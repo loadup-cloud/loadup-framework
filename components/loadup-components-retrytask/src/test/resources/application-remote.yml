@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://58.215.212.230:30236/retrytask
+    username: root
+    password: Ro0t@123
+

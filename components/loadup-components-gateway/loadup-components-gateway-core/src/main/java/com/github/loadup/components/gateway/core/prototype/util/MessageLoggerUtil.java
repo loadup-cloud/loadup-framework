@@ -1,0 +1,105 @@
+package com.github.loadup.components.gateway.core.prototype.util;
+
+import com.github.loadup.components.gateway.cache.common.SystemParameter;
+import com.github.loadup.components.gateway.core.common.enums.InterfaceType;
+import com.github.loadup.components.gateway.core.communication.http.util.SensitivityUtil;
+import com.github.loadup.components.gateway.core.model.*;
+import com.github.loadup.components.gateway.facade.util.LogUtil;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+
+/**
+ * <p>
+ * MessageLoggerUtil.java
+ * </p>
+ */
+public class MessageLoggerUtil {
+    /**
+     * message digest
+     */
+    public static final Logger commonMessageLogger = LoggerFactory
+            .getLogger("COMMON-MESSAGE-LOGGER");
+
+    /**
+     * Print http receive log.
+     */
+    public static void printHttpReceiveLog(String interfaceId, InterfaceType type, String uuid,
+                                           String uri, String httpMethod, String message,
+                                           Map<String, String> httpHeader) {
+
+        printHttpLog("httpclient receive " + type + " message", interfaceId, type, uuid, uri,
+                httpMethod, message, httpHeader);
+    }
+
+    /**
+     * Print http send log.
+     */
+    public static void printHttpSendLog(String interfaceId, InterfaceType type, String uuid,
+                                        String url, String httpMethod, String message,
+                                        Map<String, String> httpHeader) {
+
+        printHttpLog("httpclient send " + type + " message", interfaceId, type, uuid, url,
+                httpMethod, message, httpHeader);
+    }
+
+    /**
+     * Print http log.
+     */
+    public static void printHttpLog(String dialog, String interfaceId, InterfaceType interfaceType,
+                                    String uuid, String url, String httpMethod, String message,
+                                    Map<String, String> httpHeader) {
+
+        try {
+
+            Map<String, ShieldType> rules = ShieldConfig.getShieldRules(interfaceId, interfaceType);
+            StringBuilder log = new StringBuilder();
+            String maskUrl = SensitivityUtil.mask(url, rules, SensitivityProcessType.URL);
+            log.append("[HTTP] ").append(dialog);
+            log.append(",uuid:").append(uuid);
+            log.append(",URL:").append(maskUrl);
+            log.append(",http method:").append(httpMethod).append(",");
+
+            if (MapUtils.isNotEmpty(httpHeader)) {
+
+                Map<String, String> maskHeader = SensitivityUtil.mask(httpHeader, rules,
+                        SensitivityProcessType.HEADER_MAP);
+
+                maskHeader.forEach((k, v) -> {
+                    log.append("HttpHeader:").append(k).append("=").append(v).append(",");
+                });
+            }
+            log.append("message=");
+            message = SensitivityUtil.mask(message, rules,
+                    SensitivityUtil.matchProcessTypeByString(message));
+            message = getMaxLengthLog(message);
+            //去除换行
+            if (StringUtils.isNotBlank(message)) {
+                message = message.replaceAll("[\\t\\n\\r]", "");
+            }
+            log.append(message);
+            LogUtil.info(commonMessageLogger, log.toString());
+        } catch (Exception e) {
+            // 任何异常不再抛出
+            ExceptionUtil.caught(e, "print exception log .");
+        }
+    }
+
+    public static String getMaxLengthLog(String message) {
+        try {
+            String maxLogLength = SystemParameter.getParameter("maxLogLength");
+            int maxLength = Integer.parseInt(maxLogLength);
+            if (message.length() > maxLength) {
+                message = StringUtils.substring(message, 0, maxLength) + "...";
+            }
+        } catch (Exception e) {
+            ExceptionUtil.caught(e, "getMaxLengthLog catch exception, " + e.getMessage());
+        }
+
+        return message;
+    }
+
+}

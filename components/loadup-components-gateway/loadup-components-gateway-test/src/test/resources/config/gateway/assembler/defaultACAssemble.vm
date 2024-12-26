@@ -1,0 +1,8 @@
+#set($content='{"profileId":"' + $!m.g('profileId') + '","currencyPair":"USD/CNY"}')
+#set($clientId=$!m.g('client-id'))
+#set($requestTime=$!m.g('request-time'))
+#set($certCode=$!m.g('security-strategy-code'))
+#set($uri=$!velocityStringUtils.getPathFromHttp($!m.g('integration-url'), 0))
+#set($signature=$!rsaSignatureUtil.standardSign($!uri, $!clientId, $!requestTime, $!content, $!certCode))
+#set($dummy=$!m.addField("signature",$!signature))
+$!content

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.github.loadup</groupId>
+        <artifactId>loadup-dependencies</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
+    <groupId>com.github.loadup</groupId>
+    <artifactId>loadup-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <!--        <module>loadup-dependencies</module>-->
+        <module>commons/loadup-commons-dto</module>
+        <module>commons/loadup-commons-lang</module>
+        <module>commons/loadup-commons-util</module>
+        <!--        <module>components/loadup-components-retrytask</module>-->
+        <!--        <module>components/cache/loadup-components-cache-api</module>-->
+        <!--            <module>components/cache/loadup-components-cache-binder-redis</module>-->
+        <!--        <module>components/cache/loadup-components-cache-binder-caffeine</module>-->
+        <!--        <module>components/cache/loadup-components-cache-test</module>-->
+        <module>components/upms/loadup-components-upms</module>
+        <module>starter/loadup-framework-liquibase-starter</module>
+        <module>starter/loadup-framework-data-jdbc-starter</module>
+        <module>components/loadup-components-tracer</module>
+        <module>components/loadup-components-database</module>
+        <module>components/loadup-components-gateway</module>
+        <!--    <module>components/gateway/loadup-components-gateway-adaptor</module>-->
+        <!--    <module>components/gateway/loadup-components-gateway-client</module>-->
+        <!--    <module>components/gateway/loadup-components-gateway-domain</module>-->
+        <!--    <module>components/gateway/loadup-components-gateway-starter</module>-->
+        <!--    <module>components/gateway/loadup-components-gateway-app</module>-->
+        <!--    <module>loadup-api</module>-->
+        <module>launcher</module>
+    </modules>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.github.loadup.framework</groupId>
+                <artifactId>loadup-framework-data-jdbc-starter</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.loadup.framework</groupId>
+                <artifactId>loadup-framework-liquibase-starter</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>LoadUp Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+        </repository>
+        <snapshotRepository>
+            <id>github</id>
+            <name>LoadUp Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+
+</project>

@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.github.loadup.components.gateway.plugin.repository.database.DatabaseRepositoryAutoConfiguration

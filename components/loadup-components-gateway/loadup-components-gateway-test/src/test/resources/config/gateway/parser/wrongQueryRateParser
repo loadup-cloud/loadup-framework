@@ -1,0 +1,42 @@
+    import MessageEnvelope;
+    import MessageParser;
+    import  com.github.loadup.components.gateway.core.message.unimsg.UnifyCommonMessage;
+    import UnifyMsg;
+    import com.alibaba.fastjson2.JSONObject;
+    import com.alibaba.fastjson2.JSON;
+
+    public class QueryRateParser implements MessageParser {
+        @Override
+        public UnifyMessage parse(MessageEnvelope messageEnvelope) {
+        UnifyCommonMessage message = new UnifyCommonMessage();
+        JSONObject jsonObject = JSON.parseObject((String)messageEnvelope.getContent());
+        message.getCommonBody().addField("source", jsonObject.getString("source"));
+        message.getCommonBody().addField("counterparty", jsonObject.getString("counterparty"));
+        message.getCommonBody().addField("quoteId", jsonObject.getString("quoteId"));
+        message.getCommonBody().addField("quoteRequestId", jsonObject.getString("quoteRequestId"));
+        message.getCommonBody().addField("baseCurrency", jsonObject.getString("baseCurrency"));
+        message.getCommonBody().addField("termCurrency", jsonObject.getString("termCurrency"));
+
+
+        message.getCommonBody().addField("bidPrice", jsonObject.getString("bidPrice"));
+        message.getCommonBody().addField("offerPrice", jsonObject.getString("offerPrice"));
+        message.getCommonBody().addField("amount", jsonObject.getString("amount"));
+        message.getCommonBody().addField("coverAmount", jsonObject.getString("coverAmount"));
+        message.getCommonBody().addField("valueDate", jsonObject.getString("valueDate"));
+        message.getCommonBody().addField("createdDate", jsonObject.getString("createdDate"));
+
+
+        message.getCommonBody().addField("validUntilTime", jsonObject.getString("validUntilTime"));
+        message.getCommonBody().addField("marketStatus", jsonObject.getString("marketStatus"));
+        message.getCommonBody().addField("responseStatus", jsonObject.getString("responseStatus"));
+        return message;
+    }
+
+    public void share(UnifyMessage responseMessage, UnifyMessage requestMessage) {
+
+    }
+
+
+
+
+}

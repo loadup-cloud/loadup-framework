@@ -1,0 +1,101 @@
+package com.github.loadup.components.gateway.plugin.helper;
+
+import com.github.loadup.commons.util.JsonUtil;
+import com.github.loadup.components.gateway.facade.util.LogUtil;
+import com.github.loadup.components.gateway.plugin.exception.IllegalBeanMethodException;
+import com.github.loadup.components.gateway.plugin.exception.IllegalBeanUriException;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Helper for SpringBean call communication plugin extension. And bean uri is expected to be: SPRINGBEAN://{spingBean_id}/{method}
+ */
+public class BeanApiHelper {
+    private static final Logger logger = LoggerFactory.getLogger(BeanApiHelper.class);
+
+    //private static BeanApiHelper instance;
+
+    private String  patternStr;
+    private Pattern pattern;
+
+    private BeanApiHelper() {
+        patternStr = "SPRINGBEAN://[a-zA-Z|0-9|.|_]+/[a-zA-Z|0-9|_]+";
+        pattern = Pattern.compile(patternStr);
+    }
+
+    private static class BeanApiHelperSingletonHolder {
+        private static final BeanApiHelper INSTANCE = new BeanApiHelper();
+    }
+
+    public static BeanApiHelper getInstance() {
+        return BeanApiHelperSingletonHolder.INSTANCE;
+    }
+
+    /**
+     * @throws IllegalBeanUriException
+     */
+    public ApiDefinition parseApiDefinition(String beanUri) throws IllegalBeanUriException {
+        Matcher matcher = pattern.matcher(beanUri);
+        boolean isMatch = matcher.matches();
+        if (isMatch) {
+            String[] protocolPath = beanUri.split("://");
+
+            String[] classNMethod = protocolPath[1].split("/");
+            String beanId = classNMethod[0];
+            String method = classNMethod[1];
+
+            return new ApiDefinition(beanId, method);
+        } else {
+            String errMsg = String.format("Bean uri=%s do not match pattern=%s", beanUri, patternStr);
+            throw new IllegalBeanUriException(errMsg);
+        }
+    }
+
+    /**
+     * @throws IllegalBeanMethodException
+     */
+    public Method getServiceMethod(Object bizService, ApiDefinition api) throws IllegalBeanMethodException {
+        String methodName = api.getMethod();
+
+        Set<Method> foundMethods = new HashSet<>();
+
+        for (Method method : bizService.getClass().getMethods()) {
+            if (StringUtils.equals(method.getName(), methodName)) {
+                foundMethods.add(method);
+            }
+        }
+
+        // generally valid
+        if (foundMethods.size() == 1) {
+            return foundMethods.iterator().next();
+        }
+
+        if (foundMethods.size() == 0) {
+            throw new IllegalBeanMethodException("Could not find target method " + methodName);
+        }
+        throw new IllegalBeanMethodException("Class method overloading is not allowed now, target method is "
+                + methodName);
+    }
+
+    /**
+     * parse parameter
+     */
+    @SuppressWarnings({"static-access", "rawtypes"})
+    public Object parseParam(Method method, String requestMessage) {
+        Class<?>[] paramTypes = method.getParameterTypes();
+
+        // only one parameter is allowed for standard OpenApi
+        if (paramTypes.length != 1) {
+            throw new RuntimeException("invalid parameter types");
+        }
+        LogUtil.info(logger, "The class of parameter is " + paramTypes[0].getName() + "The requestMessage is " + requestMessage);
+        return JsonUtil.parseObject(requestMessage, paramTypes[0]);
+    }
+}

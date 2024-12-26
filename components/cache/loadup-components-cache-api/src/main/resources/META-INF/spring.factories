@@ -1,0 +1,2 @@
+com.github.loadup.framework.api.binding.Binding=\
+  com.github.loadup.components.cache.binding.DefaultCacheBinding

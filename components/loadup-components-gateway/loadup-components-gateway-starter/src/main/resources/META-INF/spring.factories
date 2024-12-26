@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.github.loadup.components.gateway.starter.gatewayCoreAutoConfiguration,\
+com.github.loadup.components.gateway.starter.impl.spi.SpiAutoConfiguration

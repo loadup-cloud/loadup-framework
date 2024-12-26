@@ -1,0 +1,22 @@
+{
+  "properties": [
+    {
+      "name": "spring.cache.caffeine.init-cache-capacity",
+      "type": "java.lang.Integer",
+      "description": "init capacity.",
+      "defaultValue": 256
+    },
+    {
+      "name": "spring.cache.caffeine.max-cache-capacity",
+      "type": "java.lang.Long",
+      "description": "max capacity.",
+      "defaultValue": "10000L"
+    },
+    {
+      "name": "spring.cache.caffeine.allow-null-value",
+      "type": "java.lang.Boolean",
+      "description": "allow null value.",
+      "defaultValue": "true"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+spring:
+  cache:
+    type: caffeine
+    cache-names:
+      - products
+      - users

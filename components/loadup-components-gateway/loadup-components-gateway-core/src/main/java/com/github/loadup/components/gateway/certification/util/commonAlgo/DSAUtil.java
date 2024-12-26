@@ -1,0 +1,102 @@
+package com.github.loadup.components.gateway.certification.util.commonAlgo;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import java.security.*;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * DSA数字签名算法
+ */
+public class DSAUtil {
+
+    /**
+     * RSA 算法名字
+     */
+    private static String KEY_ALGO_NAME = "DSA";
+
+    /**
+     * 公钥名
+     */
+    public static String PUBLICK_KEY = "PUBLIC_KEY";
+
+    /**
+     * 私钥名
+     */
+    public static String PRIVATE_KEY = "PRIVATE_KEY";
+
+    static {
+        if (Security.getProvider("BC") == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+    }
+
+    /**
+     * 公共签名接口
+     */
+    public static byte[] sign(byte[] data, byte[] key, String algorithm) throws Exception {
+        byte[] rtn = null;
+        PrivateKey privateKey = recoverPrivateKey(key);
+        Signature signature = Signature.getInstance(algorithm);
+        signature.initSign(privateKey);
+        signature.update(data);
+        rtn = signature.sign();
+        return rtn;
+
+    }
+
+    /**
+     * 公共验签接口
+     */
+    public static boolean verify(byte[] unSignedData, byte[] signedData, byte[] key,
+                                 String algorithm) throws Exception {
+        PublicKey publicKey = recoverPublicKey(key);
+        Signature signature = Signature.getInstance(algorithm);
+        signature.initVerify(publicKey);
+
+        signature.update(unSignedData);
+        return signature.verify(signedData);
+
+    }
+
+    /**
+     * 生成公私钥对
+     */
+    public static Map<String, Object> generateKey(int keySize) throws Exception {
+
+        Map<String, Object> rtn = new HashMap<String, Object>();
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_ALGO_NAME);
+        keyPairGenerator.initialize(keySize, new SecureRandom());
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
+        byte[] publicKey = keyPair.getPublic().getEncoded();
+        byte[] privateKey = keyPair.getPrivate().getEncoded();
+        rtn.put(PUBLICK_KEY, publicKey);
+        rtn.put(PRIVATE_KEY, privateKey);
+        return rtn;
+    }
+
+    /**
+     * 恢复私钥
+     */
+    public static PrivateKey recoverPrivateKey(byte[] data) throws Exception {
+
+        PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(data);
+        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGO_NAME);
+        return keyFactory.generatePrivate(pkcs8EncodedKeySpec);
+
+    }
+
+    /**
+     * 恢复公钥
+     */
+    public static PublicKey recoverPublicKey(byte[] data) throws Exception {
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(data);
+        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGO_NAME);
+        return keyFactory.generatePublic(keySpec);
+
+    }
+
+}
