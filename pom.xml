@@ -29,6 +29,7 @@
         <module>components/loadup-components-tracer</module>
         <module>components/loadup-components-database</module>
         <module>components/loadup-components-gateway</module>
+        <module>components/loadup-components-test</module>
         <!--    <module>components/gateway/loadup-components-gateway-adaptor</module>-->
         <!--    <module>components/gateway/loadup-components-gateway-client</module>-->
         <!--    <module>components/gateway/loadup-components-gateway-domain</module>-->
