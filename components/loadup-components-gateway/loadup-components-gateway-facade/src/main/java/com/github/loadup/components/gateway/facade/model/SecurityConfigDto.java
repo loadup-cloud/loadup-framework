@@ -1,5 +1,31 @@
 package com.github.loadup.components.gateway.facade.model;
 
+/*-
+ * #%L
+ * loadup-components-gateway-facade
+ * %%
+ * Copyright (C) 2022 - 2025 loadup_cloud
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -9,300 +35,300 @@ import java.util.Date;
  *
  */
 public class SecurityConfigDto {
-    //========== properties ==========
+	//========== properties ==========
 
-    /**
-     * This property corresponds to db column <tt>tenant_id</tt>.
-     */
-    private String tenantId;
+	/**
+	 * This property corresponds to db column <tt>tenant_id</tt>.
+	 */
+	private String tenantId;
 
-    /**
-     * This property corresponds to db column <tt>security_strategy_code</tt>.
-     */
-    private String securityStrategyCode;
+	/**
+	 * This property corresponds to db column <tt>security_strategy_code</tt>.
+	 */
+	private String securityStrategyCode;
 
-    /**
-     * This property corresponds to db column <tt>client_id</tt>.
-     */
-    private String clientId;
+	/**
+	 * This property corresponds to db column <tt>client_id</tt>.
+	 */
+	private String clientId;
 
-    /**
-     * This property corresponds to db column <tt>cert_content</tt>.
-     */
-    private String certContent;
+	/**
+	 * This property corresponds to db column <tt>cert_content</tt>.
+	 */
+	private String certContent;
 
-    /**
-     * This property corresponds to db column <tt>operate_type</tt>.
-     */
-    private String operateType;
+	/**
+	 * This property corresponds to db column <tt>operate_type</tt>.
+	 */
+	private String operateType;
 
-    /**
-     * This property corresponds to db column <tt>cert_type</tt>.
-     */
-    private String certType;
+	/**
+	 * This property corresponds to db column <tt>cert_type</tt>.
+	 */
+	private String certType;
 
-    /**
-     * This property corresponds to db column <tt>status</tt>.
-     */
-    private String status;
+	/**
+	 * This property corresponds to db column <tt>status</tt>.
+	 */
+	private String status;
 
-    /**
-     * This property corresponds to db column <tt>key_type</tt>.
-     */
-    private String keyType;
+	/**
+	 * This property corresponds to db column <tt>key_type</tt>.
+	 */
+	private String keyType;
 
-    /**
-     * This property corresponds to db column <tt>algo_name</tt>.
-     */
-    private String algoName;
+	/**
+	 * This property corresponds to db column <tt>algo_name</tt>.
+	 */
+	private String algoName;
 
-    /**
-     * This property corresponds to db column <tt>properties</tt>.
-     */
-    private String properties;
+	/**
+	 * This property corresponds to db column <tt>properties</tt>.
+	 */
+	private String properties;
 
-    /**
-     * This property corresponds to db column <tt>algo_properties</tt>.
-     */
-    private String algoProperties;
+	/**
+	 * This property corresponds to db column <tt>algo_properties</tt>.
+	 */
+	private String algoProperties;
 
-    /**
-     * This property corresponds to db column <tt>gmt_valid</tt>.
-     */
-    private Date gmtValid;
+	/**
+	 * This property corresponds to db column <tt>gmt_valid</tt>.
+	 */
+	private Date gmtValid;
 
-    /**
-     * This property corresponds to db column <tt>gmt_invalid</tt>.
-     */
-    private Date gmtInvalid;
+	/**
+	 * This property corresponds to db column <tt>gmt_invalid</tt>.
+	 */
+	private Date gmtInvalid;
 
-    /**
-     * This property corresponds to db column <tt>gmt_create</tt>.
-     */
-    private Date gmtCreate;
+	/**
+	 * This property corresponds to db column <tt>gmt_create</tt>.
+	 */
+	private Date gmtCreate;
 
-    /**
-     * This property corresponds to db column <tt>gmt_modified</tt>.
-     */
-    private Date gmtModified;
+	/**
+	 * This property corresponds to db column <tt>gmt_modified</tt>.
+	 */
+	private Date gmtModified;
 
-    //========== getters and setters ==========
+	//========== getters and setters ==========
 
-    /**
-     * Getter method for property <tt>tenantId</tt>.
-     */
-    public String getTenantId() {
-        return tenantId;
-    }
+	/**
+	 * Getter method for property <tt>tenantId</tt>.
+	 */
+	public String getTenantId() {
+		return tenantId;
+	}
 
-    /**
-     * Setter method for property <tt>tenantId</tt>.
-     */
-    public void setTenantId(String tenantId) {
-        this.tenantId = tenantId;
-    }
+	/**
+	 * Setter method for property <tt>tenantId</tt>.
+	 */
+	public void setTenantId(String tenantId) {
+		this.tenantId = tenantId;
+	}
 
-    /**
-     * Getter method for property <tt>securityStrategyCode</tt>.
-     */
-    public String getSecurityStrategyCode() {
-        return securityStrategyCode;
-    }
+	/**
+	 * Getter method for property <tt>securityStrategyCode</tt>.
+	 */
+	public String getSecurityStrategyCode() {
+		return securityStrategyCode;
+	}
 
-    /**
-     * Setter method for property <tt>securityStrategyCode</tt>.
-     */
-    public void setSecurityStrategyCode(String securityStrategyCode) {
-        this.securityStrategyCode = securityStrategyCode;
-    }
+	/**
+	 * Setter method for property <tt>securityStrategyCode</tt>.
+	 */
+	public void setSecurityStrategyCode(String securityStrategyCode) {
+		this.securityStrategyCode = securityStrategyCode;
+	}
 
-    /**
-     * Getter method for property <tt>clientId</tt>.
-     */
-    public String getClientId() {
-        return clientId;
-    }
+	/**
+	 * Getter method for property <tt>clientId</tt>.
+	 */
+	public String getClientId() {
+		return clientId;
+	}
 
-    /**
-     * Setter method for property <tt>clientId</tt>.
-     */
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
+	/**
+	 * Setter method for property <tt>clientId</tt>.
+	 */
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
 
-    /**
-     * Getter method for property <tt>certContent</tt>.
-     */
-    public String getCertContent() {
-        return certContent;
-    }
+	/**
+	 * Getter method for property <tt>certContent</tt>.
+	 */
+	public String getCertContent() {
+		return certContent;
+	}
 
-    /**
-     * Setter method for property <tt>certContent</tt>.
-     */
-    public void setCertContent(String certContent) {
-        this.certContent = certContent;
-    }
+	/**
+	 * Setter method for property <tt>certContent</tt>.
+	 */
+	public void setCertContent(String certContent) {
+		this.certContent = certContent;
+	}
 
-    /**
-     * Getter method for property <tt>operateType</tt>.
-     */
-    public String getOperateType() {
-        return operateType;
-    }
+	/**
+	 * Getter method for property <tt>operateType</tt>.
+	 */
+	public String getOperateType() {
+		return operateType;
+	}
 
-    /**
-     * Setter method for property <tt>operateType</tt>.
-     */
-    public void setOperateType(String operateType) {
-        this.operateType = operateType;
-    }
+	/**
+	 * Setter method for property <tt>operateType</tt>.
+	 */
+	public void setOperateType(String operateType) {
+		this.operateType = operateType;
+	}
 
-    /**
-     * Getter method for property <tt>certType</tt>.
-     */
-    public String getCertType() {
-        return certType;
-    }
+	/**
+	 * Getter method for property <tt>certType</tt>.
+	 */
+	public String getCertType() {
+		return certType;
+	}
 
-    /**
-     * Setter method for property <tt>certType</tt>.
-     */
-    public void setCertType(String certType) {
-        this.certType = certType;
-    }
+	/**
+	 * Setter method for property <tt>certType</tt>.
+	 */
+	public void setCertType(String certType) {
+		this.certType = certType;
+	}
 
-    /**
-     * Getter method for property <tt>status</tt>.
-     */
-    public String getStatus() {
-        return status;
-    }
+	/**
+	 * Getter method for property <tt>status</tt>.
+	 */
+	public String getStatus() {
+		return status;
+	}
 
-    /**
-     * Setter method for property <tt>status</tt>.
-     */
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	/**
+	 * Setter method for property <tt>status</tt>.
+	 */
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    /**
-     * Getter method for property <tt>keyType</tt>.
-     */
-    public String getKeyType() {
-        return keyType;
-    }
+	/**
+	 * Getter method for property <tt>keyType</tt>.
+	 */
+	public String getKeyType() {
+		return keyType;
+	}
 
-    /**
-     * Setter method for property <tt>keyType</tt>.
-     */
-    public void setKeyType(String keyType) {
-        this.keyType = keyType;
-    }
+	/**
+	 * Setter method for property <tt>keyType</tt>.
+	 */
+	public void setKeyType(String keyType) {
+		this.keyType = keyType;
+	}
 
-    /**
-     * Getter method for property <tt>algoName</tt>.
-     */
-    public String getAlgoName() {
-        return algoName;
-    }
+	/**
+	 * Getter method for property <tt>algoName</tt>.
+	 */
+	public String getAlgoName() {
+		return algoName;
+	}
 
-    /**
-     * Setter method for property <tt>algoName</tt>.
-     */
-    public void setAlgoName(String algoName) {
-        this.algoName = algoName;
-    }
+	/**
+	 * Setter method for property <tt>algoName</tt>.
+	 */
+	public void setAlgoName(String algoName) {
+		this.algoName = algoName;
+	}
 
-    /**
-     * Getter method for property <tt>properties</tt>.
-     */
-    public String getProperties() {
-        return properties;
-    }
+	/**
+	 * Getter method for property <tt>properties</tt>.
+	 */
+	public String getProperties() {
+		return properties;
+	}
 
-    /**
-     * Setter method for property <tt>properties</tt>.
-     */
-    public void setProperties(String properties) {
-        this.properties = properties;
-    }
+	/**
+	 * Setter method for property <tt>properties</tt>.
+	 */
+	public void setProperties(String properties) {
+		this.properties = properties;
+	}
 
-    /**
-     * Getter method for property <tt>algoProperties</tt>.
-     */
-    public String getAlgoProperties() {
-        return algoProperties;
-    }
+	/**
+	 * Getter method for property <tt>algoProperties</tt>.
+	 */
+	public String getAlgoProperties() {
+		return algoProperties;
+	}
 
-    /**
-     * Setter method for property <tt>algoProperties</tt>.
-     */
-    public void setAlgoProperties(String algoProperties) {
-        this.algoProperties = algoProperties;
-    }
+	/**
+	 * Setter method for property <tt>algoProperties</tt>.
+	 */
+	public void setAlgoProperties(String algoProperties) {
+		this.algoProperties = algoProperties;
+	}
 
-    /**
-     * Getter method for property <tt>gmtValid</tt>.
-     */
-    public Date getGmtValid() {
-        return gmtValid;
-    }
+	/**
+	 * Getter method for property <tt>gmtValid</tt>.
+	 */
+	public Date getGmtValid() {
+		return gmtValid;
+	}
 
-    /**
-     * Setter method for property <tt>gmtValid</tt>.
-     */
-    public void setGmtValid(Date gmtValid) {
-        this.gmtValid = gmtValid;
-    }
+	/**
+	 * Setter method for property <tt>gmtValid</tt>.
+	 */
+	public void setGmtValid(Date gmtValid) {
+		this.gmtValid = gmtValid;
+	}
 
-    /**
-     * Getter method for property <tt>gmtInvalid</tt>.
-     */
-    public Date getGmtInvalid() {
-        return gmtInvalid;
-    }
+	/**
+	 * Getter method for property <tt>gmtInvalid</tt>.
+	 */
+	public Date getGmtInvalid() {
+		return gmtInvalid;
+	}
 
-    /**
-     * Setter method for property <tt>gmtInvalid</tt>.
-     */
-    public void setGmtInvalid(Date gmtInvalid) {
-        this.gmtInvalid = gmtInvalid;
-    }
+	/**
+	 * Setter method for property <tt>gmtInvalid</tt>.
+	 */
+	public void setGmtInvalid(Date gmtInvalid) {
+		this.gmtInvalid = gmtInvalid;
+	}
 
-    /**
-     * Getter method for property <tt>gmtCreate</tt>.
-     */
-    public Date getGmtCreate() {
-        return gmtCreate;
-    }
+	/**
+	 * Getter method for property <tt>gmtCreate</tt>.
+	 */
+	public Date getGmtCreate() {
+		return gmtCreate;
+	}
 
-    /**
-     * Setter method for property <tt>gmtCreate</tt>.
-     */
-    public void setGmtCreate(Date gmtCreate) {
-        this.gmtCreate = gmtCreate;
-    }
+	/**
+	 * Setter method for property <tt>gmtCreate</tt>.
+	 */
+	public void setGmtCreate(Date gmtCreate) {
+		this.gmtCreate = gmtCreate;
+	}
 
-    /**
-     * Getter method for property <tt>gmtModified</tt>.
-     */
-    public Date getGmtModified() {
-        return gmtModified;
-    }
+	/**
+	 * Getter method for property <tt>gmtModified</tt>.
+	 */
+	public Date getGmtModified() {
+		return gmtModified;
+	}
 
-    /**
-     * Setter method for property <tt>gmtModified</tt>.
-     */
-    public void setGmtModified(Date gmtModified) {
-        this.gmtModified = gmtModified;
-    }
+	/**
+	 * Setter method for property <tt>gmtModified</tt>.
+	 */
+	public void setGmtModified(Date gmtModified) {
+		this.gmtModified = gmtModified;
+	}
 
-    /**
-     * @see Object#toString()
-     */
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-    }
+	/**
+	 * @see Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
 }

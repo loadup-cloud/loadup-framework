@@ -40,20 +40,20 @@ import java.time.LocalDateTime;
 @Setter
 public abstract class BaseDO implements Serializable {
 
-    @CreatedDate
-    @InsertOnlyProperty
-    private LocalDateTime createdTime;
+	@CreatedDate
+	@InsertOnlyProperty
+	private LocalDateTime createdTime;
 
-    @LastModifiedDate
-    private LocalDateTime modifiedTime;
+	@LastModifiedDate
+	private LocalDateTime modifiedTime;
 
-    public abstract String getId();
+	public abstract String getId();
 
-    public abstract void setId(String id);
+	public abstract void setId(String id);
 
-    @Override
-    public String toString() {
-        return ToStringUtils.reflectionToString(this);
-    }
+	@Override
+	public String toString() {
+		return ToStringUtils.reflectionToString(this);
+	}
 
 }

@@ -27,7 +27,7 @@ package com.github.loadup.commons.util;
  */
 
 /*
-  @author Laysan
+@author Laysan
  * @since 1.0.0
  */
 
@@ -35,15 +35,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class ToStringUtils {
-    static {
-        ToStringBuilder.setDefaultStyle(ToStringStyle.JSON_STYLE);
-    }
+	static {
+		ToStringBuilder.setDefaultStyle(ToStringStyle.JSON_STYLE);
+	}
 
-    public static String reflectionToString(Object object) {
-        return ToStringBuilder.reflectionToString(object);
-    }
+	public static String reflectionToString(Object object) {
+		return ToStringBuilder.reflectionToString(object);
+	}
 
-    public static String reflectionToString(Object object, ToStringStyle style) {
-        return ToStringBuilder.reflectionToString(object, style);
-    }
+	public static String reflectionToString(Object object, ToStringStyle style) {
+		return ToStringBuilder.reflectionToString(object, style);
+	}
 }

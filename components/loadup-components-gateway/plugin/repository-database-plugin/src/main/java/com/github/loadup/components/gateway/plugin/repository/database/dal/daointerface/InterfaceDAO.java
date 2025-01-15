@@ -1,5 +1,31 @@
 package com.github.loadup.components.gateway.plugin.repository.database.dal.daointerface;
 
+/*-
+ * #%L
+ * repository-database-plugin
+ * %%
+ * Copyright (C) 2022 - 2025 loadup_cloud
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject.InterfaceDO;
 
 import java.util.List;
@@ -17,45 +43,45 @@ import java.util.List;
  */
 public interface InterfaceDAO {
 
-    /**
-     * Insert one <tt>InterfaceDO</tt> object to DB table <tt>gateway_interface</tt>, return primary key
-     */
-    public String insert(InterfaceDO interfaceDO);
+	/**
+	 * Insert one <tt>InterfaceDO</tt> object to DB table <tt>gateway_interface</tt>, return primary key
+	 */
+	public String insert(InterfaceDO interfaceDO);
 
-    /**
-     * Update DB table <tt>gateway_interface</tt>.
-     */
-    public int update(InterfaceDO interfaceDO);
+	/**
+	 * Update DB table <tt>gateway_interface</tt>.
+	 */
+	public int update(InterfaceDO interfaceDO);
 
-    /**
-     * Query DB table <tt>gateway_interface</tt> for records.
-     */
-    public InterfaceDO loadByInterfaceId(String interfaceId);
+	/**
+	 * Query DB table <tt>gateway_interface</tt> for records.
+	 */
+	public InterfaceDO loadByInterfaceId(String interfaceId);
 
-    /**
-     * Query DB table <tt>gateway_interface</tt> for records.
-     */
-    public InterfaceDO lockByInterfaceId(String interfaceId);
+	/**
+	 * Query DB table <tt>gateway_interface</tt> for records.
+	 */
+	public InterfaceDO lockByInterfaceId(String interfaceId);
 
-    /**
-     * Query DB table <tt>gateway_interface</tt> for records.
-     */
-    public List<InterfaceDO> lock(String type, String url, String tenantId);
+	/**
+	 * Query DB table <tt>gateway_interface</tt> for records.
+	 */
+	public List<InterfaceDO> lock(String type, String url, String tenantId);
 
-    /**
-     * Query DB table <tt>gateway_interface</tt> for records.
-     */
-    public List<InterfaceDO> loadAll();
+	/**
+	 * Query DB table <tt>gateway_interface</tt> for records.
+	 */
+	public List<InterfaceDO> loadAll();
 
-    /**
-     * Delete records from DB table <tt>gateway_interface</tt>.
-     */
-    public int delete(String interfaceId);
+	/**
+	 * Delete records from DB table <tt>gateway_interface</tt>.
+	 */
+	public int delete(String interfaceId);
 
-    /**
-     * Query DB table <tt>gateway_interface</tt> for records.
-     */
-    public List<InterfaceDO> loadByPage(String tenantId, String interfaceId, String clientId, String type, String status,
-                                        String interfaceName, int offset, int rowcount);
+	/**
+	 * Query DB table <tt>gateway_interface</tt> for records.
+	 */
+	public List<InterfaceDO> loadByPage(String tenantId, String interfaceId, String clientId, String type, String status,
+										String interfaceName, int offset, int rowcount);
 
 }

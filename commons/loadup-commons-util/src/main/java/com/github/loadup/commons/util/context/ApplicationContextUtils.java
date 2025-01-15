@@ -41,97 +41,97 @@ import java.util.Objects;
 @Component
 public class ApplicationContextUtils implements ApplicationContextAware {
 
-    /**
-     * Spring应用上下文
-     */
-    private static ApplicationContext applicationContext;
+	/**
+	 * Spring应用上下文
+	 */
+	private static ApplicationContext applicationContext;
 
-    /**
-     * 实现ApplicationContextAware接口的回调方法，设置上下文环境
-     *
-     * @throws BeansException
-     */
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        ApplicationContextUtils.applicationContext = applicationContext;
-    }
+	/**
+	 * 实现ApplicationContextAware接口的回调方法，设置上下文环境
+	 *
+	 * @throws BeansException
+	 */
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		ApplicationContextUtils.applicationContext = applicationContext;
+	}
 
-    /**
-     *
-     */
-    public static ApplicationContext getApplicationContext() {
-        return applicationContext;
-    }
+	/**
+	 *
+	 */
+	public static ApplicationContext getApplicationContext() {
+		return applicationContext;
+	}
 
-    /**
-     * 获取对象
-     *
-     * @throws BeansException
-     */
-    public static Object getBean(String name) throws BeansException {
-        Object bean = applicationContext.getBean(name);
-        if (Objects.isNull(bean)) {
-            if (!StringUtils.endsWith(name, "Impl")) {
-                bean = applicationContext.getBean(name + "Impl");
-            }
-        }
-        return bean;
+	/**
+	 * 获取对象
+	 *
+	 * @throws BeansException
+	 */
+	public static Object getBean(String name) throws BeansException {
+		Object bean = applicationContext.getBean(name);
+		if (Objects.isNull(bean)) {
+			if (!StringUtils.endsWith(name, "Impl")) {
+				bean = applicationContext.getBean(name + "Impl");
+			}
+		}
+		return bean;
 
-    }
+	}
 
-    /**
-     * 获取所有定义的bean的名字
-     */
-    public static String[] getBeanDefinitionNames() {
-        return applicationContext.getBeanDefinitionNames();
-    }
+	/**
+	 * 获取所有定义的bean的名字
+	 */
+	public static String[] getBeanDefinitionNames() {
+		return applicationContext.getBeanDefinitionNames();
+	}
 
-    /**
-     * 获取类型为requiredType的对象
-     * 如果bean不能被类型转换，相应的异常将会被抛出（BeanNotOfRequiredTypeException）
-     *
-     * @throws BeansException
-     */
-    public static <T> T getBean(String name, Class<T> requiredType) throws BeansException {
-        T bean = applicationContext.getBean(name, requiredType);
-        if (Objects.isNull(bean)) {
-            if (!StringUtils.endsWith(name, "Impl")) {
-                bean = applicationContext.getBean(name + "Impl", requiredType);
-            }
-        }
-        return bean;
-    }
+	/**
+	 * 获取类型为requiredType的对象
+	 * 如果bean不能被类型转换，相应的异常将会被抛出（BeanNotOfRequiredTypeException）
+	 *
+	 * @throws BeansException
+	 */
+	public static <T> T getBean(String name, Class<T> requiredType) throws BeansException {
+		T bean = applicationContext.getBean(name, requiredType);
+		if (Objects.isNull(bean)) {
+			if (!StringUtils.endsWith(name, "Impl")) {
+				bean = applicationContext.getBean(name + "Impl", requiredType);
+			}
+		}
+		return bean;
+	}
 
-    /**
-     * 如果BeanFactory包含一个与所给名称匹配的bean定义，则返回true
-     */
-    public static boolean containsBean(String name) {
-        return applicationContext.containsBean(name);
-    }
+	/**
+	 * 如果BeanFactory包含一个与所给名称匹配的bean定义，则返回true
+	 */
+	public static boolean containsBean(String name) {
+		return applicationContext.containsBean(name);
+	}
 
-    /**
-     * 判断以给定名字注册的bean定义是一个singleton还是一个prototype。
-     * 如果与给定名字相应的bean定义没有被找到，将会抛出一个异常（NoSuchBeanDefinitionException）
-     *
-     * @throws NoSuchBeanDefinitionException
-     */
-    public static boolean isSingleton(String name) throws NoSuchBeanDefinitionException {
-        return applicationContext.isSingleton(name);
-    }
+	/**
+	 * 判断以给定名字注册的bean定义是一个singleton还是一个prototype。
+	 * 如果与给定名字相应的bean定义没有被找到，将会抛出一个异常（NoSuchBeanDefinitionException）
+	 *
+	 * @throws NoSuchBeanDefinitionException
+	 */
+	public static boolean isSingleton(String name) throws NoSuchBeanDefinitionException {
+		return applicationContext.isSingleton(name);
+	}
 
-    /**
-     * @throws NoSuchBeanDefinitionException
-     */
-    public static Class<?> getType(String name) throws NoSuchBeanDefinitionException {
-        return applicationContext.getType(name);
-    }
+	/**
+	 * @throws NoSuchBeanDefinitionException
+	 */
+	public static Class<?> getType(String name) throws NoSuchBeanDefinitionException {
+		return applicationContext.getType(name);
+	}
 
-    /**
-     * 如果给定的bean名字在bean定义中有别名，则返回这些别名
-     *
-     * @throws NoSuchBeanDefinitionException
-     */
-    public static String[] getAliases(String name) throws NoSuchBeanDefinitionException {
-        return applicationContext.getAliases(name);
-    }
+	/**
+	 * 如果给定的bean名字在bean定义中有别名，则返回这些别名
+	 *
+	 * @throws NoSuchBeanDefinitionException
+	 */
+	public static String[] getAliases(String name) throws NoSuchBeanDefinitionException {
+		return applicationContext.getAliases(name);
+	}
 }

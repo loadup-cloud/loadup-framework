@@ -1,5 +1,31 @@
 package com.github.loadup.components.gateway.facade.model;
 
+/*-
+ * #%L
+ * loadup-components-gateway-facade
+ * %%
+ * Copyright (C) 2022 - 2025 loadup_cloud
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,79 +33,79 @@ import java.util.Map;
  * Extension Communication Configuration.
  */
 public class CommunicationConfiguration {
-    /**
-     * communicationId
-     */
-    private String communicationId;
+	/**
+	 * communicationId
+	 */
+	private String communicationId;
 
-    /**
-     * protocol
-     */
-    private String protocol;
+	/**
+	 * protocol
+	 */
+	private String protocol;
 
-    /**
-     * the uri that we receive
-     */
-    private String uri;
+	/**
+	 * the uri that we receive
+	 */
+	private String uri;
 
-    /**
-     * communication properties
-     */
-    private Map<String, String> properties = new HashMap<String, String>();
+	/**
+	 * communication properties
+	 */
+	private Map<String, String> properties = new HashMap<String, String>();
 
-    /**
-     * Getter method for property <tt>communicationId</tt>.
-     */
-    public String getCommunicationId() {
-        return communicationId;
-    }
+	/**
+	 * Getter method for property <tt>communicationId</tt>.
+	 */
+	public String getCommunicationId() {
+		return communicationId;
+	}
 
-    /**
-     * Setter method for property <tt>communicationId</tt>.
-     */
-    public void setCommunicationId(String communicationId) {
-        this.communicationId = communicationId;
-    }
+	/**
+	 * Setter method for property <tt>communicationId</tt>.
+	 */
+	public void setCommunicationId(String communicationId) {
+		this.communicationId = communicationId;
+	}
 
-    /**
-     * Getter method for property <tt>protocol</tt>.
-     */
-    public String getProtocol() {
-        return protocol;
-    }
+	/**
+	 * Getter method for property <tt>protocol</tt>.
+	 */
+	public String getProtocol() {
+		return protocol;
+	}
 
-    /**
-     * Setter method for property <tt>protocol</tt>.
-     */
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
+	/**
+	 * Setter method for property <tt>protocol</tt>.
+	 */
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
 
-    /**
-     * Getter method for property <tt>uri</tt>.
-     */
-    public String getUri() {
-        return uri;
-    }
+	/**
+	 * Getter method for property <tt>uri</tt>.
+	 */
+	public String getUri() {
+		return uri;
+	}
 
-    /**
-     * Setter method for property <tt>uri</tt>.
-     */
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
+	/**
+	 * Setter method for property <tt>uri</tt>.
+	 */
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
 
-    /**
-     * Getter method for property <tt>properties</tt>.
-     */
-    public Map<String, String> getProperties() {
-        return properties;
-    }
+	/**
+	 * Getter method for property <tt>properties</tt>.
+	 */
+	public Map<String, String> getProperties() {
+		return properties;
+	}
 
-    /**
-     * Setter method for property <tt>properties</tt>.
-     */
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
+	/**
+	 * Setter method for property <tt>properties</tt>.
+	 */
+	public void setProperties(Map<String, String> properties) {
+		this.properties = properties;
+	}
 }

@@ -30,77 +30,77 @@ import java.io.Serial;
 import java.util.*;
 
 public class MultiResponse<T> extends Response {
-    @Serial
-    private static final long serialVersionUID = 195635483708408296L;
+	@Serial
+	private static final long serialVersionUID = 195635483708408296L;
 
-    private Collection<T> data;
+	private Collection<T> data;
 
-    public List<T> getData() {
-        if (null == data) {
-            return Collections.emptyList();
-        }
-        if (data instanceof List) {
-            return (List<T>) data;
-        }
-        return new ArrayList<>(data);
-    }
+	public List<T> getData() {
+		if (null == data) {
+			return Collections.emptyList();
+		}
+		if (data instanceof List) {
+			return (List<T>) data;
+		}
+		return new ArrayList<>(data);
+	}
 
-    public void setData(Collection<T> data) {
-        this.data = data;
-    }
+	public void setData(Collection<T> data) {
+		this.data = data;
+	}
 
-    public boolean isEmpty() {
-        return Objects.isNull(data) || data.isEmpty();
-    }
+	public boolean isEmpty() {
+		return Objects.isNull(data) || data.isEmpty();
+	}
 
-    public boolean isNotEmpty() {
-        return !isEmpty();
-    }
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
 
-    public static <T> MultiResponse<T> of(Collection<T> data) {
-        MultiResponse<T> response = new MultiResponse<>();
-        if (Objects.isNull(data) || data.isEmpty()) {
-            response.setResult(Result.buildFailure(CommonResultCodeEnum.NOT_FOUND));
-            return response;
-        }
-        response.setResult(Result.buildSuccess());
-        response.setData(data);
-        return response;
-    }
+	public static <T> MultiResponse<T> of(Collection<T> data) {
+		MultiResponse<T> response = new MultiResponse<>();
+		if (Objects.isNull(data) || data.isEmpty()) {
+			response.setResult(Result.buildFailure(CommonResultCodeEnum.NOT_FOUND));
+			return response;
+		}
+		response.setResult(Result.buildSuccess());
+		response.setData(data);
+		return response;
+	}
 
-    public static MultiResponse buildSuccess() {
-        MultiResponse response = new MultiResponse();
-        response.setResult(Result.buildSuccess());
-        return response;
-    }
+	public static MultiResponse buildSuccess() {
+		MultiResponse response = new MultiResponse();
+		response.setResult(Result.buildSuccess());
+		return response;
+	}
 
-    public static MultiResponse buildFailure() {
-        MultiResponse response = new MultiResponse();
-        response.setResult(Result.buildFailure());
-        return response;
-    }
+	public static MultiResponse buildFailure() {
+		MultiResponse response = new MultiResponse();
+		response.setResult(Result.buildFailure());
+		return response;
+	}
 
-    public static MultiResponse buildFailure(String errCode) {
-        MultiResponse response = new MultiResponse();
-        response.setResult(Result.buildFailure(errCode));
-        return response;
-    }
+	public static MultiResponse buildFailure(String errCode) {
+		MultiResponse response = new MultiResponse();
+		response.setResult(Result.buildFailure(errCode));
+		return response;
+	}
 
-    public static MultiResponse buildFailure(ResultCode errCode) {
-        MultiResponse response = new MultiResponse();
-        response.setResult(Result.buildFailure(errCode));
-        return response;
-    }
+	public static MultiResponse buildFailure(ResultCode errCode) {
+		MultiResponse response = new MultiResponse();
+		response.setResult(Result.buildFailure(errCode));
+		return response;
+	}
 
-    public static MultiResponse buildFailure(ResultCode errCode, String errMessage) {
-        MultiResponse response = new MultiResponse();
-        response.setResult(Result.buildFailure(errCode, errMessage));
-        return response;
-    }
+	public static MultiResponse buildFailure(ResultCode errCode, String errMessage) {
+		MultiResponse response = new MultiResponse();
+		response.setResult(Result.buildFailure(errCode, errMessage));
+		return response;
+	}
 
-    public static Response buildFailure(String errCode, String errMessage) {
-        Response response = new Response();
-        response.setResult(Result.buildFailure(errCode, errMessage));
-        return response;
-    }
+	public static Response buildFailure(String errCode, String errMessage) {
+		Response response = new Response();
+		response.setResult(Result.buildFailure(errCode, errMessage));
+		return response;
+	}
 }

@@ -42,15 +42,15 @@ import java.time.LocalDateTime;
 @Setter
 public abstract class BaseDomain implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = -2885192493194863635L;
+	@Serial
+	private static final long serialVersionUID = -2885192493194863635L;
 
-    private String        tenantId;
-    private LocalDateTime createTime;
-    private LocalDateTime modifiedTime;
+	private String        tenantId;
+	private LocalDateTime createTime;
+	private LocalDateTime modifiedTime;
 
-    @Override
-    public String toString() {
-        return ToStringUtils.reflectionToString(this);
-    }
+	@Override
+	public String toString() {
+		return ToStringUtils.reflectionToString(this);
+	}
 }

@@ -37,30 +37,30 @@ import lombok.Setter;
 @Setter
 public class CommonError {
 
-    private ErrorCode errorCode;
+	private ErrorCode errorCode;
 
-    /**
-     * 错误描述
-     */
-    private String errorMsg;
-    /**
-     * 错误发生系统
-     */
-    private String location;
+	/**
+	 * 错误描述
+	 */
+	private String errorMsg;
+	/**
+	 * 错误发生系统
+	 */
+	private String location;
 
-    public String toDigest() {
+	public String toDigest() {
 
-        return errorCode + "@" + location;
-    }
+		return errorCode + "@" + location;
+	}
 
-    // ~~~ 重写方法
+	// ~~~ 重写方法
 
-    /**
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
 
-        return errorCode + "@" + location + "::" + errorMsg;
-    }
+		return errorCode + "@" + location + "::" + errorMsg;
+	}
 }

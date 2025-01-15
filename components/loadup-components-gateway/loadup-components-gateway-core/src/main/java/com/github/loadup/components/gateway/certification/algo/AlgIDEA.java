@@ -1,5 +1,31 @@
 package com.github.loadup.components.gateway.certification.algo;
 
+/*-
+ * #%L
+ * loadup-components-gateway-core
+ * %%
+ * Copyright (C) 2022 - 2025 loadup_cloud
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import com.github.loadup.components.gateway.certification.exception.CertificationErrorCode;
 import com.github.loadup.components.gateway.certification.exception.CertificationException;
 import com.github.loadup.components.gateway.certification.manager.SymmetricEncryptionManager;
@@ -19,107 +45,107 @@ import java.security.Security;
  */
 @Component
 public class AlgIDEA extends AbstractAlgorithm {
-    /**
-     * 日志定义
-     */
-    private static Logger logger = LoggerFactory.getLogger("CERT-ALGO");
+	/**
+	 * 日志定义
+	 */
+	private static Logger logger = LoggerFactory.getLogger("CERT-ALGO");
 
-    /**
-     * DES算法名字
-     */
-    private static String KEY_ALGO_NAME = "IDEA";
+	/**
+	 * DES算法名字
+	 */
+	private static String KEY_ALGO_NAME = "IDEA";
 
-    static {
-        if (Security.getProvider("BC") == null) {
-            Security.addProvider(new BouncyCastleProvider());
-        }
-    }
+	static {
+		if (Security.getProvider("BC") == null) {
+			Security.addProvider(new BouncyCastleProvider());
+		}
+	}
 
-    /**
-     * 通用加密处理
-     */
-    @Override
-    public byte[] encrypt(byte[] data, byte[] key, String algorithm) {
+	/**
+	 * 通用加密处理
+	 */
+	@Override
+	public byte[] encrypt(byte[] data, byte[] key, String algorithm) {
 
-        try {
+		try {
 
-            Cipher cipher = Cipher.getInstance(algorithm);
+			Cipher cipher = Cipher.getInstance(algorithm);
 
-            cipher.init(Cipher.ENCRYPT_MODE, recovertKey(key));
+			cipher.init(Cipher.ENCRYPT_MODE, recovertKey(key));
 
-            return cipher.doFinal(data);
+			return cipher.doFinal(data);
 
-        } catch (Exception e) {
-            LogUtil.error(logger, e, genLogSign(algorithm) + "encrypt error:");
-            throw new CertificationException(CertificationErrorCode.ENCRYPT_ERROR,
-                    genLogSign(algorithm), e);
-        }
-    }
+		} catch (Exception e) {
+			LogUtil.error(logger, e, genLogSign(algorithm) + "encrypt error:");
+			throw new CertificationException(CertificationErrorCode.ENCRYPT_ERROR,
+					genLogSign(algorithm), e);
+		}
+	}
 
-    /**
-     * 通用解密处理
-     */
-    @Override
-    public byte[] decrypt(byte[] data, byte[] key, String algorithm) {
+	/**
+	 * 通用解密处理
+	 */
+	@Override
+	public byte[] decrypt(byte[] data, byte[] key, String algorithm) {
 
-        try {
-            Cipher cipher = Cipher.getInstance(algorithm);
+		try {
+			Cipher cipher = Cipher.getInstance(algorithm);
 
-            cipher.init(Cipher.DECRYPT_MODE, recovertKey(key));
+			cipher.init(Cipher.DECRYPT_MODE, recovertKey(key));
 
-            return cipher.doFinal(data);
+			return cipher.doFinal(data);
 
-        } catch (Exception e) {
-            LogUtil.error(logger, e, genLogSign(algorithm) + "encrypt error:");
+		} catch (Exception e) {
+			LogUtil.error(logger, e, genLogSign(algorithm) + "encrypt error:");
 
-            throw new CertificationException(CertificationErrorCode.DECRYPT_ERROR,
-                    genLogSign(algorithm), e);
-        }
-    }
+			throw new CertificationException(CertificationErrorCode.DECRYPT_ERROR,
+					genLogSign(algorithm), e);
+		}
+	}
 
-    /**
-     * 生成AES算法秘钥的二进制数组
-     */
-    public static byte[] generateKey(int keyLen) {
-        try {
+	/**
+	 * 生成AES算法秘钥的二进制数组
+	 */
+	public static byte[] generateKey(int keyLen) {
+		try {
 
-            KeyGenerator keyGenerator = KeyGenerator.getInstance(KEY_ALGO_NAME);
+			KeyGenerator keyGenerator = KeyGenerator.getInstance(KEY_ALGO_NAME);
 
-            keyGenerator.init(keyLen);
+			keyGenerator.init(keyLen);
 
-            SecretKey secretKey = keyGenerator.generateKey();
+			SecretKey secretKey = keyGenerator.generateKey();
 
-            return secretKey.getEncoded();
+			return secretKey.getEncoded();
 
-        } catch (Exception e) {
-            LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "generate key error:");
-        }
-        return null;
-    }
+		} catch (Exception e) {
+			LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "generate key error:");
+		}
+		return null;
+	}
 
-    /**
-     * 基于秘钥 byte数组生成秘钥
-     */
-    public static SecretKey recovertKey(byte[] key) {
+	/**
+	 * 基于秘钥 byte数组生成秘钥
+	 */
+	public static SecretKey recovertKey(byte[] key) {
 
-        try {
+		try {
 
-            SecretKey secretKey = new SecretKeySpec(key, KEY_ALGO_NAME);
-            return secretKey;
+			SecretKey secretKey = new SecretKeySpec(key, KEY_ALGO_NAME);
+			return secretKey;
 
-        } catch (Exception e) {
-            LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "recovery key error:");
+		} catch (Exception e) {
+			LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "recovery key error:");
 
-            throw new CertificationException(CertificationErrorCode.RECOVER_KEY_ERROR,
-                    genLogSign(KEY_ALGO_NAME), e);
-        }
-    }
+			throw new CertificationException(CertificationErrorCode.RECOVER_KEY_ERROR,
+					genLogSign(KEY_ALGO_NAME), e);
+		}
+	}
 
-    /**
-     * 注册算法类到对应manager接口
-     */
-    @Override
-    protected void doRegisterManager() {
-        SymmetricEncryptionManager.registerAlgo(AlgorithmEnum.IDEA, this);
-    }
+	/**
+	 * 注册算法类到对应manager接口
+	 */
+	@Override
+	protected void doRegisterManager() {
+		SymmetricEncryptionManager.registerAlgo(AlgorithmEnum.IDEA, this);
+	}
 }

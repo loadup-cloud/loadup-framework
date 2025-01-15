@@ -18,28 +18,7 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.alipay.test.acts</groupId>
-            <artifactId>acts-common-util</artifactId>
-            <version>2.0.6</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/acts-common-util-2.0.6-sources.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.alipay.test.acts</groupId>
-            <artifactId>acts-common-dto</artifactId>
-            <version>2.0.6</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/acts-common-dto-2.0.6-sources.jar</systemPath>
-        </dependency>
 
-        <dependency>
-            <groupId>com.alipay.test.acts</groupId>
-            <artifactId>acts-core</artifactId>
-            <version>2.0.16</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/acts-core-2.0.16-sources.jar</systemPath>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/com.github.vincentrussell/json-data-generator -->
 <!--        <dependency>-->
 <!--            <groupId>com.github.vincentrussell</groupId>-->

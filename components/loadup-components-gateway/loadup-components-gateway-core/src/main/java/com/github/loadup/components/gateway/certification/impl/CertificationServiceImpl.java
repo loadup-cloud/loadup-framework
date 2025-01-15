@@ -1,5 +1,31 @@
 package com.github.loadup.components.gateway.certification.impl;
 
+/*-
+ * #%L
+ * loadup-components-gateway-core
+ * %%
+ * Copyright (C) 2022 - 2025 loadup_cloud
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import com.github.loadup.components.gateway.cache.manager.CertAlgorithmCacheManager;
 import com.github.loadup.components.gateway.certification.exception.CertificationException;
 import com.github.loadup.components.gateway.certification.facade.CertificationService;
@@ -19,90 +45,90 @@ import java.util.Map;
 @Component
 public class CertificationServiceImpl implements CertificationService {
 
-    /**
-     * 日志定义
-     */
-    private static Logger logger = LoggerFactory.getLogger("CERT-SERVICE");
+	/**
+	 * 日志定义
+	 */
+	private static Logger logger = LoggerFactory.getLogger("CERT-SERVICE");
 
-    /**
-     * 扩展点名称
-     */
-    private String processComponent;
+	/**
+	 * 扩展点名称
+	 */
+	private String processComponent;
 
-    /**
-     * cert cache manager
-     */
-    @Resource
-    private CertAlgorithmCacheManager certAlgorithmCacheManager;
+	/**
+	 * cert cache manager
+	 */
+	@Resource
+	private CertAlgorithmCacheManager certAlgorithmCacheManager;
 
-    /**
-     * 算法管理类，通过算法的类别进行管理
-     */
-    public static Map<String, AlgoManager> algoManagerMap = new HashMap<String, AlgoManager>();
+	/**
+	 * 算法管理类，通过算法的类别进行管理
+	 */
+	public static Map<String, AlgoManager> algoManagerMap = new HashMap<String, AlgoManager>();
 
-    /**
-     * 获取证书内容, 从缓存获取证书内容，证书内容以byte[]的base64Encode后的String格式
-     *
-     * @throws CertificationException
-     */
-    @Override
-    public String getCert(String securityStrategyCode,
-                          String securityStrategyOperateType,
-                          String securityStrategyAlgorithm,
-                          String clientId)
-            throws CertificationException {
-        return certAlgorithmCacheManager.getCertContentString(securityStrategyCode,
-                securityStrategyOperateType, securityStrategyAlgorithm, clientId);
-    }
+	/**
+	 * 获取证书内容, 从缓存获取证书内容，证书内容以byte[]的base64Encode后的String格式
+	 *
+	 * @throws CertificationException
+	 */
+	@Override
+	public String getCert(String securityStrategyCode,
+						String securityStrategyOperateType,
+						String securityStrategyAlgorithm,
+						String clientId)
+			throws CertificationException {
+		return certAlgorithmCacheManager.getCertContentString(securityStrategyCode,
+				securityStrategyOperateType, securityStrategyAlgorithm, clientId);
+	}
 
-    //@Override
-    //public void registerExtension(Extension extension) throws Exception {
-    //    Object[] contribs = extension.getContributions();
-    //    if (contribs.length == 0) {
-    //        LogUtil.error(logger, "没有扩展信息注册, extension=" + extension);
-    //        return;
-    //    }
-    //
-    //    String extensionPoint = extension.getExtensionPoint();
-    //
-    //    if (logger.isInfoEnabled()) {
-    //        LogUtil.info(logger, "注册扩展点extensionPoint=" + extensionPoint + "processComponent = "
-    //                + processComponent);
-    //    }
-    //
-    //    if (StringUtils.equals(extensionPoint, processComponent)) {
-    //        for (Object contrib : contribs) {
-    //            try {
-    //                AlgoManagerDescriptor desc = (AlgoManagerDescriptor) contrib;
-    //                algoManagerMap.put(desc.getName(), desc.getAlgoManager());
-    //            } catch (Exception ex) {
-    //                LogUtil.error(logger, "注册扩展点的时候发生异常:contrib=" + contrib, ex);
-    //            }
-    //
-    //            if (logger.isInfoEnabled()) {
-    //                LogUtil.info(logger, "注册任务信息:descriptor = " + contrib);
-    //            }
-    //        }
-    //    } else {
-    //        LogUtil.error(logger, "没有找到AlgoManagerDescriptor对应的扩展点处理方式，descriptor=" + contribs);
-    //    }
-    //}
+	//@Override
+	//public void registerExtension(Extension extension) throws Exception {
+	//    Object[] contribs = extension.getContributions();
+	//    if (contribs.length == 0) {
+	//        LogUtil.error(logger, "没有扩展信息注册, extension=" + extension);
+	//        return;
+	//    }
+	//
+	//    String extensionPoint = extension.getExtensionPoint();
+	//
+	//    if (logger.isInfoEnabled()) {
+	//        LogUtil.info(logger, "注册扩展点extensionPoint=" + extensionPoint + "processComponent = "
+	//                + processComponent);
+	//    }
+	//
+	//    if (StringUtils.equals(extensionPoint, processComponent)) {
+	//        for (Object contrib : contribs) {
+	//            try {
+	//                AlgoManagerDescriptor desc = (AlgoManagerDescriptor) contrib;
+	//                algoManagerMap.put(desc.getName(), desc.getAlgoManager());
+	//            } catch (Exception ex) {
+	//                LogUtil.error(logger, "注册扩展点的时候发生异常:contrib=" + contrib, ex);
+	//            }
+	//
+	//            if (logger.isInfoEnabled()) {
+	//                LogUtil.info(logger, "注册任务信息:descriptor = " + contrib);
+	//            }
+	//        }
+	//    } else {
+	//        LogUtil.error(logger, "没有找到AlgoManagerDescriptor对应的扩展点处理方式，descriptor=" + contribs);
+	//    }
+	//}
 
-    /**
-     * 注册算法管理类
-     */
-    public static void registerManager(String managerType, AlgoManager manager) {
-        if (managerType != null && manager != null) {
-            LogUtil.info(logger, "register algo manager：" + managerType);
-            algoManagerMap.put(managerType, manager);
-        }
-    }
+	/**
+	 * 注册算法管理类
+	 */
+	public static void registerManager(String managerType, AlgoManager manager) {
+		if (managerType != null && manager != null) {
+			LogUtil.info(logger, "register algo manager：" + managerType);
+			algoManagerMap.put(managerType, manager);
+		}
+	}
 
-    /**
-     * Setter method for property <tt>processComponent<tt>.
-     */
-    public void setProcessComponent(String processComponent) {
-        this.processComponent = processComponent;
-    }
+	/**
+	 * Setter method for property <tt>processComponent<tt>.
+	 */
+	public void setProcessComponent(String processComponent) {
+		this.processComponent = processComponent;
+	}
 
 }

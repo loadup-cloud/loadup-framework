@@ -42,74 +42,74 @@ import java.io.Serializable;
 @Setter
 public class Result extends DTO implements ResultCode, Serializable {
 
-    @Serial
-    private static final long serialVersionUID = -6017673453793484984L;
+	@Serial
+	private static final long serialVersionUID = -6017673453793484984L;
 
-    private String resultCode;
+	private String resultCode;
 
-    /**
-     * resultCode
-     */
-    private String resultStatus;
+	/**
+	 * resultCode
+	 */
+	private String resultStatus;
 
-    /**
-     * resultMsg
-     */
-    private String resultMessage;
+	/**
+	 * resultMsg
+	 */
+	private String resultMessage;
 
-    public static Result buildSuccess() {
-        Result result = new Result();
-        result.setResultCode(CommonResultCodeEnum.SUCCESS.getResultCode());
-        result.setResultStatus(ResultStatusEnum.SUCCESS.getCode());
-        result.setResultMessage(CommonResultCodeEnum.SUCCESS.getResultMessage());
-        return result;
-    }
+	public static Result buildSuccess() {
+		Result result = new Result();
+		result.setResultCode(CommonResultCodeEnum.SUCCESS.getResultCode());
+		result.setResultStatus(ResultStatusEnum.SUCCESS.getCode());
+		result.setResultMessage(CommonResultCodeEnum.SUCCESS.getResultMessage());
+		return result;
+	}
 
-    public static Result buildFailure() {
-        Result result = new Result();
-        result.setResultCode(CommonResultCodeEnum.PROCESS_FAIL.getResultCode());
-        result.setResultStatus(CommonResultCodeEnum.PROCESS_FAIL.getResultStatus());
-        result.setResultMessage(CommonResultCodeEnum.PROCESS_FAIL.getResultMessage());
-        return result;
-    }
+	public static Result buildFailure() {
+		Result result = new Result();
+		result.setResultCode(CommonResultCodeEnum.PROCESS_FAIL.getResultCode());
+		result.setResultStatus(CommonResultCodeEnum.PROCESS_FAIL.getResultStatus());
+		result.setResultMessage(CommonResultCodeEnum.PROCESS_FAIL.getResultMessage());
+		return result;
+	}
 
-    public static Result buildFailure(String errorCode, String errorMessage) {
-        Result result = new Result();
-        CommonResultCodeEnum resultCodeEnum = CommonResultCodeEnum.getByResultCode(errorCode);
-        result.setResultCode(resultCodeEnum.getResultCode());
-        result.setResultStatus(resultCodeEnum.getResultStatus());
-        result.setResultMessage(resultCodeEnum.getResultMessage());
-        if (StringUtils.isNotBlank(errorMessage)) {
-            result.setResultMessage(errorMessage);
-        }
-        return result;
-    }
+	public static Result buildFailure(String errorCode, String errorMessage) {
+		Result result = new Result();
+		CommonResultCodeEnum resultCodeEnum = CommonResultCodeEnum.getByResultCode(errorCode);
+		result.setResultCode(resultCodeEnum.getResultCode());
+		result.setResultStatus(resultCodeEnum.getResultStatus());
+		result.setResultMessage(resultCodeEnum.getResultMessage());
+		if (StringUtils.isNotBlank(errorMessage)) {
+			result.setResultMessage(errorMessage);
+		}
+		return result;
+	}
 
-    public static Result buildFailure(String errorCode) {
-        Result result = new Result();
-        CommonResultCodeEnum resultCodeEnum = CommonResultCodeEnum.getByResultCode(errorCode);
-        result.setResultCode(resultCodeEnum.getResultCode());
-        result.setResultStatus(resultCodeEnum.getResultStatus());
-        result.setResultMessage(resultCodeEnum.getResultMessage());
-        return result;
-    }
+	public static Result buildFailure(String errorCode) {
+		Result result = new Result();
+		CommonResultCodeEnum resultCodeEnum = CommonResultCodeEnum.getByResultCode(errorCode);
+		result.setResultCode(resultCodeEnum.getResultCode());
+		result.setResultStatus(resultCodeEnum.getResultStatus());
+		result.setResultMessage(resultCodeEnum.getResultMessage());
+		return result;
+	}
 
-    public static Result buildFailure(ResultCode errorCode, String errorMessage) {
-        Result result = new Result();
-        result.setResultCode(errorCode.getResultCode());
-        result.setResultStatus(errorCode.getResultStatus());
-        result.setResultMessage(errorCode.getResultMessage());
-        if (StringUtils.isNotBlank(errorMessage)) {
-            result.setResultMessage(errorMessage);
-        }
-        return result;
-    }
+	public static Result buildFailure(ResultCode errorCode, String errorMessage) {
+		Result result = new Result();
+		result.setResultCode(errorCode.getResultCode());
+		result.setResultStatus(errorCode.getResultStatus());
+		result.setResultMessage(errorCode.getResultMessage());
+		if (StringUtils.isNotBlank(errorMessage)) {
+			result.setResultMessage(errorMessage);
+		}
+		return result;
+	}
 
-    public static Result buildFailure(ResultCode errorCode) {
-        Result result = new Result();
-        result.setResultCode(errorCode.getResultCode());
-        result.setResultStatus(errorCode.getResultStatus());
-        result.setResultMessage(errorCode.getResultMessage());
-        return result;
-    }
+	public static Result buildFailure(ResultCode errorCode) {
+		Result result = new Result();
+		result.setResultCode(errorCode.getResultCode());
+		result.setResultStatus(errorCode.getResultStatus());
+		result.setResultMessage(errorCode.getResultMessage());
+		return result;
+	}
 }

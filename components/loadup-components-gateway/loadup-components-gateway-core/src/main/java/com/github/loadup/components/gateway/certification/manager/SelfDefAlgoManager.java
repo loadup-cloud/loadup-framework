@@ -1,5 +1,31 @@
 package com.github.loadup.components.gateway.certification.manager;
 
+/*-
+ * #%L
+ * loadup-components-gateway-core
+ * %%
+ * Copyright (C) 2022 - 2025 loadup_cloud
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import com.github.loadup.components.gateway.certification.exception.CertificationErrorCode;
 import com.github.loadup.components.gateway.certification.exception.CertificationException;
 import com.github.loadup.components.gateway.certification.impl.CertificationServiceImpl;
@@ -18,136 +44,136 @@ import java.util.Map;
 @Component
 public class SelfDefAlgoManager extends AbstractAlgoManager {
 
-    /**
-     * 日志定义
-     */
-    private static Logger logger = LoggerFactory
-            .getLogger(SelfDefAlgoManager.class);
+	/**
+	 * 日志定义
+	 */
+	private static Logger logger = LoggerFactory
+			.getLogger(SelfDefAlgoManager.class);
 
-    private Map<String, OuterService> serviceMap = new HashMap<String, OuterService>();
+	private Map<String, OuterService> serviceMap = new HashMap<String, OuterService>();
 
-    /**
-     * 扩展点名称
-     */
-    private String processComponent;
+	/**
+	 * 扩展点名称
+	 */
+	private String processComponent;
 
-    //@Override
-    //public void registerExtension(Extension extension) throws Exception {
-    //    Object[] contribs = extension.getContributions();
-    //    if (contribs.length == 0) {
-    //        LogUtil.error(logger, "没有扩展信息注册, extension=" + extension);
-    //        return;
-    //    }
-    //
-    //    String extensionPoint = extension.getExtensionPoint();
-    //
-    //    if (logger.isInfoEnabled()) {
-    //        LogUtil.info(logger, "注册扩展点extensionPoint=" + extensionPoint + "processComponent = "
-    //                    + processComponent);
-    //    }
-    //
-    //    if (StringUtils.equals(extensionPoint, processComponent)) {
-    //        for (Object contrib : contribs) {
-    //            try {
-    //                OutServiceDescriptor desc = (OutServiceDescriptor) contrib;
-    //                this.serviceMap.put(desc.getName(), desc.getOuterService());
-    //            } catch (Exception ex) {
-    //                LogUtil.error(logger, "注册扩展点的时候发生异常:contrib=" + contrib, ex);
-    //            }
-    //
-    //            if (logger.isInfoEnabled()) {
-    //                LogUtil.info(logger, "注册任务信息:descriptor = " + contrib);
-    //            }
-    //        }
-    //    } else {
-    //        LogUtil.error(logger, "没有找到OutServiceDescriptor对应的扩展点处理方式，descriptor=" + contribs);
-    //    }
-    //}
+	//@Override
+	//public void registerExtension(Extension extension) throws Exception {
+	//    Object[] contribs = extension.getContributions();
+	//    if (contribs.length == 0) {
+	//        LogUtil.error(logger, "没有扩展信息注册, extension=" + extension);
+	//        return;
+	//    }
+	//
+	//    String extensionPoint = extension.getExtensionPoint();
+	//
+	//    if (logger.isInfoEnabled()) {
+	//        LogUtil.info(logger, "注册扩展点extensionPoint=" + extensionPoint + "processComponent = "
+	//                    + processComponent);
+	//    }
+	//
+	//    if (StringUtils.equals(extensionPoint, processComponent)) {
+	//        for (Object contrib : contribs) {
+	//            try {
+	//                OutServiceDescriptor desc = (OutServiceDescriptor) contrib;
+	//                this.serviceMap.put(desc.getName(), desc.getOuterService());
+	//            } catch (Exception ex) {
+	//                LogUtil.error(logger, "注册扩展点的时候发生异常:contrib=" + contrib, ex);
+	//            }
+	//
+	//            if (logger.isInfoEnabled()) {
+	//                LogUtil.info(logger, "注册任务信息:descriptor = " + contrib);
+	//            }
+	//        }
+	//    } else {
+	//        LogUtil.error(logger, "没有找到OutServiceDescriptor对应的扩展点处理方式，descriptor=" + contribs);
+	//    }
+	//}
 
-    /**
-     * get outService
-     */
-    private OuterService getService(String algoString) {
-        OuterService service = this.serviceMap.get(algoString);
-        if (null == service) {
-            throw new CertificationException(CertificationErrorCode.NO_OUT_SERVICE, "no OutService named "
-                    + algoString);
-        }
-        return service;
-    }
+	/**
+	 * get outService
+	 */
+	private OuterService getService(String algoString) {
+		OuterService service = this.serviceMap.get(algoString);
+		if (null == service) {
+			throw new CertificationException(CertificationErrorCode.NO_OUT_SERVICE, "no OutService named "
+					+ algoString);
+		}
+		return service;
+	}
 
-    /**
-     *
-     */
-    @Override
-    public String encrypt(String srcContent, CertificationFactor certificationFactor) {
-        return getService(certificationFactor.getAlgoString()).encrypt(srcContent,
-                certificationFactor);
-    }
+	/**
+	 *
+	 */
+	@Override
+	public String encrypt(String srcContent, CertificationFactor certificationFactor) {
+		return getService(certificationFactor.getAlgoString()).encrypt(srcContent,
+				certificationFactor);
+	}
 
-    /**
-     *
-     */
-    @Override
-    public String decrypt(String encryptedContent, CertificationFactor certificationFactor) {
-        return getService(certificationFactor.getAlgoString()).decrypt(encryptedContent,
-                certificationFactor);
-    }
+	/**
+	 *
+	 */
+	@Override
+	public String decrypt(String encryptedContent, CertificationFactor certificationFactor) {
+		return getService(certificationFactor.getAlgoString()).decrypt(encryptedContent,
+				certificationFactor);
+	}
 
-    /**
-     *
-     */
-    @Override
-    public String sign(String srcContent, CertificationFactor certificationFactor) {
-        return getService(certificationFactor.getAlgoString())
-                .sign(srcContent, certificationFactor);
-    }
+	/**
+	 *
+	 */
+	@Override
+	public String sign(String srcContent, CertificationFactor certificationFactor) {
+		return getService(certificationFactor.getAlgoString())
+				.sign(srcContent, certificationFactor);
+	}
 
-    /**
-     *
-     */
-    @Override
-    public boolean verify(String srcContent, String signedContent,
-                          CertificationFactor certificationFactor) {
-        return getService(certificationFactor.getAlgoString()).verify(srcContent, signedContent,
-                certificationFactor);
-    }
+	/**
+	 *
+	 */
+	@Override
+	public boolean verify(String srcContent, String signedContent,
+						CertificationFactor certificationFactor) {
+		return getService(certificationFactor.getAlgoString()).verify(srcContent, signedContent,
+				certificationFactor);
+	}
 
-    /**
-     *
-     */
-    @Override
-    public String digest(String srcContent, CertificationFactor certificationFactor) {
-        return getService(certificationFactor.getAlgoString()).digest(srcContent,
-                certificationFactor);
-    }
+	/**
+	 *
+	 */
+	@Override
+	public String digest(String srcContent, CertificationFactor certificationFactor) {
+		return getService(certificationFactor.getAlgoString()).digest(srcContent,
+				certificationFactor);
+	}
 
-    /**
-     * Invoked by a BeanFactory after it has set all bean properties supplied
-     * (and satisfied BeanFactoryAware and ApplicationContextAware).
-     * <p>This method allows the bean instance to perform initialization only
-     * possible when all bean properties have been set and to throw an
-     * exception in the event of misconfiguration.
-     *
-     * @throws Exception in the event of misconfiguration (such
-     * as failure to set an essential property) or if initialization fails.
-     */
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        CertificationServiceImpl.registerManager("SELF_DEF_ALGO", this);
-    }
+	/**
+	 * Invoked by a BeanFactory after it has set all bean properties supplied
+	 * (and satisfied BeanFactoryAware and ApplicationContextAware).
+	 * <p>This method allows the bean instance to perform initialization only
+	 * possible when all bean properties have been set and to throw an
+	 * exception in the event of misconfiguration.
+	 *
+	 * @throws Exception in the event of misconfiguration (such
+	 * as failure to set an essential property) or if initialization fails.
+	 */
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		CertificationServiceImpl.registerManager("SELF_DEF_ALGO", this);
+	}
 
-    /**
-     * Getter method for property <tt>processComponent<tt>.
-     */
-    public String getProcessComponent() {
-        return processComponent;
-    }
+	/**
+	 * Getter method for property <tt>processComponent<tt>.
+	 */
+	public String getProcessComponent() {
+		return processComponent;
+	}
 
-    /**
-     * Setter method for property <tt>processComponent<tt>.
-     */
-    public void setProcessComponent(String processComponent) {
-        this.processComponent = processComponent;
-    }
+	/**
+	 * Setter method for property <tt>processComponent<tt>.
+	 */
+	public void setProcessComponent(String processComponent) {
+		this.processComponent = processComponent;
+	}
 }

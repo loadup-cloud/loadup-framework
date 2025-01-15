@@ -32,25 +32,25 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public final class ServiceTemplate {
-    private ServiceTemplate() {
-    }
+	private ServiceTemplate() {
+	}
 
-    public static <T extends Response> T execute(Consumer<Void> checkParameter, //checkParameter
-                                                 Supplier<T> process, //process
-                                                 Supplier<T> composeExceptionResponse,//composeExceptionResponse
-                                                 Consumer<Void> composeDigestLog //composeDigestLog
-    ) {
-        T response;
-        try {
-            checkParameter.accept(null); // 执行参数检查
-            response = process.get();   // 执行业务逻辑
-        } catch (Exception e) {
-            e.printStackTrace();
-            response = composeExceptionResponse.get(); // 异常处理
-        } finally {
-            composeDigestLog.accept(null);  // 执行日志
-        }
-        return response;
-    }
+	public static <T extends Response> T execute(Consumer<Void> checkParameter, //checkParameter
+												Supplier<T> process, //process
+												Supplier<T> composeExceptionResponse,//composeExceptionResponse
+												Consumer<Void> composeDigestLog //composeDigestLog
+	) {
+		T response;
+		try {
+			checkParameter.accept(null); // 执行参数检查
+			response = process.get();   // 执行业务逻辑
+		} catch (Exception e) {
+			e.printStackTrace();
+			response = composeExceptionResponse.get(); // 异常处理
+		} finally {
+			composeDigestLog.accept(null);  // 执行日志
+		}
+		return response;
+	}
 
 }

@@ -1,5 +1,31 @@
 package com.github.loadup.components.gateway.core.model;
 
+/*-
+ * #%L
+ * loadup-components-gateway-core
+ * %%
+ * Copyright (C) 2022 - 2025 loadup_cloud
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -10,170 +36,170 @@ import java.util.Map;
  */
 public class InterfaceConfig {
 
-    /**
-     * 接口id
-     */
-    private String interfaceId;
+	/**
+	 * 接口id
+	 */
+	private String interfaceId;
 
-    /**
-     * 接口名称
-     */
-    private String interfaceName;
+	/**
+	 * 接口名称
+	 */
+	private String interfaceName;
 
-    /**
-     * 报文处理id
-     */
-    private String messageProcessorId;
+	/**
+	 * 报文处理id
+	 */
+	private String messageProcessorId;
 
-    /**
-     * 集成ID
-     */
-    private String messageReceiverInterfaceId;
+	/**
+	 * 集成ID
+	 */
+	private String messageReceiverInterfaceId;
 
-    /**
-     * 接口属性
-     */
-    private final Properties properties = new Properties();
+	/**
+	 * 接口属性
+	 */
+	private final Properties properties = new Properties();
 
-    /**
-     * 接口版本号
-     */
-    private String version;
+	/**
+	 * 接口版本号
+	 */
+	private String version;
 
-    /**
-     * 安全信息号
-     */
-    private String securityStrategyCode;
+	/**
+	 * 安全信息号
+	 */
+	private String securityStrategyCode;
 
-    /**
-     * 是否开启
-     */
-    private boolean isEnable;
+	/**
+	 * 是否开启
+	 */
+	private boolean isEnable;
 
-    /**
-     * Getter method for property <tt>interfaceId</tt>.
-     */
-    public String getInterfaceId() {
-        return interfaceId;
-    }
+	/**
+	 * Getter method for property <tt>interfaceId</tt>.
+	 */
+	public String getInterfaceId() {
+		return interfaceId;
+	}
 
-    /**
-     * Setter method for property <tt>interfaceId</tt>.
-     */
-    public void setInterfaceId(String interfaceId) {
-        this.interfaceId = interfaceId;
-    }
+	/**
+	 * Setter method for property <tt>interfaceId</tt>.
+	 */
+	public void setInterfaceId(String interfaceId) {
+		this.interfaceId = interfaceId;
+	}
 
-    /**
-     * Getter method for property <tt>interfaceName</tt>.
-     */
-    public String getInterfaceName() {
-        return interfaceName;
-    }
+	/**
+	 * Getter method for property <tt>interfaceName</tt>.
+	 */
+	public String getInterfaceName() {
+		return interfaceName;
+	}
 
-    /**
-     * Setter method for property <tt>interfaceName</tt>.
-     */
-    public void setInterfaceName(String interfaceName) {
-        this.interfaceName = interfaceName;
-    }
+	/**
+	 * Setter method for property <tt>interfaceName</tt>.
+	 */
+	public void setInterfaceName(String interfaceName) {
+		this.interfaceName = interfaceName;
+	}
 
-    /**
-     * Getter method for property <tt>messageProcessorId</tt>.
-     */
-    public String getMessageProcessorId() {
-        return messageProcessorId;
-    }
+	/**
+	 * Getter method for property <tt>messageProcessorId</tt>.
+	 */
+	public String getMessageProcessorId() {
+		return messageProcessorId;
+	}
 
-    /**
-     * Setter method for property <tt>messageProcessorId</tt>.
-     */
-    public void setMessageProcessorId(String messageProcessorId) {
-        this.messageProcessorId = messageProcessorId;
-    }
+	/**
+	 * Setter method for property <tt>messageProcessorId</tt>.
+	 */
+	public void setMessageProcessorId(String messageProcessorId) {
+		this.messageProcessorId = messageProcessorId;
+	}
 
-    /**
-     * Getter method for property <tt>propertes</tt>.
-     */
-    public Properties getProperties() {
-        return properties;
-    }
+	/**
+	 * Getter method for property <tt>propertes</tt>.
+	 */
+	public Properties getProperties() {
+		return properties;
+	}
 
-    /**
-     * Setter method for property <tt>propertes</tt>.
-     */
-    public void setProperties(String properties) {
-        this.properties.setProperties(properties);
-    }
+	/**
+	 * Setter method for property <tt>propertes</tt>.
+	 */
+	public void setProperties(String properties) {
+		this.properties.setProperties(properties);
+	}
 
-    /**
-     * Setter method for property <tt>propertes</tt>.
-     */
-    public void setPropertiesByMap(Map<String, String> properties) {
-        this.properties.setProperties(properties);
-    }
+	/**
+	 * Setter method for property <tt>propertes</tt>.
+	 */
+	public void setPropertiesByMap(Map<String, String> properties) {
+		this.properties.setProperties(properties);
+	}
 
-    /**
-     * Getter method for property <tt>isEnable</tt>.
-     */
-    public boolean isEnable() {
-        return isEnable;
-    }
+	/**
+	 * Getter method for property <tt>isEnable</tt>.
+	 */
+	public boolean isEnable() {
+		return isEnable;
+	}
 
-    /**
-     * Setter method for property <tt>isEnable</tt>.
-     */
-    public void setEnable(boolean isEnable) {
-        this.isEnable = isEnable;
-    }
+	/**
+	 * Setter method for property <tt>isEnable</tt>.
+	 */
+	public void setEnable(boolean isEnable) {
+		this.isEnable = isEnable;
+	}
 
-    /**
-     * Getter method for property <tt>version</tt>.
-     */
-    public String getVersion() {
-        return version;
-    }
+	/**
+	 * Getter method for property <tt>version</tt>.
+	 */
+	public String getVersion() {
+		return version;
+	}
 
-    /**
-     * Setter method for property <tt>version</tt>.
-     */
-    public void setVersion(String version) {
-        this.version = version;
-    }
+	/**
+	 * Setter method for property <tt>version</tt>.
+	 */
+	public void setVersion(String version) {
+		this.version = version;
+	}
 
-    /**
-     * Getter method for property <tt>messageReceiverInterfaceId</tt>.
-     */
-    public String getMessageReceiverInterfaceId() {
-        return messageReceiverInterfaceId;
-    }
+	/**
+	 * Getter method for property <tt>messageReceiverInterfaceId</tt>.
+	 */
+	public String getMessageReceiverInterfaceId() {
+		return messageReceiverInterfaceId;
+	}
 
-    /**
-     * Setter method for property <tt>messageReceiverInterfaceId</tt>.
-     */
-    public void setMessageReceiverInterfaceId(String messageReceiverInterfaceId) {
-        this.messageReceiverInterfaceId = messageReceiverInterfaceId;
-    }
+	/**
+	 * Setter method for property <tt>messageReceiverInterfaceId</tt>.
+	 */
+	public void setMessageReceiverInterfaceId(String messageReceiverInterfaceId) {
+		this.messageReceiverInterfaceId = messageReceiverInterfaceId;
+	}
 
-    /**
-     * Getter method for property <tt>securityStrategyCode</tt>.
-     */
-    public String getSecurityStrategyCode() {
-        return securityStrategyCode;
-    }
+	/**
+	 * Getter method for property <tt>securityStrategyCode</tt>.
+	 */
+	public String getSecurityStrategyCode() {
+		return securityStrategyCode;
+	}
 
-    /**
-     * Setter method for property <tt>securityStrategyCode</tt>.
-     */
-    public void setSecurityStrategyCode(String securityStrategyCode) {
-        this.securityStrategyCode = securityStrategyCode;
-    }
+	/**
+	 * Setter method for property <tt>securityStrategyCode</tt>.
+	 */
+	public void setSecurityStrategyCode(String securityStrategyCode) {
+		this.securityStrategyCode = securityStrategyCode;
+	}
 
-    /**
-     * @see Object#toString()
-     */
-    @Override
-    public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-    }
+	/**
+	 * @see Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
 }

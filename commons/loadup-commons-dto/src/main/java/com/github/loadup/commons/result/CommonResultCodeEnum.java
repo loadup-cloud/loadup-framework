@@ -33,41 +33,41 @@ import java.util.Arrays;
 
 @Getter
 public enum CommonResultCodeEnum implements ResultCode {
-    SUCCESS(ResultStatusEnum.SUCCESS, "Success."),
-    UNKNOWN(ResultStatusEnum.UNKNOWN, "Unknown failed."),
-    PARAM_ILLEGAL(ResultStatusEnum.FAIL, "Parameter illegal."),
-    PROCESS_FAIL(ResultStatusEnum.FAIL, "Process fail."),
-    ACCESS_DENIED(ResultStatusEnum.FAIL, "Access denied."),
-    INVALID_CLIENT(ResultStatusEnum.FAIL, "Invalid client."),
-    NOT_FOUND(ResultStatusEnum.FAIL, "Key is not found."),
-    ;
-    private String resultStatus;
+	SUCCESS(ResultStatusEnum.SUCCESS, "Success."),
+	UNKNOWN(ResultStatusEnum.UNKNOWN, "Unknown failed."),
+	PARAM_ILLEGAL(ResultStatusEnum.FAIL, "Parameter illegal."),
+	PROCESS_FAIL(ResultStatusEnum.FAIL, "Process fail."),
+	ACCESS_DENIED(ResultStatusEnum.FAIL, "Access denied."),
+	INVALID_CLIENT(ResultStatusEnum.FAIL, "Invalid client."),
+	NOT_FOUND(ResultStatusEnum.FAIL, "Key is not found."),
+	;
+	private String resultStatus;
 
-    private String resultMessage;
+	private String resultMessage;
 
-    CommonResultCodeEnum(ResultStatusEnum resultStatus, String resultMessage) {
-        this.resultStatus = resultStatus.getCode();
-        this.resultMessage = resultMessage;
-    }
+	CommonResultCodeEnum(ResultStatusEnum resultStatus, String resultMessage) {
+		this.resultStatus = resultStatus.getCode();
+		this.resultMessage = resultMessage;
+	}
 
-    @Override
-    public String getResultCode() {
-        return name();
-    }
+	@Override
+	public String getResultCode() {
+		return name();
+	}
 
-    @Override
-    public String getResultStatus() {
-        return resultStatus;
-    }
+	@Override
+	public String getResultStatus() {
+		return resultStatus;
+	}
 
-    @Override
-    public String getResultMessage() {
-        return resultMessage;
-    }
+	@Override
+	public String getResultMessage() {
+		return resultMessage;
+	}
 
-    public static CommonResultCodeEnum getByResultCode(String resultCode) {
-        return Arrays.stream(CommonResultCodeEnum.values()).filter(value -> StringUtils.equals(value.getResultCode(), resultCode))
-                .findFirst().orElse(null);
-    }
+	public static CommonResultCodeEnum getByResultCode(String resultCode) {
+		return Arrays.stream(CommonResultCodeEnum.values()).filter(value -> StringUtils.equals(value.getResultCode(), resultCode))
+				.findFirst().orElse(null);
+	}
 
 }

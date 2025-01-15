@@ -34,13 +34,13 @@ import java.util.Arrays;
  * @author Laysan
  */
 public class EnumUtils {
-    /**
-     * getEnumByCode
-     */
-    public static <T extends Enum<T> & IEnum> T getEnumByCode(Class<T> enumClass, String code) {
-        return Arrays.stream(enumClass.getEnumConstants())
-                .filter(enumItem -> enumItem.getCode().equals(code))
-                .findFirst()
-                .orElse(null);
-    }
+	/**
+	 * getEnumByCode
+	 */
+	public static <T extends Enum<T> & IEnum> T getEnumByCode(Class<T> enumClass, String code) {
+		return Arrays.stream(enumClass.getEnumConstants())
+				.filter(enumItem -> enumItem.getCode().equals(code))
+				.findFirst()
+				.orElse(null);
+	}
 }

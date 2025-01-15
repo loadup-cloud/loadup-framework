@@ -1,5 +1,31 @@
 package com.github.loadup.components.database.sequence;
 
+/*-
+ * #%L
+ * loadup-components-database
+ * %%
+ * Copyright (C) 2022 - 2025 loadup_cloud
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -8,35 +34,35 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Getter
 public class SequenceRange {
-    private final Long min;
-    private final Long max;
+	private final Long min;
+	private final Long max;
 
-    private final AtomicLong value;
+	private final AtomicLong value;
 
-    private boolean over = false;
+	private boolean over = false;
 
-    public SequenceRange(Long min, Long max) {
-        this.min = min;
-        this.max = max;
-        this.value = new AtomicLong(min);
-    }
+	public SequenceRange(Long min, Long max) {
+		this.min = min;
+		this.max = max;
+		this.value = new AtomicLong(min);
+	}
 
-    public long getAndIncrement() {
-        long currentValue = value.getAndIncrement();
-        if (currentValue > max) {
-            over = true;
-            return -1;
-        }
-        return currentValue;
-    }
+	public long getAndIncrement() {
+		long currentValue = value.getAndIncrement();
+		if (currentValue > max) {
+			over = true;
+			return -1;
+		}
+		return currentValue;
+	}
 
-    public AtomicLong getValue() {
-        return value;
-    }
+	public AtomicLong getValue() {
+		return value;
+	}
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-    }
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+	}
 
 }
