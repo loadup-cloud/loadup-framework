@@ -33,15 +33,16 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.github.loadup.commons.constant.CommonConstants;
 import com.github.loadup.commons.util.json.MultiDateDeserializer;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -62,14 +63,18 @@ public class JsonUtil {
         //对象的所有字段全部列入
         mapper.setSerializationInclusion(Include.ALWAYS);
         //所有的日期格式都统一为以下的样式，即yyyy-MM-dd HH:mm:ss
-        mapper.setDateFormat(new StdDateFormat().withColonInTimeZone(true));
+        mapper.setDateFormat(new SimpleDateFormat(CommonConstants.DEFAULT_DATE_FORMAT));
 
         // 注册 JavaTimeModule 处理 java.time 包的类
         JavaTimeModule javaTimeModule = new JavaTimeModule();
-        javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ISO_DATE));
-        javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ISO_DATE));
-        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ISO_DATE_TIME));
-        javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ISO_DATE_TIME));
+        javaTimeModule.addSerializer(LocalDate.class,
+                new LocalDateSerializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_FORMAT)));
+        javaTimeModule.addDeserializer(LocalDate.class,
+                new LocalDateDeserializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_FORMAT)));
+        javaTimeModule.addSerializer(LocalDateTime.class,
+                new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_TIME_FORMAT)));
+        javaTimeModule.addDeserializer(LocalDateTime.class,
+                new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_TIME_FORMAT)));
         mapper.registerModule(javaTimeModule);
 
         SimpleModule module = new SimpleModule();
@@ -236,5 +241,4 @@ public class JsonUtil {
             return new HashMap<>();
         }
     }
-
 }

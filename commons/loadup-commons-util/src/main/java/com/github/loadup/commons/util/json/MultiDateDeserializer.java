@@ -3,6 +3,7 @@ package com.github.loadup.commons.util.json;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.github.loadup.commons.constant.CommonConstants;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -10,8 +11,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MultiDateDeserializer extends StdDeserializer<Date> {
-    private static final SimpleDateFormat[] DATE_FORMATS = {new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), new SimpleDateFormat("yyyy/MM/dd"),
-            new SimpleDateFormat("yyyy-MM-dd")};
+    private static final SimpleDateFormat[] DATE_FORMATS = {
+            new SimpleDateFormat(CommonConstants.DEFAULT_DATE_TIME_FORMAT),
+            new SimpleDateFormat("yyyy/MM/dd"),
+            new SimpleDateFormat(CommonConstants.DEFAULT_DATE_FORMAT)};
 
     public MultiDateDeserializer() {
         super(Date.class);

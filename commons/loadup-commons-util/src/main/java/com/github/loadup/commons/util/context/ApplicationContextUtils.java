@@ -26,11 +26,14 @@ package com.github.loadup.commons.util.context;
  * #L%
  */
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 /**
  * Spring上下文工具类
@@ -66,7 +69,13 @@ public class ApplicationContextUtils implements ApplicationContextAware {
      * @throws BeansException
      */
     public static Object getBean(String name) throws BeansException {
-        return applicationContext.getBean(name);
+        Object bean = applicationContext.getBean(name);
+        if (Objects.isNull(bean)) {
+            if (!StringUtils.endsWith(name, "Impl")) {
+                bean = applicationContext.getBean(name + "Impl");
+            }
+        }
+        return bean;
 
     }
 
@@ -84,7 +93,13 @@ public class ApplicationContextUtils implements ApplicationContextAware {
      * @throws BeansException
      */
     public static <T> T getBean(String name, Class<T> requiredType) throws BeansException {
-        return applicationContext.getBean(name, requiredType);
+        T bean = applicationContext.getBean(name, requiredType);
+        if (Objects.isNull(bean)) {
+            if (!StringUtils.endsWith(name, "Impl")) {
+                bean = applicationContext.getBean(name + "Impl", requiredType);
+            }
+        }
+        return bean;
     }
 
     /**

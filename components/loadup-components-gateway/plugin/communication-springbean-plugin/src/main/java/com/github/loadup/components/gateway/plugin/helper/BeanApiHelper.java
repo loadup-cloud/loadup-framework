@@ -4,9 +4,8 @@ import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.plugin.exception.IllegalBeanMethodException;
 import com.github.loadup.components.gateway.plugin.exception.IllegalBeanUriException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
@@ -17,11 +16,8 @@ import java.util.regex.Pattern;
 /**
  * Helper for SpringBean call communication plugin extension. And bean uri is expected to be: SPRINGBEAN://{spingBean_id}/{method}
  */
+@Slf4j
 public class BeanApiHelper {
-    private static final Logger logger = LoggerFactory.getLogger(BeanApiHelper.class);
-
-    //private static BeanApiHelper instance;
-
     private String  patternStr;
     private Pattern pattern;
 
@@ -45,9 +41,9 @@ public class BeanApiHelper {
         Matcher matcher = pattern.matcher(beanUri);
         boolean isMatch = matcher.matches();
         if (isMatch) {
-            String[] protocolPath = beanUri.split("://");
+            String[] protocolPath = StringUtils.split(beanUri, "://", 2);
 
-            String[] classNMethod = protocolPath[1].split("/");
+            String[] classNMethod = StringUtils.split(protocolPath[1], "://", 2);
             String beanId = classNMethod[0];
             String method = classNMethod[1];
 
@@ -62,7 +58,7 @@ public class BeanApiHelper {
      * @throws IllegalBeanMethodException
      */
     public Method getServiceMethod(Object bizService, ApiDefinition api) throws IllegalBeanMethodException {
-        String methodName = api.getMethod();
+        String methodName = api.method();
 
         Set<Method> foundMethods = new HashSet<>();
 
@@ -95,7 +91,7 @@ public class BeanApiHelper {
         if (paramTypes.length != 1) {
             throw new RuntimeException("invalid parameter types");
         }
-        LogUtil.info(logger, "The class of parameter is " + paramTypes[0].getName() + "The requestMessage is " + requestMessage);
+        LogUtil.info(log, "The class of parameter is " + paramTypes[0].getName() + "The requestMessage is " + requestMessage);
         return JsonUtil.parseObject(requestMessage, paramTypes[0]);
     }
 }

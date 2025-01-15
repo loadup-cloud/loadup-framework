@@ -36,7 +36,5 @@ import org.springframework.context.annotation.*;
 @Configuration
 @AutoConfigureOrder(0)
 @ComponentScan(basePackages = "com.github.loadup.components.gateway.*")
-@PropertySource("classpath:gateway-core.properties")
-@ImportResource("classpath*:/META-INF/spring/gateway-*.xml")
 public class GatewayCoreAutoConfiguration {
 }

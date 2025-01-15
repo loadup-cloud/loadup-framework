@@ -10,7 +10,6 @@ import com.github.loadup.components.gateway.facade.model.CommunicationConfigurat
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.plugin.helper.ApiDefinition;
 import com.github.loadup.components.gateway.plugin.helper.BeanApiHelper;
-import com.google.gson.JsonSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -27,7 +26,7 @@ public class SpringBeanCommunicationExtPt implements CommunicationProxyExtPt {
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
+    private static final Logger log = LoggerFactory
             .getLogger(SpringBeanCommunicationExtPt.class);
 
     private BeanApiHelper beanApiHelper = BeanApiHelper.getInstance();
@@ -36,7 +35,7 @@ public class SpringBeanCommunicationExtPt implements CommunicationProxyExtPt {
     public String sendMessage(CommunicationConfiguration config, String messageContent) {
         Object result;
         if (config == null) {
-            LogUtil.error(logger, "BEAN_CALL_ERROR, CommunicationConfiguration is null");
+            LogUtil.error(log, "BEAN_CALL_ERROR, CommunicationConfiguration is null");
             return "";
         }
 
@@ -44,18 +43,12 @@ public class SpringBeanCommunicationExtPt implements CommunicationProxyExtPt {
             ApiDefinition apiDefinition = beanApiHelper.parseApiDefinition(config.getUri());
 
             // invoke spring bean method in current spring context
-            Object objService = ApplicationContextUtils.getBean(apiDefinition.getBeanId());
+            Object objService = ApplicationContextUtils.getBean(apiDefinition.beanId());
             Method method = beanApiHelper.getServiceMethod(objService, apiDefinition);
             Object request = beanApiHelper.parseParam(method, messageContent);
             result = method.invoke(objService, request);
-        } catch (JsonSyntaxException e) {
-            LogUtil.error(logger, e,
-                    "BEAN_CALL_ERROR_PREX, Failed to send message because of error occurs when trying to get bean with config:"
-                            + config.getUri());
-            throw new GatewayException(GatewayliteErrorCode.PARAM_ILLEGAL,
-                    "Param of input is illegal");
         } catch (Exception e) {
-            LogUtil.error(logger, e,
+            LogUtil.error(log, e,
                     "BEAN_CALL_ERROR_PREX, Failed to send message because of error occurs when trying to get bean with config:"
                             + config.getUri());
             throw new RuntimeException("Failed to send message to springbean.");
