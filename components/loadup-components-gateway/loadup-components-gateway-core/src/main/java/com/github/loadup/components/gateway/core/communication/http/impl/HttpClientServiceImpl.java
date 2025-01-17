@@ -26,8 +26,8 @@ package com.github.loadup.components.gateway.core.communication.http.impl;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.ErrorCode;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.result.ResultCode;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.exception.util.AssertUtil;
 import com.github.loadup.components.gateway.core.common.enums.InterfaceScope;
 import com.github.loadup.components.gateway.core.common.enums.InterfaceType;
@@ -115,7 +115,7 @@ public class HttpClientServiceImpl implements CommunicationService, Initializing
 		long timecost = System.currentTimeMillis();
 		String callRespMsg = null;
 		boolean success = false;
-		ErrorCode errorCode = null;
+		ResultCode errorCode = null;
 		try {
 			if (StringUtils.equals(TransportProtocol.INSTPROXY, protocol.toUpperCase())) {
 				//                handlerResult = instproxyHandler.handler(traceId, communicationConfig,messageEnvelope);
@@ -128,33 +128,33 @@ public class HttpClientServiceImpl implements CommunicationService, Initializing
 			callRespMsg = e.getMessage();
 			ExceptionUtil.caught(e, "HttpClient send timeout:", communicationConfig);
 			errorCode = CommunicationErrorCode.CONNECT_TIME_OUT;
-			throw new GatewayException(errorCode, e);
+			throw new CommonException(errorCode, e);
 		} catch (SocketTimeoutException e) {
 			timeout = true;
 			callRespMsg = e.getMessage();
 			ExceptionUtil.caught(e, "HttpClient send timeout:", communicationConfig);
 			errorCode = CommunicationErrorCode.SOCKET_TIME_OUT;
-			throw new GatewayException(errorCode, e);
+			throw new CommonException(errorCode, e);
 		} catch (ConnectException e) {
 			callRespMsg = e.getMessage();
 			ExceptionUtil.caught(e, "HttpClient connect exception:", communicationConfig);
 			if (StringUtils.equalsIgnoreCase(e.getMessage(), CONNECT_TIME_OUT)) {
 				errorCode = CommunicationErrorCode.CONNECT_TIME_OUT;
-				throw new GatewayException(errorCode, e);
+				throw new CommonException(errorCode, e);
 			} else if (StringUtils.equalsIgnoreCase(e.getMessage(), CONNECT_REFUSED)) {
 				errorCode = CommunicationErrorCode.CONNECT_REFUSED;
-				throw new GatewayException(errorCode, e);
+				throw new CommonException(errorCode, e);
 			}
 			errorCode = CommunicationErrorCode.IO_EXCEPTION;
-			throw new GatewayException(errorCode, e);
-		} catch (GatewayException e) {
+			throw new CommonException(errorCode, e);
+		} catch (CommonException e) {
 			callRespMsg = e.getMessage();
-			errorCode = e.getErrorCode();
+			errorCode = e.getResultCode();
 			throw e;
 		} catch (Exception e) {
 			callRespMsg = e.getMessage();
 			errorCode = CommunicationErrorCode.IO_EXCEPTION;
-			throw new GatewayException(errorCode, e);
+			throw new CommonException(errorCode, e);
 		} finally {
 			long time = System.currentTimeMillis() - timecost;
 			if (!MetricLoggerUtil.judgeBinderEnabled()) {

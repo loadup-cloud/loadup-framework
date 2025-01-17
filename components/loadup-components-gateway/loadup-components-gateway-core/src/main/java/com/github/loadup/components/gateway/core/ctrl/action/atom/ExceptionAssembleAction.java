@@ -27,8 +27,8 @@ package com.github.loadup.components.gateway.core.ctrl.action.atom;
  */
 
 import com.alibaba.fastjson2.JSONObject;
-import com.github.loadup.components.gateway.common.exception.ErrorCode;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
+import com.github.loadup.commons.result.ResultCode;
 import com.github.loadup.components.gateway.common.util.CommonUtil;
 import com.github.loadup.components.gateway.core.common.enums.MessageFormat;
 import com.github.loadup.components.gateway.core.ctrl.action.AbstractBusinessAction;
@@ -58,11 +58,11 @@ public class ExceptionAssembleAction extends AbstractBusinessAction {
 
 	@Override
 	public void doBusiness(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) {
-		GatewayException gatewayException = gatewayRuntimeProcessContext.getBusinessException();
-		LogUtil.error(logger, gatewayException, "error message is ");
-		ErrorCode errorCode = gatewayException.getErrorCode();
+		CommonException commonException = gatewayRuntimeProcessContext.getBusinessException();
+		LogUtil.error(logger, commonException, "error message is ");
+		ResultCode errorCode = commonException.getResultCode();
 
-		JSONObject jsonResult = buildResult(errorCode, gatewayException);
+		JSONObject jsonResult = buildResult(errorCode, commonException);
 
 		String content = jsonResult.toJSONString();
 		MessageEnvelope resultMsg = new MessageEnvelope(MessageFormat.TEXT, content);
@@ -73,7 +73,7 @@ public class ExceptionAssembleAction extends AbstractBusinessAction {
 	/**
 	 * build result body
 	 */
-	private JSONObject buildResult(ErrorCode errorCode, GatewayException gatewayException) {
+	private JSONObject buildResult(ResultCode errorCode, CommonException commonException) {
 		// get switch
 		if (Boolean.parseBoolean(useAcFormatResultWhenGatewayException)) {
 			// correct ac format result
@@ -89,7 +89,7 @@ public class ExceptionAssembleAction extends AbstractBusinessAction {
 		JSONObject jsonResult = new JSONObject();
 		jsonResult.put("result", jsonStatus);
 		//if(!StringUtils.equals(errorCode.getMessage(), gatewayliteException.getMessage())) {
-		jsonResult.put("errorMessage", gatewayException.getMessage());
+		jsonResult.put("errorMessage", commonException.getMessage());
 		//}
 
 		return jsonResult;

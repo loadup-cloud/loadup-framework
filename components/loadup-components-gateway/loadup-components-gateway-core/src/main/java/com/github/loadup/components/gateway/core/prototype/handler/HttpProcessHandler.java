@@ -26,10 +26,10 @@ package com.github.loadup.components.gateway.core.prototype.handler;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.util.CommonUtil;
 import com.github.loadup.components.gateway.core.common.Constant;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.common.enums.*;
 import com.github.loadup.components.gateway.core.ctrl.RuntimeProcessContextHolder;
 import com.github.loadup.components.gateway.core.ctrl.action.atom.ExceptionAssembleAction;
@@ -153,7 +153,7 @@ public class HttpProcessHandler {
 			httpServiceAction.process(runtimeProcessContext);
 			callRespMsg = "SUCCESS";
 			success = true;
-		} catch (GatewayException e) {
+		} catch (CommonException e) {
 			stopWatch.stop();
 			LogUtil.error(logger, e, "Http process handler fail! throw business exception");
 			runtimeProcessContext.setBusinessException(e);
@@ -162,20 +162,20 @@ public class HttpProcessHandler {
 
 			MetricLoggerUtil.countError(httpRequest.getRequestURI(),
 					stopWatch.getTotalTimeMillis(), runtimeProcessContext.getRequesterClientId(),
-					messageType, runtimeProcessContext.getTraceId(), e.getErrorCode());
+					messageType, runtimeProcessContext.getTraceId(), e.getResultCode());
 		} catch (Throwable e) {
 			stopWatch.stop();
 			LogUtil.error(logger, e, "Http process handler fail! throw exception");
-			GatewayException gatewayException = new GatewayException(
-					GatewayliteErrorCode.UNKNOWN_EXCEPTION, e);
-			runtimeProcessContext.setBusinessException(gatewayException);
+			CommonException commonException = new CommonException(
+					GatewayErrorCode.UNKNOWN_EXCEPTION, e);
+			runtimeProcessContext.setBusinessException(commonException);
 			exceptionAssembleAction.process(runtimeProcessContext);
 			callRespMsg = e.getMessage();
 
 			MetricLoggerUtil.countError(httpRequest.getRequestURI(),
 					stopWatch.getTotalTimeMillis(), runtimeProcessContext.getRequesterClientId(),
 					messageType, runtimeProcessContext.getTraceId(),
-					gatewayException.getErrorCode());
+					commonException.getResultCode());
 		} finally {
 			if (stopWatch.isRunning()) {
 				stopWatch.stop();

@@ -27,10 +27,10 @@ package com.github.loadup.components.gateway.starter.impl.spi;
  */
 
 import com.github.loadup.components.gateway.common.error.LimitRuleErrorCode;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.exception.util.AssertUtil;
 import com.github.loadup.components.gateway.core.common.Constant;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.facade.enums.*;
 import com.github.loadup.components.gateway.facade.model.LimitConfig;
 import com.github.loadup.components.gateway.facade.spi.LimitRuleService;
@@ -66,7 +66,7 @@ public class LimitRuleServiceImpl implements LimitRuleService {
         LimitTimeRuleEnum timeRule = limitConfig.getLimitTimeRule();
         if (timeRule == null) {
             //LogUtil.error(logger, "Please input the correct limit time rule (QPS/QPM)");
-            throw new GatewayException(GatewayliteErrorCode.CONFIGURATION_NOT_FOUND,
+            throw new CommonException(GatewayErrorCode.CONFIGURATION_NOT_FOUND,
                     "Wrong limit time rule type!");
         }
 
@@ -89,7 +89,7 @@ public class LimitRuleServiceImpl implements LimitRuleService {
                 break;
             default:
                 //LogUtil.error(logger, "Please input the correct limit time rule (QPS/QPM)");
-                throw new GatewayException(GatewayliteErrorCode.CONFIGURATION_NOT_FOUND,
+                throw new CommonException(GatewayErrorCode.CONFIGURATION_NOT_FOUND,
                         "Wrong limit time rule type!");
         }
 
@@ -165,7 +165,7 @@ public class LimitRuleServiceImpl implements LimitRuleService {
             maxLimit = Integer.parseInt(strMaxLimit);
         } catch (NumberFormatException e) {
             //LogUtil.error(logger, "The value has to be an Integer!", e);
-            throw new GatewayException(GatewayliteErrorCode.PARAM_ILLEGAL,
+            throw new CommonException(GatewayErrorCode.PARAM_ILLEGAL,
                     "Please input an Integer!");
         }
 

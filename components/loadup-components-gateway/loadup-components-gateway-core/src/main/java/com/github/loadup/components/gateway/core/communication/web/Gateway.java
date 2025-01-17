@@ -46,7 +46,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.IOException;
 
-import static com.github.loadup.components.gateway.core.common.GatewayliteErrorCode.CONFIGURATION_NOT_FOUND;
+import static com.github.loadup.components.gateway.core.common.GatewayErrorCode.CONFIGURATION_NOT_FOUND;
 import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_HTTP_INTEGRATION_URL;
 import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_HTTP_INTERFACE_ID;
 

@@ -26,8 +26,8 @@ package com.github.loadup.components.gateway.message.common.errorr;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.ErrorCode;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.commons.result.ResultCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -35,7 +35,7 @@ import org.apache.commons.lang3.StringUtils;
  * ParserErrorCode.java
  * </p>
  */
-public enum ParserErrorCode implements ErrorCode {
+public enum ParserErrorCode implements ResultCode {
 
 	/**
 	 * PARSE_ERROR
@@ -68,8 +68,8 @@ public enum ParserErrorCode implements ErrorCode {
 	/**
 	 * 获取枚举值
 	 */
-	public static GatewayliteErrorCode getEnumByCode(String code) {
-		for (GatewayliteErrorCode codeEnum : GatewayliteErrorCode.values()) {
+	public static GatewayErrorCode getEnumByCode(String code) {
+		for (GatewayErrorCode codeEnum : GatewayErrorCode.values()) {
 			if (StringUtils.equals(code, codeEnum.getCode())) {
 				return codeEnum;
 			}

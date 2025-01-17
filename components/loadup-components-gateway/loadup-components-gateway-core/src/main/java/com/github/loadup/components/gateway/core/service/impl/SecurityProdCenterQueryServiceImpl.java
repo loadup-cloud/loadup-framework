@@ -27,7 +27,7 @@ package com.github.loadup.components.gateway.core.service.impl;
  */
 
 import com.github.loadup.components.gateway.common.exception.util.AssertUtil;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.service.SecurityProdCenterQueryService;
 import com.github.loadup.components.gateway.facade.config.model.Constant;
 import com.github.loadup.components.gateway.facade.config.model.SecurityConditionGroup;
@@ -68,14 +68,14 @@ public class SecurityProdCenterQueryServiceImpl implements SecurityProdCenterQue
 				continue;
 			}
 			AssertUtil.isNotBlank(result.getSecurityStrategyKey(),
-					GatewayliteErrorCode.CONFIGURATION_LOAD_ERROR,
+					GatewayErrorCode.CONFIGURATION_LOAD_ERROR,
 					"security config key query from config center is blank");
 			AssertUtil.isNotBlank(result.getCertType(),
-					GatewayliteErrorCode.CONFIGURATION_LOAD_ERROR,
+					GatewayErrorCode.CONFIGURATION_LOAD_ERROR,
 					"security config cert type query from config center is blank");
 			break;
 		}
-		AssertUtil.isNotNull(result, GatewayliteErrorCode.CONFIGURATION_LOAD_ERROR,
+		AssertUtil.isNotNull(result, GatewayErrorCode.CONFIGURATION_LOAD_ERROR,
 				"SecurityConditionGroup query from config center is null");
 		return result;
 	}

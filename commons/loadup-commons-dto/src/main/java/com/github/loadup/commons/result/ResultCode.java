@@ -32,13 +32,13 @@ import jakarta.validation.constraints.Size;
 public interface ResultCode {
 	@NotBlank
 	@Size(max = 64)
-	String getResultCode();
+	String getCode();
 
 	@NotBlank
 	@Size(max = 2)
-	String getResultStatus();
+	String getStatus();
 
 	@NotBlank
 	@Size(max = 256)
-	String getResultMessage();
+	String getMessage();
 }

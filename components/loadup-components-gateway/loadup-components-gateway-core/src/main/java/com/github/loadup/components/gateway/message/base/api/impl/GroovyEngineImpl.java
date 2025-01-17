@@ -26,7 +26,7 @@ package com.github.loadup.components.gateway.message.base.api.impl;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.exception.util.AssertUtil;
 import com.github.loadup.components.gateway.core.common.enums.RoleType;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
@@ -51,10 +51,10 @@ public class GroovyEngineImpl implements GroovyEngine {
 			AssertUtil.isNotBlank(beanName, ParserErrorCode.NOT_EXIST_SCRIPT);
 			MessageParser messageParser = groovyDynamicLoader.getGroovyBean(beanName);
 			return messageParser.parse(messageEnvelope);
-		} catch (GatewayException e) {
+		} catch (CommonException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new GatewayException(ParserErrorCode.PARSE_ERROR, e);
+			throw new CommonException(ParserErrorCode.PARSE_ERROR, e);
 		}
 	}
 
@@ -64,24 +64,24 @@ public class GroovyEngineImpl implements GroovyEngine {
 			AssertUtil.isNotBlank(beanName, ParserErrorCode.NOT_EXIST_SCRIPT);
 			MessageAssembler messageAssembler = groovyDynamicLoader.getGroovyBean(beanName);
 			return messageAssembler.assemble(message);
-		} catch (GatewayException e) {
+		} catch (CommonException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new GatewayException(ParserErrorCode.PARSE_ERROR, e);
+			throw new CommonException(ParserErrorCode.PARSE_ERROR, e);
 		}
 	}
 
 	@Override
 	public MessageEnvelope assembleErrorMessage(String beanName, RoleType roleType, String interfaceTypeStr, UnifyMsg message,
-												GatewayException exception) {
+												CommonException exception) {
 		try {
 			AssertUtil.isNotBlank(beanName, ParserErrorCode.NOT_EXIST_SCRIPT);
 			MessageAssembler messageAssembler = groovyDynamicLoader.getGroovyBean(beanName);
 			return messageAssembler.assembleError(message, exception);
-		} catch (GatewayException e) {
+		} catch (CommonException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new GatewayException(ParserErrorCode.PARSE_ERROR, e);
+			throw new CommonException(ParserErrorCode.PARSE_ERROR, e);
 		}
 	}
 }

@@ -26,11 +26,11 @@ package com.github.loadup.components.gateway.plugin.repository.file.service.impl
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.exception.util.AssertUtil;
 import com.github.loadup.components.gateway.common.util.FileUtil;
 import com.github.loadup.components.gateway.core.common.Constant;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.plugin.repository.file.service.ConfigFileBuilder;
 import org.apache.commons.collections4.CollectionUtils;
@@ -239,13 +239,13 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
 			}
 		} catch (IOException e) {
 			LogUtil.error(logger, e, "failed loading configuration file=" + filePath);
-			throw new GatewayException(GatewayliteErrorCode.SYSTEM_ERROR);
-		} catch (GatewayException e) {
+			throw new CommonException(GatewayErrorCode.SYSTEM_ERROR);
+		} catch (CommonException e) {
 			LogUtil.error(logger, e, "failed loading configuration file=" + filePath);
 			throw e;
 		} catch (Exception e) {
 			LogUtil.error(logger, e, "failed loading configuration file=" + filePath);
-			throw new GatewayException(GatewayliteErrorCode.SYSTEM_ERROR);
+			throw new CommonException(GatewayErrorCode.SYSTEM_ERROR);
 		}
 
 		return lines;
@@ -327,7 +327,7 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
 		List<String> lines = new ArrayList<String>();
 		try {
 			inputFileStream = this.getClass().getClassLoader().getResourceAsStream(CLASSPATH_PREFIX.concat(filePath));
-			AssertUtil.isNotNull(inputFileStream, GatewayliteErrorCode.SYSTEM_ERROR,
+			AssertUtil.isNotNull(inputFileStream, GatewayErrorCode.SYSTEM_ERROR,
 					String.format("can not find file, path: %s", filePath));
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputFileStream));
 			bufferedReader.lines().forEach(line -> {
@@ -336,7 +336,7 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
 			return lines;
 		} catch (Exception e) {
 			LogUtil.error(logger, e, e.getMessage());
-			throw new GatewayException(GatewayliteErrorCode.CONFIGURATION_NOT_FOUND, e);
+			throw new CommonException(GatewayErrorCode.CONFIGURATION_NOT_FOUND, e);
 		} finally {
 			if (null != inputFileStream) {
 				try {

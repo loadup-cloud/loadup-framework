@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
                     return MultiResponse.of(userDTOList);
                 },
                 //build failure
-                () -> MultiResponse.buildFailure(),
+                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
                 //compose log
                 (Void) -> {
                 });
@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
                     return SingleResponse.of(UserDTOConvertor.INSTANCE.toSimpleUserDTO(user));
                 },
                 //build failure
-                () -> SingleResponse.buildFailure(),
+                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
                 //compose log
                 (Void) -> {
                 });
@@ -103,7 +103,11 @@ public class UserServiceImpl implements UserService {
                     }
                     userGateway.saveUserRoles(cmd.getUserId(), cmd.getRoleIdList());
                     return getUserById(IdQuery.of(cmd.getUserId()));
-                }, () -> SingleResponse.buildFailure(), (Void) -> {
+                },
+                //
+                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
+                //
+                (Void) -> {
                 });
     }
 
@@ -117,7 +121,6 @@ public class UserServiceImpl implements UserService {
                 },
                 // process
                 () -> {
-
                     String userId = cmd.getId();
                     User user = userGateway.getById(userId);
                     if (Objects.isNull(user)) {
@@ -130,7 +133,11 @@ public class UserServiceImpl implements UserService {
                     user.setPassword(PasswordUtils.encrypt(cmd.getNewPassword(), cmd.getNewPassword(), user.getSalt()));
                     userGateway.changePassword(user);
                     return Response.buildSuccess();
-                }, () -> Response.buildFailure(), (Void) -> {
+                },
+                //
+                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
+                //
+                (Void) -> {
                 });
     }
 }

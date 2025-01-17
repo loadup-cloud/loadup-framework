@@ -56,7 +56,7 @@ public class UserServiceTest {
     @Test
     public void testSave() {
         SingleResponse<SimpleUserDTO> userById = createUser();
-        Assertions.assertEquals("SUCCESS", userById.getResult().getResultCode());
+        Assertions.assertEquals("SUCCESS", userById.getResult().getCode());
         Assertions.assertEquals("ls", userById.getData().getNickname());
     }
 
@@ -73,9 +73,9 @@ public class UserServiceTest {
         changeCmd.setConfirmPassword(newPwd);
         //ThreadUtils.sleep(Duration.ofSeconds(2));
         Response response = userService.changePassword(changeCmd);
-        Assertions.assertTrue(response.getResult().getResultCode() == "SUCCESS");
+        Assertions.assertTrue(response.getResult().getCode() == "SUCCESS");
         Optional<UserDO> userDO = userRepository.findById(userId);
-        Assertions.assertTrue(response.getResult().getResultCode() == "SUCCESS");
+        Assertions.assertTrue(response.getResult().getCode() == "SUCCESS");
         userDO.ifPresent(
                 user -> Assertions.assertEquals(newPwd, PasswordUtils.decrypt(user.getPassword(), newPwd, user.getSalt())));
     }
@@ -91,11 +91,11 @@ public class UserServiceTest {
         roles.add(roleDTO.getData().getId());
         userRolesSaveCmd.setRoleIdList(roles);
         SingleResponse<UserDTO> response = userService.saveUserRoles(userRolesSaveCmd);
-        Assertions.assertEquals("SUCCESS", response.getResult().getResultCode());
+        Assertions.assertEquals("SUCCESS", response.getResult().getCode());
         Assertions.assertTrue(response.getData().getRoleList().size() == 1);
 
         SingleResponse<UserDTO> response2 = userService.saveUserRoles(userRolesSaveCmd);
-        Assertions.assertEquals("SUCCESS", response2.getResult().getResultCode());
+        Assertions.assertEquals("SUCCESS", response2.getResult().getCode());
         Assertions.assertEquals(1, response2.getData().getRoleList().size());
 
     }

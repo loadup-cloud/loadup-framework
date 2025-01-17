@@ -27,7 +27,7 @@ package com.github.loadup.components.gateway.core.model.communication;
  */
 
 import com.github.loadup.components.gateway.common.exception.util.AssertUtil;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.prototype.util.ExceptionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -92,7 +92,7 @@ public class TransportURI {
 	 */
 	public TransportURI(String url, String schemaId) {
 
-		AssertUtil.isNotBlank(url, GatewayliteErrorCode.PARAM_ILLEGAL, "URL不能为空");
+		AssertUtil.isNotBlank(url, GatewayErrorCode.PARAM_ILLEGAL, "URL不能为空");
 
 		//1. 解析传输协议
 		parseTransportURL(url, schemaId);

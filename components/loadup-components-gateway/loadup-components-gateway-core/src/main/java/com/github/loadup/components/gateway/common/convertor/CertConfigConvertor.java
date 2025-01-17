@@ -27,10 +27,10 @@ package com.github.loadup.components.gateway.common.convertor;
  */
 
 import com.github.loadup.components.gateway.certification.cache.CacheUtil;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.util.TenantUtil;
 import com.github.loadup.components.gateway.core.common.Constant;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.model.CertConfig;
 import com.github.loadup.components.gateway.facade.config.model.SecurityConditionGroup;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
@@ -88,7 +88,7 @@ public class CertConfigConvertor {
 		} catch (Exception ex) {
 			LogUtil.error(logger, "error to get actual cert content. SecurityConditionGroup=",
 					result);
-			throw new GatewayException(GatewayliteErrorCode.CONFIGURATION_LOAD_ERROR, ex);
+			throw new CommonException(GatewayErrorCode.CONFIGURATION_LOAD_ERROR, ex);
 		}
 		result.setCertStatus(Constant.DEFAULT_CERT_STATUS);
 		return result;

@@ -41,32 +41,32 @@ public enum CommonResultCodeEnum implements ResultCode {
 	INVALID_CLIENT(ResultStatusEnum.FAIL, "Invalid client."),
 	NOT_FOUND(ResultStatusEnum.FAIL, "Key is not found."),
 	;
-	private String resultStatus;
+	private String status;
 
-	private String resultMessage;
+	private String message;
 
-	CommonResultCodeEnum(ResultStatusEnum resultStatus, String resultMessage) {
-		this.resultStatus = resultStatus.getCode();
-		this.resultMessage = resultMessage;
+	CommonResultCodeEnum(ResultStatusEnum status, String message) {
+		this.status = status.getCode();
+		this.message = message;
 	}
 
 	@Override
-	public String getResultCode() {
+	public String getCode() {
 		return name();
 	}
 
 	@Override
-	public String getResultStatus() {
-		return resultStatus;
+	public String getStatus() {
+		return status;
 	}
 
 	@Override
-	public String getResultMessage() {
-		return resultMessage;
+	public String getMessage() {
+		return message;
 	}
 
 	public static CommonResultCodeEnum getByResultCode(String resultCode) {
-		return Arrays.stream(CommonResultCodeEnum.values()).filter(value -> StringUtils.equals(value.getResultCode(), resultCode))
+		return Arrays.stream(CommonResultCodeEnum.values()).filter(value -> StringUtils.equals(value.getCode(), resultCode))
 				.findFirst().orElse(null);
 	}
 

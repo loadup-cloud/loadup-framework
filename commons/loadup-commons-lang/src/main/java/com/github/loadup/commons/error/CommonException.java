@@ -27,9 +27,12 @@ package com.github.loadup.commons.error;
  */
 
 import com.github.loadup.commons.result.ResultCode;
+import com.github.loadup.commons.util.ToStringUtils;
 import lombok.Getter;
 
 import java.io.Serial;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Laysan
@@ -59,5 +62,17 @@ public class CommonException extends RuntimeException {
 	public CommonException(ResultCode resultCode, String msg, Throwable cause) {
 		super(msg, cause);
 		this.resultCode = resultCode;
+	}
+
+	@Override
+	public String toString() {
+		Map<String, String> map = new HashMap<>();
+		if (resultCode != null) {
+			map.put("code",resultCode.getCode());
+			map.put("message",resultCode.getMessage());
+		}
+		map.put("extraMessage",getMessage());
+
+		return ToStringUtils.reflectionToString(map);
 	}
 }

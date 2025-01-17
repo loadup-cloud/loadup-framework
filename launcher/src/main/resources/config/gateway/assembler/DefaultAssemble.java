@@ -1,4 +1,4 @@
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.message.script.assemble.AbstractMsgAssembler;
 import com.github.loadup.components.gateway.message.unimsg.UnifyMsg;
 
@@ -10,7 +10,7 @@ public class DefaultAssemble extends AbstractMsgAssembler {
     }
 
     @Override
-    protected Object assembleErrorMessage(UnifyMsg message, GatewayException exception) {
+    protected Object assembleErrorMessage(UnifyMsg message, CommonException exception) {
         return "{}";
     }
 

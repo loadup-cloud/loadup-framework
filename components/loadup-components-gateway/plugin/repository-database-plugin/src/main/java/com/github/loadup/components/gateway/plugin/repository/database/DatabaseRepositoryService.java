@@ -27,10 +27,10 @@ package com.github.loadup.components.gateway.plugin.repository.database;
  */
 
 import com.alibaba.cola.extension.Extension;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.exception.util.AssertUtil;
 import com.github.loadup.components.gateway.common.util.InterfaceConfigUtil;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.facade.enums.InterfaceStatus;
 import com.github.loadup.components.gateway.facade.enums.InterfaceType;
 import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExtPt;
@@ -226,7 +226,7 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 
 		InterfaceDO interfaceDO = gatewayInterfaceDAO.loadByInterfaceId(interfaceId);
 
-		AssertUtil.isNotNull(interfaceDO, GatewayliteErrorCode.PARAM_ILLEGAL,
+		AssertUtil.isNotNull(interfaceDO, GatewayErrorCode.PARAM_ILLEGAL,
 				"Interface is not exist!");
 
 		// 1. build api config
@@ -244,7 +244,7 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 
 		List<SecurityDO> securityDOS = gatewaySecurityDAO.loadByClientId(clientId);
 
-		AssertUtil.isFalse(CollectionUtils.isEmpty(securityDOS), GatewayliteErrorCode.PARAM_ILLEGAL,
+		AssertUtil.isFalse(CollectionUtils.isEmpty(securityDOS), GatewayErrorCode.PARAM_ILLEGAL,
 				"Cert configs is not exist!");
 
 		try {
@@ -351,8 +351,8 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 			InstDO instDO = InstConvertor.dto2DO(clientConfigAddDto);
 			return gatewayInstDAO.insert(instDO);
 		} catch (DataIntegrityViolationException exception) {
-			throw new GatewayException(GatewayliteErrorCode.CLIENT_ALREADY_EXIST,
-					GatewayliteErrorCode.CLIENT_ALREADY_EXIST.getMessage());
+			throw new CommonException(GatewayErrorCode.CLIENT_ALREADY_EXIST,
+					GatewayErrorCode.CLIENT_ALREADY_EXIST.getMessage());
 		}
 	}
 
@@ -364,11 +364,11 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 		gatewayTransactionTemplate.execute(transactionStatus -> {
 
 			InstDO load = gatewayInstDAO.lock(request.getClientId());
-			AssertUtil.isNotNull(load, GatewayliteErrorCode.CLIENT_NOT_EXIST);
+			AssertUtil.isNotNull(load, GatewayErrorCode.CLIENT_NOT_EXIST);
 
 			InterfaceDO interfaceDO = gatewayInterfaceDAO
 					.lockByInterfaceId(request.getInterfaceId());
-			AssertUtil.isNotNull(interfaceDO, GatewayliteErrorCode.INTERFACE_NOT_EXIST);
+			AssertUtil.isNotNull(interfaceDO, GatewayErrorCode.INTERFACE_NOT_EXIST);
 
 			try {
 				gatewayInstInterfaceMapDAO.insert(InstInterfaceMapConvertor.Dto2DO(request));
@@ -396,7 +396,7 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 		gatewayTransactionTemplate.execute(transactionStatus -> {
 			// 1. lock client
 			InstDO instDO = gatewayInstDAO.lock(request.getClientId());
-			AssertUtil.isNotNull(instDO, GatewayliteErrorCode.CLIENT_NOT_EXIST);
+			AssertUtil.isNotNull(instDO, GatewayErrorCode.CLIENT_NOT_EXIST);
 
 			// 2. update client
 			gatewayInstDAO.update(InstConvertor.dto2DO(request));
@@ -430,8 +430,8 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 			gatewaySecurityDAO.insert(SecurityConvertor.dto2DO(request));
 			return request;
 		} catch (DataIntegrityViolationException e) {
-			throw new GatewayException(GatewayliteErrorCode.SECURITY_ALREADY_EXIST,
-					GatewayliteErrorCode.SECURITY_ALREADY_EXIST.getMessage());
+			throw new CommonException(GatewayErrorCode.SECURITY_ALREADY_EXIST,
+					GatewayErrorCode.SECURITY_ALREADY_EXIST.getMessage());
 		}
 	}
 
@@ -444,7 +444,7 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 			// 1. lock
 			SecurityDO securityDO = gatewaySecurityDAO.load(request.getClientId(),
 					request.getSecurityStrategyCode(), request.getOperateType(), request.getAlgoName());
-			AssertUtil.isNotNull(securityDO, GatewayliteErrorCode.SECURITY_NOT_EXIST);
+			AssertUtil.isNotNull(securityDO, GatewayErrorCode.SECURITY_NOT_EXIST);
 
 			// 2. update
 			return gatewaySecurityDAO.update(SecurityConvertor.dto2DO(request));
@@ -665,8 +665,8 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 		try {
 			gatewayInterfaceDAO.insert(interfaceDO);
 		} catch (DataIntegrityViolationException exception) {
-			throw new GatewayException(GatewayliteErrorCode.INTERFACE_ALREADY_EXISTS,
-					GatewayliteErrorCode.INTERFACE_ALREADY_EXISTS.getMessage());
+			throw new CommonException(GatewayErrorCode.INTERFACE_ALREADY_EXISTS,
+					GatewayErrorCode.INTERFACE_ALREADY_EXISTS.getMessage());
 		}
 
 	}
@@ -680,7 +680,7 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 			// 1. lock interface
 			InterfaceDO interfaceDO = gatewayInterfaceDAO
 					.lockByInterfaceId(dto.getInterfaceId());
-			AssertUtil.isNotNull(interfaceDO, GatewayliteErrorCode.INTERFACE_NOT_EXIST);
+			AssertUtil.isNotNull(interfaceDO, GatewayErrorCode.INTERFACE_NOT_EXIST);
 			InterfaceDO updateDO = InterfaceConvertor.dto2DO(dto);
 
 			// 2. update
@@ -697,14 +697,14 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 		gatewayTransactionTemplate.execute(transactionStatus -> {
 			// 1. lock interface
 			InterfaceDO interfaceDO = gatewayInterfaceDAO.loadByInterfaceId(interfaceId);
-			AssertUtil.isNotNull(interfaceDO, GatewayliteErrorCode.INTERFACE_NOT_EXIST);
+			AssertUtil.isNotNull(interfaceDO, GatewayErrorCode.INTERFACE_NOT_EXIST);
 
 			// 2. lock all version interface
 			List<InterfaceDO> interfaceDOS = gatewayInterfaceDAO.lock(interfaceDO.getType(),
 					interfaceDO.getUrl(), interfaceDO.getTenantId());
 			AssertUtil.isTrue(!CollectionUtils.isEmpty(interfaceDOS),
-					GatewayliteErrorCode.INTERFACE_NOT_EXIST,
-					GatewayliteErrorCode.INTERFACE_NOT_EXIST.getMessage());
+					GatewayErrorCode.INTERFACE_NOT_EXIST,
+					GatewayErrorCode.INTERFACE_NOT_EXIST.getMessage());
 
 			// 3. online current version, offline other versions
 			boolean online = false;
@@ -719,8 +719,8 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 				}
 			}
 			// 4. make sure current version is ONLINE
-			AssertUtil.isTrue(online, GatewayliteErrorCode.INTERFACE_NOT_EXIST,
-					GatewayliteErrorCode.INTERFACE_NOT_EXIST.getMessage());
+			AssertUtil.isTrue(online, GatewayErrorCode.INTERFACE_NOT_EXIST,
+					GatewayErrorCode.INTERFACE_NOT_EXIST.getMessage());
 			return null;
 		});
 	}
@@ -733,7 +733,7 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 		gatewayTransactionTemplate.execute(transactionStatus -> {
 			// 1. lock interface
 			InterfaceDO interfaceDO = gatewayInterfaceDAO.lockByInterfaceId(interfaceId);
-			AssertUtil.isNotNull(interfaceDO, GatewayliteErrorCode.INTERFACE_NOT_EXIST);
+			AssertUtil.isNotNull(interfaceDO, GatewayErrorCode.INTERFACE_NOT_EXIST);
 
 			interfaceDO.setStatus(InterfaceStatus.INVALID.getCode());
 			// 2. update
@@ -772,7 +772,7 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 			// 1. load interface
 			InterfaceDO interfaceDO = gatewayInterfaceDAO
 					.loadByInterfaceId(dto.getInterfaceId());
-			AssertUtil.isNotNull(interfaceDO, GatewayliteErrorCode.INTERFACE_NOT_EXIST);
+			AssertUtil.isNotNull(interfaceDO, GatewayErrorCode.INTERFACE_NOT_EXIST);
 
 			// 2. lock all version for current interface
 			List<InterfaceDO> dos = gatewayInterfaceDAO.lock(interfaceDO.getTenantId(),
@@ -782,8 +782,8 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 			for (InterfaceDO doItem : dos) {
 				if (StringUtils.compare(dto.getVersion(), doItem.getVersion()) <= 0) {
 					// confirm the request version is the biggest.
-					throw new GatewayException(
-							GatewayliteErrorCode.INTERFACE_VERSION_NOT_BIGGEST);
+					throw new CommonException(
+							GatewayErrorCode.INTERFACE_VERSION_NOT_BIGGEST);
 				}
 			}
 			// 4. save current version

@@ -52,7 +52,7 @@ public class RoleServiceTest {
     public void testCreateRole() {
         SingleResponse<SimpleRoleDTO> response
                 = createRole();
-        Assertions.assertEquals("SUCCESS", response.getResult().getResultCode());
+        Assertions.assertEquals("SUCCESS", response.getResult().getCode());
         Assertions.assertEquals("test_role", response.getData().getRoleCode());
 
     }
@@ -68,11 +68,11 @@ public class RoleServiceTest {
         users.add(userDTO.getData().getId());
         userRolesSaveCmd.setUserIdList(users);
         SingleResponse<RoleDTO> response = roleService.saveRoleUsers(userRolesSaveCmd);
-        Assertions.assertEquals("SUCCESS", response.getResult().getResultCode());
+        Assertions.assertEquals("SUCCESS", response.getResult().getCode());
         Assertions.assertTrue(response.getData().getUserList().size() == 1);
 
         SingleResponse<RoleDTO> response2 = roleService.saveRoleUsers(userRolesSaveCmd);
-        Assertions.assertEquals("SUCCESS", response2.getResult().getResultCode());
+        Assertions.assertEquals("SUCCESS", response2.getResult().getCode());
         Assertions.assertEquals(1, response2.getData().getUserList().size());
 
     }

@@ -45,42 +45,42 @@ public class Result extends DTO implements ResultCode, Serializable {
 	@Serial
 	private static final long serialVersionUID = -6017673453793484984L;
 
-	private String resultCode;
+	private String code;
 
 	/**
 	 * resultCode
 	 */
-	private String resultStatus;
+	private String status;
 
 	/**
 	 * resultMsg
 	 */
-	private String resultMessage;
+	private String message;
 
 	public static Result buildSuccess() {
 		Result result = new Result();
-		result.setResultCode(CommonResultCodeEnum.SUCCESS.getResultCode());
-		result.setResultStatus(ResultStatusEnum.SUCCESS.getCode());
-		result.setResultMessage(CommonResultCodeEnum.SUCCESS.getResultMessage());
+		result.setCode(CommonResultCodeEnum.SUCCESS.getCode());
+		result.setStatus(ResultStatusEnum.SUCCESS.getCode());
+		result.setMessage(CommonResultCodeEnum.SUCCESS.getMessage());
 		return result;
 	}
 
 	public static Result buildFailure() {
 		Result result = new Result();
-		result.setResultCode(CommonResultCodeEnum.PROCESS_FAIL.getResultCode());
-		result.setResultStatus(CommonResultCodeEnum.PROCESS_FAIL.getResultStatus());
-		result.setResultMessage(CommonResultCodeEnum.PROCESS_FAIL.getResultMessage());
+		result.setCode(CommonResultCodeEnum.PROCESS_FAIL.getCode());
+		result.setStatus(CommonResultCodeEnum.PROCESS_FAIL.getStatus());
+		result.setMessage(CommonResultCodeEnum.PROCESS_FAIL.getMessage());
 		return result;
 	}
 
 	public static Result buildFailure(String errorCode, String errorMessage) {
 		Result result = new Result();
 		CommonResultCodeEnum resultCodeEnum = CommonResultCodeEnum.getByResultCode(errorCode);
-		result.setResultCode(resultCodeEnum.getResultCode());
-		result.setResultStatus(resultCodeEnum.getResultStatus());
-		result.setResultMessage(resultCodeEnum.getResultMessage());
+		result.setCode(resultCodeEnum.getCode());
+		result.setStatus(resultCodeEnum.getStatus());
+		result.setMessage(resultCodeEnum.getMessage());
 		if (StringUtils.isNotBlank(errorMessage)) {
-			result.setResultMessage(errorMessage);
+			result.setMessage(errorMessage);
 		}
 		return result;
 	}
@@ -88,28 +88,28 @@ public class Result extends DTO implements ResultCode, Serializable {
 	public static Result buildFailure(String errorCode) {
 		Result result = new Result();
 		CommonResultCodeEnum resultCodeEnum = CommonResultCodeEnum.getByResultCode(errorCode);
-		result.setResultCode(resultCodeEnum.getResultCode());
-		result.setResultStatus(resultCodeEnum.getResultStatus());
-		result.setResultMessage(resultCodeEnum.getResultMessage());
+		result.setCode(resultCodeEnum.getCode());
+		result.setStatus(resultCodeEnum.getStatus());
+		result.setMessage(resultCodeEnum.getMessage());
 		return result;
 	}
 
 	public static Result buildFailure(ResultCode errorCode, String errorMessage) {
 		Result result = new Result();
-		result.setResultCode(errorCode.getResultCode());
-		result.setResultStatus(errorCode.getResultStatus());
-		result.setResultMessage(errorCode.getResultMessage());
+		result.setCode(errorCode.getCode());
+		result.setStatus(errorCode.getStatus());
+		result.setMessage(errorCode.getMessage());
 		if (StringUtils.isNotBlank(errorMessage)) {
-			result.setResultMessage(errorMessage);
+			result.setMessage(errorMessage);
 		}
 		return result;
 	}
 
 	public static Result buildFailure(ResultCode errorCode) {
 		Result result = new Result();
-		result.setResultCode(errorCode.getResultCode());
-		result.setResultStatus(errorCode.getResultStatus());
-		result.setResultMessage(errorCode.getResultMessage());
+		result.setCode(errorCode.getCode());
+		result.setStatus(errorCode.getStatus());
+		result.setMessage(errorCode.getMessage());
 		return result;
 	}
 }

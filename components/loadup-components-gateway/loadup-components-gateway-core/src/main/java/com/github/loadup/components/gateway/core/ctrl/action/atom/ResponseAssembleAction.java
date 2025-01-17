@@ -28,10 +28,10 @@ package com.github.loadup.components.gateway.core.ctrl.action.atom;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.util.CommonUtil;
 import com.github.loadup.components.gateway.common.util.DateUtil;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.common.enums.RoleType;
 import com.github.loadup.components.gateway.core.ctrl.action.AbstractBusinessAction;
 import com.github.loadup.components.gateway.core.ctrl.action.BusinessAction;
@@ -100,12 +100,12 @@ public class ResponseAssembleAction extends AbstractBusinessAction {
 					if (null == jsonResult.getJSONObject("result")) {
 						if (Boolean.parseBoolean(enableDefaultResultStructInResponse)) {
 							JSONObject result = CommonUtil
-									.assembleAcResult(GatewayliteErrorCode.SUCCESS);
+									.assembleAcResult(GatewayErrorCode.SUCCESS);
 							// get switch
 							if (Boolean.parseBoolean(useAcFormatResultWhenGatewayException)) {
 								// if correct ac format result switch is opened
 								result = CommonUtil
-										.assembleAcResultWhenException(GatewayliteErrorCode.SUCCESS);
+										.assembleAcResultWhenException(GatewayErrorCode.SUCCESS);
 							}
 							jsonResult.put("result", result);
 						}
@@ -113,7 +113,7 @@ public class ResponseAssembleAction extends AbstractBusinessAction {
 					messageResponseMessage.setContent(jsonResult.toJSONString());
 				}
 			} catch (Throwable e) {
-				throw new GatewayException(GatewayliteErrorCode.UNKNOWN_EXCEPTION, content, e);
+				throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION, content, e);
 			}
 		}
 		messageResponseMessage.putExtMap(KEY_HTTP_CLIENT_ID,

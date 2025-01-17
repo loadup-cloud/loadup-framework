@@ -27,11 +27,11 @@ package com.github.loadup.components.gateway.cache;
  */
 
 import com.github.loadup.components.gateway.common.convertor.InterfaceConfigConvertor;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.exception.util.AssertUtil;
 import com.github.loadup.components.gateway.common.util.CacheLogUtil;
 import com.github.loadup.components.gateway.common.util.RepositoryUtil;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.common.enums.*;
 import com.github.loadup.components.gateway.core.model.InterfaceConfig;
 import com.github.loadup.components.gateway.core.service.InterfaceProdCenterQueryService;
@@ -90,7 +90,7 @@ public class InterfaceConfigCache {
 		if (repositoryType == RepositoryType.PRODCENTER) {
 			// will not use interfaceId to query config from PRODCENTER
 			InterfaceType interfaceType = InterfaceType.getEnumByCode(interfaceTypeStr);
-			AssertUtil.isNotNull(interfaceType, GatewayliteErrorCode.CONFIGURATION_NOT_FOUND);
+			AssertUtil.isNotNull(interfaceType, GatewayErrorCode.CONFIGURATION_NOT_FOUND);
 			switch (interfaceType) {
 				case SPI:
 					// 传过来的interfaceId是接收方integrationUrl。想要获取接收方的CommunicationConfig
@@ -127,8 +127,8 @@ public class InterfaceConfigCache {
 				try {
 					apiConditionGroup = interfaceProdCenterQueryService
 							.queryAPIConditionGroup(openUrl, null);
-				} catch (GatewayException ex) {
-					if (ex.getErrorCode() != GatewayliteErrorCode.CONFIGURATION_LOAD_ERROR) {
+				} catch (CommonException ex) {
+					if (ex.getResultCode() != GatewayErrorCode.CONFIGURATION_LOAD_ERROR) {
 						throw ex;
 					}
 				}
@@ -138,7 +138,7 @@ public class InterfaceConfigCache {
 				result = InterfaceConfigConvertor.convertToReceiverConfig(apiConditionGroup);
 			}
 		}
-		AssertUtil.isNotNull(result, GatewayliteErrorCode.CONFIGURATION_NOT_FOUND);
+		AssertUtil.isNotNull(result, GatewayErrorCode.CONFIGURATION_NOT_FOUND);
 		return result;
 	}
 

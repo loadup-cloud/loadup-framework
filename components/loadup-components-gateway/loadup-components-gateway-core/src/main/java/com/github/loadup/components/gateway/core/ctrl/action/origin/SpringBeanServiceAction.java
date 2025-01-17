@@ -28,8 +28,8 @@ package com.github.loadup.components.gateway.core.ctrl.action.origin;
 
 import com.github.loadup.components.gateway.cache.CommunicationConfigCache;
 import com.github.loadup.components.gateway.cache.InterfaceConfigCache;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.commons.error.CommonException;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.common.annotation.LogTraceId;
 import com.github.loadup.components.gateway.core.common.enums.RoleType;
 import com.github.loadup.components.gateway.core.ctrl.action.AbstractBusinessAction;
@@ -52,7 +52,7 @@ public class SpringBeanServiceAction extends AbstractBusinessAction {
 
 	@Override
 	@LogTraceId
-	public void doBusiness(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) throws GatewayException {
+	public void doBusiness(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) throws CommonException {
 		String integratorUrl = gatewayRuntimeProcessContext.getIntegratorUrl();
 		//CommunicationConfig integratorCommunicationConfig = interfaceCacheManager.getCommunicationConfigByURI(integratorUrl);
 		CommunicationConfig integratorCommunicationConfig = CommunicationConfigCache.getWithUrl(integratorUrl,
@@ -64,9 +64,9 @@ public class SpringBeanServiceAction extends AbstractBusinessAction {
 			integratorCommunicationConfig = CommunicationConfigCache.getWithInterfaceId(integratorInterfaceId);
 		}
 		if (integratorCommunicationConfig == null) {
-			GatewayException gatewayException = new GatewayException(GatewayliteErrorCode.PARAM_ILLEGAL);
-			gatewayRuntimeProcessContext.setBusinessException(gatewayException);
-			throw gatewayException;
+			CommonException commonException = new CommonException(GatewayErrorCode.PARAM_ILLEGAL);
+			gatewayRuntimeProcessContext.setBusinessException(commonException);
+			throw commonException;
 		}
 		//InterfaceConfig integratorInterfaceConfig = interfaceCacheManager.getInterfaceConfigById(integratorCommunicationConfig
 		// .getInterfaceId());

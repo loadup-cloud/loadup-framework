@@ -26,9 +26,9 @@ package com.github.loadup.components.gateway.message.script.cache;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.util.*;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.common.enums.*;
 import com.github.loadup.components.gateway.core.model.InterfaceConfig;
 import com.github.loadup.components.gateway.core.model.MessageProcessConfig;
@@ -146,8 +146,8 @@ public class GroovyScriptCache {
 					try {
 						apiConditionGroup = interfaceProdCenterQueryService
 								.queryAPIConditionGroup(interfaceId, null);
-					} catch (GatewayException ex) {
-						if (ex.getErrorCode() != GatewayliteErrorCode.CONFIGURATION_LOAD_ERROR) {
+					} catch (CommonException ex) {
+						if (ex.getResultCode() != GatewayErrorCode.CONFIGURATION_LOAD_ERROR) {
 							throw ex;
 						}
 					}
@@ -191,8 +191,8 @@ public class GroovyScriptCache {
 					try {
 						apiConditionGroup = interfaceProdCenterQueryService
 								.queryAPIConditionGroup(null, interfaceId);
-					} catch (GatewayException ex) {
-						if (ex.getErrorCode() != GatewayliteErrorCode.CONFIGURATION_LOAD_ERROR) {
+					} catch (CommonException ex) {
+						if (ex.getResultCode() != GatewayErrorCode.CONFIGURATION_LOAD_ERROR) {
 							throw ex;
 						}
 					}
@@ -230,7 +230,7 @@ public class GroovyScriptCache {
 				try {
 					apiConditionGroup = interfaceProdCenterQueryService
 							.queryAPIConditionGroup(openUrl, null);
-				} catch (GatewayException ex) {
+				} catch (CommonException ex) {
 					// do nothing because apiConditionGroup by openurl could be null
 					continue;
 				}

@@ -26,8 +26,8 @@ package com.github.loadup.components.gateway.common.util;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.ErrorCode;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.commons.result.ResultCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.facade.model.Result;
 
 /**
@@ -38,7 +38,7 @@ public class ResultUtil {
 	/**
 	 *
 	 */
-	public static Result buildResult(GatewayliteErrorCode errorCode, String message) {
+	public static Result buildResult(GatewayErrorCode errorCode, String message) {
 
 		Result result = new Result();
 		result.setResultCode(errorCode.getCode());
@@ -51,14 +51,14 @@ public class ResultUtil {
 	/**
 	 *
 	 */
-	public static Result buildResult(GatewayliteErrorCode errorCode) {
+	public static Result buildResult(GatewayErrorCode errorCode) {
 		return buildResult(errorCode, errorCode.getMessage());
 	}
 
 	/**
 	 *
 	 */
-	public static Result buildResult(ErrorCode errorCode) {
+	public static Result buildResult(ResultCode errorCode) {
 		Result result = new Result();
 		result.setResultCode(errorCode.getCode());
 		result.setResultStatus(errorCode.getStatus());
@@ -70,7 +70,7 @@ public class ResultUtil {
 	 *
 	 */
 	public static Result buildSuccessResult() {
-		return buildResult(GatewayliteErrorCode.SUCCESS);
+		return buildResult(GatewayErrorCode.SUCCESS);
 	}
 
 }

@@ -26,7 +26,7 @@ package com.github.loadup.components.gateway.message.base.api;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.core.common.enums.RoleType;
 import com.github.loadup.components.gateway.core.ctrl.context.GatewayRuntimeProcessContext;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
@@ -57,6 +57,6 @@ public interface MessageEngine {
 										String interfaceTypeStr,
 										UnifyMsg message,
 										MessageEnvelope messageEnvelope,
-										GatewayException exception);
+										CommonException exception);
 
 }

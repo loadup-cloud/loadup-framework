@@ -29,8 +29,6 @@ package com.github.loadup.components.gateway.plugin;
 import com.alibaba.cola.extension.Extension;
 import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.commons.util.context.ApplicationContextUtils;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
 import com.github.loadup.components.gateway.facade.extpoint.CommunicationProxyExtPt;
 import com.github.loadup.components.gateway.facade.model.CommunicationConfiguration;
 import com.github.loadup.components.gateway.facade.util.LogUtil;

@@ -26,7 +26,7 @@ package com.github.loadup.components.gateway.core.prototype.util;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.ErrorCode;
+import com.github.loadup.commons.result.ResultCode;
 import com.github.loadup.components.gateway.core.ctrl.context.GatewayRuntimeProcessContext;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import org.slf4j.Logger;
@@ -77,7 +77,7 @@ public class DigestLoggerUtil {
 	/**
 	 * print digest limit log
 	 */
-	public static void printLimitDigestLog(String entityId, String maxLimit, ErrorCode errorCode) {
+	public static void printLimitDigestLog(String entityId, String maxLimit, ResultCode errorCode) {
 		LogUtil.info(digestLimitLogger, entityId, ", ", maxLimit, ", ", errorCode);
 	}
 

@@ -27,7 +27,7 @@ package com.github.loadup.components.gateway.core.common.util;
  */
 
 import com.github.loadup.components.gateway.common.error.LimitRuleErrorCode;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.exception.util.AssertUtil;
 import com.github.loadup.components.gateway.common.util.PropertiesUtil;
 import com.github.loadup.components.gateway.common.util.RepositoryUtil;
@@ -265,11 +265,11 @@ public class LimitUtil {
 			AssertUtil.isTrue(globalMaxLimit != 0, LimitRuleErrorCode.LIMIT_NO_TOKEN,
 					"globalMaxLimitStr is zero, no token:" + key);
 			return globalMaxLimitStr;
-		} catch (GatewayException ex) {
+		} catch (CommonException ex) {
 			DigestLoggerUtil.printLimitDigestLog(key,
 					StringUtils.isNotBlank(currentEntityMaxLimitStr) ? currentEntityMaxLimitStr
 							: globalMaxLimitStr,
-					ex.getErrorCode());
+					ex.getResultCode());
 			throw ex;
 		}
 	}

@@ -27,7 +27,7 @@ package com.github.loadup.components.gateway.core.prototype.parser;
  */
 
 import com.github.loadup.commons.util.JsonUtil;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.message.script.parser.MessageParser;
@@ -40,8 +40,8 @@ import org.springframework.util.CollectionUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.github.loadup.components.gateway.core.common.GatewayliteErrorCode.INVALID_SIGNATURE;
-import static com.github.loadup.components.gateway.core.common.GatewayliteErrorCode.PARAM_ILLEGAL;
+import static com.github.loadup.components.gateway.core.common.GatewayErrorCode.INVALID_SIGNATURE;
+import static com.github.loadup.components.gateway.core.common.GatewayErrorCode.PARAM_ILLEGAL;
 import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_PARSE_RESULT;
 import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_REQUEST_BODY;
 
@@ -71,7 +71,7 @@ public class StanderApiMsgParser implements MessageParser {
 		Map<String, String> headerMap = messageEnvelope.getHeaders();
 
 		if (verifyOpenApiParamsFail(headerMap)) {
-			throw new GatewayException(PARAM_ILLEGAL);
+			throw new CommonException(PARAM_ILLEGAL);
 		}
 		String clientId = headerMap.get(KEY_HTTP_CLIENT_ID);
 		////2.2 进行签名验证
@@ -80,7 +80,7 @@ public class StanderApiMsgParser implements MessageParser {
 		}
 		////2.3 验证失败直接返回
 		if (!verifySignatureSucceed) {
-			throw new GatewayException(INVALID_SIGNATURE);
+			throw new CommonException(INVALID_SIGNATURE);
 		}
 
 		//3 返回最终结果

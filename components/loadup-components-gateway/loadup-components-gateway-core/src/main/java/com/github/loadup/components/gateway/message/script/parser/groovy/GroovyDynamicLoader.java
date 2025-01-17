@@ -26,8 +26,8 @@ package com.github.loadup.components.gateway.message.script.parser.groovy;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.GatewayException;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.commons.error.CommonException;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.prototype.util.ExceptionUtil;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import groovy.lang.GroovyClassLoader;
@@ -84,7 +84,7 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
 		try {
 			return (T) applicationContext.getBean(gclassName);
 		} catch (Exception e) {
-			throw new GatewayException(GatewayliteErrorCode.SCRIPT_LOAD_ERROR, e);
+			throw new CommonException(GatewayErrorCode.SCRIPT_LOAD_ERROR, e);
 		} finally {
 			readLock.unlock();
 		}
@@ -98,7 +98,7 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
 		try {
 			return (T) applicationContext.getBean(gclassName, clazz);
 		} catch (Exception e) {
-			throw new GatewayException(GatewayliteErrorCode.SCRIPT_LOAD_ERROR, e);
+			throw new CommonException(GatewayErrorCode.SCRIPT_LOAD_ERROR, e);
 		}
 	}
 
@@ -124,7 +124,7 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
 					Class<GroovyObject> clazz = (Class<GroovyObject>) groovyClass;
 					GroovyObject instance = clazz.getDeclaredConstructor().newInstance();
 					if (beanFactory.containsBean(groovyInfo.getClassName())) {
-						throw new GatewayException(GatewayliteErrorCode.CONFIGURATION_LOAD_ERROR,
+						throw new CommonException(GatewayErrorCode.CONFIGURATION_LOAD_ERROR,
 								groovyInfo.getClassName() + " bean exist!");
 					}
 					beanFactory.registerSingleton(groovyInfo.getClassName(), instance);
@@ -138,12 +138,12 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
 
 			// 把脚本缓存一下，在删除的时候需要使用脚本源代码
 			GroovyInnerCache.put2map(clear, groovyInfos);
-		} catch (GatewayException e) {
+		} catch (CommonException e) {
 			LogUtil.error(logger, e, "initialize groovy script error:" + groovyInfos);
 			throw e;
 		} catch (Exception e) {
 			LogUtil.error(logger, e, "initialize groovy script error:" + groovyInfos);
-			throw new GatewayException(GatewayliteErrorCode.UNKNOWN_EXCEPTION, e);
+			throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION, e);
 		}
 	}
 
@@ -170,12 +170,12 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
 			//更新缓存
 			GroovyInnerCache.update2map(groovyInfos);
 			//加载spring bean
-		} catch (GatewayException e) {
+		} catch (CommonException e) {
 			LogUtil.error(logger, e, "update groovy script error:" + groovyInfos);
 			throw e;
 		} catch (Exception e) {
 			LogUtil.error(logger, e, "update groovy script error:" + groovyInfos);
-			throw new GatewayException(GatewayliteErrorCode.UNKNOWN_EXCEPTION, e);
+			throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION, e);
 		} finally {
 			//            Profiler.release();
 			writeLock.unlock();
@@ -209,12 +209,12 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
 			GroovyInnerCache.put2map(clear, groovyInfos);
 
 			// 加载脚本Bean配置
-		} catch (GatewayException e) {
+		} catch (CommonException e) {
 			ExceptionUtil.caught(e, "groovy script initialize error:", groovyInfos);
 			throw e;
 		} catch (Exception e) {
 			ExceptionUtil.caught(e, "groovy script initialize error:", groovyInfos);
-			throw new GatewayException(GatewayliteErrorCode.UNKNOWN_EXCEPTION, e);
+			throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION, e);
 		} finally {
 			//            Profiler.release();
 			writeLock.unlock();

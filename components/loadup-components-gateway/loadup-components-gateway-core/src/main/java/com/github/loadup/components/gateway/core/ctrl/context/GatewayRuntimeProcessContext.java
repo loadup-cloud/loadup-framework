@@ -26,7 +26,7 @@ package com.github.loadup.components.gateway.core.ctrl.context;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.core.model.CommunicationConfig;
 import com.github.loadup.components.gateway.core.model.InterfaceConfig;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
@@ -185,7 +185,7 @@ public class GatewayRuntimeProcessContext {
 	/**
 	 * business exception
 	 */
-	public GatewayException businessException;
+	public CommonException businessException;
 
 	/**
 	 * Gets get requester url.
@@ -232,7 +232,7 @@ public class GatewayRuntimeProcessContext {
 	/**
 	 * Sets set business exception.
 	 */
-	public void setBusinessException(GatewayException businessException) {
+	public void setBusinessException(CommonException businessException) {
 		this.businessException = businessException;
 	}
 
@@ -407,7 +407,7 @@ public class GatewayRuntimeProcessContext {
 	/**
 	 * Gets get business exception.
 	 */
-	public GatewayException getBusinessException() {
+	public CommonException getBusinessException() {
 		return businessException;
 	}
 

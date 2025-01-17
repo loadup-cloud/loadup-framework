@@ -26,13 +26,12 @@ package com.github.loadup.components.gateway.message.base.api.impl;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.core.common.enums.RoleType;
 import com.github.loadup.components.gateway.core.ctrl.context.GatewayRuntimeProcessContext;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
 import com.github.loadup.components.gateway.message.base.api.GroovyEngine;
 import com.github.loadup.components.gateway.message.base.api.MessageEngine;
-import com.github.loadup.components.gateway.message.base.assemble.MessageAssembler;
 import com.github.loadup.components.gateway.message.script.cache.GroovyScriptCache;
 import com.github.loadup.components.gateway.message.script.parser.MessageParser;
 import com.github.loadup.components.gateway.message.unimsg.UnifyMsg;
@@ -72,7 +71,7 @@ public class MessageEngineImpl implements MessageEngine {
 												GatewayRuntimeProcessContext context, String interfaceTypeStr,
 												UnifyMsg message,
 												MessageEnvelope messageEnvelope,
-												GatewayException exception) {
+												CommonException exception) {
 		String beanName = GroovyScriptCache.getBeanName(interfaceId + "_ASSEMBLER", roleType,
 				context.getTransactionType());
 		return groovyEngine.assembleErrorMessage(beanName, roleType, context.getTransactionType(), message, exception);

@@ -28,6 +28,7 @@
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>
             <artifactId>fastjson2</artifactId>
+            <version>2.0.51</version>
         </dependency>
         <!-- validator end -->
 
@@ -49,6 +50,10 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.loadup.framework</groupId>
+            <artifactId>loadup-commons-dto</artifactId>
         </dependency>
     </dependencies>
 

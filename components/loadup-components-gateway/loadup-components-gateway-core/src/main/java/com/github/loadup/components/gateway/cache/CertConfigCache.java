@@ -27,9 +27,9 @@ package com.github.loadup.components.gateway.cache;
  */
 
 import com.github.loadup.components.gateway.certification.cache.CacheUtil;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.util.*;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.common.enums.RepositoryType;
 import com.github.loadup.components.gateway.core.model.CertConfig;
 import com.github.loadup.components.gateway.core.prototype.constant.SwitchConstants;
@@ -113,7 +113,7 @@ public class CertConfigCache {
 			}
 			return result;
 		}
-		throw new GatewayException(GatewayliteErrorCode.CONFIGURATION_LOAD_ERROR,
+		throw new CommonException(GatewayErrorCode.CONFIGURATION_LOAD_ERROR,
 				"Unsupported repository.");
 	}
 

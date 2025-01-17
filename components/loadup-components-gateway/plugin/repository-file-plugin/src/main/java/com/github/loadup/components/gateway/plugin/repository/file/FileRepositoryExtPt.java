@@ -29,8 +29,8 @@ package com.github.loadup.components.gateway.plugin.repository.file;
 import com.alibaba.cola.extension.Extension;
 import com.github.loadup.components.gateway.cache.common.SystemParameter;
 import com.github.loadup.components.gateway.certification.util.CommonUtil;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.commons.error.CommonException;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.model.Properties;
 import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExtPt;
 import com.github.loadup.components.gateway.facade.model.*;
@@ -144,7 +144,7 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
 
 	@Override
 	public void saveOrUpdateInterface(InterfaceDto interfaceDto) {
-		throw new GatewayException(GatewayliteErrorCode.UNKNOWN_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
 				"fileRepositoryService not support saveOrUpdateInterface method");
 	}
 
@@ -213,13 +213,13 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
 
 	@Override
 	public void addInterface(InterfaceDto dto) {
-		throw new GatewayException(GatewayliteErrorCode.UNKNOWN_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
 				"fileRepositoryService not support add interface");
 	}
 
 	@Override
 	public void updateInterface(InterfaceDto dto) {
-		throw new GatewayException(GatewayliteErrorCode.UNKNOWN_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
 				"fileRepositoryService not support update interface");
 	}
 
@@ -227,92 +227,92 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
 	public List<InterfaceDto> queryInterface(Integer pageSize, Integer page, String tntInstId,
 											String interfaceId, String clientId, String type,
 											String status, String interfaceName) {
-		throw new GatewayException(GatewayliteErrorCode.UNKNOWN_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
 				"fileRepositoryService not support query interface");
 
 	}
 
 	@Override
 	public void removeInterface(String interfaceId) {
-		throw new GatewayException(GatewayliteErrorCode.UNKNOWN_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
 				"fileRepositoryService not support remove interface");
 	}
 
 	@Override
 	public void upgradeInterface(InterfaceDto dto) {
-		throw new GatewayException(GatewayliteErrorCode.UNKNOWN_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
 				"fileRepositoryService not support upgrade interface");
 	}
 
 	@Override
 	public void onlineInterface(String interfaceId) {
-		throw new GatewayException(GatewayliteErrorCode.UNKNOWN_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
 				"fileRepositoryService not support online interface");
 	}
 
 	@Override
 	public void offlineInterface(String interfaceId) {
-		throw new GatewayException(GatewayliteErrorCode.UNKNOWN_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
 				"fileRepositoryService not support offline interface");
 	}
 
 	@Override
 	public String addClient(ClientConfigDto clientConfigAddDto) {
-		throw new GatewayException(GatewayliteErrorCode.SYSTEM_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
 				"fileRepositoryService not support addmethod");
 	}
 
 	@Override
 	public void authorizeClient(ClientInterfaceConfigDto clientConfigAuthorizeDto) {
-		throw new GatewayException(GatewayliteErrorCode.SYSTEM_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
 				"fileRepositoryService not support authrizemethod");
 	}
 
 	@Override
 	public void deauthorizeClient(ClientInterfaceConfigDto clientConfigDeauthorizeDto) {
-		throw new GatewayException(GatewayliteErrorCode.SYSTEM_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
 				"fileRepositoryService not support deauthrizemethod");
 	}
 
 	@Override
 	public void updateClient(ClientConfigDto clientConfigUpdateDto) {
-		throw new GatewayException(GatewayliteErrorCode.SYSTEM_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
 				"fileRepositoryService not support updatemethod");
 	}
 
 	@Override
 	public ClientConfigDto queryClient(String clientId) {
-		throw new GatewayException(GatewayliteErrorCode.SYSTEM_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
 				"fileRepositoryService not support querymethod");
 	}
 
 	@Override
 	public int removeClient(String clientId) {
-		throw new GatewayException(GatewayliteErrorCode.SYSTEM_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
 				"fileRepositoryService not support removemethod");
 	}
 
 	@Override
 	public SecurityConfigDto addSecurity(SecurityConfigDto dto) {
-		throw new GatewayException(GatewayliteErrorCode.SYSTEM_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
 				"fileRepositoryService not support addmethod");
 	}
 
 	@Override
 	public void updateSecurity(SecurityConfigDto request) {
-		throw new GatewayException(GatewayliteErrorCode.SYSTEM_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
 				"fileRepositoryService not support updatemethod");
 	}
 
 	@Override
 	public List<SecurityConfigDto> querySecurityByClient(String clientId) {
-		throw new GatewayException(GatewayliteErrorCode.SYSTEM_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
 				"fileRepositoryService not support querymethod");
 	}
 
 	@Override
 	public int removeSecurity(SecurityConfigDto certCode) {
-		throw new GatewayException(GatewayliteErrorCode.SYSTEM_EXCEPTION,
+		throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
 				"fileRepositoryService not support removemethod");
 	}
 

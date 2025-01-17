@@ -26,10 +26,12 @@ package com.github.loadup.components.gateway.facade.response;
  * #L%
  */
 
+import com.github.loadup.commons.result.Response ;
+
 /**
  *
  */
-public class ClientConfigAddResponse extends BaseResponse {
+public class ClientConfigAddResponse extends Response {
 
 	private String clientId;
 

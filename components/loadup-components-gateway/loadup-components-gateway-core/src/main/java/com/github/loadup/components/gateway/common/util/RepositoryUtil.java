@@ -28,9 +28,9 @@ package com.github.loadup.components.gateway.common.util;
 
 import com.alibaba.cola.extension.ExtensionExecutor;
 import com.github.loadup.components.gateway.cache.common.SystemParameter;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.core.common.Constant;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.common.enums.RepositoryType;
 import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExtPt;
 import jakarta.annotation.Resource;
@@ -50,7 +50,7 @@ public class RepositoryUtil {
 		RepositoryServiceExtPt result = ExtensionPointLoader.get(RepositoryServiceExtPt.class,
 				SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE));
 		if (result == null) {
-			throw new GatewayException(GatewayliteErrorCode.PARAM_ILLEGAL, "Can not find repositoryService.");
+			throw new CommonException(GatewayErrorCode.PARAM_ILLEGAL, "Can not find repositoryService.");
 		}
 		return result;
 	}
@@ -62,7 +62,7 @@ public class RepositoryUtil {
 		String type = StringUtils.defaultString(SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE), "FILE");
 		RepositoryType result = RepositoryType.getEnumByCode(type);
 		if (result == null) {
-			throw new GatewayException(GatewayliteErrorCode.PARAM_ILLEGAL, "Can not find valid repositoryType.");
+			throw new CommonException(GatewayErrorCode.PARAM_ILLEGAL, "Can not find valid repositoryType.");
 		}
 		return result;
 	}

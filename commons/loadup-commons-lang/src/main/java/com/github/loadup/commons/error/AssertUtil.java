@@ -47,7 +47,7 @@ public class AssertUtil {
 	public static void isTrue(boolean expValue, ResultCode resultCode, Object... objs) {
 		if (!expValue) {
 			String logString = getLogString(objs);
-			String resultMsg = StringUtils.isBlank(logString) ? resultCode.getResultMessage() : logString;
+			String resultMsg = StringUtils.isBlank(logString) ? resultCode.getMessage() : logString;
 			throw new CommonException(resultCode, resultMsg);
 		}
 	}

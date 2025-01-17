@@ -27,8 +27,8 @@ package com.github.loadup.components.gateway.plugin;
  */
 
 import com.alibaba.cola.extension.Extension;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.commons.error.CommonException;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.prototype.util.SerializationUtil;
 import com.github.loadup.components.gateway.facade.extpoint.CommunicationProxyExtPt;
 import com.github.loadup.components.gateway.facade.model.CommunicationConfiguration;
@@ -108,7 +108,7 @@ public class RpcCommunicationExt implements CommunicationProxyExtPt {
 			// 1.4 invoke
 			OpenApiTransResponse openApiTransResponse = openApi.invoke(openApiTransRequest);
 			if (openApiTransResponse == null) {
-				throw new GatewayException(GatewayliteErrorCode.PROCESS_FAIL);
+				throw new CommonException(GatewayErrorCode.PROCESS_FAIL);
 			}
 			return SerializationUtil.serializeWithDateFormat(openApiTransResponse.getMessage(), dateFormat);
 		} catch (Exception e) {

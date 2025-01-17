@@ -26,7 +26,7 @@ package com.github.loadup.components.gateway.message.base.assemble;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
 import com.github.loadup.components.gateway.message.unimsg.UnifyMsg;
 
@@ -43,6 +43,6 @@ public interface MessageAssembler {
 	/**
 	 * 组装异常报文服务
 	 */
-	MessageEnvelope assembleError(UnifyMsg message, GatewayException exception);
+	MessageEnvelope assembleError(UnifyMsg message, CommonException exception);
 
 }

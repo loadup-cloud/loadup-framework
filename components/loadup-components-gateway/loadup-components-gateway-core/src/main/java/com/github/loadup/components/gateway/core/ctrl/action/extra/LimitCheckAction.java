@@ -27,7 +27,7 @@ package com.github.loadup.components.gateway.core.ctrl.action.extra;
  */
 
 import com.github.loadup.components.gateway.common.error.LimitRuleErrorCode;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.exception.util.AssertUtil;
 import com.github.loadup.components.gateway.core.common.util.LimitUtil;
 import com.github.loadup.components.gateway.core.ctrl.action.AbstractBusinessAction;
@@ -75,9 +75,9 @@ public class LimitCheckAction extends AbstractBusinessAction {
 			if (limitConfig.isEnableLimit()) {
 				try {
 					applyLimitToken(limitConfig);
-				} catch (GatewayException ex) {
+				} catch (CommonException ex) {
 					DigestLoggerUtil.printLimitDigestLog(interfaceConfig.getInterfaceId(),
-							limitConfig.getLimitValue() + "", ex.getErrorCode());
+							limitConfig.getLimitValue() + "", ex.getResultCode());
 					throw ex;
 				}
 			}

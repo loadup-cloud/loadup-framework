@@ -26,11 +26,11 @@ package com.github.loadup.components.gateway.service.impl;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.util.CommonUtil;
 import com.github.loadup.components.gateway.common.util.ResultUtil;
 import com.github.loadup.components.gateway.core.common.Constant;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.common.enums.*;
 import com.github.loadup.components.gateway.core.ctrl.RuntimeProcessContextHolder;
 import com.github.loadup.components.gateway.core.ctrl.action.BusinessAction;
@@ -123,30 +123,30 @@ public class MessageServiceImpl implements MessageService {
 			springBeanServiceAction.process(processContext);
 			success = true;
 			callRespMsg = "SUCCESS";
-		} catch (GatewayException e) {
+		} catch (CommonException e) {
 			LogUtil.error(logger, e, "Message Service send message fail, throw business exception");
 			processContext.setBusinessException(e);
 			exceptionAssembleAction.process(processContext);
 			callRespMsg = e.getMessage();
-			spiResponse.setResult(ResultUtil.buildResult(e.getErrorCode()));
+			spiResponse.setResult(ResultUtil.buildResult(e.getResultCode()));
 			MetricLoggerUtil.countError(request.getIntegrationUrl(),
 					System.currentTimeMillis() - timecost,
 					request.getMessage().get(Constant.KEY_HTTP_CLIENT_ID), InterfaceType.SPI,
-					processContext.getTraceId(), e.getErrorCode());
+					processContext.getTraceId(), e.getResultCode());
 		} catch (Throwable e) {
 			LogUtil.error(logger, e, "Message Service send message fail! throw exception");
-			GatewayException gatewayException = new GatewayException(
-					GatewayliteErrorCode.UNKNOWN_EXCEPTION, e);
-			processContext.setBusinessException(gatewayException);
+			CommonException commonException = new CommonException(
+					GatewayErrorCode.UNKNOWN_EXCEPTION, e);
+			processContext.setBusinessException(commonException);
 			exceptionAssembleAction.process(processContext);
 			callRespMsg = e.getMessage();
 			spiResponse.setResult(
-					ResultUtil.buildResult(GatewayliteErrorCode.UNKNOWN_EXCEPTION, e.getMessage()));
+					ResultUtil.buildResult(GatewayErrorCode.UNKNOWN_EXCEPTION, e.getMessage()));
 
 			MetricLoggerUtil.countError(request.getIntegrationUrl(),
 					System.currentTimeMillis() - timecost,
 					request.getMessage().get(Constant.KEY_HTTP_CLIENT_ID), InterfaceType.SPI,
-					processContext.getTraceId(), gatewayException.getErrorCode());
+					processContext.getTraceId(), commonException.getResultCode());
 		} finally {
 			//limitRuleService.resetToken(processContext.getIntegratorInterfaceId());
 			integrationReceiveResponse = processContext.getResponseMessage();

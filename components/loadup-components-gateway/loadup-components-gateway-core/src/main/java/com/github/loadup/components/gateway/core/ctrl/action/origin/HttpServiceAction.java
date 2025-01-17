@@ -28,10 +28,10 @@ package com.github.loadup.components.gateway.core.ctrl.action.origin;
 
 import com.github.loadup.components.gateway.cache.CommunicationConfigCache;
 import com.github.loadup.components.gateway.cache.InterfaceConfigCache;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.exception.util.AssertUtil;
 import com.github.loadup.components.gateway.common.util.RepositoryUtil;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.common.annotation.LogTraceId;
 import com.github.loadup.components.gateway.core.common.enums.RepositoryType;
 import com.github.loadup.components.gateway.core.common.enums.RoleType;
@@ -154,8 +154,8 @@ public class HttpServiceAction extends AbstractBusinessAction {
 			try {
 				senderCommunicationConfig = CommunicationConfigCache.getWithUrl(url,
 						gatewayRuntimeProcessContext.getTransactionType());
-			} catch (GatewayException ex) {
-				if (ex.getErrorCode() != GatewayliteErrorCode.CONFIGURATION_LOAD_ERROR) {
+			} catch (CommonException ex) {
+				if (ex.getResultCode() != GatewayErrorCode.CONFIGURATION_LOAD_ERROR) {
 					throw ex;
 				}
 			}
@@ -164,7 +164,7 @@ public class HttpServiceAction extends AbstractBusinessAction {
 			}
 		}
 		AssertUtil.isNotNull(senderCommunicationConfig,
-				GatewayliteErrorCode.CONFIGURATION_NOT_FOUND, "senderCommunicationConfig is null");
+				GatewayErrorCode.CONFIGURATION_NOT_FOUND, "senderCommunicationConfig is null");
 		return senderCommunicationConfig;
 	}
 

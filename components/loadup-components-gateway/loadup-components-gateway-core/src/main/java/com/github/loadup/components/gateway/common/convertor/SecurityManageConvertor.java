@@ -77,7 +77,6 @@ public class SecurityManageConvertor {
 			return null;
 		}
 		CertConfigInnerResponse innerResponse = new CertConfigInnerResponse();
-		innerResponse.setTntInstId(innerDto.getTenantId());
 		innerResponse.setAlgoName(innerDto.getAlgoName());
 		innerResponse.setSecurityStrategyCode(innerDto.getSecurityStrategyCode());
 		innerResponse.setClientId(innerDto.getClientId());

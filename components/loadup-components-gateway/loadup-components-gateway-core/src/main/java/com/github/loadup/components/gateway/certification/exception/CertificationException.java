@@ -26,46 +26,46 @@ package com.github.loadup.components.gateway.certification.exception;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.ErrorCode;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
-import com.github.loadup.components.gateway.core.common.GatewayliteErrorCode;
+import com.github.loadup.commons.error.CommonException;
+import com.github.loadup.commons.result.ResultCode;
+import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 
 /**
  * 安全组件异常
  */
-public class CertificationException extends GatewayException {
-	/**
-	 * Constructor.
-	 */
-	public CertificationException(String message) {
-		super(GatewayliteErrorCode.SYSTEM_ERROR, message);
-	}
+public class CertificationException extends CommonException {
+    /**
+     * Constructor.
+     */
+    public CertificationException(String message) {
+        super(GatewayErrorCode.SYSTEM_ERROR, message);
+    }
 
-	/**
-	 * Constructor.
-	 */
-	public CertificationException(ErrorCode resultCode) {
-		super(resultCode);
-	}
+    /**
+     * Constructor.
+     */
+    public CertificationException(ResultCode resultCode) {
+        super(resultCode);
+    }
 
-	/**
-	 * Constructor.
-	 */
-	public CertificationException(ErrorCode resultCode, String message) {
-		super(resultCode, message);
-	}
+    /**
+     * Constructor.
+     */
+    public CertificationException(ResultCode resultCode, String message) {
+        super(resultCode, message);
+    }
 
-	/**
-	 * Constructor.
-	 */
-	public CertificationException(ErrorCode resultCode, Throwable e) {
-		super(resultCode, e);
-	}
+    /**
+     * Constructor.
+     */
+    public CertificationException(ResultCode resultCode, Throwable e) {
+        super(resultCode, e);
+    }
 
-	/**
-	 * Constructor.
-	 */
-	public CertificationException(ErrorCode resultCode, String message, Throwable e) {
-		super(resultCode, message, e);
-	}
+    /**
+     * Constructor.
+     */
+    public CertificationException(ResultCode resultCode, String message, Throwable e) {
+        super(resultCode, message, e);
+    }
 }

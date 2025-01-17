@@ -26,8 +26,8 @@ package com.github.loadup.components.gateway.message.script.assemble;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.ErrorCode;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.result.ResultCode;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.core.common.enums.MessageFormat;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
@@ -42,37 +42,37 @@ public abstract class AbstractMsgAssembler implements MessageAssembler {
 
 	protected abstract Object assembleMessage(UnifyMsg message);
 
-	protected abstract Object assembleErrorMessage(UnifyMsg message, GatewayException exception);
+	protected abstract Object assembleErrorMessage(UnifyMsg message, CommonException exception);
 
 	@Override
 	public MessageEnvelope assemble(UnifyMsg message) {
 		Object content;
 		try {
 			content = assembleMessage(message);
-		} catch (GatewayException e) {
+		} catch (CommonException e) {
 			LogUtil.error(logger, e, "Message assemble fail!");
 			content = assembleErrorMessage(message, e);
 		} catch (Exception e) {
 			LogUtil.error(logger, e, "Message assemble fail!");
-			ErrorCode errorCode = ParserErrorCode.PARSE_ERROR;
-			throw new GatewayException(errorCode, e);
+			ResultCode errorCode = ParserErrorCode.PARSE_ERROR;
+			throw new CommonException(errorCode, e);
 		}
 
 		return new MessageEnvelope(MessageFormat.TEXT, content);
 	}
 
 	@Override
-	public MessageEnvelope assembleError(UnifyMsg message, GatewayException exception) {
+	public MessageEnvelope assembleError(UnifyMsg message, CommonException exception) {
 		Object content;
 		try {
 			content = assembleErrorMessage(message, exception);
-		} catch (GatewayException e) {
+		} catch (CommonException e) {
 			LogUtil.error(logger, e, "Message assemble fail!");
 			throw e;
 		} catch (Exception e) {
 			LogUtil.error(logger, e, "Message assemble fail!");
-			ErrorCode errorCode = ParserErrorCode.PARSE_ERROR;
-			throw new GatewayException(errorCode, e);
+			ResultCode errorCode = ParserErrorCode.PARSE_ERROR;
+			throw new CommonException(errorCode, e);
 		}
 
 		return new MessageEnvelope(MessageFormat.TEXT, content);

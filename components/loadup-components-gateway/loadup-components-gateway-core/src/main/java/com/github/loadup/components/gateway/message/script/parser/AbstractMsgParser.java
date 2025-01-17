@@ -26,8 +26,8 @@ package com.github.loadup.components.gateway.message.script.parser;
  * #L%
  */
 
-import com.github.loadup.components.gateway.common.exception.ErrorCode;
-import com.github.loadup.components.gateway.common.exception.GatewayException;
+import com.github.loadup.commons.result.ResultCode;
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.message.common.errorr.ParserErrorCode;
@@ -54,13 +54,13 @@ public abstract class AbstractMsgParser implements MessageParser {
 		String parseResult;
 		try {
 			parseResult = parseMessage(message, extInfo);
-		} catch (GatewayException e) {
+		} catch (CommonException e) {
 			LogUtil.error(logger, e, "Message parser fail!");
 			throw e;
 		} catch (Exception e) {
 			LogUtil.error(logger, e, "Message parser fail!");
-			ErrorCode errorCode = ParserErrorCode.PARSE_ERROR;
-			throw new GatewayException(errorCode, e);
+			ResultCode errorCode = ParserErrorCode.PARSE_ERROR;
+			throw new CommonException(errorCode, e);
 		}
 		messageResult.addField(KEY_PARSE_RESULT, parseResult);
 		return messageResult;
