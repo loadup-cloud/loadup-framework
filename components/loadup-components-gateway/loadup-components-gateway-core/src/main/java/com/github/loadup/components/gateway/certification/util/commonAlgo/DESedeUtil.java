@@ -124,7 +124,7 @@ public class DESedeUtil {
      * @throws Exception
      */
     public static byte[] encrypt(byte[] data, byte[] key, String salt,
-                                 String algorithm) throws Exception {
+                                String algorithm) throws Exception {
 
         Cipher cipher = Cipher.getInstance(algorithm);
 
@@ -144,7 +144,7 @@ public class DESedeUtil {
      * @throws Exception
      */
     public static byte[] decrypt(byte[] data, byte[] key, String salt,
-                                 String algorithm) throws Exception {
+                                String algorithm) throws Exception {
         Cipher cipher = Cipher.getInstance(algorithm);
 
         IvParameterSpec iv = convertIv(cipher, salt);

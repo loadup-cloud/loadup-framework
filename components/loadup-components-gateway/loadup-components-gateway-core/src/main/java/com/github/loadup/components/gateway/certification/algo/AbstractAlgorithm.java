@@ -129,7 +129,7 @@ public class AbstractAlgorithm implements Algorithm, InitializingBean {
      */
     @Override
     public boolean verify(byte[] unSignedData, byte[] signedData, byte[] key, String algorithm,
-                          boolean attach) {
+                        boolean attach) {
         throw new CertificationException(CertificationErrorCode.UNSUPPORTED_OPERATION, algorithm);
     }
 
@@ -173,8 +173,8 @@ public class AbstractAlgorithm implements Algorithm, InitializingBean {
      */
     @Override
     public byte[] signXmlElement(byte[] priKeyData, byte[] certData, byte[] xmlDocBytes,
-                                 String encode, String elementTagName, String algorithm,
-                                 int signatureAppendMode) {
+                                String encode, String elementTagName, String algorithm,
+                                int signatureAppendMode) {
         throw new CertificationException(CertificationErrorCode.UNSUPPORTED_OPERATION, algorithm);
     }
 

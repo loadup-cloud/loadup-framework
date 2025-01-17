@@ -163,18 +163,18 @@ public class CertConfigInnerResponse extends BaseResponse {
      *
 
      */
-	/*public Map<String, String> getCertProperties() {
-		return certProperties;
-	}*/
+    /*public Map<String, String> getCertProperties() {
+        return certProperties;
+    }*/
 
     /**
      * Setter method for property <tt>certProperties</tt>.
      *
 
      */
-	/*public void setCertProperties(Map<String, String> certProperties) {
-		this.certProperties = certProperties;
-	}*/
+    /*public void setCertProperties(Map<String, String> certProperties) {
+        this.certProperties = certProperties;
+    }*/
 
     /**
      * Getter method for property <tt>algorithmProperties</tt>.

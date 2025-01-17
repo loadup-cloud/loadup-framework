@@ -57,8 +57,8 @@ public class MessageProcessConfigBuilder extends
      * generic config build from template map
      */
     public MessageProcessConfigDto build(String url, String securityStrategyCode,
-                                         String headerAssemble, String bodyAssemble,
-                                         String parser) {
+                                        String headerAssemble, String bodyAssemble,
+                                        String parser) {
         if (!validate(url, securityStrategyCode) || StringUtils.isBlank(parser)) {
             return null;
         }

@@ -251,7 +251,7 @@ public class LimitUtil {
      * If currentEntityMaxLimitStr is blank, will use globalMaxLimitStr.
      */
     private String getMaxLimit(String key, String globalMaxLimitStr,
-                               String currentEntityMaxLimitStr) {
+                            String currentEntityMaxLimitStr) {
         try {
             if (StringUtils.isNotBlank(currentEntityMaxLimitStr)) {
                 int currentEntityMaxLimit = Integer.parseInt(currentEntityMaxLimitStr);

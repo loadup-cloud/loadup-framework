@@ -174,8 +174,8 @@ public class AlgXmlRSASignature extends AbstractAlgorithm {
      */
     @Override
     public byte[] signXmlElement(byte[] priKeyData, byte[] certData, byte[] xmlDocBytes,
-                                 String encode, String elementTagName, String algorithm,
-                                 int signatureAppendMode) {
+                                String encode, String elementTagName, String algorithm,
+                                int signatureAppendMode) {
         try {
             Document xmlDocument = getXmlDocument(xmlDocBytes, encode);
             XMLSignature xmlSignature = new XMLSignature(xmlDocument, xmlDocument.getDocumentURI(),

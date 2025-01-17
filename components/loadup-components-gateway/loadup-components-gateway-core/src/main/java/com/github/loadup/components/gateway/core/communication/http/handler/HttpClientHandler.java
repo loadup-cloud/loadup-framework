@@ -124,7 +124,7 @@ public class HttpClientHandler {
      * @throws IOException
      */
     public MessageEnvelope handler(String transUUID, CommunicationConfig communicationConfig,
-                                   MessageEnvelope messageEnvelope) throws Exception,
+                                MessageEnvelope messageEnvelope) throws Exception,
             IOException {
         CloseableHttpClient client = httpClientCache.getClient(communicationConfig);
 
@@ -209,7 +209,7 @@ public class HttpClientHandler {
      * @throws IOException
      */
     public Object runTask(final CloseableHttpClient client, final HttpUriRequestBase httpMethod,
-                          final CommunicationConfig config) throws Exception, IOException {
+                        final CommunicationConfig config) throws Exception, IOException {
 
         try {
             String str = client.execute(httpMethod, res -> {
@@ -248,7 +248,7 @@ public class HttpClientHandler {
      * judge whether need convert to error message
      */
     private boolean needConvertToErrorMessage(int statusCode,
-                                              CommunicationConfig receiverCommunicationConfig) {
+                                            CommunicationConfig receiverCommunicationConfig) {
         return statusCode != 200
                 && receiverCommunicationConfig.getHttpStatusErrorCode(statusCode) != null;
     }
@@ -418,7 +418,7 @@ public class HttpClientHandler {
      * @throws UnsupportedEncodingException
      */
     protected void addContent(String content, CommunicationConfig communicationConfig,
-                              HttpUriRequestBase method) throws UnsupportedEncodingException {
+                            HttpUriRequestBase method) throws UnsupportedEncodingException {
         if (StringUtils.isBlank(content)) {
             return;
         }
@@ -461,7 +461,7 @@ public class HttpClientHandler {
      * print http send log
      */
     public void printHttpSendLog(String interfaceId, String uuid, HttpUriRequestBase httpMethod,
-                                 MessageEnvelope outMessage) {
+                                MessageEnvelope outMessage) {
         String url;
         String message;
         String method = httpMethod.getMethod();

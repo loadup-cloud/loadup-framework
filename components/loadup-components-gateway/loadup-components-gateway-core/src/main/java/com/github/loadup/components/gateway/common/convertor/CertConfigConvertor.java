@@ -57,7 +57,7 @@ public class CertConfigConvertor {
      * convert ConditionGroup to CertConfig
      */
     public static CertConfig convertToCertConfig(SecurityConditionGroup securityConditionGroup,
-                                                 String tenantId) {
+                                                String tenantId) {
         if (securityConditionGroup == null) {
             return null;
         }

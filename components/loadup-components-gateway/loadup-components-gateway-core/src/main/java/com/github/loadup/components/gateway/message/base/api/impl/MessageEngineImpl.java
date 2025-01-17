@@ -79,8 +79,8 @@ public class MessageEngineImpl implements MessageEngine {
 
     @Override
     public UnifyMsg parse(String interfaceId, RoleType roleType,
-                          GatewayRuntimeProcessContext context,
-                          MessageEnvelope messageEnvelope) {
+                        GatewayRuntimeProcessContext context,
+                        MessageEnvelope messageEnvelope) {
         String beanName = GroovyScriptCache.getBeanName(interfaceId + "_PARSER", roleType,
                 context.getTransactionType());
         if (StringUtils.isBlank(beanName) && roleType == RoleType.SENDER) {

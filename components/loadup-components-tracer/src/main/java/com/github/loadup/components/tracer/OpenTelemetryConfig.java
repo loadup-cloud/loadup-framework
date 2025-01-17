@@ -115,7 +115,7 @@ public class OpenTelemetryConfig {
 
         @Override
         public void inject(io.opentelemetry.context.Context context, Object carrier,
-                           io.opentelemetry.context.propagation.TextMapSetter setter) {
+                        io.opentelemetry.context.propagation.TextMapSetter setter) {
             //w3cPropagator.inject(context, carrier, setter);
             SpanContext spanContext = Span.fromContext(context).getSpanContext();
             if (spanContext.isValid()) {

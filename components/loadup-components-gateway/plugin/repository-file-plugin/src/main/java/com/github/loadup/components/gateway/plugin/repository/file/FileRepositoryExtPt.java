@@ -223,8 +223,8 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
 
     @Override
     public List<InterfaceDto> queryInterface(Integer pageSize, Integer page, String tntInstId,
-                                             String interfaceId, String clientId, String type,
-                                             String status, String interfaceName) {
+                                            String interfaceId, String clientId, String type,
+                                            String status, String interfaceName) {
         throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
                 "fileRepositoryService not support query interface");
 
@@ -498,11 +498,11 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
      */
     @Deprecated
     private void buildConfig(String url, String securityStrategyCode,
-                             String integrationServiceRequestHeaderAssemble,
-                             String integrationServiceRequestAssemble,
-                             String integrationServiceResponseParser,
-                             String communicationProperties, String integrationInterfaceId,
-                             int index) {
+                            String integrationServiceRequestHeaderAssemble,
+                            String integrationServiceRequestAssemble,
+                            String integrationServiceResponseParser,
+                            String communicationProperties, String integrationInterfaceId,
+                            int index) {
 
         Map<String, String> propertyMap = CommonUtil.Str2Kv(communicationProperties);
 

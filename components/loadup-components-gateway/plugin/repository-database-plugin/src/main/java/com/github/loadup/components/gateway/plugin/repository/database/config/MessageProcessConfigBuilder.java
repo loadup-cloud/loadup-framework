@@ -52,9 +52,9 @@ public class MessageProcessConfigBuilder extends
      * generic config build with template content, not template map
      */
     public MessageProcessConfigDto buildByTemplateContent(String interfaceId,
-                                                          String requestHeaderAssembleTemplate,
-                                                          String requestAssembleTemplate,
-                                                          String responseParserTemplate) {
+                                                        String requestHeaderAssembleTemplate,
+                                                        String requestAssembleTemplate,
+                                                        String responseParserTemplate) {
         if (StringUtils.isBlank(responseParserTemplate)) {
             return null;
         }

@@ -109,8 +109,8 @@ public interface RepositoryServiceExtPt extends ExtensionPointI {
      * </p>
      */
     List<InterfaceDto> queryInterface(Integer pageSize, Integer page, String tntInstId,
-                                      String interfaceId, String clientId, String type,
-                                      String status, String interfaceName);
+                                    String interfaceId, String clientId, String type,
+                                    String status, String interfaceName);
 
     /**
      * <p>

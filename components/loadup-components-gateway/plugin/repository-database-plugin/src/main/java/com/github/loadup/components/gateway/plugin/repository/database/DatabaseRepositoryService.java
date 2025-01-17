@@ -611,9 +611,9 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
      * parser.
      */
     private void buildConfig(String interfaceId, String uriString, String securityStrategyCode,
-                             String headerAssemble, String bodyAssemble, String parser,
-                             String communicationProperties, String integrationInterfaceId,
-                             String interfaceName, String version, String status, int index) {
+                            String headerAssemble, String bodyAssemble, String parser,
+                            String communicationProperties, String integrationInterfaceId,
+                            String interfaceName, String version, String status, int index) {
 
         MessageReceiverConfigDto msgReceiver = messageReceiverConfigBuilder.build(uriString,
                 securityStrategyCode);
@@ -759,8 +759,8 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
      */
     @Override
     public List<InterfaceDto> queryInterface(Integer pageSize, Integer page, String tntInstId,
-                                             String interfaceId, String clientId, String type,
-                                             String status, String interfaceName) {
+                                            String interfaceId, String clientId, String type,
+                                            String status, String interfaceName) {
         List<InterfaceDO> loadAllPage = gatewayInterfaceDAO.loadByPage(tntInstId, interfaceId,
                 clientId, type, status, interfaceName, (page - 1) * pageSize, pageSize);
         List<InterfaceDto> result = new ArrayList<>();

@@ -44,9 +44,9 @@ public final class ServiceTemplate {
     }
 
     public static <T extends Response> T execute(Consumer<Void> checkParameter, //checkParameter
-                                                 Supplier<T> process, //process
-                                                 Function<Exception, Result> composeExceptionResponse, // 修改为 Function<Throwable, T>
-                                                 Consumer<Void> composeDigestLog //composeDigestLog
+                                                Supplier<T> process, //process
+                                                Function<Exception, Result> composeExceptionResponse, // 修改为 Function<Throwable, T>
+                                                Consumer<Void> composeDigestLog //composeDigestLog
     ) {
         T response = null;
         try {

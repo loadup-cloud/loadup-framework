@@ -43,7 +43,7 @@ public interface CommunicationCallBackService {
      * 报文接收后回调处理
      */
     public MessageEnvelope receive(String transUUID, CommunicationConfig config,
-                                   MessageEnvelope messageEnvelope);
+                                MessageEnvelope messageEnvelope);
 
     /**
      * 获取ssl私钥证书

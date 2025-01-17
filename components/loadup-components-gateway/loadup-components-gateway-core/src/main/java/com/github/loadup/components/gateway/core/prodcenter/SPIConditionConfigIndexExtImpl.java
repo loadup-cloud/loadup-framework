@@ -41,7 +41,7 @@ import java.util.List;
 public class SPIConditionConfigIndexExtImpl {
 
     public List<List<String>> customIndexKeys(String tntInstId, String configName,
-                                              SPIConditionGroup spiConditionGroup) {
+                                            SPIConditionGroup spiConditionGroup) {
         List<String> spiConditionGroupIndex = new ArrayList<>();
         spiConditionGroupIndex.add(Constant.INTEGRATION_URL_INDEX_COLUMN);
         return new ArrayList<List<String>>(Collections.singleton(spiConditionGroupIndex));

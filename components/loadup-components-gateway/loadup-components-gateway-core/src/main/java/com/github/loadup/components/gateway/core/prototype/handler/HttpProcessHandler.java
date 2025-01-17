@@ -227,7 +227,7 @@ public class HttpProcessHandler {
     }
 
     private void printHttpRequestLog(HttpServletRequest httpRequest,
-                                     GatewayRuntimeProcessContext runtimeProcessContext) {
+                                    GatewayRuntimeProcessContext runtimeProcessContext) {
         MessageEnvelope httpRequestMessage = runtimeProcessContext.getRequestMessage();
         CommunicationConfig integratorCommunicationConfig = runtimeProcessContext
                 .getIntegratorCommunicationConfig();

@@ -52,7 +52,7 @@ public interface AlgoManager {
      * 验签接口
      */
     public boolean verify(String SrcContent, String signedContent,
-                          CertificationFactor certificationFactor);
+                        CertificationFactor certificationFactor);
 
     /**
      * 摘要接口
@@ -68,6 +68,6 @@ public interface AlgoManager {
      * 特殊验签接口
      */
     public String decode(String SrcContent, String signedContent,
-                         CertificationFactor certificationFactor);
+                        CertificationFactor certificationFactor);
 
 }

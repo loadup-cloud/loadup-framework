@@ -45,12 +45,12 @@ public interface SignatureExtensible {
      * 3rd party signature method used by extension loader
      */
     String thirdPartySign(String bizCode, String certKey, String content,
-                          Map<String, String> message);
+                        Map<String, String> message);
 
     /**
      * 3rd party signature verify method used by extension loader
      */
     boolean thirdPartyVerify(String certKey, String srcContent, String signature,
-                             String signedContent, Map<String, String> message);
+                            String signedContent, Map<String, String> message);
 
 }

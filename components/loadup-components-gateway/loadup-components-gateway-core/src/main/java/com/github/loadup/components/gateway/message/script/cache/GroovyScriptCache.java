@@ -79,7 +79,7 @@ public class GroovyScriptCache {
      * @clear clear
      */
     public static void putAll(boolean clear, List<InterfaceConfig> interfaceConfigs,
-                              Map<String, MessageProcessConfig> processConfigs) {
+                            Map<String, MessageProcessConfig> processConfigs) {
         if (interfaceConfigs == null) {
             return;
         }
@@ -113,7 +113,7 @@ public class GroovyScriptCache {
      * 更新单个接口部分缓存
      */
     public static void putPart(List<InterfaceConfig> interfaceConfigs,
-                               Map<String, MessageProcessConfig> processConfigs) {
+                            Map<String, MessageProcessConfig> processConfigs) {
         Lock writelock = lock.writeLock();
         writelock.lock();
         try {
@@ -135,7 +135,7 @@ public class GroovyScriptCache {
      * 根据接口Id获得groovy的beanName
      */
     public static String getBeanName(String interfaceId, RoleType roleType,
-                                     String interfaceTypeStr) {
+                                    String interfaceTypeStr) {
         if (StringUtils.isBlank(interfaceId)) {
             return null;
         }
@@ -229,7 +229,7 @@ public class GroovyScriptCache {
      * 根据openapi的url获得groovy的beanName
      */
     public static String getBeanNameByOpenUrls(String[] openUrls, RoleType roleType,
-                                               String interfaceTypeStr) {
+                                            String interfaceTypeStr) {
         Lock readlock = lock.readLock();
         readlock.lock();
         try {
@@ -258,8 +258,8 @@ public class GroovyScriptCache {
      * generate prodcenter bean name
      */
     private static String generateProdCenterBeanName(String url, String parseContent,
-                                                     String tntInstId, String roleType,
-                                                     String interfaceType) {
+                                                    String tntInstId, String roleType,
+                                                    String interfaceType) {
 
         if (StringUtils.isBlank(parseContent)) {
             return null;

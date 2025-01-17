@@ -52,8 +52,8 @@ public class SecurityProdCenterQueryServiceImpl implements SecurityProdCenterQue
      */
     @Override
     public SecurityConditionGroup querySecurityConditionGroup(String securityStrategyCode,
-                                                              String operateType, String algorithm,
-                                                              String clientId) {
+                                                            String operateType, String algorithm,
+                                                            String clientId) {
         SecurityConditionGroup result = null;
         for (String productCode : Arrays.asList(Constant.TENANT_GATEWAY_PRODUCT_CODE,
                 Constant.PLATFORM_GATEWAY_PRODUCT_CODE)) {

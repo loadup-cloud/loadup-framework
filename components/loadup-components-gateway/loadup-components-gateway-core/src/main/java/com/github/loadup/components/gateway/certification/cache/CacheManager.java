@@ -201,7 +201,7 @@ public class CacheManager implements Refreshable {
      * 基于 instId，appId，operationType获取对应操作要素
      */
     public CertificationFactor getOperationFactor(String instId, String appId,
-                                                  String operationType) {
+                                                String operationType) {
         String key = CacheUtil.generateKey(instId, appId, operationType);
         return certificationFactorMap.get(key);
     }
@@ -210,7 +210,7 @@ public class CacheManager implements Refreshable {
      * 全量构建缓存
      */
     private boolean buildCache(List<AppConfig> appConfigs, List<CertAlogMap> certAlogMaps,
-                               List<CertConfig> certConfigs, boolean isAll) {
+                            List<CertConfig> certConfigs, boolean isAll) {
         boolean buildResult = true;
 
         try {

@@ -80,7 +80,7 @@ public interface Algorithm {
      * 公共验签接口
      */
     public boolean verify(byte[] unSignedData, byte[] signedData, byte[] key, String algorithm,
-                          boolean attach);
+                        boolean attach);
 
     /**
      * XML签名
@@ -106,8 +106,8 @@ public interface Algorithm {
      * @throws Exception the exception
      */
     public byte[] signXmlElement(byte[] priKeyData, byte[] certData, byte[] xmlDocBytes,
-                                 String encode, String elementTagName, String algorithm,
-                                 int signatureAppendMode);
+                                String encode, String elementTagName, String algorithm,
+                                int signatureAppendMode);
 
     /**
      * 验证XML签名

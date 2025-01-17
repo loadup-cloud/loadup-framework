@@ -53,7 +53,7 @@ public class MetricLoggerUtil {
      * print monitor metric info
      */
     public static void monitor(String url, long timeCost, boolean success, String clientId,
-                               InterfaceType messageType, String traceId, InterfaceScope interfaceScope) {
+                            InterfaceType messageType, String traceId, InterfaceScope interfaceScope) {
         if (!judgeBinderEnabled()) {
             return;
         }
@@ -72,7 +72,7 @@ public class MetricLoggerUtil {
      * print monitor metric info
      */
     public static void countError(String url, long timeCost, String clientId,
-                                  InterfaceType messageType, String traceId, ResultCode errorCode) {
+                                InterfaceType messageType, String traceId, ResultCode errorCode) {
         if (!judgeBinderEnabled()) {
             return;
         }

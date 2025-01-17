@@ -44,7 +44,7 @@ public class InterfaceConfigUtil {
      *
      */
     public static String generateInterfaceId(String url, String tenantId, String version, String type,
-                                             Map<String, String> communicationProperties) {
+                                            Map<String, String> communicationProperties) {
 
         if (MapUtils.isNotEmpty(communicationProperties)) {
             String customInterfaceId = communicationProperties.get(Constant.INTERFACE_ID);

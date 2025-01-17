@@ -50,7 +50,7 @@ public class SecurityConfigDataInitHandler {
      *
      */
     protected void process(String tntInstId, String configName,
-                           SecurityConditionGroup securityConditionGroup) {
+                        SecurityConditionGroup securityConditionGroup) {
         LogUtil.info(logger, "init security config for securityConditionGroup:",
                 securityConditionGroup);
         CertConfig certConfig = CertConfigConvertor.convertToCertConfig(securityConditionGroup,

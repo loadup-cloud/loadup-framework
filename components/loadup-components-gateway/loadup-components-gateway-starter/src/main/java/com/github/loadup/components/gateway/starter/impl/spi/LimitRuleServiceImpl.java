@@ -178,8 +178,8 @@ public class LimitRuleServiceImpl implements LimitRuleService {
      * Standalone mode limit service
      */
     public synchronized boolean applyTokenStandalone(String entryKeyId,
-                                                     LimitTimeRuleEnum limitTimeRuleEnum,
-                                                     Integer limitValue) {
+                                                    LimitTimeRuleEnum limitTimeRuleEnum,
+                                                    Integer limitValue) {
         initFlowRules(entryKeyId, limitTimeRuleEnum, limitValue);
         //Entry entry = null;
         //try {
@@ -221,7 +221,7 @@ public class LimitRuleServiceImpl implements LimitRuleService {
      * Configuration of flow rules of Sentinel for standalone limit service
      */
     public void initFlowRules(String entryKeyId, LimitTimeRuleEnum limitTimeRuleEnum,
-                              Integer limitValue) {
+                            Integer limitValue) {
         //List<FlowRule> rules = new ArrayList<>();
         //FlowRule rule = new FlowRule();
         //rule.setResource(entryKeyId);

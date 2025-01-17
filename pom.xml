@@ -88,9 +88,12 @@
                             <!-- define the steps to apply to those files -->
                             <trimTrailingWhitespace/>
                             <endWithNewline/>
-
                             <indent>
                                 <tabs>true</tabs>
+                                <spacesPerTab>4</spacesPerTab>
+                            </indent>
+                            <indent>
+                                <spaces>true</spaces>
                                 <spacesPerTab>4</spacesPerTab>
                             </indent>
                         </format>

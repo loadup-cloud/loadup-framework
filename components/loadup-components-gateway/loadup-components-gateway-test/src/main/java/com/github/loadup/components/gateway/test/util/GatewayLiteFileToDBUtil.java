@@ -152,7 +152,7 @@ public class GatewayLiteFileToDBUtil {
     }
 
     private static void resolveApiConf(String fileUrl,
-                                       Map<String, String> templateValue) throws IOException {
+                                    Map<String, String> templateValue) throws IOException {
 
         List<Map<String, String>> apiConfData = resolveCsv(fileUrl);
 
@@ -223,7 +223,7 @@ public class GatewayLiteFileToDBUtil {
     }
 
     private static void resolveSpiConf(String fileUrl,
-                                       Map<String, String> templateValue) throws IOException {
+                                    Map<String, String> templateValue) throws IOException {
 
         List<Map<String, String>> spiConfData = resolveCsv(fileUrl);
 

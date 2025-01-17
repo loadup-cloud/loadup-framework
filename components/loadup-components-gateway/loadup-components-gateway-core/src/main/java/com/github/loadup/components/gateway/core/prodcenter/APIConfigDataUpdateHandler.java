@@ -56,7 +56,7 @@ public class APIConfigDataUpdateHandler {
      *
      */
     protected void process(String tntInstId, String configName,
-                           APIConditionGroup apiConditionGroup) {
+                        APIConditionGroup apiConditionGroup) {
         LogUtil.info(logger, "update groovy script for apiConditionGroup:", apiConditionGroup);
         //编译groovy脚本
         groovyDynamicLoader

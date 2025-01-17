@@ -107,7 +107,7 @@ public class XmlSignatureManager extends AbstractAlgoManager {
      */
     @Override
     public boolean verify(String srcContent, String signedContent,
-                          CertificationFactor certificationFactor) {
+                        CertificationFactor certificationFactor) {
         return (Boolean) doOperation(certificationFactor, srcContent, signedContent);
     }
 
@@ -116,7 +116,7 @@ public class XmlSignatureManager extends AbstractAlgoManager {
      */
     @Override
     protected Boolean doVerify(byte[] unsignedData, byte[] signedData,
-                               CertificationFactor certificationFactor) {
+                            CertificationFactor certificationFactor) {
         Algorithm algorithm = getAlgorithm(certificationFactor);
         byte[] key = (byte[]) certificationFactor.getCertMap().get(
                 CertTypeEnum.PUBLIC_KEY.getCertType());

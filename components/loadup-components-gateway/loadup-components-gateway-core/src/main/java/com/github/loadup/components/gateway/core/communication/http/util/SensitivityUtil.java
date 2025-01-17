@@ -72,7 +72,7 @@ public class SensitivityUtil {
      *
      */
     public static <T> T mask(T content, Map<String, ShieldType> rules,
-                             SensitivityProcessType type) {
+                            SensitivityProcessType type) {
         if (MapUtils.isEmpty(rules) || type == null) {
             return content;
         }

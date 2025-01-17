@@ -46,7 +46,7 @@ public class GroovyEngineImpl implements GroovyEngine {
 
     @Override
     public UnifyMsg parse(String beanName, RoleType roleType, String interfaceTypeStr,
-                          MessageEnvelope messageEnvelope) {
+                        MessageEnvelope messageEnvelope) {
         try {
             AssertUtil.isNotBlank(beanName, ParserErrorCode.NOT_EXIST_SCRIPT);
             MessageParser messageParser = groovyDynamicLoader.getGroovyBean(beanName);

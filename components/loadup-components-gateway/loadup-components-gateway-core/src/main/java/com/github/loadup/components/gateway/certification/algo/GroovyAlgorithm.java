@@ -42,7 +42,7 @@ public interface GroovyAlgorithm {
      * 公共验签接口
      */
     public boolean verify(String unSignedData, String signedData,
-                          CertificationFactor certificationFactor);
+                        CertificationFactor certificationFactor);
 
     /**
      * 加密操作接口

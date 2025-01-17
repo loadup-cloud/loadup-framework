@@ -37,7 +37,7 @@ public interface SecurityProdCenterQueryService {
      * query security condition group config
      */
     public SecurityConditionGroup querySecurityConditionGroup(String securityStrategyCode,
-                                                              String operateType, String algorithm,
-                                                              String clientId);
+                                                            String operateType, String algorithm,
+                                                            String clientId);
 
 }

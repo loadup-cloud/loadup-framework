@@ -39,9 +39,9 @@ public interface CertificationService {
      * @throws CertificationException
      */
     String getCert(String security_strategy_code,
-                   String security_strategy_operate_type,
-                   String security_strategy_algorithm,
-                   String clientId)
+                String security_strategy_operate_type,
+                String security_strategy_algorithm,
+                String clientId)
             throws CertificationException;
 
 }

@@ -51,10 +51,10 @@ public class InterfaceConfigInnerServiceImpl implements InterfaceConfigInnerServ
      */
     @Override
     public void putApiConfigsToCache(List<InterfaceConfig> interfaceConfigList,
-                                     List<MessageSenderConfig> messageSenderConfigList,
-                                     List<MessageReceiverConfig> messageReceiverConfigList,
-                                     List<MessageProcessConfig> messageProcessConfigList,
-                                     List<CommunicationConfig> communicationConfigList) {
+                                    List<MessageSenderConfig> messageSenderConfigList,
+                                    List<MessageReceiverConfig> messageReceiverConfigList,
+                                    List<MessageProcessConfig> messageProcessConfigList,
+                                    List<CommunicationConfig> communicationConfigList) {
         // put to cache
         cacheManager.pushToCache(interfaceConfigList, messageProcessConfigList,
                 communicationConfigList, messageReceiverConfigList, messageSenderConfigList, null,
@@ -66,10 +66,10 @@ public class InterfaceConfigInnerServiceImpl implements InterfaceConfigInnerServ
      */
     @Override
     public void putSpiConfigsToCache(List<InterfaceConfig> interfaceConfigList,
-                                     List<MessageSenderConfig> messageSenderConfigList,
-                                     List<MessageReceiverConfig> messageReceiverConfigList,
-                                     List<MessageProcessConfig> messageProcessConfigList,
-                                     List<CommunicationConfig> communicationConfigList) {
+                                    List<MessageSenderConfig> messageSenderConfigList,
+                                    List<MessageReceiverConfig> messageReceiverConfigList,
+                                    List<MessageProcessConfig> messageProcessConfigList,
+                                    List<CommunicationConfig> communicationConfigList) {
         // put to cache
         cacheManager.pushToCache(interfaceConfigList, messageProcessConfigList,
                 communicationConfigList, messageReceiverConfigList, messageSenderConfigList, null,

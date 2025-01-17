@@ -603,7 +603,7 @@ public class NumberUtil {
      * 将给定范围内的整数添加到已有集合中
      */
     public static Collection<Integer> appendRange(final int startInclude, final int stopInclude, int step,
-                                                  final Collection<Integer> values) {
+                                                final Collection<Integer> values) {
         if (startInclude < stopInclude) {
             step = Math.abs(step);
         } else if (startInclude > stopInclude) {

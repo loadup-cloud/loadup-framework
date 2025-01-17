@@ -100,8 +100,8 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
      * init loadCache
      */
     private void loadCache(List<InterfaceConfig> interfaceConfigs,
-                           List<MessageProcessConfig> processConfig,
-                           List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
+                        List<MessageProcessConfig> processConfig,
+                        List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
         //初始化
         try {
             Map<String, MessageProcessConfig> processConfigMap = convert(processConfig);
@@ -123,8 +123,8 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
      * refreshCache
      */
     private void refreshCache(List<InterfaceConfig> interfaceConfigs,
-                              List<MessageProcessConfig> processConfig,
-                              List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
+                            List<MessageProcessConfig> processConfig,
+                            List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
         //初始化
         Map<String, MessageProcessConfig> processConfigMap = convert(processConfig);
         //加载groovy脚本名称缓存
@@ -137,8 +137,8 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
         //编译groovy脚本
         groovyDynamicLoader.refreshAll(true, groovyList);
         //加载校验模板
-		/*TODO validator removed
-		ValidatorCache.putAll(interfaceConfigs, processConfigMap);*/
+        /*TODO validator removed
+        ValidatorCache.putAll(interfaceConfigs, processConfigMap);*/
     }
 
     /**
@@ -172,8 +172,8 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
         groovyDynamicLoader.update(groovyInfos);
         GroovyScriptCache.putPart(interfaceConfigs, processConfigMap);
         VelocityScriptCache.putPart(interfaceConfigs, processConfigMap);
-		/*TODO validator removed
-		ValidatorCache.putPart(interfaceConfigs, processConfigMap);*/
+        /*TODO validator removed
+        ValidatorCache.putPart(interfaceConfigs, processConfigMap);*/
 
         //refresh velocity dynamic script util bean
         //        refreshVelocityContext(dynamicScriptBeanConfigs);
@@ -184,8 +184,8 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
      * convertUpdateGroovyInfo
      */
     private List<GroovyInfo>[] convertUpdateGroovyInfo(List<InterfaceConfig> interfaceConfigs,
-                                                       Map<String, MessageProcessConfig> processConfigMap,
-                                                       List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
+                                                    Map<String, MessageProcessConfig> processConfigMap,
+                                                    List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
         List<GroovyInfo> addedList = new ArrayList<GroovyInfo>();
         List<GroovyInfo> updatedList = new ArrayList<GroovyInfo>();
         List<GroovyInfo> deleteddList = new ArrayList<GroovyInfo>();

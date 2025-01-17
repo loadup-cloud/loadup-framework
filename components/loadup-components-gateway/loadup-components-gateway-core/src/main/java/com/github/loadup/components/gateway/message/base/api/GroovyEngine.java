@@ -38,6 +38,6 @@ public interface GroovyEngine {
     MessageEnvelope assemble(String beanName, RoleType roleType, String interfaceTypeStr, UnifyMsg message);
 
     MessageEnvelope assembleErrorMessage(String beanName, RoleType roleType, String interfaceTypeStr, UnifyMsg message,
-                                         CommonException exception);
+                                        CommonException exception);
 
 }

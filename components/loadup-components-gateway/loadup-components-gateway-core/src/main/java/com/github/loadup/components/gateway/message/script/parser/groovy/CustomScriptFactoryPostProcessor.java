@@ -249,7 +249,7 @@ public class CustomScriptFactoryPostProcessor
      * into a ScriptFactory definition and a scripted object definition.
      */
     protected void prepareScriptBeans(BeanDefinition bd, String scriptFactoryBeanName,
-                                      String scriptedObjectBeanName) {
+                                    String scriptedObjectBeanName) {
         if (!this.scriptBeanFactory.containsBeanDefinition(scriptedObjectBeanName)) {
 
             this.scriptBeanFactory.registerBeanDefinition(scriptFactoryBeanName,
@@ -439,7 +439,7 @@ public class CustomScriptFactoryPostProcessor
      * 根据beanName转换成ScriptSource
      */
     protected ScriptSource convertToScriptSource(String beanName, String scriptSourceLocator,
-                                                 ResourceLoader loader) {
+                                                ResourceLoader loader) {
         if (scriptSourceLocator.startsWith(INLINE_SCRIPT_PREFIX)) {
             return new StaticScriptSource(scriptSourceLocator.substring(INLINE_SCRIPT_PREFIX
                     .length()), beanName);

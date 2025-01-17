@@ -213,7 +213,7 @@ public class GatewayFilter implements Filter {
     }
 
     private void printHttpRequestLog(HttpServletRequest httpRequest,
-                                     GatewayRuntimeProcessContext runtimeProcessContext) {
+                                    GatewayRuntimeProcessContext runtimeProcessContext) {
         MessageEnvelope httpRequestMessage = runtimeProcessContext.getRequestMessage();
         CommunicationConfig integratorCommunicationConfig = runtimeProcessContext
                 .getIntegratorCommunicationConfig();

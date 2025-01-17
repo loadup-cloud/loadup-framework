@@ -99,7 +99,7 @@ public final class AssertUtil {
      * @throws CommonException
      */
     public static void isNotNull(Object object, GatewayErrorCode resutlCode,
-                                 String message) throws CommonException {
+                                String message) throws CommonException {
         if (object == null) {
             throw new CommonException(resutlCode, message);
         }

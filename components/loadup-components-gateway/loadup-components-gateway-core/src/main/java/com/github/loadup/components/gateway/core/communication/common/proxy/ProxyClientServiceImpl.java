@@ -62,7 +62,7 @@ public class ProxyClientServiceImpl implements CommunicationService, Initializin
      */
     @Override
     public MessageSendResult send(String traceId, CommunicationConfig communicationConfig,
-                                  MessageEnvelope messageEnvelope) {
+                                MessageEnvelope messageEnvelope) {
 
         String protocol = communicationConfig.getProtocol();
 

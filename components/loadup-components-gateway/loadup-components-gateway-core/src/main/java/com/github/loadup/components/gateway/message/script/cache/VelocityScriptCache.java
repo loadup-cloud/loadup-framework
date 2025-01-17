@@ -82,7 +82,7 @@ public class VelocityScriptCache {
      * @clear clear cache if true
      */
     public static void putAll(boolean clear, List<InterfaceConfig> interfaceConfigs,
-                              Map<String, MessageProcessConfig> processConfigs) {
+                            Map<String, MessageProcessConfig> processConfigs) {
         if (interfaceConfigs == null) {
             return;
         }
@@ -118,7 +118,7 @@ public class VelocityScriptCache {
      * 更新单个接口部分缓存
      */
     public static void putPart(List<InterfaceConfig> interfaceConfigs,
-                               Map<String, MessageProcessConfig> processConfigs) {
+                            Map<String, MessageProcessConfig> processConfigs) {
         Lock writelock = lock.writeLock();
         writelock.lock();
         try {
@@ -141,7 +141,7 @@ public class VelocityScriptCache {
      * 根据接口ID返回组装模板
      */
     public static AssembleTemplate getAssembleTemplate(String interfaceId, RoleType roleType,
-                                                       String interfaceTypeStr) {
+                                                    String interfaceTypeStr) {
         if (StringUtils.isBlank(interfaceId)) {
             return null;
         }

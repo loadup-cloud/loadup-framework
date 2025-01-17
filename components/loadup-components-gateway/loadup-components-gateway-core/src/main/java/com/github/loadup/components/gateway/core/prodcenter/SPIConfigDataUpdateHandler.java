@@ -55,7 +55,7 @@ public class SPIConfigDataUpdateHandler {
      * @see BaseConfigDataUpdateHandler#process(String, String, Object)
      */
     protected void process(String tntInstId, String configName,
-                           SPIConditionGroup spiConditionGroup) {
+                        SPIConditionGroup spiConditionGroup) {
         LogUtil.info(logger, "update groovy script for spiConditionGroup:", spiConditionGroup);
         //编译groovy脚本
         groovyDynamicLoader

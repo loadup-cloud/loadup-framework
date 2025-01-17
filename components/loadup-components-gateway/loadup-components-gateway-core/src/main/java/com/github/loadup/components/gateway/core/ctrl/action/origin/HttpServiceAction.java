@@ -95,8 +95,8 @@ public class HttpServiceAction extends AbstractBusinessAction {
      * fetch communication config with url or interface id
      */
     private CommunicationConfig getCommunicationConfigWithUrlOrInterfaceId(GatewayRuntimeProcessContext gatewayRuntimeProcessContext,
-                                                                           String integratorUrl,
-                                                                           String interfaceId) {
+                                                                        String integratorUrl,
+                                                                        String interfaceId) {
         CommunicationConfig receiverCommunicationConfig;
         if (StringUtils.isNotBlank(interfaceId)) {
             receiverCommunicationConfig = CommunicationConfigCache.getWithInterfaceId(interfaceId);

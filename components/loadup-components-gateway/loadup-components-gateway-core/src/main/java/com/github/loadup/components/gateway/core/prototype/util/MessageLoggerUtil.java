@@ -56,8 +56,8 @@ public class MessageLoggerUtil {
      * Print http receive log.
      */
     public static void printHttpReceiveLog(String interfaceId, InterfaceType type, String uuid,
-                                           String uri, String httpMethod, String message,
-                                           Map<String, String> httpHeader) {
+                                        String uri, String httpMethod, String message,
+                                        Map<String, String> httpHeader) {
 
         printHttpLog("httpclient receive " + type + " message", interfaceId, type, uuid, uri,
                 httpMethod, message, httpHeader);

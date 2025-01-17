@@ -60,7 +60,7 @@ public class GroovyInfoConvertor {
      * 转换groovyInfo对象列表
      */
     public static List<GroovyInfo> convertGroovyInfo(List<MessageProcessConfig> processConfigs,
-                                                     List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
+                                                    List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
         List<GroovyInfo> list = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(processConfigs)) {
             for (MessageProcessConfig processConfig : processConfigs) {

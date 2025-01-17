@@ -449,7 +449,7 @@ public class AssertUtil {
      * @since 5.4.5
      */
     public static <T extends CharSequence, X extends Throwable> T notContain(final CharSequence textToSearch, final T substring,
-                                                                             final Supplier<X> errorSupplier) throws X {
+                                                                            final Supplier<X> errorSupplier) throws X {
         if (StringUtils.contains(textToSearch, substring)) {
             throw errorSupplier.get();
         }
@@ -807,7 +807,7 @@ public class AssertUtil {
      * @since 5.7.15
      */
     public static <X extends Throwable> int checkBetween(final int value, final int min, final int max,
-                                                         final Supplier<? extends X> errorSupplier) throws X {
+                                                        final Supplier<? extends X> errorSupplier) throws X {
         if (value < min || value > max) {
             throw errorSupplier.get();
         }
@@ -840,7 +840,7 @@ public class AssertUtil {
      * @since 5.7.15
      */
     public static <X extends Throwable> long checkBetween(final long value, final long min, final long max,
-                                                          final Supplier<? extends X> errorSupplier) throws X {
+                                                        final Supplier<? extends X> errorSupplier) throws X {
         if (value < min || value > max) {
             throw errorSupplier.get();
         }
@@ -888,7 +888,7 @@ public class AssertUtil {
      * @since 5.7.15
      */
     public static double checkBetween(final double value, final double min, final double max, final String errorMsgTemplate,
-                                      final Object... params) {
+                                    final Object... params) {
         return checkBetween(value, min, max, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
     }
 
