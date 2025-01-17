@@ -33,10 +33,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SimpleRoleDTO extends DTO {
-    private String id;
-    private String roleName;
-    private String roleType;
-    private String roleCode;
-    private String description;
-    private String status;
+	private String id;
+	private String roleName;
+	private String roleType;
+	private String roleCode;
+	private String description;
+	private String status;
 }

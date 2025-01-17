@@ -34,38 +34,38 @@ import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
  * 安全组件异常
  */
 public class CertificationException extends CommonException {
-    /**
-     * Constructor.
-     */
-    public CertificationException(String message) {
-        super(GatewayErrorCode.SYSTEM_ERROR, message);
-    }
+	/**
+	 * Constructor.
+	 */
+	public CertificationException(String message) {
+		super(GatewayErrorCode.SYSTEM_ERROR, message);
+	}
 
-    /**
-     * Constructor.
-     */
-    public CertificationException(ResultCode resultCode) {
-        super(resultCode);
-    }
+	/**
+	 * Constructor.
+	 */
+	public CertificationException(ResultCode resultCode) {
+		super(resultCode);
+	}
 
-    /**
-     * Constructor.
-     */
-    public CertificationException(ResultCode resultCode, String message) {
-        super(resultCode, message);
-    }
+	/**
+	 * Constructor.
+	 */
+	public CertificationException(ResultCode resultCode, String message) {
+		super(resultCode, message);
+	}
 
-    /**
-     * Constructor.
-     */
-    public CertificationException(ResultCode resultCode, Throwable e) {
-        super(resultCode, e);
-    }
+	/**
+	 * Constructor.
+	 */
+	public CertificationException(ResultCode resultCode, Throwable e) {
+		super(resultCode, e);
+	}
 
-    /**
-     * Constructor.
-     */
-    public CertificationException(ResultCode resultCode, String message, Throwable e) {
-        super(resultCode, message, e);
-    }
+	/**
+	 * Constructor.
+	 */
+	public CertificationException(ResultCode resultCode, String message, Throwable e) {
+		super(resultCode, message, e);
+	}
 }

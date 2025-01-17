@@ -38,12 +38,12 @@ import java.io.Serial;
 @Setter
 @Table("upms_user_depart")
 public class UserDepartDO extends BaseDO {
-    @Serial
-    private static final long serialVersionUID = -1032586075918703314L;
+	@Serial
+	private static final long serialVersionUID = -1032586075918703314L;
 
-    @Id
-    private String id;
-    private String userId;
-    private String departId;
+	@Id
+	private String id;
+	private String userId;
+	private String departId;
 
 }

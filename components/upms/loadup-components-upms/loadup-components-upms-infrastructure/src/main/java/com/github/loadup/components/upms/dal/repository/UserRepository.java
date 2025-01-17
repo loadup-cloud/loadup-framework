@@ -36,8 +36,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends ListCrudRepository<UserDO, String>, UserExtendRepository {
 
-    @Modifying
-    @Query("update upms_user set password = :password,modified_time=now() where id = :id")
-    void changePassword(@Param("id") String id, @Param("password") String password);
+	@Modifying
+	@Query("update upms_user set password = :password,modified_time=now() where id = :id")
+	void changePassword(@Param("id") String id, @Param("password") String password);
 
 }

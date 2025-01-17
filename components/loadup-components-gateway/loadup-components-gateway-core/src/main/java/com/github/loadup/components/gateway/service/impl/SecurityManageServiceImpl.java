@@ -50,113 +50,113 @@ import java.util.List;
 @Component("gatewaySecurityManageService")
 public class SecurityManageServiceImpl implements SecurityManageService {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(SecurityManageServiceImpl.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(SecurityManageServiceImpl.class);
 
-    private RepositoryServiceExtPt getRepositoryService() {
-        RepositoryServiceExtPt result = null;// ExtensionPointLoader.get(RepositoryServiceExt.class,
-        //            SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE));
-        return result;
-    }
+	private RepositoryServiceExtPt getRepositoryService() {
+		RepositoryServiceExtPt result = null;// ExtensionPointLoader.get(RepositoryServiceExt.class,
+		//            SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE));
+		return result;
+	}
 
-    @Override
-    public CertConfigAddResponse add(CertConfigAddRequest request) {
-        CertConfigAddResponse response = new CertConfigAddResponse();
+	@Override
+	public CertConfigAddResponse add(CertConfigAddRequest request) {
+		CertConfigAddResponse response = new CertConfigAddResponse();
 
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
-                    getRepositoryService()
-                            .addSecurity(SecurityManageConvertor.certConfigAddRequest2Dto(request));
-                    response.setAlgoName(request.getClientId());
-                    response.setOperationType(request.getOperateType());
-                    response.setClientId(request.getClientId());
-                    response.setSecurityStrategyCode(request.getSecurityStrategyCode());
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
-    }
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
+					getRepositoryService()
+							.addSecurity(SecurityManageConvertor.certConfigAddRequest2Dto(request));
+					response.setAlgoName(request.getClientId());
+					response.setOperationType(request.getOperateType());
+					response.setClientId(request.getClientId());
+					response.setSecurityStrategyCode(request.getSecurityStrategyCode());
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				}
+		);
+	}
 
-    @Override
-    public CertConfigUpdateResponse update(CertConfigUpdateRequest request) {
-        CertConfigUpdateResponse response = new CertConfigUpdateResponse();
+	@Override
+	public CertConfigUpdateResponse update(CertConfigUpdateRequest request) {
+		CertConfigUpdateResponse response = new CertConfigUpdateResponse();
 
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
 
-                    getRepositoryService()
-                            .updateSecurity(SecurityManageConvertor.certConfigUpdateRequest2Dto(request));
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
-    }
+					getRepositoryService()
+							.updateSecurity(SecurityManageConvertor.certConfigUpdateRequest2Dto(request));
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				}
+		);
+	}
 
-    @Override
-    public CertConfigQueryResponse query(CertConfigQueryRequest request) {
-        CertConfigQueryResponse response = new CertConfigQueryResponse();
+	@Override
+	public CertConfigQueryResponse query(CertConfigQueryRequest request) {
+		CertConfigQueryResponse response = new CertConfigQueryResponse();
 
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
 
-                    List<SecurityConfigDto> queryResult = getRepositoryService()
-                            .querySecurityByClient(request.getClientId());
-                    List<CertConfigInnerResponse> configInnerResponses = new ArrayList<>();
-                    if (!CollectionUtils.isEmpty(queryResult)) {
-                        for (SecurityConfigDto securityConfigDto : queryResult) {
-                            configInnerResponses.add(SecurityManageConvertor
-                                    .convertToCertConfigInnerResponse(securityConfigDto));
-                        }
-                        response.setCertConfigList(configInnerResponses);
-                    }
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
+					List<SecurityConfigDto> queryResult = getRepositoryService()
+							.querySecurityByClient(request.getClientId());
+					List<CertConfigInnerResponse> configInnerResponses = new ArrayList<>();
+					if (!CollectionUtils.isEmpty(queryResult)) {
+						for (SecurityConfigDto securityConfigDto : queryResult) {
+							configInnerResponses.add(SecurityManageConvertor
+									.convertToCertConfigInnerResponse(securityConfigDto));
+						}
+						response.setCertConfigList(configInnerResponses);
+					}
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				}
+		);
 
-    }
+	}
 
-    @Override
-    public CertConfigRemoveResponse remove(CertConfigRemoveRequest request) {
-        CertConfigRemoveResponse response = new CertConfigRemoveResponse();
+	@Override
+	public CertConfigRemoveResponse remove(CertConfigRemoveRequest request) {
+		CertConfigRemoveResponse response = new CertConfigRemoveResponse();
 
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
-                    getRepositoryService()
-                            .removeSecurity(SecurityManageConvertor.certConfigRemoveRequest2Dto(request));
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
+					getRepositoryService()
+							.removeSecurity(SecurityManageConvertor.certConfigRemoveRequest2Dto(request));
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				}
+		);
 
-    }
+	}
 
 }

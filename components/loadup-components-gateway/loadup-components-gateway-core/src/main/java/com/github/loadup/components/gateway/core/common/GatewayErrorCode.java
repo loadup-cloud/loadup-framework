@@ -34,228 +34,228 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum GatewayErrorCode implements ResultCode {
 
-    /**
-     * Success
-     */
-    SUCCESS("SUCCESS", "Success.", "S"),
+	/**
+	 * Success
+	 */
+	SUCCESS("SUCCESS", "Success.", "S"),
 
-    /**
-     * System Exception
-     */
-    SYSTEM_EXCEPTION("SYSTEM_EXCEPTION", "Runtime system, like rpc time out, DB lock  time out etc", "U"),
+	/**
+	 * System Exception
+	 */
+	SYSTEM_EXCEPTION("SYSTEM_EXCEPTION", "Runtime system, like rpc time out, DB lock  time out etc", "U"),
 
-    /**
-     * Param illegal
-     */
-    PARAM_ILLEGAL("PARAM_ILLEGAL", "Param of input is illegal, like exceed max length, type not right etc.", "F"),
+	/**
+	 * Param illegal
+	 */
+	PARAM_ILLEGAL("PARAM_ILLEGAL", "Param of input is illegal, like exceed max length, type not right etc.", "F"),
 
-    /**
-     * Param illegal
-     */
-    CONFIGURATION_NOT_FOUND("CONFIGURATION_NOT_FOUND", "Configuration can not be found, pls check.", "F"),
+	/**
+	 * Param illegal
+	 */
+	CONFIGURATION_NOT_FOUND("CONFIGURATION_NOT_FOUND", "Configuration can not be found, pls check.", "F"),
 
-    /**
-     * configuration load error
-     */
-    CONFIGURATION_LOAD_ERROR("CONFIGURATION_LOAD_ERROR", "Configuration load error, pls check.", "F"),
+	/**
+	 * configuration load error
+	 */
+	CONFIGURATION_LOAD_ERROR("CONFIGURATION_LOAD_ERROR", "Configuration load error, pls check.", "F"),
 
-    /**
-     * Unknown exception
-     */
-    UNKNOWN_EXCEPTION("UNKNOWN_EXCEPTION", "Unknown exception like NPE, ClassCastException etc.", "U"),
+	/**
+	 * Unknown exception
+	 */
+	UNKNOWN_EXCEPTION("UNKNOWN_EXCEPTION", "Unknown exception like NPE, ClassCastException etc.", "U"),
 
-    /**
-     * operation not support
-     */
-    OPERATION_NOT_SUPPORT("OPERATION_NOT_SUPPORT", "Operation not support.", "F"),
+	/**
+	 * operation not support
+	 */
+	OPERATION_NOT_SUPPORT("OPERATION_NOT_SUPPORT", "Operation not support.", "F"),
 
-    /**
-     * Invalid signature
-     */
-    INVALID_SIGNATURE("INVALID_SIGNATURE", "Signature is invalid.", "F"),
+	/**
+	 * Invalid signature
+	 */
+	INVALID_SIGNATURE("INVALID_SIGNATURE", "Signature is invalid.", "F"),
 
-    /**
-     * process fail
-     */
-    PROCESS_FAIL("PROCESS_FAIL", "General business failure. No retry.", "F"),
+	/**
+	 * process fail
+	 */
+	PROCESS_FAIL("PROCESS_FAIL", "General business failure. No retry.", "F"),
 
-    /**
-     * request traffic exceed limit
-     */
-    REQUEST_TRAFFIC_EXCEED_LIMIT("REQUEST_TRAFFIC_EXCEED_LIMIT", "Repeat traffic exceed inconsistent.", "F"),
+	/**
+	 * request traffic exceed limit
+	 */
+	REQUEST_TRAFFIC_EXCEED_LIMIT("REQUEST_TRAFFIC_EXCEED_LIMIT", "Repeat traffic exceed inconsistent.", "F"),
 
-    /**
-     * json format illegal
-     */
-    JSON_FORMAT_ILLEGAL("JSON_FORMAT_ILLEGAL", "Json format is illegal.", "F"),
+	/**
+	 * json format illegal
+	 */
+	JSON_FORMAT_ILLEGAL("JSON_FORMAT_ILLEGAL", "Json format is illegal.", "F"),
 
-    /**
-     * SERVICE_NOT_EXIST
-     */
-    SERVICE_NOT_EXIST("SERVICE_NOT_EXIST", "Service not exist, please confirm with the service provider.", "F"),
+	/**
+	 * SERVICE_NOT_EXIST
+	 */
+	SERVICE_NOT_EXIST("SERVICE_NOT_EXIST", "Service not exist, please confirm with the service provider.", "F"),
 
-    /**
-     * SCRIPT_LOAD_ERROR
-     */
-    SCRIPT_LOAD_ERROR("SCRIPT_LOAD_ERROR", "script load fail.", "F"),
+	/**
+	 * SCRIPT_LOAD_ERROR
+	 */
+	SCRIPT_LOAD_ERROR("SCRIPT_LOAD_ERROR", "script load fail.", "F"),
 
-    /**
-     * SCRIPT_REMOVE_ERROR
-     */
-    SCRIPT_REMOVE_ERROR("SCRIPT_REMOVE_ERROR", "script remove fail", "F"),
+	/**
+	 * SCRIPT_REMOVE_ERROR
+	 */
+	SCRIPT_REMOVE_ERROR("SCRIPT_REMOVE_ERROR", "script remove fail", "F"),
 
-    /**
-     * WRITE_SCRIPT_CONFIG_ERROR
-     */
-    WRITE_SCRIPT_CONFIG_ERROR("WRITE_SCRIPT_CONFIG_ERROR", "write script config fail", "F"),
+	/**
+	 * WRITE_SCRIPT_CONFIG_ERROR
+	 */
+	WRITE_SCRIPT_CONFIG_ERROR("WRITE_SCRIPT_CONFIG_ERROR", "write script config fail", "F"),
 
-    /**
-     * ILLEGAL_MESSAGE
-     */
-    ILLEGAL_MESSAGE("ILLEGAL_MESSAGE", "illegal message", "F"),
+	/**
+	 * ILLEGAL_MESSAGE
+	 */
+	ILLEGAL_MESSAGE("ILLEGAL_MESSAGE", "illegal message", "F"),
 
-    /**
-     * ASSEMBLER_ERROR
-     */
-    ASSEMBLER_ERROR("ASSEMBLER_ERROR", "assemble fail.", "F"),
+	/**
+	 * ASSEMBLER_ERROR
+	 */
+	ASSEMBLER_ERROR("ASSEMBLER_ERROR", "assemble fail.", "F"),
 
-    /**
-     * SYSTEM_ERROR
-     */
-    SYSTEM_ERROR("SYSTEM_ERROR", "system error", "F"),
+	/**
+	 * SYSTEM_ERROR
+	 */
+	SYSTEM_ERROR("SYSTEM_ERROR", "system error", "F"),
 
-    /**
-     * NOT_EXIST_ASSEMBLER
-     */
-    NOT_EXIST_ASSEMBLER("NOT_EXIST_ASSEMBLER", "not exist assembler", "F"),
+	/**
+	 * NOT_EXIST_ASSEMBLER
+	 */
+	NOT_EXIST_ASSEMBLER("NOT_EXIST_ASSEMBLER", "not exist assembler", "F"),
 
-    /**
-     * INTERFACE_NOT_EXIST
-     */
-    INTERFACE_NOT_EXIST(" INTERFACE_NOT_EXIST", "interface not exist", "F"),
+	/**
+	 * INTERFACE_NOT_EXIST
+	 */
+	INTERFACE_NOT_EXIST(" INTERFACE_NOT_EXIST", "interface not exist", "F"),
 
-    /**
-     * INTERFACE_STATUS_VALID
-     */
-    INTERFACE_STATUS_VALID("INTERFACE_STATUS_VALID", "interface status valid", "F"),
+	/**
+	 * INTERFACE_STATUS_VALID
+	 */
+	INTERFACE_STATUS_VALID("INTERFACE_STATUS_VALID", "interface status valid", "F"),
 
-    /**
-     * INTERFACE_NOT_NEWEST
-     */
-    INTERFACE_NOT_NEWEST("INTERFACE_NOT_NEWEST", "interface not newest", "F"),
+	/**
+	 * INTERFACE_NOT_NEWEST
+	 */
+	INTERFACE_NOT_NEWEST("INTERFACE_NOT_NEWEST", "interface not newest", "F"),
 
-    /**
-     * INTERFACE_VERSION_NOT_BIGGEST
-     */
-    INTERFACE_VERSION_NOT_BIGGEST("INTERFACE_VERSION_NOT_BIGGEST", "Interface version is not the biggest.", "F"),
+	/**
+	 * INTERFACE_VERSION_NOT_BIGGEST
+	 */
+	INTERFACE_VERSION_NOT_BIGGEST("INTERFACE_VERSION_NOT_BIGGEST", "Interface version is not the biggest.", "F"),
 
-    /**
-     * INTERFACE_ALREADY_EXISTS
-     */
-    INTERFACE_ALREADY_EXISTS("INTERFACE_ALREADY_EXISTS", "Interface already exists.", "S"),
+	/**
+	 * INTERFACE_ALREADY_EXISTS
+	 */
+	INTERFACE_ALREADY_EXISTS("INTERFACE_ALREADY_EXISTS", "Interface already exists.", "S"),
 
-    /**
-     * CLIENT_ALREADY_EXIST
-     */
-    CLIENT_ALREADY_EXIST("CLIENT_ALREADY_EXIST", "client already exist", "S"),
+	/**
+	 * CLIENT_ALREADY_EXIST
+	 */
+	CLIENT_ALREADY_EXIST("CLIENT_ALREADY_EXIST", "client already exist", "S"),
 
-    /**
-     * CLIENT_ALREADY_EXIST
-     */
-    CLIENT_NOT_EXIST("CLIENT_NOT_EXIST", "client not exist", "F"),
+	/**
+	 * CLIENT_ALREADY_EXIST
+	 */
+	CLIENT_NOT_EXIST("CLIENT_NOT_EXIST", "client not exist", "F"),
 
-    /**
-     * SECURITY_ALREADY_EXIST
-     */
-    SECURITY_ALREADY_EXIST("SECURITY_ALREADY_EXIST", "security already exist", "S"),
+	/**
+	 * SECURITY_ALREADY_EXIST
+	 */
+	SECURITY_ALREADY_EXIST("SECURITY_ALREADY_EXIST", "security already exist", "S"),
 
-    /**
-     * SECURITY_NOT_EXIST
-     */
-    SECURITY_NOT_EXIST("SECURITY_NOT_EXIST", "security not exist", "F"),
+	/**
+	 * SECURITY_NOT_EXIST
+	 */
+	SECURITY_NOT_EXIST("SECURITY_NOT_EXIST", "security not exist", "F"),
 
-    /**
-     * ACCESS_DENIED
-     */
-    ACCESS_DENIED("ACCESS_DENIED", "Access denied.", "F"),
+	/**
+	 * ACCESS_DENIED
+	 */
+	ACCESS_DENIED("ACCESS_DENIED", "Access denied.", "F"),
 
-    /**
-     * INVALID_API
-     */
-    INVALID_API("INVALID_API", "Invalid api.", "F"),
+	/**
+	 * INVALID_API
+	 */
+	INVALID_API("INVALID_API", "Invalid api.", "F"),
 
-    /**
-     * METHOD_NOT_SUPPORTED
-     */
-    METHOD_NOT_SUPPORTED("METHOD_NOT_SUPPORTED", "Method not supported.", "F"),
+	/**
+	 * METHOD_NOT_SUPPORTED
+	 */
+	METHOD_NOT_SUPPORTED("METHOD_NOT_SUPPORTED", "Method not supported.", "F"),
 
-    /**
-     * MEDIA_TYPE_NOT_ACCEPTABLE
-     */
-    MEDIA_TYPE_NOT_ACCEPTABLE("MEDIA_TYPE_NOT_ACCEPTABLE", "Media type not acceptable.", "F"),
+	/**
+	 * MEDIA_TYPE_NOT_ACCEPTABLE
+	 */
+	MEDIA_TYPE_NOT_ACCEPTABLE("MEDIA_TYPE_NOT_ACCEPTABLE", "Media type not acceptable.", "F"),
 
-    /**
-     * INVALID_CLIENT
-     */
-    INVALID_CLIENT("INVALID_CLIENT", "Invalid client.", "F"),
+	/**
+	 * INVALID_CLIENT
+	 */
+	INVALID_CLIENT("INVALID_CLIENT", "Invalid client.", "F"),
 
-    /**
-     * illegal integration uri
-     */
-    ILLEGAL_INTEGRATION_URI("ILLEGAL_INTEGRATION_URI", "illegal integration uri.", "F");
+	/**
+	 * illegal integration uri
+	 */
+	ILLEGAL_INTEGRATION_URI("ILLEGAL_INTEGRATION_URI", "illegal integration uri.", "F");
 
-    /**
-     * error message
-     */
-    private final String resultMessage;
+	/**
+	 * error message
+	 */
+	private final String resultMessage;
 
-    /**
-     * error code
-     */
-    private final String resultCode;
+	/**
+	 * error code
+	 */
+	private final String resultCode;
 
-    private final String resultStatus;
+	private final String resultStatus;
 
-    GatewayErrorCode(String resultCode, String resultMessage, String resultStatus) {
-        this.resultCode = resultCode;
-        this.resultMessage = resultMessage;
-        this.resultStatus = resultStatus;
-    }
+	GatewayErrorCode(String resultCode, String resultMessage, String resultStatus) {
+		this.resultCode = resultCode;
+		this.resultMessage = resultMessage;
+		this.resultStatus = resultStatus;
+	}
 
-    /**
-     * 获取枚举值
-     */
-    public static GatewayErrorCode getEnumByCode(String code) {
-        for (GatewayErrorCode codeEnum : GatewayErrorCode.values()) {
-            if (StringUtils.equals(code, codeEnum.getCode())) {
-                return codeEnum;
-            }
-        }
-        return null;
-    }
+	/**
+	 * 获取枚举值
+	 */
+	public static GatewayErrorCode getEnumByCode(String code) {
+		for (GatewayErrorCode codeEnum : GatewayErrorCode.values()) {
+			if (StringUtils.equals(code, codeEnum.getCode())) {
+				return codeEnum;
+			}
+		}
+		return null;
+	}
 
-    /**
-     * Gets get code.
-     */
-    @Override
-    public String getCode() {
-        return this.resultCode;
-    }
+	/**
+	 * Gets get code.
+	 */
+	@Override
+	public String getCode() {
+		return this.resultCode;
+	}
 
-    /**
-     * Gets get message.
-     */
-    @Override
-    public String getMessage() {
-        return this.resultMessage;
-    }
+	/**
+	 * Gets get message.
+	 */
+	@Override
+	public String getMessage() {
+		return this.resultMessage;
+	}
 
-    /**
-     * Get the status
-     */
-    @Override
-    public String getStatus() {
-        return this.resultStatus;
-    }
+	/**
+	 * Get the status
+	 */
+	@Override
+	public String getStatus() {
+		return this.resultStatus;
+	}
 
 }

@@ -34,12 +34,12 @@ import com.github.loadup.components.upms.client.dto.RoleDTO;
 import com.github.loadup.components.upms.client.dto.SimpleRoleDTO;
 
 public interface RoleService {
-    SingleResponse<RoleDTO> getRoleById(String roleId);
+	SingleResponse<RoleDTO> getRoleById(String roleId);
 
-    MultiResponse<SimpleRoleDTO> getRoleByUserId(String userId);
+	MultiResponse<SimpleRoleDTO> getRoleByUserId(String userId);
 
-    SingleResponse<SimpleRoleDTO> save(RoleSaveCmd cmd);
+	SingleResponse<SimpleRoleDTO> save(RoleSaveCmd cmd);
 
-    SingleResponse<RoleDTO> saveRoleUsers(RoleUsersSaveCmd cmd);
+	SingleResponse<RoleDTO> saveRoleUsers(RoleUsersSaveCmd cmd);
 
 }

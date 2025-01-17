@@ -35,5 +35,5 @@ import java.util.List;
 @Setter
 public class PositionDTO extends SimplePositionDTO {
 
-    private List<SimpleUserDTO> userList;
+	private List<SimpleUserDTO> userList;
 }

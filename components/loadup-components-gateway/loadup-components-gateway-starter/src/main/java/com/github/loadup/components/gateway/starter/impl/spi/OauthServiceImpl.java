@@ -38,13 +38,13 @@ import com.github.loadup.components.gateway.facade.spi.OauthService;
  */
 public class OauthServiceImpl implements OauthService {
 
-    @Override
-    public boolean validateClient(AuthRequest authRequest) {
-        return true;
-    }
+	@Override
+	public boolean validateClient(AuthRequest authRequest) {
+		return true;
+	}
 
-    @Override
-    public boolean validateToken(AuthRequest authRequest) {
-        return true;
-    }
+	@Override
+	public boolean validateToken(AuthRequest authRequest) {
+		return true;
+	}
 }

@@ -43,57 +43,57 @@ import java.util.List;
 @SpringBootTest(classes = TestApplication.class)
 public class RoleServiceTest {
 
-    @Autowired
-    private RoleService roleService;
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private RoleService roleService;
+	@Autowired
+	private UserService userService;
 
-    @Test
-    public void testCreateRole() {
-        SingleResponse<SimpleRoleDTO> response
-                = createRole();
-        Assertions.assertEquals("SUCCESS", response.getResult().getCode());
-        Assertions.assertEquals("test_role", response.getData().getRoleCode());
+	@Test
+	public void testCreateRole() {
+		SingleResponse<SimpleRoleDTO> response
+				= createRole();
+		Assertions.assertEquals("SUCCESS", response.getResult().getCode());
+		Assertions.assertEquals("test_role", response.getData().getRoleCode());
 
-    }
+	}
 
-    @Test
-    public void testSaveRoleUsers() {
-        SingleResponse<SimpleUserDTO> userDTO = createUser();
-        SingleResponse<SimpleRoleDTO> roleDTO = createRole();
+	@Test
+	public void testSaveRoleUsers() {
+		SingleResponse<SimpleUserDTO> userDTO = createUser();
+		SingleResponse<SimpleRoleDTO> roleDTO = createRole();
 
-        RoleUsersSaveCmd userRolesSaveCmd = new RoleUsersSaveCmd();
-        userRolesSaveCmd.setRoleId(roleDTO.getData().getId());
-        List<String> users = new ArrayList<>();
-        users.add(userDTO.getData().getId());
-        userRolesSaveCmd.setUserIdList(users);
-        SingleResponse<RoleDTO> response = roleService.saveRoleUsers(userRolesSaveCmd);
-        Assertions.assertEquals("SUCCESS", response.getResult().getCode());
-        Assertions.assertTrue(response.getData().getUserList().size() == 1);
+		RoleUsersSaveCmd userRolesSaveCmd = new RoleUsersSaveCmd();
+		userRolesSaveCmd.setRoleId(roleDTO.getData().getId());
+		List<String> users = new ArrayList<>();
+		users.add(userDTO.getData().getId());
+		userRolesSaveCmd.setUserIdList(users);
+		SingleResponse<RoleDTO> response = roleService.saveRoleUsers(userRolesSaveCmd);
+		Assertions.assertEquals("SUCCESS", response.getResult().getCode());
+		Assertions.assertTrue(response.getData().getUserList().size() == 1);
 
-        SingleResponse<RoleDTO> response2 = roleService.saveRoleUsers(userRolesSaveCmd);
-        Assertions.assertEquals("SUCCESS", response2.getResult().getCode());
-        Assertions.assertEquals(1, response2.getData().getUserList().size());
+		SingleResponse<RoleDTO> response2 = roleService.saveRoleUsers(userRolesSaveCmd);
+		Assertions.assertEquals("SUCCESS", response2.getResult().getCode());
+		Assertions.assertEquals(1, response2.getData().getUserList().size());
 
-    }
+	}
 
-    private SingleResponse<SimpleUserDTO> createUser() {
-        UserSaveCmd cmd = new UserSaveCmd();
-        SimpleUserDTO dto = new SimpleUserDTO();
-        dto.setNickname("ls");
-        dto.setPassword("123456");
-        cmd.setUser(dto);
-        SingleResponse<SimpleUserDTO> userDTO = userService.save(cmd);
-        return userDTO;
-    }
+	private SingleResponse<SimpleUserDTO> createUser() {
+		UserSaveCmd cmd = new UserSaveCmd();
+		SimpleUserDTO dto = new SimpleUserDTO();
+		dto.setNickname("ls");
+		dto.setPassword("123456");
+		cmd.setUser(dto);
+		SingleResponse<SimpleUserDTO> userDTO = userService.save(cmd);
+		return userDTO;
+	}
 
-    private SingleResponse<SimpleRoleDTO> createRole() {
-        RoleSaveCmd cmd = new RoleSaveCmd();
-        SimpleRoleDTO dto = new SimpleRoleDTO();
-        dto.setRoleCode("test_role");
-        dto.setRoleName("测试");
-        cmd.setRole(dto);
-        SingleResponse<SimpleRoleDTO> response = roleService.save(cmd);
-        return response;
-    }
+	private SingleResponse<SimpleRoleDTO> createRole() {
+		RoleSaveCmd cmd = new RoleSaveCmd();
+		SimpleRoleDTO dto = new SimpleRoleDTO();
+		dto.setRoleCode("test_role");
+		dto.setRoleName("测试");
+		cmd.setRole(dto);
+		SingleResponse<SimpleRoleDTO> response = roleService.save(cmd);
+		return response;
+	}
 }

@@ -32,14 +32,14 @@ import java.util.List;
 
 public interface DepartGateway {
 
-    void create(Depart domain);
+	void create(Depart domain);
 
-    void update(Depart domain);
+	void update(Depart domain);
 
-    void delete(String id);
+	void delete(String id);
 
-    Depart getById(String id);
+	Depart getById(String id);
 
-    List<Depart> getByUserId(String userId);
+	List<Depart> getByUserId(String userId);
 
 }

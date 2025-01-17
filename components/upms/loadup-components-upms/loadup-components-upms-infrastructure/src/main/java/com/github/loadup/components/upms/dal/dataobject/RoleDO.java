@@ -38,24 +38,24 @@ import java.io.Serial;
 @Setter
 @Table("upms_role")
 public class RoleDO extends BaseDO {
-    @Serial
-    private static final long serialVersionUID = -7880508769910616841L;
+	@Serial
+	private static final long serialVersionUID = -7880508769910616841L;
 
-    @Id
-    private String id;
-    /**
-     * 角色名称
-     */
-    private String roleName;
+	@Id
+	private String id;
+	/**
+	 * 角色名称
+	 */
+	private String roleName;
 
-    /**
-     * 角色编码
-     */
-    private String roleCode;
+	/**
+	 * 角色编码
+	 */
+	private String roleCode;
 
-    /**
-     * 描述
-     */
-    private String description;
-    private String status;
+	/**
+	 * 描述
+	 */
+	private String description;
+	private String status;
 }

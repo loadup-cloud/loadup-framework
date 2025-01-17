@@ -37,28 +37,28 @@ import java.util.List;
 @Slf4j
 public class DepartGatewayImpl implements DepartGateway {
 
-    @Override
-    public void create(Depart domain) {
+	@Override
+	public void create(Depart domain) {
 
-    }
+	}
 
-    @Override
-    public void update(Depart domain) {
+	@Override
+	public void update(Depart domain) {
 
-    }
+	}
 
-    @Override
-    public void delete(String id) {
+	@Override
+	public void delete(String id) {
 
-    }
+	}
 
-    @Override
-    public Depart getById(String id) {
-        return null;
-    }
+	@Override
+	public Depart getById(String id) {
+		return null;
+	}
 
-    @Override
-    public List<Depart> getByUserId(String userId) {
-        return List.of();
-    }
+	@Override
+	public List<Depart> getByUserId(String userId) {
+		return List.of();
+	}
 }

@@ -32,14 +32,14 @@ import java.util.List;
 
 public interface PositionGateway {
 
-    void create(Position domain);
+	void create(Position domain);
 
-    void update(Position domain);
+	void update(Position domain);
 
-    void delete(String id);
+	void delete(String id);
 
-    Position getById(String id);
+	Position getById(String id);
 
-    List<Position> getByUserId(String userId);
+	List<Position> getByUserId(String userId);
 
 }

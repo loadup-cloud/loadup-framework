@@ -36,9 +36,9 @@ import java.util.List;
 @Getter
 @Setter
 public class UserRolesSaveCmd extends BaseRequest {
-    @NotBlank
-    private String       userId;
-    @NotNull
-    @NotEmpty
-    private List<String> roleIdList;
+	@NotBlank
+	private String       userId;
+	@NotNull
+	@NotEmpty
+	private List<String> roleIdList;
 }

@@ -34,11 +34,11 @@ import java.util.List;
 
 @Repository
 public interface UserDepartRepository extends ListCrudRepository<UserDepartDO, String> {
-    List<UserDepartDO> findAllByUserId(String userId);
+	List<UserDepartDO> findAllByUserId(String userId);
 
-    List<UserDepartDO> findAllByDepartId(String departId);
+	List<UserDepartDO> findAllByDepartId(String departId);
 
-    void deleteAllByDepartId(String roleId);
+	void deleteAllByDepartId(String roleId);
 
-    void deleteAllByUserId(String userId);
+	void deleteAllByUserId(String userId);
 }

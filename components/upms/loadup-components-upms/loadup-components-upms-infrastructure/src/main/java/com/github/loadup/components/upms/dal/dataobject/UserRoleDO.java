@@ -38,16 +38,16 @@ import java.io.Serial;
 @Table("upms_user_role")
 @NoArgsConstructor
 public class UserRoleDO extends BaseDO {
-    @Serial
-    private static final long serialVersionUID = -1032586075918703314L;
+	@Serial
+	private static final long serialVersionUID = -1032586075918703314L;
 
-    @Id
-    private String id;
-    private String userId;
-    private String roleId;
+	@Id
+	private String id;
+	private String userId;
+	private String roleId;
 
-    public UserRoleDO(String userId, String roleId) {
-        this.userId = userId;
-        this.roleId = roleId;
-    }
+	public UserRoleDO(String userId, String roleId) {
+		this.userId = userId;
+		this.roleId = roleId;
+	}
 }

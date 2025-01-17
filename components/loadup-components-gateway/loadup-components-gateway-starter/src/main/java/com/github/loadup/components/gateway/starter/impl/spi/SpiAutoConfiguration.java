@@ -41,16 +41,16 @@ import org.springframework.context.annotation.Bean;
  */
 public class SpiAutoConfiguration {
 
-    @Bean(name = "defaultOauthServiceService")
-    @ConditionalOnMissingBean(value = OauthService.class)
-    public OauthService getOauthService() {
-        return new OauthServiceImpl();
-    }
+	@Bean(name = "defaultOauthServiceService")
+	@ConditionalOnMissingBean(value = OauthService.class)
+	public OauthService getOauthService() {
+		return new OauthServiceImpl();
+	}
 
-    @Bean(name = "defaultRuleService")
-    @ConditionalOnMissingBean(value = LimitRuleService.class)
-    public LimitRuleService getLimitRuleService() {
-        return new LimitRuleServiceImpl();
-    }
+	@Bean(name = "defaultRuleService")
+	@ConditionalOnMissingBean(value = LimitRuleService.class)
+	public LimitRuleService getLimitRuleService() {
+		return new LimitRuleServiceImpl();
+	}
 
 }

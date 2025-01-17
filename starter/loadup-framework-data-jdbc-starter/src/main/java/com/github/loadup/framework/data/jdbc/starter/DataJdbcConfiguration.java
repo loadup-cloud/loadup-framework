@@ -38,15 +38,13 @@ import org.springframework.data.relational.core.mapping.event.BeforeConvertCallb
 @EnableJdbcRepositories(basePackages = "com.github.loadup")
 public class DataJdbcConfiguration extends AbstractJdbcConfiguration {
 
-    @Bean
-    BeforeConvertCallback<BaseDO> beforeSaveCallback() {
-        return (minion) -> {
-            if (minion.getId() == null) {
-                minion.setId(RandomUtil.randomString(20));
-            }
-            return minion;
-        };
-    }
+	@Bean
+	BeforeConvertCallback<BaseDO> beforeSaveCallback() {
+		return (minion) -> {
+			if (minion.getId() == null) {
+				minion.setId(RandomUtil.randomString(20));
+			}
+			return minion;
+		};
+	}
 }
-
-

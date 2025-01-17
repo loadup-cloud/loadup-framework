@@ -41,46 +41,46 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class ContactAddress extends BaseDomain implements Serializable {
-    private String  id;
-    private String  country;
-    private String  province;
-    private String  city;
-    private String  area;
-    private String  address1;
-    private String  address2;
-    private String  address3;
-    private String  zipcode;
-    private String  addressType;
-    private boolean defaultAddress;
-    private boolean verified;
-    private String  suburb;
-    private String  extendInfo;
+	private String  id;
+	private String  country;
+	private String  province;
+	private String  city;
+	private String  area;
+	private String  address1;
+	private String  address2;
+	private String  address3;
+	private String  zipcode;
+	private String  addressType;
+	private boolean defaultAddress;
+	private boolean verified;
+	private String  suburb;
+	private String  extendInfo;
 
-    public boolean equals(Object o) {
-        if (!(o instanceof ContactAddress)) {
-            return false;
-        }
-        ContactAddress contactAddress = (ContactAddress) o;
-        if (!StringUtils.equals(contactAddress.getAddressType(), this.addressType)) {
-            return false;
-        } else if (!StringUtils.equals(contactAddress.getAddress1(), this.address1)) {
-            return false;
-        } else if (!StringUtils.equals(contactAddress.getAddress2(), this.address2)) {
-            return false;
-        } else if (!StringUtils.equals(contactAddress.getCountry(), this.country)) {
-            return false;
-        } else if (!StringUtils.equals(contactAddress.getArea(), this.area)) {
-            return false;
-        } else if (!StringUtils.equals(contactAddress.getCity(), this.city)) {
-            return false;
-        } else {
-            return !StringUtils.equals(contactAddress.getProvince(), this.province) ? false : StringUtils.equals(
-                    contactAddress.getZipcode(), this.zipcode);
-        }
-    }
+	public boolean equals(Object o) {
+		if (!(o instanceof ContactAddress)) {
+			return false;
+		}
+		ContactAddress contactAddress = (ContactAddress) o;
+		if (!StringUtils.equals(contactAddress.getAddressType(), this.addressType)) {
+			return false;
+		} else if (!StringUtils.equals(contactAddress.getAddress1(), this.address1)) {
+			return false;
+		} else if (!StringUtils.equals(contactAddress.getAddress2(), this.address2)) {
+			return false;
+		} else if (!StringUtils.equals(contactAddress.getCountry(), this.country)) {
+			return false;
+		} else if (!StringUtils.equals(contactAddress.getArea(), this.area)) {
+			return false;
+		} else if (!StringUtils.equals(contactAddress.getCity(), this.city)) {
+			return false;
+		} else {
+			return !StringUtils.equals(contactAddress.getProvince(), this.province) ? false : StringUtils.equals(
+					contactAddress.getZipcode(), this.zipcode);
+		}
+	}
 
-    @Override
-    public String toString() {
-        return ToStringUtils.reflectionToString(this);
-    }
+	@Override
+	public String toString() {
+		return ToStringUtils.reflectionToString(this);
+	}
 }

@@ -35,14 +35,14 @@ import java.util.List;
 
 @Mapper
 public interface DepartConvertor {
-    DepartConvertor INSTANCE = Mappers.getMapper(DepartConvertor.class);
+	DepartConvertor INSTANCE = Mappers.getMapper(DepartConvertor.class);
 
-    Depart toDepart(DepartDO roleDO);
+	Depart toDepart(DepartDO roleDO);
 
-    List<Depart> toDepartList(List<DepartDO> roleDOList);
+	List<Depart> toDepartList(List<DepartDO> roleDOList);
 
-    DepartDO toDepartDO(Depart role);
+	DepartDO toDepartDO(Depart role);
 
-    List<DepartDO> toDepartDOList(List<Depart> roleList);
+	List<DepartDO> toDepartDOList(List<Depart> roleList);
 
 }

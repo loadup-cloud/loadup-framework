@@ -50,146 +50,146 @@ import org.springframework.stereotype.Component;
 @Component("gatewayClientManageService")
 public class ClientManageServiceImpl implements ClientManageService {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(ClientManageServiceImpl.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(ClientManageServiceImpl.class);
 
-    /**
-     * get repository service from extension
-     */
-    private RepositoryServiceExtPt getRepositoryService() {
-        RepositoryServiceExtPt result = null;// ExtensionPointLoader.get(RepositoryServiceExt.class,
-        //            SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE));
-        return result;
-    }
+	/**
+	 * get repository service from extension
+	 */
+	private RepositoryServiceExtPt getRepositoryService() {
+		RepositoryServiceExtPt result = null;// ExtensionPointLoader.get(RepositoryServiceExt.class,
+		//            SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE));
+		return result;
+	}
 
-    @Override
-    public ClientConfigAddResponse add(ClientConfigAddRequest request) {
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
-                    String clientId = getRepositoryService()
-                            .addClient(ClientConfigConvertor.addRequest2Dto(request));
-                    ClientConfigAddResponse response = new ClientConfigAddResponse();
-                    response.setClientId(clientId);
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
-    }
+	@Override
+	public ClientConfigAddResponse add(ClientConfigAddRequest request) {
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
+					String clientId = getRepositoryService()
+							.addClient(ClientConfigConvertor.addRequest2Dto(request));
+					ClientConfigAddResponse response = new ClientConfigAddResponse();
+					response.setClientId(clientId);
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				}
+		);
+	}
 
-    @Override
-    public ClientConfigAuthorizeResponse authorize(ClientConfigAuthorizeRequest request) {
-        ClientConfigAuthorizeResponse authorizeResponse = new ClientConfigAuthorizeResponse();
-        return ServiceTemplate.execute(
+	@Override
+	public ClientConfigAuthorizeResponse authorize(ClientConfigAuthorizeRequest request) {
+		ClientConfigAuthorizeResponse authorizeResponse = new ClientConfigAuthorizeResponse();
+		return ServiceTemplate.execute(
 
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
-                    getRepositoryService()
-                            .authorizeClient(ClientConfigConvertor.authorizeRequest2Dto(request));
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
+					getRepositoryService()
+							.authorizeClient(ClientConfigConvertor.authorizeRequest2Dto(request));
 
-                    return authorizeResponse;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+					return authorizeResponse;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
 
-                // compose digest log
-                (Void) -> {
+				// compose digest log
+				(Void) -> {
 
-                });
-    }
+				});
+	}
 
-    @Override
-    public ClientConfigDeauthorizeResponse deauthorize(ClientConfigDeauthorizeRequest request) {
-        ClientConfigDeauthorizeResponse authorizeResponse = new ClientConfigDeauthorizeResponse();
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
-                    getRepositoryService()
-                            .deauthorizeClient(ClientConfigConvertor.deauthorizeRequest2Dto(request));
+	@Override
+	public ClientConfigDeauthorizeResponse deauthorize(ClientConfigDeauthorizeRequest request) {
+		ClientConfigDeauthorizeResponse authorizeResponse = new ClientConfigDeauthorizeResponse();
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
+					getRepositoryService()
+							.deauthorizeClient(ClientConfigConvertor.deauthorizeRequest2Dto(request));
 
-                    return authorizeResponse;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                });
-    }
+					return authorizeResponse;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				});
+	}
 
-    @Override
-    public ClientConfigUpdateResponse update(ClientConfigUpdateRequest request) {
-        ClientConfigUpdateResponse authorizeResponse = new ClientConfigUpdateResponse();
+	@Override
+	public ClientConfigUpdateResponse update(ClientConfigUpdateRequest request) {
+		ClientConfigUpdateResponse authorizeResponse = new ClientConfigUpdateResponse();
 
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
-                    getRepositoryService().updateClient(ClientConfigConvertor.updateRequest2Dto(request));
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
+					getRepositoryService().updateClient(ClientConfigConvertor.updateRequest2Dto(request));
 
-                    return authorizeResponse;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                });
-    }
+					return authorizeResponse;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				});
+	}
 
-    @Override
-    public ClientConfigQueryResponse query(ClientConfigQueryRequest request) {
-        ClientConfigQueryResponse response = new ClientConfigQueryResponse();
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
-                    String clientId = request.getClientId();
-                    ClientConfigDto load = getRepositoryService().queryClient(clientId);
-                    if (load != null) {
-                        response.setClientId(load.getClientId());
-                        response.setName(load.getName());
-                        String properties = load.getProperties();
-                        if (!StringUtils.isEmpty(properties)) {
-                            response.setProperties(JsonUtil.jsonToMap(properties));
-                        }
-                    }
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                });
-    }
+	@Override
+	public ClientConfigQueryResponse query(ClientConfigQueryRequest request) {
+		ClientConfigQueryResponse response = new ClientConfigQueryResponse();
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
+					String clientId = request.getClientId();
+					ClientConfigDto load = getRepositoryService().queryClient(clientId);
+					if (load != null) {
+						response.setClientId(load.getClientId());
+						response.setName(load.getName());
+						String properties = load.getProperties();
+						if (!StringUtils.isEmpty(properties)) {
+							response.setProperties(JsonUtil.jsonToMap(properties));
+						}
+					}
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				});
+	}
 
-    @Override
-    public ClientConfigRemoveResponse remove(ClientConfigRemoveRequest request) {
-        ClientConfigRemoveResponse response = new ClientConfigRemoveResponse();
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
-                    String clientId = request.getClientId();
-                    getRepositoryService().removeClient(clientId);
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                });
+	@Override
+	public ClientConfigRemoveResponse remove(ClientConfigRemoveRequest request) {
+		ClientConfigRemoveResponse response = new ClientConfigRemoveResponse();
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
+					String clientId = request.getClientId();
+					getRepositoryService().removeClient(clientId);
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				});
 
-    }
+	}
 }

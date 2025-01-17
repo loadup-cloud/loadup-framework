@@ -35,5 +35,5 @@ import java.util.List;
 @Setter
 public class DepartDTO extends SimpleDepartDTO {
 
-    private List<SimpleUserDTO> userList;
+	private List<SimpleUserDTO> userList;
 }

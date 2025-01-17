@@ -33,13 +33,13 @@ import com.github.loadup.components.upms.client.dto.SimpleUserDTO;
 import com.github.loadup.components.upms.client.dto.UserDTO;
 
 public interface UserService {
-    SingleResponse<UserDTO> getUserById(IdQuery query);
+	SingleResponse<UserDTO> getUserById(IdQuery query);
 
-    MultiResponse<SimpleUserDTO> getUserByRoleId(String roleId);
+	MultiResponse<SimpleUserDTO> getUserByRoleId(String roleId);
 
-    SingleResponse<SimpleUserDTO> save(UserSaveCmd cmd);
+	SingleResponse<SimpleUserDTO> save(UserSaveCmd cmd);
 
-    SingleResponse<UserDTO> saveUserRoles(UserRolesSaveCmd cmd);
+	SingleResponse<UserDTO> saveUserRoles(UserRolesSaveCmd cmd);
 
-    Response changePassword(UserChangePasswordCmd cmd);
+	Response changePassword(UserChangePasswordCmd cmd);
 }

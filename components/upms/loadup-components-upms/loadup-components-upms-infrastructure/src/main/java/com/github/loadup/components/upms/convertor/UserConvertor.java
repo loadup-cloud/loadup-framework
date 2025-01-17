@@ -35,14 +35,14 @@ import java.util.List;
 
 @Mapper(uses = {UserNameConvertor.class})
 public interface UserConvertor {
-    UserConvertor INSTANCE = Mappers.getMapper(UserConvertor.class);
+	UserConvertor INSTANCE = Mappers.getMapper(UserConvertor.class);
 
-    User toUser(UserDO userDO);
+	User toUser(UserDO userDO);
 
-    List<User> toUserList(List<UserDO> userDOList);
+	List<User> toUserList(List<UserDO> userDOList);
 
-    UserDO toUserDO(User user);
+	UserDO toUserDO(User user);
 
-    List<UserDO> toUserDOList(List<User> user);
+	List<UserDO> toUserDOList(List<User> user);
 
 }

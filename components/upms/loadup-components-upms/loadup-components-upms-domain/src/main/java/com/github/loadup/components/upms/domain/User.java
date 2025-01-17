@@ -44,25 +44,25 @@ import java.util.List;
 @Getter
 @Setter
 public class User extends BaseDomain {
-    @Serial
-    private static final long serialVersionUID = 5534160252441899151L;
+	@Serial
+	private static final long serialVersionUID = 5534160252441899151L;
 
-    private String         id;
-    private String         nickname;
-    private UserName       englishName;
-    private UserName       officialName;
-    private String         password;
-    private String         salt;
-    private String         avatar;
-    private LocalDate      birthday;
-    private LocalDateTime  registeredTime;
-    private String         userType;
-    private List<Role>     roleList;
-    private List<Position> positionList;
-    private List<Depart>   departList;
+	private String         id;
+	private String         nickname;
+	private UserName       englishName;
+	private UserName       officialName;
+	private String         password;
+	private String         salt;
+	private String         avatar;
+	private LocalDate      birthday;
+	private LocalDateTime  registeredTime;
+	private String         userType;
+	private List<Role>     roleList;
+	private List<Position> positionList;
+	private List<Depart>   departList;
 
-    @Override
-    public String toString() {
-        return ToStringUtils.reflectionToString(this);
-    }
+	@Override
+	public String toString() {
+		return ToStringUtils.reflectionToString(this);
+	}
 }

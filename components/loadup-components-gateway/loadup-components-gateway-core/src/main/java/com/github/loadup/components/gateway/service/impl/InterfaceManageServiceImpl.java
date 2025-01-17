@@ -47,174 +47,174 @@ import java.util.List;
 @Component("gatewayInterfaceManageService")
 public class InterfaceManageServiceImpl implements InterfaceManageService {
 
-    @Override
-    public InterfaceConfigAddResponse add(InterfaceConfigAddRequest request) {
-        InterfaceConfigAddResponse response = new InterfaceConfigAddResponse();
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
+	@Override
+	public InterfaceConfigAddResponse add(InterfaceConfigAddRequest request) {
+		InterfaceConfigAddResponse response = new InterfaceConfigAddResponse();
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
 
-                    InterfaceDto interfaceAddConfigDto = InterfaceConfigConvertor.convertToDto(request);
-                    getRepositoryService().addInterface(interfaceAddConfigDto);
-                    response.setInterfaceId(interfaceAddConfigDto.getInterfaceId());
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
+					InterfaceDto interfaceAddConfigDto = InterfaceConfigConvertor.convertToDto(request);
+					getRepositoryService().addInterface(interfaceAddConfigDto);
+					response.setInterfaceId(interfaceAddConfigDto.getInterfaceId());
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				}
+		);
 
-    }
+	}
 
-    @Override
-    public InterfaceConfigUpdateResponse update(InterfaceConfigUpdateRequest request) {
-        InterfaceConfigUpdateResponse response = new InterfaceConfigUpdateResponse();
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
+	@Override
+	public InterfaceConfigUpdateResponse update(InterfaceConfigUpdateRequest request) {
+		InterfaceConfigUpdateResponse response = new InterfaceConfigUpdateResponse();
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
 
-                    InterfaceDto interfaceDto = InterfaceConfigConvertor.convertToDto(request);
-                    getRepositoryService().updateInterface(interfaceDto);
-                    response.setInterfaceId(request.getInterfaceId());
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
+					InterfaceDto interfaceDto = InterfaceConfigConvertor.convertToDto(request);
+					getRepositoryService().updateInterface(interfaceDto);
+					response.setInterfaceId(request.getInterfaceId());
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				}
+		);
 
-    }
+	}
 
-    @Override
-    public InterfaceConfigUpgradeResponse upgrade(InterfaceConfigUpgradeRequest request) {
-        InterfaceConfigUpgradeResponse response = new InterfaceConfigUpgradeResponse();
+	@Override
+	public InterfaceConfigUpgradeResponse upgrade(InterfaceConfigUpgradeRequest request) {
+		InterfaceConfigUpgradeResponse response = new InterfaceConfigUpgradeResponse();
 
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
-                    InterfaceDto interfaceDto = InterfaceConfigConvertor.convertToDto(request);
-                    getRepositoryService().upgradeInterface(interfaceDto);
-                    response.setInterfaceId(interfaceDto.getInterfaceId());
-                    response.setVersion(interfaceDto.getVersion());
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
+					InterfaceDto interfaceDto = InterfaceConfigConvertor.convertToDto(request);
+					getRepositoryService().upgradeInterface(interfaceDto);
+					response.setInterfaceId(interfaceDto.getInterfaceId());
+					response.setVersion(interfaceDto.getVersion());
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				}
+		);
 
-    }
+	}
 
-    @Override
-    public InterfaceConfigQueryResponse query(InterfaceConfigQueryRequest request) {
-        InterfaceConfigQueryResponse response = new InterfaceConfigQueryResponse();
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
-                    request
-                            .setPage(request.getPage() == null ? Constant.DEFAULT_PAGE : request.getPage());
-                    request.setPageSize(request.getPageSize() == null ? Constant.DEFAULT_PAGE_SIZE
-                            : request.getPageSize());
+	@Override
+	public InterfaceConfigQueryResponse query(InterfaceConfigQueryRequest request) {
+		InterfaceConfigQueryResponse response = new InterfaceConfigQueryResponse();
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
+					request
+							.setPage(request.getPage() == null ? Constant.DEFAULT_PAGE : request.getPage());
+					request.setPageSize(request.getPageSize() == null ? Constant.DEFAULT_PAGE_SIZE
+							: request.getPageSize());
 
-                    List<InterfaceDto> dto = getRepositoryService().queryInterface(
-                            request.getPageSize(), request.getPage(), request.getTntInstId(),
-                            request.getInterfaceId(), request.getClientId(), request.getType(),
-                            request.getStatus(), request.getInterfaceName());
-                    response
-                            .setInterfaceConfigList(InterfaceConfigConvertor.buildinterfaceConfigList(dto));
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
-    }
+					List<InterfaceDto> dto = getRepositoryService().queryInterface(
+							request.getPageSize(), request.getPage(), request.getTntInstId(),
+							request.getInterfaceId(), request.getClientId(), request.getType(),
+							request.getStatus(), request.getInterfaceName());
+					response
+							.setInterfaceConfigList(InterfaceConfigConvertor.buildinterfaceConfigList(dto));
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				}
+		);
+	}
 
-    @Override
-    public InterfaceConfigRemoveResponse remove(InterfaceConfigRemoveRequest request) {
-        InterfaceConfigRemoveResponse response = new InterfaceConfigRemoveResponse();
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
-                    getRepositoryService().removeInterface(request.getInterfaceId());
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
+	@Override
+	public InterfaceConfigRemoveResponse remove(InterfaceConfigRemoveRequest request) {
+		InterfaceConfigRemoveResponse response = new InterfaceConfigRemoveResponse();
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
+					getRepositoryService().removeInterface(request.getInterfaceId());
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				}
+		);
 
-    }
+	}
 
-    @Override
-    public InterfaceConfigOnlineResponse online(InterfaceConfigOnlineRequest request) {
-        InterfaceConfigOnlineResponse response = new InterfaceConfigOnlineResponse();
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
+	@Override
+	public InterfaceConfigOnlineResponse online(InterfaceConfigOnlineRequest request) {
+		InterfaceConfigOnlineResponse response = new InterfaceConfigOnlineResponse();
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
 
-                    getRepositoryService().onlineInterface(request.getInterfaceId());
-                    response.setInterfaceId(request.getInterfaceId());
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
+					getRepositoryService().onlineInterface(request.getInterfaceId());
+					response.setInterfaceId(request.getInterfaceId());
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				}
+		);
 
-    }
+	}
 
-    @Override
-    public InterfaceConfigOfflineResponse offline(InterfaceConfigOfflineRequest request) {
-        InterfaceConfigOfflineResponse response = new InterfaceConfigOfflineResponse();
+	@Override
+	public InterfaceConfigOfflineResponse offline(InterfaceConfigOfflineRequest request) {
+		InterfaceConfigOfflineResponse response = new InterfaceConfigOfflineResponse();
 
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
-                    getRepositoryService().offlineInterface(request.getInterfaceId());
-                    response.setInterfaceId(request.getInterfaceId());
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
+					getRepositoryService().offlineInterface(request.getInterfaceId());
+					response.setInterfaceId(request.getInterfaceId());
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				}
+		);
 
-    }
+	}
 
-    private RepositoryServiceExtPt getRepositoryService() {
-        RepositoryServiceExtPt result = null;//ExtensionPointLoader.get(RepositoryServiceExt.class,
-        //            SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE));
-        return result;
+	private RepositoryServiceExtPt getRepositoryService() {
+		RepositoryServiceExtPt result = null;//ExtensionPointLoader.get(RepositoryServiceExt.class,
+		//            SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE));
+		return result;
 
-    }
+	}
 
 }

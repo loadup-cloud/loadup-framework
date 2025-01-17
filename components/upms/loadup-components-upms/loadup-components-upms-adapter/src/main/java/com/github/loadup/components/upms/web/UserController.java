@@ -43,27 +43,27 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class UserController {
 
-    @Resource
-    private UserService userService;
+	@Resource
+	private UserService userService;
 
-    @PostMapping(value = "/queryById")
-    public SingleResponse<UserDTO> queryById(@RequestBody IdQuery query) {
-        log.info("queryById:{}", TraceUtil.getTracerId());
-        return userService.getUserById(query);
-    }
+	@PostMapping(value = "/queryById")
+	public SingleResponse<UserDTO> queryById(@RequestBody IdQuery query) {
+		log.info("queryById:{}", TraceUtil.getTracerId());
+		return userService.getUserById(query);
+	}
 
-    @PostMapping(value = "/queryByRoleId")
-    public MultiResponse<SimpleUserDTO> queryByRoleId(@RequestBody IdQuery query) {
-        return userService.getUserByRoleId(query.getId());
-    }
+	@PostMapping(value = "/queryByRoleId")
+	public MultiResponse<SimpleUserDTO> queryByRoleId(@RequestBody IdQuery query) {
+		return userService.getUserByRoleId(query.getId());
+	}
 
-    @PostMapping(value = "/changePassword")
-    public Response changePassword(@RequestBody UserChangePasswordCmd cmd) {
-        return userService.changePassword(cmd);
-    }
+	@PostMapping(value = "/changePassword")
+	public Response changePassword(@RequestBody UserChangePasswordCmd cmd) {
+		return userService.changePassword(cmd);
+	}
 
-    @PostMapping(value = "/save")
-    public Response save(@RequestBody UserSaveCmd cmd) {
-        return userService.save(cmd);
-    }
+	@PostMapping(value = "/save")
+	public Response save(@RequestBody UserSaveCmd cmd) {
+		return userService.save(cmd);
+	}
 }

@@ -39,10 +39,10 @@ import java.io.Serial;
 @Getter
 @Setter
 public class MobileNoInfo extends DTO {
-    @Serial
-    private static final long    serialVersionUID = 7329171068311954009L;
-    private              String  mobileId;
-    private              String  mobileNo;
-    private              boolean verified;
+	@Serial
+	private static final long    serialVersionUID = 7329171068311954009L;
+	private              String  mobileId;
+	private              String  mobileNo;
+	private              boolean verified;
 
 }

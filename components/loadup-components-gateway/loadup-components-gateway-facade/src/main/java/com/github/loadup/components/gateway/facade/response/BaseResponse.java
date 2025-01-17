@@ -34,8 +34,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  */
 public abstract class BaseResponse extends Response {
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
 }

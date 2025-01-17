@@ -45,63 +45,63 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class RoleGatewayImpl implements RoleGateway {
-    @Resource
-    private RoleRepository     roleRepository;
-    @Resource
-    private UserRoleRepository userRoleRepository;
-    @Resource
-    private UserRepository     userRepository;
+	@Resource
+	private RoleRepository     roleRepository;
+	@Resource
+	private UserRoleRepository userRoleRepository;
+	@Resource
+	private UserRepository     userRepository;
 
-    @Override
-    public Role create(Role role) {
-        RoleDO roleDO = RoleConvertor.INSTANCE.toRoleDO(role);
-        roleRepository.save(roleDO);
-        return RoleConvertor.INSTANCE.toRole(roleDO);
-    }
+	@Override
+	public Role create(Role role) {
+		RoleDO roleDO = RoleConvertor.INSTANCE.toRoleDO(role);
+		roleRepository.save(roleDO);
+		return RoleConvertor.INSTANCE.toRole(roleDO);
+	}
 
-    @Override
-    public void update(Role role) {
-        if (StringUtils.isBlank(role.getId())) {
-            return;
-        }
-        roleRepository.save(RoleConvertor.INSTANCE.toRoleDO(role));
-    }
+	@Override
+	public void update(Role role) {
+		if (StringUtils.isBlank(role.getId())) {
+			return;
+		}
+		roleRepository.save(RoleConvertor.INSTANCE.toRoleDO(role));
+	}
 
-    @Override
-    public void delete(String roleId) {
-        if (StringUtils.isBlank(roleId)) {
-            return;
-        }
-        roleRepository.deleteById(roleId);
-    }
+	@Override
+	public void delete(String roleId) {
+		if (StringUtils.isBlank(roleId)) {
+			return;
+		}
+		roleRepository.deleteById(roleId);
+	}
 
-    @Override
-    public Role getById(String roleId) {
-        Role role = roleRepository.findById(roleId).map(RoleConvertor.INSTANCE::toRole).orElse(null);
-        List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByRoleId(roleId);
-        List<User> userList = userRoleDOList.stream().map(userRoleDO -> userRepository.findById(userRoleDO.getUserId())
-                .map(UserConvertor.INSTANCE::toUser).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
-        role.setUserList(userList);
-        return role;
-    }
+	@Override
+	public Role getById(String roleId) {
+		Role role = roleRepository.findById(roleId).map(RoleConvertor.INSTANCE::toRole).orElse(null);
+		List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByRoleId(roleId);
+		List<User> userList = userRoleDOList.stream().map(userRoleDO -> userRepository.findById(userRoleDO.getUserId())
+				.map(UserConvertor.INSTANCE::toUser).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
+		role.setUserList(userList);
+		return role;
+	}
 
-    @Override
-    public List<Role> getByUserId(String userId) {
-        List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByUserId(userId);
-        List<Role> result = new ArrayList<>();
-        for (UserRoleDO userRoleDO : userRoleDOList) {
-            Role role = roleRepository.findById(userRoleDO.getUserId()).map(RoleConvertor.INSTANCE::toRole).orElse(null);
-            if (Objects.nonNull(role)) {
-                result.add(role);
-            }
-        }
-        return result;
-    }
+	@Override
+	public List<Role> getByUserId(String userId) {
+		List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByUserId(userId);
+		List<Role> result = new ArrayList<>();
+		for (UserRoleDO userRoleDO : userRoleDOList) {
+			Role role = roleRepository.findById(userRoleDO.getUserId()).map(RoleConvertor.INSTANCE::toRole).orElse(null);
+			if (Objects.nonNull(role)) {
+				result.add(role);
+			}
+		}
+		return result;
+	}
 
-    @Override
-    public void saveRoleUsers(String roleId, List<String> userIdList) {
-        List<UserRoleDO> userRoleDOList = userIdList.stream().map(userId -> new UserRoleDO(userId, roleId)).collect(Collectors.toList());
-        userRoleRepository.removeAllByRoleId(roleId);
-        userRoleRepository.saveAll(userRoleDOList);
-    }
+	@Override
+	public void saveRoleUsers(String roleId, List<String> userIdList) {
+		List<UserRoleDO> userRoleDOList = userIdList.stream().map(userId -> new UserRoleDO(userId, roleId)).collect(Collectors.toList());
+		userRoleRepository.removeAllByRoleId(roleId);
+		userRoleRepository.saveAll(userRoleDOList);
+	}
 }

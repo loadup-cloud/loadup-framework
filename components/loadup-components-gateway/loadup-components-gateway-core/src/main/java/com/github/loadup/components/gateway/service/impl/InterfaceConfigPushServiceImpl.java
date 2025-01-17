@@ -57,184 +57,184 @@ import java.util.HashMap;
 @Component("gatewayInterfaceConfigPushService")
 public class InterfaceConfigPushServiceImpl implements InterfaceConfigPushService {
 
-    /**
-     * logger
-     */
-    private static final Logger logger = LoggerFactory
-            .getLogger(InterfaceConfigPushServiceImpl.class);
+	/**
+	 * logger
+	 */
+	private static final Logger logger = LoggerFactory
+			.getLogger(InterfaceConfigPushServiceImpl.class);
 
-    /**
-     * repository manager
-     */
-    @Resource
-    private RepositoryManager repositoryManager;
+	/**
+	 * repository manager
+	 */
+	@Resource
+	private RepositoryManager repositoryManager;
 
-    /**
-     * gateway domain, default is empty
-     */
-    @Value("${gateway.domain:}")
-    private String gatewaydomain;
+	/**
+	 * gateway domain, default is empty
+	 */
+	@Value("${gateway.domain:}")
+	private String gatewaydomain;
 
-    /**
-     * @see InterfaceConfigPushService#pushAPIConfig(APIConfigRequest)
-     */
-    @Override
-    public APIConfigResponse pushAPIConfig(APIConfigRequest request) {
+	/**
+	 * @see InterfaceConfigPushService#pushAPIConfig(APIConfigRequest)
+	 */
+	@Override
+	public APIConfigResponse pushAPIConfig(APIConfigRequest request) {
 
-        APIConfigResponse response = new APIConfigResponse();
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
-                    buildOpenApiUrl(request);
+		APIConfigResponse response = new APIConfigResponse();
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
+					buildOpenApiUrl(request);
 
-                    // 2. set PLUGIN OPENAPI flag
-                    if (MapUtils.isEmpty(request.getCommunicationProperties())) {
-                        request.setCommunicationProperties(new HashMap<>());
-                    }
+					// 2. set PLUGIN OPENAPI flag
+					if (MapUtils.isEmpty(request.getCommunicationProperties())) {
+						request.setCommunicationProperties(new HashMap<>());
+					}
 
-                    request.getCommunicationProperties().putIfAbsent(Constant.INTERFACE_TYPE,
-                            Constant.PLUGIN_OPENAPI);
+					request.getCommunicationProperties().putIfAbsent(Constant.INTERFACE_TYPE,
+							Constant.PLUGIN_OPENAPI);
 
-                    InterfaceDto interfaceDto = buildApiInterfaceDto(request);
-                    repositoryManager.saveOrUpdateInterface(interfaceDto);
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                });
-    }
+					InterfaceDto interfaceDto = buildApiInterfaceDto(request);
+					repositoryManager.saveOrUpdateInterface(interfaceDto);
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				});
+	}
 
-    /**
-     * @see InterfaceConfigPushService#pushSPIConfig(SPIConfigRequest)
-     */
-    @Override
-    public SPIConfigResponse pushSPIConfig(SPIConfigRequest request) {
+	/**
+	 * @see InterfaceConfigPushService#pushSPIConfig(SPIConfigRequest)
+	 */
+	@Override
+	public SPIConfigResponse pushSPIConfig(SPIConfigRequest request) {
 
-        SPIConfigResponse response = new SPIConfigResponse();
+		SPIConfigResponse response = new SPIConfigResponse();
 
-        return ServiceTemplate.execute(
-                // check parameter
-                (Void) -> ValidateUtils.validate(request),
-                // process
-                () -> {
-                    if (MapUtils.isEmpty(request.getCommunicationProperties())) {
-                        request.setCommunicationProperties(new HashMap<>());
-                    }
-                    InterfaceDto interfaceDto = buildSpiInterfaceDto(request);
-                    repositoryManager.saveOrUpdateInterface(interfaceDto);
-                    return response;
-                },
-                // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                });
-    }
+		return ServiceTemplate.execute(
+				// check parameter
+				(Void) -> ValidateUtils.validate(request),
+				// process
+				() -> {
+					if (MapUtils.isEmpty(request.getCommunicationProperties())) {
+						request.setCommunicationProperties(new HashMap<>());
+					}
+					InterfaceDto interfaceDto = buildSpiInterfaceDto(request);
+					repositoryManager.saveOrUpdateInterface(interfaceDto);
+					return response;
+				},
+				// compose exception response
+				(e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+				// compose digest log
+				(Void) -> {
+				});
+	}
 
-    /**
-     * build api interface dto
-     */
-    private InterfaceDto buildApiInterfaceDto(APIConfigRequest apiConfig) {
+	/**
+	 * build api interface dto
+	 */
+	private InterfaceDto buildApiInterfaceDto(APIConfigRequest apiConfig) {
 
-        InterfaceDto apiInterfaceDto = new InterfaceDto();
-        apiInterfaceDto.setTenantId(apiConfig.getTenantId());
-        String version = StringUtils.defaultIfBlank(apiConfig.getVersion(),
-                Constant.INTERFACE_DEFAULT_VERSION);
+		InterfaceDto apiInterfaceDto = new InterfaceDto();
+		apiInterfaceDto.setTenantId(apiConfig.getTenantId());
+		String version = StringUtils.defaultIfBlank(apiConfig.getVersion(),
+				Constant.INTERFACE_DEFAULT_VERSION);
 
-        String interfaceId = InterfaceConfigUtil.generateInterfaceId(apiConfig.getIntegrationUrl(),
-                apiConfig.getTenantId(), version, InterfaceType.OPENAPI.getCode(),
-                apiConfig.getCommunicationProperties());
+		String interfaceId = InterfaceConfigUtil.generateInterfaceId(apiConfig.getIntegrationUrl(),
+				apiConfig.getTenantId(), version, InterfaceType.OPENAPI.getCode(),
+				apiConfig.getCommunicationProperties());
 
-        apiInterfaceDto.setInterfaceId(interfaceId);
-        apiInterfaceDto.setInterfaceName(interfaceId);
+		apiInterfaceDto.setInterfaceId(interfaceId);
+		apiInterfaceDto.setInterfaceName(interfaceId);
 
-        apiInterfaceDto.setUrl(apiConfig.getUrl());
-        apiInterfaceDto.setIntegrationUrl(apiConfig.getIntegrationUrl());
-        apiInterfaceDto.setSecurityStrategyCode(apiConfig.getSecurityStrategyCode());
-        apiInterfaceDto.setVersion(version);
-        apiInterfaceDto.setType(InterfaceType.OPENAPI.getCode());
-        apiInterfaceDto.setStatus(InterfaceStatus.VALID.getCode());
+		apiInterfaceDto.setUrl(apiConfig.getUrl());
+		apiInterfaceDto.setIntegrationUrl(apiConfig.getIntegrationUrl());
+		apiInterfaceDto.setSecurityStrategyCode(apiConfig.getSecurityStrategyCode());
+		apiInterfaceDto.setVersion(version);
+		apiInterfaceDto.setType(InterfaceType.OPENAPI.getCode());
+		apiInterfaceDto.setStatus(InterfaceStatus.VALID.getCode());
 
-        String openApiMsgParser = apiConfig.getCommunicationProperties()
-                .get(Constant.OPENAPI_MSG_PARSER);
-        String msgBodyAssemble = apiConfig.getCommunicationProperties()
-                .get(Constant.MES_BODY_ASSEMBLE);
-        String msgHeaderAssemble = apiConfig.getCommunicationProperties()
-                .get(Constant.MSG_HEADER_ASSEMBLE);
+		String openApiMsgParser = apiConfig.getCommunicationProperties()
+				.get(Constant.OPENAPI_MSG_PARSER);
+		String msgBodyAssemble = apiConfig.getCommunicationProperties()
+				.get(Constant.MES_BODY_ASSEMBLE);
+		String msgHeaderAssemble = apiConfig.getCommunicationProperties()
+				.get(Constant.MSG_HEADER_ASSEMBLE);
 
-        apiInterfaceDto.setInterfaceRequestParser(openApiMsgParser);
-        apiInterfaceDto.setInterfaceResponseHeaderAssemble(msgBodyAssemble);
-        apiInterfaceDto.setInterfaceResponseBodyAssemble(msgHeaderAssemble);
+		apiInterfaceDto.setInterfaceRequestParser(openApiMsgParser);
+		apiInterfaceDto.setInterfaceResponseHeaderAssemble(msgBodyAssemble);
+		apiInterfaceDto.setInterfaceResponseBodyAssemble(msgHeaderAssemble);
 
-        apiInterfaceDto
-                .setIntegrationRequestHeaderAssemble(apiConfig.getIntegrationRequestHeaderAssemble());
-        apiInterfaceDto
-                .setIntegrationRequestBodyAssemble(apiConfig.getIntegrationRequestBodyAssemble());
-        apiInterfaceDto.setIntegrationResponseParser(apiConfig.getIntegrationResponseParser());
+		apiInterfaceDto
+				.setIntegrationRequestHeaderAssemble(apiConfig.getIntegrationRequestHeaderAssemble());
+		apiInterfaceDto
+				.setIntegrationRequestBodyAssemble(apiConfig.getIntegrationRequestBodyAssemble());
+		apiInterfaceDto.setIntegrationResponseParser(apiConfig.getIntegrationResponseParser());
 
-        apiInterfaceDto.setCommunicationProperties(apiConfig.getCommunicationProperties());
+		apiInterfaceDto.setCommunicationProperties(apiConfig.getCommunicationProperties());
 
-        return apiInterfaceDto;
+		return apiInterfaceDto;
 
-    }
+	}
 
-    /**
-     * build Spi interface DTO
-     */
-    private InterfaceDto buildSpiInterfaceDto(SPIConfigRequest spiConfig) {
+	/**
+	 * build Spi interface DTO
+	 */
+	private InterfaceDto buildSpiInterfaceDto(SPIConfigRequest spiConfig) {
 
-        InterfaceDto spiInterfaceDto = new InterfaceDto();
-        spiInterfaceDto.setTenantId(spiConfig.getTenantId());
-        String version = StringUtils.defaultIfBlank(spiConfig.getVersion(),
-                Constant.INTERFACE_DEFAULT_VERSION);
+		InterfaceDto spiInterfaceDto = new InterfaceDto();
+		spiInterfaceDto.setTenantId(spiConfig.getTenantId());
+		String version = StringUtils.defaultIfBlank(spiConfig.getVersion(),
+				Constant.INTERFACE_DEFAULT_VERSION);
 
-        String interfaceId = InterfaceConfigUtil.generateInterfaceId(spiConfig.getIntegrationUrl(),
-                spiConfig.getTenantId(), version, InterfaceType.SPI.getCode(),
-                spiConfig.getCommunicationProperties());
+		String interfaceId = InterfaceConfigUtil.generateInterfaceId(spiConfig.getIntegrationUrl(),
+				spiConfig.getTenantId(), version, InterfaceType.SPI.getCode(),
+				spiConfig.getCommunicationProperties());
 
-        spiInterfaceDto.setInterfaceId(interfaceId);
-        spiInterfaceDto.setInterfaceName(interfaceId);
+		spiInterfaceDto.setInterfaceId(interfaceId);
+		spiInterfaceDto.setInterfaceName(interfaceId);
 
-        spiInterfaceDto.setUrl("");
-        spiInterfaceDto.setIntegrationUrl(spiConfig.getIntegrationUrl());
-        spiInterfaceDto.setSecurityStrategyCode(spiConfig.getSecurityStrategyCode());
-        spiInterfaceDto.setVersion(version);
-        spiInterfaceDto.setType(InterfaceType.SPI.getCode());
-        spiInterfaceDto.setStatus(InterfaceStatus.VALID.getCode());
-        spiInterfaceDto.setInterfaceRequestParser("");
-        spiInterfaceDto.setInterfaceResponseHeaderAssemble("");
-        spiInterfaceDto.setInterfaceResponseBodyAssemble("");
+		spiInterfaceDto.setUrl("");
+		spiInterfaceDto.setIntegrationUrl(spiConfig.getIntegrationUrl());
+		spiInterfaceDto.setSecurityStrategyCode(spiConfig.getSecurityStrategyCode());
+		spiInterfaceDto.setVersion(version);
+		spiInterfaceDto.setType(InterfaceType.SPI.getCode());
+		spiInterfaceDto.setStatus(InterfaceStatus.VALID.getCode());
+		spiInterfaceDto.setInterfaceRequestParser("");
+		spiInterfaceDto.setInterfaceResponseHeaderAssemble("");
+		spiInterfaceDto.setInterfaceResponseBodyAssemble("");
 
-        spiInterfaceDto
-                .setIntegrationRequestHeaderAssemble(spiConfig.getIntegrationRequestHeaderAssemble());
-        spiInterfaceDto
-                .setIntegrationRequestBodyAssemble(spiConfig.getIntegrationRequestBodyAssemble());
-        spiInterfaceDto.setIntegrationResponseParser(spiConfig.getIntegrationResponseParser());
+		spiInterfaceDto
+				.setIntegrationRequestHeaderAssemble(spiConfig.getIntegrationRequestHeaderAssemble());
+		spiInterfaceDto
+				.setIntegrationRequestBodyAssemble(spiConfig.getIntegrationRequestBodyAssemble());
+		spiInterfaceDto.setIntegrationResponseParser(spiConfig.getIntegrationResponseParser());
 
-        spiInterfaceDto.setCommunicationProperties(spiConfig.getCommunicationProperties());
+		spiInterfaceDto.setCommunicationProperties(spiConfig.getCommunicationProperties());
 
-        return spiInterfaceDto;
+		return spiInterfaceDto;
 
-    }
+	}
 
-    /**
-     *
-     */
-    private void buildOpenApiUrl(APIConfigRequest request) {
-        StringBuilder url = new StringBuilder();
-        if (StringUtils.isNotBlank(gatewaydomain)) {
-            url.append(StringUtils.stripEnd(gatewaydomain, Constant.PATH_SEPARATOR));
-        }
-        if (StringUtils.isNotBlank(request.getTenantId())) {
-            url.append(Constant.PATH_SEPARATOR).append(request.getTenantId());
-        }
-        url.append(Constant.PATH_SEPARATOR)
-                .append(StringUtils.stripStart(request.getUrl(), Constant.PATH_SEPARATOR));
+	/**
+	 *
+	 */
+	private void buildOpenApiUrl(APIConfigRequest request) {
+		StringBuilder url = new StringBuilder();
+		if (StringUtils.isNotBlank(gatewaydomain)) {
+			url.append(StringUtils.stripEnd(gatewaydomain, Constant.PATH_SEPARATOR));
+		}
+		if (StringUtils.isNotBlank(request.getTenantId())) {
+			url.append(Constant.PATH_SEPARATOR).append(request.getTenantId());
+		}
+		url.append(Constant.PATH_SEPARATOR)
+				.append(StringUtils.stripStart(request.getUrl(), Constant.PATH_SEPARATOR));
 
-        request.setUrl(url.toString());
-    }
+		request.setUrl(url.toString());
+	}
 }
