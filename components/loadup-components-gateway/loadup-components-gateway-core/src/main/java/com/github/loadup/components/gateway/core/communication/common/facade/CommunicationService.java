@@ -36,9 +36,9 @@ import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
  */
 public interface CommunicationService extends Refreshable {
 
-	/**
-	 * 发送报文方法
-	 */
-	MessageSendResult send(String traceId, CommunicationConfig communicationConfig, MessageEnvelope messageEnvelope);
+    /**
+     * 发送报文方法
+     */
+    MessageSendResult send(String traceId, CommunicationConfig communicationConfig, MessageEnvelope messageEnvelope);
 
 }

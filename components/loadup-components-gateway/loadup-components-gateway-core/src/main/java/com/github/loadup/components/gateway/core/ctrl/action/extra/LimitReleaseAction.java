@@ -47,25 +47,25 @@ import java.util.List;
 @Component("limitReleaseAction")
 public class LimitReleaseAction extends AbstractBusinessAction {
 
-	@Resource
-	private LimitRuleService limitRuleService;
+    @Resource
+    private LimitRuleService limitRuleService;
 
-	@Override
-	protected void doBusiness(GatewayRuntimeProcessContext context) {
-		List<LimitConfig> limitConfigList = context.getLimitConfigList();
-		if (!CollectionUtils.isEmpty(limitConfigList)) {
-			for (LimitConfig limitConfig : limitConfigList) {
-				if (limitConfig.getLimitTimeRule() == LimitTimeRuleEnum.CONCURRENCY) {
-					limitRuleService.resetToken(limitConfig);
-				}
-			}
-		}
-	}
+    @Override
+    protected void doBusiness(GatewayRuntimeProcessContext context) {
+        List<LimitConfig> limitConfigList = context.getLimitConfigList();
+        if (!CollectionUtils.isEmpty(limitConfigList)) {
+            for (LimitConfig limitConfig : limitConfigList) {
+                if (limitConfig.getLimitTimeRule() == LimitTimeRuleEnum.CONCURRENCY) {
+                    limitRuleService.resetToken(limitConfig);
+                }
+            }
+        }
+    }
 
-	@Override
-	@Resource
-	@Qualifier("responseAssembleAction")
-	public void setNextAction(BusinessAction responseAssembleAction) {
-		this.nextAction = responseAssembleAction;
-	}
+    @Override
+    @Resource
+    @Qualifier("responseAssembleAction")
+    public void setNextAction(BusinessAction responseAssembleAction) {
+        this.nextAction = responseAssembleAction;
+    }
 }

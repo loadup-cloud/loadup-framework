@@ -32,8 +32,13 @@ import com.github.loadup.commons.result.SingleResponse;
 import com.github.loadup.commons.util.PasswordUtils;
 import com.github.loadup.components.upms.client.api.RoleService;
 import com.github.loadup.components.upms.client.api.UserService;
-import com.github.loadup.components.upms.client.cmd.*;
-import com.github.loadup.components.upms.client.dto.*;
+import com.github.loadup.components.upms.client.cmd.RoleSaveCmd;
+import com.github.loadup.components.upms.client.cmd.UserChangePasswordCmd;
+import com.github.loadup.components.upms.client.cmd.UserRolesSaveCmd;
+import com.github.loadup.components.upms.client.cmd.UserSaveCmd;
+import com.github.loadup.components.upms.client.dto.SimpleRoleDTO;
+import com.github.loadup.components.upms.client.dto.SimpleUserDTO;
+import com.github.loadup.components.upms.client.dto.UserDTO;
 import com.github.loadup.components.upms.dal.dataobject.UserDO;
 import com.github.loadup.components.upms.dal.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
@@ -41,82 +46,84 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest(classes = TestApplication.class)
 public class UserServiceTest {
 
-	@Autowired
-	UserService    userService;
-	@Autowired
-	UserRepository userRepository;
-	@Autowired
-	RoleService    roleService;
+    @Autowired
+    UserService userService;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    RoleService roleService;
 
-	@Test
-	public void testSave() {
-		SingleResponse<SimpleUserDTO> userById = createUser();
-		Assertions.assertEquals("SUCCESS", userById.getResult().getCode());
-		Assertions.assertEquals("ls", userById.getData().getNickname());
-	}
+    @Test
+    public void testSave() {
+        SingleResponse<SimpleUserDTO> userById = createUser();
+        Assertions.assertEquals("SUCCESS", userById.getResult().getCode());
+        Assertions.assertEquals("ls", userById.getData().getNickname());
+    }
 
-	@Test
-	public void testChangePassword() throws InterruptedException {
-		String oldPwd = "123456";
-		String newPwd = "12345678";
-		SingleResponse<SimpleUserDTO> save = createUser();
-		UserChangePasswordCmd changeCmd = new UserChangePasswordCmd();
-		String userId = save.getData().getId();
-		changeCmd.setId(userId);
-		changeCmd.setOldPassword(oldPwd);
-		changeCmd.setNewPassword(newPwd);
-		changeCmd.setConfirmPassword(newPwd);
-		//ThreadUtils.sleep(Duration.ofSeconds(2));
-		Response response = userService.changePassword(changeCmd);
-		Assertions.assertTrue(response.getResult().getCode() == "SUCCESS");
-		Optional<UserDO> userDO = userRepository.findById(userId);
-		Assertions.assertTrue(response.getResult().getCode() == "SUCCESS");
-		userDO.ifPresent(
-				user -> Assertions.assertEquals(newPwd, PasswordUtils.decrypt(user.getPassword(), newPwd, user.getSalt())));
-	}
+    @Test
+    public void testChangePassword() throws InterruptedException {
+        String oldPwd = "123456";
+        String newPwd = "12345678";
+        SingleResponse<SimpleUserDTO> save = createUser();
+        UserChangePasswordCmd changeCmd = new UserChangePasswordCmd();
+        String userId = save.getData().getId();
+        changeCmd.setId(userId);
+        changeCmd.setOldPassword(oldPwd);
+        changeCmd.setNewPassword(newPwd);
+        changeCmd.setConfirmPassword(newPwd);
+        //ThreadUtils.sleep(Duration.ofSeconds(2));
+        Response response = userService.changePassword(changeCmd);
+        Assertions.assertTrue(response.getResult().getCode() == "SUCCESS");
+        Optional<UserDO> userDO = userRepository.findById(userId);
+        Assertions.assertTrue(response.getResult().getCode() == "SUCCESS");
+        userDO.ifPresent(
+                user -> Assertions.assertEquals(newPwd, PasswordUtils.decrypt(user.getPassword(), newPwd, user.getSalt())));
+    }
 
-	@Test
-	public void testSaveUserRoles() {
-		SingleResponse<SimpleUserDTO> userDTO = createUser();
-		SingleResponse<SimpleRoleDTO> roleDTO = createRole();
+    @Test
+    public void testSaveUserRoles() {
+        SingleResponse<SimpleUserDTO> userDTO = createUser();
+        SingleResponse<SimpleRoleDTO> roleDTO = createRole();
 
-		UserRolesSaveCmd userRolesSaveCmd = new UserRolesSaveCmd();
-		userRolesSaveCmd.setUserId(userDTO.getData().getId());
-		List<String> roles = new ArrayList<>();
-		roles.add(roleDTO.getData().getId());
-		userRolesSaveCmd.setRoleIdList(roles);
-		SingleResponse<UserDTO> response = userService.saveUserRoles(userRolesSaveCmd);
-		Assertions.assertEquals("SUCCESS", response.getResult().getCode());
-		Assertions.assertTrue(response.getData().getRoleList().size() == 1);
+        UserRolesSaveCmd userRolesSaveCmd = new UserRolesSaveCmd();
+        userRolesSaveCmd.setUserId(userDTO.getData().getId());
+        List<String> roles = new ArrayList<>();
+        roles.add(roleDTO.getData().getId());
+        userRolesSaveCmd.setRoleIdList(roles);
+        SingleResponse<UserDTO> response = userService.saveUserRoles(userRolesSaveCmd);
+        Assertions.assertEquals("SUCCESS", response.getResult().getCode());
+        Assertions.assertTrue(response.getData().getRoleList().size() == 1);
 
-		SingleResponse<UserDTO> response2 = userService.saveUserRoles(userRolesSaveCmd);
-		Assertions.assertEquals("SUCCESS", response2.getResult().getCode());
-		Assertions.assertEquals(1, response2.getData().getRoleList().size());
+        SingleResponse<UserDTO> response2 = userService.saveUserRoles(userRolesSaveCmd);
+        Assertions.assertEquals("SUCCESS", response2.getResult().getCode());
+        Assertions.assertEquals(1, response2.getData().getRoleList().size());
 
-	}
+    }
 
-	private SingleResponse<SimpleRoleDTO> createRole() {
-		RoleSaveCmd roleSaveCmd = new RoleSaveCmd();
-		SimpleRoleDTO roleDTO = new SimpleRoleDTO();
-		roleDTO.setRoleCode("test_role");
-		roleDTO.setRoleName("测试");
-		roleSaveCmd.setRole(roleDTO);
-		SingleResponse<SimpleRoleDTO> roleSaveResponse = roleService.save(roleSaveCmd);
-		return roleSaveResponse;
-	}
+    private SingleResponse<SimpleRoleDTO> createRole() {
+        RoleSaveCmd roleSaveCmd = new RoleSaveCmd();
+        SimpleRoleDTO roleDTO = new SimpleRoleDTO();
+        roleDTO.setRoleCode("test_role");
+        roleDTO.setRoleName("测试");
+        roleSaveCmd.setRole(roleDTO);
+        SingleResponse<SimpleRoleDTO> roleSaveResponse = roleService.save(roleSaveCmd);
+        return roleSaveResponse;
+    }
 
-	private SingleResponse<SimpleUserDTO> createUser() {
-		UserSaveCmd cmd = new UserSaveCmd();
-		SimpleUserDTO dto = new SimpleUserDTO();
-		dto.setNickname("ls");
-		dto.setPassword("123456");
-		cmd.setUser(dto);
-		SingleResponse<SimpleUserDTO> userDTO = userService.save(cmd);
-		return userDTO;
-	}
+    private SingleResponse<SimpleUserDTO> createUser() {
+        UserSaveCmd cmd = new UserSaveCmd();
+        SimpleUserDTO dto = new SimpleUserDTO();
+        dto.setNickname("ls");
+        dto.setPassword("123456");
+        cmd.setUser(dto);
+        SingleResponse<SimpleUserDTO> userDTO = userService.save(cmd);
+        return userDTO;
+    }
 }

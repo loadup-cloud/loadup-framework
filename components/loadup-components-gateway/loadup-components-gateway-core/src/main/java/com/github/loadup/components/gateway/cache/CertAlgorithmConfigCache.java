@@ -41,35 +41,35 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CertAlgorithmConfigCache {
 
-	/**
-	 * Key is message sender id
-	 */
-	private static Map<String, CertAlgorithmConfig> certAlgorithmConfigMap = new ConcurrentHashMap();
+    /**
+     * Key is message sender id
+     */
+    private static Map<String, CertAlgorithmConfig> certAlgorithmConfigMap = new ConcurrentHashMap();
 
-	/**
-	 * Put all.
-	 */
-	public static void putAll(boolean clear, List<CertAlgorithmConfig> certAlgorithmConfigList) {
-		if (CollectionUtils.isEmpty(certAlgorithmConfigList)) {
-			return;
-		}
-		Map<String, CertAlgorithmConfig> tempMap = new ConcurrentHashMap<>();
-		certAlgorithmConfigList.forEach(certAlgorithmConfig -> {
-			String certCode = certAlgorithmConfig.getCertCode();
-			tempMap.put(certCode, certAlgorithmConfig);
-		});
-		if (clear) {
-			certAlgorithmConfigMap = tempMap;
-		} else {
-			certAlgorithmConfigMap.putAll(tempMap);
-		}
-		CacheLogUtil.printLog("certAlgorithmConfigMap", certAlgorithmConfigMap);
-	}
+    /**
+     * Put all.
+     */
+    public static void putAll(boolean clear, List<CertAlgorithmConfig> certAlgorithmConfigList) {
+        if (CollectionUtils.isEmpty(certAlgorithmConfigList)) {
+            return;
+        }
+        Map<String, CertAlgorithmConfig> tempMap = new ConcurrentHashMap<>();
+        certAlgorithmConfigList.forEach(certAlgorithmConfig -> {
+            String certCode = certAlgorithmConfig.getCertCode();
+            tempMap.put(certCode, certAlgorithmConfig);
+        });
+        if (clear) {
+            certAlgorithmConfigMap = tempMap;
+        } else {
+            certAlgorithmConfigMap.putAll(tempMap);
+        }
+        CacheLogUtil.printLog("certAlgorithmConfigMap", certAlgorithmConfigMap);
+    }
 
-	/**
-	 * Gets get with cert code.
-	 */
-	public static CertAlgorithmConfig getWithCertCode(String certCode) {
-		return certAlgorithmConfigMap.get(certCode);
-	}
+    /**
+     * Gets get with cert code.
+     */
+    public static CertAlgorithmConfig getWithCertCode(String certCode) {
+        return certAlgorithmConfigMap.get(certCode);
+    }
 }

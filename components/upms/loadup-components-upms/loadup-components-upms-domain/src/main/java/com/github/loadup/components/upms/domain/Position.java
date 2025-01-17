@@ -41,18 +41,18 @@ import java.util.List;
 @Getter
 @Setter
 public class Position extends BaseDomain {
-	@Serial
-	private static final long serialVersionUID = 5928278866062804522L;
+    @Serial
+    private static final long serialVersionUID = 5928278866062804522L;
 
-	private String     id;
-	private String     positionName;
-	private String     positionCode;
-	private String     positionLevel;
-	private String     description;
-	private List<User> userList;
+    private String id;
+    private String positionName;
+    private String positionCode;
+    private String positionLevel;
+    private String description;
+    private List<User> userList;
 
-	@Override
-	public String toString() {
-		return ToStringUtils.reflectionToString(this);
-	}
+    @Override
+    public String toString() {
+        return ToStringUtils.reflectionToString(this);
+    }
 }

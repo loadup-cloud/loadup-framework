@@ -47,7 +47,7 @@ public class RetryTaskConfigProperties {
      * the prefix of table name
      */
     private String tablePrefix = "";
-    private String dbType      = "MYSQL";
+    private String dbType = "MYSQL";
 
     @NestedConfigurationProperty
     private List<RetryStrategyConfig> taskList = new ArrayList<>();

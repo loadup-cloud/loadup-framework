@@ -40,24 +40,24 @@ import java.io.InputStream;
  */
 public class FileUtil {
 
-	/**
-	 * New method, to get file content
-	 *
-	 * @throws IOException
-	 */
-	public static String getFileContent(String filePath, Object obj) throws IOException {
-		InputStream inputFileStream = null;
-		try {
-			inputFileStream = obj.getClass().getClassLoader().getResourceAsStream(filePath);
-			byte[] fileByte = new byte[inputFileStream.available()];
-			inputFileStream.read(fileByte);
-			return new String(fileByte, "UTF-8");
-		} finally {
-			if (null != inputFileStream) {
-				inputFileStream.close();
-			}
-		}
+    /**
+     * New method, to get file content
+     *
+     * @throws IOException
+     */
+    public static String getFileContent(String filePath, Object obj) throws IOException {
+        InputStream inputFileStream = null;
+        try {
+            inputFileStream = obj.getClass().getClassLoader().getResourceAsStream(filePath);
+            byte[] fileByte = new byte[inputFileStream.available()];
+            inputFileStream.read(fileByte);
+            return new String(fileByte, "UTF-8");
+        } finally {
+            if (null != inputFileStream) {
+                inputFileStream.close();
+            }
+        }
 
-	}
+    }
 
 }

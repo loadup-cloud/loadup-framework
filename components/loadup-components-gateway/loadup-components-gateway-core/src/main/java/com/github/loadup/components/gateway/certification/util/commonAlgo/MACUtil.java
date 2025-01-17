@@ -28,7 +28,9 @@ package com.github.loadup.components.gateway.certification.util.commonAlgo;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import javax.crypto.*;
+import javax.crypto.KeyGenerator;
+import javax.crypto.Mac;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Security;
 
@@ -37,36 +39,36 @@ import java.security.Security;
  */
 public class MACUtil {
 
-	static {
-		if (Security.getProvider("BC") == null) {
-			Security.addProvider(new BouncyCastleProvider());
-		}
-	}
+    static {
+        if (Security.getProvider("BC") == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+    }
 
-	/**
-	 * mac系列算法实现
-	 */
-	public static byte[] digest(byte[] data, byte[] key, String algorithm) throws Exception {
-		Mac mac = Mac.getInstance(algorithm);
-		mac.init(recoverKey(key, algorithm));
-		return mac.doFinal(data);
-	}
+    /**
+     * mac系列算法实现
+     */
+    public static byte[] digest(byte[] data, byte[] key, String algorithm) throws Exception {
+        Mac mac = Mac.getInstance(algorithm);
+        mac.init(recoverKey(key, algorithm));
+        return mac.doFinal(data);
+    }
 
-	/**
-	 * 基于秘钥的二进制数组和算法还原秘钥
-	 */
-	public static SecretKey recoverKey(byte[] data, String algorithm) {
-		return new SecretKeySpec(data, algorithm);
-	}
+    /**
+     * 基于秘钥的二进制数组和算法还原秘钥
+     */
+    public static SecretKey recoverKey(byte[] data, String algorithm) {
+        return new SecretKeySpec(data, algorithm);
+    }
 
-	/**
-	 * 生成算法对应的秘钥
-	 */
-	public static byte[] generateKey(String algorithm) throws Exception {
-		KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm);
-		SecretKey secretKey = keyGenerator.generateKey();
-		return secretKey.getEncoded();
+    /**
+     * 生成算法对应的秘钥
+     */
+    public static byte[] generateKey(String algorithm) throws Exception {
+        KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm);
+        SecretKey secretKey = keyGenerator.generateKey();
+        return secretKey.getEncoded();
 
-	}
+    }
 
 }

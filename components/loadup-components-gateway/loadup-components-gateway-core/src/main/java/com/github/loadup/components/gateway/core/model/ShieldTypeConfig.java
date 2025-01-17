@@ -34,68 +34,68 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 public class ShieldTypeConfig {
 
-	/**
-	 * interface id
-	 */
-	private String interfaceId;
+    /**
+     * interface id
+     */
+    private String interfaceId;
 
-	/**
-	 * key
-	 */
-	private String key;
+    /**
+     * key
+     */
+    private String key;
 
-	/**
-	 * {@link ShieldType}
-	 */
-	private ShieldType shieldType;
+    /**
+     * {@link ShieldType}
+     */
+    private ShieldType shieldType;
 
-	/**
-	 * Getter method for property <tt>interfaceId</tt>.
-	 */
-	public String getInterfaceId() {
-		return interfaceId;
-	}
+    /**
+     * Getter method for property <tt>interfaceId</tt>.
+     */
+    public String getInterfaceId() {
+        return interfaceId;
+    }
 
-	/**
-	 * Setter method for property <tt>interfaceId</tt>.
-	 */
-	public void setInterfaceId(String interfaceId) {
-		this.interfaceId = interfaceId;
-	}
+    /**
+     * Setter method for property <tt>interfaceId</tt>.
+     */
+    public void setInterfaceId(String interfaceId) {
+        this.interfaceId = interfaceId;
+    }
 
-	/**
-	 * Getter method for property <tt>key</tt>.
-	 */
-	public String getKey() {
-		return key;
-	}
+    /**
+     * Getter method for property <tt>key</tt>.
+     */
+    public String getKey() {
+        return key;
+    }
 
-	/**
-	 * Setter method for property <tt>key</tt>.
-	 */
-	public void setKey(String key) {
-		this.key = key;
-	}
+    /**
+     * Setter method for property <tt>key</tt>.
+     */
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-	/**
-	 * Getter method for property <tt>shieldType</tt>.
-	 */
-	public ShieldType getShieldType() {
-		return shieldType;
-	}
+    /**
+     * Getter method for property <tt>shieldType</tt>.
+     */
+    public ShieldType getShieldType() {
+        return shieldType;
+    }
 
-	/**
-	 * Setter method for property <tt>shieldType</tt>.
-	 */
-	public void setShieldType(ShieldType shieldType) {
-		this.shieldType = shieldType;
-	}
+    /**
+     * Setter method for property <tt>shieldType</tt>.
+     */
+    public void setShieldType(ShieldType shieldType) {
+        this.shieldType = shieldType;
+    }
 
-	/**
-	 * @see Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-	}
+    /**
+     * @see Object#toString()
+     */
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

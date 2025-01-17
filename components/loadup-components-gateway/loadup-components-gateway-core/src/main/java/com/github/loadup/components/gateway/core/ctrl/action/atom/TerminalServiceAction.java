@@ -38,8 +38,8 @@ import org.springframework.stereotype.Component;
 @Component("terminalServiceAction")
 public class TerminalServiceAction implements BusinessAction {
 
-	@Override
-	public void process(GatewayRuntimeProcessContext context) {
-	}
+    @Override
+    public void process(GatewayRuntimeProcessContext context) {
+    }
 
 }

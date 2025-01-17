@@ -39,6 +39,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class Tenant extends DTO {
-    private String              tenantId;
+    private String tenantId;
     private Map<String, String> attributes = new HashMap<>();
 }

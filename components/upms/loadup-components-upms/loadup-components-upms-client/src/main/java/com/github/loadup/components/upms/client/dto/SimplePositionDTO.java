@@ -34,23 +34,23 @@ import lombok.Setter;
 @Setter
 public class SimplePositionDTO extends DTO {
 
-	private String id;
-	/**
-	 * 名称
-	 */
-	private String positionName;
+    private String id;
+    /**
+     * 名称
+     */
+    private String positionName;
 
-	/**
-	 * 编码
-	 */
-	private String positionCode;
-	/**
-	 * 级别
-	 */
-	private String positionLevel;
+    /**
+     * 编码
+     */
+    private String positionCode;
+    /**
+     * 级别
+     */
+    private String positionLevel;
 
-	/**
-	 * 描述
-	 */
-	private String description;
+    /**
+     * 描述
+     */
+    private String description;
 }

@@ -35,42 +35,42 @@ import com.github.loadup.components.gateway.facade.model.Result;
  */
 public class ResultUtil {
 
-	/**
-	 *
-	 */
-	public static Result buildResult(GatewayErrorCode errorCode, String message) {
+    /**
+     *
+     */
+    public static Result buildResult(GatewayErrorCode errorCode, String message) {
 
-		Result result = new Result();
-		result.setResultCode(errorCode.getCode());
-		result.setResultStatus(errorCode.getStatus());
-		result.setResultMessage(errorCode.getMessage());
-		return result;
+        Result result = new Result();
+        result.setResultCode(errorCode.getCode());
+        result.setResultStatus(errorCode.getStatus());
+        result.setResultMessage(errorCode.getMessage());
+        return result;
 
-	}
+    }
 
-	/**
-	 *
-	 */
-	public static Result buildResult(GatewayErrorCode errorCode) {
-		return buildResult(errorCode, errorCode.getMessage());
-	}
+    /**
+     *
+     */
+    public static Result buildResult(GatewayErrorCode errorCode) {
+        return buildResult(errorCode, errorCode.getMessage());
+    }
 
-	/**
-	 *
-	 */
-	public static Result buildResult(ResultCode errorCode) {
-		Result result = new Result();
-		result.setResultCode(errorCode.getCode());
-		result.setResultStatus(errorCode.getStatus());
-		result.setResultMessage(errorCode.getMessage());
-		return result;
-	}
+    /**
+     *
+     */
+    public static Result buildResult(ResultCode errorCode) {
+        Result result = new Result();
+        result.setResultCode(errorCode.getCode());
+        result.setResultStatus(errorCode.getStatus());
+        result.setResultMessage(errorCode.getMessage());
+        return result;
+    }
 
-	/**
-	 *
-	 */
-	public static Result buildSuccessResult() {
-		return buildResult(GatewayErrorCode.SUCCESS);
-	}
+    /**
+     *
+     */
+    public static Result buildSuccessResult() {
+        return buildResult(GatewayErrorCode.SUCCESS);
+    }
 
 }

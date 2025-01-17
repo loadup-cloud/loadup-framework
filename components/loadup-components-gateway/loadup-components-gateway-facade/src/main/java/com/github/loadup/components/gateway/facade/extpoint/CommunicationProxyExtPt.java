@@ -35,12 +35,12 @@ import com.github.loadup.components.gateway.facade.model.CommunicationConfigurat
  */
 public interface CommunicationProxyExtPt extends ExtensionPointI {
 
-	/**
-	 * send message based on different communication configurations, such as http, SPRINGBean, etc.
-	 *
-	 *
-	 *
-	 * For example, message for SpringBean call should be in "JSON" format (As the plugin code use json tools to convert message to java
-	 */
-	String sendMessage(CommunicationConfiguration configuration, String messageContent);
+    /**
+     * send message based on different communication configurations, such as http, SPRINGBean, etc.
+     * <p>
+     * <p>
+     * <p>
+     * For example, message for SpringBean call should be in "JSON" format (As the plugin code use json tools to convert message to java
+     */
+    String sendMessage(CommunicationConfiguration configuration, String messageContent);
 }

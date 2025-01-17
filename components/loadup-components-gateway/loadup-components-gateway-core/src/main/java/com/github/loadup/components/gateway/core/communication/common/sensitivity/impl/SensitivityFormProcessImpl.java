@@ -38,13 +38,13 @@ import java.util.Map;
 @Component("sensitivityFormProcessImpl")
 public class SensitivityFormProcessImpl extends SensitivityUrlProcessImpl {
 
-	@Override
-	public String mask(String maskContent, Map<String, ShieldType> shieldRule) {
-		return super.mask(maskContent, shieldRule);
-	}
+    @Override
+    public String mask(String maskContent, Map<String, ShieldType> shieldRule) {
+        return super.mask(maskContent, shieldRule);
+    }
 
-	@Override
-	public SensitivityProcessType getTag() {
-		return SensitivityProcessType.FORM_BODY;
-	}
+    @Override
+    public SensitivityProcessType getTag() {
+        return SensitivityProcessType.FORM_BODY;
+    }
 }

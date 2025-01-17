@@ -21,13 +21,13 @@ public class CaptchaProperties {
     /**
      * 验证码显示宽度
      */
-    private int    width       = 130;
+    private int width = 130;
     /**
      * 验证码显示高度
      */
-    private int    height      = 48;
-    private String charType    = CharTypeEnum.DEFAULT.getCode();
-    private int    length      = 4;
+    private int height = 48;
+    private String charType = CharTypeEnum.DEFAULT.getCode();
+    private int length = 4;
     private String captchaType = CaptchaTypeEnum.PNG_IMG.getCode();
 
     private Font font;

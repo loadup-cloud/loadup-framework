@@ -35,14 +35,14 @@ import com.github.loadup.components.gateway.message.unimsg.UnifyMsg;
  */
 public interface MessageAssembler {
 
-	/**
-	 * 组装报文服务
-	 */
-	MessageEnvelope assemble(UnifyMsg message);
+    /**
+     * 组装报文服务
+     */
+    MessageEnvelope assemble(UnifyMsg message);
 
-	/**
-	 * 组装异常报文服务
-	 */
-	MessageEnvelope assembleError(UnifyMsg message, CommonException exception);
+    /**
+     * 组装异常报文服务
+     */
+    MessageEnvelope assembleError(UnifyMsg message, CommonException exception);
 
 }

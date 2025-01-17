@@ -33,8 +33,8 @@ import com.github.loadup.components.gateway.facade.enums.CertTypeEnum;
  */
 public interface CertGetService {
 
-	/**
-	 * 获取证书或秘钥内容, 从缓存获取对应内容
-	 */
-	public String getCert(String certAliasName, CertTypeEnum certType, String bizKey);
+    /**
+     * 获取证书或秘钥内容, 从缓存获取对应内容
+     */
+    public String getCert(String certAliasName, CertTypeEnum certType, String bizKey);
 }

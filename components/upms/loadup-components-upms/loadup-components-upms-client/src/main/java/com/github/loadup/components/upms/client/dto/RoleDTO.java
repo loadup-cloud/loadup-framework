@@ -34,5 +34,5 @@ import java.util.List;
 @Getter
 @Setter
 public class RoleDTO extends SimpleRoleDTO {
-	private List<SimpleUserDTO> userList;
+    private List<SimpleUserDTO> userList;
 }

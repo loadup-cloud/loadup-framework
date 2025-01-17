@@ -71,7 +71,7 @@ public class RetryComponentServiceImpl implements RetryComponentService {
      * the factory of transaction templete
      */
     @Autowired
-    private TransactionTemplate         transactionTemplate;
+    private TransactionTemplate transactionTemplate;
     @Autowired
     private TaskStrategyExecutorFactory taskStrategyExecutorFactory;
 

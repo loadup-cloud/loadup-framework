@@ -29,7 +29,10 @@ package com.github.loadup.components.gateway.certification.util.commonAlgo;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import java.security.Security;
@@ -43,92 +46,92 @@ import java.security.Security;
  */
 public class DESUtil {
 
-	/**
-	 * DES算法名字
-	 */
-	private static String KEY_ALGO_NAME = "DES";
+    /**
+     * DES算法名字
+     */
+    private static String KEY_ALGO_NAME = "DES";
 
-	static {
-		if (Security.getProvider("BC") == null) {
-			Security.addProvider(new BouncyCastleProvider());
-		}
-	}
+    static {
+        if (Security.getProvider("BC") == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+    }
 
-	/**
-	 * 通用加密处理
-	 */
-	public static byte[] encrypt(byte[] data, byte[] key, String algorithm) throws Exception {
+    /**
+     * 通用加密处理
+     */
+    public static byte[] encrypt(byte[] data, byte[] key, String algorithm) throws Exception {
 
-		Cipher cipher = Cipher.getInstance(algorithm);
+        Cipher cipher = Cipher.getInstance(algorithm);
 
-		if (isCBCMode(algorithm)) {
-			cipher.init(Cipher.ENCRYPT_MODE, recovertKey(key), getIv(cipher));
-		} else {
-			cipher.init(Cipher.ENCRYPT_MODE, recovertKey(key));
-		}
+        if (isCBCMode(algorithm)) {
+            cipher.init(Cipher.ENCRYPT_MODE, recovertKey(key), getIv(cipher));
+        } else {
+            cipher.init(Cipher.ENCRYPT_MODE, recovertKey(key));
+        }
 
-		return cipher.doFinal(data);
+        return cipher.doFinal(data);
 
-	}
+    }
 
-	/**
-	 * 通用解密处理
-	 */
-	public static byte[] decrypt(byte[] data, byte[] key, String algorithm) throws Exception {
+    /**
+     * 通用解密处理
+     */
+    public static byte[] decrypt(byte[] data, byte[] key, String algorithm) throws Exception {
 
-		Cipher cipher = Cipher.getInstance(algorithm);
+        Cipher cipher = Cipher.getInstance(algorithm);
 
-		if (isCBCMode(algorithm)) {
-			cipher.init(Cipher.DECRYPT_MODE, recovertKey(key), getIv(cipher));
-		} else {
-			cipher.init(Cipher.DECRYPT_MODE, recovertKey(key));
-		}
+        if (isCBCMode(algorithm)) {
+            cipher.init(Cipher.DECRYPT_MODE, recovertKey(key), getIv(cipher));
+        } else {
+            cipher.init(Cipher.DECRYPT_MODE, recovertKey(key));
+        }
 
-		return cipher.doFinal(data);
-	}
+        return cipher.doFinal(data);
+    }
 
-	/**
-	 * 生成DES算法秘钥的二进制数组
-	 */
-	public static byte[] generateKey(int keyLen) throws Exception {
-		KeyGenerator keyGenerator = KeyGenerator.getInstance(KEY_ALGO_NAME);
+    /**
+     * 生成DES算法秘钥的二进制数组
+     */
+    public static byte[] generateKey(int keyLen) throws Exception {
+        KeyGenerator keyGenerator = KeyGenerator.getInstance(KEY_ALGO_NAME);
 
-		keyGenerator.init(keyLen);
+        keyGenerator.init(keyLen);
 
-		SecretKey secretKey = keyGenerator.generateKey();
+        SecretKey secretKey = keyGenerator.generateKey();
 
-		return secretKey.getEncoded();
+        return secretKey.getEncoded();
 
-	}
+    }
 
-	/**
-	 * 基于秘钥 byte数组生成秘钥
-	 */
-	public static SecretKey recovertKey(byte[] key) throws Exception {
+    /**
+     * 基于秘钥 byte数组生成秘钥
+     */
+    public static SecretKey recovertKey(byte[] key) throws Exception {
 
-		DESKeySpec desKeySpec = new DESKeySpec(key);
+        DESKeySpec desKeySpec = new DESKeySpec(key);
 
-		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(KEY_ALGO_NAME);
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(KEY_ALGO_NAME);
 
-		return keyFactory.generateSecret(desKeySpec);
-	}
+        return keyFactory.generateSecret(desKeySpec);
+    }
 
-	/**
-	 * 初始化向量
-	 */
-	public static IvParameterSpec getIv(Cipher cipher) {
+    /**
+     * 初始化向量
+     */
+    public static IvParameterSpec getIv(Cipher cipher) {
 
-		byte[] iv = new byte[cipher.getBlockSize()];
-		for (int i = 0; i < iv.length; i++) {
-			iv[i] = 0;
-		}
-		return new IvParameterSpec(iv);
-	}
+        byte[] iv = new byte[cipher.getBlockSize()];
+        for (int i = 0; i < iv.length; i++) {
+            iv[i] = 0;
+        }
+        return new IvParameterSpec(iv);
+    }
 
-	/**
-	 * 判断算是否CBC模式，此方法值针对DES, DESede等算法适用
-	 */
-	public static boolean isCBCMode(String algoStr) {
-		return StringUtils.contains(algoStr, "CBC");
-	}
+    /**
+     * 判断算是否CBC模式，此方法值针对DES, DESede等算法适用
+     */
+    public static boolean isCBCMode(String algoStr) {
+        return StringUtils.contains(algoStr, "CBC");
+    }
 }

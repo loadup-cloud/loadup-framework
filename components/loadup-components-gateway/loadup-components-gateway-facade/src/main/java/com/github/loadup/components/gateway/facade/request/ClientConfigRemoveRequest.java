@@ -35,21 +35,21 @@ import jakarta.validation.constraints.Size;
 
 public class ClientConfigRemoveRequest extends BaseRequest {
 
-	@NotBlank(message = "clienId can not be balank")
-	@Size(max = 64, message = "clientId's length should be not bigger than 64.")
-	private String clientId;
+    @NotBlank(message = "clienId can not be balank")
+    @Size(max = 64, message = "clientId's length should be not bigger than 64.")
+    private String clientId;
 
-	/**
-	 * Getter method for property <tt>clientId</tt>.
-	 */
-	public String getClientId() {
-		return clientId;
-	}
+    /**
+     * Getter method for property <tt>clientId</tt>.
+     */
+    public String getClientId() {
+        return clientId;
+    }
 
-	/**
-	 * Setter method for property <tt>clientId</tt>.
-	 */
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
-	}
+    /**
+     * Setter method for property <tt>clientId</tt>.
+     */
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
 }

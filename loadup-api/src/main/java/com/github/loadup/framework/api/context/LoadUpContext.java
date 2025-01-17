@@ -40,10 +40,10 @@ import lombok.Setter;
 
 public class LoadUpContext {
     private static ThreadLocal<LoadUpContext> threadLocal = new TransmittableThreadLocal<>();
-    private static List<Tenant>               tenantList  = new ArrayList<>();
+    private static List<Tenant> tenantList = new ArrayList<>();
     @Getter
     @Setter
-    private        Map<String, Object>        attributes  = new ConcurrentHashMap<>();
+    private Map<String, Object> attributes = new ConcurrentHashMap<>();
 
     @Getter
     @Setter

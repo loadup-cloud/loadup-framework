@@ -45,43 +45,43 @@ import java.security.Security;
 @Component
 public class AlgSHA extends AbstractAlgorithm {
 
-	/**
-	 * 日志定义
-	 */
-	private static Logger logger = LoggerFactory.getLogger("COMMON-CERT-ALGORITHM");
+    /**
+     * 日志定义
+     */
+    private static Logger logger = LoggerFactory.getLogger("COMMON-CERT-ALGORITHM");
 
-	static {
-		if (Security.getProvider("BC") == null) {
-			Security.addProvider(new BouncyCastleProvider());
-		}
-	}
+    static {
+        if (Security.getProvider("BC") == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+    }
 
-	/**
-	 * 摘要算法
-	 */
-	@Override
-	public byte[] digest(byte[] data, String algorithm) {
+    /**
+     * 摘要算法
+     */
+    @Override
+    public byte[] digest(byte[] data, String algorithm) {
 
-		try {
-			MessageDigest md = MessageDigest.getInstance(algorithm);
-			return md.digest(data);
-		} catch (Exception e) {
-			LogUtil.error(logger, e, genLogSign(algorithm) + "message digest error:");
+        try {
+            MessageDigest md = MessageDigest.getInstance(algorithm);
+            return md.digest(data);
+        } catch (Exception e) {
+            LogUtil.error(logger, e, genLogSign(algorithm) + "message digest error:");
 
-			throw new CertificationException(CertificationErrorCode.DIGEST_ERROR, genLogSign(algorithm), e);
-		}
+            throw new CertificationException(CertificationErrorCode.DIGEST_ERROR, genLogSign(algorithm), e);
+        }
 
-	}
+    }
 
-	/**
-	 * 注册算法类到对应manager接口
-	 */
-	@Override
-	protected void doRegisterManager() {
-		DigestManager.registerAlgo(AlgorithmEnum.SHA_1, this);
-		DigestManager.registerAlgo(AlgorithmEnum.SHA_224, this);
-		DigestManager.registerAlgo(AlgorithmEnum.SHA_256, this);
-		DigestManager.registerAlgo(AlgorithmEnum.SHA_384, this);
-		DigestManager.registerAlgo(AlgorithmEnum.SHA_512, this);
-	}
+    /**
+     * 注册算法类到对应manager接口
+     */
+    @Override
+    protected void doRegisterManager() {
+        DigestManager.registerAlgo(AlgorithmEnum.SHA_1, this);
+        DigestManager.registerAlgo(AlgorithmEnum.SHA_224, this);
+        DigestManager.registerAlgo(AlgorithmEnum.SHA_256, this);
+        DigestManager.registerAlgo(AlgorithmEnum.SHA_384, this);
+        DigestManager.registerAlgo(AlgorithmEnum.SHA_512, this);
+    }
 }

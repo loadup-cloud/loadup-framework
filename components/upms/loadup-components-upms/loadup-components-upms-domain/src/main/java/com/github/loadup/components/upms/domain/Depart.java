@@ -41,21 +41,21 @@ import java.util.List;
 @Getter
 @Setter
 public class Depart extends BaseDomain {
-	@Serial
-	private static final long serialVersionUID = 5928278866062804522L;
+    @Serial
+    private static final long serialVersionUID = 5928278866062804522L;
 
-	private String     id;
-	private Depart     parent;
-	private String     departName;
-	private String     departCode;
-	private String     departType;
-	private String     description;
-	private String     status;
-	private int        orderIndex;
-	private List<User> userList;
+    private String id;
+    private Depart parent;
+    private String departName;
+    private String departCode;
+    private String departType;
+    private String description;
+    private String status;
+    private int orderIndex;
+    private List<User> userList;
 
-	@Override
-	public String toString() {
-		return ToStringUtils.reflectionToString(this);
-	}
+    @Override
+    public String toString() {
+        return ToStringUtils.reflectionToString(this);
+    }
 }

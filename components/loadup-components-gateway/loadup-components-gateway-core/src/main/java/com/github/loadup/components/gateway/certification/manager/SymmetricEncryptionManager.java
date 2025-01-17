@@ -42,74 +42,74 @@ import java.util.Map;
 @Component
 public class SymmetricEncryptionManager extends AbstractAlgoManager {
 
-	/**
-	 * 算法Map
-	 */
-	private static Map<AlgorithmEnum, Algorithm> algoMap = new HashMap<AlgorithmEnum, Algorithm>();
+    /**
+     * 算法Map
+     */
+    private static Map<AlgorithmEnum, Algorithm> algoMap = new HashMap<AlgorithmEnum, Algorithm>();
 
-	/**
-	 * 注册算法
-	 */
-	public static void registerAlgo(AlgorithmEnum algo, Object obj) {
-		algoMap.put(algo, (Algorithm) obj);
-	}
+    /**
+     * 注册算法
+     */
+    public static void registerAlgo(AlgorithmEnum algo, Object obj) {
+        algoMap.put(algo, (Algorithm) obj);
+    }
 
-	/**
-	 * 解密实现
-	 */
-	@Override
-	public String decrypt(String encryptedContent, CertificationFactor certificationFactor) {
-		return (String) doOperation(certificationFactor, encryptedContent);
-	}
+    /**
+     * 解密实现
+     */
+    @Override
+    public String decrypt(String encryptedContent, CertificationFactor certificationFactor) {
+        return (String) doOperation(certificationFactor, encryptedContent);
+    }
 
-	/**
-	 * 加密接口
-	 */
-	@Override
-	public String encrypt(String srcContent, CertificationFactor certificationFactor) {
-		return (String) doOperation(certificationFactor, srcContent);
-	}
+    /**
+     * 加密接口
+     */
+    @Override
+    public String encrypt(String srcContent, CertificationFactor certificationFactor) {
+        return (String) doOperation(certificationFactor, srcContent);
+    }
 
-	/**
-	 * 执行解密操作
-	 */
-	@Override
-	protected byte[] doDecrypt(byte[] srcInput, CertificationFactor certificationFactor) {
-		Algorithm algorithm = getAlgorithm(certificationFactor);
-		byte[] key = (byte[]) certificationFactor.getCertMap().get(CertTypeEnum.SYMMETRIC_KEY.getCertType());
-		return algorithm.decrypt(srcInput, key, certificationFactor.getAlgoString());
-	}
+    /**
+     * 执行解密操作
+     */
+    @Override
+    protected byte[] doDecrypt(byte[] srcInput, CertificationFactor certificationFactor) {
+        Algorithm algorithm = getAlgorithm(certificationFactor);
+        byte[] key = (byte[]) certificationFactor.getCertMap().get(CertTypeEnum.SYMMETRIC_KEY.getCertType());
+        return algorithm.decrypt(srcInput, key, certificationFactor.getAlgoString());
+    }
 
-	/**
-	 * 执行加密操作
-	 */
-	@Override
-	protected byte[] doEncrypt(byte[] srcInput, CertificationFactor certificationFactor) {
-		Algorithm algorithm = getAlgorithm(certificationFactor);
-		byte[] key = (byte[]) certificationFactor.getCertMap().get(CertTypeEnum.SYMMETRIC_KEY.getCertType());
-		return algorithm.encrypt(srcInput, key, certificationFactor.getAlgoString());
-	}
+    /**
+     * 执行加密操作
+     */
+    @Override
+    protected byte[] doEncrypt(byte[] srcInput, CertificationFactor certificationFactor) {
+        Algorithm algorithm = getAlgorithm(certificationFactor);
+        byte[] key = (byte[]) certificationFactor.getCertMap().get(CertTypeEnum.SYMMETRIC_KEY.getCertType());
+        return algorithm.encrypt(srcInput, key, certificationFactor.getAlgoString());
+    }
 
-	/**
-	 * 获取支持算法映射表
-	 */
-	@Override
-	protected Map<AlgorithmEnum, Algorithm> getAlgorithmMap() {
-		return algoMap;
-	}
+    /**
+     * 获取支持算法映射表
+     */
+    @Override
+    protected Map<AlgorithmEnum, Algorithm> getAlgorithmMap() {
+        return algoMap;
+    }
 
-	/**
-	 * Invoked by a BeanFactory after it has set all bean properties supplied
-	 * (and satisfied BeanFactoryAware and ApplicationContextAware).
-	 * <p>This method allows the bean instance to perform initialization only
-	 * possible when all bean properties have been set and to throw an
-	 * exception in the event of misconfiguration.
-	 *
-	 * @throws Exception in the event of misconfiguration (such
-	 * as failure to set an essential property) or if initialization fails.
-	 */
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		CertificationServiceImpl.registerManager("SYMMETRIC_ENCRYPTION", this);
-	}
+    /**
+     * Invoked by a BeanFactory after it has set all bean properties supplied
+     * (and satisfied BeanFactoryAware and ApplicationContextAware).
+     * <p>This method allows the bean instance to perform initialization only
+     * possible when all bean properties have been set and to throw an
+     * exception in the event of misconfiguration.
+     *
+     * @throws Exception in the event of misconfiguration (such
+     *                   as failure to set an essential property) or if initialization fails.
+     */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        CertificationServiceImpl.registerManager("SYMMETRIC_ENCRYPTION", this);
+    }
 }

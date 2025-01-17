@@ -42,56 +42,56 @@ import org.springframework.stereotype.Component;
 @Component("gatewayFileMessageSenderConfigBuilder")
 public class MessageSenderConfigBuilder extends AbstractInterfaceConfigBuilder<MessageSenderConfigDto> {
 
-	private static final Logger logger = LoggerFactory.getLogger(MessageSenderConfigBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageSenderConfigBuilder.class);
 
-	/**
-	 * validate mandatory fields
-	 */
-	@Override
-	protected boolean validate(String url, String securityStrategyCode) {
-		boolean isValidUri = super.validate(url, securityStrategyCode);
+    /**
+     * validate mandatory fields
+     */
+    @Override
+    protected boolean validate(String url, String securityStrategyCode) {
+        boolean isValidUri = super.validate(url, securityStrategyCode);
 
-		if (isValidUri) {
-			if (StringUtils.contains(url, Constant.URI_SEPARATOR)) {
+        if (isValidUri) {
+            if (StringUtils.contains(url, Constant.URI_SEPARATOR)) {
 
-				String domainPath = StringUtils.substringAfter(url, Constant.URI_SEPARATOR);
+                String domainPath = StringUtils.substringAfter(url, Constant.URI_SEPARATOR);
 
-				if (StringUtils.isBlank(domainPath)) {
-					LogUtil.error(logger, "Ignore invalid URI string=" + url);
-					return false;
-				}
-			}
-		}
+                if (StringUtils.isBlank(domainPath)) {
+                    LogUtil.error(logger, "Ignore invalid URI string=" + url);
+                    return false;
+                }
+            }
+        }
 
-		return isValidUri;
+        return isValidUri;
 
-	}
+    }
 
-	/**
-	 * generic config build
-	 */
-	public MessageSenderConfigDto build(String url, String securityStrategyCode) {
-		if (!validate(url, securityStrategyCode)) {
-			return null;
-		}
+    /**
+     * generic config build
+     */
+    public MessageSenderConfigDto build(String url, String securityStrategyCode) {
+        if (!validate(url, securityStrategyCode)) {
+            return null;
+        }
 
-		String domainString = getDomain(url);
+        String domainString = getDomain(url);
 
-		MessageSenderConfigDto msgSender = new MessageSenderConfigDto();
-		msgSender.setMessageSenderId(domainString);
-		msgSender.setMessageSenderName(domainString);
-		msgSender.setCertCode(securityStrategyCode);
+        MessageSenderConfigDto msgSender = new MessageSenderConfigDto();
+        msgSender.setMessageSenderId(domainString);
+        msgSender.setMessageSenderName(domainString);
+        msgSender.setCertCode(securityStrategyCode);
 
-		return msgSender;
-	}
+        return msgSender;
+    }
 
-	public MessageSenderConfigDto build(ApiConfigRepository apiConfig) {
-		String domainString = getURIPathWithUrl(apiConfig.getOpenURl());
-		MessageSenderConfigDto msgSender = new MessageSenderConfigDto();
-		msgSender.setMessageSenderId(domainString);
-		msgSender.setMessageSenderName(domainString);
-		msgSender.setCertCode(apiConfig.getSecurityStrategyCode());
-		return msgSender;
-	}
+    public MessageSenderConfigDto build(ApiConfigRepository apiConfig) {
+        String domainString = getURIPathWithUrl(apiConfig.getOpenURl());
+        MessageSenderConfigDto msgSender = new MessageSenderConfigDto();
+        msgSender.setMessageSenderId(domainString);
+        msgSender.setMessageSenderName(domainString);
+        msgSender.setCertCode(apiConfig.getSecurityStrategyCode());
+        return msgSender;
+    }
 
 }

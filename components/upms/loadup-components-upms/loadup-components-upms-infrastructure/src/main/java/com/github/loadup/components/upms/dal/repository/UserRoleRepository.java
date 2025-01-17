@@ -37,15 +37,15 @@ import java.util.List;
 
 @Repository
 public interface UserRoleRepository extends ListCrudRepository<UserRoleDO, String> {
-	List<UserRoleDO> findAllByUserId(String userId);
+    List<UserRoleDO> findAllByUserId(String userId);
 
-	List<UserRoleDO> findAllByRoleId(String roleId);
+    List<UserRoleDO> findAllByRoleId(String roleId);
 
-	@Modifying
-	@Query("delete from upms_user_role where role_id = :roleId")
-	void removeAllByRoleId(@Param("roleId") String roleId);
+    @Modifying
+    @Query("delete from upms_user_role where role_id = :roleId")
+    void removeAllByRoleId(@Param("roleId") String roleId);
 
-	@Modifying
-	@Query("delete from upms_user_role where user_id = :userId")
-	void removeAllByUserId(@Param("userId") String userId);
+    @Modifying
+    @Query("delete from upms_user_role where user_id = :userId")
+    void removeAllByUserId(@Param("userId") String userId);
 }

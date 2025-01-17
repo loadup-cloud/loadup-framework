@@ -40,402 +40,382 @@ import java.util.List;
  */
 public class GatewayRuntimeProcessContext {
 
-	/**
-	 * request interface config
-	 */
-	private InterfaceConfig requesterInterfaceConfig;
+    /**
+     * business exception
+     */
+    public CommonException businessException;
+    /**
+     * request interface config
+     */
+    private InterfaceConfig requesterInterfaceConfig;
+    /**
+     * integrator interface config
+     */
+    private InterfaceConfig integratorInterfaceConfig;
+    /**
+     * request communication config
+     */
+    private CommunicationConfig requesterCommunicationConfig;
+    /**
+     * integrator communication config
+     */
+    private CommunicationConfig integratorCommunicationConfig;
+    /**
+     * trace id
+     */
+    private String traceId;
+    /**
+     * transaction type, see InterfaceType
+     */
+    private String transactionType;
+    /**
+     * receiver client id
+     */
+    private String requesterClientId;
+    /**
+     * integrator client id
+     */
+    private String integratorClientId;
+    /**
+     * requester cert code
+     */
+    private String requesterCertCode;
+    /**
+     * integratorCertCode
+     */
+    private String integratorCertCode;
+    /**
+     * requester url
+     */
+    private String requesterUrl;
+    /**
+     * requester uri
+     */
+    private String requesterUri;
+    /**
+     * integrator url
+     */
+    private String integratorUrl;
+    /**
+     * integrator interface id
+     */
+    private String integratorInterfaceId;
+    /**
+     * requester http method
+     */
+    private String requesterHttpMethod;
+    /**
+     * need status
+     */
+    private boolean needStatus = true;
+    /**
+     * limit entry key id list
+     */
+    private List<LimitConfig> limitConfigListList = Collections.emptyList();
+    /**
+     * request message: this is from the requester side
+     */
+    private MessageEnvelope requestMessage;
+    /**
+     * response message: the message that we replay to the requester
+     */
+    private MessageEnvelope responseMessage;
+    /**
+     * resultMessage: each result we get from the previous action. all the middle result is in it.
+     */
+    private MessageEnvelope resultMessage;
 
-	/**
-	 * integrator interface config
-	 */
-	private InterfaceConfig integratorInterfaceConfig;
+    /**
+     * Gets get transaction type.
+     */
+    public String getTransactionType() {
+        return transactionType;
+    }
 
-	/**
-	 * request communication config
-	 */
-	private CommunicationConfig requesterCommunicationConfig;
+    /**
+     * Sets set transaction type.
+     */
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
+    }
 
-	/**
-	 * integrator communication config
-	 */
-	private CommunicationConfig integratorCommunicationConfig;
+    /**
+     * Is need status boolean.
+     */
+    public boolean isNeedStatus() {
+        return needStatus;
+    }
 
-	/**
-	 * trace id
-	 */
-	private String traceId;
+    /**
+     * Sets set need status.
+     */
+    public void setNeedStatus(boolean needStatus) {
+        this.needStatus = needStatus;
+    }
 
-	/**
-	 * transaction type, see InterfaceType
-	 */
-	private String transactionType;
+    /**
+     * Gets get request uri.
+     */
+    public String getRequesterUri() {
+        return requesterUri;
+    }
 
-	/**
-	 * receiver client id
-	 */
-	private String requesterClientId;
+    /**
+     * Sets set request uri.
+     */
+    public void setRequesterUri(String requesterUri) {
+        this.requesterUri = requesterUri;
+    }
 
-	/**
-	 * integrator client id
-	 */
-	private String integratorClientId;
+    /**
+     * Gets get requester url.
+     */
+    public String getRequesterUrl() {
+        return requesterUrl;
+    }
 
-	/**
-	 * requester cert code
-	 */
-	private String requesterCertCode;
+    /**
+     * Sets set requester url.
+     */
+    public void setRequesterUrl(String requesterUrl) {
+        this.requesterUrl = requesterUrl;
+    }
 
-	/**
-	 * integratorCertCode
-	 */
-	private String integratorCertCode;
+    /**
+     * Gets get integration url.
+     */
+    public String getIntegratorUrl() {
+        return integratorUrl;
+    }
 
-	/**
-	 * requester url
-	 */
-	private String requesterUrl;
+    /**
+     * Sets set integrator url.
+     */
+    public void setIntegratorUrl(String integratorUrl) {
+        this.integratorUrl = integratorUrl;
+    }
 
-	/**
-	 * requester uri
-	 */
-	private String requesterUri;
+    /**
+     * Gets get requester http method.
+     */
+    public String getRequesterHttpMethod() {
+        return requesterHttpMethod;
+    }
 
-	/**
-	 * integrator url
-	 */
-	private String integratorUrl;
+    /**
+     * Sets set requester http method.
+     */
+    public void setRequesterHttpMethod(String requesterHttpMethod) {
+        this.requesterHttpMethod = requesterHttpMethod;
+    }
 
-	/**
-	 * integrator interface id
-	 */
-	private String integratorInterfaceId;
+    /**
+     * Gets get requester interface config.
+     */
+    public InterfaceConfig getRequesterInterfaceConfig() {
+        return requesterInterfaceConfig;
+    }
 
-	/**
-	 * requester http method
-	 */
-	private String requesterHttpMethod;
+    /**
+     * Sets set requester interface config.
+     */
+    public void setRequesterInterfaceConfig(InterfaceConfig requesterInterfaceConfig) {
+        this.requesterInterfaceConfig = requesterInterfaceConfig;
+    }
 
-	/**
-	 * need status
-	 */
-	private boolean needStatus = true;
+    /**
+     * Gets get integrator interface config.
+     */
+    public InterfaceConfig getIntegratorInterfaceConfig() {
+        return integratorInterfaceConfig;
+    }
 
-	/**
-	 * limit entry key id list
-	 */
-	private List<LimitConfig> limitConfigListList = Collections.emptyList();
+    /**
+     * Sets set integrator interface config.
+     */
+    public void setIntegratorInterfaceConfig(InterfaceConfig integratorInterfaceConfig) {
+        this.integratorInterfaceConfig = integratorInterfaceConfig;
+    }
 
-	/**
-	 * Gets get transaction type.
-	 */
-	public String getTransactionType() {
-		return transactionType;
-	}
+    /**
+     * Gets get requester communication config.
+     */
+    public CommunicationConfig getRequesterCommunicationConfig() {
+        return requesterCommunicationConfig;
+    }
 
-	/**
-	 * Sets set transaction type.
-	 */
-	public void setTransactionType(String transactionType) {
-		this.transactionType = transactionType;
-	}
+    /**
+     * Sets set requester communication config.
+     */
+    public void setRequesterCommunicationConfig(CommunicationConfig requesterCommunicationConfig) {
+        this.requesterCommunicationConfig = requesterCommunicationConfig;
+    }
 
-	/**
-	 * Is need status boolean.
-	 */
-	public boolean isNeedStatus() {
-		return needStatus;
-	}
+    /**
+     * Gets get integrator communication config.
+     */
+    public CommunicationConfig getIntegratorCommunicationConfig() {
+        return integratorCommunicationConfig;
+    }
 
-	/**
-	 * Sets set need status.
-	 */
-	public void setNeedStatus(boolean needStatus) {
-		this.needStatus = needStatus;
-	}
+    /**
+     * Sets set integrator communication config.
+     */
+    public void setIntegratorCommunicationConfig(CommunicationConfig integratorCommunicationConfig) {
+        this.integratorCommunicationConfig = integratorCommunicationConfig;
+    }
 
-	/**
-	 * Gets get request uri.
-	 */
-	public String getRequesterUri() {
-		return requesterUri;
-	}
+    /**
+     * Gets get trace id.
+     */
+    public String getTraceId() {
+        return traceId;
+    }
 
-	/**
-	 * Sets set request uri.
-	 */
-	public void setRequesterUri(String requesterUri) {
-		this.requesterUri = requesterUri;
-	}
+    /**
+     * Sets set trace id.
+     */
+    public void setTraceId(String traceId) {
+        this.traceId = traceId;
+    }
 
-	/**
-	 * request message: this is from the requester side
-	 */
-	private MessageEnvelope requestMessage;
+    /**
+     * Gets get receiver client id.
+     */
+    public String getRequesterClientId() {
+        return requesterClientId;
+    }
 
-	/**
-	 * response message: the message that we replay to the requester
-	 */
-	private MessageEnvelope responseMessage;
+    /**
+     * Sets set receiver client id.
+     */
+    public void setRequesterClientId(String requesterClientId) {
+        this.requesterClientId = requesterClientId;
+    }
 
-	/**
-	 * resultMessage: each result we get from the previous action. all the middle result is in it.
-	 */
-	private MessageEnvelope resultMessage;
+    /**
+     * Gets get integrator client id.
+     */
+    public String getIntegratorClientId() {
+        return integratorClientId;
+    }
 
-	/**
-	 * business exception
-	 */
-	public CommonException businessException;
+    /**
+     * Sets set integrator client id.
+     */
+    public void setIntegratorClientId(String integratorClientId) {
+        this.integratorClientId = integratorClientId;
+    }
 
-	/**
-	 * Gets get requester url.
-	 */
-	public String getRequesterUrl() {
-		return requesterUrl;
-	}
+    /**
+     * Gets get cert code from requester.
+     */
+    public String getRequesterCertCode() {
+        return requesterCertCode;
+    }
 
-	/**
-	 * Sets set requester url.
-	 */
-	public void setRequesterUrl(String requesterUrl) {
-		this.requesterUrl = requesterUrl;
-	}
+    /**
+     * Sets set cert code from requester.
+     */
+    public void setRequesterCertCode(String requesterCertCode) {
+        this.requesterCertCode = requesterCertCode;
+    }
 
-	/**
-	 * Gets get integration url.
-	 */
-	public String getIntegratorUrl() {
-		return integratorUrl;
-	}
+    /**
+     * Gets get cert code from integrator.
+     */
+    public String getIntegratorCertCode() {
+        return integratorCertCode;
+    }
 
-	/**
-	 * Sets set integrator url.
-	 */
-	public void setIntegratorUrl(String integratorUrl) {
-		this.integratorUrl = integratorUrl;
-	}
+    /**
+     * Sets set cert code from integrator.
+     */
+    public void setIntegratorCertCode(String integratorCertCode) {
+        this.integratorCertCode = integratorCertCode;
+    }
 
-	/**
-	 * Gets get requester http method.
-	 */
-	public String getRequesterHttpMethod() {
-		return requesterHttpMethod;
-	}
+    /**
+     * Gets get request message.
+     */
+    public MessageEnvelope getRequestMessage() {
+        return requestMessage;
+    }
 
-	/**
-	 * Sets set requester http method.
-	 */
-	public void setRequesterHttpMethod(String requesterHttpMethod) {
-		this.requesterHttpMethod = requesterHttpMethod;
-	}
+    /**
+     * Sets set request message.
+     */
+    public void setRequestMessage(MessageEnvelope requestMessage) {
+        this.requestMessage = requestMessage;
+    }
 
-	/**
-	 * Sets set business exception.
-	 */
-	public void setBusinessException(CommonException businessException) {
-		this.businessException = businessException;
-	}
+    /**
+     * Gets get response message.
+     */
+    public MessageEnvelope getResponseMessage() {
+        return responseMessage;
+    }
 
-	/**
-	 * Gets get requester interface config.
-	 */
-	public InterfaceConfig getRequesterInterfaceConfig() {
-		return requesterInterfaceConfig;
-	}
+    /**
+     * Sets set response message.
+     */
+    public void setResponseMessage(MessageEnvelope responseMessage) {
+        this.responseMessage = responseMessage;
+    }
 
-	/**
-	 * Sets set requester interface config.
-	 */
-	public void setRequesterInterfaceConfig(InterfaceConfig requesterInterfaceConfig) {
-		this.requesterInterfaceConfig = requesterInterfaceConfig;
-	}
+    /**
+     * Gets get result message.
+     */
+    public MessageEnvelope getResultMessage() {
+        return resultMessage;
+    }
 
-	/**
-	 * Gets get integrator interface config.
-	 */
-	public InterfaceConfig getIntegratorInterfaceConfig() {
-		return integratorInterfaceConfig;
-	}
+    /**
+     * Sets set result message.
+     */
+    public void setResultMessage(MessageEnvelope resultMessage) {
+        this.resultMessage = resultMessage;
+    }
 
-	/**
-	 * Sets set integrator interface config.
-	 */
-	public void setIntegratorInterfaceConfig(InterfaceConfig integratorInterfaceConfig) {
-		this.integratorInterfaceConfig = integratorInterfaceConfig;
-	}
+    /**
+     * Gets get business exception.
+     */
+    public CommonException getBusinessException() {
+        return businessException;
+    }
 
-	/**
-	 * Gets get requester communication config.
-	 */
-	public CommunicationConfig getRequesterCommunicationConfig() {
-		return requesterCommunicationConfig;
-	}
+    /**
+     * Sets set business exception.
+     */
+    public void setBusinessException(CommonException businessException) {
+        this.businessException = businessException;
+    }
 
-	/**
-	 * Sets set requester communication config.
-	 */
-	public void setRequesterCommunicationConfig(CommunicationConfig requesterCommunicationConfig) {
-		this.requesterCommunicationConfig = requesterCommunicationConfig;
-	}
+    /**
+     * Gets get integrator interface id.
+     */
+    public String getIntegratorInterfaceId() {
+        return integratorInterfaceId;
+    }
 
-	/**
-	 * Gets get integrator communication config.
-	 */
-	public CommunicationConfig getIntegratorCommunicationConfig() {
-		return integratorCommunicationConfig;
-	}
+    /**
+     * Sets set integrator interface id.
+     */
+    public void setIntegratorInterfaceId(String integratorInterfaceId) {
+        this.integratorInterfaceId = integratorInterfaceId;
+    }
 
-	/**
-	 * Sets set integrator communication config.
-	 */
-	public void setIntegratorCommunicationConfig(CommunicationConfig integratorCommunicationConfig) {
-		this.integratorCommunicationConfig = integratorCommunicationConfig;
-	}
+    /**
+     * Gets get limitConfigListList.
+     */
+    public List<LimitConfig> getLimitConfigList() {
+        return limitConfigListList;
+    }
 
-	/**
-	 * Gets get trace id.
-	 */
-	public String getTraceId() {
-		return traceId;
-	}
-
-	/**
-	 * Sets set trace id.
-	 */
-	public void setTraceId(String traceId) {
-		this.traceId = traceId;
-	}
-
-	/**
-	 * Gets get receiver client id.
-	 */
-	public String getRequesterClientId() {
-		return requesterClientId;
-	}
-
-	/**
-	 * Sets set receiver client id.
-	 */
-	public void setRequesterClientId(String requesterClientId) {
-		this.requesterClientId = requesterClientId;
-	}
-
-	/**
-	 * Gets get integrator client id.
-	 */
-	public String getIntegratorClientId() {
-		return integratorClientId;
-	}
-
-	/**
-	 * Sets set integrator client id.
-	 */
-	public void setIntegratorClientId(String integratorClientId) {
-		this.integratorClientId = integratorClientId;
-	}
-
-	/**
-	 * Gets get cert code from requester.
-	 */
-	public String getRequesterCertCode() {
-		return requesterCertCode;
-	}
-
-	/**
-	 * Sets set cert code from requester.
-	 */
-	public void setRequesterCertCode(String requesterCertCode) {
-		this.requesterCertCode = requesterCertCode;
-	}
-
-	/**
-	 * Gets get cert code from integrator.
-	 */
-	public String getIntegratorCertCode() {
-		return integratorCertCode;
-	}
-
-	/**
-	 * Sets set cert code from integrator.
-	 */
-	public void setIntegratorCertCode(String integratorCertCode) {
-		this.integratorCertCode = integratorCertCode;
-	}
-
-	/**
-	 * Gets get request message.
-	 */
-	public MessageEnvelope getRequestMessage() {
-		return requestMessage;
-	}
-
-	/**
-	 * Sets set request message.
-	 */
-	public void setRequestMessage(MessageEnvelope requestMessage) {
-		this.requestMessage = requestMessage;
-	}
-
-	/**
-	 * Gets get response message.
-	 */
-	public MessageEnvelope getResponseMessage() {
-		return responseMessage;
-	}
-
-	/**
-	 * Sets set response message.
-	 */
-	public void setResponseMessage(MessageEnvelope responseMessage) {
-		this.responseMessage = responseMessage;
-	}
-
-	/**
-	 * Gets get result message.
-	 */
-	public MessageEnvelope getResultMessage() {
-		return resultMessage;
-	}
-
-	/**
-	 * Sets set result message.
-	 */
-	public void setResultMessage(MessageEnvelope resultMessage) {
-		this.resultMessage = resultMessage;
-	}
-
-	/**
-	 * Gets get business exception.
-	 */
-	public CommonException getBusinessException() {
-		return businessException;
-	}
-
-	/**
-	 * Gets get integrator interface id.
-	 */
-	public String getIntegratorInterfaceId() {
-		return integratorInterfaceId;
-	}
-
-	/**
-	 * Sets set integrator interface id.
-	 */
-	public void setIntegratorInterfaceId(String integratorInterfaceId) {
-		this.integratorInterfaceId = integratorInterfaceId;
-	}
-
-	/**
-	 * Gets get limitConfigListList.
-	 */
-	public List<LimitConfig> getLimitConfigList() {
-		return limitConfigListList;
-	}
-
-	/**
-	 * Sets set limitConfigListList.
-	 */
-	public void setLimitConfigList(List<LimitConfig> limitConfigListList) {
-		this.limitConfigListList = limitConfigListList;
-	}
+    /**
+     * Sets set limitConfigListList.
+     */
+    public void setLimitConfigList(List<LimitConfig> limitConfigListList) {
+        this.limitConfigListList = limitConfigListList;
+    }
 }

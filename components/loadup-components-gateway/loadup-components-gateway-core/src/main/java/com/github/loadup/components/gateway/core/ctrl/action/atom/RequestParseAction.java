@@ -53,88 +53,88 @@ import org.springframework.stereotype.Component;
 @Component("requestParseAction")
 public class RequestParseAction extends AbstractBusinessAction {
 
-	@Resource
-	@Qualifier("messageEngine")
-	private MessageEngine messageEngine;
+    @Resource
+    @Qualifier("messageEngine")
+    private MessageEngine messageEngine;
 
-	//    @Resource
-	//    private OauthService  oauthService;
+    //    @Resource
+    //    private OauthService  oauthService;
 
-	@Override
-	public void doBusiness(GatewayRuntimeProcessContext context) {
-		MessageEnvelope messageEnvelope = context.getRequestMessage();
+    @Override
+    public void doBusiness(GatewayRuntimeProcessContext context) {
+        MessageEnvelope messageEnvelope = context.getRequestMessage();
 
-		String transactionType = context.getTransactionType();
-		String requesterCertCode = context.getRequesterCertCode();
-		messageEnvelope
-				.setNeedVerifySignature(needVerifySignature(transactionType, requesterCertCode));
+        String transactionType = context.getTransactionType();
+        String requesterCertCode = context.getRequesterCertCode();
+        messageEnvelope
+                .setNeedVerifySignature(needVerifySignature(transactionType, requesterCertCode));
 
-		UnifyMsg unifyMessage = null;
+        UnifyMsg unifyMessage = null;
 
-		String requesterInterfaceId = context.getRequesterInterfaceConfig() == null
-				? StringUtils.EMPTY
-				: context.getRequesterInterfaceConfig().getInterfaceId();
+        String requesterInterfaceId = context.getRequesterInterfaceConfig() == null
+                ? StringUtils.EMPTY
+                : context.getRequesterInterfaceConfig().getInterfaceId();
 
-		unifyMessage = messageEngine.parse(requesterInterfaceId, RoleType.SENDER, context,
-				messageEnvelope);
+        unifyMessage = messageEngine.parse(requesterInterfaceId, RoleType.SENDER, context,
+                messageEnvelope);
 
-		InterfaceConfig interfaceConfig = context.getRequesterInterfaceConfig();
-		checkOauth(unifyMessage, interfaceConfig);
+        InterfaceConfig interfaceConfig = context.getRequesterInterfaceConfig();
+        checkOauth(unifyMessage, interfaceConfig);
 
-		unifyMessage.addField(ProcessConstants.KEY_HTTP_INTEGRATION_URL, context.getIntegratorUrl());
-		MessageEnvelope messageResult = messageEnvelope.clone();
-		messageResult.setContent(unifyMessage.toJSonStr());
-		messageResult.setLogContent(unifyMessage.toJSonStr());
-		context.setResultMessage(messageResult);
-	}
+        unifyMessage.addField(ProcessConstants.KEY_HTTP_INTEGRATION_URL, context.getIntegratorUrl());
+        MessageEnvelope messageResult = messageEnvelope.clone();
+        messageResult.setContent(unifyMessage.toJSonStr());
+        messageResult.setLogContent(unifyMessage.toJSonStr());
+        context.setResultMessage(messageResult);
+    }
 
-	private void checkOauth(UnifyMsg unifyMessage, InterfaceConfig interfaceConfig) {
-		boolean oauthResult = true;
-		AuthRequest authRequest = new AuthRequest();
-		authRequest.setAccessToken(unifyMessage.g(OauthConstants.ACCESS_TOKEN));
-		authRequest.setAuthClientId(unifyMessage.g(OauthConstants.AUTH_CLIENT_ID));
-		authRequest.setExtendInfo(unifyMessage.g(OauthConstants.EXTEND_INFO));
-		authRequest.setReferenceClientId(unifyMessage.g(OauthConstants.REFERENCE_CLIENT_ID));
-		authRequest.setResourceId(unifyMessage.g(OauthConstants.RESOURCE_ID));
-		authRequest.setScope(unifyMessage.g(OauthConstants.SCOPE));
-		authRequest.setResourceOwnerId(OauthConstants.RESOURCE_OWNER_ID);
+    private void checkOauth(UnifyMsg unifyMessage, InterfaceConfig interfaceConfig) {
+        boolean oauthResult = true;
+        AuthRequest authRequest = new AuthRequest();
+        authRequest.setAccessToken(unifyMessage.g(OauthConstants.ACCESS_TOKEN));
+        authRequest.setAuthClientId(unifyMessage.g(OauthConstants.AUTH_CLIENT_ID));
+        authRequest.setExtendInfo(unifyMessage.g(OauthConstants.EXTEND_INFO));
+        authRequest.setReferenceClientId(unifyMessage.g(OauthConstants.REFERENCE_CLIENT_ID));
+        authRequest.setResourceId(unifyMessage.g(OauthConstants.RESOURCE_ID));
+        authRequest.setScope(unifyMessage.g(OauthConstants.SCOPE));
+        authRequest.setResourceOwnerId(OauthConstants.RESOURCE_OWNER_ID);
 
-		String authType = StringUtils.EMPTY;
-		if (null != interfaceConfig) {
-			authType = PropertiesUtil.getProperty(interfaceConfig.getProperties(), "AUTH_TYPE");
-		}
+        String authType = StringUtils.EMPTY;
+        if (null != interfaceConfig) {
+            authType = PropertiesUtil.getProperty(interfaceConfig.getProperties(), "AUTH_TYPE");
+        }
 
-		//        if (StringUtils.equals(authType, "OAUTH_CLIENT")) {
-		//            oauthResult = oauthService.validateClient(authRequest);
-		//            AssertUtil.isTrue(oauthResult, OauthErrorCode.INVALID_AUTH_CLIENT,
-		//                OauthErrorCode.INVALID_AUTH_CLIENT.getMessage());
-		//
-		//        } else if (StringUtils.equals(authType, "OAUTH_TOKEN")) {
-		//            oauthResult = oauthService.validateClient(authRequest);
-		//            AssertUtil.isTrue(oauthResult, OauthErrorCode.INVALID_AUTH_CLIENT,
-		//                OauthErrorCode.INVALID_AUTH_CLIENT.getMessage());
-		//            oauthResult = oauthService.validateToke(authRequest);
-		//            AssertUtil.isTrue(oauthResult, OauthErrorCode.INVALID_ACCESS_TOKEN,
-		//                OauthErrorCode.INVALID_ACCESS_TOKEN.getMessage());
-		//        }
+        //        if (StringUtils.equals(authType, "OAUTH_CLIENT")) {
+        //            oauthResult = oauthService.validateClient(authRequest);
+        //            AssertUtil.isTrue(oauthResult, OauthErrorCode.INVALID_AUTH_CLIENT,
+        //                OauthErrorCode.INVALID_AUTH_CLIENT.getMessage());
+        //
+        //        } else if (StringUtils.equals(authType, "OAUTH_TOKEN")) {
+        //            oauthResult = oauthService.validateClient(authRequest);
+        //            AssertUtil.isTrue(oauthResult, OauthErrorCode.INVALID_AUTH_CLIENT,
+        //                OauthErrorCode.INVALID_AUTH_CLIENT.getMessage());
+        //            oauthResult = oauthService.validateToke(authRequest);
+        //            AssertUtil.isTrue(oauthResult, OauthErrorCode.INVALID_ACCESS_TOKEN,
+        //                OauthErrorCode.INVALID_ACCESS_TOKEN.getMessage());
+        //        }
 
-	}
+    }
 
-	@Override
-	@Resource
-	@Qualifier("requestAssembleAction")
-	public void setNextAction(BusinessAction requestParseAction) {
-		this.nextAction = requestParseAction;
-	}
+    @Override
+    @Resource
+    @Qualifier("requestAssembleAction")
+    public void setNextAction(BusinessAction requestParseAction) {
+        this.nextAction = requestParseAction;
+    }
 
-	/**
-	 * 判断是否需要进行验签
-	 */
-	private boolean needVerifySignature(String transactionType, String certCode) {
-		if (StringUtils.equals(transactionType, InterfaceType.SPI.getCode())
-				|| StringUtils.equals(certCode, SwitchConstants.OFF)) {
-			return false;
-		}
-		return true;
-	}
+    /**
+     * 判断是否需要进行验签
+     */
+    private boolean needVerifySignature(String transactionType, String certCode) {
+        if (StringUtils.equals(transactionType, InterfaceType.SPI.getCode())
+                || StringUtils.equals(certCode, SwitchConstants.OFF)) {
+            return false;
+        }
+        return true;
+    }
 }

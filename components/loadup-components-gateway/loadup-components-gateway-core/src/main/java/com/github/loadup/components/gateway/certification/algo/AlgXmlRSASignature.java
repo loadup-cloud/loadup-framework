@@ -41,13 +41,20 @@ import org.apache.xml.security.utils.XMLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.*;
-import java.security.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -59,212 +66,210 @@ import java.security.spec.X509EncodedKeySpec;
 @Component
 public class AlgXmlRSASignature extends AbstractAlgorithm {
 
-	/**
-	 * 日志定义
-	 */
-	private static Logger logger = LoggerFactory.getLogger("CERT-ALGO");
+    public static String DDD = "http://apache.org/xml/features/disallow-doctype-decl";
+    /**
+     * 日志定义
+     */
+    private static Logger logger = LoggerFactory.getLogger("CERT-ALGO");
+    /**
+     * RSA 算法名字
+     */
+    private static String KEY_ALGO_NAME = "RSA";
 
-	/**
-	 * RSA 算法名字
-	 */
-	private static String KEY_ALGO_NAME = "RSA";
+    static {
+        org.apache.xml.security.Init.init();
+    }
 
-	public static String DDD = "http://apache.org/xml/features/disallow-doctype-decl";
+    /**
+     * 获取XML文件
+     *
+     * @throws Exception the exception
+     */
+    public static Document getXmlDocument(byte[] xmlDocBytes, String encode) throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature(DDD, true);
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        InputSource inputSource = new InputSource(new ByteArrayInputStream(xmlDocBytes));
+        if (!StringUtils.isEmpty(encode)) {
+            inputSource.setEncoding(encode);
+        }
+        return builder.parse(inputSource);
+    }
 
-	static {
-		org.apache.xml.security.Init.init();
-	}
+    /**
+     * 恢复私钥
+     */
+    public static PrivateKey recoverPrivateKey(byte[] data) {
 
-	/**
-	 * XML签名
-	 *
-	 *
-	 *
-	 *
-	 *
-	 * 支持下列算法
-	 * <ul>
-	 *     <li>XMLSignature.ALGO_ID_SIGNATURE_RSA</li>
-	 *     <li>XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA1</li>
-	 *     <li>XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA256</li>
-	 *     <li>XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA384</li>
-	 *     <li>XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA512</li>
-	 * </ul>
-	 *
-	 * <ul>
-	 *   <li>作为子节点：  XmlSignatureAppendMode.AS_CHILDREN</li>
-	 *   <li>作为兄弟节点：XmlSignatureAppendMode.AS_BROTHER</li>
-	 * </ul>
-	 *
-	 * @throws Exception the exception
-	 */
-	@Override
-	public byte[] signXmlElement(byte[] priKeyData, byte[] certData, byte[] xmlDocBytes,
-								String encode, String elementTagName, String algorithm,
-								int signatureAppendMode) {
-		try {
-			Document xmlDocument = getXmlDocument(xmlDocBytes, encode);
-			XMLSignature xmlSignature = new XMLSignature(xmlDocument, xmlDocument.getDocumentURI(),
-					algorithm);
+        try {
 
-			NodeList nodeList = xmlDocument.getElementsByTagName(elementTagName);
-			if (nodeList == null || nodeList.getLength() - 1 < 0) {
-				throw new Exception("Document element with tag name " + elementTagName
-						+ " not fount");
-			}
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(data);
+            KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGO_NAME);
+            return keyFactory.generatePrivate(pkcs8EncodedKeySpec);
 
-			Node elementNode = nodeList.item(0);
-			if (elementNode == null) {
-				throw new Exception("Document element with tag name " + elementTagName
-						+ " not fount");
-			}
-			if (signatureAppendMode == XmlSignatureAppendMode.AS_CHILDREN) {
-				elementNode.appendChild(xmlSignature.getElement());
-			} else if (signatureAppendMode == XmlSignatureAppendMode.AS_BROTHER) {
-				elementNode.getParentNode().appendChild(xmlSignature.getElement());
-			} else {
-				throw new IllegalArgumentException("Illegal Append Mode");
-			}
+        } catch (Exception e) {
+            LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "recover privateKey error:");
 
-			Transforms transforms = new Transforms(xmlDocument);
-			transforms.addTransform(Transforms.TRANSFORM_ENVELOPED_SIGNATURE);
-			xmlSignature.addDocument("", transforms, Constants.ALGO_ID_DIGEST_SHA1);
-			//添加证书签发者信息
-			appendIssuerSerial(xmlSignature, certData);
-			PrivateKey privateKey = recoverPrivateKey(priKeyData);
-			xmlSignature.sign(privateKey);
+            throw new CertificationException(CertificationErrorCode.RECOVER_PRIVATE_KEY_ERROR,
+                    genLogSign(KEY_ALGO_NAME), e);
+        }
 
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			XMLUtils.outputDOM(xmlDocument, os);
-			return os.toByteArray();
-		} catch (Exception e) {
-			LogUtil.error(logger, e, genLogSign(algorithm) + "sign error:");
+    }
 
-			throw new CertificationException(CertificationErrorCode.SIGN_ERROR, genLogSign(algorithm), e);
-		}
-	}
+    /**
+     * 恢复公钥
+     */
+    public static PublicKey recoverPublicKey(byte[] data) {
 
-	/**
-	 * 签名添加证书信息
-	 */
-	private void appendIssuerSerial(XMLSignature xmlSignature, byte[] certData) {
-		if (certData != null) {
-			X509Certificate certificate = this.recoverCertificate(certData);
-			X509Data x509data = new X509Data(xmlSignature.getDocument());
-			x509data.addIssuerSerial(certificate.getIssuerDN().getName(), certificate
-					.getSerialNumber());
-			xmlSignature.getKeyInfo().add(x509data);
-		}
-	}
+        try {
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(data);
+            KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGO_NAME);
+            return keyFactory.generatePublic(keySpec);
+        } catch (Exception e) {
+            LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "recover publicKey error:");
 
-	/**
-	 * 验证XML签名
-	 *
-	 * @throws Exception the exception
-	 */
-	@Override
-	public boolean verifyXmlElement(byte[] pubKeyData, byte[] xmlDocBytes, String encode) {
-		try {
-			Document xmlDocument = getXmlDocument(xmlDocBytes, encode);
-			NodeList signatureNodes = xmlDocument.getElementsByTagNameNS(Constants.SignatureSpecNS,
-					"Signature");
-			if (signatureNodes == null || signatureNodes.getLength() < 1) {
-				throw new Exception("Signature element not found!");
-			}
+            throw new CertificationException(CertificationErrorCode.RECOVER_PUBLIC_KEY_ERROR,
+                    genLogSign(KEY_ALGO_NAME), e);
+        }
+    }
 
-			Element signElement = (Element) signatureNodes.item(0);
-			if (signElement == null) {
-				throw new Exception("Signature element  not found");
-			}
+    /**
+     * 恢复证书
+     */
+    public static X509Certificate recoverCertificate(byte[] data) {
+        try {
+            InputStream certIn = new ByteArrayInputStream(data);
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            return (X509Certificate) cf.generateCertificate(certIn);
+        } catch (Exception e) {
+            LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "recover certificate error:");
+            throw new CertificationException(CertificationErrorCode.RECOVER_KEY_ERROR,
+                    genLogSign(KEY_ALGO_NAME), e);
+        }
+    }
 
-			XMLSignature signature = new XMLSignature(signElement, "");
-			PublicKey publicKey = recoverPublicKey(pubKeyData);
-			return signature.checkSignatureValue(publicKey);
-		} catch (Exception e) {
-			LogUtil.error(logger, e, genLogSign("xml algo") + "encrypt error:");
+    /**
+     * XML签名
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * 支持下列算法
+     * <ul>
+     *     <li>XMLSignature.ALGO_ID_SIGNATURE_RSA</li>
+     *     <li>XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA1</li>
+     *     <li>XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA256</li>
+     *     <li>XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA384</li>
+     *     <li>XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA512</li>
+     * </ul>
+     *
+     * <ul>
+     *   <li>作为子节点：  XmlSignatureAppendMode.AS_CHILDREN</li>
+     *   <li>作为兄弟节点：XmlSignatureAppendMode.AS_BROTHER</li>
+     * </ul>
+     *
+     * @throws Exception the exception
+     */
+    @Override
+    public byte[] signXmlElement(byte[] priKeyData, byte[] certData, byte[] xmlDocBytes,
+                                 String encode, String elementTagName, String algorithm,
+                                 int signatureAppendMode) {
+        try {
+            Document xmlDocument = getXmlDocument(xmlDocBytes, encode);
+            XMLSignature xmlSignature = new XMLSignature(xmlDocument, xmlDocument.getDocumentURI(),
+                    algorithm);
 
-			throw new CertificationException(CertificationErrorCode.VERIFY_ERROR, genLogSign("xml algo"), e);
-		}
-	}
+            NodeList nodeList = xmlDocument.getElementsByTagName(elementTagName);
+            if (nodeList == null || nodeList.getLength() - 1 < 0) {
+                throw new Exception("Document element with tag name " + elementTagName
+                        + " not fount");
+            }
 
-	/**
-	 * 获取XML文件
-	 *
-	 * @throws Exception the exception
-	 */
-	public static Document getXmlDocument(byte[] xmlDocBytes, String encode) throws Exception {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setFeature(DDD, true);
-		factory.setNamespaceAware(true);
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		InputSource inputSource = new InputSource(new ByteArrayInputStream(xmlDocBytes));
-		if (!StringUtils.isEmpty(encode)) {
-			inputSource.setEncoding(encode);
-		}
-		return builder.parse(inputSource);
-	}
+            Node elementNode = nodeList.item(0);
+            if (elementNode == null) {
+                throw new Exception("Document element with tag name " + elementTagName
+                        + " not fount");
+            }
+            if (signatureAppendMode == XmlSignatureAppendMode.AS_CHILDREN) {
+                elementNode.appendChild(xmlSignature.getElement());
+            } else if (signatureAppendMode == XmlSignatureAppendMode.AS_BROTHER) {
+                elementNode.getParentNode().appendChild(xmlSignature.getElement());
+            } else {
+                throw new IllegalArgumentException("Illegal Append Mode");
+            }
 
-	/**
-	 * 恢复私钥
-	 */
-	public static PrivateKey recoverPrivateKey(byte[] data) {
+            Transforms transforms = new Transforms(xmlDocument);
+            transforms.addTransform(Transforms.TRANSFORM_ENVELOPED_SIGNATURE);
+            xmlSignature.addDocument("", transforms, Constants.ALGO_ID_DIGEST_SHA1);
+            //添加证书签发者信息
+            appendIssuerSerial(xmlSignature, certData);
+            PrivateKey privateKey = recoverPrivateKey(priKeyData);
+            xmlSignature.sign(privateKey);
 
-		try {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            XMLUtils.outputDOM(xmlDocument, os);
+            return os.toByteArray();
+        } catch (Exception e) {
+            LogUtil.error(logger, e, genLogSign(algorithm) + "sign error:");
 
-			PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(data);
-			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGO_NAME);
-			return keyFactory.generatePrivate(pkcs8EncodedKeySpec);
+            throw new CertificationException(CertificationErrorCode.SIGN_ERROR, genLogSign(algorithm), e);
+        }
+    }
 
-		} catch (Exception e) {
-			LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "recover privateKey error:");
+    /**
+     * 签名添加证书信息
+     */
+    private void appendIssuerSerial(XMLSignature xmlSignature, byte[] certData) {
+        if (certData != null) {
+            X509Certificate certificate = this.recoverCertificate(certData);
+            X509Data x509data = new X509Data(xmlSignature.getDocument());
+            x509data.addIssuerSerial(certificate.getIssuerDN().getName(), certificate
+                    .getSerialNumber());
+            xmlSignature.getKeyInfo().add(x509data);
+        }
+    }
 
-			throw new CertificationException(CertificationErrorCode.RECOVER_PRIVATE_KEY_ERROR,
-					genLogSign(KEY_ALGO_NAME), e);
-		}
+    /**
+     * 验证XML签名
+     *
+     * @throws Exception the exception
+     */
+    @Override
+    public boolean verifyXmlElement(byte[] pubKeyData, byte[] xmlDocBytes, String encode) {
+        try {
+            Document xmlDocument = getXmlDocument(xmlDocBytes, encode);
+            NodeList signatureNodes = xmlDocument.getElementsByTagNameNS(Constants.SignatureSpecNS,
+                    "Signature");
+            if (signatureNodes == null || signatureNodes.getLength() < 1) {
+                throw new Exception("Signature element not found!");
+            }
 
-	}
+            Element signElement = (Element) signatureNodes.item(0);
+            if (signElement == null) {
+                throw new Exception("Signature element  not found");
+            }
 
-	/**
-	 * 恢复公钥
-	 */
-	public static PublicKey recoverPublicKey(byte[] data) {
+            XMLSignature signature = new XMLSignature(signElement, "");
+            PublicKey publicKey = recoverPublicKey(pubKeyData);
+            return signature.checkSignatureValue(publicKey);
+        } catch (Exception e) {
+            LogUtil.error(logger, e, genLogSign("xml algo") + "encrypt error:");
 
-		try {
-			X509EncodedKeySpec keySpec = new X509EncodedKeySpec(data);
-			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGO_NAME);
-			return keyFactory.generatePublic(keySpec);
-		} catch (Exception e) {
-			LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "recover publicKey error:");
+            throw new CertificationException(CertificationErrorCode.VERIFY_ERROR, genLogSign("xml algo"), e);
+        }
+    }
 
-			throw new CertificationException(CertificationErrorCode.RECOVER_PUBLIC_KEY_ERROR,
-					genLogSign(KEY_ALGO_NAME), e);
-		}
-	}
-
-	/**
-	 * 恢复证书
-	 */
-	public static X509Certificate recoverCertificate(byte[] data) {
-		try {
-			InputStream certIn = new ByteArrayInputStream(data);
-			CertificateFactory cf = CertificateFactory.getInstance("X.509");
-			return (X509Certificate) cf.generateCertificate(certIn);
-		} catch (Exception e) {
-			LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "recover certificate error:");
-			throw new CertificationException(CertificationErrorCode.RECOVER_KEY_ERROR,
-					genLogSign(KEY_ALGO_NAME), e);
-		}
-	}
-
-	/**
-	 * 注册算法类到对应manager接口
-	 */
-	@Override
-	protected void doRegisterManager() {
-		XmlSignatureManager.registerAlgo(AlgorithmEnum.ALGO_ID_SIGNATURE_RSA, this);
-		XmlSignatureManager.registerAlgo(AlgorithmEnum.ALGO_ID_SIGNATURE_RSA_SHA1, this);
-		XmlSignatureManager.registerAlgo(AlgorithmEnum.ALGO_ID_SIGNATURE_RSA_SHA256, this);
-		XmlSignatureManager.registerAlgo(AlgorithmEnum.ALGO_ID_SIGNATURE_RSA_SHA384, this);
-		XmlSignatureManager.registerAlgo(AlgorithmEnum.ALGO_ID_SIGNATURE_RSA_SHA512, this);
-	}
+    /**
+     * 注册算法类到对应manager接口
+     */
+    @Override
+    protected void doRegisterManager() {
+        XmlSignatureManager.registerAlgo(AlgorithmEnum.ALGO_ID_SIGNATURE_RSA, this);
+        XmlSignatureManager.registerAlgo(AlgorithmEnum.ALGO_ID_SIGNATURE_RSA_SHA1, this);
+        XmlSignatureManager.registerAlgo(AlgorithmEnum.ALGO_ID_SIGNATURE_RSA_SHA256, this);
+        XmlSignatureManager.registerAlgo(AlgorithmEnum.ALGO_ID_SIGNATURE_RSA_SHA384, this);
+        XmlSignatureManager.registerAlgo(AlgorithmEnum.ALGO_ID_SIGNATURE_RSA_SHA512, this);
+    }
 }

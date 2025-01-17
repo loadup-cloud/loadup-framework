@@ -38,12 +38,12 @@ import java.util.Map;
  */
 public class UnifyMsgHelper {
 
-	public static UnifyMsg fromJSonStr(String jsonStr) {
-		Map<String, String> messageMap = JSONObject.parseObject(jsonStr, new TypeReference<>() {
-		});
-		UnifyMsg unifyMsg = new UnifyMsg();
-		unifyMsg.setMessageMap(messageMap);
-		return unifyMsg;
+    public static UnifyMsg fromJSonStr(String jsonStr) {
+        Map<String, String> messageMap = JSONObject.parseObject(jsonStr, new TypeReference<>() {
+        });
+        UnifyMsg unifyMsg = new UnifyMsg();
+        unifyMsg.setMessageMap(messageMap);
+        return unifyMsg;
 
-	}
+    }
 }

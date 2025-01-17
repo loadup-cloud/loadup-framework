@@ -35,14 +35,14 @@ import com.github.loadup.components.gateway.facade.model.LimitConfig;
  */
 public interface LimitRuleService {
 
-	/**
-	 * apply token by multi-condition
-	 */
-	boolean applyToken(LimitConfig limitConfig);
+    /**
+     * apply token by multi-condition
+     */
+    boolean applyToken(LimitConfig limitConfig);
 
-	/**
-	 * reset token
-	 */
-	void resetToken(LimitConfig limitConfig);
+    /**
+     * reset token
+     */
+    void resetToken(LimitConfig limitConfig);
 
 }

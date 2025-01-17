@@ -46,7 +46,7 @@ public class ChineseGifCaptchaServiceImpl extends CommonInnerService implements 
                 y2 = ty;
             }
             int ctrlx1 = RandomUtils.nextInt(width / 4, width / 4 * 3), ctrly1 = RandomUtils.nextInt(5, height - 5);
-            int[][] besselXY = new int[][] {{x1, y1}, {ctrlx, ctrly}, {ctrlx1, ctrly1}, {x2, y2}};
+            int[][] besselXY = new int[][]{{x1, y1}, {ctrlx, ctrly}, {ctrlx1, ctrly1}, {x2, y2}};
             // 开始画gif每一帧
             GifEncoder gifEncoder = new GifEncoder();
             gifEncoder.setQuality(180);

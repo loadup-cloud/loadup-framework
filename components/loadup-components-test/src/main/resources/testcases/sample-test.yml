@@ -10,7 +10,7 @@ Arguments:
 ---
 
 # Flags: Map<String, Map<String, String>>
-Flags: {}
+Flags: { }
 
 ---
 

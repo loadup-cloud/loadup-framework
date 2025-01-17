@@ -26,7 +26,9 @@ package com.github.loadup.components.gateway.plugin.repository.file.config;
  * #L%
  */
 
-import com.alibaba.cola.extension.*;
+import com.alibaba.cola.extension.BizScenario;
+import com.alibaba.cola.extension.ExtensionException;
+import com.alibaba.cola.extension.ExtensionExecutor;
 import com.github.loadup.components.gateway.certification.cache.CacheUtil;
 import com.github.loadup.components.gateway.certification.exception.CertificationErrorCode;
 import com.github.loadup.components.gateway.certification.exception.CertificationException;
@@ -52,119 +54,118 @@ import java.io.IOException;
 @Component("gatewayFileCertConfigBuilder")
 public class CertConfigBuilder extends AbstractCertAlgorithmConfigBuilder<CertConfigDto> {
 
-	@Resource
-	private ExtensionExecutor extensionExecutor;
+    /**
+     * logger
+     */
+    private static final Logger logger = LoggerFactory
+            .getLogger(CertConfigBuilder.class);
+    @Resource
+    private ExtensionExecutor extensionExecutor;
 
-	/**
-	 * logger
-	 */
-	private static final Logger logger = LoggerFactory
-			.getLogger(CertConfigBuilder.class);
+    /**
+     * build dto
+     */
+    public CertConfigDto buildDto(CertConfigRepository certConfigRepository) {
+        CertConfigDto certConfigDto = new CertConfigDto();
+        certConfigDto.setCertCode(CacheUtil.generateKey(
+                certConfigRepository.getSecurityStrategyCode(), certConfigRepository.getOperateType(),
+                certConfigRepository.getAlgorithm(), certConfigRepository.getClientId()));
+        String certType = certConfigRepository.getCertType();
+        CertTypeEnum certTypeEnum = CertTypeEnum.getEnumByType(certType);
+        if (null == certTypeEnum) {
+            LogUtil.error(logger, "Cert Type: ", certType, " is abnormal");
+            return null;
+        } else {
+            certConfigDto.setCertType(certType);
+        }
+        String keyType = certConfigRepository.getKeyType();
+        CertContentType certContentTypeEnum = CertContentType.getByName(keyType);
+        if (null == certContentTypeEnum) {
+            LogUtil.info(logger, "Cert Content Type: ", keyType, " is abnormal");
+        }
+        certConfigDto.setCertType(keyType);
+        certConfigDto.setCertStatus("Y");
+        String keyContent = certConfigRepository.getKeyContent();
+        certConfigDto.setCertContent(getCertContent(keyType, certTypeEnum, keyContent));
+        certConfigDto.setCertContent(getCertContent(keyType, certTypeEnum, keyContent));
+        certConfigDto.setProperties(certConfigRepository.getCertProperties());
+        return certConfigDto;
+    }
 
-	/**
-	 * build dto
-	 */
-	public CertConfigDto buildDto(CertConfigRepository certConfigRepository) {
-		CertConfigDto certConfigDto = new CertConfigDto();
-		certConfigDto.setCertCode(CacheUtil.generateKey(
-				certConfigRepository.getSecurityStrategyCode(), certConfigRepository.getOperateType(),
-				certConfigRepository.getAlgorithm(), certConfigRepository.getClientId()));
-		String certType = certConfigRepository.getCertType();
-		CertTypeEnum certTypeEnum = CertTypeEnum.getEnumByType(certType);
-		if (null == certTypeEnum) {
-			LogUtil.error(logger, "Cert Type: ", certType, " is abnormal");
-			return null;
-		} else {
-			certConfigDto.setCertType(certType);
-		}
-		String keyType = certConfigRepository.getKeyType();
-		CertContentType certContentTypeEnum = CertContentType.getByName(keyType);
-		if (null == certContentTypeEnum) {
-			LogUtil.info(logger, "Cert Content Type: ", keyType, " is abnormal");
-		}
-		certConfigDto.setCertType(keyType);
-		certConfigDto.setCertStatus("Y");
-		String keyContent = certConfigRepository.getKeyContent();
-		certConfigDto.setCertContent(getCertContent(keyType, certTypeEnum, keyContent));
-		certConfigDto.setCertContent(getCertContent(keyType, certTypeEnum, keyContent));
-		certConfigDto.setProperties(certConfigRepository.getCertProperties());
-		return certConfigDto;
-	}
+    /**
+     * generic config build
+     * <p>
+     * format should follow the template which is defined in SECURITY_STRATEGY_CONF
+     * 0 security_strategy_code, Mandatory
+     * 1 security_strategy_operate_type, Mandatory
+     * 2 security_strategy_algorithm, Mandatory
+     * 3 security_strategy_key_type, Mandatory
+     * 4 cert_type, Mandatory
+     * 5 security_strategy_key, Mandatory
+     * 6 client_id,
+     * 7 cert_properties,
+     * 8 algorithm_properties
+     */
+    public CertConfigDto build(String... fileColumns) {
+        String securityStrategyKeyType = fileColumns[3];
+        String certType = fileColumns[4];
+        String securityStrategyKey = fileColumns[5];
 
-	/**
-	 * generic config build
-	 * <p>
-	 * format should follow the template which is defined in SECURITY_STRATEGY_CONF
-	 * 0 security_strategy_code, Mandatory
-	 * 1 security_strategy_operate_type, Mandatory
-	 * 2 security_strategy_algorithm, Mandatory
-	 * 3 security_strategy_key_type, Mandatory
-	 * 4 cert_type, Mandatory
-	 * 5 security_strategy_key, Mandatory
-	 * 6 client_id,
-	 * 7 cert_properties,
-	 * 8 algorithm_properties
-	 */
-	public CertConfigDto build(String... fileColumns) {
-		String securityStrategyKeyType = fileColumns[3];
-		String certType = fileColumns[4];
-		String securityStrategyKey = fileColumns[5];
+        if (!validate(fileColumns)) {
+            return null;
+        }
 
-		if (!validate(fileColumns)) {
-			return null;
-		}
+        CertConfigDto certConfigDto = new CertConfigDto();
+        certConfigDto.setCertCode(
+                CertUtil.buildCertCode(fileColumns[0], fileColumns[1], fileColumns[2], fileColumns[6]));
+        CertTypeEnum certTypeEnum = CertTypeEnum.getEnumByType(certType);
+        if (null == certTypeEnum) {
+            LogUtil.error(logger, "Cert Type: ", certType, " is abnormal");
+            return null;
+        } else {
+            certConfigDto.setCertType(certType);
+        }
+        CertContentType certContentTypeEnum = CertContentType.getByName(securityStrategyKeyType);
+        if (null == certContentTypeEnum) {
+            LogUtil.info(logger, "Cert Content Type: ", securityStrategyKeyType, " is abnormal");
+        }
+        certConfigDto.setCertType(securityStrategyKeyType);
+        certConfigDto.setCertStatus("Y");
+        certConfigDto.setCertContent(
+                getCertContent(securityStrategyKeyType, certTypeEnum, securityStrategyKey));
+        certConfigDto.setProperties(fileColumns[7]);
 
-		CertConfigDto certConfigDto = new CertConfigDto();
-		certConfigDto.setCertCode(
-				CertUtil.buildCertCode(fileColumns[0], fileColumns[1], fileColumns[2], fileColumns[6]));
-		CertTypeEnum certTypeEnum = CertTypeEnum.getEnumByType(certType);
-		if (null == certTypeEnum) {
-			LogUtil.error(logger, "Cert Type: ", certType, " is abnormal");
-			return null;
-		} else {
-			certConfigDto.setCertType(certType);
-		}
-		CertContentType certContentTypeEnum = CertContentType.getByName(securityStrategyKeyType);
-		if (null == certContentTypeEnum) {
-			LogUtil.info(logger, "Cert Content Type: ", securityStrategyKeyType, " is abnormal");
-		}
-		certConfigDto.setCertType(securityStrategyKeyType);
-		certConfigDto.setCertStatus("Y");
-		certConfigDto.setCertContent(
-				getCertContent(securityStrategyKeyType, certTypeEnum, securityStrategyKey));
-		certConfigDto.setProperties(fileColumns[7]);
+        return certConfigDto;
+    }
 
-		return certConfigDto;
-	}
-
-	/**
-	 * 获取对应的证书内容，如果证书内容本地存储，则已经进行过base64处理，
-	 * 别名存储则调用外部接口获取证书，默认返回的格式是证书byte[] base64encode处理
-	 */
-	//TODO refactor parameter
-	public String getCertContent(String bizScene, CertTypeEnum certType, String certContentString) {
-		try {
-			if (StringUtils.equalsIgnoreCase(
-					CertContentType.CERT_OFFICIAL_CONTENT.getCertContentType(), bizScene)) {
-				return certContentString;
-			} else {
-				return extensionExecutor.execute(CertificationAccessExt.class, BizScenario.valueOf(bizScene), ext -> {
-					try {
-						return ext.getCertContent(certContentString, certType);
-					} catch (IOException e) {
-						LogUtil.error(logger, e, "get certContent Exception,bizScene=", bizScene);
-					}
-					return null;
-				});
-			}
-		} catch (ExtensionException e) {
-			throw new CertificationException(CertificationErrorCode.GET_CERT_CONTENT_ERROR,
-					"no ext for bizScene=" + bizScene);
-		} catch (CertificationException e) {
-			LogUtil.error(logger, e, "get certContent CertificationException,bizScene=", bizScene);
-		} catch (Exception e) {
-			LogUtil.error(logger, e, "get certContent Exception,bizScene=", bizScene);
-		}
-		return null;
-	}
+    /**
+     * 获取对应的证书内容，如果证书内容本地存储，则已经进行过base64处理，
+     * 别名存储则调用外部接口获取证书，默认返回的格式是证书byte[] base64encode处理
+     */
+    //TODO refactor parameter
+    public String getCertContent(String bizScene, CertTypeEnum certType, String certContentString) {
+        try {
+            if (StringUtils.equalsIgnoreCase(
+                    CertContentType.CERT_OFFICIAL_CONTENT.getCertContentType(), bizScene)) {
+                return certContentString;
+            } else {
+                return extensionExecutor.execute(CertificationAccessExt.class, BizScenario.valueOf(bizScene), ext -> {
+                    try {
+                        return ext.getCertContent(certContentString, certType);
+                    } catch (IOException e) {
+                        LogUtil.error(logger, e, "get certContent Exception,bizScene=", bizScene);
+                    }
+                    return null;
+                });
+            }
+        } catch (ExtensionException e) {
+            throw new CertificationException(CertificationErrorCode.GET_CERT_CONTENT_ERROR,
+                    "no ext for bizScene=" + bizScene);
+        } catch (CertificationException e) {
+            LogUtil.error(logger, e, "get certContent CertificationException,bizScene=", bizScene);
+        } catch (Exception e) {
+            LogUtil.error(logger, e, "get certContent Exception,bizScene=", bizScene);
+        }
+        return null;
+    }
 }

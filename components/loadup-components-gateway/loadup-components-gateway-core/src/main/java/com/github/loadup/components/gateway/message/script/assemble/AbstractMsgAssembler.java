@@ -26,8 +26,8 @@ package com.github.loadup.components.gateway.message.script.assemble;
  * #L%
  */
 
-import com.github.loadup.commons.result.ResultCode;
 import com.github.loadup.commons.error.CommonException;
+import com.github.loadup.commons.result.ResultCode;
 import com.github.loadup.components.gateway.core.common.enums.MessageFormat;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
@@ -38,44 +38,44 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractMsgAssembler implements MessageAssembler {
-	private final Logger logger = LoggerFactory.getLogger(AbstractMsgAssembler.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractMsgAssembler.class);
 
-	protected abstract Object assembleMessage(UnifyMsg message);
+    protected abstract Object assembleMessage(UnifyMsg message);
 
-	protected abstract Object assembleErrorMessage(UnifyMsg message, CommonException exception);
+    protected abstract Object assembleErrorMessage(UnifyMsg message, CommonException exception);
 
-	@Override
-	public MessageEnvelope assemble(UnifyMsg message) {
-		Object content;
-		try {
-			content = assembleMessage(message);
-		} catch (CommonException e) {
-			LogUtil.error(logger, e, "Message assemble fail!");
-			content = assembleErrorMessage(message, e);
-		} catch (Exception e) {
-			LogUtil.error(logger, e, "Message assemble fail!");
-			ResultCode errorCode = ParserErrorCode.PARSE_ERROR;
-			throw new CommonException(errorCode, e);
-		}
+    @Override
+    public MessageEnvelope assemble(UnifyMsg message) {
+        Object content;
+        try {
+            content = assembleMessage(message);
+        } catch (CommonException e) {
+            LogUtil.error(logger, e, "Message assemble fail!");
+            content = assembleErrorMessage(message, e);
+        } catch (Exception e) {
+            LogUtil.error(logger, e, "Message assemble fail!");
+            ResultCode errorCode = ParserErrorCode.PARSE_ERROR;
+            throw new CommonException(errorCode, e);
+        }
 
-		return new MessageEnvelope(MessageFormat.TEXT, content);
-	}
+        return new MessageEnvelope(MessageFormat.TEXT, content);
+    }
 
-	@Override
-	public MessageEnvelope assembleError(UnifyMsg message, CommonException exception) {
-		Object content;
-		try {
-			content = assembleErrorMessage(message, exception);
-		} catch (CommonException e) {
-			LogUtil.error(logger, e, "Message assemble fail!");
-			throw e;
-		} catch (Exception e) {
-			LogUtil.error(logger, e, "Message assemble fail!");
-			ResultCode errorCode = ParserErrorCode.PARSE_ERROR;
-			throw new CommonException(errorCode, e);
-		}
+    @Override
+    public MessageEnvelope assembleError(UnifyMsg message, CommonException exception) {
+        Object content;
+        try {
+            content = assembleErrorMessage(message, exception);
+        } catch (CommonException e) {
+            LogUtil.error(logger, e, "Message assemble fail!");
+            throw e;
+        } catch (Exception e) {
+            LogUtil.error(logger, e, "Message assemble fail!");
+            ResultCode errorCode = ParserErrorCode.PARSE_ERROR;
+            throw new CommonException(errorCode, e);
+        }
 
-		return new MessageEnvelope(MessageFormat.TEXT, content);
-	}
+        return new MessageEnvelope(MessageFormat.TEXT, content);
+    }
 
 }

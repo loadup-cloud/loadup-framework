@@ -33,9 +33,9 @@ import lombok.Data;
 @Data
 public class TaskWrapper {
 
-    private Method   method;
-    private Object   object;
+    private Method method;
+    private Object object;
     private Class<?> annotation;
-    private String   cron;
+    private String cron;
 
 }

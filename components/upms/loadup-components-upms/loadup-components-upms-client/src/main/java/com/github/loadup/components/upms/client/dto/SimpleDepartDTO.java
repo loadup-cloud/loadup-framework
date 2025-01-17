@@ -34,12 +34,12 @@ import lombok.Setter;
 @Setter
 public class SimpleDepartDTO extends DTO {
 
-	private String          id;
-	private SimpleDepartDTO parent;
-	private String          departName;
-	private String          departCode;
-	private String          departType;
-	private String          description;
-	private String          status;
-	private int             orderIndex;
+    private String id;
+    private SimpleDepartDTO parent;
+    private String departName;
+    private String departCode;
+    private String departType;
+    private String description;
+    private String status;
+    private int orderIndex;
 }

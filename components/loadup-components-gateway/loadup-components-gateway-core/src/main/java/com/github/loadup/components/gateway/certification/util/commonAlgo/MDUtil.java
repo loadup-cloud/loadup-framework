@@ -36,19 +36,19 @@ import java.security.Security;
  */
 public class MDUtil {
 
-	static {
-		if (Security.getProvider("BC") == null) {
-			Security.addProvider(new BouncyCastleProvider());
-		}
-	}
+    static {
+        if (Security.getProvider("BC") == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+    }
 
-	/**
-	 *
-	 */
-	public static byte[] digest(byte[] data, String algorithm) throws Exception {
+    /**
+     *
+     */
+    public static byte[] digest(byte[] data, String algorithm) throws Exception {
 
-		MessageDigest md = MessageDigest.getInstance(algorithm);
-		return md.digest(data);
-	}
+        MessageDigest md = MessageDigest.getInstance(algorithm);
+        return md.digest(data);
+    }
 
 }

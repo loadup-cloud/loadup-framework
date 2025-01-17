@@ -27,7 +27,9 @@ package com.github.loadup.components.upms.web;
  */
 
 import com.github.loadup.commons.request.query.IdQuery;
-import com.github.loadup.commons.result.*;
+import com.github.loadup.commons.result.MultiResponse;
+import com.github.loadup.commons.result.Response;
+import com.github.loadup.commons.result.SingleResponse;
 import com.github.loadup.components.tracer.TraceUtil;
 import com.github.loadup.components.upms.client.api.UserService;
 import com.github.loadup.components.upms.client.cmd.UserChangePasswordCmd;
@@ -36,34 +38,37 @@ import com.github.loadup.components.upms.client.dto.SimpleUserDTO;
 import com.github.loadup.components.upms.client.dto.UserDTO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
-	@Resource
-	private UserService userService;
+    @Resource
+    private UserService userService;
 
-	@PostMapping(value = "/queryById")
-	public SingleResponse<UserDTO> queryById(@RequestBody IdQuery query) {
-		log.info("queryById:{}", TraceUtil.getTracerId());
-		return userService.getUserById(query);
-	}
+    @PostMapping(value = "/queryById")
+    public SingleResponse<UserDTO> queryById(@RequestBody IdQuery query) {
+        log.info("queryById:{}", TraceUtil.getTracerId());
+        return userService.getUserById(query);
+    }
 
-	@PostMapping(value = "/queryByRoleId")
-	public MultiResponse<SimpleUserDTO> queryByRoleId(@RequestBody IdQuery query) {
-		return userService.getUserByRoleId(query.getId());
-	}
+    @PostMapping(value = "/queryByRoleId")
+    public MultiResponse<SimpleUserDTO> queryByRoleId(@RequestBody IdQuery query) {
+        return userService.getUserByRoleId(query.getId());
+    }
 
-	@PostMapping(value = "/changePassword")
-	public Response changePassword(@RequestBody UserChangePasswordCmd cmd) {
-		return userService.changePassword(cmd);
-	}
+    @PostMapping(value = "/changePassword")
+    public Response changePassword(@RequestBody UserChangePasswordCmd cmd) {
+        return userService.changePassword(cmd);
+    }
 
-	@PostMapping(value = "/save")
-	public Response save(@RequestBody UserSaveCmd cmd) {
-		return userService.save(cmd);
-	}
+    @PostMapping(value = "/save")
+    public Response save(@RequestBody UserSaveCmd cmd) {
+        return userService.save(cmd);
+    }
 }

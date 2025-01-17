@@ -41,20 +41,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class RetryStrategyUtil {
-    private static RetryStrategyUtil instance;
-
-    //    @Resource
-    private RetryTaskStrategyFactory retryTaskStrategyFactory;
-
-    //    @PostConstruct
-    public void init() {
-        instance = this;
-    }
-
     /**
      * 分隔符
      */
     public static final char SEPARATOR = ',';
+    private static RetryStrategyUtil instance;
+    //    @Resource
+    private RetryTaskStrategyFactory retryTaskStrategyFactory;
 
     /**
      * 根据重试策略更新重试任务
@@ -80,5 +73,10 @@ public class RetryStrategyUtil {
             return false;
         }
         return (executedTimes >= maxExecuteTimes);
+    }
+
+    //    @PostConstruct
+    public void init() {
+        instance = this;
     }
 }

@@ -45,66 +45,66 @@ import java.util.stream.Collectors;
 @Component("sensitivityUrlProcessImpl")
 public class SensitivityUrlProcessImpl implements SensitivityDataProcess<String> {
 
-	private static final String MASK_PATTERN_VALUE_URI = "(%s)=(\\S+?)(&|$)";
+    private static final String MASK_PATTERN_VALUE_URI = "(%s)=(\\S+?)(&|$)";
 
-	@Override
-	public String mask(String maskContent, Map<String, ShieldType> shieldRule) {
+    private static String maskUrl(String url, String patternStr, ShieldType shieldType) {
+        if (StringUtils.isBlank(patternStr)) {
+            return url;
+        }
 
-		Map<ShieldType, List<String>> maskRules = shieldRule.entrySet().stream()
-				.collect(Collectors.groupingBy(Map.Entry::getValue,
-						Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
+        StringBuffer sb = new StringBuffer();
+        Pattern p = Pattern.compile(patternStr);
+        Matcher m = p.matcher(url);
+        while (m.find()) {
+            String value = m.group(2);
+            if (StringUtils.isNotBlank(value)) {
+                // 对value进行敏感处理
+                String maskValue = MaskUtil.mask(value.trim(), shieldType.name());
+                String oriContext = m.group(0);
+                String replace = null;
+                int offset = oriContext.lastIndexOf(value);
+                String last = oriContext.substring(offset);
+                replace = oriContext.substring(0, offset) + last.replace(value, maskValue);
+                m.appendReplacement(sb, replace);
 
-		String result = maskContent;
+            } else {
+                m.appendReplacement(sb, m.group(0));
+            }
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
 
-		for (Map.Entry<ShieldType, List<String>> entry : maskRules.entrySet()) {
+    private static String getMaskUriPatternStr(String maskRule) {
 
-			for (String maskField : entry.getValue()) {
-				String maskUriPatternStr = getMaskUriPatternStr(maskField);
-				result = maskUrl(result, maskUriPatternStr, entry.getKey());
-			}
-		}
-		return result;
-	}
+        if (StringUtils.isEmpty(maskRule)) {
+            //没有配置敏感字段
+            return StringUtils.EMPTY;
+        }
+        return String.format(MASK_PATTERN_VALUE_URI, maskRule);
+    }
 
-	private static String maskUrl(String url, String patternStr, ShieldType shieldType) {
-		if (StringUtils.isBlank(patternStr)) {
-			return url;
-		}
+    @Override
+    public String mask(String maskContent, Map<String, ShieldType> shieldRule) {
 
-		StringBuffer sb = new StringBuffer();
-		Pattern p = Pattern.compile(patternStr);
-		Matcher m = p.matcher(url);
-		while (m.find()) {
-			String value = m.group(2);
-			if (StringUtils.isNotBlank(value)) {
-				// 对value进行敏感处理
-				String maskValue = MaskUtil.mask(value.trim(), shieldType.name());
-				String oriContext = m.group(0);
-				String replace = null;
-				int offset = oriContext.lastIndexOf(value);
-				String last = oriContext.substring(offset);
-				replace = oriContext.substring(0, offset) + last.replace(value, maskValue);
-				m.appendReplacement(sb, replace);
+        Map<ShieldType, List<String>> maskRules = shieldRule.entrySet().stream()
+                .collect(Collectors.groupingBy(Map.Entry::getValue,
+                        Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
 
-			} else {
-				m.appendReplacement(sb, m.group(0));
-			}
-		}
-		m.appendTail(sb);
-		return sb.toString();
-	}
+        String result = maskContent;
 
-	private static String getMaskUriPatternStr(String maskRule) {
+        for (Map.Entry<ShieldType, List<String>> entry : maskRules.entrySet()) {
 
-		if (StringUtils.isEmpty(maskRule)) {
-			//没有配置敏感字段
-			return StringUtils.EMPTY;
-		}
-		return String.format(MASK_PATTERN_VALUE_URI, maskRule);
-	}
+            for (String maskField : entry.getValue()) {
+                String maskUriPatternStr = getMaskUriPatternStr(maskField);
+                result = maskUrl(result, maskUriPatternStr, entry.getKey());
+            }
+        }
+        return result;
+    }
 
-	@Override
-	public SensitivityProcessType getTag() {
-		return SensitivityProcessType.URL;
-	}
+    @Override
+    public SensitivityProcessType getTag() {
+        return SensitivityProcessType.URL;
+    }
 }

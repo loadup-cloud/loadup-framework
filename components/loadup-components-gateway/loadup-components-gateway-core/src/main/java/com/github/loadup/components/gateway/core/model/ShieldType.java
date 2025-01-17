@@ -33,19 +33,19 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum ShieldType {
 
-	//private data，全部隐藏
-	ALL;
+    //private data，全部隐藏
+    ALL;
 
-	/**
-	 * 根据编码查询枚举。
-	 */
-	public static ShieldType getByCode(String code) {
-		for (ShieldType value : ShieldType.values()) {
-			if (StringUtils.equals(code, value.name())) {
-				return value;
-			}
-		}
-		return null;
-	}
+    /**
+     * 根据编码查询枚举。
+     */
+    public static ShieldType getByCode(String code) {
+        for (ShieldType value : ShieldType.values()) {
+            if (StringUtils.equals(code, value.name())) {
+                return value;
+            }
+        }
+        return null;
+    }
 
 }

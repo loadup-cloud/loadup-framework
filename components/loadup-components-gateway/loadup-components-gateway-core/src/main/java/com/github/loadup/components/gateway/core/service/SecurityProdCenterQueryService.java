@@ -33,11 +33,11 @@ import com.github.loadup.components.gateway.facade.config.model.SecurityConditio
  */
 public interface SecurityProdCenterQueryService {
 
-	/**
-	 * query security condition group config
-	 */
-	public SecurityConditionGroup querySecurityConditionGroup(String securityStrategyCode,
-															String operateType, String algorithm,
-															String clientId);
+    /**
+     * query security condition group config
+     */
+    public SecurityConditionGroup querySecurityConditionGroup(String securityStrategyCode,
+                                                              String operateType, String algorithm,
+                                                              String clientId);
 
 }

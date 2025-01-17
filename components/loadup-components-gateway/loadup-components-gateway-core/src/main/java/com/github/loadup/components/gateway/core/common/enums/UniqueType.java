@@ -37,65 +37,65 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum UniqueType {
 
-	/**
-	 * SERIAL_UNIQUE
-	 */
-	SERIAL_UNIQUE("SERIAL_UNIQUE", "流水号幂等"),
+    /**
+     * SERIAL_UNIQUE
+     */
+    SERIAL_UNIQUE("SERIAL_UNIQUE", "流水号幂等"),
 
-	/**
-	 * FILE_SRC_PATH_UNIQUE
-	 */
-	FILE_SRC_PATH_UNIQUE("FILE_SRC_PATH_UNIQUE", "源文件路径幂等"),
+    /**
+     * FILE_SRC_PATH_UNIQUE
+     */
+    FILE_SRC_PATH_UNIQUE("FILE_SRC_PATH_UNIQUE", "源文件路径幂等"),
 
-	/**
-	 * FILE_DEST_PATH_UNIQUE
-	 */
-	FILE_DEST_PATH_UNIQUE("FILE_DEST_PATH_UNIQUE", "目标文件路径幂等"),
+    /**
+     * FILE_DEST_PATH_UNIQUE
+     */
+    FILE_DEST_PATH_UNIQUE("FILE_DEST_PATH_UNIQUE", "目标文件路径幂等"),
 
-	;
+    ;
 
-	/**
-	 * code
-	 */
-	private String code;
+    /**
+     * code
+     */
+    private String code;
 
-	/**
-	 * desc
-	 */
-	private String desc;
+    /**
+     * desc
+     */
+    private String desc;
 
-	/**
-	 * 构造器
-	 */
-	private UniqueType(String code, String desc) {
-		this.code = code;
-		this.desc = desc;
-	}
+    /**
+     * 构造器
+     */
+    private UniqueType(String code, String desc) {
+        this.code = code;
+        this.desc = desc;
+    }
 
-	/**
-	 * getter
-	 */
-	public String getCode() {
-		return code;
-	}
+    /**
+     * 通过code获取枚举类
+     */
+    public static UniqueType getByCode(String code) {
 
-	/**
-	 * getter
-	 */
-	public String getDesc() {
-		return desc;
-	}
+        for (UniqueType type : UniqueType.values()) {
+            if (StringUtils.equalsIgnoreCase(type.getCode(), code)) {
+                return type;
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * 通过code获取枚举类
-	 */
-	public static UniqueType getByCode(String code) {
+    /**
+     * getter
+     */
+    public String getCode() {
+        return code;
+    }
 
-		for (UniqueType type : UniqueType.values()) {
-			if (StringUtils.equalsIgnoreCase(type.getCode(), code)) {
-				return type;
-			}
-		}
-		return null;
-	}
+    /**
+     * getter
+     */
+    public String getDesc() {
+        return desc;
+    }
 }

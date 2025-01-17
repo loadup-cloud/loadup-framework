@@ -38,50 +38,50 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class SequenceServiceImpl implements SequenceService {
-	@Resource
-	private          SequenceRepository sequenceRepository;
-	private volatile SequenceRange      currentRange;
-	private final    Lock               lock = new ReentrantLock();
+    private final Lock lock = new ReentrantLock();
+    @Resource
+    private SequenceRepository sequenceRepository;
+    private volatile SequenceRange currentRange;
 
-	@Override
-	public Long getNextSequence(String sequenceName) {
-		if (currentRange == null) {
-			lock.lock();
-			try {
-				if (currentRange == null) {
-					currentRange = sequenceRepository.getNextRange(sequenceName);
-				}
-			} finally {
-				lock.unlock();
-			}
-		}
-		long value = currentRange.getAndIncrement();
-		if (value == -1) {
-			lock.lock();
-			try {
-				for (; ; ) {
-					if (currentRange.isOver()) {
-						currentRange = sequenceRepository.getNextRange(sequenceName);
-					}
-					value = currentRange.getAndIncrement();
-					if (value == -1) {
-						continue;
-					}
-					break;
-				}
-			} finally {
-				lock.unlock();
-			}
-		}
-		if (value < 0) {
-			throw new RuntimeException("Sequence value overflow, value = " + value);
-		}
+    @Override
+    public Long getNextSequence(String sequenceName) {
+        if (currentRange == null) {
+            lock.lock();
+            try {
+                if (currentRange == null) {
+                    currentRange = sequenceRepository.getNextRange(sequenceName);
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+        long value = currentRange.getAndIncrement();
+        if (value == -1) {
+            lock.lock();
+            try {
+                for (; ; ) {
+                    if (currentRange.isOver()) {
+                        currentRange = sequenceRepository.getNextRange(sequenceName);
+                    }
+                    value = currentRange.getAndIncrement();
+                    if (value == -1) {
+                        continue;
+                    }
+                    break;
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+        if (value < 0) {
+            throw new RuntimeException("Sequence value overflow, value = " + value);
+        }
 
-		return value;
-	}
+        return value;
+    }
 
-	@Override
-	public LocalDateTime getSystemDate() {
-		return LocalDateTime.now();
-	}
+    @Override
+    public LocalDateTime getSystemDate() {
+        return LocalDateTime.now();
+    }
 }

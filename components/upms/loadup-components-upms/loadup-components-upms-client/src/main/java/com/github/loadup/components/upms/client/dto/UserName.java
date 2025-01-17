@@ -37,7 +37,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserName extends DTO {
-	private String firstName;
-	private String lastName;
+    private String firstName;
+    private String lastName;
 
 }

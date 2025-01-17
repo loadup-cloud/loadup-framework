@@ -36,24 +36,24 @@ import com.github.loadup.components.gateway.core.ctrl.context.GatewayRuntimeProc
  */
 public abstract class AbstractBusinessAction implements BusinessAction {
 
-	/**
-	 * The next action we will run
-	 */
-	protected BusinessAction nextAction;
+    /**
+     * The next action we will run
+     */
+    protected BusinessAction nextAction;
 
-	protected abstract void doBusiness(GatewayRuntimeProcessContext context);
+    protected abstract void doBusiness(GatewayRuntimeProcessContext context);
 
-	@LogTraceId
-	@Override
-	public void process(GatewayRuntimeProcessContext context) {
-		doBusiness(context);
-		nextAction.process(context);
-	}
+    @LogTraceId
+    @Override
+    public void process(GatewayRuntimeProcessContext context) {
+        doBusiness(context);
+        nextAction.process(context);
+    }
 
-	public abstract void setNextAction(BusinessAction nextAction);
+    public BusinessAction getNextAction() {
+        return nextAction;
+    }
 
-	public BusinessAction getNextAction() {
-		return nextAction;
-	}
+    public abstract void setNextAction(BusinessAction nextAction);
 
 }

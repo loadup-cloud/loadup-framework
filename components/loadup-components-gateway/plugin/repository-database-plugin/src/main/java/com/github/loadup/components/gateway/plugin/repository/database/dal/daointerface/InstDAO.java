@@ -43,34 +43,34 @@ import java.util.List;
  */
 public interface InstDAO {
 
-	/**
-	 * Insert one <tt>InstDO</tt> object to DB table <tt>gateway_inst</tt>, return primary key
-	 */
-	public String insert(InstDO inst);
+    /**
+     * Insert one <tt>InstDO</tt> object to DB table <tt>gateway_inst</tt>, return primary key
+     */
+    public String insert(InstDO inst);
 
-	/**
-	 * Update DB table <tt>gateway_inst</tt>.
-	 */
-	public int update(InstDO inst);
+    /**
+     * Update DB table <tt>gateway_inst</tt>.
+     */
+    public int update(InstDO inst);
 
-	/**
-	 * Query DB table <tt>gateway_inst</tt> for records.
-	 */
-	public List<InstDO> loadAll();
+    /**
+     * Query DB table <tt>gateway_inst</tt> for records.
+     */
+    public List<InstDO> loadAll();
 
-	/**
-	 * Query DB table <tt>gateway_inst</tt> for records.
-	 */
-	public InstDO load(String clientId);
+    /**
+     * Query DB table <tt>gateway_inst</tt> for records.
+     */
+    public InstDO load(String clientId);
 
-	/**
-	 * Query DB table <tt>gateway_inst</tt> for records.
-	 */
-	public InstDO lock(String clientId);
+    /**
+     * Query DB table <tt>gateway_inst</tt> for records.
+     */
+    public InstDO lock(String clientId);
 
-	/**
-	 * Delete records from DB table <tt>gateway_inst</tt>.
-	 */
-	public int delete(String clientId);
+    /**
+     * Delete records from DB table <tt>gateway_inst</tt>.
+     */
+    public int delete(String clientId);
 
 }

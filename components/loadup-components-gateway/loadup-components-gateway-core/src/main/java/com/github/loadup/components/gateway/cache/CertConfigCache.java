@@ -26,9 +26,11 @@ package com.github.loadup.components.gateway.cache;
  * #L%
  */
 
-import com.github.loadup.components.gateway.certification.cache.CacheUtil;
 import com.github.loadup.commons.error.CommonException;
-import com.github.loadup.components.gateway.common.util.*;
+import com.github.loadup.components.gateway.certification.cache.CacheUtil;
+import com.github.loadup.components.gateway.common.util.CacheLogUtil;
+import com.github.loadup.components.gateway.common.util.RepositoryUtil;
+import com.github.loadup.components.gateway.common.util.TenantUtil;
 import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.common.enums.RepositoryType;
 import com.github.loadup.components.gateway.core.model.CertConfig;
@@ -52,69 +54,69 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component("gatewayCertConfigCache")
 public class CertConfigCache {
 
-	/**
-	 * Key is message sender id
-	 */
-	private static Map<String, CertConfig> certConfigMap = new ConcurrentHashMap();
+    /**
+     * Key is message sender id
+     */
+    private static Map<String, CertConfig> certConfigMap = new ConcurrentHashMap();
 
-	@Resource
-	private SecurityProdCenterQueryService securityProdCenterQueryService;
+    @Resource
+    private SecurityProdCenterQueryService securityProdCenterQueryService;
 
-	/**
-	 * Put all.
-	 */
-	public static synchronized void putAll(boolean clear, List<CertConfig> certConfigList) {
-		if (CollectionUtils.isEmpty(certConfigList)) {
-			return;
-		}
+    /**
+     * Put all.
+     */
+    public static synchronized void putAll(boolean clear, List<CertConfig> certConfigList) {
+        if (CollectionUtils.isEmpty(certConfigList)) {
+            return;
+        }
 
-		Map<String, CertConfig> tempMap = new ConcurrentHashMap<String, CertConfig>();
-		certConfigList.forEach(certConfig -> {
-			String certCode = certConfig.getCertCode();
-			tempMap.put(certCode, certConfig);
-		});
-		if (clear) {
-			certConfigMap = tempMap;
-		} else {
-			certConfigMap.putAll(tempMap);
-		}
-		CacheLogUtil.printLog("certConfigMap", certConfigMap);
-	}
+        Map<String, CertConfig> tempMap = new ConcurrentHashMap<String, CertConfig>();
+        certConfigList.forEach(certConfig -> {
+            String certCode = certConfig.getCertCode();
+            tempMap.put(certCode, certConfig);
+        });
+        if (clear) {
+            certConfigMap = tempMap;
+        } else {
+            certConfigMap.putAll(tempMap);
+        }
+        CacheLogUtil.printLog("certConfigMap", certConfigMap);
+    }
 
-	/**
-	 * Gets get with cert code.
-	 */
-	public CertConfig getWithCertCode(String certCode) {
-		RepositoryType repositoryType = RepositoryUtil.getRepositoryType();
-		if (repositoryType.isConfigInInternalCache()) {
-			return certConfigMap.get(certCode);
-		}
-		if (repositoryType == RepositoryType.PRODCENTER) {
-			String[] keys = CacheUtil.splitKey(certCode);
-			if (ArrayUtils.isEmpty(keys) || keys.length < 4) {
-				return null;
-			}
-			String securityStrategyCode = keys[0];
-			if (StringUtils.equals(securityStrategyCode, SwitchConstants.OFF)) {
-				return null;
-			}
-			CertConfig result = certConfigMap.get(certCode);
-			if (result != null) {
-				return result;
-			}
-			// need to query cert config for platform config if no cert config for current tenant
-			String securityStrategyOperateType = keys[1];
-			String algorithm = keys[2];
-			String platformCertCode = CacheUtil.generateKey(securityStrategyCode,
-					securityStrategyOperateType, algorithm);
-			result = certConfigMap.get(platformCertCode);
-			if (result != null) {
-				result.setClientId(TenantUtil.getCurrentClientId());
-			}
-			return result;
-		}
-		throw new CommonException(GatewayErrorCode.CONFIGURATION_LOAD_ERROR,
-				"Unsupported repository.");
-	}
+    /**
+     * Gets get with cert code.
+     */
+    public CertConfig getWithCertCode(String certCode) {
+        RepositoryType repositoryType = RepositoryUtil.getRepositoryType();
+        if (repositoryType.isConfigInInternalCache()) {
+            return certConfigMap.get(certCode);
+        }
+        if (repositoryType == RepositoryType.PRODCENTER) {
+            String[] keys = CacheUtil.splitKey(certCode);
+            if (ArrayUtils.isEmpty(keys) || keys.length < 4) {
+                return null;
+            }
+            String securityStrategyCode = keys[0];
+            if (StringUtils.equals(securityStrategyCode, SwitchConstants.OFF)) {
+                return null;
+            }
+            CertConfig result = certConfigMap.get(certCode);
+            if (result != null) {
+                return result;
+            }
+            // need to query cert config for platform config if no cert config for current tenant
+            String securityStrategyOperateType = keys[1];
+            String algorithm = keys[2];
+            String platformCertCode = CacheUtil.generateKey(securityStrategyCode,
+                    securityStrategyOperateType, algorithm);
+            result = certConfigMap.get(platformCertCode);
+            if (result != null) {
+                result.setClientId(TenantUtil.getCurrentClientId());
+            }
+            return result;
+        }
+        throw new CommonException(GatewayErrorCode.CONFIGURATION_LOAD_ERROR,
+                "Unsupported repository.");
+    }
 
 }

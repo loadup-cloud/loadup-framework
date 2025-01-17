@@ -36,8 +36,8 @@ import com.github.loadup.components.gateway.facade.response.PluginAPIResponse;
 @Extension
 public interface PluginOpenApi {
 
-	/**
-	 * implemented by plugin, invoked by gateway runtime
-	 */
-	PluginAPIResponse invoke(PluginAPIRequest request);
+    /**
+     * implemented by plugin, invoked by gateway runtime
+     */
+    PluginAPIResponse invoke(PluginAPIRequest request);
 }

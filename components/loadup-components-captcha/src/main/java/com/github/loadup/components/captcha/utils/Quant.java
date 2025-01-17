@@ -28,40 +28,36 @@ public class Quant {
 	/* Network Definitions
 	   ------------------- */
 
-    protected static final int maxnetpos    = (netsize - 1);
+    protected static final int maxnetpos = (netsize - 1);
     protected static final int netbiasshift = 4;
-    protected static final int ncycles      = 100;
+    protected static final int ncycles = 100;
 
     protected static final int intbiasshift = 16;
-    protected static final int intbias      = (((int) 1) << intbiasshift);
-    protected static final int gammashift   = 10;
-    protected static final int gamma        = (((int) 1) << gammashift);
-    protected static final int betashift    = 10;
-    protected static final int beta         = (intbias >> betashift);
-    protected static final int betagamma    =
+    protected static final int intbias = (((int) 1) << intbiasshift);
+    protected static final int beta = (intbias >> betashift);
+    protected static final int betagamma =
             (intbias << (gammashift - betashift));
-
-    protected static final int initrad         = (netsize >> 3);
+    protected static final int gammashift = 10;
+    protected static final int gamma = (((int) 1) << gammashift);
+    protected static final int betashift = 10;
+    protected static final int initrad = (netsize >> 3);
     protected static final int radiusbiasshift = 6;
-    protected static final int radiusbias      = (((int) 1) << radiusbiasshift);
-    protected static final int initradius      = (initrad * radiusbias);
-    protected static final int radiusdec       = 30;
+    protected static final int radiusbias = (((int) 1) << radiusbiasshift);
+    protected static final int initradius = (initrad * radiusbias);
+    protected static final int radiusdec = 30;
 
     protected static final int alphabiasshift = 10;
-    protected static final int initalpha      = (((int) 1) << alphabiasshift);
-
-    protected int alphadec;
-
-    protected static final int radbiasshift   = 8;
-    protected static final int radbias        = (((int) 1) << radbiasshift);
+    protected static final int initalpha = (((int) 1) << alphabiasshift);
+    protected static final int radbiasshift = 8;
+    protected static final int radbias = (((int) 1) << radbiasshift);
     protected static final int alpharadbshift = (alphabiasshift + radbiasshift);
-    protected static final int alpharadbias   = (((int) 1) << alpharadbshift);
+    protected static final int alpharadbias = (((int) 1) << alpharadbshift);
+    protected int alphadec;
 
 	/* Types and Global Variables
 	-------------------------- */
-
     protected byte[] thepicture;
-    protected int    lengthcount;
+    protected int lengthcount;
 
     protected int samplefac;
 
@@ -70,8 +66,8 @@ public class Quant {
 
     protected int[] netindex = new int[256];
 
-    protected int[] bias     = new int[netsize];
-    protected int[] freq     = new int[netsize];
+    protected int[] bias = new int[netsize];
+    protected int[] freq = new int[netsize];
     protected int[] radpower = new int[initrad];
 
     /* Initialise network in range (0,0,0) to (255,255,255) and set parameters
@@ -99,7 +95,9 @@ public class Quant {
     public byte[] colorMap() {
         byte[] map = new byte[3 * netsize];
         int[] index = new int[netsize];
-        for (int i = 0; i < netsize; i++) {index[network[i][3]] = i;}
+        for (int i = 0; i < netsize; i++) {
+            index[network[i][3]] = i;
+        }
         int k = 0;
         for (int i = 0; i < netsize; i++) {
             int j = index[i];
@@ -155,7 +153,9 @@ public class Quant {
             com.github.loadup.components.gateway
             if (smallval != previouscol) {
                 netindex[previouscol] = (startpos + i) >> 1;
-                for (j = previouscol + 1; j < smallval; j++) {netindex[j] = i;}
+                for (j = previouscol + 1; j < smallval; j++) {
+                    netindex[j] = i;
+                }
                 previouscol = smallval;
                 startpos = i;
             }
@@ -176,7 +176,9 @@ public class Quant {
         byte[] p;
         int pix, lim;
 
-        if (lengthcount < minpicturebytes) {samplefac = 1;}
+        if (lengthcount < minpicturebytes) {
+            samplefac = 1;
+        }
         alphadec = 30 + ((samplefac - 1) / 3);
         p = thepicture;
         pix = 0;
@@ -187,7 +189,9 @@ public class Quant {
         radius = initradius;
 
         rad = radius >> radiusbiasshift;
-        if (rad <= 1) {rad = 0;}
+        if (rad <= 1) {
+            rad = 0;
+        }
         for (i = 0; i < rad; i++) {
             radpower[i] =
                     alpha * (((rad * rad - i * i) * radbias) / (rad * rad));
@@ -195,9 +199,19 @@ public class Quant {
 
         //fprintf(stderr,"beginning 1D learning: initial radius=%d\n", rad);
 
-        if (lengthcount < minpicturebytes) {step = 3;} else if ((lengthcount % prime1) != 0) {step = 3 * prime1;} else {
-            if ((lengthcount % prime2) != 0) {step = 3 * prime2;} else {
-                if ((lengthcount % prime3) != 0) {step = 3 * prime3;} else {step = 3 * prime4;}
+        if (lengthcount < minpicturebytes) {
+            step = 3;
+        } else if ((lengthcount % prime1) != 0) {
+            step = 3 * prime1;
+        } else {
+            if ((lengthcount % prime2) != 0) {
+                step = 3 * prime2;
+            } else {
+                if ((lengthcount % prime3) != 0) {
+                    step = 3 * prime3;
+                } else {
+                    step = 3 * prime4;
+                }
             }
         }
 
@@ -215,15 +229,21 @@ public class Quant {
             }
 
             pix += step;
-            if (pix >= lim) {pix -= lengthcount;}
+            if (pix >= lim) {
+                pix -= lengthcount;
+            }
 
             i++;
-            if (delta == 0) {delta = 1;}
+            if (delta == 0) {
+                delta = 1;
+            }
             if (i % delta == 0) {
                 alpha -= alpha / alphadec;
                 radius -= radius / radiusdec;
                 rad = radius >> radiusbiasshift;
-                if (rad <= 1) {rad = 0;}
+                if (rad <= 1) {
+                    rad = 0;
+                }
                 for (j = 0; j < rad; j++) {
                     radpower[j] =
                             alpha * (((rad * rad - j * j) * radbias) / (rad * rad));
@@ -256,13 +276,19 @@ public class Quant {
                     com.github.loadup.components.gateway
                 } else {
                     i++;
-                    if (dist < 0) {dist = -dist;}
+                    if (dist < 0) {
+                        dist = -dist;
+                    }
                     a = p[0] - b;
-                    if (a < 0) {a = -a;}
+                    if (a < 0) {
+                        a = -a;
+                    }
                     dist += a;
                     if (dist < bestd) {
                         a = p[2] - r;
-                        if (a < 0) {a = -a;}
+                        if (a < 0) {
+                            a = -a;
+                        }
                         dist += a;
                         if (dist < bestd) {
                             bestd = dist;
@@ -280,13 +306,19 @@ public class Quant {
                     com.github.loadup.components.gateway
                 } else {
                     j--;
-                    if (dist < 0) {dist = -dist;}
+                    if (dist < 0) {
+                        dist = -dist;
+                    }
                     a = p[0] - b;
-                    if (a < 0) {a = -a;}
+                    if (a < 0) {
+                        a = -a;
+                    }
                     dist += a;
                     if (dist < bestd) {
                         a = p[2] - r;
-                        if (a < 0) {a = -a;}
+                        if (a < 0) {
+                            a = -a;
+                        }
                         dist += a;
                         if (dist < bestd) {
                             bestd = dist;
@@ -329,9 +361,13 @@ public class Quant {
         int[] p;
 
         lo = i - rad;
-        if (lo < -1) {lo = -1;}
+        if (lo < -1) {
+            lo = -1;
+        }
         hi = i + rad;
-        if (hi > netsize) {hi = netsize;}
+        if (hi > netsize) {
+            hi = netsize;
+        }
 
         j = i + 1;
         k = i - 1;
@@ -385,12 +421,18 @@ public class Quant {
         for (i = 0; i < netsize; i++) {
             n = network[i];
             dist = n[0] - b;
-            if (dist < 0) {dist = -dist;}
+            if (dist < 0) {
+                dist = -dist;
+            }
             a = n[1] - g;
-            if (a < 0) {a = -a;}
+            if (a < 0) {
+                a = -a;
+            }
             dist += a;
             a = n[2] - r;
-            if (a < 0) {a = -a;}
+            if (a < 0) {
+                a = -a;
+            }
             dist += a;
             if (dist < bestd) {
                 bestd = dist;

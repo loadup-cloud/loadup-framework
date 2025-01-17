@@ -38,19 +38,19 @@ import org.slf4j.LoggerFactory;
  * </p>
  */
 public class FileRepositoryUtil {
-	private static final Logger logger = LoggerFactory.getLogger(FileRepositoryUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileRepositoryUtil.class);
 
-	/**
-	 * get columns from row
-	 */
-	public static String[] getColumns(String line) {
-		if (StringUtils.isBlank(line) || StringUtils.isBlank(line.trim())) {
-			//log sys warn and ignore
-			LogUtil.warn(logger, "reading empty line, ignore");
-			return null;
-		}
+    /**
+     * get columns from row
+     */
+    public static String[] getColumns(String line) {
+        if (StringUtils.isBlank(line) || StringUtils.isBlank(line.trim())) {
+            //log sys warn and ignore
+            LogUtil.warn(logger, "reading empty line, ignore");
+            return null;
+        }
 
-		return StringUtils.splitPreserveAllTokens(line, Constant.COMMA_SEPARATOR);
-	}
+        return StringUtils.splitPreserveAllTokens(line, Constant.COMMA_SEPARATOR);
+    }
 
 }

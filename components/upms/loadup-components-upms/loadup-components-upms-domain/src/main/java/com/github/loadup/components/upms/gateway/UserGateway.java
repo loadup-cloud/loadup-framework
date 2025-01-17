@@ -32,15 +32,15 @@ import java.util.List;
 
 public interface UserGateway {
 
-	User create(User user);
+    User create(User user);
 
-	void changePassword(User user);
+    void changePassword(User user);
 
-	void delete(String userId);
+    void delete(String userId);
 
-	User getById(String userId);
+    User getById(String userId);
 
-	List<User> getByRoleId(String roleId);
+    List<User> getByRoleId(String roleId);
 
-	void saveUserRoles(String userId, List<String> roleIds);
+    void saveUserRoles(String userId, List<String> roleIds);
 }

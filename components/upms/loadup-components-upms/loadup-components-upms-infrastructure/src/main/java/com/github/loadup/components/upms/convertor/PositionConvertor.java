@@ -35,14 +35,14 @@ import java.util.List;
 
 @Mapper
 public interface PositionConvertor {
-	PositionConvertor INSTANCE = Mappers.getMapper(PositionConvertor.class);
+    PositionConvertor INSTANCE = Mappers.getMapper(PositionConvertor.class);
 
-	Position toPosition(PositionDO roleDO);
+    Position toPosition(PositionDO roleDO);
 
-	List<Position> toPositionList(List<PositionDO> roleDOList);
+    List<Position> toPositionList(List<PositionDO> roleDOList);
 
-	PositionDO toPositionDO(Position role);
+    PositionDO toPositionDO(Position role);
 
-	List<PositionDO> toPositionDOList(List<Position> roleList);
+    List<PositionDO> toPositionDOList(List<Position> roleList);
 
 }

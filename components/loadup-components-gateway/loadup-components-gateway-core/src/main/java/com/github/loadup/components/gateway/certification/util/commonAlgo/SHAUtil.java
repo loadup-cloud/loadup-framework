@@ -36,19 +36,19 @@ import java.security.Security;
  */
 public class SHAUtil {
 
-	static {
-		if (Security.getProvider("BC") == null) {
-			Security.addProvider(new BouncyCastleProvider());
-		}
-	}
+    static {
+        if (Security.getProvider("BC") == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+    }
 
-	/**
-	 * 摘要算法
-	 */
-	public static byte[] digest(byte[] data, String algorithm) throws Exception {
+    /**
+     * 摘要算法
+     */
+    public static byte[] digest(byte[] data, String algorithm) throws Exception {
 
-		MessageDigest md = MessageDigest.getInstance(algorithm);
-		return md.digest(data);
-	}
+        MessageDigest md = MessageDigest.getInstance(algorithm);
+        return md.digest(data);
+    }
 
 }

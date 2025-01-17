@@ -31,7 +31,9 @@ import com.github.loadup.components.gateway.common.util.CommonUtil;
 import com.github.loadup.components.gateway.common.util.ResultUtil;
 import com.github.loadup.components.gateway.core.common.Constant;
 import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
-import com.github.loadup.components.gateway.core.common.enums.*;
+import com.github.loadup.components.gateway.core.common.enums.InterfaceScope;
+import com.github.loadup.components.gateway.core.common.enums.InterfaceType;
+import com.github.loadup.components.gateway.core.common.enums.MessageFormat;
 import com.github.loadup.components.gateway.core.ctrl.RuntimeProcessContextHolder;
 import com.github.loadup.components.gateway.core.ctrl.action.BusinessAction;
 import com.github.loadup.components.gateway.core.ctrl.action.atom.ExceptionAssembleAction;
@@ -46,11 +48,15 @@ import com.github.loadup.components.gateway.facade.spi.LimitRuleService;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Message send service
@@ -59,126 +65,126 @@ import java.util.*;
 @Component("messageService")
 public class MessageServiceImpl implements MessageService {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(MessageServiceImpl.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(MessageServiceImpl.class);
 
-	@Resource
-	@Qualifier("springBeanServiceAction")
-	private BusinessAction springBeanServiceAction;
+    @Resource
+    @Qualifier("springBeanServiceAction")
+    private BusinessAction springBeanServiceAction;
 
-	@Resource
-	@Qualifier("exceptionAssembleAction")
-	private ExceptionAssembleAction exceptionAssembleAction;
+    @Resource
+    @Qualifier("exceptionAssembleAction")
+    private ExceptionAssembleAction exceptionAssembleAction;
 
-	@Resource
-	private LimitRuleService limitRuleService;
+    @Resource
+    private LimitRuleService limitRuleService;
 
-	/**
-	 * Send string.
-	 */
-	@Override
-	public String send(String integrationUrl, Map<String, String> message) {
+    /**
+     * Send string.
+     */
+    @Override
+    public String send(String integrationUrl, Map<String, String> message) {
 
-		return send(new SPIRequest(integrationUrl, message)).getContent();
-	}
+        return send(new SPIRequest(integrationUrl, message)).getContent();
+    }
 
-	@Override
-	public SPIResponse send(SPIRequest request) {
+    @Override
+    public SPIResponse send(SPIRequest request) {
 
-		long timecost = System.currentTimeMillis();
-		SPIResponse spiResponse = new SPIResponse(StringUtils.EMPTY, new HashMap<>(),
-				ResultUtil.buildSuccessResult());
-		GatewayRuntimeProcessContext processContext = RuntimeProcessContextHolder
-				.createRuntimeProcessContext();
-		processContext.setTransactionType(InterfaceType.SPI.getCode());
+        long timecost = System.currentTimeMillis();
+        SPIResponse spiResponse = new SPIResponse(StringUtils.EMPTY, new HashMap<>(),
+                ResultUtil.buildSuccessResult());
+        GatewayRuntimeProcessContext processContext = RuntimeProcessContextHolder
+                .createRuntimeProcessContext();
+        processContext.setTransactionType(InterfaceType.SPI.getCode());
 
-		// init tracer
-		String tracerIdByGatewaylite = null;
-		//        Span span = Span.current();
-		//TracerUtil.getSpan();
-		//        if (null != span) {
-		////            processContext.setTraceId(TracerUtil.getTracerId());
-		//        } else {
-		////            Span spangateway = TracerUtil.createSpan(Constant.COMPONENT_NAME);
-		////            TracerUtil.putSpan(spangateway);
-		////            TracerUtil.logTraceId(spangateway);
-		////            tracerIdByGatewaylite = TracerUtil.getTracerId();
-		////            processContext.setTraceId(tracerIdByGatewaylite);
-		//        }
-		//        processContext.setTraceId(TracerUtil.getTracerId());
-		processContext.setIntegratorUrl(request.getIntegrationUrl());
-		processContext.setIntegratorInterfaceId(request.getIntegrationUrl());
-		MessageEnvelope requestMessage = new MessageEnvelope(MessageFormat.MAP, "");
-		requestMessage.setContent(request.getMessage());
-		processContext.setRequestMessage(requestMessage);
-		processContext.setNeedStatus(false);
+        // init tracer
+        String tracerIdByGatewaylite = null;
+        //        Span span = Span.current();
+        //TracerUtil.getSpan();
+        //        if (null != span) {
+        ////            processContext.setTraceId(TracerUtil.getTracerId());
+        //        } else {
+        ////            Span spangateway = TracerUtil.createSpan(Constant.COMPONENT_NAME);
+        ////            TracerUtil.putSpan(spangateway);
+        ////            TracerUtil.logTraceId(spangateway);
+        ////            tracerIdByGatewaylite = TracerUtil.getTracerId();
+        ////            processContext.setTraceId(tracerIdByGatewaylite);
+        //        }
+        //        processContext.setTraceId(TracerUtil.getTracerId());
+        processContext.setIntegratorUrl(request.getIntegrationUrl());
+        processContext.setIntegratorInterfaceId(request.getIntegrationUrl());
+        MessageEnvelope requestMessage = new MessageEnvelope(MessageFormat.MAP, "");
+        requestMessage.setContent(request.getMessage());
+        processContext.setRequestMessage(requestMessage);
+        processContext.setNeedStatus(false);
 
-		// set mdc traceId
-		MDC.put(Constant.TRACER_KEY, processContext.getTraceId());
+        // set mdc traceId
+        MDC.put(Constant.TRACER_KEY, processContext.getTraceId());
 
-		MessageEnvelope integrationReceiveResponse = null;
-		String callRespMsg = null;
-		boolean success = false;
-		try {
-			springBeanServiceAction.process(processContext);
-			success = true;
-			callRespMsg = "SUCCESS";
-		} catch (CommonException e) {
-			LogUtil.error(logger, e, "Message Service send message fail, throw business exception");
-			processContext.setBusinessException(e);
-			exceptionAssembleAction.process(processContext);
-			callRespMsg = e.getMessage();
-			spiResponse.setResult(ResultUtil.buildResult(e.getResultCode()));
-			MetricLoggerUtil.countError(request.getIntegrationUrl(),
-					System.currentTimeMillis() - timecost,
-					request.getMessage().get(Constant.KEY_HTTP_CLIENT_ID), InterfaceType.SPI,
-					processContext.getTraceId(), e.getResultCode());
-		} catch (Throwable e) {
-			LogUtil.error(logger, e, "Message Service send message fail! throw exception");
-			CommonException commonException = new CommonException(
-					GatewayErrorCode.UNKNOWN_EXCEPTION, e);
-			processContext.setBusinessException(commonException);
-			exceptionAssembleAction.process(processContext);
-			callRespMsg = e.getMessage();
-			spiResponse.setResult(
-					ResultUtil.buildResult(GatewayErrorCode.UNKNOWN_EXCEPTION, e.getMessage()));
+        MessageEnvelope integrationReceiveResponse = null;
+        String callRespMsg = null;
+        boolean success = false;
+        try {
+            springBeanServiceAction.process(processContext);
+            success = true;
+            callRespMsg = "SUCCESS";
+        } catch (CommonException e) {
+            LogUtil.error(logger, e, "Message Service send message fail, throw business exception");
+            processContext.setBusinessException(e);
+            exceptionAssembleAction.process(processContext);
+            callRespMsg = e.getMessage();
+            spiResponse.setResult(ResultUtil.buildResult(e.getResultCode()));
+            MetricLoggerUtil.countError(request.getIntegrationUrl(),
+                    System.currentTimeMillis() - timecost,
+                    request.getMessage().get(Constant.KEY_HTTP_CLIENT_ID), InterfaceType.SPI,
+                    processContext.getTraceId(), e.getResultCode());
+        } catch (Throwable e) {
+            LogUtil.error(logger, e, "Message Service send message fail! throw exception");
+            CommonException commonException = new CommonException(
+                    GatewayErrorCode.UNKNOWN_EXCEPTION, e);
+            processContext.setBusinessException(commonException);
+            exceptionAssembleAction.process(processContext);
+            callRespMsg = e.getMessage();
+            spiResponse.setResult(
+                    ResultUtil.buildResult(GatewayErrorCode.UNKNOWN_EXCEPTION, e.getMessage()));
 
-			MetricLoggerUtil.countError(request.getIntegrationUrl(),
-					System.currentTimeMillis() - timecost,
-					request.getMessage().get(Constant.KEY_HTTP_CLIENT_ID), InterfaceType.SPI,
-					processContext.getTraceId(), commonException.getResultCode());
-		} finally {
-			//limitRuleService.resetToken(processContext.getIntegratorInterfaceId());
-			integrationReceiveResponse = processContext.getResponseMessage();
+            MetricLoggerUtil.countError(request.getIntegrationUrl(),
+                    System.currentTimeMillis() - timecost,
+                    request.getMessage().get(Constant.KEY_HTTP_CLIENT_ID), InterfaceType.SPI,
+                    processContext.getTraceId(), commonException.getResultCode());
+        } finally {
+            //limitRuleService.resetToken(processContext.getIntegratorInterfaceId());
+            integrationReceiveResponse = processContext.getResponseMessage();
 
-			spiResponse.setContent(CommonUtil.getMsgContent(integrationReceiveResponse));
-			Map<String, String> headers = integrationReceiveResponse == null ?
-					Collections.emptyMap() : integrationReceiveResponse.getHeaders();
-			spiResponse.setHeaders(headers);
+            spiResponse.setContent(CommonUtil.getMsgContent(integrationReceiveResponse));
+            Map<String, String> headers = integrationReceiveResponse == null ?
+                    Collections.emptyMap() : integrationReceiveResponse.getHeaders();
+            spiResponse.setHeaders(headers);
 
-			if (!MetricLoggerUtil.judgeBinderEnabled()) {
-				DigestLoggerUtil.printSimpleDigestLog(request.getIntegrationUrl(), callRespMsg,
-						System.currentTimeMillis() - timecost);
-			} else {
-				MetricLoggerUtil.monitor(request.getIntegrationUrl(),
-						System.currentTimeMillis() - timecost, success,
-						request.getMessage().get(Constant.KEY_HTTP_CLIENT_ID), InterfaceType.SPI,
-						processContext.getTraceId(), InterfaceScope.INBOUND);
-			}
-			RuntimeProcessContextHolder.cleanActionContext();
-			MDC.clear();
+            if (!MetricLoggerUtil.judgeBinderEnabled()) {
+                DigestLoggerUtil.printSimpleDigestLog(request.getIntegrationUrl(), callRespMsg,
+                        System.currentTimeMillis() - timecost);
+            } else {
+                MetricLoggerUtil.monitor(request.getIntegrationUrl(),
+                        System.currentTimeMillis() - timecost, success,
+                        request.getMessage().get(Constant.KEY_HTTP_CLIENT_ID), InterfaceType.SPI,
+                        processContext.getTraceId(), InterfaceScope.INBOUND);
+            }
+            RuntimeProcessContextHolder.cleanActionContext();
+            MDC.clear();
 
-			// clear tracer
-			if (StringUtils.isNotBlank(tracerIdByGatewaylite)) {
-				//                Span activeSpan = TracerUtil.getSpan();
-				//                if (activeSpan != null) {
-				//                    activeSpan.finish();
-				//                }
-			}
-		}
+            // clear tracer
+            if (StringUtils.isNotBlank(tracerIdByGatewaylite)) {
+                //                Span activeSpan = TracerUtil.getSpan();
+                //                if (activeSpan != null) {
+                //                    activeSpan.finish();
+                //                }
+            }
+        }
 
-		return spiResponse;
+        return spiResponse;
 
-	}
+    }
 
 }

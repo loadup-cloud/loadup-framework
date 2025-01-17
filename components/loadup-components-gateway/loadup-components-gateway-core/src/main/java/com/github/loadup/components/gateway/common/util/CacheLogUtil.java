@@ -38,32 +38,32 @@ import java.util.Map;
  */
 public class CacheLogUtil {
 
-	/**
-	 * logger
-	 */
-	private static final Logger logger = LoggerFactory.getLogger("DIGEST-CACHE-LOGGER");
+    /**
+     * logger
+     */
+    private static final Logger logger = LoggerFactory.getLogger("DIGEST-CACHE-LOGGER");
 
-	/**
-	 * Print log
-	 */
-	public static <K, V> void printLog(String cacheName, Map<K, V> cache) {
+    /**
+     * Print log
+     */
+    public static <K, V> void printLog(String cacheName, Map<K, V> cache) {
 
-		try {
-			LogUtil.info(logger, cacheName + ":\n" + cache);
-		} catch (Exception e) {
-			LogUtil.error(logger, e, "");
-		}
-	}
+        try {
+            LogUtil.info(logger, cacheName + ":\n" + cache);
+        } catch (Exception e) {
+            LogUtil.error(logger, e, "");
+        }
+    }
 
-	/**
-	 * Print log
-	 */
-	public static void printLog(String cacheName, List<?> cache) {
+    /**
+     * Print log
+     */
+    public static void printLog(String cacheName, List<?> cache) {
 
-		try {
-			LogUtil.info(logger, cacheName + ":\n" + cache);
-		} catch (Exception e) {
-			LogUtil.error(logger, e, "");
-		}
-	}
+        try {
+            LogUtil.info(logger, cacheName + ":\n" + cache);
+        } catch (Exception e) {
+            LogUtil.error(logger, e, "");
+        }
+    }
 }

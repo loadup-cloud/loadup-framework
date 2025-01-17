@@ -39,35 +39,35 @@ import org.springframework.stereotype.Component;
 @Component("gatewayFileInterfaceConfigBuilder")
 public class InterfaceConfigBuilder extends AbstractInterfaceConfigBuilder<InterfaceConfigDto> {
 
-	/**
-	 * logger
-	 */
-	private static final Logger logger = LoggerFactory
-			.getLogger(InterfaceConfigBuilder.class);
+    /**
+     * logger
+     */
+    private static final Logger logger = LoggerFactory
+            .getLogger(InterfaceConfigBuilder.class);
 
-	/**
-	 * generic config build
-	 */
-	public InterfaceConfigDto build(String url, String securityStrategyCode,
-									String communicationProperties, String integrationInterfaceId) {
-		if (!validate(url, securityStrategyCode)) {
-			return null;
-		}
+    /**
+     * generic config build
+     */
+    public InterfaceConfigDto build(String url, String securityStrategyCode,
+                                    String communicationProperties, String integrationInterfaceId) {
+        if (!validate(url, securityStrategyCode)) {
+            return null;
+        }
 
-		//1 interfaceId
-		String interfaceId = generateBizKey(url);
+        //1 interfaceId
+        String interfaceId = generateBizKey(url);
 
-		InterfaceConfigDto interfaceConfigDto = new InterfaceConfigDto();
-		interfaceConfigDto.setInterfaceId(interfaceId);
-		interfaceConfigDto.setMessageProcessId(interfaceId);
-		interfaceConfigDto.setInterfaceName(interfaceId);
-		interfaceConfigDto.setCertCode(securityStrategyCode);
-		interfaceConfigDto.setIsEnable("true");
-		if (StringUtils.isNotEmpty(integrationInterfaceId)) {
-			interfaceConfigDto
-					.setMessageReceiverInterfaceId(generateBizKey(integrationInterfaceId));
-		}
-		interfaceConfigDto.setProperties(communicationProperties);
-		return interfaceConfigDto;
-	}
+        InterfaceConfigDto interfaceConfigDto = new InterfaceConfigDto();
+        interfaceConfigDto.setInterfaceId(interfaceId);
+        interfaceConfigDto.setMessageProcessId(interfaceId);
+        interfaceConfigDto.setInterfaceName(interfaceId);
+        interfaceConfigDto.setCertCode(securityStrategyCode);
+        interfaceConfigDto.setIsEnable("true");
+        if (StringUtils.isNotEmpty(integrationInterfaceId)) {
+            interfaceConfigDto
+                    .setMessageReceiverInterfaceId(generateBizKey(integrationInterfaceId));
+        }
+        interfaceConfigDto.setProperties(communicationProperties);
+        return interfaceConfigDto;
+    }
 }

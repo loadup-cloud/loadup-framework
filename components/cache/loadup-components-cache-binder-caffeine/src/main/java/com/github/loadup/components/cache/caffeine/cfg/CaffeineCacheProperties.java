@@ -48,11 +48,11 @@ public class CaffeineCacheProperties {
      * <p>
      * spring.cache.caffeine.max-cache-capacity
      */
-    private Long    maxCacheCapacity  = 10000L;
+    private Long maxCacheCapacity = 10000L;
     /**
      * allow null as value or not
      * spring.cache.caffeine.allow-null-value
      */
-    private Boolean allowNullValue    = Boolean.TRUE;
+    private Boolean allowNullValue = Boolean.TRUE;
 
 }

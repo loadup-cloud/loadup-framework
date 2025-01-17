@@ -37,15 +37,15 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum GenderEnum implements IEnum {
-	MALE("MALE", "Male"),
-	FEMALE("FEMALE", "Female"),
-	UNKNOWN("UNKNOWN", "Unknown"),
-	;
+    MALE("MALE", "Male"),
+    FEMALE("FEMALE", "Female"),
+    UNKNOWN("UNKNOWN", "Unknown"),
+    ;
 
-	private final String code;
-	private final String description;
+    private final String code;
+    private final String description;
 
-	public static GenderEnum getByCode(String code) {
-		return EnumUtils.getEnumByCode(GenderEnum.class, code);
-	}
+    public static GenderEnum getByCode(String code) {
+        return EnumUtils.getEnumByCode(GenderEnum.class, code);
+    }
 }

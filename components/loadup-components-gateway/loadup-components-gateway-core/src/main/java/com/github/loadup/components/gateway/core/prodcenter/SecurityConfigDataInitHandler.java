@@ -43,20 +43,20 @@ import java.util.Collections;
 @Component("gatewaySecurityConfigDataInitHandler")
 public class SecurityConfigDataInitHandler {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(SecurityConfigDataInitHandler.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(SecurityConfigDataInitHandler.class);
 
-	/**
-	 *
-	 */
-	protected void process(String tntInstId, String configName,
-						SecurityConditionGroup securityConditionGroup) {
-		LogUtil.info(logger, "init security config for securityConditionGroup:",
-				securityConditionGroup);
-		CertConfig certConfig = CertConfigConvertor.convertToCertConfig(securityConditionGroup,
-				tntInstId);
-		CertConfigCache.putAll(false, Collections.singletonList(certConfig));
-		LogUtil.info(logger, "init security config for securityConditionGroup end");
-	}
+    /**
+     *
+     */
+    protected void process(String tntInstId, String configName,
+                           SecurityConditionGroup securityConditionGroup) {
+        LogUtil.info(logger, "init security config for securityConditionGroup:",
+                securityConditionGroup);
+        CertConfig certConfig = CertConfigConvertor.convertToCertConfig(securityConditionGroup,
+                tntInstId);
+        CertConfigCache.putAll(false, Collections.singletonList(certConfig));
+        LogUtil.info(logger, "init security config for securityConditionGroup end");
+    }
 
 }

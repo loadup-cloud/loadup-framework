@@ -38,19 +38,19 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 public interface SignatureService {
 
-	/**
-	 * assemble signature info with httpRequest
-	 */
-	String getSignatureInfo(HttpServletRequest httpServletRequest, MessageEnvelope envelope);
+    /**
+     * assemble signature info with httpRequest
+     */
+    String getSignatureInfo(HttpServletRequest httpServletRequest, MessageEnvelope envelope);
 
-	/**
-	 * assemble signature info with httpRequest
-	 */
-	String getOriginSignatureInfo(HttpServletRequest httpServletRequest, MessageEnvelope envelope);
+    /**
+     * assemble signature info with httpRequest
+     */
+    String getOriginSignatureInfo(HttpServletRequest httpServletRequest, MessageEnvelope envelope);
 
-	/**
-	 * get signature content
-	 */
-	String sign(MessageEnvelope messageEnvelope, SignatureRequest signatureRequest);
+    /**
+     * get signature content
+     */
+    String sign(MessageEnvelope messageEnvelope, SignatureRequest signatureRequest);
 
 }

@@ -39,17 +39,17 @@ import java.util.List;
 @Component
 public class APIConditionConfigIndexExtImpl {
 
-	public List<List<String>> customIndexKeys(String tntInstId, String configName,
-											APIConditionGroup apiConditionGroup) {
+    public List<List<String>> customIndexKeys(String tntInstId, String configName,
+                                              APIConditionGroup apiConditionGroup) {
 
-		List<List<String>> result = new ArrayList<List<String>>();
-		List<String> urlIndex = new ArrayList<>();
-		urlIndex.add(Constant.URL_INDEX_COLUMN);
-		result.add(urlIndex);
+        List<List<String>> result = new ArrayList<List<String>>();
+        List<String> urlIndex = new ArrayList<>();
+        urlIndex.add(Constant.URL_INDEX_COLUMN);
+        result.add(urlIndex);
 
-		List<String> integrationUrlIndex = new ArrayList<>();
-		integrationUrlIndex.add(Constant.INTEGRATION_URL_INDEX_COLUMN);
-		result.add(integrationUrlIndex);
-		return result;
-	}
+        List<String> integrationUrlIndex = new ArrayList<>();
+        integrationUrlIndex.add(Constant.INTEGRATION_URL_INDEX_COLUMN);
+        result.add(integrationUrlIndex);
+        return result;
+    }
 }

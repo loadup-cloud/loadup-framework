@@ -43,18 +43,18 @@ public class ApplicationContextAwareUtil implements ApplicationContextAware {
     private static ApplicationContext applicationContext;
 
     /**
+     * Getter method for property <tt>applicationContext</tt>.
+     */
+    public static ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
+    /**
      * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
      */
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         ApplicationContextAwareUtil.applicationContext = applicationContext;
-    }
-
-    /**
-     * Getter method for property <tt>applicationContext</tt>.
-     */
-    public static ApplicationContext getApplicationContext() {
-        return applicationContext;
     }
 
     /**

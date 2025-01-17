@@ -37,20 +37,20 @@ import java.util.List;
 
 @Mapper(uses = {UserNameConvertor.class, DepartDTOConvertor.class, PositionDTOConvertor.class})
 public interface UserDTOConvertor {
-	UserDTOConvertor INSTANCE = Mappers.getMapper(UserDTOConvertor.class);
+    UserDTOConvertor INSTANCE = Mappers.getMapper(UserDTOConvertor.class);
 
-	User toUser(UserDTO dto);
+    User toUser(UserDTO dto);
 
-	User toUser(SimpleUserDTO dto);
+    User toUser(SimpleUserDTO dto);
 
-	List<User> toUserList(List<UserDTO> dtoList);
+    List<User> toUserList(List<UserDTO> dtoList);
 
-	UserDTO toUserDTO(User domain);
+    UserDTO toUserDTO(User domain);
 
-	List<UserDTO> toUserDTOList(List<User> domainList);
+    List<UserDTO> toUserDTOList(List<User> domainList);
 
-	SimpleUserDTO toSimpleUserDTO(User domain);
+    SimpleUserDTO toSimpleUserDTO(User domain);
 
-	List<SimpleUserDTO> toSimpleUserDTOList(List<User> domainList);
+    List<SimpleUserDTO> toSimpleUserDTOList(List<User> domainList);
 
 }

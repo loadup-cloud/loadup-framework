@@ -36,36 +36,36 @@ package com.github.loadup.commons.core;
 import java.lang.management.ManagementFactory;
 
 public enum Pid {
-	INSTANCE;
+    INSTANCE;
 
-	private final int pid;
+    private final int pid;
 
-	Pid() {
-		this.pid = getPid();
-	}
+    Pid() {
+        this.pid = getPid();
+    }
 
-	/**
-	 * 获取PID值
-	 */
-	public int get() {
-		return this.pid;
-	}
+    /**
+     * 获取当前进程ID，首先获取进程名称，读取@前的ID值，如果不存在，则读取进程名的hash值
+     *
+     * @throws RuntimeException 进程名称为空
+     */
+    private static int getPid() throws RuntimeException {
+        final String processName = ManagementFactory.getRuntimeMXBean().getName();
+        if (null == processName || 0 == processName.length()) {
+            throw new RuntimeException("Process name is blank!");
+        }
+        final int atIndex = processName.indexOf('@');
+        if (atIndex > 0) {
+            return Integer.parseInt(processName.substring(0, atIndex));
+        } else {
+            return processName.hashCode();
+        }
+    }
 
-	/**
-	 * 获取当前进程ID，首先获取进程名称，读取@前的ID值，如果不存在，则读取进程名的hash值
-	 *
-	 * @throws RuntimeException 进程名称为空
-	 */
-	private static int getPid() throws RuntimeException {
-		final String processName = ManagementFactory.getRuntimeMXBean().getName();
-		if (null == processName || 0 == processName.length()) {
-			throw new RuntimeException("Process name is blank!");
-		}
-		final int atIndex = processName.indexOf('@');
-		if (atIndex > 0) {
-			return Integer.parseInt(processName.substring(0, atIndex));
-		} else {
-			return processName.hashCode();
-		}
-	}
+    /**
+     * 获取PID值
+     */
+    public int get() {
+        return this.pid;
+    }
 }

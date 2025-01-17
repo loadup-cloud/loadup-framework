@@ -38,20 +38,20 @@ import java.io.Serial;
 @Setter
 @Table("upms_depart")
 public class DepartDO extends BaseDO {
-	@Serial
-	private static final long   serialVersionUID = -5905118473496026853L;
-	@Id
-	private              String id;
+    @Serial
+    private static final long serialVersionUID = -5905118473496026853L;
+    @Id
+    private String id;
 
-	/**
-	 * 父机构ID
-	 */
-	private String parentId;
-	private String departName;
-	private String departCode;
-	private String departType;
-	private String description;
-	private String status;
-	private int    orderIndex;
+    /**
+     * 父机构ID
+     */
+    private String parentId;
+    private String departName;
+    private String departCode;
+    private String departType;
+    private String description;
+    private String status;
+    private int orderIndex;
 
 }

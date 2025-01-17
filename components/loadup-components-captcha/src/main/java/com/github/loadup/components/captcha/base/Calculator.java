@@ -9,9 +9,9 @@ import java.util.Stack;
  * @link https://www.cnblogs.com/woider/p/5331391.html
  */
 public class Calculator {
-    private final Stack<String>    postfixStack   = new Stack<String>();// 后缀式栈
-    private final Stack<Character> opStack        = new Stack<Character>();// 运算符栈
-    private final int[]            operatPriority = new int[] {0, 3, 2, 1, -1, 1, 0, 2};// 运用运算符ASCII码-40做索引的运算符优先级
+    private final Stack<String> postfixStack = new Stack<String>();// 后缀式栈
+    private final Stack<Character> opStack = new Stack<Character>();// 运算符栈
+    private final int[] operatPriority = new int[]{0, 3, 2, 1, -1, 1, 0, 2};// 运用运算符ASCII码-40做索引的运算符优先级
 
     public static double conversion(String expression) {
         double result = 0;

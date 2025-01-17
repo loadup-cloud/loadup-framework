@@ -36,28 +36,28 @@ import java.util.List;
 @Component
 @Slf4j
 public class PositionGatewayImpl implements PositionGateway {
-	@Override
-	public void create(Position domain) {
+    @Override
+    public void create(Position domain) {
 
-	}
+    }
 
-	@Override
-	public void update(Position domain) {
+    @Override
+    public void update(Position domain) {
 
-	}
+    }
 
-	@Override
-	public void delete(String id) {
+    @Override
+    public void delete(String id) {
 
-	}
+    }
 
-	@Override
-	public Position getById(String id) {
-		return null;
-	}
+    @Override
+    public Position getById(String id) {
+        return null;
+    }
 
-	@Override
-	public List<Position> getByUserId(String userId) {
-		return List.of();
-	}
+    @Override
+    public List<Position> getByUserId(String userId) {
+        return List.of();
+    }
 }

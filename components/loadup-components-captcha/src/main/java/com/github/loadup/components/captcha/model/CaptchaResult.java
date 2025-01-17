@@ -18,8 +18,8 @@ import org.apache.commons.io.IOUtils;
 @Data
 public class CaptchaResult extends DTO {
     private ByteArrayOutputStream outputStream;
-    private String                base64;
-    private String                cacheKey;
+    private String base64;
+    private String cacheKey;
 
     public void toOutputStream(OutputStream out) {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());

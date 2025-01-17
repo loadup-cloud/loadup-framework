@@ -36,15 +36,15 @@ import org.springframework.stereotype.Component;
 @Component("gatewayDatabaseInstConfigBuilder")
 public class InstConfigBuilder extends AbstractInterfaceConfigBuilder<InstConfigDto> {
 
-	/**
-	 * generic config build
-	 */
-	public InstConfigDto build(String clientId, String name, String properties) {
-		InstConfigDto instConfigDto = new InstConfigDto();
-		instConfigDto.setClientId(clientId);
-		instConfigDto.setName(name);
-		instConfigDto.setProperties(properties);
-		return instConfigDto;
-	}
+    /**
+     * generic config build
+     */
+    public InstConfigDto build(String clientId, String name, String properties) {
+        InstConfigDto instConfigDto = new InstConfigDto();
+        instConfigDto.setClientId(clientId);
+        instConfigDto.setName(name);
+        instConfigDto.setProperties(properties);
+        return instConfigDto;
+    }
 
 }

@@ -43,44 +43,44 @@ import java.util.List;
  */
 public interface InstInterfaceMapDAO {
 
-	/**
-	 * Insert one <tt>InstInterfaceMapDO</tt> object to DB table <tt>gateway_inst_interface_map</tt>, return primary key
-	 */
-	public String insert(InstInterfaceMapDO instInterfaceMap);
+    /**
+     * Insert one <tt>InstInterfaceMapDO</tt> object to DB table <tt>gateway_inst_interface_map</tt>, return primary key
+     */
+    public String insert(InstInterfaceMapDO instInterfaceMap);
 
-	/**
-	 * Query DB table <tt>gateway_inst_interface_map</tt> for records.
-	 */
-	public List<InstInterfaceMapDO> loadAll();
+    /**
+     * Query DB table <tt>gateway_inst_interface_map</tt> for records.
+     */
+    public List<InstInterfaceMapDO> loadAll();
 
-	/**
-	 * Query DB table <tt>gateway_inst_interface_map</tt> for records.
-	 */
-	public List<InstInterfaceMapDO> loadByClientId(String clientId);
+    /**
+     * Query DB table <tt>gateway_inst_interface_map</tt> for records.
+     */
+    public List<InstInterfaceMapDO> loadByClientId(String clientId);
 
-	/**
-	 * Query DB table <tt>gateway_inst_interface_map</tt> for records.
-	 */
-	public List<InstInterfaceMapDO> loadByInterfaceId(String interfaceId);
+    /**
+     * Query DB table <tt>gateway_inst_interface_map</tt> for records.
+     */
+    public List<InstInterfaceMapDO> loadByInterfaceId(String interfaceId);
 
-	/**
-	 * Query DB table <tt>gateway_inst_interface_map</tt> for records.
-	 */
-	public InstInterfaceMapDO loadByClientIdAndInterfaceId(String clientId, String interfaceId);
+    /**
+     * Query DB table <tt>gateway_inst_interface_map</tt> for records.
+     */
+    public InstInterfaceMapDO loadByClientIdAndInterfaceId(String clientId, String interfaceId);
 
-	/**
-	 * Delete records from DB table <tt>gateway_inst_interface_map</tt>.
-	 */
-	public int delete(String clientId, String interfaceId);
+    /**
+     * Delete records from DB table <tt>gateway_inst_interface_map</tt>.
+     */
+    public int delete(String clientId, String interfaceId);
 
-	/**
-	 * Delete records from DB table <tt>gateway_inst_interface_map</tt>.
-	 */
-	public int deleteByClientId(String clientId);
+    /**
+     * Delete records from DB table <tt>gateway_inst_interface_map</tt>.
+     */
+    public int deleteByClientId(String clientId);
 
-	/**
-	 * Delete records from DB table <tt>gateway_inst_interface_map</tt>.
-	 */
-	public int deleteByInterfaceId(String interfaceId);
+    /**
+     * Delete records from DB table <tt>gateway_inst_interface_map</tt>.
+     */
+    public int deleteByInterfaceId(String interfaceId);
 
 }

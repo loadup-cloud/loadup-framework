@@ -41,35 +41,35 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class MessageReceiverConfigCache {
 
-	/**
-	 * Key is message receiver id
-	 */
-	private static Map<String, MessageReceiverConfig> messageReceiverMap = new ConcurrentHashMap<>();
+    /**
+     * Key is message receiver id
+     */
+    private static Map<String, MessageReceiverConfig> messageReceiverMap = new ConcurrentHashMap<>();
 
-	/**
-	 * Put all.
-	 */
-	public static void putAll(boolean clear, List<MessageReceiverConfig> messageReceiverConfigList) {
-		if (CollectionUtils.isEmpty(messageReceiverConfigList)) {
-			return;
-		}
+    /**
+     * Put all.
+     */
+    public static void putAll(boolean clear, List<MessageReceiverConfig> messageReceiverConfigList) {
+        if (CollectionUtils.isEmpty(messageReceiverConfigList)) {
+            return;
+        }
 
-		Map<String, MessageReceiverConfig> tempMap = new ConcurrentHashMap<>();
-		messageReceiverConfigList.forEach(
-				messageReceiverConfig -> tempMap.put(messageReceiverConfig.getMessageReceiverId(), messageReceiverConfig));
-		if (clear) {
-			messageReceiverMap = tempMap;
-		} else {
-			messageReceiverMap.putAll(tempMap);
-		}
-		CacheLogUtil.printLog("messageReceiverMap", messageReceiverMap);
-	}
+        Map<String, MessageReceiverConfig> tempMap = new ConcurrentHashMap<>();
+        messageReceiverConfigList.forEach(
+                messageReceiverConfig -> tempMap.put(messageReceiverConfig.getMessageReceiverId(), messageReceiverConfig));
+        if (clear) {
+            messageReceiverMap = tempMap;
+        } else {
+            messageReceiverMap.putAll(tempMap);
+        }
+        CacheLogUtil.printLog("messageReceiverMap", messageReceiverMap);
+    }
 
-	/**
-	 * Gets get with message receiver id.
-	 */
-	public static MessageReceiverConfig getWithMessageReceiverId(String messageReceiverId) {
-		return messageReceiverMap.get(messageReceiverId);
+    /**
+     * Gets get with message receiver id.
+     */
+    public static MessageReceiverConfig getWithMessageReceiverId(String messageReceiverId) {
+        return messageReceiverMap.get(messageReceiverId);
 
-	}
+    }
 }

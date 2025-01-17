@@ -40,7 +40,7 @@ public class ExponentialWaitStrategy implements RetryTaskStrategy {
     /**
      * 1 unit 作为指数
      */
-    private long multiplier  = 1;
+    private long multiplier = 1;
     /**
      * 最大重试到 50 unit
      */

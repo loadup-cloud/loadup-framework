@@ -37,27 +37,27 @@ import static com.github.loadup.components.gateway.core.common.Constant.UNDERSCO
  */
 @Component("databaseCommunicationConfigBuilder")
 public class CommunicationConfigBuilder extends
-		AbstractInterfaceConfigBuilder<CommunicationConfigDto> {
+        AbstractInterfaceConfigBuilder<CommunicationConfigDto> {
 
-	/**
-	 * generic config build
-	 * format should follow the template which is defined in SPI interface
-	 */
-	public CommunicationConfigDto build(String url, String interfaceId, String securityStrategyCode,
-										String communicationProperties, int index) {
-		if (!validate(url, securityStrategyCode)) {
-			return null;
-		}
-		CommunicationConfigDto communicationConfigDto = new CommunicationConfigDto();
-		String protocol = getProtocol(url);
-		//interfaceId_index
-		communicationConfigDto
-				.setCommunicationId(interfaceId.concat(UNDERSCORE).concat(String.valueOf(index)));
-		communicationConfigDto.setInterfaceId(interfaceId);
-		communicationConfigDto.setUri(url);
-		communicationConfigDto.setProperties(communicationProperties);
-		communicationConfigDto.setProtocol(protocol);
-		return communicationConfigDto;
-	}
+    /**
+     * generic config build
+     * format should follow the template which is defined in SPI interface
+     */
+    public CommunicationConfigDto build(String url, String interfaceId, String securityStrategyCode,
+                                        String communicationProperties, int index) {
+        if (!validate(url, securityStrategyCode)) {
+            return null;
+        }
+        CommunicationConfigDto communicationConfigDto = new CommunicationConfigDto();
+        String protocol = getProtocol(url);
+        //interfaceId_index
+        communicationConfigDto
+                .setCommunicationId(interfaceId.concat(UNDERSCORE).concat(String.valueOf(index)));
+        communicationConfigDto.setInterfaceId(interfaceId);
+        communicationConfigDto.setUri(url);
+        communicationConfigDto.setProperties(communicationProperties);
+        communicationConfigDto.setProtocol(protocol);
+        return communicationConfigDto;
+    }
 
 }

@@ -33,9 +33,9 @@ import com.github.loadup.components.gateway.facade.config.model.BasicGatewayCond
  */
 public interface BasicGatewayProdCenterQueryService {
 
-	/**
-	 * query basic gatewaylite condition group config
-	 */
-	public BasicGatewayConditionGroup queryBasicGatewayConditionGroup();
+    /**
+     * query basic gatewaylite condition group config
+     */
+    public BasicGatewayConditionGroup queryBasicGatewayConditionGroup();
 
 }

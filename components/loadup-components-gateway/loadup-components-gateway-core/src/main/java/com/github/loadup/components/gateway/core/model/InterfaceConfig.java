@@ -36,170 +36,165 @@ import java.util.Map;
  */
 public class InterfaceConfig {
 
-	/**
-	 * 接口id
-	 */
-	private String interfaceId;
+    /**
+     * 接口属性
+     */
+    private final Properties properties = new Properties();
+    /**
+     * 接口id
+     */
+    private String interfaceId;
+    /**
+     * 接口名称
+     */
+    private String interfaceName;
+    /**
+     * 报文处理id
+     */
+    private String messageProcessorId;
+    /**
+     * 集成ID
+     */
+    private String messageReceiverInterfaceId;
+    /**
+     * 接口版本号
+     */
+    private String version;
 
-	/**
-	 * 接口名称
-	 */
-	private String interfaceName;
+    /**
+     * 安全信息号
+     */
+    private String securityStrategyCode;
 
-	/**
-	 * 报文处理id
-	 */
-	private String messageProcessorId;
+    /**
+     * 是否开启
+     */
+    private boolean isEnable;
 
-	/**
-	 * 集成ID
-	 */
-	private String messageReceiverInterfaceId;
+    /**
+     * Getter method for property <tt>interfaceId</tt>.
+     */
+    public String getInterfaceId() {
+        return interfaceId;
+    }
 
-	/**
-	 * 接口属性
-	 */
-	private final Properties properties = new Properties();
+    /**
+     * Setter method for property <tt>interfaceId</tt>.
+     */
+    public void setInterfaceId(String interfaceId) {
+        this.interfaceId = interfaceId;
+    }
 
-	/**
-	 * 接口版本号
-	 */
-	private String version;
+    /**
+     * Getter method for property <tt>interfaceName</tt>.
+     */
+    public String getInterfaceName() {
+        return interfaceName;
+    }
 
-	/**
-	 * 安全信息号
-	 */
-	private String securityStrategyCode;
+    /**
+     * Setter method for property <tt>interfaceName</tt>.
+     */
+    public void setInterfaceName(String interfaceName) {
+        this.interfaceName = interfaceName;
+    }
 
-	/**
-	 * 是否开启
-	 */
-	private boolean isEnable;
+    /**
+     * Getter method for property <tt>messageProcessorId</tt>.
+     */
+    public String getMessageProcessorId() {
+        return messageProcessorId;
+    }
 
-	/**
-	 * Getter method for property <tt>interfaceId</tt>.
-	 */
-	public String getInterfaceId() {
-		return interfaceId;
-	}
+    /**
+     * Setter method for property <tt>messageProcessorId</tt>.
+     */
+    public void setMessageProcessorId(String messageProcessorId) {
+        this.messageProcessorId = messageProcessorId;
+    }
 
-	/**
-	 * Setter method for property <tt>interfaceId</tt>.
-	 */
-	public void setInterfaceId(String interfaceId) {
-		this.interfaceId = interfaceId;
-	}
+    /**
+     * Getter method for property <tt>propertes</tt>.
+     */
+    public Properties getProperties() {
+        return properties;
+    }
 
-	/**
-	 * Getter method for property <tt>interfaceName</tt>.
-	 */
-	public String getInterfaceName() {
-		return interfaceName;
-	}
+    /**
+     * Setter method for property <tt>propertes</tt>.
+     */
+    public void setProperties(String properties) {
+        this.properties.setProperties(properties);
+    }
 
-	/**
-	 * Setter method for property <tt>interfaceName</tt>.
-	 */
-	public void setInterfaceName(String interfaceName) {
-		this.interfaceName = interfaceName;
-	}
+    /**
+     * Setter method for property <tt>propertes</tt>.
+     */
+    public void setPropertiesByMap(Map<String, String> properties) {
+        this.properties.setProperties(properties);
+    }
 
-	/**
-	 * Getter method for property <tt>messageProcessorId</tt>.
-	 */
-	public String getMessageProcessorId() {
-		return messageProcessorId;
-	}
+    /**
+     * Getter method for property <tt>isEnable</tt>.
+     */
+    public boolean isEnable() {
+        return isEnable;
+    }
 
-	/**
-	 * Setter method for property <tt>messageProcessorId</tt>.
-	 */
-	public void setMessageProcessorId(String messageProcessorId) {
-		this.messageProcessorId = messageProcessorId;
-	}
+    /**
+     * Setter method for property <tt>isEnable</tt>.
+     */
+    public void setEnable(boolean isEnable) {
+        this.isEnable = isEnable;
+    }
 
-	/**
-	 * Getter method for property <tt>propertes</tt>.
-	 */
-	public Properties getProperties() {
-		return properties;
-	}
+    /**
+     * Getter method for property <tt>version</tt>.
+     */
+    public String getVersion() {
+        return version;
+    }
 
-	/**
-	 * Setter method for property <tt>propertes</tt>.
-	 */
-	public void setProperties(String properties) {
-		this.properties.setProperties(properties);
-	}
+    /**
+     * Setter method for property <tt>version</tt>.
+     */
+    public void setVersion(String version) {
+        this.version = version;
+    }
 
-	/**
-	 * Setter method for property <tt>propertes</tt>.
-	 */
-	public void setPropertiesByMap(Map<String, String> properties) {
-		this.properties.setProperties(properties);
-	}
+    /**
+     * Getter method for property <tt>messageReceiverInterfaceId</tt>.
+     */
+    public String getMessageReceiverInterfaceId() {
+        return messageReceiverInterfaceId;
+    }
 
-	/**
-	 * Getter method for property <tt>isEnable</tt>.
-	 */
-	public boolean isEnable() {
-		return isEnable;
-	}
+    /**
+     * Setter method for property <tt>messageReceiverInterfaceId</tt>.
+     */
+    public void setMessageReceiverInterfaceId(String messageReceiverInterfaceId) {
+        this.messageReceiverInterfaceId = messageReceiverInterfaceId;
+    }
 
-	/**
-	 * Setter method for property <tt>isEnable</tt>.
-	 */
-	public void setEnable(boolean isEnable) {
-		this.isEnable = isEnable;
-	}
+    /**
+     * Getter method for property <tt>securityStrategyCode</tt>.
+     */
+    public String getSecurityStrategyCode() {
+        return securityStrategyCode;
+    }
 
-	/**
-	 * Getter method for property <tt>version</tt>.
-	 */
-	public String getVersion() {
-		return version;
-	}
+    /**
+     * Setter method for property <tt>securityStrategyCode</tt>.
+     */
+    public void setSecurityStrategyCode(String securityStrategyCode) {
+        this.securityStrategyCode = securityStrategyCode;
+    }
 
-	/**
-	 * Setter method for property <tt>version</tt>.
-	 */
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
-	/**
-	 * Getter method for property <tt>messageReceiverInterfaceId</tt>.
-	 */
-	public String getMessageReceiverInterfaceId() {
-		return messageReceiverInterfaceId;
-	}
-
-	/**
-	 * Setter method for property <tt>messageReceiverInterfaceId</tt>.
-	 */
-	public void setMessageReceiverInterfaceId(String messageReceiverInterfaceId) {
-		this.messageReceiverInterfaceId = messageReceiverInterfaceId;
-	}
-
-	/**
-	 * Getter method for property <tt>securityStrategyCode</tt>.
-	 */
-	public String getSecurityStrategyCode() {
-		return securityStrategyCode;
-	}
-
-	/**
-	 * Setter method for property <tt>securityStrategyCode</tt>.
-	 */
-	public void setSecurityStrategyCode(String securityStrategyCode) {
-		this.securityStrategyCode = securityStrategyCode;
-	}
-
-	/**
-	 * @see Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-	}
+    /**
+     * @see Object#toString()
+     */
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

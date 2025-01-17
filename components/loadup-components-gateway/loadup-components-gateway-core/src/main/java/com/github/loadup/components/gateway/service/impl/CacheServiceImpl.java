@@ -40,22 +40,22 @@ import org.springframework.stereotype.Component;
 @Component("cacheService")
 public class CacheServiceImpl implements CacheService {
 
-	@Resource
-	@Qualifier("cacheManager")
-	private CacheManager cacheManager;
+    @Resource
+    @Qualifier("cacheManager")
+    private CacheManager cacheManager;
 
-	@Override
-	public void refreshInterface(String interfaceId) {
-		cacheManager.refreshByInterfaceId(interfaceId);
-	}
+    @Override
+    public void refreshInterface(String interfaceId) {
+        cacheManager.refreshByInterfaceId(interfaceId);
+    }
 
-	@Override
-	public void refreshSecurity(String clientId) {
-		cacheManager.refreshCert(clientId);
-	}
+    @Override
+    public void refreshSecurity(String clientId) {
+        cacheManager.refreshCert(clientId);
+    }
 
-	@Override
-	public void refreshAll() {
-		cacheManager.refresh();
-	}
+    @Override
+    public void refreshAll() {
+        cacheManager.refresh();
+    }
 }

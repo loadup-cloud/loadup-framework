@@ -41,19 +41,19 @@ import java.util.List;
 @Getter
 @Setter
 public class Role extends BaseDomain {
-	@Serial
-	private static final long serialVersionUID = 733055929483311499L;
+    @Serial
+    private static final long serialVersionUID = 733055929483311499L;
 
-	private String     id;
-	private String     roleName;
-	private String     roleType;
-	private String     roleCode;
-	private String     description;
-	private String     status;
-	private List<User> userList;
+    private String id;
+    private String roleName;
+    private String roleType;
+    private String roleCode;
+    private String description;
+    private String status;
+    private List<User> userList;
 
-	@Override
-	public String toString() {
-		return ToStringUtils.reflectionToString(this);
-	}
+    @Override
+    public String toString() {
+        return ToStringUtils.reflectionToString(this);
+    }
 }

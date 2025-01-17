@@ -31,15 +31,15 @@ package com.github.loadup.components.gateway.core.common.enums;
  */
 public enum MessageComponent {
 
-	/**
-	 * Script Type
-	 */
-	SCRIPT;
+    /**
+     * Script Type
+     */
+    SCRIPT;
 
-	/**
-	 * 枚举名称
-	 */
-	public String getCode() {
-		return this.name();
-	}
+    /**
+     * 枚举名称
+     */
+    public String getCode() {
+        return this.name();
+    }
 }

@@ -37,38 +37,38 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum TerminalTypeEnum implements IEnum {
-	/**
-	 * APP
-	 */
-	APP("APP", "APP"),
+    /**
+     * APP
+     */
+    APP("APP", "APP"),
 
-	/**
-	 * WEB
-	 */
-	WEB("WEB", "WEB"),
+    /**
+     * WEB
+     */
+    WEB("WEB", "WEB"),
 
-	/**
-	 * WAP
-	 */
-	WAP("WAP", "WAP"),
+    /**
+     * WAP
+     */
+    WAP("WAP", "WAP"),
 
-	/**
-	 * SYSTEM
-	 */
-	SYSTEM("SYSTEM", "SYSTEM"),
+    /**
+     * SYSTEM
+     */
+    SYSTEM("SYSTEM", "SYSTEM"),
 
-	/**
-	 * PC
-	 */
-	PC("PC", "PC"),
+    /**
+     * PC
+     */
+    PC("PC", "PC"),
 
-	;
+    ;
 
-	private final String code;
+    private final String code;
 
-	private final String description;
+    private final String description;
 
-	public static TerminalTypeEnum getByCode(String code) {
-		return EnumUtils.getEnumByCode(TerminalTypeEnum.class, code);
-	}
+    public static TerminalTypeEnum getByCode(String code) {
+        return EnumUtils.getEnumByCode(TerminalTypeEnum.class, code);
+    }
 }

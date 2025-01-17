@@ -42,25 +42,25 @@ import org.springframework.stereotype.Component;
 @Component("gatewaySPIConfigDataUpdateHandler")
 public class SPIConfigDataUpdateHandler {
 
-	private static final Logger              logger = LoggerFactory
-			.getLogger(SPIConfigDataUpdateHandler.class);
-	/**
-	 * groovy缓存加载器
-	 */
-	@Resource
-	@Qualifier("liteGroovyDynamicLoader")
-	private              GroovyDynamicLoader groovyDynamicLoader;
+    private static final Logger logger = LoggerFactory
+            .getLogger(SPIConfigDataUpdateHandler.class);
+    /**
+     * groovy缓存加载器
+     */
+    @Resource
+    @Qualifier("liteGroovyDynamicLoader")
+    private GroovyDynamicLoader groovyDynamicLoader;
 
-	/**
-	 * @see BaseConfigDataUpdateHandler#process(String, String, Object)
-	 */
-	protected void process(String tntInstId, String configName,
-						SPIConditionGroup spiConditionGroup) {
-		LogUtil.info(logger, "update groovy script for spiConditionGroup:", spiConditionGroup);
-		//编译groovy脚本
-		groovyDynamicLoader
-				.update(GroovyInfoConvertor.convertGroovyInfo(spiConditionGroup, tntInstId));
-		LogUtil.info(logger, "update groovy script for spiConditionGroup end");
-	}
+    /**
+     * @see BaseConfigDataUpdateHandler#process(String, String, Object)
+     */
+    protected void process(String tntInstId, String configName,
+                           SPIConditionGroup spiConditionGroup) {
+        LogUtil.info(logger, "update groovy script for spiConditionGroup:", spiConditionGroup);
+        //编译groovy脚本
+        groovyDynamicLoader
+                .update(GroovyInfoConvertor.convertGroovyInfo(spiConditionGroup, tntInstId));
+        LogUtil.info(logger, "update groovy script for spiConditionGroup end");
+    }
 
 }

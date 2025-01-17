@@ -40,41 +40,41 @@ import java.util.List;
 @Component("gatewayInterfaceConfigInnerService")
 public class InterfaceConfigInnerServiceImpl implements InterfaceConfigInnerService {
 
-	/**
-	 * cache manager service
-	 */
-	@Resource
-	private CacheManager cacheManager;
+    /**
+     * cache manager service
+     */
+    @Resource
+    private CacheManager cacheManager;
 
-	/**
-	 * @see InterfaceConfigInnerService#putApiConfigsToCache(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List)
-	 */
-	@Override
-	public void putApiConfigsToCache(List<InterfaceConfig> interfaceConfigList,
-									List<MessageSenderConfig> messageSenderConfigList,
-									List<MessageReceiverConfig> messageReceiverConfigList,
-									List<MessageProcessConfig> messageProcessConfigList,
-									List<CommunicationConfig> communicationConfigList) {
-		// put to cache
-		cacheManager.pushToCache(interfaceConfigList, messageProcessConfigList,
-				communicationConfigList, messageReceiverConfigList, messageSenderConfigList, null,
-				null, null);
-	}
+    /**
+     * @see InterfaceConfigInnerService#putApiConfigsToCache(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List)
+     */
+    @Override
+    public void putApiConfigsToCache(List<InterfaceConfig> interfaceConfigList,
+                                     List<MessageSenderConfig> messageSenderConfigList,
+                                     List<MessageReceiverConfig> messageReceiverConfigList,
+                                     List<MessageProcessConfig> messageProcessConfigList,
+                                     List<CommunicationConfig> communicationConfigList) {
+        // put to cache
+        cacheManager.pushToCache(interfaceConfigList, messageProcessConfigList,
+                communicationConfigList, messageReceiverConfigList, messageSenderConfigList, null,
+                null, null);
+    }
 
-	/**
-	 * @see InterfaceConfigInnerService#putSpiConfigsToCache(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List)
-	 */
-	@Override
-	public void putSpiConfigsToCache(List<InterfaceConfig> interfaceConfigList,
-									List<MessageSenderConfig> messageSenderConfigList,
-									List<MessageReceiverConfig> messageReceiverConfigList,
-									List<MessageProcessConfig> messageProcessConfigList,
-									List<CommunicationConfig> communicationConfigList) {
-		// put to cache
-		cacheManager.pushToCache(interfaceConfigList, messageProcessConfigList,
-				communicationConfigList, messageReceiverConfigList, messageSenderConfigList, null,
-				null, null);
+    /**
+     * @see InterfaceConfigInnerService#putSpiConfigsToCache(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List)
+     */
+    @Override
+    public void putSpiConfigsToCache(List<InterfaceConfig> interfaceConfigList,
+                                     List<MessageSenderConfig> messageSenderConfigList,
+                                     List<MessageReceiverConfig> messageReceiverConfigList,
+                                     List<MessageProcessConfig> messageProcessConfigList,
+                                     List<CommunicationConfig> communicationConfigList) {
+        // put to cache
+        cacheManager.pushToCache(interfaceConfigList, messageProcessConfigList,
+                communicationConfigList, messageReceiverConfigList, messageSenderConfigList, null,
+                null, null);
 
-	}
+    }
 
 }

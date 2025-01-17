@@ -32,9 +32,6 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 public class CommonInnerService {
-    @Resource
-    protected CaptchaProperties captchaProperties;
-
     public static final String DELTA =
             "\u7684\u4e00\u4e86\u662f\u6211\u4e0d\u5728\u4eba\u4eec\u6709\u6765\u4ed6\u8fd9\u4e0a\u7740\u4e2a\u5730\u5230\u5927\u91cc"
                     + "\u8bf4\u5c31\u53bb\u5b50\u5f97\u4e5f\u548c\u90a3\u8981\u4e0b\u770b\u5929\u65f6\u8fc7\u51fa\u5c0f\u4e48\u8d77\u4f60"
@@ -84,6 +81,8 @@ public class CommonInnerService {
                     + "\u975e\u4f55\u725b\u53d6\u5165\u5cb8\u6562\u6389\u5ffd\u79cd\u88c5\u9876\u6025\u6797\u505c\u606f\u53e5\u533a\u8863"
                     + "\u822c"
                     + "\u62a5\u53f6\u538b\u6162\u53d4\u80cc\u7ec6";
+    @Resource
+    protected CaptchaProperties captchaProperties;
 
     protected String generateCode() {
         return generateCode(captchaProperties.getCharTypeEnum(), captchaProperties.getLength());
@@ -137,8 +136,12 @@ public class CommonInnerService {
      * 给定范围获得随机颜色
      */
     protected Color randomColor(int fc, int bc) {
-        if (fc > 255) {fc = 255;}
-        if (bc > 255) {bc = 255;}
+        if (fc > 255) {
+            fc = 255;
+        }
+        if (bc > 255) {
+            bc = 255;
+        }
         int r = fc + RandomUtils.nextInt(0, bc - fc);
         int g = fc + RandomUtils.nextInt(0, bc - fc);
         int b = fc + RandomUtils.nextInt(0, bc - fc);

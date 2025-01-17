@@ -31,11 +31,11 @@ package com.github.loadup.components.gateway.plugin.exception;
  */
 public class IllegalBeanUriException extends Exception {
 
-	public IllegalBeanUriException(String msg) {
-		super(msg);
-	}
+    public IllegalBeanUriException(String msg) {
+        super(msg);
+    }
 
-	public IllegalBeanUriException(String msg, Throwable throwable) {
-		super(msg, throwable);
-	}
+    public IllegalBeanUriException(String msg, Throwable throwable) {
+        super(msg, throwable);
+    }
 }

@@ -49,31 +49,31 @@ import static com.github.loadup.components.gateway.core.prototype.constant.Proce
 @Component("responseParseAction")
 public class ResponseParseAction extends AbstractBusinessAction {
 
-	@Resource
-	private MessageEngine messageEngine;
+    @Resource
+    private MessageEngine messageEngine;
 
-	@Override
-	public void doBusiness(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) {
-		MessageEnvelope resultEnvelope = gatewayRuntimeProcessContext.getResultMessage();
-		String integratorInterfaceId = gatewayRuntimeProcessContext.getIntegratorInterfaceConfig().getInterfaceId();
-		UnifyMsg unifyCommonMessage = new UnifyMsg();
-		UnifyMsg respMessage = messageEngine.parse(integratorInterfaceId, RoleType.RECEIVER, gatewayRuntimeProcessContext,
-				resultEnvelope);
-		String exceptionMsg = respMessage.g(KEY_PARSE_EXCEPTION);
-		String parseResult = respMessage.g(KEY_PARSE_RESULT);
+    @Override
+    public void doBusiness(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) {
+        MessageEnvelope resultEnvelope = gatewayRuntimeProcessContext.getResultMessage();
+        String integratorInterfaceId = gatewayRuntimeProcessContext.getIntegratorInterfaceConfig().getInterfaceId();
+        UnifyMsg unifyCommonMessage = new UnifyMsg();
+        UnifyMsg respMessage = messageEngine.parse(integratorInterfaceId, RoleType.RECEIVER, gatewayRuntimeProcessContext,
+                resultEnvelope);
+        String exceptionMsg = respMessage.g(KEY_PARSE_EXCEPTION);
+        String parseResult = respMessage.g(KEY_PARSE_RESULT);
 
-		MessageEnvelope responseEnvelope = resultEnvelope.clone();
-		responseEnvelope.setHeaders(resultEnvelope.getHeaders());
-		responseEnvelope.setContent(StringUtils.isBlank(exceptionMsg) ? parseResult : exceptionMsg);
-		MessageEnvelope result = responseEnvelope.clone();
-		gatewayRuntimeProcessContext.setResultMessage(result);
-		gatewayRuntimeProcessContext.setResponseMessage(responseEnvelope);
-	}
+        MessageEnvelope responseEnvelope = resultEnvelope.clone();
+        responseEnvelope.setHeaders(resultEnvelope.getHeaders());
+        responseEnvelope.setContent(StringUtils.isBlank(exceptionMsg) ? parseResult : exceptionMsg);
+        MessageEnvelope result = responseEnvelope.clone();
+        gatewayRuntimeProcessContext.setResultMessage(result);
+        gatewayRuntimeProcessContext.setResponseMessage(responseEnvelope);
+    }
 
-	@Override
-	@Resource
-	@Qualifier("limitReleaseAction")
-	public void setNextAction(BusinessAction responseAssembleAction) {
-		this.nextAction = responseAssembleAction;
-	}
+    @Override
+    @Resource
+    @Qualifier("limitReleaseAction")
+    public void setNextAction(BusinessAction responseAssembleAction) {
+        this.nextAction = responseAssembleAction;
+    }
 }

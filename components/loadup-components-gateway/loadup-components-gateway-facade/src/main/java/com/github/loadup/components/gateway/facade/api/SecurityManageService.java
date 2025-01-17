@@ -26,30 +26,36 @@ package com.github.loadup.components.gateway.facade.api;
  * #L%
  */
 
-import com.github.loadup.components.gateway.facade.request.*;
-import com.github.loadup.components.gateway.facade.response.*;
+import com.github.loadup.components.gateway.facade.request.CertConfigAddRequest;
+import com.github.loadup.components.gateway.facade.request.CertConfigQueryRequest;
+import com.github.loadup.components.gateway.facade.request.CertConfigRemoveRequest;
+import com.github.loadup.components.gateway.facade.request.CertConfigUpdateRequest;
+import com.github.loadup.components.gateway.facade.response.CertConfigAddResponse;
+import com.github.loadup.components.gateway.facade.response.CertConfigQueryResponse;
+import com.github.loadup.components.gateway.facade.response.CertConfigRemoveResponse;
+import com.github.loadup.components.gateway.facade.response.CertConfigUpdateResponse;
 
 /**
  *
  */
 public interface SecurityManageService {
-	/**
-	 * add new cert config.
-	 */
-	CertConfigAddResponse add(CertConfigAddRequest request);
+    /**
+     * add new cert config.
+     */
+    CertConfigAddResponse add(CertConfigAddRequest request);
 
-	/**
-	 * update present cert config
-	 */
-	CertConfigUpdateResponse update(CertConfigUpdateRequest request);
+    /**
+     * update present cert config
+     */
+    CertConfigUpdateResponse update(CertConfigUpdateRequest request);
 
-	/**
-	 * query cert config by client id
-	 */
-	CertConfigQueryResponse query(CertConfigQueryRequest clientId);
+    /**
+     * query cert config by client id
+     */
+    CertConfigQueryResponse query(CertConfigQueryRequest clientId);
 
-	/**
-	 * remove cert config by certCode
-	 */
-	CertConfigRemoveResponse remove(CertConfigRemoveRequest certCode);
+    /**
+     * remove cert config by certCode
+     */
+    CertConfigRemoveResponse remove(CertConfigRemoveRequest certCode);
 }

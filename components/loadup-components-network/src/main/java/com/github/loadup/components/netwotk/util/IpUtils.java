@@ -41,11 +41,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class IpUtils {
-    private static final Logger   logger    = LoggerFactory.getLogger(IpUtils.class);
-    private static       String   NOT_FOUND = "0";
-    private static       IpUtils  instance;
+    private static final Logger logger = LoggerFactory.getLogger(IpUtils.class);
+    private static String NOT_FOUND = "0";
+    private static IpUtils instance;
     @Resource
-    private              Searcher ipSearcher;
+    private Searcher ipSearcher;
 
     /**
      * 国家|区域|省份|城市|ISP

@@ -27,7 +27,9 @@ package com.github.loadup.framework.api.binding;
  */
 
 public interface Binding {
-    default void init() {}
+    default void init() {
+    }
 
-    default void destory() {}
+    default void destory() {
+    }
 }

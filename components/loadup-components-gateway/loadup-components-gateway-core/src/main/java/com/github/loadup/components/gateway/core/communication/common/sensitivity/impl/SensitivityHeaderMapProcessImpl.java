@@ -41,27 +41,27 @@ import java.util.Map;
  */
 @Component("sensitivityHeaderMapProcessImpl")
 public class SensitivityHeaderMapProcessImpl implements
-		SensitivityDataProcess<Map<String, String>> {
-	@Override
-	public Map<String, String> mask(Map<String, String> maskContent,
-									Map<String, ShieldType> shieldRule) {
+        SensitivityDataProcess<Map<String, String>> {
+    @Override
+    public Map<String, String> mask(Map<String, String> maskContent,
+                                    Map<String, ShieldType> shieldRule) {
 
-		Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new HashMap<>();
 
-		maskContent.forEach((key, value) -> {
-			if (shieldRule.containsKey(key) && StringUtils.isNotBlank(value)) {
-				ShieldType shieldType = shieldRule.get(key);
-				String mask = MaskUtil.mask(value, shieldType.name());
-				result.put(key, mask);
-			} else {
-				result.put(key, value);
-			}
-		});
-		return result;
-	}
+        maskContent.forEach((key, value) -> {
+            if (shieldRule.containsKey(key) && StringUtils.isNotBlank(value)) {
+                ShieldType shieldType = shieldRule.get(key);
+                String mask = MaskUtil.mask(value, shieldType.name());
+                result.put(key, mask);
+            } else {
+                result.put(key, value);
+            }
+        });
+        return result;
+    }
 
-	@Override
-	public SensitivityProcessType getTag() {
-		return SensitivityProcessType.HEADER_MAP;
-	}
+    @Override
+    public SensitivityProcessType getTag() {
+        return SensitivityProcessType.HEADER_MAP;
+    }
 }

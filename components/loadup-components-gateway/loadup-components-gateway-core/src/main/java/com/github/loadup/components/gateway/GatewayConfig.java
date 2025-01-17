@@ -33,16 +33,16 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class GatewayConfig {
-	@Bean
-	public GatewayFilter filterBean() {
-		return new GatewayFilter();
-	}
+    @Bean
+    public GatewayFilter filterBean() {
+        return new GatewayFilter();
+    }
 
-	@Bean
-	public FilterRegistrationBean<GatewayFilter> gatewayFilter() {
-		FilterRegistrationBean<GatewayFilter> registrationBean = new FilterRegistrationBean<>();
-		registrationBean.setFilter(filterBean());
-		registrationBean.addUrlPatterns("/*");
-		return registrationBean;
-	}
+    @Bean
+    public FilterRegistrationBean<GatewayFilter> gatewayFilter() {
+        FilterRegistrationBean<GatewayFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(filterBean());
+        registrationBean.addUrlPatterns("/*");
+        return registrationBean;
+    }
 }

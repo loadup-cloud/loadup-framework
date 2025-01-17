@@ -47,17 +47,17 @@ import org.springframework.stereotype.Component;
 public class RetryTaskFactory {
     /**
      * sql sentence in every database
-     *
+     * <p>
      * key:  DbType-SqlType
      * value: sql sentence
      */
-    private Map<String, String>              sqlMap;
-    private String                           tablePrefix;
-    private String                           dbType;
+    private Map<String, String> sqlMap;
+    private String tablePrefix;
+    private String dbType;
     /**
      * default shedule thread pool
      */
-    private ThreadPoolTaskExecutor           scheduleThreadPool;
+    private ThreadPoolTaskExecutor scheduleThreadPool;
     /**
      * retry stategy config.key: bizType
      */

@@ -29,125 +29,124 @@ package com.github.loadup.components.gateway.core.model;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  */
 public class InstConfig {
 
-	/**
-	 * client id
-	 */
-	private String clientId;
+    /**
+     * properties
+     */
+    private final Properties properties = new Properties();
+    /**
+     * client id
+     */
+    private String clientId;
+    /**
+     * name
+     */
+    private String name;
+    /**
+     * interface map
+     */
+    private Map<String, InterfaceConfig> interfaceMap = new HashMap<>();
 
-	/**
-	 * name
-	 */
-	private String name;
+    /**
+     * gmt create
+     */
+    private Date gmtCreate;
 
-	/**
-	 * properties
-	 */
-	private final Properties properties = new Properties();
+    /**
+     * gmt modified
+     */
+    private Date gmtModified;
 
-	/**
-	 * interface map
-	 */
-	private Map<String, InterfaceConfig> interfaceMap = new HashMap<>();
+    /**
+     * Getter method for property <tt>clientId</tt>.
+     */
+    public String getClientId() {
+        return clientId;
+    }
 
-	/**
-	 * gmt create
-	 */
-	private Date gmtCreate;
+    /**
+     * Setter method for property <tt>clientId</tt>.
+     */
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
 
-	/**
-	 * gmt modified
-	 */
-	private Date gmtModified;
+    /**
+     * Getter method for property <tt>name</tt>.
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Getter method for property <tt>clientId</tt>.
-	 */
-	public String getClientId() {
-		return clientId;
-	}
+    /**
+     * Setter method for property <tt>name</tt>.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * Setter method for property <tt>clientId</tt>.
-	 */
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
-	}
+    /**
+     * Getter method for property <tt>interfaceMap</tt>.
+     */
+    public Map<String, InterfaceConfig> getInterfaceMap() {
+        return interfaceMap;
+    }
 
-	/**
-	 * Getter method for property <tt>name</tt>.
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Setter method for property <tt>interfaceMap</tt>.
+     */
+    public void setInterfaceMap(Map<String, InterfaceConfig> interfaceMap) {
+        this.interfaceMap = interfaceMap;
+    }
 
-	/**
-	 * Setter method for property <tt>name</tt>.
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * Getter method for property <tt>properties</tt>.
+     */
+    public Properties getProperties() {
+        return properties;
+    }
 
-	/**
-	 * Getter method for property <tt>interfaceMap</tt>.
-	 */
-	public Map<String, InterfaceConfig> getInterfaceMap() {
-		return interfaceMap;
-	}
+    /**
+     * Getter method for property <tt>gmtCreate</tt>.
+     */
+    public Date getGmtCreate() {
+        return gmtCreate;
+    }
 
-	/**
-	 * Setter method for property <tt>interfaceMap</tt>.
-	 */
-	public void setInterfaceMap(Map<String, InterfaceConfig> interfaceMap) {
-		this.interfaceMap = interfaceMap;
-	}
+    /**
+     * Setter method for property <tt>gmtCreate</tt>.
+     */
+    public void setGmtCreate(Date gmtCreate) {
+        this.gmtCreate = gmtCreate;
+    }
 
-	/**
-	 * Getter method for property <tt>properties</tt>.
-	 */
-	public Properties getProperties() {
-		return properties;
-	}
+    /**
+     * Getter method for property <tt>gmtModified</tt>.
+     */
+    public Date getGmtModified() {
+        return gmtModified;
+    }
 
-	/**
-	 * Getter method for property <tt>gmtCreate</tt>.
-	 */
-	public Date getGmtCreate() {
-		return gmtCreate;
-	}
+    /**
+     * Setter method for property <tt>gmtModified</tt>.
+     */
+    public void setGmtModified(Date gmtModified) {
+        this.gmtModified = gmtModified;
+    }
 
-	/**
-	 * Setter method for property <tt>gmtCreate</tt>.
-	 */
-	public void setGmtCreate(Date gmtCreate) {
-		this.gmtCreate = gmtCreate;
-	}
-
-	/**
-	 * Getter method for property <tt>gmtModified</tt>.
-	 */
-	public Date getGmtModified() {
-		return gmtModified;
-	}
-
-	/**
-	 * Setter method for property <tt>gmtModified</tt>.
-	 */
-	public void setGmtModified(Date gmtModified) {
-		this.gmtModified = gmtModified;
-	}
-
-	/**
-	 * @see Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-	}
+    /**
+     * @see Object#toString()
+     */
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

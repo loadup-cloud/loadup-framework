@@ -30,7 +30,9 @@ import com.github.loadup.components.upms.convertor.RoleConvertor;
 import com.github.loadup.components.upms.convertor.UserConvertor;
 import com.github.loadup.components.upms.dal.dataobject.RoleDO;
 import com.github.loadup.components.upms.dal.dataobject.UserRoleDO;
-import com.github.loadup.components.upms.dal.repository.*;
+import com.github.loadup.components.upms.dal.repository.RoleRepository;
+import com.github.loadup.components.upms.dal.repository.UserRepository;
+import com.github.loadup.components.upms.dal.repository.UserRoleRepository;
 import com.github.loadup.components.upms.domain.Role;
 import com.github.loadup.components.upms.domain.User;
 import com.github.loadup.components.upms.gateway.RoleGateway;
@@ -39,69 +41,71 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
 @Slf4j
 public class RoleGatewayImpl implements RoleGateway {
-	@Resource
-	private RoleRepository     roleRepository;
-	@Resource
-	private UserRoleRepository userRoleRepository;
-	@Resource
-	private UserRepository     userRepository;
+    @Resource
+    private RoleRepository roleRepository;
+    @Resource
+    private UserRoleRepository userRoleRepository;
+    @Resource
+    private UserRepository userRepository;
 
-	@Override
-	public Role create(Role role) {
-		RoleDO roleDO = RoleConvertor.INSTANCE.toRoleDO(role);
-		roleRepository.save(roleDO);
-		return RoleConvertor.INSTANCE.toRole(roleDO);
-	}
+    @Override
+    public Role create(Role role) {
+        RoleDO roleDO = RoleConvertor.INSTANCE.toRoleDO(role);
+        roleRepository.save(roleDO);
+        return RoleConvertor.INSTANCE.toRole(roleDO);
+    }
 
-	@Override
-	public void update(Role role) {
-		if (StringUtils.isBlank(role.getId())) {
-			return;
-		}
-		roleRepository.save(RoleConvertor.INSTANCE.toRoleDO(role));
-	}
+    @Override
+    public void update(Role role) {
+        if (StringUtils.isBlank(role.getId())) {
+            return;
+        }
+        roleRepository.save(RoleConvertor.INSTANCE.toRoleDO(role));
+    }
 
-	@Override
-	public void delete(String roleId) {
-		if (StringUtils.isBlank(roleId)) {
-			return;
-		}
-		roleRepository.deleteById(roleId);
-	}
+    @Override
+    public void delete(String roleId) {
+        if (StringUtils.isBlank(roleId)) {
+            return;
+        }
+        roleRepository.deleteById(roleId);
+    }
 
-	@Override
-	public Role getById(String roleId) {
-		Role role = roleRepository.findById(roleId).map(RoleConvertor.INSTANCE::toRole).orElse(null);
-		List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByRoleId(roleId);
-		List<User> userList = userRoleDOList.stream().map(userRoleDO -> userRepository.findById(userRoleDO.getUserId())
-				.map(UserConvertor.INSTANCE::toUser).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
-		role.setUserList(userList);
-		return role;
-	}
+    @Override
+    public Role getById(String roleId) {
+        Role role = roleRepository.findById(roleId).map(RoleConvertor.INSTANCE::toRole).orElse(null);
+        List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByRoleId(roleId);
+        List<User> userList = userRoleDOList.stream().map(userRoleDO -> userRepository.findById(userRoleDO.getUserId())
+                .map(UserConvertor.INSTANCE::toUser).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
+        role.setUserList(userList);
+        return role;
+    }
 
-	@Override
-	public List<Role> getByUserId(String userId) {
-		List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByUserId(userId);
-		List<Role> result = new ArrayList<>();
-		for (UserRoleDO userRoleDO : userRoleDOList) {
-			Role role = roleRepository.findById(userRoleDO.getUserId()).map(RoleConvertor.INSTANCE::toRole).orElse(null);
-			if (Objects.nonNull(role)) {
-				result.add(role);
-			}
-		}
-		return result;
-	}
+    @Override
+    public List<Role> getByUserId(String userId) {
+        List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByUserId(userId);
+        List<Role> result = new ArrayList<>();
+        for (UserRoleDO userRoleDO : userRoleDOList) {
+            Role role = roleRepository.findById(userRoleDO.getUserId()).map(RoleConvertor.INSTANCE::toRole).orElse(null);
+            if (Objects.nonNull(role)) {
+                result.add(role);
+            }
+        }
+        return result;
+    }
 
-	@Override
-	public void saveRoleUsers(String roleId, List<String> userIdList) {
-		List<UserRoleDO> userRoleDOList = userIdList.stream().map(userId -> new UserRoleDO(userId, roleId)).collect(Collectors.toList());
-		userRoleRepository.removeAllByRoleId(roleId);
-		userRoleRepository.saveAll(userRoleDOList);
-	}
+    @Override
+    public void saveRoleUsers(String roleId, List<String> userIdList) {
+        List<UserRoleDO> userRoleDOList = userIdList.stream().map(userId -> new UserRoleDO(userId, roleId)).collect(Collectors.toList());
+        userRoleRepository.removeAllByRoleId(roleId);
+        userRoleRepository.saveAll(userRoleDOList);
+    }
 }

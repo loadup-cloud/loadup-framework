@@ -38,43 +38,43 @@ import java.io.IOException;
  */
 public final class DatabaseScriptSource implements ScriptSource {
 
-	/**
-	 * 脚本名称
-	 */
-	private String scriptName;
+    /**
+     * 脚本名称
+     */
+    private String scriptName;
 
-	/**
-	 * 构造函数
-	 */
-	public DatabaseScriptSource(String scriptName) {
-		this.scriptName = scriptName;
-	}
+    /**
+     * 构造函数
+     */
+    public DatabaseScriptSource(String scriptName) {
+        this.scriptName = scriptName;
+    }
 
-	/**
-	 * @see ScriptSource#getScriptAsString()
-	 */
-	public String getScriptAsString() throws IOException {
-		// 从内部缓存获取
-		GroovyInfo groovyInfo = GroovyInnerCache.getByName(scriptName);
-		if (groovyInfo != null) {
-			return groovyInfo.getGroovyContent();
-		} else {
-			return "";
-		}
-	}
+    /**
+     * @see ScriptSource#getScriptAsString()
+     */
+    public String getScriptAsString() throws IOException {
+        // 从内部缓存获取
+        GroovyInfo groovyInfo = GroovyInnerCache.getByName(scriptName);
+        if (groovyInfo != null) {
+            return groovyInfo.getGroovyContent();
+        } else {
+            return "";
+        }
+    }
 
-	/**
-	 * @see ScriptSource#isModified()
-	 */
-	public boolean isModified() {
-		return false;
-	}
+    /**
+     * @see ScriptSource#isModified()
+     */
+    public boolean isModified() {
+        return false;
+    }
 
-	/**
-	 * @see ScriptSource#suggestedClassName()
-	 */
-	public String suggestedClassName() {
-		return org.springframework.util.StringUtils.stripFilenameExtension(this.scriptName);
-	}
+    /**
+     * @see ScriptSource#suggestedClassName()
+     */
+    public String suggestedClassName() {
+        return org.springframework.util.StringUtils.stripFilenameExtension(this.scriptName);
+    }
 
 }

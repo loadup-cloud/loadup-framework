@@ -46,7 +46,8 @@
 <sqlMap namespace="gateway">
 
     <!-- result maps for database table gateway_inst -->
-    <resultMap id="RM-INST" class="com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject.InstDO">
+    <resultMap id="RM-INST"
+               class="com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject.InstDO">
         <result property="tenantId" column="tenant_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
         <result property="clientId" column="client_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
         <result property="name" column="name" javaType="java.lang.String" jdbcType="VARCHAR"/>

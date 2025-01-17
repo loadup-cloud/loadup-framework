@@ -37,78 +37,78 @@ import java.util.Map;
  */
 public class SPIResponse {
 
-	/**
-	 * 响应报文
-	 */
-	private String content;
+    /**
+     * 响应报文
+     */
+    private String content;
 
-	/**
-	 * headers
-	 */
-	private Map<String, String> headers;
+    /**
+     * headers
+     */
+    private Map<String, String> headers;
 
-	/**
-	 * gateway process result
-	 */
-	private Result result;
+    /**
+     * gateway process result
+     */
+    private Result result;
 
-	public SPIResponse() {
-	}
+    public SPIResponse() {
+    }
 
-	public SPIResponse(String content, Map<String, String> headers, Result result) {
-		this.content = content;
-		this.headers = headers;
-		this.result = result;
-	}
+    public SPIResponse(String content, Map<String, String> headers, Result result) {
+        this.content = content;
+        this.headers = headers;
+        this.result = result;
+    }
 
-	/**
-	 * Getter method for property <tt>content</tt>.
-	 */
-	public String getContent() {
-		return content;
-	}
+    /**
+     * Getter method for property <tt>content</tt>.
+     */
+    public String getContent() {
+        return content;
+    }
 
-	/**
-	 * Setter method for property <tt>content</tt>.
-	 */
-	public void setContent(String content) {
-		this.content = content;
-	}
+    /**
+     * Setter method for property <tt>content</tt>.
+     */
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-	/**
-	 * Getter method for property <tt>headers</tt>.
-	 */
-	public Map<String, String> getHeaders() {
-		return headers;
-	}
+    /**
+     * Getter method for property <tt>headers</tt>.
+     */
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
 
-	/**
-	 * Setter method for property <tt>headers</tt>.
-	 */
-	public void setHeaders(Map<String, String> headers) {
-		this.headers = headers;
-	}
+    /**
+     * Setter method for property <tt>headers</tt>.
+     */
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
 
-	/**
-	 * Getter method for property <tt>result</tt>.
-	 */
-	public Result getResult() {
-		return result;
-	}
+    /**
+     * Getter method for property <tt>result</tt>.
+     */
+    public Result getResult() {
+        return result;
+    }
 
-	/**
-	 * Setter method for property <tt>result</tt>.
-	 */
-	public void setResult(Result result) {
-		this.result = result;
-	}
+    /**
+     * Setter method for property <tt>result</tt>.
+     */
+    public void setResult(Result result) {
+        this.result = result;
+    }
 
-	/**
-	 * to string
-	 */
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-	}
+    /**
+     * to string
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+    }
 
 }

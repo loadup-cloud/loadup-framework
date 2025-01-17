@@ -31,22 +31,22 @@ package com.github.loadup.components.gateway.core.model;
  */
 public class CertAlgorithmConfig extends BaseAlgoConfig {
 
-	/**
-	 * 算法类型
-	 */
-	private String algoType;
+    /**
+     * 算法类型
+     */
+    private String algoType;
 
-	/**
-	 * Getter method for property <tt>algoType<tt>.
-	 */
-	public String getAlgoType() {
-		return algoType;
-	}
+    /**
+     * Getter method for property <tt>algoType<tt>.
+     */
+    public String getAlgoType() {
+        return algoType;
+    }
 
-	/**
-	 * Setter method for property <tt>algoType<tt>.
-	 */
-	public void setAlgoType(String algoType) {
-		this.algoType = algoType;
-	}
+    /**
+     * Setter method for property <tt>algoType<tt>.
+     */
+    public void setAlgoType(String algoType) {
+        this.algoType = algoType;
+    }
 }

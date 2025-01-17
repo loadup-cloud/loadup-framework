@@ -34,6 +34,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RoleSaveCmd {
-	@NotNull
-	private SimpleRoleDTO role;
+    @NotNull
+    private SimpleRoleDTO role;
 }

@@ -47,47 +47,47 @@ import org.springframework.stereotype.Component;
 @Component("messageEngine")
 public class MessageEngineImpl implements MessageEngine {
 
-	@Autowired
-	@Qualifier("standerApiMsgParser")
-	private MessageParser defaultMessageParser;
+    @Autowired
+    @Qualifier("standerApiMsgParser")
+    private MessageParser defaultMessageParser;
 
-	@Resource
-	private GroovyEngine groovyEngine;
+    @Resource
+    private GroovyEngine groovyEngine;
 
-	@Override
-	public MessageEnvelope assemble(String interfaceId,
-									RoleType roleType,
-									GatewayRuntimeProcessContext context,
-									String interfaceTypeStr,
-									UnifyMsg message) {
-		String beanName = GroovyScriptCache.getBeanName(interfaceId + "_ASSEMBLER", roleType,
-				context.getTransactionType());
-		return groovyEngine.assemble(beanName, roleType, context.getTransactionType(), message);
+    @Override
+    public MessageEnvelope assemble(String interfaceId,
+                                    RoleType roleType,
+                                    GatewayRuntimeProcessContext context,
+                                    String interfaceTypeStr,
+                                    UnifyMsg message) {
+        String beanName = GroovyScriptCache.getBeanName(interfaceId + "_ASSEMBLER", roleType,
+                context.getTransactionType());
+        return groovyEngine.assemble(beanName, roleType, context.getTransactionType(), message);
 
-	}
+    }
 
-	@Override
-	public MessageEnvelope assembleErrorMessage(String interfaceId, RoleType roleType,
-												GatewayRuntimeProcessContext context, String interfaceTypeStr,
-												UnifyMsg message,
-												MessageEnvelope messageEnvelope,
-												CommonException exception) {
-		String beanName = GroovyScriptCache.getBeanName(interfaceId + "_ASSEMBLER", roleType,
-				context.getTransactionType());
-		return groovyEngine.assembleErrorMessage(beanName, roleType, context.getTransactionType(), message, exception);
-	}
+    @Override
+    public MessageEnvelope assembleErrorMessage(String interfaceId, RoleType roleType,
+                                                GatewayRuntimeProcessContext context, String interfaceTypeStr,
+                                                UnifyMsg message,
+                                                MessageEnvelope messageEnvelope,
+                                                CommonException exception) {
+        String beanName = GroovyScriptCache.getBeanName(interfaceId + "_ASSEMBLER", roleType,
+                context.getTransactionType());
+        return groovyEngine.assembleErrorMessage(beanName, roleType, context.getTransactionType(), message, exception);
+    }
 
-	@Override
-	public UnifyMsg parse(String interfaceId, RoleType roleType,
-						GatewayRuntimeProcessContext context,
-						MessageEnvelope messageEnvelope) {
-		String beanName = GroovyScriptCache.getBeanName(interfaceId + "_PARSER", roleType,
-				context.getTransactionType());
-		if (StringUtils.isBlank(beanName) && roleType == RoleType.SENDER) {
-			return defaultMessageParser.parse(messageEnvelope);
-		} else {
-			return groovyEngine.parse(beanName, roleType, context.getTransactionType(), messageEnvelope);
-		}
-	}
+    @Override
+    public UnifyMsg parse(String interfaceId, RoleType roleType,
+                          GatewayRuntimeProcessContext context,
+                          MessageEnvelope messageEnvelope) {
+        String beanName = GroovyScriptCache.getBeanName(interfaceId + "_PARSER", roleType,
+                context.getTransactionType());
+        if (StringUtils.isBlank(beanName) && roleType == RoleType.SENDER) {
+            return defaultMessageParser.parse(messageEnvelope);
+        } else {
+            return groovyEngine.parse(beanName, roleType, context.getTransactionType(), messageEnvelope);
+        }
+    }
 
 }

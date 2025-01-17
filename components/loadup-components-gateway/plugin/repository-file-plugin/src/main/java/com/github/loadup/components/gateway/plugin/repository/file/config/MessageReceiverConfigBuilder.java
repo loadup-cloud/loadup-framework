@@ -37,23 +37,23 @@ import org.springframework.stereotype.Component;
  */
 @Component("gatewayFileMessageReceiverConfigBuilder")
 public class MessageReceiverConfigBuilder extends
-		AbstractInterfaceConfigBuilder<MessageReceiverConfigDto> {
+        AbstractInterfaceConfigBuilder<MessageReceiverConfigDto> {
 
-	/**
-	 * generic config build
-	 */
-	public MessageReceiverConfigDto build(String url, String securityStrategyCode) {
-		if (!validate(url, securityStrategyCode)) {
-			return null;
-		}
-		String domain = getDomain(url);
+    /**
+     * generic config build
+     */
+    public MessageReceiverConfigDto build(String url, String securityStrategyCode) {
+        if (!validate(url, securityStrategyCode)) {
+            return null;
+        }
+        String domain = getDomain(url);
 
-		MessageReceiverConfigDto msgReceiver = new MessageReceiverConfigDto();
-		msgReceiver.setMessageReceiverId(domain);
-		msgReceiver.setMessageReceiverName(domain);
-		msgReceiver.setCertCode(securityStrategyCode);
+        MessageReceiverConfigDto msgReceiver = new MessageReceiverConfigDto();
+        msgReceiver.setMessageReceiverId(domain);
+        msgReceiver.setMessageReceiverName(domain);
+        msgReceiver.setCertCode(securityStrategyCode);
 
-		return msgReceiver;
-	}
+        return msgReceiver;
+    }
 
 }

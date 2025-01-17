@@ -51,55 +51,55 @@ import org.springframework.stereotype.Component;
 @Component("exceptionAssembleAction")
 public class ExceptionAssembleAction extends AbstractBusinessAction {
 
-	private static final Logger logger = LoggerFactory.getLogger("COMMON-ERROR-LOGGER");
+    private static final Logger logger = LoggerFactory.getLogger("COMMON-ERROR-LOGGER");
 
-	@Value("${use.ac.format.result.when.gateway.exception:false}")
-	private String useAcFormatResultWhenGatewayException;
+    @Value("${use.ac.format.result.when.gateway.exception:false}")
+    private String useAcFormatResultWhenGatewayException;
 
-	@Override
-	public void doBusiness(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) {
-		CommonException commonException = gatewayRuntimeProcessContext.getBusinessException();
-		LogUtil.error(logger, commonException, "error message is ");
-		ResultCode errorCode = commonException.getResultCode();
+    @Override
+    public void doBusiness(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) {
+        CommonException commonException = gatewayRuntimeProcessContext.getBusinessException();
+        LogUtil.error(logger, commonException, "error message is ");
+        ResultCode errorCode = commonException.getResultCode();
 
-		JSONObject jsonResult = buildResult(errorCode, commonException);
+        JSONObject jsonResult = buildResult(errorCode, commonException);
 
-		String content = jsonResult.toJSONString();
-		MessageEnvelope resultMsg = new MessageEnvelope(MessageFormat.TEXT, content);
-		gatewayRuntimeProcessContext.setResultMessage(resultMsg);
+        String content = jsonResult.toJSONString();
+        MessageEnvelope resultMsg = new MessageEnvelope(MessageFormat.TEXT, content);
+        gatewayRuntimeProcessContext.setResultMessage(resultMsg);
 
-	}
+    }
 
-	/**
-	 * build result body
-	 */
-	private JSONObject buildResult(ResultCode errorCode, CommonException commonException) {
-		// get switch
-		if (Boolean.parseBoolean(useAcFormatResultWhenGatewayException)) {
-			// correct ac format result
-			JSONObject jsonStatus = CommonUtil.assembleAcResultWhenException(errorCode);
-			JSONObject jsonResult = new JSONObject();
-			jsonResult.put("result", jsonStatus);
-			return jsonResult;
-		}
+    /**
+     * build result body
+     */
+    private JSONObject buildResult(ResultCode errorCode, CommonException commonException) {
+        // get switch
+        if (Boolean.parseBoolean(useAcFormatResultWhenGatewayException)) {
+            // correct ac format result
+            JSONObject jsonStatus = CommonUtil.assembleAcResultWhenException(errorCode);
+            JSONObject jsonResult = new JSONObject();
+            jsonResult.put("result", jsonStatus);
+            return jsonResult;
+        }
 
-		// gateway format result
-		JSONObject jsonStatus = CommonUtil.assembleAcResult(errorCode);
+        // gateway format result
+        JSONObject jsonStatus = CommonUtil.assembleAcResult(errorCode);
 
-		JSONObject jsonResult = new JSONObject();
-		jsonResult.put("result", jsonStatus);
-		//if(!StringUtils.equals(errorCode.getMessage(), gatewayliteException.getMessage())) {
-		jsonResult.put("errorMessage", commonException.getMessage());
-		//}
+        JSONObject jsonResult = new JSONObject();
+        jsonResult.put("result", jsonStatus);
+        //if(!StringUtils.equals(errorCode.getMessage(), gatewayliteException.getMessage())) {
+        jsonResult.put("errorMessage", commonException.getMessage());
+        //}
 
-		return jsonResult;
-	}
+        return jsonResult;
+    }
 
-	@Override
-	@Resource
-	@Qualifier("limitReleaseAction")
-	public void setNextAction(BusinessAction responseAssembleAction) {
-		this.nextAction = responseAssembleAction;
-	}
+    @Override
+    @Resource
+    @Qualifier("limitReleaseAction")
+    public void setNextAction(BusinessAction responseAssembleAction) {
+        this.nextAction = responseAssembleAction;
+    }
 
 }

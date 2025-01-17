@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class TenantUtil {
-    public static final String TENANT    = "tenant";
+    public static final String TENANT = "tenant";
     public static final String TENANT_ID = "tenantId";
 
     public static Tenant getTenant() {

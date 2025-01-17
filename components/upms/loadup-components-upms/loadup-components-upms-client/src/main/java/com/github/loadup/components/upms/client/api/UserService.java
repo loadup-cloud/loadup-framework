@@ -27,19 +27,23 @@ package com.github.loadup.components.upms.client.api;
  */
 
 import com.github.loadup.commons.request.query.IdQuery;
-import com.github.loadup.commons.result.*;
-import com.github.loadup.components.upms.client.cmd.*;
+import com.github.loadup.commons.result.MultiResponse;
+import com.github.loadup.commons.result.Response;
+import com.github.loadup.commons.result.SingleResponse;
+import com.github.loadup.components.upms.client.cmd.UserChangePasswordCmd;
+import com.github.loadup.components.upms.client.cmd.UserRolesSaveCmd;
+import com.github.loadup.components.upms.client.cmd.UserSaveCmd;
 import com.github.loadup.components.upms.client.dto.SimpleUserDTO;
 import com.github.loadup.components.upms.client.dto.UserDTO;
 
 public interface UserService {
-	SingleResponse<UserDTO> getUserById(IdQuery query);
+    SingleResponse<UserDTO> getUserById(IdQuery query);
 
-	MultiResponse<SimpleUserDTO> getUserByRoleId(String roleId);
+    MultiResponse<SimpleUserDTO> getUserByRoleId(String roleId);
 
-	SingleResponse<SimpleUserDTO> save(UserSaveCmd cmd);
+    SingleResponse<SimpleUserDTO> save(UserSaveCmd cmd);
 
-	SingleResponse<UserDTO> saveUserRoles(UserRolesSaveCmd cmd);
+    SingleResponse<UserDTO> saveUserRoles(UserRolesSaveCmd cmd);
 
-	Response changePassword(UserChangePasswordCmd cmd);
+    Response changePassword(UserChangePasswordCmd cmd);
 }

@@ -33,14 +33,14 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public abstract class UserNameConvertor {
-	public static final UserNameConvertor INSTANCE = Mappers.getMapper(UserNameConvertor.class);
+    public static final UserNameConvertor INSTANCE = Mappers.getMapper(UserNameConvertor.class);
 
-	UserName convert(String userName) {
-		return JsonUtil.parseObject(userName, UserName.class);
-	}
+    UserName convert(String userName) {
+        return JsonUtil.parseObject(userName, UserName.class);
+    }
 
-	String convert(UserName user) {
-		return JsonUtil.toJSONString(user);
-	}
+    String convert(UserName user) {
+        return JsonUtil.toJSONString(user);
+    }
 
 }

@@ -26,7 +26,10 @@ package com.github.loadup.components.upms.service.impl;
  * #L%
  */
 
-import com.github.loadup.commons.result.*;
+import com.github.loadup.commons.result.CommonResultCodeEnum;
+import com.github.loadup.commons.result.MultiResponse;
+import com.github.loadup.commons.result.Result;
+import com.github.loadup.commons.result.SingleResponse;
 import com.github.loadup.commons.template.ServiceTemplate;
 import com.github.loadup.commons.util.ValidateUtils;
 import com.github.loadup.components.upms.client.api.RoleService;
@@ -46,57 +49,57 @@ import java.util.Objects;
 
 @Service
 public class RoleServiceImpl implements RoleService {
-	@Resource
-	private RoleGateway roleGateway;
+    @Resource
+    private RoleGateway roleGateway;
 
-	@Override
-	public SingleResponse<RoleDTO> getRoleById(String roleId) {
-		Role role = roleGateway.getById(roleId);
-		RoleDTO userDTO = RoleDTOConvertor.INSTANCE.toRoleDTO(role);
-		return SingleResponse.of(userDTO);
-	}
+    @Override
+    public SingleResponse<RoleDTO> getRoleById(String roleId) {
+        Role role = roleGateway.getById(roleId);
+        RoleDTO userDTO = RoleDTOConvertor.INSTANCE.toRoleDTO(role);
+        return SingleResponse.of(userDTO);
+    }
 
-	@Override
-	public MultiResponse<SimpleRoleDTO> getRoleByUserId(String userId) {
-		List<Role> roleList = roleGateway.getByUserId(userId);
-		List<SimpleRoleDTO> roleDTOList = RoleDTOConvertor.INSTANCE.toSimpleRoleDTO(roleList);
-		return MultiResponse.of(roleDTOList);
-	}
+    @Override
+    public MultiResponse<SimpleRoleDTO> getRoleByUserId(String userId) {
+        List<Role> roleList = roleGateway.getByUserId(userId);
+        List<SimpleRoleDTO> roleDTOList = RoleDTOConvertor.INSTANCE.toSimpleRoleDTO(roleList);
+        return MultiResponse.of(roleDTOList);
+    }
 
-	@Override
-	public SingleResponse<SimpleRoleDTO> save(RoleSaveCmd cmd) {
-		return ServiceTemplate.execute(
-				(Void) -> ValidateUtils.validate(cmd), // check parameter
-				() -> { // process
-					SimpleRoleDTO dto = cmd.getRole();
-					Role role = RoleDTOConvertor.INSTANCE.toRole(dto);
-					if (StringUtils.isBlank(role.getStatus())) {
-						role.setStatus("NORMAL");
-					}
-					role = roleGateway.create(role);
-					return SingleResponse.of(RoleDTOConvertor.INSTANCE.toSimpleRoleDTO(role));
-				},
-				(e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
-				(Void) -> {
-				}
-		);
-	}
+    @Override
+    public SingleResponse<SimpleRoleDTO> save(RoleSaveCmd cmd) {
+        return ServiceTemplate.execute(
+                (Void) -> ValidateUtils.validate(cmd), // check parameter
+                () -> { // process
+                    SimpleRoleDTO dto = cmd.getRole();
+                    Role role = RoleDTOConvertor.INSTANCE.toRole(dto);
+                    if (StringUtils.isBlank(role.getStatus())) {
+                        role.setStatus("NORMAL");
+                    }
+                    role = roleGateway.create(role);
+                    return SingleResponse.of(RoleDTOConvertor.INSTANCE.toSimpleRoleDTO(role));
+                },
+                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
+                (Void) -> {
+                }
+        );
+    }
 
-	@Override
-	public SingleResponse<RoleDTO> saveRoleUsers(RoleUsersSaveCmd cmd) {
-		return ServiceTemplate.execute(
-				(Void) -> ValidateUtils.validate(cmd),
-				() -> {
-					Role role = roleGateway.getById(cmd.getRoleId());
-					if (Objects.isNull(role)) {
-						return SingleResponse.buildFailure(CommonResultCodeEnum.NOT_FOUND);
-					}
-					roleGateway.saveRoleUsers(cmd.getRoleId(), cmd.getUserIdList());
-					return getRoleById(role.getId());
-				},
-				(e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
-				(Void) -> {
-				}
-		);
-	}
+    @Override
+    public SingleResponse<RoleDTO> saveRoleUsers(RoleUsersSaveCmd cmd) {
+        return ServiceTemplate.execute(
+                (Void) -> ValidateUtils.validate(cmd),
+                () -> {
+                    Role role = roleGateway.getById(cmd.getRoleId());
+                    if (Objects.isNull(role)) {
+                        return SingleResponse.buildFailure(CommonResultCodeEnum.NOT_FOUND);
+                    }
+                    roleGateway.saveRoleUsers(cmd.getRoleId(), cmd.getUserIdList());
+                    return getRoleById(role.getId());
+                },
+                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
+                (Void) -> {
+                }
+        );
+    }
 }

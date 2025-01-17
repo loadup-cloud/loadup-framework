@@ -42,50 +42,49 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TraceUtil {
 
-	@Value("${spring.application.name:''}")
-	private       String applicationName;
-	private final Tracer tracer;
+    private static TraceUtil traceUtil;
+    private static String staticApplicationName;
+    private final Tracer tracer;
+    @Value("${spring.application.name:''}")
+    private String applicationName;
 
-	private static TraceUtil traceUtil;
-	private static String    staticApplicationName;
+    public static Tracer getTracer() {
+        return traceUtil.tracer;
+    }
 
-	@PostConstruct
-	public void initialize() {
-		traceUtil = this;
-		staticApplicationName = applicationName;
-	}
+    public static Span getSpan() {
+        TraceContext sofaTraceContext = TraceContextHolder.getSofaTraceContext();
+        return sofaTraceContext.getCurrentSpan();
+    }
 
-	public static Tracer getTracer() {
-		return traceUtil.tracer;
-	}
+    public static Span createSpan(String moduleType) {
+        Span span = getTracer().spanBuilder(moduleType).startSpan();
+        TraceContextHolder.getSofaTraceContext().push(span);
+        return span;
+    }
 
-	public static Span getSpan() {
-		TraceContext sofaTraceContext = TraceContextHolder.getSofaTraceContext();
-		return sofaTraceContext.getCurrentSpan();
-	}
+    public static Span createSpan(String moduleType, Context parentContext) {
+        Span span = getTracer().spanBuilder(moduleType).setParent(parentContext).startSpan();
+        TraceContextHolder.getSofaTraceContext().push(span);
+        return span;
+    }
 
-	public static Span createSpan(String moduleType) {
-		Span span = getTracer().spanBuilder(moduleType).startSpan();
-		TraceContextHolder.getSofaTraceContext().push(span);
-		return span;
-	}
+    public static String getTracerId() {
+        return getSpan().getSpanContext().getTraceId();
+    }
 
-	public static Span createSpan(String moduleType, Context parentContext) {
-		Span span = getTracer().spanBuilder(moduleType).setParent(parentContext).startSpan();
-		TraceContextHolder.getSofaTraceContext().push(span);
-		return span;
-	}
+    public static void logTraceId(Span span) {
+        //MDCUtil.logStartedSpan(span);
+    }
 
-	public static String getTracerId() {
-		return getSpan().getSpanContext().getTraceId();
-	}
+    public static void clearTraceId() {
+        //MDCUtil.logStoppedSpan();
+    }
 
-	public static void logTraceId(Span span) {
-		//MDCUtil.logStartedSpan(span);
-	}
-
-	public static void clearTraceId() {
-		//MDCUtil.logStoppedSpan();
-	}
+    @PostConstruct
+    public void initialize() {
+        traceUtil = this;
+        staticApplicationName = applicationName;
+    }
 
 }

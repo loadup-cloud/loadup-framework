@@ -45,24 +45,24 @@ import org.springframework.stereotype.Component;
 @Component("sendToIntegratorAction")
 public class SendToIntegratorAction extends AbstractBusinessAction {
 
-	@Resource
-	private CommunicationService communicationService;
+    @Resource
+    private CommunicationService communicationService;
 
-	@Override
-	public void doBusiness(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) {
-		String traceId = gatewayRuntimeProcessContext.getTraceId();
-		CommunicationConfig communicationConfig = gatewayRuntimeProcessContext.getIntegratorCommunicationConfig();
-		MessageEnvelope requestMessage = gatewayRuntimeProcessContext.getResultMessage();
-		MessageSendResult messageSendResult = communicationService.send(traceId, communicationConfig, requestMessage);
-		gatewayRuntimeProcessContext.setResultMessage(messageSendResult.getMessageEnvelope());
+    @Override
+    public void doBusiness(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) {
+        String traceId = gatewayRuntimeProcessContext.getTraceId();
+        CommunicationConfig communicationConfig = gatewayRuntimeProcessContext.getIntegratorCommunicationConfig();
+        MessageEnvelope requestMessage = gatewayRuntimeProcessContext.getResultMessage();
+        MessageSendResult messageSendResult = communicationService.send(traceId, communicationConfig, requestMessage);
+        gatewayRuntimeProcessContext.setResultMessage(messageSendResult.getMessageEnvelope());
 
-	}
+    }
 
-	@Override
-	@Resource
-	@Qualifier("responseParseAction")
-	public void setNextAction(BusinessAction responseParseAction) {
-		this.nextAction = responseParseAction;
-	}
+    @Override
+    @Resource
+    @Qualifier("responseParseAction")
+    public void setNextAction(BusinessAction responseParseAction) {
+        this.nextAction = responseParseAction;
+    }
 
 }

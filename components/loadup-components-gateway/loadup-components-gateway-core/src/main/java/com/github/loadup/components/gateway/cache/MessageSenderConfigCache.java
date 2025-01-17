@@ -41,33 +41,33 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class MessageSenderConfigCache {
 
-	/**
-	 * Key is message sender id
-	 */
-	private static Map<String, MessageSenderConfig> messageSenderMap = new ConcurrentHashMap<>();
+    /**
+     * Key is message sender id
+     */
+    private static Map<String, MessageSenderConfig> messageSenderMap = new ConcurrentHashMap<>();
 
-	/**
-	 * Put all.
-	 */
-	public static void putAll(boolean clear, List<MessageSenderConfig> messageSenderConfigList) {
-		if (CollectionUtils.isEmpty(messageSenderConfigList)) {
-			return;
-		}
+    /**
+     * Put all.
+     */
+    public static void putAll(boolean clear, List<MessageSenderConfig> messageSenderConfigList) {
+        if (CollectionUtils.isEmpty(messageSenderConfigList)) {
+            return;
+        }
 
-		Map<String, MessageSenderConfig> tempMap = new ConcurrentHashMap<>();
-		messageSenderConfigList.forEach(messageSenderConfig -> tempMap.put(messageSenderConfig.getMessageSenderId(), messageSenderConfig));
-		if (clear) {
-			messageSenderMap = tempMap;
-		} else {
-			messageSenderMap.putAll(tempMap);
-		}
-		CacheLogUtil.printLog("messageSenderMap", messageSenderMap);
-	}
+        Map<String, MessageSenderConfig> tempMap = new ConcurrentHashMap<>();
+        messageSenderConfigList.forEach(messageSenderConfig -> tempMap.put(messageSenderConfig.getMessageSenderId(), messageSenderConfig));
+        if (clear) {
+            messageSenderMap = tempMap;
+        } else {
+            messageSenderMap.putAll(tempMap);
+        }
+        CacheLogUtil.printLog("messageSenderMap", messageSenderMap);
+    }
 
-	/**
-	 * Get with message sender id message sender config.
-	 */
-	public static MessageSenderConfig getWithMessageSenderId(String messageSenderConfigId) {
-		return messageSenderMap.get(messageSenderConfigId);
-	}
+    /**
+     * Get with message sender id message sender config.
+     */
+    public static MessageSenderConfig getWithMessageSenderId(String messageSenderConfigId) {
+        return messageSenderMap.get(messageSenderConfigId);
+    }
 }

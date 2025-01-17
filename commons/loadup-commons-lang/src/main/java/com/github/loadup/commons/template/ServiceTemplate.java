@@ -28,45 +28,49 @@ package com.github.loadup.commons.template;
 
 import com.github.loadup.commons.error.AssertUtil;
 import com.github.loadup.commons.error.CommonException;
-import com.github.loadup.commons.result.*;
+import com.github.loadup.commons.result.CommonResultCodeEnum;
+import com.github.loadup.commons.result.Response;
+import com.github.loadup.commons.result.Result;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
-import java.util.function.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Slf4j(topic = "SERVICE-LOGGER")
 public final class ServiceTemplate {
-	private ServiceTemplate() {
-	}
+    private ServiceTemplate() {
+    }
 
-	public static <T extends Response> T execute(Consumer<Void> checkParameter, //checkParameter
-												Supplier<T> process, //process
-												Function<Exception, Result> composeExceptionResponse, // 修改为 Function<Throwable, T>
-												Consumer<Void> composeDigestLog //composeDigestLog
-	) {
-		T response = null;
-		try {
-			checkParameter.accept(null); // 执行参数检查
-			response = process.get();   // 执行业务逻辑
-			AssertUtil.notNull(response);
-			response.setResult(Result.buildSuccess());
-		} catch (CommonException exception) {
-			log.error("service process, exception occurred:", exception.getMessage());
-			response.setResult(Result.buildFailure(exception.getResultCode()));
-		} catch (Exception throwable) {
-			log.error("service process,  exception occurred:", throwable.getMessage());
-			Result result = composeExceptionResponse.apply(throwable); // 异常处理
-			if (Objects.isNull(result)) {
-				result = Result.buildFailure(CommonResultCodeEnum.UNKNOWN);
-			}
-			response.setResult(result);
-		} catch (Throwable throwable) {
-			log.error("service process, unknown exception occurred:", throwable.getMessage());
-			response.setResult(Result.buildFailure(CommonResultCodeEnum.UNKNOWN));
-		} finally {
-			composeDigestLog.accept(null);  // 执行日志
-		}
-		return response;
-	}
+    public static <T extends Response> T execute(Consumer<Void> checkParameter, //checkParameter
+                                                 Supplier<T> process, //process
+                                                 Function<Exception, Result> composeExceptionResponse, // 修改为 Function<Throwable, T>
+                                                 Consumer<Void> composeDigestLog //composeDigestLog
+    ) {
+        T response = null;
+        try {
+            checkParameter.accept(null); // 执行参数检查
+            response = process.get();   // 执行业务逻辑
+            AssertUtil.notNull(response);
+            response.setResult(Result.buildSuccess());
+        } catch (CommonException exception) {
+            log.error("service process, exception occurred:", exception.getMessage());
+            response.setResult(Result.buildFailure(exception.getResultCode()));
+        } catch (Exception throwable) {
+            log.error("service process,  exception occurred:", throwable.getMessage());
+            Result result = composeExceptionResponse.apply(throwable); // 异常处理
+            if (Objects.isNull(result)) {
+                result = Result.buildFailure(CommonResultCodeEnum.UNKNOWN);
+            }
+            response.setResult(result);
+        } catch (Throwable throwable) {
+            log.error("service process, unknown exception occurred:", throwable.getMessage());
+            response.setResult(Result.buildFailure(CommonResultCodeEnum.UNKNOWN));
+        } finally {
+            composeDigestLog.accept(null);  // 执行日志
+        }
+        return response;
+    }
 
 }

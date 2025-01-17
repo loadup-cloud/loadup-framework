@@ -38,18 +38,18 @@ import org.springframework.stereotype.Component;
 @Component("gatewayFileInstConfigBuilder")
 public class InstConfigBuilder extends AbstractInterfaceConfigBuilder<InstConfigDto> {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(InstConfigBuilder.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(InstConfigBuilder.class);
 
-	/**
-	 * generic config build
-	 */
-	public InstConfigDto build(String clientId, String name, String properties) {
-		InstConfigDto instConfigDto = new InstConfigDto();
-		instConfigDto.setClientId(clientId);
-		instConfigDto.setName(name);
-		instConfigDto.setProperties(properties);
-		return instConfigDto;
-	}
+    /**
+     * generic config build
+     */
+    public InstConfigDto build(String clientId, String name, String properties) {
+        InstConfigDto instConfigDto = new InstConfigDto();
+        instConfigDto.setClientId(clientId);
+        instConfigDto.setName(name);
+        instConfigDto.setProperties(properties);
+        return instConfigDto;
+    }
 
 }

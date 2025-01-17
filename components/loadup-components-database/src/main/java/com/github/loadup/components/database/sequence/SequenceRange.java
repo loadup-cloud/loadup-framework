@@ -34,35 +34,35 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Getter
 public class SequenceRange {
-	private final Long min;
-	private final Long max;
+    private final Long min;
+    private final Long max;
 
-	private final AtomicLong value;
+    private final AtomicLong value;
 
-	private boolean over = false;
+    private boolean over = false;
 
-	public SequenceRange(Long min, Long max) {
-		this.min = min;
-		this.max = max;
-		this.value = new AtomicLong(min);
-	}
+    public SequenceRange(Long min, Long max) {
+        this.min = min;
+        this.max = max;
+        this.value = new AtomicLong(min);
+    }
 
-	public long getAndIncrement() {
-		long currentValue = value.getAndIncrement();
-		if (currentValue > max) {
-			over = true;
-			return -1;
-		}
-		return currentValue;
-	}
+    public long getAndIncrement() {
+        long currentValue = value.getAndIncrement();
+        if (currentValue > max) {
+            over = true;
+            return -1;
+        }
+        return currentValue;
+    }
 
-	public AtomicLong getValue() {
-		return value;
-	}
+    public AtomicLong getValue() {
+        return value;
+    }
 
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-	}
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+    }
 
 }

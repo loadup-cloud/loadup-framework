@@ -41,57 +41,55 @@ import java.util.Map;
  */
 @Component("gatewayFileMessageProcessConfigBuilder")
 public class MessageProcessConfigBuilder extends
-		AbstractInterfaceConfigBuilder<MessageProcessConfigDto> {
+        AbstractInterfaceConfigBuilder<MessageProcessConfigDto> {
 
-	//组装脚本存在的路径
-	private Map<String, String> assembleTemplateCache = new HashMap<String, String>();
+    /**
+     * logger
+     */
+    private static final Logger logger = LoggerFactory
+            .getLogger(MessageProcessConfigBuilder.class);
+    //组装脚本存在的路径
+    private Map<String, String> assembleTemplateCache = new HashMap<String, String>();
+    //groovy java 脚本存在的路径
+    private Map<String, String> parseTemplateCache = new HashMap<String, String>();
 
-	//groovy java 脚本存在的路径
-	private Map<String, String> parseTemplateCache = new HashMap<String, String>();
+    /**
+     * generic config build from template map
+     */
+    public MessageProcessConfigDto build(String url, String securityStrategyCode,
+                                         String headerAssemble, String bodyAssemble,
+                                         String parser) {
+        if (!validate(url, securityStrategyCode) || StringUtils.isBlank(parser)) {
+            return null;
+        }
 
-	/**
-	 * logger
-	 */
-	private static final Logger logger = LoggerFactory
-			.getLogger(MessageProcessConfigBuilder.class);
+        MessageProcessConfigDto messageProcessConfigDto = new MessageProcessConfigDto();
+        messageProcessConfigDto.setMessageProcessId(generateBizKey(url));
+        //1 integration_service_response_parser
 
-	/**
-	 * generic config build from template map
-	 */
-	public MessageProcessConfigDto build(String url, String securityStrategyCode,
-										String headerAssemble, String bodyAssemble,
-										String parser) {
-		if (!validate(url, securityStrategyCode) || StringUtils.isBlank(parser)) {
-			return null;
-		}
+        messageProcessConfigDto.setParserClassName(StringUtils.removeEnd(parser, ".java"));
+        messageProcessConfigDto.setParserTemplate(parseTemplateCache.get(parser));
 
-		MessageProcessConfigDto messageProcessConfigDto = new MessageProcessConfigDto();
-		messageProcessConfigDto.setMessageProcessId(generateBizKey(url));
-		//1 integration_service_response_parser
+        //2 integration_service_request_header_assemble 从缓存中获取
+        messageProcessConfigDto.setHeaderTemplate(assembleTemplateCache.get(headerAssemble));
 
-		messageProcessConfigDto.setParserClassName(StringUtils.removeEnd(parser, ".java"));
-		messageProcessConfigDto.setParserTemplate(parseTemplateCache.get(parser));
+        //3 integration_service_request_assemble 从缓存中获取
+        messageProcessConfigDto.setAssembleTemplate(assembleTemplateCache.get(bodyAssemble));
+        messageProcessConfigDto.setAssembleClassName(StringUtils.removeEnd(bodyAssemble, ".java"));
+        return messageProcessConfigDto;
+    }
 
-		//2 integration_service_request_header_assemble 从缓存中获取
-		messageProcessConfigDto.setHeaderTemplate(assembleTemplateCache.get(headerAssemble));
+    /**
+     * Setter method for property <tt>assembleTemplateCache</tt>.
+     */
+    public void setAssembleTemplateCache(Map<String, String> assembleTemplateCache) {
+        this.assembleTemplateCache = assembleTemplateCache;
+    }
 
-		//3 integration_service_request_assemble 从缓存中获取
-		messageProcessConfigDto.setAssembleTemplate(assembleTemplateCache.get(bodyAssemble));
-		messageProcessConfigDto.setAssembleClassName(StringUtils.removeEnd(bodyAssemble, ".java"));
-		return messageProcessConfigDto;
-	}
-
-	/**
-	 * Setter method for property <tt>assembleTemplateCache</tt>.
-	 */
-	public void setAssembleTemplateCache(Map<String, String> assembleTemplateCache) {
-		this.assembleTemplateCache = assembleTemplateCache;
-	}
-
-	/**
-	 * Setter method for property <tt>parseTemplateCache</tt>.
-	 */
-	public void setParseTemplateCache(Map<String, String> parseTemplateCache) {
-		this.parseTemplateCache = parseTemplateCache;
-	}
+    /**
+     * Setter method for property <tt>parseTemplateCache</tt>.
+     */
+    public void setParseTemplateCache(Map<String, String> parseTemplateCache) {
+        this.parseTemplateCache = parseTemplateCache;
+    }
 }

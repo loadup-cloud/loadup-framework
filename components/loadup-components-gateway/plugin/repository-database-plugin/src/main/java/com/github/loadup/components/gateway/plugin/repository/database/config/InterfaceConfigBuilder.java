@@ -41,40 +41,40 @@ import org.springframework.stereotype.Component;
 @Component("databaseInterfaceConfigBuilder")
 public class InterfaceConfigBuilder extends AbstractInterfaceConfigBuilder<InterfaceConfigDto> {
 
-	/**
-	 * logger
-	 */
-	private static final Logger logger = LoggerFactory
-			.getLogger(InterfaceConfigBuilder.class);
+    /**
+     * logger
+     */
+    private static final Logger logger = LoggerFactory
+            .getLogger(InterfaceConfigBuilder.class);
 
-	/**
-	 * generic config build
-	 */
-	public InterfaceConfigDto build(String interfaceId, String securityStrategyCode,
-									String integrationInterfaceId, String interfaceName,
-									String version, String status, String communicationProperties) {
+    /**
+     * generic config build
+     */
+    public InterfaceConfigDto build(String interfaceId, String securityStrategyCode,
+                                    String integrationInterfaceId, String interfaceName,
+                                    String version, String status, String communicationProperties) {
 
-		if (StringUtils.isBlank(interfaceId) || StringUtils.isBlank(securityStrategyCode)) {
+        if (StringUtils.isBlank(interfaceId) || StringUtils.isBlank(securityStrategyCode)) {
 
-			LogUtil.error(logger, "There are some invalid interfaceId=" + interfaceId
-					+ ";securityStrategyCode=" + securityStrategyCode);
-			return null;
-		}
+            LogUtil.error(logger, "There are some invalid interfaceId=" + interfaceId
+                    + ";securityStrategyCode=" + securityStrategyCode);
+            return null;
+        }
 
-		InterfaceConfigDto interfaceConfigDto = new InterfaceConfigDto();
+        InterfaceConfigDto interfaceConfigDto = new InterfaceConfigDto();
 
-		interfaceConfigDto.setInterfaceId(interfaceId);
-		interfaceConfigDto.setMessageProcessId(interfaceId);
-		interfaceConfigDto.setInterfaceName(interfaceName);
-		interfaceConfigDto.setVersion(version);
-		interfaceConfigDto.setStatus(status);
-		interfaceConfigDto.setCertCode(securityStrategyCode);
-		interfaceConfigDto
-				.setIsEnable(InterfaceStatus.VALID.getCode().equals(status) ? "true" : "false");
-		if (StringUtils.isNotEmpty(integrationInterfaceId)) {
-			interfaceConfigDto.setMessageReceiverInterfaceId(integrationInterfaceId);
-		}
-		interfaceConfigDto.setProperties(communicationProperties);
-		return interfaceConfigDto;
-	}
+        interfaceConfigDto.setInterfaceId(interfaceId);
+        interfaceConfigDto.setMessageProcessId(interfaceId);
+        interfaceConfigDto.setInterfaceName(interfaceName);
+        interfaceConfigDto.setVersion(version);
+        interfaceConfigDto.setStatus(status);
+        interfaceConfigDto.setCertCode(securityStrategyCode);
+        interfaceConfigDto
+                .setIsEnable(InterfaceStatus.VALID.getCode().equals(status) ? "true" : "false");
+        if (StringUtils.isNotEmpty(integrationInterfaceId)) {
+            interfaceConfigDto.setMessageReceiverInterfaceId(integrationInterfaceId);
+        }
+        interfaceConfigDto.setProperties(communicationProperties);
+        return interfaceConfigDto;
+    }
 }

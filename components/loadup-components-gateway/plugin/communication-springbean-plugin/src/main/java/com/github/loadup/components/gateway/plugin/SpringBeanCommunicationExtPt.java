@@ -47,37 +47,37 @@ import java.lang.reflect.Method;
 @Component
 public class SpringBeanCommunicationExtPt implements CommunicationProxyExtPt {
 
-	/**
-	 * logger
-	 */
-	private static final Logger log = LoggerFactory
-			.getLogger(SpringBeanCommunicationExtPt.class);
+    /**
+     * logger
+     */
+    private static final Logger log = LoggerFactory
+            .getLogger(SpringBeanCommunicationExtPt.class);
 
-	private BeanApiHelper beanApiHelper = BeanApiHelper.getInstance();
+    private BeanApiHelper beanApiHelper = BeanApiHelper.getInstance();
 
-	@Override
-	public String sendMessage(CommunicationConfiguration config, String messageContent) {
-		Object result;
-		if (config == null) {
-			LogUtil.error(log, "BEAN_CALL_ERROR, CommunicationConfiguration is null");
-			return "";
-		}
+    @Override
+    public String sendMessage(CommunicationConfiguration config, String messageContent) {
+        Object result;
+        if (config == null) {
+            LogUtil.error(log, "BEAN_CALL_ERROR, CommunicationConfiguration is null");
+            return "";
+        }
 
-		try {
-			ApiDefinition apiDefinition = beanApiHelper.parseApiDefinition(config.getUri());
+        try {
+            ApiDefinition apiDefinition = beanApiHelper.parseApiDefinition(config.getUri());
 
-			// invoke spring bean method in current spring context
-			Object objService = ApplicationContextUtils.getBean(apiDefinition.beanId());
-			Method method = beanApiHelper.getServiceMethod(objService, apiDefinition);
-			Object request = beanApiHelper.parseParam(method, messageContent);
-			result = method.invoke(objService, request);
-		} catch (Exception e) {
-			LogUtil.error(log, e,
-					"BEAN_CALL_ERROR_PREX, Failed to send message because of error occurs when trying to get bean with config:"
-							+ config.getUri());
-			throw new RuntimeException("Failed to send message to springbean.");
-		}
-		return result != null ? JsonUtil.toJSONString(result) : "";
-	}
+            // invoke spring bean method in current spring context
+            Object objService = ApplicationContextUtils.getBean(apiDefinition.beanId());
+            Method method = beanApiHelper.getServiceMethod(objService, apiDefinition);
+            Object request = beanApiHelper.parseParam(method, messageContent);
+            result = method.invoke(objService, request);
+        } catch (Exception e) {
+            LogUtil.error(log, e,
+                    "BEAN_CALL_ERROR_PREX, Failed to send message because of error occurs when trying to get bean with config:"
+                            + config.getUri());
+            throw new RuntimeException("Failed to send message to springbean.");
+        }
+        return result != null ? JsonUtil.toJSONString(result) : "";
+    }
 
 }

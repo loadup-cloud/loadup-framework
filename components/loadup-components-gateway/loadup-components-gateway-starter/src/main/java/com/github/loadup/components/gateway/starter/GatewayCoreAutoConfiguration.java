@@ -27,7 +27,8 @@ package com.github.loadup.components.gateway.starter;
  */
 
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Laysan

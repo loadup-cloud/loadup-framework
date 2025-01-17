@@ -36,17 +36,17 @@ import org.slf4j.LoggerFactory;
  */
 public final class ExceptionUtil {
 
-	/**
-	 * logger
-	 */
-	private static final Logger logger = LoggerFactory
-			.getLogger("COMMON-ERROR-LOGGER");
+    /**
+     * logger
+     */
+    private static final Logger logger = LoggerFactory
+            .getLogger("COMMON-ERROR-LOGGER");
 
-	/**
-	 * 捕捉错误日志并输出到日志文件：common-error.log
-	 */
-	public static void caught(Throwable e, Object... message) {
-		LogUtil.error(logger, e, message);
-	}
+    /**
+     * 捕捉错误日志并输出到日志文件：common-error.log
+     */
+    public static void caught(Throwable e, Object... message) {
+        LogUtil.error(logger, e, message);
+    }
 
 }

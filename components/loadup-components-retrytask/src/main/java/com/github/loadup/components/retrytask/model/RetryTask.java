@@ -45,12 +45,12 @@ import java.time.LocalDateTime;
 public class RetryTask extends DTO {
 
     @Serial
-    private static final long   serialVersionUID = -1317061799686036458L;
+    private static final long serialVersionUID = -1317061799686036458L;
     /**
      * task serial id
      */
     @Id
-    private              String taskId;
+    private String taskId;
 
     /**
      * business id, used as sharding index

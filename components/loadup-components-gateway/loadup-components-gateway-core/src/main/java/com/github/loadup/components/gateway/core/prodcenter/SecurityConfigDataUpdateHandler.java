@@ -43,20 +43,20 @@ import java.util.Collections;
 @Component("gatewaySecurityConfigDataUpdateHandler")
 public class SecurityConfigDataUpdateHandler {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(SecurityConfigDataUpdateHandler.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(SecurityConfigDataUpdateHandler.class);
 
-	/**
-	 *
-	 */
-	protected void process(String tntInstId, String configName,
-						SecurityConditionGroup securityConditionGroup) {
-		LogUtil.info(logger, "update security config for securityConditionGroup:",
-				securityConditionGroup);
-		CertConfig certConfig = CertConfigConvertor.convertToCertConfig(securityConditionGroup,
-				tntInstId);
-		CertConfigCache.putAll(false, Collections.singletonList(certConfig));
-		LogUtil.info(logger, "update security config for securityConditionGroup end");
-	}
+    /**
+     *
+     */
+    protected void process(String tntInstId, String configName,
+                           SecurityConditionGroup securityConditionGroup) {
+        LogUtil.info(logger, "update security config for securityConditionGroup:",
+                securityConditionGroup);
+        CertConfig certConfig = CertConfigConvertor.convertToCertConfig(securityConditionGroup,
+                tntInstId);
+        CertConfigCache.putAll(false, Collections.singletonList(certConfig));
+        LogUtil.info(logger, "update security config for securityConditionGroup end");
+    }
 
 }

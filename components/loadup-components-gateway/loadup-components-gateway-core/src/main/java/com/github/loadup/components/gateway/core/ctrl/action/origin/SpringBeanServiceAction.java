@@ -26,9 +26,9 @@ package com.github.loadup.components.gateway.core.ctrl.action.origin;
  * #L%
  */
 
+import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.cache.CommunicationConfigCache;
 import com.github.loadup.components.gateway.cache.InterfaceConfigCache;
-import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.common.annotation.LogTraceId;
 import com.github.loadup.components.gateway.core.common.enums.RoleType;
@@ -50,41 +50,41 @@ import org.springframework.stereotype.Component;
 @Component("springBeanServiceAction")
 public class SpringBeanServiceAction extends AbstractBusinessAction {
 
-	@Override
-	@LogTraceId
-	public void doBusiness(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) throws CommonException {
-		String integratorUrl = gatewayRuntimeProcessContext.getIntegratorUrl();
-		//CommunicationConfig integratorCommunicationConfig = interfaceCacheManager.getCommunicationConfigByURI(integratorUrl);
-		CommunicationConfig integratorCommunicationConfig = CommunicationConfigCache.getWithUrl(integratorUrl,
-				gatewayRuntimeProcessContext.getTransactionType());
-		if (integratorCommunicationConfig == null) {
-			String integratorInterfaceId = gatewayRuntimeProcessContext.getIntegratorInterfaceId();
-			//integratorCommunicationConfig = interfaceCacheManager.getCommunicationConfigByInterfaceId(integratorInterfaceId);
-			// spi场景，prodcenter不会根据interfaceId查找配置，故如果是prodcenter则不用处理
-			integratorCommunicationConfig = CommunicationConfigCache.getWithInterfaceId(integratorInterfaceId);
-		}
-		if (integratorCommunicationConfig == null) {
-			CommonException commonException = new CommonException(GatewayErrorCode.PARAM_ILLEGAL);
-			gatewayRuntimeProcessContext.setBusinessException(commonException);
-			throw commonException;
-		}
-		//InterfaceConfig integratorInterfaceConfig = interfaceCacheManager.getInterfaceConfigById(integratorCommunicationConfig
-		// .getInterfaceId());
-		InterfaceConfig integratorInterfaceConfig = InterfaceConfigCache.getWithInterfaceId(
-				integratorCommunicationConfig.getInterfaceId(), RoleType.RECEIVER,
-				gatewayRuntimeProcessContext.getTransactionType());
-		gatewayRuntimeProcessContext.setIntegratorUrl(integratorUrl);
-		gatewayRuntimeProcessContext.setIntegratorCommunicationConfig(integratorCommunicationConfig);
-		gatewayRuntimeProcessContext.setIntegratorInterfaceConfig(integratorInterfaceConfig);
+    @Override
+    @LogTraceId
+    public void doBusiness(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) throws CommonException {
+        String integratorUrl = gatewayRuntimeProcessContext.getIntegratorUrl();
+        //CommunicationConfig integratorCommunicationConfig = interfaceCacheManager.getCommunicationConfigByURI(integratorUrl);
+        CommunicationConfig integratorCommunicationConfig = CommunicationConfigCache.getWithUrl(integratorUrl,
+                gatewayRuntimeProcessContext.getTransactionType());
+        if (integratorCommunicationConfig == null) {
+            String integratorInterfaceId = gatewayRuntimeProcessContext.getIntegratorInterfaceId();
+            //integratorCommunicationConfig = interfaceCacheManager.getCommunicationConfigByInterfaceId(integratorInterfaceId);
+            // spi场景，prodcenter不会根据interfaceId查找配置，故如果是prodcenter则不用处理
+            integratorCommunicationConfig = CommunicationConfigCache.getWithInterfaceId(integratorInterfaceId);
+        }
+        if (integratorCommunicationConfig == null) {
+            CommonException commonException = new CommonException(GatewayErrorCode.PARAM_ILLEGAL);
+            gatewayRuntimeProcessContext.setBusinessException(commonException);
+            throw commonException;
+        }
+        //InterfaceConfig integratorInterfaceConfig = interfaceCacheManager.getInterfaceConfigById(integratorCommunicationConfig
+        // .getInterfaceId());
+        InterfaceConfig integratorInterfaceConfig = InterfaceConfigCache.getWithInterfaceId(
+                integratorCommunicationConfig.getInterfaceId(), RoleType.RECEIVER,
+                gatewayRuntimeProcessContext.getTransactionType());
+        gatewayRuntimeProcessContext.setIntegratorUrl(integratorUrl);
+        gatewayRuntimeProcessContext.setIntegratorCommunicationConfig(integratorCommunicationConfig);
+        gatewayRuntimeProcessContext.setIntegratorInterfaceConfig(integratorInterfaceConfig);
 
-		gatewayRuntimeProcessContext.setResultMessage(gatewayRuntimeProcessContext.getRequestMessage().clone());
+        gatewayRuntimeProcessContext.setResultMessage(gatewayRuntimeProcessContext.getRequestMessage().clone());
 
-	}
+    }
 
-	@Override
-	@Resource
-	@Qualifier("requestAssembleAction")
-	public void setNextAction(BusinessAction requestParseAction) {
-		this.nextAction = requestParseAction;
-	}
+    @Override
+    @Resource
+    @Qualifier("requestAssembleAction")
+    public void setNextAction(BusinessAction requestParseAction) {
+        this.nextAction = requestParseAction;
+    }
 }

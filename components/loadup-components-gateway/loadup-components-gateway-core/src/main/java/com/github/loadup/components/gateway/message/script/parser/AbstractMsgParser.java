@@ -26,8 +26,8 @@ package com.github.loadup.components.gateway.message.script.parser;
  * #L%
  */
 
-import com.github.loadup.commons.result.ResultCode;
 import com.github.loadup.commons.error.CommonException;
+import com.github.loadup.commons.result.ResultCode;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.message.common.errorr.ParserErrorCode;
@@ -41,28 +41,28 @@ import static com.github.loadup.components.gateway.core.prototype.constant.Proce
 
 public abstract class AbstractMsgParser implements MessageParser {
 
-	protected abstract String parseMessage(String message, Map<String, String> httpHeaderInfo);
+    protected static final Logger logger = LoggerFactory.getLogger(AbstractMsgParser.class);
 
-	protected static final Logger logger = LoggerFactory.getLogger(AbstractMsgParser.class);
+    protected abstract String parseMessage(String message, Map<String, String> httpHeaderInfo);
 
-	@Override
-	public UnifyMsg parse(MessageEnvelope messageEnvelope) {
-		UnifyMsg messageResult = new UnifyMsg();
+    @Override
+    public UnifyMsg parse(MessageEnvelope messageEnvelope) {
+        UnifyMsg messageResult = new UnifyMsg();
 
-		String message = String.valueOf(messageEnvelope.getContent());
-		Map<String, String> extInfo = messageEnvelope.getHeaders();
-		String parseResult;
-		try {
-			parseResult = parseMessage(message, extInfo);
-		} catch (CommonException e) {
-			LogUtil.error(logger, e, "Message parser fail!");
-			throw e;
-		} catch (Exception e) {
-			LogUtil.error(logger, e, "Message parser fail!");
-			ResultCode errorCode = ParserErrorCode.PARSE_ERROR;
-			throw new CommonException(errorCode, e);
-		}
-		messageResult.addField(KEY_PARSE_RESULT, parseResult);
-		return messageResult;
-	}
+        String message = String.valueOf(messageEnvelope.getContent());
+        Map<String, String> extInfo = messageEnvelope.getHeaders();
+        String parseResult;
+        try {
+            parseResult = parseMessage(message, extInfo);
+        } catch (CommonException e) {
+            LogUtil.error(logger, e, "Message parser fail!");
+            throw e;
+        } catch (Exception e) {
+            LogUtil.error(logger, e, "Message parser fail!");
+            ResultCode errorCode = ParserErrorCode.PARSE_ERROR;
+            throw new CommonException(errorCode, e);
+        }
+        messageResult.addField(KEY_PARSE_RESULT, parseResult);
+        return messageResult;
+    }
 }

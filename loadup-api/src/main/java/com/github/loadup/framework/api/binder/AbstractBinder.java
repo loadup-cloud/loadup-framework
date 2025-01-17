@@ -31,8 +31,8 @@ import com.github.loadup.framework.api.config.BaseBinderCfg;
 import com.github.loadup.framework.api.core.BinderRegistry;
 
 public abstract class AbstractBinder<T extends BaseBinderCfg> implements Binder {
-    private T              cfg;
-    private String         name;
+    private T cfg;
+    private String name;
     private BindingFactory bindingFactory;
     private BinderRegistry binderRegistry;
 

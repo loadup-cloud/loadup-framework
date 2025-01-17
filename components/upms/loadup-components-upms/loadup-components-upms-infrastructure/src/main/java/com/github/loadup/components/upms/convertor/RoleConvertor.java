@@ -35,14 +35,14 @@ import java.util.List;
 
 @Mapper
 public interface RoleConvertor {
-	RoleConvertor INSTANCE = Mappers.getMapper(RoleConvertor.class);
+    RoleConvertor INSTANCE = Mappers.getMapper(RoleConvertor.class);
 
-	Role toRole(RoleDO roleDO);
+    Role toRole(RoleDO roleDO);
 
-	List<Role> toRoleList(List<RoleDO> roleDOList);
+    List<Role> toRoleList(List<RoleDO> roleDOList);
 
-	RoleDO toRoleDO(Role role);
+    RoleDO toRoleDO(Role role);
 
-	List<RoleDO> toRoleDOList(List<Role> roleList);
+    List<RoleDO> toRoleDOList(List<Role> roleList);
 
 }

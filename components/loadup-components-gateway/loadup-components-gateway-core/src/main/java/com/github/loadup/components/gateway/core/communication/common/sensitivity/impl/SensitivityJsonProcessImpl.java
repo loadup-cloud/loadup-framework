@@ -45,69 +45,69 @@ import java.util.stream.Collectors;
 @Component("sensitivityJsonProcessImpl")
 public class SensitivityJsonProcessImpl implements SensitivityDataProcess<String> {
 
-	/**
-	 * 默认的JSON脱敏正则表达式
-	 */
-	private static final String MASK_PATTERN_VALUE_JSON = "\\\\?\"(%s)\\\\?\" *: *(?:\\\\?\"(.*?)\\\\?\"|(\\d+))";
+    /**
+     * 默认的JSON脱敏正则表达式
+     */
+    private static final String MASK_PATTERN_VALUE_JSON = "\\\\?\"(%s)\\\\?\" *: *(?:\\\\?\"(.*?)\\\\?\"|(\\d+))";
 
-	@Override
-	public String mask(String maskContent, Map<String, ShieldType> shieldRule) {
+    private static String mask(String message, String patternStr, ShieldType shieldType) {
 
-		Map<ShieldType, List<String>> maskRules = shieldRule.entrySet().stream()
-				.collect(Collectors.groupingBy(Map.Entry::getValue,
-						Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
+        if (StringUtils.isBlank(patternStr)) {
+            return message;
+        }
 
-		String result = maskContent;
-		for (Map.Entry<ShieldType, List<String>> entry : maskRules.entrySet()) {
+        StringBuffer sb = new StringBuffer();
+        Pattern p = Pattern.compile(patternStr);
+        Matcher m = p.matcher(message);
+        while (m.find()) {
+            String value = m.group(2);
+            //兼容message为Json格式，且value为数字，无双引号包括的情况
+            if (value == null && m.groupCount() == 3) {
+                value = m.group(3);
+            }
+            if (StringUtils.isNotBlank(value)) {
+                // 对value进行敏感处理
+                String maskValue = MaskUtil.mask(value.trim(), shieldType.name());
+                String oriContext = m.group(0);
+                String replace = null;
 
-			for (String maskField : entry.getValue()) {
-				String maskUriPatternStr = getMaskPatternValueJson(maskField);
-				result = mask(result, maskUriPatternStr, entry.getKey());
-			}
-		}
-		return result;
-	}
+                //json脱敏
+                int offset = oriContext.lastIndexOf(value);
+                String last = oriContext.substring(offset);
+                replace = oriContext.substring(0, offset) + last.replace(value, maskValue);
+                m.appendReplacement(sb, replace);
+            } else {
+                m.appendReplacement(sb, m.group(0));
+            }
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
 
-	private static String mask(String message, String patternStr, ShieldType shieldType) {
+    private static String getMaskPatternValueJson(String field) {
+        return String.format(MASK_PATTERN_VALUE_JSON, field);
+    }
 
-		if (StringUtils.isBlank(patternStr)) {
-			return message;
-		}
+    @Override
+    public String mask(String maskContent, Map<String, ShieldType> shieldRule) {
 
-		StringBuffer sb = new StringBuffer();
-		Pattern p = Pattern.compile(patternStr);
-		Matcher m = p.matcher(message);
-		while (m.find()) {
-			String value = m.group(2);
-			//兼容message为Json格式，且value为数字，无双引号包括的情况
-			if (value == null && m.groupCount() == 3) {
-				value = m.group(3);
-			}
-			if (StringUtils.isNotBlank(value)) {
-				// 对value进行敏感处理
-				String maskValue = MaskUtil.mask(value.trim(), shieldType.name());
-				String oriContext = m.group(0);
-				String replace = null;
+        Map<ShieldType, List<String>> maskRules = shieldRule.entrySet().stream()
+                .collect(Collectors.groupingBy(Map.Entry::getValue,
+                        Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
 
-				//json脱敏
-				int offset = oriContext.lastIndexOf(value);
-				String last = oriContext.substring(offset);
-				replace = oriContext.substring(0, offset) + last.replace(value, maskValue);
-				m.appendReplacement(sb, replace);
-			} else {
-				m.appendReplacement(sb, m.group(0));
-			}
-		}
-		m.appendTail(sb);
-		return sb.toString();
-	}
+        String result = maskContent;
+        for (Map.Entry<ShieldType, List<String>> entry : maskRules.entrySet()) {
 
-	private static String getMaskPatternValueJson(String field) {
-		return String.format(MASK_PATTERN_VALUE_JSON, field);
-	}
+            for (String maskField : entry.getValue()) {
+                String maskUriPatternStr = getMaskPatternValueJson(maskField);
+                result = mask(result, maskUriPatternStr, entry.getKey());
+            }
+        }
+        return result;
+    }
 
-	@Override
-	public SensitivityProcessType getTag() {
-		return SensitivityProcessType.JSON_BODY;
-	}
+    @Override
+    public SensitivityProcessType getTag() {
+        return SensitivityProcessType.JSON_BODY;
+    }
 }

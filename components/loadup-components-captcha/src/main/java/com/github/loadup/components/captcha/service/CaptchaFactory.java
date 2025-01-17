@@ -43,20 +43,20 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CaptchaFactory {
-    public static final Map<String, String>         CACHE_MAP         = new ConcurrentHashMap<>();
+    public static final Map<String, String> CACHE_MAP = new ConcurrentHashMap<>();
     /**
      * key CaptchaTypeEnum
      */
-    private             Map<String, CaptchaService> captchaServiceMap = new HashMap<>();
+    private Map<String, CaptchaService> captchaServiceMap = new HashMap<>();
 
     @Resource
     private ArithmeticCaptchaServiceImpl arithmeticCaptchaService;
     @Resource
-    private SpecCaptchaServiceImpl       specCaptchaService;
+    private SpecCaptchaServiceImpl specCaptchaService;
     @Resource
-    private GifCaptchaServiceImpl        gifCaptchaService;
+    private GifCaptchaServiceImpl gifCaptchaService;
     @Resource
-    private ChineseCaptchaServiceImpl    chineseCaptchaService;
+    private ChineseCaptchaServiceImpl chineseCaptchaService;
     @Resource
     private ChineseGifCaptchaServiceImpl chineseGifCaptchaService;
 

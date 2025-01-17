@@ -36,19 +36,19 @@ import java.util.List;
 
 @Mapper
 public interface RoleDTOConvertor {
-	RoleDTOConvertor INSTANCE = Mappers.getMapper(RoleDTOConvertor.class);
+    RoleDTOConvertor INSTANCE = Mappers.getMapper(RoleDTOConvertor.class);
 
-	Role toRole(RoleDTO dto);
+    Role toRole(RoleDTO dto);
 
-	Role toRole(SimpleRoleDTO dto);
+    Role toRole(SimpleRoleDTO dto);
 
-	List<Role> toRoleList(List<RoleDTO> dtoList);
+    List<Role> toRoleList(List<RoleDTO> dtoList);
 
-	List<RoleDTO> toRoleDTOList(List<Role> domainList);
+    List<RoleDTO> toRoleDTOList(List<Role> domainList);
 
-	List<SimpleRoleDTO> toSimpleRoleDTO(List<Role> domainList);
+    List<SimpleRoleDTO> toSimpleRoleDTO(List<Role> domainList);
 
-	RoleDTO toRoleDTO(Role role);
+    RoleDTO toRoleDTO(Role role);
 
-	SimpleRoleDTO toSimpleRoleDTO(Role role);
+    SimpleRoleDTO toSimpleRoleDTO(Role role);
 }

@@ -54,12 +54,12 @@ import java.util.Map;
 public class RetryTaskRepositoryExtImpl implements RetryTaskRepositoryExt {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final String                     tableNamePrefix;
+    private final String tableNamePrefix;
     /**
      * the factory of retry strategy
      */
     @Autowired
-    private       RetryTaskFactory           retryTaskFactory;
+    private RetryTaskFactory retryTaskFactory;
 
     @Autowired
     public RetryTaskRepositoryExtImpl(NamedParameterJdbcTemplate jdbcTemplate,

@@ -35,11 +35,11 @@ import java.util.List;
 @Getter
 @Setter
 public class UserDTO extends SimpleUserDTO {
-	@Serial
-	private static final long serialVersionUID = 2214060332955405179L;
+    @Serial
+    private static final long serialVersionUID = 2214060332955405179L;
 
-	private List<SimpleRoleDTO>     roleList;
-	private List<SimplePositionDTO> positionList;
-	private List<SimpleDepartDTO>   departList;
+    private List<SimpleRoleDTO> roleList;
+    private List<SimplePositionDTO> positionList;
+    private List<SimpleDepartDTO> departList;
 
 }

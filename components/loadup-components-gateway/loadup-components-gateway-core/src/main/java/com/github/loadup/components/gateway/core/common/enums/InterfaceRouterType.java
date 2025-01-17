@@ -31,34 +31,34 @@ package com.github.loadup.components.gateway.core.common.enums;
  */
 public enum InterfaceRouterType {
 
-	/**
-	 * route by weight
-	 */
-	WEIGHT,
+    /**
+     * route by weight
+     */
+    WEIGHT,
 
-	/**
-	 * route by param
-	 */
-	PARAM,
-	;
+    /**
+     * route by param
+     */
+    PARAM,
+    ;
 
-	/**
-	 * get name
-	 */
-	public String getCode() {
-		return this.name();
-	}
+    /**
+     * 根据枚举代码，获取枚举
+     */
+    public static InterfaceRouterType getEnumByCode(String code) {
+        for (InterfaceRouterType type : InterfaceRouterType.values()) {
+            if (type.getCode().equalsIgnoreCase(code)) {
+                return type;
+            }
+        }
 
-	/**
-	 * 根据枚举代码，获取枚举
-	 */
-	public static InterfaceRouterType getEnumByCode(String code) {
-		for (InterfaceRouterType type : InterfaceRouterType.values()) {
-			if (type.getCode().equalsIgnoreCase(code)) {
-				return type;
-			}
-		}
+        return null;
+    }
 
-		return null;
-	}
+    /**
+     * get name
+     */
+    public String getCode() {
+        return this.name();
+    }
 }

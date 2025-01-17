@@ -26,8 +26,8 @@ package com.github.loadup.components.gateway.core.prototype.parser;
  * #L%
  */
 
-import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.commons.error.CommonException;
+import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.message.script.parser.MessageParser;
@@ -57,64 +57,64 @@ import static com.github.loadup.components.gateway.core.prototype.constant.Proce
  */
 @Component("standerApiMsgParser")
 public class StanderApiMsgParser implements MessageParser {
-	public static final String KEY_HTTP_CLIENT_ID = "client-id";
+    public static final String KEY_HTTP_CLIENT_ID = "client-id";
 
-	private final Logger logger = LoggerFactory.getLogger(StanderApiMsgParser.class);
+    private final Logger logger = LoggerFactory.getLogger(StanderApiMsgParser.class);
 
-	@Override
-	public UnifyMsg parse(MessageEnvelope messageEnvelope) {
-		UnifyMsg mesResult = new UnifyMsg();
-		boolean verifySignatureSucceed = true;
+    @Override
+    public UnifyMsg parse(MessageEnvelope messageEnvelope) {
+        UnifyMsg mesResult = new UnifyMsg();
+        boolean verifySignatureSucceed = true;
 
-		//1. verify the parameter
-		String message = String.valueOf(messageEnvelope.getContent());
-		Map<String, String> headerMap = messageEnvelope.getHeaders();
+        //1. verify the parameter
+        String message = String.valueOf(messageEnvelope.getContent());
+        Map<String, String> headerMap = messageEnvelope.getHeaders();
 
-		if (verifyOpenApiParamsFail(headerMap)) {
-			throw new CommonException(PARAM_ILLEGAL);
-		}
-		String clientId = headerMap.get(KEY_HTTP_CLIENT_ID);
-		////2.2 进行签名验证
-		if (messageEnvelope.isNeedVerifySignature()) {
-			verifySignatureSucceed = getVerifySignResult(messageEnvelope.getSignatureCertCode(), clientId, messageEnvelope);
-		}
-		////2.3 验证失败直接返回
-		if (!verifySignatureSucceed) {
-			throw new CommonException(INVALID_SIGNATURE);
-		}
+        if (verifyOpenApiParamsFail(headerMap)) {
+            throw new CommonException(PARAM_ILLEGAL);
+        }
+        String clientId = headerMap.get(KEY_HTTP_CLIENT_ID);
+        ////2.2 进行签名验证
+        if (messageEnvelope.isNeedVerifySignature()) {
+            verifySignatureSucceed = getVerifySignResult(messageEnvelope.getSignatureCertCode(), clientId, messageEnvelope);
+        }
+        ////2.3 验证失败直接返回
+        if (!verifySignatureSucceed) {
+            throw new CommonException(INVALID_SIGNATURE);
+        }
 
-		//3 返回最终结果
-		Map<String, Object> jsonObject = new HashMap<>();
-		try {
-			jsonObject = JsonUtil.toJsonMap(message);
-			mesResult.addMap(jsonObject);
-		} catch (Exception e) {
-			LogUtil.error(logger, e, "json parse fail");
-			jsonObject.put(KEY_REQUEST_BODY, message);
-		}
-		//jsonObject.put("clientId", clientId);
-		//jsonObject.put(KEY_HTTP_CLIENT_ID, headerMap.get(KEY_HTTP_CLIENT_ID));
-		mesResult.addField(KEY_PARSE_RESULT, JsonUtil.toJSONString(jsonObject));
-		mesResult.addField(KEY_HTTP_CLIENT_ID, headerMap.get(KEY_HTTP_CLIENT_ID));
-		return mesResult;
-	}
+        //3 返回最终结果
+        Map<String, Object> jsonObject = new HashMap<>();
+        try {
+            jsonObject = JsonUtil.toJsonMap(message);
+            mesResult.addMap(jsonObject);
+        } catch (Exception e) {
+            LogUtil.error(logger, e, "json parse fail");
+            jsonObject.put(KEY_REQUEST_BODY, message);
+        }
+        //jsonObject.put("clientId", clientId);
+        //jsonObject.put(KEY_HTTP_CLIENT_ID, headerMap.get(KEY_HTTP_CLIENT_ID));
+        mesResult.addField(KEY_PARSE_RESULT, JsonUtil.toJSONString(jsonObject));
+        mesResult.addField(KEY_HTTP_CLIENT_ID, headerMap.get(KEY_HTTP_CLIENT_ID));
+        return mesResult;
+    }
 
-	private boolean getVerifySignResult(String requesterCertCode, String clientId, MessageEnvelope messageEnvelope) {
-		boolean isVerifySignOk;
-		try {
-			isVerifySignOk = true;
-		} catch (Exception e) {
+    private boolean getVerifySignResult(String requesterCertCode, String clientId, MessageEnvelope messageEnvelope) {
+        boolean isVerifySignOk;
+        try {
+            isVerifySignOk = true;
+        } catch (Exception e) {
 
-			isVerifySignOk = false;
-		}
-		return isVerifySignOk;
-	}
+            isVerifySignOk = false;
+        }
+        return isVerifySignOk;
+    }
 
-	/**
-	 * check the parameters
-	 */
-	private boolean verifyOpenApiParamsFail(Map<String, String> extMap) {
-		return CollectionUtils.isEmpty(extMap);
-	}
+    /**
+     * check the parameters
+     */
+    private boolean verifyOpenApiParamsFail(Map<String, String> extMap) {
+        return CollectionUtils.isEmpty(extMap);
+    }
 
 }

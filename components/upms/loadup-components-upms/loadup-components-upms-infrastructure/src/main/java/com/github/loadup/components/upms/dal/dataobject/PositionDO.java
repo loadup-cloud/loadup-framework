@@ -38,26 +38,26 @@ import java.io.Serial;
 @Setter
 @Table("upms_position")
 public class PositionDO extends BaseDO {
-	@Serial
-	private static final long   serialVersionUID = -1581818204817285894L;
-	@Id
-	private              String id;
-	/**
-	 * 名称
-	 */
-	private              String positionName;
+    @Serial
+    private static final long serialVersionUID = -1581818204817285894L;
+    @Id
+    private String id;
+    /**
+     * 名称
+     */
+    private String positionName;
 
-	/**
-	 * 编码
-	 */
-	private String positionCode;
-	/**
-	 * 级别
-	 */
-	private String positionLevel;
+    /**
+     * 编码
+     */
+    private String positionCode;
+    /**
+     * 级别
+     */
+    private String positionLevel;
 
-	/**
-	 * 描述
-	 */
-	private String description;
+    /**
+     * 描述
+     */
+    private String description;
 }

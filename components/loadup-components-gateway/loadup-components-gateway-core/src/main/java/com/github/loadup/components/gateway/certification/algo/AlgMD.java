@@ -44,40 +44,40 @@ import java.security.Security;
  */
 @Component
 public class AlgMD extends AbstractAlgorithm {
-	/**
-	 * 日志定义
-	 */
-	private static Logger logger = LoggerFactory.getLogger("CERT-ALGO");
+    /**
+     * 日志定义
+     */
+    private static Logger logger = LoggerFactory.getLogger("CERT-ALGO");
 
-	static {
-		if (Security.getProvider("BC") == null) {
-			Security.addProvider(new BouncyCastleProvider());
-		}
-	}
+    static {
+        if (Security.getProvider("BC") == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+    }
 
-	/**
-	 *
-	 */
-	@Override
-	public byte[] digest(byte[] data, String algorithm) {
+    /**
+     *
+     */
+    @Override
+    public byte[] digest(byte[] data, String algorithm) {
 
-		try {
-			MessageDigest md = MessageDigest.getInstance(algorithm);
-			return md.digest(data);
-		} catch (Exception e) {
-			LogUtil.error(logger, e, genLogSign(algorithm) + "digest error:");
+        try {
+            MessageDigest md = MessageDigest.getInstance(algorithm);
+            return md.digest(data);
+        } catch (Exception e) {
+            LogUtil.error(logger, e, genLogSign(algorithm) + "digest error:");
 
-			throw new CertificationException(CertificationErrorCode.DIGEST_ERROR, genLogSign(algorithm), e);
-		}
-	}
+            throw new CertificationException(CertificationErrorCode.DIGEST_ERROR, genLogSign(algorithm), e);
+        }
+    }
 
-	/**
-	 * 注册算法类到对应manager接口
-	 */
-	@Override
-	protected void doRegisterManager() {
-		DigestManager.registerAlgo(AlgorithmEnum.MD2, this);
-		DigestManager.registerAlgo(AlgorithmEnum.MD4, this);
-		DigestManager.registerAlgo(AlgorithmEnum.MD5, this);
-	}
+    /**
+     * 注册算法类到对应manager接口
+     */
+    @Override
+    protected void doRegisterManager() {
+        DigestManager.registerAlgo(AlgorithmEnum.MD2, this);
+        DigestManager.registerAlgo(AlgorithmEnum.MD4, this);
+        DigestManager.registerAlgo(AlgorithmEnum.MD5, this);
+    }
 }

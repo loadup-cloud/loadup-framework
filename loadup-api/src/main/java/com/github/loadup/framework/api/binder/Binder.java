@@ -30,11 +30,14 @@ import com.github.loadup.framework.api.binding.BindingFactory;
 import com.github.loadup.framework.api.config.BaseBinderCfg;
 
 public interface Binder {
-    default void init() {}
+    default void init() {
+    }
 
-    default void postProcessAfterBeanFactoryInit() {}
+    default void postProcessAfterBeanFactoryInit() {
+    }
 
-    default void destory() {}
+    default void destory() {
+    }
 
     BaseBinderCfg getCfg();
 

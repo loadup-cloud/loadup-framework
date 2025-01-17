@@ -32,8 +32,8 @@ package com.github.loadup.commons.enums;
  */
 public interface IEnum {
 
-	String getCode();
+    String getCode();
 
-	String getDescription();
+    String getDescription();
 
 }

@@ -43,44 +43,44 @@ import java.util.List;
  */
 public interface SecurityDAO {
 
-	/**
-	 * Insert one <tt>SecurityDO</tt> object to DB table <tt>gateway_security</tt>, return primary key
-	 */
-	public String insert(SecurityDO security);
+    /**
+     * Insert one <tt>SecurityDO</tt> object to DB table <tt>gateway_security</tt>, return primary key
+     */
+    public String insert(SecurityDO security);
 
-	/**
-	 * Query DB table <tt>gateway_security</tt> for records.
-	 */
-	public SecurityDO load(String clientId, String securityStrategyCode, String operateType, String algoName);
+    /**
+     * Query DB table <tt>gateway_security</tt> for records.
+     */
+    public SecurityDO load(String clientId, String securityStrategyCode, String operateType, String algoName);
 
-	/**
-	 * Query DB table <tt>gateway_security</tt> for records.
-	 */
-	public SecurityDO lock(String clientId, String securityStrategyCode, String operateType, String algoName);
+    /**
+     * Query DB table <tt>gateway_security</tt> for records.
+     */
+    public SecurityDO lock(String clientId, String securityStrategyCode, String operateType, String algoName);
 
-	/**
-	 * Query DB table <tt>gateway_security</tt> for records.
-	 */
-	public List<SecurityDO> loadAll();
+    /**
+     * Query DB table <tt>gateway_security</tt> for records.
+     */
+    public List<SecurityDO> loadAll();
 
-	/**
-	 * Query DB table <tt>gateway_security</tt> for records.
-	 */
-	public List<SecurityDO> loadByClientId(String clientId);
+    /**
+     * Query DB table <tt>gateway_security</tt> for records.
+     */
+    public List<SecurityDO> loadByClientId(String clientId);
 
-	/**
-	 * Update DB table <tt>gateway_security</tt>.
-	 */
-	public int update(SecurityDO security);
+    /**
+     * Update DB table <tt>gateway_security</tt>.
+     */
+    public int update(SecurityDO security);
 
-	/**
-	 * Delete records from DB table <tt>gateway_security</tt>.
-	 */
-	public int delete(String clientId, String securityStrategyCode, String operateType, String algoName);
+    /**
+     * Delete records from DB table <tt>gateway_security</tt>.
+     */
+    public int delete(String clientId, String securityStrategyCode, String operateType, String algoName);
 
-	/**
-	 * Delete records from DB table <tt>gateway_security</tt>.
-	 */
-	public int deleteByClientId(String clientId);
+    /**
+     * Delete records from DB table <tt>gateway_security</tt>.
+     */
+    public int deleteByClientId(String clientId);
 
 }

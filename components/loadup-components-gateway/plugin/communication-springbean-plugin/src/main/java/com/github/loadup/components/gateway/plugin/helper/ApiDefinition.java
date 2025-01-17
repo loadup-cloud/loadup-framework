@@ -33,8 +33,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  */
 public record ApiDefinition(String beanId, String method) {
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-	}
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+    }
 }

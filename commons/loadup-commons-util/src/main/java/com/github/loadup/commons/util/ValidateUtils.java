@@ -26,32 +26,35 @@ package com.github.loadup.commons.util;
  * #L%
  */
 
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
 import java.util.Set;
 
 //@Slf4j
 public class ValidateUtils {
-	private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
-	public static void validate(Object obj) {
-		Validator validator = factory.getValidator();
-		Set<ConstraintViolation<Object>> constraintViolations = validator.validate(obj);
-		if (!constraintViolations.isEmpty()) {
-			throw new RuntimeException("Validation failed: " + constraintViolations);
-		}
-	}
+    public static void validate(Object obj) {
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<Object>> constraintViolations = validator.validate(obj);
+        if (!constraintViolations.isEmpty()) {
+            throw new RuntimeException("Validation failed: " + constraintViolations);
+        }
+    }
 
-	public static boolean isValid(Object obj) {
-		try {
-			validate(obj);
-			return true;
-		} catch (RuntimeException e) {
-			return false;
-		}
-	}
+    public static boolean isValid(Object obj) {
+        try {
+            validate(obj);
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
 
-	public static String getErrorMessage(ConstraintViolation<?> cv) {
-		return cv.getMessage();
-	}
+    public static String getErrorMessage(ConstraintViolation<?> cv) {
+        return cv.getMessage();
+    }
 }

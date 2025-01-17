@@ -41,31 +41,31 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class MessageProcessConfigCache {
 
-	private static Map<String, MessageProcessConfig> messageProcessMap = new ConcurrentHashMap<>();
+    private static Map<String, MessageProcessConfig> messageProcessMap = new ConcurrentHashMap<>();
 
-	/**
-	 * build the cache
-	 */
-	public static void putAll(boolean clear, List<MessageProcessConfig> messageProcessConfigList) {
-		if (CollectionUtils.isEmpty(messageProcessConfigList)) {
-			return;
-		}
-		Map<String, MessageProcessConfig> tempMap = new ConcurrentHashMap<>();
-		messageProcessConfigList.forEach(
-				messageProcessConfig -> tempMap.put(messageProcessConfig.getMessageProcessId(), messageProcessConfig));
-		if (clear) {
-			messageProcessMap = tempMap;
-		} else {
-			messageProcessMap.putAll(tempMap);
-		}
-		CacheLogUtil.printLog("messageProcessConfigMap", messageProcessMap);
-	}
+    /**
+     * build the cache
+     */
+    public static void putAll(boolean clear, List<MessageProcessConfig> messageProcessConfigList) {
+        if (CollectionUtils.isEmpty(messageProcessConfigList)) {
+            return;
+        }
+        Map<String, MessageProcessConfig> tempMap = new ConcurrentHashMap<>();
+        messageProcessConfigList.forEach(
+                messageProcessConfig -> tempMap.put(messageProcessConfig.getMessageProcessId(), messageProcessConfig));
+        if (clear) {
+            messageProcessMap = tempMap;
+        } else {
+            messageProcessMap.putAll(tempMap);
+        }
+        CacheLogUtil.printLog("messageProcessConfigMap", messageProcessMap);
+    }
 
-	/**
-	 * get message process with message process id
-	 */
-	public static MessageProcessConfig getWithMessageProcessId(String messageProcessId) {
-		return messageProcessMap.get(messageProcessId);
-	}
+    /**
+     * get message process with message process id
+     */
+    public static MessageProcessConfig getWithMessageProcessId(String messageProcessId) {
+        return messageProcessMap.get(messageProcessId);
+    }
 
 }

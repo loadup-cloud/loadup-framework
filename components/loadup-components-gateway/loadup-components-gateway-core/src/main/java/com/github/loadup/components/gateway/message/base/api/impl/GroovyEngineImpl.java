@@ -41,47 +41,47 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GroovyEngineImpl implements GroovyEngine {
-	@Resource
-	private GroovyDynamicLoader groovyDynamicLoader;
+    @Resource
+    private GroovyDynamicLoader groovyDynamicLoader;
 
-	@Override
-	public UnifyMsg parse(String beanName, RoleType roleType, String interfaceTypeStr,
-						MessageEnvelope messageEnvelope) {
-		try {
-			AssertUtil.isNotBlank(beanName, ParserErrorCode.NOT_EXIST_SCRIPT);
-			MessageParser messageParser = groovyDynamicLoader.getGroovyBean(beanName);
-			return messageParser.parse(messageEnvelope);
-		} catch (CommonException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new CommonException(ParserErrorCode.PARSE_ERROR, e);
-		}
-	}
+    @Override
+    public UnifyMsg parse(String beanName, RoleType roleType, String interfaceTypeStr,
+                          MessageEnvelope messageEnvelope) {
+        try {
+            AssertUtil.isNotBlank(beanName, ParserErrorCode.NOT_EXIST_SCRIPT);
+            MessageParser messageParser = groovyDynamicLoader.getGroovyBean(beanName);
+            return messageParser.parse(messageEnvelope);
+        } catch (CommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CommonException(ParserErrorCode.PARSE_ERROR, e);
+        }
+    }
 
-	@Override
-	public MessageEnvelope assemble(String beanName, RoleType roleType, String interfaceTypeStr, UnifyMsg message) {
-		try {
-			AssertUtil.isNotBlank(beanName, ParserErrorCode.NOT_EXIST_SCRIPT);
-			MessageAssembler messageAssembler = groovyDynamicLoader.getGroovyBean(beanName);
-			return messageAssembler.assemble(message);
-		} catch (CommonException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new CommonException(ParserErrorCode.PARSE_ERROR, e);
-		}
-	}
+    @Override
+    public MessageEnvelope assemble(String beanName, RoleType roleType, String interfaceTypeStr, UnifyMsg message) {
+        try {
+            AssertUtil.isNotBlank(beanName, ParserErrorCode.NOT_EXIST_SCRIPT);
+            MessageAssembler messageAssembler = groovyDynamicLoader.getGroovyBean(beanName);
+            return messageAssembler.assemble(message);
+        } catch (CommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CommonException(ParserErrorCode.PARSE_ERROR, e);
+        }
+    }
 
-	@Override
-	public MessageEnvelope assembleErrorMessage(String beanName, RoleType roleType, String interfaceTypeStr, UnifyMsg message,
-												CommonException exception) {
-		try {
-			AssertUtil.isNotBlank(beanName, ParserErrorCode.NOT_EXIST_SCRIPT);
-			MessageAssembler messageAssembler = groovyDynamicLoader.getGroovyBean(beanName);
-			return messageAssembler.assembleError(message, exception);
-		} catch (CommonException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new CommonException(ParserErrorCode.PARSE_ERROR, e);
-		}
-	}
+    @Override
+    public MessageEnvelope assembleErrorMessage(String beanName, RoleType roleType, String interfaceTypeStr, UnifyMsg message,
+                                                CommonException exception) {
+        try {
+            AssertUtil.isNotBlank(beanName, ParserErrorCode.NOT_EXIST_SCRIPT);
+            MessageAssembler messageAssembler = groovyDynamicLoader.getGroovyBean(beanName);
+            return messageAssembler.assembleError(message, exception);
+        } catch (CommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CommonException(ParserErrorCode.PARSE_ERROR, e);
+        }
+    }
 }

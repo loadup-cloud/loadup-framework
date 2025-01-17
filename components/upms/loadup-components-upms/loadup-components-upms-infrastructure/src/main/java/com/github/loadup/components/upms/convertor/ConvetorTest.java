@@ -31,16 +31,16 @@ import com.github.loadup.components.upms.dal.dataobject.UserDO;
 import com.github.loadup.components.upms.domain.User;
 
 public class ConvetorTest {
-	public static void main(String[] args) {
-		User user = new User();
-		user.setId("1");
-		user.setNickname("12");
-		UserName userName = new UserName();
-		userName.setFirstName("12");
-		userName.setLastName("123");
-		user.setEnglishName(userName);
-		String convert = UserNameConvertor.INSTANCE.convert(userName);
-		UserDO userd = UserConvertor.INSTANCE.toUserDO(user);
-		System.out.println(userd);
-	}
+    public static void main(String[] args) {
+        User user = new User();
+        user.setId("1");
+        user.setNickname("12");
+        UserName userName = new UserName();
+        userName.setFirstName("12");
+        userName.setLastName("123");
+        user.setEnglishName(userName);
+        String convert = UserNameConvertor.INSTANCE.convert(userName);
+        UserDO userd = UserConvertor.INSTANCE.toUserDO(user);
+        System.out.println(userd);
+    }
 }

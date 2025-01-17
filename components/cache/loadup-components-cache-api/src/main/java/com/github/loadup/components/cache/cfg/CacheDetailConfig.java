@@ -35,6 +35,6 @@ public class CacheDetailConfig {
 
     private String name;
     private String expireAfterWrite = "60S";
-    private int    initialCapacity  = 1000;
-    private int    maximumSize      = 1000;
+    private int initialCapacity = 1000;
+    private int maximumSize = 1000;
 }

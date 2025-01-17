@@ -36,16 +36,16 @@ import java.util.List;
 
 @Mapper
 public interface PositionDTOConvertor {
-	PositionDTOConvertor INSTANCE = Mappers.getMapper(PositionDTOConvertor.class);
+    PositionDTOConvertor INSTANCE = Mappers.getMapper(PositionDTOConvertor.class);
 
-	Position toPosition(PositionDTO dto);
+    Position toPosition(PositionDTO dto);
 
-	List<Position> toPositionList(List<PositionDTO> dtoList);
+    List<Position> toPositionList(List<PositionDTO> dtoList);
 
-	PositionDTO toPositionDTO(Position domain);
+    PositionDTO toPositionDTO(Position domain);
 
-	SimplePositionDTO toSimplePositionDTO(Position domain);
+    SimplePositionDTO toSimplePositionDTO(Position domain);
 
-	List<PositionDTO> toPositionDTOList(List<Position> domainList);
+    List<PositionDTO> toPositionDTOList(List<Position> domainList);
 
 }

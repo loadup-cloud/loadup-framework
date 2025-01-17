@@ -49,142 +49,139 @@ import java.util.stream.Stream;
 @Component
 public class ShieldConfig {
 
-	/**
-	 * default key
-	 */
-	public static final String KEY_DEFAULT = "DEFAULT";
+    /**
+     * default key
+     */
+    public static final String KEY_DEFAULT = "DEFAULT";
+    /**
+     * separator "|"
+     */
+    public static final String SEPARATOR = "|";
+    /**
+     * shield config cache
+     * ie. Map<interfaceId, Map<path, ShieldType>>
+     * if no interface id, the key default as DEFAULT
+     */
+    private static Map<String, Map<String, ShieldType>> shieldConfig = new ConcurrentHashMap<>();
+    private static InterfaceProdCenterQueryService interfaceProdCenterQueryService;
 
-	/**
-	 * shield config cache
-	 * ie. Map<interfaceId, Map<path, ShieldType>>
-	 * if no interface id, the key default as DEFAULT
-	 */
-	private static Map<String, Map<String, ShieldType>> shieldConfig = new ConcurrentHashMap<>();
+    public static Map<String, ShieldType> getShieldRules(String interfaceId,
+                                                         InterfaceType interfaceType) {
+        Map<String, ShieldType> result = new HashMap<>();
+        Map<String, ShieldType> defaultMap = shieldConfig.get(KEY_DEFAULT);
+        if (MapUtils.isNotEmpty(defaultMap)) {
+            result.putAll(defaultMap);
+        }
 
-	/**
-	 * separator "|"
-	 */
-	public static final String SEPARATOR = "|";
+        if (StringUtils.isNotBlank(interfaceId)) {
+            Map<String, ShieldType> interfaceMap = shieldConfig.get(interfaceId);
+            if (MapUtils.isNotEmpty(interfaceMap)) {
+                result.putAll(interfaceMap);
+            }
+        }
 
-	private static InterfaceProdCenterQueryService interfaceProdCenterQueryService;
+        Map<String, ShieldType> prodShieldRules = getProdShieldRules(interfaceId, interfaceType);
+        if (MapUtils.isNotEmpty(prodShieldRules)) {
+            result.putAll(prodShieldRules);
+        }
 
-	public static Map<String, ShieldType> getShieldRules(String interfaceId,
-														InterfaceType interfaceType) {
-		Map<String, ShieldType> result = new HashMap<>();
-		Map<String, ShieldType> defaultMap = shieldConfig.get(KEY_DEFAULT);
-		if (MapUtils.isNotEmpty(defaultMap)) {
-			result.putAll(defaultMap);
-		}
+        return result;
+    }
 
-		if (StringUtils.isNotBlank(interfaceId)) {
-			Map<String, ShieldType> interfaceMap = shieldConfig.get(interfaceId);
-			if (MapUtils.isNotEmpty(interfaceMap)) {
-				result.putAll(interfaceMap);
-			}
-		}
+    /**
+     *
+     */
+    private static Map<String, ShieldType> getProdShieldRules(String interfaceId,
+                                                              InterfaceType type) {
+        Map<String, ShieldType> rules = new HashMap<>();
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+            //                && StringUtils.isNotBlank(TenantUtil.getTenantId())) {
 
-		Map<String, ShieldType> prodShieldRules = getProdShieldRules(interfaceId, interfaceType);
-		if (MapUtils.isNotEmpty(prodShieldRules)) {
-			result.putAll(prodShieldRules);
-		}
+            CommunicationPropertiesGroup propertiesGroup = interfaceProdCenterQueryService.
+                    queryCommunicationPropertiesGroup(interfaceId);
 
-		return result;
-	}
+            if (propertiesGroup == null && type == InterfaceType.OPENAPI) {
+                APIConditionGroup apiConditionGroup = interfaceProdCenterQueryService.
+                        queryAPIConditionGroup(interfaceId, null);
+                if (apiConditionGroup != null) {
+                    propertiesGroup = interfaceProdCenterQueryService.
+                            queryCommunicationPropertiesGroup(apiConditionGroup.getIntegrationUrl());
+                }
+            }
 
-	/**
-	 *
-	 */
-	private static Map<String, ShieldType> getProdShieldRules(String interfaceId,
-															InterfaceType type) {
-		Map<String, ShieldType> rules = new HashMap<>();
-		if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
-			//                && StringUtils.isNotBlank(TenantUtil.getTenantId())) {
+            CommunicationPropertiesGroup allPropertiesGroup = interfaceProdCenterQueryService
+                    .queryCommunicationPropertiesGroup(Constant.TENANT_COMMUNICATION_PROPERTIES_GROUP_URL);
+            CommunicationPropertiesGroup typePropertiesGroup = null;
+            if (type != null) {
+                typePropertiesGroup = interfaceProdCenterQueryService
+                        .queryCommunicationPropertiesGroup(type.name());
+            }
 
-			CommunicationPropertiesGroup propertiesGroup = interfaceProdCenterQueryService.
-					queryCommunicationPropertiesGroup(interfaceId);
+            rules.putAll(convertProdConfigToShieldRules(propertiesGroup));
+            rules.putAll(convertProdConfigToShieldRules(allPropertiesGroup));
+            rules.putAll(convertProdConfigToShieldRules(typePropertiesGroup));
 
-			if (propertiesGroup == null && type == InterfaceType.OPENAPI) {
-				APIConditionGroup apiConditionGroup = interfaceProdCenterQueryService.
-						queryAPIConditionGroup(interfaceId, null);
-				if (apiConditionGroup != null) {
-					propertiesGroup = interfaceProdCenterQueryService.
-							queryCommunicationPropertiesGroup(apiConditionGroup.getIntegrationUrl());
-				}
-			}
+        }
+        return rules;
+    }
 
-			CommunicationPropertiesGroup allPropertiesGroup = interfaceProdCenterQueryService
-					.queryCommunicationPropertiesGroup(Constant.TENANT_COMMUNICATION_PROPERTIES_GROUP_URL);
-			CommunicationPropertiesGroup typePropertiesGroup = null;
-			if (type != null) {
-				typePropertiesGroup = interfaceProdCenterQueryService
-						.queryCommunicationPropertiesGroup(type.name());
-			}
+    /**
+     *
+     */
+    private static Map<String, ShieldType> convertProdConfigToShieldRules(CommunicationPropertiesGroup communicationPropertiesGroup) {
+        Map<String, ShieldType> rules = new HashMap<>();
+        if (communicationPropertiesGroup != null) {
+            Stream.of(StringUtils.split(
+                    StringUtils.defaultString(communicationPropertiesGroup.getShieldKeys(), ""),
+                    Constant.COMMA_SEPARATOR)).forEach(m -> {
+                // 目前只支持一种类型，全部隐藏
+                rules.put(m, ShieldType.ALL);
+            });
+        }
+        return rules;
+    }
 
-			rules.putAll(convertProdConfigToShieldRules(propertiesGroup));
-			rules.putAll(convertProdConfigToShieldRules(allPropertiesGroup));
-			rules.putAll(convertProdConfigToShieldRules(typePropertiesGroup));
+    /**
+     * Put shield config for default.
+     */
+    public static void putShiledConfig(String key, ShieldType shieldType) {
 
-		}
-		return rules;
-	}
+        if (!shieldConfig.containsKey(KEY_DEFAULT)) {
+            shieldConfig.put(KEY_DEFAULT, new ConcurrentHashMap<String, ShieldType>(16));
+        }
+        shieldConfig.get(KEY_DEFAULT).put(key, shieldType);
+    }
 
-	/**
-	 *
-	 */
-	private static Map<String, ShieldType> convertProdConfigToShieldRules(CommunicationPropertiesGroup communicationPropertiesGroup) {
-		Map<String, ShieldType> rules = new HashMap<>();
-		if (communicationPropertiesGroup != null) {
-			Stream.of(StringUtils.split(
-					StringUtils.defaultString(communicationPropertiesGroup.getShieldKeys(), ""),
-					Constant.COMMA_SEPARATOR)).forEach(m -> {
-				// 目前只支持一种类型，全部隐藏
-				rules.put(m, ShieldType.ALL);
-			});
-		}
-		return rules;
-	}
+    /**
+     * Put shield config by interface id
+     * If no interface, use DEFAULT
+     */
+    public static void putShieldConfig(String interfaceId, String key, ShieldType shieldType) {
+        if (!shieldConfig.containsKey(interfaceId)) {
+            shieldConfig.put(interfaceId, new ConcurrentHashMap<String, ShieldType>(16));
+        }
+        shieldConfig.get(interfaceId).put(key, shieldType);
+    }
 
-	/**
-	 * Put shield config for default.
-	 */
-	public static void putShiledConfig(String key, ShieldType shieldType) {
+    /**
+     * Clear all config cache
+     */
+    public static void clearCache() {
+        shieldConfig = new ConcurrentHashMap<String, Map<String, ShieldType>>();
+    }
 
-		if (!shieldConfig.containsKey(KEY_DEFAULT)) {
-			shieldConfig.put(KEY_DEFAULT, new ConcurrentHashMap<String, ShieldType>(16));
-		}
-		shieldConfig.get(KEY_DEFAULT).put(key, shieldType);
-	}
+    /**
+     * Clear cache by interfaceId
+     */
+    public static void clearCacheByInterface(String interfaceId) {
+        shieldConfig.remove(interfaceId);
+    }
 
-	/**
-	 * Put shield config by interface id
-	 * If no interface, use DEFAULT
-	 */
-	public static void putShieldConfig(String interfaceId, String key, ShieldType shieldType) {
-		if (!shieldConfig.containsKey(interfaceId)) {
-			shieldConfig.put(interfaceId, new ConcurrentHashMap<String, ShieldType>(16));
-		}
-		shieldConfig.get(interfaceId).put(key, shieldType);
-	}
-
-	/**
-	 * Clear all config cache
-	 */
-	public static void clearCache() {
-		shieldConfig = new ConcurrentHashMap<String, Map<String, ShieldType>>();
-	}
-
-	/**
-	 * Clear cache by interfaceId
-	 */
-	public static void clearCacheByInterface(String interfaceId) {
-		shieldConfig.remove(interfaceId);
-	}
-
-	/**
-	 * Setter method for property <tt>interfaceProdCenterQueryService</tt>.
-	 */
-	@Resource
-	public void setInterfaceProdCenterQueryService(InterfaceProdCenterQueryService interfaceProdCenterQueryService) {
-		ShieldConfig.interfaceProdCenterQueryService = interfaceProdCenterQueryService;
-	}
+    /**
+     * Setter method for property <tt>interfaceProdCenterQueryService</tt>.
+     */
+    @Resource
+    public void setInterfaceProdCenterQueryService(InterfaceProdCenterQueryService interfaceProdCenterQueryService) {
+        ShieldConfig.interfaceProdCenterQueryService = interfaceProdCenterQueryService;
+    }
 }

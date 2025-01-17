@@ -33,9 +33,9 @@ import com.github.loadup.components.gateway.facade.config.model.LimitConditionGr
  */
 public interface LimitProdCenterQueryService {
 
-	/**
-	 * query limit condition group config
-	 */
-	LimitConditionGroup queryLimitConditionGroup();
+    /**
+     * query limit condition group config
+     */
+    LimitConditionGroup queryLimitConditionGroup();
 
 }

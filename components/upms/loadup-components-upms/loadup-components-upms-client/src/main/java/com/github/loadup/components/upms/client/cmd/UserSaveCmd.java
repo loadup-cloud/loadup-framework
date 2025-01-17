@@ -35,6 +35,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserSaveCmd extends BaseRequest {
-	@NotNull
-	private SimpleUserDTO user;
+    @NotNull
+    private SimpleUserDTO user;
 }

@@ -55,70 +55,70 @@ import java.util.Map;
 @Component("requestAssembleAction")
 public class RequestAssembleAction extends AbstractBusinessAction {
 
-	@Resource
-	@Qualifier("messageEngine")
-	private MessageEngine messageEngine;
+    @Resource
+    @Qualifier("messageEngine")
+    private MessageEngine messageEngine;
 
-	@LogTraceId
-	@Override
-	public void doBusiness(GatewayRuntimeProcessContext context) {
-		InterfaceConfig integratorInterfaceConfig = context.getIntegratorInterfaceConfig();
-		UnifyMsg unifyMsg = null;
-		MessageEnvelope inputResult = context.getResultMessage();
-		switch (inputResult.getMessageFormat()) {
-			case TEXT:
-				unifyMsg = UnifyMsgHelper.fromJSonStr(String.valueOf(inputResult.getContent()));
-				if (unifyMsg == null) {
-					unifyMsg = new UnifyMsg();
-				}
-				break;
-			case MAP:
-				unifyMsg = new UnifyMsg();
-				Map<String, String> message = (Map) inputResult.getContent();
-				if (!CollectionUtils.isEmpty(message)) {
-					UnifyMsg finalUnifyMsg = unifyMsg;
-					message.forEach((k, v) -> {
-						finalUnifyMsg.addField(k, v);
-					});
-				}
-				break;
-			default:
-				break;
-		}
-		CommunicationConfig communicationConfig = context.getIntegratorCommunicationConfig();
-		CommunicationConfig cloneConfig = communicationConfig.clone();
-		if (HttpConfigUtil.isRest(cloneConfig)) {
-			reAssembleURI(cloneConfig, unifyMsg);
-			context.setIntegratorCommunicationConfig(cloneConfig);
-		}
-		String interfaceId = integratorInterfaceConfig.getInterfaceId();
-		MessageEnvelope msgEnvelope = messageEngine.assemble(interfaceId, RoleType.RECEIVER, context,
-				context.getTransactionType(), unifyMsg);
-		context.setResultMessage(msgEnvelope);
-	}
+    @LogTraceId
+    @Override
+    public void doBusiness(GatewayRuntimeProcessContext context) {
+        InterfaceConfig integratorInterfaceConfig = context.getIntegratorInterfaceConfig();
+        UnifyMsg unifyMsg = null;
+        MessageEnvelope inputResult = context.getResultMessage();
+        switch (inputResult.getMessageFormat()) {
+            case TEXT:
+                unifyMsg = UnifyMsgHelper.fromJSonStr(String.valueOf(inputResult.getContent()));
+                if (unifyMsg == null) {
+                    unifyMsg = new UnifyMsg();
+                }
+                break;
+            case MAP:
+                unifyMsg = new UnifyMsg();
+                Map<String, String> message = (Map) inputResult.getContent();
+                if (!CollectionUtils.isEmpty(message)) {
+                    UnifyMsg finalUnifyMsg = unifyMsg;
+                    message.forEach((k, v) -> {
+                        finalUnifyMsg.addField(k, v);
+                    });
+                }
+                break;
+            default:
+                break;
+        }
+        CommunicationConfig communicationConfig = context.getIntegratorCommunicationConfig();
+        CommunicationConfig cloneConfig = communicationConfig.clone();
+        if (HttpConfigUtil.isRest(cloneConfig)) {
+            reAssembleURI(cloneConfig, unifyMsg);
+            context.setIntegratorCommunicationConfig(cloneConfig);
+        }
+        String interfaceId = integratorInterfaceConfig.getInterfaceId();
+        MessageEnvelope msgEnvelope = messageEngine.assemble(interfaceId, RoleType.RECEIVER, context,
+                context.getTransactionType(), unifyMsg);
+        context.setResultMessage(msgEnvelope);
+    }
 
-	private void reAssembleURI(CommunicationConfig cloneConfig, UnifyMsg unifyMsg) {
-		String origUrl = cloneConfig.getUri().getUrl();
-		String url = origUrl;
-		if (StringUtils.contains(origUrl, "$!m.g") || StringUtils.contains(origUrl, "$m.g")) {
-			int firstIndex = StringUtils.indexOf(origUrl, "$!");
-			int lastIndex = StringUtils.lastIndexOf(origUrl, "')");
-			String prefixPart = StringUtils.substring(origUrl, 0, firstIndex);
-			String suffixPart = StringUtils.substring(origUrl, lastIndex + 2);
-			String translatePart = StringUtils.substring(origUrl, firstIndex, lastIndex + 2);
-			//            String middlePart = messageAssembler.assemble(translatePart, unifyMsg);
-			url = prefixPart + "middlePart" + suffixPart;
-		}
-		String schema = cloneConfig.getUri().getSchema();
-		TransportURI transportURI = new TransportURI(url, schema);
-		cloneConfig.setUri(transportURI);
-	}
+    private void reAssembleURI(CommunicationConfig cloneConfig, UnifyMsg unifyMsg) {
+        String origUrl = cloneConfig.getUri().getUrl();
+        String url = origUrl;
+        if (StringUtils.contains(origUrl, "$!m.g") || StringUtils.contains(origUrl, "$m.g")) {
+            int firstIndex = StringUtils.indexOf(origUrl, "$!");
+            int lastIndex = StringUtils.lastIndexOf(origUrl, "')");
+            String prefixPart = StringUtils.substring(origUrl, 0, firstIndex);
+            String suffixPart = StringUtils.substring(origUrl, lastIndex + 2);
+            String translatePart = StringUtils.substring(origUrl, firstIndex, lastIndex + 2);
+            //            String middlePart = messageAssembler.assemble(translatePart, unifyMsg);
+            url = prefixPart + "middlePart" + suffixPart;
+        }
+        String schema = cloneConfig.getUri().getSchema();
+        TransportURI transportURI = new TransportURI(url, schema);
+        cloneConfig.setUri(transportURI);
+    }
 
-	@Override
-	@Resource
-	@Qualifier("limitCheckAction")
-	public void setNextAction(BusinessAction sendToIntegrationAction) {
-		this.nextAction = sendToIntegrationAction;
-	}
+    @Override
+    @Resource
+    @Qualifier("limitCheckAction")
+    public void setNextAction(BusinessAction sendToIntegrationAction) {
+        this.nextAction = sendToIntegrationAction;
+    }
 
 }

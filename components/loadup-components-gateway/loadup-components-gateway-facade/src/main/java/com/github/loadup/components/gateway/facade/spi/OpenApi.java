@@ -34,8 +34,8 @@ import com.github.loadup.components.gateway.facade.response.OpenApiTransResponse
  */
 public interface OpenApi {
 
-	/**
-	 * Invoke openApi .
-	 */
-	OpenApiTransResponse invoke(OpenApiTransRequest openApiTransRequest);
+    /**
+     * Invoke openApi .
+     */
+    OpenApiTransResponse invoke(OpenApiTransRequest openApiTransRequest);
 }

@@ -37,17 +37,17 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class SimpleUserDTO extends DTO {
-	@Serial
-	private static final long serialVersionUID = -3669783060494947628L;
+    @Serial
+    private static final long serialVersionUID = -3669783060494947628L;
 
-	private String        id;
-	private String        nickname;
-	private UserName      englishName;
-	private UserName      officialName;
-	private String        password;
-	private String        avatar;
-	private LocalDate     birthday;
-	private LocalDateTime registeredTime;
-	private String        userType;
+    private String id;
+    private String nickname;
+    private UserName englishName;
+    private UserName officialName;
+    private String password;
+    private String avatar;
+    private LocalDate birthday;
+    private LocalDateTime registeredTime;
+    private String userType;
 
 }

@@ -56,81 +56,81 @@ import static com.github.loadup.components.gateway.core.prototype.constant.Proce
 @Controller
 public class Gateway {
 
-	/**
-	 * Process Handler
-	 */
-	@Resource
-	private HttpProcessHandler httpProcessHandler;
+    /**
+     * Process Handler
+     */
+    @Resource
+    private HttpProcessHandler httpProcessHandler;
 
-	@Value("${use.ac.format.result.when.gateway.exception:false}")
-	private String useAcFormatResultWhenGatewayException;
+    @Value("${use.ac.format.result.when.gateway.exception:false}")
+    private String useAcFormatResultWhenGatewayException;
 
-	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
-	public void renderIndex(HttpServletRequest request, HttpServletResponse response) {
-		try {
-			response.getOutputStream().write("Hello, Welcome to Gateway!".getBytes());
-		} catch (Exception e) {
-			ExceptionUtil.caught(e, "renderIndex error !");
-		}
-	}
+    @RequestMapping(value = "/index.html", method = RequestMethod.GET)
+    public void renderIndex(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            response.getOutputStream().write("Hello, Welcome to Gateway!".getBytes());
+        } catch (Exception e) {
+            ExceptionUtil.caught(e, "renderIndex error !");
+        }
+    }
 
-	@RequestMapping(value = "/index.html", method = RequestMethod.HEAD)
-	public void renderHead(HttpServletRequest request, HttpServletResponse response) {
-	}
+    @RequestMapping(value = "/index.html", method = RequestMethod.HEAD)
+    public void renderHead(HttpServletRequest request, HttpServletResponse response) {
+    }
 
-	/**
-	 * OPENAPI
-	 */
-	@RequestMapping(value = "/xx")
-	public void receiver(HttpServletRequest request, HttpServletResponse response) {
-		try {
-			httpProcessHandler.handler(InterfaceType.OPENAPI, request, response);
-		} catch (Exception ex) {
-			ExceptionUtil.caught(ex, "http error request:");
-		}
-	}
+    /**
+     * OPENAPI
+     */
+    @RequestMapping(value = "/xx")
+    public void receiver(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            httpProcessHandler.handler(InterfaceType.OPENAPI, request, response);
+        } catch (Exception ex) {
+            ExceptionUtil.caught(ex, "http error request:");
+        }
+    }
 
-	/**
-	 * SPI
-	 */
-	@RequestMapping(value = ProcessConstants.KEY_HTTP_SEND_METHOD)
-	public void sender(HttpServletRequest request, HttpServletResponse response) {
-		try {
-			//校验
-			if (verifyParameterOfSpi(request, response)) {
-				return;
-			}
-			httpProcessHandler.handler(InterfaceType.SPI, request, response);
-		} catch (Exception ex) {
-			// 其他异常打印后结束
-			ExceptionUtil.caught(ex, "http error request:");
-		}
-	}
+    /**
+     * SPI
+     */
+    @RequestMapping(value = ProcessConstants.KEY_HTTP_SEND_METHOD)
+    public void sender(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            //校验
+            if (verifyParameterOfSpi(request, response)) {
+                return;
+            }
+            httpProcessHandler.handler(InterfaceType.SPI, request, response);
+        } catch (Exception ex) {
+            // 其他异常打印后结束
+            ExceptionUtil.caught(ex, "http error request:");
+        }
+    }
 
-	/**
-	 * verify the spi parameter
-	 *
-	 * @throws IOException
-	 */
-	private boolean verifyParameterOfSpi(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		if (StringUtils.isBlank(
-				request.getHeader(KEY_HTTP_INTEGRATION_URL)) && StringUtils.isBlank(request.getHeader(KEY_HTTP_INTERFACE_ID))) {
-			JSONObject jsonResult = new JSONObject();
-			// get switch
-			if (Boolean.parseBoolean(useAcFormatResultWhenGatewayException)) {
-				// real ac format error result
-				jsonResult.put("result",
-						CommonUtil.assembleAcResultWhenException(CONFIGURATION_NOT_FOUND));
-			} else {
-				// gateway format error result
-				jsonResult.put("result", CommonUtil.assembleAcResult(CONFIGURATION_NOT_FOUND));
-				jsonResult.put("errorMessage", CONFIGURATION_NOT_FOUND.getMessage());
-			}
-			MessageEnvelope messageEnvelope = new MessageEnvelope(MessageFormat.TEXT, jsonResult.toJSONString());
-			HttpToolUtil.returnResponse(response, messageEnvelope, null);
-			return true;
-		}
-		return false;
-	}
+    /**
+     * verify the spi parameter
+     *
+     * @throws IOException
+     */
+    private boolean verifyParameterOfSpi(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (StringUtils.isBlank(
+                request.getHeader(KEY_HTTP_INTEGRATION_URL)) && StringUtils.isBlank(request.getHeader(KEY_HTTP_INTERFACE_ID))) {
+            JSONObject jsonResult = new JSONObject();
+            // get switch
+            if (Boolean.parseBoolean(useAcFormatResultWhenGatewayException)) {
+                // real ac format error result
+                jsonResult.put("result",
+                        CommonUtil.assembleAcResultWhenException(CONFIGURATION_NOT_FOUND));
+            } else {
+                // gateway format error result
+                jsonResult.put("result", CommonUtil.assembleAcResult(CONFIGURATION_NOT_FOUND));
+                jsonResult.put("errorMessage", CONFIGURATION_NOT_FOUND.getMessage());
+            }
+            MessageEnvelope messageEnvelope = new MessageEnvelope(MessageFormat.TEXT, jsonResult.toJSONString());
+            HttpToolUtil.returnResponse(response, messageEnvelope, null);
+            return true;
+        }
+        return false;
+    }
 
 }

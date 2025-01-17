@@ -37,9 +37,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class EmailInfo extends DTO {
-	private static final long    serialVersionUID = 641189284470311200L;
-	private              String  emailId;
-	private              String  email;
-	private              boolean verified;
+    private static final long serialVersionUID = 641189284470311200L;
+    private String emailId;
+    private String email;
+    private boolean verified;
 
 }

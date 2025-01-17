@@ -43,45 +43,45 @@ import java.util.List;
  */
 public interface InterfaceDAO {
 
-	/**
-	 * Insert one <tt>InterfaceDO</tt> object to DB table <tt>gateway_interface</tt>, return primary key
-	 */
-	public String insert(InterfaceDO interfaceDO);
+    /**
+     * Insert one <tt>InterfaceDO</tt> object to DB table <tt>gateway_interface</tt>, return primary key
+     */
+    public String insert(InterfaceDO interfaceDO);
 
-	/**
-	 * Update DB table <tt>gateway_interface</tt>.
-	 */
-	public int update(InterfaceDO interfaceDO);
+    /**
+     * Update DB table <tt>gateway_interface</tt>.
+     */
+    public int update(InterfaceDO interfaceDO);
 
-	/**
-	 * Query DB table <tt>gateway_interface</tt> for records.
-	 */
-	public InterfaceDO loadByInterfaceId(String interfaceId);
+    /**
+     * Query DB table <tt>gateway_interface</tt> for records.
+     */
+    public InterfaceDO loadByInterfaceId(String interfaceId);
 
-	/**
-	 * Query DB table <tt>gateway_interface</tt> for records.
-	 */
-	public InterfaceDO lockByInterfaceId(String interfaceId);
+    /**
+     * Query DB table <tt>gateway_interface</tt> for records.
+     */
+    public InterfaceDO lockByInterfaceId(String interfaceId);
 
-	/**
-	 * Query DB table <tt>gateway_interface</tt> for records.
-	 */
-	public List<InterfaceDO> lock(String type, String url, String tenantId);
+    /**
+     * Query DB table <tt>gateway_interface</tt> for records.
+     */
+    public List<InterfaceDO> lock(String type, String url, String tenantId);
 
-	/**
-	 * Query DB table <tt>gateway_interface</tt> for records.
-	 */
-	public List<InterfaceDO> loadAll();
+    /**
+     * Query DB table <tt>gateway_interface</tt> for records.
+     */
+    public List<InterfaceDO> loadAll();
 
-	/**
-	 * Delete records from DB table <tt>gateway_interface</tt>.
-	 */
-	public int delete(String interfaceId);
+    /**
+     * Delete records from DB table <tt>gateway_interface</tt>.
+     */
+    public int delete(String interfaceId);
 
-	/**
-	 * Query DB table <tt>gateway_interface</tt> for records.
-	 */
-	public List<InterfaceDO> loadByPage(String tenantId, String interfaceId, String clientId, String type, String status,
-										String interfaceName, int offset, int rowcount);
+    /**
+     * Query DB table <tt>gateway_interface</tt> for records.
+     */
+    public List<InterfaceDO> loadByPage(String tenantId, String interfaceId, String clientId, String type, String status,
+                                        String interfaceName, int offset, int rowcount);
 
 }

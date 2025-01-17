@@ -35,11 +35,11 @@ import org.springframework.data.relational.core.mapping.Table;
 @Setter
 @Table("sys_sequence")
 public class Sequence extends BaseDO {
-	private String id;
-	private String name;
-	private Long   value;
-	private Long   minValue;
-	private Long   maxValue;
-	private Long   step;
+    private String id;
+    private String name;
+    private Long value;
+    private Long minValue;
+    private Long maxValue;
+    private Long step;
 
 }

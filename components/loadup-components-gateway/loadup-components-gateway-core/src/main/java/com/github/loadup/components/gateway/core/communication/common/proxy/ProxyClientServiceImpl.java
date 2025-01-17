@@ -50,74 +50,74 @@ import org.springframework.stereotype.Component;
 @Component("proxyClientService")
 public class ProxyClientServiceImpl implements CommunicationService, InitializingBean {
 
-	@Resource
-	private              ExtensionExecutor extensionExecutor;
-	/**
-	 * logger
-	 */
-	private static final Logger            logger = LoggerFactory.getLogger(ProxyClientServiceImpl.class);
+    /**
+     * logger
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ProxyClientServiceImpl.class);
+    @Resource
+    private ExtensionExecutor extensionExecutor;
 
-	/**
-	 * @see CommunicationService#send(String, CommunicationConfig, MessageEnvelope)
-	 */
-	@Override
-	public MessageSendResult send(String traceId, CommunicationConfig communicationConfig,
-								MessageEnvelope messageEnvelope) {
+    /**
+     * @see CommunicationService#send(String, CommunicationConfig, MessageEnvelope)
+     */
+    @Override
+    public MessageSendResult send(String traceId, CommunicationConfig communicationConfig,
+                                  MessageEnvelope messageEnvelope) {
 
-		String protocol = communicationConfig.getProtocol();
+        String protocol = communicationConfig.getProtocol();
 
-		//String messageContent = messageEnvelope.toString(); @TODO to be confirmed?
-		String messageContent = messageEnvelope.getContent().toString();
-		CommunicationConfiguration communicationConfigDto = new CommunicationConfiguration();
-		communicationConfigDto.setProtocol(protocol);
-		communicationConfigDto.setUri(communicationConfig.getUri().getUrl());
-		communicationConfig.getProperties().getConfigMap().put(
-				Constant.CONNECTION_TIMEOUT, String.valueOf(communicationConfig.getConnectTimeout()));
-		communicationConfigDto.setProperties(communicationConfig.getProperties().getConfigMap());
+        //String messageContent = messageEnvelope.toString(); @TODO to be confirmed?
+        String messageContent = messageEnvelope.getContent().toString();
+        CommunicationConfiguration communicationConfigDto = new CommunicationConfiguration();
+        communicationConfigDto.setProtocol(protocol);
+        communicationConfigDto.setUri(communicationConfig.getUri().getUrl());
+        communicationConfig.getProperties().getConfigMap().put(
+                Constant.CONNECTION_TIMEOUT, String.valueOf(communicationConfig.getConnectTimeout()));
+        communicationConfigDto.setProperties(communicationConfig.getProperties().getConfigMap());
 
-		String resultContent = extensionExecutor.execute(CommunicationProxyExtPt.class, BizScenario.valueOf(protocol),
-				ext -> ext.sendMessage(communicationConfigDto, messageContent));
+        String resultContent = extensionExecutor.execute(CommunicationProxyExtPt.class, BizScenario.valueOf(protocol),
+                ext -> ext.sendMessage(communicationConfigDto, messageContent));
 
-		MessageEnvelope responseMsg = new MessageEnvelope(MessageFormat.TEXT, resultContent, null);
+        MessageEnvelope responseMsg = new MessageEnvelope(MessageFormat.TEXT, resultContent, null);
 
-		return new MessageSendResult(responseMsg, false, false);
-	}
+        return new MessageSendResult(responseMsg, false, false);
+    }
 
-	/**
-	 * @see CommunicationService#init(Object...)
-	 */
-	@Override
-	public void init(Object... obj) {
-	}
+    /**
+     * @see CommunicationService#init(Object...)
+     */
+    @Override
+    public void init(Object... obj) {
+    }
 
-	/**
-	 * @see CommunicationService#isInitOk()
-	 */
-	@Override
-	public boolean isInitOk() {
-		return true;
-	}
+    /**
+     * @see CommunicationService#isInitOk()
+     */
+    @Override
+    public boolean isInitOk() {
+        return true;
+    }
 
-	/**
-	 * @see CommunicationService#refresh(Object...)
-	 */
-	@Override
-	public void refresh(Object... obj) {
-	}
+    /**
+     * @see CommunicationService#refresh(Object...)
+     */
+    @Override
+    public void refresh(Object... obj) {
+    }
 
-	/**
-	 * @see CommunicationService#refreshById(String, Object...)
-	 */
-	@Override
-	public void refreshById(String id, Object... obj) {
-	}
+    /**
+     * @see CommunicationService#refreshById(String, Object...)
+     */
+    @Override
+    public void refreshById(String id, Object... obj) {
+    }
 
-	/**
-	 * @see InitializingBean#afterPropertiesSet()
-	 */
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		CommunicationServiceImpl.registerHandler(TransportProtocol.PROXY, this);
-	}
+    /**
+     * @see InitializingBean#afterPropertiesSet()
+     */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        CommunicationServiceImpl.registerHandler(TransportProtocol.PROXY, this);
+    }
 
 }

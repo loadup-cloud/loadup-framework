@@ -31,19 +31,19 @@ package com.github.loadup.components.gateway.core.common.enums;
  */
 public interface PropertyName {
 
-	/**
-	 * 属性名称
-	 */
-	String getName();
+    /**
+     * 属性名称
+     */
+    String getName();
 
-	/**
-	 * 属性描述
-	 */
-	String getDescription();
+    /**
+     * 属性描述
+     */
+    String getDescription();
 
-	/**
-	 * 获取默认值
-	 */
-	String getDefaultValue();
+    /**
+     * 获取默认值
+     */
+    String getDefaultValue();
 
 }

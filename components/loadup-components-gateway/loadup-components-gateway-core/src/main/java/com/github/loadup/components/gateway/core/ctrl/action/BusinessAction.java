@@ -35,6 +35,6 @@ import com.github.loadup.components.gateway.core.ctrl.context.GatewayRuntimeProc
  */
 public interface BusinessAction {
 
-	public void process(GatewayRuntimeProcessContext context);
+    public void process(GatewayRuntimeProcessContext context);
 
 }

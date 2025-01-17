@@ -1,6 +1,6 @@
 //package com.github.loadup.components.gateway.common.exception;
 //
-///*-
+/// *-
 // * #%L
 // * loadup-components-gateway-core
 // * %%

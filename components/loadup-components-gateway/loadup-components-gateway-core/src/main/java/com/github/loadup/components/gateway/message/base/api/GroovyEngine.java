@@ -33,11 +33,11 @@ import com.github.loadup.components.gateway.message.unimsg.UnifyMsg;
 
 public interface GroovyEngine {
 
-	UnifyMsg parse(String beanName, RoleType roleType, String interfaceTypeStr, MessageEnvelope messageEnvelope);
+    UnifyMsg parse(String beanName, RoleType roleType, String interfaceTypeStr, MessageEnvelope messageEnvelope);
 
-	MessageEnvelope assemble(String beanName, RoleType roleType, String interfaceTypeStr, UnifyMsg message);
+    MessageEnvelope assemble(String beanName, RoleType roleType, String interfaceTypeStr, UnifyMsg message);
 
-	MessageEnvelope assembleErrorMessage(String beanName, RoleType roleType, String interfaceTypeStr, UnifyMsg message,
-										CommonException exception);
+    MessageEnvelope assembleErrorMessage(String beanName, RoleType roleType, String interfaceTypeStr, UnifyMsg message,
+                                         CommonException exception);
 
 }

@@ -33,7 +33,9 @@ import com.github.loadup.commons.template.ServiceTemplate;
 import com.github.loadup.commons.util.PasswordUtils;
 import com.github.loadup.commons.util.ValidateUtils;
 import com.github.loadup.components.upms.client.api.UserService;
-import com.github.loadup.components.upms.client.cmd.*;
+import com.github.loadup.components.upms.client.cmd.UserChangePasswordCmd;
+import com.github.loadup.components.upms.client.cmd.UserRolesSaveCmd;
+import com.github.loadup.components.upms.client.cmd.UserSaveCmd;
 import com.github.loadup.components.upms.client.dto.SimpleUserDTO;
 import com.github.loadup.components.upms.client.dto.UserDTO;
 import com.github.loadup.components.upms.domain.User;
@@ -47,97 +49,97 @@ import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
-	@Resource
-	private UserGateway userGateway;
+    @Resource
+    private UserGateway userGateway;
 
-	@Override
-	public SingleResponse<UserDTO> getUserById(IdQuery query) {
-		User user = userGateway.getById(query.getId());
-		UserDTO userDTO = UserDTOConvertor.INSTANCE.toUserDTO(user);
-		return SingleResponse.of(userDTO);
-	}
+    @Override
+    public SingleResponse<UserDTO> getUserById(IdQuery query) {
+        User user = userGateway.getById(query.getId());
+        UserDTO userDTO = UserDTOConvertor.INSTANCE.toUserDTO(user);
+        return SingleResponse.of(userDTO);
+    }
 
-	@Override
-	public MultiResponse<SimpleUserDTO> getUserByRoleId(String roleId) {
-		return ServiceTemplate.execute((Void) -> ValidateUtils.validate(roleId), // check parameter
-				() -> { // process
-					List<User> userList = userGateway.getByRoleId(roleId);
-					List<SimpleUserDTO> userDTOList = UserDTOConvertor.INSTANCE.toSimpleUserDTOList(userList);
-					return MultiResponse.of(userDTOList);
-				},
-				//build failure
-				(e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
-				//compose log
-				(Void) -> {
-				});
+    @Override
+    public MultiResponse<SimpleUserDTO> getUserByRoleId(String roleId) {
+        return ServiceTemplate.execute((Void) -> ValidateUtils.validate(roleId), // check parameter
+                () -> { // process
+                    List<User> userList = userGateway.getByRoleId(roleId);
+                    List<SimpleUserDTO> userDTOList = UserDTOConvertor.INSTANCE.toSimpleUserDTOList(userList);
+                    return MultiResponse.of(userDTOList);
+                },
+                //build failure
+                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
+                //compose log
+                (Void) -> {
+                });
 
-	}
+    }
 
-	@Override
-	public SingleResponse<SimpleUserDTO> save(UserSaveCmd cmd) {
-		return ServiceTemplate.execute((Void) -> ValidateUtils.validate(cmd), // check parameter
-				() -> { // process
-					SimpleUserDTO dto = cmd.getUser();
-					User user = UserDTOConvertor.INSTANCE.toUser(dto);
-					user.setSalt(PasswordUtils.getRandomSalt());
-					String plantPassword = dto.getPassword();
-					user.setPassword(PasswordUtils.encrypt(plantPassword, plantPassword, user.getSalt()));
-					user = userGateway.create(user);
-					return SingleResponse.of(UserDTOConvertor.INSTANCE.toSimpleUserDTO(user));
-				},
-				//build failure
-				(e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
-				//compose log
-				(Void) -> {
-				});
-	}
+    @Override
+    public SingleResponse<SimpleUserDTO> save(UserSaveCmd cmd) {
+        return ServiceTemplate.execute((Void) -> ValidateUtils.validate(cmd), // check parameter
+                () -> { // process
+                    SimpleUserDTO dto = cmd.getUser();
+                    User user = UserDTOConvertor.INSTANCE.toUser(dto);
+                    user.setSalt(PasswordUtils.getRandomSalt());
+                    String plantPassword = dto.getPassword();
+                    user.setPassword(PasswordUtils.encrypt(plantPassword, plantPassword, user.getSalt()));
+                    user = userGateway.create(user);
+                    return SingleResponse.of(UserDTOConvertor.INSTANCE.toSimpleUserDTO(user));
+                },
+                //build failure
+                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
+                //compose log
+                (Void) -> {
+                });
+    }
 
-	@Override
-	public SingleResponse<UserDTO> saveUserRoles(UserRolesSaveCmd cmd) {
-		return ServiceTemplate.execute((Void) -> ValidateUtils.validate(cmd), // check parameter
+    @Override
+    public SingleResponse<UserDTO> saveUserRoles(UserRolesSaveCmd cmd) {
+        return ServiceTemplate.execute((Void) -> ValidateUtils.validate(cmd), // check parameter
 
-				() -> { // process
-					User user = userGateway.getById(cmd.getUserId());
-					if (Objects.isNull(user)) {
-						return SingleResponse.buildFailure(CommonResultCodeEnum.NOT_FOUND);
-					}
-					userGateway.saveUserRoles(cmd.getUserId(), cmd.getRoleIdList());
-					return getUserById(IdQuery.of(cmd.getUserId()));
-				},
-				//
-				(e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
-				//
-				(Void) -> {
-				});
-	}
+                () -> { // process
+                    User user = userGateway.getById(cmd.getUserId());
+                    if (Objects.isNull(user)) {
+                        return SingleResponse.buildFailure(CommonResultCodeEnum.NOT_FOUND);
+                    }
+                    userGateway.saveUserRoles(cmd.getUserId(), cmd.getRoleIdList());
+                    return getUserById(IdQuery.of(cmd.getUserId()));
+                },
+                //
+                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
+                //
+                (Void) -> {
+                });
+    }
 
-	@Override
-	public Response changePassword(UserChangePasswordCmd cmd) {
-		return ServiceTemplate.execute(
-				// check parameter
-				(Void) -> {
-					ValidateUtils.validate(cmd);
-					AssertUtil.equals(cmd.getNewPassword(), cmd.getConfirmPassword());
-				},
-				// process
-				() -> {
-					String userId = cmd.getId();
-					User user = userGateway.getById(userId);
-					if (Objects.isNull(user)) {
-						return Response.buildFailure(CommonResultCodeEnum.NOT_FOUND);
-					}
-					String dbPassword = user.getPassword();
-					if (!cmd.getOldPassword().equals(PasswordUtils.decrypt(dbPassword, cmd.getOldPassword(), user.getSalt()))) {
-						return Response.buildFailure(CommonResultCodeEnum.PROCESS_FAIL);
-					}
-					user.setPassword(PasswordUtils.encrypt(cmd.getNewPassword(), cmd.getNewPassword(), user.getSalt()));
-					userGateway.changePassword(user);
-					return Response.buildSuccess();
-				},
-				//
-				(e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
-				//
-				(Void) -> {
-				});
-	}
+    @Override
+    public Response changePassword(UserChangePasswordCmd cmd) {
+        return ServiceTemplate.execute(
+                // check parameter
+                (Void) -> {
+                    ValidateUtils.validate(cmd);
+                    AssertUtil.equals(cmd.getNewPassword(), cmd.getConfirmPassword());
+                },
+                // process
+                () -> {
+                    String userId = cmd.getId();
+                    User user = userGateway.getById(userId);
+                    if (Objects.isNull(user)) {
+                        return Response.buildFailure(CommonResultCodeEnum.NOT_FOUND);
+                    }
+                    String dbPassword = user.getPassword();
+                    if (!cmd.getOldPassword().equals(PasswordUtils.decrypt(dbPassword, cmd.getOldPassword(), user.getSalt()))) {
+                        return Response.buildFailure(CommonResultCodeEnum.PROCESS_FAIL);
+                    }
+                    user.setPassword(PasswordUtils.encrypt(cmd.getNewPassword(), cmd.getNewPassword(), user.getSalt()));
+                    userGateway.changePassword(user);
+                    return Response.buildSuccess();
+                },
+                //
+                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
+                //
+                (Void) -> {
+                });
+    }
 }

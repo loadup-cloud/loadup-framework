@@ -7,33 +7,25 @@ import java.io.OutputStream;
  *
  */
 public class Encoder {
-    private static final int EOF = -1;
-    // 图片的宽高
-    private              int imgW, imgH;
-    private byte[] pixAry;
-    private int    initCodeSize;  // 验证码位数
-    private int    remaining;  // 剩余数量
-    private int    curPixel;  // 像素
-
     static final int BITS = 12;
-
     static final int HSIZE = 5003; // 80% 占用率
-
+    private static final int EOF = -1;
     int n_bits; // number of bits/code
-    int maxbits    = BITS; // user settable max # bits/code
+    int maxbits = BITS; // user settable max # bits/code
     int maxcode; // maximum code, given n_bits
     int maxmaxcode = 1 << BITS; // should NEVER generate this code
-
-    int[] htab    = new int[HSIZE];
+    int[] htab = new int[HSIZE];
     int[] codetab = new int[HSIZE];
-
     int hsize = HSIZE; // for dynamic table sizing
-
     int free_ent = 0; // first unused entry
-
     // block compression parameters -- after all codes are used up,
     // and compression rate changes, start over.
     boolean clear_flg = false;
+    int g_init_bits;
+    int ClearCode;
+    int EOFCode;
+    int cur_accum = 0;
+    int cur_bits = 0;
 
     // Algorithm:  use open addressing double hashing (no chaining) on the
     // prefix code / next character combination.  We do a variant of Knuth's
@@ -46,30 +38,6 @@ public class Encoder {
     // for the decompressor.  Late addition:  construct the table according to
     // file size for noticeable speed improvement on small files.  Please direct
     // questions about this implementation to ames!jaw.
-
-    int g_init_bits;
-
-    int ClearCode;
-    int EOFCode;
-
-    // output
-    //
-    // Output the given code.
-    // Inputs:
-    //      code:   A n_bits-bit integer.  If == -1, then EOF.  This assumes
-    //              that n_bits =< wordsize - 1.
-    // Outputs:
-    //      Outputs code to the file.
-    // Assumptions:
-    //      Chars are 8 bits long.
-    // Algorithm:
-    //      Maintain a BITS character long buffer (so that 8 codes will
-    // fit in it exactly).  Use the VAX insv instruction to insert each
-    // code in turn.  When the buffer fills up empty it and start over.
-
-    int cur_accum = 0;
-    int cur_bits  = 0;
-
     int masks[] =
             {
                     0x0000,
@@ -89,12 +57,31 @@ public class Encoder {
                     0x3FFF,
                     0x7FFF,
                     0xFFFF};
-
     // Number of characters so far in this 'packet'
     int a_count;
-
     // Define the storage for the packet accumulator
     byte[] accum = new byte[256];
+
+    // output
+    //
+    // Output the given code.
+    // Inputs:
+    //      code:   A n_bits-bit integer.  If == -1, then EOF.  This assumes
+    //              that n_bits =< wordsize - 1.
+    // Outputs:
+    //      Outputs code to the file.
+    // Assumptions:
+    //      Chars are 8 bits long.
+    // Algorithm:
+    //      Maintain a BITS character long buffer (so that 8 codes will
+    // fit in it exactly).  Use the VAX insv instruction to insert each
+    // code in turn.  When the buffer fills up empty it and start over.
+    // 图片的宽高
+    private int imgW, imgH;
+    private byte[] pixAry;
+    private int initCodeSize;  // 验证码位数
+    private int remaining;  // 剩余数量
+    private int curPixel;  // 像素
 
     //----------------------------------------------------------------------------
 
@@ -116,7 +103,9 @@ public class Encoder {
      */
     void char_out(byte c, OutputStream outs) throws IOException {
         accum[a_count++] = c;
-        if (a_count >= 254) {flush_char(outs);}
+        if (a_count >= 254) {
+            flush_char(outs);
+        }
     }
 
     // Clear out the hash table
@@ -140,7 +129,9 @@ public class Encoder {
      *
      */
     void cl_hash(int hsize) {
-        for (int i = 0; i < hsize; ++i) {htab[i] = -1;}
+        for (int i = 0; i < hsize; ++i) {
+            htab[i] = -1;
+        }
     }
 
     /**
@@ -172,7 +163,9 @@ public class Encoder {
         ent = nextPixel();
 
         hshift = 0;
-        for (fcode = hsize; fcode < 65536; fcode *= 2) {++hshift;}
+        for (fcode = hsize; fcode < 65536; fcode *= 2) {
+            ++hshift;
+        }
         hshift = 8 - hshift; // set hash code range bound
 
         hsize_reg = hsize;
@@ -191,9 +184,13 @@ public class Encoder {
             } else if (htab[i] >= 0) // non-empty slot
             {
                 disp = hsize_reg - i; // secondary hash (after G. Knott)
-                if (i == 0) {disp = 1;}
+                if (i == 0) {
+                    disp = 1;
+                }
                 do {
-                    if ((i -= disp) < 0) {i += hsize_reg;}
+                    if ((i -= disp) < 0) {
+                        i += hsize_reg;
+                    }
 
                     if (htab[i] == fcode) {
                         ent = codetab[i];
@@ -206,7 +203,9 @@ public class Encoder {
             if (free_ent < maxmaxcode) {
                 codetab[i] = free_ent++; // code -> hashtable
                 htab[i] = fcode;
-            } else {cl_block(outs);}
+            } else {
+                cl_block(outs);
+            }
         }
         // Put out the final code.
         output(ent, outs);
@@ -257,7 +256,9 @@ public class Encoder {
      *
      */
     private int nextPixel() {
-        if (remaining == 0) {return EOF;}
+        if (remaining == 0) {
+            return EOF;
+        }
 
         --remaining;
 
@@ -272,7 +273,11 @@ public class Encoder {
     void output(int code, OutputStream outs) throws IOException {
         cur_accum &= masks[cur_bits];
 
-        if (cur_bits > 0) {cur_accum |= (code << cur_bits);} else {cur_accum = code;}
+        if (cur_bits > 0) {
+            cur_accum |= (code << cur_bits);
+        } else {
+            cur_accum = code;
+        }
 
         cur_bits += n_bits;
 
@@ -290,7 +295,11 @@ public class Encoder {
                 clear_flg = false;
             } else {
                 ++n_bits;
-                if (n_bits == maxbits) {maxcode = maxmaxcode;} else {maxcode = MAXCODE(n_bits);}
+                if (n_bits == maxbits) {
+                    maxcode = maxmaxcode;
+                } else {
+                    maxcode = MAXCODE(n_bits);
+                }
             }
         }
 

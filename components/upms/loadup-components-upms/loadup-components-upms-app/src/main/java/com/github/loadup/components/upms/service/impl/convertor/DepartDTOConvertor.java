@@ -36,16 +36,16 @@ import java.util.List;
 
 @Mapper
 public interface DepartDTOConvertor {
-	DepartDTOConvertor INSTANCE = Mappers.getMapper(DepartDTOConvertor.class);
+    DepartDTOConvertor INSTANCE = Mappers.getMapper(DepartDTOConvertor.class);
 
-	Depart toDepart(DepartDTO dto);
+    Depart toDepart(DepartDTO dto);
 
-	List<Depart> toDepartList(List<DepartDTO> dtoList);
+    List<Depart> toDepartList(List<DepartDTO> dtoList);
 
-	DepartDTO toDepartDTO(Depart domain);
+    DepartDTO toDepartDTO(Depart domain);
 
-	SimpleDepartDTO toSimpleDepartDTO(Depart domain);
+    SimpleDepartDTO toSimpleDepartDTO(Depart domain);
 
-	List<DepartDTO> toDepartDTOList(List<Depart> domainList);
+    List<DepartDTO> toDepartDTOList(List<Depart> domainList);
 
 }

@@ -32,41 +32,41 @@ import org.apache.commons.lang3.StringUtils;
  *
  */
 public enum LimitTimeRuleEnum {
-	/**
-	 * QPS level
-	 */
-	QPS("QPS"),
+    /**
+     * QPS level
+     */
+    QPS("QPS"),
 
-	/**
-	 * QPM level
-	 */
-	QPM("QPM"),
+    /**
+     * QPM level
+     */
+    QPM("QPM"),
 
-	/**
-	 *
-	 */
-	CONCURRENCY("CONCURRENCY");
+    /**
+     *
+     */
+    CONCURRENCY("CONCURRENCY");
 
-	public String getRuleType() {
-		return ruleType;
-	}
+    private String ruleType;
 
-	public void setRuleType(String ruleType) {
-		this.ruleType = ruleType;
-	}
+    private LimitTimeRuleEnum(String rule) {
+        this.ruleType = rule;
+    }
 
-	private String ruleType;
+    public static LimitTimeRuleEnum getTimeRuleByString(String rule) {
+        for (LimitTimeRuleEnum limitTimeRuleEnum : LimitTimeRuleEnum.values()) {
+            if (StringUtils.equals(limitTimeRuleEnum.getRuleType(), rule)) {
+                return limitTimeRuleEnum;
+            }
+        }
+        return null;
+    }
 
-	private LimitTimeRuleEnum(String rule) {
-		this.ruleType = rule;
-	}
+    public String getRuleType() {
+        return ruleType;
+    }
 
-	public static LimitTimeRuleEnum getTimeRuleByString(String rule) {
-		for (LimitTimeRuleEnum limitTimeRuleEnum : LimitTimeRuleEnum.values()) {
-			if (StringUtils.equals(limitTimeRuleEnum.getRuleType(), rule)) {
-				return limitTimeRuleEnum;
-			}
-		}
-		return null;
-	}
+    public void setRuleType(String ruleType) {
+        this.ruleType = ruleType;
+    }
 }

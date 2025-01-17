@@ -41,12 +41,12 @@ import java.util.Arrays;
 @Component("gateway.cache.manager.sensitivityManager")
 public class SensitivityManager {
 
-	@Value("${shieldKeys:mobile,bankcard,id}")
-	private String shieldKeys;
+    @Value("${shieldKeys:mobile,bankcard,id}")
+    private String shieldKeys;
 
-	public void init() {
-		Arrays.asList(StringUtils.split(shieldKeys, ",")).stream().forEach(key -> {
-			ShieldConfig.putShiledConfig(key, ShieldType.ALL);
-		});
-	}
+    public void init() {
+        Arrays.asList(StringUtils.split(shieldKeys, ",")).stream().forEach(key -> {
+            ShieldConfig.putShiledConfig(key, ShieldType.ALL);
+        });
+    }
 }

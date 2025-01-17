@@ -23,13 +23,13 @@ import org.apache.commons.lang3.RandomUtils;
  * Created by 王帆 on 2018-07-27 上午 10:08.
  */
 public abstract class Captcha {
-    // 常用颜色
-    private   Font         font     = null; // 验证码的字体
-    protected int          len      = 4; // 验证码随机字符长度
-    protected int          width    = 130; // 验证码显示宽度
-    protected int          height   = 48; // 验证码显示高度
+    protected int len = 4; // 验证码随机字符长度
+    protected int width = 130; // 验证码显示宽度
+    protected int height = 48; // 验证码显示高度
     protected CharTypeEnum charType = CharTypeEnum.DEFAULT;  // 验证码类型
-    protected String       chars    = null; // 当前验证码
+    protected String chars = null; // 当前验证码
+    // 常用颜色
+    private Font font = null; // 验证码的字体
 
     protected String generateCode(CharTypeEnum charType, int len) {
         String cs = "";
@@ -91,8 +91,12 @@ public abstract class Captcha {
      * 给定范围获得随机颜色
      */
     protected Color color(int fc, int bc) {
-        if (fc > 255) {fc = 255;}
-        if (bc > 255) {bc = 255;}
+        if (fc > 255) {
+            fc = 255;
+        }
+        if (bc > 255) {
+            bc = 255;
+        }
         int r = fc + RandomUtils.nextInt(0, bc - fc);
         int g = fc + RandomUtils.nextInt(0, bc - fc);
         int b = fc + RandomUtils.nextInt(0, bc - fc);

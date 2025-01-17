@@ -31,13 +31,13 @@ package com.github.loadup.components.gateway.certification.spi;
  */
 public interface CertCacheRefresher {
 
-	/**
-	 * 获取接入安全组件的应用名
-	 */
-	public String getAppName();
+    /**
+     * 获取接入安全组件的应用名
+     */
+    public String getAppName();
 
-	/**
-	 * 根据certCode刷新对应的安全组件的缓存
-	 */
-	public void refreshCache(String certCode);
+    /**
+     * 根据certCode刷新对应的安全组件的缓存
+     */
+    public void refreshCache(String certCode);
 }

@@ -33,41 +33,41 @@ package com.github.loadup.components.gateway.facade.model;
  */
 public class InstInterfaceConfigDto {
 
-	/**
-	 * client id
-	 */
-	private String clientId;
+    /**
+     * client id
+     */
+    private String clientId;
 
-	/**
-	 * name
-	 */
-	private String interfaceId;
+    /**
+     * name
+     */
+    private String interfaceId;
 
-	/**
-	 * Getter method for property <tt>clientId</tt>.
-	 */
-	public String getClientId() {
-		return clientId;
-	}
+    /**
+     * Getter method for property <tt>clientId</tt>.
+     */
+    public String getClientId() {
+        return clientId;
+    }
 
-	/**
-	 * Setter method for property <tt>clientId</tt>.
-	 */
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
-	}
+    /**
+     * Setter method for property <tt>clientId</tt>.
+     */
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
 
-	/**
-	 * Getter method for property <tt>interfaceId</tt>.
-	 */
-	public String getInterfaceId() {
-		return interfaceId;
-	}
+    /**
+     * Getter method for property <tt>interfaceId</tt>.
+     */
+    public String getInterfaceId() {
+        return interfaceId;
+    }
 
-	/**
-	 * Setter method for property <tt>interfaceId</tt>.
-	 */
-	public void setInterfaceId(String interfaceId) {
-		this.interfaceId = interfaceId;
-	}
+    /**
+     * Setter method for property <tt>interfaceId</tt>.
+     */
+    public void setInterfaceId(String interfaceId) {
+        this.interfaceId = interfaceId;
+    }
 }

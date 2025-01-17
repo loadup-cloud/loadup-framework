@@ -36,14 +36,14 @@ import com.github.loadup.components.gateway.facade.response.SPIConfigResponse;
  */
 public interface InterfaceConfigPushService {
 
-	/**
-	 * push api config to gateway runtime
-	 */
-	APIConfigResponse pushAPIConfig(APIConfigRequest request);
+    /**
+     * push api config to gateway runtime
+     */
+    APIConfigResponse pushAPIConfig(APIConfigRequest request);
 
-	/**
-	 * push spi config to gateway runtime
-	 */
-	SPIConfigResponse pushSPIConfig(SPIConfigRequest request);
+    /**
+     * push spi config to gateway runtime
+     */
+    SPIConfigResponse pushSPIConfig(SPIConfigRequest request);
 
 }

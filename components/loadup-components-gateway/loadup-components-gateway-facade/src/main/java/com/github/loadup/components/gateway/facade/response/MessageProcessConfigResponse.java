@@ -31,117 +31,117 @@ package com.github.loadup.components.gateway.facade.response;
  */
 public class MessageProcessConfigResponse {
 
-	/**
-	 * Optional
-	 */
-	private String senderRequestParserTemplate;
+    /**
+     * Optional
+     */
+    private String senderRequestParserTemplate;
 
-	/**
-	 * Optional
-	 */
-	private String senderResponseBodyAssembleTemplate;
+    /**
+     * Optional
+     */
+    private String senderResponseBodyAssembleTemplate;
 
-	/**
-	 * Optional
-	 */
-	private String senderResponseHeaderAssembleTemplate;
+    /**
+     * Optional
+     */
+    private String senderResponseHeaderAssembleTemplate;
 
-	/**
-	 * Required
-	 */
-	private String receiverResponseParserTemplate;
+    /**
+     * Required
+     */
+    private String receiverResponseParserTemplate;
 
-	/**
-	 * Required
-	 */
-	private String receiverRequestBodyAssembleTemplate;
+    /**
+     * Required
+     */
+    private String receiverRequestBodyAssembleTemplate;
 
-	/**
-	 * Required
-	 */
-	private String receiverRequestHeaderAssembleTemplate;
+    /**
+     * Required
+     */
+    private String receiverRequestHeaderAssembleTemplate;
 
-	/**
-	 * Getter method for property <tt>senderRequestParserTemplate</tt>.
-	 */
-	public String getSenderRequestParserTemplate() {
-		return senderRequestParserTemplate;
-	}
+    /**
+     * Getter method for property <tt>senderRequestParserTemplate</tt>.
+     */
+    public String getSenderRequestParserTemplate() {
+        return senderRequestParserTemplate;
+    }
 
-	/**
-	 * Setter method for property <tt>senderRequestParserTemplate</tt>.
-	 */
-	public void setSenderRequestParserTemplate(String senderRequestParserTemplate) {
-		this.senderRequestParserTemplate = senderRequestParserTemplate;
-	}
+    /**
+     * Setter method for property <tt>senderRequestParserTemplate</tt>.
+     */
+    public void setSenderRequestParserTemplate(String senderRequestParserTemplate) {
+        this.senderRequestParserTemplate = senderRequestParserTemplate;
+    }
 
-	/**
-	 * Getter method for property <tt>senderResponseBodyAssembleTemplate</tt>.
-	 */
-	public String getSenderResponseBodyAssembleTemplate() {
-		return senderResponseBodyAssembleTemplate;
-	}
+    /**
+     * Getter method for property <tt>senderResponseBodyAssembleTemplate</tt>.
+     */
+    public String getSenderResponseBodyAssembleTemplate() {
+        return senderResponseBodyAssembleTemplate;
+    }
 
-	/**
-	 * Setter method for property <tt>senderResponseBodyAssembleTemplate</tt>.
-	 */
-	public void setSenderResponseBodyAssembleTemplate(String senderResponseBodyAssembleTemplate) {
-		this.senderResponseBodyAssembleTemplate = senderResponseBodyAssembleTemplate;
-	}
+    /**
+     * Setter method for property <tt>senderResponseBodyAssembleTemplate</tt>.
+     */
+    public void setSenderResponseBodyAssembleTemplate(String senderResponseBodyAssembleTemplate) {
+        this.senderResponseBodyAssembleTemplate = senderResponseBodyAssembleTemplate;
+    }
 
-	/**
-	 * Getter method for property <tt>senderResponseHeaderAssembleTemplate</tt>.
-	 */
-	public String getSenderResponseHeaderAssembleTemplate() {
-		return senderResponseHeaderAssembleTemplate;
-	}
+    /**
+     * Getter method for property <tt>senderResponseHeaderAssembleTemplate</tt>.
+     */
+    public String getSenderResponseHeaderAssembleTemplate() {
+        return senderResponseHeaderAssembleTemplate;
+    }
 
-	/**
-	 * Setter method for property <tt>senderResponseHeaderAssembleTemplate</tt>.
-	 */
-	public void setSenderResponseHeaderAssembleTemplate(String senderResponseHeaderAssembleTemplate) {
-		this.senderResponseHeaderAssembleTemplate = senderResponseHeaderAssembleTemplate;
-	}
+    /**
+     * Setter method for property <tt>senderResponseHeaderAssembleTemplate</tt>.
+     */
+    public void setSenderResponseHeaderAssembleTemplate(String senderResponseHeaderAssembleTemplate) {
+        this.senderResponseHeaderAssembleTemplate = senderResponseHeaderAssembleTemplate;
+    }
 
-	/**
-	 * Getter method for property <tt>receiverResponseParserTemplate</tt>.
-	 */
-	public String getReceiverResponseParserTemplate() {
-		return receiverResponseParserTemplate;
-	}
+    /**
+     * Getter method for property <tt>receiverResponseParserTemplate</tt>.
+     */
+    public String getReceiverResponseParserTemplate() {
+        return receiverResponseParserTemplate;
+    }
 
-	/**
-	 * Setter method for property <tt>receiverResponseParserTemplate</tt>.
-	 */
-	public void setReceiverResponseParserTemplate(String receiverResponseParserTemplate) {
-		this.receiverResponseParserTemplate = receiverResponseParserTemplate;
-	}
+    /**
+     * Setter method for property <tt>receiverResponseParserTemplate</tt>.
+     */
+    public void setReceiverResponseParserTemplate(String receiverResponseParserTemplate) {
+        this.receiverResponseParserTemplate = receiverResponseParserTemplate;
+    }
 
-	/**
-	 * Getter method for property <tt>receiverRequestBodyAssembleTemplate</tt>.
-	 */
-	public String getReceiverRequestBodyAssembleTemplate() {
-		return receiverRequestBodyAssembleTemplate;
-	}
+    /**
+     * Getter method for property <tt>receiverRequestBodyAssembleTemplate</tt>.
+     */
+    public String getReceiverRequestBodyAssembleTemplate() {
+        return receiverRequestBodyAssembleTemplate;
+    }
 
-	/**
-	 * Setter method for property <tt>receiverRequestBodyAssembleTemplate</tt>.
-	 */
-	public void setReceiverRequestBodyAssembleTemplate(String receiverRequestBodyAssembleTemplate) {
-		this.receiverRequestBodyAssembleTemplate = receiverRequestBodyAssembleTemplate;
-	}
+    /**
+     * Setter method for property <tt>receiverRequestBodyAssembleTemplate</tt>.
+     */
+    public void setReceiverRequestBodyAssembleTemplate(String receiverRequestBodyAssembleTemplate) {
+        this.receiverRequestBodyAssembleTemplate = receiverRequestBodyAssembleTemplate;
+    }
 
-	/**
-	 * Getter method for property <tt>receiverRequestHeaderAssembleTemplate</tt>.
-	 */
-	public String getReceiverRequestHeaderAssembleTemplate() {
-		return receiverRequestHeaderAssembleTemplate;
-	}
+    /**
+     * Getter method for property <tt>receiverRequestHeaderAssembleTemplate</tt>.
+     */
+    public String getReceiverRequestHeaderAssembleTemplate() {
+        return receiverRequestHeaderAssembleTemplate;
+    }
 
-	/**
-	 * Setter method for property <tt>receiverRequestHeaderAssembleTemplate</tt>.
-	 */
-	public void setReceiverRequestHeaderAssembleTemplate(String receiverRequestHeaderAssembleTemplate) {
-		this.receiverRequestHeaderAssembleTemplate = receiverRequestHeaderAssembleTemplate;
-	}
+    /**
+     * Setter method for property <tt>receiverRequestHeaderAssembleTemplate</tt>.
+     */
+    public void setReceiverRequestHeaderAssembleTemplate(String receiverRequestHeaderAssembleTemplate) {
+        this.receiverRequestHeaderAssembleTemplate = receiverRequestHeaderAssembleTemplate;
+    }
 }

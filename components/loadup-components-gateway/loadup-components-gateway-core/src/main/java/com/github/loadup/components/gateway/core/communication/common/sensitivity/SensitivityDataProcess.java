@@ -36,11 +36,11 @@ import java.util.Map;
  */
 public interface SensitivityDataProcess<T> {
 
-	/**
-	 *
-	 */
-	T mask(T maskContent, Map<String, ShieldType> shieldRule);
+    /**
+     *
+     */
+    T mask(T maskContent, Map<String, ShieldType> shieldRule);
 
-	SensitivityProcessType getTag();
+    SensitivityProcessType getTag();
 
 }

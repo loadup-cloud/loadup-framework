@@ -38,27 +38,27 @@ import java.util.List;
  */
 public class MessageReceiverConfigConvertor {
 
-	/**
-	 * convert dto model to domain model
-	 */
-	public static MessageReceiverConfig dto2Model(MessageReceiverConfigDto item) {
-		MessageReceiverConfig messageReceiverConfig = new MessageReceiverConfig();
-		messageReceiverConfig.setMessageReceiverId(item.getMessageReceiverId());
-		messageReceiverConfig.setMessageReceiverName(item.getMessageReceiverName());
-		return messageReceiverConfig;
-	}
+    /**
+     * convert dto model to domain model
+     */
+    public static MessageReceiverConfig dto2Model(MessageReceiverConfigDto item) {
+        MessageReceiverConfig messageReceiverConfig = new MessageReceiverConfig();
+        messageReceiverConfig.setMessageReceiverId(item.getMessageReceiverId());
+        messageReceiverConfig.setMessageReceiverName(item.getMessageReceiverName());
+        return messageReceiverConfig;
+    }
 
-	/**
-	 * convert dto models to domain models
-	 */
-	public static List<MessageReceiverConfig> dtoList2ModelList(List<MessageReceiverConfigDto> messageReceiverConfigDtos) {
-		List<MessageReceiverConfig> models = new ArrayList<>();
-		if (CollectionUtils.isEmpty(messageReceiverConfigDtos)) {
-			return models;
-		}
-		for (MessageReceiverConfigDto dto : messageReceiverConfigDtos) {
-			models.add(dto2Model(dto));
-		}
-		return models;
-	}
+    /**
+     * convert dto models to domain models
+     */
+    public static List<MessageReceiverConfig> dtoList2ModelList(List<MessageReceiverConfigDto> messageReceiverConfigDtos) {
+        List<MessageReceiverConfig> models = new ArrayList<>();
+        if (CollectionUtils.isEmpty(messageReceiverConfigDtos)) {
+            return models;
+        }
+        for (MessageReceiverConfigDto dto : messageReceiverConfigDtos) {
+            models.add(dto2Model(dto));
+        }
+        return models;
+    }
 }

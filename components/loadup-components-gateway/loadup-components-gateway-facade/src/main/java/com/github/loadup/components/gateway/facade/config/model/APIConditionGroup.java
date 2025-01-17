@@ -37,261 +37,261 @@ import java.io.Serializable;
 
 public class APIConditionGroup implements Serializable {
 
-	private static final long serialVersionUID = -4878291431746547062L;
+    private static final long serialVersionUID = -4878291431746547062L;
 
-	/**
-	 * sender url
-	 */
-	private String url;
+    /**
+     * sender url
+     */
+    private String url;
 
-	/**
-	 * interface name configured in product center used by other components
-	 */
-	private String interfaceName;
+    /**
+     * interface name configured in product center used by other components
+     */
+    private String interfaceName;
 
-	/**
-	 * receiver url
-	 */
-	private String integrationUrl;
+    /**
+     * receiver url
+     */
+    private String integrationUrl;
 
-	/**
-	 * security strategy code
-	 */
-	private String securityStrategyCode;
+    /**
+     * security strategy code
+     */
+    private String securityStrategyCode;
 
-	/**
-	 * sender request parser, groovy format.
-	 */
-	private String interfaceRequestParser;
+    /**
+     * sender request parser, groovy format.
+     */
+    private String interfaceRequestParser;
 
-	/**
-	 * integration service request header assemble content, velocity format.
-	 */
-	private String integrationRequestHeaderAssemble;
+    /**
+     * integration service request header assemble content, velocity format.
+     */
+    private String integrationRequestHeaderAssemble;
 
-	/**
-	 * integration service request assemble content, velocity format.
-	 */
-	private String integrationRequestBodyAssemble;
+    /**
+     * integration service request assemble content, velocity format.
+     */
+    private String integrationRequestBodyAssemble;
 
-	/**
-	 * integration service response parser, groovy format.
-	 */
-	private String integrationResponseParser;
+    /**
+     * integration service response parser, groovy format.
+     */
+    private String integrationResponseParser;
 
-	/**
-	 * sender response response header assemble content, velocity format.
-	 */
-	private String interfaceResponseHeaderAssemble;
+    /**
+     * sender response response header assemble content, velocity format.
+     */
+    private String interfaceResponseHeaderAssemble;
 
-	/**
-	 * sender response response body assemble content, velocity format.
-	 */
-	private String interfaceResponseBodyAssemble;
+    /**
+     * sender response response body assemble content, velocity format.
+     */
+    private String interfaceResponseBodyAssemble;
 
-	/**
-	 * limit connections for this OPENAPI
-	 */
-	private Integer limitConn;
+    /**
+     * limit connections for this OPENAPI
+     */
+    private Integer limitConn;
 
-	/**
-	 * communication properties
-	 */
-	private String communicationProperties;
+    /**
+     * communication properties
+     */
+    private String communicationProperties;
 
-	/**
-	 * http status except 200 map to error code.
-	 * in format
-	 */
-	private String httpStatusToErrorCode;
+    /**
+     * http status except 200 map to error code.
+     * in format
+     */
+    private String httpStatusToErrorCode;
 
-	/**
-	 * Getter method for property <tt>url</tt>.
-	 */
-	public String getUrl() {
-		return url;
-	}
+    /**
+     * Getter method for property <tt>url</tt>.
+     */
+    public String getUrl() {
+        return url;
+    }
 
-	/**
-	 * Setter method for property <tt>url</tt>.
-	 */
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    /**
+     * Setter method for property <tt>url</tt>.
+     */
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-	/**
-	 * Getter method for property <tt>interfaceName</tt>.
-	 */
-	public String getInterfaceName() {
-		return interfaceName;
-	}
+    /**
+     * Getter method for property <tt>interfaceName</tt>.
+     */
+    public String getInterfaceName() {
+        return interfaceName;
+    }
 
-	/**
-	 * Setter method for property <tt>interfaceName</tt>.
-	 */
-	public void setInterfaceName(String interfaceName) {
-		this.interfaceName = interfaceName;
-	}
+    /**
+     * Setter method for property <tt>interfaceName</tt>.
+     */
+    public void setInterfaceName(String interfaceName) {
+        this.interfaceName = interfaceName;
+    }
 
-	/**
-	 * Getter method for property <tt>integrationUrl</tt>.
-	 */
-	public String getIntegrationUrl() {
-		return integrationUrl;
-	}
+    /**
+     * Getter method for property <tt>integrationUrl</tt>.
+     */
+    public String getIntegrationUrl() {
+        return integrationUrl;
+    }
 
-	/**
-	 * Setter method for property <tt>integrationUrl</tt>.
-	 */
-	public void setIntegrationUrl(String integrationUrl) {
-		this.integrationUrl = integrationUrl;
-	}
+    /**
+     * Setter method for property <tt>integrationUrl</tt>.
+     */
+    public void setIntegrationUrl(String integrationUrl) {
+        this.integrationUrl = integrationUrl;
+    }
 
-	/**
-	 * Getter method for property <tt>securityStrategyCode</tt>.
-	 */
-	public String getSecurityStrategyCode() {
-		return securityStrategyCode;
-	}
+    /**
+     * Getter method for property <tt>securityStrategyCode</tt>.
+     */
+    public String getSecurityStrategyCode() {
+        return securityStrategyCode;
+    }
 
-	/**
-	 * Setter method for property <tt>securityStrategyCode</tt>.
-	 */
-	public void setSecurityStrategyCode(String securityStrategyCode) {
-		this.securityStrategyCode = securityStrategyCode;
-	}
+    /**
+     * Setter method for property <tt>securityStrategyCode</tt>.
+     */
+    public void setSecurityStrategyCode(String securityStrategyCode) {
+        this.securityStrategyCode = securityStrategyCode;
+    }
 
-	/**
-	 * Getter method for property <tt>interfaceRequestParser</tt>.
-	 */
-	public String getInterfaceRequestParser() {
-		return interfaceRequestParser;
-	}
+    /**
+     * Getter method for property <tt>interfaceRequestParser</tt>.
+     */
+    public String getInterfaceRequestParser() {
+        return interfaceRequestParser;
+    }
 
-	/**
-	 * Setter method for property <tt>interfaceRequestParser</tt>.
-	 */
-	public void setInterfaceRequestParser(String interfaceRequestParser) {
-		this.interfaceRequestParser = interfaceRequestParser;
-	}
+    /**
+     * Setter method for property <tt>interfaceRequestParser</tt>.
+     */
+    public void setInterfaceRequestParser(String interfaceRequestParser) {
+        this.interfaceRequestParser = interfaceRequestParser;
+    }
 
-	/**
-	 * Getter method for property <tt>integrationRequestHeaderAssemble</tt>.
-	 */
-	public String getIntegrationRequestHeaderAssemble() {
-		return integrationRequestHeaderAssemble;
-	}
+    /**
+     * Getter method for property <tt>integrationRequestHeaderAssemble</tt>.
+     */
+    public String getIntegrationRequestHeaderAssemble() {
+        return integrationRequestHeaderAssemble;
+    }
 
-	/**
-	 * Setter method for property <tt>integrationRequestHeaderAssemble</tt>.
-	 */
-	public void setIntegrationRequestHeaderAssemble(String integrationRequestHeaderAssemble) {
-		this.integrationRequestHeaderAssemble = integrationRequestHeaderAssemble;
-	}
+    /**
+     * Setter method for property <tt>integrationRequestHeaderAssemble</tt>.
+     */
+    public void setIntegrationRequestHeaderAssemble(String integrationRequestHeaderAssemble) {
+        this.integrationRequestHeaderAssemble = integrationRequestHeaderAssemble;
+    }
 
-	/**
-	 * Getter method for property <tt>integrationRequestBodyAssemble</tt>.
-	 */
-	public String getIntegrationRequestBodyAssemble() {
-		return integrationRequestBodyAssemble;
-	}
+    /**
+     * Getter method for property <tt>integrationRequestBodyAssemble</tt>.
+     */
+    public String getIntegrationRequestBodyAssemble() {
+        return integrationRequestBodyAssemble;
+    }
 
-	/**
-	 * Setter method for property <tt>integrationRequestBodyAssemble</tt>.
-	 */
-	public void setIntegrationRequestBodyAssemble(String integrationRequestBodyAssemble) {
-		this.integrationRequestBodyAssemble = integrationRequestBodyAssemble;
-	}
+    /**
+     * Setter method for property <tt>integrationRequestBodyAssemble</tt>.
+     */
+    public void setIntegrationRequestBodyAssemble(String integrationRequestBodyAssemble) {
+        this.integrationRequestBodyAssemble = integrationRequestBodyAssemble;
+    }
 
-	/**
-	 * Getter method for property <tt>integrationResponseParser</tt>.
-	 */
-	public String getIntegrationResponseParser() {
-		return integrationResponseParser;
-	}
+    /**
+     * Getter method for property <tt>integrationResponseParser</tt>.
+     */
+    public String getIntegrationResponseParser() {
+        return integrationResponseParser;
+    }
 
-	/**
-	 * Setter method for property <tt>integrationResponseParser</tt>.
-	 */
-	public void setIntegrationResponseParser(String integrationResponseParser) {
-		this.integrationResponseParser = integrationResponseParser;
-	}
+    /**
+     * Setter method for property <tt>integrationResponseParser</tt>.
+     */
+    public void setIntegrationResponseParser(String integrationResponseParser) {
+        this.integrationResponseParser = integrationResponseParser;
+    }
 
-	/**
-	 * Getter method for property <tt>interfaceResponseHeaderAssemble</tt>.
-	 */
-	public String getInterfaceResponseHeaderAssemble() {
-		return interfaceResponseHeaderAssemble;
-	}
+    /**
+     * Getter method for property <tt>interfaceResponseHeaderAssemble</tt>.
+     */
+    public String getInterfaceResponseHeaderAssemble() {
+        return interfaceResponseHeaderAssemble;
+    }
 
-	/**
-	 * Setter method for property <tt>interfaceResponseHeaderAssemble</tt>.
-	 */
-	public void setInterfaceResponseHeaderAssemble(String interfaceResponseHeaderAssemble) {
-		this.interfaceResponseHeaderAssemble = interfaceResponseHeaderAssemble;
-	}
+    /**
+     * Setter method for property <tt>interfaceResponseHeaderAssemble</tt>.
+     */
+    public void setInterfaceResponseHeaderAssemble(String interfaceResponseHeaderAssemble) {
+        this.interfaceResponseHeaderAssemble = interfaceResponseHeaderAssemble;
+    }
 
-	/**
-	 * Getter method for property <tt>interfaceResponseBodyAssemble</tt>.
-	 */
-	public String getInterfaceResponseBodyAssemble() {
-		return interfaceResponseBodyAssemble;
-	}
+    /**
+     * Getter method for property <tt>interfaceResponseBodyAssemble</tt>.
+     */
+    public String getInterfaceResponseBodyAssemble() {
+        return interfaceResponseBodyAssemble;
+    }
 
-	/**
-	 * Setter method for property <tt>interfaceResponseBodyAssemble</tt>.
-	 */
-	public void setInterfaceResponseBodyAssemble(String interfaceResponseBodyAssemble) {
-		this.interfaceResponseBodyAssemble = interfaceResponseBodyAssemble;
-	}
+    /**
+     * Setter method for property <tt>interfaceResponseBodyAssemble</tt>.
+     */
+    public void setInterfaceResponseBodyAssemble(String interfaceResponseBodyAssemble) {
+        this.interfaceResponseBodyAssemble = interfaceResponseBodyAssemble;
+    }
 
-	/**
-	 * Getter method for property <tt>limitConn</tt>.
-	 */
-	public Integer getLimitConn() {
-		return limitConn;
-	}
+    /**
+     * Getter method for property <tt>limitConn</tt>.
+     */
+    public Integer getLimitConn() {
+        return limitConn;
+    }
 
-	/**
-	 * Setter method for property <tt>limitConn</tt>.
-	 */
-	public void setLimitConn(Integer limitConn) {
-		this.limitConn = limitConn;
-	}
+    /**
+     * Setter method for property <tt>limitConn</tt>.
+     */
+    public void setLimitConn(Integer limitConn) {
+        this.limitConn = limitConn;
+    }
 
-	/**
-	 * Getter method for property <tt>communicationProperties</tt>.
-	 */
-	public String getCommunicationProperties() {
-		return communicationProperties;
-	}
+    /**
+     * Getter method for property <tt>communicationProperties</tt>.
+     */
+    public String getCommunicationProperties() {
+        return communicationProperties;
+    }
 
-	/**
-	 * Setter method for property <tt>communicationProperties</tt>.
-	 */
-	public void setCommunicationProperties(String communicationProperties) {
-		this.communicationProperties = communicationProperties;
-	}
+    /**
+     * Setter method for property <tt>communicationProperties</tt>.
+     */
+    public void setCommunicationProperties(String communicationProperties) {
+        this.communicationProperties = communicationProperties;
+    }
 
-	/**
-	 * Getter method for property <tt>httpStatusToErrorCode</tt>.
-	 */
-	public String getHttpStatusToErrorCode() {
-		return httpStatusToErrorCode;
-	}
+    /**
+     * Getter method for property <tt>httpStatusToErrorCode</tt>.
+     */
+    public String getHttpStatusToErrorCode() {
+        return httpStatusToErrorCode;
+    }
 
-	/**
-	 * Setter method for property <tt>httpStatusToErrorCode</tt>.
-	 */
-	public void setHttpStatusToErrorCode(String httpStatusToErrorCode) {
-		this.httpStatusToErrorCode = httpStatusToErrorCode;
-	}
+    /**
+     * Setter method for property <tt>httpStatusToErrorCode</tt>.
+     */
+    public void setHttpStatusToErrorCode(String httpStatusToErrorCode) {
+        this.httpStatusToErrorCode = httpStatusToErrorCode;
+    }
 
-	/**
-	 * @see Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-	}
+    /**
+     * @see Object#toString()
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

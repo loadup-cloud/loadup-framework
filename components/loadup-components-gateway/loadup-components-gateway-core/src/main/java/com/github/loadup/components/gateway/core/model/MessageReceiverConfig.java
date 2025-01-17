@@ -34,87 +34,87 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 public class MessageReceiverConfig {
 
-	/**
-	 * 发送者ID
-	 */
-	private String MessageReceiverId;
+    /**
+     * 发送者ID
+     */
+    private String MessageReceiverId;
 
-	/**
-	 * 发送者Name
-	 */
-	private String MessageReceiverName;
+    /**
+     * 发送者Name
+     */
+    private String MessageReceiverName;
 
-	/**
-	 * 安全组件Code
-	 */
-	private String certCode;
+    /**
+     * 安全组件Code
+     */
+    private String certCode;
 
-	/**
-	 * 扩展参数
-	 */
-	private Properties properties = new Properties();
+    /**
+     * 扩展参数
+     */
+    private Properties properties = new Properties();
 
-	/**
-	 * Getter method for property <tt>MessageReceiverId</tt>.
-	 */
-	public String getMessageReceiverId() {
-		return MessageReceiverId;
-	}
+    /**
+     * Getter method for property <tt>MessageReceiverId</tt>.
+     */
+    public String getMessageReceiverId() {
+        return MessageReceiverId;
+    }
 
-	/**
-	 * Setter method for property <tt>MessageReceiverId</tt>.
-	 */
-	public void setMessageReceiverId(String messageReceiverId) {
-		MessageReceiverId = messageReceiverId;
-	}
+    /**
+     * Setter method for property <tt>MessageReceiverId</tt>.
+     */
+    public void setMessageReceiverId(String messageReceiverId) {
+        MessageReceiverId = messageReceiverId;
+    }
 
-	/**
-	 * Getter method for property <tt>MessageReceiverName</tt>.
-	 */
-	public String getMessageReceiverName() {
-		return MessageReceiverName;
-	}
+    /**
+     * Getter method for property <tt>MessageReceiverName</tt>.
+     */
+    public String getMessageReceiverName() {
+        return MessageReceiverName;
+    }
 
-	/**
-	 * Setter method for property <tt>MessageReceiverName</tt>.
-	 */
-	public void setMessageReceiverName(String messageReceiverName) {
-		MessageReceiverName = messageReceiverName;
-	}
+    /**
+     * Setter method for property <tt>MessageReceiverName</tt>.
+     */
+    public void setMessageReceiverName(String messageReceiverName) {
+        MessageReceiverName = messageReceiverName;
+    }
 
-	/**
-	 * Getter method for property <tt>certCode</tt>.
-	 */
-	public String getCertCode() {
-		return certCode;
-	}
+    /**
+     * Getter method for property <tt>certCode</tt>.
+     */
+    public String getCertCode() {
+        return certCode;
+    }
 
-	/**
-	 * Setter method for property <tt>certCode</tt>.
-	 */
-	public void setCertCode(String certCode) {
-		this.certCode = certCode;
-	}
+    /**
+     * Setter method for property <tt>certCode</tt>.
+     */
+    public void setCertCode(String certCode) {
+        this.certCode = certCode;
+    }
 
-	/**
-	 * Getter method for property <tt>properties</tt>.
-	 */
-	public Properties getProperties() {
-		return properties;
-	}
+    /**
+     * Getter method for property <tt>properties</tt>.
+     */
+    public Properties getProperties() {
+        return properties;
+    }
 
-	/**
-	 * Setter method for property <tt>properties</tt>.
-	 */
-	public void setProperties(Properties properties) {
-		this.properties = properties;
-	}
+    /**
+     * Setter method for property <tt>properties</tt>.
+     */
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
 
-	/**
-	 * toString
-	 */
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-	}
+    /**
+     * toString
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+    }
 }

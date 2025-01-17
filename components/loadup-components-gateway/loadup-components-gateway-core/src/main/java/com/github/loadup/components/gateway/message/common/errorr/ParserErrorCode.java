@@ -37,68 +37,68 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum ParserErrorCode implements ResultCode {
 
-	/**
-	 * PARSE_ERROR
-	 */
-	PARSE_ERROR("PARSE_ERROR", "parse error", "U"),
+    /**
+     * PARSE_ERROR
+     */
+    PARSE_ERROR("PARSE_ERROR", "parse error", "U"),
 
-	/**
-	 * NOT_EXIST_SCRIPT
-	 */
-	NOT_EXIST_SCRIPT("NOT_EXIST_SCRIPT", "not exist script", "F");
+    /**
+     * NOT_EXIST_SCRIPT
+     */
+    NOT_EXIST_SCRIPT("NOT_EXIST_SCRIPT", "not exist script", "F");
 
-	/**
-	 * error message
-	 */
-	private final String message;
+    /**
+     * error message
+     */
+    private final String message;
 
-	/**
-	 * error code
-	 */
-	private final String code;
+    /**
+     * error code
+     */
+    private final String code;
 
-	private final String status;
+    private final String status;
 
-	ParserErrorCode(String code, String message, String status) {
-		this.code = code;
-		this.message = message;
-		this.status = status;
-	}
+    ParserErrorCode(String code, String message, String status) {
+        this.code = code;
+        this.message = message;
+        this.status = status;
+    }
 
-	/**
-	 * 获取枚举值
-	 */
-	public static GatewayErrorCode getEnumByCode(String code) {
-		for (GatewayErrorCode codeEnum : GatewayErrorCode.values()) {
-			if (StringUtils.equals(code, codeEnum.getCode())) {
-				return codeEnum;
-			}
-		}
-		return null;
-	}
+    /**
+     * 获取枚举值
+     */
+    public static GatewayErrorCode getEnumByCode(String code) {
+        for (GatewayErrorCode codeEnum : GatewayErrorCode.values()) {
+            if (StringUtils.equals(code, codeEnum.getCode())) {
+                return codeEnum;
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Gets get code.
-	 */
-	@Override
-	public String getCode() {
-		return this.code;
-	}
+    /**
+     * Gets get code.
+     */
+    @Override
+    public String getCode() {
+        return this.code;
+    }
 
-	/**
-	 * Gets get message.
-	 */
-	@Override
-	public String getMessage() {
-		return this.message;
-	}
+    /**
+     * Gets get message.
+     */
+    @Override
+    public String getMessage() {
+        return this.message;
+    }
 
-	/**
-	 * Get the status
-	 */
-	@Override
-	public String getStatus() {
-		return this.status;
-	}
+    /**
+     * Get the status
+     */
+    @Override
+    public String getStatus() {
+        return this.status;
+    }
 
 }

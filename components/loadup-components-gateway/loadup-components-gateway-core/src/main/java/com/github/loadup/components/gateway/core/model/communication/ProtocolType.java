@@ -30,49 +30,49 @@ package com.github.loadup.components.gateway.core.model.communication;
  *
  */
 public enum ProtocolType {
-	/**
-	 * HTTP
-	 */
-	HTTP,
+    /**
+     * HTTP
+     */
+    HTTP,
 
-	/**
-	 * HTTPS
-	 */
-	HTTPS,
+    /**
+     * HTTPS
+     */
+    HTTPS,
 
-	/**
-	 * TR
-	 */
-	TR,
+    /**
+     * TR
+     */
+    TR,
 
-	/**
-	 * SPRINGBEAN
-	 */
-	SPRINGBEAN,
+    /**
+     * SPRINGBEAN
+     */
+    SPRINGBEAN,
 
-	/**
-	 * PLUGINBEAN
-	 */
-	PLUGINBEAN;
+    /**
+     * PLUGINBEAN
+     */
+    PLUGINBEAN;
 
-	/**
-	 * 获取枚举代码
-	 */
-	public String getCode() {
-		return this.name();
-	}
+    /**
+     * 根据枚举代码，获取枚举
+     */
+    public static ProtocolType getEnumByCode(String code) {
+        for (ProtocolType type : ProtocolType.values()) {
+            if (type.getCode().equalsIgnoreCase(code)) {
+                return type;
+            }
+        }
 
-	/**
-	 * 根据枚举代码，获取枚举
-	 */
-	public static ProtocolType getEnumByCode(String code) {
-		for (ProtocolType type : ProtocolType.values()) {
-			if (type.getCode().equalsIgnoreCase(code)) {
-				return type;
-			}
-		}
+        //default HTTP
+        return HTTP;
+    }
 
-		//default HTTP
-		return HTTP;
-	}
+    /**
+     * 获取枚举代码
+     */
+    public String getCode() {
+        return this.name();
+    }
 }

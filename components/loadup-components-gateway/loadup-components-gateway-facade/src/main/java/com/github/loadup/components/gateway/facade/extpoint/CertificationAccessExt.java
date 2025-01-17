@@ -38,12 +38,12 @@ import java.io.IOException;
 @Extension
 public interface CertificationAccessExt {
 
-	/**
-	 * <p>
-	 * get the certification content
-	 * </p>
-	 *
-	 * @throws IOException io exception
-	 */
-	String getCertContent(String certAliasName, CertTypeEnum certType) throws IOException;
+    /**
+     * <p>
+     * get the certification content
+     * </p>
+     *
+     * @throws IOException io exception
+     */
+    String getCertContent(String certAliasName, CertTypeEnum certType) throws IOException;
 }

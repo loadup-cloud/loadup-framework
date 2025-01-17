@@ -30,7 +30,9 @@ import com.github.loadup.commons.dataobject.BaseDO;
 import com.github.loadup.commons.util.RandomUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jdbc.repository.config.*;
+import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
+import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
+import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
 import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback;
 
 @Configuration
@@ -38,13 +40,13 @@ import org.springframework.data.relational.core.mapping.event.BeforeConvertCallb
 @EnableJdbcRepositories(basePackages = "com.github.loadup")
 public class DataJdbcConfiguration extends AbstractJdbcConfiguration {
 
-	@Bean
-	BeforeConvertCallback<BaseDO> beforeSaveCallback() {
-		return (minion) -> {
-			if (minion.getId() == null) {
-				minion.setId(RandomUtil.randomString(20));
-			}
-			return minion;
-		};
-	}
+    @Bean
+    BeforeConvertCallback<BaseDO> beforeSaveCallback() {
+        return (minion) -> {
+            if (minion.getId() == null) {
+                minion.setId(RandomUtil.randomString(20));
+            }
+            return minion;
+        };
+    }
 }

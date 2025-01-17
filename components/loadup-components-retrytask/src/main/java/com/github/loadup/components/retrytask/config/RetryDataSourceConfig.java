@@ -47,28 +47,28 @@ public class RetryDataSourceConfig {
 
     /**
      * business type, users can define themselves
-     *
+     * <p>
      * DEFAULT(in default)
      */
-    private String              bizType = RetryTaskConstants.DEFAULT_BIZ_TYPE;
+    private String bizType = RetryTaskConstants.DEFAULT_BIZ_TYPE;
     /**
      * the mode of the relation of business tables and task tables
-     *
+     * <p>
      * SAME(in default, business tables and task tables are in the same database)
      * DIFFERENT(business tables and task tables are in the different database)
      */
-    private String              dbMode  = "SAME";
+    private String dbMode = "SAME";
     /**
      * datasource
      */
-    private DataSource          dataSource;
+    private DataSource dataSource;
     /**
      * the prefix of table name
      */
-    private String              tablePrefix;
+    private String tablePrefix;
     /**
      * sql sentence in every database
-     *
+     * <p>
      * key:  DbType-SqlType
      * value: sql sentence
      */

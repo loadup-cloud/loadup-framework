@@ -44,7 +44,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.security.*;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -58,147 +61,147 @@ import java.util.Iterator;
 @Component
 public class AlgSignaturePkcs7 extends AbstractAlgorithm {
 
-	/**
-	 * 日志定义
-	 */
-	private static Logger logger = LoggerFactory.getLogger("CERT-ALGO");
+    /**
+     * 日志定义
+     */
+    private static Logger logger = LoggerFactory.getLogger("CERT-ALGO");
 
-	/**
-	 * RSA 算法名字
-	 */
-	private static String KEY_ALGO_NAME = "RSA";
+    /**
+     * RSA 算法名字
+     */
+    private static String KEY_ALGO_NAME = "RSA";
 
-	static {
-		if (Security.getProvider("BC") == null) {
-			Security.addProvider(new BouncyCastleProvider());
-		}
-	}
+    static {
+        if (Security.getProvider("BC") == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+    }
 
-	/**
-	 * @see Algorithm#sign#sign(byte[], byte[], String)
-	 */
-	@Override
-	public byte[] sign(byte[] data, byte[] key, byte[] cert, String algorithm, boolean attach) {
-		try {
-			CMSTypedData cmsData = new CMSProcessableByteArray(data);//消息明文对象
-			CMSSignedDataGenerator gen = buildSignedGenerator(key, cert, algorithm);
-			CMSSignedData signed = gen.generate(cmsData, attach);
-			return signed.getEncoded();
-		} catch (Exception e) {
-			LogUtil.error(logger, e, genLogSign("PKCS7") + " sign error:");
-			throw new CertificationException(CertificationErrorCode.SIGN_ERROR, genLogSign("PKCS7"), e);
-		}
-	}
+    /**
+     * 恢复私钥
+     */
+    public static PrivateKey recoverPrivateKey(byte[] data) {
+        try {
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(data);
+            KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGO_NAME);
+            return keyFactory.generatePrivate(pkcs8EncodedKeySpec);
 
-	/**
-	 * @see Algorithm#verify(byte[], byte[], byte[], String, boolean)
-	 */
-	@Override
-	public boolean verify(byte[] unSignedData, byte[] signedData, byte[] key, String algorithm,
-						boolean attach) {
-		try {
-			CMSSignedData cmsdata = null;
-			if (attach) { //签名包含原文
-				cmsdata = new CMSSignedData(signedData);
-			} else { //签名里不包含原文
-				CMSProcessableByteArray plain = new CMSProcessableByteArray(unSignedData);
-				cmsdata = new CMSSignedData(plain, signedData);
-			}
-			SignerInformationVerifier verifier = this.buildSignerVerifier(key);
-			Collection<SignerInformation> c = cmsdata.getSignerInfos().getSigners(); //获取签名信息
-			Iterator<SignerInformation> it = c.iterator();
-			while (it.hasNext()) { //验证每一个签名
-				SignerInformation signer = it.next();
-				if (!signer.verify(verifier)) {
-					return false;
-				}
-			}
-			return true;
-		} catch (Exception e) {
-			LogUtil.error(logger, e, genLogSign("PKCS7") + "verify error:");
-			throw new CertificationException(CertificationErrorCode.SIGN_ERROR, genLogSign("PKCS7"), e);
-		}
+        } catch (Exception e) {
+            LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + " recover privateKey error:");
 
-	}
+            throw new CertificationException(CertificationErrorCode.RECOVER_PRIVATE_KEY_ERROR,
+                    genLogSign(KEY_ALGO_NAME), e);
+        }
+    }
 
-	/**
-	 * @throws Exception
-	 */
-	private CMSSignedDataGenerator buildSignedGenerator(byte[] key, byte[] cert,
-														String algorithm) throws Exception {
-		X509Certificate certificate = this.recoverCertificate(cert);
-		ContentSigner signer = new JcaContentSignerBuilder(algorithm).setProvider("BC")
-				.build(recoverPrivateKey(key));
-		CMSSignedDataGenerator generator = new CMSSignedDataGenerator();
-		generator.addSignerInfoGenerator(new JcaSignerInfoGeneratorBuilder(
-				new JcaDigestCalculatorProviderBuilder().setProvider("BC").build()).build(signer,
-				certificate));
-		//generator.addCertificates(null);
-		return generator;
-	}
+    /**
+     * 恢复证书
+     */
+    public static X509Certificate recoverCertificate(byte[] data) {
+        try {
+            InputStream certIn = new ByteArrayInputStream(data);
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            return (X509Certificate) cf.generateCertificate(certIn);
+        } catch (Exception e) {
+            LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + " recover certificate error:");
+            throw new CertificationException(CertificationErrorCode.RECOVER_KEY_ERROR,
+                    genLogSign(KEY_ALGO_NAME), e);
+        }
+    }
 
-	private SignerInformationVerifier buildSignerVerifier(byte[] key) throws Exception {
-		JcaSimpleSignerInfoVerifierBuilder sigVerifBuilder = new JcaSimpleSignerInfoVerifierBuilder();
-		SignerInformationVerifier signerInfoVerif = sigVerifBuilder.setProvider("BC")
-				.build(recoverPublicKey(key));
-		return signerInfoVerif;
-	}
+    /**
+     * 恢复公钥
+     */
+    public static PublicKey recoverPublicKey(byte[] data) {
+        try {
 
-	/**
-	 * 恢复私钥
-	 */
-	public static PrivateKey recoverPrivateKey(byte[] data) {
-		try {
-			PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(data);
-			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGO_NAME);
-			return keyFactory.generatePrivate(pkcs8EncodedKeySpec);
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(data);
+            KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGO_NAME);
+            return keyFactory.generatePublic(keySpec);
+        } catch (Exception e) {
+            LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + " recover publicKey error:");
 
-		} catch (Exception e) {
-			LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + " recover privateKey error:");
+            throw new CertificationException(CertificationErrorCode.RECOVER_PUBLIC_KEY_ERROR,
+                    genLogSign(KEY_ALGO_NAME), e);
+        }
+    }
 
-			throw new CertificationException(CertificationErrorCode.RECOVER_PRIVATE_KEY_ERROR,
-					genLogSign(KEY_ALGO_NAME), e);
-		}
-	}
+    /**
+     * @see Algorithm#sign#sign(byte[], byte[], String)
+     */
+    @Override
+    public byte[] sign(byte[] data, byte[] key, byte[] cert, String algorithm, boolean attach) {
+        try {
+            CMSTypedData cmsData = new CMSProcessableByteArray(data);//消息明文对象
+            CMSSignedDataGenerator gen = buildSignedGenerator(key, cert, algorithm);
+            CMSSignedData signed = gen.generate(cmsData, attach);
+            return signed.getEncoded();
+        } catch (Exception e) {
+            LogUtil.error(logger, e, genLogSign("PKCS7") + " sign error:");
+            throw new CertificationException(CertificationErrorCode.SIGN_ERROR, genLogSign("PKCS7"), e);
+        }
+    }
 
-	/**
-	 * 恢复证书
-	 */
-	public static X509Certificate recoverCertificate(byte[] data) {
-		try {
-			InputStream certIn = new ByteArrayInputStream(data);
-			CertificateFactory cf = CertificateFactory.getInstance("X.509");
-			return (X509Certificate) cf.generateCertificate(certIn);
-		} catch (Exception e) {
-			LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + " recover certificate error:");
-			throw new CertificationException(CertificationErrorCode.RECOVER_KEY_ERROR,
-					genLogSign(KEY_ALGO_NAME), e);
-		}
-	}
+    /**
+     * @see Algorithm#verify(byte[], byte[], byte[], String, boolean)
+     */
+    @Override
+    public boolean verify(byte[] unSignedData, byte[] signedData, byte[] key, String algorithm,
+                          boolean attach) {
+        try {
+            CMSSignedData cmsdata = null;
+            if (attach) { //签名包含原文
+                cmsdata = new CMSSignedData(signedData);
+            } else { //签名里不包含原文
+                CMSProcessableByteArray plain = new CMSProcessableByteArray(unSignedData);
+                cmsdata = new CMSSignedData(plain, signedData);
+            }
+            SignerInformationVerifier verifier = this.buildSignerVerifier(key);
+            Collection<SignerInformation> c = cmsdata.getSignerInfos().getSigners(); //获取签名信息
+            Iterator<SignerInformation> it = c.iterator();
+            while (it.hasNext()) { //验证每一个签名
+                SignerInformation signer = it.next();
+                if (!signer.verify(verifier)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            LogUtil.error(logger, e, genLogSign("PKCS7") + "verify error:");
+            throw new CertificationException(CertificationErrorCode.SIGN_ERROR, genLogSign("PKCS7"), e);
+        }
 
-	/**
-	 * 恢复公钥
-	 */
-	public static PublicKey recoverPublicKey(byte[] data) {
-		try {
+    }
 
-			X509EncodedKeySpec keySpec = new X509EncodedKeySpec(data);
-			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGO_NAME);
-			return keyFactory.generatePublic(keySpec);
-		} catch (Exception e) {
-			LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + " recover publicKey error:");
+    /**
+     * @throws Exception
+     */
+    private CMSSignedDataGenerator buildSignedGenerator(byte[] key, byte[] cert,
+                                                        String algorithm) throws Exception {
+        X509Certificate certificate = this.recoverCertificate(cert);
+        ContentSigner signer = new JcaContentSignerBuilder(algorithm).setProvider("BC")
+                .build(recoverPrivateKey(key));
+        CMSSignedDataGenerator generator = new CMSSignedDataGenerator();
+        generator.addSignerInfoGenerator(new JcaSignerInfoGeneratorBuilder(
+                new JcaDigestCalculatorProviderBuilder().setProvider("BC").build()).build(signer,
+                certificate));
+        //generator.addCertificates(null);
+        return generator;
+    }
 
-			throw new CertificationException(CertificationErrorCode.RECOVER_PUBLIC_KEY_ERROR,
-					genLogSign(KEY_ALGO_NAME), e);
-		}
-	}
+    private SignerInformationVerifier buildSignerVerifier(byte[] key) throws Exception {
+        JcaSimpleSignerInfoVerifierBuilder sigVerifBuilder = new JcaSimpleSignerInfoVerifierBuilder();
+        SignerInformationVerifier signerInfoVerif = sigVerifBuilder.setProvider("BC")
+                .build(recoverPublicKey(key));
+        return signerInfoVerif;
+    }
 
-	/**
-	 * 注册算法类到对应manager接口
-	 */
-	@Override
-	protected void doRegisterManager() {
-		Pkcs7SignatureManager.registerAlgo(AlgorithmEnum.PKCS7_SHA1, this);
-	}
+    /**
+     * 注册算法类到对应manager接口
+     */
+    @Override
+    protected void doRegisterManager() {
+        Pkcs7SignatureManager.registerAlgo(AlgorithmEnum.PKCS7_SHA1, this);
+    }
 
 }

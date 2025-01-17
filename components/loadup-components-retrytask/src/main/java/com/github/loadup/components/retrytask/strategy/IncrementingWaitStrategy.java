@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class IncrementingWaitStrategy implements RetryTaskStrategy {
     private long initialSleepTime = 1;
-    private long increment        = 5;
+    private long increment = 5;
 
     @Override
     public RetryStrategyType getStrategyType() {

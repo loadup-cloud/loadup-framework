@@ -30,7 +30,9 @@ import com.github.loadup.components.gateway.facade.config.model.CommunicationPro
 import com.github.loadup.components.gateway.facade.config.model.Constant;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * communication properties group index
@@ -38,11 +40,11 @@ import java.util.*;
 @Component
 public class CommunicationPropertiesGroupIndexExtImpl {
 
-	public List<List<String>> customIndexKeys(String tntInstId, String configName,
-											CommunicationPropertiesGroup communicationPropertiesGroup) {
+    public List<List<String>> customIndexKeys(String tntInstId, String configName,
+                                              CommunicationPropertiesGroup communicationPropertiesGroup) {
 
-		List<String> indexList = new ArrayList<>();
-		indexList.add(Constant.URL_INDEX_COLUMN);
-		return new ArrayList<>(Collections.singleton(indexList));
-	}
+        List<String> indexList = new ArrayList<>();
+        indexList.add(Constant.URL_INDEX_COLUMN);
+        return new ArrayList<>(Collections.singleton(indexList));
+    }
 }

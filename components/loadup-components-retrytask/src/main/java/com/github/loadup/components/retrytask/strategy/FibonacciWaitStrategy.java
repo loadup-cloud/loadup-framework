@@ -42,7 +42,7 @@ public class FibonacciWaitStrategy implements RetryTaskStrategy {
     /**
      * 1 unit 作为指数
      */
-    private long multiplier  = 1;
+    private long multiplier = 1;
     /**
      * 最大重试到 50 unit
      */
@@ -78,8 +78,12 @@ public class FibonacciWaitStrategy implements RetryTaskStrategy {
     }
 
     private long fib(long n) {
-        if (n == 0L) {return 0L;}
-        if (n == 1L) {return 1L;}
+        if (n == 0L) {
+            return 0L;
+        }
+        if (n == 1L) {
+            return 1L;
+        }
 
         long prevPrev = 0L;
         long prev = 1L;

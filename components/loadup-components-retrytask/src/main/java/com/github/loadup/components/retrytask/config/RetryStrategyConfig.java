@@ -44,7 +44,7 @@ public class RetryStrategyConfig {
 
     /**
      * business type, users can define themselves
-     *
+     * <p>
      * DEFAULT(in default)
      */
     private String bizType = RetryTaskConstants.DEFAULT_BIZ_TYPE;

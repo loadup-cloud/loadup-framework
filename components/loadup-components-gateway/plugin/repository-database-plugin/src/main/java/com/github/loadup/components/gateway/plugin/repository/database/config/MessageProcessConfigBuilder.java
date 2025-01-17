@@ -40,36 +40,36 @@ import org.springframework.stereotype.Component;
  */
 @Component("databaseMessageProcessConfigBuilder")
 public class MessageProcessConfigBuilder extends
-		AbstractInterfaceConfigBuilder<MessageProcessConfigDto> {
+        AbstractInterfaceConfigBuilder<MessageProcessConfigDto> {
 
-	/**
-	 * logger
-	 */
-	private static final Logger logger = LoggerFactory
-			.getLogger(MessageProcessConfigBuilder.class);
+    /**
+     * logger
+     */
+    private static final Logger logger = LoggerFactory
+            .getLogger(MessageProcessConfigBuilder.class);
 
-	/**
-	 * generic config build with template content, not template map
-	 */
-	public MessageProcessConfigDto buildByTemplateContent(String interfaceId,
-														String requestHeaderAssembleTemplate,
-														String requestAssembleTemplate,
-														String responseParserTemplate) {
-		if (StringUtils.isBlank(responseParserTemplate)) {
-			return null;
-		}
+    /**
+     * generic config build with template content, not template map
+     */
+    public MessageProcessConfigDto buildByTemplateContent(String interfaceId,
+                                                          String requestHeaderAssembleTemplate,
+                                                          String requestAssembleTemplate,
+                                                          String responseParserTemplate) {
+        if (StringUtils.isBlank(responseParserTemplate)) {
+            return null;
+        }
 
-		MessageProcessConfigDto messageProcessConfigDto = new MessageProcessConfigDto();
-		messageProcessConfigDto.setMessageProcessId(interfaceId);
-		try {
-			String parserClassName = MD5Util.getMD5String(responseParserTemplate);
-			messageProcessConfigDto.setParserClassName(parserClassName);
-		} catch (Exception ex) {
-			LogUtil.error(logger, ex, "Generate MD5 for parser class error.");
-		}
-		messageProcessConfigDto.setParserTemplate(responseParserTemplate);
-		messageProcessConfigDto.setHeaderTemplate(requestHeaderAssembleTemplate);
-		messageProcessConfigDto.setAssembleTemplate(requestAssembleTemplate);
-		return messageProcessConfigDto;
-	}
+        MessageProcessConfigDto messageProcessConfigDto = new MessageProcessConfigDto();
+        messageProcessConfigDto.setMessageProcessId(interfaceId);
+        try {
+            String parserClassName = MD5Util.getMD5String(responseParserTemplate);
+            messageProcessConfigDto.setParserClassName(parserClassName);
+        } catch (Exception ex) {
+            LogUtil.error(logger, ex, "Generate MD5 for parser class error.");
+        }
+        messageProcessConfigDto.setParserTemplate(responseParserTemplate);
+        messageProcessConfigDto.setHeaderTemplate(requestHeaderAssembleTemplate);
+        messageProcessConfigDto.setAssembleTemplate(requestAssembleTemplate);
+        return messageProcessConfigDto;
+    }
 }
