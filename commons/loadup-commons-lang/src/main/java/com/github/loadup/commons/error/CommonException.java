@@ -39,34 +39,34 @@ import lombok.Getter;
 @Getter
 public class CommonException extends RuntimeException {
 
-  @Serial private static final long serialVersionUID = 2713503013175560520L;
-  private final ResultCode resultCode;
+@Serial private static final long serialVersionUID = 2713503013175560520L;
+private final ResultCode resultCode;
 
-  public CommonException(ResultCode resultCode) {
+public CommonException(ResultCode resultCode) {
     this.resultCode = resultCode;
-  }
+}
 
-  public CommonException(ResultCode resultCode, String msg) {
+public CommonException(ResultCode resultCode, String msg) {
     super(msg);
     this.resultCode = resultCode;
-  }
+}
 
-  public CommonException(ResultCode resultCode, Throwable cause) {
+public CommonException(ResultCode resultCode, Throwable cause) {
     super(cause);
     this.resultCode = resultCode;
-  }
+}
 
-  public CommonException(ResultCode resultCode, String msg, Throwable cause) {
+public CommonException(ResultCode resultCode, String msg, Throwable cause) {
     super(msg, cause);
     this.resultCode = resultCode;
-  }
+}
 
-  @Override
-  public String toString() {
+@Override
+public String toString() {
     Map<String, String> map = new HashMap<>();
     if (resultCode != null) {
-      map.put("code", resultCode.getCode());
-      map.put("message", resultCode.getMessage());
+    map.put("code", resultCode.getCode());
+    map.put("message", resultCode.getMessage());
     }
     map.put("extraMessage", getMessage());
 
@@ -77,5 +77,5 @@ public class CommonException extends RuntimeException {
         + "\"\",\"extraMessage\":\"\""
         + map.getOrDefault("extraMessage", "")
         + "\"\"}";
-  }
+}
 }
