@@ -111,7 +111,7 @@
                         <formatAnnotations/>  <!-- fixes formatting of type annotations, see below -->
                         <importOrder/> <!-- standard import order -->
                         <licenseHeader>
-                            <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
+                          <file>${maven.multiModuleProjectDirectory}/LICENSE.txt</file>
                         </licenseHeader>
                         <!-- make sure every file has the following copyright header.
                           optionally, Spotless can set copyright years by digging
