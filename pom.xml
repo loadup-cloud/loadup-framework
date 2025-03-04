@@ -75,17 +75,15 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>2.44.2</version>
+                <version>2.44.3</version>
                 <configuration>
                     <formats>
-                        <!-- you can define as many formats as you want, each is independent -->
+                       <!-- you can define as many formats as you want, each is independent -->
                         <format>
-                            <!-- define the files to apply to -->
                             <includes>
                                 <include>src/main/java/**/*.java</include>
                                 <include>src/test/java/**/*.java</include>
-                            </includes>
-                            <!-- define the steps to apply to those files -->
+                            </includes>    <!-- define the steps to apply to those files -->
                             <trimTrailingWhitespace/>
                             <endWithNewline/>
                             <indent>
@@ -100,10 +98,11 @@
                     </formats>
                     <!-- define a language-specific format -->
                     <java>
+
                         <!-- no need to specify files, inferred automatically, but you can if you want -->
                         <!-- apply a specific flavor of google-java-format and reflow long strings -->
                         <googleJavaFormat>
-                            <version>1.8</version>
+                            <version>1.25.2</version>
                             <style>GOOGLE</style>
                             <reflowLongStrings>true</reflowLongStrings>
                             <formatJavadoc>true</formatJavadoc>
@@ -111,7 +110,9 @@
                         <removeUnusedImports/> <!-- self-explanatory -->
                         <formatAnnotations/>  <!-- fixes formatting of type annotations, see below -->
                         <importOrder/> <!-- standard import order -->
-
+                        <licenseHeader>
+                            <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
+                        </licenseHeader>
                         <!-- make sure every file has the following copyright header.
                           optionally, Spotless can set copyright years by digging
                           through git history (see "license" section below) -->

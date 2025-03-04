@@ -4,7 +4,7 @@ package com.github.loadup.components.cache.caffeine.cfg;
  * #%L
  * loadup-components-cache-binder-caffeine
  * %%
- * Copyright (C) 2022 - 2023 loadup_cloud
+ * Copyright (C) 2022 - 2025 loadup_cloud
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
