@@ -50,7 +50,7 @@ import java.util.Map;
  * CacheManger.java
  * </p>
  */
-@Component("cacheManager")
+@Component("gatewayCacheManager")
 public class CacheManager {
 
     private static final Logger logger = LoggerFactory.getLogger(CacheManager.class);

@@ -53,7 +53,7 @@ public class ConfigInitListener implements ApplicationListener<ApplicationStarte
             .getLogger(ConfigInitListener.class);
 
     @Autowired
-    @Qualifier("cacheManager")
+    @Qualifier("gatewayCacheManager")
     private CacheManager cacheManager;
 
     @Autowired

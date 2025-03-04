@@ -30,6 +30,7 @@ import com.github.loadup.commons.request.query.IdQuery;
 import com.github.loadup.commons.result.MultiResponse;
 import com.github.loadup.commons.result.Response;
 import com.github.loadup.commons.result.SingleResponse;
+import com.github.loadup.components.cache.api.CacheBinding;
 import com.github.loadup.components.tracer.TraceUtil;
 import com.github.loadup.components.upms.client.api.UserService;
 import com.github.loadup.components.upms.client.cmd.UserChangePasswordCmd;
@@ -50,10 +51,13 @@ public class UserController {
 
     @Resource
     private UserService userService;
+    @Resource
+    private CacheBinding cacheBinding;
 
     @PostMapping(value = "/queryById")
     public SingleResponse<UserDTO> queryById(@RequestBody IdQuery query) {
         log.info("queryById:{}", TraceUtil.getTracerId());
+        cacheBinding.set("test", "test", 1000);
         return userService.getUserById(query);
     }
 

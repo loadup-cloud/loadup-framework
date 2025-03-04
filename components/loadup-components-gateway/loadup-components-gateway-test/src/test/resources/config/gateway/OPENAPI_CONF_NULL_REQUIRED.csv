@@ -1,4 +1,0 @@
-open_uri,integration_uri,security_strategy_code,integration_service_request_header_assemble,integration_service_request_assemble,integration_service_response_parser,communication_properties
-http://wf.com/rate/query.htm,http://wf.rate.query,SIGN_RSA_0,testSPIHeaderAssemble,testSPIAssemble,testSPIResParser.java,SEND_CHARSET=UTF-8
-http://fake001.API.com/query.htm,,SIGN_RSA_0,testSPIHeaderAssemble,testSPIAssemble,testSPIResParser.java,SEND_CHARSET=UTF-8
-http://fake002.API.com/query.htm,http://wf.rate.query,,testSPIHeaderAssemble,testSPIAssemble,testSPIResParser.java,SEND_CHARSET=UTF-8

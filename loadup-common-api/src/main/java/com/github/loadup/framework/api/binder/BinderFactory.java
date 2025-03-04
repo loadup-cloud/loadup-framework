@@ -1,10 +1,10 @@
-package com.github.loadup.components.gateway.service.impl;
+package com.github.loadup.framework.api.binder;
 
 /*-
  * #%L
- * loadup-components-gateway-core
+ * loadup-api
  * %%
- * Copyright (C) 2022 - 2025 loadup_cloud
+ * Copyright (C) 2022 - 2023 loadup_cloud
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,36 +26,6 @@ package com.github.loadup.components.gateway.service.impl;
  * #L%
  */
 
-import com.github.loadup.components.gateway.cache.manager.CacheManager;
-import com.github.loadup.components.gateway.facade.api.CacheService;
-import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+public interface BinderFactory {
 
-/**
- * <p>
- * CacheServiceImpl.java
- * </p>
- */
-@Component("cacheService")
-public class CacheServiceImpl implements CacheService {
-
-    @Resource
-    @Qualifier("gatewayCacheManager")
-    private CacheManager cacheManager;
-
-    @Override
-    public void refreshInterface(String interfaceId) {
-        cacheManager.refreshByInterfaceId(interfaceId);
-    }
-
-    @Override
-    public void refreshSecurity(String clientId) {
-        cacheManager.refreshCert(clientId);
-    }
-
-    @Override
-    public void refreshAll() {
-        cacheManager.refresh();
-    }
 }

@@ -1,10 +1,10 @@
-package com.github.loadup.components.gateway.service.impl;
+package com.github.loadup.components.cache.caffeine.cfg;
 
 /*-
  * #%L
- * loadup-components-gateway-core
+ * loadup-components-cache-binder-caffeine
  * %%
- * Copyright (C) 2022 - 2025 loadup_cloud
+ * Copyright (C) 2022 - 2023 loadup_cloud
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,36 +26,32 @@ package com.github.loadup.components.gateway.service.impl;
  * #L%
  */
 
-import com.github.loadup.components.gateway.cache.manager.CacheManager;
-import com.github.loadup.components.gateway.facade.api.CacheService;
-import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-/**
- * <p>
- * CacheServiceImpl.java
- * </p>
- */
-@Component("cacheService")
-public class CacheServiceImpl implements CacheService {
+@Getter
+@Setter
+@Component
+@ConfigurationProperties(prefix = "spring.cache.caffeine")
+public class CaffeineCacheProperties {
+    /**
+     * init Capacity
+     * spring.cache.caffeine.init-cache-capacity
+     */
+    private Integer initCacheCapacity = 256;
+    /**
+     * max
+     * delete by recently or very often
+     * <p>
+     * spring.cache.caffeine.max-cache-capacity
+     */
+    private Long maxCacheCapacity = 10000L;
+    /**
+     * allow null as value or not
+     * spring.cache.caffeine.allow-null-value
+     */
+    private Boolean allowNullValue = Boolean.TRUE;
 
-    @Resource
-    @Qualifier("gatewayCacheManager")
-    private CacheManager cacheManager;
-
-    @Override
-    public void refreshInterface(String interfaceId) {
-        cacheManager.refreshByInterfaceId(interfaceId);
-    }
-
-    @Override
-    public void refreshSecurity(String clientId) {
-        cacheManager.refreshCert(clientId);
-    }
-
-    @Override
-    public void refreshAll() {
-        cacheManager.refresh();
-    }
 }

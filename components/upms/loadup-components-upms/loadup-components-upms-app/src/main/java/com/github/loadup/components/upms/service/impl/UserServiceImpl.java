@@ -32,6 +32,7 @@ import com.github.loadup.commons.result.*;
 import com.github.loadup.commons.template.ServiceTemplate;
 import com.github.loadup.commons.util.PasswordUtils;
 import com.github.loadup.commons.util.ValidateUtils;
+import com.github.loadup.components.cache.api.CacheBinding;
 import com.github.loadup.components.upms.client.api.UserService;
 import com.github.loadup.components.upms.client.cmd.UserChangePasswordCmd;
 import com.github.loadup.components.upms.client.cmd.UserRolesSaveCmd;
@@ -52,10 +53,15 @@ public class UserServiceImpl implements UserService {
     @Resource
     private UserGateway userGateway;
 
+    @Resource
+    private CacheBinding cacheBinding;
+
     @Override
     public SingleResponse<UserDTO> getUserById(IdQuery query) {
         User user = userGateway.getById(query.getId());
         UserDTO userDTO = UserDTOConvertor.INSTANCE.toUserDTO(user);
+        cacheBinding.set("test", userDTO, 1000);
+        Object o = cacheBinding.get("test");
         return SingleResponse.of(userDTO);
     }
 

@@ -15,14 +15,15 @@
     <packaging>pom</packaging>
     <modules>
         <!--        <module>loadup-dependencies</module>-->
+        <module>loadup-common-api</module>
         <module>commons/loadup-commons-dto</module>
         <module>commons/loadup-commons-lang</module>
         <module>commons/loadup-commons-util</module>
         <!--        <module>components/loadup-components-retrytask</module>-->
-        <!--        <module>components/cache/loadup-components-cache-api</module>-->
-        <!--            <module>components/cache/loadup-components-cache-binder-redis</module>-->
-        <!--        <module>components/cache/loadup-components-cache-binder-caffeine</module>-->
+        <module>components/loadup-components-cache/loadup-components-cache-api</module>
+        <module>components/loadup-components-cache/loadup-components-cache-binder-caffeine</module>
         <!--        <module>components/cache/loadup-components-cache-test</module>-->
+        <!--            <module>components/cache/loadup-components-cache-binder-redis</module>-->
         <module>components/upms/loadup-components-upms</module>
         <module>starter/loadup-framework-liquibase-starter</module>
         <module>starter/loadup-framework-data-jdbc-starter</module>
@@ -35,7 +36,6 @@
         <!--    <module>components/gateway/loadup-components-gateway-domain</module>-->
         <!--    <module>components/gateway/loadup-components-gateway-starter</module>-->
         <!--    <module>components/gateway/loadup-components-gateway-app</module>-->
-        <!--    <module>loadup-api</module>-->
         <module>launcher</module>
     </modules>
     <properties>

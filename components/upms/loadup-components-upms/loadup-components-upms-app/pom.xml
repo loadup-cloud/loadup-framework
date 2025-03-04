@@ -40,6 +40,12 @@
             <artifactId>mysql-connector-j</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.loadup.components</groupId>
+            <artifactId>loadup-components-cache-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
 
 
         <!--        <dependency>-->

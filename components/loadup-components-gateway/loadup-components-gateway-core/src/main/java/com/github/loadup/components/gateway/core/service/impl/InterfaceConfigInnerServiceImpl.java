@@ -30,6 +30,7 @@ import com.github.loadup.components.gateway.cache.manager.CacheManager;
 import com.github.loadup.components.gateway.core.model.*;
 import com.github.loadup.components.gateway.core.service.InterfaceConfigInnerService;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -44,6 +45,7 @@ public class InterfaceConfigInnerServiceImpl implements InterfaceConfigInnerServ
      * cache manager service
      */
     @Resource
+    @Qualifier("gatewayCacheManager")
     private CacheManager cacheManager;
 
     /**
