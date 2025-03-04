@@ -87,7 +87,7 @@ public class OpenTelemetryConfig {
                 .setLoggerProvider(sdkLoggerProvider)
                 .setPropagators(ContextPropagators.create(
                         TextMapPropagator.composite(W3CTraceContextPropagator.getInstance(), W3CBaggagePropagator.getInstance())))
-                .buildAndRegisterGlobal();
+                .build();
 
         return openTelemetry;
     }
