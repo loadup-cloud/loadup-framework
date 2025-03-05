@@ -49,5 +49,5 @@ public class SimpleUserDTO extends DTO {
     private LocalDate birthday;
     private LocalDateTime registeredTime;
     private String userType;
-
 }
+

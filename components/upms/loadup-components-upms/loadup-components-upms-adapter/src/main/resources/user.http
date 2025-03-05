@@ -24,6 +24,6 @@ Content-Type: application/json
     "nickname": "test",
     "password": "123456",
     "birthday": "2024-01-01",
-    "registeredTime": "2024-01-02T12:00:00"
+    "registeredTime": "2024-01-02 12:00:00"
   }
 }
