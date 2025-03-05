@@ -27,7 +27,7 @@ package com.github.loadup.commons.enums;
  */
 
 /**
- * @author Laysan
+ * @author Lise
  * @since 1.0.0
  */
 public interface IEnum {

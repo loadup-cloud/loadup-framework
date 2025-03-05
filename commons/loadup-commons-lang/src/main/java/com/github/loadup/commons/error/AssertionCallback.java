@@ -27,7 +27,7 @@ package com.github.loadup.commons.error;
  */
 
 /**
- * @author Laysan
+ * @author Lise
  * @since 1.0.0
  */
 public interface AssertionCallback {

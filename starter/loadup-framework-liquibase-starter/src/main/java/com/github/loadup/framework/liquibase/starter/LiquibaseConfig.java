@@ -36,7 +36,7 @@ import javax.sql.DataSource;
 /**
  * Configuration initialization when ApplicationStartedEvent
  *
- * @author Laysan
+ * @author Lise
  */
 @Configuration
 @ConditionalOnBean(DataSource.class)

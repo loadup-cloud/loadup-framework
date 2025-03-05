@@ -33,10 +33,10 @@ import org.springframework.context.annotation.Bean;
 
 /**
  * <p>
- * SpiAutoConfiguration.java, v 0.1 2020-03-13 9:52 AM Laysan Exp $
+ * SpiAutoConfiguration.java, v 0.1 2020-03-13 9:52 AM Lise Exp $
  * </p>
  *
- * @author Laysan
+ * @author Lise
  * @since SpiAutoConfiguration
  */
 public class SpiAutoConfiguration {

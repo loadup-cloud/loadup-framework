@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 /**
- * @author Laysan
+ * @author Lise
  */
 @Component
 public class SequenceStrategy implements RetryTaskStrategy {

@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * @author Laysan
+ * @author Lise
  * @since 1.0.0
  */
 

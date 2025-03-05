@@ -33,7 +33,7 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 
 /**
- * @author Laysan
+ * @author Lise
  */
 @Slf4j
 public abstract class AbstractScheduler {

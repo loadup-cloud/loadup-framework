@@ -36,7 +36,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;
 
 /**
- * @author Laysan
+ * @author Lise
  */
 @ConfigurationProperties(prefix = "retrytask")
 @Getter

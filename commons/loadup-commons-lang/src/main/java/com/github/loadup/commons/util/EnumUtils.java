@@ -31,7 +31,7 @@ import com.github.loadup.commons.enums.IEnum;
 import java.util.Arrays;
 
 /**
- * @author Laysan
+ * @author Lise
  */
 public class EnumUtils {
     /**

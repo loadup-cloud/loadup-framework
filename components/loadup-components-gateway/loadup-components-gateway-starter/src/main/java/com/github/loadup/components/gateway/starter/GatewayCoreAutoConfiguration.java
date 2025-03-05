@@ -31,7 +31,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author Laysan
+ * @author Lise
  */
 @Configuration
 @AutoConfigureOrder(0)

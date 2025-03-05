@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * @author Laysan
+ * @author Lise
  * @since 1.0.0
  */
 public class StringUtils extends org.apache.commons.lang3.StringUtils {

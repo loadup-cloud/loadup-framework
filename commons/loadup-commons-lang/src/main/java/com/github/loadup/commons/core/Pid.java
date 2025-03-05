@@ -29,7 +29,7 @@ package com.github.loadup.commons.core;
 /**
  * 进程ID单例封装<br>
  *
- * @author Laysan
+ * @author Lise
  * @since 1.0.0
  */
 import java.lang.management.ManagementFactory;

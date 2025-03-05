@@ -31,10 +31,10 @@ import com.github.loadup.components.gateway.facade.spi.OauthService;
 
 /**
  * <p>
- * OauthService.java, v 0.1 2020-03-13 9:54 上午 Laysan Exp $
+ * OauthService.java, v 0.1 2020-03-13 9:54 上午 Lise Exp $
  * </p>
  *
- * @author Laysan
+ * @author Lise
  */
 public class OauthServiceImpl implements OauthService {
 

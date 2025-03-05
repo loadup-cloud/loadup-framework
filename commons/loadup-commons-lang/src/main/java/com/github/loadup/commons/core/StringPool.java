@@ -27,7 +27,7 @@ package com.github.loadup.commons.core;
  */
 
 /**
- * @author Laysan
+ * @author Lise
  * @since 1.0.0
  */
 public interface StringPool {

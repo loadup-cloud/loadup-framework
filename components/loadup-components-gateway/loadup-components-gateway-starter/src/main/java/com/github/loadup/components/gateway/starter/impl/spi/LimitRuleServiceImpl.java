@@ -45,7 +45,7 @@ import org.springframework.stereotype.Service;
  * Limit Rule service
  * contains standalone and distributed service, chosen by config
  *
- * @author Laysan
+ * @author Lise
  * @Date: 2020/8/11 4:01 PM
  */
 @Service

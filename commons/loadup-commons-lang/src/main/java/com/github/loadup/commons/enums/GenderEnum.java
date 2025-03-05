@@ -31,7 +31,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * @author Laysan
+ * @author Lise
  * @since 1.0.0
  */
 @Getter

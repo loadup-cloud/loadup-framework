@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
 /**
  * Configuration initialization when ApplicationStartedEvent
  *
- * @author Laysan
+ * @author Lise
  */
 @Component
 @Order(0)

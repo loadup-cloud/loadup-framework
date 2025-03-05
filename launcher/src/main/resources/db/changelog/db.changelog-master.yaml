@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 1
-      author: Laysan
+      author: Lise
       changes:
         - createTable:
             tableName: upms_user
@@ -225,7 +225,7 @@ databaseChangeLog:
                   type: varchar(32)
   - changeSet:
       id: 2
-      author: Laysan
+      author: Lise
       changes:
         - addColumn:
             tableName: upms_depart
@@ -235,7 +235,7 @@ databaseChangeLog:
                   type: varchar(32)
   - changeSet:
       id: 3
-      author: Laysan
+      author: Lise
       changes:
         - addNotNullConstraint:
             catalogName: loadup-boot

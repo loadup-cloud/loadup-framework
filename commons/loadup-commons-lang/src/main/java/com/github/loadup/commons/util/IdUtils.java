@@ -29,7 +29,7 @@ package com.github.loadup.commons.util;
 import java.util.UUID;
 
 /**
- * @author Laysan
+ * @author Lise
  * @since 1.0.0
  */
 public class IdUtils {

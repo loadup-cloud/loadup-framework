@@ -47,7 +47,7 @@ import io.opentelemetry.api.trace.Span;
 import org.slf4j.MDC;
 
 /**
- * @author Laysan
+ * @author Lise
  */
 public class MDCUtils {
 

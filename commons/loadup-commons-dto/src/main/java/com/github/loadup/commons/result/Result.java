@@ -35,7 +35,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * @author Laysan
+ * @author Lise
  * @since 1.0.0
  */
 @Getter

@@ -13,7 +13,7 @@ import lombok.Data;
 import org.apache.commons.io.IOUtils;
 
 /**
- * @author Laysan
+ * @author Lise
  */
 @Data
 public class CaptchaResult extends DTO {
