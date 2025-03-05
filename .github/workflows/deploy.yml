@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'librca'
+          distribution: 'liberica'
           cache: 'maven'
           cache-dependency-path: 'pom.xml'
       - name: Publish package
