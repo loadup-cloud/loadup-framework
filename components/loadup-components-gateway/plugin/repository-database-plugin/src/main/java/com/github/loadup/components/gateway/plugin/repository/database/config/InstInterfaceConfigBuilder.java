@@ -46,5 +46,4 @@ public class InstInterfaceConfigBuilder extends AbstractInterfaceConfigBuilder<I
         instConfigDto.setInterfaceId(interfaceId);
         return instConfigDto;
     }
-
 }

@@ -56,5 +56,4 @@ public class SyncTaskStrategyExecutor implements TaskStrategyExecutor {
 
         retryTaskExecutor.execute(retryTask);
     }
-
 }

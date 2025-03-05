@@ -64,7 +64,5 @@ public class AsyncTaskStrategyExecutor implements TaskStrategyExecutor {
         RetryTaskRunner retryTaskRunner = new RetryTaskRunner(retryTaskExecutor, retryTask);
 
         retryTaskExecutorThreadPool.execute(retryTaskRunner);
-
     }
-
 }

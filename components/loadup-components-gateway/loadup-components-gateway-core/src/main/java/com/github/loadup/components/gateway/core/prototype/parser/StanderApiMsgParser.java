@@ -66,7 +66,7 @@ public class StanderApiMsgParser implements MessageParser {
         UnifyMsg mesResult = new UnifyMsg();
         boolean verifySignatureSucceed = true;
 
-        //1. verify the parameter
+        // 1. verify the parameter
         String message = String.valueOf(messageEnvelope.getContent());
         Map<String, String> headerMap = messageEnvelope.getHeaders();
 
@@ -74,16 +74,17 @@ public class StanderApiMsgParser implements MessageParser {
             throw new CommonException(PARAM_ILLEGAL);
         }
         String clientId = headerMap.get(KEY_HTTP_CLIENT_ID);
-        ////2.2 进行签名验证
+        //// 2.2 进行签名验证
         if (messageEnvelope.isNeedVerifySignature()) {
-            verifySignatureSucceed = getVerifySignResult(messageEnvelope.getSignatureCertCode(), clientId, messageEnvelope);
+            verifySignatureSucceed =
+                    getVerifySignResult(messageEnvelope.getSignatureCertCode(), clientId, messageEnvelope);
         }
-        ////2.3 验证失败直接返回
+        //// 2.3 验证失败直接返回
         if (!verifySignatureSucceed) {
             throw new CommonException(INVALID_SIGNATURE);
         }
 
-        //3 返回最终结果
+        // 3 返回最终结果
         Map<String, Object> jsonObject = new HashMap<>();
         try {
             jsonObject = JsonUtil.toJsonMap(message);
@@ -92,8 +93,8 @@ public class StanderApiMsgParser implements MessageParser {
             LogUtil.error(logger, e, "json parse fail");
             jsonObject.put(KEY_REQUEST_BODY, message);
         }
-        //jsonObject.put("clientId", clientId);
-        //jsonObject.put(KEY_HTTP_CLIENT_ID, headerMap.get(KEY_HTTP_CLIENT_ID));
+        // jsonObject.put("clientId", clientId);
+        // jsonObject.put(KEY_HTTP_CLIENT_ID, headerMap.get(KEY_HTTP_CLIENT_ID));
         mesResult.addField(KEY_PARSE_RESULT, JsonUtil.toJSONString(jsonObject));
         mesResult.addField(KEY_HTTP_CLIENT_ID, headerMap.get(KEY_HTTP_CLIENT_ID));
         return mesResult;
@@ -116,5 +117,4 @@ public class StanderApiMsgParser implements MessageParser {
     private boolean verifyOpenApiParamsFail(Map<String, String> extMap) {
         return CollectionUtils.isEmpty(extMap);
     }
-
 }

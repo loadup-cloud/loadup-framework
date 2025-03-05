@@ -34,7 +34,6 @@ import jakarta.validation.constraints.Size;
 /**
  *
  */
-
 public class CertConfigRemoveRequest extends BaseRequest {
 
     @NotBlank(message = "clientId can not be blank")

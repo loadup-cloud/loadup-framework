@@ -159,5 +159,4 @@ public enum CommunicationErrorCode implements ResultCode {
     public String getStatus() {
         return this.status;
     }
-
 }

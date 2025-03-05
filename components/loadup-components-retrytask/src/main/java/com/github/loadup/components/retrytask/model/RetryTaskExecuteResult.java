@@ -26,7 +26,7 @@ package com.github.loadup.components.retrytask.model;
  * #L%
  */
 
-//import com.github.loadup.commons.base.DTO;
+// import com.github.loadup.commons.base.DTO;
 
 import com.github.loadup.commons.base.DTO;
 import lombok.Getter;
@@ -53,5 +53,4 @@ public class RetryTaskExecuteResult extends DTO {
      * the result of business
      */
     private String bizResult;
-
 }

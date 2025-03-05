@@ -70,7 +70,6 @@ public enum OSTypeEnum implements IEnum {
      * Linux
      */
     LINUX("LINUX", "Linux"),
-
     ;
 
     /**

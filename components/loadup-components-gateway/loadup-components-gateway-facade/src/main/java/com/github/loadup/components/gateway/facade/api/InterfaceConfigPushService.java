@@ -45,5 +45,4 @@ public interface InterfaceConfigPushService {
      * push spi config to gateway runtime
      */
     SPIConfigResponse pushSPIConfig(SPIConfigRequest request);
-
 }

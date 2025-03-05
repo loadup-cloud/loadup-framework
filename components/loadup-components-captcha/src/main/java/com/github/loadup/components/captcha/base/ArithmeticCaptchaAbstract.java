@@ -1,8 +1,8 @@
 package com.github.loadup.components.captcha.base;
 
-//import javax.script.ScriptEngine;
-//import javax.script.ScriptEngineManager;
-//import javax.script.ScriptException;
+// import javax.script.ScriptEngine;
+// import javax.script.ScriptEngineManager;
+// import javax.script.ScriptException;
 
 import org.apache.commons.lang3.RandomUtils;
 
@@ -11,7 +11,7 @@ import org.apache.commons.lang3.RandomUtils;
  * Created by 王帆 on 2019-08-23 上午 10:08.
  */
 public abstract class ArithmeticCaptchaAbstract extends Captcha {
-    private String arithmeticString;  // 计算公式
+    private String arithmeticString; // 计算公式
 
     public ArithmeticCaptchaAbstract() {
         setLen(2);

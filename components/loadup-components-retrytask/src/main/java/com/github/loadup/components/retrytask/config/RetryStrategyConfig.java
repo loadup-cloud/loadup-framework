@@ -110,5 +110,4 @@ public class RetryStrategyConfig {
     private String attemptTimeLimiter;
 
     private RetryTaskExecutorSpi executor;
-
 }

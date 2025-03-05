@@ -81,8 +81,7 @@ public final class XmlHelper {
      *
      * @throws DocumentException
      */
-    public static Map<String, String> convertPrototype(String messagePrototype)
-            throws DocumentException {
+    public static Map<String, String> convertPrototype(String messagePrototype) throws DocumentException {
         List<Element> fields = getFields(messagePrototype, "map");
 
         Map<String, String> paramMap = new LinkedHashMap<String, String>();
@@ -110,8 +109,7 @@ public final class XmlHelper {
      *
      * @throws DocumentException
      */
-    public static List<Element> getFields(String xml, String node, String subNode)
-            throws DocumentException {
+    public static List<Element> getFields(String xml, String node, String subNode) throws DocumentException {
         Element root = getField(xml);
         Element nodeElement = child(root, node);
         return children(nodeElement, subNode);
@@ -138,7 +136,6 @@ public final class XmlHelper {
         } finally {
             IOUtils.closeQuietly(stringReader);
         }
-
     }
 
     /**
@@ -189,5 +186,4 @@ public final class XmlHelper {
 
         return Boolean.valueOf(text);
     }
-
 }

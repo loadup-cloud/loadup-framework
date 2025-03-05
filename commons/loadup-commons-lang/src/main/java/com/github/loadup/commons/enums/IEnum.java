@@ -35,5 +35,4 @@ public interface IEnum {
     String getCode();
 
     String getDescription();
-
 }

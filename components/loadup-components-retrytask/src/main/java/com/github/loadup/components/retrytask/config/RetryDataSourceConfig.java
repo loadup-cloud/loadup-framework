@@ -79,5 +79,4 @@ public class RetryDataSourceConfig {
     public RetryDataSourceConfig(String bizType) {
         this.bizType = bizType;
     }
-
 }

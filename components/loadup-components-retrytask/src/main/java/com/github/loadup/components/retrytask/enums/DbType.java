@@ -52,5 +52,4 @@ public enum DbType implements IEnum {
      * description
      */
     private String description;
-
 }

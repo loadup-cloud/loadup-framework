@@ -29,16 +29,16 @@ package com.github.loadup.components.gateway.certification.manager;
 /**
  * 算法管理描述
  */
-//@XObject("AlgoManagerDesc")
+// @XObject("AlgoManagerDesc")
 public class AlgoManagerDescriptor {
 
     /**
      * 组件的名字
      */
-    //@XNode("@name")
+    // @XNode("@name")
     private String name;
 
-    //@XNodeSpring("@listener")
+    // @XNodeSpring("@listener")
     private AlgoManager algoManager;
 
     @Override

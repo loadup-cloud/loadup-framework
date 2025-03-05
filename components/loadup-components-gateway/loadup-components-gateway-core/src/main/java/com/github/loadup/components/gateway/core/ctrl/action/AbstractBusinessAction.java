@@ -55,5 +55,4 @@ public abstract class AbstractBusinessAction implements BusinessAction {
     }
 
     public abstract void setNextAction(BusinessAction nextAction);
-
 }

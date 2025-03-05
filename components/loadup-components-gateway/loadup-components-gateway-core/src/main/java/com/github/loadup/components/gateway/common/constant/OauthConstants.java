@@ -67,5 +67,4 @@ public class OauthConstants {
      * oauth extend info
      */
     public static final String EXTEND_INFO = "oauth_extend_info";
-
 }

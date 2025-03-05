@@ -20,5 +20,4 @@ public abstract class AbstractJobExecutor implements Job {
      * execute job
      */
     public abstract void executeJob(final JobExecutionContext context);
-
 }

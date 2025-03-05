@@ -55,7 +55,6 @@ public class SendToIntegratorAction extends AbstractBusinessAction {
         MessageEnvelope requestMessage = gatewayRuntimeProcessContext.getResultMessage();
         MessageSendResult messageSendResult = communicationService.send(traceId, communicationConfig, requestMessage);
         gatewayRuntimeProcessContext.setResultMessage(messageSendResult.getMessageEnvelope());
-
     }
 
     @Override
@@ -64,5 +63,4 @@ public class SendToIntegratorAction extends AbstractBusinessAction {
     public void setNextAction(BusinessAction responseParseAction) {
         this.nextAction = responseParseAction;
     }
-
 }

@@ -45,7 +45,6 @@ public enum RepositoryType {
      * product center
      */
     PRODCENTER("PRODCENTER", false, "product center repository, config in prodcenter query client"),
-
     ;
 
     /**
@@ -104,5 +103,4 @@ public enum RepositoryType {
     public String getMessage() {
         return message;
     }
-
 }

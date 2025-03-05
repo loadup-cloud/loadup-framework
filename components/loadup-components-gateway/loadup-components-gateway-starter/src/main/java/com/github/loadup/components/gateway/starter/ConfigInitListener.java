@@ -49,8 +49,7 @@ public class ConfigInitListener implements ApplicationListener<ApplicationStarte
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(ConfigInitListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigInitListener.class);
 
     @Autowired
     @Qualifier("gatewayCacheManager")
@@ -69,14 +68,12 @@ public class ConfigInitListener implements ApplicationListener<ApplicationStarte
         LogUtil.info(logger, "========= Begin load configuration===========");
         // assemble all the paramter from the out side
 
-        //validate if each of config file path is blank
+        // validate if each of config file path is blank
 
         cacheManager.init();
         sensitivityManager.init();
 
         LogUtil.info(logger, "========= Finish load configuration version 2.0.10 ===========");
-        LogUtil.info(logger, "========= time cost is ", System.currentTimeMillis() - timeCost,
-                " ms===========");
+        LogUtil.info(logger, "========= time cost is ", System.currentTimeMillis() - timeCost, " ms===========");
     }
-
 }

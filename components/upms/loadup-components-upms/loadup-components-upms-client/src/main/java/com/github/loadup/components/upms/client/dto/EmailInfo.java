@@ -41,5 +41,4 @@ public class EmailInfo extends DTO {
     private String emailId;
     private String email;
     private boolean verified;
-
 }

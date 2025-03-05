@@ -49,7 +49,7 @@ public class GifCaptchaServiceImpl extends CommonInnerService implements Captcha
                 y2 = ty;
             }
             int ctrlx1 = RandomUtils.nextInt(width / 4, width / 4 * 3), ctrly1 = RandomUtils.nextInt(5, height - 5);
-            int[][] besselXY = new int[][]{{x1, y1}, {ctrlx, ctrly}, {ctrlx1, ctrly1}, {x2, y2}};
+            int[][] besselXY = new int[][] {{x1, y1}, {ctrlx, ctrly}, {ctrlx1, ctrly1}, {x2, y2}};
             // 开始画gif每一帧
             GifEncoder gifEncoder = new GifEncoder();
             gifEncoder.setQuality(180);
@@ -91,26 +91,39 @@ public class GifCaptchaServiceImpl extends CommonInnerService implements Captcha
         // 抗锯齿
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         // 画干扰圆圈
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f * RandomUtils.nextInt(0, 10)));  // 设置透明度
+        g2d.setComposite(
+                AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f * RandomUtils.nextInt(0, 10))); // 设置透明度
         drawOval(2, g2d);
         // 画干扰线
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));  // 设置透明度
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f)); // 设置透明度
         g2d.setStroke(new BasicStroke(1.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
         g2d.setColor(fontColor[0]);
-        CubicCurve2D shape = new CubicCurve2D.Double(besselXY[0][0], besselXY[0][1], besselXY[1][0], besselXY[1][1], besselXY[2][0],
-                besselXY[2][1], besselXY[3][0], besselXY[3][1]);
+        CubicCurve2D shape = new CubicCurve2D.Double(
+                besselXY[0][0],
+                besselXY[0][1],
+                besselXY[1][0],
+                besselXY[1][1],
+                besselXY[2][0],
+                besselXY[2][1],
+                besselXY[3][0],
+                besselXY[3][1]);
         g2d.draw(shape);
         // 画验证码
         g2d.setFont(getFont());
         FontMetrics fontMetrics = g2d.getFontMetrics();
-        int fW = width / strs.length;  // 每一个字符所占的宽度
-        int fSp = (fW - (int) fontMetrics.getStringBounds("W", g2d).getWidth()) / 2;  // 字符的左右边距
+        int fW = width / strs.length; // 每一个字符所占的宽度
+        int fSp = (fW - (int) fontMetrics.getStringBounds("W", g2d).getWidth()) / 2; // 字符的左右边距
         for (int i = 0; i < strs.length; i++) {
             // 设置透明度
             AlphaComposite ac3 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha(flag, i));
             g2d.setComposite(ac3);
             g2d.setColor(fontColor[i]);
-            int fY = height - ((height - (int) fontMetrics.getStringBounds(String.valueOf(strs[i]), g2d).getHeight()) >> 1);  // 文字的纵坐标
+            int fY = height
+                    - ((height
+                                    - (int) fontMetrics
+                                            .getStringBounds(String.valueOf(strs[i]), g2d)
+                                            .getHeight())
+                            >> 1); // 文字的纵坐标
             g2d.drawString(String.valueOf(strs[i]), i * fW + fSp + 3, fY - 3);
         }
         g2d.dispose();
@@ -139,5 +152,4 @@ public class GifCaptchaServiceImpl extends CommonInnerService implements Captcha
         captchaResult.setCacheKey(key);
         return captchaResult;
     }
-
 }

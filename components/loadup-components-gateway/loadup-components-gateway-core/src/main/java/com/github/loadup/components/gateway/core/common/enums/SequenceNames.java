@@ -39,6 +39,5 @@ public enum SequenceNames {
      * 文件传输流水号seq
      */
     SEQ_FILE_MOVING_SERIAL,
-
     ;
 }

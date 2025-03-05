@@ -44,8 +44,7 @@ public class DalDigestLogUtil {
     /**
      * 摘要日志
      */
-    private static final Logger DIGEST_LOGGER = LoggerFactory
-            .getLogger(RetryTaskLoggerConstants.DAL_DIGEST_NAME);
+    private static final Logger DIGEST_LOGGER = LoggerFactory.getLogger(RetryTaskLoggerConstants.DAL_DIGEST_NAME);
 
     /**
      * 摘要日志的内容分隔符
@@ -72,8 +71,7 @@ public class DalDigestLogUtil {
      *
      * @throws Throwable Throwable
      */
-    public static Object businessInvoke(Object target, Method method,
-                                        Object[] args) throws Throwable {
+    public static Object businessInvoke(Object target, Method method, Object[] args) throws Throwable {
 
         // DAO执行是否成功
         boolean success = true;
@@ -93,20 +91,18 @@ public class DalDigestLogUtil {
         } finally {
 
             long elapseTime = System.currentTimeMillis() - startTime;
-            DIGEST_LOGGER.info(
-                    buildDigestLog(success, elapseTime, method, args, resultSize));
+            DIGEST_LOGGER.info(buildDigestLog(success, elapseTime, method, args, resultSize));
         }
     }
 
     /**
      * 构建摘要日志
      */
-    private static String buildDigestLog(boolean isSucess, long elapseTime, Method method,
-                                         Object[] args, String resultSize) {
+    private static String buildDigestLog(
+            boolean isSucess, long elapseTime, Method method, Object[] args, String resultSize) {
 
         // 被拦截方法签名："类名.方法名"
-        String invocationSignature = method.getDeclaringClass().getSimpleName() + "."
-                + method.getName();
+        String invocationSignature = method.getDeclaringClass().getSimpleName() + "." + method.getName();
 
         StringBuilder sb = new StringBuilder("[(");
 
@@ -184,5 +180,4 @@ public class DalDigestLogUtil {
 
         sb.append(")");
     }
-
 }

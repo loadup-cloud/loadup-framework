@@ -73,11 +73,9 @@ import java.util.List;
 @Extension(bizId = "DATABASE")
 @Component("loadUpDatabaseRepositoryExtPt")
 @Order(-2)
-public class DatabaseRepositoryService implements RepositoryServiceExtPt,
-        ApplicationListener<ApplicationStartedEvent> {
+public class DatabaseRepositoryService implements RepositoryServiceExtPt, ApplicationListener<ApplicationStartedEvent> {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(DatabaseRepositoryService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseRepositoryService.class);
 
     /**
      * cert config dto list
@@ -238,15 +236,13 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 
         InterfaceDO interfaceDO = gatewayInterfaceDAO.loadByInterfaceId(interfaceId);
 
-        AssertUtil.isNotNull(interfaceDO, GatewayErrorCode.PARAM_ILLEGAL,
-                "Interface is not exist!");
+        AssertUtil.isNotNull(interfaceDO, GatewayErrorCode.PARAM_ILLEGAL, "Interface is not exist!");
 
         // 1. build api config
         buildAPIConfig(Arrays.asList(interfaceDO));
 
         // 2. build spi config
         buildSPIConfig(Arrays.asList(interfaceDO));
-
     }
 
     /**
@@ -256,23 +252,24 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 
         List<SecurityDO> securityDOS = gatewaySecurityDAO.loadByClientId(clientId);
 
-        AssertUtil.isFalse(CollectionUtils.isEmpty(securityDOS), GatewayErrorCode.PARAM_ILLEGAL,
-                "Cert configs is not exist!");
+        AssertUtil.isFalse(
+                CollectionUtils.isEmpty(securityDOS), GatewayErrorCode.PARAM_ILLEGAL, "Cert configs is not exist!");
 
         try {
 
             securityDOS.forEach(securityDO -> {
-                //获取certConfig
+                // 获取certConfig
                 CertConfigDto certConfigDto = certConfigBuilder.buildDto(securityDO);
                 if (null == certConfigDto) {
-                    LogUtil.error(logger, "failed building certConfig, security_strategy_code: ",
+                    LogUtil.error(
+                            logger,
+                            "failed building certConfig, security_strategy_code: ",
                             securityDO.getSecurityStrategyCode());
                 } else {
                     this.certConfigDtoList.add(certConfigDto);
                 }
 
-                CertAlgorithmConfigDto certAlgorithmConfigDto = certAlgorithmConfigBuilder
-                        .build(securityDO);
+                CertAlgorithmConfigDto certAlgorithmConfigDto = certAlgorithmConfigBuilder.build(securityDO);
                 this.certAlgorithmConfigDtoList.add(certAlgorithmConfigDto);
             });
 
@@ -363,8 +360,8 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
             InstDO instDO = InstConvertor.dto2DO(clientConfigAddDto);
             return gatewayInstDAO.insert(instDO);
         } catch (DataIntegrityViolationException exception) {
-            throw new CommonException(GatewayErrorCode.CLIENT_ALREADY_EXIST,
-                    GatewayErrorCode.CLIENT_ALREADY_EXIST.getMessage());
+            throw new CommonException(
+                    GatewayErrorCode.CLIENT_ALREADY_EXIST, GatewayErrorCode.CLIENT_ALREADY_EXIST.getMessage());
         }
     }
 
@@ -374,12 +371,10 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
     @Override
     public void authorizeClient(ClientInterfaceConfigDto request) {
         gatewayTransactionTemplate.execute(transactionStatus -> {
-
             InstDO load = gatewayInstDAO.lock(request.getClientId());
             AssertUtil.isNotNull(load, GatewayErrorCode.CLIENT_NOT_EXIST);
 
-            InterfaceDO interfaceDO = gatewayInterfaceDAO
-                    .lockByInterfaceId(request.getInterfaceId());
+            InterfaceDO interfaceDO = gatewayInterfaceDAO.lockByInterfaceId(request.getInterfaceId());
             AssertUtil.isNotNull(interfaceDO, GatewayErrorCode.INTERFACE_NOT_EXIST);
 
             try {
@@ -442,8 +437,8 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
             gatewaySecurityDAO.insert(SecurityConvertor.dto2DO(request));
             return request;
         } catch (DataIntegrityViolationException e) {
-            throw new CommonException(GatewayErrorCode.SECURITY_ALREADY_EXIST,
-                    GatewayErrorCode.SECURITY_ALREADY_EXIST.getMessage());
+            throw new CommonException(
+                    GatewayErrorCode.SECURITY_ALREADY_EXIST, GatewayErrorCode.SECURITY_ALREADY_EXIST.getMessage());
         }
     }
 
@@ -454,8 +449,11 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
     public void updateSecurity(SecurityConfigDto request) {
         gatewayTransactionTemplate.execute(transactionStatus -> {
             // 1. lock
-            SecurityDO securityDO = gatewaySecurityDAO.load(request.getClientId(),
-                    request.getSecurityStrategyCode(), request.getOperateType(), request.getAlgoName());
+            SecurityDO securityDO = gatewaySecurityDAO.load(
+                    request.getClientId(),
+                    request.getSecurityStrategyCode(),
+                    request.getOperateType(),
+                    request.getAlgoName());
             AssertUtil.isNotNull(securityDO, GatewayErrorCode.SECURITY_NOT_EXIST);
 
             // 2. update
@@ -484,8 +482,11 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
      */
     @Override
     public int removeSecurity(SecurityConfigDto request) {
-        return gatewaySecurityDAO.delete(request.getClientId(),
-                request.getSecurityStrategyCode(), request.getOperateType(), request.getAlgoName());
+        return gatewaySecurityDAO.delete(
+                request.getClientId(),
+                request.getSecurityStrategyCode(),
+                request.getOperateType(),
+                request.getAlgoName());
     }
 
     /**
@@ -499,7 +500,6 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
 
         // 2. build spi configs
         buildSPIConfig(interfaceDOS);
-
     }
 
     /**
@@ -509,9 +509,9 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
         List<InstDO> instDOS = gatewayInstDAO.loadAll();
 
         instDOS.forEach(instDO -> {
-            //获取certConfig
-            InstConfigDto instConfigDto = instConfigBuilder.build(instDO.getClientId(),
-                    instDO.getName(), instDO.getProperties());
+            // 获取certConfig
+            InstConfigDto instConfigDto =
+                    instConfigBuilder.build(instDO.getClientId(), instDO.getName(), instDO.getProperties());
             this.instConfigDtoList.add(instConfigDto);
         });
     }
@@ -523,9 +523,9 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
         List<InstInterfaceMapDO> instInterfaceDOS = gatewayInstInterfaceMapDAO.loadAll();
 
         instInterfaceDOS.forEach(instInterfaceDO -> {
-            //获取certConfig
-            InstInterfaceConfigDto instInterfaceConfigDto = instInterfaceConfigBuilder
-                    .build(instInterfaceDO.getClientId(), instInterfaceDO.getInterfaceId());
+            // 获取certConfig
+            InstInterfaceConfigDto instInterfaceConfigDto =
+                    instInterfaceConfigBuilder.build(instInterfaceDO.getClientId(), instInterfaceDO.getInterfaceId());
             instInterfaceConfigDtoList.add(instInterfaceConfigDto);
         });
     }
@@ -538,24 +538,24 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
             List<SecurityDO> securityDOS = gatewaySecurityDAO.loadAll();
 
             securityDOS.forEach(securityDO -> {
-                //获取certConfig
+                // 获取certConfig
                 CertConfigDto certConfigDto = certConfigBuilder.buildDto(securityDO);
                 if (null == certConfigDto) {
-                    LogUtil.error(logger, "failed building certConfig, security_strategy_code: ",
+                    LogUtil.error(
+                            logger,
+                            "failed building certConfig, security_strategy_code: ",
                             securityDO.getSecurityStrategyCode());
                 } else {
                     this.certConfigDtoList.add(certConfigDto);
                 }
 
-                CertAlgorithmConfigDto certAlgorithmConfigDto = certAlgorithmConfigBuilder
-                        .build(securityDO);
+                CertAlgorithmConfigDto certAlgorithmConfigDto = certAlgorithmConfigBuilder.build(securityDO);
                 this.certAlgorithmConfigDtoList.add(certAlgorithmConfigDto);
             });
 
         } catch (Exception e) {
             LogUtil.error(logger, e, "Init cert fail.");
         }
-
     }
 
     /**
@@ -568,31 +568,48 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
                 continue;
             }
 
-            MessageSenderConfigDto msgSender = messageSenderConfigBuilder.build(apiConfig.getUrl(),
-                    apiConfig.getSecurityStrategyCode());
+            MessageSenderConfigDto msgSender =
+                    messageSenderConfigBuilder.build(apiConfig.getUrl(), apiConfig.getSecurityStrategyCode());
             if (null != msgSender) {
                 messageSenderConfigDtoList.add(msgSender);
             }
 
             // 1. build outbound interface
-            buildConfig(apiConfig.getInterfaceId(), apiConfig.getIntegrationUrl(),
+            buildConfig(
+                    apiConfig.getInterfaceId(),
+                    apiConfig.getIntegrationUrl(),
                     apiConfig.getSecurityStrategyCode(),
                     apiConfig.getIntegrationRequestHeaderAssemble(),
                     apiConfig.getIntegrationRequestBodyAssemble(),
-                    apiConfig.getIntegrationResponseParser(), apiConfig.getCommunicationProperties(),
-                    null, apiConfig.getInterfaceName(), apiConfig.getVersion(), apiConfig.getStatus(),
+                    apiConfig.getIntegrationResponseParser(),
+                    apiConfig.getCommunicationProperties(),
+                    null,
+                    apiConfig.getInterfaceName(),
+                    apiConfig.getVersion(),
+                    apiConfig.getStatus(),
                     index);
 
             // 2. build inbound interface
-            String inboundInterfaceId = InterfaceConfigUtil.generateInterfaceId(apiConfig.getUrl(),
-                    apiConfig.getTenantId(), apiConfig.getVersion(), apiConfig.getType(),
+            String inboundInterfaceId = InterfaceConfigUtil.generateInterfaceId(
+                    apiConfig.getUrl(),
+                    apiConfig.getTenantId(),
+                    apiConfig.getVersion(),
+                    apiConfig.getType(),
                     new HashMap<>());
 
-            buildConfig(inboundInterfaceId, apiConfig.getUrl(), apiConfig.getSecurityStrategyCode(),
+            buildConfig(
+                    inboundInterfaceId,
+                    apiConfig.getUrl(),
+                    apiConfig.getSecurityStrategyCode(),
                     apiConfig.getInterfaceResponseHeaderAssemble(),
-                    apiConfig.getInterfaceResponseBodyAssemble(), apiConfig.getInterfaceRequestParser(),
-                    apiConfig.getCommunicationProperties(), apiConfig.getInterfaceId(),
-                    apiConfig.getInterfaceName(), apiConfig.getVersion(), apiConfig.getStatus(), index);
+                    apiConfig.getInterfaceResponseBodyAssemble(),
+                    apiConfig.getInterfaceRequestParser(),
+                    apiConfig.getCommunicationProperties(),
+                    apiConfig.getInterfaceId(),
+                    apiConfig.getInterfaceName(),
+                    apiConfig.getVersion(),
+                    apiConfig.getStatus(),
+                    index);
 
             index++;
         }
@@ -610,39 +627,51 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
      * <p>
      * parser.
      */
-    private void buildConfig(String interfaceId, String uriString, String securityStrategyCode,
-                            String headerAssemble, String bodyAssemble, String parser,
-                            String communicationProperties, String integrationInterfaceId,
-                            String interfaceName, String version, String status, int index) {
+    private void buildConfig(
+            String interfaceId,
+            String uriString,
+            String securityStrategyCode,
+            String headerAssemble,
+            String bodyAssemble,
+            String parser,
+            String communicationProperties,
+            String integrationInterfaceId,
+            String interfaceName,
+            String version,
+            String status,
+            int index) {
 
-        MessageReceiverConfigDto msgReceiver = messageReceiverConfigBuilder.build(uriString,
-                securityStrategyCode);
+        MessageReceiverConfigDto msgReceiver = messageReceiverConfigBuilder.build(uriString, securityStrategyCode);
         if (null != msgReceiver) {
             messageReceiverConfigDtoList.add(msgReceiver);
         }
 
-        InterfaceConfigDto interfaceConfigDto = interfaceConfigBuilder.build(interfaceId,
-                securityStrategyCode, integrationInterfaceId, interfaceName, version, status,
+        InterfaceConfigDto interfaceConfigDto = interfaceConfigBuilder.build(
+                interfaceId,
+                securityStrategyCode,
+                integrationInterfaceId,
+                interfaceName,
+                version,
+                status,
                 communicationProperties);
 
         if (null != interfaceConfigDto) {
             interfaceConfigDtoList.add(interfaceConfigDto);
         }
 
-        MessageProcessConfigDto messageProcessConfigDto = messageProcessConfigBuilder
-                .buildByTemplateContent(interfaceId, headerAssemble, bodyAssemble, parser);
+        MessageProcessConfigDto messageProcessConfigDto =
+                messageProcessConfigBuilder.buildByTemplateContent(interfaceId, headerAssemble, bodyAssemble, parser);
 
         if (null != messageProcessConfigDto) {
             messageProcessConfigDtoList.add(messageProcessConfigDto);
         }
 
-        CommunicationConfigDto communicationConfigDto = communicationConfigBuilder.build(uriString,
-                interfaceId, securityStrategyCode, communicationProperties, index);
+        CommunicationConfigDto communicationConfigDto = communicationConfigBuilder.build(
+                uriString, interfaceId, securityStrategyCode, communicationProperties, index);
 
         if (null != communicationConfigDto) {
             communicationConfigDtoList.add(communicationConfigDto);
         }
-
     }
 
     /**
@@ -656,12 +685,18 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
                 continue;
             }
 
-            buildConfig(spiConfig.getInterfaceId(), spiConfig.getIntegrationUrl(),
+            buildConfig(
+                    spiConfig.getInterfaceId(),
+                    spiConfig.getIntegrationUrl(),
                     spiConfig.getSecurityStrategyCode(),
                     spiConfig.getIntegrationRequestHeaderAssemble(),
                     spiConfig.getIntegrationRequestBodyAssemble(),
-                    spiConfig.getIntegrationResponseParser(), spiConfig.getCommunicationProperties(),
-                    null, spiConfig.getInterfaceName(), spiConfig.getVersion(), spiConfig.getStatus(),
+                    spiConfig.getIntegrationResponseParser(),
+                    spiConfig.getCommunicationProperties(),
+                    null,
+                    spiConfig.getInterfaceName(),
+                    spiConfig.getVersion(),
+                    spiConfig.getStatus(),
                     index);
 
             index++;
@@ -677,10 +712,9 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
         try {
             gatewayInterfaceDAO.insert(interfaceDO);
         } catch (DataIntegrityViolationException exception) {
-            throw new CommonException(GatewayErrorCode.INTERFACE_ALREADY_EXISTS,
-                    GatewayErrorCode.INTERFACE_ALREADY_EXISTS.getMessage());
+            throw new CommonException(
+                    GatewayErrorCode.INTERFACE_ALREADY_EXISTS, GatewayErrorCode.INTERFACE_ALREADY_EXISTS.getMessage());
         }
-
     }
 
     /**
@@ -690,8 +724,7 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
     public void updateInterface(InterfaceDto dto) {
         gatewayTransactionTemplate.execute(transactionStatus -> {
             // 1. lock interface
-            InterfaceDO interfaceDO = gatewayInterfaceDAO
-                    .lockByInterfaceId(dto.getInterfaceId());
+            InterfaceDO interfaceDO = gatewayInterfaceDAO.lockByInterfaceId(dto.getInterfaceId());
             AssertUtil.isNotNull(interfaceDO, GatewayErrorCode.INTERFACE_NOT_EXIST);
             InterfaceDO updateDO = InterfaceConvertor.dto2DO(dto);
 
@@ -712,9 +745,10 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
             AssertUtil.isNotNull(interfaceDO, GatewayErrorCode.INTERFACE_NOT_EXIST);
 
             // 2. lock all version interface
-            List<InterfaceDO> interfaceDOS = gatewayInterfaceDAO.lock(interfaceDO.getType(),
-                    interfaceDO.getUrl(), interfaceDO.getTenantId());
-            AssertUtil.isTrue(!CollectionUtils.isEmpty(interfaceDOS),
+            List<InterfaceDO> interfaceDOS =
+                    gatewayInterfaceDAO.lock(interfaceDO.getType(), interfaceDO.getUrl(), interfaceDO.getTenantId());
+            AssertUtil.isTrue(
+                    !CollectionUtils.isEmpty(interfaceDOS),
                     GatewayErrorCode.INTERFACE_NOT_EXIST,
                     GatewayErrorCode.INTERFACE_NOT_EXIST.getMessage());
 
@@ -731,8 +765,8 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
                 }
             }
             // 4. make sure current version is ONLINE
-            AssertUtil.isTrue(online, GatewayErrorCode.INTERFACE_NOT_EXIST,
-                    GatewayErrorCode.INTERFACE_NOT_EXIST.getMessage());
+            AssertUtil.isTrue(
+                    online, GatewayErrorCode.INTERFACE_NOT_EXIST, GatewayErrorCode.INTERFACE_NOT_EXIST.getMessage());
             return null;
         });
     }
@@ -758,11 +792,17 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
      *
      */
     @Override
-    public List<InterfaceDto> queryInterface(Integer pageSize, Integer page, String tntInstId,
-                                            String interfaceId, String clientId, String type,
-                                            String status, String interfaceName) {
-        List<InterfaceDO> loadAllPage = gatewayInterfaceDAO.loadByPage(tntInstId, interfaceId,
-                clientId, type, status, interfaceName, (page - 1) * pageSize, pageSize);
+    public List<InterfaceDto> queryInterface(
+            Integer pageSize,
+            Integer page,
+            String tntInstId,
+            String interfaceId,
+            String clientId,
+            String type,
+            String status,
+            String interfaceName) {
+        List<InterfaceDO> loadAllPage = gatewayInterfaceDAO.loadByPage(
+                tntInstId, interfaceId, clientId, type, status, interfaceName, (page - 1) * pageSize, pageSize);
         List<InterfaceDto> result = new ArrayList<>();
         for (InterfaceDO interfaceDO : loadAllPage) {
             result.add(InterfaceConvertor.do2Dto(interfaceDO));
@@ -782,29 +822,29 @@ public class DatabaseRepositoryService implements RepositoryServiceExtPt,
     public void upgradeInterface(InterfaceDto dto) {
         gatewayTransactionTemplate.execute(status -> {
             // 1. load interface
-            InterfaceDO interfaceDO = gatewayInterfaceDAO
-                    .loadByInterfaceId(dto.getInterfaceId());
+            InterfaceDO interfaceDO = gatewayInterfaceDAO.loadByInterfaceId(dto.getInterfaceId());
             AssertUtil.isNotNull(interfaceDO, GatewayErrorCode.INTERFACE_NOT_EXIST);
 
             // 2. lock all version for current interface
-            List<InterfaceDO> dos = gatewayInterfaceDAO.lock(interfaceDO.getTenantId(),
-                    interfaceDO.getUrl(), interfaceDO.getType());
+            List<InterfaceDO> dos =
+                    gatewayInterfaceDAO.lock(interfaceDO.getTenantId(), interfaceDO.getUrl(), interfaceDO.getType());
 
             // 3. make sure request version is bigger than any other version
             for (InterfaceDO doItem : dos) {
                 if (StringUtils.compare(dto.getVersion(), doItem.getVersion()) <= 0) {
                     // confirm the request version is the biggest.
-                    throw new CommonException(
-                            GatewayErrorCode.INTERFACE_VERSION_NOT_BIGGEST);
+                    throw new CommonException(GatewayErrorCode.INTERFACE_VERSION_NOT_BIGGEST);
                 }
             }
             // 4. save current version
-            dto.setInterfaceId(
-                    InterfaceConfigUtil.generateInterfaceId(dto.getUrl(), dto.getTenantId(),
-                            dto.getVersion(), dto.getType(), dto.getCommunicationProperties()));
+            dto.setInterfaceId(InterfaceConfigUtil.generateInterfaceId(
+                    dto.getUrl(),
+                    dto.getTenantId(),
+                    dto.getVersion(),
+                    dto.getType(),
+                    dto.getCommunicationProperties()));
             gatewayInterfaceDAO.insert(InterfaceConvertor.dto2DO(dto));
             return null;
         });
-
     }
 }

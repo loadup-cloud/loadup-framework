@@ -76,5 +76,4 @@ public interface MessageService {
      * </ol>
      */
     SPIResponse send(SPIRequest request);
-
 }

@@ -113,5 +113,4 @@ public enum InterfaceProperty implements PropertyName {
     public String getName() {
         return name;
     }
-
 }

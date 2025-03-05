@@ -2,9 +2,9 @@ package com.github.loadup.framework.api.context;
 
 /*-
  * #%L
- * loadup-api
+ * loadup-common-api
  * %%
- * Copyright (C) 2022 - 2024 loadup_cloud
+ * Copyright (C) 2022 - 2025 loadup_cloud
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,8 @@ package com.github.loadup.framework.api.context;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import io.opentelemetry.api.trace.Span;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +37,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-import lombok.Getter;
-import lombok.Setter;
-
 public class LoadUpContext {
     private static ThreadLocal<LoadUpContext> threadLocal = new TransmittableThreadLocal<>();
     private static List<Tenant> tenantList = new ArrayList<>();
+
     @Getter
     @Setter
     private Map<String, Object> attributes = new ConcurrentHashMap<>();
@@ -91,5 +91,4 @@ public class LoadUpContext {
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
-
 }

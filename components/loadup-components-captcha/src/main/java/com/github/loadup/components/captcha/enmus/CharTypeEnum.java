@@ -45,7 +45,7 @@ public enum CharTypeEnum implements IEnum {
     public static CharTypeEnum getByCode(String code) {
         return Arrays.stream(CharTypeEnum.values())
                 .filter(v -> StringUtils.equals(v.getCode(), code))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
     }
-
 }

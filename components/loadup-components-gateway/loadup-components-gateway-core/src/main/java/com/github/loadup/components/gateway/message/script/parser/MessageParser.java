@@ -38,5 +38,4 @@ public interface MessageParser {
      * 解析报文
      */
     UnifyMsg parse(MessageEnvelope messageEnvelope);
-
 }

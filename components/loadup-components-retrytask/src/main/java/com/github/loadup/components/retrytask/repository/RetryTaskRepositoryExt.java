@@ -44,5 +44,4 @@ public interface RetryTaskRepositoryExt {
      * 捞取没有超过次数限制而且状态为已执行过但是超过30分钟还没有被删除的流水
      */
     List<RetryTask> loadUnusualTask(String bizType, int extremeRetryTime, int rowNum);
-
 }

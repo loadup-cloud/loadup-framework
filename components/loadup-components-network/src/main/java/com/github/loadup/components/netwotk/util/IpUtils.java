@@ -44,6 +44,7 @@ public class IpUtils {
     private static final Logger logger = LoggerFactory.getLogger(IpUtils.class);
     private static String NOT_FOUND = "0";
     private static IpUtils instance;
+
     @Resource
     private Searcher ipSearcher;
 

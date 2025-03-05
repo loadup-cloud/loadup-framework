@@ -76,9 +76,7 @@ public class CertConfigRepository {
     /**
      * Constructor.
      */
-    public CertConfigRepository() {
-
-    }
+    public CertConfigRepository() {}
 
     /**
      * Constructor.

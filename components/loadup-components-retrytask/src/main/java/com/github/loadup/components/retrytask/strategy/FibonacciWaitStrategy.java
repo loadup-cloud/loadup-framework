@@ -59,7 +59,6 @@ public class FibonacciWaitStrategy implements RetryTaskStrategy {
      * 第一次失败后，依次等待时长：1*1;1*1；2*1；3*1；5*1；...
      * strategyValue 配置为multiplier，maximumWait 不填或填错则使用默认值
      */
-
     @Override
     public LocalDateTime calculateNextExecuteTime(RetryTask retryTask, RetryStrategyConfig retryStrategyConfig) {
         String[] intervals = StringUtils.split(retryStrategyConfig.getStrategyValue(), StringPool.COMMA, 2);
@@ -74,7 +73,8 @@ public class FibonacciWaitStrategy implements RetryTaskStrategy {
         if (result > maximumWait || result < 0L) {
             result = maximumWait;
         }
-        return addTime(retryTask.getNextExecuteTime(), Math.toIntExact(result), retryStrategyConfig.getStrategyValueUnit());
+        return addTime(
+                retryTask.getNextExecuteTime(), Math.toIntExact(result), retryStrategyConfig.getStrategyValueUnit());
     }
 
     private long fib(long n) {
@@ -97,5 +97,4 @@ public class FibonacciWaitStrategy implements RetryTaskStrategy {
 
         return result;
     }
-
 }

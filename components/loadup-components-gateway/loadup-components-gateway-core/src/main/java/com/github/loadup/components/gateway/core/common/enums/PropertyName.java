@@ -45,5 +45,4 @@ public interface PropertyName {
      * 获取默认值
      */
     String getDefaultValue();
-
 }

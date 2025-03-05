@@ -40,7 +40,6 @@ public enum InterfaceStatus {
      * invalid
      */
     INVALID("INVALID", "N"),
-
     ;
 
     /**

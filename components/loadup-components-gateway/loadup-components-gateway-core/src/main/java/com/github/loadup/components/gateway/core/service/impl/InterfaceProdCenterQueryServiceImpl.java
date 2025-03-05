@@ -136,7 +136,7 @@ public class InterfaceProdCenterQueryServiceImpl implements InterfaceProdCenterQ
 
     /**
      * build query request
-
+     *
      */
     //    private ClientConditionGroupRequest buildConditionGroupQueryRequest(String url,
     //                                                                        String integrationUrl,

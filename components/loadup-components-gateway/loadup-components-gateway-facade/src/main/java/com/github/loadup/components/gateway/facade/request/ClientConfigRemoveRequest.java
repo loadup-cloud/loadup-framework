@@ -32,7 +32,6 @@ import jakarta.validation.constraints.Size;
 /**
  *
  */
-
 public class ClientConfigRemoveRequest extends BaseRequest {
 
     @NotBlank(message = "clienId can not be balank")

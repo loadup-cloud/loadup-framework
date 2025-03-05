@@ -49,5 +49,4 @@ public interface InterfaceProdCenterQueryService {
      * query communication properties group
      */
     CommunicationPropertiesGroup queryCommunicationPropertiesGroup(String url);
-
 }

@@ -64,15 +64,14 @@ public class DalDigestLogInterceptor {
     /**
      * 构建摘要日志
      */
-    private static String buildDigestLog(boolean isSucess, long elapseTime,
-                                         MethodInvocation invocation, String resultSize) {
+    private static String buildDigestLog(
+            boolean isSucess, long elapseTime, MethodInvocation invocation, String resultSize) {
 
         // 被拦截的DAO方法
         Method method = invocation.getMethod();
 
         // 被拦截方法签名："类名.方法名"
-        String invocationSignature = method.getDeclaringClass().getSimpleName() + "."
-                + method.getName();
+        String invocationSignature = method.getDeclaringClass().getSimpleName() + "." + method.getName();
 
         StringBuilder sb = new StringBuilder("[(");
 
@@ -173,8 +172,7 @@ public class DalDigestLogInterceptor {
         } finally {
 
             long elapseTime = System.currentTimeMillis() - startTime;
-            log
-                    .info("DIGEST_LOGGER", buildDigestLog(success, elapseTime, invocation, resultSize));
+            log.info("DIGEST_LOGGER", buildDigestLog(success, elapseTime, invocation, resultSize));
         }
     }
 }

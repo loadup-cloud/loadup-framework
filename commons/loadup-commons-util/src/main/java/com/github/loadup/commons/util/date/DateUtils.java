@@ -38,7 +38,7 @@ import java.util.Date;
 public class DateUtils {
     private static final ZoneId DEFAULT_ZONE = ZoneId.systemDefault();
 
-    //======= get =================
+    // ======= get =================
 
     public static LocalDate getCurrentDate() {
         return LocalDate.now();
@@ -68,7 +68,7 @@ public class DateUtils {
         return ZonedDateTime.now(zoneId);
     }
 
-    //======= format =================
+    // ======= format =================
     public static String format(LocalDate date, String pattern) {
         return format(date, DateTimeFormatter.ofPattern(pattern));
     }
@@ -117,7 +117,7 @@ public class DateUtils {
         return toLocalDateTime(date, zoneId).format(formatter);
     }
 
-    //======= parse =================
+    // ======= parse =================
     public static LocalDateTime parse(String str, String pattern) {
         return parse(str, DateTimeFormatter.ofPattern(pattern));
     }
@@ -193,7 +193,7 @@ public class DateUtils {
         return toDate(dateTime, zoneId);
     }
 
-    //======= toDate =================
+    // ======= toDate =================
     public static Date toDate(LocalDateTime dateTime) {
         return toDate(dateTime, DEFAULT_ZONE);
     }
@@ -216,7 +216,7 @@ public class DateUtils {
         return Date.from(zonedDateTime.toInstant());
     }
 
-    //======= toLocalDateTime =================
+    // ======= toLocalDateTime =================
 
     public static LocalDateTime toLocalDateTime(LocalDate date) {
         return date.atStartOfDay();
@@ -239,7 +239,7 @@ public class DateUtils {
         return dateTime.atZone(zoneId).toLocalDateTime();
     }
 
-    //======= toLocalDate =================
+    // ======= toLocalDate =================
     public static LocalDate toLocalDate(LocalDateTime dateTime) {
         return dateTime.toLocalDate();
     }
@@ -253,7 +253,7 @@ public class DateUtils {
         return zonedDateTime.toLocalDate();
     }
 
-    //======= toLocalTime =================
+    // ======= toLocalTime =================
     public static LocalTime toLocalTime(Date date) {
         Instant instant = date.toInstant();
         return instant.atZone(DEFAULT_ZONE).toLocalTime();
@@ -263,7 +263,7 @@ public class DateUtils {
         return date.toLocalTime();
     }
 
-    //======= toZonedDateTime =================
+    // ======= toZonedDateTime =================
     public static ZonedDateTime toZonedDateTime(LocalDateTime dateTime, ZoneId zoneId) {
         return dateTime.atZone(zoneId);
     }
@@ -273,7 +273,7 @@ public class DateUtils {
         return localDateTime.atZone(zoneId);
     }
 
-    //======= plus =================
+    // ======= plus =================
 
     public static Date plusDays(Date date, int days) {
         LocalDateTime localDate = toLocalDateTime(date).plusDays(days);

@@ -39,33 +39,27 @@ public class DigestLoggerUtil {
     /**
      * message digest
      */
-    public static final Logger digestMessageLogger = LoggerFactory
-            .getLogger("DIGEST-MESSAGE-LOGGER");
+    public static final Logger digestMessageLogger = LoggerFactory.getLogger("DIGEST-MESSAGE-LOGGER");
 
     /**
      * http digest
      */
-    public static final Logger DIGEST_HTTP_LOGGER = LoggerFactory
-            .getLogger("DIGEST-HTTP-LOGGER");
+    public static final Logger DIGEST_HTTP_LOGGER = LoggerFactory.getLogger("DIGEST-HTTP-LOGGER");
 
     /**
      * count error logger
      */
-    public static final Logger COUNT_ERROR_LOGGER = LoggerFactory
-            .getLogger("COUNT-ERROR-LOGGER");
+    public static final Logger COUNT_ERROR_LOGGER = LoggerFactory.getLogger("COUNT-ERROR-LOGGER");
 
     /**
      * limit digest logger
      */
-    public static final Logger digestLimitLogger = LoggerFactory
-            .getLogger("DIGEST-LIMIT-LOGGER");
+    public static final Logger digestLimitLogger = LoggerFactory.getLogger("DIGEST-LIMIT-LOGGER");
 
     /**
      * 通用日志打印方法，屏蔽敏感日志
      */
-    public static void printInfoLog(GatewayRuntimeProcessContext processContext, long timeCost) {
-
-    }
+    public static void printInfoLog(GatewayRuntimeProcessContext processContext, long timeCost) {}
 
     /**
      * 通用日志打印方法, 打印调用方耗时信息
@@ -80,5 +74,4 @@ public class DigestLoggerUtil {
     public static void printLimitDigestLog(String entityId, String maxLimit, ResultCode errorCode) {
         LogUtil.info(digestLimitLogger, entityId, ", ", maxLimit, ", ", errorCode);
     }
-
 }

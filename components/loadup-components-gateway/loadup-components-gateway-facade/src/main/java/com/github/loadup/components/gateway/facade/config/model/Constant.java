@@ -75,5 +75,4 @@ public final class Constant {
      * interface id column
      */
     public static final String INTERFACE_ID_INDEX_COLUMN = "interfaceId";
-
 }

@@ -44,7 +44,6 @@ public enum SequenceFormat {
      * 数字型SEQ - 样式为：数字类型SEQ
      */
     SEQ_NUM_11("SEQ_NUM_11", "样式为：数字类型SEQ"),
-
     ;
 
     /**

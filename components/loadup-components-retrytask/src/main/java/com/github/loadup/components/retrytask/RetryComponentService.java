@@ -48,5 +48,4 @@ public interface RetryComponentService {
      * update the retry task, increase the retry count, modify the next execute time
      */
     void update(String bizId, String bizType);
-
 }

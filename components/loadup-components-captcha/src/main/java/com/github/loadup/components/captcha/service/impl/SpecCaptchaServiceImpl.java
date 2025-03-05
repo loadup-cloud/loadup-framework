@@ -29,7 +29,8 @@ public class SpecCaptchaServiceImpl extends CommonInnerService implements Captch
      */
     private boolean graphicsImage(char[] strs, OutputStream out) {
         try {
-            BufferedImage bi = new BufferedImage(captchaProperties.getWidth(), captchaProperties.getHeight(), BufferedImage.TYPE_INT_RGB);
+            BufferedImage bi = new BufferedImage(
+                    captchaProperties.getWidth(), captchaProperties.getHeight(), BufferedImage.TYPE_INT_RGB);
             Graphics2D g2d = (Graphics2D) bi.getGraphics();
             // 填充背景
             g2d.setColor(Color.WHITE);
@@ -51,8 +52,12 @@ public class SpecCaptchaServiceImpl extends CommonInnerService implements Captch
             for (int i = 0; i < strs.length; i++) {
                 g2d.setColor(randomColor());
                 // 文字的纵坐标
-                int fY = captchaProperties.getHeight() - ((captchaProperties.getHeight() - (int) fontMetrics.getStringBounds(
-                        String.valueOf(strs[i]), g2d).getHeight()) >> 1);
+                int fY = captchaProperties.getHeight()
+                        - ((captchaProperties.getHeight()
+                                        - (int) fontMetrics
+                                                .getStringBounds(String.valueOf(strs[i]), g2d)
+                                                .getHeight())
+                                >> 1);
                 g2d.drawString(String.valueOf(strs[i]), i * fW + fSp + 3, fY - 3);
             }
             g2d.dispose();
@@ -83,5 +88,4 @@ public class SpecCaptchaServiceImpl extends CommonInnerService implements Captch
         captchaResult.setCacheKey(key);
         return captchaResult;
     }
-
 }

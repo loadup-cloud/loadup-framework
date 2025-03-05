@@ -55,6 +55,7 @@ public class MessageProcessConfigDto {
      * Required
      */
     private String assembleTemplate;
+
     private String assembleClassName;
 
     /**
@@ -144,5 +145,4 @@ public class MessageProcessConfigDto {
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
-
 }

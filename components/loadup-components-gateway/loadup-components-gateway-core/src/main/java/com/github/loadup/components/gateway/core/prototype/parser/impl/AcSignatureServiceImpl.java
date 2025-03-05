@@ -47,6 +47,7 @@ import static com.github.loadup.components.gateway.core.prototype.constant.Proce
 public class AcSignatureServiceImpl implements SignatureService {
     private static final String SIGNATURE = "signature";
     private static Logger logger = LoggerFactory.getLogger(AcSignatureServiceImpl.class);
+
     @Value("${gatewaylite.signature.private.security.code:}")
     private String privateKey;
 
@@ -74,14 +75,16 @@ public class AcSignatureServiceImpl implements SignatureService {
     @Override
     public String sign(MessageEnvelope messageEnvelope, SignatureRequest signatureRequest) {
         //        String clientId = signatureRequest.getClientId();
-        //        String certContent = rsaSignatureUtil.getPrivateKeyContent(signatureRequest.getSecurityStrategyCode(), clientId);
+        //        String certContent = rsaSignatureUtil.getPrivateKeyContent(signatureRequest.getSecurityStrategyCode(),
+        // clientId);
         //        String signature = "";
         //        if (StringUtils.isBlank(certContent)) {
         //            return "algorithm=RSA256" + ",keyVersion=2" + ", signature=testing_signature";
         //        }
         //        try {
         //            LogUtil.debug(logger,
-        //                    "=======sign raw str is " + signatureRequest.getSignRawStr() + "; certContent is" + certContent + ";
+        //                    "=======sign raw str is " + signatureRequest.getSignRawStr() + "; certContent is" +
+        // certContent + ";
         //                    clientid is " + clientId);
         //            signature = rsaSignatureUtil.sign(signatureRequest.getSignRawStr(), certContent);
         //        } catch (Exception e) {
@@ -90,5 +93,4 @@ public class AcSignatureServiceImpl implements SignatureService {
         //        return "algorithm=RSA256" + ",keyVersion=2" + ", signature=" + signature;
         return "";
     }
-
 }

@@ -37,5 +37,4 @@ public interface LimitProdCenterQueryService {
      * query limit condition group config
      */
     LimitConditionGroup queryLimitConditionGroup();
-
 }

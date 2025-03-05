@@ -1,4 +1,4 @@
-//package com.github.loadup.components.gateway.common.exception;
+// package com.github.loadup.components.gateway.common.exception;
 //
 /// *-
 // * #%L
@@ -26,12 +26,12 @@
 // * #L%
 // */
 //
-//import com.github.loadup.commons.result.ResultCode;
+// import com.github.loadup.commons.result.ResultCode;
 //
-///**
+/// **
 // * Base transaction
 // */
-//public class CommonException extends RuntimeException {
+// public class CommonException extends RuntimeException {
 //
 //    /**
 //     * 异常代码
@@ -102,4 +102,4 @@
 //        retValue.append(']');
 //        return retValue.toString();
 //    }
-//}
+// }

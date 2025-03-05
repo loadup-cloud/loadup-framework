@@ -43,7 +43,8 @@ public class IpAutoConfiguration {
     @Bean("ipSearcher")
     public Searcher searcher() {
         Searcher searcher = null;
-        String dbPath = Objects.requireNonNull(ResourceLoader.class.getResource("/config/ip2region.xdb")).getPath();
+        String dbPath = Objects.requireNonNull(ResourceLoader.class.getResource("/config/ip2region.xdb"))
+                .getPath();
 
         // 1、从 dbPath 加载整个 xdb 到内存。
         byte[] cBuff = new byte[0];
@@ -61,5 +62,4 @@ public class IpAutoConfiguration {
         }
         return searcher;
     }
-
 }

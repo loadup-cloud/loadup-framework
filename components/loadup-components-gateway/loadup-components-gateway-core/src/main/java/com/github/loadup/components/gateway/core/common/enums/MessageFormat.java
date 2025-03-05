@@ -75,5 +75,4 @@ public enum MessageFormat {
     public String getCode() {
         return this.name();
     }
-
 }

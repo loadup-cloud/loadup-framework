@@ -50,6 +50,7 @@ public class AppConfig {
      * 安全组件Code
      */
     private String certCode;
+
     private String instId;
     private String tntInstId;
 

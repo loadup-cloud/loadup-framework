@@ -57,7 +57,6 @@ public class ExponentialWaitStrategy implements RetryTaskStrategy {
      * 第一次失败后，依次等待时长：2^1 * 100;2^2 * 100；2^3 * 100;...
      * strategyValue 配置为multiplier，maximumWait 不填或填错则使用默认值
      */
-
     @Override
     public LocalDateTime calculateNextExecuteTime(RetryTask retryTask, RetryStrategyConfig retryStrategyConfig) {
         String[] intervals = StringUtils.split(retryStrategyConfig.getStrategyValue(), ",", 2);
@@ -72,7 +71,7 @@ public class ExponentialWaitStrategy implements RetryTaskStrategy {
         if (result > maximumWait || result < 0L) {
             result = maximumWait;
         }
-        return addTime(retryTask.getNextExecuteTime(), Math.toIntExact(result), retryStrategyConfig.getStrategyValueUnit());
+        return addTime(
+                retryTask.getNextExecuteTime(), Math.toIntExact(result), retryStrategyConfig.getStrategyValueUnit());
     }
-
 }

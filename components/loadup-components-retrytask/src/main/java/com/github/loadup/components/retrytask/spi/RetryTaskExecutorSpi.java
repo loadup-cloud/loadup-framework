@@ -45,5 +45,4 @@ public interface RetryTaskExecutorSpi {
      * 重试任务执行回调方法
      */
     RetryTaskExecuteResult execute(RetryTask retryTask);
-
 }

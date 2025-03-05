@@ -87,5 +87,4 @@ public enum MessageStruct {
     public String getDescription() {
         return description;
     }
-
 }

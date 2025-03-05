@@ -52,6 +52,7 @@ public class RetryTaskFactory {
      * value: sql sentence
      */
     private Map<String, String> sqlMap;
+
     private String tablePrefix;
     private String dbType;
     /**
@@ -80,5 +81,4 @@ public class RetryTaskFactory {
 
         return null;
     }
-
 }

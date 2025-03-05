@@ -26,7 +26,6 @@ package com.github.loadup.components.cache.api;
  * #L%
  */
 
-
 import com.github.loadup.framework.api.binding.BaseBinding;
 
 public interface CacheBinding extends BaseBinding {

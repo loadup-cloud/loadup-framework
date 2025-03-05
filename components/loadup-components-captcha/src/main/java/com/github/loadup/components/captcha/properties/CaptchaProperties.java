@@ -26,6 +26,7 @@ public class CaptchaProperties {
      * 验证码显示高度
      */
     private int height = 48;
+
     private String charType = CharTypeEnum.DEFAULT.getCode();
     private int length = 4;
     private String captchaType = CaptchaTypeEnum.PNG_IMG.getCode();
@@ -60,8 +61,7 @@ public class CaptchaProperties {
     }
 
     public void setFont(CharFontEnum font, int style, float size) throws IOException, FontFormatException {
-        this.font = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/fonts/" + font.getCode())).deriveFont(style,
-                size);
+        this.font = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/fonts/" + font.getCode()))
+                .deriveFont(style, size);
     }
-
 }

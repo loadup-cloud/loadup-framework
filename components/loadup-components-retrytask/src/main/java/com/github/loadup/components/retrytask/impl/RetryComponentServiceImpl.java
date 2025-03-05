@@ -72,6 +72,7 @@ public class RetryComponentServiceImpl implements RetryComponentService {
      */
     @Autowired
     private TransactionTemplate transactionTemplate;
+
     @Autowired
     private TaskStrategyExecutorFactory taskStrategyExecutorFactory;
 
@@ -115,8 +116,7 @@ public class RetryComponentServiceImpl implements RetryComponentService {
         // check params
         checkParams(bizId, bizType);
 
-        final RetryStrategyConfig retryStrategyConfig = retryTaskFactory
-                .buildRetryStrategyConfig(bizType);
+        final RetryStrategyConfig retryStrategyConfig = retryTaskFactory.buildRetryStrategyConfig(bizType);
 
         // execute the transaction
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -137,11 +137,9 @@ public class RetryComponentServiceImpl implements RetryComponentService {
     private void checkParams(String bizId, String bizType) {
 
         if (StringUtils.isBlank(bizId) || StringUtils.isBlank(bizType)) {
-            log.warn("handleTask parameter is null. bizId=", bizId, ",bizType=",
-                    bizType);
+            log.warn("handleTask parameter is null. bizId=", bizId, ",bizType=", bizType);
             throw new RuntimeException("handleTask parameter is null");
         }
-
     }
 
     /**
@@ -154,8 +152,8 @@ public class RetryComponentServiceImpl implements RetryComponentService {
             throw new RuntimeException("parameter illegal,retryTaskRequest=null");
         }
 
-        checkParams(retryTaskRequest.getBizId(), retryTaskRequest.getBizType(),
-                retryTaskRequest.getScheduleExecuteType());
+        checkParams(
+                retryTaskRequest.getBizId(), retryTaskRequest.getBizType(), retryTaskRequest.getScheduleExecuteType());
     }
 
     /**
@@ -164,15 +162,19 @@ public class RetryComponentServiceImpl implements RetryComponentService {
     private void checkParams(String bizId, String bizType, ScheduleExecuteType scheduleExecuteType) {
 
         if (StringUtils.isBlank(bizId) || StringUtils.isBlank(bizType) || scheduleExecuteType == null) {
-            log.warn("register parameter is null. bizId=", bizId, ",bizType=", bizType,
-                    ",scheduleExecuteType=", scheduleExecuteType);
+            log.warn(
+                    "register parameter is null. bizId=",
+                    bizId,
+                    ",bizType=",
+                    bizType,
+                    ",scheduleExecuteType=",
+                    scheduleExecuteType);
             throw new RuntimeException("register parameter is null");
         }
 
         if (bizId.length() < 12) {
             log.warn("In the register process, the length of business id is illegal. bizId=", bizId);
-            throw new RuntimeException(
-                    "In the register process, the length of business id is illegal");
+            throw new RuntimeException("In the register process, the length of business id is illegal");
         }
     }
 
@@ -182,13 +184,14 @@ public class RetryComponentServiceImpl implements RetryComponentService {
     private RetryTask constructRetryTask(RetryTaskRequest retryTaskRequest) {
         Date now = new Date();
         RetryTask retryTask = new RetryTask();
-        RetryStrategyConfig retryStrategyConfig = retryTaskFactory
-                .buildRetryStrategyConfig(retryTaskRequest.getBizType());
-        retryTask.setTaskId("");//IdUtils.generateId(String.valueOf(retryTaskRequest.getBizId().hashCode() / 100)));
+        RetryStrategyConfig retryStrategyConfig =
+                retryTaskFactory.buildRetryStrategyConfig(retryTaskRequest.getBizType());
+        retryTask.setTaskId(""); // IdUtils.generateId(String.valueOf(retryTaskRequest.getBizId().hashCode() / 100)));
         retryTask.setBizId(retryTaskRequest.getBizId());
         retryTask.setBizType(retryTaskRequest.getBizType());
         retryTask.setExecutedTimes(0);
-        retryTask.setNextExecuteTime(LocalDateTime.now().plus(Duration.ofSeconds(retryTaskRequest.getStartExecuteInterval())));
+        retryTask.setNextExecuteTime(
+                LocalDateTime.now().plus(Duration.ofSeconds(retryTaskRequest.getStartExecuteInterval())));
         retryTask.setMaxExecuteTimes(retryStrategyConfig.getMaxExecuteCount());
         retryTask.setProcessing(false);
         retryTask.setBizContext(retryTaskRequest.getBizContext());
@@ -204,18 +207,16 @@ public class RetryComponentServiceImpl implements RetryComponentService {
      */
     private void processTask(RetryTask retryTask, ScheduleExecuteType scheduleExecuteType) {
 
-        RetryStrategyConfig retryStrategyConfig = retryTaskFactory.buildRetryStrategyConfig(retryTask
-                .getBizType());
+        RetryStrategyConfig retryStrategyConfig = retryTaskFactory.buildRetryStrategyConfig(retryTask.getBizType());
 
         // is need execute immediately
         if (!retryStrategyConfig.isExecuteImmediately()) {
             return;
         }
 
-        TaskStrategyExecutor taskStrategyExecutor = taskStrategyExecutorFactory
-                .findTaskStrategyExecutor(scheduleExecuteType);
+        TaskStrategyExecutor taskStrategyExecutor =
+                taskStrategyExecutorFactory.findTaskStrategyExecutor(scheduleExecuteType);
 
         taskStrategyExecutor.execute(retryTask);
     }
-
 }

@@ -70,5 +70,4 @@ public final class DynamicBean {
         retValue.append(']');
         return retValue.toString();
     }
-
 }

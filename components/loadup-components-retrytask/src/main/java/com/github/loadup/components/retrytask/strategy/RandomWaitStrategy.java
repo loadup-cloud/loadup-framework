@@ -63,7 +63,6 @@ public class RandomWaitStrategy implements RetryTaskStrategy {
     /**
      * 随机时长等待策略，可以设置一个随机等待的最大时长，也可以设置一个随机等待的时长区间。
      */
-
     @Override
     public LocalDateTime calculateNextExecuteTime(RetryTask retryTask, RetryStrategyConfig retryStrategyConfig) {
         String[] intervals = StringUtils.split(retryStrategyConfig.getStrategyValue(), ",");
@@ -74,7 +73,9 @@ public class RandomWaitStrategy implements RetryTaskStrategy {
             maximum = Long.parseLong(intervals[1]);
         }
         long result = Math.abs(RandomUtils.nextLong()) % (maximum - minimum);
-        return addTime(retryTask.getNextExecuteTime(), Math.toIntExact(result + minimum), retryStrategyConfig.getStrategyValueUnit());
+        return addTime(
+                retryTask.getNextExecuteTime(),
+                Math.toIntExact(result + minimum),
+                retryStrategyConfig.getStrategyValueUnit());
     }
-
 }

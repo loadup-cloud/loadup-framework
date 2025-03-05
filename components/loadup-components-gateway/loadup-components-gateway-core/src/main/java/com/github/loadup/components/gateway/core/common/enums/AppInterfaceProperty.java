@@ -72,5 +72,4 @@ public enum AppInterfaceProperty implements PropertyName {
     public String getName() {
         return name;
     }
-
 }

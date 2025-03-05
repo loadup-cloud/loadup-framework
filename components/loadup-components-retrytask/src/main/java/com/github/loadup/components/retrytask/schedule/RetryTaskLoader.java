@@ -65,7 +65,7 @@ public class RetryTaskLoader {
      */
     public List<String> load(String bizType) {
 
-        //SQL执行捞取Task列表
+        // SQL执行捞取Task列表
         List<RetryTask> retryTasks = loadTasks(bizType);
 
         return convertRetryTasks2BusinessKeys(retryTasks);
@@ -110,7 +110,8 @@ public class RetryTaskLoader {
             retryTasks = loadByPriority(bizType, rowNum);
         }
 
-        List<RetryTask> unusualRetryTasks = retryTaskRepository.loadUnusualTask(bizType, retryStrategyConfig.getExtremeRetryTime(), rowNum);
+        List<RetryTask> unusualRetryTasks =
+                retryTaskRepository.loadUnusualTask(bizType, retryStrategyConfig.getExtremeRetryTime(), rowNum);
 
         if (!CollectionUtils.isEmpty(retryTasks)) {
             resultTasks.addAll(retryTasks);
@@ -129,8 +130,8 @@ public class RetryTaskLoader {
 
         List<RetryTask> retryTasks = new ArrayList<>();
 
-        List<RetryTask> retryTaskHighLevel = retryTaskRepository.loadByPriority(bizType,
-                TaskPriorityEnum.H.getCode(), rowNum);
+        List<RetryTask> retryTaskHighLevel =
+                retryTaskRepository.loadByPriority(bizType, TaskPriorityEnum.H.getCode(), rowNum);
 
         int remainSize = 0;
 
@@ -142,15 +143,13 @@ public class RetryTaskLoader {
         }
 
         if (remainSize > 0) {
-            List<RetryTask> retryTaskLowLevel = retryTaskRepository.loadByPriority(bizType,
-                    TaskPriorityEnum.L.getCode(), remainSize);
+            List<RetryTask> retryTaskLowLevel =
+                    retryTaskRepository.loadByPriority(bizType, TaskPriorityEnum.L.getCode(), remainSize);
             if (!CollectionUtils.isEmpty(retryTaskLowLevel)) {
                 retryTasks.addAll(retryTaskLowLevel);
             }
         }
 
         return retryTasks;
-
     }
-
 }

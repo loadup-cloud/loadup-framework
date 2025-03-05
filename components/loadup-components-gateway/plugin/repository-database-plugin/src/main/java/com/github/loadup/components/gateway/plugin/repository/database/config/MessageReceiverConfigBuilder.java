@@ -34,8 +34,7 @@ import org.springframework.stereotype.Component;
  * MessageReceiver Builder
  */
 @Component("databaseMessageReceiverConfigBuilder")
-public class MessageReceiverConfigBuilder extends
-        AbstractInterfaceConfigBuilder<MessageReceiverConfigDto> {
+public class MessageReceiverConfigBuilder extends AbstractInterfaceConfigBuilder<MessageReceiverConfigDto> {
 
     /**
      * generic config build

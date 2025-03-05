@@ -39,22 +39,21 @@ import org.springframework.stereotype.Component;
  * MessageProcessConfig builder
  */
 @Component("databaseMessageProcessConfigBuilder")
-public class MessageProcessConfigBuilder extends
-        AbstractInterfaceConfigBuilder<MessageProcessConfigDto> {
+public class MessageProcessConfigBuilder extends AbstractInterfaceConfigBuilder<MessageProcessConfigDto> {
 
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(MessageProcessConfigBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageProcessConfigBuilder.class);
 
     /**
      * generic config build with template content, not template map
      */
-    public MessageProcessConfigDto buildByTemplateContent(String interfaceId,
-                                                        String requestHeaderAssembleTemplate,
-                                                        String requestAssembleTemplate,
-                                                        String responseParserTemplate) {
+    public MessageProcessConfigDto buildByTemplateContent(
+            String interfaceId,
+            String requestHeaderAssembleTemplate,
+            String requestAssembleTemplate,
+            String responseParserTemplate) {
         if (StringUtils.isBlank(responseParserTemplate)) {
             return null;
         }

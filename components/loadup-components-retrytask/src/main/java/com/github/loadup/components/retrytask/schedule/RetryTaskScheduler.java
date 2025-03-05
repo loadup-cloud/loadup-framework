@@ -1,4 +1,4 @@
-//package com.github.loadup.components.retrytask.schedule;
+// package com.github.loadup.components.retrytask.schedule;
 //
 /// *-
 // * #%L
@@ -26,24 +26,24 @@
 // * #L%
 // */
 //
-//import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
-//import com.github.loadup.components.retrytask.config.RetryTaskFactory;
-//import java.util.List;
-//import java.util.Map;
-//import javax.annotation.Resource;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.scheduling.annotation.Async;
-//import org.springframework.scheduling.annotation.Scheduled;
-//import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-//import org.springframework.stereotype.Component;
+// import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
+// import com.github.loadup.components.retrytask.config.RetryTaskFactory;
+// import java.util.List;
+// import java.util.Map;
+// import javax.annotation.Resource;
+// import lombok.extern.slf4j.Slf4j;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.scheduling.annotation.Async;
+// import org.springframework.scheduling.annotation.Scheduled;
+// import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+// import org.springframework.stereotype.Component;
 //
 /// **
 // * RetryTaskScheduler
 // */
-//@Component
-//@Slf4j
-//public class RetryTaskScheduler {
+// @Component
+// @Slf4j
+// public class RetryTaskScheduler {
 //
 //    @Resource
 //    private RetryTaskLoader        retryTaskLoader;
@@ -83,4 +83,4 @@
 //            //log.info("RetryTaskScheduler finish retry, elapseTime=" + elapseTime);
 //        }
 //    }
-//}
+// }

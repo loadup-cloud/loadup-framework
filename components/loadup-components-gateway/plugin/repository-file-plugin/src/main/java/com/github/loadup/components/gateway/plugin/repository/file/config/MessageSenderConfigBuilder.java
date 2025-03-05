@@ -64,7 +64,6 @@ public class MessageSenderConfigBuilder extends AbstractInterfaceConfigBuilder<M
         }
 
         return isValidUri;
-
     }
 
     /**
@@ -93,5 +92,4 @@ public class MessageSenderConfigBuilder extends AbstractInterfaceConfigBuilder<M
         msgSender.setCertCode(apiConfig.getSecurityStrategyCode());
         return msgSender;
     }
-
 }

@@ -45,12 +45,11 @@ public class FileRepositoryUtil {
      */
     public static String[] getColumns(String line) {
         if (StringUtils.isBlank(line) || StringUtils.isBlank(line.trim())) {
-            //log sys warn and ignore
+            // log sys warn and ignore
             LogUtil.warn(logger, "reading empty line, ignore");
             return null;
         }
 
         return StringUtils.splitPreserveAllTokens(line, Constant.COMMA_SEPARATOR);
     }
-
 }

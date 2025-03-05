@@ -35,6 +35,7 @@ public class ProcessConstants {
      * 当外部报文不是json个时候的时候，将所有内容透传给内部系统
      */
     public static final String KEY_REQUEST_HEADER = "request-header";
+
     public static final String KEY_REQUEST_BODY = "request-body";
 
     /**
@@ -131,5 +132,4 @@ public class ProcessConstants {
      * send 请求对外暴露的http服务
      */
     public static final String KEY_HTTP_SEND_METHOD = "/gateway/messageservie/send";
-
 }

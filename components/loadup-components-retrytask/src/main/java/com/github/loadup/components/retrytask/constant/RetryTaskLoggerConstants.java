@@ -45,5 +45,4 @@ public class RetryTaskLoggerConstants {
      * retry task logger name
      */
     public static final String RETRYTASK_EXECUTE_NAME = "RETRYTASK-EXECUTE";
-
 }

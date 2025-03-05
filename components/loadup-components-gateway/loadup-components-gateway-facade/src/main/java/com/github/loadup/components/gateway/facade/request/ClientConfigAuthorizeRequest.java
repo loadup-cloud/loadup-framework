@@ -32,7 +32,6 @@ import jakarta.validation.constraints.Size;
 /**
  *
  */
-
 public class ClientConfigAuthorizeRequest extends BaseRequest {
 
     @NotBlank(message = "clientId can not be null")

@@ -228,26 +228,22 @@ public enum AlgorithmEnum {
     /**
      * RSA_SHA1 xml签名算法
      */
-    ALGO_ID_SIGNATURE_RSA_SHA1("ALGO_ID_SIGNATURE_RSA_SHA1", "XML_SIGNATURE", "SINGLE",
-            "RSA_SHA1 xml签名算法"),
+    ALGO_ID_SIGNATURE_RSA_SHA1("ALGO_ID_SIGNATURE_RSA_SHA1", "XML_SIGNATURE", "SINGLE", "RSA_SHA1 xml签名算法"),
 
     /**
      * RSA_SHA256 xml签名算法
      */
-    ALGO_ID_SIGNATURE_RSA_SHA256("ALGO_ID_SIGNATURE_RSA_SHA256", "XML_SIGNATURE", "SINGLE",
-            "RSA_SHA256 xml签名算法"),
+    ALGO_ID_SIGNATURE_RSA_SHA256("ALGO_ID_SIGNATURE_RSA_SHA256", "XML_SIGNATURE", "SINGLE", "RSA_SHA256 xml签名算法"),
 
     /**
      * RSA_SHA384 xml签名算法
      */
-    ALGO_ID_SIGNATURE_RSA_SHA384("ALGO_ID_SIGNATURE_RSA_SHA384", "XML_SIGNATURE", "SINGLE",
-            "RSA_SHA384 xml签名算法"),
+    ALGO_ID_SIGNATURE_RSA_SHA384("ALGO_ID_SIGNATURE_RSA_SHA384", "XML_SIGNATURE", "SINGLE", "RSA_SHA384 xml签名算法"),
 
     /**
      * RSA_SHA512 xml签名算法
      */
-    ALGO_ID_SIGNATURE_RSA_SHA512("ALGO_ID_SIGNATURE_RSA_SHA512", "XML_SIGNATURE", "SINGLE",
-            "RSA_SHA512 xml签名算法"),
+    ALGO_ID_SIGNATURE_RSA_SHA512("ALGO_ID_SIGNATURE_RSA_SHA512", "XML_SIGNATURE", "SINGLE", "RSA_SHA512 xml签名算法"),
 
     /**
      * ----------------------KATONG 特殊算法-----------------------------
@@ -275,7 +271,6 @@ public enum AlgorithmEnum {
      * ---------------------- saas层实现算法-----------------------------
      */
     SELF_DEF_ALGO("SELF_DEF_ALGO", "SELF_DEF_ALGO", "MULTIPLE", "SAAS实现的自定义算法"),
-
     ;
 
     /**
@@ -325,8 +320,7 @@ public enum AlgorithmEnum {
         }
 
         for (AlgorithmEnum algorithm : AlgorithmEnum.values()) {
-            if ("MULTIPLE".equals(algorithm.getSubAlgo())
-                    && algoName.startsWith(algorithm.getName())) {
+            if ("MULTIPLE".equals(algorithm.getSubAlgo()) && algoName.startsWith(algorithm.getName())) {
                 return algorithm;
             }
         }

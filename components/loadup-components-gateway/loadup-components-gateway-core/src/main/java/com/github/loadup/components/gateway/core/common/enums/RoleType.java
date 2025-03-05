@@ -40,7 +40,6 @@ public enum RoleType {
      * receiver
      */
     RECEIVER("RECEIVER", "receiver"),
-
     ;
 
     /**

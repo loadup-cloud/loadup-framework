@@ -59,17 +59,17 @@ public class MDCUtils {
 
     public static void logStartedSpan(Span currentSpan) {
         if (currentSpan != null) {
-//            MDC.put(MDC_TRACE_ID, TracerUtils.getTracerId());
+            //            MDC.put(MDC_TRACE_ID, TracerUtils.getTracerId());
         }
     }
 
     public static void logStoppedSpan() {
         MDC.remove(MDC_TRACE_ID);
         MDC.remove(MDC_SPAN_ID);
-//        Span span = TracerUtils.getSpan();
-//        if (span != null) {
-//            MDC.put(MDC_TRACE_ID, TracerUtils.getTracerId());
-//        }
+        //        Span span = TracerUtils.getSpan();
+        //        if (span != null) {
+        //            MDC.put(MDC_TRACE_ID, TracerUtils.getTracerId());
+        //        }
     }
 
     public static void logTenantId(String tenantId) {
@@ -79,5 +79,4 @@ public class MDCUtils {
     public static void clearTenantId() {
         MDC.remove(MDC_TENANT_ID);
     }
-
 }

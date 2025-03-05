@@ -130,5 +130,4 @@ public class CommonParameter {
      * 签名是否附加报文
      */
     public static String ATTACH = "ATTACH";
-
 }

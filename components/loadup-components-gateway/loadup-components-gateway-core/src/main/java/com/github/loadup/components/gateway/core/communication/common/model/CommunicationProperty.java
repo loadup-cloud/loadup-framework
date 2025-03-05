@@ -144,5 +144,4 @@ public enum CommunicationProperty implements PropertyName {
     public String getDefaultValue() {
         return defaultValue;
     }
-
 }

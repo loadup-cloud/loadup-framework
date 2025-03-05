@@ -36,8 +36,5 @@ public class QueryRateParserFail implements MessageParser {
         return message;
     }
 
-    public void share(UnifyMsg responseMessage, UnifyMsg requestMessage) {
-
-    }
-
+    public void share(UnifyMsg responseMessage, UnifyMsg requestMessage) {}
 }

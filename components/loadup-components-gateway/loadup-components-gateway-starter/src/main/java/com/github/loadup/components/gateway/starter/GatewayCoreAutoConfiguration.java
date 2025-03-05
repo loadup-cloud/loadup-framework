@@ -33,9 +33,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @author Laysan
  */
-
 @Configuration
 @AutoConfigureOrder(0)
 @ComponentScan(basePackages = "com.github.loadup.components.gateway.*")
-public class GatewayCoreAutoConfiguration {
-}
+public class GatewayCoreAutoConfiguration {}

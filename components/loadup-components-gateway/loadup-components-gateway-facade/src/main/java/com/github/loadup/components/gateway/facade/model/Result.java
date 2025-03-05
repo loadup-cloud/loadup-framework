@@ -34,8 +34,7 @@ public class Result {
     private String resultStatus;
     private String resultMessage;
 
-    public Result() {
-    }
+    public Result() {}
 
     public String getResultCode() {
         return this.resultCode;
@@ -60,5 +59,4 @@ public class Result {
     public void setResultMessage(String resultMessage) {
         this.resultMessage = resultMessage;
     }
-
 }

@@ -51,6 +51,7 @@ public class UserController {
 
     @Resource
     private UserService userService;
+
     @Resource
     private CacheBinding cacheBinding;
 

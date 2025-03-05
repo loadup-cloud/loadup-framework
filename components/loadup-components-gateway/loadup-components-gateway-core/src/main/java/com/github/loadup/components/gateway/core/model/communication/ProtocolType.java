@@ -65,7 +65,7 @@ public enum ProtocolType {
             }
         }
 
-        //default HTTP
+        // default HTTP
         return HTTP;
     }
 

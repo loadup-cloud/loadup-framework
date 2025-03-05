@@ -53,5 +53,4 @@ public class CaffeineCacheProperties {
      * spring.cache.caffeine.allow-null-value
      */
     private Boolean allowNullValue = Boolean.TRUE;
-
 }

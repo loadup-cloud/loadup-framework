@@ -144,5 +144,4 @@ public class AuthRequest {
     public void setExtendInfo(String extendInfo) {
         this.extendInfo = extendInfo;
     }
-
 }

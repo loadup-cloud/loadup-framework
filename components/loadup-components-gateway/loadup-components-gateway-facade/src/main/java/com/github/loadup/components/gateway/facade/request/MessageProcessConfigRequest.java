@@ -31,7 +31,6 @@ import jakarta.validation.constraints.NotBlank;
 /**
  *
  */
-
 public class MessageProcessConfigRequest {
 
     /**

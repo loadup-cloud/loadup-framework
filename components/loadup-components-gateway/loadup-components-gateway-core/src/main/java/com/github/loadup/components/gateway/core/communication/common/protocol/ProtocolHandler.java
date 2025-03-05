@@ -38,16 +38,13 @@ public abstract class ProtocolHandler {
      *
      * @throws Exception
      */
-    protected abstract MessageEnvelope convertInMessage(Object inMessage,
-                                                        Object... protocolSelector)
-            throws Exception;
+    protected abstract MessageEnvelope convertInMessage(Object inMessage, Object... protocolSelector) throws Exception;
 
     /**
      * 将发送或者响应消息进行格式转化
      *
      * @throws Exception
      */
-    protected abstract Object convertOutMessage(MessageEnvelope outMessage,
-                                                Object... protocolSelector) throws Exception;
-
+    protected abstract Object convertOutMessage(MessageEnvelope outMessage, Object... protocolSelector)
+            throws Exception;
 }

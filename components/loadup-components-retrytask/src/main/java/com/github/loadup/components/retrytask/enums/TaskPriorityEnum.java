@@ -57,5 +57,4 @@ public enum TaskPriorityEnum implements IEnum {
      * description
      */
     private String description;
-
 }

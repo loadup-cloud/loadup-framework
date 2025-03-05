@@ -28,5 +28,4 @@ package com.github.loadup.commons.request;
 
 import com.github.loadup.commons.dto.DTO;
 
-public class BaseRequest extends DTO {
-}
+public class BaseRequest extends DTO {}

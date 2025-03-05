@@ -27,7 +27,9 @@ package com.github.loadup.components.upms.dal.dataobject;
  */
 
 import com.github.loadup.commons.dataobject.BaseDO;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 

@@ -40,7 +40,6 @@ public enum InterfaceScope {
      * OUTBOUND
      */
     OUTBOUND("OUTBOUND", "OUTBOUND"),
-
     ;
 
     /**

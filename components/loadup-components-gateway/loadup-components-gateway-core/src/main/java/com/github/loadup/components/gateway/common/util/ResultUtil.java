@@ -45,7 +45,6 @@ public class ResultUtil {
         result.setResultStatus(errorCode.getStatus());
         result.setResultMessage(errorCode.getMessage());
         return result;
-
     }
 
     /**
@@ -72,5 +71,4 @@ public class ResultUtil {
     public static Result buildSuccessResult() {
         return buildResult(GatewayErrorCode.SUCCESS);
     }
-
 }

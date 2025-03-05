@@ -45,6 +45,7 @@ public class RetryStrategyUtil {
      * 分隔符
      */
     public static final char SEPARATOR = ',';
+
     private static RetryStrategyUtil instance;
     //    @Resource
     private RetryTaskStrategyFactory retryTaskStrategyFactory;
@@ -52,10 +53,9 @@ public class RetryStrategyUtil {
     /**
      * 根据重试策略更新重试任务
      */
-    public static void updateRetryTaskByStrategy(RetryTask retryTask,
-                                                 RetryStrategyConfig retryStrategyConfig) {
-        RetryTaskStrategy retryTaskStrategy = instance.retryTaskStrategyFactory.findRetryTaskStrategy(
-                retryStrategyConfig.getStrategyType());
+    public static void updateRetryTaskByStrategy(RetryTask retryTask, RetryStrategyConfig retryStrategyConfig) {
+        RetryTaskStrategy retryTaskStrategy =
+                instance.retryTaskStrategyFactory.findRetryTaskStrategy(retryStrategyConfig.getStrategyType());
         int executedTimes = retryTask.getExecutedTimes();
         retryTask.setExecutedTimes(executedTimes + 1);
         //        Date nextExecuteTime = retryTaskStrategy.calculateNextExecuteTime(retryTask, retryStrategyConfig);

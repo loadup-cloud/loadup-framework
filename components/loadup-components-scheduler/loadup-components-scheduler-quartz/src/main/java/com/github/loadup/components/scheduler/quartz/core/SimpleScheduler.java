@@ -19,17 +19,17 @@ public class SimpleScheduler extends AbstractScheduler {
     }
 
     private CronTrigger createTrigger(final String cron) {
-        return TriggerBuilder
-                .newTrigger()
+        return TriggerBuilder.newTrigger()
                 .withIdentity("xx")
-                .withSchedule(
-                        CronScheduleBuilder.cronSchedule(cron).withMisfireHandlingInstructionDoNothing())
+                .withSchedule(CronScheduleBuilder.cronSchedule(cron).withMisfireHandlingInstructionDoNothing())
                 .build();
     }
 
     @Override
     public JobDetail newJob() {
-        return JobBuilder.newJob(SimpleJobExecutor.class).withIdentity(this.jobName).build();
+        return JobBuilder.newJob(SimpleJobExecutor.class)
+                .withIdentity(this.jobName)
+                .build();
     }
 
     @Override

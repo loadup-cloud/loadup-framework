@@ -44,11 +44,16 @@ public class ChineseCaptchaServiceImpl extends CommonInnerService implements Cap
             // 画字符串
             g2d.setFont(getChineseFont());
             FontMetrics fontMetrics = g2d.getFontMetrics();
-            int fW = width / strs.length;  // 每一个字符所占的宽度
-            int fSp = (fW - (int) fontMetrics.getStringBounds("王", g2d).getWidth()) / 2;  // 字符的左右边距
+            int fW = width / strs.length; // 每一个字符所占的宽度
+            int fSp = (fW - (int) fontMetrics.getStringBounds("王", g2d).getWidth()) / 2; // 字符的左右边距
             for (int i = 0; i < strs.length; i++) {
                 g2d.setColor(randomColor());
-                int fY = height - ((height - (int) fontMetrics.getStringBounds(String.valueOf(strs[i]), g2d).getHeight()) >> 1);  // 文字的纵坐标
+                int fY = height
+                        - ((height
+                                        - (int) fontMetrics
+                                                .getStringBounds(String.valueOf(strs[i]), g2d)
+                                                .getHeight())
+                                >> 1); // 文字的纵坐标
                 g2d.drawString(String.valueOf(strs[i]), i * fW + fSp + 3, fY - 3);
             }
             g2d.dispose();
@@ -79,5 +84,4 @@ public class ChineseCaptchaServiceImpl extends CommonInnerService implements Cap
         captchaResult.setCacheKey(key);
         return captchaResult;
     }
-
 }

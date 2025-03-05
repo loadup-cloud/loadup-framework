@@ -39,8 +39,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      *
      * @throws IOException 输入输出异常
      */
-    public static void io(InputStream in, OutputStream out)
-            throws IOException {
+    public static void io(InputStream in, OutputStream out) throws IOException {
         io(in, out, -1);
     }
 
@@ -49,8 +48,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      *
      * @throws IOException 输入输出异常
      */
-    public static void io(InputStream in, OutputStream out, int bufferSize)
-            throws IOException {
+    public static void io(InputStream in, OutputStream out, int bufferSize) throws IOException {
         if (bufferSize == -1) {
             bufferSize = DEFAULT_BUFFER_SIZE;
         }
@@ -77,8 +75,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      *
      * @throws IOException 输入输出异常
      */
-    public static void io(Reader in, Writer out, int bufferSize)
-            throws IOException {
+    public static void io(Reader in, Writer out, int bufferSize) throws IOException {
         if (bufferSize == -1) {
             bufferSize = DEFAULT_BUFFER_SIZE >> 1;
         }
@@ -119,8 +116,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      *
      * @throws IOException 输入输出异常
      */
-    public static String readText(InputStream in, String encoding)
-            throws IOException {
+    public static String readText(InputStream in, String encoding) throws IOException {
         return readText(in, encoding, -1);
     }
 
@@ -129,10 +125,8 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      *
      * @throws IOException 输入输出异常
      */
-    public static String readText(InputStream in, String encoding, int bufferSize)
-            throws IOException {
-        Reader reader = (encoding == null) ? new InputStreamReader(in)
-                : new InputStreamReader(in, encoding);
+    public static String readText(InputStream in, String encoding, int bufferSize) throws IOException {
+        Reader reader = (encoding == null) ? new InputStreamReader(in) : new InputStreamReader(in, encoding);
 
         return readText(reader, bufferSize);
     }
@@ -151,8 +145,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      *
      * @throws IOException 输入输出异常
      */
-    public static String readText(Reader reader, int bufferSize)
-            throws IOException {
+    public static String readText(Reader reader, int bufferSize) throws IOException {
         StringWriter writer = new StringWriter();
 
         io(reader, writer, bufferSize);
@@ -187,8 +180,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
             }
         }
 
-        public void write(byte[] data, int offset, int length)
-                throws IOException {
+        public void write(byte[] data, int offset, int length) throws IOException {
             synchronized (lock) {
                 out.write(data, offset, length);
             }

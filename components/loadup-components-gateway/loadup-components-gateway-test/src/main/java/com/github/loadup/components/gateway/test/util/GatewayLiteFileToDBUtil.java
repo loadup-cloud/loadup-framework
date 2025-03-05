@@ -38,24 +38,30 @@ public class GatewayLiteFileToDBUtil {
 
     public static void main(String[] args) throws IOException {
 
-        //prod
-        String confRoot = "/Users/luohao/IdeaProjects/lmgatewaylite/app/launch/src/main/resources/config/gateway.sg-prod";
+        // prod
+        String confRoot =
+                "/Users/luohao/IdeaProjects/lmgatewaylite/app/launch/src/main/resources/config/gateway.sg-prod";
         String apiFileUrl = confRoot + "/OPENAPI_CONF.csv";
         String spiFileUrl = confRoot + "/SPI_CONF.csv";
         String securityFileUrl = confRoot + "/SECURITY_STRATEGY_CONF.csv";
 
-        //sandbox
-        //        String apiFileUrl = "/Users/luohao/IdeaProjects/lmgatewaylite/app/launch/src/main/resources/config/gateway
+        // sandbox
+        //        String apiFileUrl =
+        // "/Users/luohao/IdeaProjects/lmgatewaylite/app/launch/src/main/resources/config/gateway
         //        .sg-sandbox/OPENAPI_CONF.csv";
-        //        String spiFileUrl = "/Users/luohao/IdeaProjects/lmgatewaylite/app/launch/src/main/resources/config/gateway
+        //        String spiFileUrl =
+        // "/Users/luohao/IdeaProjects/lmgatewaylite/app/launch/src/main/resources/config/gateway
         //        .sg-sandbox/SPI_CONF.csv";
-        //        String securityFileUrl = "/Users/luohao/IdeaProjects/lmgatewaylite/app/launch/src/main/resources/config/gateway
+        //        String securityFileUrl =
+        // "/Users/luohao/IdeaProjects/lmgatewaylite/app/launch/src/main/resources/config/gateway
         //        .sg-sandbox/SECURITY_STRATEGY_CONF.csv";
-        //dev
+        // dev
         //        String apiFileUrl = "/Users/luohao/IdeaProjects/local-utils/src/main/resources/OPENAPI_CONF_DEV.csv";
-        //        String spiFileUrl = "/Users/luohao/IdeaProjects/lmgatewaylite/app/launch/src/main/resources/config/gateway/SPI_CONF_DEV
+        //        String spiFileUrl =
+        // "/Users/luohao/IdeaProjects/lmgatewaylite/app/launch/src/main/resources/config/gateway/SPI_CONF_DEV
         //        .csv";
-        //        String securityFileUrl = "/Users/luohao/IdeaProjects/lmgatewaylite/app/launch/src/main/resources/config/gateway
+        //        String securityFileUrl =
+        // "/Users/luohao/IdeaProjects/lmgatewaylite/app/launch/src/main/resources/config/gateway
         //        /SECURITY_STRATEGY_CONF.csv";
 
         Map<String, String> templateValue = getTemplateValueFromFile(confRoot);
@@ -72,7 +78,6 @@ public class GatewayLiteFileToDBUtil {
         }
 
         return Stream.of(obj);
-
     }
 
     private static Map<String, String> getTemplateValueFromFile(String confRoot) {
@@ -84,8 +89,7 @@ public class GatewayLiteFileToDBUtil {
         File assemblerFolderObj = new File(assemblerFolder);
         File parserFolderObj = new File(parserFolder);
 
-        Stream
-                .concat(streamOf(assemblerFolderObj.listFiles()), streamOf(parserFolderObj.listFiles()))
+        Stream.concat(streamOf(assemblerFolderObj.listFiles()), streamOf(parserFolderObj.listFiles()))
                 .forEach(eachFile -> {
                     String fileName = eachFile.getName();
                     FileInputStream fileInputStream = null;
@@ -114,10 +118,10 @@ public class GatewayLiteFileToDBUtil {
                 + "(tenant_id, security_strategy_code, client_id, cert_content, operate_type, cert_type, status, `key_type`, algo_name, "
                 + "properties, algo_properties, gmt_valid, gmt_invalid, gmt_create, gmt_modified) VALUES";
 
-        String insertTailTemplate
-                = "(NULL, __security_strategy_code__, __client_id__, __cert_content__, __operate_type__, __cert_type__, __status__, "
-                + "__key_type__, __algo_name__, __properties__, __algo_properties__, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, "
-                + "CURRENT_TIMESTAMP)";
+        String insertTailTemplate =
+                "(NULL, __security_strategy_code__, __client_id__, __cert_content__, __operate_type__, __cert_type__, __status__, "
+                        + "__key_type__, __algo_name__, __properties__, __algo_properties__, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, "
+                        + "CURRENT_TIMESTAMP)";
 
         Set<String> exist = new HashSet<>();
 
@@ -125,12 +129,10 @@ public class GatewayLiteFileToDBUtil {
             StringBuffer insertSql = new StringBuffer(insertHead);
 
             String replace = insertTailTemplate
-                    .replace("__security_strategy_code__",
-                            include(securityConf.get("security_strategy_code")))
+                    .replace("__security_strategy_code__", include(securityConf.get("security_strategy_code")))
                     .replace("__client_id__", include(securityConf.get("client_id")))
                     .replace("__cert_content__", include(securityConf.get("security_strategy_key")))
-                    .replace("__operate_type__",
-                            include(securityConf.get("security_strategy_operate_type")))
+                    .replace("__operate_type__", include(securityConf.get("security_strategy_operate_type")))
                     .replace("__cert_type__", include(securityConf.get("cert_type")))
                     .replace("__status__", include("VALID"))
                     .replace("__key_type__", include(securityConf.get("security_strategy_key_type")))
@@ -144,29 +146,27 @@ public class GatewayLiteFileToDBUtil {
             System.out.println(insertSql.toString());
             System.out.println("####################################");
         }
-
     }
 
     private static String include(String input) {
         return "'" + input.replaceAll("'", "\\\\'") + "'";
     }
 
-    private static void resolveApiConf(String fileUrl,
-                                    Map<String, String> templateValue) throws IOException {
+    private static void resolveApiConf(String fileUrl, Map<String, String> templateValue) throws IOException {
 
         List<Map<String, String>> apiConfData = resolveCsv(fileUrl);
 
-        String insertHead
-                = "INSERT INTO gateway_interface (tenant_id, interface_id, interface_name, url, integration_url, "
-                + "security_strategy_code, version, `type`, status, integration_response_parser, integration_request_header_assemble, "
-                + "integration_request_body_assemble, communication_properties, gmt_create, gmt_modified, interface_request_parser, "
-                + "interface_response_body_assemble, interface_response_header_assemble) VALUES ";
+        String insertHead =
+                "INSERT INTO gateway_interface (tenant_id, interface_id, interface_name, url, integration_url, "
+                        + "security_strategy_code, version, `type`, status, integration_response_parser, integration_request_header_assemble, "
+                        + "integration_request_body_assemble, communication_properties, gmt_create, gmt_modified, interface_request_parser, "
+                        + "interface_response_body_assemble, interface_response_header_assemble) VALUES ";
 
-        String insertTailTemplate
-                = "(__tenantId__, __interfaceId__, __interfaceName__, __url__, __integrationUrl__, __securityStrategyCode__, __version__ "
-                + ", __type__, __status__, __integrationResponseParser__, __integrationRequestHeaderAssemble__, "
-                + "__integrationRequestBodyAssemble__, __communicationProperties__, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, "
-                + "__interfaceRequestParser__, __interfaceResponseBodyAssemble__, __interfaceResponseHeaderAssemble__)";
+        String insertTailTemplate =
+                "(__tenantId__, __interfaceId__, __interfaceName__, __url__, __integrationUrl__, __securityStrategyCode__, __version__ "
+                        + ", __type__, __status__, __integrationResponseParser__, __integrationRequestHeaderAssemble__, "
+                        + "__integrationRequestBodyAssemble__, __communicationProperties__, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, "
+                        + "__interfaceRequestParser__, __interfaceResponseBodyAssemble__, __interfaceResponseHeaderAssemble__)";
 
         Set<String> exist = new HashSet<>();
 
@@ -175,8 +175,7 @@ public class GatewayLiteFileToDBUtil {
 
             String integrationUri = apiConf.get("integration_uri");
 
-            String callPath = integrationUri
-                    .substring(integrationUri.indexOf("://") + "://".length());
+            String callPath = integrationUri.substring(integrationUri.indexOf("://") + "://".length());
 
             String interfaceId = "platform.OPENAPI." + callPath.replaceAll("/", ".") + ".1.0";
 
@@ -190,24 +189,29 @@ public class GatewayLiteFileToDBUtil {
                 continue;
             }
 
-            String replace = insertTailTemplate.replace("__tenantId__", "NULL")
+            String replace = insertTailTemplate
+                    .replace("__tenantId__", "NULL")
                     .replace("__interfaceId__", include(interfaceId))
                     .replace("__interfaceName__", include(interfaceId))
                     .replace("__url__", include(apiConf.get("open_uri")))
                     .replace("__integrationUrl__", include(apiConf.get("integration_uri")))
                     .replace("__securityStrategyCode__", include(apiConf.get("security_strategy_code")))
-                    .replace("__version__", include("1.0")).replace("__type__", include("OPENAPI"))
+                    .replace("__version__", include("1.0"))
+                    .replace("__type__", include("OPENAPI"))
                     .replace("__status__", include("VALID"))
-                    .replace("__integrationResponseParser__",
-                            include(templateValue
-                                    .getOrDefault(apiConf.get("integration_service_response_parser"), "")))
-                    .replace("__integrationRequestHeaderAssemble__",
+                    .replace(
+                            "__integrationResponseParser__",
+                            include(templateValue.getOrDefault(apiConf.get("integration_service_response_parser"), "")))
+                    .replace(
+                            "__integrationRequestHeaderAssemble__",
                             include(templateValue.getOrDefault(
                                     apiConf.get("integration_service_request_header_assemble"), "")))
-                    .replace("__integrationRequestBodyAssemble__",
-                            include(templateValue
-                                    .getOrDefault(apiConf.get("integration_service_request_assemble"), "")))
-                    .replace("__communicationProperties__",
+                    .replace(
+                            "__integrationRequestBodyAssemble__",
+                            include(templateValue.getOrDefault(
+                                    apiConf.get("integration_service_request_assemble"), "")))
+                    .replace(
+                            "__communicationProperties__",
                             include(apiConf.getOrDefault("communication_properties", "")))
                     .replace("__interfaceRequestParser__", include(""))
                     .replace("__interfaceResponseBodyAssemble__", include(""))
@@ -219,25 +223,23 @@ public class GatewayLiteFileToDBUtil {
             System.out.println(insertSql.toString());
             System.out.println("####################################");
         }
-
     }
 
-    private static void resolveSpiConf(String fileUrl,
-                                    Map<String, String> templateValue) throws IOException {
+    private static void resolveSpiConf(String fileUrl, Map<String, String> templateValue) throws IOException {
 
         List<Map<String, String>> spiConfData = resolveCsv(fileUrl);
 
-        String insertHead
-                = "INSERT INTO gateway_interface (tenant_id, interface_id, interface_name, url, integration_url, "
-                + "security_strategy_code, version, `type`, status, integration_response_parser, integration_request_header_assemble, "
-                + "integration_request_body_assemble, communication_properties, gmt_create, gmt_modified, interface_request_parser, "
-                + "interface_response_body_assemble, interface_response_header_assemble) VALUES ";
+        String insertHead =
+                "INSERT INTO gateway_interface (tenant_id, interface_id, interface_name, url, integration_url, "
+                        + "security_strategy_code, version, `type`, status, integration_response_parser, integration_request_header_assemble, "
+                        + "integration_request_body_assemble, communication_properties, gmt_create, gmt_modified, interface_request_parser, "
+                        + "interface_response_body_assemble, interface_response_header_assemble) VALUES ";
 
-        String insertTailTemplate
-                = "(__tenantId__, __interfaceId__, __interfaceName__, __url__, __integrationUrl__, __securityStrategyCode__, __version__ "
-                + ", __type__, __status__, __integrationResponseParser__, __integrationRequestHeaderAssemble__, "
-                + "__integrationRequestBodyAssemble__, __communicationProperties__, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, "
-                + "__interfaceRequestParser__, __interfaceResponseBodyAssemble__, __interfaceResponseHeaderAssemble__)";
+        String insertTailTemplate =
+                "(__tenantId__, __interfaceId__, __interfaceName__, __url__, __integrationUrl__, __securityStrategyCode__, __version__ "
+                        + ", __type__, __status__, __integrationResponseParser__, __integrationRequestHeaderAssemble__, "
+                        + "__integrationRequestBodyAssemble__, __communicationProperties__, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, "
+                        + "__interfaceRequestParser__, __interfaceResponseBodyAssemble__, __interfaceResponseHeaderAssemble__)";
 
         Set<String> exist = new HashSet<>();
 
@@ -246,8 +248,7 @@ public class GatewayLiteFileToDBUtil {
 
             String integrationUri = spiConf.get("integration_uri");
 
-            String callPath = integrationUri
-                    .substring(integrationUri.indexOf("://") + "://".length());
+            String callPath = integrationUri.substring(integrationUri.indexOf("://") + "://".length());
 
             String interfaceId = "platform.SPI." + callPath.replaceAll("/", ".") + ".1.0";
 
@@ -257,23 +258,29 @@ public class GatewayLiteFileToDBUtil {
                 continue;
             }
 
-            String replace = insertTailTemplate.replace("__tenantId__", "NULL")
+            String replace = insertTailTemplate
+                    .replace("__tenantId__", "NULL")
                     .replace("__interfaceId__", include(interfaceId))
-                    .replace("__interfaceName__", include(interfaceId)).replace("__url__", include(""))
+                    .replace("__interfaceName__", include(interfaceId))
+                    .replace("__url__", include(""))
                     .replace("__integrationUrl__", include(spiConf.get("integration_uri")))
                     .replace("__securityStrategyCode__", include(spiConf.get("security_strategy_code")))
-                    .replace("__version__", include("1.0")).replace("__type__", include("SPI"))
+                    .replace("__version__", include("1.0"))
+                    .replace("__type__", include("SPI"))
                     .replace("__status__", include("VALID"))
-                    .replace("__integrationResponseParser__",
-                            include(templateValue
-                                    .getOrDefault(spiConf.get("integration_service_response_parser"), "")))
-                    .replace("__integrationRequestHeaderAssemble__",
+                    .replace(
+                            "__integrationResponseParser__",
+                            include(templateValue.getOrDefault(spiConf.get("integration_service_response_parser"), "")))
+                    .replace(
+                            "__integrationRequestHeaderAssemble__",
                             include(templateValue.getOrDefault(
                                     spiConf.get("integration_service_request_header_assemble"), "")))
-                    .replace("__integrationRequestBodyAssemble__",
-                            include(templateValue
-                                    .getOrDefault(spiConf.get("integration_service_request_assemble"), "")))
-                    .replace("__communicationProperties__",
+                    .replace(
+                            "__integrationRequestBodyAssemble__",
+                            include(templateValue.getOrDefault(
+                                    spiConf.get("integration_service_request_assemble"), "")))
+                    .replace(
+                            "__communicationProperties__",
                             include(spiConf.getOrDefault("communication_properties", "")))
                     .replace("__interfaceRequestParser__", include(""))
                     .replace("__interfaceResponseBodyAssemble__", include(""))
@@ -285,7 +292,6 @@ public class GatewayLiteFileToDBUtil {
             System.out.println(insertSql.toString());
             System.out.println("####################################");
         }
-
     }
 
     private static List<Map<String, String>> resolveCsv(String fileUrl) throws IOException {

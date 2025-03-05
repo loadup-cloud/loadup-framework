@@ -34,7 +34,8 @@ import com.github.loadup.components.gateway.core.ctrl.context.GatewayRuntimeProc
  * </p>
  */
 public class RuntimeProcessContextHolder<T> {
-    private final static ThreadLocal<GatewayRuntimeProcessContext> processContextLocal = new ThreadLocal<GatewayRuntimeProcessContext>();
+    private static final ThreadLocal<GatewayRuntimeProcessContext> processContextLocal =
+            new ThreadLocal<GatewayRuntimeProcessContext>();
 
     /**
      * create a new runtime process context
@@ -58,5 +59,4 @@ public class RuntimeProcessContextHolder<T> {
     public static void cleanActionContext() {
         processContextLocal.remove();
     }
-
 }

@@ -46,5 +46,4 @@ public class InstConfigBuilder extends AbstractInterfaceConfigBuilder<InstConfig
         instConfigDto.setProperties(properties);
         return instConfigDto;
     }
-
 }

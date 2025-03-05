@@ -42,5 +42,4 @@ public abstract class UserNameConvertor {
     String convert(UserName user) {
         return JsonUtil.toJSONString(user);
     }
-
 }

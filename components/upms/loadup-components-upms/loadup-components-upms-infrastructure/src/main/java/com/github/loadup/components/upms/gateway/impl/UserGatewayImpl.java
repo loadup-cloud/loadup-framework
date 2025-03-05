@@ -54,23 +54,29 @@ import java.util.stream.Collectors;
 public class UserGatewayImpl implements UserGateway {
     @Resource
     private UserRepository userRepository;
+
     @Resource
     private UserRoleRepository userRoleRepository;
+
     @Resource
     private UserDepartRepository userDepartRepository;
+
     @Resource
     private UserPositionRepository userPositionRepository;
+
     @Resource
     private DepartRepository departRepository;
+
     @Resource
     private PositionRepository positionRepository;
+
     @Resource
     private RoleRepository roleRepository;
 
     @Override
     public User create(User user) {
         UserDO userDO = UserConvertor.INSTANCE.toUserDO(user);
-        //userDO.setNew(true);
+        // userDO.setNew(true);
         userRepository.save(userDO);
         return UserConvertor.INSTANCE.toUser(userDO);
     }
@@ -79,7 +85,7 @@ public class UserGatewayImpl implements UserGateway {
     public void changePassword(User user) {
         Assert.notNull(user.getId(), "userId must not be null");
         UserDO userDO = UserConvertor.INSTANCE.toUserDO(user);
-        //userDO.setNew(false);
+        // userDO.setNew(false);
         userRepository.changePassword(user.getId(), userDO.getPassword());
     }
 
@@ -93,20 +99,38 @@ public class UserGatewayImpl implements UserGateway {
 
     @Override
     public User getById(String userId) {
-        User user = userRepository.findById(userId).map(UserConvertor.INSTANCE::toUser).orElse(null);
+        User user = userRepository
+                .findById(userId)
+                .map(UserConvertor.INSTANCE::toUser)
+                .orElse(null);
         if (Objects.isNull(user)) {
             return null;
         }
         List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByUserId(userId);
         List<UserDepartDO> userDepartDOList = userDepartRepository.findAllByUserId(userId);
         List<UserPositionDO> userPositionDOList = userPositionRepository.findAllByUserId(userId);
-        List<Role> roleList = userRoleDOList.stream().map(userRoleDO -> roleRepository.findById(userRoleDO.getRoleId())
-                .map(RoleConvertor.INSTANCE::toRole).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
+        List<Role> roleList = userRoleDOList.stream()
+                .map(userRoleDO -> roleRepository
+                        .findById(userRoleDO.getRoleId())
+                        .map(RoleConvertor.INSTANCE::toRole)
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
         user.setRoleList(roleList);
-        user.setDepartList(userDepartDOList.stream().map(userRoleDO -> departRepository.findById(userRoleDO.getDepartId())
-                .map(DepartConvertor.INSTANCE::toDepart).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList()));
-        user.setPositionList(userPositionDOList.stream().map(userRoleDO -> positionRepository.findById(userRoleDO.getPositionId())
-                .map(PositionConvertor.INSTANCE::toPosition).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList()));
+        user.setDepartList(userDepartDOList.stream()
+                .map(userRoleDO -> departRepository
+                        .findById(userRoleDO.getDepartId())
+                        .map(DepartConvertor.INSTANCE::toDepart)
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
+        user.setPositionList(userPositionDOList.stream()
+                .map(userRoleDO -> positionRepository
+                        .findById(userRoleDO.getPositionId())
+                        .map(PositionConvertor.INSTANCE::toPosition)
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
         return user;
     }
 
@@ -115,7 +139,10 @@ public class UserGatewayImpl implements UserGateway {
         List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByRoleId(roleId);
         List<User> result = new ArrayList<>();
         for (UserRoleDO userRoleDO : userRoleDOList) {
-            User user = userRepository.findById(userRoleDO.getUserId()).map(UserConvertor.INSTANCE::toUser).orElse(null);
+            User user = userRepository
+                    .findById(userRoleDO.getUserId())
+                    .map(UserConvertor.INSTANCE::toUser)
+                    .orElse(null);
             if (Objects.nonNull(user)) {
                 result.add(user);
             }
@@ -125,7 +152,8 @@ public class UserGatewayImpl implements UserGateway {
 
     @Override
     public void saveUserRoles(String userId, List<String> roleIds) {
-        List<UserRoleDO> userRoleDOList = roleIds.stream().map(roleId -> new UserRoleDO(userId, roleId)).collect(Collectors.toList());
+        List<UserRoleDO> userRoleDOList =
+                roleIds.stream().map(roleId -> new UserRoleDO(userId, roleId)).collect(Collectors.toList());
         userRoleRepository.removeAllByUserId(userId);
         userRoleRepository.saveAll(userRoleDOList);
     }

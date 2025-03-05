@@ -74,7 +74,6 @@ public abstract class AbstractScheduler {
     public void init() {
         if (inited.compareAndSet(false, true)) {
             initScheduler();
-
         }
     }
 
@@ -126,7 +125,9 @@ public abstract class AbstractScheduler {
     }
 
     private CronTrigger createTrigger(String cron) {
-        return TriggerBuilder.newTrigger().withIdentity(this.jobName).withSchedule(
-                CronScheduleBuilder.cronSchedule(cron).withMisfireHandlingInstructionDoNothing()).build();
+        return TriggerBuilder.newTrigger()
+                .withIdentity(this.jobName)
+                .withSchedule(CronScheduleBuilder.cronSchedule(cron).withMisfireHandlingInstructionDoNothing())
+                .build();
     }
 }

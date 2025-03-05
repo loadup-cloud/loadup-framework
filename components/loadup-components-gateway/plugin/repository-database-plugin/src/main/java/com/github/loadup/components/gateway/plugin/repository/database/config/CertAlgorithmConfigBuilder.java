@@ -54,21 +54,23 @@ public class CertAlgorithmConfigBuilder extends AbstractCertAlgorithmConfigBuild
     public CertAlgorithmConfigDto build(SecurityDO securityDO) {
         CertAlgorithmConfigDto certAlgorithmConfigDto = new CertAlgorithmConfigDto();
 
-        //security_strategy_operate_type.security_strategy_algorithm.index
-        certAlgorithmConfigDto
-                .setCertCode(CacheUtil.generateKey(securityDO.getSecurityStrategyCode(),
-                        securityDO.getOperateType(), securityDO.getAlgoName(), securityDO.getClientId()));
-        //security_strategy_operate_type
+        // security_strategy_operate_type.security_strategy_algorithm.index
+        certAlgorithmConfigDto.setCertCode(CacheUtil.generateKey(
+                securityDO.getSecurityStrategyCode(),
+                securityDO.getOperateType(),
+                securityDO.getAlgoName(),
+                securityDO.getClientId()));
+        // security_strategy_operate_type
         certAlgorithmConfigDto.setOperateType(securityDO.getOperateType());
-        //security_strategy_type
+        // security_strategy_type
         certAlgorithmConfigDto.setAlgoType(securityDO.getAlgoName());
-        //security_strategy_algorithm
+        // security_strategy_algorithm
         certAlgorithmConfigDto.setAlgoName(securityDO.getAlgoName());
 
-        //cert_algorithm_properties
+        // cert_algorithm_properties
         certAlgorithmConfigDto.setAlgoProperties(securityDO.getAlgoProperties());
 
-        //certAlgorithmConfig.setCertTypes(certConfigRepository.getCertType());
+        // certAlgorithmConfig.setCertTypes(certConfigRepository.getCertType());
         certAlgorithmConfigDto.setCertType(securityDO.getCertType());
         return certAlgorithmConfigDto;
     }
@@ -93,19 +95,20 @@ public class CertAlgorithmConfigBuilder extends AbstractCertAlgorithmConfigBuild
         }
 
         CertAlgorithmConfigDto certAlgorithmConfigDto = new CertAlgorithmConfigDto();
-        //security_strategy_operate_type.security_strategy_algorithm.index
-        certAlgorithmConfigDto.setCertCode(CertUtil.buildCertCode(fileColumns[0], fileColumns[1], fileColumns[2], fileColumns[6]));
-        //security_strategy_operate_type
+        // security_strategy_operate_type.security_strategy_algorithm.index
+        certAlgorithmConfigDto.setCertCode(
+                CertUtil.buildCertCode(fileColumns[0], fileColumns[1], fileColumns[2], fileColumns[6]));
+        // security_strategy_operate_type
         certAlgorithmConfigDto.setOperateType(fileColumns[1]);
-        //security_strategy_type
+        // security_strategy_type
         certAlgorithmConfigDto.setAlgoType(buildAlgorithmType(fileColumns[2]));
-        //security_strategy_algorithm
+        // security_strategy_algorithm
         certAlgorithmConfigDto.setAlgoName(fileColumns[2]);
 
-        //cert_algorithm_properties
+        // cert_algorithm_properties
         certAlgorithmConfigDto.setAlgoProperties(fileColumns[8]);
 
-        //certAlgorithmConfig.setCertTypes(fileColumns[4]);
+        // certAlgorithmConfig.setCertTypes(fileColumns[4]);
         certAlgorithmConfigDto.setCertType(fileColumns[4]);
         return certAlgorithmConfigDto;
     }
@@ -119,7 +122,5 @@ public class CertAlgorithmConfigBuilder extends AbstractCertAlgorithmConfigBuild
             LogUtil.error(logger, "Introduced a new algorithm=" + algorithmName);
         }
         return algorithmName;
-
     }
-
 }

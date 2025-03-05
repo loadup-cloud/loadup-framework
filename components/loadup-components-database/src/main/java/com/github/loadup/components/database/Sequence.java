@@ -41,5 +41,4 @@ public class Sequence extends BaseDO {
     private Long minValue;
     private Long maxValue;
     private Long step;
-
 }

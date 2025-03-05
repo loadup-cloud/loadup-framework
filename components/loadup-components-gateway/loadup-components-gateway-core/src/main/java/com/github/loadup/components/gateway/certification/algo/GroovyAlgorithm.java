@@ -41,8 +41,7 @@ public interface GroovyAlgorithm {
     /**
      * 公共验签接口
      */
-    public boolean verify(String unSignedData, String signedData,
-                        CertificationFactor certificationFactor);
+    public boolean verify(String unSignedData, String signedData, CertificationFactor certificationFactor);
 
     /**
      * 加密操作接口
@@ -68,5 +67,4 @@ public interface GroovyAlgorithm {
      * 特殊验签算法
      */
     public String decode(String srcContent, CertificationFactor certificationFactor);
-
 }

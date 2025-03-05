@@ -39,5 +39,4 @@ public class DefaultAssemble extends AbstractMsgAssembler {
     protected Object assembleErrorMessage(UnifyMsg message, CommonException exception) {
         return "{}";
     }
-
 }

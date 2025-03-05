@@ -26,7 +26,7 @@ public abstract class Captcha {
     protected int len = 4; // 验证码随机字符长度
     protected int width = 130; // 验证码显示宽度
     protected int height = 48; // 验证码显示高度
-    protected CharTypeEnum charType = CharTypeEnum.DEFAULT;  // 验证码类型
+    protected CharTypeEnum charType = CharTypeEnum.DEFAULT; // 验证码类型
     protected String chars = null; // 当前验证码
     // 常用颜色
     private Font font = null; // 验证码的字体
@@ -55,9 +55,7 @@ public abstract class Captcha {
         return cs;
     }
 
-    protected void saveCache(String key, String value) {
-
-    }
+    protected void saveCache(String key, String value) {}
 
     /**
      * 生成随机验证码
@@ -218,11 +216,11 @@ public abstract class Captcha {
                 y1 = y2;
                 y2 = ty;
             }
-            if (RandomUtils.nextInt(0, 2) == 0) {  // 二阶贝塞尔曲线
+            if (RandomUtils.nextInt(0, 2) == 0) { // 二阶贝塞尔曲线
                 QuadCurve2D shape = new QuadCurve2D.Double();
                 shape.setCurve(x1, y1, ctrlx, ctrly, x2, y2);
                 g.draw(shape);
-            } else {  // 三阶贝塞尔曲线
+            } else { // 三阶贝塞尔曲线
                 int ctrlx1 = RandomUtils.nextInt(width / 4, width / 4 * 3), ctrly1 = RandomUtils.nextInt(5, height - 5);
                 CubicCurve2D shape = new CubicCurve2D.Double(x1, y1, ctrlx, ctrly, ctrlx1, ctrly1, x2, y2);
                 g.draw(shape);
@@ -254,8 +252,8 @@ public abstract class Captcha {
     }
 
     public void setFont(CharFontEnum font, int style, float size) throws IOException, FontFormatException {
-        this.font = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/fonts/" + font.getCode())).deriveFont(style,
-                size);
+        this.font = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/fonts/" + font.getCode()))
+                .deriveFont(style, size);
     }
 
     public int getLen() {
@@ -281,5 +279,4 @@ public abstract class Captcha {
     public void setHeight(int height) {
         this.height = height;
     }
-
 }

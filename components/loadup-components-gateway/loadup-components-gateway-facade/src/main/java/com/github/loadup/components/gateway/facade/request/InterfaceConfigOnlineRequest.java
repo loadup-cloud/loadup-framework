@@ -51,5 +51,4 @@ public class InterfaceConfigOnlineRequest extends BaseRequest {
     public void setInterfaceId(String interfaceId) {
         this.interfaceId = interfaceId;
     }
-
 }

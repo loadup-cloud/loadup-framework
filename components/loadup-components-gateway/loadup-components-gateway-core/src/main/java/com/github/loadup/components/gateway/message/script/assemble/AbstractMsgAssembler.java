@@ -77,5 +77,4 @@ public abstract class AbstractMsgAssembler implements MessageAssembler {
 
         return new MessageEnvelope(MessageFormat.TEXT, content);
     }
-
 }

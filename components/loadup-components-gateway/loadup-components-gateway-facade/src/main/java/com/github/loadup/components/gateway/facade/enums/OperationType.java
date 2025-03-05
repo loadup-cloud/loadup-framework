@@ -50,7 +50,6 @@ public enum OperationType {
      * 报文 解密
      */
     OP_DECRYPT("OP_DECRYPT", "解密"),
-
     ;
 
     /**

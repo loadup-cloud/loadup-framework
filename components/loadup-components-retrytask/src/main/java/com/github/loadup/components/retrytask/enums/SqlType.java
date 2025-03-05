@@ -87,5 +87,4 @@ public enum SqlType implements IEnum {
      * description
      */
     private String description;
-
 }

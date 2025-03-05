@@ -40,7 +40,6 @@ public enum CertStatus {
      * invalid
      */
     INVALID("INVALID", "N"),
-
     ;
 
     /**

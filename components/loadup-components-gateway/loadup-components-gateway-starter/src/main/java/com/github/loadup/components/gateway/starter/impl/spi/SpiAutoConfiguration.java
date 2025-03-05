@@ -52,5 +52,4 @@ public class SpiAutoConfiguration {
     public LimitRuleService getLimitRuleService() {
         return new LimitRuleServiceImpl();
     }
-
 }

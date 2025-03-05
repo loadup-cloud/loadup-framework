@@ -56,7 +56,6 @@ public enum LoggerLevelEnum implements IEnum {
      * ERROR
      */
     ERROR("ERROR", "ERROR"),
-
     ;
 
     private final String code;

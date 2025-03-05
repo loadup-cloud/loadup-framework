@@ -44,5 +44,4 @@ public interface MessageAssembler {
      * 组装异常报文服务
      */
     MessageEnvelope assembleError(UnifyMsg message, CommonException exception);
-
 }

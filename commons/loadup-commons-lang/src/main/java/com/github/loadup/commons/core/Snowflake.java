@@ -48,7 +48,8 @@ public class Snowflake {
 
     public Snowflake(long machineId) {
         if (machineId > MAX_MACHINE_NUM || machineId < 0) {
-            throw new IllegalArgumentException("Machine ID can't be greater than " + MAX_MACHINE_NUM + " or less than 0");
+            throw new IllegalArgumentException(
+                    "Machine ID can't be greater than " + MAX_MACHINE_NUM + " or less than 0");
         }
         this.machineId = machineId;
     }
@@ -79,17 +80,15 @@ public class Snowflake {
 
         lastTimestamp = currentTimestamp;
 
-        long id = (currentTimestamp - START_TIMESTAMP) << TIMESTAMP_LEFT
-                | machineId << MACHINE_LEFT
-                | sequence;
+        long id = (currentTimestamp - START_TIMESTAMP) << TIMESTAMP_LEFT | machineId << MACHINE_LEFT | sequence;
 
         // 格式化输出
-        return formatDate(currentTimestamp) +
-                formatNumber(tenantNumber, 3) +
-                formatNumber(systemNumber, 3) +
-                businessCode +
-                formatNumber(tableNumber, 3) +
-                formatNumber(id, 3);
+        return formatDate(currentTimestamp)
+                + formatNumber(tenantNumber, 3)
+                + formatNumber(systemNumber, 3)
+                + businessCode
+                + formatNumber(tableNumber, 3)
+                + formatNumber(id, 3);
     }
 
     private long getNextTimestamp() {
@@ -102,7 +101,8 @@ public class Snowflake {
 
     private String formatDate(long timestamp) {
         Instant instant = Instant.ofEpochMilli(timestamp);
-        LocalDate localDate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
+        LocalDate localDate =
+                LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
         return String.format("%04d%02d%02d", localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth());
     }
 

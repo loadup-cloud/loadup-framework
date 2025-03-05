@@ -44,5 +44,4 @@ public interface OauthService {
      * verify oauth token
      */
     public boolean validateToken(AuthRequest authRequest);
-
 }

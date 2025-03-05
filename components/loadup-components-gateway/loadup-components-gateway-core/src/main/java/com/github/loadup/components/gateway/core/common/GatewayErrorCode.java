@@ -257,5 +257,4 @@ public enum GatewayErrorCode implements ResultCode {
     public String getStatus() {
         return this.resultStatus;
     }
-
 }

@@ -45,8 +45,8 @@ public class GroovyEngineImpl implements GroovyEngine {
     private GroovyDynamicLoader groovyDynamicLoader;
 
     @Override
-    public UnifyMsg parse(String beanName, RoleType roleType, String interfaceTypeStr,
-                        MessageEnvelope messageEnvelope) {
+    public UnifyMsg parse(
+            String beanName, RoleType roleType, String interfaceTypeStr, MessageEnvelope messageEnvelope) {
         try {
             AssertUtil.isNotBlank(beanName, ParserErrorCode.NOT_EXIST_SCRIPT);
             MessageParser messageParser = groovyDynamicLoader.getGroovyBean(beanName);
@@ -72,8 +72,8 @@ public class GroovyEngineImpl implements GroovyEngine {
     }
 
     @Override
-    public MessageEnvelope assembleErrorMessage(String beanName, RoleType roleType, String interfaceTypeStr, UnifyMsg message,
-                                                CommonException exception) {
+    public MessageEnvelope assembleErrorMessage(
+            String beanName, RoleType roleType, String interfaceTypeStr, UnifyMsg message, CommonException exception) {
         try {
             AssertUtil.isNotBlank(beanName, ParserErrorCode.NOT_EXIST_SCRIPT);
             MessageAssembler messageAssembler = groovyDynamicLoader.getGroovyBean(beanName);

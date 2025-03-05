@@ -90,5 +90,4 @@ public class MessageSendResult {
 
         return retValue.toString();
     }
-
 }

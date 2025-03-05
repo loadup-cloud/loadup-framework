@@ -61,7 +61,6 @@ public enum TerminalTypeEnum implements IEnum {
      * PC
      */
     PC("PC", "PC"),
-
     ;
 
     private final String code;

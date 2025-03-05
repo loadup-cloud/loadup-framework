@@ -99,7 +99,8 @@ public class RetryTaskExecuter {
 
             retryTaskExecutor.plainExecute(retryTask);
 
-            // if process success, then return null, out layer will do postProcess by check whether retryTask is null or not
+            // if process success, then return null, out layer will do postProcess by check whether retryTask is null or
+            // not
             return null;
 
         } catch (Exception exception) {
@@ -117,11 +118,13 @@ public class RetryTaskExecuter {
         if (Objects.nonNull(retryTaskNeedUpdate)) {
             try {
                 // retry next time
-                RetryStrategyConfig retryStrategyConfig = retryTaskFactory.buildRetryStrategyConfig(retryTaskNeedUpdate.getBizType());
+                RetryStrategyConfig retryStrategyConfig =
+                        retryTaskFactory.buildRetryStrategyConfig(retryTaskNeedUpdate.getBizType());
                 RetryStrategyUtil.updateRetryTaskByStrategy(retryTaskNeedUpdate, retryStrategyConfig);
                 retryTaskRepository.save(retryTaskNeedUpdate);
             } catch (Exception e) {
-                //                LogUtils.error(log, "the task update failed when do after process, businessKey={}", businessKey);
+                //                LogUtils.error(log, "the task update failed when do after process, businessKey={}",
+                // businessKey);
             }
         }
     }

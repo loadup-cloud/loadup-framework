@@ -59,5 +59,4 @@ public class RetryTaskRunner implements Runnable {
 
         retryTaskExecutor.execute(retryTask);
     }
-
 }

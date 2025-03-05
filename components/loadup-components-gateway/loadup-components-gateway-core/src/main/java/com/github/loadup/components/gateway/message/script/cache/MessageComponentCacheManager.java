@@ -58,8 +58,7 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(MessageComponentCacheManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageComponentCacheManager.class);
     /**
      * groovy缓存加载器
      */
@@ -74,10 +73,10 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
     public void init(Object... obj) {
         List<InterfaceConfig> interfaceConfigs = (List<InterfaceConfig>) obj[0];
         List<MessageProcessConfig> processConfig = (List<MessageProcessConfig>) obj[1];
-        //dynamic script bean
+        // dynamic script bean
         List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs = (List<DynamicScriptBeanConfig>) obj[2];
         loadCache(interfaceConfigs, processConfig, dynamicScriptBeanConfigs);
-        //refresh dynamic script bean in velocity
+        // refresh dynamic script bean in velocity
         //        refreshVelocityContext(dynamicScriptBeanConfigs);
         isInitOk = true;
     }
@@ -89,30 +88,31 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
     public void refresh(Object... obj) {
         List<InterfaceConfig> interfaceConfigs = (List<InterfaceConfig>) obj[0];
         List<MessageProcessConfig> processConfig = (List<MessageProcessConfig>) obj[1];
-        //dynamic script bean
+        // dynamic script bean
         List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs = (List<DynamicScriptBeanConfig>) obj[2];
         this.refreshCache(interfaceConfigs, processConfig, dynamicScriptBeanConfigs);
-        //refresh dynamic script bean in velocity
+        // refresh dynamic script bean in velocity
         //        refreshVelocityContext(dynamicScriptBeanConfigs);
     }
 
     /**
      * init loadCache
      */
-    private void loadCache(List<InterfaceConfig> interfaceConfigs,
-                        List<MessageProcessConfig> processConfig,
-                        List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
-        //初始化
+    private void loadCache(
+            List<InterfaceConfig> interfaceConfigs,
+            List<MessageProcessConfig> processConfig,
+            List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
+        // 初始化
         try {
             Map<String, MessageProcessConfig> processConfigMap = convert(processConfig);
-            //加载groovy脚本名称缓存
+            // 加载groovy脚本名称缓存
             GroovyScriptCache.putAll(false, interfaceConfigs, processConfigMap);
-            //加载velocity缓存
+            // 加载velocity缓存
             //            VelocityScriptCache.putAll(false, interfaceConfigs, processConfigMap);
-            //从processconfig和dynamic_script_bean中加载groovy脚本转换成GroovyInfo
-            List<GroovyInfo> groovyList = GroovyInfoConvertor.convertGroovyInfo(processConfig,
-                    dynamicScriptBeanConfigs);
-            //编译groovy脚本
+            // 从processconfig和dynamic_script_bean中加载groovy脚本转换成GroovyInfo
+            List<GroovyInfo> groovyList =
+                    GroovyInfoConvertor.convertGroovyInfo(processConfig, dynamicScriptBeanConfigs);
+            // 编译groovy脚本
             groovyDynamicLoader.init(false, groovyList);
         } catch (Exception e) {
             LogUtil.error(logger, e, "script message init cache error!");
@@ -122,21 +122,21 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
     /**
      * refreshCache
      */
-    private void refreshCache(List<InterfaceConfig> interfaceConfigs,
-                            List<MessageProcessConfig> processConfig,
-                            List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
-        //初始化
+    private void refreshCache(
+            List<InterfaceConfig> interfaceConfigs,
+            List<MessageProcessConfig> processConfig,
+            List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
+        // 初始化
         Map<String, MessageProcessConfig> processConfigMap = convert(processConfig);
-        //加载groovy脚本名称缓存
+        // 加载groovy脚本名称缓存
         GroovyScriptCache.putAll(true, interfaceConfigs, processConfigMap);
-        //加载velocity缓存
+        // 加载velocity缓存
         VelocityScriptCache.putAll(true, interfaceConfigs, processConfigMap);
-        //从processconfig和dynamic_script_bean中加载groovy脚本转换成GroovyInfo
-        List<GroovyInfo> groovyList = GroovyInfoConvertor.convertGroovyInfo(processConfig,
-                dynamicScriptBeanConfigs);
-        //编译groovy脚本
+        // 从processconfig和dynamic_script_bean中加载groovy脚本转换成GroovyInfo
+        List<GroovyInfo> groovyList = GroovyInfoConvertor.convertGroovyInfo(processConfig, dynamicScriptBeanConfigs);
+        // 编译groovy脚本
         groovyDynamicLoader.refreshAll(true, groovyList);
-        //加载校验模板
+        // 加载校验模板
         /*TODO validator removed
         ValidatorCache.putAll(interfaceConfigs, processConfigMap);*/
     }
@@ -165,17 +165,17 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
         List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs = (List<DynamicScriptBeanConfig>) obj[2];
 
         Map<String, MessageProcessConfig> processConfigMap = convert(processConfig);
-        //先更新groovy脚本，需要筛选出新增和更新的
-        List<GroovyInfo>[] groovyInfos = convertUpdateGroovyInfo(interfaceConfigs, processConfigMap,
-                dynamicScriptBeanConfigs);
-        //编译groovy脚本
+        // 先更新groovy脚本，需要筛选出新增和更新的
+        List<GroovyInfo>[] groovyInfos =
+                convertUpdateGroovyInfo(interfaceConfigs, processConfigMap, dynamicScriptBeanConfigs);
+        // 编译groovy脚本
         groovyDynamicLoader.update(groovyInfos);
         GroovyScriptCache.putPart(interfaceConfigs, processConfigMap);
         VelocityScriptCache.putPart(interfaceConfigs, processConfigMap);
         /*TODO validator removed
         ValidatorCache.putPart(interfaceConfigs, processConfigMap);*/
 
-        //refresh velocity dynamic script util bean
+        // refresh velocity dynamic script util bean
         //        refreshVelocityContext(dynamicScriptBeanConfigs);
 
     }
@@ -183,18 +183,18 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
     /**
      * convertUpdateGroovyInfo
      */
-    private List<GroovyInfo>[] convertUpdateGroovyInfo(List<InterfaceConfig> interfaceConfigs,
-                                                    Map<String, MessageProcessConfig> processConfigMap,
-                                                    List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
+    private List<GroovyInfo>[] convertUpdateGroovyInfo(
+            List<InterfaceConfig> interfaceConfigs,
+            Map<String, MessageProcessConfig> processConfigMap,
+            List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
         List<GroovyInfo> addedList = new ArrayList<GroovyInfo>();
         List<GroovyInfo> updatedList = new ArrayList<GroovyInfo>();
         List<GroovyInfo> deleteddList = new ArrayList<GroovyInfo>();
         for (InterfaceConfig interfaceConfig : interfaceConfigs) {
             String interfaceId = interfaceConfig.getInterfaceId();
-            MessageProcessConfig processConfig = processConfigMap
-                    .get(interfaceConfig.getMessageProcessorId());
+            MessageProcessConfig processConfig = processConfigMap.get(interfaceConfig.getMessageProcessorId());
             if (processConfig != null) {
-                //新增脚本
+                // 新增脚本
                 if (GroovyScriptCache.getBeanName(interfaceId, null, null) == null) {
                     addedList.add(GroovyInfoConvertor.convertGroovyInfo(
                             GroovyScriptCache.generateParserBeanName(processConfig),
@@ -207,21 +207,19 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
             }
         }
 
-        //dynamic script util bean
+        // dynamic script util bean
         for (DynamicScriptBeanConfig dynamicScriptBeanConfig : dynamicScriptBeanConfigs) {
-            //新增脚本
+            // 新增脚本
             if (GroovyInnerCache.getByName(dynamicScriptBeanConfig.getBeanName()) == null) {
-                addedList.add(
-                        GroovyInfoConvertor.convertGroovyInfo(dynamicScriptBeanConfig.getBeanName(),
-                                dynamicScriptBeanConfig.getBeanContent()));
+                addedList.add(GroovyInfoConvertor.convertGroovyInfo(
+                        dynamicScriptBeanConfig.getBeanName(), dynamicScriptBeanConfig.getBeanContent()));
             } else {
-                updatedList.add(
-                        GroovyInfoConvertor.convertGroovyInfo(dynamicScriptBeanConfig.getBeanName(),
-                                dynamicScriptBeanConfig.getBeanContent()));
+                updatedList.add(GroovyInfoConvertor.convertGroovyInfo(
+                        dynamicScriptBeanConfig.getBeanName(), dynamicScriptBeanConfig.getBeanContent()));
             }
         }
 
-        return new List[]{addedList, updatedList, deleteddList};
+        return new List[] {addedList, updatedList, deleteddList};
     }
 
     /**
@@ -229,8 +227,7 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
      */
     @Override
     public CacheName[] getCacheDomains() {
-        return new CacheName[]{CacheName.INTERFACE, CacheName.MESSAGE_PROCESS,
-                CacheName.DYNAMIC_SCRIPT_BEAN_CONFIG};
+        return new CacheName[] {CacheName.INTERFACE, CacheName.MESSAGE_PROCESS, CacheName.DYNAMIC_SCRIPT_BEAN_CONFIG};
     }
 
     /**

@@ -100,5 +100,4 @@ public enum ParserErrorCode implements ResultCode {
     public String getStatus() {
         return this.status;
     }
-
 }

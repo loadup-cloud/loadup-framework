@@ -27,10 +27,11 @@ package com.github.loadup.commons.error;
  */
 
 import com.github.loadup.commons.result.ResultCode;
+import lombok.Getter;
+
 import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.Getter;
 
 /**
  * @author Laysan

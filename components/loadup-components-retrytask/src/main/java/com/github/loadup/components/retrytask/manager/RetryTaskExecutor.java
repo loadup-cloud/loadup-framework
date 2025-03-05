@@ -51,7 +51,8 @@ public class RetryTaskExecutor implements TaskExecutor {
     /**
      * execute logger
      */
-    private final static Logger EXE_DIGEST_LOGGER = LoggerFactory.getLogger(RetryTaskLoggerConstants.EXECUTE_DIGEST_NAME);
+    private static final Logger EXE_DIGEST_LOGGER =
+            LoggerFactory.getLogger(RetryTaskLoggerConstants.EXECUTE_DIGEST_NAME);
 
     /**
      * the repository of retry task
@@ -81,7 +82,6 @@ public class RetryTaskExecutor implements TaskExecutor {
             // retry next time
             RetryStrategyUtil.updateRetryTaskByStrategy(retryTask, retryStrategyConfig);
             retryTaskRepository.save(retryTask);
-
         }
     }
 
@@ -112,15 +112,15 @@ public class RetryTaskExecutor implements TaskExecutor {
         } finally {
 
             EXE_DIGEST_LOGGER.info(constructExecuteDigest(retryTask, result, startTime));
-            //clean MDC
+            // clean MDC
             cleanMDC();
         }
     }
 
     private void cleanMDC() {
-        //MDC.remove(MDC_TRACEID);
-        //MDC.remove(MDC_SOFA_TRACEID);
-        //MDC.remove(MDC_ISLOADTEST);
+        // MDC.remove(MDC_TRACEID);
+        // MDC.remove(MDC_SOFA_TRACEID);
+        // MDC.remove(MDC_ISLOADTEST);
     }
 
     /**
@@ -130,16 +130,26 @@ public class RetryTaskExecutor implements TaskExecutor {
 
         StringBuffer digest = new StringBuffer();
         long elapseTime = System.currentTimeMillis() - startTime;
-        digest.append(retryTask.getBizId()).append(',').append(retryTask.getTaskId()).append(',').append(retryTask.getBizType()).append(',')
-                .append(retryTask.getExecutedTimes()).append(',').append(executeResult != null && executeResult.isSuccess()).append(',')
-                .append(elapseTime).append("ms");
+        digest.append(retryTask.getBizId())
+                .append(',')
+                .append(retryTask.getTaskId())
+                .append(',')
+                .append(retryTask.getBizType())
+                .append(',')
+                .append(retryTask.getExecutedTimes())
+                .append(',')
+                .append(executeResult != null && executeResult.isSuccess())
+                .append(',')
+                .append(elapseTime)
+                .append("ms");
         return digest.toString();
     }
 
     /**
      * prepose handler
      */
-    private void processResult(RetryTaskExecuteResult result, RetryTask retryTask, RetryStrategyConfig retryStrategyConfig) {
+    private void processResult(
+            RetryTaskExecuteResult result, RetryTask retryTask, RetryStrategyConfig retryStrategyConfig) {
 
         // the task is processing asynchronized, we need do nothing
         if (result.isProcessing()) {
@@ -164,5 +174,4 @@ public class RetryTaskExecutor implements TaskExecutor {
         retryTask.setModifiedTime(LocalDateTime.now());
         retryTaskRepository.save(retryTask);
     }
-
 }

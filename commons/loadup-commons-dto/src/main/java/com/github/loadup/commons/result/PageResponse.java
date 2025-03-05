@@ -151,6 +151,8 @@ public class PageResponse<T> extends MultiResponse {
     }
 
     public Long getTotalPages() {
-        return this.totalCount % this.pageSize == 0 ? this.totalCount / this.pageSize : (this.totalCount / this.pageSize) + 1;
+        return this.totalCount % this.pageSize == 0
+                ? this.totalCount / this.pageSize
+                : (this.totalCount / this.pageSize) + 1;
     }
 }

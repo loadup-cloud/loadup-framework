@@ -1,4 +1,4 @@
-//package com.github.loadup.components.retrytask.test.strategy;
+// package com.github.loadup.components.retrytask.test.strategy;
 //
 /// *-
 // * #%L
@@ -26,23 +26,23 @@
 // * #L%
 // */
 //
-//import com.github.loadup.capability.common.enums.TimeUnitEnum;
-//import com.github.loadup.capability.common.test.BaseTest;
-//import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
-//import com.github.loadup.components.retrytask.enums.RetryStrategyType;
-//import com.github.loadup.components.retrytask.model.RetryTask;
-//import com.github.loadup.components.retrytask.strategy.RetryTaskStrategyFactory;
-//import java.util.Date;
-//import java.util.HashMap;
-//import java.util.Map;
-//import javax.annotation.Resource;
-//import lombok.extern.slf4j.Slf4j;
-//import org.apache.commons.lang3.time.DateUtils;
-//import org.junit.jupiter.api.Assertions;
-//import org.junit.jupiter.api.Test;
+// import com.github.loadup.capability.common.enums.TimeUnitEnum;
+// import com.github.loadup.capability.common.test.BaseTest;
+// import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
+// import com.github.loadup.components.retrytask.enums.RetryStrategyType;
+// import com.github.loadup.components.retrytask.model.RetryTask;
+// import com.github.loadup.components.retrytask.strategy.RetryTaskStrategyFactory;
+// import java.util.Date;
+// import java.util.HashMap;
+// import java.util.Map;
+// import javax.annotation.Resource;
+// import lombok.extern.slf4j.Slf4j;
+// import org.apache.commons.lang3.time.DateUtils;
+// import org.junit.jupiter.api.Assertions;
+// import org.junit.jupiter.api.Test;
 //
-//@Slf4j
-//public class StrategyTest extends BaseTest {
+// @Slf4j
+// public class StrategyTest extends BaseTest {
 //    @Resource
 //    RetryTaskStrategyFactory retryTaskStrategyFactory;
 //
@@ -104,7 +104,8 @@
 //            Date date = retryTaskStrategyFactory.findRetryTaskStrategy(strategyType)
 //                    .calculateNextExecuteTime(retryTask, config);
 //            Date oriNextExecuteTime = retryTask.getNextExecuteTime();
-//            log.info("executedTimes={},currentExecuteTime={},nextExecuteTime={}", k, retryTask.getNextExecuteTime(), date);
+//            log.info("executedTimes={},currentExecuteTime={},nextExecuteTime={}", k, retryTask.getNextExecuteTime(),
+// date);
 //            retryTask.setNextExecuteTime(date);
 //            assertDateEquals(date, DateUtils.addSeconds(oriNextExecuteTime, v));
 //        });
@@ -199,4 +200,4 @@
 //            Assertions.assertTrue(DateUtils.addSeconds(oriNextExecuteTime, 9).before(date));
 //        });
 //    }
-//}
+// }

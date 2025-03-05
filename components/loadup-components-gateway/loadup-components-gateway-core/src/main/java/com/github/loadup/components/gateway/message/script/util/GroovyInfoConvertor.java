@@ -59,21 +59,22 @@ public class GroovyInfoConvertor {
     /**
      * 转换groovyInfo对象列表
      */
-    public static List<GroovyInfo> convertGroovyInfo(List<MessageProcessConfig> processConfigs,
-                                                    List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
+    public static List<GroovyInfo> convertGroovyInfo(
+            List<MessageProcessConfig> processConfigs, List<DynamicScriptBeanConfig> dynamicScriptBeanConfigs) {
         List<GroovyInfo> list = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(processConfigs)) {
             for (MessageProcessConfig processConfig : processConfigs) {
-                list.add(GroovyInfoConvertor.convertGroovyInfo(GroovyScriptCache.generateParserBeanName(processConfig),
-                        processConfig.getParserTemplate()));
-                list.add(GroovyInfoConvertor.convertGroovyInfo(GroovyScriptCache.generateAssembleBeanName(processConfig),
+                list.add(GroovyInfoConvertor.convertGroovyInfo(
+                        GroovyScriptCache.generateParserBeanName(processConfig), processConfig.getParserTemplate()));
+                list.add(GroovyInfoConvertor.convertGroovyInfo(
+                        GroovyScriptCache.generateAssembleBeanName(processConfig),
                         processConfig.getAssembleTemplate()));
             }
         }
         if (CollectionUtils.isNotEmpty(dynamicScriptBeanConfigs)) {
             for (DynamicScriptBeanConfig dynamicScriptBeanConfig : dynamicScriptBeanConfigs) {
-                list.add(GroovyInfoConvertor.convertGroovyInfo(dynamicScriptBeanConfig.getBeanName(),
-                        dynamicScriptBeanConfig.getBeanContent()));
+                list.add(GroovyInfoConvertor.convertGroovyInfo(
+                        dynamicScriptBeanConfig.getBeanName(), dynamicScriptBeanConfig.getBeanContent()));
             }
         }
         return list;
@@ -87,23 +88,29 @@ public class GroovyInfoConvertor {
         List<GroovyInfo> addList = new ArrayList<>();
         List<GroovyInfo> updateList = new ArrayList<>();
         List<GroovyInfo> deleteList = new ArrayList<>();
-        String requestParserBeanName = GroovyScriptCache.generateParserBeanName(apiConditionGroup.getUrl(), tntIntId,
-                RoleType.SENDER.getCode(), InterfaceType.OPENAPI.getCode());
+        String requestParserBeanName = GroovyScriptCache.generateParserBeanName(
+                apiConditionGroup.getUrl(), tntIntId, RoleType.SENDER.getCode(), InterfaceType.OPENAPI.getCode());
 
         // PARSE_TEMPLATE_NAME_PREFIX 前缀为网关自带的解析模板工厂，不需要额外注册groovyBean
-        if (StringUtils.isNotBlank(apiConditionGroup.getInterfaceRequestParser()) && !StringUtils.startsWith(
-                apiConditionGroup.getInterfaceRequestParser(), Constant.PARSE_TEMPLATE_NAME_PREFIX)) {
+        if (StringUtils.isNotBlank(apiConditionGroup.getInterfaceRequestParser())
+                && !StringUtils.startsWith(
+                        apiConditionGroup.getInterfaceRequestParser(), Constant.PARSE_TEMPLATE_NAME_PREFIX)) {
             GroovyInfo info = convertGroovyInfo(requestParserBeanName, apiConditionGroup.getInterfaceRequestParser());
             updateList.add(info);
         } else {
             GroovyInfo info = convertGroovyInfo(requestParserBeanName, null);
             deleteList.add(info);
         }
-        String responseParserBeanName = GroovyScriptCache.generateParserBeanName(apiConditionGroup.getIntegrationUrl(), tntIntId,
-                RoleType.RECEIVER.getCode(), InterfaceType.OPENAPI.getCode());
-        if (StringUtils.isNotBlank(apiConditionGroup.getIntegrationResponseParser()) && !StringUtils.startsWith(
-                apiConditionGroup.getInterfaceRequestParser(), Constant.PARSE_TEMPLATE_NAME_PREFIX)) {
-            GroovyInfo info = convertGroovyInfo(responseParserBeanName, apiConditionGroup.getIntegrationResponseParser());
+        String responseParserBeanName = GroovyScriptCache.generateParserBeanName(
+                apiConditionGroup.getIntegrationUrl(),
+                tntIntId,
+                RoleType.RECEIVER.getCode(),
+                InterfaceType.OPENAPI.getCode());
+        if (StringUtils.isNotBlank(apiConditionGroup.getIntegrationResponseParser())
+                && !StringUtils.startsWith(
+                        apiConditionGroup.getInterfaceRequestParser(), Constant.PARSE_TEMPLATE_NAME_PREFIX)) {
+            GroovyInfo info =
+                    convertGroovyInfo(responseParserBeanName, apiConditionGroup.getIntegrationResponseParser());
             updateList.add(info);
         } else {
             GroovyInfo info = convertGroovyInfo(responseParserBeanName, null);
@@ -123,12 +130,17 @@ public class GroovyInfoConvertor {
         List<GroovyInfo> addList = new ArrayList<>();
         List<GroovyInfo> updateList = new ArrayList<>();
         List<GroovyInfo> deleteList = new ArrayList<>();
-        String responseParserBeanName = GroovyScriptCache.generateParserBeanName(spiConditionGroup.getIntegrationUrl(), tntIntId,
-                RoleType.RECEIVER.getCode(), InterfaceType.SPI.getCode());
+        String responseParserBeanName = GroovyScriptCache.generateParserBeanName(
+                spiConditionGroup.getIntegrationUrl(),
+                tntIntId,
+                RoleType.RECEIVER.getCode(),
+                InterfaceType.SPI.getCode());
         // PARSE_TEMPLATE_NAME_PREFIX 前缀为网关自带的解析模板工厂，不需要额外注册groovyBean
-        if (StringUtils.isNotBlank(spiConditionGroup.getIntegrationResponseParser()) && !StringUtils.startsWith(
-                spiConditionGroup.getInterfaceRequestParser(), Constant.PARSE_TEMPLATE_NAME_PREFIX)) {
-            GroovyInfo info = convertGroovyInfo(responseParserBeanName, spiConditionGroup.getIntegrationResponseParser());
+        if (StringUtils.isNotBlank(spiConditionGroup.getIntegrationResponseParser())
+                && !StringUtils.startsWith(
+                        spiConditionGroup.getInterfaceRequestParser(), Constant.PARSE_TEMPLATE_NAME_PREFIX)) {
+            GroovyInfo info =
+                    convertGroovyInfo(responseParserBeanName, spiConditionGroup.getIntegrationResponseParser());
             updateList.add(info);
         } else {
             GroovyInfo info = convertGroovyInfo(responseParserBeanName, null);

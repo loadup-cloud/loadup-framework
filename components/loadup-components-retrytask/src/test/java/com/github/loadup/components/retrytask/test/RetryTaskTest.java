@@ -1,4 +1,4 @@
-//package com.github.loadup.components.retrytask.test;
+// package com.github.loadup.components.retrytask.test;
 //
 /// *-
 // * #%L
@@ -26,27 +26,27 @@
 // * #L%
 // */
 //
-//import com.github.loadup.capability.common.test.BaseTest;
-//import com.github.loadup.components.retrytask.RetryComponentService;
-//import com.github.loadup.components.retrytask.model.RetryTask;
-//import com.github.loadup.components.retrytask.model.RetryTaskRequest;
-//import com.github.loadup.components.retrytask.repository.RetryTaskRepository;
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.UUID;
-//import javax.annotation.Resource;
-//import lombok.AllArgsConstructor;
-//import lombok.Data;
-//import lombok.extern.slf4j.Slf4j;
-//import org.apache.commons.lang3.time.DateUtils;
-//import org.junit.jupiter.api.Assertions;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.boot.test.context.SpringBootTest;
+// import com.github.loadup.capability.common.test.BaseTest;
+// import com.github.loadup.components.retrytask.RetryComponentService;
+// import com.github.loadup.components.retrytask.model.RetryTask;
+// import com.github.loadup.components.retrytask.model.RetryTaskRequest;
+// import com.github.loadup.components.retrytask.repository.RetryTaskRepository;
+// import java.util.ArrayList;
+// import java.util.List;
+// import java.util.UUID;
+// import javax.annotation.Resource;
+// import lombok.AllArgsConstructor;
+// import lombok.Data;
+// import lombok.extern.slf4j.Slf4j;
+// import org.apache.commons.lang3.time.DateUtils;
+// import org.junit.jupiter.api.Assertions;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
 //
-//@SpringBootTest
-//@Slf4j
-////@ActiveProfiles("remote")
-//public class RetryTaskTest extends BaseTest {
+// @SpringBootTest
+// @Slf4j
+//// @ActiveProfiles("remote")
+// public class RetryTaskTest extends BaseTest {
 //    @Resource
 //    RetryComponentService retryComponentService;
 //    @Resource
@@ -101,7 +101,8 @@
 //                Thread.sleep(map.getSleep() * 1000L);
 //                register = retryTaskRepository.findByBizId(bizId, bizType);
 //                Assertions.assertEquals(i + 1, register.getExecutedTimes());
-//                assertDateEquals(DateUtils.addSeconds(register.getCreatedTime(), map.getTotal()), register.getNextExecuteTime());
+//                assertDateEquals(DateUtils.addSeconds(register.getCreatedTime(), map.getTotal()),
+// register.getNextExecuteTime());
 //            }
 //        } catch (InterruptedException e) {
 //            throw new RuntimeException(e);
@@ -111,4 +112,4 @@
 //
 //    }
 //
-//}
+// }

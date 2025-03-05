@@ -34,7 +34,6 @@ import org.springframework.stereotype.Component;
  * the default retry task executor
  */
 @Component
-
 public class DefaultTaskStrategyExecutor implements TaskStrategyExecutor {
 
     @Override
@@ -48,7 +47,6 @@ public class DefaultTaskStrategyExecutor implements TaskStrategyExecutor {
     @Override
     public void execute(RetryTask retryTask) {
 
-        //do noting
+        // do noting
     }
-
 }

@@ -42,19 +42,18 @@ public class InterfaceConfigBuilder extends AbstractInterfaceConfigBuilder<Inter
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(InterfaceConfigBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(InterfaceConfigBuilder.class);
 
     /**
      * generic config build
      */
-    public InterfaceConfigDto build(String url, String securityStrategyCode,
-                                    String communicationProperties, String integrationInterfaceId) {
+    public InterfaceConfigDto build(
+            String url, String securityStrategyCode, String communicationProperties, String integrationInterfaceId) {
         if (!validate(url, securityStrategyCode)) {
             return null;
         }
 
-        //1 interfaceId
+        // 1 interfaceId
         String interfaceId = generateBizKey(url);
 
         InterfaceConfigDto interfaceConfigDto = new InterfaceConfigDto();
@@ -64,8 +63,7 @@ public class InterfaceConfigBuilder extends AbstractInterfaceConfigBuilder<Inter
         interfaceConfigDto.setCertCode(securityStrategyCode);
         interfaceConfigDto.setIsEnable("true");
         if (StringUtils.isNotEmpty(integrationInterfaceId)) {
-            interfaceConfigDto
-                    .setMessageReceiverInterfaceId(generateBizKey(integrationInterfaceId));
+            interfaceConfigDto.setMessageReceiverInterfaceId(generateBizKey(integrationInterfaceId));
         }
         interfaceConfigDto.setProperties(communicationProperties);
         return interfaceConfigDto;

@@ -55,9 +55,10 @@ public class RetryTaskTransactionSynchronization implements TransactionSynchroni
     /**
      * 构造函数
      */
-    public RetryTaskTransactionSynchronization(RetryTask retryTask,
-                                               TaskStrategyExecutorFactory taskStrategyExecutorFactory,
-                                               ScheduleExecuteType scheduleExecuteType) {
+    public RetryTaskTransactionSynchronization(
+            RetryTask retryTask,
+            TaskStrategyExecutorFactory taskStrategyExecutorFactory,
+            ScheduleExecuteType scheduleExecuteType) {
         this.retryTask = retryTask;
         this.taskStrategyExecutorFactory = taskStrategyExecutorFactory;
         this.scheduleExecuteType = scheduleExecuteType;
@@ -67,36 +68,31 @@ public class RetryTaskTransactionSynchronization implements TransactionSynchroni
      * @see org.springframework.transaction.support.TransactionSynchronization#suspend()
      */
     @Override
-    public void suspend() {
-    }
+    public void suspend() {}
 
     /**
      * @see org.springframework.transaction.support.TransactionSynchronization#resume()
      */
     @Override
-    public void resume() {
-    }
+    public void resume() {}
 
     /**
      * @see org.springframework.transaction.support.TransactionSynchronization#beforeCommit(boolean)
      */
     @Override
-    public void beforeCommit(boolean readOnly) {
-    }
+    public void beforeCommit(boolean readOnly) {}
 
     /**
      * @see org.springframework.transaction.support.TransactionSynchronization#beforeCompletion()
      */
     @Override
-    public void beforeCompletion() {
-    }
+    public void beforeCompletion() {}
 
     /**
      * @see org.springframework.transaction.support.TransactionSynchronization#afterCommit()
      */
     @Override
-    public void afterCommit() {
-    }
+    public void afterCommit() {}
 
     /**
      * @see org.springframework.transaction.support.TransactionSynchronization#afterCompletion(int)
@@ -104,8 +100,8 @@ public class RetryTaskTransactionSynchronization implements TransactionSynchroni
     @Override
     public void afterCompletion(int status) {
         if (status == STATUS_COMMITTED) {
-            TaskStrategyExecutor taskStrategyExecutor = taskStrategyExecutorFactory
-                    .findTaskStrategyExecutor(scheduleExecuteType);
+            TaskStrategyExecutor taskStrategyExecutor =
+                    taskStrategyExecutorFactory.findTaskStrategyExecutor(scheduleExecuteType);
             taskStrategyExecutor.execute(retryTask);
         }
     }
@@ -114,7 +110,5 @@ public class RetryTaskTransactionSynchronization implements TransactionSynchroni
      * @see org.springframework.transaction.support.TransactionSynchronization#flush()
      */
     @Override
-    public void flush() {
-    }
-
+    public void flush() {}
 }

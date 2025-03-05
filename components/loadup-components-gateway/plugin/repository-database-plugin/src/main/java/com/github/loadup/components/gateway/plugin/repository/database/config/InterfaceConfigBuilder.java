@@ -44,20 +44,26 @@ public class InterfaceConfigBuilder extends AbstractInterfaceConfigBuilder<Inter
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(InterfaceConfigBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(InterfaceConfigBuilder.class);
 
     /**
      * generic config build
      */
-    public InterfaceConfigDto build(String interfaceId, String securityStrategyCode,
-                                    String integrationInterfaceId, String interfaceName,
-                                    String version, String status, String communicationProperties) {
+    public InterfaceConfigDto build(
+            String interfaceId,
+            String securityStrategyCode,
+            String integrationInterfaceId,
+            String interfaceName,
+            String version,
+            String status,
+            String communicationProperties) {
 
         if (StringUtils.isBlank(interfaceId) || StringUtils.isBlank(securityStrategyCode)) {
 
-            LogUtil.error(logger, "There are some invalid interfaceId=" + interfaceId
-                    + ";securityStrategyCode=" + securityStrategyCode);
+            LogUtil.error(
+                    logger,
+                    "There are some invalid interfaceId=" + interfaceId + ";securityStrategyCode="
+                            + securityStrategyCode);
             return null;
         }
 
@@ -69,8 +75,7 @@ public class InterfaceConfigBuilder extends AbstractInterfaceConfigBuilder<Inter
         interfaceConfigDto.setVersion(version);
         interfaceConfigDto.setStatus(status);
         interfaceConfigDto.setCertCode(securityStrategyCode);
-        interfaceConfigDto
-                .setIsEnable(InterfaceStatus.VALID.getCode().equals(status) ? "true" : "false");
+        interfaceConfigDto.setIsEnable(InterfaceStatus.VALID.getCode().equals(status) ? "true" : "false");
         if (StringUtils.isNotEmpty(integrationInterfaceId)) {
             interfaceConfigDto.setMessageReceiverInterfaceId(integrationInterfaceId);
         }

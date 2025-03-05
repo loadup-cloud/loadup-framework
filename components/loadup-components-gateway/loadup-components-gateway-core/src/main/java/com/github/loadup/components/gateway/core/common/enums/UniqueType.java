@@ -51,7 +51,6 @@ public enum UniqueType {
      * FILE_DEST_PATH_UNIQUE
      */
     FILE_DEST_PATH_UNIQUE("FILE_DEST_PATH_UNIQUE", "目标文件路径幂等"),
-
     ;
 
     /**

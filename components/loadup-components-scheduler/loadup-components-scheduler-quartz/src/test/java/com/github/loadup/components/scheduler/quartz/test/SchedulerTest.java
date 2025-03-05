@@ -35,12 +35,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @Slf4j
-//@ActiveProfiles("remote")
+// @ActiveProfiles("remote")
 public class SchedulerTest extends BaseTest {
     @Test
     void testScheduler() throws InterruptedException {
         Thread.sleep(2000);
         Assertions.assertEquals(SimpleTask.testData, "123");
     }
-
 }

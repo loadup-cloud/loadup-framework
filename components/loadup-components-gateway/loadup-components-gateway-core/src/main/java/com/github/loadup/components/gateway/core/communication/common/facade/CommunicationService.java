@@ -40,5 +40,4 @@ public interface CommunicationService extends Refreshable {
      * 发送报文方法
      */
     MessageSendResult send(String traceId, CommunicationConfig communicationConfig, MessageEnvelope messageEnvelope);
-
 }

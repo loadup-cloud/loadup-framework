@@ -37,5 +37,4 @@ public interface BasicGatewayProdCenterQueryService {
      * query basic gatewaylite condition group config
      */
     public BasicGatewayConditionGroup queryBasicGatewayConditionGroup();
-
 }

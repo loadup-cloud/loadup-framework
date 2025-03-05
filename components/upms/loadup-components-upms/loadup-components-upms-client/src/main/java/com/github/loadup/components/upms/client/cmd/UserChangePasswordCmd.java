@@ -36,11 +36,13 @@ import lombok.Setter;
 public class UserChangePasswordCmd extends BaseRequest {
     @NotBlank
     private String id;
+
     @NotBlank
     private String oldPassword;
+
     @NotBlank
     private String newPassword;
+
     @NotBlank
     private String confirmPassword;
-
 }

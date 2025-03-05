@@ -53,8 +53,7 @@ public class CertConfigBuilder extends AbstractCertAlgorithmConfigBuilder<CertCo
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(CertConfigBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(CertConfigBuilder.class);
 
     public CertConfigDto buildDto(SecurityDO certConfigRepository) {
 
@@ -62,7 +61,7 @@ public class CertConfigBuilder extends AbstractCertAlgorithmConfigBuilder<CertCo
         certConfigDto.setCertCode(CacheUtil.generateKey(
                 certConfigRepository.getSecurityStrategyCode(), certConfigRepository.getOperateType(),
                 certConfigRepository.getAlgoName(), certConfigRepository.getClientId()));
-        //certType @CertTypeEnum
+        // certType @CertTypeEnum
         String certType = certConfigRepository.getCertType();
         CertTypeEnum certTypeEnum = CertTypeEnum.getEnumByType(certType);
         if (null == certTypeEnum) {
@@ -71,25 +70,25 @@ public class CertConfigBuilder extends AbstractCertAlgorithmConfigBuilder<CertCo
         } else {
             certConfigDto.setCertType(certType);
         }
-        //securityStrategyKeyType should support ext point
+        // securityStrategyKeyType should support ext point
         String keyType = certConfigRepository.getKeyType();
         CertContentType certContentTypeEnum = CertContentType.getByName(keyType);
         if (null == certContentTypeEnum) {
             LogUtil.info(logger, "Cert Content Type: ", keyType, " is abnormal");
         }
-        //certConfig.setCertContentType(keyType);
+        // certConfig.setCertContentType(keyType);
         certConfigDto.setCertType(keyType);
         CertStatus certStatus = CertStatus.VALID;
         certStatus = CertStatus.getEnumByCode(certConfigRepository.getStatus());
         certConfigDto.setCertStatus(certStatus.getMessage());
-        //cert_algorithm_properties
-        //TODO date convertion
-        //certConfig.setGmtValid(values[6]);
-        //certConfig.setGmtInValid(values[6]);
+        // cert_algorithm_properties
+        // TODO date convertion
+        // certConfig.setGmtValid(values[6]);
+        // certConfig.setGmtInValid(values[6]);
 
         String keyContent = certConfigRepository.getCertContent();
         certConfigDto.setCertContent(getCertContent(keyType, certTypeEnum, keyContent));
-        //certConfig.setCertSpecial(certConfigRepository.getCertProperties());
+        // certConfig.setCertSpecial(certConfigRepository.getCertProperties());
         certConfigDto.setProperties(certConfigRepository.getProperties());
         return certConfigDto;
     }
@@ -133,8 +132,7 @@ public class CertConfigBuilder extends AbstractCertAlgorithmConfigBuilder<CertCo
         }
         certConfigDto.setCertType(securityStrategyKeyType);
         certConfigDto.setCertStatus("Y");
-        certConfigDto.setCertContent(
-                getCertContent(securityStrategyKeyType, certTypeEnum, security_strategy_key));
+        certConfigDto.setCertContent(getCertContent(securityStrategyKeyType, certTypeEnum, security_strategy_key));
         certConfigDto.setProperties(fileColumns[7]);
 
         return certConfigDto;
@@ -144,21 +142,19 @@ public class CertConfigBuilder extends AbstractCertAlgorithmConfigBuilder<CertCo
      * 获取对应的证书内容，如果证书内容本地存储，则已经进行过base64处理，
      * 别名存储则调用外部接口获取证书，默认返回的格式是证书byte[] base64encode处理
      */
-    //TODO refactor parameter
+    // TODO refactor parameter
     public String getCertContent(String bizScene, CertTypeEnum certType, String certContentString) {
         try {
-            if (StringUtils.equalsIgnoreCase(
-                    CertContentType.CERT_OFFICIAL_CONTENT.getCertContentType(), bizScene)) {
+            if (StringUtils.equalsIgnoreCase(CertContentType.CERT_OFFICIAL_CONTENT.getCertContentType(), bizScene)) {
                 return certContentString;
             } else {
-                CertificationAccessExt certificationAccessService = ExtensionPointLoader
-                        .get(CertificationAccessExt.class, bizScene);
+                CertificationAccessExt certificationAccessService =
+                        ExtensionPointLoader.get(CertificationAccessExt.class, bizScene);
 
                 if (null == certificationAccessService) {
-                    LogUtil.error(logger, "no ext for bizScene=", bizScene, ";certType=",
-                            certType.getCertType());
-                    throw new CertificationException(CertificationErrorCode.GET_CERT_CONTENT_ERROR,
-                            "no ext for bizScene=" + bizScene);
+                    LogUtil.error(logger, "no ext for bizScene=", bizScene, ";certType=", certType.getCertType());
+                    throw new CertificationException(
+                            CertificationErrorCode.GET_CERT_CONTENT_ERROR, "no ext for bizScene=" + bizScene);
                 }
                 return certificationAccessService.getCertContent(certContentString, certType);
             }

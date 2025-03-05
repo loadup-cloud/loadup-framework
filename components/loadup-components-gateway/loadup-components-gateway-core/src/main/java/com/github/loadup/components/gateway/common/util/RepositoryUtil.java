@@ -47,8 +47,8 @@ public class RepositoryUtil {
      * get repository service
      */
     public static RepositoryServiceExtPt getRepositoryService() {
-        RepositoryServiceExtPt result = ExtensionPointLoader.get(RepositoryServiceExtPt.class,
-                SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE));
+        RepositoryServiceExtPt result = ExtensionPointLoader.get(
+                RepositoryServiceExtPt.class, SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE));
         if (result == null) {
             throw new CommonException(GatewayErrorCode.PARAM_ILLEGAL, "Can not find repositoryService.");
         }
@@ -59,7 +59,8 @@ public class RepositoryUtil {
      * get repository type
      */
     public static RepositoryType getRepositoryType() {
-        String type = StringUtils.defaultString(SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE), "FILE");
+        String type =
+                StringUtils.defaultString(SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE), "FILE");
         RepositoryType result = RepositoryType.getEnumByCode(type);
         if (result == null) {
             throw new CommonException(GatewayErrorCode.PARAM_ILLEGAL, "Can not find valid repositoryType.");

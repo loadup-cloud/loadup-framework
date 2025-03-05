@@ -40,7 +40,6 @@ public enum InterfaceType {
      * spi
      */
     SPI("SPI", "spi"),
-
     ;
 
     /**

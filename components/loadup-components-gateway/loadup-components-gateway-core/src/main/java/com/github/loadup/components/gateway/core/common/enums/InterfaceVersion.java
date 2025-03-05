@@ -50,7 +50,6 @@ public enum InterfaceVersion {
      * V4
      */
     V4("V4", null, "v2"),
-
     ;
 
     /**

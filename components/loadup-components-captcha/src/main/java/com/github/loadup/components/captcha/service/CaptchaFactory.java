@@ -51,12 +51,16 @@ public class CaptchaFactory {
 
     @Resource
     private ArithmeticCaptchaServiceImpl arithmeticCaptchaService;
+
     @Resource
     private SpecCaptchaServiceImpl specCaptchaService;
+
     @Resource
     private GifCaptchaServiceImpl gifCaptchaService;
+
     @Resource
     private ChineseCaptchaServiceImpl chineseCaptchaService;
+
     @Resource
     private ChineseGifCaptchaServiceImpl chineseGifCaptchaService;
 
@@ -72,5 +76,4 @@ public class CaptchaFactory {
     public CaptchaService getCaptchaService(CaptchaTypeEnum type) {
         return captchaServiceMap.get(type.getCode());
     }
-
 }

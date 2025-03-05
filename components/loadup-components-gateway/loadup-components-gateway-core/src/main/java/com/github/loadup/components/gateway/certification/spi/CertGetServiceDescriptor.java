@@ -32,16 +32,16 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * 证书获取服务描述
  */
-//@XObject("CertGetServiceDescriptor")
+// @XObject("CertGetServiceDescriptor")
 public class CertGetServiceDescriptor {
 
     /**
      * 组件的名字
      */
-    //@XNode("@name")
+    // @XNode("@name")
     private String name;
 
-    //@XNodeSpring("@listener")
+    // @XNodeSpring("@listener")
     private CertGetService certGetService;
 
     /**
@@ -50,7 +50,6 @@ public class CertGetServiceDescriptor {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-
     }
 
     /**

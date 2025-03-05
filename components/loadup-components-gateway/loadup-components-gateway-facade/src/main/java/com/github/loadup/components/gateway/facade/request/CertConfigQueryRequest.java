@@ -32,7 +32,6 @@ import jakarta.validation.constraints.Size;
 /**
  *
  */
-
 public class CertConfigQueryRequest extends BaseRequest {
 
     /**

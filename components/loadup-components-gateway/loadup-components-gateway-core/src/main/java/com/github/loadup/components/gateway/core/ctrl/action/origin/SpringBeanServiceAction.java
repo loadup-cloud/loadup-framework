@@ -54,12 +54,14 @@ public class SpringBeanServiceAction extends AbstractBusinessAction {
     @LogTraceId
     public void doBusiness(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) throws CommonException {
         String integratorUrl = gatewayRuntimeProcessContext.getIntegratorUrl();
-        //CommunicationConfig integratorCommunicationConfig = interfaceCacheManager.getCommunicationConfigByURI(integratorUrl);
-        CommunicationConfig integratorCommunicationConfig = CommunicationConfigCache.getWithUrl(integratorUrl,
-                gatewayRuntimeProcessContext.getTransactionType());
+        // CommunicationConfig integratorCommunicationConfig =
+        // interfaceCacheManager.getCommunicationConfigByURI(integratorUrl);
+        CommunicationConfig integratorCommunicationConfig =
+                CommunicationConfigCache.getWithUrl(integratorUrl, gatewayRuntimeProcessContext.getTransactionType());
         if (integratorCommunicationConfig == null) {
             String integratorInterfaceId = gatewayRuntimeProcessContext.getIntegratorInterfaceId();
-            //integratorCommunicationConfig = interfaceCacheManager.getCommunicationConfigByInterfaceId(integratorInterfaceId);
+            // integratorCommunicationConfig =
+            // interfaceCacheManager.getCommunicationConfigByInterfaceId(integratorInterfaceId);
             // spi场景，prodcenter不会根据interfaceId查找配置，故如果是prodcenter则不用处理
             integratorCommunicationConfig = CommunicationConfigCache.getWithInterfaceId(integratorInterfaceId);
         }
@@ -68,17 +70,19 @@ public class SpringBeanServiceAction extends AbstractBusinessAction {
             gatewayRuntimeProcessContext.setBusinessException(commonException);
             throw commonException;
         }
-        //InterfaceConfig integratorInterfaceConfig = interfaceCacheManager.getInterfaceConfigById(integratorCommunicationConfig
+        // InterfaceConfig integratorInterfaceConfig =
+        // interfaceCacheManager.getInterfaceConfigById(integratorCommunicationConfig
         // .getInterfaceId());
         InterfaceConfig integratorInterfaceConfig = InterfaceConfigCache.getWithInterfaceId(
-                integratorCommunicationConfig.getInterfaceId(), RoleType.RECEIVER,
+                integratorCommunicationConfig.getInterfaceId(),
+                RoleType.RECEIVER,
                 gatewayRuntimeProcessContext.getTransactionType());
         gatewayRuntimeProcessContext.setIntegratorUrl(integratorUrl);
         gatewayRuntimeProcessContext.setIntegratorCommunicationConfig(integratorCommunicationConfig);
         gatewayRuntimeProcessContext.setIntegratorInterfaceConfig(integratorInterfaceConfig);
 
-        gatewayRuntimeProcessContext.setResultMessage(gatewayRuntimeProcessContext.getRequestMessage().clone());
-
+        gatewayRuntimeProcessContext.setResultMessage(
+                gatewayRuntimeProcessContext.getRequestMessage().clone());
     }
 
     @Override

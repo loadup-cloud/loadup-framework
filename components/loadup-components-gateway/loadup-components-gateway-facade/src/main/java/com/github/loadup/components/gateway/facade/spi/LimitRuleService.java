@@ -44,5 +44,4 @@ public interface LimitRuleService {
      * reset token
      */
     void resetToken(LimitConfig limitConfig);
-
 }

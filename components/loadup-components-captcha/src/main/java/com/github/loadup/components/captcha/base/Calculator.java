@@ -9,9 +9,9 @@ import java.util.Stack;
  * @link https://www.cnblogs.com/woider/p/5331391.html
  */
 public class Calculator {
-    private final Stack<String> postfixStack = new Stack<String>();// 后缀式栈
-    private final Stack<Character> opStack = new Stack<Character>();// 运算符栈
-    private final int[] operatPriority = new int[]{0, 3, 2, 1, -1, 1, 0, 2};// 运用运算符ASCII码-40做索引的运算符优先级
+    private final Stack<String> postfixStack = new Stack<String>(); // 后缀式栈
+    private final Stack<Character> opStack = new Stack<Character>(); // 运算符栈
+    private final int[] operatPriority = new int[] {0, 3, 2, 1, -1, 1, 0, 2}; // 运用运算符ASCII码-40做索引的运算符优先级
 
     public static double conversion(String expression) {
         double result = 0;
@@ -59,14 +59,14 @@ public class Calculator {
     public double calculate(String expression) {
         Stack<String> resultStack = new Stack<String>();
         prepare(expression);
-        Collections.reverse(postfixStack);// 将后缀式栈反转
-        String firstValue, secondValue, currentValue;// 参与计算的第一个值，第二个值和算术运算符
+        Collections.reverse(postfixStack); // 将后缀式栈反转
+        String firstValue, secondValue, currentValue; // 参与计算的第一个值，第二个值和算术运算符
         while (!postfixStack.isEmpty()) {
             currentValue = postfixStack.pop();
-            if (!isOperator(currentValue.charAt(0))) {// 如果不是运算符则存入操作数栈中
+            if (!isOperator(currentValue.charAt(0))) { // 如果不是运算符则存入操作数栈中
                 currentValue = currentValue.replace("~", "-");
                 resultStack.push(currentValue);
-            } else {// 如果是运算符则从操作数栈中取两个值和该数值一起参与运算
+            } else { // 如果是运算符则从操作数栈中取两个值和该数值一起参与运算
                 secondValue = resultStack.pop();
                 firstValue = resultStack.pop();
 
@@ -85,19 +85,19 @@ public class Calculator {
      * 数据准备阶段将表达式转换成为后缀式栈
      */
     private void prepare(String expression) {
-        opStack.push(',');// 运算符放入栈底元素逗号，此符号优先级最低
+        opStack.push(','); // 运算符放入栈底元素逗号，此符号优先级最低
         char[] arr = expression.toCharArray();
-        int currentIndex = 0;// 当前字符的位置
-        int count = 0;// 上次算术运算符到本次算术运算符的字符的长度便于或者之间的数值
-        char currentOp, peekOp;// 当前操作符和栈顶操作符
+        int currentIndex = 0; // 当前字符的位置
+        int count = 0; // 上次算术运算符到本次算术运算符的字符的长度便于或者之间的数值
+        char currentOp, peekOp; // 当前操作符和栈顶操作符
         for (int i = 0; i < arr.length; i++) {
             currentOp = arr[i];
-            if (isOperator(currentOp)) {// 如果当前字符是运算符
+            if (isOperator(currentOp)) { // 如果当前字符是运算符
                 if (count > 0) {
-                    postfixStack.push(new String(arr, currentIndex, count));// 取两个运算符之间的数字
+                    postfixStack.push(new String(arr, currentIndex, count)); // 取两个运算符之间的数字
                 }
                 peekOp = opStack.peek();
-                if (currentOp == ')') {// 遇到反括号则将运算符栈中的元素移除到后缀式栈中直到遇到左括号
+                if (currentOp == ')') { // 遇到反括号则将运算符栈中的元素移除到后缀式栈中直到遇到左括号
                     while (opStack.peek() != '(') {
                         postfixStack.push(String.valueOf(opStack.pop()));
                     }
@@ -115,12 +115,12 @@ public class Calculator {
                 count++;
             }
         }
-        if (count > 1 || (count == 1 && !isOperator(arr[currentIndex]))) {// 最后一个字符不是括号或者其他运算符的则加入后缀式栈中
+        if (count > 1 || (count == 1 && !isOperator(arr[currentIndex]))) { // 最后一个字符不是括号或者其他运算符的则加入后缀式栈中
             postfixStack.push(new String(arr, currentIndex, count));
         }
 
         while (opStack.peek() != ',') {
-            postfixStack.push(String.valueOf(opStack.pop()));// 将操作符栈中的剩余的元素添加到后缀式栈中
+            postfixStack.push(String.valueOf(opStack.pop())); // 将操作符栈中的剩余的元素添加到后缀式栈中
         }
     }
 
@@ -134,7 +134,7 @@ public class Calculator {
     /**
      * 利用ASCII码-40做下标去算术符号优先级
      */
-    public boolean compare(char cur, char peek) {// 如果是peek优先级高于cur，返回true，默认都是peek优先级要低
+    public boolean compare(char cur, char peek) { // 如果是peek优先级高于cur，返回true，默认都是peek优先级要低
         boolean result = false;
         if (operatPriority[(peek) - 40] >= operatPriority[(cur) - 40]) {
             result = true;
@@ -164,4 +164,3 @@ public class Calculator {
         return result;
     }
 }
-

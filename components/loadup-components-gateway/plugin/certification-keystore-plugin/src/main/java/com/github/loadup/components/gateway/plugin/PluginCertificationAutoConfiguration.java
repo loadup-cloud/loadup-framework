@@ -31,5 +31,4 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan(basePackages = "com.github.loadup.components.gateway.plugin")
-public class PluginCertificationAutoConfiguration {
-}
+public class PluginCertificationAutoConfiguration {}

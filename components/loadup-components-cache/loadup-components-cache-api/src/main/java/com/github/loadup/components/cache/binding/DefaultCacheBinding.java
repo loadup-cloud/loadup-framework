@@ -48,10 +48,22 @@ public class DefaultCacheBinding implements CacheBinding {
             stopWatch.start();
             res = cacheBinder.set(key, value, exp);
             stopWatch.stop();
-            log.info("binder={},method={},key={},result={},cost={}", cacheBinder.getName(), "set", key, "success", stopWatch.getTotalTimeMillis());
+            log.info(
+                    "binder={},method={},key={},result={},cost={}",
+                    cacheBinder.getName(),
+                    "set",
+                    key,
+                    "success",
+                    stopWatch.getTotalTimeMillis());
         } catch (Exception e) {
             stopWatch.stop();
-            log.info("binder={},method={},key={},result={},cost={}", cacheBinder.getName(), "set", key, "fail", stopWatch.getTotalTimeMillis());
+            log.info(
+                    "binder={},method={},key={},result={},cost={}",
+                    cacheBinder.getName(),
+                    "set",
+                    key,
+                    "fail",
+                    stopWatch.getTotalTimeMillis());
             throw e;
         }
         return res;
@@ -65,10 +77,22 @@ public class DefaultCacheBinding implements CacheBinding {
             stopWatch.start();
             res = cacheBinder.get(key);
             stopWatch.stop();
-            log.info("binder={},method={},key={},result={},cost={}", cacheBinder.getName(), "get", key, "success", stopWatch.getTotalTimeMillis());
+            log.info(
+                    "binder={},method={},key={},result={},cost={}",
+                    cacheBinder.getName(),
+                    "get",
+                    key,
+                    "success",
+                    stopWatch.getTotalTimeMillis());
         } catch (Exception e) {
             stopWatch.stop();
-            log.info("binder={},method={},key={},result={},cost={}", cacheBinder.getName(), "get", key, "fail", stopWatch.getTotalTimeMillis());
+            log.info(
+                    "binder={},method={},key={},result={},cost={}",
+                    cacheBinder.getName(),
+                    "get",
+                    key,
+                    "fail",
+                    stopWatch.getTotalTimeMillis());
             throw e;
         }
         return res;
@@ -82,10 +106,22 @@ public class DefaultCacheBinding implements CacheBinding {
             stopWatch.start();
             res = cacheBinder.get(key, cls);
             stopWatch.stop();
-            log.info("binder={},method={},key={},result={},cost={}", cacheBinder.getName(), "get", key, "success", stopWatch.getTotalTimeMillis());
+            log.info(
+                    "binder={},method={},key={},result={},cost={}",
+                    cacheBinder.getName(),
+                    "get",
+                    key,
+                    "success",
+                    stopWatch.getTotalTimeMillis());
         } catch (Exception e) {
             stopWatch.stop();
-            log.info("binder={},method={},key={},result={},cost={}", cacheBinder.getName(), "get", key, "fail", stopWatch.getTotalTimeMillis());
+            log.info(
+                    "binder={},method={},key={},result={},cost={}",
+                    cacheBinder.getName(),
+                    "get",
+                    key,
+                    "fail",
+                    stopWatch.getTotalTimeMillis());
             throw e;
         }
         return res;
@@ -99,10 +135,22 @@ public class DefaultCacheBinding implements CacheBinding {
             stopWatch.start();
             res = cacheBinder.delete(key);
             stopWatch.stop();
-            log.info("binder={},method={},key={},result={},cost={}", cacheBinder.getName(), "delete", key, "success", stopWatch.getTotalTimeMillis());
+            log.info(
+                    "binder={},method={},key={},result={},cost={}",
+                    cacheBinder.getName(),
+                    "delete",
+                    key,
+                    "success",
+                    stopWatch.getTotalTimeMillis());
         } catch (Exception e) {
             stopWatch.stop();
-            log.info("binder={},method={},key={},result={},cost={}", cacheBinder.getName(), "delete", key, "fail", stopWatch.getTotalTimeMillis());
+            log.info(
+                    "binder={},method={},key={},result={},cost={}",
+                    cacheBinder.getName(),
+                    "delete",
+                    key,
+                    "fail",
+                    stopWatch.getTotalTimeMillis());
             throw e;
         }
         return res;
@@ -116,10 +164,22 @@ public class DefaultCacheBinding implements CacheBinding {
             stopWatch.start();
             res = cacheBinder.deleteAll();
             stopWatch.stop();
-            log.info("binder={},method={},key={},result={},cost={}", cacheBinder.getName(), "deleteAll", "all", "success", stopWatch.getTotalTimeMillis());
+            log.info(
+                    "binder={},method={},key={},result={},cost={}",
+                    cacheBinder.getName(),
+                    "deleteAll",
+                    "all",
+                    "success",
+                    stopWatch.getTotalTimeMillis());
         } catch (Exception e) {
             stopWatch.stop();
-            log.info("binder={},method={},key={},result={},cost={}", cacheBinder.getName(), "deleteAll", "all", "fail", stopWatch.getTotalTimeMillis());
+            log.info(
+                    "binder={},method={},key={},result={},cost={}",
+                    cacheBinder.getName(),
+                    "deleteAll",
+                    "all",
+                    "fail",
+                    stopWatch.getTotalTimeMillis());
             throw e;
         }
         return res;

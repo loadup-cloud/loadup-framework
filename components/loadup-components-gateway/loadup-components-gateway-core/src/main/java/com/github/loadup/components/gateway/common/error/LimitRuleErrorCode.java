@@ -34,7 +34,6 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @date 2020-3-25 PM. 4:31:30
  */
-
 public enum LimitRuleErrorCode implements ResultCode {
 
     /**
@@ -98,5 +97,4 @@ public enum LimitRuleErrorCode implements ResultCode {
     public String getStatus() {
         return this.status;
     }
-
 }

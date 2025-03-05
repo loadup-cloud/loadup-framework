@@ -37,5 +37,4 @@ public class TaskWrapper {
     private Object object;
     private Class<?> annotation;
     private String cron;
-
 }

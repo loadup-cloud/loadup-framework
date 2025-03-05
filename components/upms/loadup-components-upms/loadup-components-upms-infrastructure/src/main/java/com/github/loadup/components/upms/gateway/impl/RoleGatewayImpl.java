@@ -51,8 +51,10 @@ import java.util.stream.Collectors;
 public class RoleGatewayImpl implements RoleGateway {
     @Resource
     private RoleRepository roleRepository;
+
     @Resource
     private UserRoleRepository userRoleRepository;
+
     @Resource
     private UserRepository userRepository;
 
@@ -81,10 +83,18 @@ public class RoleGatewayImpl implements RoleGateway {
 
     @Override
     public Role getById(String roleId) {
-        Role role = roleRepository.findById(roleId).map(RoleConvertor.INSTANCE::toRole).orElse(null);
+        Role role = roleRepository
+                .findById(roleId)
+                .map(RoleConvertor.INSTANCE::toRole)
+                .orElse(null);
         List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByRoleId(roleId);
-        List<User> userList = userRoleDOList.stream().map(userRoleDO -> userRepository.findById(userRoleDO.getUserId())
-                .map(UserConvertor.INSTANCE::toUser).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
+        List<User> userList = userRoleDOList.stream()
+                .map(userRoleDO -> userRepository
+                        .findById(userRoleDO.getUserId())
+                        .map(UserConvertor.INSTANCE::toUser)
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
         role.setUserList(userList);
         return role;
     }
@@ -94,7 +104,10 @@ public class RoleGatewayImpl implements RoleGateway {
         List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByUserId(userId);
         List<Role> result = new ArrayList<>();
         for (UserRoleDO userRoleDO : userRoleDOList) {
-            Role role = roleRepository.findById(userRoleDO.getUserId()).map(RoleConvertor.INSTANCE::toRole).orElse(null);
+            Role role = roleRepository
+                    .findById(userRoleDO.getUserId())
+                    .map(RoleConvertor.INSTANCE::toRole)
+                    .orElse(null);
             if (Objects.nonNull(role)) {
                 result.add(role);
             }
@@ -104,7 +117,9 @@ public class RoleGatewayImpl implements RoleGateway {
 
     @Override
     public void saveRoleUsers(String roleId, List<String> userIdList) {
-        List<UserRoleDO> userRoleDOList = userIdList.stream().map(userId -> new UserRoleDO(userId, roleId)).collect(Collectors.toList());
+        List<UserRoleDO> userRoleDOList = userIdList.stream()
+                .map(userId -> new UserRoleDO(userId, roleId))
+                .collect(Collectors.toList());
         userRoleRepository.removeAllByRoleId(roleId);
         userRoleRepository.saveAll(userRoleDOList);
     }

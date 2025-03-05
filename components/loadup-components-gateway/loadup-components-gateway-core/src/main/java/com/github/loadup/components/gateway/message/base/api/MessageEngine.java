@@ -37,26 +37,28 @@ import com.github.loadup.components.gateway.message.unimsg.UnifyMsg;
  */
 public interface MessageEngine {
 
-    UnifyMsg parse(String interfaceId,
-                RoleType roleType,
-                GatewayRuntimeProcessContext context,
-                MessageEnvelope messageEnvelope);
+    UnifyMsg parse(
+            String interfaceId,
+            RoleType roleType,
+            GatewayRuntimeProcessContext context,
+            MessageEnvelope messageEnvelope);
 
-    MessageEnvelope assemble(String interfaceId,
-                            RoleType roleType,
-                            GatewayRuntimeProcessContext context,
-                            String interfaceTypeStr,
-                            UnifyMsg message);
+    MessageEnvelope assemble(
+            String interfaceId,
+            RoleType roleType,
+            GatewayRuntimeProcessContext context,
+            String interfaceTypeStr,
+            UnifyMsg message);
 
     /**
      * assemble exception message
      */
-    MessageEnvelope assembleErrorMessage(String interfaceId,
-                                        RoleType roleType,
-                                        GatewayRuntimeProcessContext context,
-                                        String interfaceTypeStr,
-                                        UnifyMsg message,
-                                        MessageEnvelope messageEnvelope,
-                                        CommonException exception);
-
+    MessageEnvelope assembleErrorMessage(
+            String interfaceId,
+            RoleType roleType,
+            GatewayRuntimeProcessContext context,
+            String interfaceTypeStr,
+            UnifyMsg message,
+            MessageEnvelope messageEnvelope,
+            CommonException exception);
 }

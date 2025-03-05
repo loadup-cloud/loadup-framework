@@ -62,8 +62,9 @@ public class RetryTaskRepositoryExtImpl implements RetryTaskRepositoryExt {
     private RetryTaskFactory retryTaskFactory;
 
     @Autowired
-    public RetryTaskRepositoryExtImpl(NamedParameterJdbcTemplate jdbcTemplate,
-                                      @Value("${loadup.retry-task.table-name.prefix:}") String tableNamePrefix) {
+    public RetryTaskRepositoryExtImpl(
+            NamedParameterJdbcTemplate jdbcTemplate,
+            @Value("${loadup.retry-task.table-name.prefix:}") String tableNamePrefix) {
         this.jdbcTemplate = jdbcTemplate;
         this.tableNamePrefix = tableNamePrefix;
     }
@@ -138,8 +139,8 @@ public class RetryTaskRepositoryExtImpl implements RetryTaskRepositoryExt {
 
         String sql = finSql(SqlType.SQL_TASK_LOAD);
         @SuppressWarnings({"unchecked", "rawtypes"})
-        List<RetryTask> retryTasks = jdbcTemplate.query(sql, paramMap,
-                (RowMapper) (rs, rowNum1) -> convertResultSet2RetryTask(rs));
+        List<RetryTask> retryTasks =
+                jdbcTemplate.query(sql, paramMap, (RowMapper) (rs, rowNum1) -> convertResultSet2RetryTask(rs));
         return retryTasks;
     }
 
@@ -153,8 +154,8 @@ public class RetryTaskRepositoryExtImpl implements RetryTaskRepositoryExt {
 
         String sql = finSql(SqlType.SQL_TASK_LOAD_BY_PRIORITY);
         @SuppressWarnings({"unchecked", "rawtypes"})
-        List<RetryTask> retryTasks = jdbcTemplate.query(sql, paramMap,
-                (RowMapper) (rs, rowNum1) -> convertResultSet2RetryTask(rs));
+        List<RetryTask> retryTasks =
+                jdbcTemplate.query(sql, paramMap, (RowMapper) (rs, rowNum1) -> convertResultSet2RetryTask(rs));
 
         return retryTasks;
     }
@@ -168,8 +169,8 @@ public class RetryTaskRepositoryExtImpl implements RetryTaskRepositoryExt {
 
         String unusualSql = finSql(SqlType.SQL_TASK_LOAD_UNUSUAL);
         @SuppressWarnings({"unchecked", "rawtypes"})
-        List<RetryTask> unusualRetryTasks = jdbcTemplate.query(unusualSql, paramMap,
-                (RowMapper) (rs, rowNum1) -> convertResultSet2RetryTask(rs));
+        List<RetryTask> unusualRetryTasks =
+                jdbcTemplate.query(unusualSql, paramMap, (RowMapper) (rs, rowNum1) -> convertResultSet2RetryTask(rs));
 
         return unusualRetryTasks;
     }
@@ -212,15 +213,12 @@ public class RetryTaskRepositoryExtImpl implements RetryTaskRepositoryExt {
         retryTask.setExecutedTimes(rs.getInt("executed_times"));
         //        retryTask.setNextExecuteTime(ResultSetUtil.obtainDateValue(rs, "next_execute_time"));
         retryTask.setMaxExecuteTimes(rs.getInt("max_execute_times"));
-        retryTask.setProcessing(
-                StringUtils.equalsIgnoreCase(rs.getString("processing_flag"), "T"));
+        retryTask.setProcessing(StringUtils.equalsIgnoreCase(rs.getString("processing_flag"), "T"));
         retryTask.setBizContext(rs.getString("biz_context"));
         //        retryTask.setCreatedTime(ResultSetUtil.obtainDateValue(rs, "gmt_create"));
         //        retryTask.setModifiedTime(ResultSetUtil.obtainDateValue(rs, "gmt_modified"));
         retryTask.setPriority(rs.getString("priority"));
-        retryTask.setSuspended(
-                StringUtils.equalsIgnoreCase(rs.getString("suspended"), "T"));
+        retryTask.setSuspended(StringUtils.equalsIgnoreCase(rs.getString("suspended"), "T"));
         return retryTask;
     }
-
 }

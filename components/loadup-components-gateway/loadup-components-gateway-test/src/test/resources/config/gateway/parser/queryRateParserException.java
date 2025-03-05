@@ -37,8 +37,5 @@ public class QueryRateParserException implements MessageParser {
         return unifyMsg;
     }
 
-    public void share(UnifyMsg responseMessage, UnifyMsg requestMessage) {
-
-    }
-
+    public void share(UnifyMsg responseMessage, UnifyMsg requestMessage) {}
 }

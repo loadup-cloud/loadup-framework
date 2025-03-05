@@ -58,8 +58,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @Component("gatewayVelocityScriptCache")
 public class VelocityScriptCache {
 
-    protected static final Logger logger = LoggerFactory
-            .getLogger(VelocityScriptCache.class);
+    protected static final Logger logger = LoggerFactory.getLogger(VelocityScriptCache.class);
 
     /**
      * 读写锁
@@ -81,8 +80,8 @@ public class VelocityScriptCache {
      *
      * @clear clear cache if true
      */
-    public static void putAll(boolean clear, List<InterfaceConfig> interfaceConfigs,
-                            Map<String, MessageProcessConfig> processConfigs) {
+    public static void putAll(
+            boolean clear, List<InterfaceConfig> interfaceConfigs, Map<String, MessageProcessConfig> processConfigs) {
         if (interfaceConfigs == null) {
             return;
         }
@@ -91,10 +90,11 @@ public class VelocityScriptCache {
         try {
             String processorId = null;
             String interfaceId = null;
-            Map<String, AssembleTemplate> tempCache = new HashMap<String, AssembleTemplate>(
-                    interfaceConfigs.size());
-            LogUtil.info(logger, "init velocity script,interface size=" + interfaceConfigs.size()
-                    + ",processConfigs size=" + processConfigs.size());
+            Map<String, AssembleTemplate> tempCache = new HashMap<String, AssembleTemplate>(interfaceConfigs.size());
+            LogUtil.info(
+                    logger,
+                    "init velocity script,interface size=" + interfaceConfigs.size() + ",processConfigs size="
+                            + processConfigs.size());
             for (InterfaceConfig interfaceConfig : interfaceConfigs) {
                 interfaceId = interfaceConfig.getInterfaceId();
                 processorId = interfaceConfig.getMessageProcessorId();
@@ -117,16 +117,15 @@ public class VelocityScriptCache {
     /**
      * 更新单个接口部分缓存
      */
-    public static void putPart(List<InterfaceConfig> interfaceConfigs,
-                            Map<String, MessageProcessConfig> processConfigs) {
+    public static void putPart(
+            List<InterfaceConfig> interfaceConfigs, Map<String, MessageProcessConfig> processConfigs) {
         Lock writelock = lock.writeLock();
         writelock.lock();
         try {
             for (InterfaceConfig interfaceConfig : interfaceConfigs) {
                 String interfaceId = interfaceConfig.getInterfaceId();
                 scriptCache.remove(interfaceId);
-                MessageProcessConfig processConfig = processConfigs
-                        .get(interfaceConfig.getMessageProcessorId());
+                MessageProcessConfig processConfig = processConfigs.get(interfaceConfig.getMessageProcessorId());
                 if (processConfig != null) {
                     AssembleTemplate template = convert(processConfig);
                     scriptCache.put(interfaceId, template);
@@ -140,8 +139,7 @@ public class VelocityScriptCache {
     /**
      * 根据接口ID返回组装模板
      */
-    public static AssembleTemplate getAssembleTemplate(String interfaceId, RoleType roleType,
-                                                    String interfaceTypeStr) {
+    public static AssembleTemplate getAssembleTemplate(String interfaceId, RoleType roleType, String interfaceTypeStr) {
         if (StringUtils.isBlank(interfaceId)) {
             return null;
         }
@@ -151,17 +149,17 @@ public class VelocityScriptCache {
             if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
                 if (RoleType.SENDER == roleType
                         && InterfaceType.OPENAPI == InterfaceType.getEnumByCode(interfaceTypeStr)) {
-                    APIConditionGroup apiConditionGroup = interfaceProdCenterQueryService
-                            .queryAPIConditionGroup(interfaceId, null);
+                    APIConditionGroup apiConditionGroup =
+                            interfaceProdCenterQueryService.queryAPIConditionGroup(interfaceId, null);
                     return AssembleTemplateConvertor.convertToSenderConfig(apiConditionGroup);
-                } else if (RoleType.RECEIVER == roleType && InterfaceType.OPENAPI == InterfaceType
-                        .getEnumByCode(interfaceTypeStr)) {
-                    APIConditionGroup apiConditionGroup = interfaceProdCenterQueryService
-                            .queryAPIConditionGroup(null, interfaceId);
+                } else if (RoleType.RECEIVER == roleType
+                        && InterfaceType.OPENAPI == InterfaceType.getEnumByCode(interfaceTypeStr)) {
+                    APIConditionGroup apiConditionGroup =
+                            interfaceProdCenterQueryService.queryAPIConditionGroup(null, interfaceId);
                     return AssembleTemplateConvertor.convertToReceiverConfig(apiConditionGroup);
                 } else if (InterfaceType.SPI == InterfaceType.getEnumByCode(interfaceTypeStr)) {
-                    SPIConditionGroup spiConditionGroup = interfaceProdCenterQueryService
-                            .querySPIConditionGroup(interfaceId);
+                    SPIConditionGroup spiConditionGroup =
+                            interfaceProdCenterQueryService.querySPIConditionGroup(interfaceId);
                     return AssembleTemplateConvertor.convertToReceiverConfig(spiConditionGroup);
                 }
             } else {
@@ -201,5 +199,4 @@ public class VelocityScriptCache {
     public void setInterfaceProdCenterQueryService(InterfaceProdCenterQueryService interfaceProdCenterQueryService) {
         VelocityScriptCache.interfaceProdCenterQueryService = interfaceProdCenterQueryService;
     }
-
 }

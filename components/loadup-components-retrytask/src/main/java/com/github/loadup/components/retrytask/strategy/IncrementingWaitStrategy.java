@@ -50,7 +50,6 @@ public class IncrementingWaitStrategy implements RetryTaskStrategy {
      * 递增等待策略，根据初始值和递增值，等待时长依次递增。就本例而言：
      * 第一次失败后，将依次等待1s；6s(1+5)；11(1+5+5)s；16(1+5+5+5)s；...
      */
-
     @Override
     public LocalDateTime calculateNextExecuteTime(RetryTask retryTask, RetryStrategyConfig retryStrategyConfig) {
         String[] intervals = StringUtils.split(retryStrategyConfig.getStrategyValue(), StringPool.COMMA);
@@ -59,7 +58,7 @@ public class IncrementingWaitStrategy implements RetryTaskStrategy {
             increment = Long.parseLong(intervals[1]);
         }
         long result = initialSleepTime + (increment * (retryTask.getExecutedTimes() - 1));
-        return addTime(retryTask.getNextExecuteTime(), Math.toIntExact(result), retryStrategyConfig.getStrategyValueUnit());
+        return addTime(
+                retryTask.getNextExecuteTime(), Math.toIntExact(result), retryStrategyConfig.getStrategyValueUnit());
     }
-
 }

@@ -46,11 +46,12 @@ public class FixedWaitStrategy implements RetryTaskStrategy {
     /**
      * 固定时长等待策略，失败后，将等待固定的时长进行重试；
      */
-
     @Override
     public LocalDateTime calculateNextExecuteTime(RetryTask retryTask, RetryStrategyConfig retryStrategyConfig) {
         String strategyValue = retryStrategyConfig.getStrategyValue();
-        return addTime(retryTask.getNextExecuteTime(), Integer.parseInt(strategyValue), retryStrategyConfig.getStrategyValueUnit());
+        return addTime(
+                retryTask.getNextExecuteTime(),
+                Integer.parseInt(strategyValue),
+                retryStrategyConfig.getStrategyValueUnit());
     }
-
 }

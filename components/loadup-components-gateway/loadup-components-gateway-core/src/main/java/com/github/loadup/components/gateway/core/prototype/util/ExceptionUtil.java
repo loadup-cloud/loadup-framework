@@ -39,8 +39,7 @@ public final class ExceptionUtil {
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger("COMMON-ERROR-LOGGER");
+    private static final Logger logger = LoggerFactory.getLogger("COMMON-ERROR-LOGGER");
 
     /**
      * 捕捉错误日志并输出到日志文件：common-error.log
@@ -48,5 +47,4 @@ public final class ExceptionUtil {
     public static void caught(Throwable e, Object... message) {
         LogUtil.error(logger, e, message);
     }
-
 }

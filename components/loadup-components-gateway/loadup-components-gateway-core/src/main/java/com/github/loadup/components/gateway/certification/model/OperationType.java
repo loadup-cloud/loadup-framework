@@ -90,7 +90,6 @@ public enum OperationType {
      * 文件摘要
      */
     FILE_DIGEST("FILE_SIGN", "文件摘要"),
-
     ;
 
     /**

@@ -32,16 +32,16 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  *
  */
-//@XObject("OutServiceDescriptor")
+// @XObject("OutServiceDescriptor")
 public class OutServiceDescriptor {
 
     /**
      * 组件的名字
      */
-    //@XNode("@name")
+    // @XNode("@name")
     private String name;
 
-    //@XNodeSpring("@listener")
+    // @XNodeSpring("@listener")
     private OuterService outerService;
 
     /**
@@ -50,7 +50,6 @@ public class OutServiceDescriptor {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-
     }
 
     /**

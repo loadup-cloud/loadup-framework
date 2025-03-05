@@ -50,11 +50,8 @@ public class SequenceStrategy implements RetryTaskStrategy {
         String[] intervals = StringUtils.split(retryStrategyConfig.getStrategyValue(), ",");
         int executedTimes = retryTask.getExecutedTimes();
 
-        int intervalsIdx = (executedTimes + 1) >= intervals.length ? intervals.length - 1
-                : executedTimes;
+        int intervalsIdx = (executedTimes + 1) >= intervals.length ? intervals.length - 1 : executedTimes;
         int nextInterval = Integer.parseInt(intervals[intervalsIdx]);
-        return addTime(retryTask.getNextExecuteTime(), nextInterval,
-                retryStrategyConfig.getStrategyValueUnit());
+        return addTime(retryTask.getNextExecuteTime(), nextInterval, retryStrategyConfig.getStrategyValueUnit());
     }
-
 }

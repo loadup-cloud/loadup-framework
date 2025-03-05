@@ -42,8 +42,7 @@ import org.springframework.stereotype.Component;
 @Component("gatewayAPIConfigDataUpdateHandler")
 public class APIConfigDataUpdateHandler {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(APIConfigDataUpdateHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(APIConfigDataUpdateHandler.class);
 
     /**
      * groovy缓存加载器
@@ -55,13 +54,10 @@ public class APIConfigDataUpdateHandler {
     /**
      *
      */
-    protected void process(String tntInstId, String configName,
-                        APIConditionGroup apiConditionGroup) {
+    protected void process(String tntInstId, String configName, APIConditionGroup apiConditionGroup) {
         LogUtil.info(logger, "update groovy script for apiConditionGroup:", apiConditionGroup);
-        //编译groovy脚本
-        groovyDynamicLoader
-                .update(GroovyInfoConvertor.convertGroovyInfo(apiConditionGroup, tntInstId));
+        // 编译groovy脚本
+        groovyDynamicLoader.update(GroovyInfoConvertor.convertGroovyInfo(apiConditionGroup, tntInstId));
         LogUtil.info(logger, "update groovy script for apiConditionGroup end");
     }
-
 }

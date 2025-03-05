@@ -48,5 +48,4 @@ public class InterfaceConfigOfflineResponse extends BaseResponse {
     public void setInterfaceId(String interfaceId) {
         this.interfaceId = interfaceId;
     }
-
 }

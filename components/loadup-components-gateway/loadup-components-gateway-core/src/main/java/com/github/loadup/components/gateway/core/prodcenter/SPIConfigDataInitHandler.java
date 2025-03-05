@@ -42,8 +42,7 @@ import org.springframework.stereotype.Component;
 @Component("gatewaySPIConfigDataInitHandler")
 public class SPIConfigDataInitHandler {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(SPIConfigDataInitHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(SPIConfigDataInitHandler.class);
 
     /**
      * groovy缓存加载器
@@ -55,12 +54,10 @@ public class SPIConfigDataInitHandler {
     /**
      *
      */
-    protected void process(String tntInstId, String configName,
-                        SPIConditionGroup spiConditionGroup) {
+    protected void process(String tntInstId, String configName, SPIConditionGroup spiConditionGroup) {
         LogUtil.info(logger, "init groovy script for spiConditionGroup:", spiConditionGroup);
-        //编译groovy脚本
-        groovyDynamicLoader.init(false,
-                GroovyInfoConvertor.convertGroovyInfo(spiConditionGroup, tntInstId)[1]);
+        // 编译groovy脚本
+        groovyDynamicLoader.init(false, GroovyInfoConvertor.convertGroovyInfo(spiConditionGroup, tntInstId)[1]);
         LogUtil.info(logger, "init groovy script for spiConditionGroup end");
     }
 }

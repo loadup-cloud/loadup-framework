@@ -50,7 +50,6 @@ public enum FormatType {
      * 双重base64编码
      */
     DOUBLE_BASE64("DOUBLE_BASE64", "双重base64编码"),
-
     ;
 
     /**

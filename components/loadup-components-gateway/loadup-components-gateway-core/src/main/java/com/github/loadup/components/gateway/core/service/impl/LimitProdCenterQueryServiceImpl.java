@@ -60,7 +60,7 @@ public class LimitProdCenterQueryServiceImpl implements LimitProdCenterQueryServ
 
     /**
      * build query request
-
+     *
      */
     //    private ClientConditionGroupRequest buildConditionGroupQueryRequest() {
     //
@@ -75,9 +75,9 @@ public class LimitProdCenterQueryServiceImpl implements LimitProdCenterQueryServ
 
     /**
      * validate response
-
-
-
+     *
+     *
+     *
      */
     //    private <T> void checkClientResponse(ClientResponse<T> clientResponse,
     //                                         String resultObjectName) {

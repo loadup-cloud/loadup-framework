@@ -35,5 +35,4 @@ public class UserExtendRepositoryImpl implements UserExtendRepository {
     public UserExtendRepositoryImpl(JdbcAggregateTemplate template) {
         this.template = template;
     }
-
 }

@@ -182,5 +182,4 @@ public class AssembleTemplate {
     public void setErrorSubTemplate(String errorSubTemplate) {
         this.errorSubTemplate = errorSubTemplate;
     }
-
 }

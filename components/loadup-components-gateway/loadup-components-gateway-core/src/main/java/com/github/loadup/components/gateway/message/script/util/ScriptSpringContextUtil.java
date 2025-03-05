@@ -46,8 +46,7 @@ public class ScriptSpringContextUtil implements ApplicationContextAware {
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(ScriptSpringContextUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(ScriptSpringContextUtil.class);
 
     /**
      * Spring context
@@ -68,8 +67,10 @@ public class ScriptSpringContextUtil implements ApplicationContextAware {
             Method getMethod = obj.getClass().getMethod(method, parameterTypes);
             return getMethod.invoke(obj, parmas);
         } catch (Exception e) {
-            LogUtil.error(logger, e, "ScriptSpringContextUtil invoke error,method:" + beanName + "." +
-                    "method,params:" + parmas);
+            LogUtil.error(
+                    logger,
+                    e,
+                    "ScriptSpringContextUtil invoke error,method:" + beanName + "." + "method,params:" + parmas);
         }
         return null;
     }
@@ -98,7 +99,6 @@ public class ScriptSpringContextUtil implements ApplicationContextAware {
      */
     public static Object getBean(String name) throws BeansException {
         return applicationContext.getBean(name);
-
     }
 
     /**
@@ -150,5 +150,4 @@ public class ScriptSpringContextUtil implements ApplicationContextAware {
     public static String[] getAliases(String name) throws NoSuchBeanDefinitionException {
         return applicationContext.getAliases(name);
     }
-
 }

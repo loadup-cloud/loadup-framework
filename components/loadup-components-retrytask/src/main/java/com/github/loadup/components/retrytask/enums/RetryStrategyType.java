@@ -73,7 +73,6 @@ public enum RetryStrategyType implements IEnum {
      * 第一次失败后，将依次等待1s；6s(1+5)；11(1+5+5)s；16(1+5+5+5)s；...
      */
     INCREMENTING_WAIT_STRATEGY("INCREMENTING_WAIT_STRATEGY", "User can define interval"),
-
     ;
 
     /**
@@ -85,5 +84,4 @@ public enum RetryStrategyType implements IEnum {
      * description
      */
     private String description;
-
 }

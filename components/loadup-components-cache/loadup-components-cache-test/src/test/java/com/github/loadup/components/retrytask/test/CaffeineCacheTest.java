@@ -38,9 +38,9 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.ComponentScan;
 
-@SpringBootTest(properties = {
-        "spring.application.name=loadup-caffeine-test"
-}, classes = TestingWebApplication.class)
+@SpringBootTest(
+        properties = {"spring.application.name=loadup-caffeine-test"},
+        classes = TestingWebApplication.class)
 class CaffeineCacheTest {
 
     @Autowired
@@ -53,5 +53,4 @@ class CaffeineCacheTest {
         Cache cache = cacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
         Assertions.assertNotNull(cache);
     }
-
 }

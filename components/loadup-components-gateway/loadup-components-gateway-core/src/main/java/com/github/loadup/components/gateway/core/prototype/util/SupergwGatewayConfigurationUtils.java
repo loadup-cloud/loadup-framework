@@ -41,9 +41,7 @@ public class SupergwGatewayConfigurationUtils {
         int splitIndex = StringUtils.indexOf(uriString, charset);
         if (splitIndex > 0) {
             uriString = StringUtils.substring(uriString, 0, splitIndex);
-
         }
         return uriString;
     }
-
 }

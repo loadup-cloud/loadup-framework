@@ -45,8 +45,7 @@ public interface OuterService {
      * <p>
      * param certificationFactor  操作要素
      */
-    public boolean verify(String SrcContent, String signedContent,
-                        CertificationFactor certificationFactor);
+    public boolean verify(String SrcContent, String signedContent, CertificationFactor certificationFactor);
 
     /**
      * 报文加密统一接口
@@ -68,5 +67,4 @@ public interface OuterService {
      * 报文摘要统一接口
      */
     public String digest(String srcContent, CertificationFactor certificationFactor);
-
 }

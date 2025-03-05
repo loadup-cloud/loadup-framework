@@ -170,7 +170,6 @@ public enum TableName {
      * interface router config
      */
     LGW_INTERFACE_ROUTER("lgw_interface_router", "interface_id", "interface router config"),
-
     ;
 
     /**
@@ -237,5 +236,4 @@ public enum TableName {
     public String getRefreshKey() {
         return refreshKey;
     }
-
 }

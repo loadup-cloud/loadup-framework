@@ -170,5 +170,4 @@ public enum CertificationErrorCode implements ResultCode {
     public String getStatus() {
         return this.status;
     }
-
 }

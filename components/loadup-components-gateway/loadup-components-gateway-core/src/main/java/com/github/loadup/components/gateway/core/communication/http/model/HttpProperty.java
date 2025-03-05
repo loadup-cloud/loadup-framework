@@ -115,5 +115,4 @@ public enum HttpProperty implements PropertyName {
     public String getDefaultValue() {
         return defaultValue;
     }
-
 }

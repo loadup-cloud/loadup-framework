@@ -54,5 +54,4 @@ public class TaskStrategyExecutorFactory {
 
         return taskStrategyExecutors.get(scheduleExecuteType.getCode());
     }
-
 }

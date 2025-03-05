@@ -38,5 +38,4 @@ public interface CaptchaService {
      * 校验验证码
      */
     boolean validate(String key, String userInputCaptcha);
-
 }

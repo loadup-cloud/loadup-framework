@@ -31,5 +31,4 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan(basePackages = "com.github.loadup.components.gateway.plugin.repository.file")
-public class FileRepositoryAutoConfiguration {
-}
+public class FileRepositoryAutoConfiguration {}

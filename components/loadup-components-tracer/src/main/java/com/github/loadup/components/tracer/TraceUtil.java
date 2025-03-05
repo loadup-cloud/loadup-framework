@@ -45,6 +45,7 @@ public class TraceUtil {
     private static TraceUtil traceUtil;
     private static String staticApplicationName;
     private final Tracer tracer;
+
     @Value("${spring.application.name:''}")
     private String applicationName;
 
@@ -74,11 +75,11 @@ public class TraceUtil {
     }
 
     public static void logTraceId(Span span) {
-        //MDCUtil.logStartedSpan(span);
+        // MDCUtil.logStartedSpan(span);
     }
 
     public static void clearTraceId() {
-        //MDCUtil.logStoppedSpan();
+        // MDCUtil.logStoppedSpan();
     }
 
     @PostConstruct
@@ -86,5 +87,4 @@ public class TraceUtil {
         traceUtil = this;
         staticApplicationName = applicationName;
     }
-
 }

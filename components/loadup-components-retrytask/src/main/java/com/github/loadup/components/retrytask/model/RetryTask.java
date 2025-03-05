@@ -106,5 +106,4 @@ public class RetryTask extends DTO {
      * suspended
      */
     private Boolean suspended;
-
 }

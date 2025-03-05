@@ -37,29 +37,27 @@ import org.springframework.stereotype.Component;
  * CommunicationConfig Builder
  */
 @Component("gatewayFileCommunicationConfigBuilder")
-public class CommunicationConfigBuilder extends
-        AbstractInterfaceConfigBuilder<CommunicationConfigDto> {
+public class CommunicationConfigBuilder extends AbstractInterfaceConfigBuilder<CommunicationConfigDto> {
 
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(CommunicationConfigBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommunicationConfigBuilder.class);
 
     /**
      * generic config builder
      */
-    public CommunicationConfigDto build(String url, String securityStrategyCode,
-                                        String communicationProperties, int index) {
+    public CommunicationConfigDto build(
+            String url, String securityStrategyCode, String communicationProperties, int index) {
         if (!validate(url, securityStrategyCode)) {
             return null;
         }
         CommunicationConfigDto communicationConfigDto = new CommunicationConfigDto();
         String interfaceId = generateBizKey(url);
         String protocol = getProtocol(url);
-        //interfaceId_index
-        communicationConfigDto
-                .setCommunicationId(interfaceId.concat(Constant.UNDERSCORE).concat(String.valueOf(index)));
+        // interfaceId_index
+        communicationConfigDto.setCommunicationId(
+                interfaceId.concat(Constant.UNDERSCORE).concat(String.valueOf(index)));
         communicationConfigDto.setInterfaceId(interfaceId);
         communicationConfigDto.setUri(url);
         communicationConfigDto.setProperties(communicationProperties);

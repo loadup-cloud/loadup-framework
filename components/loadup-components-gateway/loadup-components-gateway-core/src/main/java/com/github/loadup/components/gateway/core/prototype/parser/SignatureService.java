@@ -52,5 +52,4 @@ public interface SignatureService {
      * get signature content
      */
     String sign(MessageEnvelope messageEnvelope, SignatureRequest signatureRequest);
-
 }

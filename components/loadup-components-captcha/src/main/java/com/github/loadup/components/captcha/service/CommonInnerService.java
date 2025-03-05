@@ -81,6 +81,7 @@ public class CommonInnerService {
                     + "\u975e\u4f55\u725b\u53d6\u5165\u5cb8\u6562\u6389\u5ffd\u79cd\u88c5\u9876\u6025\u6797\u505c\u606f\u53e5\u533a\u8863"
                     + "\u822c"
                     + "\u62a5\u53f6\u538b\u6162\u53d4\u80cc\u7ec6";
+
     @Resource
     protected CaptchaProperties captchaProperties;
 
@@ -198,8 +199,11 @@ public class CommonInnerService {
         for (int i = 0; i < num; i++) {
             g.setColor(color == null ? randomColor() : color);
             int w = 5 + RandomUtils.nextInt(0, 10);
-            g.drawOval(RandomUtils.nextInt(0, captchaProperties.getWidth() - 25),
-                    RandomUtils.nextInt(0, captchaProperties.getHeight() - 15), w, w);
+            g.drawOval(
+                    RandomUtils.nextInt(0, captchaProperties.getWidth() - 25),
+                    RandomUtils.nextInt(0, captchaProperties.getHeight() - 15),
+                    w,
+                    w);
         }
     }
 
@@ -227,11 +231,11 @@ public class CommonInnerService {
                 y1 = y2;
                 y2 = ty;
             }
-            if (RandomUtils.nextInt(0, 2) == 0) {  // 二阶贝塞尔曲线
+            if (RandomUtils.nextInt(0, 2) == 0) { // 二阶贝塞尔曲线
                 QuadCurve2D shape = new QuadCurve2D.Double();
                 shape.setCurve(x1, y1, ctrlx, ctrly, x2, y2);
                 g.draw(shape);
-            } else {  // 三阶贝塞尔曲线
+            } else { // 三阶贝塞尔曲线
                 int ctrlx1 = RandomUtils.nextInt(width / 4, width / 4 * 3), ctrly1 = RandomUtils.nextInt(5, height - 5);
                 CubicCurve2D shape = new CubicCurve2D.Double(x1, y1, ctrlx, ctrly, ctrlx1, ctrly1, x2, y2);
                 g.draw(shape);
@@ -260,7 +264,8 @@ public class CommonInnerService {
     }
 
     public Font getFont(CharFontEnum font, int style, float size) throws IOException, FontFormatException {
-        return Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/fonts/" + font.getCode())).deriveFont(style, size);
+        return Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/fonts/" + font.getCode()))
+                .deriveFont(style, size);
     }
 
     public boolean validate(String key, String userInputValue) {

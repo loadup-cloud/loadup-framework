@@ -49,37 +49,59 @@ public class MessageLoggerUtil {
     /**
      * message digest
      */
-    public static final Logger commonMessageLogger = LoggerFactory
-            .getLogger("COMMON-MESSAGE-LOGGER");
+    public static final Logger commonMessageLogger = LoggerFactory.getLogger("COMMON-MESSAGE-LOGGER");
 
     /**
      * Print http receive log.
      */
-    public static void printHttpReceiveLog(String interfaceId, InterfaceType type, String uuid,
-                                        String uri, String httpMethod, String message,
-                                        Map<String, String> httpHeader) {
+    public static void printHttpReceiveLog(
+            String interfaceId,
+            InterfaceType type,
+            String uuid,
+            String uri,
+            String httpMethod,
+            String message,
+            Map<String, String> httpHeader) {
 
-        printHttpLog("httpclient receive " + type + " message", interfaceId, type, uuid, uri,
-                httpMethod, message, httpHeader);
+        printHttpLog(
+                "httpclient receive " + type + " message",
+                interfaceId,
+                type,
+                uuid,
+                uri,
+                httpMethod,
+                message,
+                httpHeader);
     }
 
     /**
      * Print http send log.
      */
-    public static void printHttpSendLog(String interfaceId, InterfaceType type, String uuid,
-                                        String url, String httpMethod, String message,
-                                        Map<String, String> httpHeader) {
+    public static void printHttpSendLog(
+            String interfaceId,
+            InterfaceType type,
+            String uuid,
+            String url,
+            String httpMethod,
+            String message,
+            Map<String, String> httpHeader) {
 
-        printHttpLog("httpclient send " + type + " message", interfaceId, type, uuid, url,
-                httpMethod, message, httpHeader);
+        printHttpLog(
+                "httpclient send " + type + " message", interfaceId, type, uuid, url, httpMethod, message, httpHeader);
     }
 
     /**
      * Print http log.
      */
-    public static void printHttpLog(String dialog, String interfaceId, InterfaceType interfaceType,
-                                    String uuid, String url, String httpMethod, String message,
-                                    Map<String, String> httpHeader) {
+    public static void printHttpLog(
+            String dialog,
+            String interfaceId,
+            InterfaceType interfaceType,
+            String uuid,
+            String url,
+            String httpMethod,
+            String message,
+            Map<String, String> httpHeader) {
 
         try {
 
@@ -93,18 +115,17 @@ public class MessageLoggerUtil {
 
             if (MapUtils.isNotEmpty(httpHeader)) {
 
-                Map<String, String> maskHeader = SensitivityUtil.mask(httpHeader, rules,
-                        SensitivityProcessType.HEADER_MAP);
+                Map<String, String> maskHeader =
+                        SensitivityUtil.mask(httpHeader, rules, SensitivityProcessType.HEADER_MAP);
 
                 maskHeader.forEach((k, v) -> {
                     log.append("HttpHeader:").append(k).append("=").append(v).append(",");
                 });
             }
             log.append("message=");
-            message = SensitivityUtil.mask(message, rules,
-                    SensitivityUtil.matchProcessTypeByString(message));
+            message = SensitivityUtil.mask(message, rules, SensitivityUtil.matchProcessTypeByString(message));
             message = getMaxLengthLog(message);
-            //去除换行
+            // 去除换行
             if (StringUtils.isNotBlank(message)) {
                 message = message.replaceAll("[\\t\\n\\r]", "");
             }
@@ -129,5 +150,4 @@ public class MessageLoggerUtil {
 
         return message;
     }
-
 }

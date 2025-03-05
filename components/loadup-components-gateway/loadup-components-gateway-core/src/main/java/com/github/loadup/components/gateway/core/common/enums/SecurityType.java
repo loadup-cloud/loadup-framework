@@ -43,5 +43,4 @@ public enum SecurityType {
      * 不做任何处理
      */
     NONE
-
 }

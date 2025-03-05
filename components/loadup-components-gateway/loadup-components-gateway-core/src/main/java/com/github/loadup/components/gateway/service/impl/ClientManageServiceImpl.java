@@ -48,14 +48,13 @@ import org.springframework.stereotype.Component;
 @Component("gatewayClientManageService")
 public class ClientManageServiceImpl implements ClientManageService {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(ClientManageServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClientManageServiceImpl.class);
 
     /**
      * get repository service from extension
      */
     private RepositoryServiceExtPt getRepositoryService() {
-        RepositoryServiceExtPt result = null;// ExtensionPointLoader.get(RepositoryServiceExt.class,
+        RepositoryServiceExtPt result = null; // ExtensionPointLoader.get(RepositoryServiceExt.class,
         //            SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE));
         return result;
     }
@@ -67,8 +66,7 @@ public class ClientManageServiceImpl implements ClientManageService {
                 (Void) -> ValidateUtils.validate(request),
                 // process
                 () -> {
-                    String clientId = getRepositoryService()
-                            .addClient(ClientConfigConvertor.addRequest2Dto(request));
+                    String clientId = getRepositoryService().addClient(ClientConfigConvertor.addRequest2Dto(request));
                     ClientConfigAddResponse response = new ClientConfigAddResponse();
                     response.setClientId(clientId);
                     return response;
@@ -76,9 +74,7 @@ public class ClientManageServiceImpl implements ClientManageService {
                 // compose exception response
                 (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
                 // compose digest log
-                (Void) -> {
-                }
-        );
+                (Void) -> {});
     }
 
     @Override
@@ -90,8 +86,7 @@ public class ClientManageServiceImpl implements ClientManageService {
                 (Void) -> ValidateUtils.validate(request),
                 // process
                 () -> {
-                    getRepositoryService()
-                            .authorizeClient(ClientConfigConvertor.authorizeRequest2Dto(request));
+                    getRepositoryService().authorizeClient(ClientConfigConvertor.authorizeRequest2Dto(request));
 
                     return authorizeResponse;
                 },
@@ -99,9 +94,7 @@ public class ClientManageServiceImpl implements ClientManageService {
                 (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
 
                 // compose digest log
-                (Void) -> {
-
-                });
+                (Void) -> {});
     }
 
     @Override
@@ -112,16 +105,14 @@ public class ClientManageServiceImpl implements ClientManageService {
                 (Void) -> ValidateUtils.validate(request),
                 // process
                 () -> {
-                    getRepositoryService()
-                            .deauthorizeClient(ClientConfigConvertor.deauthorizeRequest2Dto(request));
+                    getRepositoryService().deauthorizeClient(ClientConfigConvertor.deauthorizeRequest2Dto(request));
 
                     return authorizeResponse;
                 },
                 // compose exception response
                 (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
                 // compose digest log
-                (Void) -> {
-                });
+                (Void) -> {});
     }
 
     @Override
@@ -140,8 +131,7 @@ public class ClientManageServiceImpl implements ClientManageService {
                 // compose exception response
                 (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
                 // compose digest log
-                (Void) -> {
-                });
+                (Void) -> {});
     }
 
     @Override
@@ -167,8 +157,7 @@ public class ClientManageServiceImpl implements ClientManageService {
                 // compose exception response
                 (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
                 // compose digest log
-                (Void) -> {
-                });
+                (Void) -> {});
     }
 
     @Override
@@ -186,8 +175,6 @@ public class ClientManageServiceImpl implements ClientManageService {
                 // compose exception response
                 (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
                 // compose digest log
-                (Void) -> {
-                });
-
+                (Void) -> {});
     }
 }

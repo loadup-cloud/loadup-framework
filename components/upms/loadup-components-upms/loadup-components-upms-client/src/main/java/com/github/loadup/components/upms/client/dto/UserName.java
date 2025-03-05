@@ -39,5 +39,4 @@ import lombok.Setter;
 public class UserName extends DTO {
     private String firstName;
     private String lastName;
-
 }

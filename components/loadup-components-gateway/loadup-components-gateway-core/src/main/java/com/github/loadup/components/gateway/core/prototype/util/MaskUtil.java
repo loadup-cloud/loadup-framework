@@ -58,13 +58,16 @@ public class MaskUtil {
      * 屏蔽前6后4
      */
     public static String shieldTopSixLastFour(String origStr) {
-        //eg: cardno should be shielded in log
+        // eg: cardno should be shielded in log
         if (origStr.length() <= 10) {
             return defaultHide(origStr);
         }
         StringBuilder stringBuilder = new StringBuilder();
-        return stringBuilder.append(origStr.substring(0, 6)).append("****")
-                .append(origStr.substring(origStr.length() - 4)).toString();
+        return stringBuilder
+                .append(origStr.substring(0, 6))
+                .append("****")
+                .append(origStr.substring(origStr.length() - 4))
+                .toString();
     }
 
     /**
@@ -74,5 +77,4 @@ public class MaskUtil {
 
         return "***";
     }
-
 }

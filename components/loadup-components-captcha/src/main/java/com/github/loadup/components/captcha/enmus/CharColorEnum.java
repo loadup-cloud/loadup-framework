@@ -62,7 +62,6 @@ public enum CharColorEnum implements IEnum {
      * color
      */
     COLOR_12("0,51,102", "color"),
-
     ;
 
     private String code;

@@ -1,4 +1,4 @@
-//package com.github.loadup.components.gateway.common.exception;
+// package com.github.loadup.components.gateway.common.exception;
 //
 /// *-
 // * #%L
@@ -26,10 +26,10 @@
 // * #L%
 // */
 //
-///**
+/// **
 // * Define the error code parent
 // */
-//public interface ErrorCode {
+// public interface ErrorCode {
 //
 //	/**
 //	 * get the error code
@@ -48,4 +48,4 @@
 //	 * U is unknown
 //	 */
 //	public String getStatus();
-//}
+// }

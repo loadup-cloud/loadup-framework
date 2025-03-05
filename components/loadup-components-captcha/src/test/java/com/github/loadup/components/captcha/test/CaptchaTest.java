@@ -55,17 +55,17 @@ public class CaptchaTest {
                 CaptchaService captchaService = captchaFactory.getCaptchaService(typeEnum);
                 CaptchaResult generate = captchaService.generate(uuid);
                 String value = CaptchaFactory.CACHE_MAP.get(uuid);
-                filePath = "./target" + File.separator + value + "." + typeEnum.getCode().substring(0, 3).toLowerCase();
+                filePath = "./target" + File.separator + value + "."
+                        + typeEnum.getCode().substring(0, 3).toLowerCase();
                 generate.toFile(filePath);
                 Assertions.assertTrue(new File(filePath).exists());
                 Assertions.assertTrue(captchaService.validate(uuid, value));
             } finally {
                 System.out.println(filePath);
                 if (filePath != null) {
-                    //Files.deleteIfExists(Paths.get(filePath));
+                    // Files.deleteIfExists(Paths.get(filePath));
                 }
             }
         }
     }
-
 }

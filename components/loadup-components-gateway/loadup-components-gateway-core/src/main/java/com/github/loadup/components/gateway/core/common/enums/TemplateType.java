@@ -42,7 +42,6 @@ public enum TemplateType {
      * assembler
      */
     ASSEMBLER("ASSEMBLER", "assembler template"),
-
     ;
 
     /**

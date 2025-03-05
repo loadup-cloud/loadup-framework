@@ -43,5 +43,4 @@ public @interface DistributedScheduler {
     String name() default "";
 
     String cron() default "";
-
 }

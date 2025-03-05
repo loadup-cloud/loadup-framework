@@ -50,5 +50,4 @@ public interface Refreshable {
      * 根据id刷新部分缓存
      */
     void refreshById(String id, Object... obj);
-
 }

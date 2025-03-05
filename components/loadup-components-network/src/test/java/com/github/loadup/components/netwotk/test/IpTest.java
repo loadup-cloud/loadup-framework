@@ -49,5 +49,4 @@ public class IpTest {
         Assertions.assertEquals(city, "南京市");
         Assertions.assertEquals(isp, "南京市");
     }
-
 }

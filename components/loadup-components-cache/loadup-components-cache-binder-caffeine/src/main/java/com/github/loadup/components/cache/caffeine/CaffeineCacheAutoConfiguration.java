@@ -61,8 +61,9 @@ public class CaffeineCacheAutoConfiguration {
         CaffeineCacheManager defaultCacheManager = new CaffeineCacheManager(CacheConstants.DEFAULT_CACHE_NAME);
         defaultCacheManager.setAllowNullValues(properties.getAllowNullValue());
 
-        Caffeine<Object, Object> caffeineBuilder = Caffeine.newBuilder().initialCapacity(properties.getInitCacheCapacity()).maximumSize(
-                properties.getMaxCacheCapacity());
+        Caffeine<Object, Object> caffeineBuilder = Caffeine.newBuilder()
+                .initialCapacity(properties.getInitCacheCapacity())
+                .maximumSize(properties.getMaxCacheCapacity());
         defaultCacheManager.setCaffeine(caffeineBuilder);
         return new CaffeineCacheManager();
     }

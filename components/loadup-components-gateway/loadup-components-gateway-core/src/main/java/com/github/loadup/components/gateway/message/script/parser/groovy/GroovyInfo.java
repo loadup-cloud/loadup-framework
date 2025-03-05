@@ -98,5 +98,4 @@ public class GroovyInfo {
     public String toString() {
         return "groovyInfo[className=" + className + "]";
     }
-
 }

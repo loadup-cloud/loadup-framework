@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public class InterfaceDto {
 
-    //========== properties ==========
+    // ========== properties ==========
 
     /**
      * tenant_id

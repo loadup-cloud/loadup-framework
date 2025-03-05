@@ -102,5 +102,4 @@ public enum OauthErrorCode implements ResultCode {
     public String getStatus() {
         return this.status;
     }
-
 }

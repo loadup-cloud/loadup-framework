@@ -96,5 +96,4 @@ public class RuntimeUtils {
     public static long getUsableMemory() {
         return getMaxMemory() - getTotalMemory() + getFreeMemory();
     }
-
 }

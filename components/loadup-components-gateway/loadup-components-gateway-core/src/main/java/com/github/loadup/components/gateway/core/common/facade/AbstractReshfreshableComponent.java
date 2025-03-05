@@ -63,5 +63,4 @@ public abstract class AbstractReshfreshableComponent implements Refreshable {
     public CacheName[] getCacheDomains() {
         return domains;
     }
-
 }

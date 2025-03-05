@@ -78,8 +78,8 @@ public class GroovyScriptCache {
      *
      * @clear clear
      */
-    public static void putAll(boolean clear, List<InterfaceConfig> interfaceConfigs,
-                            Map<String, MessageProcessConfig> processConfigs) {
+    public static void putAll(
+            boolean clear, List<InterfaceConfig> interfaceConfigs, Map<String, MessageProcessConfig> processConfigs) {
         if (interfaceConfigs == null) {
             return;
         }
@@ -106,22 +106,20 @@ public class GroovyScriptCache {
         } finally {
             writelock.unlock();
         }
-
     }
 
     /**
      * 更新单个接口部分缓存
      */
-    public static void putPart(List<InterfaceConfig> interfaceConfigs,
-                            Map<String, MessageProcessConfig> processConfigs) {
+    public static void putPart(
+            List<InterfaceConfig> interfaceConfigs, Map<String, MessageProcessConfig> processConfigs) {
         Lock writelock = lock.writeLock();
         writelock.lock();
         try {
             for (InterfaceConfig interfaceConfig : interfaceConfigs) {
                 String interfaceId = interfaceConfig.getInterfaceId();
                 cache.remove(interfaceId);
-                MessageProcessConfig processConfig = processConfigs
-                        .get(interfaceConfig.getMessageProcessorId());
+                MessageProcessConfig processConfig = processConfigs.get(interfaceConfig.getMessageProcessorId());
                 if (processConfig != null) {
                     cache.put(interfaceId, generateParserBeanName(processConfig));
                 }
@@ -134,8 +132,7 @@ public class GroovyScriptCache {
     /**
      * 根据接口Id获得groovy的beanName
      */
-    public static String getBeanName(String interfaceId, RoleType roleType,
-                                    String interfaceTypeStr) {
+    public static String getBeanName(String interfaceId, RoleType roleType, String interfaceTypeStr) {
         if (StringUtils.isBlank(interfaceId)) {
             return null;
         }
@@ -146,31 +143,35 @@ public class GroovyScriptCache {
                 // beanName format: url-roleType-interfaceType
                 if (InterfaceType.getEnumByCode(interfaceTypeStr) == InterfaceType.OPENAPI) {
                     if (RoleType.RECEIVER == roleType) {
-                        return getBeanNameByIntegratorInterfaceId(interfaceId, roleType,
-                                interfaceTypeStr);
+                        return getBeanNameByIntegratorInterfaceId(interfaceId, roleType, interfaceTypeStr);
                     }
 
                     APIConditionGroup apiConditionGroup = null;
                     try {
-                        apiConditionGroup = interfaceProdCenterQueryService
-                                .queryAPIConditionGroup(interfaceId, null);
+                        apiConditionGroup = interfaceProdCenterQueryService.queryAPIConditionGroup(interfaceId, null);
                     } catch (CommonException ex) {
                         if (ex.getResultCode() != GatewayErrorCode.CONFIGURATION_LOAD_ERROR) {
                             throw ex;
                         }
                     }
                     if (apiConditionGroup != null) {
-                        return generateProdCenterBeanName(apiConditionGroup.getUrl(),
+                        return generateProdCenterBeanName(
+                                apiConditionGroup.getUrl(),
                                 apiConditionGroup.getInterfaceRequestParser(),
-                                TenantUtil.getCurrentTenantId(), roleType.getCode(), interfaceTypeStr);
+                                TenantUtil.getCurrentTenantId(),
+                                roleType.getCode(),
+                                interfaceTypeStr);
                     }
                 } else if (InterfaceType.getEnumByCode(interfaceTypeStr) == InterfaceType.SPI) {
-                    SPIConditionGroup spiConditionGroup = interfaceProdCenterQueryService
-                            .querySPIConditionGroup(interfaceId);
+                    SPIConditionGroup spiConditionGroup =
+                            interfaceProdCenterQueryService.querySPIConditionGroup(interfaceId);
 
-                    return generateProdCenterBeanName(spiConditionGroup.getIntegrationUrl(),
+                    return generateProdCenterBeanName(
+                            spiConditionGroup.getIntegrationUrl(),
                             spiConditionGroup.getIntegrationResponseParser(),
-                            TenantUtil.getCurrentTenantId(), roleType.getCode(), interfaceTypeStr);
+                            TenantUtil.getCurrentTenantId(),
+                            roleType.getCode(),
+                            interfaceTypeStr);
                 }
             } else {
                 return cache.get(interfaceId);
@@ -184,8 +185,8 @@ public class GroovyScriptCache {
     /**
      * 根据接口Id获得groovy的beanName
      */
-    public static String getBeanNameByIntegratorInterfaceId(String interfaceId, RoleType roleType,
-                                                            String interfaceTypeStr) {
+    public static String getBeanNameByIntegratorInterfaceId(
+            String interfaceId, RoleType roleType, String interfaceTypeStr) {
         if (StringUtils.isBlank(interfaceId)) {
             return null;
         }
@@ -197,24 +198,29 @@ public class GroovyScriptCache {
                 if (InterfaceType.getEnumByCode(interfaceTypeStr) == InterfaceType.OPENAPI) {
                     APIConditionGroup apiConditionGroup = null;
                     try {
-                        apiConditionGroup = interfaceProdCenterQueryService
-                                .queryAPIConditionGroup(null, interfaceId);
+                        apiConditionGroup = interfaceProdCenterQueryService.queryAPIConditionGroup(null, interfaceId);
                     } catch (CommonException ex) {
                         if (ex.getResultCode() != GatewayErrorCode.CONFIGURATION_LOAD_ERROR) {
                             throw ex;
                         }
                     }
                     if (apiConditionGroup != null) {
-                        return generateProdCenterBeanName(apiConditionGroup.getIntegrationUrl(),
+                        return generateProdCenterBeanName(
+                                apiConditionGroup.getIntegrationUrl(),
                                 apiConditionGroup.getIntegrationResponseParser(),
-                                TenantUtil.getCurrentTenantId(), roleType.getCode(), interfaceTypeStr);
+                                TenantUtil.getCurrentTenantId(),
+                                roleType.getCode(),
+                                interfaceTypeStr);
                     }
                 } else if (InterfaceType.getEnumByCode(interfaceTypeStr) == InterfaceType.SPI) {
-                    SPIConditionGroup spiConditionGroup = interfaceProdCenterQueryService
-                            .querySPIConditionGroup(interfaceId);
-                    return generateProdCenterBeanName(spiConditionGroup.getIntegrationUrl(),
+                    SPIConditionGroup spiConditionGroup =
+                            interfaceProdCenterQueryService.querySPIConditionGroup(interfaceId);
+                    return generateProdCenterBeanName(
+                            spiConditionGroup.getIntegrationUrl(),
                             spiConditionGroup.getIntegrationResponseParser(),
-                            TenantUtil.getCurrentTenantId(), roleType.getCode(), interfaceTypeStr);
+                            TenantUtil.getCurrentTenantId(),
+                            roleType.getCode(),
+                            interfaceTypeStr);
                 }
             } else {
                 return cache.get(interfaceId);
@@ -228,24 +234,25 @@ public class GroovyScriptCache {
     /**
      * 根据openapi的url获得groovy的beanName
      */
-    public static String getBeanNameByOpenUrls(String[] openUrls, RoleType roleType,
-                                            String interfaceTypeStr) {
+    public static String getBeanNameByOpenUrls(String[] openUrls, RoleType roleType, String interfaceTypeStr) {
         Lock readlock = lock.readLock();
         readlock.lock();
         try {
             for (String openUrl : openUrls) {
                 APIConditionGroup apiConditionGroup = null;
                 try {
-                    apiConditionGroup = interfaceProdCenterQueryService
-                            .queryAPIConditionGroup(openUrl, null);
+                    apiConditionGroup = interfaceProdCenterQueryService.queryAPIConditionGroup(openUrl, null);
                 } catch (CommonException ex) {
                     // do nothing because apiConditionGroup by openurl could be null
                     continue;
                 }
                 if (apiConditionGroup != null) {
-                    return generateProdCenterBeanName(apiConditionGroup.getUrl(),
+                    return generateProdCenterBeanName(
+                            apiConditionGroup.getUrl(),
                             apiConditionGroup.getInterfaceRequestParser(),
-                            TenantUtil.getCurrentTenantId(), roleType.getCode(), interfaceTypeStr);
+                            TenantUtil.getCurrentTenantId(),
+                            roleType.getCode(),
+                            interfaceTypeStr);
                 }
             }
         } finally {
@@ -257,16 +264,15 @@ public class GroovyScriptCache {
     /**
      * generate prodcenter bean name
      */
-    private static String generateProdCenterBeanName(String url, String parseContent,
-                                                    String tntInstId, String roleType,
-                                                    String interfaceType) {
+    private static String generateProdCenterBeanName(
+            String url, String parseContent, String tntInstId, String roleType, String interfaceType) {
 
         if (StringUtils.isBlank(parseContent)) {
             return null;
         }
 
-        if (StringUtils.startsWith(parseContent,
-                com.github.loadup.components.gateway.core.common.Constant.PARSE_TEMPLATE_NAME_PREFIX)) {
+        if (StringUtils.startsWith(
+                parseContent, com.github.loadup.components.gateway.core.common.Constant.PARSE_TEMPLATE_NAME_PREFIX)) {
             return parseContent;
         }
 
@@ -283,14 +289,16 @@ public class GroovyScriptCache {
      * 生成beanName
      */
     public static String generateParserBeanName(MessageProcessConfig processConfig) {
-        return StringUtils.joinWith("_",
+        return StringUtils.joinWith(
+                "_",
                 "PARSER",
                 StringUtils.lowerCase(processConfig.getParserClassName()),
                 StringUtils.lowerCase(processConfig.getMessageProcessId()));
     }
 
     public static String generateAssembleBeanName(MessageProcessConfig processConfig) {
-        return StringUtils.joinWith("_",
+        return StringUtils.joinWith(
+                "_",
                 "ASSEMBLER",
                 StringUtils.lowerCase(processConfig.getAssembleClassName()),
                 StringUtils.lowerCase(processConfig.getMessageProcessId()));
@@ -299,11 +307,9 @@ public class GroovyScriptCache {
     /**
      * 生成beanName
      */
-    public static String generateParserBeanName(String url, String tntInstId, String roleType,
-                                                String interfaceType) {
+    public static String generateParserBeanName(String url, String tntInstId, String roleType, String interfaceType) {
         return StringUtils.lowerCase(StringUtils.join(
-                new String[]{UriUtil.getUriWithDot(url), roleType, interfaceType, tntInstId},
-                PATH_CONJUNCTION));
+                new String[] {UriUtil.getUriWithDot(url), roleType, interfaceType, tntInstId}, PATH_CONJUNCTION));
     }
 
     /**

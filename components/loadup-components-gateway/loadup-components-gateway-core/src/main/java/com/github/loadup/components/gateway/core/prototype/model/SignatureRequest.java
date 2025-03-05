@@ -54,7 +54,6 @@ public class SignatureRequest {
         rawMessage.append(".");
         rawMessage.append(message);
         return rawMessage.toString();
-
     }
 
     /**

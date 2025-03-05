@@ -106,8 +106,7 @@ public final class Constant {
     /**
      * 配置分隔符
      */
-    public static final Pattern CONFIG_SEPARATOR = Pattern
-            .compile("\r*\n+|;");
+    public static final Pattern CONFIG_SEPARATOR = Pattern.compile("\r*\n+|;");
 
     /**
      * 值/对分隔符
@@ -127,32 +126,32 @@ public final class Constant {
     /**
      * ,分隔符
      */
-    public final static String COMMA_SEPARATOR = ",";
+    public static final String COMMA_SEPARATOR = ",";
 
     /**
      * key value de
      */
-    public final static String URL_KEY_VALUE_SEPARATOR = "&";
+    public static final String URL_KEY_VALUE_SEPARATOR = "&";
 
     /**
      * 下划线
      */
-    public final static String UNDERSCORE = "_";
+    public static final String UNDERSCORE = "_";
 
     /**
      * uri分隔符
      */
-    public final static String URI_SEPARATOR = "://";
+    public static final String URI_SEPARATOR = "://";
 
     /**
      * path分割符
      */
-    public final static String PATH_SEPARATOR = "/";
+    public static final String PATH_SEPARATOR = "/";
 
     /**
      * path连接符
      */
-    public final static String PATH_CONJUNCTION = ".";
+    public static final String PATH_CONJUNCTION = ".";
 
     /**
      * 默认版本号
@@ -242,8 +241,8 @@ public final class Constant {
     /**
      * signature extension class regex for velocity template
      */
-    public static final Pattern SIGNATURE_EXTENSION_CLASS_REGEX = Pattern.compile(
-            "(([a-z|A-Z|0-9|_])+)\\s*?\\.thirdPartySign\\s*?\\(\\s*?\"(([a-z|A-Z|0-9|\\.|_])+)\"");
+    public static final Pattern SIGNATURE_EXTENSION_CLASS_REGEX =
+            Pattern.compile("(([a-z|A-Z|0-9|_])+)\\s*?\\.thirdPartySign\\s*?\\(\\s*?\"(([a-z|A-Z|0-9|\\.|_])+)\"");
 
     /**
      * 网银回执中保存订单号的字段
@@ -598,6 +597,7 @@ public final class Constant {
      * interface version flag in request
      **/
     public static final String ORIGIN_VERSION = "ORIGIN_VERSION";
+
     public static final String HEAD_ORIGIN_VERSION = "_Header_Origin_Version";
     public static final String TEXT_FORMAT = "UTF-8";
     public static final int BUFFER_SIZE = 1024;
@@ -652,5 +652,4 @@ public final class Constant {
 
         return result.toString();
     }
-
 }

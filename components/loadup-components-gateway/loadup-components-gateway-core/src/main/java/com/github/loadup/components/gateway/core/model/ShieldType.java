@@ -33,7 +33,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum ShieldType {
 
-    //private data，全部隐藏
+    // private data，全部隐藏
     ALL;
 
     /**
@@ -47,5 +47,4 @@ public enum ShieldType {
         }
         return null;
     }
-
 }

@@ -41,5 +41,4 @@ public interface RoleService {
     SingleResponse<SimpleRoleDTO> save(RoleSaveCmd cmd);
 
     SingleResponse<RoleDTO> saveRoleUsers(RoleUsersSaveCmd cmd);
-
 }

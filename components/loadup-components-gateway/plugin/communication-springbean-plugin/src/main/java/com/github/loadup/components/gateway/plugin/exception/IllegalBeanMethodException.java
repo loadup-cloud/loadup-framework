@@ -33,5 +33,4 @@ public class IllegalBeanMethodException extends Exception {
     public IllegalBeanMethodException(String msg) {
         super(msg);
     }
-
 }

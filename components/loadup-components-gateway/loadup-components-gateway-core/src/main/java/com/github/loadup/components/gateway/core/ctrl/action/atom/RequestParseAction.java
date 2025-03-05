@@ -66,8 +66,7 @@ public class RequestParseAction extends AbstractBusinessAction {
 
         String transactionType = context.getTransactionType();
         String requesterCertCode = context.getRequesterCertCode();
-        messageEnvelope
-                .setNeedVerifySignature(needVerifySignature(transactionType, requesterCertCode));
+        messageEnvelope.setNeedVerifySignature(needVerifySignature(transactionType, requesterCertCode));
 
         UnifyMsg unifyMessage = null;
 
@@ -75,8 +74,7 @@ public class RequestParseAction extends AbstractBusinessAction {
                 ? StringUtils.EMPTY
                 : context.getRequesterInterfaceConfig().getInterfaceId();
 
-        unifyMessage = messageEngine.parse(requesterInterfaceId, RoleType.SENDER, context,
-                messageEnvelope);
+        unifyMessage = messageEngine.parse(requesterInterfaceId, RoleType.SENDER, context, messageEnvelope);
 
         InterfaceConfig interfaceConfig = context.getRequesterInterfaceConfig();
         checkOauth(unifyMessage, interfaceConfig);

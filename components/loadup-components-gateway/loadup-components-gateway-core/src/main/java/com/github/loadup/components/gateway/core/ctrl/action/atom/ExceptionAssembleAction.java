@@ -67,7 +67,6 @@ public class ExceptionAssembleAction extends AbstractBusinessAction {
         String content = jsonResult.toJSONString();
         MessageEnvelope resultMsg = new MessageEnvelope(MessageFormat.TEXT, content);
         gatewayRuntimeProcessContext.setResultMessage(resultMsg);
-
     }
 
     /**
@@ -88,9 +87,9 @@ public class ExceptionAssembleAction extends AbstractBusinessAction {
 
         JSONObject jsonResult = new JSONObject();
         jsonResult.put("result", jsonStatus);
-        //if(!StringUtils.equals(errorCode.getMessage(), gatewayliteException.getMessage())) {
+        // if(!StringUtils.equals(errorCode.getMessage(), gatewayliteException.getMessage())) {
         jsonResult.put("errorMessage", commonException.getMessage());
-        //}
+        // }
 
         return jsonResult;
     }
@@ -101,5 +100,4 @@ public class ExceptionAssembleAction extends AbstractBusinessAction {
     public void setNextAction(BusinessAction responseAssembleAction) {
         this.nextAction = responseAssembleAction;
     }
-
 }

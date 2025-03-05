@@ -46,5 +46,4 @@ public interface TaskExecutor {
      * @throws Exception exception
      */
     void plainExecute(RetryTask retryTask) throws Exception;
-
 }

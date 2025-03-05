@@ -65,5 +65,4 @@ public class RetryTaskConstants {
      * COMMA
      */
     public static final char COMMA = ',';
-
 }

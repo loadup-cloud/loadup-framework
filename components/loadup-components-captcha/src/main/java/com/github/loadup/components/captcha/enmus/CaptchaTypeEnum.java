@@ -41,7 +41,7 @@ public enum CaptchaTypeEnum implements IEnum {
     public static CaptchaTypeEnum getByCode(String code) {
         return Arrays.stream(CaptchaTypeEnum.values())
                 .filter(v -> StringUtils.equals(v.getCode(), code))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
     }
-
 }

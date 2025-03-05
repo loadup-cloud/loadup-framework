@@ -22,7 +22,8 @@ public class SimpleTaskManager implements BeanPostProcessor, TaskManager {
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         Method[] methods = bean.getClass().getDeclaredMethods();
         for (Method method : methods) {
-            DistributedScheduler distributedScheduler = AnnotationUtils.getAnnotation(method, DistributedScheduler.class);
+            DistributedScheduler distributedScheduler =
+                    AnnotationUtils.getAnnotation(method, DistributedScheduler.class);
             if (distributedScheduler != null) {
                 String taskName = distributedScheduler.name();
                 String cron = distributedScheduler.cron();
