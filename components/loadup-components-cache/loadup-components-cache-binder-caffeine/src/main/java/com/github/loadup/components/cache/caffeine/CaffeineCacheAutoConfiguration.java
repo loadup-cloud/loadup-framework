@@ -28,6 +28,7 @@ package com.github.loadup.components.cache.caffeine;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.loadup.components.cache.api.CacheBinder;
+import com.github.loadup.components.cache.caffeine.binder.CaffeineCacheBinderImpl;
 import com.github.loadup.components.cache.caffeine.cfg.CaffeineCacheProperties;
 import com.github.loadup.components.cache.constans.CacheConstants;
 import jakarta.annotation.Resource;
@@ -36,6 +37,7 @@ import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -56,7 +58,7 @@ public class CaffeineCacheAutoConfiguration {
      * default cache
      */
     @Primary
-    @Bean(name = "defaultCacheManager")
+    @Bean(name = "caffeineCacheManager")
     public CacheManager defaultCacheManager() {
         CaffeineCacheManager defaultCacheManager = new CaffeineCacheManager(CacheConstants.DEFAULT_CACHE_NAME);
         defaultCacheManager.setAllowNullValues(properties.getAllowNullValue());
@@ -70,6 +72,7 @@ public class CaffeineCacheAutoConfiguration {
 
     @Bean(name = "caffeineCacheBinder")
     @ConditionalOnMissingBean(CacheBinder.class)
+    @ConditionalOnProperty(name = "spring.cache.type", havingValue = "caffeine", matchIfMissing = true)
     public CacheBinder cacheBinder() {
         return new CaffeineCacheBinderImpl();
     }

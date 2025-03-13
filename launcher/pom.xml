@@ -45,7 +45,7 @@
 
         <dependency>
             <groupId>com.github.loadup.components</groupId>
-            <artifactId>loadup-components-cache-binder-caffeine</artifactId>
+            <artifactId>loadup-components-cache-binder-redis</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>

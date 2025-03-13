@@ -4,17 +4,53 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.github.loadup.framework</groupId>
-        <artifactId>loadup-framework</artifactId>
+        <groupId>com.github.loadup</groupId>
+        <artifactId>loadup-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
+    <groupId>com.github.loadup.components</groupId>
     <artifactId>loadup-components-cache-binder-redis</artifactId>
 
     <properties>
-
-
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>17</java.version>
+        <java.compiler.version>${java.version}</java.compiler.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
+    <dependencies>
+
+        <dependency>
+            <groupId>com.github.loadup</groupId>
+            <artifactId>loadup-commons-util</artifactId>
+            <version>${loadup.framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.loadup.components</groupId>
+            <artifactId>loadup-components-cache-api</artifactId>
+            <version>${loadup.framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

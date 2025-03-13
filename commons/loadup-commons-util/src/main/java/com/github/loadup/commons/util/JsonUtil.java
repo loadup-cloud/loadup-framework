@@ -52,7 +52,7 @@ public class JsonUtil {
 
     private static final ObjectMapper objectMapper = createObjectMapper();
 
-    private static ObjectMapper createObjectMapper() {
+    public static ObjectMapper createObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         //忽略 在json字符串中存在，但是在java对象中不存在对应属性的情况。防止错误
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
