@@ -41,12 +41,12 @@ public class DefaultCacheBinding implements CacheBinding {
     private CacheBinder cacheBinder;
 
     @Override
-    public boolean set(String key, Object value, int exp) {
+    public boolean set(String cacheName,String key, Object value ) {
         boolean res;
         StopWatch stopWatch = new StopWatch();
         try {
             stopWatch.start();
-            res = cacheBinder.set(key, value, exp);
+            res = cacheBinder.set(cacheName,key, value);
             stopWatch.stop();
             log.info(
                     "binder={},method={},key={},result={},cost={}",
@@ -70,12 +70,12 @@ public class DefaultCacheBinding implements CacheBinding {
     }
 
     @Override
-    public Object get(String key) {
+    public Object get(String cacheName,String key) {
         Object res;
         StopWatch stopWatch = new StopWatch();
         try {
             stopWatch.start();
-            res = cacheBinder.get(key);
+            res = cacheBinder.get(cacheName,key);
             stopWatch.stop();
             log.info(
                     "binder={},method={},key={},result={},cost={}",
@@ -99,12 +99,12 @@ public class DefaultCacheBinding implements CacheBinding {
     }
 
     @Override
-    public <T> T get(Class<T> cls, String key) {
+    public <T> T get(String cacheName, String key,Class<T> cls) {
         T res;
         StopWatch stopWatch = new StopWatch();
         try {
             stopWatch.start();
-            res = cacheBinder.get(key, cls);
+            res = cacheBinder.get(cacheName,key, cls);
             stopWatch.stop();
             log.info(
                     "binder={},method={},key={},result={},cost={}",
@@ -128,12 +128,12 @@ public class DefaultCacheBinding implements CacheBinding {
     }
 
     @Override
-    public boolean delete(String key) {
+    public boolean delete(String cacheName,String key) {
         boolean res;
         StopWatch stopWatch = new StopWatch();
         try {
             stopWatch.start();
-            res = cacheBinder.delete(key);
+            res = cacheBinder.delete(cacheName,key);
             stopWatch.stop();
             log.info(
                     "binder={},method={},key={},result={},cost={}",
@@ -157,12 +157,12 @@ public class DefaultCacheBinding implements CacheBinding {
     }
 
     @Override
-    public boolean deleteAll() {
+    public boolean deleteAll(String cacheName) {
         boolean res;
         StopWatch stopWatch = new StopWatch();
         try {
             stopWatch.start();
-            res = cacheBinder.deleteAll();
+            res = cacheBinder.deleteAll(cacheName);
             stopWatch.stop();
             log.info(
                     "binder={},method={},key={},result={},cost={}",

@@ -58,7 +58,7 @@ public class UserController {
     @PostMapping(value = "/queryById")
     public SingleResponse<UserDTO> queryById(@RequestBody IdQuery query) {
         log.info("queryById:{}", TraceUtil.getTracerId());
-        cacheBinding.set("test", "test", 1000);
+        cacheBinding.set("test", "test", "1000S");
         return userService.getUserById(query);
     }
 

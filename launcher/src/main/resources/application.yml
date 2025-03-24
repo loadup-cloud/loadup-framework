@@ -8,7 +8,28 @@ spring:
     username: root
     password: 123456
   cache:
-    type: redis
+    type: caffeine
+    cache-names:
+      - UserCache
+      - DefaultCache
+    caffeine:
+      spec: UserCache=maximumSize=1000,expireAfterWrite=10s,DefaultCache=maximumSize=1000,expireAfterWrite=100s
+      cache-config:
+        UserCache:
+          maximum-size: 1000
+          expire-after-write: 100s
+        DefaultCache:
+          maximum-size: 1000
+          expire-after-write: 1000s
+    redis:
+      time-to-live: 1000s
+      cache-config:
+        UserCache:
+          maximum-size: 1000
+          expire-after-write: 100s
+        DefaultCache:
+          maximum-size: 1000
+          expire-after-write: 1000s
   data:
     redis:
       host: localhost

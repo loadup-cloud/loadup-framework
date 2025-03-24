@@ -12,10 +12,10 @@ package com.github.loadup.components.cache.impl;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,14 +26,16 @@ package com.github.loadup.components.cache.impl;
  * #L%
  */
 
+import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.cache.api.CacheBinder;
-import com.github.loadup.components.cache.constans.CacheConstants;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class RedisCacheBinderImpl implements CacheBinder {
@@ -47,19 +49,20 @@ public class RedisCacheBinderImpl implements CacheBinder {
         return "RedisCache";
     }
 
-
     @Override
-    public boolean set(String key, Object value, int exp) {
-        Cache cache = redisCacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
+    public boolean set(String cacheName,String key, Object value ) {
+        Cache cache = redisCacheManager.getCache(cacheName);
         Assert.notNull(cache, "cache is null");
-        cache.putIfAbsent(key, value);
+        cache.put(key, value);
         return true;
     }
 
     @Override
-    public Object get(String key) {
-        Cache cache = redisCacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
-        Assert.notNull(cache, "cache is null");
+    public Object get(String cacheName,String key) {
+        Cache cache = redisCacheManager.getCache(key);
+        if (Objects.isNull(cache)) {
+            return null;
+        }
         Cache.ValueWrapper valueWrapper = cache.get(key);
         if (Objects.isNull(valueWrapper)) {
             return null;
@@ -68,28 +71,28 @@ public class RedisCacheBinderImpl implements CacheBinder {
     }
 
     @Override
-    public <T> T get(String key, Class<T> clazz) {
-        Cache cache = redisCacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
-        Assert.notNull(cache, "cache is null");
-        T value = cache.get(key, clazz);
-        if (Objects.isNull(value)) {
+    public <T> T get(String cacheName,String key, Class<T> clazz) {
+        Cache cache = redisCacheManager.getCache(key);
+        if (Objects.isNull(cache)) {
             return null;
         }
-        return value;
+        Map map = cache.get(key, Map.class);
+        if (CollectionUtils.isEmpty(map)) {
+            return null;
+        }
+        return JsonUtil.parseObject(map, clazz);
     }
 
     @Override
-    public boolean delete(String key) {
-        Cache cache = redisCacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
-        Assert.notNull(cache, "cache is null");
-        cache.evict(key);
+    public boolean delete(String cacheName,String key) {
+        Cache cache = redisCacheManager.getCache(key);
+        cache.evictIfPresent(key);
         return true;
     }
 
     @Override
-    public boolean deleteAll() {
-        Cache cache = redisCacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
-        Assert.notNull(cache, "cache is null");
+    public boolean deleteAll(String cacheName) {
+        Cache cache = redisCacheManager.getCache(cacheName);
         cache.clear();
         return true;
     }

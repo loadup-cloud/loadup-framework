@@ -29,8 +29,7 @@ package com.github.loadup.components.cache.caffeine;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.loadup.components.cache.api.CacheBinder;
 import com.github.loadup.components.cache.caffeine.binder.CaffeineCacheBinderImpl;
-import com.github.loadup.components.cache.caffeine.cfg.CaffeineCacheProperties;
-import com.github.loadup.components.cache.constans.CacheConstants;
+import com.github.loadup.components.cache.caffeine.cfg.LoadUpCaffeineCacheProperties;
 import jakarta.annotation.Resource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
@@ -52,7 +51,7 @@ import org.springframework.context.annotation.Primary;
 @ConditionalOnMissingBean(CacheBinder.class)
 public class CaffeineCacheAutoConfiguration {
     @Resource
-    private CaffeineCacheProperties properties;
+    private LoadUpCaffeineCacheProperties properties;
 
     /**
      * default cache
@@ -60,14 +59,14 @@ public class CaffeineCacheAutoConfiguration {
     @Primary
     @Bean(name = "caffeineCacheManager")
     public CacheManager defaultCacheManager() {
-        CaffeineCacheManager defaultCacheManager = new CaffeineCacheManager(CacheConstants.DEFAULT_CACHE_NAME);
+        CaffeineCacheManager defaultCacheManager = new CaffeineCacheManager();
         defaultCacheManager.setAllowNullValues(properties.getAllowNullValue());
 
         Caffeine<Object, Object> caffeineBuilder = Caffeine.newBuilder()
                 .initialCapacity(properties.getInitCacheCapacity())
                 .maximumSize(properties.getMaxCacheCapacity());
         defaultCacheManager.setCaffeine(caffeineBuilder);
-        return new CaffeineCacheManager();
+        return defaultCacheManager;
     }
 
     @Bean(name = "caffeineCacheBinder")

@@ -58,10 +58,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public SingleResponse<UserDTO> getUserById(IdQuery query) {
-        User user = userGateway.getById(query.getId());
-        UserDTO userDTO = UserDTOConvertor.INSTANCE.toUserDTO(user);
-        cacheBinding.set("test", userDTO, 1000);
-        Object o = cacheBinding.get("test");
+        String cacheKey="UserDTO_"+query.getId();
+        String cacheName="UserCache";
+        UserDTO userDTO = cacheBinding.get(cacheName,cacheKey,UserDTO.class);
+        if (Objects.isNull(userDTO)) {
+            User user = userGateway.getById(query.getId());
+            userDTO = UserDTOConvertor.INSTANCE.toUserDTO(user);
+            cacheBinding.set(cacheName,cacheKey, userDTO);
+            cacheBinding.set(cacheName+"2#200s",cacheKey+"_back", userDTO);
+        }
         return SingleResponse.of(userDTO);
     }
 

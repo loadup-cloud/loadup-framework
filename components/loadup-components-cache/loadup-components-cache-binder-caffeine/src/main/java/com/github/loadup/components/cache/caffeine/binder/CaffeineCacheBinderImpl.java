@@ -48,7 +48,7 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
     }
 
     @Override
-    public boolean set(String key, Object value, int exp) {
+    public boolean set(String cacheName,String key, Object value ) {
         Cache cache = caffeineCacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
         Assert.notNull(cache, "cache is null");
         cache.putIfAbsent(key, value);
@@ -56,7 +56,7 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
     }
 
     @Override
-    public Object get(String key) {
+    public Object get(String cacheName,String key) {
         Cache cache = caffeineCacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
         Assert.notNull(cache, "cache is null");
         Cache.ValueWrapper valueWrapper = cache.get(key);
@@ -67,7 +67,7 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
     }
 
     @Override
-    public <T> T get(String key, Class<T> clazz) {
+    public <T> T get(String cacheName,String key, Class<T> clazz) {
         Cache cache = caffeineCacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
         Assert.notNull(cache, "cache is null");
         T value = cache.get(key, clazz);
@@ -78,7 +78,7 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
     }
 
     @Override
-    public boolean delete(String key) {
+    public boolean delete(String cacheName,String key) {
         Cache cache = caffeineCacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
         Assert.notNull(cache, "cache is null");
         cache.evict(key);
@@ -86,7 +86,7 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
     }
 
     @Override
-    public boolean deleteAll() {
+    public boolean deleteAll(String cacheName) {
         Cache cache = caffeineCacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
         Assert.notNull(cache, "cache is null");
         cache.clear();

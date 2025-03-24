@@ -40,6 +40,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.github.loadup.commons.constant.CommonConstants;
 import com.github.loadup.commons.util.json.MultiDateDeserializer;
+import org.apache.commons.collections4.MapUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -50,9 +51,9 @@ import java.util.*;
 
 public class JsonUtil {
 
-    private static final ObjectMapper objectMapper = createObjectMapper();
+    private static final ObjectMapper objectMapper = initObjectMapper();
 
-    public static ObjectMapper createObjectMapper() {
+    public static ObjectMapper initObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         //忽略 在json字符串中存在，但是在java对象中不存在对应属性的情况。防止错误
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -97,6 +98,7 @@ public class JsonUtil {
             return null;
         }
     }
+
 
     public static <T> String toJSONStringPretty(T obj) {
 
@@ -154,6 +156,29 @@ public class JsonUtil {
         }
     }
 
+    /**
+     * Json string to map
+     * @param jsonString
+     * @return
+     */
+    public static Map toMap(String jsonString) {
+        return parseObject(jsonString, Map.class);
+    }
+
+    /**
+     * parse map to object
+     * @param map
+     * @param valueType
+     * @return
+     * @param <T>
+     */
+    public static <T> T parseObject(Map map,Class<T> valueType) {
+        if (MapUtils.isEmpty(map) || valueType == null) {
+            return null;
+        }
+        String jsonString = toJSONString(map);
+        return parseObject(jsonString, valueType);
+    }
     /**
      * 从JSON字符串中获取指定路径下的子节点
      */

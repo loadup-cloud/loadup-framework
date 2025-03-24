@@ -31,11 +31,14 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Getter
 @Setter
 @Component
 @ConfigurationProperties(prefix = "spring.cache.caffeine")
-public class CaffeineCacheProperties {
+public class LoadUpCaffeineCacheProperties {
     /**
      * init Capacity
      * spring.cache.caffeine.init-cache-capacity
@@ -52,5 +55,7 @@ public class CaffeineCacheProperties {
      * allow null as value or not
      * spring.cache.caffeine.allow-null-value
      */
-    private Boolean allowNullValue = Boolean.TRUE;
+    private Boolean allowNullValue = Boolean.FALSE;
+    private Map<String, String> cacheConfig = new HashMap<>();
+
 }

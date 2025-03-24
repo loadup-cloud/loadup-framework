@@ -164,8 +164,7 @@
         <dependency>
             <groupId>com.github.loadup.framework</groupId>
             <artifactId>loadup-commons-util</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>${loadup.framework.version}</version>
         </dependency>
 
     </dependencies>

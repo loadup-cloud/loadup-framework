@@ -29,13 +29,13 @@ package com.github.loadup.components.cache.api;
 import com.github.loadup.framework.api.binding.BaseBinding;
 
 public interface CacheBinding extends BaseBinding {
-    boolean set(String key, Object value, int exp);
+    boolean set(String cacheName, String key, Object value);
 
-    Object get(String key);
+    Object get(String cacheName, String key);
 
-    <T> T get(Class<T> cls, String key);
+    <T> T get(String cacheName, String key, Class<T> cls);
 
-    boolean delete(String key);
+    boolean delete(String cacheName, String key);
 
-    boolean deleteAll();
+    boolean deleteAll(String cacheName);
 }
