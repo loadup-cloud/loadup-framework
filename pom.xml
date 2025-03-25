@@ -15,14 +15,8 @@
     <packaging>pom</packaging>
     <modules>
         <!--        <module>loadup-dependencies</module>-->
-        <module>commons/loadup-commons-api</module>
-        <module>commons/loadup-commons-dto</module>
-        <module>commons/loadup-commons-lang</module>
-        <module>commons/loadup-commons-util</module>
-        <!--        <module>components/loadup-components-retrytask</module>-->
-        <module>components/loadup-components-cache/loadup-components-cache-api</module>
-        <module>components/loadup-components-cache/loadup-components-cache-binder-caffeine</module>
-        <module>components/loadup-components-cache/loadup-components-cache-binder-redis</module>
+        <module>commons</module>
+        <module>components/loadup-components-cache</module>
         <!--        <module>components/cache/loadup-components-cache-test</module>-->
         <!--            <module>components/cache/loadup-components-cache-binder-redis</module>-->
         <module>components/upms/loadup-components-upms</module>
