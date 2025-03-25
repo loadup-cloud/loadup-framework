@@ -35,8 +35,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.loadup</groupId>
-            <artifactId>loadup-common-api</artifactId>
+            <groupId>com.github.loadup.framework</groupId>
+            <artifactId>loadup-commons-api</artifactId>
             <version>${loadup.framework.version}</version>
         </dependency>
 

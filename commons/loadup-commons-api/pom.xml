@@ -7,10 +7,11 @@
         <groupId>com.github.loadup</groupId>
         <artifactId>loadup-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>loadup-common-api</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+
+    <groupId>com.github.loadup.framework</groupId>
+    <artifactId>loadup-commons-api</artifactId>
 
 
     <properties>

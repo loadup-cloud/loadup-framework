@@ -15,7 +15,7 @@
     <packaging>pom</packaging>
     <modules>
         <!--        <module>loadup-dependencies</module>-->
-        <module>loadup-common-api</module>
+        <module>commons/loadup-commons-api</module>
         <module>commons/loadup-commons-dto</module>
         <module>commons/loadup-commons-lang</module>
         <module>commons/loadup-commons-util</module>
@@ -55,6 +55,11 @@
                 <version>${loadup.framework.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.github.loadup.framework</groupId>
+                <artifactId>loadup-commons-api</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.github.loadup.framework</groupId>
                 <artifactId>loadup-commons-dto</artifactId>
