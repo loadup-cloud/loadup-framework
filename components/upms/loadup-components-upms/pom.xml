@@ -23,7 +23,6 @@
         <module>loadup-components-upms-infrastructure</module>
         <module>loadup-components-upms-client</module>
         <module>loadup-components-upms-app</module>
-        <module>loadup-components-upms-adapter</module>
     </modules>
     <dependencies>
         <dependency>
