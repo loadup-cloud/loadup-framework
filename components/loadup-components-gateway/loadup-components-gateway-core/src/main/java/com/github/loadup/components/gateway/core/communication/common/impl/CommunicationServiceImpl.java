@@ -59,7 +59,7 @@ public class CommunicationServiceImpl implements CommunicationService {
      */
     @Override
     public MessageSendResult send(String traceId, CommunicationConfig communicationConfig,
-                                MessageEnvelope messageEnvelope) {
+                                  MessageEnvelope messageEnvelope) {
         String protocol = communicationConfig.getProtocol();
 
         CommunicationService service = handler.get(protocol.toUpperCase());

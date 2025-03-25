@@ -50,7 +50,7 @@ public class RedisCacheBinderImpl implements CacheBinder {
     }
 
     @Override
-    public boolean set(String cacheName,String key, Object value ) {
+    public boolean set(String cacheName, String key, Object value) {
         Cache cache = redisCacheManager.getCache(cacheName);
         Assert.notNull(cache, "cache is null");
         cache.put(key, value);
@@ -58,7 +58,7 @@ public class RedisCacheBinderImpl implements CacheBinder {
     }
 
     @Override
-    public Object get(String cacheName,String key) {
+    public Object get(String cacheName, String key) {
         Cache cache = redisCacheManager.getCache(key);
         if (Objects.isNull(cache)) {
             return null;
@@ -71,7 +71,7 @@ public class RedisCacheBinderImpl implements CacheBinder {
     }
 
     @Override
-    public <T> T get(String cacheName,String key, Class<T> clazz) {
+    public <T> T get(String cacheName, String key, Class<T> clazz) {
         Cache cache = redisCacheManager.getCache(key);
         if (Objects.isNull(cache)) {
             return null;
@@ -84,7 +84,7 @@ public class RedisCacheBinderImpl implements CacheBinder {
     }
 
     @Override
-    public boolean delete(String cacheName,String key) {
+    public boolean delete(String cacheName, String key) {
         Cache cache = redisCacheManager.getCache(key);
         cache.evictIfPresent(key);
         return true;

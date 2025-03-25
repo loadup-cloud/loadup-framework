@@ -309,7 +309,7 @@ public class GroovyScriptCache {
      */
     public static String generateParserBeanName(String url, String tntInstId, String roleType, String interfaceType) {
         return StringUtils.lowerCase(StringUtils.join(
-                new String[] {UriUtil.getUriWithDot(url), roleType, interfaceType, tntInstId}, PATH_CONJUNCTION));
+                new String[]{UriUtil.getUriWithDot(url), roleType, interfaceType, tntInstId}, PATH_CONJUNCTION));
     }
 
     /**

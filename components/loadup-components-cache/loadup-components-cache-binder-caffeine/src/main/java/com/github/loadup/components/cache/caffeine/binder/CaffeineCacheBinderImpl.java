@@ -12,10 +12,10 @@ package com.github.loadup.components.cache.caffeine.binder;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -47,7 +47,7 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
     }
 
     @Override
-    public boolean set(String cacheName,String key, Object value ) {
+    public boolean set(String cacheName, String key, Object value) {
         Cache cache = caffeineCacheManager.getCache(cacheName);
         Assert.notNull(cache, "cache is null");
         cache.putIfAbsent(key, value);
@@ -55,7 +55,7 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
     }
 
     @Override
-    public Object get(String cacheName,String key) {
+    public Object get(String cacheName, String key) {
         Cache cache = caffeineCacheManager.getCache(cacheName);
         Assert.notNull(cache, "cache is null");
         Cache.ValueWrapper valueWrapper = cache.get(key);
@@ -66,7 +66,7 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
     }
 
     @Override
-    public <T> T get(String cacheName,String key, Class<T> clazz) {
+    public <T> T get(String cacheName, String key, Class<T> clazz) {
         Cache cache = caffeineCacheManager.getCache(cacheName);
         Assert.notNull(cache, "cache is null");
         T value = cache.get(key, clazz);
@@ -77,7 +77,7 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
     }
 
     @Override
-    public boolean delete(String cacheName,String key) {
+    public boolean delete(String cacheName, String key) {
         Cache cache = caffeineCacheManager.getCache(cacheName);
         Assert.notNull(cache, "cache is null");
         cache.evict(key);

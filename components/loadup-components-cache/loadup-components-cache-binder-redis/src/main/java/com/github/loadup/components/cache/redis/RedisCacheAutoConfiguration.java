@@ -83,7 +83,7 @@ public class RedisCacheAutoConfiguration {
 
         LoadUpRedisCacheManager loadUpRedisCacheManager = new LoadUpRedisCacheManager(
                 RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory),
-                redisCacheConfiguration(cacheProperties),cacheConfigurations);
+                redisCacheConfiguration(cacheProperties), cacheConfigurations);
         return loadUpRedisCacheManager;
     }
 

@@ -41,7 +41,7 @@ import java.util.List;
 public class SecurityConditionConfigIndexExtImpl {
 
     public List<List<String>> customIndexKeys(String tntInstId, String configName,
-                                            SecurityConditionGroup securityConditionGroup) {
+                                              SecurityConditionGroup securityConditionGroup) {
         List<String> securityConditionGroupIndex = new ArrayList<>();
         securityConditionGroupIndex.add(Constant.SECURITY_CONDITION_GROUP_INDEX_COLUMN_CODE);
         securityConditionGroupIndex

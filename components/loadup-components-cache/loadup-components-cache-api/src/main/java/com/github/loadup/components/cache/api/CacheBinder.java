@@ -29,19 +29,19 @@ package com.github.loadup.components.cache.api;
 import com.github.loadup.framework.api.binder.BaseBinder;
 
 public interface CacheBinder extends BaseBinder {
-    default boolean set(String cacheName,String key, Object value ) {
+    default boolean set(String cacheName, String key, Object value) {
         return false;
     }
 
-    default Object get(String cacheName,String key) {
+    default Object get(String cacheName, String key) {
         return null;
     }
 
-    default <T> T get(String cacheName,String key, Class<T> cls) {
+    default <T> T get(String cacheName, String key, Class<T> cls) {
         return null;
     }
 
-    default boolean delete(String cacheName,String key) {
+    default boolean delete(String cacheName, String key) {
         return false;
     }
 

@@ -26,4 +26,5 @@ package com.github.loadup.framework.api.binder;
  * #L%
  */
 
-public interface BinderFactory {}
+public interface BinderFactory {
+}

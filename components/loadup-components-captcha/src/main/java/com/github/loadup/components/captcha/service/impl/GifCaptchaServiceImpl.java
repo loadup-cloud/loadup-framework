@@ -49,7 +49,7 @@ public class GifCaptchaServiceImpl extends CommonInnerService implements Captcha
                 y2 = ty;
             }
             int ctrlx1 = RandomUtils.nextInt(width / 4, width / 4 * 3), ctrly1 = RandomUtils.nextInt(5, height - 5);
-            int[][] besselXY = new int[][] {{x1, y1}, {ctrlx, ctrly}, {ctrlx1, ctrly1}, {x2, y2}};
+            int[][] besselXY = new int[][]{{x1, y1}, {ctrlx, ctrly}, {ctrlx1, ctrly1}, {x2, y2}};
             // 开始画gif每一帧
             GifEncoder gifEncoder = new GifEncoder();
             gifEncoder.setQuality(180);
@@ -120,10 +120,10 @@ public class GifCaptchaServiceImpl extends CommonInnerService implements Captcha
             g2d.setColor(fontColor[i]);
             int fY = height
                     - ((height
-                                    - (int) fontMetrics
-                                            .getStringBounds(String.valueOf(strs[i]), g2d)
-                                            .getHeight())
-                            >> 1); // 文字的纵坐标
+                    - (int) fontMetrics
+                    .getStringBounds(String.valueOf(strs[i]), g2d)
+                    .getHeight())
+                    >> 1); // 文字的纵坐标
             g2d.drawString(String.valueOf(strs[i]), i * fW + fSp + 3, fY - 3);
         }
         g2d.dispose();

@@ -46,7 +46,8 @@ public class LogUtil {
      */
     private static final char THREAD_LEFT_TAG = '[';
 
-    private LogUtil() {}
+    private LogUtil() {
+    }
 
     public static void info(Logger logger, Object... obj) {
         if (logger.isInfoEnabled()) {

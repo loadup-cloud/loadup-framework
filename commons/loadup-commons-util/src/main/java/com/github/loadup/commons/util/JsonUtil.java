@@ -158,6 +158,7 @@ public class JsonUtil {
 
     /**
      * Json string to map
+     *
      * @param jsonString
      * @return
      */
@@ -167,18 +168,20 @@ public class JsonUtil {
 
     /**
      * parse map to object
+     *
      * @param map
      * @param valueType
-     * @return
      * @param <T>
+     * @return
      */
-    public static <T> T parseObject(Map map,Class<T> valueType) {
+    public static <T> T parseObject(Map map, Class<T> valueType) {
         if (MapUtils.isEmpty(map) || valueType == null) {
             return null;
         }
         String jsonString = toJSONString(map);
         return parseObject(jsonString, valueType);
     }
+
     /**
      * 从JSON字符串中获取指定路径下的子节点
      */

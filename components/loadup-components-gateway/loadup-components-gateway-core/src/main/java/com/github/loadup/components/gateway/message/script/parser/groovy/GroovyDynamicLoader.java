@@ -52,7 +52,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * <P>
+ * <p>
  * <p>
  * Groovy脚本的动态加载器，同时观察<br>
  * 将类、脚本等动态加载到Spring Context中，交由Spring统一维护

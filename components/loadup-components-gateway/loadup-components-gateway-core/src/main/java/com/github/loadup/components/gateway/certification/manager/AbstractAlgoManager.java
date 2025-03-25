@@ -86,7 +86,7 @@ public class AbstractAlgoManager implements AlgoManager, InitializingBean {
      */
     @Override
     public boolean verify(String srcContent, String signedContent,
-                        CertificationFactor certificationFactor) {
+                          CertificationFactor certificationFactor) {
         throw new CertificationException(CertificationErrorCode.UNSUPPORTED_OPERATION);
 
     }
@@ -104,7 +104,7 @@ public class AbstractAlgoManager implements AlgoManager, InitializingBean {
      */
     @Override
     public String decode(String srcContent, String signedContent,
-                        CertificationFactor certificationFactor) {
+                         CertificationFactor certificationFactor) {
         throw new CertificationException(CertificationErrorCode.UNSUPPORTED_OPERATION);
 
     }
@@ -188,7 +188,7 @@ public class AbstractAlgoManager implements AlgoManager, InitializingBean {
      * 执行验签操作
      */
     protected Boolean doVerify(byte[] unsignedData, byte[] signedData,
-                            CertificationFactor certificationFactor) {
+                               CertificationFactor certificationFactor) {
         return false;
     }
 
@@ -203,7 +203,7 @@ public class AbstractAlgoManager implements AlgoManager, InitializingBean {
      * 执行特殊验签操作
      */
     protected String doDecode(byte[] unsignedData, byte[] signedData,
-                            CertificationFactor certificationFactor) {
+                              CertificationFactor certificationFactor) {
         return null;
     }
 

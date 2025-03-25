@@ -74,7 +74,8 @@ public class ClientManageServiceImpl implements ClientManageService {
                 // compose exception response
                 (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
                 // compose digest log
-                (Void) -> {});
+                (Void) -> {
+                });
     }
 
     @Override
@@ -94,7 +95,8 @@ public class ClientManageServiceImpl implements ClientManageService {
                 (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
 
                 // compose digest log
-                (Void) -> {});
+                (Void) -> {
+                });
     }
 
     @Override
@@ -112,7 +114,8 @@ public class ClientManageServiceImpl implements ClientManageService {
                 // compose exception response
                 (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
                 // compose digest log
-                (Void) -> {});
+                (Void) -> {
+                });
     }
 
     @Override
@@ -131,7 +134,8 @@ public class ClientManageServiceImpl implements ClientManageService {
                 // compose exception response
                 (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
                 // compose digest log
-                (Void) -> {});
+                (Void) -> {
+                });
     }
 
     @Override
@@ -157,7 +161,8 @@ public class ClientManageServiceImpl implements ClientManageService {
                 // compose exception response
                 (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
                 // compose digest log
-                (Void) -> {});
+                (Void) -> {
+                });
     }
 
     @Override
@@ -175,6 +180,7 @@ public class ClientManageServiceImpl implements ClientManageService {
                 // compose exception response
                 (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
                 // compose digest log
-                (Void) -> {});
+                (Void) -> {
+                });
     }
 }

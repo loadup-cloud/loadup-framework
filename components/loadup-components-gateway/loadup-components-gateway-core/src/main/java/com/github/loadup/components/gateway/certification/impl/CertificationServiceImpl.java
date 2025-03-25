@@ -113,9 +113,9 @@ public class CertificationServiceImpl implements CertificationService {
      */
     @Override
     public String getCert(String securityStrategyCode,
-                        String securityStrategyOperateType,
-                        String securityStrategyAlgorithm,
-                        String clientId)
+                          String securityStrategyOperateType,
+                          String securityStrategyAlgorithm,
+                          String clientId)
             throws CertificationException {
         return certAlgorithmCacheManager.getCertContentString(securityStrategyCode,
                 securityStrategyOperateType, securityStrategyAlgorithm, clientId);

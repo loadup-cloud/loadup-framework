@@ -32,7 +32,6 @@ import com.github.loadup.commons.result.*;
 import com.github.loadup.commons.template.ServiceTemplate;
 import com.github.loadup.commons.util.PasswordUtils;
 import com.github.loadup.commons.util.ValidateUtils;
-import com.github.loadup.components.cache.api.CacheBinding;
 import com.github.loadup.components.upms.client.api.UserService;
 import com.github.loadup.components.upms.client.cmd.UserChangePasswordCmd;
 import com.github.loadup.components.upms.client.cmd.UserRolesSaveCmd;

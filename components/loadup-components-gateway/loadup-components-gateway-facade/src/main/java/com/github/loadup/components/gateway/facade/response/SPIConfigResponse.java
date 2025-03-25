@@ -29,4 +29,5 @@ package com.github.loadup.components.gateway.facade.response;
 /**
  *
  */
-public class SPIConfigResponse extends BaseResponse {}
+public class SPIConfigResponse extends BaseResponse {
+}

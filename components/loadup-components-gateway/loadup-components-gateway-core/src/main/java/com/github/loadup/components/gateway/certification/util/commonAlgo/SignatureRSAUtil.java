@@ -90,7 +90,7 @@ public class SignatureRSAUtil {
      * 公共验签接口
      */
     public static boolean verify(byte[] unSignedData, byte[] signedData, byte[] key,
-                                String algorithm) throws Exception {
+                                 String algorithm) throws Exception {
         PublicKey publicKey = recoverPublicKey(key);
         Signature signature = Signature.getInstance(algorithm);
         signature.initVerify(publicKey);

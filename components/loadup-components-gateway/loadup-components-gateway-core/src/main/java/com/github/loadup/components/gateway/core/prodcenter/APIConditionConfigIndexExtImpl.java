@@ -40,7 +40,7 @@ import java.util.List;
 public class APIConditionConfigIndexExtImpl {
 
     public List<List<String>> customIndexKeys(String tntInstId, String configName,
-                                            APIConditionGroup apiConditionGroup) {
+                                              APIConditionGroup apiConditionGroup) {
 
         List<List<String>> result = new ArrayList<List<String>>();
         List<String> urlIndex = new ArrayList<>();

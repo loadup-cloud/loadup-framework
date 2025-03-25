@@ -147,7 +147,7 @@ public class AlgSignaturePkcs7 extends AbstractAlgorithm {
      */
     @Override
     public boolean verify(byte[] unSignedData, byte[] signedData, byte[] key, String algorithm,
-                        boolean attach) {
+                          boolean attach) {
         try {
             CMSSignedData cmsdata = null;
             if (attach) { //签名包含原文

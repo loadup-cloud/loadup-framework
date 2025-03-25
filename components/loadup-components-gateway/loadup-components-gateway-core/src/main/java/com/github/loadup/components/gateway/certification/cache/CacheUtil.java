@@ -98,8 +98,8 @@ public class CacheUtil {
      * 生成安全组件操作要素
      */
     public static CertificationFactor generateCertFactor(String bizKey, CertAlogMap certAlogMap,
-                                                        Map<String, String> certMap,
-                                                        Map<String, CertConfig> certConfigMap) {
+                                                         Map<String, String> certMap,
+                                                         Map<String, CertConfig> certConfigMap) {
 
         CertificationFactor certificationFactor = new CertificationFactor();
 

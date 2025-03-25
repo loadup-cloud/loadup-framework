@@ -60,7 +60,8 @@ public class SpiConfigRepository {
      */
     private String communicationProperties;
 
-    public SpiConfigRepository() {}
+    public SpiConfigRepository() {
+    }
 
     /**
      * Constructor.

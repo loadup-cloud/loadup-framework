@@ -86,7 +86,7 @@ public class CertUtil {
      * build cert code
      */
     public static String buildCertCode(String securityStrategyCode, String operateType,
-                                    String algorithm, String clientId) {
+                                       String algorithm, String clientId) {
         return CacheUtil.generateKey(securityStrategyCode, operateType, algorithm, clientId);
     }
 }

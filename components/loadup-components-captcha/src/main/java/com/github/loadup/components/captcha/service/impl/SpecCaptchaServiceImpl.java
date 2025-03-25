@@ -54,10 +54,10 @@ public class SpecCaptchaServiceImpl extends CommonInnerService implements Captch
                 // 文字的纵坐标
                 int fY = captchaProperties.getHeight()
                         - ((captchaProperties.getHeight()
-                                        - (int) fontMetrics
-                                                .getStringBounds(String.valueOf(strs[i]), g2d)
-                                                .getHeight())
-                                >> 1);
+                        - (int) fontMetrics
+                        .getStringBounds(String.valueOf(strs[i]), g2d)
+                        .getHeight())
+                        >> 1);
                 g2d.drawString(String.valueOf(strs[i]), i * fW + fSp + 3, fY - 3);
             }
             g2d.dispose();

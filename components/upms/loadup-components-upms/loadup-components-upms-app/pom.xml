@@ -45,6 +45,10 @@
             <version>1.0.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.loadup.components</groupId>
+            <artifactId>loadup-components-upms-client</artifactId>
+        </dependency>
 
 
         <!--        <dependency>-->

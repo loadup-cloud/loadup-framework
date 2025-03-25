@@ -29,4 +29,5 @@ package com.github.loadup.components.retrytask.util;
 /**
  * 上下文工具类
  */
-public class ContextUtil {}
+public class ContextUtil {
+}

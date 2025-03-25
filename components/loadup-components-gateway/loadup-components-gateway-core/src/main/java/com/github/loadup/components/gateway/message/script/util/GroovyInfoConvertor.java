@@ -94,7 +94,7 @@ public class GroovyInfoConvertor {
         // PARSE_TEMPLATE_NAME_PREFIX 前缀为网关自带的解析模板工厂，不需要额外注册groovyBean
         if (StringUtils.isNotBlank(apiConditionGroup.getInterfaceRequestParser())
                 && !StringUtils.startsWith(
-                        apiConditionGroup.getInterfaceRequestParser(), Constant.PARSE_TEMPLATE_NAME_PREFIX)) {
+                apiConditionGroup.getInterfaceRequestParser(), Constant.PARSE_TEMPLATE_NAME_PREFIX)) {
             GroovyInfo info = convertGroovyInfo(requestParserBeanName, apiConditionGroup.getInterfaceRequestParser());
             updateList.add(info);
         } else {
@@ -108,7 +108,7 @@ public class GroovyInfoConvertor {
                 InterfaceType.OPENAPI.getCode());
         if (StringUtils.isNotBlank(apiConditionGroup.getIntegrationResponseParser())
                 && !StringUtils.startsWith(
-                        apiConditionGroup.getInterfaceRequestParser(), Constant.PARSE_TEMPLATE_NAME_PREFIX)) {
+                apiConditionGroup.getInterfaceRequestParser(), Constant.PARSE_TEMPLATE_NAME_PREFIX)) {
             GroovyInfo info =
                     convertGroovyInfo(responseParserBeanName, apiConditionGroup.getIntegrationResponseParser());
             updateList.add(info);
@@ -138,7 +138,7 @@ public class GroovyInfoConvertor {
         // PARSE_TEMPLATE_NAME_PREFIX 前缀为网关自带的解析模板工厂，不需要额外注册groovyBean
         if (StringUtils.isNotBlank(spiConditionGroup.getIntegrationResponseParser())
                 && !StringUtils.startsWith(
-                        spiConditionGroup.getInterfaceRequestParser(), Constant.PARSE_TEMPLATE_NAME_PREFIX)) {
+                spiConditionGroup.getInterfaceRequestParser(), Constant.PARSE_TEMPLATE_NAME_PREFIX)) {
             GroovyInfo info =
                     convertGroovyInfo(responseParserBeanName, spiConditionGroup.getIntegrationResponseParser());
             updateList.add(info);

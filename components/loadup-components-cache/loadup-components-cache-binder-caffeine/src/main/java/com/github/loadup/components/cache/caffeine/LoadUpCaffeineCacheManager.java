@@ -12,10 +12,10 @@ package com.github.loadup.components.cache.caffeine;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,15 +26,11 @@ package com.github.loadup.components.cache.caffeine;
  * #L%
  */
 
-import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.Cache;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.util.StringUtils;
 
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-
-public class LoadUpCaffeineCacheManager  extends CaffeineCacheManager {
+public class LoadUpCaffeineCacheManager extends CaffeineCacheManager {
 
     @Override
     protected Cache createCaffeineCache(String name) {

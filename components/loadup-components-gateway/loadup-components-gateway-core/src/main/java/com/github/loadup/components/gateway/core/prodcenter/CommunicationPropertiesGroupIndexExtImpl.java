@@ -41,7 +41,7 @@ import java.util.List;
 public class CommunicationPropertiesGroupIndexExtImpl {
 
     public List<List<String>> customIndexKeys(String tntInstId, String configName,
-                                            CommunicationPropertiesGroup communicationPropertiesGroup) {
+                                              CommunicationPropertiesGroup communicationPropertiesGroup) {
 
         List<String> indexList = new ArrayList<>();
         indexList.add(Constant.URL_INDEX_COLUMN);

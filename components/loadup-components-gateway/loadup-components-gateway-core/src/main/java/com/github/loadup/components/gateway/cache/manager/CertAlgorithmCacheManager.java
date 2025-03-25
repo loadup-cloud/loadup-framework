@@ -57,7 +57,7 @@ public class CertAlgorithmCacheManager {
      * certCode = security_strategy_code-security_strategy_operate_type-security_strategy_type-client_id
      */
     private String buildCertCode(String security_strategy_code, String security_strategy_operate_type,
-                                String security_strategy_type, String client_id) {
+                                 String security_strategy_type, String client_id) {
         return CacheUtil.generateKey(security_strategy_code, security_strategy_operate_type, security_strategy_type, client_id);
     }
 
@@ -65,8 +65,8 @@ public class CertAlgorithmCacheManager {
      * get Cert Content String
      */
     public String getCertContentString(String security_strategy_code,
-                                    String security_strategy_operate_type,
-                                    String security_strategy_algorithm, String clientId) {
+                                       String security_strategy_operate_type,
+                                       String security_strategy_algorithm, String clientId) {
         String key = CacheUtil.generateKey(security_strategy_code, security_strategy_operate_type, security_strategy_algorithm, clientId);
         //TODO need to fetch cert content if this is only a key
         //CertConfig certConfig = certConfigCache.get(key);
@@ -78,9 +78,9 @@ public class CertAlgorithmCacheManager {
      * get CertConfig by certCode
      */
     public CertConfig getCertConfigByCode(String security_strategy_code,
-                                        String security_strategy_operate_type,
-                                        String security_strategy_type,
-                                        String client_id) {
+                                          String security_strategy_operate_type,
+                                          String security_strategy_type,
+                                          String client_id) {
         String certCode = buildCertCode(security_strategy_code, security_strategy_operate_type, security_strategy_type, client_id);
         CertConfig certConfig = certConfigCache.getWithCertCode(certCode);
         return certConfig;

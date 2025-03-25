@@ -55,7 +55,8 @@ public abstract class Captcha {
         return cs;
     }
 
-    protected void saveCache(String key, String value) {}
+    protected void saveCache(String key, String value) {
+    }
 
     /**
      * 生成随机验证码

@@ -134,7 +134,7 @@ public class SelfDefAlgoManager extends AbstractAlgoManager {
      */
     @Override
     public boolean verify(String srcContent, String signedContent,
-                        CertificationFactor certificationFactor) {
+                          CertificationFactor certificationFactor) {
         return getService(certificationFactor.getAlgoString()).verify(srcContent, signedContent,
                 certificationFactor);
     }

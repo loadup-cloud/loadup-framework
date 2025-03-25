@@ -84,7 +84,7 @@ public class InterfaceConfigCache {
      * get with interface Id
      */
     public static InterfaceConfig getWithInterfaceId(String interfaceId, RoleType roleType,
-                                                    String interfaceTypeStr) {
+                                                     String interfaceTypeStr) {
         RepositoryType repositoryType = RepositoryUtil.getRepositoryType();
         if (repositoryType.isConfigInInternalCache()) {
             return interfaceConfigMap.get(interfaceId);

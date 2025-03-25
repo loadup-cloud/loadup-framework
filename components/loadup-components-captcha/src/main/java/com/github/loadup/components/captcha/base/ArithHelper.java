@@ -11,7 +11,8 @@ class ArithHelper {
     private static final int DEF_DIV_SCALE = 16;
 
     // 这个类不能实例化
-    private ArithHelper() {}
+    private ArithHelper() {
+    }
 
     /**
      * 提供精确的加法运算。

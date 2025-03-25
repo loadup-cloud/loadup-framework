@@ -35,103 +35,103 @@ public enum CacheName {
     /**
      * 接口定义缓存
      */
-    INTERFACE("接口定义缓存", new TableName[] {TableName.LGW_INTERFACE}),
+    INTERFACE("接口定义缓存", new TableName[]{TableName.LGW_INTERFACE}),
 
     /**
      * 应用缓存
      */
-    APP("应用缓存", new TableName[] {TableName.LGW_APP}),
+    APP("应用缓存", new TableName[]{TableName.LGW_APP}),
 
     /**
      * 机构缓存
      */
-    INST("机构缓存", new TableName[] {TableName.LGW_INST}),
+    INST("机构缓存", new TableName[]{TableName.LGW_INST}),
 
     /**
      * 报文处理缓存
      */
-    MESSAGE_PROCESS("报文处理缓存", new TableName[] {TableName.LGW_MESSAGE_PROCESS}),
+    MESSAGE_PROCESS("报文处理缓存", new TableName[]{TableName.LGW_MESSAGE_PROCESS}),
 
     /**
      * Message Receiver
      */
-    MESSAGE_RECEIVER("报文接受者", new TableName[] {}),
+    MESSAGE_RECEIVER("报文接受者", new TableName[]{}),
 
     /**
      * Message Sender
      */
-    MESSAGE_SENDER("报文发送方", new TableName[] {}),
+    MESSAGE_SENDER("报文发送方", new TableName[]{}),
 
     /**
      * 接口关系缓存
      */
-    APP_INTERFACE("接口关系缓存", new TableName[] {TableName.LGW_APP_INTERFACE_MAP}),
+    APP_INTERFACE("接口关系缓存", new TableName[]{TableName.LGW_APP_INTERFACE_MAP}),
 
     /**
      * 通信缓存
      */
-    COMMUNICATION("通信缓存", new TableName[] {TableName.LGW_COMMUNICATION}),
+    COMMUNICATION("通信缓存", new TableName[]{TableName.LGW_COMMUNICATION}),
 
     /**
      * 前置分流缓存
      */
-    ROUTE("前置分流缓存", new TableName[] {TableName.LGW_ROUTE_RULE, TableName.LGW_ROUTE_CONFIG}),
+    ROUTE("前置分流缓存", new TableName[]{TableName.LGW_ROUTE_RULE, TableName.LGW_ROUTE_CONFIG}),
 
     /**
      * 限流配置缓存
      */
-    LIMIT_RULE("限流配置缓存", new TableName[] {TableName.LGW_LIMIT_RULE_CONFIG}),
+    LIMIT_RULE("限流配置缓存", new TableName[]{TableName.LGW_LIMIT_RULE_CONFIG}),
 
     /**
      * 证书配置缓存
      */
-    CERT("证书配置缓存", new TableName[] {TableName.LGW_CERT_ALGO_MAP, TableName.LGW_CERT_CONFIG}),
+    CERT("证书配置缓存", new TableName[]{TableName.LGW_CERT_ALGO_MAP, TableName.LGW_CERT_CONFIG}),
 
     /**
      * 证书详细信息
      */
-    CERT_CONFIG("证书详细信息", new TableName[] {}),
+    CERT_CONFIG("证书详细信息", new TableName[]{}),
 
     /**
      * 证书算法相关信息
      */
-    CERT_ALGO_CONFIG("证书算法信息", new TableName[] {}),
+    CERT_ALGO_CONFIG("证书算法信息", new TableName[]{}),
 
     /**
      * 传输配置
      */
-    FILE_MOVING_CONFIG("传输配置", new TableName[] {TableName.LGW_FILE_MOVING_CONFIG}),
+    FILE_MOVING_CONFIG("传输配置", new TableName[]{TableName.LGW_FILE_MOVING_CONFIG}),
 
     /**
      * 资源配置
      */
-    FILE_RESOURCE_CONFIG("资源配置", new TableName[] {TableName.LGW_FILE_RESOURCE_CONFIG}),
+    FILE_RESOURCE_CONFIG("资源配置", new TableName[]{TableName.LGW_FILE_RESOURCE_CONFIG}),
 
     /**
      * GROOVY脚本配置
      */
-    FILE_GROOVY("GROOVY脚本配置", new TableName[] {TableName.LGW_FILE_GROOVY}),
+    FILE_GROOVY("GROOVY脚本配置", new TableName[]{TableName.LGW_FILE_GROOVY}),
 
     /**
      * 敏感字段配置
      */
-    SHIELD_CONFIG("敏感字段配置", new TableName[] {TableName.LGW_SHIELD_CONF}),
+    SHIELD_CONFIG("敏感字段配置", new TableName[]{TableName.LGW_SHIELD_CONF}),
 
     /**
      * api转发规则配置表
      */
-    DISPATCH_RULE_CONFIG("api转发规则配置表", new TableName[] {TableName.LGW_DISPATCH_RULE_CONFIG}),
+    DISPATCH_RULE_CONFIG("api转发规则配置表", new TableName[]{TableName.LGW_DISPATCH_RULE_CONFIG}),
 
     /**
      * dynamic script bean config
      */
     DYNAMIC_SCRIPT_BEAN_CONFIG(
-            "dynamic script bean config", new TableName[] {TableName.LGW_DYNAMIC_SCRIPT_BEAN_CONFIG}),
+            "dynamic script bean config", new TableName[]{TableName.LGW_DYNAMIC_SCRIPT_BEAN_CONFIG}),
 
     /**
      * 适配没有缓存域的表
      **/
-    NULL("空的缓存域", new TableName[] {});
+    NULL("空的缓存域", new TableName[]{});
 
     /**
      * 描述

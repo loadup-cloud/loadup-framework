@@ -82,7 +82,7 @@ public class Convertor {
      * 对于验签操作入参转换
      */
     public static Map<String, byte[]> converInput(String unsignedContent, String signedContent,
-                                                CertificationFactor certificationFactor) {
+                                                  CertificationFactor certificationFactor) {
         String unSignedDataEncode = (null == certificationFactor.getAlgoParameter()) ? null
                 : certificationFactor.getAlgoParameter().get(CommonParameter.UNSIGNED_DATA_ENCODE);
         String unSignedFormat = (null == certificationFactor.getAlgoParameter()) ? null

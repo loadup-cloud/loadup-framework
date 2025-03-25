@@ -353,7 +353,7 @@ public class RandomUtil {
      * @since 4.0.8
      */
     public static double randomDouble(final double minInclude, final double maxExclude, final int scale,
-                                    final RoundingMode roundingMode) {
+                                      final RoundingMode roundingMode) {
         return NumberUtil.round(randomDouble(minInclude, maxExclude), scale, roundingMode).doubleValue();
     }
 

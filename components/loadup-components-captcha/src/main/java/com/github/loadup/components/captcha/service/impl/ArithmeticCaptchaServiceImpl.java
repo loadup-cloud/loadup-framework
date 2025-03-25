@@ -87,10 +87,10 @@ public class ArithmeticCaptchaServiceImpl extends CommonInnerService implements 
                 g2d.setColor(randomColor());
                 int fY = height
                         - ((height
-                                        - (int) fontMetrics
-                                                .getStringBounds(String.valueOf(strs[i]), g2d)
-                                                .getHeight())
-                                >> 1); // 文字的纵坐标
+                        - (int) fontMetrics
+                        .getStringBounds(String.valueOf(strs[i]), g2d)
+                        .getHeight())
+                        >> 1); // 文字的纵坐标
                 g2d.drawString(String.valueOf(strs[i]), i * fW + fSp + 3, fY - 3);
             }
             g2d.dispose();

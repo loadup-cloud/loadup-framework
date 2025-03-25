@@ -61,8 +61,8 @@ public class HttpToolUtil {
      * Return the http response information
      */
     public static void returnResponse(HttpServletResponse httpResponse,
-                                    MessageEnvelope messageResponse,
-                                    CommunicationConfig requesterCommunicationConfig) {
+                                      MessageEnvelope messageResponse,
+                                      CommunicationConfig requesterCommunicationConfig) {
         Map<String, String> resMap = messageResponse.getHeaders();
         String resResult = String.valueOf(messageResponse.getContent());
         try {

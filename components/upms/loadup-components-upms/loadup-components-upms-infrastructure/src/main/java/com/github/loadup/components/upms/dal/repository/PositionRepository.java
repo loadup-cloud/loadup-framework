@@ -31,4 +31,5 @@ import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PositionRepository extends ListCrudRepository<PositionDO, String> {}
+public interface PositionRepository extends ListCrudRepository<PositionDO, String> {
+}

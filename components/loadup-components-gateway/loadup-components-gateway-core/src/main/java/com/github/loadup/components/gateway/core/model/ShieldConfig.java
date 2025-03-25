@@ -66,7 +66,7 @@ public class ShieldConfig {
     private static InterfaceProdCenterQueryService interfaceProdCenterQueryService;
 
     public static Map<String, ShieldType> getShieldRules(String interfaceId,
-                                                        InterfaceType interfaceType) {
+                                                         InterfaceType interfaceType) {
         Map<String, ShieldType> result = new HashMap<>();
         Map<String, ShieldType> defaultMap = shieldConfig.get(KEY_DEFAULT);
         if (MapUtils.isNotEmpty(defaultMap)) {
@@ -92,7 +92,7 @@ public class ShieldConfig {
      *
      */
     private static Map<String, ShieldType> getProdShieldRules(String interfaceId,
-                                                            InterfaceType type) {
+                                                              InterfaceType type) {
         Map<String, ShieldType> rules = new HashMap<>();
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
             //                && StringUtils.isNotBlank(TenantUtil.getTenantId())) {

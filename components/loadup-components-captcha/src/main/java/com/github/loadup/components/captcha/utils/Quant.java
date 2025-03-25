@@ -34,12 +34,12 @@ public class Quant {
 
     protected static final int intbiasshift = 16;
     protected static final int intbias = (((int) 1) << intbiasshift);
-    protected static final int gammashift = 10;
-    protected static final int gamma = (((int) 1) << gammashift);
-    protected static final int betashift = 10;
     protected static final int beta = (intbias >> betashift);
     protected static final int betagamma =
             (intbias << (gammashift - betashift));
+    protected static final int gammashift = 10;
+    protected static final int gamma = (((int) 1) << gammashift);
+    protected static final int betashift = 10;
     protected static final int initrad = (netsize >> 3);
     protected static final int radiusbiasshift = 6;
     protected static final int radiusbias = (((int) 1) << radiusbiasshift);
@@ -54,8 +54,8 @@ public class Quant {
     protected static final int alpharadbias = (((int) 1) << alpharadbshift);
     protected int alphadec;
 
-	/* Types and Global Variables
-	-------------------------- */
+    /* Types and Global Variables
+    -------------------------- */
     protected byte[] thepicture;
     protected int lengthcount;
 

@@ -34,4 +34,5 @@ import java.util.List;
 /**
  * Repository of retry task
  */
-public interface RetryTaskRepository extends CrudRepository<RetryTask, Long>, RetryTaskRepositoryExt {}
+public interface RetryTaskRepository extends CrudRepository<RetryTask, Long>, RetryTaskRepositoryExt {
+}

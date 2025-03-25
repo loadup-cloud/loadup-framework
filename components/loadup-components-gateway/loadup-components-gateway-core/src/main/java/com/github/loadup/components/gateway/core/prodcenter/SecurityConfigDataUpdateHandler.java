@@ -50,7 +50,7 @@ public class SecurityConfigDataUpdateHandler {
      *
      */
     protected void process(String tntInstId, String configName,
-                        SecurityConditionGroup securityConditionGroup) {
+                           SecurityConditionGroup securityConditionGroup) {
         LogUtil.info(logger, "update security config for securityConditionGroup:",
                 securityConditionGroup);
         CertConfig certConfig = CertConfigConvertor.convertToCertConfig(securityConditionGroup,

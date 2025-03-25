@@ -64,7 +64,8 @@ public class ApiConfigRepository {
      */
     private String communicationProperties;
 
-    public ApiConfigRepository() {}
+    public ApiConfigRepository() {
+    }
 
     /**
      * Constructor.

@@ -219,7 +219,7 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
             }
         }
 
-        return new List[] {addedList, updatedList, deleteddList};
+        return new List[]{addedList, updatedList, deleteddList};
     }
 
     /**
@@ -227,7 +227,7 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
      */
     @Override
     public CacheName[] getCacheDomains() {
-        return new CacheName[] {CacheName.INTERFACE, CacheName.MESSAGE_PROCESS, CacheName.DYNAMIC_SCRIPT_BEAN_CONFIG};
+        return new CacheName[]{CacheName.INTERFACE, CacheName.MESSAGE_PROCESS, CacheName.DYNAMIC_SCRIPT_BEAN_CONFIG};
     }
 
     /**
