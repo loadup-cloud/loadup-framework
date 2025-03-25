@@ -19,4 +19,12 @@ public class DurationUtils  extends org.apache.commons.lang3.time.DurationUtils 
         }
         return Duration.parse(duration.toUpperCase());
     }
+
+    public static long parseSeconds(String duration) {
+        if (!StringUtils.startsWithIgnoreCase(duration, "PT")) {
+            duration = "PT" + duration;
+        }
+        Duration parse = Duration.parse(duration.toUpperCase());
+        return parse.getSeconds();
+    }
 }

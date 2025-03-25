@@ -1,4 +1,4 @@
-package com.github.loadup.components.cache.impl;
+package com.github.loadup.components.cache.redis.impl;
 
 /*-
  * #%L

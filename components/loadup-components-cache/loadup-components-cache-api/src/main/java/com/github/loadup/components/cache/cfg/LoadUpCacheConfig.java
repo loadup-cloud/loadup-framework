@@ -31,10 +31,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CacheDetailConfig {
+public class LoadUpCacheConfig {
 
-    private String name;
-    private String expireAfterWrite = "60S";
-    private int initialCapacity = 1000;
-    private int maximumSize = 1000;
+    private long maximumSize;
+    private String expireAfterWrite;
 }

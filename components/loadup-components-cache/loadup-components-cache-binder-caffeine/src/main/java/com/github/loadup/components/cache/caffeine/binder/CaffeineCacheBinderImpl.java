@@ -27,7 +27,6 @@ package com.github.loadup.components.cache.caffeine.binder;
  */
 
 import com.github.loadup.components.cache.api.CacheBinder;
-import com.github.loadup.components.cache.constans.CacheConstants;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
@@ -49,7 +48,7 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
 
     @Override
     public boolean set(String cacheName,String key, Object value ) {
-        Cache cache = caffeineCacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
+        Cache cache = caffeineCacheManager.getCache(cacheName);
         Assert.notNull(cache, "cache is null");
         cache.putIfAbsent(key, value);
         return true;
@@ -57,7 +56,7 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
 
     @Override
     public Object get(String cacheName,String key) {
-        Cache cache = caffeineCacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
+        Cache cache = caffeineCacheManager.getCache(cacheName);
         Assert.notNull(cache, "cache is null");
         Cache.ValueWrapper valueWrapper = cache.get(key);
         if (Objects.isNull(valueWrapper)) {
@@ -68,7 +67,7 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
 
     @Override
     public <T> T get(String cacheName,String key, Class<T> clazz) {
-        Cache cache = caffeineCacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
+        Cache cache = caffeineCacheManager.getCache(cacheName);
         Assert.notNull(cache, "cache is null");
         T value = cache.get(key, clazz);
         if (Objects.isNull(value)) {
@@ -79,7 +78,7 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
 
     @Override
     public boolean delete(String cacheName,String key) {
-        Cache cache = caffeineCacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
+        Cache cache = caffeineCacheManager.getCache(cacheName);
         Assert.notNull(cache, "cache is null");
         cache.evict(key);
         return true;
@@ -87,7 +86,7 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
 
     @Override
     public boolean deleteAll(String cacheName) {
-        Cache cache = caffeineCacheManager.getCache(CacheConstants.DEFAULT_CACHE_NAME);
+        Cache cache = caffeineCacheManager.getCache(cacheName);
         Assert.notNull(cache, "cache is null");
         cache.clear();
         return true;

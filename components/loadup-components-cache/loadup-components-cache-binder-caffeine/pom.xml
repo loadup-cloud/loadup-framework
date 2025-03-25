@@ -34,7 +34,11 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.loadup.framework</groupId>
+            <artifactId>loadup-commons-util</artifactId>
+            <version>${loadup.framework.version}</version>
         </dependency>
 
 

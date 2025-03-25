@@ -1,4 +1,4 @@
-package com.github.loadup.components.cache;
+package com.github.loadup.components.cache.redis;
 
 /*-
  * #%L
@@ -30,8 +30,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.commons.util.date.DurationUtils;
 import com.github.loadup.components.cache.api.CacheBinder;
-import com.github.loadup.components.cache.cfg.LoadUpRedisCacheProperties;
-import com.github.loadup.components.cache.impl.RedisCacheBinderImpl;
+import com.github.loadup.components.cache.redis.cfg.LoadUpRedisCacheProperties;
+import com.github.loadup.components.cache.redis.impl.RedisCacheBinderImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

@@ -1,4 +1,4 @@
-package com.github.loadup.components.cache;
+package com.github.loadup.components.cache.redis;
 
 import org.springframework.data.redis.cache.RedisCache;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -32,7 +32,7 @@ public class LoadUpRedisCacheManager extends RedisCacheManager {
         if (cacheConfig == null) {
             cacheConfig = defaultConfig;
         }
-        
+
         String[] array = StringUtils.delimitedListToStringArray(name, "#");
         name = array[0];
         // 解析TTL

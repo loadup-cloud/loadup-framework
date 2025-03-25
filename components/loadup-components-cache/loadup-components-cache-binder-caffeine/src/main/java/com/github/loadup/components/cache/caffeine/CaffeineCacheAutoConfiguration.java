@@ -27,10 +27,13 @@ package com.github.loadup.components.cache.caffeine;
  */
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.loadup.commons.util.date.DurationUtils;
 import com.github.loadup.components.cache.api.CacheBinder;
 import com.github.loadup.components.cache.caffeine.binder.CaffeineCacheBinderImpl;
 import com.github.loadup.components.cache.caffeine.cfg.LoadUpCaffeineCacheProperties;
+import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
@@ -44,6 +47,9 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 @EnableCaching
 @EnableConfigurationProperties(CacheProperties.class)
 @ConditionalOnClass({Caffeine.class, CaffeineCacheManager.class})
@@ -51,7 +57,7 @@ import org.springframework.context.annotation.Primary;
 @ConditionalOnMissingBean(CacheBinder.class)
 public class CaffeineCacheAutoConfiguration {
     @Resource
-    private LoadUpCaffeineCacheProperties properties;
+    private LoadUpCaffeineCacheProperties caffeineCacheProperties;
 
     /**
      * default cache
@@ -60,13 +66,28 @@ public class CaffeineCacheAutoConfiguration {
     @Bean(name = "caffeineCacheManager")
     public CacheManager defaultCacheManager() {
         CaffeineCacheManager defaultCacheManager = new CaffeineCacheManager();
-        defaultCacheManager.setAllowNullValues(properties.getAllowNullValue());
+        defaultCacheManager.setAllowNullValues(caffeineCacheProperties.getAllowNullValue());
+        // 设置默认的缓存配置
+        defaultCacheManager.setCaffeine(Caffeine.newBuilder()
+                .expireAfterWrite(7, TimeUnit.DAYS) // 默认过期时间
+                .maximumSize(100)); // 默认最大缓存大小
 
-        Caffeine<Object, Object> caffeineBuilder = Caffeine.newBuilder()
-                .initialCapacity(properties.getInitCacheCapacity())
-                .maximumSize(properties.getMaxCacheCapacity());
-        defaultCacheManager.setCaffeine(caffeineBuilder);
         return defaultCacheManager;
+    }
+
+    private Caffeine fetchCaffeine(String cacheName) {
+        Map<String, LoadUpCacheConfig> cacheConfig = caffeineCacheProperties.getCacheConfig();
+        Caffeine<Object, Object> caffeine = null;
+        for (Map.Entry<String, LoadUpCacheConfig> entry : cacheConfig.entrySet()) {
+            String key = entry.getKey();
+            LoadUpCacheConfig config = entry.getValue();
+            if (StringUtils.equals(key, cacheName)) {
+                caffeine = Caffeine.newBuilder()
+                        .expireAfterWrite(DurationUtils.parse(config.getExpireAfterWrite())) // 设置缓存过期时间
+                        .maximumSize(config.getMaximumSize());
+            }
+        }
+        return caffeine;
     }
 
     @Bean(name = "caffeineCacheBinder")

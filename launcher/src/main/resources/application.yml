@@ -13,7 +13,9 @@ spring:
       - UserCache
       - DefaultCache
     caffeine:
-      spec: UserCache=maximumSize=1000,expireAfterWrite=10s,DefaultCache=maximumSize=1000,expireAfterWrite=100s
+      spec:
+        UserCache: maximumSize=1000,expireAfterWrite=10s
+        DefaultCache: maximumSize=1000,expireAfterWrite=100s
       cache-config:
         UserCache:
           maximum-size: 1000

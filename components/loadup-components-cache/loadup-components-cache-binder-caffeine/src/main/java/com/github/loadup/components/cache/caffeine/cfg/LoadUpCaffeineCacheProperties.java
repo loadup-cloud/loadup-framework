@@ -26,6 +26,7 @@ package com.github.loadup.components.cache.caffeine.cfg;
  * #L%
  */
 
+import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -56,6 +57,6 @@ public class LoadUpCaffeineCacheProperties {
      * spring.cache.caffeine.allow-null-value
      */
     private Boolean allowNullValue = Boolean.FALSE;
-    private Map<String, String> cacheConfig = new HashMap<>();
+    private Map<String, LoadUpCacheConfig> cacheConfig = new HashMap<>();
 
 }
