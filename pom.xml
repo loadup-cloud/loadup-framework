@@ -26,8 +26,7 @@
         <!--        <module>components/cache/loadup-components-cache-test</module>-->
         <!--            <module>components/cache/loadup-components-cache-binder-redis</module>-->
         <module>components/upms/loadup-components-upms</module>
-        <module>starter/loadup-framework-liquibase-starter</module>
-        <module>starter/loadup-framework-data-jdbc-starter</module>
+        <module>components/loadup-components-liquibase</module>
         <module>components/loadup-components-tracer</module>
         <module>components/loadup-components-database</module>
         <module>components/loadup-components-gateway</module>
@@ -46,14 +45,41 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-database</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-liquibase</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>com.github.loadup.framework</groupId>
-                <artifactId>loadup-framework-data-jdbc-starter</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <artifactId>loadup-commons-dto</artifactId>
+                <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.loadup.framework</groupId>
-                <artifactId>loadup-framework-liquibase-starter</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <artifactId>loadup-commons-lang</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.loadup.framework</groupId>
+                <artifactId>loadup-commons-util</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-gateway</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-upms</artifactId>
+                <version>${loadup.framework.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

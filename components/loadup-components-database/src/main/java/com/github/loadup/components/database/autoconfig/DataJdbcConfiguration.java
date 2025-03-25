@@ -1,4 +1,4 @@
-package com.github.loadup.framework.data.jdbc.starter;
+package com.github.loadup.components.database.autoconfig;
 
 /*-
  * #%L

@@ -22,7 +22,6 @@
         <dependency>
             <groupId>com.github.loadup.components</groupId>
             <artifactId>loadup-components-upms-infrastructure</artifactId>
-            <version>${loadup.framework.version}</version>
         </dependency>
 
 
