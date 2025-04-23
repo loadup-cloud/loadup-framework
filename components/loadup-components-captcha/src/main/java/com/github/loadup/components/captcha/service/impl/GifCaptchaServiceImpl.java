@@ -68,7 +68,7 @@ public class GifCaptchaServiceImpl extends CommonInnerService implements Captcha
         } finally {
             try {
                 os.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

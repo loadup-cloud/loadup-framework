@@ -1,0 +1,4 @@
+class,property,flag,exp,exp,exp,4
+BizChargeInfo,preChargeNo,Y,testChargeNo,testChargeNo,testChargeNo,testChargeNo
+,amount,Y,testres/normal/Pay/PayRequest/MultiCurrencyMoney.csv@4,testres/normal/Pay/PayRequest/MultiCurrencyMoney.csv@3,,testres/normal/Pay/PayRequest/MultiCurrencyMoney.csv@4
+,chargeDetailInfos,Y,testres/normal/Pay/PayRequest/ChargeDetailInfo.csv@1;1;1,,,testres/normal/Pay/PayRequest/ChargeDetailInfo.csv@2

@@ -1,0 +1,51 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: loadup-boot
+  datasource:
+    url: jdbc:mysql://localhost:3306/loadup-boot?useUnicode=true&characterEncoding=utf8
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  cache:
+    type: caffeine
+    cache-names:
+      - UserCache
+      - DefaultCache
+    caffeine:
+      spec:
+        UserCache: maximumSize=1000,expireAfterWrite=10s
+        DefaultCache: maximumSize=1000,expireAfterWrite=100s
+      cache-config:
+        UserCache:
+          maximum-size: 1000
+          expire-after-write: 100s
+        DefaultCache:
+          maximum-size: 1000
+          expire-after-write: 1000s
+    redis:
+      time-to-live: 1000s
+      cache-config:
+        UserCache:
+          maximum-size: 1000
+          expire-after-write: 100s
+        DefaultCache:
+          maximum-size: 1000
+          expire-after-write: 1000s
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+
+logging:
+  level:
+    org:
+      springframework:
+        jdbc: DEBUG
+
+loadup:
+  cache:
+    type: redis
+

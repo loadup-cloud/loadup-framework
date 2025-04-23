@@ -57,7 +57,7 @@ public class IpAutoConfiguration {
         // 2、使用上述的 cBuff 创建一个完全基于内存的查询对象。
         try {
             searcher = Searcher.newWithBuffer(cBuff);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("failed to create content cached searcher: %s\n", e);
         }
         return searcher;

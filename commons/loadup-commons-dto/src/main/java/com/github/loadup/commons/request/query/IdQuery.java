@@ -41,9 +41,9 @@ public class IdQuery extends DTO {
 
     private String id;
 
-    public static IdQuery of(@NotBlank String userId) {
+    public static IdQuery of(@NotBlank String id) {
         IdQuery idQuery = new IdQuery();
-        idQuery.setId(userId);
+        idQuery.setId(id);
         return idQuery;
     }
 }

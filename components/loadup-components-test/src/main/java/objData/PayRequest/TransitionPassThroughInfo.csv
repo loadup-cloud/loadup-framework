@@ -1,0 +1,3 @@
+class,property,flag,exp
+TransitionPassThroughInfo,creditPassThroughExt,M,creditPassThroughExt:1
+,debitPassThroughExt,M,debitPassThroughExt:1

@@ -129,7 +129,7 @@ public class GifEncoder {
             }
             writePixels(); // encode and write pixel data
             firstFrame = false;
-        } catch (IOException e) {
+        } catch (Exception e) {
             ok = false;
         }
 
@@ -142,7 +142,7 @@ public class GifEncoder {
         try {
             out.flush();
             return ok;
-        } catch (IOException e) {
+        } catch (Exception e) {
             ok = false;
         }
 
@@ -170,7 +170,7 @@ public class GifEncoder {
             if (closeStream) {
                 out.close();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             ok = false;
         }
 
@@ -247,7 +247,7 @@ public class GifEncoder {
         out = os;
         try {
             writeString("GIF89a"); // header
-        } catch (IOException e) {
+        } catch (Exception e) {
             ok = false;
         }
         return started = ok;
@@ -262,7 +262,7 @@ public class GifEncoder {
             out = new BufferedOutputStream(new FileOutputStream(file));
             ok = start(out);
             closeStream = true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             ok = false;
         }
         return started = ok;

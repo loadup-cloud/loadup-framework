@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  #%L
+  loadup-components-test
+  %%
+  Copyright (C) 2022 - 2025 loadup_cloud
+  %%
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+  #L%
+  -->
+
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMap namespace="acts">
+
+    <resultMap id="RM-ORG-DB" class="com.alipay.test.acts.dal.dataobject.OrgDbDO">
+        <result property="sourceId" column="source_id" javaType="java.lang.String" jdbcType="VARCHER2" />
+        <result property="system" column="system" javaType="java.lang.String" jdbcType="VARCHER2" />
+        <result property="sourceData" column="source_data" javaType="java.lang.String" jdbcType="VARCHER2" />
+        <result property="sourceRule" column="source_rule" javaType="java.lang.String" jdbcType="VARCHER2"/>
+        <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="TIMESTAMP(6)"/>
+        <result property="gmtModify" column="gmt_modify" javaType="java.util.Date" jdbcType="TIMESTAMP(6)"/>
+        <result property="memo" column="memo" javaType="java.lang.String" jdbcType="VARCHER2" />
+    </resultMap>
+		
+	<select id="RM-ORG-DB-BY-SYSTEM-AND-SOURCE-DATA" resultMap="RM-ORG-DB" >
+			<![CDATA[
+				select source_id,
+						system,
+						source_data,
+						source_rule,
+						memo,
+						gmt_create,
+						gmt_modify
+			  from org_db
+			 where system=#system# and source_data=#sourceData#
+				]]>
+	</select>
+	
+	<select id="RM-ORG-DB-BY-SOURCE-ID" resultMap="RM-ORG-DB" >
+			<![CDATA[
+				select source_id,
+						system,
+						source_data,
+						source_rule,
+						memo,
+						gmt_create,
+						gmt_modify
+			  from org_db
+			 where source_id=#sourceId#
+				]]>
+	</select>
+	
+	<select id="RM-ORG-DB-BY-SYSTEM" resultMap="RM-ORG-DB"  >
+			<![CDATA[
+				select source_id,
+						system,
+						source_data,
+						source_rule,
+						memo,
+						gmt_create,
+						gmt_modify
+			  from org_db
+			 where system=#system#
+				]]>
+	</select>
+	
+</sqlMap>

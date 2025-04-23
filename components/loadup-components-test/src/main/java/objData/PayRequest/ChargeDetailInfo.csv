@@ -1,0 +1,11 @@
+class,property,flag,1,2
+ChargeDetailInfo,ipId,Y,201412051000123456789000120,201412051000123456789000120
+,assetToolName,Y,CURRENT,BALANCE
+,accountNo,Y,,
+,amount,Y,testres/normal/Pay/PayRequest/MultiCurrencyMoney.csv@1,testres/normal/Pay/PayRequest/MultiCurrencyMoney.csv@4
+,memo,Y,活期付费,提现收费
+,fundDetailExt,M,,
+,passThroughExt,M,passThroughExt:1,passThroughExt:1
+,innerInstId,Y,InnerId,InnerId
+,involvedPartyType,Y,1,1
+,ipRoleId,Y,201412051000123456789000120,201412051000123456789000120

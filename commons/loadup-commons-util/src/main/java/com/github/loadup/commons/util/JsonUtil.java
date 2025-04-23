@@ -107,7 +107,7 @@ public class JsonUtil {
         }
         try {
             return obj instanceof String ? (String) obj : objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -123,7 +123,7 @@ public class JsonUtil {
         }
         try {
             return objectMapper.readValue(jsonString, valueType);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -137,7 +137,7 @@ public class JsonUtil {
 
         try {
             return (T) (typeReference.getType().equals(String.class) ? str : objectMapper.readValue(str, typeReference));
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -150,7 +150,7 @@ public class JsonUtil {
 
         try {
             return objectMapper.readValue(str, javaType);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -189,7 +189,7 @@ public class JsonUtil {
         try {
             JsonNode rootNode = objectMapper.readTree(jsonString);
             return rootNode.at(path);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -240,7 +240,7 @@ public class JsonUtil {
     public static JsonNode toJsonNodeTree(String jsonString) {
         try {
             return objectMapper.readTree(jsonString);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -253,7 +253,7 @@ public class JsonUtil {
         try {
             return objectMapper.readValue(jsonString, new TypeReference<>() {
             });
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return new HashMap<>();
         }
@@ -266,7 +266,7 @@ public class JsonUtil {
         try {
             return objectMapper.readValue(jsonString, new TypeReference<>() {
             });
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return new HashMap<>();
         }

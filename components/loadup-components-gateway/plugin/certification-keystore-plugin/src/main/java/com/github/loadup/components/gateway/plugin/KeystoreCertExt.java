@@ -141,7 +141,7 @@ public class KeystoreCertExt implements ApplicationContextAware,
             LogUtil.error(logger, e, "failed featching certification certAliasName=", certAliasName);
         } catch (UnrecoverableKeyException e) {
             LogUtil.error(logger, e, "failed featching key keyAliasName=", certAliasName);
-        } catch (IOException e) {
+        } catch (Exception e) {
             LogUtil.error(logger, e, "failed reading keystore file path=", keystorePath);
         } finally {
             if (null != fis) {

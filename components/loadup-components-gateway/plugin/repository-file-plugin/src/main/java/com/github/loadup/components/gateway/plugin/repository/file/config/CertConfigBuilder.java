@@ -152,7 +152,7 @@ public class CertConfigBuilder extends AbstractCertAlgorithmConfigBuilder<CertCo
                 return extensionExecutor.execute(CertificationAccessExt.class, BizScenario.valueOf(bizScene), ext -> {
                     try {
                         return ext.getCertContent(certContentString, certType);
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         LogUtil.error(logger, e, "get certContent Exception,bizScene=", bizScene);
                     }
                     return null;

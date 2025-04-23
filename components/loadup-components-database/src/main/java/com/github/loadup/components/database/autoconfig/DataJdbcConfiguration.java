@@ -2,7 +2,7 @@ package com.github.loadup.components.database.autoconfig;
 
 /*-
  * #%L
- * loadup-components-upms-infrastructure
+ * loadup-modules-upms-infrastructure
  * %%
  * Copyright (C) 2022 - 2024 loadup_cloud
  * %%

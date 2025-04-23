@@ -65,7 +65,7 @@ public class ChineseGifCaptchaServiceImpl extends CommonInnerService implements 
         } finally {
             try {
                 os.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

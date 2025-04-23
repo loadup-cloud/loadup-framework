@@ -1,0 +1,13 @@
+"columnName","dataType","comment","primaryKey","nullable","flag","value"
+"id","varchar(128)","id","true","false","C","12"
+"created_time","datetime","created_time","false","false","Y","2025-03-05T15:11:50"
+"modified_time","datetime","modified_time","false","false","Y","2025-03-05T15:11:50"
+"nickname","varchar(64)","nickname","false","true","Y","test"
+"english_name","varchar(64)","english_name","false","true","Y","{""firstName"":""firstName"",""lastName"":""lastName""}"
+"official_name","varchar(64)","official_name","false","true","Y","{""firstName"":""firstName"",""lastName"":""lastName""}"
+"password","varchar(255)","password","false","true","Y",""
+"salt","varchar(64)","salt","false","true","Y",""
+"avatar","varchar(1024)","avatar","false","true","Y",""
+"birthday","date","avatar","false","true","Y",
+"registered_time","datetime","registered_time","false","false","Y",
+"user_type","varchar(32)","avatar","false","true","Y",""

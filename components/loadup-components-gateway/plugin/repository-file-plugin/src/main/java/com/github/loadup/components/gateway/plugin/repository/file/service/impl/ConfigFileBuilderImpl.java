@@ -192,7 +192,7 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
                 }
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             LogUtil.error(logger, e, "failed reading file in root path=" + fileRootPath + ", file path=" + directory);
         }
 
@@ -207,7 +207,7 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
         String fileContent = "";
         try {
             fileContent = FileUtils.readFileToString(file);
-        } catch (IOException e) {
+        } catch (Exception e) {
             //log warn
             LogUtil.error(logger, e, "failed reading file=" + file.getName());
         }
@@ -343,7 +343,7 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
             if (null != inputFileStream) {
                 try {
                     inputFileStream.close();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     LogUtil.error(logger, e, e.getMessage());
                 }
             }

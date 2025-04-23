@@ -60,12 +60,12 @@ public class ChineseCaptchaServiceImpl extends CommonInnerService implements Cap
             ImageIO.write(bi, "png", out);
             out.flush();
             return true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
                 out.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

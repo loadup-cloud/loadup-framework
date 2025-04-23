@@ -102,7 +102,7 @@ public class GatewayLiteFileToDBUtil {
                         }
                         templateValue.put(fileName, content.toString());
 
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 });

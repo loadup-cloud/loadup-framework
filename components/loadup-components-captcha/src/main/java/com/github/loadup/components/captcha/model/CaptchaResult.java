@@ -25,7 +25,7 @@ public class CaptchaResult extends DTO {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
         try {
             IOUtils.copy(inputStream, out);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
             IOUtils.closeQuietly(inputStream);

@@ -64,12 +64,12 @@ public class SpecCaptchaServiceImpl extends CommonInnerService implements Captch
             ImageIO.write(bi, "png", out);
             out.flush();
             return true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
                 out.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

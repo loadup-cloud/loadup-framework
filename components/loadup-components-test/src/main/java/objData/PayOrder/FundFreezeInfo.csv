@@ -1,0 +1,6 @@
+class,property,flag,exp1,exp2,exp3
+FundFreezeInfo,freezeCode,Y,100008,100008,100008
+,memo,Y,解冻1元,冻结1元,null
+,freezeStartTime,D,null,today,null
+,freezeEndTime,D,null,today,null
+,freezeNo,N,,,
