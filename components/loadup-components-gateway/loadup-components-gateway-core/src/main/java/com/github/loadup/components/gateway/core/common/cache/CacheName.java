@@ -179,7 +179,7 @@ public enum CacheName {
     }
 
     /**
-     * Getter method for property <tt>tables</tt>.
+     * 
      */
     public TableName[] getTables() {
         return tables;

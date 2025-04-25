@@ -80,28 +80,28 @@ public enum CertContentType {
     }
 
     /**
-     * Getter method for property <tt>certContentType<tt>.
+     * 
      */
     public String getCertContentType() {
         return certContentType;
     }
 
     /**
-     * Setter method for property <tt>certContentType<tt>.
+     * 
      */
     public void setCertContentType(String certContentType) {
         this.certContentType = certContentType;
     }
 
     /**
-     * Getter method for property <tt>desc<tt>.
+     * 
      */
     public String getDesc() {
         return desc;
     }
 
     /**
-     * Setter method for property <tt>desc<tt>.
+     * 
      */
     public void setDesc(String desc) {
         this.desc = desc;

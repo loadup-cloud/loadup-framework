@@ -210,14 +210,14 @@ public class HttpClientServiceImpl implements CommunicationService, Initializing
     }
 
     /**
-     * Setter method for property <tt>httpClientHandler</tt>.
+     * 
      */
     public void setHttpClientHandler(HttpClientHandler httpClientHandler) {
         this.httpClientHandler = httpClientHandler;
     }
 
     /**
-     * Setter method for property <tt>httpClientCache</tt>.
+     * 
      */
     public void setHttpClientCache(HttpClientCache httpClientCache) {
         this.httpClientCache = httpClientCache;
@@ -235,7 +235,7 @@ public class HttpClientServiceImpl implements CommunicationService, Initializing
     }
 
     /**
-     * Setter method for property <tt>instproxyHandler</tt>.
+     * 
      *
 
      */

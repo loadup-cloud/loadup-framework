@@ -43,7 +43,7 @@ public class ApplicationContextAwareUtil implements ApplicationContextAware {
     private static ApplicationContext applicationContext;
 
     /**
-     * Getter method for property <tt>applicationContext</tt>.
+     * 
      */
     public static ApplicationContext getApplicationContext() {
         return applicationContext;

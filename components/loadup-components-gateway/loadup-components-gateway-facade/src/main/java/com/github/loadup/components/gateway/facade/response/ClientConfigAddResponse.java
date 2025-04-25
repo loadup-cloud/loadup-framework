@@ -36,14 +36,14 @@ public class ClientConfigAddResponse extends Response {
     private String clientId;
 
     /**
-     * Getter method for property <tt>clientId</tt>.
+     * 
      */
     public String getClientId() {
         return clientId;
     }
 
     /**
-     * Setter method for property <tt>clientId</tt>.
+     * 
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;

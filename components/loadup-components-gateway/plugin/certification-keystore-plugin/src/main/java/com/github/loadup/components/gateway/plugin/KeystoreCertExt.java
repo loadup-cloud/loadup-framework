@@ -168,7 +168,7 @@ public class KeystoreCertExt implements ApplicationContextAware,
     }
 
     /**
-     * Setter method for property <tt>applicationContext</tt>.
+     *
      */
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
@@ -176,21 +176,21 @@ public class KeystoreCertExt implements ApplicationContextAware,
     }
 
     /**
-     * Setter method for property <tt>encryptAlgorithm</tt>.
+     *
      */
     public void setEncryptAlgorithm(String encryptAlgorithm) {
         this.encryptAlgorithm = encryptAlgorithm;
     }
 
     /**
-     * Setter method for property <tt>keystorePassword</tt>.
+     *
      */
     public void setKeystorePassword(String keystorePassword) {
         this.keystorePassword = keystorePassword;
     }
 
     /**
-     * Setter method for property <tt>keystorePath</tt>.
+     *
      */
     public void setKeystorePath(String keystorePath) {
         this.keystorePath = keystorePath;

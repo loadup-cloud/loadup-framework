@@ -51,7 +51,7 @@ public abstract class AbstractReshfreshableComponent implements Refreshable {
     }
 
     /**
-     * Setter method for property <tt>isInitOk</tt>.
+     * 
      */
     public void setInitOk(boolean isInitOk) {
         this.isInitOk = isInitOk;

@@ -75,28 +75,28 @@ public enum TemplateType {
     }
 
     /**
-     * Getter method for property <tt>code</tt>.
+     * 
      */
     public String getCode() {
         return code;
     }
 
     /**
-     * Setter method for property <tt>code</tt>.
+     * 
      */
     public void setCode(String code) {
         this.code = code;
     }
 
     /**
-     * Getter method for property <tt>desc</tt>.
+     * 
      */
     public String getDesc() {
         return desc;
     }
 
     /**
-     * Setter method for property <tt>desc</tt>.
+     * 
      */
     public void setDesc(String desc) {
         this.desc = desc;

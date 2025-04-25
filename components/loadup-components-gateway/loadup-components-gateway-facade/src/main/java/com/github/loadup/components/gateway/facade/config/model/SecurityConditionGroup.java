@@ -70,84 +70,84 @@ public class SecurityConditionGroup implements Serializable {
     private String securityStrategyKey;
 
     /**
-     * Getter method for property <tt>securityStrategyCode</tt>.
+     * 
      */
     public String getSecurityStrategyCode() {
         return securityStrategyCode;
     }
 
     /**
-     * Setter method for property <tt>securityStrategyCode</tt>.
+     * 
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
     }
 
     /**
-     * Getter method for property <tt>securityStrategyOperateType</tt>.
+     * 
      */
     public String getSecurityStrategyOperateType() {
         return securityStrategyOperateType;
     }
 
     /**
-     * Setter method for property <tt>securityStrategyOperateType</tt>.
+     * 
      */
     public void setSecurityStrategyOperateType(String securityStrategyOperateType) {
         this.securityStrategyOperateType = securityStrategyOperateType;
     }
 
     /**
-     * Getter method for property <tt>securityStrategyAlgorithm</tt>.
+     * 
      */
     public String getSecurityStrategyAlgorithm() {
         return securityStrategyAlgorithm;
     }
 
     /**
-     * Setter method for property <tt>securityStrategyAlgorithm</tt>.
+     * 
      */
     public void setSecurityStrategyAlgorithm(String securityStrategyAlgorithm) {
         this.securityStrategyAlgorithm = securityStrategyAlgorithm;
     }
 
     /**
-     * Getter method for property <tt>securityStrategyKeyType</tt>.
+     * 
      */
     public String getSecurityStrategyKeyType() {
         return securityStrategyKeyType;
     }
 
     /**
-     * Setter method for property <tt>securityStrategyKeyType</tt>.
+     * 
      */
     public void setSecurityStrategyKeyType(String securityStrategyKeyType) {
         this.securityStrategyKeyType = securityStrategyKeyType;
     }
 
     /**
-     * Getter method for property <tt>certType</tt>.
+     * 
      */
     public String getCertType() {
         return certType;
     }
 
     /**
-     * Setter method for property <tt>certType</tt>.
+     * 
      */
     public void setCertType(String certType) {
         this.certType = certType;
     }
 
     /**
-     * Getter method for property <tt>securityStrategyKey</tt>.
+     * 
      */
     public String getSecurityStrategyKey() {
         return securityStrategyKey;
     }
 
     /**
-     * Setter method for property <tt>securityStrategyKey</tt>.
+     * 
      */
     public void setSecurityStrategyKey(String securityStrategyKey) {
         this.securityStrategyKey = securityStrategyKey;

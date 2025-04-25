@@ -130,7 +130,7 @@ public class SensitivityUtil {
     }
 
     /**
-     * Setter method for property <tt>sensitivityDataProcessList</tt>.
+     * 
      */
     @Resource
     public void setSensitivityDataProcessList(List<SensitivityDataProcess> sensitivityDataProcessList) {

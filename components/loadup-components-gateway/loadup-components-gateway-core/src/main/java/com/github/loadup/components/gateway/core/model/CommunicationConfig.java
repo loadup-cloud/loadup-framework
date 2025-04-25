@@ -233,7 +233,7 @@ public class CommunicationConfig {
     }
 
     /**
-     * Setter method for property <tt>recvMessageFormat</tt>.
+     * 
      */
     public void setRecvMessageFormat(MessageFormat recvMessageFormat) {
         this.recvMessageFormat = recvMessageFormat;
@@ -247,77 +247,77 @@ public class CommunicationConfig {
     }
 
     /**
-     * Setter method for property <tt>sendMessageFormat</tt>.
+     * 
      */
     public void setSendMessageFormat(MessageFormat sendMessageFormat) {
         this.sendMessageFormat = sendMessageFormat;
     }
 
     /**
-     * Getter method for property <tt>communicationId</tt>.
+     *
      */
     public String getCommunicationId() {
         return communicationId;
     }
 
     /**
-     * Setter method for property <tt>communicationId</tt>.
+     * 
      */
     public void setCommunicationId(String communicationId) {
         this.communicationId = communicationId;
     }
 
     /**
-     * Getter method for property <tt>uri</tt>.
+     *
      */
     public TransportURI getUri() {
         return uri;
     }
 
     /**
-     * Setter method for property <tt>uri</tt>.
+     * 
      */
     public void setUri(TransportURI uri) {
         this.uri = uri;
     }
 
     /**
-     * Getter method for property <tt>connectTimeout</tt>.
+     *
      */
     public int getConnectTimeout() {
         return connectTimeout;
     }
 
     /**
-     * Setter method for property <tt>connectTimeout</tt>.
+     * 
      */
     public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
     }
 
     /**
-     * Getter method for property <tt>readTimeout</tt>.
+     *
      */
     public int getReadTimeout() {
         return readTimeout;
     }
 
     /**
-     * Setter method for property <tt>readTimeout</tt>.
+     * 
      */
     public void setReadTimeout(int readTimeout) {
         this.readTimeout = readTimeout;
     }
 
     /**
-     * Getter method for property <tt>properties</tt>.
+     *
      */
     public Properties getProperties() {
         return properties;
     }
 
     /**
-     * Setter method for property <tt>properties</tt>.
+     * 
      */
     public void setProperties(String properties) {
         try {
@@ -329,21 +329,21 @@ public class CommunicationConfig {
     }
 
     /**
-     * Getter method for property <tt>errorCodeMap</tt>.
+     *
      */
     public Map<Integer, ResultCode> getErrorCodeMap() {
         return errorCodeMap;
     }
 
     /**
-     * Setter method for property <tt>errorCodeMap</tt>.
+     * 
      */
     public void setErrorCodeMap(Map<Integer, ResultCode> errorCodeMap) {
         this.errorCodeMap = errorCodeMap;
     }
 
     /**
-     * Setter method for property <tt>errorCodeMap</tt>.
+     * 
      */
     public void setErrorCodeMap(String errorCodeMapString) {
         if (StringUtils.isEmpty(errorCodeMapString)) {
@@ -380,7 +380,7 @@ public class CommunicationConfig {
     }
 
     /**
-     * Setter method for property <tt>properties</tt>.
+     * 
      */
     public void setPropertiesByMap(Map<String, String> properties) {
         try {
@@ -392,42 +392,42 @@ public class CommunicationConfig {
     }
 
     /**
-     * Getter method for property <tt>protocol</tt>.
+     *
      */
     public String getProtocol() {
         return protocol;
     }
 
     /**
-     * Setter method for property <tt>protocol</tt>.
+     * 
      */
     public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
 
     /**
-     * Getter method for property <tt>connectionType</tt>.
+     *
      */
     public ConnectionType getConnectionType() {
         return connectionType;
     }
 
     /**
-     * Setter method for property <tt>connectionType</tt>.
+     * 
      */
     public void setConnectionType(ConnectionType connectionType) {
         this.connectionType = connectionType;
     }
 
     /**
-     * Getter method for property <tt>interfaceId</tt>.
+     *
      */
     public String getInterfaceId() {
         return interfaceId;
     }
 
     /**
-     * Setter method for property <tt>interfaceId</tt>.
+     * 
      */
     public void setInterfaceId(String interfaceId) {
         this.interfaceId = interfaceId;
@@ -442,14 +442,14 @@ public class CommunicationConfig {
     }
 
     /**
-     * Getter method for property <tt>appId</tt>.
+     *
      */
     public String getAppId() {
         return appId;
     }
 
     /**
-     * Setter method for property <tt>appId</tt>.
+     * 
      */
     public void setAppId(String appId) {
         this.appId = appId;

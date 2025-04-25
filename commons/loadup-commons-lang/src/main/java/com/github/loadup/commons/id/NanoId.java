@@ -53,7 +53,7 @@ import java.util.Random;
  * <p>
  * 此实现的逻辑基于JavaScript的NanoId实现，见：<a href="https://github.com/ai/nanoid">https://github.com/ai/nanoid</a>
  *
- * @author David Klebanoff
+ * 
  */
 public class NanoId {
 

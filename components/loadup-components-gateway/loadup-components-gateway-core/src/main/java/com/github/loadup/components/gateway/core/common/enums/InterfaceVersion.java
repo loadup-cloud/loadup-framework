@@ -89,21 +89,21 @@ public enum InterfaceVersion {
     }
 
     /**
-     * Getter method for property <tt>code</tt>.
+     *
      */
     public String getCode() {
         return code;
     }
 
     /**
-     * Getter method for property <tt>message</tt>.
+     *
      */
     public String getMessage() {
         return message;
     }
 
     /**
-     * Getter method for property <tt>nextVersion</tt>.
+     *
      */
     public String getNextVersion() {
         return nextVersion;

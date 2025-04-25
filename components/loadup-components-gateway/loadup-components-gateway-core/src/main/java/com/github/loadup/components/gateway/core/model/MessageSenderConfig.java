@@ -55,56 +55,56 @@ public class MessageSenderConfig {
     private Properties properties = new Properties();
 
     /**
-     * Getter method for property <tt>messageSenderId</tt>.
+     *
      */
     public String getMessageSenderId() {
         return messageSenderId;
     }
 
     /**
-     * Setter method for property <tt>messageSenderId</tt>.
+     * 
      */
     public void setMessageSenderId(String messageSenderId) {
         this.messageSenderId = messageSenderId;
     }
 
     /**
-     * Getter method for property <tt>messageSenderName</tt>.
+     *
      */
     public String getMessageSenderName() {
         return messageSenderName;
     }
 
     /**
-     * Setter method for property <tt>messageSenderName</tt>.
+     * 
      */
     public void setMessageSenderName(String messageSenderName) {
         this.messageSenderName = messageSenderName;
     }
 
     /**
-     * Getter method for property <tt>certCode</tt>.
+     *
      */
     public String getCertCode() {
         return certCode;
     }
 
     /**
-     * Setter method for property <tt>certCode</tt>.
+     * 
      */
     public void setCertCode(String certCode) {
         this.certCode = certCode;
     }
 
     /**
-     * Getter method for property <tt>properties</tt>.
+     *
      */
     public Properties getProperties() {
         return properties;
     }
 
     /**
-     * Setter method for property <tt>properties</tt>.
+     * 
      */
     public void setProperties(Properties properties) {
         this.properties = properties;

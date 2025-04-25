@@ -37,14 +37,14 @@ public class CertAlgorithmConfig extends BaseAlgoConfig {
     private String algoType;
 
     /**
-     * Getter method for property <tt>algoType<tt>.
+     *
      */
     public String getAlgoType() {
         return algoType;
     }
 
     /**
-     * Setter method for property <tt>algoType<tt>.
+     *
      */
     public void setAlgoType(String algoType) {
         this.algoType = algoType;

@@ -53,28 +53,28 @@ public class OutServiceDescriptor {
     }
 
     /**
-     * Getter method for property <tt>name<tt>.
+     *
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Setter method for property <tt>name<tt>.
+     * 
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * Getter method for property <tt>outerService<tt>.
+     *
      */
     public OuterService getOuterService() {
         return outerService;
     }
 
     /**
-     * Setter method for property <tt>outerService<tt>.
+     * 
      */
     public void setOuterService(OuterService outerService) {
         this.outerService = outerService;

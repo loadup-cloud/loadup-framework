@@ -103,63 +103,63 @@ public class CertConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * Getter method for property <tt>certCode</tt>.
+     *
      */
     public String getCertCode() {
         return certCode;
     }
 
     /**
-     * Setter method for property <tt>certCode</tt>.
+     * 
      */
     public void setCertCode(String certCode) {
         this.certCode = certCode;
     }
 
     /**
-     * Getter method for property <tt>certType</tt>.
+     *
      */
     public CertTypeEnum getCertType() {
         return certType;
     }
 
     /**
-     * Setter method for property <tt>certType</tt>.
+     * 
      */
     public void setCertType(CertTypeEnum certType) {
         this.certType = certType;
     }
 
     /**
-     * Getter method for property <tt>certContent</tt>.
+     *
      */
     public String getCertContent() {
         return certContent;
     }
 
     /**
-     * Setter method for property <tt>certContent</tt>.
+     * 
      */
     public void setCertContent(String certContent) {
         this.certContent = certContent;
     }
 
     /**
-     * Getter method for property <tt>certStatus</tt>.
+     *
      */
     public String getCertStatus() {
         return certStatus;
     }
 
     /**
-     * Setter method for property <tt>certStatus</tt>.
+     * 
      */
     public void setCertStatus(String certStatus) {
         this.certStatus = certStatus;
     }
 
     /**
-     * Getter method for property <tt>certProperties</tt>.
+     *
      *
 
      */
@@ -168,7 +168,7 @@ public class CertConfigInnerResponse extends BaseResponse {
     }*/
 
     /**
-     * Setter method for property <tt>certProperties</tt>.
+     * 
      *
 
      */
@@ -177,70 +177,70 @@ public class CertConfigInnerResponse extends BaseResponse {
     }*/
 
     /**
-     * Getter method for property <tt>algorithmProperties</tt>.
+     *
      */
     public Map<String, String> getAlgorithmProperties() {
         return algorithmProperties;
     }
 
     /**
-     * Setter method for property <tt>algorithmProperties</tt>.
+     * 
      */
     public void setAlgorithmProperties(Map<String, String> algorithmProperties) {
         this.algorithmProperties = algorithmProperties;
     }
 
     /**
-     * Getter method for property <tt>securityStrategyCode</tt>.
+     *
      */
     public String getSecurityStrategyCode() {
         return securityStrategyCode;
     }
 
     /**
-     * Setter method for property <tt>securityStrategyCode</tt>.
+     * 
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
     }
 
     /**
-     * Getter method for property <tt>clientId</tt>.
+     *
      */
     public String getClientId() {
         return clientId;
     }
 
     /**
-     * Setter method for property <tt>clientId</tt>.
+     * 
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;
     }
 
     /**
-     * Getter method for property <tt>operateType</tt>.
+     *
      */
     public OperationType getOperateType() {
         return operateType;
     }
 
     /**
-     * Setter method for property <tt>operateType</tt>.
+     * 
      */
     public void setOperateType(OperationType operateType) {
         this.operateType = operateType;
     }
 
     /**
-     * Getter method for property <tt>algoName</tt>.
+     *
      */
     public String getAlgoName() {
         return algoName;
     }
 
     /**
-     * Setter method for property <tt>algoName</tt>.
+     * 
      */
     public void setAlgoName(String algoName) {
         this.algoName = algoName;

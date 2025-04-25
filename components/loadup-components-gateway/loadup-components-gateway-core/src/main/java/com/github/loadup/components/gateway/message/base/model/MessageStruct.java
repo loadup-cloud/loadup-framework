@@ -75,14 +75,14 @@ public enum MessageStruct {
     }
 
     /**
-     * Getter method for property <tt>format</tt>.
+     *
      */
     public MessageFormat getFormat() {
         return format;
     }
 
     /**
-     * Getter method for property <tt>description</tt>.
+     *
      */
     public String getDescription() {
         return description;

@@ -224,14 +224,14 @@ public enum TableName {
     }
 
     /**
-     * Getter method for property <tt>tables</tt>.
+     * 
      */
     public String getTableName() {
         return tableName;
     }
 
     /**
-     * Getter method for property <tt>refreshKey</tt>.
+     * 
      */
     public String getRefreshKey() {
         return refreshKey;

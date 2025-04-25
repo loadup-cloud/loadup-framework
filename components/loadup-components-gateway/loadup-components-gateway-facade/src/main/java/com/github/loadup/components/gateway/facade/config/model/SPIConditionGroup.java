@@ -100,168 +100,168 @@ public class SPIConditionGroup implements Serializable {
     private String httpStatusToErrorCode;
 
     /**
-     * Getter method for property <tt>interfaceName</tt>.
+     * 
      */
     public String getInterfaceName() {
         return interfaceName;
     }
 
     /**
-     * Setter method for property <tt>interfaceName</tt>.
+     *
      */
     public void setInterfaceName(String interfaceName) {
         this.interfaceName = interfaceName;
     }
 
     /**
-     * Getter method for property <tt>integrationUrl</tt>.
+     * 
      */
     public String getIntegrationUrl() {
         return integrationUrl;
     }
 
     /**
-     * Setter method for property <tt>integrationUrl</tt>.
+     *
      */
     public void setIntegrationUrl(String integrationUrl) {
         this.integrationUrl = integrationUrl;
     }
 
     /**
-     * Getter method for property <tt>securityStrategyCode</tt>.
+     * 
      */
     public String getSecurityStrategyCode() {
         return securityStrategyCode;
     }
 
     /**
-     * Setter method for property <tt>securityStrategyCode</tt>.
+     *
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
     }
 
     /**
-     * Getter method for property <tt>interfaceRequestParser</tt>.
+     * 
      */
     public String getInterfaceRequestParser() {
         return interfaceRequestParser;
     }
 
     /**
-     * Setter method for property <tt>interfaceRequestParser</tt>.
+     *
      */
     public void setInterfaceRequestParser(String interfaceRequestParser) {
         this.interfaceRequestParser = interfaceRequestParser;
     }
 
     /**
-     * Getter method for property <tt>integrationRequestHeaderAssemble</tt>.
+     * 
      */
     public String getIntegrationRequestHeaderAssemble() {
         return integrationRequestHeaderAssemble;
     }
 
     /**
-     * Setter method for property <tt>integrationRequestHeaderAssemble</tt>.
+     *
      */
     public void setIntegrationRequestHeaderAssemble(String integrationRequestHeaderAssemble) {
         this.integrationRequestHeaderAssemble = integrationRequestHeaderAssemble;
     }
 
     /**
-     * Getter method for property <tt>integrationRequestBodyAssemble</tt>.
+     * 
      */
     public String getIntegrationRequestBodyAssemble() {
         return integrationRequestBodyAssemble;
     }
 
     /**
-     * Setter method for property <tt>integrationRequestBodyAssemble</tt>.
+     *
      */
     public void setIntegrationRequestBodyAssemble(String integrationRequestBodyAssemble) {
         this.integrationRequestBodyAssemble = integrationRequestBodyAssemble;
     }
 
     /**
-     * Getter method for property <tt>integrationResponseParser</tt>.
+     * 
      */
     public String getIntegrationResponseParser() {
         return integrationResponseParser;
     }
 
     /**
-     * Setter method for property <tt>integrationResponseParser</tt>.
+     *
      */
     public void setIntegrationResponseParser(String integrationResponseParser) {
         this.integrationResponseParser = integrationResponseParser;
     }
 
     /**
-     * Getter method for property <tt>interfaceResponseHeaderAssemble</tt>.
+     * 
      */
     public String getInterfaceResponseHeaderAssemble() {
         return interfaceResponseHeaderAssemble;
     }
 
     /**
-     * Setter method for property <tt>interfaceResponseHeaderAssemble</tt>.
+     *
      */
     public void setInterfaceResponseHeaderAssemble(String interfaceResponseHeaderAssemble) {
         this.interfaceResponseHeaderAssemble = interfaceResponseHeaderAssemble;
     }
 
     /**
-     * Getter method for property <tt>interfaceResponseBodyAssemble</tt>.
+     * 
      */
     public String getInterfaceResponseBodyAssemble() {
         return interfaceResponseBodyAssemble;
     }
 
     /**
-     * Setter method for property <tt>interfaceResponseBodyAssemble</tt>.
+     *
      */
     public void setInterfaceResponseBodyAssemble(String interfaceResponseBodyAssemble) {
         this.interfaceResponseBodyAssemble = interfaceResponseBodyAssemble;
     }
 
     /**
-     * Getter method for property <tt>limitConn</tt>.
+     * 
      */
     public Integer getLimitConn() {
         return limitConn;
     }
 
     /**
-     * Setter method for property <tt>limitConn</tt>.
+     *
      */
     public void setLimitConn(Integer limitConn) {
         this.limitConn = limitConn;
     }
 
     /**
-     * Getter method for property <tt>communicationProperties</tt>.
+     * 
      */
     public String getCommunicationProperties() {
         return communicationProperties;
     }
 
     /**
-     * Setter method for property <tt>communicationProperties</tt>.
+     *
      */
     public void setCommunicationProperties(String communicationProperties) {
         this.communicationProperties = communicationProperties;
     }
 
     /**
-     * Getter method for property <tt>httpStatusToErrorCode</tt>.
+     * 
      */
     public String getHttpStatusToErrorCode() {
         return httpStatusToErrorCode;
     }
 
     /**
-     * Setter method for property <tt>httpStatusToErrorCode</tt>.
+     *
      */
     public void setHttpStatusToErrorCode(String httpStatusToErrorCode) {
         this.httpStatusToErrorCode = httpStatusToErrorCode;

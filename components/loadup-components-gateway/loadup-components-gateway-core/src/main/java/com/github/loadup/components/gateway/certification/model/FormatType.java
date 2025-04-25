@@ -83,28 +83,28 @@ public enum FormatType {
     }
 
     /**
-     * Getter method for property <tt>name<tt>.
+     *
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Setter method for property <tt>name<tt>.
+     * 
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * Getter method for property <tt>desc<tt>.
+     *
      */
     public String getDesc() {
         return desc;
     }
 
     /**
-     * Setter method for property <tt>desc<tt>.
+     * 
      */
     public void setDesc(String desc) {
         this.desc = desc;

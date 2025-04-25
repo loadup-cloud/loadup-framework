@@ -50,28 +50,28 @@ public class BasicGatewayConditionGroup implements Serializable {
     private Boolean needFillDefaultACResult = Boolean.TRUE;
 
     /**
-     * Getter method for property <tt>shieldKeys</tt>.
+     *
      */
     public String getShieldKeys() {
         return shieldKeys;
     }
 
     /**
-     * Setter method for property <tt>shieldKeys</tt>.
+     * 
      */
     public void setShieldKeys(String shieldKeys) {
         this.shieldKeys = shieldKeys;
     }
 
     /**
-     * Getter method for property <tt>needFillDefaultACResult</tt>.
+     *
      */
     public Boolean getNeedFillDefaultACResult() {
         return needFillDefaultACResult;
     }
 
     /**
-     * Setter method for property <tt>needFillDefaultACResult</tt>.
+     * 
      */
     public void setNeedFillDefaultACResult(Boolean needFillDefaultACResult) {
         this.needFillDefaultACResult = needFillDefaultACResult;

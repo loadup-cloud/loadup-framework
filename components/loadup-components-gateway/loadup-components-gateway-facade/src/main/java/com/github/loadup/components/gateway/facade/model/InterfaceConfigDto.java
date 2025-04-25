@@ -178,28 +178,28 @@ public class InterfaceConfigDto {
     }
 
     /**
-     * Getter method for property <tt>version</tt>.
+     *
      */
     public String getVersion() {
         return version;
     }
 
     /**
-     * Setter method for property <tt>version</tt>.
+     * 
      */
     public void setVersion(String version) {
         this.version = version;
     }
 
     /**
-     * Getter method for property <tt>status</tt>.
+     *
      */
     public String getStatus() {
         return status;
     }
 
     /**
-     * Setter method for property <tt>status</tt>.
+     * 
      */
     public void setStatus(String status) {
         this.status = status;

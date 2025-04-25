@@ -329,56 +329,56 @@ public enum AlgorithmEnum {
     }
 
     /**
-     * Getter method for property <tt>desc<tt>.
+     * 
      */
     public String getDesc() {
         return desc;
     }
 
     /**
-     * Setter method for property <tt>desc<tt>.
+     *
      */
     public void setDesc(String desc) {
         this.desc = desc;
     }
 
     /**
-     * Getter method for property <tt>name<tt>.
+     * 
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Setter method for property <tt>name<tt>.
+     *
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * Getter method for property <tt>type<tt>.
+     * 
      */
     public String getType() {
         return type;
     }
 
     /**
-     * Setter method for property <tt>type<tt>.
+     *
      */
     public void setType(String type) {
         this.type = type;
     }
 
     /**
-     * Getter method for property <tt>subAlgo<tt>.
+     * 
      */
     public String getSubAlgo() {
         return subAlgo;
     }
 
     /**
-     * Setter method for property <tt>subAlgo<tt>.
+     *
      */
     public void setSubAlgo(String subAlgo) {
         this.subAlgo = subAlgo;

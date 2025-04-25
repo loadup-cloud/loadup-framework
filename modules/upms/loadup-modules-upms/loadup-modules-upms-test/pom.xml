@@ -21,7 +21,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.loadup.components</groupId>
-            <artifactId>loadup-components-test</artifactId>
+            <artifactId>loadup-components-testify</artifactId>
         </dependency>
 
         <dependency>

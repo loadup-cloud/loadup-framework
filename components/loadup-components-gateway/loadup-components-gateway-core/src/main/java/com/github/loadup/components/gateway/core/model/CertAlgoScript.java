@@ -44,28 +44,28 @@ public class CertAlgoScript {
     private String algoScriptContent;
 
     /**
-     * Getter method for property <tt>className<tt>.
+     *
      */
     public String getClassName() {
         return className;
     }
 
     /**
-     * Setter method for property <tt>className<tt>.
+     *
      */
     public void setClassName(String className) {
         this.className = className;
     }
 
     /**
-     * Getter method for property <tt>algoScriptContent<tt>.
+     *
      */
     public String getAlgoScriptContent() {
         return algoScriptContent;
     }
 
     /**
-     * Setter method for property <tt>algoScriptContent<tt>.
+     *
      */
     public void setAlgoScriptContent(String algoScriptContent) {
         this.algoScriptContent = algoScriptContent;

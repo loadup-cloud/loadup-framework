@@ -2,7 +2,10 @@
 
 # Arguments: List<Object>
 [
-  null]
+  !!com.github.loadup.commons.request.query.IdQuery {
+    id: '123'
+  }
+]
 
 ---
 # Flags: Map<String, Map<String, String>>
@@ -21,8 +24,8 @@ null
 ---
 # User-defined Params: Map<String, Object>
 {
-val1: "sampleVal1",
-val2: "sampleVal2"
+  val1: "sampleVal1",
+  val2: "sampleVal2"
 }
 
 ---

@@ -204,21 +204,21 @@ public class TransportURI {
     }
 
     /**
-     * Getter method for property <tt>url</tt>.
+     * 
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * Getter method for property <tt>host</tt>.
+     * 
      */
     public String getHost() {
         return host;
     }
 
     /**
-     * Getter method for property <tt>port</tt>.
+     * 
      */
     public int getPort() {
         return port;
@@ -239,14 +239,14 @@ public class TransportURI {
     }
 
     /**
-     * Getter method for property <tt>schema</tt>.
+     * 
      */
     public String getSchema() {
         return schema;
     }
 
     /**
-     * Setter method for property <tt>schema</tt>.
+     * 
      */
     public void setSchema(String schema) {
         this.schema = schema;
@@ -276,14 +276,14 @@ public class TransportURI {
     }
 
     /**
-     * Getter method for property <tt>transport</tt>.
+     * 
      */
     public String getTransport() {
         return transport;
     }
 
     /**
-     * Setter method for property <tt>transport</tt>.
+     * 
      */
     public void setTransport(String transport) {
         this.transport = transport;

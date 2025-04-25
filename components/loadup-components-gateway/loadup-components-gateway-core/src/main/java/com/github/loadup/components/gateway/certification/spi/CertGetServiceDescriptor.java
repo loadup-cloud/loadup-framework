@@ -53,28 +53,28 @@ public class CertGetServiceDescriptor {
     }
 
     /**
-     * Getter method for property <tt>name<tt>.
+     *
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Setter method for property <tt>name<tt>.
+     * 
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * Getter method for property <tt>certGetService<tt>.
+     *
      */
     public CertGetService getCertGetService() {
         return certGetService;
     }
 
     /**
-     * Setter method for property <tt>certGetService<tt>.
+     * 
      */
     public void setCertGetService(CertGetService certGetService) {
         this.certGetService = certGetService;

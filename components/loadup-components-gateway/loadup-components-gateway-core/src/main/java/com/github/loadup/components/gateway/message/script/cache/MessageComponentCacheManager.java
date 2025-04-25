@@ -231,7 +231,7 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
     }
 
     /**
-     * Setter method for property <tt>groovyDynamicLoader</tt>.
+     *
      */
     public void setGroovyDynamicLoader(GroovyDynamicLoader groovyDynamicLoader) {
         this.groovyDynamicLoader = groovyDynamicLoader;

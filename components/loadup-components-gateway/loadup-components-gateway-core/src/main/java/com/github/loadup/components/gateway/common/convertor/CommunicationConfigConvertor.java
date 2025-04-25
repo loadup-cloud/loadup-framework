@@ -235,7 +235,7 @@ public class CommunicationConfigConvertor {
     }
 
     /**
-     * Setter method for property <tt>interfaceProdCenterQueryService</tt>.
+     *
      */
     @Resource
     public void setInterfaceProdCenterQueryService(InterfaceProdCenterQueryService interfaceProdCenterQueryService) {

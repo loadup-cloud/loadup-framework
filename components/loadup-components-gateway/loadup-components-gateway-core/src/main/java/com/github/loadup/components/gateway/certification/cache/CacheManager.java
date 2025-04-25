@@ -434,14 +434,14 @@ public class CacheManager implements Refreshable {
     }
 
     /**
-     * Setter method for property <tt>isInitOk</tt>.
+     *
      */
     public void setInitOk(boolean isInitOk) {
         this.isInitOk = isInitOk;
     }
 
     /**
-     * Setter method for property <tt>certGetServiceMap</tt>.
+     *
      */
     public void setCertGetServiceMap(
             Map<String, CertGetService> certGetServiceMap) {
@@ -449,28 +449,28 @@ public class CacheManager implements Refreshable {
     }
 
     /**
-     * Getter method for property <tt>processComponent<tt>.
+     *
      */
     public String getProcessComponent() {
         return processComponent;
     }
 
     /**
-     * Setter method for property <tt>processComponent<tt>.
+     *
      */
     public void setProcessComponent(String processComponent) {
         this.processComponent = processComponent;
     }
 
     /**
-     * Getter method for property <tt>isInitDependency<tt>.
+     *
      */
     public boolean isInitDependency() {
         return isInitDependency;
     }
 
     /**
-     * Setter method for property <tt>isInitDependency<tt>.
+     *
      */
     public void setIsInitDependency(boolean isInitDependency) {
         this.isInitDependency = isInitDependency;

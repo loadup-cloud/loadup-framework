@@ -14,7 +14,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <!--        <module>loadup-dependencies</module>-->
+        <module>thirdparty/json-data-generator</module>
         <module>commons</module>
         <module>components/loadup-components-cache</module>
         <!--        <module>components/cache/loadup-components-cache-test</module>-->
@@ -24,7 +24,7 @@
         <module>components/loadup-components-tracer</module>
         <module>components/loadup-components-database</module>
         <module>components/loadup-components-gateway</module>
-        <module>components/loadup-components-test</module>
+        <module>components/loadup-components-testify</module>
         <!--    <module>components/gateway/loadup-components-gateway-adaptor</module>-->
         <!--    <module>components/gateway/loadup-components-gateway-client</module>-->
         <!--    <module>components/gateway/loadup-components-gateway-domain</module>-->
@@ -77,7 +77,7 @@
             </dependency>
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
-                <artifactId>loadup-components-test</artifactId>
+                <artifactId>loadup-components-testify</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>

@@ -1,7 +1,7 @@
 
 package com.github.loadup.modules.upms.test.base;
 
-import com.alipay.test.acts.template.ActsTestBase;
+import com.github.loadup.components.testify.template.TestifyTestBase;
 import com.github.loadup.modules.upms.test.TestApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest(classes = TestApplication.class)
-public class LoadupUpmsTestBase extends ActsTestBase {
+public class LoadupUpmsTestBase extends TestifyTestBase {
 
     //启动时需要加载的测试依赖
     static {
@@ -54,9 +54,9 @@ public class LoadupUpmsTestBase extends ActsTestBase {
         List<String> ignoreCheckFields = new ArrayList<String>();
 
         // DemoResponse这个类的errMsg字段跳过校验
-        //ignoreCheckFields.add("com.alipay.actsdemo.response.DemoResponse#errMsg#N");
+        //ignoreCheckFields.add("com.xxx.DemoResponse#errMsg#N");
         // DemoResponse这个类的errMsg字段进行正则匹配校验，正则表达式填写至yaml该字段区域
-        //ignoreCheckFields.add("com.alipay.actsdemo.response.DemoResponse#errMsg#R");
+        //ignoreCheckFields.add("com.xxx.DemoResponse#errMsg#R");
 
         return ignoreCheckFields;
     }

@@ -1,20 +1,20 @@
 package com.github.loadup.modules.upms.test.userservice.saveuserroles;
 
+import com.github.loadup.components.testify.runtime.TestifyRuntimeContext;
 import com.github.loadup.modules.upms.test.base.LoadupUpmsTestBase;
-import com.alipay.test.acts.annotation.TestBean;
-import com.alipay.test.acts.annotation.acts.RunOnly;
-import com.alipay.test.acts.annotation.acts.PrepareCase;
-import com.alipay.test.acts.model.PrepareData;
-import com.alipay.test.acts.runtime.ActsRuntimeContext;
+import com.github.loadup.components.testify.annotation.TestBean;
+import com.github.loadup.components.testify.annotation.testify.RunOnly;
+import com.github.loadup.components.testify.annotation.testify.PrepareCase;
+import com.github.loadup.components.testify.model.PrepareData;
 import org.testng.annotations.Test;
-import com.alipay.test.acts.annotation.acts.AutoFill;
+import com.github.loadup.components.testify.annotation.testify.AutoFill;
 import jakarta.annotation.Resource;
 import com.github.loadup.modules.upms.client.api.UserService;
 
 /**
  *
  * @author ACTS
- * @version $Id: SaveUserRolesActsTest.java, v1.0.0 2025-04-23 16:40:27 ACTS Exp $
+ * 
  */
 public class SaveUserRolesTest extends LoadupUpmsTestBase {
 
@@ -39,7 +39,7 @@ public class SaveUserRolesTest extends LoadupUpmsTestBase {
 	 *
 	 * {@link com.github.loadup.modules.upms.client.api.UserService#saveUserRoles(com.github.loadup.modules.upms.client.cmd.UserRolesSaveCmd)}
 	 **/
-	@Test(dataProvider = "ActsDataProvider")
+	@Test(dataProvider = "TestifyDataProvider")
 	@AutoFill(overwrite = false, sqlList = {})
     @RunOnly(caseList = {".*"})  // 支持正则匹配，且仅在本地调试时生效
 	public void saveUserRoles(String caseId, String desc, PrepareData prepareData) {
@@ -51,11 +51,11 @@ public class SaveUserRolesTest extends LoadupUpmsTestBase {
 	/**
 	 * 可覆写该方法，添加一些用例执行前的自定义逻辑，如特殊入参设置、服务mock等
 	 *
-	 * @param actsRuntimeContext
+	 * @param testifyRuntimeContext
 	 */
 	@Override
-	public void beforeActsTest(ActsRuntimeContext actsRuntimeContext) {
-        super.beforeActsTest(actsRuntimeContext);
+	public void beforeTestifyTest(TestifyRuntimeContext testifyRuntimeContext) {
+        super.beforeTestifyTest(testifyRuntimeContext);
 		//String caseId = actsRuntimeContext.getCaseId();
         //
 		//if (caseId.equals("case01")) {
@@ -69,18 +69,18 @@ public class SaveUserRolesTest extends LoadupUpmsTestBase {
 
     // 在用例执行前，正则匹配到case01时执行以下逻辑做数据准备，效果同beforeActsTest内逻辑
     @PrepareCase(".*case01.*")
-    public void p01(ActsRuntimeContext actsRuntimeContext) {
+    public void p01(TestifyRuntimeContext testifyRuntimeContext) {
 	    // actsRuntimeContext.setArg(0, "set first arg by hand");
     }
 
 	/**
 	 * 可覆写该方法，添加一些用例执行后的自定义逻辑，如清理Mock等
 	 *
-	 * @param actsRuntimeContext
+	 * @param context
 	 */
 	@Override
-	public void afterActsTest(ActsRuntimeContext actsRuntimeContext) {
-        super.afterActsTest(actsRuntimeContext);
+	public void afterTestifyTest(TestifyRuntimeContext context) {
+        super.afterTestifyTest(context);
 	}
 
 }

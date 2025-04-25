@@ -47,28 +47,28 @@ public class PluginAPIResponse {
     private Map<String, String> extendInfo;
 
     /**
-     * Getter method for property <tt>message</tt>.
+     * 
      */
     public String getMessage() {
         return message;
     }
 
     /**
-     * Setter method for property <tt>message</tt>.
+     * 
      */
     public void setMessage(String message) {
         this.message = message;
     }
 
     /**
-     * Getter method for property <tt>extendInfo</tt>.
+     * 
      */
     public Map<String, String> getExtendInfo() {
         return extendInfo;
     }
 
     /**
-     * Setter method for property <tt>extendInfo</tt>.
+     * 
      */
     public void setExtendInfo(Map<String, String> extendInfo) {
         this.extendInfo = extendInfo;

@@ -76,112 +76,112 @@ public class AppInterfaceMap {
     private boolean enable;
 
     /**
-     * Getter method for property <tt>interfaceId</tt>.
+     *
      */
     public String getInterfaceId() {
         return interfaceId;
     }
 
     /**
-     * Setter method for property <tt>interfaceId</tt>.
+     * 
      */
     public void setInterfaceId(String interfaceId) {
         this.interfaceId = interfaceId;
     }
 
     /**
-     * Getter method for property <tt>appId</tt>.
+     *
      */
     public String getAppId() {
         return appId;
     }
 
     /**
-     * Setter method for property <tt>appId</tt>.
+     * 
      */
     public void setAppId(String appId) {
         this.appId = appId;
     }
 
     /**
-     * Getter method for property <tt>communicationId</tt>.
+     *
      */
     public String getCommunicationId() {
         return communicationId;
     }
 
     /**
-     * Setter method for property <tt>communicationId</tt>.
+     * 
      */
     public void setCommunicationId(String communicationId) {
         this.communicationId = communicationId;
     }
 
     /**
-     * Getter method for property <tt>routeId</tt>.
+     *
      */
     public String getRouteId() {
         return routeId;
     }
 
     /**
-     * Setter method for property <tt>routeId</tt>.
+     * 
      */
     public void setRouteId(String routeId) {
         this.routeId = routeId;
     }
 
     /**
-     * Getter method for property <tt>enable</tt>.
+     *
      */
     public boolean isEnable() {
         return enable;
     }
 
     /**
-     * Setter method for property <tt>enable</tt>.
+     * 
      */
     public void setEnable(boolean enable) {
         this.enable = enable;
     }
 
     /**
-     * Getter method for property <tt>bizProperties</tt>.
+     *
      */
     public Properties getBizProperties() {
         return bizProperties;
     }
 
     /**
-     * Setter method for property <tt>bizProperties</tt>.
+     * 
      */
     public void setBizProperties(String bizProperties) {
         this.bizProperties.setProperties(bizProperties);
     }
 
     /**
-     * Getter method for property <tt>extProperties</tt>.
+     *
      */
     public Properties getExtProperties() {
         return extProperties;
     }
 
     /**
-     * Setter method for property <tt>bizProperties</tt>.
+     * 
      */
     public void setExtProperties(String extProperties) {
         this.extProperties.setProperties(extProperties);
     }
 
     /**
-     * Getter method for property <tt>tntInstId</tt>.
+     *
      */
     public String getTntInstId() {
         return StringUtils.defaultIfBlank(tntInstId, "");
     }
 
     /**
-     * Setter method for property <tt>tntInstId</tt>.
+     * 
      */
     public void setTntInstId(String tntInstId) {
         this.tntInstId = tntInstId;

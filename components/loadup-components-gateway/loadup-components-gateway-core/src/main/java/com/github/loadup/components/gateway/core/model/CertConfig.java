@@ -87,140 +87,140 @@ public class CertConfig {
     private String clientId;
 
     /**
-     * Getter method for property <tt>certCode<tt>.
+     * 
      */
     public String getCertCode() {
         return certCode;
     }
 
     /**
-     * Setter method for property <tt>certCode<tt>.
+     *
      */
     public void setCertCode(String certCode) {
         this.certCode = certCode;
     }
 
     /**
-     * Getter method for property <tt>certContent<tt>.
+     * 
      */
     public String getCertContent() {
         return certContent;
     }
 
     /**
-     * Setter method for property <tt>certContent<tt>.
+     *
      */
     public void setCertContent(String certContent) {
         this.certContent = certContent;
     }
 
     /**
-     * Getter method for property <tt>certSpecial<tt>.
+     * 
      */
     public String getCertSpecial() {
         return certSpecial;
     }
 
     /**
-     * Setter method for property <tt>certSpecial<tt>.
+     *
      */
     public void setCertSpecial(String certSpecial) {
         this.certSpecial = certSpecial;
     }
 
     /**
-     * Getter method for property <tt>certStatus<tt>.
+     * 
      */
     public String getCertStatus() {
         return certStatus;
     }
 
     /**
-     * Setter method for property <tt>certStatus<tt>.
+     *
      */
     public void setCertStatus(String certStatus) {
         this.certStatus = certStatus;
     }
 
     /**
-     * Getter method for property <tt>certType<tt>.
+     * 
      */
     public String getCertType() {
         return certType;
     }
 
     /**
-     * Setter method for property <tt>certType<tt>.
+     *
      */
     public void setCertType(String certType) {
         this.certType = certType;
     }
 
     /**
-     * Getter method for property <tt>certContentType<tt>.
+     * 
      */
     public String getCertContentType() {
         return certContentType;
     }
 
     /**
-     * Setter method for property <tt>certContentType<tt>.
+     *
      */
     public void setCertContentType(String certContentType) {
         this.certContentType = certContentType;
     }
 
     /**
-     * Getter method for property <tt>certUniqId<tt>.
+     * 
      */
     public String getCertUniqId() {
         return certUniqId;
     }
 
     /**
-     * Setter method for property <tt>certUniqId<tt>.
+     *
      */
     public void setCertUniqId(String certUniqId) {
         this.certUniqId = certUniqId;
     }
 
     /**
-     * Getter method for property <tt>gmtInValid<tt>.
+     * 
      */
     public Date getGmtInValid() {
         return gmtInValid;
     }
 
     /**
-     * Setter method for property <tt>gmtInValid<tt>.
+     *
      */
     public void setGmtInValid(Date gmtInValid) {
         this.gmtInValid = gmtInValid;
     }
 
     /**
-     * Getter method for property <tt>gmtValid<tt>.
+     * 
      */
     public Date getGmtValid() {
         return gmtValid;
     }
 
     /**
-     * Setter method for property <tt>gmtValid<tt>.
+     *
      */
     public void setGmtValid(Date gmtValid) {
         this.gmtValid = gmtValid;
     }
 
     /**
-     * Getter method for property <tt>clientId</tt>.
+     * 
      */
     public String getClientId() {
         return clientId;
     }
 
     /**
-     * Setter method for property <tt>clientId</tt>.
+     *
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;

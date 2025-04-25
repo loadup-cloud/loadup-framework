@@ -60,28 +60,28 @@ public class ParserTemplateParams {
     }
 
     /**
-     * Getter method for property <tt>templateName</tt>.
+     *
      */
     public String getTemplateName() {
         return templateName;
     }
 
     /**
-     * Setter method for property <tt>templateName</tt>.
+     *
      */
     public void setTemplateName(String templateName) {
         this.templateName = templateName;
     }
 
     /**
-     * Getter method for property <tt>templateParams</tt>.
+     *
      */
     public Map<String, String> getTemplateParams() {
         return templateParams;
     }
 
     /**
-     * Setter method for property <tt>templateParams</tt>.
+     *
      */
     public void setTemplateParams(Map<String, String> templateParams) {
         this.templateParams = templateParams;

@@ -145,7 +145,7 @@ public class InterfaceConfigCache {
     }
 
     /**
-     * Setter method for property <tt>interfaceProdCenterQueryService</tt>.
+     *
      */
     @Resource
     public void setInterfaceProdCenterQueryService(InterfaceProdCenterQueryService interfaceProdCenterQueryService) {

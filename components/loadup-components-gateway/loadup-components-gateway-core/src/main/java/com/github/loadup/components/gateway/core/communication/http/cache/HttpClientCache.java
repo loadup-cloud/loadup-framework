@@ -202,21 +202,21 @@ public class HttpClientCache {
     }
 
     /**
-     * Getter method for property <tt>isInitOk</tt>.
+     *
      */
     public boolean isInitOk() {
         return isInitOk;
     }
 
     /**
-     * Setter method for property <tt>isInitOk</tt>.
+     * 
      */
     public void setInitOk(boolean isInitOk) {
         this.isInitOk = isInitOk;
     }
 
     /**
-     * Setter method for property <tt>sSLProtocolHelper</tt>.
+     * 
      *
 
      */

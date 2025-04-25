@@ -125,7 +125,7 @@ public class LimitUtil {
     private InterfaceProdCenterQueryService interfaceProdCenterQueryService;
 
     /**
-     * Getter method for property <tt>openLimitService</tt>.
+     * 
      */
     public Boolean getOpenLimitService() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
@@ -135,7 +135,7 @@ public class LimitUtil {
     }
 
     /**
-     * Getter method for property <tt>limitType</tt>.
+     * 
      */
     public String getLimitType() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
@@ -145,7 +145,7 @@ public class LimitUtil {
     }
 
     /**
-     * Getter method for property <tt>interfaceMaxLimitStr</tt>.
+     * 
      */
     @Deprecated
     public String getInterfaceMaxLimitStr() {
@@ -277,7 +277,7 @@ public class LimitUtil {
     }
 
     /**
-     * Getter method for property <tt>tenantMaxLimitStr</tt>.
+     * 
      */
     public String getTenantMaxLimitStr() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
@@ -287,7 +287,7 @@ public class LimitUtil {
     }
 
     /**
-     * Getter method for property <tt>clientMaxLimitStr</tt>.
+     * 
      */
     public String getClientMaxLimitStr() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
@@ -297,7 +297,7 @@ public class LimitUtil {
     }
 
     /**
-     * Getter method for property <tt>limitTimeRule</tt>.
+     * 
      */
     public String getLimitTimeRule() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
@@ -308,7 +308,7 @@ public class LimitUtil {
     }
 
     /**
-     * Getter method for property <tt>fallbackStrategy</tt>.
+     * 
      */
     public String getFallbackStrategy() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
@@ -319,7 +319,7 @@ public class LimitUtil {
     }
 
     /**
-     * Getter method for property <tt>fallbackInterfaceMaxLimit</tt>.
+     * 
      */
     public String getFallbackInterfaceMaxLimit() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
@@ -330,7 +330,7 @@ public class LimitUtil {
     }
 
     /**
-     * Getter method for property <tt>fallbackClientMaxLimit</tt>.
+     * 
      */
     public String getFallbackClientMaxLimit() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
@@ -341,7 +341,7 @@ public class LimitUtil {
     }
 
     /**
-     * Getter method for property <tt>fallbackTenantMaxLimit</tt>.
+     * 
      */
     public String getFallbackTenantMaxLimit() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {

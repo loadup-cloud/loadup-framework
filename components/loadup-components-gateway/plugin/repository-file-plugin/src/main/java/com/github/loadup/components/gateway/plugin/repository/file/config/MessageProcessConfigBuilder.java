@@ -80,14 +80,14 @@ public class MessageProcessConfigBuilder extends
     }
 
     /**
-     * Setter method for property <tt>assembleTemplateCache</tt>.
+     *
      */
     public void setAssembleTemplateCache(Map<String, String> assembleTemplateCache) {
         this.assembleTemplateCache = assembleTemplateCache;
     }
 
     /**
-     * Setter method for property <tt>parseTemplateCache</tt>.
+     *
      */
     public void setParseTemplateCache(Map<String, String> parseTemplateCache) {
         this.parseTemplateCache = parseTemplateCache;

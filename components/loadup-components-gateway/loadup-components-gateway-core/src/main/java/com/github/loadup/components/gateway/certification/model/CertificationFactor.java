@@ -67,84 +67,84 @@ public class CertificationFactor {
     private Map<String, String> certAliasNameMap;
 
     /**
-     * Getter method for property <tt>algoParameter<tt>.
+     *
      */
     public Map<String, String> getAlgoParameter() {
         return algoParameter;
     }
 
     /**
-     * Setter method for property <tt>algoParameter<tt>.
+     * 
      */
     public void setAlgoParameter(Map<String, String> algoParameter) {
         this.algoParameter = algoParameter;
     }
 
     /**
-     * Getter method for property <tt>algoString<tt>.
+     *
      */
     public String getAlgoString() {
         return algoString;
     }
 
     /**
-     * Setter method for property <tt>algoString<tt>.
+     * 
      */
     public void setAlgoString(String algoString) {
         this.algoString = algoString;
     }
 
     /**
-     * Getter method for property <tt>bizKey<tt>.
+     *
      */
     public String getBizKey() {
         return bizKey;
     }
 
     /**
-     * Setter method for property <tt>bizKey<tt>.
+     * 
      */
     public void setBizKey(String bizKey) {
         this.bizKey = bizKey;
     }
 
     /**
-     * Getter method for property <tt>certMap<tt>.
+     *
      */
     public Map<String, Object> getCertMap() {
         return certMap;
     }
 
     /**
-     * Setter method for property <tt>certMap<tt>.
+     * 
      */
     public void setCertMap(Map<String, Object> certMap) {
         this.certMap = certMap;
     }
 
     /**
-     * Getter method for property <tt>operationType<tt>.
+     *
      */
     public OperationType getOperationType() {
         return operationType;
     }
 
     /**
-     * Setter method for property <tt>operationType<tt>.
+     * 
      */
     public void setOperationType(OperationType operationType) {
         this.operationType = operationType;
     }
 
     /**
-     * Getter method for property <tt>certAliasNameMap<tt>.
+     *
      */
     public Map<String, String> getCertAliasNameMap() {
         return certAliasNameMap;
     }
 
     /**
-     * Setter method for property <tt>certAliasNameMap<tt>.
+     * 
      */
     public void setCertAliasNameMap(Map<String, String> certAliasNameMap) {
         this.certAliasNameMap = certAliasNameMap;

@@ -81,126 +81,126 @@ public class CommunicationPropertiesGroup implements Serializable {
     private String shieldKeys;
 
     /**
-     * Getter method for property <tt>limitValue</tt>.
+     * 
      */
     public Integer getLimitValue() {
         return limitValue;
     }
 
     /**
-     * Setter method for property <tt>limitValue</tt>.
+     * 
      */
     public void setLimitValue(Integer limitValue) {
         this.limitValue = limitValue;
     }
 
     /**
-     * Getter method for property <tt>limitTimeRule</tt>.
+     * 
      */
     public String getLimitTimeRule() {
         return limitTimeRule;
     }
 
     /**
-     * Setter method for property <tt>limitTimeRule</tt>.
+     * 
      */
     public void setLimitTimeRule(String limitTimeRule) {
         this.limitTimeRule = limitTimeRule;
     }
 
     /**
-     * Getter method for property <tt>limitType</tt>.
+     * 
      */
     public String getLimitType() {
         return limitType;
     }
 
     /**
-     * Setter method for property <tt>limitType</tt>.
+     * 
      */
     public void setLimitType(String limitType) {
         this.limitType = limitType;
     }
 
     /**
-     * Getter method for property <tt>distributedFallbackStrategy</tt>.
+     * 
      */
     public String getDistributedFallbackStrategy() {
         return distributedFallbackStrategy;
     }
 
     /**
-     * Setter method for property <tt>distributedFallbackStrategy</tt>.
+     * 
      */
     public void setDistributedFallbackStrategy(String distributedFallbackStrategy) {
         this.distributedFallbackStrategy = distributedFallbackStrategy;
     }
 
     /**
-     * Getter method for property <tt>distributedFallbackStrategyLimitValue</tt>.
+     * 
      */
     public Integer getDistributedFallbackStrategyLimitValue() {
         return distributedFallbackStrategyLimitValue;
     }
 
     /**
-     * Setter method for property <tt>distributedFallbackStrategyLimitValue</tt>.
+     * 
      */
     public void setDistributedFallbackStrategyLimitValue(Integer distributedFallbackStrategyLimitValue) {
         this.distributedFallbackStrategyLimitValue = distributedFallbackStrategyLimitValue;
     }
 
     /**
-     * Getter method for property <tt>connectTimeout</tt>.
+     * 
      */
     public Integer getConnectTimeout() {
         return connectTimeout;
     }
 
     /**
-     * Setter method for property <tt>connectTimeout</tt>.
+     * 
      */
     public void setConnectTimeout(Integer connectTimeout) {
         this.connectTimeout = connectTimeout;
     }
 
     /**
-     * Getter method for property <tt>readTimeout</tt>.
+     * 
      */
     public Integer getReadTimeout() {
         return readTimeout;
     }
 
     /**
-     * Setter method for property <tt>readTimeout</tt>.
+     * 
      */
     public void setReadTimeout(Integer readTimeout) {
         this.readTimeout = readTimeout;
     }
 
     /**
-     * Getter method for property <tt>shieldKeys</tt>.
+     * 
      */
     public String getShieldKeys() {
         return shieldKeys;
     }
 
     /**
-     * Setter method for property <tt>shieldKeys</tt>.
+     * 
      */
     public void setShieldKeys(String shieldKeys) {
         this.shieldKeys = shieldKeys;
     }
 
     /**
-     * Getter method for property <tt>url</tt>.
+     * 
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * Setter method for property <tt>url</tt>.
+     * 
      */
     public void setUrl(String url) {
         this.url = url;

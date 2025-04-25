@@ -85,21 +85,21 @@ public class GroovyInfoGroup {
     }
 
     /**
-     * Getter method for property <tt>modifiedGroovy</tt>.
+     * 
      */
     public List<GroovyInfo> getModifiedGroovy() {
         return modifiedGroovy;
     }
 
     /**
-     * Getter method for property <tt>addedGroovy</tt>.
+     * 
      */
     public List<GroovyInfo> getAddedGroovy() {
         return addedGroovy;
     }
 
     /**
-     * Getter method for property <tt>deletedGroovy</tt>.
+     * 
      */
     public List<GroovyInfo> getDeletedGroovy() {
         return deletedGroovy;

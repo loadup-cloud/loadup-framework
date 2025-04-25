@@ -1,0 +1,75 @@
+[
+  
+  {
+    index: '0',
+    friends: [
+      
+      {
+        id: '0',
+        name: 'nameValue',
+        value: 'valueValue0'
+      },
+
+      {
+        id: '0',
+        name: 'nameValue',
+        value: 'valueValue1'
+      },
+
+      {
+        id: '0',
+        name: 'nameValue',
+        value: 'valueValue2'
+      }
+    ],
+},
+
+  {
+    index: '1',
+    friends: [
+      
+      {
+        id: '0',
+        name: 'nameValue',
+        value: 'valueValue3'
+      },
+
+      {
+        id: '0',
+        name: 'nameValue',
+        value: 'valueValue4'
+      },
+
+      {
+        id: '0',
+        name: 'nameValue',
+        value: 'valueValue5'
+      }
+    ],
+},
+
+  {
+    index: '2',
+    friends: [
+      
+      {
+        id: '0',
+        name: 'nameValue',
+        value: 'valueValue6'
+      },
+
+      {
+        id: '0',
+        name: 'nameValue',
+        value: 'valueValue7'
+      },
+
+      {
+        id: '0',
+        name: 'nameValue',
+        value: 'valueValue8'
+      }
+    ],
+}
+]
+

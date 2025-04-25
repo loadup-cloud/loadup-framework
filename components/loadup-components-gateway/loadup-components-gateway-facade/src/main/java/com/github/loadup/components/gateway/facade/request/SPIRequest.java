@@ -55,28 +55,28 @@ public class SPIRequest {
     }
 
     /**
-     * Getter method for property <tt>integrationUrl</tt>.
+     *
      */
     public String getIntegrationUrl() {
         return integrationUrl;
     }
 
     /**
-     * Setter method for property <tt>integrationUrl</tt>.
+     * 
      */
     public void setIntegrationUrl(String integrationUrl) {
         this.integrationUrl = integrationUrl;
     }
 
     /**
-     * Getter method for property <tt>message</tt>.
+     *
      */
     public Map<String, String> getMessage() {
         return message;
     }
 
     /**
-     * Setter method for property <tt>message</tt>.
+     * 
      */
     public void setMessage(Map<String, String> message) {
         this.message = message;

@@ -97,126 +97,126 @@ public class APIConfigRequest extends BaseRequest {
     private Map<String, String> communicationProperties;
 
     /**
-     * Getter method for property <tt>url</tt>.
+     * 
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * Setter method for property <tt>url</tt>.
+     * 
      */
     public void setUrl(String url) {
         this.url = url;
     }
 
     /**
-     * Getter method for property <tt>integrationUrl</tt>.
+     * 
      */
     public String getIntegrationUrl() {
         return integrationUrl;
     }
 
     /**
-     * Setter method for property <tt>integrationUrl</tt>.
+     * 
      */
     public void setIntegrationUrl(String integrationUrl) {
         this.integrationUrl = integrationUrl;
     }
 
     /**
-     * Getter method for property <tt>securityStrategyCode</tt>.
+     * 
      */
     public String getSecurityStrategyCode() {
         return securityStrategyCode;
     }
 
     /**
-     * Setter method for property <tt>securityStrategyCode</tt>.
+     * 
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
     }
 
     /**
-     * Getter method for property <tt>integrationRequestHeaderAssemble</tt>.
+     * 
      */
     public String getIntegrationRequestHeaderAssemble() {
         return integrationRequestHeaderAssemble;
     }
 
     /**
-     * Setter method for property <tt>integrationRequestHeaderAssemble</tt>.
+     * 
      */
     public void setIntegrationRequestHeaderAssemble(String integrationRequestHeaderAssemble) {
         this.integrationRequestHeaderAssemble = integrationRequestHeaderAssemble;
     }
 
     /**
-     * Getter method for property <tt>integrationRequestBodyAssemble</tt>.
+     * 
      */
     public String getIntegrationRequestBodyAssemble() {
         return integrationRequestBodyAssemble;
     }
 
     /**
-     * Setter method for property <tt>integrationRequestBodyAssemble</tt>.
+     * 
      */
     public void setIntegrationRequestBodyAssemble(String integrationRequestBodyAssemble) {
         this.integrationRequestBodyAssemble = integrationRequestBodyAssemble;
     }
 
     /**
-     * Getter method for property <tt>integrationResponseParser</tt>.
+     * 
      */
     public String getIntegrationResponseParser() {
         return integrationResponseParser;
     }
 
     /**
-     * Setter method for property <tt>integrationResponseParser</tt>.
+     * 
      */
     public void setIntegrationResponseParser(String integrationResponseParser) {
         this.integrationResponseParser = integrationResponseParser;
     }
 
     /**
-     * Getter method for property <tt>communicationProperties</tt>.
+     * 
      */
     public Map<String, String> getCommunicationProperties() {
         return communicationProperties;
     }
 
     /**
-     * Setter method for property <tt>communicationProperties</tt>.
+     * 
      */
     public void setCommunicationProperties(Map<String, String> communicationProperties) {
         this.communicationProperties = communicationProperties;
     }
 
     /**
-     * Getter method for property <tt>tenantId</tt>.
+     * 
      */
     public String getTenantId() {
         return tenantId;
     }
 
     /**
-     * Setter method for property <tt>tenantId</tt>.
+     * 
      */
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
     }
 
     /**
-     * Getter method for property <tt>version</tt>.
+     * 
      */
     public String getVersion() {
         return version;
     }
 
     /**
-     * Setter method for property <tt>version</tt>.
+     * 
      */
     public void setVersion(String version) {
         this.version = version;

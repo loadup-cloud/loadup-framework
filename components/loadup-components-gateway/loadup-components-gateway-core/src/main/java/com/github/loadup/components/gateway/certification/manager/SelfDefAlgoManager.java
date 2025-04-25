@@ -164,14 +164,14 @@ public class SelfDefAlgoManager extends AbstractAlgoManager {
     }
 
     /**
-     * Getter method for property <tt>processComponent<tt>.
+     * 
      */
     public String getProcessComponent() {
         return processComponent;
     }
 
     /**
-     * Setter method for property <tt>processComponent<tt>.
+     * 
      */
     public void setProcessComponent(String processComponent) {
         this.processComponent = processComponent;

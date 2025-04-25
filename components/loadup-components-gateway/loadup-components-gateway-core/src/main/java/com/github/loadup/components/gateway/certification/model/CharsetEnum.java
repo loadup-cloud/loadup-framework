@@ -79,14 +79,14 @@ public enum CharsetEnum {
     }
 
     /**
-     * Getter method for property <tt>charSet<tt>.
+     * 
      */
     public String getCharSet() {
         return charSet;
     }
 
     /**
-     * Setter method for property <tt>charSet<tt>.
+     * 
      */
     public void setCharSet(String charSet) {
         this.charSet = charSet;

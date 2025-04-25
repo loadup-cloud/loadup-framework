@@ -183,14 +183,14 @@ public enum CertTypeEnum {
     }
 
     /**
-     * Getter method for property <tt>certType</tt>.
+     *
      */
     public String getCertType() {
         return certType;
     }
 
     /**
-     * Getter method for property <tt>certName</tt>.
+     *
      */
     public String getCertName() {
         return certName;

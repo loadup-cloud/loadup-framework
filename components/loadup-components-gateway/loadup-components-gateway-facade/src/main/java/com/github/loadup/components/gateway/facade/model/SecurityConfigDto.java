@@ -115,210 +115,210 @@ public class SecurityConfigDto {
     //========== getters and setters ==========
 
     /**
-     * Getter method for property <tt>tenantId</tt>.
+     *
      */
     public String getTenantId() {
         return tenantId;
     }
 
     /**
-     * Setter method for property <tt>tenantId</tt>.
+     *
      */
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
     }
 
     /**
-     * Getter method for property <tt>securityStrategyCode</tt>.
+     *
      */
     public String getSecurityStrategyCode() {
         return securityStrategyCode;
     }
 
     /**
-     * Setter method for property <tt>securityStrategyCode</tt>.
+     *
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
     }
 
     /**
-     * Getter method for property <tt>clientId</tt>.
+     *
      */
     public String getClientId() {
         return clientId;
     }
 
     /**
-     * Setter method for property <tt>clientId</tt>.
+     *
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;
     }
 
     /**
-     * Getter method for property <tt>certContent</tt>.
+     *
      */
     public String getCertContent() {
         return certContent;
     }
 
     /**
-     * Setter method for property <tt>certContent</tt>.
+     *
      */
     public void setCertContent(String certContent) {
         this.certContent = certContent;
     }
 
     /**
-     * Getter method for property <tt>operateType</tt>.
+     *
      */
     public String getOperateType() {
         return operateType;
     }
 
     /**
-     * Setter method for property <tt>operateType</tt>.
+     *
      */
     public void setOperateType(String operateType) {
         this.operateType = operateType;
     }
 
     /**
-     * Getter method for property <tt>certType</tt>.
+     *
      */
     public String getCertType() {
         return certType;
     }
 
     /**
-     * Setter method for property <tt>certType</tt>.
+     *
      */
     public void setCertType(String certType) {
         this.certType = certType;
     }
 
     /**
-     * Getter method for property <tt>status</tt>.
+     *
      */
     public String getStatus() {
         return status;
     }
 
     /**
-     * Setter method for property <tt>status</tt>.
+     *
      */
     public void setStatus(String status) {
         this.status = status;
     }
 
     /**
-     * Getter method for property <tt>keyType</tt>.
+     *
      */
     public String getKeyType() {
         return keyType;
     }
 
     /**
-     * Setter method for property <tt>keyType</tt>.
+     *
      */
     public void setKeyType(String keyType) {
         this.keyType = keyType;
     }
 
     /**
-     * Getter method for property <tt>algoName</tt>.
+     *
      */
     public String getAlgoName() {
         return algoName;
     }
 
     /**
-     * Setter method for property <tt>algoName</tt>.
+     *
      */
     public void setAlgoName(String algoName) {
         this.algoName = algoName;
     }
 
     /**
-     * Getter method for property <tt>properties</tt>.
+     *
      */
     public String getProperties() {
         return properties;
     }
 
     /**
-     * Setter method for property <tt>properties</tt>.
+     *
      */
     public void setProperties(String properties) {
         this.properties = properties;
     }
 
     /**
-     * Getter method for property <tt>algoProperties</tt>.
+     *
      */
     public String getAlgoProperties() {
         return algoProperties;
     }
 
     /**
-     * Setter method for property <tt>algoProperties</tt>.
+     *
      */
     public void setAlgoProperties(String algoProperties) {
         this.algoProperties = algoProperties;
     }
 
     /**
-     * Getter method for property <tt>gmtValid</tt>.
+     *
      */
     public Date getGmtValid() {
         return gmtValid;
     }
 
     /**
-     * Setter method for property <tt>gmtValid</tt>.
+     *
      */
     public void setGmtValid(Date gmtValid) {
         this.gmtValid = gmtValid;
     }
 
     /**
-     * Getter method for property <tt>gmtInvalid</tt>.
+     *
      */
     public Date getGmtInvalid() {
         return gmtInvalid;
     }
 
     /**
-     * Setter method for property <tt>gmtInvalid</tt>.
+     *
      */
     public void setGmtInvalid(Date gmtInvalid) {
         this.gmtInvalid = gmtInvalid;
     }
 
     /**
-     * Getter method for property <tt>gmtCreate</tt>.
+     *
      */
     public Date getGmtCreate() {
         return gmtCreate;
     }
 
     /**
-     * Setter method for property <tt>gmtCreate</tt>.
+     *
      */
     public void setGmtCreate(Date gmtCreate) {
         this.gmtCreate = gmtCreate;
     }
 
     /**
-     * Getter method for property <tt>gmtModified</tt>.
+     *
      */
     public Date getGmtModified() {
         return gmtModified;
     }
 
     /**
-     * Setter method for property <tt>gmtModified</tt>.
+     *
      */
     public void setGmtModified(Date gmtModified) {
         this.gmtModified = gmtModified;

@@ -1,0 +1,86 @@
+package $packagename;
+
+import $TestBaseName;
+import com.github.loadup.components.testify.annotation.TestBean;
+import com.github.loadup.components.testify.annotation.testify.RunOnly;
+import com.github.loadup.components.testify.annotation.testify.PrepareCase;
+import model.com.github.loadup.components.testify.PrepareData;
+import com.github.loadup.components.testify.runtime.TestifyRuntimeContext;
+import org.testng.annotations.Test;
+import com.github.loadup.components.testify.annotation.testify.AutoFill;
+import jakarta.annotation.Resource;
+import $serviceref;
+
+/**
+ *
+ * @author ACTS
+ *
+ */
+public class ${MethodName}Test extends ${AppName}${ModuleName}TestBase {
+
+	@TestBean
+	@Resource
+	protected $ServiceName ${serviceName};
+
+	/**
+	 * runTest说明：脚本中的process方法中的clear,prepare,execute,check四个方法如果无法满足脚本
+	 * 需求可以进行重写。
+	 * For example:
+	 * public void prepare(TestifyRuntimeContext testifyRuntimeContext) throws ActsTestException {
+	 *      userDefined();//自定义数据准备;
+	 *      super.prepare(testifyRuntimeContext);//继承父类数据准备方法
+	 * }
+	 *
+	 *
+	 * 预跑反填说明：
+	 *  @AutoFill(overwrite = false, sqlList = {})
+	 *  - 如果需要重写预跑反填数据需要设置: overwrite = true
+	 *  - sqlList可填写仅针对本测试方法的校验db数据的捞取逻辑，更多解释可参考基类的backFillSqlList方法注释
+	 *
+	 * {@link ${serviceref}#${methodname}(${argsType})}
+	 **/
+	@Test(dataProvider = "TestifyDataProvider")
+	@AutoFill(overwrite = false, sqlList = {})
+    @RunOnly(caseList = {".*"})  // 支持正则匹配，且仅在本地调试时生效
+	public void ${methodname}(String caseId, String desc, PrepareData prepareData) {
+		runTest(caseId, prepareData);
+	}
+
+
+
+	/**
+	 * 可覆写该方法，添加一些用例执行前的自定义逻辑，如特殊入参设置、服务mock等
+	 *
+	 * @param testifyRuntimeContext
+	 */
+	@Override
+	public void beforeTestifyTest(TestifyRuntimeContext testifyRuntimeContext) {
+        super.beforeTestifyTest(testifyRuntimeContext);
+		//String caseId = testifyRuntimeContext.getCaseId();
+        //
+		//if (caseId.equals("case01")) {
+		//	// 重新设置用例入参对象
+		//	testifyRuntimeContext.setArg(0, "set first arg by hand");
+        //
+		//	// Mock service by Mockito
+		//
+		//}
+	}
+
+    // 在用例执行前，正则匹配到case01时执行以下逻辑做数据准备，效果同 beforeTestifyTest 内逻辑
+    @PrepareCase(".*case01.*")
+    public void p01(TestifyRuntimeContext testifyRuntimeContext) {
+	    // testifyRuntimeContext.setArg(0, "set first arg by hand");
+    }
+
+	/**
+	 * 可覆写该方法，添加一些用例执行后的自定义逻辑，如清理Mock等
+	 *
+	 * @param testifyRuntimeContext
+	 */
+	@Override
+	public void afterTestifyTest(TestifyRuntimeContext testifyRuntimeContext) {
+        super.afterTestifyTest(testifyRuntimeContext);
+	}
+
+}

@@ -1,0 +1,1098 @@
+/**
+ 
+ * Copyright (c) 2004-2015 All Rights Reserved.
+ */
+package com.github.loadup.components.testify.datarule.parser;
+
+/*-
+ * #%L
+ * loadup-components-test
+ * %%
+ * Copyright (C) 2022 - 2025 loadup_cloud
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
+import static com.github.loadup.components.testify.datarule.parser.RuleCharTypes.isFirstIdentifierChar;
+import static com.github.loadup.components.testify.datarule.parser.RuleCharTypes.isIdentifierChar;
+import static com.github.loadup.components.testify.datarule.parser.RuleCharTypes.isWhitespace;
+import static com.github.loadup.components.testify.datarule.parser.RuleLayoutCharacters.EOI;
+import static com.github.loadup.components.testify.datarule.parser.RuleToken.COLON;
+import static com.github.loadup.components.testify.datarule.parser.RuleToken.COLONCOLON;
+import static com.github.loadup.components.testify.datarule.parser.RuleToken.COLONEQ;
+import static com.github.loadup.components.testify.datarule.parser.RuleToken.COMMA;
+import static com.github.loadup.components.testify.datarule.parser.RuleToken.EOF;
+import static com.github.loadup.components.testify.datarule.parser.RuleToken.ERROR;
+import static com.github.loadup.components.testify.datarule.parser.RuleToken.LBRACE;
+import static com.github.loadup.components.testify.datarule.parser.RuleToken.LBRACKET;
+import static com.github.loadup.components.testify.datarule.parser.RuleToken.LITERAL_ALIAS;
+import static com.github.loadup.components.testify.datarule.parser.RuleToken.LITERAL_CHARS;
+import static com.github.loadup.components.testify.datarule.parser.RuleToken.LPAREN;
+import static com.github.loadup.components.testify.datarule.parser.RuleToken.RBRACE;
+import static com.github.loadup.components.testify.datarule.parser.RuleToken.RBRACKET;
+import static com.github.loadup.components.testify.datarule.parser.RuleToken.RPAREN;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Arrays;
+
+/**
+ * 词法分析器。
+ *
+ * 
+ * 
+ */
+public class RuleLexer {
+
+    private static final long MULTMIN_RADIX_TEN = Long.MIN_VALUE / 10;
+    private static final long N_MULTMAX_RADIX_TEN = -Long.MAX_VALUE / 10;
+    private final static int[] digits = new int['9' + 1];
+
+    static {
+        for (int i = '0'; i <= '9'; ++i) {
+            digits[i] = i - '0';
+        }
+    }
+
+    protected final String text;
+    protected int pos;
+    protected int mark;
+    protected char ch;
+    protected char[] buf;
+    protected int bufPos;
+    protected RuleToken token;
+    protected RuleKeywords keywods = RuleKeywords.DEFAULT_KEYWORDS;
+    protected String stringVal;
+    protected boolean skipComment = true;
+    protected CommentHandler commentHandler;
+    protected boolean hasComment = false;
+    private SavePoint savePoint = null;
+    /*
+     * anti sql injection
+     */
+    private boolean allowComment = true;
+    private int varIndex = -1;
+
+    public RuleLexer(String input) {
+        this(input, true);
+    }
+
+    public RuleLexer(String input, boolean skipComment) {
+        this.skipComment = skipComment;
+
+        this.text = input;
+        this.pos = -1;
+
+        scanChar();
+    }
+
+    public RuleLexer(char[] input, int inputLength, boolean skipComment) {
+        this(new String(input, 0, inputLength), skipComment);
+    }
+
+    public CommentHandler getCommentHandler() {
+        return commentHandler;
+    }
+
+    public void setCommentHandler(CommentHandler commentHandler) {
+        this.commentHandler = commentHandler;
+    }
+
+    public final char charAt(int index) {
+        if (index >= text.length()) {
+            return EOI;
+        }
+
+        return text.charAt(index);
+    }
+
+    public final String addSymbol() {
+        return subString(mark, bufPos);
+    }
+
+    public final String subString(int offset, int count) {
+        return text.substring(offset, offset + count);
+    }
+
+    protected void initBuff(int size) {
+        if (buf == null) {
+            if (size < 32) {
+                buf = new char[32];
+            } else {
+                buf = new char[size + 32];
+            }
+        } else if (buf.length < size) {
+            buf = Arrays.copyOf(buf, size);
+        }
+    }
+
+    public void arraycopy(int srcPos, char[] dest, int destPos, int length) {
+        text.getChars(srcPos, srcPos + length, dest, destPos);
+    }
+
+    public boolean isAllowComment() {
+        return allowComment;
+    }
+
+    public void setAllowComment(boolean allowComment) {
+        this.allowComment = allowComment;
+    }
+
+    public int nextVarIndex() {
+        return ++varIndex;
+    }
+
+    public RuleKeywords getKeywods() {
+        return keywods;
+    }
+
+    public void mark() {
+        SavePoint savePoint = new SavePoint();
+        savePoint.bp = pos;
+        savePoint.sp = bufPos;
+        savePoint.np = mark;
+        savePoint.ch = ch;
+        savePoint.token = token;
+        this.savePoint = savePoint;
+    }
+
+    public void reset() {
+        this.pos = savePoint.bp;
+        this.bufPos = savePoint.sp;
+        this.mark = savePoint.np;
+        this.ch = savePoint.ch;
+        this.token = savePoint.token;
+    }
+
+    protected final void scanChar() {
+        ch = charAt(++pos);
+    }
+
+    protected void unscan() {
+        ch = charAt(--pos);
+    }
+
+    public boolean isEOF() {
+        return pos >= text.length();
+    }
+
+    /**
+     * Report an error at the given position using the provided arguments.
+     */
+    protected void lexError(String key, Object... args) {
+        token = ERROR;
+    }
+
+    /**
+     * Return the current token, set by nextToken().
+     */
+    public final RuleToken token() {
+        return token;
+    }
+
+    public String info() {
+        return this.token + " " + this.stringVal();
+    }
+
+    public final void nextTokenComma() {
+        if (ch == ' ') {
+            scanChar();
+        }
+
+        if (ch == ',' || ch == '，') {
+            scanChar();
+            token = COMMA;
+            return;
+        }
+
+        if (ch == ')') {
+            scanChar();
+            token = RPAREN;
+            return;
+        }
+
+        nextToken();
+    }
+
+    public final void nextTokenLParen() {
+        if (ch == ' ') {
+            scanChar();
+        }
+
+        if (ch == '(') {
+            scanChar();
+            token = LPAREN;
+            return;
+        }
+        nextToken();
+    }
+
+    public final void nextTokenValue() {
+        if (ch == ' ') {
+            scanChar();
+        }
+
+        if (ch == '\'') {
+            bufPos = 0;
+            scanString();
+            return;
+        }
+
+        if (ch >= '0' && ch <= '9') {
+            bufPos = 0;
+            scanNumber();
+            return;
+        }
+
+        if (ch == '?') {
+            scanChar();
+            token = RuleToken.QUES;
+            return;
+        }
+
+        if (isFirstIdentifierChar(ch) && ch != 'N') {
+            scanIdentifier();
+            return;
+        }
+
+        nextToken();
+    }
+
+    public final void nextToken() {
+        bufPos = 0;
+
+        for (; ; ) {
+            if (isWhitespace(ch)) {
+                scanChar();
+                continue;
+            }
+
+            if (ch == '$' && charAt(pos + 1) == '{') {
+                scanVariable();
+                return;
+            }
+
+            if (isFirstIdentifierChar(ch)) {
+                if (ch == 'N') {
+                    if (charAt(pos + 1) == '\'') {
+                        ++pos;
+                        ch = '\'';
+                        scanString();
+                        token = RuleToken.LITERAL_NCHARS;
+                        return;
+                    }
+                }
+
+                scanIdentifier();
+                return;
+            }
+
+            switch (ch) {
+                case '0':
+                    if (charAt(pos + 1) == 'x') {
+                        scanChar();
+                        scanChar();
+                        scanHexaDecimal();
+                    } else {
+                        scanNumber();
+                    }
+                    return;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    scanNumber();
+                    return;
+                case ',':
+                case '，':
+                    scanChar();
+                    token = COMMA;
+                    return;
+                case '(':
+                    scanChar();
+                    token = LPAREN;
+                    return;
+                case ')':
+                    scanChar();
+                    token = RPAREN;
+                    return;
+                case '[':
+                    scanLBracket();
+                    return;
+                case ']':
+                    scanChar();
+                    token = RBRACKET;
+                    return;
+                case '{':
+                    scanChar();
+                    token = LBRACE;
+                    return;
+                case '}':
+                    scanChar();
+                    token = RBRACE;
+                    return;
+                case ':':
+                    scanChar();
+                    if (ch == '=') {
+                        scanChar();
+                        token = COLONEQ;
+                    } else if (ch == ':') {
+                        scanChar();
+                        token = COLONCOLON;
+                    } else {
+                        token = COLON;
+                    }
+                    return;
+                case '#':
+                    scanSharp();
+                    if ((token() == RuleToken.LINE_COMMENT || token() == RuleToken.MULTI_LINE_COMMENT)
+                            && skipComment) {
+                        bufPos = 0;
+                        continue;
+                    }
+                    return;
+                case '.':
+                    scanChar();
+                    if (isDigit(ch)) {
+                        unscan();
+                        scanNumber();
+                        return;
+                    } else if (ch == '.') {
+                        scanChar();
+                        if (ch == '.') {
+                            scanChar();
+                            token = RuleToken.DOTDOTDOT;
+                        } else {
+                            token = RuleToken.DOTDOT;
+                        }
+                    } else {
+                        token = RuleToken.DOT;
+                    }
+                    return;
+                case '\'':
+                    scanString();
+                    return;
+                case '\"':
+                    scanAlias();
+                    return;
+                case '*':
+                    scanChar();
+                    token = RuleToken.STAR;
+                    return;
+                case '?':
+                    scanChar();
+                    token = RuleToken.QUES;
+                    return;
+                case ';':
+                    scanChar();
+                    token = RuleToken.SEMI;
+                    return;
+                case '`':
+                    throw new RuleParserException("TODO"); // TODO
+                case '@':
+                    scanVariable();
+                    return;
+                case '-':
+                    int subNextChar = charAt(pos + 1);
+                    if (subNextChar == '-') {
+                        scanComment();
+                        if ((token() == RuleToken.LINE_COMMENT || token() == RuleToken.MULTI_LINE_COMMENT)
+                                && skipComment) {
+                            bufPos = 0;
+                            continue;
+                        }
+                    } else {
+                        scanOperator();
+                    }
+                    return;
+                case '/':
+                    int nextChar = charAt(pos + 1);
+                    if (nextChar == '/' || nextChar == '*') {
+                        scanComment();
+                        if ((token() == RuleToken.LINE_COMMENT || token() == RuleToken.MULTI_LINE_COMMENT)
+                                && skipComment) {
+                            bufPos = 0;
+                            continue;
+                        }
+                    } else {
+                        token = RuleToken.SLASH;
+                        scanChar();
+                    }
+                    return;
+                default:
+                    if (Character.isLetter(ch)) {
+                        scanIdentifier();
+                        return;
+                    }
+
+                    if (isOperator(ch)) {
+                        scanOperator();
+                        return;
+                    }
+
+                    // QS_TODO ?
+                    if (isEOF()) { // JLS
+                        token = EOF;
+                    } else {
+                        lexError("illegal.char", String.valueOf((int) ch));
+                        scanChar();
+                    }
+
+                    return;
+            }
+        }
+
+    }
+
+    protected void scanLBracket() {
+        scanChar();
+        token = LBRACKET;
+    }
+
+    private final void scanOperator() {
+        switch (ch) {
+            case '+':
+                scanChar();
+                token = RuleToken.PLUS;
+                break;
+            case '-':
+                scanChar();
+                token = RuleToken.SUB;
+                break;
+            case '*':
+                scanChar();
+                token = RuleToken.STAR;
+                break;
+            case '/':
+                scanChar();
+                token = RuleToken.SLASH;
+                break;
+            case '&':
+                scanChar();
+                if (ch == '&') {
+                    scanChar();
+                    token = RuleToken.AMPAMP;
+                } else {
+                    token = RuleToken.AMP;
+                }
+                break;
+            case '|':
+                scanChar();
+                if (ch == '|') {
+                    scanChar();
+                    token = RuleToken.BARBAR;
+                } else {
+                    token = RuleToken.BAR;
+                }
+                break;
+            case '^':
+                scanChar();
+                token = RuleToken.CARET;
+                break;
+            case '%':
+                scanChar();
+                token = RuleToken.PERCENT;
+                break;
+            case '=':
+                scanChar();
+                if (ch == '=') {
+                    scanChar();
+                    token = RuleToken.EQEQ;
+                } else {
+                    token = RuleToken.EQ;
+                }
+                break;
+            case '>':
+                scanChar();
+                if (ch == '=') {
+                    scanChar();
+                    token = RuleToken.GTEQ;
+                } else if (ch == '>') {
+                    scanChar();
+                    token = RuleToken.GTGT;
+                } else {
+                    token = RuleToken.GT;
+                }
+                break;
+            case '<':
+                scanChar();
+                if (ch == '=') {
+                    scanChar();
+                    if (ch == '>') {
+                        token = RuleToken.LTEQGT;
+                        scanChar();
+                    } else {
+                        token = RuleToken.LTEQ;
+                    }
+                } else if (ch == '>') {
+                    scanChar();
+                    token = RuleToken.LTGT;
+                } else if (ch == '<') {
+                    scanChar();
+                    token = RuleToken.LTLT;
+                } else {
+                    token = RuleToken.LT;
+                }
+                break;
+            case '!':
+                scanChar();
+                if (ch == '=') {
+                    scanChar();
+                    token = RuleToken.BANGEQ;
+                } else if (ch == '>') {
+                    scanChar();
+                    token = RuleToken.BANGGT;
+                } else if (ch == '<') {
+                    scanChar();
+                    token = RuleToken.BANGLT;
+                } else {
+                    token = RuleToken.BANG;
+                }
+                break;
+            case '?':
+                scanChar();
+                token = RuleToken.QUES;
+                break;
+            case '~':
+                scanChar();
+                token = RuleToken.TILDE;
+                break;
+            default:
+                throw new RuleParserException("TODO");
+        }
+    }
+
+    protected void scanString() {
+        mark = pos;
+        boolean hasSpecial = false;
+
+        for (; ; ) {
+            if (isEOF()) {
+                lexError("unclosed.str.lit");
+                return;
+            }
+
+            ch = charAt(++pos);
+
+            if (ch == '\'') {
+                scanChar();
+                if (ch != '\'') {
+                    token = LITERAL_CHARS;
+                    break;
+                } else {
+                    if (!hasSpecial) {
+                        initBuff(bufPos);
+                        arraycopy(mark + 1, buf, 0, bufPos);
+                        hasSpecial = true;
+                    }
+                    putChar('\'');
+                    continue;
+                }
+            }
+
+            if (!hasSpecial) {
+                bufPos++;
+                continue;
+            }
+
+            if (bufPos == buf.length) {
+                putChar(ch);
+            } else {
+                buf[bufPos++] = ch;
+            }
+        }
+
+        if (!hasSpecial) {
+            stringVal = subString(mark + 1, bufPos);
+        } else {
+            stringVal = new String(buf, 0, bufPos);
+        }
+    }
+
+    private final void scanAlias() {
+        mark = pos;
+
+        if (buf == null) {
+            buf = new char[32];
+        }
+
+        for (; ; ) {
+            if (isEOF()) {
+                lexError("unclosed.str.lit");
+                return;
+            }
+
+            ch = charAt(++pos);
+
+            if (ch == '\"') {
+                scanChar();
+                token = LITERAL_ALIAS;
+                break;
+            }
+
+            if (bufPos == buf.length) {
+                putChar(ch);
+            } else {
+                buf[bufPos++] = ch;
+            }
+        }
+
+        stringVal = subString(mark + 1, bufPos);
+    }
+
+    public void scanSharp() {
+        scanVariable();
+    }
+
+    public void scanVariable() {
+        if (ch != '@' && ch != ':' && ch != '#' && ch != '$') {
+            throw new RuleParserException("illegal variable");
+        }
+
+        mark = pos;
+        bufPos = 1;
+        char ch;
+
+        if (charAt(pos + 1) == '@') {
+            ch = charAt(++pos);
+
+            bufPos++;
+        } else if (charAt(pos + 1) == '{') {
+            pos++;
+            bufPos++;
+
+            for (; ; ) {
+                ch = charAt(++pos);
+
+                if (ch == '}') {
+                    break;
+                }
+
+                bufPos++;
+                continue;
+            }
+
+            if (ch != '}') {
+                throw new RuleParserException("syntax error");
+            }
+            ++pos;
+            bufPos++;
+
+            this.ch = charAt(pos);
+
+            stringVal = addSymbol();
+            token = RuleToken.VARIANT;
+            return;
+        }
+
+        for (; ; ) {
+            ch = charAt(++pos);
+
+            if (!(isIdentifierChar(ch) || ch == '.')) {
+                break;
+            }
+
+            bufPos++;
+            continue;
+        }
+
+        this.ch = charAt(pos);
+
+        stringVal = addSymbol();
+        token = RuleToken.VARIANT;
+    }
+
+    public void scanObject() {
+        unscan();
+
+        if (ch != '{') {
+            throw new RuleParserException("illegal object");
+        }
+
+        mark = pos;
+        bufPos = 1;
+        char ch;
+        int stack = 1;
+        for (; ; ) {
+            ch = charAt(++pos);
+
+            if (ch == '}') {
+                stack--;
+                if (stack == 0) {
+                    break;
+                }
+            } else if (ch == '{') {
+                stack++;
+            } else if (ch == EOI) {
+                throw new RuleParserException("illegal object");
+            }
+
+            bufPos++;
+        }
+
+        ++pos;
+        bufPos++;
+
+        this.ch = charAt(pos);
+
+        stringVal = addSymbol();
+    }
+
+    public void scanComment() {
+        if (!allowComment) {
+            throw new RuleParserException("comment not allow");
+        }
+
+        if (ch != '/') {
+            throw new IllegalStateException();
+        }
+
+        mark = pos;
+        bufPos = 0;
+        scanChar();
+
+        if (ch == '*') {
+            scanChar();
+            bufPos++;
+
+            for (; ; ) {
+                if (ch == '*' && charAt(pos + 1) == '/') {
+                    bufPos += 2;
+                    scanChar();
+                    scanChar();
+                    break;
+                }
+
+                scanChar();
+                bufPos++;
+            }
+
+            stringVal = subString(mark, bufPos);
+            token = RuleToken.MULTI_LINE_COMMENT;
+            hasComment = true;
+            return;
+        }
+
+        if (ch == '/') {
+            scanChar();
+            bufPos++;
+
+            for (; ; ) {
+                if (ch == '\r') {
+                    if (charAt(pos + 1) == '\n') {
+                        bufPos += 2;
+                        scanChar();
+                        break;
+                    }
+                    bufPos++;
+                    break;
+                }
+
+                if (ch == '\n') {
+                    scanChar();
+                    bufPos++;
+                    break;
+                }
+
+                scanChar();
+                bufPos++;
+            }
+
+            stringVal = subString(mark + 1, bufPos);
+            token = RuleToken.LINE_COMMENT;
+            hasComment = true;
+            return;
+        }
+    }
+
+    public void scanIdentifier() {
+        final char first = ch;
+
+        final boolean firstFlag = isFirstIdentifierChar(first);
+        if (!firstFlag) {
+            throw new RuleParserException("illegal identifier");
+        }
+
+        mark = pos;
+        bufPos = 1;
+        char ch;
+        for (; ; ) {
+            ch = charAt(++pos);
+
+            if (!isIdentifierChar(ch)) {
+                break;
+            }
+
+            bufPos++;
+            continue;
+        }
+
+        this.ch = charAt(pos);
+
+        stringVal = addSymbol();
+        RuleToken tok = keywods.getKeyword(stringVal);
+        if (tok != null) {
+            token = tok;
+        } else {
+            token = RuleToken.IDENTIFIER;
+        }
+    }
+
+    public void scanNumber() {
+        mark = pos;
+
+        if (ch == '-') {
+            bufPos++;
+            ch = charAt(++pos);
+        }
+
+        for (; ; ) {
+            if (ch >= '0' && ch <= '9') {
+                bufPos++;
+            } else {
+                break;
+            }
+            ch = charAt(++pos);
+        }
+
+        boolean isDouble = false;
+
+        if (ch == '.') {
+            if (charAt(pos + 1) == '.') {
+                token = RuleToken.LITERAL_INT;
+                return;
+            }
+            bufPos++;
+            ch = charAt(++pos);
+            isDouble = true;
+
+            for (; ; ) {
+                if (ch >= '0' && ch <= '9') {
+                    bufPos++;
+                } else {
+                    break;
+                }
+                ch = charAt(++pos);
+            }
+        }
+
+        if (ch == 'e' || ch == 'E') {
+            bufPos++;
+            ch = charAt(++pos);
+
+            if (ch == '+' || ch == '-') {
+                bufPos++;
+                ch = charAt(++pos);
+            }
+
+            for (; ; ) {
+                if (ch >= '0' && ch <= '9') {
+                    bufPos++;
+                } else {
+                    break;
+                }
+                ch = charAt(++pos);
+            }
+
+            isDouble = true;
+        }
+
+        if (isDouble) {
+            token = RuleToken.LITERAL_FLOAT;
+            stringVal = addSymbol();
+        } else {
+            token = RuleToken.LITERAL_INT;
+            stringVal = addSymbol();
+        }
+    }
+
+    public void scanHexaDecimal() {
+        mark = pos;
+
+        if (ch == '-') {
+            bufPos++;
+            ch = charAt(++pos);
+        }
+
+        for (; ; ) {
+            if (RuleCharTypes.isHex(ch)) {
+                bufPos++;
+            } else {
+                break;
+            }
+            ch = charAt(++pos);
+        }
+
+        token = RuleToken.LITERAL_HEX;
+    }
+
+    public String hexString() {
+        return subString(mark, bufPos);
+    }
+
+    public final boolean isDigit(char ch) {
+        return ch >= '0' && ch <= '9';
+    }
+
+    /**
+     * Append a character to sbuf.
+     */
+    protected final void putChar(char ch) {
+        if (bufPos == buf.length) {
+            char[] newsbuf = new char[buf.length * 2];
+            System.arraycopy(buf, 0, newsbuf, 0, buf.length);
+            buf = newsbuf;
+        }
+        buf[bufPos++] = ch;
+    }
+
+    /**
+     * Return the current token's position: a 0-based offset from beginning of the raw input stream (before unicode
+     * translation)
+     */
+    public final int pos() {
+        return pos;
+    }
+
+    /**
+     * The value of a literal token, recorded as a string. For integers, leading 0x and 'l' suffixes are suppressed.
+     */
+    public final String stringVal() {
+        return stringVal;
+    }
+
+    private boolean isOperator(char ch) {
+        switch (ch) {
+            case '!':
+            case '%':
+            case '&':
+            case '*':
+            case '+':
+            case '-':
+            case '<':
+            case '=':
+            case '>':
+            case '^':
+            case '|':
+            case '~':
+            case ';':
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    // QS_TODO negative number is invisible for lexer
+    public Number integerValue() {
+        long result = 0;
+        boolean negative = false;
+        int i = mark, max = mark + bufPos;
+        long limit;
+        long multmin;
+        int digit;
+
+        if (charAt(mark) == '-') {
+            negative = true;
+            limit = Long.MIN_VALUE;
+            i++;
+        } else {
+            limit = -Long.MAX_VALUE;
+        }
+        multmin = negative ? MULTMIN_RADIX_TEN : N_MULTMAX_RADIX_TEN;
+        if (i < max) {
+            digit = digits[charAt(i++)];
+            result = -digit;
+        }
+        while (i < max) {
+            // Accumulating negatively avoids surprises near MAX_VALUE
+            digit = digits[charAt(i++)];
+            if (result < multmin) {
+                return new BigInteger(numberString());
+            }
+            result *= 10;
+            if (result < limit + digit) {
+                return new BigInteger(numberString());
+            }
+            result -= digit;
+        }
+
+        if (negative) {
+            if (i > mark + 1) {
+                if (result >= Integer.MIN_VALUE) {
+                    return (int) result;
+                }
+                return result;
+            } else { /* Only got "-" */
+                throw new NumberFormatException(numberString());
+            }
+        } else {
+            result = -result;
+            if (result <= Integer.MAX_VALUE) {
+                return (int) result;
+            }
+            return result;
+        }
+    }
+
+    public int bp() {
+        return this.pos;
+    }
+
+    public char current() {
+        return this.ch;
+    }
+
+    public void reset(int mark, char markChar, RuleToken token) {
+        this.pos = mark;
+        this.ch = markChar;
+        this.token = token;
+    }
+
+    public final String numberString() {
+        return subString(mark, bufPos);
+    }
+
+    public BigDecimal decimalValue() {
+        return new BigDecimal(subString(mark, bufPos).toCharArray());
+    }
+
+    public boolean isHasComment() {
+        return hasComment;
+    }
+
+    public static interface CommentHandler {
+
+        boolean handle(RuleToken lastToken, String comment);
+    }
+
+    private static class SavePoint {
+
+        int bp;
+        int sp;
+        int np;
+        char ch;
+        RuleToken token;
+    }
+}

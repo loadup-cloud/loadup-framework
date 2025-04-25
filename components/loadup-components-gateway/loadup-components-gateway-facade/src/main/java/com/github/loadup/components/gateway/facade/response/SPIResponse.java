@@ -62,42 +62,42 @@ public class SPIResponse {
     }
 
     /**
-     * Getter method for property <tt>content</tt>.
+     *
      */
     public String getContent() {
         return content;
     }
 
     /**
-     * Setter method for property <tt>content</tt>.
+     * 
      */
     public void setContent(String content) {
         this.content = content;
     }
 
     /**
-     * Getter method for property <tt>headers</tt>.
+     *
      */
     public Map<String, String> getHeaders() {
         return headers;
     }
 
     /**
-     * Setter method for property <tt>headers</tt>.
+     * 
      */
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
     }
 
     /**
-     * Getter method for property <tt>result</tt>.
+     *
      */
     public Result getResult() {
         return result;
     }
 
     /**
-     * Setter method for property <tt>result</tt>.
+     * 
      */
     public void setResult(Result result) {
         this.result = result;

@@ -68,98 +68,98 @@ public class LimitConfig {
     private Boolean enableLimit = Boolean.FALSE;
 
     /**
-     * Getter method for property <tt>limitValue</tt>.
+     * 
      */
     public Integer getLimitValue() {
         return limitValue;
     }
 
     /**
-     * Setter method for property <tt>limitValue</tt>.
+     * 
      */
     public void setLimitValue(Integer limitValue) {
         this.limitValue = limitValue;
     }
 
     /**
-     * Getter method for property <tt>limitTimeRule</tt>.
+     * 
      */
     public LimitTimeRuleEnum getLimitTimeRule() {
         return limitTimeRule;
     }
 
     /**
-     * Setter method for property <tt>limitTimeRule</tt>.
+     * 
      */
     public void setLimitTimeRule(LimitTimeRuleEnum limitTimeRule) {
         this.limitTimeRule = limitTimeRule;
     }
 
     /**
-     * Getter method for property <tt>limitType</tt>.
+     * 
      */
     public LimitTypeEnum getLimitType() {
         return limitType;
     }
 
     /**
-     * Setter method for property <tt>limitType</tt>.
+     * 
      */
     public void setLimitType(LimitTypeEnum limitType) {
         this.limitType = limitType;
     }
 
     /**
-     * Getter method for property <tt>distributedFallbackStrategy</tt>.
+     * 
      */
     public DistributedExceptionStrategy getDistributedFallbackStrategy() {
         return distributedFallbackStrategy;
     }
 
     /**
-     * Setter method for property <tt>distributedFallbackStrategy</tt>.
+     * 
      */
     public void setDistributedFallbackStrategy(DistributedExceptionStrategy distributedFallbackStrategy) {
         this.distributedFallbackStrategy = distributedFallbackStrategy;
     }
 
     /**
-     * Getter method for property <tt>distributedFallbackStrategyLimitValue</tt>.
+     * 
      */
     public Integer getDistributedFallbackStrategyLimitValue() {
         return distributedFallbackStrategyLimitValue;
     }
 
     /**
-     * Setter method for property <tt>distributedFallbackStrategyLimitValue</tt>.
+     * 
      */
     public void setDistributedFallbackStrategyLimitValue(Integer distributedFallbackStrategyLimitValue) {
         this.distributedFallbackStrategyLimitValue = distributedFallbackStrategyLimitValue;
     }
 
     /**
-     * Getter method for property <tt>entryKeyId</tt>.
+     * 
      */
     public String getEntryKeyId() {
         return entryKeyId;
     }
 
     /**
-     * Setter method for property <tt>entryKeyId</tt>.
+     * 
      */
     public void setEntryKeyId(String entryKeyId) {
         this.entryKeyId = entryKeyId;
     }
 
     /**
-     * Getter method for property <tt>enableLimit</tt>.
+     * 
      */
     public Boolean isEnableLimit() {
         return enableLimit;
     }
 
     /**
-     * Setter method for property <tt>enableLimit</tt>.
+     * 
      */
     public void setEnableLimit(Boolean enableLimit) {
         this.enableLimit = enableLimit;

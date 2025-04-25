@@ -110,7 +110,7 @@ public class MetricLoggerUtil {
     }
 
     /**
-     * Setter method for property <tt>metricBinder</tt>.
+     * 
      */
     @Value("${spring.cloud.antfin.metric.bindings.monitor.binder-name:}")
     public void setMetricBinder(String metricBinder) {
@@ -118,7 +118,7 @@ public class MetricLoggerUtil {
     }
 
     /**
-     * Setter method for property <tt>metricBinding</tt>.
+     * 
      *
 
      */

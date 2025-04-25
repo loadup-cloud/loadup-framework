@@ -45,28 +45,28 @@ public class GroovyInfo {
     private String groovyContent;
 
     /**
-     * Getter method for property <tt>className</tt>.
+     *
      */
     public String getClassName() {
         return className;
     }
 
     /**
-     * Setter method for property <tt>className</tt>.
+     *
      */
     public void setClassName(String className) {
         this.className = className;
     }
 
     /**
-     * Getter method for property <tt>groovyContent</tt>.
+     *
      */
     public String getGroovyContent() {
         return groovyContent;
     }
 
     /**
-     * Setter method for property <tt>groovyContent</tt>.
+     *
      */
     public void setGroovyContent(String groovyContent) {
         this.groovyContent = groovyContent;

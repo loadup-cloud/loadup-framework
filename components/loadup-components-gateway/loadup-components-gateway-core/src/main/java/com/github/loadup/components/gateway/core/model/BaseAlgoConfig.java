@@ -64,84 +64,84 @@ public class BaseAlgoConfig {
     private String memo;
 
     /**
-     * Getter method for property <tt>algoName<tt>.
+     * 
      */
     public String getAlgoName() {
         return algoName;
     }
 
     /**
-     * Setter method for property <tt>algoName<tt>.
+     *
      */
     public void setAlgoName(String algoName) {
         this.algoName = algoName;
     }
 
     /**
-     * Getter method for property <tt>algoProperties<tt>.
+     * 
      */
     public String getAlgoProperties() {
         return algoProperties;
     }
 
     /**
-     * Setter method for property <tt>algoProperties<tt>.
+     *
      */
     public void setAlgoProperties(String algoProperties) {
         this.algoProperties = algoProperties;
     }
 
     /**
-     * Getter method for property <tt>certCode<tt>.
+     * 
      */
     public String getCertCode() {
         return certCode;
     }
 
     /**
-     * Setter method for property <tt>certCode<tt>.
+     *
      */
     public void setCertCode(String certCode) {
         this.certCode = certCode;
     }
 
     /**
-     * Getter method for property <tt>certTypes<tt>.
+     * 
      */
     public String getCertTypes() {
         return certTypes;
     }
 
     /**
-     * Setter method for property <tt>certTypes<tt>.
+     *
      */
     public void setCertTypes(String certTypes) {
         this.certTypes = certTypes;
     }
 
     /**
-     * Getter method for property <tt>memo<tt>.
+     * 
      */
     public String getMemo() {
         return memo;
     }
 
     /**
-     * Setter method for property <tt>memo<tt>.
+     *
      */
     public void setMemo(String memo) {
         this.memo = memo;
     }
 
     /**
-     * Getter method for property <tt>operateType<tt>.
+     * 
      */
     public String getOperateType() {
         return operateType;
     }
 
     /**
-     * Setter method for property <tt>operateType<tt>.
+     *
      */
     public void setOperateType(String operateType) {
         this.operateType = operateType;

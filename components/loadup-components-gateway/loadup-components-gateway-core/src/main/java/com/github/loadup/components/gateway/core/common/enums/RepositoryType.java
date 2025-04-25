@@ -84,21 +84,21 @@ public enum RepositoryType {
     }
 
     /**
-     * Getter method for property <tt>code</tt>.
+     * 
      */
     public String getCode() {
         return code;
     }
 
     /**
-     * Getter method for property <tt>configInInternalCache</tt>.
+     * 
      */
     public boolean isConfigInInternalCache() {
         return configInInternalCache;
     }
 
     /**
-     * Getter method for property <tt>message</tt>.
+     * 
      */
     public String getMessage() {
         return message;

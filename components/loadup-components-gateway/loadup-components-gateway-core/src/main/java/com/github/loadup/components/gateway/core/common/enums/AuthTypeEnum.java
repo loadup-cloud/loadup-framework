@@ -80,14 +80,14 @@ public enum AuthTypeEnum {
     }
 
     /**
-     * Getter method for property <tt>code</tt>.
+     * 
      */
     public String getCode() {
         return code;
     }
 
     /**
-     * Getter method for property <tt>desc</tt>.
+     * 
      */
     public String getDesc() {
         return desc;

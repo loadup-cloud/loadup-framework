@@ -58,21 +58,21 @@ public class MessageSendResult {
     }
 
     /**
-     * Getter method for property <tt>messageEnvelope</tt>.
+     * 
      */
     public MessageEnvelope getMessageEnvelope() {
         return messageEnvelope;
     }
 
     /**
-     * Getter method for property <tt>timeout</tt>.
+     * 
      */
     public boolean isTimeout() {
         return timeout;
     }
 
     /**
-     * Getter method for property <tt>response</tt>.
+     * 
      */
     public boolean isResponse() {
         return response;

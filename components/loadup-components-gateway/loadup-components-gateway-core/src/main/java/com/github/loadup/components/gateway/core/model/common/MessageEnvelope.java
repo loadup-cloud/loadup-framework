@@ -227,35 +227,35 @@ public final class MessageEnvelope implements Cloneable, Serializable {
     }
 
     /**
-     * Getter method for property <tt>messageFormat</tt>.
+     *
      */
     public MessageFormat getMessageFormat() {
         return messageFormat;
     }
 
     /**
-     * Getter method for property <tt>extraContent</tt>.
+     *
      */
     public Map<String, String> getHeaders() {
         return headers;
     }
 
     /**
-     * Setter method for property <tt>extraContent</tt>.
+     * 
      */
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
     }
 
     /**
-     * Getter method for property <tt>logContent</tt>.
+     *
      */
     public String getLogContent() {
         return logContent;
     }
 
     /**
-     * Setter method for property <tt>logContent</tt>.
+     * 
      */
     public void setLogContent(String logContent) {
         this.logContent = logContent;
@@ -273,14 +273,14 @@ public final class MessageEnvelope implements Cloneable, Serializable {
     }
 
     /**
-     * Getter method for property <tt>content</tt>.
+     *
      */
     public Object getContent() {
         return content;
     }
 
     /**
-     * Setter method for property <tt>content</tt>.
+     * 
      */
     public void setContent(Object content) {
         this.content = content;

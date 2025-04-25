@@ -1,0 +1,80 @@
+COMMON:
+  EventContext:
+    tntInstId: 12345678
+
+AF_PaymentService_pay_N01: #用例名称
+  数据准备: #CheckPointName, 选择被prepare调用，用于数据准备，返回Object[],第一项为PayRequest
+    PayRequest: #基于名称寻找csv文件
+      __desc: 12期主动还款支付单 #基于desc寻找指定列
+      bizNo[Y]: 16
+
+
+
+  受理成功校验点: #CheckPointName, 选择被check调用，用于数据校验，入参需要输入Object[],第一项为PayOrder
+    af_pay_order:
+      __desc: 12期主动还款支付单
+      memo: 单收付-放贷
+      amount: 100
+      status: SUCCESS
+      $NotExist: true
+
+
+    group_af_pay_fund_detail:
+      __conditionKeys: tnt_inst_id,order_id
+      __orderBy: order by priority
+      af_pay_fund_detail:
+        - __desc: 贷款核心1元成功明细
+          memo: 贷款1元
+          amount: 100
+        - __desc: 存款核心1元成功明细
+          memo: 存款1元
+          amount: 100
+    
+    PayOrder:
+      __desc: 12期主动还款支付单
+      orderId: 123456
+      bizNo[MATCH]: PayRequest.bizNo
+      amount:
+        __desc: MultiCurrencyMoney@1元
+      bizChargeInfo:
+        __desc: BizChargeInfo@活期收费
+        amount:
+          __desc: MultiCurrency@1元
+        preCHargeNo: 123456
+      payFundDetail:
+        - __desc: PayFundDetail@存款核心10分明细
+          amount:
+            __desc: MultiCurrency@1元
+          assetToolName: CURRENT
+        - __desc: PayFundDetail@贷款核心20分明细
+          amount:
+            __desc: MultiCurrency@1元
+          assetToolName: LOAN
+    
+    PayFundDetail:
+      - __desc: 活期一元
+        assetToolName: CURRENT
+        amount:
+          __desc: MultiCurrency@1元
+      - __desc: 贷款一元
+        assetToolName: LOAN
+        amount:
+          __desc: MultiCurrency@1元
+
+  校验消息: #CheckPointName，选择被message调用，用于消息校验，需要提前准备消息格式
+    PAY_ACCEPT_MSG:
+      __desc: 受理成功消息
+      status: FAIL
+
+
+AF_PaymentService_pay_N02:
+  check:
+    af_pay_order:
+      memo: 单收付-放贷
+      amount: 100
+      status: SUCCESS
+  
+  message:
+    PAY_ACCEPT_MSG:
+      __desc: 受理成功消息
+      status: FAIL

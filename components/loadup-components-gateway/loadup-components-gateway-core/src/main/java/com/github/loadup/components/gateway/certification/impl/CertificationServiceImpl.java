@@ -122,7 +122,7 @@ public class CertificationServiceImpl implements CertificationService {
     }
 
     /**
-     * Setter method for property <tt>processComponent<tt>.
+     *
      */
     public void setProcessComponent(String processComponent) {
         this.processComponent = processComponent;

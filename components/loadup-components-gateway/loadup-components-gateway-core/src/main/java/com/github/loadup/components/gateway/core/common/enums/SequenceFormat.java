@@ -77,14 +77,14 @@ public enum SequenceFormat {
     }
 
     /**
-     * Getter method for property <tt>code</tt>.
+     * 
      */
     public String getCode() {
         return code;
     }
 
     /**
-     * Getter method for property <tt>message</tt>.
+     * 
      */
     public String getMessage() {
         return message;
