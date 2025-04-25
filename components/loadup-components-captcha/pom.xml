@@ -17,7 +17,7 @@
             <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.loadup.framework</groupId>
+            <groupId>com.github.loadup.commons</groupId>
             <artifactId>loadup-commons-util</artifactId>
         </dependency>
         <dependency>

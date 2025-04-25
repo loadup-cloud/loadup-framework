@@ -52,7 +52,7 @@
             <artifactId>commons-io</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.loadup.framework</groupId>
+            <groupId>com.github.loadup.commons</groupId>
             <artifactId>loadup-commons-dto</artifactId>
         </dependency>
     </dependencies>

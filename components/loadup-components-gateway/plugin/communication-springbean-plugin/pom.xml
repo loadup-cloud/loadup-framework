@@ -21,7 +21,7 @@
             <artifactId>loadup-components-gateway-facade</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.loadup.framework</groupId>
+            <groupId>com.github.loadup.commons</groupId>
             <artifactId>loadup-commons-util</artifactId>
             <version>${project.version}</version>
         </dependency>

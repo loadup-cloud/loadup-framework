@@ -16,7 +16,7 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.loadup.framework</groupId>
+            <groupId>com.github.loadup.commons</groupId>
             <artifactId>loadup-commons-lang</artifactId>
         </dependency>
         <dependency>
