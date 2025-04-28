@@ -29,7 +29,7 @@
         <dependency>
             <groupId>com.alibaba.cola</groupId>
             <artifactId>cola-component-dto</artifactId>
-            <version>4.3.2</version>
+            <version>${cola.version}</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-api</artifactId>
-            <version>1.13.0</version>
+            <version>${opentelemetry.version}</version>
         </dependency>
     </dependencies>
 

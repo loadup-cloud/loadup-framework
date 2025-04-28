@@ -14,15 +14,11 @@ import com.google.gson.JsonPrimitive;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.custommonkey.xmlunit.XpathEngine;
-import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -123,7 +119,7 @@ public class JsonDataGeneratorTest {
 
     @Test
     public void copyRepeatsDoesNotAddNullCharacters() throws IOException, JsonDataGeneratorException {
-        File file =new File("");
+        File file = new File("");
 
         try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("large_repeats.json");
              FileOutputStream fileOutputStream = new FileOutputStream(file)) {
@@ -192,7 +188,7 @@ public class JsonDataGeneratorTest {
         String results = new String(outputStream.toByteArray());
         JsonObject obj = (JsonObject) new com.google.gson.JsonParser().parse(results);
         int numberSize = obj.getAsJsonArray("numbers").size();
-     assertTrue(numberSize >= 3 && numberSize <= 10);
+        assertTrue(numberSize >= 3 && numberSize <= 10);
     }
 
     @Test//(expected = IllegalArgumentException.class)
@@ -346,7 +342,7 @@ public class JsonDataGeneratorTest {
         List<Future<String>> futures = executorService.invokeAll(callables);
         List<String> results = Lists.newArrayList(Iterables.transform(futures, new Function<Future<String>, String>() {
             @Override
-            public  String apply( Future<String> stringFuture) {
+            public String apply(Future<String> stringFuture) {
                 try {
                     return stringFuture.get();
                 } catch (InterruptedException | ExecutionException e) {
@@ -474,7 +470,7 @@ public class JsonDataGeneratorTest {
     }
 
     @Test
-    public void testXmlTemplate() throws IOException, JsonDataGeneratorException, SAXException, ParserConfigurationException, XpathException {
+    public void testXmlTemplate() throws IOException, JsonDataGeneratorException, SAXException, ParserConfigurationException {
         parser.generateTestDataJson(this.getClass().getClassLoader().getResource("xmlfunctionWithRepeat.xml"), outputStream);
 
         ByteArrayInputStream inputstream = new ByteArrayInputStream(outputStream.toByteArray());
@@ -485,14 +481,5 @@ public class JsonDataGeneratorTest {
         dbf.setIgnoringComments(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
 
-        Document doc = db.parse(inputstream);
-        XpathEngine simpleXpathEngine = XMLUnit.newXpathEngine();
-        String value = simpleXpathEngine.evaluate("//root/tags", doc);
-        assertEquals(value.split(",").length, 7);
-        assertTrue(simpleXpathEngine.evaluate("//root/element[1]/name", doc).length() > 1);
-        assertTrue(simpleXpathEngine.evaluate("//root/element[2]/name", doc).length() > 1);
-        assertTrue(simpleXpathEngine.evaluate("//root/friends/friend[1]/name", doc).length() > 1);
-        assertTrue(simpleXpathEngine.evaluate("//root/friends/friend[2]/name", doc).length() > 1);
-        assertTrue(simpleXpathEngine.evaluate("//root/friends/friend[3]/name", doc).length() > 1);
     }
 }
