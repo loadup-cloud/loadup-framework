@@ -28,10 +28,13 @@ package com.github.loadup.modules.upms.domain;
 
 import com.github.loadup.commons.domain.BaseDomain;
 import com.github.loadup.commons.util.ToStringUtils;
+import com.github.loadup.modules.upms.client.dto.UserName;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serial;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -40,17 +43,23 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class Role extends BaseDomain {
+public class UpmsUser extends BaseDomain {
     @Serial
-    private static final long serialVersionUID = 733055929483311499L;
+    private static final long serialVersionUID = 5534160252441899151L;
 
-    private String id;
-    private String roleName;
-    private String roleType;
-    private String roleCode;
-    private String description;
-    private String status;
-    private List<User> userList;
+    private String             id;
+    private String             account;
+    private String             nickName;
+    private UserName           englishName;
+    private UserName           officialName;
+    private String             password;
+    private String             avatar;
+    private LocalDate          birthday;
+    private LocalDateTime      registeredTime;
+    private String             userType;
+    private List<UpmsRole>     roleList;
+    private List<UpmsPosition> positionList;
+    private List<UpmsDepart>   departList;
 
     @Override
     public String toString() {

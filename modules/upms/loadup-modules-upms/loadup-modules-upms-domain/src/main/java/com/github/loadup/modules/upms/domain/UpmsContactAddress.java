@@ -40,7 +40,7 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
-public class ContactAddress extends BaseDomain implements Serializable {
+public class UpmsContactAddress extends BaseDomain implements Serializable {
     private String id;
     private String country;
     private String province;
@@ -57,10 +57,10 @@ public class ContactAddress extends BaseDomain implements Serializable {
     private String extendInfo;
 
     public boolean equals(Object o) {
-        if (!(o instanceof ContactAddress)) {
+        if (!(o instanceof UpmsContactAddress)) {
             return false;
         }
-        ContactAddress contactAddress = (ContactAddress) o;
+        UpmsContactAddress contactAddress = (UpmsContactAddress) o;
         if (!StringUtils.equals(contactAddress.getAddressType(), this.addressType)) {
             return false;
         } else if (!StringUtils.equals(contactAddress.getAddress1(), this.address1)) {

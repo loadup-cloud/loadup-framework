@@ -39,7 +39,7 @@ import java.io.Serial;
  */
 @Getter
 @Setter
-public class Menu extends BaseDomain {
+public class UpmsMenu extends BaseDomain {
     @Serial
     private String id;
 

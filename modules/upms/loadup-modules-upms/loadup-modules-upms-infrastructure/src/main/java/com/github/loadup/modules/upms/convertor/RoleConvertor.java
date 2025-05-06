@@ -27,7 +27,7 @@ package com.github.loadup.modules.upms.convertor;
  */
 
 import com.github.loadup.modules.upms.dal.dataobject.RoleDO;
-import com.github.loadup.modules.upms.domain.Role;
+import com.github.loadup.modules.upms.domain.UpmsRole;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -37,12 +37,12 @@ import java.util.List;
 public interface RoleConvertor {
     RoleConvertor INSTANCE = Mappers.getMapper(RoleConvertor.class);
 
-    Role toRole(RoleDO roleDO);
+    UpmsRole toRole(RoleDO roleDO);
 
-    List<Role> toRoleList(List<RoleDO> roleDOList);
+    List<UpmsRole> toRoleList(List<RoleDO> roleDOList);
 
-    RoleDO toRoleDO(Role role);
+    RoleDO toRoleDO(UpmsRole role);
 
-    List<RoleDO> toRoleDOList(List<Role> roleList);
+    List<RoleDO> toRoleDOList(List<UpmsRole> roleList);
 
 }

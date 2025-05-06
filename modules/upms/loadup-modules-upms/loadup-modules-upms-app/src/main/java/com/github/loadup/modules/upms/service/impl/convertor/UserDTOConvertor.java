@@ -29,7 +29,7 @@ package com.github.loadup.modules.upms.service.impl.convertor;
 import com.github.loadup.modules.upms.client.dto.SimpleUserDTO;
 import com.github.loadup.modules.upms.client.dto.UserDTO;
 import com.github.loadup.modules.upms.convertor.UserNameConvertor;
-import com.github.loadup.modules.upms.domain.User;
+import com.github.loadup.modules.upms.domain.UpmsUser;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -39,18 +39,18 @@ import java.util.List;
 public interface UserDTOConvertor {
     UserDTOConvertor INSTANCE = Mappers.getMapper(UserDTOConvertor.class);
 
-    User toUser(UserDTO dto);
+    UpmsUser toUser(UserDTO dto);
 
-    User toUser(SimpleUserDTO dto);
+    UpmsUser toUser(SimpleUserDTO dto);
 
-    List<User> toUserList(List<UserDTO> dtoList);
+    List<UpmsUser> toUserList(List<UserDTO> dtoList);
 
-    UserDTO toUserDTO(User domain);
+    UserDTO toUserDTO(UpmsUser domain);
 
-    List<UserDTO> toUserDTOList(List<User> domainList);
+    List<UserDTO> toUserDTOList(List<UpmsUser> domainList);
 
-    SimpleUserDTO toSimpleUserDTO(User domain);
+    SimpleUserDTO toSimpleUserDTO(UpmsUser domain);
 
-    List<SimpleUserDTO> toSimpleUserDTOList(List<User> domainList);
+    List<SimpleUserDTO> toSimpleUserDTOList(List<UpmsUser> domainList);
 
 }

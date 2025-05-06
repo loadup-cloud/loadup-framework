@@ -40,19 +40,17 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class Depart extends BaseDomain {
+public class UpmsRole extends BaseDomain {
     @Serial
-    private static final long serialVersionUID = 5928278866062804522L;
+    private static final long serialVersionUID = 733055929483311499L;
 
     private String id;
-    private Depart parent;
-    private String departName;
-    private String departCode;
-    private String departType;
+    private String roleName;
+    private String roleType;
+    private String roleCode;
     private String description;
-    private String status;
-    private int orderIndex;
-    private List<User> userList;
+    private String         status;
+    private List<UpmsUser> userList;
 
     @Override
     public String toString() {

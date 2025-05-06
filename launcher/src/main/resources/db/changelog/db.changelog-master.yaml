@@ -246,3 +246,19 @@ databaseChangeLog:
             schemaName: loadup-boot
             tableName: upms_user
             validate: true
+  - changeSet:
+      id: 4
+      author: Lise
+      changes:
+        - addColumn:
+            tableName: upms_user
+            columns:
+              - column:
+                  name: account
+                  type: varchar(64)
+        - renameColumn:
+            tableName: upms_user
+            oldColumnName: nickname
+            columnDataType: varchar(64)
+            newColumnName: nick_name
+            newDataType: varchar(64)

@@ -26,7 +26,7 @@ package com.github.loadup.modules.upms.gateway.impl;
  * #L%
  */
 
-import com.github.loadup.modules.upms.domain.Depart;
+import com.github.loadup.modules.upms.domain.UpmsDepart;
 import com.github.loadup.modules.upms.gateway.DepartGateway;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -38,12 +38,12 @@ import java.util.List;
 public class DepartGatewayImpl implements DepartGateway {
 
     @Override
-    public void create(Depart domain) {
+    public void create(UpmsDepart domain) {
 
     }
 
     @Override
-    public void update(Depart domain) {
+    public void update(UpmsDepart domain) {
 
     }
 
@@ -53,12 +53,12 @@ public class DepartGatewayImpl implements DepartGateway {
     }
 
     @Override
-    public Depart getById(String id) {
+    public UpmsDepart getById(String id) {
         return null;
     }
 
     @Override
-    public List<Depart> getByUserId(String userId) {
+    public List<UpmsDepart> getByUserId(String userId) {
         return List.of();
     }
 }

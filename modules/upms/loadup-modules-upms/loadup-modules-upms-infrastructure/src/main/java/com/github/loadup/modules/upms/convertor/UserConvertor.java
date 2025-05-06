@@ -27,7 +27,7 @@ package com.github.loadup.modules.upms.convertor;
  */
 
 import com.github.loadup.modules.upms.dal.dataobject.UserDO;
-import com.github.loadup.modules.upms.domain.User;
+import com.github.loadup.modules.upms.domain.UpmsUser;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -37,12 +37,12 @@ import java.util.List;
 public interface UserConvertor {
     UserConvertor INSTANCE = Mappers.getMapper(UserConvertor.class);
 
-    User toUser(UserDO userDO);
+    UpmsUser toUser(UserDO userDO);
 
-    List<User> toUserList(List<UserDO> userDOList);
+    List<UpmsUser> toUserList(List<UserDO> userDOList);
 
-    UserDO toUserDO(User user);
+    UserDO toUserDO(UpmsUser user);
 
-    List<UserDO> toUserDOList(List<User> user);
+    List<UserDO> toUserDOList(List<UpmsUser> user);
 
 }

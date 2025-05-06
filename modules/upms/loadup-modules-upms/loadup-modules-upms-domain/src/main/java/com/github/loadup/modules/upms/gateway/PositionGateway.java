@@ -26,20 +26,20 @@ package com.github.loadup.modules.upms.gateway;
  * #L%
  */
 
-import com.github.loadup.modules.upms.domain.Position;
+import com.github.loadup.modules.upms.domain.UpmsPosition;
 
 import java.util.List;
 
 public interface PositionGateway {
 
-    void create(Position domain);
+    void create(UpmsPosition domain);
 
-    void update(Position domain);
+    void update(UpmsPosition domain);
 
     void delete(String id);
 
-    Position getById(String id);
+    UpmsPosition getById(String id);
 
-    List<Position> getByUserId(String userId);
+    List<UpmsPosition> getByUserId(String userId);
 
 }

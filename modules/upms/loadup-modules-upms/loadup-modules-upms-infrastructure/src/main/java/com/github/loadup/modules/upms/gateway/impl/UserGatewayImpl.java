@@ -26,28 +26,23 @@ package com.github.loadup.modules.upms.gateway.impl;
  * #L%
  */
 
-import com.github.loadup.modules.upms.convertor.DepartConvertor;
-import com.github.loadup.modules.upms.convertor.PositionConvertor;
-import com.github.loadup.modules.upms.convertor.RoleConvertor;
-import com.github.loadup.modules.upms.convertor.UserConvertor;
-import com.github.loadup.modules.upms.dal.dataobject.UserDO;
-import com.github.loadup.modules.upms.dal.dataobject.UserDepartDO;
-import com.github.loadup.modules.upms.dal.dataobject.UserPositionDO;
-import com.github.loadup.modules.upms.dal.dataobject.UserRoleDO;
+import com.github.loadup.commons.error.AssertUtil;
+import com.github.loadup.commons.result.CommonResultCodeEnum;
+import com.github.loadup.commons.util.PasswordUtils;
+import com.github.loadup.modules.upms.convertor.*;
+import com.github.loadup.modules.upms.dal.dataobject.*;
 import com.github.loadup.modules.upms.dal.repository.*;
-import com.github.loadup.modules.upms.domain.Role;
-import com.github.loadup.modules.upms.domain.User;
+import com.github.loadup.modules.upms.domain.UpmsRole;
+import com.github.loadup.modules.upms.domain.UpmsUser;
 import com.github.loadup.modules.upms.gateway.UserGateway;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -75,19 +70,38 @@ public class UserGatewayImpl implements UserGateway {
     private RoleRepository roleRepository;
 
     @Override
-    public User create(User user) {
+    public UpmsUser create(UpmsUser user) {
         UserDO userDO = UserConvertor.INSTANCE.toUserDO(user);
-        // userDO.setNew(true);
+        String plantPassword = user.getPassword();
+        String randomSalt = PasswordUtils.getRandomSalt();
+        user.setPassword(PasswordUtils.encrypt(plantPassword, plantPassword, randomSalt));
         userRepository.save(userDO);
         return UserConvertor.INSTANCE.toUser(userDO);
     }
 
     @Override
-    public void changePassword(User user) {
-        Assert.notNull(user.getId(), "userId must not be null");
-        UserDO userDO = UserConvertor.INSTANCE.toUserDO(user);
-        // userDO.setNew(false);
-        userRepository.changePassword(user.getId(), userDO.getPassword());
+    public boolean validatePassword(String userId, String oldPassword) {
+        AssertUtil.notBlank(userId, CommonResultCodeEnum.PARAM_ILLEGAL, "userId must not be blank");
+        AssertUtil.notBlank(oldPassword, CommonResultCodeEnum.PARAM_ILLEGAL, "oldPassword must not be blank");
+        Optional<UserDO> byId = userRepository.findById(userId);
+        if (byId.isPresent()) {
+            UserDO userDO = byId.get();
+            String decrypted = PasswordUtils.decrypt(userDO.getPassword(), oldPassword, userDO.getSalt());
+            return StringUtils.equals(decrypted, oldPassword);
+        }
+        return false;
+    }
+
+    @Override
+    public void changePassword(String userId, String newPassword) {
+        Assert.notNull(userId, "userId must not be null");
+        Optional<UserDO> byId = userRepository.findById(userId);
+        if (byId.isPresent()) {
+            UserDO userDO = byId.get();
+            PasswordUtils.encrypt(newPassword, newPassword, userDO.getSalt());
+            userRepository.changePassword(userId, userDO.getPassword());
+        }
+
     }
 
     @Override
@@ -99,73 +113,92 @@ public class UserGatewayImpl implements UserGateway {
     }
 
     @Override
-    public User getById(String userId) {
-        User user = userRepository
-                .findById(userId)
-                .map(UserConvertor.INSTANCE::toUser)
-                .orElse(null);
+    public boolean exist(String userId) {
+        return userRepository.existsById(userId);
+    }
+
+    @Override
+    public UpmsUser getById(String userId) {
+        UpmsUser user = userRepository.findById(userId).map(UserConvertor.INSTANCE::toUser).orElse(null);
         if (Objects.isNull(user)) {
             return null;
         }
         List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByUserId(userId);
         List<UserDepartDO> userDepartDOList = userDepartRepository.findAllByUserId(userId);
         List<UserPositionDO> userPositionDOList = userPositionRepository.findAllByUserId(userId);
-        List<Role> roleList = userRoleDOList.stream()
-                .map(userRoleDO -> roleRepository
-                        .findById(userRoleDO.getRoleId())
-                        .map(RoleConvertor.INSTANCE::toRole)
-                        .orElse(null))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        List<UpmsRole> roleList = userRoleDOList.stream().map(userRoleDO -> roleRepository.findById(userRoleDO.getRoleId())
+                .map(RoleConvertor.INSTANCE::toRole).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
         user.setRoleList(roleList);
-        user.setDepartList(userDepartDOList.stream()
-                .map(userRoleDO -> departRepository
-                        .findById(userRoleDO.getDepartId())
-                        .map(DepartConvertor.INSTANCE::toDepart)
-                        .orElse(null))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
-        user.setPositionList(userPositionDOList.stream()
-                .map(userRoleDO -> positionRepository
-                        .findById(userRoleDO.getPositionId())
-                        .map(PositionConvertor.INSTANCE::toPosition)
-                        .orElse(null))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
+        user.setDepartList(userDepartDOList.stream().map(userRoleDO -> departRepository.findById(userRoleDO.getDepartId())
+                .map(DepartConvertor.INSTANCE::toDepart).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList()));
+        user.setPositionList(userPositionDOList.stream().map(userRoleDO -> positionRepository.findById(userRoleDO.getPositionId())
+                .map(PositionConvertor.INSTANCE::toPosition).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList()));
         return user;
     }
 
     @Override
-    public List<User> getByRoleId(String roleId) {
+    public List<UpmsUser> getByRoleId(String roleId) {
         List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByRoleId(roleId);
         return fetchUserList(userRoleDOList);
     }
 
     @Override
-    public List<User> getByRoleIdList(Collection<String> idList) {
+    public List<UpmsUser> getByRoleIdList(List<String> idList) {
         List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByRoleIdIn(idList);
         return fetchUserList(userRoleDOList);
     }
 
-    private List<User> fetchUserList(List<UserRoleDO> userRoleDOList) {
-        List<User> result = new ArrayList<>();
-        for (UserRoleDO userRoleDO : userRoleDOList) {
-            User user = userRepository
-                    .findById(userRoleDO.getUserId())
-                    .map(UserConvertor.INSTANCE::toUser)
-                    .orElse(null);
-            if (Objects.nonNull(user)) {
-                result.add(user);
-            }
-        }
-        return result;
+    private List<UpmsUser> fetchUserList(List<UserRoleDO> userRoleDOList) {
+        return userRoleDOList.stream().map(
+                userRoleDO -> userRepository.findById(userRoleDO.getUserId()).map(UserConvertor.INSTANCE::toUser)).filter(
+                Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
 
     @Override
     public void saveUserRoles(String userId, List<String> roleIds) {
-        List<UserRoleDO> userRoleDOList =
-                roleIds.stream().map(roleId -> new UserRoleDO(userId, roleId)).collect(Collectors.toList());
+        List<UserRoleDO> userRoleDOList = roleIds.stream().map(roleId -> new UserRoleDO(userId, roleId)).collect(Collectors.toList());
         userRoleRepository.removeAllByUserId(userId);
         userRoleRepository.saveAll(userRoleDOList);
     }
+
+    @Override
+    public List<String> getUserRoleList(String userId) {
+        List<UserRoleDO> userRoleList = userRoleRepository.findAllByUserId(userId);
+        if (CollectionUtils.isEmpty(userRoleList)) {
+            return new ArrayList<>();
+        }
+        return userRoleList.stream().map(v -> roleRepository.findById(v.getRoleId())).filter(Optional::isPresent).map(Optional::get).map(
+                RoleDO::getRoleCode).collect(Collectors.toList());
+    }
+
+    @Override
+    public Set<String> getUserRoleSet(String userId) {
+        return new HashSet<>(getUserRoleList(userId));
+    }
+
+    @Override
+    public Set<String> getUserPermissionsSet(String userId) {
+        return Set.of();
+    }
+
+    @Override
+    public UpmsUser getByAccount(String account) {
+        UserDO userDO = userRepository.findByAccount(account);
+        return UserConvertor.INSTANCE.toUser(userDO);
+    }
+
+    @Override
+    public List<UpmsUser> getByDepartIdList(List<String> idList) {
+        List<UserDepartDO> doList = userDepartRepository.findAllByDepartIdIn(idList);
+        return doList.stream().map(userRoleDO -> userRepository.findById(userRoleDO.getUserId()).map(UserConvertor.INSTANCE::toUser))
+                .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UpmsUser> getByDepartId(String departId) {
+        List<UserDepartDO> doList = userDepartRepository.findAllByDepartId(departId);
+        return doList.stream().map(userRoleDO -> userRepository.findById(userRoleDO.getUserId()).map(UserConvertor.INSTANCE::toUser))
+                .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+    }
+
 }

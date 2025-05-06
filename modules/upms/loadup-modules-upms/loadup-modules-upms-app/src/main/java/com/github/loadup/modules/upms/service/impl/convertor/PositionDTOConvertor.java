@@ -28,7 +28,7 @@ package com.github.loadup.modules.upms.service.impl.convertor;
 
 import com.github.loadup.modules.upms.client.dto.PositionDTO;
 import com.github.loadup.modules.upms.client.dto.SimplePositionDTO;
-import com.github.loadup.modules.upms.domain.Position;
+import com.github.loadup.modules.upms.domain.UpmsPosition;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -38,14 +38,14 @@ import java.util.List;
 public interface PositionDTOConvertor {
     PositionDTOConvertor INSTANCE = Mappers.getMapper(PositionDTOConvertor.class);
 
-    Position toPosition(PositionDTO dto);
+    UpmsPosition toPosition(PositionDTO dto);
 
-    List<Position> toPositionList(List<PositionDTO> dtoList);
+    List<UpmsPosition> toPositionList(List<PositionDTO> dtoList);
 
-    PositionDTO toPositionDTO(Position domain);
+    PositionDTO toPositionDTO(UpmsPosition domain);
 
-    SimplePositionDTO toSimplePositionDTO(Position domain);
+    SimplePositionDTO toSimplePositionDTO(UpmsPosition domain);
 
-    List<PositionDTO> toPositionDTOList(List<Position> domainList);
+    List<PositionDTO> toPositionDTOList(List<UpmsPosition> domainList);
 
 }

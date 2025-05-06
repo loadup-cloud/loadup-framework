@@ -26,7 +26,7 @@ package com.github.loadup.modules.upms.gateway.impl;
  * #L%
  */
 
-import com.github.loadup.modules.upms.domain.Position;
+import com.github.loadup.modules.upms.domain.UpmsPosition;
 import com.github.loadup.modules.upms.gateway.PositionGateway;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -37,12 +37,12 @@ import java.util.List;
 @Slf4j
 public class PositionGatewayImpl implements PositionGateway {
     @Override
-    public void create(Position domain) {
+    public void create(UpmsPosition domain) {
 
     }
 
     @Override
-    public void update(Position domain) {
+    public void update(UpmsPosition domain) {
 
     }
 
@@ -52,12 +52,12 @@ public class PositionGatewayImpl implements PositionGateway {
     }
 
     @Override
-    public Position getById(String id) {
+    public UpmsPosition getById(String id) {
         return null;
     }
 
     @Override
-    public List<Position> getByUserId(String userId) {
+    public List<UpmsPosition> getByUserId(String userId) {
         return List.of();
     }
 }

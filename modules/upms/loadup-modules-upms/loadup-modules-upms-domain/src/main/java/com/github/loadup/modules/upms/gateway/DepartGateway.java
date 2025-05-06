@@ -26,20 +26,20 @@ package com.github.loadup.modules.upms.gateway;
  * #L%
  */
 
-import com.github.loadup.modules.upms.domain.Depart;
+import com.github.loadup.modules.upms.domain.UpmsDepart;
 
 import java.util.List;
 
 public interface DepartGateway {
 
-    void create(Depart domain);
+    void create(UpmsDepart domain);
 
-    void update(Depart domain);
+    void update(UpmsDepart domain);
 
     void delete(String id);
 
-    Depart getById(String id);
+    UpmsDepart getById(String id);
 
-    List<Depart> getByUserId(String userId);
+    List<UpmsDepart> getByUserId(String userId);
 
 }

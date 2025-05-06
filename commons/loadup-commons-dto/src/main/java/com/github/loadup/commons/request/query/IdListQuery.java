@@ -33,6 +33,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
@@ -40,9 +41,9 @@ public class IdListQuery extends DTO {
     @Serial
     private static final long serialVersionUID = 7157141921495739675L;
 
-    private Collection<String> idList;
+    private List<String> idList;
 
-    public static IdListQuery of(@NotBlank Collection<String> idList) {
+    public static IdListQuery of(@NotBlank List<String> idList) {
         IdListQuery idQuery = new IdListQuery();
         idQuery.setIdList(idList);
         return idQuery;

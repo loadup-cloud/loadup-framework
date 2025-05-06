@@ -30,6 +30,7 @@ import com.github.loadup.modules.upms.dal.dataobject.UserDepartDO;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -37,6 +38,7 @@ public interface UserDepartRepository extends ListCrudRepository<UserDepartDO, S
     List<UserDepartDO> findAllByUserId(String userId);
 
     List<UserDepartDO> findAllByDepartId(String departId);
+    List<UserDepartDO> findAllByDepartIdIn(Collection<String> idList);
 
     void deleteAllByDepartId(String roleId);
 

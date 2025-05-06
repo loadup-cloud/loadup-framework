@@ -28,13 +28,13 @@ package com.github.loadup.modules.upms.convertor;
 
 import com.github.loadup.modules.upms.client.dto.UserName;
 import com.github.loadup.modules.upms.dal.dataobject.UserDO;
-import com.github.loadup.modules.upms.domain.User;
+import com.github.loadup.modules.upms.domain.UpmsUser;
 
 public class ConvetorTest {
     public static void main(String[] args) {
-        User user = new User();
+        UpmsUser user = new UpmsUser();
         user.setId("1");
-        user.setNickname("12");
+        user.setNickName("12");
         UserName userName = new UserName();
         userName.setFirstName("12");
         userName.setLastName("123");

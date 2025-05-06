@@ -39,4 +39,7 @@ public interface UserRepository extends ListCrudRepository<UserDO, String>, User
     @Modifying
     @Query("update upms_user set password = :password,modified_time=now() where id = :id")
     void changePassword(@Param("id") String id, @Param("password") String password);
+
+    UserDO findByAccount(@Param("account") String account);
+
 }

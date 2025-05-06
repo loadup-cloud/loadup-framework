@@ -27,7 +27,7 @@ package com.github.loadup.modules.upms.convertor;
  */
 
 import com.github.loadup.modules.upms.dal.dataobject.PositionDO;
-import com.github.loadup.modules.upms.domain.Position;
+import com.github.loadup.modules.upms.domain.UpmsPosition;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -37,12 +37,12 @@ import java.util.List;
 public interface PositionConvertor {
     PositionConvertor INSTANCE = Mappers.getMapper(PositionConvertor.class);
 
-    Position toPosition(PositionDO roleDO);
+    UpmsPosition toPosition(PositionDO roleDO);
 
-    List<Position> toPositionList(List<PositionDO> roleDOList);
+    List<UpmsPosition> toPositionList(List<PositionDO> roleDOList);
 
-    PositionDO toPositionDO(Position role);
+    PositionDO toPositionDO(UpmsPosition role);
 
-    List<PositionDO> toPositionDOList(List<Position> roleList);
+    List<PositionDO> toPositionDOList(List<UpmsPosition> roleList);
 
 }

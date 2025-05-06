@@ -27,7 +27,7 @@ package com.github.loadup.modules.upms.convertor;
  */
 
 import com.github.loadup.modules.upms.dal.dataobject.DepartDO;
-import com.github.loadup.modules.upms.domain.Depart;
+import com.github.loadup.modules.upms.domain.UpmsDepart;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -37,12 +37,12 @@ import java.util.List;
 public interface DepartConvertor {
     DepartConvertor INSTANCE = Mappers.getMapper(DepartConvertor.class);
 
-    Depart toDepart(DepartDO roleDO);
+    UpmsDepart toDepart(DepartDO roleDO);
 
-    List<Depart> toDepartList(List<DepartDO> roleDOList);
+    List<UpmsDepart> toDepartList(List<DepartDO> roleDOList);
 
-    DepartDO toDepartDO(Depart role);
+    DepartDO toDepartDO(UpmsDepart role);
 
-    List<DepartDO> toDepartDOList(List<Depart> roleList);
+    List<DepartDO> toDepartDOList(List<UpmsDepart> roleList);
 
 }

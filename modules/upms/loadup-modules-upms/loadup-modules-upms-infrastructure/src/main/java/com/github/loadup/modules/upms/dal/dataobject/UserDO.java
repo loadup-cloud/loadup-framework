@@ -41,17 +41,18 @@ import java.time.LocalDateTime;
 @Table("upms_user")
 public class UserDO extends BaseDO {
     @Serial
-    private static final long serialVersionUID = 3152323013685154107L;
+    private static final long          serialVersionUID = 3152323013685154107L;
     @Id
-    private String id;
-    private String nickname;
-    private String englishName;
-    private String officialName;
-    private String password;
-    private String salt;
-    private String avatar;
-    private LocalDate birthday;
-    private LocalDateTime registeredTime;
-    private String userType;
+    private              String        id;
+    private              String        account;
+    private              String        nickName;
+    private              String        englishName;
+    private              String        officialName;
+    private              String        password;
+    private              String        salt;
+    private              String        avatar;
+    private              LocalDate     birthday;
+    private              LocalDateTime registeredTime;
+    private              String        userType;
 
 }

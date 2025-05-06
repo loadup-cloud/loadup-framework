@@ -37,7 +37,7 @@ import com.github.loadup.modules.upms.client.cmd.RoleSaveCmd;
 import com.github.loadup.modules.upms.client.cmd.RoleUsersSaveCmd;
 import com.github.loadup.modules.upms.client.dto.RoleDTO;
 import com.github.loadup.modules.upms.client.dto.SimpleRoleDTO;
-import com.github.loadup.modules.upms.domain.Role;
+import com.github.loadup.modules.upms.domain.UpmsRole;
 import com.github.loadup.modules.upms.gateway.RoleGateway;
 import com.github.loadup.modules.upms.service.impl.convertor.RoleDTOConvertor;
 import jakarta.annotation.Resource;
@@ -54,14 +54,14 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public SingleResponse<RoleDTO> getRoleById(String roleId) {
-        Role role = roleGateway.getById(roleId);
+        UpmsRole role = roleGateway.getById(roleId);
         RoleDTO userDTO = RoleDTOConvertor.INSTANCE.toRoleDTO(role);
         return SingleResponse.of(userDTO);
     }
 
     @Override
     public MultiResponse<SimpleRoleDTO> getRoleByUserId(String userId) {
-        List<Role> roleList = roleGateway.getByUserId(userId);
+        List<UpmsRole> roleList = roleGateway.getByUserId(userId);
         List<SimpleRoleDTO> roleDTOList = RoleDTOConvertor.INSTANCE.toSimpleRoleDTO(roleList);
         return MultiResponse.of(roleDTOList);
     }
@@ -72,7 +72,7 @@ public class RoleServiceImpl implements RoleService {
                 (Void) -> ValidateUtils.validate(cmd), // check parameter
                 () -> { // process
                     SimpleRoleDTO dto = cmd.getRole();
-                    Role role = RoleDTOConvertor.INSTANCE.toRole(dto);
+                    UpmsRole role = RoleDTOConvertor.INSTANCE.toRole(dto);
                     if (StringUtils.isBlank(role.getStatus())) {
                         role.setStatus("NORMAL");
                     }
@@ -90,7 +90,7 @@ public class RoleServiceImpl implements RoleService {
         return ServiceTemplate.execute(
                 (Void) -> ValidateUtils.validate(cmd),
                 () -> {
-                    Role role = roleGateway.getById(cmd.getRoleId());
+                    UpmsRole role = roleGateway.getById(cmd.getRoleId());
                     if (Objects.isNull(role)) {
                         return SingleResponse.buildFailure(CommonResultCodeEnum.NOT_FOUND);
                     }

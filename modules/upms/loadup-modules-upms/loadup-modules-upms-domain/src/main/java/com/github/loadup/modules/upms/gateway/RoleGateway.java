@@ -26,7 +26,7 @@ package com.github.loadup.modules.upms.gateway;
  * #L%
  */
 
-import com.github.loadup.modules.upms.domain.Role;
+import com.github.loadup.modules.upms.domain.UpmsRole;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -35,15 +35,15 @@ import java.util.List;
 
 public interface RoleGateway {
 
-    Role create(Role role);
+    UpmsRole create(UpmsRole role);
 
-    void update(Role role);
+    void update(UpmsRole role);
 
     void delete(String roleId);
 
-    Role getById(String roleId);
+    UpmsRole getById(String roleId);
 
-    List<Role> getByUserId(String userId);
+    List<UpmsRole> getByUserId(String userId);
 
     void saveRoleUsers(@NotBlank String roleId, @NotNull @NotEmpty List<String> userIdList);
 }

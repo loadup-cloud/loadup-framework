@@ -1,4 +1,4 @@
-package com.github.loadup.modules.upms.gateway;
+package com.github.loadup.modules.upms.domain;
 
 /*-
  * #%L
@@ -26,40 +26,36 @@ package com.github.loadup.modules.upms.gateway;
  * #L%
  */
 
-import com.github.loadup.modules.upms.domain.UpmsUser;
+import com.github.loadup.commons.domain.BaseDomain;
+import com.github.loadup.commons.util.ToStringUtils;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.io.Serial;
 import java.util.List;
-import java.util.Set;
 
-public interface UserGateway {
+/**
+ * @author lise
+ * @since 1.0.0
+ */
+@Getter
+@Setter
+public class UpmsDepart extends BaseDomain {
+    @Serial
+    private static final long serialVersionUID = 5928278866062804522L;
 
-    UpmsUser create(UpmsUser user);
+    private String     id;
+    private UpmsDepart parent;
+    private String     departName;
+    private String     departCode;
+    private String     departType;
+    private String     description;
+    private String     status;
+    private int            orderIndex;
+    private List<UpmsUser> userList;
 
-    void changePassword(String userId, String newPassword);
-
-    void delete(String userId);
-
-    boolean exist(String userId);
-
-    UpmsUser getById(String userId);
-
-    List<UpmsUser> getByRoleId(String roleId);
-
-    List<UpmsUser> getByRoleIdList(List<String> idList);
-
-    void saveUserRoles(String userId, List<String> roleIds);
-
-    List<String> getUserRoleList(String userId);
-
-    Set<String> getUserRoleSet(String userId);
-
-    Set<String> getUserPermissionsSet(String userId);
-
-    UpmsUser getByAccount(String account);
-
-    List<UpmsUser> getByDepartIdList(List<String> idList);
-
-    List<UpmsUser> getByDepartId(String departId);
-
-    boolean validatePassword(String userId, String oldPassword);
+    @Override
+    public String toString() {
+        return ToStringUtils.reflectionToString(this);
+    }
 }

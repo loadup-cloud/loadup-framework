@@ -31,15 +31,14 @@ import com.github.loadup.commons.request.query.IdListQuery;
 import com.github.loadup.commons.request.query.IdQuery;
 import com.github.loadup.commons.result.*;
 import com.github.loadup.commons.template.ServiceTemplate;
-import com.github.loadup.commons.util.PasswordUtils;
 import com.github.loadup.commons.util.ValidateUtils;
 import com.github.loadup.modules.upms.client.api.UserService;
 import com.github.loadup.modules.upms.client.cmd.*;
 import com.github.loadup.modules.upms.client.dto.SimpleUserDTO;
 import com.github.loadup.modules.upms.client.dto.UserDTO;
-import com.github.loadup.modules.upms.domain.User;
-import com.github.loadup.modules.upms.gateway.UserGateway;
 import com.github.loadup.modules.upms.client.query.*;
+import com.github.loadup.modules.upms.domain.UpmsUser;
+import com.github.loadup.modules.upms.gateway.UserGateway;
 import com.github.loadup.modules.upms.service.impl.convertor.UserDTOConvertor;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -54,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public SingleResponse<UserDTO> getUserById(IdQuery query) {
-        User user = userGateway.getById(query.getId());
+        UpmsUser user = userGateway.getById(query.getId());
         UserDTO userDTO = UserDTOConvertor.INSTANCE.toUserDTO(user);
         return SingleResponse.of(userDTO);
     }
@@ -78,7 +77,7 @@ public class UserServiceImpl implements UserService {
     public MultiResponse<SimpleUserDTO> getUserByRoleIds(UserRoleListQuery query) {
         return ServiceTemplate.execute((Void) -> ValidateUtils.validate(query), // check parameter
                 () -> { // process
-                    List<User> userList = userGateway.getByRoleIdList(query.getIdList());
+                    List<UpmsUser> userList = userGateway.getByRoleIdList(query.getIdList());
                     List<SimpleUserDTO> userDTOList = UserDTOConvertor.INSTANCE.toSimpleUserDTOList(userList);
                     return MultiResponse.of(userDTOList);
                 },
@@ -105,10 +104,9 @@ public class UserServiceImpl implements UserService {
         return ServiceTemplate.execute((Void) -> ValidateUtils.validate(cmd), // check parameter
                 () -> { // process
                     SimpleUserDTO dto = cmd.getUser();
-                    User user = UserDTOConvertor.INSTANCE.toUser(dto);
-                    user.setSalt(PasswordUtils.getRandomSalt());
+                    UpmsUser user = UserDTOConvertor.INSTANCE.toUser(dto);
                     String plantPassword = dto.getPassword();
-                    user.setPassword(PasswordUtils.encrypt(plantPassword, plantPassword, user.getSalt()));
+                    user.setPassword(plantPassword);
                     user = userGateway.create(user);
                     return SingleResponse.of(UserDTOConvertor.INSTANCE.toSimpleUserDTO(user));
                 },
@@ -124,7 +122,7 @@ public class UserServiceImpl implements UserService {
         return ServiceTemplate.execute((Void) -> ValidateUtils.validate(cmd), // check parameter
 
                 () -> { // process
-                    User user = userGateway.getById(cmd.getUserId());
+                    UpmsUser user = userGateway.getById(cmd.getUserId());
                     if (Objects.isNull(user)) {
                         return SingleResponse.buildFailure(CommonResultCodeEnum.NOT_FOUND);
                     }
@@ -150,16 +148,13 @@ public class UserServiceImpl implements UserService {
                 // process
                 () -> {
                     String userId = cmd.getId();
-                    User user = userGateway.getById(userId);
-                    if (Objects.isNull(user)) {
+                    if (!userGateway.exist(userId)) {
                         return Response.buildFailure(CommonResultCodeEnum.NOT_FOUND);
                     }
-                    String dbPassword = user.getPassword();
-                    if (!cmd.getOldPassword().equals(PasswordUtils.decrypt(dbPassword, cmd.getOldPassword(), user.getSalt()))) {
+                    if (!userGateway.validatePassword(userId, cmd.getOldPassword())) {
                         return Response.buildFailure(CommonResultCodeEnum.PROCESS_FAIL);
                     }
-                    user.setPassword(PasswordUtils.encrypt(cmd.getNewPassword(), cmd.getNewPassword(), user.getSalt()));
-                    userGateway.changePassword(user);
+                    userGateway.changePassword(userId, cmd.getNewPassword());
                     return Response.buildSuccess();
                 },
                 //

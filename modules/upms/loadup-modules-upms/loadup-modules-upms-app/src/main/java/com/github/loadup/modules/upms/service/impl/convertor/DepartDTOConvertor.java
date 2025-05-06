@@ -28,7 +28,7 @@ package com.github.loadup.modules.upms.service.impl.convertor;
 
 import com.github.loadup.modules.upms.client.dto.DepartDTO;
 import com.github.loadup.modules.upms.client.dto.SimpleDepartDTO;
-import com.github.loadup.modules.upms.domain.Depart;
+import com.github.loadup.modules.upms.domain.UpmsDepart;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -38,14 +38,14 @@ import java.util.List;
 public interface DepartDTOConvertor {
     DepartDTOConvertor INSTANCE = Mappers.getMapper(DepartDTOConvertor.class);
 
-    Depart toDepart(DepartDTO dto);
+    UpmsDepart toDepart(DepartDTO dto);
 
-    List<Depart> toDepartList(List<DepartDTO> dtoList);
+    List<UpmsDepart> toDepartList(List<DepartDTO> dtoList);
 
-    DepartDTO toDepartDTO(Depart domain);
+    DepartDTO toDepartDTO(UpmsDepart domain);
 
-    SimpleDepartDTO toSimpleDepartDTO(Depart domain);
+    SimpleDepartDTO toSimpleDepartDTO(UpmsDepart domain);
 
-    List<DepartDTO> toDepartDTOList(List<Depart> domainList);
+    List<DepartDTO> toDepartDTOList(List<UpmsDepart> domainList);
 
 }

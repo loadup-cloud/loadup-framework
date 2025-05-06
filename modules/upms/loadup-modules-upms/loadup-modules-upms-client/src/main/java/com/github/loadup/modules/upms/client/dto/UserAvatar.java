@@ -1,4 +1,4 @@
-package com.github.loadup.modules.upms.domain;
+package com.github.loadup.modules.upms.client.dto;
 
 /*-
  * #%L
@@ -26,13 +26,9 @@ package com.github.loadup.modules.upms.domain;
  * #L%
  */
 
-import com.github.loadup.commons.domain.BaseDomain;
-import com.github.loadup.commons.util.ToStringUtils;
+import com.github.loadup.commons.dto.DTO;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serial;
-import java.util.List;
 
 /**
  * @author lise
@@ -40,19 +36,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class Position extends BaseDomain {
-    @Serial
-    private static final long serialVersionUID = 5928278866062804522L;
-
-    private String id;
-    private String positionName;
-    private String positionCode;
-    private String positionLevel;
-    private String description;
-    private List<User> userList;
-
-    @Override
-    public String toString() {
-        return ToStringUtils.reflectionToString(this);
-    }
+public class UserAvatar extends DTO {
+    private String avatarName;
+    private String avatarUrl;
 }

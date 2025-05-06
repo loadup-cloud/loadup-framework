@@ -32,12 +32,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
 public class UserDeptListQuery extends IdListQuery {
 
-    public static UserDeptListQuery of(@NotBlank Collection<String> idList) {
+    public static UserDeptListQuery of(@NotBlank List<String> idList) {
         UserDeptListQuery idQuery = new UserDeptListQuery();
         idQuery.setIdList(idList);
         return idQuery;

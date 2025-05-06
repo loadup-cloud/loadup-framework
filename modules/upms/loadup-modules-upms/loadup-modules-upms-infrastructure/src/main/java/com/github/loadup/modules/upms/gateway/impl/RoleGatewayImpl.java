@@ -33,8 +33,8 @@ import com.github.loadup.modules.upms.dal.dataobject.UserRoleDO;
 import com.github.loadup.modules.upms.dal.repository.RoleRepository;
 import com.github.loadup.modules.upms.dal.repository.UserRepository;
 import com.github.loadup.modules.upms.dal.repository.UserRoleRepository;
-import com.github.loadup.modules.upms.domain.Role;
-import com.github.loadup.modules.upms.domain.User;
+import com.github.loadup.modules.upms.domain.UpmsRole;
+import com.github.loadup.modules.upms.domain.UpmsUser;
 import com.github.loadup.modules.upms.gateway.RoleGateway;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -59,14 +59,14 @@ public class RoleGatewayImpl implements RoleGateway {
     private UserRepository userRepository;
 
     @Override
-    public Role create(Role role) {
+    public UpmsRole create(UpmsRole role) {
         RoleDO roleDO = RoleConvertor.INSTANCE.toRoleDO(role);
         roleRepository.save(roleDO);
         return RoleConvertor.INSTANCE.toRole(roleDO);
     }
 
     @Override
-    public void update(Role role) {
+    public void update(UpmsRole role) {
         if (StringUtils.isBlank(role.getId())) {
             return;
         }
@@ -82,13 +82,13 @@ public class RoleGatewayImpl implements RoleGateway {
     }
 
     @Override
-    public Role getById(String roleId) {
-        Role role = roleRepository
+    public UpmsRole getById(String roleId) {
+        UpmsRole role = roleRepository
                 .findById(roleId)
                 .map(RoleConvertor.INSTANCE::toRole)
                 .orElse(null);
         List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByRoleId(roleId);
-        List<User> userList = userRoleDOList.stream()
+        List<UpmsUser> userList = userRoleDOList.stream()
                 .map(userRoleDO -> userRepository
                         .findById(userRoleDO.getUserId())
                         .map(UserConvertor.INSTANCE::toUser)
@@ -100,11 +100,11 @@ public class RoleGatewayImpl implements RoleGateway {
     }
 
     @Override
-    public List<Role> getByUserId(String userId) {
+    public List<UpmsRole> getByUserId(String userId) {
         List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByUserId(userId);
-        List<Role> result = new ArrayList<>();
+        List<UpmsRole> result = new ArrayList<>();
         for (UserRoleDO userRoleDO : userRoleDOList) {
-            Role role = roleRepository
+            UpmsRole role = roleRepository
                     .findById(userRoleDO.getUserId())
                     .map(RoleConvertor.INSTANCE::toRole)
                     .orElse(null);

@@ -28,7 +28,7 @@ package com.github.loadup.modules.upms.service.impl.convertor;
 
 import com.github.loadup.modules.upms.client.dto.RoleDTO;
 import com.github.loadup.modules.upms.client.dto.SimpleRoleDTO;
-import com.github.loadup.modules.upms.domain.Role;
+import com.github.loadup.modules.upms.domain.UpmsRole;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -38,17 +38,17 @@ import java.util.List;
 public interface RoleDTOConvertor {
     RoleDTOConvertor INSTANCE = Mappers.getMapper(RoleDTOConvertor.class);
 
-    Role toRole(RoleDTO dto);
+    UpmsRole toRole(RoleDTO dto);
 
-    Role toRole(SimpleRoleDTO dto);
+    UpmsRole toRole(SimpleRoleDTO dto);
 
-    List<Role> toRoleList(List<RoleDTO> dtoList);
+    List<UpmsRole> toRoleList(List<RoleDTO> dtoList);
 
-    List<RoleDTO> toRoleDTOList(List<Role> domainList);
+    List<RoleDTO> toRoleDTOList(List<UpmsRole> domainList);
 
-    List<SimpleRoleDTO> toSimpleRoleDTO(List<Role> domainList);
+    List<SimpleRoleDTO> toSimpleRoleDTO(List<UpmsRole> domainList);
 
-    RoleDTO toRoleDTO(Role role);
+    RoleDTO toRoleDTO(UpmsRole role);
 
-    SimpleRoleDTO toSimpleRoleDTO(Role role);
+    SimpleRoleDTO toSimpleRoleDTO(UpmsRole role);
 }
