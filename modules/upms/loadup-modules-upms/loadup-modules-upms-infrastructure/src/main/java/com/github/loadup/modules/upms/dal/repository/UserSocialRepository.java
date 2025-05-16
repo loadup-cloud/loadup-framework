@@ -1,4 +1,4 @@
-package com.github.loadup.modules.upms.convertor;
+package com.github.loadup.modules.upms.dal.repository;
 
 /*-
  * #%L
@@ -26,21 +26,20 @@ package com.github.loadup.modules.upms.convertor;
  * #L%
  */
 
-import com.github.loadup.modules.upms.domain.UserName;
-import com.github.loadup.modules.upms.dal.dataobject.UserDO;
-import com.github.loadup.modules.upms.domain.UpmsUser;
+import com.github.loadup.modules.upms.dal.dataobject.UserSocialDO;
+import org.springframework.data.jdbc.repository.query.Query;
+import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-public class ConvetorTest {
-    public static void main(String[] args) {
-        UpmsUser user = new UpmsUser();
-        user.setId("1");
-        user.setNickName("12");
-        UserName userName = new UserName();
-        userName.setFirstName("12");
-        userName.setLastName("123");
-        user.setEnglishName(userName);
-        String convert = UserNameConvertor.INSTANCE.convert(userName);
-        UserDO userd = UserConvertor.INSTANCE.toUserDO(user);
-        System.out.println(userd);
-    }
+import java.util.List;
+
+@Repository
+public interface UserSocialRepository extends ListCrudRepository<UserSocialDO, String> {
+
+    @Query("select * from upms_user_social where account_type = :accountType and social_account = :socialAccount ")
+    UserSocialDO findByAccountType(@Param("accountType") String accountType, @Param("socialAccount") String socialAccount);
+
+    List<UserSocialDO> findAllByUserId(String userId);
+
 }

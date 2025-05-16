@@ -64,7 +64,7 @@ public class UserServiceTest {
     public void testSave() {
         SingleResponse<SimpleUserDTO> userById = createUser();
         Assertions.assertEquals("SUCCESS", userById.getResult().getCode());
-        Assertions.assertEquals("ls", userById.getData().getNickname());
+        Assertions.assertEquals("ls", userById.getData().getNickName());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetUserByRoleIds() {
+    public void testListByRoleIds() {
         SingleResponse<SimpleUserDTO> userDTO = createUser();
         SingleResponse<SimpleRoleDTO> roleDTO = createRole();
         SingleResponse<SimpleRoleDTO> roleDTO2 = createRole();
@@ -122,7 +122,7 @@ public class UserServiceTest {
 
         UserRoleListQuery query = new UserRoleListQuery();
         query.setIdList(roles);
-        MultiResponse<SimpleUserDTO> response = userService.getUserByRoleIds(query);
+        MultiResponse<SimpleUserDTO> response = userService.listByRoleIds(query);
         Assertions.assertEquals("SUCCESS", response.getResult().getCode());
         List<SimpleUserDTO> userDTOList = response.getData();
         Assertions.assertEquals(1, userDTOList.size());
@@ -145,7 +145,7 @@ public class UserServiceTest {
     private SingleResponse<SimpleUserDTO> createUser() {
         UserSaveCmd cmd = new UserSaveCmd();
         SimpleUserDTO dto = new SimpleUserDTO();
-        dto.setNickname("ls");
+        dto.setNickName("ls");
         dto.setPassword("123456");
         cmd.setUser(dto);
         SingleResponse<SimpleUserDTO> userDTO = userService.save(cmd);

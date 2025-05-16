@@ -262,3 +262,41 @@ databaseChangeLog:
             columnDataType: varchar(64)
             newColumnName: nick_name
             newDataType: varchar(64)
+  - changeSet:
+      id: 5
+      author: Lise
+      changes:
+        - createTable:
+            tableName: upms_user_social
+            columns:
+              - column:
+                  name: id
+                  type: varchar(32)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_time
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modified_time
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: varchar(32)
+              - column:
+                  name: account_type
+                  type: varchar(32)
+              - column:
+                  name: social_account
+                  type: varchar(128)
+              - column:
+                  name: social_nick_name
+                  type: varchar(128)
+              - column:
+                  name: social_token
+                  type: varchar(1024)

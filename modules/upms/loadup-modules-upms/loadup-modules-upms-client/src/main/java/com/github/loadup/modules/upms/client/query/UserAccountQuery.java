@@ -1,10 +1,10 @@
-package com.github.loadup.modules.upms.convertor;
+package com.github.loadup.modules.upms.client.query;
 
 /*-
  * #%L
- * loadup-modules-upms-infrastructure
+ * loadup-modules-upms-client
  * %%
- * Copyright (C) 2022 - 2024 loadup_cloud
+ * Copyright (C) 2022 - 2025 loadup_cloud
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,21 +26,19 @@ package com.github.loadup.modules.upms.convertor;
  * #L%
  */
 
-import com.github.loadup.modules.upms.domain.UserName;
-import com.github.loadup.modules.upms.dal.dataobject.UserDO;
-import com.github.loadup.modules.upms.domain.UpmsUser;
+import com.github.loadup.commons.dto.DTO;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 
-public class ConvetorTest {
-    public static void main(String[] args) {
-        UpmsUser user = new UpmsUser();
-        user.setId("1");
-        user.setNickName("12");
-        UserName userName = new UserName();
-        userName.setFirstName("12");
-        userName.setLastName("123");
-        user.setEnglishName(userName);
-        String convert = UserNameConvertor.INSTANCE.convert(userName);
-        UserDO userd = UserConvertor.INSTANCE.toUserDO(user);
-        System.out.println(userd);
+@Getter
+@Setter
+public class UserAccountQuery extends DTO {
+    private String account;
+
+    public static UserAccountQuery of(@NotBlank String account) {
+        UserAccountQuery query = new UserAccountQuery();
+        query.setAccount(account);
+        return query;
     }
 }

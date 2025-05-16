@@ -1,10 +1,10 @@
-package com.github.loadup.modules.upms.client.query;
+package com.github.loadup.modules.upms.domain;
 
 /*-
  * #%L
- * loadup-modules-upms-client
+ * loadup-modules-upms-domain
  * %%
- * Copyright (C) 2022 - 2025 loadup_cloud
+ * Copyright (C) 2022 - 2024 loadup_cloud
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -12,10 +12,10 @@ package com.github.loadup.modules.upms.client.query;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,18 +27,32 @@ package com.github.loadup.modules.upms.client.query;
  */
 
 import com.github.loadup.commons.dto.DTO;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * @author lise
+ * @since 1.0.0
+ */
 @Getter
 @Setter
-public class UserNameQuery extends DTO {
-    private String userName;
+public class UserName extends DTO {
+    private String firstName;
+    private String lastName;
 
-    public static UserNameQuery of(@NotBlank String userName) {
-        UserNameQuery idQuery = new UserNameQuery();
-        idQuery.setUserName(userName);
-        return idQuery;
+    public String fullName() {
+        return firstName + lastName;
+    }
+
+    public String fullNameWithSpace() {
+        return firstName + " " + lastName;
+    }
+
+    public String fullNameReverse() {
+        return lastName + firstName;
+    }
+
+    public String fullNameReverseWithSpace() {
+        return lastName + " " + firstName;
     }
 }

@@ -34,6 +34,7 @@ import com.github.loadup.modules.upms.dal.dataobject.*;
 import com.github.loadup.modules.upms.dal.repository.*;
 import com.github.loadup.modules.upms.domain.UpmsRole;
 import com.github.loadup.modules.upms.domain.UpmsUser;
+import com.github.loadup.modules.upms.enums.SocialAccountTypeEnum;
 import com.github.loadup.modules.upms.gateway.UserGateway;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -69,6 +70,9 @@ public class UserGatewayImpl implements UserGateway {
     @Resource
     private RoleRepository roleRepository;
 
+    @Resource
+    private UserSocialRepository userSocialRepository;
+
     @Override
     public UpmsUser create(UpmsUser user) {
         UserDO userDO = UserConvertor.INSTANCE.toUserDO(user);
@@ -90,6 +94,12 @@ public class UserGatewayImpl implements UserGateway {
             return StringUtils.equals(decrypted, oldPassword);
         }
         return false;
+    }
+
+    @Override
+    public Optional<UpmsUser> findByMobile(String mobile) {
+        UserSocialDO userSocialDO = userSocialRepository.findByAccountType(SocialAccountTypeEnum.MOBILE.getCode(), mobile);
+        return findById(userSocialDO.getUserId());
     }
 
     @Override
@@ -118,11 +128,12 @@ public class UserGatewayImpl implements UserGateway {
     }
 
     @Override
-    public UpmsUser getById(String userId) {
-        UpmsUser user = userRepository.findById(userId).map(UserConvertor.INSTANCE::toUser).orElse(null);
-        if (Objects.isNull(user)) {
-            return null;
-        }
+    public Optional<UpmsUser> findById(String userId) {
+        return userRepository.findById(userId).map(UserConvertor.INSTANCE::toUser).map(v -> assembleUserDetail(v));
+    }
+
+    private UpmsUser assembleUserDetail(UpmsUser user) {
+        String userId = user.getId();
         List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByUserId(userId);
         List<UserDepartDO> userDepartDOList = userDepartRepository.findAllByUserId(userId);
         List<UserPositionDO> userPositionDOList = userPositionRepository.findAllByUserId(userId);
@@ -137,13 +148,13 @@ public class UserGatewayImpl implements UserGateway {
     }
 
     @Override
-    public List<UpmsUser> getByRoleId(String roleId) {
+    public List<UpmsUser> findByRoleId(String roleId) {
         List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByRoleId(roleId);
         return fetchUserList(userRoleDOList);
     }
 
     @Override
-    public List<UpmsUser> getByRoleIdList(List<String> idList) {
+    public List<UpmsUser> findByRoleIdList(List<String> idList) {
         List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByRoleIdIn(idList);
         return fetchUserList(userRoleDOList);
     }
@@ -182,20 +193,21 @@ public class UserGatewayImpl implements UserGateway {
     }
 
     @Override
-    public UpmsUser getByAccount(String account) {
+    public UpmsUser findByAccount(String account) {
         UserDO userDO = userRepository.findByAccount(account);
-        return UserConvertor.INSTANCE.toUser(userDO);
+        UpmsUser user = UserConvertor.INSTANCE.toUser(userDO);
+        return assembleUserDetail(user);
     }
 
     @Override
-    public List<UpmsUser> getByDepartIdList(List<String> idList) {
+    public List<UpmsUser> findByDepartIdList(List<String> idList) {
         List<UserDepartDO> doList = userDepartRepository.findAllByDepartIdIn(idList);
         return doList.stream().map(userRoleDO -> userRepository.findById(userRoleDO.getUserId()).map(UserConvertor.INSTANCE::toUser))
                 .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
 
     @Override
-    public List<UpmsUser> getByDepartId(String departId) {
+    public List<UpmsUser> findByDepartId(String departId) {
         List<UserDepartDO> doList = userDepartRepository.findAllByDepartId(departId);
         return doList.stream().map(userRoleDO -> userRepository.findById(userRoleDO.getUserId()).map(UserConvertor.INSTANCE::toUser))
                 .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());

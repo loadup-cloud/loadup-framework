@@ -28,8 +28,7 @@ package com.github.loadup.modules.upms.gateway;
 
 import com.github.loadup.modules.upms.domain.UpmsUser;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public interface UserGateway {
 
@@ -41,11 +40,11 @@ public interface UserGateway {
 
     boolean exist(String userId);
 
-    UpmsUser getById(String userId);
+    Optional<UpmsUser> findById(String userId);
 
-    List<UpmsUser> getByRoleId(String roleId);
+    List<UpmsUser> findByRoleId(String roleId);
 
-    List<UpmsUser> getByRoleIdList(List<String> idList);
+    List<UpmsUser> findByRoleIdList(List<String> idList);
 
     void saveUserRoles(String userId, List<String> roleIds);
 
@@ -55,11 +54,13 @@ public interface UserGateway {
 
     Set<String> getUserPermissionsSet(String userId);
 
-    UpmsUser getByAccount(String account);
+    UpmsUser findByAccount(String account);
 
-    List<UpmsUser> getByDepartIdList(List<String> idList);
+    List<UpmsUser> findByDepartIdList(List<String> idList);
 
-    List<UpmsUser> getByDepartId(String departId);
+    List<UpmsUser> findByDepartId(String departId);
 
     boolean validatePassword(String userId, String oldPassword);
+
+    Optional<UpmsUser> findByMobile(String mobile);
 }

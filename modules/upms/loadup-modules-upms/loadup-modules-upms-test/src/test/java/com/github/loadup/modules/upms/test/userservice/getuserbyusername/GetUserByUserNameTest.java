@@ -27,6 +27,7 @@ package com.github.loadup.modules.upms.test.userservice.getuserbyusername;
  */
 
 import com.github.loadup.components.testify.runtime.TestifyRuntimeContext;
+import com.github.loadup.modules.upms.client.query.UserAccountQuery;
 import com.github.loadup.modules.upms.test.base.LoadupUpmsTestBase;
 import com.github.loadup.components.testify.annotation.TestBean;
 import com.github.loadup.components.testify.annotation.testify.RunOnly;
@@ -63,7 +64,7 @@ public class GetUserByUserNameTest extends LoadupUpmsTestBase {
 	 *  - 如果需要重写预跑反填数据需要设置: overwrite = true
 	 *  - sqlList可填写仅针对本测试方法的校验db数据的捞取逻辑，更多解释可参考基类的backFillSqlList方法注释
 	 *
-	 * {@link com.github.loadup.modules.upms.client.api.UserService#getUserByUserName(com.github.loadup.modules.upms.client.query.UserNameQuery)}
+	 * {@link com.github.loadup.modules.upms.client.api.UserService#findByUserAccount(UserAccountQuery)}
 	 **/
 	@Test(dataProvider = "TestifyDataProvider")
 	@AutoFill(overwrite = false, sqlList = {})

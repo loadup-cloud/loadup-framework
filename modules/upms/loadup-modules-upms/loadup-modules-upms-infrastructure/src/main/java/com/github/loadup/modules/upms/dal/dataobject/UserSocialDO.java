@@ -1,8 +1,8 @@
-package com.github.loadup.modules.upms.client.dto;
+package com.github.loadup.modules.upms.dal.dataobject;
 
 /*-
  * #%L
- * loadup-modules-upms-domain
+ * loadup-modules-upms-infrastructure
  * %%
  * Copyright (C) 2022 - 2024 loadup_cloud
  * %%
@@ -26,17 +26,26 @@ package com.github.loadup.modules.upms.client.dto;
  * #L%
  */
 
-import com.github.loadup.commons.dto.DTO;
+import com.github.loadup.commons.dataobject.BaseDO;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-/**
- * @author lise
- * @since 1.0.0
- */
+import java.io.Serial;
+
 @Getter
 @Setter
-public class UserName extends DTO {
-    private String firstName;
-    private String lastName;
+@Table("upms_user_social")
+public class UserSocialDO extends BaseDO {
+    @Serial
+    private static final long   serialVersionUID = 1285059735878662311L;
+    @Id
+    private              String id;
+    private              String userId;
+    private              String accountType;
+    private              String socialAccount;
+    private              String socialNickName;
+    private              String socialToken;
+
 }

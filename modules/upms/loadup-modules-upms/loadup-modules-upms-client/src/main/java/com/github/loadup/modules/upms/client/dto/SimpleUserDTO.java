@@ -27,6 +27,7 @@ package com.github.loadup.modules.upms.client.dto;
  */
 
 import com.github.loadup.commons.dto.DTO;
+import com.github.loadup.modules.upms.domain.UserName;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,14 +41,15 @@ public class SimpleUserDTO extends DTO {
     @Serial
     private static final long serialVersionUID = -3669783060494947628L;
 
-    private String id;
-    private String nickname;
-    private UserName englishName;
-    private UserName officialName;
-    private String password;
-    private String avatar;
-    private LocalDate birthday;
+    private String        id;
+    private String        account;
+    private String        nickName;
+    private UserName      englishName;
+    private UserName      officialName;
+    private String        password;
+    private String        avatar;
+    private LocalDate     birthday;
     private LocalDateTime registeredTime;
-    private String userType;
+    private String        userType;
 }
 

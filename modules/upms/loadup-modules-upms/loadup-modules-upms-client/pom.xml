@@ -19,6 +19,10 @@
             <groupId>com.github.loadup.commons</groupId>
             <artifactId>loadup-commons-lang</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.github.loadup.modules</groupId>
+            <artifactId>loadup-modules-upms-domain</artifactId>
+            <version>${loadup.framework.version}</version>
+        </dependency>
     </dependencies>
 </project>

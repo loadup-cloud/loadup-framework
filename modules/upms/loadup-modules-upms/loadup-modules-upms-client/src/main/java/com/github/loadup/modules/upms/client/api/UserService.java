@@ -37,19 +37,19 @@ import com.github.loadup.modules.upms.client.dto.UserDTO;
 import com.github.loadup.modules.upms.client.query.*;
 
 public interface UserService {
-    SingleResponse<UserDTO> getUserById(IdQuery query);
+    SingleResponse<UserDTO> findById(IdQuery query);
 
-    SingleResponse<UserDTO> getUserByIds(IdListQuery query);
+    MultiResponse<UserDTO> listByIds(IdListQuery query);
 
-    SingleResponse<UserDTO> getUserByUserName(UserNameQuery query);
+    SingleResponse<UserDTO> findByUserAccount(UserAccountQuery query);
 
-    SingleResponse<UserDTO> getUserByUserMobile(UserMobileQuery query);
+    SingleResponse<UserDTO> findByUserMobile(UserMobileQuery query);
 
-    MultiResponse<SimpleUserDTO> getUserByRoleIds(UserRoleListQuery query);
+    MultiResponse<SimpleUserDTO> listByRoleIds(UserRoleListQuery query);
 
-    MultiResponse<SimpleUserDTO> getUserByDeptIds(UserDeptListQuery query);
+    MultiResponse<SimpleUserDTO> listByDeptIds(UserDeptListQuery query);
 
-    MultiResponse<SimpleUserDTO> getUserByPostIds(UserPostListQuery query);
+    MultiResponse<SimpleUserDTO> listByPostIds(UserPostListQuery query);
 
     SingleResponse<SimpleUserDTO> save(UserSaveCmd cmd);
 

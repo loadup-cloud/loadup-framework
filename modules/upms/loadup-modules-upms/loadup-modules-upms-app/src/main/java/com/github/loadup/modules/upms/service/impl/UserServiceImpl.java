@@ -44,7 +44,8 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -52,32 +53,44 @@ public class UserServiceImpl implements UserService {
     private UserGateway userGateway;
 
     @Override
-    public SingleResponse<UserDTO> getUserById(IdQuery query) {
-        UpmsUser user = userGateway.getById(query.getId());
+    public SingleResponse<UserDTO> findById(IdQuery query) {
+        Optional<UpmsUser> user = userGateway.findById(query.getId());
+        if (user.isEmpty()) {
+            return SingleResponse.buildFailure();
+        }
+        UserDTO userDTO = UserDTOConvertor.INSTANCE.toUserDTO(user.get());
+        return SingleResponse.of(userDTO);
+    }
+
+    @Override
+    public MultiResponse<UserDTO> listByIds(IdListQuery query) {
+        List<UserDTO> dtoList = query.getIdList().stream().map(v -> userGateway.findById(v)).map(
+                v -> UserDTOConvertor.INSTANCE.toUserDTO(v.get())).collect(Collectors.toList());
+        return MultiResponse.of(dtoList);
+    }
+
+    @Override
+    public SingleResponse<UserDTO> findByUserAccount(UserAccountQuery query) {
+        UpmsUser user = userGateway.findByAccount(query.getAccount());
         UserDTO userDTO = UserDTOConvertor.INSTANCE.toUserDTO(user);
         return SingleResponse.of(userDTO);
     }
 
     @Override
-    public SingleResponse<UserDTO> getUserByIds(IdListQuery query) {
-        return null;
+    public SingleResponse<UserDTO> findByUserMobile(UserMobileQuery query) {
+        Optional<UpmsUser> user = userGateway.findByMobile(query.getMobile());
+        if (user.isEmpty()) {
+            return SingleResponse.buildFailure();
+        }
+        UserDTO userDTO = UserDTOConvertor.INSTANCE.toUserDTO(user.get());
+        return SingleResponse.of(userDTO);
     }
 
     @Override
-    public SingleResponse<UserDTO> getUserByUserName(UserNameQuery query) {
-        return null;
-    }
-
-    @Override
-    public SingleResponse<UserDTO> getUserByUserMobile(UserMobileQuery query) {
-        return null;
-    }
-
-    @Override
-    public MultiResponse<SimpleUserDTO> getUserByRoleIds(UserRoleListQuery query) {
+    public MultiResponse<SimpleUserDTO> listByRoleIds(UserRoleListQuery query) {
         return ServiceTemplate.execute((Void) -> ValidateUtils.validate(query), // check parameter
                 () -> { // process
-                    List<UpmsUser> userList = userGateway.getByRoleIdList(query.getIdList());
+                    List<UpmsUser> userList = userGateway.findByRoleIdList(query.getIdList());
                     List<SimpleUserDTO> userDTOList = UserDTOConvertor.INSTANCE.toSimpleUserDTOList(userList);
                     return MultiResponse.of(userDTOList);
                 },
@@ -90,12 +103,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public MultiResponse<SimpleUserDTO> getUserByDeptIds(UserDeptListQuery query) {
+    public MultiResponse<SimpleUserDTO> listByDeptIds(UserDeptListQuery query) {
         return null;
     }
 
     @Override
-    public MultiResponse<SimpleUserDTO> getUserByPostIds(UserPostListQuery query) {
+    public MultiResponse<SimpleUserDTO> listByPostIds(UserPostListQuery query) {
         return null;
     }
 
@@ -122,12 +135,12 @@ public class UserServiceImpl implements UserService {
         return ServiceTemplate.execute((Void) -> ValidateUtils.validate(cmd), // check parameter
 
                 () -> { // process
-                    UpmsUser user = userGateway.getById(cmd.getUserId());
-                    if (Objects.isNull(user)) {
+                    Optional<UpmsUser> user = userGateway.findById(cmd.getUserId());
+                    if (user.isEmpty()) {
                         return SingleResponse.buildFailure(CommonResultCodeEnum.NOT_FOUND);
                     }
                     userGateway.saveUserRoles(cmd.getUserId(), cmd.getRoleIdList());
-                    return getUserById(IdQuery.of(cmd.getUserId()));
+                    return findById(IdQuery.of(cmd.getUserId()));
                 },
                 //
                 (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),

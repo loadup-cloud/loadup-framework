@@ -63,12 +63,12 @@ public class GetUserByIdTest extends LoadupUpmsTestBase {
 	 *  - 如果需要重写预跑反填数据需要设置: overwrite = true
 	 *  - sqlList可填写仅针对本测试方法的校验db数据的捞取逻辑，更多解释可参考基类的backFillSqlList方法注释
 	 *
-	 * {@link com.github.loadup.modules.upms.client.api.UserService#getUserById(com.github.loadup.commons.request.query.IdQuery)}
+	 * {@link com.github.loadup.modules.upms.client.api.UserService#findById(com.github.loadup.commons.request.query.IdQuery)}
 	 **/
 	@Test(dataProvider = "TestifyDataProvider")
 	@AutoFill(overwrite = false, sqlList = {})
     @RunOnly(caseList = {".*"})  // 支持正则匹配，且仅在本地调试时生效
-	public void getUserById(String caseId, String desc, PrepareData prepareData) {
+	public void findById(String caseId, String desc, PrepareData prepareData) {
 		runTest(caseId, prepareData);
 	}
 

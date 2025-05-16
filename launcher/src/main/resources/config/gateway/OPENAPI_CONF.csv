@@ -1,4 +1,4 @@
 open_uri,integration_uri,security_strategy_code,integration_service_request_header_assemble,integration_service_request_assemble,integration_service_response_parser,communication_properties
-/v1/getUserById,SPRINGBEAN://userServiceImpl/getUserById,OFF,DefaultAssemble.java,DefaultAssemble.java,DefaultParser.java,
+/v1/getUserById,SPRINGBEAN://userServiceImpl/findById,OFF,DefaultAssemble.java,DefaultAssemble.java,DefaultParser.java,
 /v1/getUserByRoleIds,SPRINGBEAN://userServiceImpl/getUserByRoleIds,OFF,DefaultAssemble.java,DefaultAssemble.java,DefaultParser.java,
 /v1/save,SPRINGBEAN://userServiceImpl/save,OFF,DefaultAssemble.java,DefaultAssemble.java,DefaultParser.java,

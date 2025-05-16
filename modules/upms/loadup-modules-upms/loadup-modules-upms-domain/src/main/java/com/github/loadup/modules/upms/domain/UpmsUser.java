@@ -28,9 +28,11 @@ package com.github.loadup.modules.upms.domain;
 
 import com.github.loadup.commons.domain.BaseDomain;
 import com.github.loadup.commons.util.ToStringUtils;
-import com.github.loadup.modules.upms.client.dto.UserName;
+import com.github.loadup.modules.upms.enums.SocialAccountTypeEnum;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serial;
 import java.time.LocalDate;
@@ -60,6 +62,29 @@ public class UpmsUser extends BaseDomain {
     private List<UpmsRole>     roleList;
     private List<UpmsPosition> positionList;
     private List<UpmsDepart>   departList;
+    private List<UpmsSocial>   socialList;
+
+    public String mobile() {
+        if (CollectionUtils.isNotEmpty(socialList)) {
+            for (UpmsSocial social : socialList) {
+                if (SocialAccountTypeEnum.MOBILE.equals(social.getAccountType())) {
+                    return social.getSocialAccount();
+                }
+            }
+        }
+        return StringUtils.EMPTY;
+    }
+
+    public UserEmail email() {
+        if (CollectionUtils.isNotEmpty(socialList)) {
+            for (UpmsSocial social : socialList) {
+                if (SocialAccountTypeEnum.EMAIL.equals(social.getAccountType())) {
+                    return UserEmail.of(social.getSocialAccount());
+                }
+            }
+        }
+        return UserEmail.blankEmail();
+    }
 
     @Override
     public String toString() {

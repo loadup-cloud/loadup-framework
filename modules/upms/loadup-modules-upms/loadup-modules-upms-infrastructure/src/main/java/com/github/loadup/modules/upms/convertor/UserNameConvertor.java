@@ -27,7 +27,7 @@ package com.github.loadup.modules.upms.convertor;
  */
 
 import com.github.loadup.commons.util.JsonUtil;
-import com.github.loadup.modules.upms.client.dto.UserName;
+import com.github.loadup.modules.upms.domain.UserName;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

@@ -84,7 +84,7 @@ public class RoleServiceTest {
     private SingleResponse<SimpleUserDTO> createUser() {
         UserSaveCmd cmd = new UserSaveCmd();
         SimpleUserDTO dto = new SimpleUserDTO();
-        dto.setNickname("ls");
+        dto.setNickName("ls");
         dto.setPassword("123456");
         cmd.setUser(dto);
         SingleResponse<SimpleUserDTO> userDTO = userService.save(cmd);
