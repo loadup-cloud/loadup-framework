@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.context;
 
 /*-
@@ -30,7 +31,7 @@ import org.testng.Assert;
 
 public class TestifySuiteContextHolder {
 
-    //线程上下文
+    // 线程上下文
     private static ThreadLocal<TestifySuiteContext> testifySuiteContextLocal = new ThreadLocal<TestifySuiteContext>();
 
     /**

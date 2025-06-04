@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.prototype.parser.impl;
 
 /*-
@@ -26,6 +27,8 @@ package com.github.loadup.components.gateway.core.prototype.parser.impl;
  * #L%
  */
 
+import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.*;
+
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
 import com.github.loadup.components.gateway.core.prototype.model.SignatureRequest;
 import com.github.loadup.components.gateway.core.prototype.parser.SignatureService;
@@ -35,8 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.*;
 
 /**
  * <p>

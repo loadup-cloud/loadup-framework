@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.util.date;
 
 /*-
@@ -26,14 +27,11 @@ package com.github.loadup.commons.util.date;
  * #L%
  */
 
-
+import java.time.Duration;
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.Duration;
-
 public class DurationUtils extends org.apache.commons.lang3.time.DurationUtils {
-    private DurationUtils() {
-    }
+    private DurationUtils() {}
 
     /**
      * 解析字符串为Duration

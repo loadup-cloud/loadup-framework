@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.db.model;
 
 /*-
@@ -35,29 +36,27 @@ import com.github.loadup.components.testify.log.TestifyLogUtil;
 import com.github.loadup.components.testify.util.BeanUtil;
 import com.github.loadup.components.testify.util.FileUtil;
 import com.github.loadup.components.testify.util.XMLUtil;
+import java.io.File;
+import java.sql.*;
+import java.util.*;
+import java.util.Date;
+import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.testng.Assert;
 import org.w3c.dom.NodeList;
 
-import javax.sql.DataSource;
-import java.io.File;
-import java.sql.*;
-import java.util.Date;
-import java.util.*;
-
 /**
  * 数据库链接对象
  *
- * 
+ *
  *
  */
 @Slf4j
 public class DBConnection {
-
 
     protected Connection conn;
 
@@ -86,20 +85,19 @@ public class DBConnection {
     public DBConnection(String dbConfigKey) {
         Assert.assertNotNull("数据库配置Key不能为空", dbConfigKey);
         if (AtsConfiguration.isOffLine()) {
-            //线下环境
+            // 线下环境
             this.isOnline = false;
             if (dbConfigKey.startsWith("ext")) {
                 this.url = AtsConfiguration.getAtsDBProperty(dbConfigKey + "_db_url");
                 this.userName = AtsConfiguration.getAtsDBProperty(dbConfigKey + "_db_username");
                 this.password = AtsConfiguration.getAtsDBProperty(dbConfigKey + "_db_password");
                 this.schema = AtsConfiguration.getAtsDBProperty(dbConfigKey + "_db_schema");
-                this.service = AbstractDBService.getService(this.url, this.userName, this.password,
-                        this.schema);
+                this.service = AbstractDBService.getService(this.url, this.userName, this.password, this.schema);
                 this.dbType = service.getDbType();
                 this.conn = service.getConn();
             } else {
-                //虽输入数据源模式，但因为为线下，故加载默认数据库链接
-                //(仅支持OB模式, Oracle库xml中太多，必须手动指定)
+                // 虽输入数据源模式，但因为为线下，故加载默认数据库链接
+                // (仅支持OB模式, Oracle库xml中太多，必须手动指定)
                 String dbMode = AtsConfiguration.getSofaConfig("dbmode");
 
                 Assert.assertNotNull("sofa配置中dbmode不能为空", dbMode);
@@ -115,23 +113,21 @@ public class DBConnection {
                         break;
                     }
                 }
-                this.service = new MySQLService(this.url,this.userName,this.password,this.schema);
+                this.service = new MySQLService(this.url, this.userName, this.password, this.schema);
                 this.conn = service.getConn();
             }
             TestifyLogUtil.info(log, "使用线下数据库链接" + url);
         } else if (StringUtils.equalsIgnoreCase(dbConfigKey.substring(0, 2), "ds")) {
-            //线上环境
+            // 线上环境
             this.isOnline = true;
             String ds = dbConfigKey.trim().toLowerCase();
             String dataSourceBeanName = null;
-            if (!ds.equals(AtsConstants.DATASOURCE_KEY)
-                    && ds.startsWith(AtsConstants.DATASOURCE_KEY)) {
+            if (!ds.equals(AtsConstants.DATASOURCE_KEY) && ds.startsWith(AtsConstants.DATASOURCE_KEY)) {
                 String suffix = ds.replaceFirst(AtsConstants.DATASOURCE_KEY, "");
                 String dataSourceBeanKey = AtsConstants.DATA_SOURCE_BEAN_NAME + "_" + suffix;
                 dataSourceBeanName = AtsConfiguration.getAtsProperty(dataSourceBeanKey);
             } else {
-                dataSourceBeanName = AtsConfiguration
-                        .getAtsProperty(AtsConstants.DATA_SOURCE_BEAN_NAME);
+                dataSourceBeanName = AtsConfiguration.getAtsProperty(AtsConstants.DATA_SOURCE_BEAN_NAME);
             }
             Assert.assertNotNull("数据源名称不能为空", dataSourceBeanName);
             String[] parts = dataSourceBeanName.split(";");
@@ -151,11 +147,12 @@ public class DBConnection {
                 // 再到虚拟bundle里取一次
                 if (dataSource == null) {
                     // 如果没有数据源则以on-the-fly-bundle为准
-//                    dataSource = (DataSource) BeanUtil.getBean(dataSourceBeanName,
-//                        SofaTestConstants.ON_THE_FLY_BUNDLE_NAME);
+                    //                    dataSource = (DataSource)
+                    // BeanUtil.getBean(dataSourceBeanName,
+                    //                        SofaTestConstants.ON_THE_FLY_BUNDLE_NAME);
                 }
             }
-//            Assert.assertNotNull("数据源bean不能为空", dataSource);
+            //            Assert.assertNotNull("数据源bean不能为空", dataSource);
             TestifyLogUtil.info(log, "使用" + dbConfigKey + "对应线上数据源链接: " + dataSourceBeanName);
             extractDBTypeFromDataSource();
             try {
@@ -183,8 +180,7 @@ public class DBConnection {
         this.password = password;
         this.schema = schema;
         this.isOnline = false;
-        AbstractDBService service = AbstractDBService.getService(this.url, this.userName,
-                this.password, this.schema);
+        AbstractDBService service = AbstractDBService.getService(this.url, this.userName, this.password, this.schema);
         this.conn = service.getConn();
         this.dbType = service.getDbType();
     }
@@ -263,8 +259,7 @@ public class DBConnection {
         }
         Map<String, Object> map = new HashMap<String, Object>();
         try {
-            if (isLock)
-                this.conn.setAutoCommit(false);
+            if (isLock) this.conn.setAutoCommit(false);
             PreparedStatement stat = conn.prepareStatement(sql);
             ResultSet resultSet = stat.executeQuery();
             ResultSetMetaData rsmd = resultSet.getMetaData();
@@ -313,8 +308,7 @@ public class DBConnection {
         try {
             Statement stmt = this.conn.createStatement();
             ResultSet resultSet = stmt.executeQuery(sql);
-            if (resultSet.next())
-                return resultSet.getString(1);
+            if (resultSet.next()) return resultSet.getString(1);
         } catch (SQLException e) {
             TestifyLogUtil.error(log, "数据库Sql执行出错:" + sql, e);
         }
@@ -342,8 +336,7 @@ public class DBConnection {
         try {
             Statement stmt = this.conn.createStatement();
             ResultSet resultSet = stmt.executeQuery(sql);
-            if (resultSet.next())
-                return resultSet.getDate(0);
+            if (resultSet.next()) return resultSet.getDate(0);
         } catch (SQLException e) {
             TestifyLogUtil.error(log, "数据库Sql执行出错:" + sql, e);
         }
@@ -368,12 +361,13 @@ public class DBConnection {
      */
     private void extractDBTypeFromDataSource() {
         String rawString = ToStringBuilder.reflectionToString(dataSource);
-//        Assert
-//            .assertTrue("数据源信息包含dataSourceFactoryMap", rawString.contains("dataSourceFactoryMap"));
+        //        Assert
+        //            .assertTrue("数据源信息包含dataSourceFactoryMap",
+        // rawString.contains("dataSourceFactoryMap"));
         String tmp = rawString.substring(rawString.indexOf("dataSourceFactoryMap") + 22);
         String dbTypeCode = tmp.substring(0, tmp.indexOf("="));
         Assert.assertNotNull("数据库类型不能为空", dbTypeCode);
-       if (dbTypeCode.equals("MYSQL")) {
+        if (dbTypeCode.equals("MYSQL")) {
             this.dbType = DataBaseTypeEnum.MYSQL;
         } else {
             Assert.fail("数据库类型异常");
@@ -443,5 +437,4 @@ public class DBConnection {
     public boolean isOnline() {
         return isOnline;
     }
-
 }

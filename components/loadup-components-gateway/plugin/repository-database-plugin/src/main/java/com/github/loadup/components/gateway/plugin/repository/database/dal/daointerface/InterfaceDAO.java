@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.database.dal.daointerface;
 
 /*-
@@ -27,7 +28,6 @@ package com.github.loadup.components.gateway.plugin.repository.database.dal.daoi
  */
 
 import com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject.InterfaceDO;
-
 import java.util.List;
 
 /**
@@ -81,7 +81,13 @@ public interface InterfaceDAO {
     /**
      * Query DB table <tt>gateway_interface</tt> for records.
      */
-    public List<InterfaceDO> loadByPage(String tenantId, String interfaceId, String clientId, String type, String status,
-                                        String interfaceName, int offset, int rowcount);
-
+    public List<InterfaceDO> loadByPage(
+            String tenantId,
+            String interfaceId,
+            String clientId,
+            String type,
+            String status,
+            String interfaceName,
+            int offset,
+            int rowcount);
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.util.commonAlgo;
 
 /*-
@@ -27,16 +28,15 @@ package com.github.loadup.components.gateway.certification.util.commonAlgo;
  */
 
 import com.github.loadup.components.gateway.certification.util.Base64Util;
-import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
+import java.security.Security;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESedeKeySpec;
 import javax.crypto.spec.IvParameterSpec;
-import java.security.Security;
+import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * DESede对称加密算法实现
@@ -72,7 +72,6 @@ public class DESedeUtil {
         }
 
         return cipher.doFinal(data);
-
     }
 
     /**
@@ -89,7 +88,6 @@ public class DESedeUtil {
         }
 
         return cipher.doFinal(data);
-
     }
 
     /**
@@ -103,7 +101,6 @@ public class DESedeUtil {
         SecretKey secretKey = keyGenerator.generateKey();
 
         return secretKey.getEncoded();
-
     }
 
     /**
@@ -115,7 +112,6 @@ public class DESedeUtil {
         SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(KEY_ALGO_NAME);
 
         return keyFactory.generateSecret(deSedeKeySpec);
-
     }
 
     /**
@@ -123,14 +119,13 @@ public class DESedeUtil {
      *
      * @throws Exception
      */
-    public static byte[] encrypt(byte[] data, byte[] key, String salt,
-                                 String algorithm) throws Exception {
+    public static byte[] encrypt(byte[] data, byte[] key, String salt, String algorithm) throws Exception {
 
         Cipher cipher = Cipher.getInstance(algorithm);
 
         IvParameterSpec iv = convertIv(cipher, salt);
 
-        if (isCBCMode(algorithm)) { //只有cbc才能带盐
+        if (isCBCMode(algorithm)) { // 只有cbc才能带盐
             cipher.init(Cipher.ENCRYPT_MODE, recovertKey(key), iv);
         } else {
             cipher.init(Cipher.ENCRYPT_MODE, recovertKey(key));
@@ -143,8 +138,7 @@ public class DESedeUtil {
      *
      * @throws Exception
      */
-    public static byte[] decrypt(byte[] data, byte[] key, String salt,
-                                 String algorithm) throws Exception {
+    public static byte[] decrypt(byte[] data, byte[] key, String salt, String algorithm) throws Exception {
         Cipher cipher = Cipher.getInstance(algorithm);
 
         IvParameterSpec iv = convertIv(cipher, salt);

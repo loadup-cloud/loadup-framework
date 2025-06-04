@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2012 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.api;
 
 /*-
@@ -31,14 +28,13 @@ package com.github.loadup.components.testify.api;
  */
 
 import com.github.loadup.components.testify.object.CtsObjectUtil;
-
 import java.util.List;
 import java.util.Map;
 
 /**
  * cts操作工具类常规入口，已弃用，这里仅保留用于过渡
  *
- * 
+ *
  *
  */
 @SuppressWarnings("deprecation")
@@ -69,8 +65,7 @@ public class ObjectOperateApis {
      * @throws NumberFormatException
      */
     public static <T> T genObjectFromCSV(Class<T> objClass, String csvPath, String index)
-            throws NumberFormatException,
-            Exception {
+            throws NumberFormatException, Exception {
         return CtsObjectUtil.genObjectFromCSV(objClass, csvPath, index);
     }
 
@@ -94,7 +89,6 @@ public class ObjectOperateApis {
      * @param index
      * @return 校验结果：true-校验成功     false-校验失败
      */
-
     public static void checkObject(Object actual, String csvPath, String index) {
         CtsObjectUtil.checkObject(actual, csvPath, index);
     }
@@ -108,9 +102,7 @@ public class ObjectOperateApis {
      * @param map
      * @return 校验结果：true-校验成功     false-校验失败
      */
-    public static void checkObject(Object actual, String csvPath, String index,
-                                   Map<String, String> map) {
+    public static void checkObject(Object actual, String csvPath, String index, Map<String, String> map) {
         CtsObjectUtil.checkObject(actual, csvPath, index, map);
     }
-
 }

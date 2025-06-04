@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.common.cache;
 
 /*-
@@ -224,14 +225,14 @@ public enum TableName {
     }
 
     /**
-     * 
+     *
      */
     public String getTableName() {
         return tableName;
     }
 
     /**
-     * 
+     *
      */
     public String getRefreshKey() {
         return refreshKey;

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.script.cache;
 
 /*-
@@ -26,6 +27,8 @@ package com.github.loadup.components.gateway.message.script.cache;
  * #L%
  */
 
+import static com.github.loadup.components.gateway.core.common.Constant.PATH_CONJUNCTION;
+
 import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.util.RepositoryUtil;
 import com.github.loadup.components.gateway.common.util.TenantUtil;
@@ -42,17 +45,14 @@ import com.github.loadup.components.gateway.facade.config.model.Constant;
 import com.github.loadup.components.gateway.facade.config.model.SPIConditionGroup;
 import com.github.loadup.components.gateway.message.script.parser.groovy.GroovyInnerCache;
 import jakarta.annotation.Resource;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import static com.github.loadup.components.gateway.core.common.Constant.PATH_CONJUNCTION;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * groovy脚本名称缓存
@@ -309,11 +309,11 @@ public class GroovyScriptCache {
      */
     public static String generateParserBeanName(String url, String tntInstId, String roleType, String interfaceType) {
         return StringUtils.lowerCase(StringUtils.join(
-                new String[]{UriUtil.getUriWithDot(url), roleType, interfaceType, tntInstId}, PATH_CONJUNCTION));
+                new String[] {UriUtil.getUriWithDot(url), roleType, interfaceType, tntInstId}, PATH_CONJUNCTION));
     }
 
     /**
-     * 
+     *
      */
     @Resource
     public void setInterfaceProdCenterQueryService(InterfaceProdCenterQueryService interfaceProdCenterQueryService) {

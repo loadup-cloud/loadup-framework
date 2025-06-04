@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils;
 
 /*-
@@ -35,69 +32,69 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author geyonglong.gyl
- * 
+ *
  */
 public class IdentityCardUtils {
     /**
      * 身份证号的第0位
      */
-    public final static int ZERO = 0;
+    public static final int ZERO = 0;
 
     /**
      * 身份证号的第4位
      */
-    public final static int FOUR = 4;
+    public static final int FOUR = 4;
+
     /**
      * 身份证号的第6位
      */
-    public final static int SIX = 6;
+    public static final int SIX = 6;
 
     /**
      * 身份证号的第8位
      */
-    public final static int EIGHT = 8;
+    public static final int EIGHT = 8;
 
     /**
      * 身份证号的第10位
      */
-    public final static int TEN = 10;
+    public static final int TEN = 10;
 
     /**
      * 身份证号的第12位
      */
-    public final static int TWELVE = 12;
+    public static final int TWELVE = 12;
 
     /**
      * 身份证号的第14位
      */
-    public final static int FOURTEEN = 14;
+    public static final int FOURTEEN = 14;
 
     /**
      * 身份证号的第15位
      */
-    public final static int FIFTEEN = 15;
+    public static final int FIFTEEN = 15;
 
     /**
      * 身份证号的第16位
      */
-    public final static int SIXTEEN = 16;
+    public static final int SIXTEEN = 16;
 
     /**
      * 身份证号的第17位
      */
-    public final static int SEVENTEEN = 17;
+    public static final int SEVENTEEN = 17;
 
     /**
      * 十九世纪
      */
-    public final static String NINETEEN = "19";
+    public static final String NINETEEN = "19";
 
     /**
      * 身份证号模式
@@ -107,25 +104,23 @@ public class IdentityCardUtils {
     /**
      * 18位身份证最后的附加位
      */
-    public final static String OVERHEAD_BIT = "X";
+    public static final String OVERHEAD_BIT = "X";
 
     /**
      * 十九世纪
      */
-    public final static int THE_19_CENTURY = 1900;
+    public static final int THE_19_CENTURY = 1900;
 
     /**
      * 男性的标识
      */
     private static final Set<String> MALE_FLAGS = new HashSet<String>();
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(IdentityCardUtils.class);
-    private static int[] WEIGHT = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9,
-            10, 5, 8, 4, 2};                                            //十七位数字本体码权重
-    private static char[] VALIDATE = {'1', '0', 'X', '9', '8', '7', '6', '5',
-            '4', '3', '2'};                                            //mod11,对应校验码字符值
 
-    //初始化男性标识集合
+    private static final Logger LOGGER = LoggerFactory.getLogger(IdentityCardUtils.class);
+    private static int[] WEIGHT = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2}; // 十七位数字本体码权重
+    private static char[] VALIDATE = {'1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2'}; // mod11,对应校验码字符值
+
+    // 初始化男性标识集合
     static {
         MALE_FLAGS.add("1");
         MALE_FLAGS.add("3");
@@ -185,12 +180,11 @@ public class IdentityCardUtils {
 
         String idCardNo = idCardNumber.trim();
 
-        //处理18位身份证 
+        // 处理18位身份证
         if (idCardNo.length() == 18) {
             year = idCardNo.substring(SIX, TEN);
             month = idCardNo.substring(TEN, TWELVE);
             day = idCardNo.substring(TWELVE, FOURTEEN);
-
         }
 
         return year + month + day;
@@ -210,22 +204,22 @@ public class IdentityCardUtils {
                 return false;
             }
 
-            //提取年月日
+            // 提取年月日
             int year = Integer.parseInt(birthDay.substring(ZERO, FOUR));
             int month = Integer.parseInt(birthDay.substring(FOUR, SIX));
             int day = Integer.parseInt(birthDay.substring(SIX, EIGHT));
 
-            //校验年份
+            // 校验年份
             if ((year < THE_19_CENTURY) || (year > getCurrentYear())) {
                 return false;
             }
 
-            //校验月份
+            // 校验月份
             if ((month < 1) || (month > 12)) {
                 return false;
             }
 
-            //校验日期
+            // 校验日期
             Calendar cal = new GregorianCalendar();
             cal.set(year, month - 1, 1);
             if ((day < 1) || (day > cal.getActualMaximum(Calendar.DAY_OF_MONTH))) {
@@ -238,7 +232,6 @@ public class IdentityCardUtils {
             LOGGER.warn("Failed to extract birthday", e);
             return false;
         }
-
     }
 
     /**

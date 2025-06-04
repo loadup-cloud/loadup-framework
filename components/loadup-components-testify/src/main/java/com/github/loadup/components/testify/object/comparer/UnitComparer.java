@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.comparer;
 
 /*-
@@ -29,8 +30,8 @@ package com.github.loadup.components.testify.object.comparer;
 /**
  * 单位数据校验接口
  *
- * 
- * 
+ *
+ *
  */
 public interface UnitComparer {
 

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.script.parser.groovy;
 
 /*-
@@ -26,13 +27,12 @@ package com.github.loadup.components.gateway.message.script.parser.groovy;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 脚本分组信息，对比缓存已经存在的脚本信息，按照修改、新增、删除进行分组
@@ -85,24 +85,23 @@ public class GroovyInfoGroup {
     }
 
     /**
-     * 
+     *
      */
     public List<GroovyInfo> getModifiedGroovy() {
         return modifiedGroovy;
     }
 
     /**
-     * 
+     *
      */
     public List<GroovyInfo> getAddedGroovy() {
         return addedGroovy;
     }
 
     /**
-     * 
+     *
      */
     public List<GroovyInfo> getDeletedGroovy() {
         return deletedGroovy;
     }
-
 }

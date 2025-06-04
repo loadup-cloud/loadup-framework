@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin;
 
 /*-
@@ -34,11 +35,10 @@ import com.github.loadup.components.gateway.facade.model.CommunicationConfigurat
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.plugin.helper.ApiDefinition;
 import com.github.loadup.components.gateway.plugin.helper.BeanApiHelper;
+import java.lang.reflect.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.lang.reflect.Method;
 
 /**
  * SpringBean call implementation of communication plugin extension.
@@ -50,8 +50,7 @@ public class SpringBeanCommunicationExtPt implements CommunicationProxyExtPt {
     /**
      * logger
      */
-    private static final Logger log = LoggerFactory
-            .getLogger(SpringBeanCommunicationExtPt.class);
+    private static final Logger log = LoggerFactory.getLogger(SpringBeanCommunicationExtPt.class);
 
     private BeanApiHelper beanApiHelper = BeanApiHelper.getInstance();
 
@@ -72,12 +71,13 @@ public class SpringBeanCommunicationExtPt implements CommunicationProxyExtPt {
             Object request = beanApiHelper.parseParam(method, messageContent);
             result = method.invoke(objService, request);
         } catch (Exception e) {
-            LogUtil.error(log, e,
+            LogUtil.error(
+                    log,
+                    e,
                     "BEAN_CALL_ERROR_PREX, Failed to send message because of error occurs when trying to get bean with config:"
                             + config.getUri());
             throw new RuntimeException("Failed to send message to springbean.");
         }
         return result != null ? JsonUtil.toJSONString(result) : "";
     }
-
 }

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.api;
 
 /*-
@@ -33,14 +30,13 @@ package com.github.loadup.components.testify.api;
 import com.alibaba.fastjson2.JSON;
 import com.github.loadup.components.testify.data.MetaItemAutoBuilder;
 import com.github.loadup.components.testify.data.RuleDataFactory;
-
 import java.util.List;
 import java.util.Map;
 
 /**
  * 数据规则操作的api
  *
- * 
+ *
  *
  */
 public class DataRuleApis {
@@ -72,7 +68,6 @@ public class DataRuleApis {
         builder.updateDbDataRule(system, projectPath);
         builder.updateObjDataRule(system, projectPath);
         return true;
-
     }
 
     /*****
@@ -88,5 +83,4 @@ public class DataRuleApis {
         List<Map<String, String>> fieldValues = (List<Map<String, String>>) JSON.parse(rowData);
         return fieldValues;
     }
-
 }

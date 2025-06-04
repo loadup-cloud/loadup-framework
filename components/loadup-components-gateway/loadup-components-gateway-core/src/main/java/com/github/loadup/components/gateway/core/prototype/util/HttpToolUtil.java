@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.prototype.util;
 
 /*-
@@ -33,12 +34,6 @@ import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StreamUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -46,6 +41,11 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StreamUtils;
 
 /**
  * <p>
@@ -60,13 +60,14 @@ public class HttpToolUtil {
     /**
      * Return the http response information
      */
-    public static void returnResponse(HttpServletResponse httpResponse,
-                                      MessageEnvelope messageResponse,
-                                      CommunicationConfig requesterCommunicationConfig) {
+    public static void returnResponse(
+            HttpServletResponse httpResponse,
+            MessageEnvelope messageResponse,
+            CommunicationConfig requesterCommunicationConfig) {
         Map<String, String> resMap = messageResponse.getHeaders();
         String resResult = String.valueOf(messageResponse.getContent());
         try {
-            //Header信息填写
+            // Header信息填写
             resMap.forEach((k, v) -> {
                 if (StringUtils.isBlank(v) || StringUtils.equalsIgnoreCase("content-length", k)) {
                     LogUtil.warn(logger, k, " is empty, so can not set in the http header");
@@ -75,11 +76,10 @@ public class HttpToolUtil {
                 }
             });
             if (requesterCommunicationConfig != null) {
-                String sendCharset = CommunicationConfigUtil
-                        .getSendCharset(requesterCommunicationConfig);
+                String sendCharset = CommunicationConfigUtil.getSendCharset(requesterCommunicationConfig);
                 httpResponse.setCharacterEncoding(sendCharset);
             }
-            //报文信息
+            // 报文信息
             httpResponse.getWriter().write(resResult);
         } catch (Exception e) {
             ExceptionUtil.caught(e, "response exception", resResult);
@@ -122,18 +122,22 @@ public class HttpToolUtil {
      * get content bytes from request.getParameterMap
      */
     private static byte[] getContentFromParameterMap(HttpServletRequest request) {
-        return request.getParameterMap().entrySet().stream().map(entry -> {
+        return request.getParameterMap().entrySet().stream()
+                .map(entry -> {
                     String[] value = entry.getValue();
                     if (value == null) {
                         return null;
                     } else if (value.length > 1) {
-                        return Arrays.stream(value).map(s -> entry.getKey() + "=" + s)
+                        return Arrays.stream(value)
+                                .map(s -> entry.getKey() + "=" + s)
                                 .collect(Collectors.joining(Constant.URL_KEY_VALUE_SEPARATOR));
                     } else {
                         return entry.getKey() + "=" + value[0];
                     }
-                }).filter(StringUtils::isNotBlank)
-                .collect(Collectors.joining(Constant.URL_KEY_VALUE_SEPARATOR)).getBytes();
+                })
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.joining(Constant.URL_KEY_VALUE_SEPARATOR))
+                .getBytes();
     }
 
     /**

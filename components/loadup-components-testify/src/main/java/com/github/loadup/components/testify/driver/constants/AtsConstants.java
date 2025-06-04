@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.driver.constants;
 
 /*-
@@ -33,8 +30,8 @@ package com.github.loadup.components.testify.driver.constants;
 /**
  * ATS中沿用常量参数
  *
- * 
- * 
+ *
+ *
  */
 public class AtsConstants {
 
@@ -112,5 +109,4 @@ public class AtsConstants {
      * 启动替换xml
      */
     public static final String MINI_EXCLUDE_XML = "mini_exclude_xml";
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.comparer.impl;
 
 /*-
@@ -26,8 +27,8 @@ package com.github.loadup.components.testify.object.comparer.impl;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
 import com.github.loadup.components.testify.object.comparer.UnitComparer;
+import org.apache.commons.lang3.StringUtils;
 
 public class AvailableComparer implements UnitComparer {
 

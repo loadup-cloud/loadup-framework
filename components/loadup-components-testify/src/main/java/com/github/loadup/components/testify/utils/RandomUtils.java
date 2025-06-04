@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils;
 
 /*-
@@ -31,15 +32,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
-
 import org.apache.commons.lang3.RandomStringUtils;
-
 import org.apache.commons.lang3.StringUtils;
 
 public class RandomUtils {
 
-    private static final char[] letters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+    private static final char[] letters = {
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+        'w', 'x', 'y', 'z'
+    };
 
     private static final char[] numLetters = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
 
@@ -89,18 +90,22 @@ public class RandomUtils {
      */
     public static String generateRandomIdentiyCardNo() {
         // 随机生成省、自治区、直辖市代码 1-2
-        String provinces[] = {"11", "12", "13", "14", "15", "21", "22", "23", "31", "32", "33",
-                "34", "35", "36", "37", "41", "42", "43", "44", "45", "46", "50", "51", "52", "53",
-                "54", "61", "62", "63", "64", "65", "71", "81", "82"};
+        String provinces[] = {
+            "11", "12", "13", "14", "15", "21", "22", "23", "31", "32", "33", "34", "35", "36",
+            "37", "41", "42", "43", "44", "45", "46", "50", "51", "52", "53", "54", "61", "62",
+            "63", "64", "65", "71", "81", "82"
+        };
         String province = provinces[new Random().nextInt(provinces.length - 1)];
         // 随机生成地级市、盟、自治州代码 3-4
-        String citys[] = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "21", "22",
-                "23", "24", "25", "26", "27", "28"};
+        String citys[] = {
+            "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "21", "22", "23", "24", "25", "26", "27", "28"
+        };
         String city = citys[new Random().nextInt(citys.length - 1)];
         // 随机生成县、县级市、区代码 5-6
-        String countys[] = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "21",
-                "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35",
-                "36", "37", "38"};
+        String countys[] = {
+            "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "21", "22", "23", "24",
+            "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38"
+        };
         String county = countys[new Random().nextInt(countys.length - 1)];
         // 随机生成出生年月 7-14
         SimpleDateFormat dft = new SimpleDateFormat("yyyyMMdd");
@@ -116,7 +121,6 @@ public class RandomUtils {
         char check = IdentityCardUtils.getOverHeadBit(idCardNumber17 + " ");
         // 拼接身份证号码
         return idCardNumber17 + check;
-
     }
 
     /**
@@ -204,7 +208,6 @@ public class RandomUtils {
         String licenceNoTemp = capitalCode + nature + leagalFlag + seq;
         // 拼接
         return licenceNoTemp + String.valueOf(computeChecksum(licenceNoTemp));
-
     }
 
     /**
@@ -234,14 +237,44 @@ public class RandomUtils {
      */
     public static String generateRandomOrgCertNo() {
         // 随机生成省、自治区、直辖市代码 1-2
-        String baseNumsPair[][] = {{"0", "0"}, {"1", "1"}, {"2", "2"}, {"3", "3"},
-                {"4", "4"}, {"5", "5"}, {"6", "6"}, {"7", "7"}, {"8", "8"}, {"9", "9"},
-                {"A", "10"}, {"B", "11"}, {"C", "12"}, {"D", "13"}, {"E", "14"},
-                {"F", "15"}, {"G", "16"}, {"H", "17"}, {"I", "18"}, {"J", "19"},
-                {"K", "20"}, {"L", "21"}, {"M", "22"}, {"N", "23"}, {"O", "24"},
-                {"P", "25"}, {"Q", "26"}, {"R", "27"}, {"S", "28"}, {"T", "29"},
-                {"U", "30"}, {"V", "31"}, {"W", "32"}, {"X", "33"}, {"Y", "34"},
-                {"Z", "35"}};
+        String baseNumsPair[][] = {
+            {"0", "0"},
+            {"1", "1"},
+            {"2", "2"},
+            {"3", "3"},
+            {"4", "4"},
+            {"5", "5"},
+            {"6", "6"},
+            {"7", "7"},
+            {"8", "8"},
+            {"9", "9"},
+            {"A", "10"},
+            {"B", "11"},
+            {"C", "12"},
+            {"D", "13"},
+            {"E", "14"},
+            {"F", "15"},
+            {"G", "16"},
+            {"H", "17"},
+            {"I", "18"},
+            {"J", "19"},
+            {"K", "20"},
+            {"L", "21"},
+            {"M", "22"},
+            {"N", "23"},
+            {"O", "24"},
+            {"P", "25"},
+            {"Q", "26"},
+            {"R", "27"},
+            {"S", "28"},
+            {"T", "29"},
+            {"U", "30"},
+            {"V", "31"},
+            {"W", "32"},
+            {"X", "33"},
+            {"Y", "34"},
+            {"Z", "35"}
+        };
         int factor[] = {3, 7, 9, 10, 5, 8, 4, 2};
         // 计算校验和
         StringBuffer tempBuffer = new StringBuffer();
@@ -271,8 +304,17 @@ public class RandomUtils {
      */
     public static String generateRandomFinancialInstNo() {
 
-        String pos12Pair[][] = {{"A", "2"}, {"B", "3"}, {"C", "5"}, {"D", "6"},
-                {"E", "4"}, {"F", "8"}, {"G", "2"}, {"H", "2"}, {"Z", "1"}};
+        String pos12Pair[][] = {
+            {"A", "2"},
+            {"B", "3"},
+            {"C", "5"},
+            {"D", "6"},
+            {"E", "4"},
+            {"F", "8"},
+            {"G", "2"},
+            {"H", "2"},
+            {"Z", "1"}
+        };
         // 随机生成行政区划 6位
         String capitals[] = {"230100", "110000", "330100", "460200"};
 
@@ -282,12 +324,10 @@ public class RandomUtils {
 
         buffer.append(pos12[0]);
         buffer.append(new Random().nextInt(Integer.parseInt(pos12[1]) + 1));
-        buffer
-                .append(StringUtils.rightPad(String.valueOf(new Random().nextInt(9999) + 1), 4, '0'));
+        buffer.append(StringUtils.rightPad(String.valueOf(new Random().nextInt(9999) + 1), 4, '0'));
         buffer.append(capitals[new Random().nextInt(capitals.length)].substring(0, 2));
 
-        buffer
-                .append(StringUtils.rightPad(String.valueOf(new Random().nextInt(99999) + 1), 5, '0'));
+        buffer.append(StringUtils.rightPad(String.valueOf(new Random().nextInt(99999) + 1), 5, '0'));
 
         int checkSum = computeChecksum(buffer.toString());
         return buffer.append(checkSum).toString();

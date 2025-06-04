@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.dal.table;
 
 /*-
@@ -35,8 +32,8 @@ import java.util.Date;
 /**
  * 数据库表字段对象
  *
- * 
- * 
+ *
+ *
  */
 public class ObjectRelate {
 
@@ -285,11 +282,30 @@ public class ObjectRelate {
      */
     @Override
     public String toString() {
-        return "ObjectRelate [id=" + id + ", system=" + system + ", model_obj=" + model_obj
-                + ", model_data=" + model_data + ", model_type=" + model_type + ", data_dsc="
-                + data_dsc + ", obj_flag=" + obj_flag + ", relate_source_id=" + relate_source_id
-                + ", source_data=" + source_data + ", memo=" + memo + ", gmt_create=" + gmt_create
-                + ", gmt_modify=" + gmt_modify + "]";
+        return "ObjectRelate [id="
+                + id
+                + ", system="
+                + system
+                + ", model_obj="
+                + model_obj
+                + ", model_data="
+                + model_data
+                + ", model_type="
+                + model_type
+                + ", data_dsc="
+                + data_dsc
+                + ", obj_flag="
+                + obj_flag
+                + ", relate_source_id="
+                + relate_source_id
+                + ", source_data="
+                + source_data
+                + ", memo="
+                + memo
+                + ", gmt_create="
+                + gmt_create
+                + ", gmt_modify="
+                + gmt_modify
+                + "]";
     }
-
 }

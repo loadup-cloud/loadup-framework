@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.util.commonAlgo;
 
 /*-
@@ -26,14 +27,13 @@ package com.github.loadup.components.gateway.certification.util.commonAlgo;
  * #L%
  */
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
-import javax.crypto.Cipher;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
+import javax.crypto.Cipher;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * RSA非对称算法实现
@@ -64,8 +64,7 @@ public class RSAUtil {
     /**
      * 公共加密接口
      */
-    public static byte[] encrypt(byte[] data, byte[] key, String algorithm, boolean isPrivateKey)
-            throws Exception {
+    public static byte[] encrypt(byte[] data, byte[] key, String algorithm, boolean isPrivateKey) throws Exception {
 
         Key secretKey = isPrivateKey ? recoverPrivateKey(key) : recoverPublicKey(key);
         Cipher cipher = Cipher.getInstance(algorithm);
@@ -76,13 +75,11 @@ public class RSAUtil {
     /**
      * 公共解密接口
      */
-    public static byte[] decrypt(byte[] data, byte[] key, String algorithm, boolean isPrivateKey)
-            throws Exception {
+    public static byte[] decrypt(byte[] data, byte[] key, String algorithm, boolean isPrivateKey) throws Exception {
         Key secretKey = isPrivateKey ? recoverPrivateKey(key) : recoverPublicKey(key);
         Cipher cipher = Cipher.getInstance(algorithm);
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
         return cipher.doFinal(data);
-
     }
 
     /**
@@ -111,7 +108,6 @@ public class RSAUtil {
         PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(data);
         KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGO_NAME);
         return keyFactory.generatePrivate(pkcs8EncodedKeySpec);
-
     }
 
     /**
@@ -122,5 +118,4 @@ public class RSAUtil {
         KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGO_NAME);
         return keyFactory.generatePublic(keySpec);
     }
-
 }

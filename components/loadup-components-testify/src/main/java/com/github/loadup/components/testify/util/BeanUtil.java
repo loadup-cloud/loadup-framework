@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -32,15 +29,13 @@ package com.github.loadup.components.testify.util;
 
 import com.github.loadup.components.testify.log.TestifyLogUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.Advised;
 
 /**
  * bean装载工具类
  *
- * 
- * 
+ *
+ *
  */
 @Slf4j
 public class BeanUtil {
@@ -56,22 +51,24 @@ public class BeanUtil {
         if (moduleName == null || moduleName.length() == 0) {
             moduleName = "ON_THE_FLY_BUNDLE_NAME";
         }
-//        Collection<ComponentInfo> componentInfos = SofaRunTimeContextHolder.get()
-//            .getComponentManager().getComponents();
-//        for (ComponentInfo componentInfo : componentInfos) {
-//            try {
-//                ApplicationContext applicationContext = (ApplicationContext) (componentInfo
-//                    .getImplementation().getTarget());
-//                if (applicationContext != null && componentInfo.dump().contains(moduleName)) {
-//                    if (null != applicationContext.getBean(name)) {
-//                        return applicationContext.getBean(name);
-//                    }
-//                }
-//            } catch (Exception e) {
-//                //这里轮询查找bean允许出现强转异常，不打印错误日志
-//                continue;
-//            }
-//        }
+        //        Collection<ComponentInfo> componentInfos = SofaRunTimeContextHolder.get()
+        //            .getComponentManager().getComponents();
+        //        for (ComponentInfo componentInfo : componentInfos) {
+        //            try {
+        //                ApplicationContext applicationContext = (ApplicationContext)
+        // (componentInfo
+        //                    .getImplementation().getTarget());
+        //                if (applicationContext != null &&
+        // componentInfo.dump().contains(moduleName)) {
+        //                    if (null != applicationContext.getBean(name)) {
+        //                        return applicationContext.getBean(name);
+        //                    }
+        //                }
+        //            } catch (Exception e) {
+        //                //这里轮询查找bean允许出现强转异常，不打印错误日志
+        //                continue;
+        //            }
+        //        }
         return null;
     }
 
@@ -108,5 +105,4 @@ public class BeanUtil {
         }
         return getBean(beanName, bundleName);
     }
-
 }

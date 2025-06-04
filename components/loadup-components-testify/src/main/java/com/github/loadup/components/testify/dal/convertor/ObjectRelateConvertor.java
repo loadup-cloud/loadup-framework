@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.dal.convertor;
 
 /*-
@@ -36,7 +33,7 @@ import com.github.loadup.components.testify.dal.table.ObjectRelate;
 /**
  * 对象关联关系模型转换器
  *
- * 
+ *
  *
  */
 public class ObjectRelateConvertor {
@@ -70,5 +67,4 @@ public class ObjectRelateConvertor {
 
         return objectRelateDO;
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.common.util;
 
 /*-
@@ -27,11 +28,10 @@ package com.github.loadup.components.gateway.common.util;
  */
 
 import com.github.loadup.components.gateway.facade.util.LogUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *

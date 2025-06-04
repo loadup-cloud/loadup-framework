@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.config.model;
 
 /*-
@@ -26,15 +27,13 @@ package com.github.loadup.components.gateway.facade.config.model;
  * #L%
  */
 
+import java.io.Serializable;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.io.Serializable;
 
 /**
  * 网关SPI配置条件组
  */
-
 public class SPIConditionGroup implements Serializable {
 
     private static final long serialVersionUID = 5405021181762410719L;
@@ -100,7 +99,7 @@ public class SPIConditionGroup implements Serializable {
     private String httpStatusToErrorCode;
 
     /**
-     * 
+     *
      */
     public String getInterfaceName() {
         return interfaceName;
@@ -114,7 +113,7 @@ public class SPIConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getIntegrationUrl() {
         return integrationUrl;
@@ -128,7 +127,7 @@ public class SPIConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getSecurityStrategyCode() {
         return securityStrategyCode;
@@ -142,7 +141,7 @@ public class SPIConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getInterfaceRequestParser() {
         return interfaceRequestParser;
@@ -156,7 +155,7 @@ public class SPIConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getIntegrationRequestHeaderAssemble() {
         return integrationRequestHeaderAssemble;
@@ -170,7 +169,7 @@ public class SPIConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getIntegrationRequestBodyAssemble() {
         return integrationRequestBodyAssemble;
@@ -184,7 +183,7 @@ public class SPIConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getIntegrationResponseParser() {
         return integrationResponseParser;
@@ -198,7 +197,7 @@ public class SPIConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getInterfaceResponseHeaderAssemble() {
         return interfaceResponseHeaderAssemble;
@@ -212,7 +211,7 @@ public class SPIConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getInterfaceResponseBodyAssemble() {
         return interfaceResponseBodyAssemble;
@@ -226,7 +225,7 @@ public class SPIConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public Integer getLimitConn() {
         return limitConn;
@@ -240,7 +239,7 @@ public class SPIConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getCommunicationProperties() {
         return communicationProperties;
@@ -254,7 +253,7 @@ public class SPIConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getHttpStatusToErrorCode() {
         return httpStatusToErrorCode;

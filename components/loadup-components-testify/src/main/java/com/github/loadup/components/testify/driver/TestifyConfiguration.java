@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.driver;
 
 /*-
@@ -30,30 +27,28 @@ package com.github.loadup.components.testify.driver;
  * #L%
  */
 
+import com.github.loadup.components.testify.constant.TestifyConstants;
+import com.github.loadup.components.testify.log.TestifyLogUtil;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang3.StringUtils;
-import com.github.loadup.components.testify.constant.TestifyConstants;
-import com.github.loadup.components.testify.log.TestifyLogUtil;
 
 /**
- * 
- * 
+ *
+ *
  */
 @Slf4j
 public class TestifyConfiguration {
-
 
     private static Map<String, String> configMap = new HashMap<>();
     /**
      * 关键日志输出带上颜色
      */
     private static boolean coloredLog = false;
+
     private static volatile TestifyConfiguration instance = null;
     private Properties dbProperties = new Properties();
     private String DB_Mode = "devdb";
@@ -63,9 +58,7 @@ public class TestifyConfiguration {
      */
     private boolean isTRMode = false;
 
-    private TestifyConfiguration() {
-
-    }
+    private TestifyConfiguration() {}
 
     public static TestifyConfiguration getInstance() {
         if (instance == null) {
@@ -74,7 +67,6 @@ public class TestifyConfiguration {
                     instance = new TestifyConfiguration();
                     loadProperties();
                 }
-
             }
         }
 
@@ -83,24 +75,24 @@ public class TestifyConfiguration {
 
     public static void loadProperties() {
 
-//        if (actsConfigMap.isEmpty()) {
-//
-//            Properties ActsProperties = getProperties(ActsConstants.ACTS_CONFIG_BASE_DIR
-//                                                      + ActsConstants.ACTS_CONFIG_FILE_NAME);
-//
-//            Set<Map.Entry<Object, Object>> entrySet = ActsProperties.entrySet();
-//            for (Map.Entry<Object, Object> entry : entrySet) {
-//                Object keyObject = entry.getKey();
-//                Object valueObject = entry.getValue();
-//                String envConfigValue = System.getProperty(ActsConstants.ACTS_CONFIG_SYSENV_PREFIX
-//                                                           + keyObject.toString());
-//                if (StringUtils.isNotBlank(envConfigValue)) {
-//                    actsConfigMap.put(keyObject.toString(), envConfigValue);
-//                } else {
-//                    actsConfigMap.put(keyObject.toString(), valueObject.toString());
-//                }
-//            }
-//        }
+        //        if (actsConfigMap.isEmpty()) {
+        //
+        //            Properties ActsProperties = getProperties(ActsConstants.ACTS_CONFIG_BASE_DIR
+        //                                                      + ActsConstants.ACTS_CONFIG_FILE_NAME);
+        //
+        //            Set<Map.Entry<Object, Object>> entrySet = ActsProperties.entrySet();
+        //            for (Map.Entry<Object, Object> entry : entrySet) {
+        //                Object keyObject = entry.getKey();
+        //                Object valueObject = entry.getValue();
+        //                String envConfigValue = System.getProperty(ActsConstants.ACTS_CONFIG_SYSENV_PREFIX
+        //                                                           + keyObject.toString());
+        //                if (StringUtils.isNotBlank(envConfigValue)) {
+        //                    actsConfigMap.put(keyObject.toString(), envConfigValue);
+        //                } else {
+        //                    actsConfigMap.put(keyObject.toString(), valueObject.toString());
+        //                }
+        //            }
+        //        }
 
         readJvmArgs();
     }
@@ -144,19 +136,14 @@ public class TestifyConfiguration {
                 dbconfFile = TestifyConstants.DB_CONF_DIR + dbconfFile.trim();
                 dbProperties = getProperties(dbconfFile);
             } else {
-                dbconfFile = TestifyConstants.TESTIFY_CONFIG_BASE_DIR
-                        + TestifyConstants.TESTIFY_CONFIG_FILE_NAME;
+                dbconfFile = TestifyConstants.TESTIFY_CONFIG_BASE_DIR + TestifyConstants.TESTIFY_CONFIG_FILE_NAME;
                 TestifyLogUtil.warn(log, "ACTS配置项没有 [dbconf_file]！");
             }
 
-            testDataSourceFile = TestifyConstants.TEST_DATA_SOURCE_DIR + DB_Mode
-                    + "-test-datasource.xml";
-            isTRMode = "true".equalsIgnoreCase(StringUtils.trim(configMap
-                    .get(TestifyConstants.TR_MODE)));
+            testDataSourceFile = TestifyConstants.TEST_DATA_SOURCE_DIR + DB_Mode + "-test-datasource.xml";
+            isTRMode = "true".equalsIgnoreCase(StringUtils.trim(configMap.get(TestifyConstants.TR_MODE)));
         }
-
     }
-
 
     public String getSofaConfig(String keyName) {
         return "";
@@ -169,9 +156,9 @@ public class TestifyConfiguration {
         if (!StringUtils.isEmpty(sofaTestMode)) {
             configPattern = sofaTestMode + "-sofa-test-config.properties";
         }
-        TestifyLogUtil.info(log, "ACTS配置初始化：sofaTestConfigFile =  "
-                + TestifyConstants.SOFA_TEST_CONFIG_DIR + configPattern);
-        return new String[]{TestifyConstants.SOFA_TEST_CONFIG_DIR, configPattern};
+        TestifyLogUtil.info(
+                log, "ACTS配置初始化：sofaTestConfigFile =  " + TestifyConstants.SOFA_TEST_CONFIG_DIR + configPattern);
+        return new String[] {TestifyConstants.SOFA_TEST_CONFIG_DIR, configPattern};
     }
 
     private String getDbMode(String dbconfFile) {
@@ -194,5 +181,4 @@ public class TestifyConfiguration {
     public boolean isColoredLog() {
         return coloredLog;
     }
-
 }

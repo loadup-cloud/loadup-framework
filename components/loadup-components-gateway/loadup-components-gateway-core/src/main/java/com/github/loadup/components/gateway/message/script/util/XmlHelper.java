@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.script.util;
 
 /*-
@@ -28,6 +29,10 @@ package com.github.loadup.components.gateway.message.script.util;
 
 import com.github.loadup.components.gateway.core.common.Constant;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
+import java.io.StringReader;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -37,11 +42,6 @@ import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import java.io.StringReader;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * XML 操作助手，使用Dom4j完成dom相关操作

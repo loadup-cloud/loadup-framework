@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.client.dto;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.modules.upms.client.dto;
  * #L%
  */
 
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 @Getter
 @Setter

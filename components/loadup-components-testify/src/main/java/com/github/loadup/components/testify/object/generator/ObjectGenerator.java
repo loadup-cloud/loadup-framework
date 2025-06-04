@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.generator;
 
 /*-
@@ -31,7 +32,7 @@ import java.lang.reflect.Type;
 /**
  * 对象类型处理器接口
  *
- * 
+ *
  *
  */
 public interface ObjectGenerator {

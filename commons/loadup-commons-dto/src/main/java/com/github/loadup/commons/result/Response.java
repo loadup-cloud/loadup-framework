@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.result;
 
 /*-
@@ -29,10 +30,9 @@ package com.github.loadup.commons.result;
 import com.github.loadup.commons.dto.DTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.io.Serial;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serial;
 
 @Getter
 @Setter
@@ -79,5 +79,4 @@ public class Response extends DTO {
         response.setResult(Result.buildFailure(errCode, errMessage));
         return response;
     }
-
 }

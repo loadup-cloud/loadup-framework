@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule;
 
 /*-
@@ -36,7 +33,7 @@ package com.github.loadup.components.testify.datarule;
  * A={a1,a2} <br>
  * 规则目前支持range、array
  *
- * 
+ *
  *
  */
 public class FieldRule implements RuleObject {
@@ -52,7 +49,7 @@ public class FieldRule implements RuleObject {
     private RuleObject rule = null;
 
     /**
-     * 
+     *
      *
      * @return property value of fieldName
      */
@@ -70,7 +67,7 @@ public class FieldRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of rule
      */
@@ -86,5 +83,4 @@ public class FieldRule implements RuleObject {
     public void setRule(RuleObject rule) {
         this.rule = rule;
     }
-
 }

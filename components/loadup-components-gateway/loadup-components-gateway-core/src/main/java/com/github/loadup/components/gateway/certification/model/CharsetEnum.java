@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.model;
 
 /*-
@@ -79,14 +80,14 @@ public enum CharsetEnum {
     }
 
     /**
-     * 
+     *
      */
     public String getCharSet() {
         return charSet;
     }
 
     /**
-     * 
+     *
      */
     public void setCharSet(String charSet) {
         this.charSet = charSet;

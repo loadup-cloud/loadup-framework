@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.config.impl;
 
 /*-
@@ -30,13 +27,12 @@ package com.github.loadup.components.testify.utils.config.impl;
  * #L%
  */
 
-import java.util.Map;
-import java.util.HashMap;
-
 import com.github.loadup.components.testify.utils.config.Configration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * 
+ *
  *
  */
 public class ConfigrationImpl implements Configration {
@@ -46,11 +42,10 @@ public class ConfigrationImpl implements Configration {
      */
     private Map<String, String> atsConfigMap = new HashMap<String, String>();
 
-    public ConfigrationImpl() {
-    }
+    public ConfigrationImpl() {}
 
     public Map<String, String> getConfig() {
-        //对map进行clone，保证map的安全性
+        // 对map进行clone，保证map的安全性
         Map<String, String> map = new HashMap<String, String>();
         map.putAll(this.atsConfigMap);
         return map;

@@ -1,4 +1,6 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.util;
+
 /*-
  * #%L
  * loadup-commons-lang
@@ -36,10 +38,6 @@ package com.github.loadup.commons.util;
  * See the Mulan PSL v2 for more details.
  */
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -47,6 +45,9 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Objects;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 数字工具类<br>
@@ -127,6 +128,7 @@ public class NumberUtil {
         }
         return result;
     }
+
     // endregion
 
     // region ----- sub
@@ -174,6 +176,7 @@ public class NumberUtil {
         }
         return result;
     }
+
     // endregion
 
     // region ----- mul
@@ -232,6 +235,7 @@ public class NumberUtil {
 
         return result;
     }
+
     // endregion
 
     // region ----- div
@@ -300,6 +304,7 @@ public class NumberUtil {
     public static int ceilDiv(final int v1, final int v2) {
         return (int) Math.ceil((double) v1 / v2);
     }
+
     // endregion
 
     // region ----- round
@@ -419,6 +424,7 @@ public class NumberUtil {
     public static BigDecimal roundDown(final Number number, final int scale) {
         return round(toBigDecimal(number), scale, RoundingMode.DOWN);
     }
+
     // endregion
 
     // region ----- decimalFormat
@@ -506,8 +512,7 @@ public class NumberUtil {
      * @since 5.6.5
      */
     public static String format(final String pattern, final Object value, final RoundingMode roundingMode) {
-        if (value instanceof Number) {
-        }
+        if (value instanceof Number) {}
         final DecimalFormat decimalFormat = new DecimalFormat(pattern);
         if (null != roundingMode) {
             decimalFormat.setRoundingMode(roundingMode);
@@ -545,6 +550,7 @@ public class NumberUtil {
         format.setMaximumFractionDigits(scale);
         return format.format(number);
     }
+
     // endregion
 
     // region ----- range
@@ -602,13 +608,13 @@ public class NumberUtil {
     /**
      * 将给定范围内的整数添加到已有集合中
      */
-    public static Collection<Integer> appendRange(final int startInclude, final int stopInclude, int step,
-                                                  final Collection<Integer> values) {
+    public static Collection<Integer> appendRange(
+            final int startInclude, final int stopInclude, int step, final Collection<Integer> values) {
         if (startInclude < stopInclude) {
             step = Math.abs(step);
         } else if (startInclude > stopInclude) {
             step = -Math.abs(step);
-        } else {// start == end
+        } else { // start == end
             values.add(startInclude);
             return values;
         }
@@ -618,9 +624,11 @@ public class NumberUtil {
         }
         return values;
     }
+
     // endregion
 
-    // ------------------------------------------------------------------------------------------- others
+    // -------------------------------------------------------------------------------------------
+    // others
 
     /**
      * 获得数字对应的二进制字符串
@@ -671,6 +679,7 @@ public class NumberUtil {
         }
         return Objects.equals(number1, number2);
     }
+
     // endregion
 
     // region ----- toStr
@@ -741,6 +750,7 @@ public class NumberUtil {
         }
         return bigDecimal.toPlainString();
     }
+
     // endregion
 
     /**
@@ -910,6 +920,7 @@ public class NumberUtil {
     public static BigDecimal nullToZero(final BigDecimal decimal) {
         return ObjectUtils.defaultIfNull(decimal, BigDecimal.ZERO);
     }
+
     // endregion
 
     /**
@@ -981,7 +992,8 @@ public class NumberUtil {
      *
      * @since 4.1.0
      */
-    public static BigDecimal pow(final BigDecimal number, final int n, final int scale, final RoundingMode roundingMode) {
+    public static BigDecimal pow(
+            final BigDecimal number, final int n, final int scale, final RoundingMode roundingMode) {
         if (n < 0) {
             // a的n次方，如果n为负数，则返回1/a的-n次方
             return BigDecimal.ONE.divide(pow(number, -n), scale, roundingMode);
@@ -997,10 +1009,7 @@ public class NumberUtil {
     }
 
     public static boolean isZero(final Number n) {
-        if (n instanceof Byte ||
-                n instanceof Short ||
-                n instanceof Integer ||
-                n instanceof Long) {
+        if (n instanceof Byte || n instanceof Short || n instanceof Integer || n instanceof Long) {
             return 0L == n.longValue();
         } else if (n instanceof BigInteger) {
             return equals(BigInteger.ZERO, n);

@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.constants;
 
 /*-
@@ -33,7 +30,7 @@ package com.github.loadup.components.testify.component.constants;
 /**
  * Common value constants shared between bind annotations.
  *
- * 
+ *
  *
  */
 public class ValueConstants {
@@ -49,5 +46,4 @@ public class ValueConstants {
      * @see CookieValue#defaultValue()
      */
     public static final String DEFAULT_NONE = "\n\t\t\n\t\t\n\uE000\uE001\uE002\n\t\t\t\t\n";
-
 }

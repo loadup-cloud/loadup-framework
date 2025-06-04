@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data.biz;
 
 /*-
@@ -33,21 +30,20 @@ package com.github.loadup.components.testify.data.biz;
 import com.github.loadup.components.testify.dal.table.CsvFillObject;
 import com.github.loadup.components.testify.util.FileUtil;
 import com.opencsv.CSVReader;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 业务模型元数据项构造器。
  *
- * 
+ *
  *
  */
 public class BizMetaInitItemFillBuilder {
-    //根据csv获取当前模型的名字,用来填充model_obj这一列
+    // 根据csv获取当前模型的名字,用来填充model_obj这一列
     private String readCurrentModelObj(String csvPath) {
         String currentModelObj = "";
         File f = new File(csvPath);
@@ -62,7 +58,7 @@ public class BizMetaInitItemFillBuilder {
         CSVReader csvReader = new CSVReader(isr);
 
         try {
-            //这是header部分
+            // 这是header部分
             csvReader.readNext();
             String[] firstLine = csvReader.readNext();
 
@@ -71,7 +67,7 @@ public class BizMetaInitItemFillBuilder {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
-            //异常捕获
+            // 异常捕获
             e.printStackTrace();
         } finally {
             try {
@@ -95,7 +91,6 @@ public class BizMetaInitItemFillBuilder {
         String[] strArrs = StringUtils.split(str, separator);
         String result = strArrs[strArrs.length - 1];
         return result;
-
     }
 
     /*
@@ -105,11 +100,9 @@ public class BizMetaInitItemFillBuilder {
 
         boolean result = false;
 
-        if (StringUtils.equals("int", primitiveType)
-                || StringUtils.equals("java.lang.Integer", primitiveType)) {
+        if (StringUtils.equals("int", primitiveType) || StringUtils.equals("java.lang.Integer", primitiveType)) {
             result = true;
-        } else if (StringUtils.equals("float", primitiveType)
-                || StringUtils.equals("java.lang.Float", primitiveType)) {
+        } else if (StringUtils.equals("float", primitiveType) || StringUtils.equals("java.lang.Float", primitiveType)) {
             result = true;
         } else if (StringUtils.equals("String", primitiveType)
                 || StringUtils.equals("java.lang.String", primitiveType)) {
@@ -117,14 +110,11 @@ public class BizMetaInitItemFillBuilder {
         } else if (StringUtils.equals("double", primitiveType)
                 || StringUtils.equals("java.lang.Double", primitiveType)) {
             result = true;
-        } else if (StringUtils.equals("long", primitiveType)
-                || StringUtils.equals("java.lang.Long", primitiveType)) {
+        } else if (StringUtils.equals("long", primitiveType) || StringUtils.equals("java.lang.Long", primitiveType)) {
             result = true;
-        } else if (StringUtils.equals("short", primitiveType)
-                || StringUtils.equals("java.lang.Short", primitiveType)) {
+        } else if (StringUtils.equals("short", primitiveType) || StringUtils.equals("java.lang.Short", primitiveType)) {
             result = true;
-        } else if (StringUtils.equals("byte", primitiveType)
-                || StringUtils.equals("java.lang.Byte", primitiveType)) {
+        } else if (StringUtils.equals("byte", primitiveType) || StringUtils.equals("java.lang.Byte", primitiveType)) {
             result = true;
         } else if (StringUtils.equals("boolean", primitiveType)
                 || StringUtils.equals("java.lang.Boolean", primitiveType)) {
@@ -132,8 +122,7 @@ public class BizMetaInitItemFillBuilder {
         } else if (StringUtils.equals("char", primitiveType)
                 || StringUtils.equals("java.lang.Character", primitiveType)) {
             result = true;
-        } else if (StringUtils.equals("Date", primitiveType)
-                || StringUtils.equals("java.util.Date", primitiveType)) {
+        } else if (StringUtils.equals("Date", primitiveType) || StringUtils.equals("java.util.Date", primitiveType)) {
             result = true;
         } else {
         }
@@ -147,7 +136,7 @@ public class BizMetaInitItemFillBuilder {
         List<CsvFillObject> initItems = new ArrayList<CsvFillObject>();
 
         @SuppressWarnings("unchecked")
-        List<File> allCSV = (List<File>) FileUtils.listFiles(dir, new String[]{"csv"}, true);
+        List<File> allCSV = (List<File>) FileUtils.listFiles(dir, new String[] {"csv"}, true);
         for (File f : allCSV) {
             InputStream in = null;
             try {

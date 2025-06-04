@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.template;
 
 /*-
@@ -29,11 +30,10 @@ package com.github.loadup.components.testify.template;
 import com.github.loadup.components.testify.config.DataAccessConfig;
 import com.github.loadup.components.testify.config.DataAccessConfigManager;
 import com.github.loadup.components.testify.model.*;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 public class PrepareTemplateImpl implements PrepareTemplate {
 
@@ -46,7 +46,7 @@ public class PrepareTemplateImpl implements PrepareTemplate {
         VirtualDataSet depDataSet = callback.prepareDepDataSet();
         fillTableName(depDataSet);
         data.setDepDataSet(depDataSet);
-        //入参准备
+        // 入参准备
         VirtualArgs args = callback.prepareArgs(depDataSet);
         data.setArgs(args);
         // 预期的db数据准备
@@ -58,11 +58,11 @@ public class PrepareTemplateImpl implements PrepareTemplate {
         VirtualResult result = new VirtualResult(expectResultObj);
         data.setExpectResult(result);
         // mock准备
-//        VirtualMockSet virtualMockSet = callback.prepareMockResult();
-        //校验的事件准备
+        //        VirtualMockSet virtualMockSet = callback.prepareMockResult();
+        // 校验的事件准备
         if (callback instanceof PrepareCallBackWithEvent) {
-            VirtualEventSet virtualEventSet = ((PrepareCallBackWithEvent) callback)
-                    .prepareExpectEventSet(args, depDataSet, expectResultObj);
+            VirtualEventSet virtualEventSet =
+                    ((PrepareCallBackWithEvent) callback).prepareExpectEventSet(args, depDataSet, expectResultObj);
             data.setExpectEventSet(virtualEventSet);
         }
 
@@ -86,7 +86,6 @@ public class PrepareTemplateImpl implements PrepareTemplate {
         }
         String fieldColumnName = StringUtils.join(strs, "_");
         return fieldColumnName;
-
     }
 
     /**
@@ -106,15 +105,12 @@ public class PrepareTemplateImpl implements PrepareTemplate {
                     List<String> keyList = new ArrayList<String>();
                     for (String flagKey : flagMap.keySet()) {
                         keyList.add(flagKey);
-
                     }
                     for (String key : keyList) {
                         String tmpFlag = flagMap.get(key);
                         flagMap.remove(key);
                         flagMap.put(convertFieldName2ColumnName(key), tmpFlag);
-
                     }
-
                 }
 
                 List<Map<String, Object>> tableData = new ArrayList<Map<String, Object>>();
@@ -127,14 +123,13 @@ public class PrepareTemplateImpl implements PrepareTemplate {
                         Object tmpData = row.get(key);
                         row.remove(key);
                         row.put(convertFieldName2ColumnName(key), tmpData);
-
                     }
                     tableData.add(row);
                 }
                 virtualTable.setTableData(tableData);
                 virtualTable.setFlags(flagMap);
-                DataAccessConfig dataAccessConfig = dataAccessConfigManager
-                        .findDataAccessConfig(virtualTable.getDataObjClazz());
+                DataAccessConfig dataAccessConfig =
+                        dataAccessConfigManager.findDataAccessConfig(virtualTable.getDataObjClazz());
                 if (dataAccessConfig != null) {
                     virtualTable.setTableName(dataAccessConfig.getTableName());
                 }

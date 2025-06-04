@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.generator.impl;
 
 /*-
@@ -28,11 +29,10 @@ package com.github.loadup.components.testify.object.generator.impl;
 
 import com.github.loadup.components.testify.helper.CSVHelper;
 import com.github.loadup.components.testify.object.generator.ObjectGenerator;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 数组处理器
@@ -86,8 +86,7 @@ public class ArrayTypeGenerator implements ObjectGenerator {
     }
 
     @Override
-    public void setObjectValue(Object collectionObject, Object value, String originalValue,
-                               int index) {
+    public void setObjectValue(Object collectionObject, Object value, String originalValue, int index) {
         Array.set(collectionObject, index, value);
     }
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.model;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.components.gateway.core.model;
  * #L%
  */
 
+import java.util.Date;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.Date;
 
 /**
  * 证书的存储模型
@@ -87,7 +87,7 @@ public class CertConfig {
     private String clientId;
 
     /**
-     * 
+     *
      */
     public String getCertCode() {
         return certCode;
@@ -101,7 +101,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getCertContent() {
         return certContent;
@@ -115,7 +115,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getCertSpecial() {
         return certSpecial;
@@ -129,7 +129,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getCertStatus() {
         return certStatus;
@@ -143,7 +143,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getCertType() {
         return certType;
@@ -157,7 +157,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getCertContentType() {
         return certContentType;
@@ -171,7 +171,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getCertUniqId() {
         return certUniqId;
@@ -185,7 +185,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public Date getGmtInValid() {
         return gmtInValid;
@@ -199,7 +199,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public Date getGmtValid() {
         return gmtValid;
@@ -213,7 +213,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getClientId() {
         return clientId;

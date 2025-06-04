@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -27,10 +28,9 @@ package com.github.loadup.components.gateway.facade.request;
  */
 
 import jakarta.validation.constraints.NotBlank;
+import java.util.Map;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.Map;
 
 /**
  *
@@ -97,126 +97,126 @@ public class APIConfigRequest extends BaseRequest {
     private Map<String, String> communicationProperties;
 
     /**
-     * 
+     *
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * 
+     *
      */
     public void setUrl(String url) {
         this.url = url;
     }
 
     /**
-     * 
+     *
      */
     public String getIntegrationUrl() {
         return integrationUrl;
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationUrl(String integrationUrl) {
         this.integrationUrl = integrationUrl;
     }
 
     /**
-     * 
+     *
      */
     public String getSecurityStrategyCode() {
         return securityStrategyCode;
     }
 
     /**
-     * 
+     *
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
     }
 
     /**
-     * 
+     *
      */
     public String getIntegrationRequestHeaderAssemble() {
         return integrationRequestHeaderAssemble;
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationRequestHeaderAssemble(String integrationRequestHeaderAssemble) {
         this.integrationRequestHeaderAssemble = integrationRequestHeaderAssemble;
     }
 
     /**
-     * 
+     *
      */
     public String getIntegrationRequestBodyAssemble() {
         return integrationRequestBodyAssemble;
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationRequestBodyAssemble(String integrationRequestBodyAssemble) {
         this.integrationRequestBodyAssemble = integrationRequestBodyAssemble;
     }
 
     /**
-     * 
+     *
      */
     public String getIntegrationResponseParser() {
         return integrationResponseParser;
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationResponseParser(String integrationResponseParser) {
         this.integrationResponseParser = integrationResponseParser;
     }
 
     /**
-     * 
+     *
      */
     public Map<String, String> getCommunicationProperties() {
         return communicationProperties;
     }
 
     /**
-     * 
+     *
      */
     public void setCommunicationProperties(Map<String, String> communicationProperties) {
         this.communicationProperties = communicationProperties;
     }
 
     /**
-     * 
+     *
      */
     public String getTenantId() {
         return tenantId;
     }
 
     /**
-     * 
+     *
      */
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
     }
 
     /**
-     * 
+     *
      */
     public String getVersion() {
         return version;
     }
 
     /**
-     * 
+     *
      */
     public void setVersion(String version) {
         this.version = version;

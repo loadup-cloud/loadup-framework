@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -27,10 +28,9 @@ package com.github.loadup.components.gateway.facade.request;
  */
 
 import jakarta.validation.constraints.NotBlank;
+import java.util.Map;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.Map;
 
 /**
  *
@@ -98,7 +98,7 @@ public class SPIConfigRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
@@ -112,7 +112,7 @@ public class SPIConfigRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationUrl(String integrationUrl) {
         this.integrationUrl = integrationUrl;
@@ -126,7 +126,7 @@ public class SPIConfigRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
@@ -140,7 +140,7 @@ public class SPIConfigRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setVersion(String version) {
         this.version = version;
@@ -154,7 +154,7 @@ public class SPIConfigRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationRequestHeaderAssemble(String integrationRequestHeaderAssemble) {
         this.integrationRequestHeaderAssemble = integrationRequestHeaderAssemble;
@@ -168,7 +168,7 @@ public class SPIConfigRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationRequestBodyAssemble(String integrationRequestBodyAssemble) {
         this.integrationRequestBodyAssemble = integrationRequestBodyAssemble;
@@ -182,7 +182,7 @@ public class SPIConfigRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationResponseParser(String integrationResponseParser) {
         this.integrationResponseParser = integrationResponseParser;
@@ -196,7 +196,7 @@ public class SPIConfigRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setCommunicationProperties(Map<String, String> communicationProperties) {
         this.communicationProperties = communicationProperties;

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.util;
 
 /*-
@@ -26,12 +27,11 @@ package com.github.loadup.components.gateway.certification.util;
  * #L%
  */
 
+import java.io.UnsupportedEncodingException;
+import java.security.Security;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Hex;
-
-import java.io.UnsupportedEncodingException;
-import java.security.Security;
 
 /**
  * 编码转换工具类
@@ -71,5 +71,4 @@ public class EncodeUtil {
         }
         return Hex.decode(data.getBytes(encode));
     }
-
 }

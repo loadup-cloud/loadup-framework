@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.util;
 
 /*-
@@ -30,16 +31,15 @@ import com.github.loadup.components.gateway.certification.cache.CacheUtil;
 import com.github.loadup.components.gateway.certification.model.CommonParameter;
 import com.github.loadup.components.gateway.core.model.CertConfig;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 证书相关工具类
@@ -85,8 +85,8 @@ public class CertUtil {
     /**
      * build cert code
      */
-    public static String buildCertCode(String securityStrategyCode, String operateType,
-                                       String algorithm, String clientId) {
+    public static String buildCertCode(
+            String securityStrategyCode, String operateType, String algorithm, String clientId) {
         return CacheUtil.generateKey(securityStrategyCode, operateType, algorithm, clientId);
     }
 }

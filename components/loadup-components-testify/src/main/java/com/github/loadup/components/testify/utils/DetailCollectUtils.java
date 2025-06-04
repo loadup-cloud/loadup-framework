@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils;
 
 /*-
@@ -27,14 +28,13 @@ package com.github.loadup.components.testify.utils;
  */
 
 import com.github.loadup.components.testify.util.LogUtil;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 
 @Slf4j
 public class DetailCollectUtils {
@@ -45,7 +45,6 @@ public class DetailCollectUtils {
         sb.append(content);
         sb.append("\r\n");
     }
-
 
     public static void appendAndLogColoredError(String content, Logger logger) {
         LogUtil.printColoredError(logger, content);
@@ -64,6 +63,7 @@ public class DetailCollectUtils {
         sb.append(content);
         sb.append("\r\n");
     }
+
     public static void appendAndLog(String content, Logger logger) {
         logger.info(content);
         sb.append(content);
@@ -100,5 +100,4 @@ public class DetailCollectUtils {
 
         }
     }
-
 }

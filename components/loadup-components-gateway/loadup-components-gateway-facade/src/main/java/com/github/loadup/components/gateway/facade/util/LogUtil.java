@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.util;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.components.gateway.facade.util;
  * #L%
  */
 
+import java.util.Date;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
-
-import java.util.Date;
 
 /**
  *
@@ -46,8 +46,7 @@ public class LogUtil {
      */
     private static final char THREAD_LEFT_TAG = '[';
 
-    private LogUtil() {
-    }
+    private LogUtil() {}
 
     public static void info(Logger logger, Object... obj) {
         if (logger.isInfoEnabled()) {

@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule;
 
 /*-
@@ -35,7 +32,7 @@ import com.github.loadup.components.testify.exception.RuleParseException;
 /**
  * 变量引用。
  *
- * 
+ *
  *
  */
 public class Reference {
@@ -68,5 +65,4 @@ public class Reference {
     public String getName() {
         return name;
     }
-
 }

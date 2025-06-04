@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.comparer.impl;
 
 /*-
@@ -26,13 +27,12 @@ package com.github.loadup.components.testify.object.comparer.impl;
  * #L%
  */
 
+import com.github.loadup.components.testify.constant.TestifyYamlConstants;
+import com.github.loadup.components.testify.object.comparer.UnitComparer;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
-import com.github.loadup.components.testify.constant.TestifyYamlConstants;
-import com.github.loadup.components.testify.object.comparer.UnitComparer;
 
 /**
  * "Y" flag 校验器
@@ -42,7 +42,7 @@ import com.github.loadup.components.testify.object.comparer.UnitComparer;
  */
 public class SimpleComparer implements UnitComparer {
 
-    private final static String lineSeparator = File.separator;
+    private static final String lineSeparator = File.separator;
 
     public static List<String> ignoreList = null;
 
@@ -63,7 +63,7 @@ public class SimpleComparer implements UnitComparer {
     public boolean compare(Object expect, Object actual, String comparerFlagCode) {
         if (ignoreList == null) {
             ignoreList = new ArrayList<String>();
-            String ignoreStr = "";// TestUtils.getSofaConfig(ActsConfigConstants.IGNORE_STRING_LIST_KEY);
+            String ignoreStr = ""; // TestUtils.getSofaConfig(ActsConfigConstants.IGNORE_STRING_LIST_KEY);
             if (StringUtils.isNotBlank(ignoreStr)) {
                 for (String ignoreString : ignoreStr.split(",")) {
                     ignoreList.add(ignoreString);
@@ -80,7 +80,7 @@ public class SimpleComparer implements UnitComparer {
             exp = exp.replace(TestifyYamlConstants.LINESEPARATOR, lineSeparator);
         }
 
-        //仅在两者均不为空时开始过滤指定字符集
+        // 仅在两者均不为空时开始过滤指定字符集
         if (ignoreList.size() > 0 && exp != null && actual != null) {
             for (String ignoreString : ignoreList) {
                 exp = exp.replaceAll(ignoreString, "");
@@ -90,5 +90,4 @@ public class SimpleComparer implements UnitComparer {
 
         return StringUtils.equals(exp, String.valueOf(actual));
     }
-
 }

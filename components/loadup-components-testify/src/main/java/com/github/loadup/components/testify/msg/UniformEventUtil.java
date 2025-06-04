@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.msg;
 
 /*-
@@ -26,9 +27,8 @@ package com.github.loadup.components.testify.msg;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * UniformEventUtil
@@ -38,7 +38,6 @@ import java.util.List;
  */
 @Slf4j
 public class UniformEventUtil {
-
 
     /**
      * 基于topic和code获取已发送的消息
@@ -51,5 +50,4 @@ public class UniformEventUtil {
 
         return null;
     }
-
 }

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.generator;
 
 /*-
@@ -33,7 +30,7 @@ package com.github.loadup.components.testify.object.generator;
 /**
  * 自定义字段生成器
  *
- * 
+ *
  *
  */
 public abstract class CustomGenerator implements ObjectGenerator {
@@ -48,5 +45,4 @@ public abstract class CustomGenerator implements ObjectGenerator {
      * @return
      */
     public abstract Object generater(String keyPath, Object originValue, String type);
-
 }

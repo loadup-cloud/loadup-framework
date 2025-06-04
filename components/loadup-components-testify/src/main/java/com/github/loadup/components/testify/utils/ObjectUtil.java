@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2011 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils;
 
 /*-
@@ -30,6 +27,7 @@ package com.github.loadup.components.testify.utils;
  * #L%
  */
 
+import com.alibaba.fastjson2.JSONObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -38,13 +36,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.springframework.aop.framework.AopProxyUtils;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.alibaba.fastjson2.JSONObject;
+import org.springframework.aop.framework.AopProxyUtils;
 
 /**
  * Object工具处理类
@@ -143,7 +138,8 @@ public class ObjectUtil {
             return;
         }
         for (Field field : obj.getClass().getDeclaredFields()) {
-            if (!StringUtils.equals(propertyName, field.getName()) || field.getClass().isPrimitive()) {
+            if (!StringUtils.equals(propertyName, field.getName())
+                    || field.getClass().isPrimitive()) {
                 continue;
             }
             field.setAccessible(true);
@@ -154,9 +150,9 @@ public class ObjectUtil {
                 } else if (propertyClazz.isInstance(Boolean.TRUE)) {
                     field.set(obj, Boolean.valueOf(value));
                 } else if (propertyClazz.isEnum()) {
-//                    field.set(obj, EnumUtil.getEnumByName(propertyClazz, value));
-//                } else if (propertyClazz.isInstance(new Integer(1))) {
-//                    field.set(obj, new Integer(value));
+                    //                    field.set(obj, EnumUtil.getEnumByName(propertyClazz, value));
+                    //                } else if (propertyClazz.isInstance(new Integer(1))) {
+                    //                    field.set(obj, new Integer(value));
                 } else if ("int".equals(propertyClazz.getName())) {
                     field.set(obj, Integer.parseInt(value));
                 } else if (propertyClazz.isInstance(new HashSet<String>())) {
@@ -216,7 +212,6 @@ public class ObjectUtil {
      * @param params
      * @return
      */
-
     public static Map<String, String> copyProperties(Object obj, String... params) {
         Map<String, String> result = new HashMap<String, String>();
         if (null == obj || null == params || params.length == 0) {

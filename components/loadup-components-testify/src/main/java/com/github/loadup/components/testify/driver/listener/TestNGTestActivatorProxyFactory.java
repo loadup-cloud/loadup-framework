@@ -1,6 +1,4 @@
-/**
- * Copyright (c) 2004-2014 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.driver.listener;
 
 /*-
@@ -32,19 +30,18 @@ package com.github.loadup.components.testify.driver.listener;
 import com.github.loadup.components.testify.driver.annotation.TCList;
 import com.github.loadup.components.testify.driver.enums.SuiteFlag;
 import com.github.loadup.components.testify.log.TestifyLogUtil;
+import java.lang.reflect.Method;
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.testng.SkipException;
 
-import java.lang.reflect.Method;
-import java.util.*;
-
 /**
  * Sofa TesgNG 测试执行器TestNGTestActivator代理
  *
- * 
+ *
  *
  */
 @Slf4j
@@ -65,7 +62,7 @@ public class TestNGTestActivatorProxyFactory implements MethodInterceptor {
      */
     private final Object targetObject;
 
-    //方法缓存，主要避免重复比较方法，提高并发时测试的执行速度
+    // 方法缓存，主要避免重复比较方法，提高并发时测试的执行速度
     private final Map<Method, Method> methodMapper = new HashMap<Method, Method>();
 
     private TestNGTestActivatorProxyFactory(Object targetObject) {
@@ -97,10 +94,9 @@ public class TestNGTestActivatorProxyFactory implements MethodInterceptor {
      * @see net.sf.cglib.proxy.MethodInterceptor#intercept(Object, Method, Object[], net.sf.cglib.proxy.MethodProxy)
      */
     @Override
-    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy)
-            throws Throwable {
+    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 
-        //check testOnly规则，如果有配置TCList的testOnly，那么只运行testOnly中出现的caseId，其他直接fail以便追踪
+        // check testOnly规则，如果有配置TCList的testOnly，那么只运行testOnly中出现的caseId，其他直接fail以便追踪
         if (!checkTestOnly(method, args)) {
             return null;
         }
@@ -108,8 +104,7 @@ public class TestNGTestActivatorProxyFactory implements MethodInterceptor {
         if (!methodMapper.containsKey(method)) {
             Method m = findEqual(method, targetObject);
             if (m == null) {
-                throw new RuntimeException("TestNGTestActivatorProxyFactory找不到对应的目标方法:"
-                        + method.getName());
+                throw new RuntimeException("TestNGTestActivatorProxyFactory找不到对应的目标方法:" + method.getName());
             }
             m.setAccessible(true);
             methodMapper.put(method, m);
@@ -118,7 +113,6 @@ public class TestNGTestActivatorProxyFactory implements MethodInterceptor {
 
         Object result = equalMethod.invoke(targetObject, args);
         return result;
-
     }
 
     /**
@@ -129,7 +123,7 @@ public class TestNGTestActivatorProxyFactory implements MethodInterceptor {
      * @return
      */
     private boolean checkTestOnly(Method method, Object[] args) {
-        //TestNGTestActivator.invokeTestNGTestMethod(String testClass, Method targetMethod, Object[] args)
+        // TestNGTestActivator.invokeTestNGTestMethod(String testClass, Method targetMethod, Object[] args)
         if (args.length == 3) {
             if (!(args[1] instanceof Method) || !(args[2] instanceof Object[])) {
                 return true;
@@ -138,23 +132,22 @@ public class TestNGTestActivatorProxyFactory implements MethodInterceptor {
             Method testMethod = (Method) args[1];
             Object[] testArgs = (Object[]) args[2];
 
-            //仅正常测试方法需要判断testOnly标识
+            // 仅正常测试方法需要判断testOnly标识
             if (testMethod.isAnnotationPresent(org.testng.annotations.Test.class)
                     && testMethod.isAnnotationPresent(TCList.class)) {
                 String[] includeCaseIds = testMethod.getAnnotation(TCList.class).testOnly();
 
-                //只有配置了TCList testOnly的时候才判断caseId是否出现在testOnly中
+                // 只有配置了TCList testOnly的时候才判断caseId是否出现在testOnly中
                 if (includeCaseIds != null && includeCaseIds.length > 0) {
                     Set<String> includeCaseIdSet = new HashSet<String>();
                     for (String caseId : includeCaseIds) {
                         includeCaseIdSet.add(caseId);
                     }
 
-                    //当测试方法参数个数大于0时，认为第一个参数为caseId
+                    // 当测试方法参数个数大于0时，认为第一个参数为caseId
                     if (testArgs != null && testArgs.length > 0) {
                         Object currentCaseId = testArgs[0];
-                        if (currentCaseId != null
-                                && includeCaseIdSet.contains(currentCaseId.toString())) {
+                        if (currentCaseId != null && includeCaseIdSet.contains(currentCaseId.toString())) {
                             return true;
                         } else {
                             throw new SkipException("case [" + testArgs[0] + "] is not run.");
@@ -166,12 +159,10 @@ public class TestNGTestActivatorProxyFactory implements MethodInterceptor {
                         if (SuiteFlag.getByCode(suiteFlagCode) == SuiteFlag.DELETE) {
                             TestifyLogUtil.warn(log, "case " + testArgs[0] + " 跳过测试");
                             throw new SkipException("case [" + testArgs[0] + "] is not run.");
-                        } else
-                            return true;
+                        } else return true;
                     }
                 }
             }
-
         }
 
         return true;
@@ -206,14 +197,12 @@ public class TestNGTestActivatorProxyFactory implements MethodInterceptor {
     private boolean isMethodEqual(Method mtd1, Method mtd2) {
         if (mtd1 != null && mtd2 != null) {
             if (mtd1.getName().equals(mtd2.getName())) {
-                if (!mtd1.getReturnType().getName().equals(mtd2.getReturnType().getName()))
-                    return false;
+                if (!mtd1.getReturnType().getName().equals(mtd2.getReturnType().getName())) return false;
                 Class<?>[] params1 = mtd1.getParameterTypes();
                 Class<?>[] params2 = mtd2.getParameterTypes();
                 if (params1.length == params2.length) {
                     for (int i = 0; i < params1.length; i++) {
-                        if (!params1[i].getName().equals(params2[i].getName()))
-                            return false;
+                        if (!params1[i].getName().equals(params2[i].getName())) return false;
                     }
                     return true;
                 }
@@ -221,5 +210,4 @@ public class TestNGTestActivatorProxyFactory implements MethodInterceptor {
         }
         return false;
     }
-
 }

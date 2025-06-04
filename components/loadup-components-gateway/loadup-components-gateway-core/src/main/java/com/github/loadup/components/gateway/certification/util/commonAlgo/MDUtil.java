@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.util.commonAlgo;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.components.gateway.certification.util.commonAlgo;
  * #L%
  */
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
 import java.security.MessageDigest;
 import java.security.Security;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * MD系类摘要算法, 支持算法：MD2，MD4，MD5
@@ -50,5 +50,4 @@ public class MDUtil {
         MessageDigest md = MessageDigest.getInstance(algorithm);
         return md.digest(data);
     }
-
 }

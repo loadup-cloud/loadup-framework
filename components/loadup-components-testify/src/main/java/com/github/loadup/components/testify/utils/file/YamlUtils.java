@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2021 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.file;
 
 /*-
@@ -34,8 +31,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
 /**
- * 
- * 
+ *
+ *
  */
 public class YamlUtils {
     /**
@@ -62,5 +59,4 @@ public class YamlUtils {
         Yaml yamlObject = new Yaml();
         return yamlObject.dump(data);
     }
-
 }

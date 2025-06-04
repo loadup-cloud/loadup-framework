@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.model;
 
 /*-
@@ -63,8 +64,7 @@ public class VirtualTable extends TestNode {
      */
     private Map<String /* fieldName*/, String /* Flag */> flags;
 
-    public VirtualTable() {
-    }
+    public VirtualTable() {}
 
     public VirtualTable(String dataObjClazz) {
         this.dataObjClazz = dataObjClazz;
@@ -99,7 +99,6 @@ public class VirtualTable extends TestNode {
         }
 
         return currentFlag;
-
     }
 
     /**
@@ -145,8 +144,9 @@ public class VirtualTable extends TestNode {
         }
         Map<String, Object> rowData = new LinkedHashMap<String, Object>();
         List<Field> tmpFields = new ArrayList<Field>();
-        for (@SuppressWarnings("rawtypes")
-             Class clazz = dataObject.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
+        for (@SuppressWarnings("rawtypes") Class clazz = dataObject.getClass();
+                clazz != Object.class;
+                clazz = clazz.getSuperclass()) {
             for (Field f : clazz.getDeclaredFields()) {
                 tmpFields.add(f);
             }
@@ -267,9 +267,16 @@ public class VirtualTable extends TestNode {
      */
     @Override
     public String toString() {
-        return "VirtualTable [dataObjClazz=" + dataObjClazz + ", tableName=" + tableName
-                + ", tableBaseDesc=" + tableBaseDesc + ", tableData=" + tableData + ", flags="
-                + flags + "]";
+        return "VirtualTable [dataObjClazz="
+                + dataObjClazz
+                + ", tableName="
+                + tableName
+                + ", tableBaseDesc="
+                + tableBaseDesc
+                + ", tableData="
+                + tableData
+                + ", flags="
+                + flags
+                + "]";
     }
-
 }

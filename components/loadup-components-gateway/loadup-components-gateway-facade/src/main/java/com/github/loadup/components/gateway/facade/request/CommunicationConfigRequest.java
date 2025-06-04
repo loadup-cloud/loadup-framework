@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -28,13 +29,11 @@ package com.github.loadup.components.gateway.facade.request;
 
 import com.github.loadup.components.gateway.facade.enums.MessageFormat;
 import jakarta.validation.constraints.NotNull;
-
 import java.util.Map;
 
 /**
  *
  */
-
 public class CommunicationConfigRequest {
     @NotNull(message = "protocol can not be null.")
     private String protocol;
@@ -62,112 +61,112 @@ public class CommunicationConfigRequest {
     private Map<String, String> properties;
 
     /**
-     * 
+     *
      */
     public String getProtocol() {
         return protocol;
     }
 
     /**
-     * 
+     *
      */
     public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
 
     /**
-     * 
+     *
      */
     public String getUri() {
         return uri;
     }
 
     /**
-     * 
+     *
      */
     public void setUri(String uri) {
         this.uri = uri;
     }
 
     /**
-     * 
+     *
      */
     public String getIntegrationUri() {
         return integrationUri;
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationUri(String integrationUri) {
         this.integrationUri = integrationUri;
     }
 
     /**
-     * 
+     *
      */
     public String getConnectTimeout() {
         return connectTimeout;
     }
 
     /**
-     * 
+     *
      */
     public void setConnectTimeout(String connectTimeout) {
         this.connectTimeout = connectTimeout;
     }
 
     /**
-     * 
+     *
      */
     public String getReadTimeout() {
         return readTimeout;
     }
 
     /**
-     * 
+     *
      */
     public void setReadTimeout(String readTimeout) {
         this.readTimeout = readTimeout;
     }
 
     /**
-     * 
+     *
      */
     public Map<String, String> getProperties() {
         return properties;
     }
 
     /**
-     * 
+     *
      */
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
 
     /**
-     * 
+     *
      */
     public MessageFormat getRecvMessageFormat() {
         return recvMessageFormat;
     }
 
     /**
-     * 
+     *
      */
     public void setRecvMessageFormat(MessageFormat recvMessageFormat) {
         this.recvMessageFormat = recvMessageFormat;
     }
 
     /**
-     * 
+     *
      */
     public MessageFormat getSendMessageFormat() {
         return sendMessageFormat;
     }
 
     /**
-     * 
+     *
      */
     public void setSendMessageFormat(MessageFormat sendMessageFormat) {
         this.sendMessageFormat = sendMessageFormat;

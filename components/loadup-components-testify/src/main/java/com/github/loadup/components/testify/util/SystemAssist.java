@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -37,7 +34,7 @@ import java.util.List;
 /**
  * 系统统一工具类。
  *
- * 
+ *
  *
  */
 public abstract class SystemAssist {
@@ -45,12 +42,12 @@ public abstract class SystemAssist {
     /**
      * 系统域
      */
-    public static final String[] SYS_DOMAINS = new String[]{"xxx", "xx"};
+    public static final String[] SYS_DOMAINS = new String[] {"xxx", "xx"};
 
     /**
      * 系统前缀
      */
-    public static final String[] SYS_PREFIXES = new String[]{"fc"};
+    public static final String[] SYS_PREFIXES = new String[] {"fc"};
 
     /**
      * 获取所有可能的包目录。

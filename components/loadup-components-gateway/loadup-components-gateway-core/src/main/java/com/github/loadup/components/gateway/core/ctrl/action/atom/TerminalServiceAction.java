@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.ctrl.action.atom;
 
 /*-
@@ -39,6 +40,5 @@ import org.springframework.stereotype.Component;
 public class TerminalServiceAction implements BusinessAction {
 
     @Override
-    public void process(GatewayRuntimeProcessContext context) {
-    }
+    public void process(GatewayRuntimeProcessContext context) {}
 }

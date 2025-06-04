@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.communication.common.sensitivity.impl;
 
 /*-
@@ -30,14 +31,13 @@ import com.github.loadup.components.gateway.core.communication.common.sensitivit
 import com.github.loadup.components.gateway.core.model.SensitivityProcessType;
 import com.github.loadup.components.gateway.core.model.ShieldType;
 import com.github.loadup.components.gateway.core.prototype.util.MaskUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * 敏感URL数据处理
@@ -78,7 +78,7 @@ public class SensitivityUrlProcessImpl implements SensitivityDataProcess<String>
     private static String getMaskUriPatternStr(String maskRule) {
 
         if (StringUtils.isEmpty(maskRule)) {
-            //没有配置敏感字段
+            // 没有配置敏感字段
             return StringUtils.EMPTY;
         }
         return String.format(MASK_PATTERN_VALUE_URI, maskRule);
@@ -88,8 +88,8 @@ public class SensitivityUrlProcessImpl implements SensitivityDataProcess<String>
     public String mask(String maskContent, Map<String, ShieldType> shieldRule) {
 
         Map<ShieldType, List<String>> maskRules = shieldRule.entrySet().stream()
-                .collect(Collectors.groupingBy(Map.Entry::getValue,
-                        Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getValue, Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
 
         String result = maskContent;
 

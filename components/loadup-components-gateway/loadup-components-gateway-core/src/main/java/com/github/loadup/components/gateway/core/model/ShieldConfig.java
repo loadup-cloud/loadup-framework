@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.model;
 
 /*-
@@ -34,14 +35,13 @@ import com.github.loadup.components.gateway.core.service.InterfaceProdCenterQuer
 import com.github.loadup.components.gateway.facade.config.model.APIConditionGroup;
 import com.github.loadup.components.gateway.facade.config.model.CommunicationPropertiesGroup;
 import jakarta.annotation.Resource;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * ShieldConfig
@@ -63,10 +63,10 @@ public class ShieldConfig {
      * if no interface id, the key default as DEFAULT
      */
     private static Map<String, Map<String, ShieldType>> shieldConfig = new ConcurrentHashMap<>();
+
     private static InterfaceProdCenterQueryService interfaceProdCenterQueryService;
 
-    public static Map<String, ShieldType> getShieldRules(String interfaceId,
-                                                         InterfaceType interfaceType) {
+    public static Map<String, ShieldType> getShieldRules(String interfaceId, InterfaceType interfaceType) {
         Map<String, ShieldType> result = new HashMap<>();
         Map<String, ShieldType> defaultMap = shieldConfig.get(KEY_DEFAULT);
         if (MapUtils.isNotEmpty(defaultMap)) {
@@ -91,36 +91,34 @@ public class ShieldConfig {
     /**
      *
      */
-    private static Map<String, ShieldType> getProdShieldRules(String interfaceId,
-                                                              InterfaceType type) {
+    private static Map<String, ShieldType> getProdShieldRules(String interfaceId, InterfaceType type) {
         Map<String, ShieldType> rules = new HashMap<>();
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
             //                && StringUtils.isNotBlank(TenantUtil.getTenantId())) {
 
-            CommunicationPropertiesGroup propertiesGroup = interfaceProdCenterQueryService.
-                    queryCommunicationPropertiesGroup(interfaceId);
+            CommunicationPropertiesGroup propertiesGroup =
+                    interfaceProdCenterQueryService.queryCommunicationPropertiesGroup(interfaceId);
 
             if (propertiesGroup == null && type == InterfaceType.OPENAPI) {
-                APIConditionGroup apiConditionGroup = interfaceProdCenterQueryService.
-                        queryAPIConditionGroup(interfaceId, null);
+                APIConditionGroup apiConditionGroup =
+                        interfaceProdCenterQueryService.queryAPIConditionGroup(interfaceId, null);
                 if (apiConditionGroup != null) {
-                    propertiesGroup = interfaceProdCenterQueryService.
-                            queryCommunicationPropertiesGroup(apiConditionGroup.getIntegrationUrl());
+                    propertiesGroup = interfaceProdCenterQueryService.queryCommunicationPropertiesGroup(
+                            apiConditionGroup.getIntegrationUrl());
                 }
             }
 
-            CommunicationPropertiesGroup allPropertiesGroup = interfaceProdCenterQueryService
-                    .queryCommunicationPropertiesGroup(Constant.TENANT_COMMUNICATION_PROPERTIES_GROUP_URL);
+            CommunicationPropertiesGroup allPropertiesGroup =
+                    interfaceProdCenterQueryService.queryCommunicationPropertiesGroup(
+                            Constant.TENANT_COMMUNICATION_PROPERTIES_GROUP_URL);
             CommunicationPropertiesGroup typePropertiesGroup = null;
             if (type != null) {
-                typePropertiesGroup = interfaceProdCenterQueryService
-                        .queryCommunicationPropertiesGroup(type.name());
+                typePropertiesGroup = interfaceProdCenterQueryService.queryCommunicationPropertiesGroup(type.name());
             }
 
             rules.putAll(convertProdConfigToShieldRules(propertiesGroup));
             rules.putAll(convertProdConfigToShieldRules(allPropertiesGroup));
             rules.putAll(convertProdConfigToShieldRules(typePropertiesGroup));
-
         }
         return rules;
     }
@@ -128,15 +126,17 @@ public class ShieldConfig {
     /**
      *
      */
-    private static Map<String, ShieldType> convertProdConfigToShieldRules(CommunicationPropertiesGroup communicationPropertiesGroup) {
+    private static Map<String, ShieldType> convertProdConfigToShieldRules(
+            CommunicationPropertiesGroup communicationPropertiesGroup) {
         Map<String, ShieldType> rules = new HashMap<>();
         if (communicationPropertiesGroup != null) {
             Stream.of(StringUtils.split(
-                    StringUtils.defaultString(communicationPropertiesGroup.getShieldKeys(), ""),
-                    Constant.COMMA_SEPARATOR)).forEach(m -> {
-                // 目前只支持一种类型，全部隐藏
-                rules.put(m, ShieldType.ALL);
-            });
+                            StringUtils.defaultString(communicationPropertiesGroup.getShieldKeys(), ""),
+                            Constant.COMMA_SEPARATOR))
+                    .forEach(m -> {
+                        // 目前只支持一种类型，全部隐藏
+                        rules.put(m, ShieldType.ALL);
+                    });
         }
         return rules;
     }

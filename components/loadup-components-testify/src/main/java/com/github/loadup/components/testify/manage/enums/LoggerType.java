@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.manage.enums;
 
 /*-
@@ -33,7 +30,7 @@ package com.github.loadup.components.testify.manage.enums;
 /**
  * 日志类型。
  *
- * 
+ *
  *
  */
 public enum LoggerType {
@@ -73,5 +70,4 @@ public enum LoggerType {
     public String getName() {
         return name;
     }
-
 }

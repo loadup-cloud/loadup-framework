@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.support;
 
 /*-
@@ -30,14 +27,13 @@ package com.github.loadup.components.testify.support;
  * #L%
  */
 
-
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * 测试用例生成器。
  *
- * 
- * 
+ *
+ *
  */
 public class TestCaseFactory {
 
@@ -93,7 +89,6 @@ public class TestCaseFactory {
         TestCase tc = new TestCase(caseId, parseOption(options), caseDescription);
 
         return tc;
-
     }
 
     /**

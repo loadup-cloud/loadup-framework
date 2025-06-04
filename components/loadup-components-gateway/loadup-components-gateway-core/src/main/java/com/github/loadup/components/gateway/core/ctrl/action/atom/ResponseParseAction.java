@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.ctrl.action.atom;
 
 /*-
@@ -26,6 +27,9 @@ package com.github.loadup.components.gateway.core.ctrl.action.atom;
  * #L%
  */
 
+import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_PARSE_EXCEPTION;
+import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_PARSE_RESULT;
+
 import com.github.loadup.components.gateway.core.common.enums.RoleType;
 import com.github.loadup.components.gateway.core.ctrl.action.AbstractBusinessAction;
 import com.github.loadup.components.gateway.core.ctrl.action.BusinessAction;
@@ -37,9 +41,6 @@ import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_PARSE_EXCEPTION;
-import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_PARSE_RESULT;
 
 /**
  * <p>
@@ -55,10 +56,11 @@ public class ResponseParseAction extends AbstractBusinessAction {
     @Override
     public void doBusiness(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) {
         MessageEnvelope resultEnvelope = gatewayRuntimeProcessContext.getResultMessage();
-        String integratorInterfaceId = gatewayRuntimeProcessContext.getIntegratorInterfaceConfig().getInterfaceId();
+        String integratorInterfaceId =
+                gatewayRuntimeProcessContext.getIntegratorInterfaceConfig().getInterfaceId();
         UnifyMsg unifyCommonMessage = new UnifyMsg();
-        UnifyMsg respMessage = messageEngine.parse(integratorInterfaceId, RoleType.RECEIVER, gatewayRuntimeProcessContext,
-                resultEnvelope);
+        UnifyMsg respMessage = messageEngine.parse(
+                integratorInterfaceId, RoleType.RECEIVER, gatewayRuntimeProcessContext, resultEnvelope);
         String exceptionMsg = respMessage.g(KEY_PARSE_EXCEPTION);
         String parseResult = respMessage.g(KEY_PARSE_RESULT);
 

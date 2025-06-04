@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.components.gateway.facade.request;
  * #L%
  */
 
+import java.util.Map;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.Map;
 
 /**
  *

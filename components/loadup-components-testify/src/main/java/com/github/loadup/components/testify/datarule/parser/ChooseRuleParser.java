@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.parser;
 
 /*-
@@ -37,8 +34,8 @@ import com.github.loadup.components.testify.exception.RuleParseException;
 /**
  * 选择规则分析器。
  *
- * 
- * 
+ *
+ *
  */
 public class ChooseRuleParser extends RuleParser<ChooseRule> {
 
@@ -82,10 +79,12 @@ public class ChooseRuleParser extends RuleParser<ChooseRule> {
                     chooseRule.setRowCount(sign * lexer.integerValue().intValue());
                     lexer.nextToken();
                 } else {
-                    throw new RuleParseException(
-                            "choose rule parse ERROR[token=" + tok + ",pos=" + lexer.pos()
-                                    + "],expect pattern like choose(2,aa,bb={b1,b2}),rule="
-                                    + lexer.text);
+                    throw new RuleParseException("choose rule parse ERROR[token="
+                            + tok
+                            + ",pos="
+                            + lexer.pos()
+                            + "],expect pattern like choose(2,aa,bb={b1,b2}),rule="
+                            + lexer.text);
                 }
 
                 accept(RuleToken.COMMA);
@@ -102,10 +101,12 @@ public class ChooseRuleParser extends RuleParser<ChooseRule> {
                     } else if (lexer.token() == RuleToken.ASSEMBLE) {
                         chooseRule.addAssembleRule(new AssembleRuleParser(lexer).parse());
                     } else {
-                        throw new RuleParseException(
-                                "choose rule parse ERROR[token=" + tok + ",pos=" + lexer.pos()
-                                        + "],expect pattern like choose(2,aa,bb={b1,b2}),rule="
-                                        + lexer.text);
+                        throw new RuleParseException("choose rule parse ERROR[token="
+                                + tok
+                                + ",pos="
+                                + lexer.pos()
+                                + "],expect pattern like choose(2,aa,bb={b1,b2}),rule="
+                                + lexer.text);
                     }
                     if (lexer.token() == RuleToken.COMMA) {
                         lexer.nextToken();
@@ -121,10 +122,12 @@ public class ChooseRuleParser extends RuleParser<ChooseRule> {
             case EOF:
                 throw new RuleParseException("EOF");
             default:
-                throw new RuleParseException(
-                        "choose rule parse ERROR[token=" + tok + ",pos=" + lexer.pos()
-                                + "],expect pattern like choose(2,aa,bb={b1,b2}),rule=" + lexer.text);
+                throw new RuleParseException("choose rule parse ERROR[token="
+                        + tok
+                        + ",pos="
+                        + lexer.pos()
+                        + "],expect pattern like choose(2,aa,bb={b1,b2}),rule="
+                        + lexer.text);
         }
-
     }
 }

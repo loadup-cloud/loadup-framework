@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.service.impl.convertor;
 
 /*-
@@ -29,10 +30,9 @@ package com.github.loadup.modules.upms.service.impl.convertor;
 import com.github.loadup.modules.upms.client.dto.PositionDTO;
 import com.github.loadup.modules.upms.client.dto.SimplePositionDTO;
 import com.github.loadup.modules.upms.domain.UpmsPosition;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
-
-import java.util.List;
 
 @Mapper
 public interface PositionDTOConvertor {
@@ -47,5 +47,4 @@ public interface PositionDTOConvertor {
     SimplePositionDTO toSimplePositionDTO(UpmsPosition domain);
 
     List<PositionDTO> toPositionDTOList(List<UpmsPosition> domainList);
-
 }

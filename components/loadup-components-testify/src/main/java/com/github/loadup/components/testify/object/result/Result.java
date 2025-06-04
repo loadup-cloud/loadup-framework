@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.result;
 
 /*-
@@ -33,7 +30,7 @@ package com.github.loadup.components.testify.object.result;
 /**
  * 通用的结果对象
  *
- * 
+ *
  *
  */
 public class Result {
@@ -68,7 +65,7 @@ public class Result {
     }
 
     /**
-     * 
+     *
      *
      * @param success value to be assigned to property success
      */
@@ -86,12 +83,11 @@ public class Result {
     }
 
     /**
-     * 
+     *
      *
      * @param comment value to be assigned to property comment
      */
     public void setComment(String comment) {
         this.comment = comment;
     }
-
 }

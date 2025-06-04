@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.collector.sqlLog;
 
 /*-
@@ -31,15 +28,14 @@ package com.github.loadup.components.testify.collector.sqlLog;
  */
 
 import com.github.loadup.components.testify.runtime.TestifyRuntimeContextThreadHold;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.*;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 更新sql日志解析器
  *
- * 
+ *
  *
  */
 public class UpdateSqlLogParser implements SqlLogParser {
@@ -47,23 +43,21 @@ public class UpdateSqlLogParser implements SqlLogParser {
     /**
      * insert sql正则表达式
      */
-    private static final Pattern fieldSetParttner = Pattern
-            .compile("([\\s\\S]*)in \\(([\\s\\S]*)\\)");
+    private static final Pattern fieldSetParttner = Pattern.compile("([\\s\\S]*)in \\(([\\s\\S]*)\\)");
 
     /**
      * @see SqlLogParser#parse(String, String, String)
      */
     @Override
-    public List<Map<String, Object>> parseGenTableDatas(String sql, List<String> paramValue,
-                                                        List<String> paramType) {
+    public List<Map<String, Object>> parseGenTableDatas(String sql, List<String> paramValue, List<String> paramType) {
 
         String querySql = genSql(sql, paramValue, paramType);
 
         String tableName = parseTableName(sql);
-        //执行sql查询
-        return TestifyRuntimeContextThreadHold.getContext().getDbDatasProcessor()
+        // 执行sql查询
+        return TestifyRuntimeContextThreadHold.getContext()
+                .getDbDatasProcessor()
                 .queryForList(tableName, querySql);
-
     }
 
     /**
@@ -74,7 +68,7 @@ public class UpdateSqlLogParser implements SqlLogParser {
      * @return
      */
     public String genSql(String sql, List<String> paramValue, List<String> paramType) {
-        //需要解析获取set部分字段及where条件涉及字段
+        // 需要解析获取set部分字段及where条件涉及字段
         String setFieldStr = sql.substring(sql.indexOf(" set ") + 5, sql.indexOf(" where "));
         String[] setFields = setFieldStr.trim().split(",");
         if (null == setFields || setFields.length == 0) {
@@ -82,7 +76,7 @@ public class UpdateSqlLogParser implements SqlLogParser {
         }
 
         String condtionPart = sql.substring(sql.indexOf(" where ")).trim();
-        //计算set条件需要更新的字段数
+        // 计算set条件需要更新的字段数
         int needUpdateFieldNum = 0;
         for (String field : setFields) {
             if (StringUtils.contains(field, "?")) {
@@ -90,9 +84,8 @@ public class UpdateSqlLogParser implements SqlLogParser {
             }
         }
         while (condtionPart.contains("?")) {
-            //条件字段值替换
-            condtionPart = StringUtils.replace(condtionPart, "?",
-                    "'" + paramValue.get(needUpdateFieldNum) + "'", 1);
+            // 条件字段值替换
+            condtionPart = StringUtils.replace(condtionPart, "?", "'" + paramValue.get(needUpdateFieldNum) + "'", 1);
             ++needUpdateFieldNum;
         }
 
@@ -111,7 +104,8 @@ public class UpdateSqlLogParser implements SqlLogParser {
     public String parseTableName(String sql) {
 
         String key = "update";
-        String sqlPart = sql.substring(sql.indexOf(key) + key.length(), sql.length()).trim();
+        String sqlPart =
+                sql.substring(sql.indexOf(key) + key.length(), sql.length()).trim();
         String[] sqlSegments = sqlPart.split(" ");
 
         return sqlSegments[0].trim();
@@ -125,14 +119,15 @@ public class UpdateSqlLogParser implements SqlLogParser {
 
         Map<String, String> fieldFlag = new HashMap<String, String>();
 
-        //条件字段
+        // 条件字段
         Set<String> conFieldSet = new HashSet<String>();
         String condtionFieldStr = sql.substring(sql.indexOf("where") + 5).trim();
         List<String> conFields = Arrays.asList(condtionFieldStr.toLowerCase().split(" and "));
         for (int i = 0; i < conFields.size(); i++) {
-            //条件字段值为集合,形如id in (?,?,?)
-            if (fieldSetParttner.matcher(conFields.get(i)).find() && conFields.get(i).contains("?")) {
-                //去除括号
+            // 条件字段值为集合,形如id in (?,?,?)
+            if (fieldSetParttner.matcher(conFields.get(i)).find()
+                    && conFields.get(i).contains("?")) {
+                // 去除括号
                 String newConField = StringUtils.replace(conFields.get(i), "(", "");
                 newConField = StringUtils.replace(newConField, ")", "");
                 conFieldSet.add(StringUtils.substring(newConField, 0, newConField.indexOf("in"))
@@ -141,7 +136,7 @@ public class UpdateSqlLogParser implements SqlLogParser {
             }
 
             if (conFields.get(i).contains("?") && conFields.get(i).contains("=")) {
-                //去除括号
+                // 去除括号
                 String newConField = StringUtils.replace(conFields.get(i), "(", "");
                 conFields.set(i, StringUtils.replace(newConField, ")", ""));
                 conFieldSet.add(StringUtils.substring(newConField, 0, newConField.indexOf("="))
@@ -149,7 +144,7 @@ public class UpdateSqlLogParser implements SqlLogParser {
             }
         }
 
-        //为字段设置标记
+        // 为字段设置标记
         for (String field : tableFields) {
             if (conFieldSet.contains(field)) {
                 fieldFlag.put(field, "C");
@@ -160,5 +155,4 @@ public class UpdateSqlLogParser implements SqlLogParser {
 
         return fieldFlag;
     }
-
 }

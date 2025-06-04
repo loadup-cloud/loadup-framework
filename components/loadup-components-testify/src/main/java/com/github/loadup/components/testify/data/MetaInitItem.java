@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data;
 
 /*-
@@ -36,7 +33,7 @@ import com.github.loadup.components.testify.data.enums.MetaInitType;
  * 原子初始项。
  * <p> 与DB字典和业务模型对应。
  *
- * 
+ *
  *
  */
 public class MetaInitItem {
@@ -84,7 +81,7 @@ public class MetaInitItem {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of host
      */
@@ -93,7 +90,7 @@ public class MetaInitItem {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of field
      */
@@ -102,7 +99,7 @@ public class MetaInitItem {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of system
      */
@@ -111,7 +108,7 @@ public class MetaInitItem {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of initType
      */
@@ -129,7 +126,7 @@ public class MetaInitItem {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of fieldType
      */
@@ -164,28 +161,19 @@ public class MetaInitItem {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         MetaInitItem other = (MetaInitItem) obj;
         if (field == null) {
-            if (other.field != null)
-                return false;
-        } else if (!field.equals(other.field))
-            return false;
+            if (other.field != null) return false;
+        } else if (!field.equals(other.field)) return false;
         if (host == null) {
-            if (other.host != null)
-                return false;
-        } else if (!host.equals(other.host))
-            return false;
+            if (other.host != null) return false;
+        } else if (!host.equals(other.host)) return false;
         if (system == null) {
-            if (other.system != null)
-                return false;
-        } else if (!system.equals(other.system))
-            return false;
+            if (other.system != null) return false;
+        } else if (!system.equals(other.system)) return false;
         return true;
     }
 

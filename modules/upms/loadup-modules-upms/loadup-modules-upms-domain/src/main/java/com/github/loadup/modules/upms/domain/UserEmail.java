@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.domain;
 
 /*-
@@ -27,11 +28,10 @@ package com.github.loadup.modules.upms.domain;
  */
 
 import com.github.loadup.commons.dto.DTO;
+import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.regex.Pattern;
 
 /**
  * @author lise
@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 @Getter
 @Setter
 public class UserEmail extends DTO {
-    public final static  String EMAIL_SEP   = "@";
+    public static final String EMAIL_SEP = "@";
     private static final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}$";
 
     private String prefix;
@@ -81,5 +81,4 @@ public class UserEmail extends DTO {
         return (prefix == null || prefix.trim().isEmpty())
                 && (domain == null || domain.trim().isEmpty());
     }
-
 }

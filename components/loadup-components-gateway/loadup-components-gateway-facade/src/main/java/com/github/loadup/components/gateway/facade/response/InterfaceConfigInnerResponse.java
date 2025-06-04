@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.response;
 
 /*-
@@ -53,7 +54,7 @@ public class InterfaceConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceId(String interfaceId) {
         this.interfaceId = interfaceId;
@@ -67,7 +68,7 @@ public class InterfaceConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceName(String interfaceName) {
         this.interfaceName = interfaceName;
@@ -81,7 +82,7 @@ public class InterfaceConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setStatus(InterfaceStatus status) {
         this.status = status;
@@ -95,7 +96,7 @@ public class InterfaceConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setVersion(String version) {
         this.version = version;
@@ -109,7 +110,7 @@ public class InterfaceConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setCommunicationConfig(CommunicationConfigResponse communicationConfig) {
         this.communicationConfig = communicationConfig;
@@ -123,7 +124,7 @@ public class InterfaceConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setProcessConfig(MessageProcessConfigResponse processConfig) {
         this.processConfig = processConfig;

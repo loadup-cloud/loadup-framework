@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.script.parser.groovy;
 
 /*-
@@ -26,23 +27,21 @@ package com.github.loadup.components.gateway.message.script.parser.groovy;
  * #L%
  */
 
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * CE专用Groovy兼容处理类
  */
 public class DelegatedEntityResolver implements EntityResolver {
 
-    private final Map<EntityResolver, String> resolvers = new LinkedHashMap<EntityResolver, String>(
-            2);
+    private final Map<EntityResolver, String> resolvers = new LinkedHashMap<EntityResolver, String>(2);
 
     /**
      * CE兼容性处理
@@ -55,11 +54,11 @@ public class DelegatedEntityResolver implements EntityResolver {
      * @see EntityResolver#resolveEntity(String, String)
      */
     @Override
-    public InputSource resolveEntity(String publicId, String systemId) throws SAXException,
-            IOException {
+    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 
-        for (Iterator<Entry<EntityResolver, String>> iterator = resolvers.entrySet().iterator(); iterator
-                .hasNext(); ) {
+        for (Iterator<Entry<EntityResolver, String>> iterator =
+                        resolvers.entrySet().iterator();
+                iterator.hasNext(); ) {
             Entry<EntityResolver, String> entry = iterator.next();
             EntityResolver entityResolver = entry.getKey();
 

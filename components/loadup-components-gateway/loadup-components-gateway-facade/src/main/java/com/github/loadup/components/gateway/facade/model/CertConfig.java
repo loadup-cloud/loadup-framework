@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.model;
 
 /*-
@@ -76,7 +77,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setCertType(String certType) {
         this.certType = certType;
@@ -90,7 +91,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setCertContent(String certContent) {
         this.certContent = certContent;
@@ -104,7 +105,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setProperties(String properties) {
         this.properties = properties;
@@ -118,7 +119,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
@@ -132,7 +133,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;
@@ -146,7 +147,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setOperateType(String operateType) {
         this.operateType = operateType;
@@ -160,7 +161,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setAlgoName(String algoName) {
         this.algoName = algoName;
@@ -174,7 +175,7 @@ public class CertConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setKeyType(String keyType) {
         this.keyType = keyType;

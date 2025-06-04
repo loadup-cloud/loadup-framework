@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.generator.impl;
 
 /*-
@@ -28,10 +29,9 @@ package com.github.loadup.components.testify.object.generator.impl;
 
 import com.github.loadup.components.testify.log.TestifyLogUtil;
 import com.github.loadup.components.testify.object.generator.ObjectGenerator;
-import lombok.extern.slf4j.Slf4j;
-
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * BigDecimal类型处理器
@@ -62,13 +62,12 @@ public class BigDecimalTypeGenerator implements ObjectGenerator {
 
     @Override
     public Class<?> getItemClass(Type collectionItemType, Class<?> clz) {
-        //简单类型不实现
+        // 简单类型不实现
         return null;
     }
 
     @Override
-    public void setObjectValue(Object collectionObject, Object value, String originalValue,
-                               int index) {
-        //简单类型不实现
+    public void setObjectValue(Object collectionObject, Object value, String originalValue, int index) {
+        // 简单类型不实现
     }
 }

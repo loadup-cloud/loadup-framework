@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.common.util;
 
 /*-
@@ -29,10 +30,9 @@ package com.github.loadup.components.gateway.common.util;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.loadup.commons.result.ResultCode;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Calendar;
 import java.util.UUID;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * use to generate the common message, such as the message and log message
@@ -79,8 +79,7 @@ public class CommonUtil {
      * generate traceId
      */
     public static String generateTraceId() {
-        return Calendar.getInstance().getTimeInMillis()
-                + UUID.randomUUID().toString();
+        return Calendar.getInstance().getTimeInMillis() + UUID.randomUUID().toString();
     }
 
     /**
@@ -91,7 +90,7 @@ public class CommonUtil {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", errorCode.getCode());
         jsonObject.put("message", errorCode.getMessage());
-        //jsonObject.put("status", errorCode.getStatus());
+        // jsonObject.put("status", errorCode.getStatus());
 
         return jsonObject;
     }
@@ -108,5 +107,4 @@ public class CommonUtil {
 
         return jsonObject;
     }
-
 }

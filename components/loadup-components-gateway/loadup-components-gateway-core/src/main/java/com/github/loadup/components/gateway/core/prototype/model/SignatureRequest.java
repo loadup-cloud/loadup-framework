@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.prototype.model;
 
 /*-
@@ -57,7 +58,7 @@ public class SignatureRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getHttpMethod() {
         return httpMethod;
@@ -71,7 +72,7 @@ public class SignatureRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getHttpUri() {
         return httpUri;
@@ -85,7 +86,7 @@ public class SignatureRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getClientId() {
         return clientId;
@@ -99,7 +100,7 @@ public class SignatureRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getRequestTime() {
         return requestTime;
@@ -113,7 +114,7 @@ public class SignatureRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getResponseTime() {
         return responseTime;
@@ -127,7 +128,7 @@ public class SignatureRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getMessage() {
         return message;

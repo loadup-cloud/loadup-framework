@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.model;
 
 /*-
@@ -64,7 +65,7 @@ public class BaseAlgoConfig {
     private String memo;
 
     /**
-     * 
+     *
      */
     public String getAlgoName() {
         return algoName;
@@ -78,7 +79,7 @@ public class BaseAlgoConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getAlgoProperties() {
         return algoProperties;
@@ -92,7 +93,7 @@ public class BaseAlgoConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getCertCode() {
         return certCode;
@@ -106,7 +107,7 @@ public class BaseAlgoConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getCertTypes() {
         return certTypes;
@@ -120,7 +121,7 @@ public class BaseAlgoConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getMemo() {
         return memo;
@@ -134,7 +135,7 @@ public class BaseAlgoConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getOperateType() {
         return operateType;

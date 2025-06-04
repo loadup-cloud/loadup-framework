@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.prototype.util;
 
 /*-
@@ -33,12 +34,11 @@ import com.github.loadup.components.gateway.core.model.SensitivityProcessType;
 import com.github.loadup.components.gateway.core.model.ShieldConfig;
 import com.github.loadup.components.gateway.core.model.ShieldType;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
+import java.util.Map;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 /**
  * <p>

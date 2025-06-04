@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.cache;
 
 /*-
@@ -29,9 +30,8 @@ package com.github.loadup.components.gateway.certification.cache;
 import com.github.loadup.components.gateway.core.model.AppConfig;
 import com.github.loadup.components.gateway.core.model.CertAlogMap;
 import com.github.loadup.components.gateway.core.model.CertConfig;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.*;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 转换工具类
@@ -66,8 +66,7 @@ public class Convertor {
     /**
      * 将certAlgoMap进行转换为Map格式 <certCode < operateType, CertAlogMap>>
      */
-    public static Map<String, Map<String, CertAlogMap>> convertCertAlgoMap(
-            List<CertAlogMap> certAlogMaps) {
+    public static Map<String, Map<String, CertAlogMap>> convertCertAlgoMap(List<CertAlogMap> certAlogMaps) {
         Map<String, Map<String, CertAlogMap>> rtn = new HashMap<String, Map<String, CertAlogMap>>();
         if (null == certAlogMaps) {
             return rtn;
@@ -99,8 +98,7 @@ public class Convertor {
             return rtn;
         }
         for (CertConfig certConfig : certConfigs) {
-            if (StringUtils.isBlank(certConfig.getCertCode())
-                    || StringUtils.isBlank(certConfig.getCertType())) {
+            if (StringUtils.isBlank(certConfig.getCertCode()) || StringUtils.isBlank(certConfig.getCertType())) {
                 continue;
             }
 

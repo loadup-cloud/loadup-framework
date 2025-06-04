@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.enums;
 
 /*-
@@ -33,7 +30,7 @@ package com.github.loadup.components.testify.component.enums;
 /**
  * 组件库类型。
  *
- * 
+ *
  *
  */
 public enum RepositoryType {
@@ -79,5 +76,4 @@ public enum RepositoryType {
         }
         return null;
     }
-
 }

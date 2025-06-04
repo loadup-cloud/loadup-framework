@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.constant;
 
 /*-
@@ -31,7 +28,7 @@ package com.github.loadup.components.testify.constant;
  */
 
 /**
- * 
+ *
  *
  */
 public class TestifyConstants {
@@ -76,11 +73,9 @@ public class TestifyConstants {
 
     public static final String THREADLOCAL_NOT_CHECK_SCRIPT = "threadlocal_not_check_script";
 
-
     public static final String PREPARE_DB_FOLDER = "PrepareDBData";
 
     public static final String CHECK_DB_FOLDER = "CheckDBData";
 
     public static final String CASE_YAML_NAME = "caseObjs.yaml";
-
 }

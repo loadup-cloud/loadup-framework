@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.dal.repository;
 
 /*-
@@ -27,17 +28,17 @@ package com.github.loadup.modules.upms.dal.repository;
  */
 
 import com.github.loadup.modules.upms.dal.dataobject.UserDepartDO;
-import org.springframework.data.repository.ListCrudRepository;
-import org.springframework.stereotype.Repository;
-
 import java.util.Collection;
 import java.util.List;
+import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserDepartRepository extends ListCrudRepository<UserDepartDO, String> {
     List<UserDepartDO> findAllByUserId(String userId);
 
     List<UserDepartDO> findAllByDepartId(String departId);
+
     List<UserDepartDO> findAllByDepartIdIn(Collection<String> idList);
 
     void deleteAllByDepartId(String roleId);

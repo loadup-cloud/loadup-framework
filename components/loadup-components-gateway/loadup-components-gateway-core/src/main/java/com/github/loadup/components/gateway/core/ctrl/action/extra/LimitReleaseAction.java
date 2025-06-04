@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.ctrl.action.extra;
 
 /*-
@@ -33,11 +34,10 @@ import com.github.loadup.components.gateway.facade.enums.LimitTimeRuleEnum;
 import com.github.loadup.components.gateway.facade.model.LimitConfig;
 import com.github.loadup.components.gateway.facade.spi.LimitRuleService;
 import jakarta.annotation.Resource;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-
-import java.util.List;
 
 /**
  * <p>

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.components.gateway.plugin.repository.database.dal.data
  * #L%
  */
 
+import java.util.Date;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.Date;
 
 /**
  * A data object class directly models database table <tt>gateway_inst</tt>.
@@ -44,7 +44,7 @@ import java.util.Date;
  */
 public class InstDO {
 
-    //========== properties ==========
+    // ========== properties ==========
 
     /**
      * This property corresponds to db column <tt>tenant_id</tt>.
@@ -76,87 +76,87 @@ public class InstDO {
      */
     private Date gmtModified;
 
-    //========== getters and setters ==========
+    // ========== getters and setters ==========
 
     /**
-     * 
+     *
      */
     public String getTenantId() {
         return tenantId;
     }
 
     /**
-     * 
+     *
      */
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
     }
 
     /**
-     * 
+     *
      */
     public String getClientId() {
         return clientId;
     }
 
     /**
-     * 
+     *
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;
     }
 
     /**
-     * 
+     *
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 
+     *
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
+     *
      */
     public String getProperties() {
         return properties;
     }
 
     /**
-     * 
+     *
      */
     public void setProperties(String properties) {
         this.properties = properties;
     }
 
     /**
-     * 
+     *
      */
     public Date getGmtCreate() {
         return gmtCreate;
     }
 
     /**
-     * 
+     *
      */
     public void setGmtCreate(Date gmtCreate) {
         this.gmtCreate = gmtCreate;
     }
 
     /**
-     * 
+     *
      */
     public Date getGmtModified() {
         return gmtModified;
     }
 
     /**
-     * 
+     *
      */
     public void setGmtModified(Date gmtModified) {
         this.gmtModified = gmtModified;

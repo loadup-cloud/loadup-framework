@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.annotation;
 
 /*-
@@ -30,9 +31,8 @@ import com.github.loadup.components.testify.annotation.testify.*;
 import com.github.loadup.components.testify.component.handler.TestUnitHandler;
 import com.github.loadup.components.testify.runtime.TestifyRuntimeContext;
 import com.github.loadup.components.testify.template.TestifyTestBase;
-import lombok.extern.slf4j.Slf4j;
-
 import java.lang.reflect.Method;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * executor method, do execute with prepare、execute、check and clean
@@ -40,10 +40,8 @@ import java.lang.reflect.Method;
  *
  * @author hupeng
  */
-
 @Slf4j
 public class TestifyExecutorMethod extends TestifyMethodImpl {
-
 
     /**
      * constructor
@@ -69,7 +67,8 @@ public class TestifyExecutorMethod extends TestifyMethodImpl {
 
         try {
 
-            log.info("=============================[" + this.group + " prepare begin]=============================\r\n");
+            log.info(
+                    "=============================[" + this.group + " prepare begin]=============================\r\n");
 
             /* do prepare */
             try {
@@ -91,7 +90,6 @@ public class TestifyExecutorMethod extends TestifyMethodImpl {
 
             log.info("=============================[" + this.group + " invoke end]=============================\r\n");
 
-
             log.info("=============================[" + this.group + " check begin]=============================\r\n");
 
             /* do check */
@@ -104,7 +102,6 @@ public class TestifyExecutorMethod extends TestifyMethodImpl {
             }
 
             log.info("=============================[" + this.group + " check end]=============================\r\n");
-
 
         } finally {
             log.info("=============================[" + this.group + " clean begin]=============================\r\n");
@@ -122,9 +119,7 @@ public class TestifyExecutorMethod extends TestifyMethodImpl {
                     log.info("=====================[" + this.group + " clean end]======================\r\n");
                 }
             }
-
         }
         log.info("=====================[" + this.group + " end]======================\r\n");
-
     }
 }

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.exception;
 
 /*-
@@ -33,7 +30,7 @@ package com.github.loadup.components.testify.exception;
 /**
  * ccil解析异常，不符合ccil语法规范。
  *
- * 
+ *
  *
  */
 public class CcilParseException extends TestifyException {
@@ -71,5 +68,4 @@ public class CcilParseException extends TestifyException {
     public CcilParseException(Throwable cause) {
         super(cause);
     }
-
 }

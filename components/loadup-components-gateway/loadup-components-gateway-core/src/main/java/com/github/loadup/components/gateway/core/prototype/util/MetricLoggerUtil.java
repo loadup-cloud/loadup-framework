@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.prototype.util;
 
 /*-
@@ -30,11 +31,10 @@ import com.github.loadup.commons.result.ResultCode;
 import com.github.loadup.components.gateway.core.common.Constant;
 import com.github.loadup.components.gateway.core.common.enums.InterfaceScope;
 import com.github.loadup.components.gateway.core.common.enums.InterfaceType;
+import java.util.LinkedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.LinkedHashMap;
 
 /**
  * metric log util class
@@ -52,8 +52,14 @@ public class MetricLoggerUtil {
     /**
      * print monitor metric info
      */
-    public static void monitor(String url, long timeCost, boolean success, String clientId,
-                               InterfaceType messageType, String traceId, InterfaceScope interfaceScope) {
+    public static void monitor(
+            String url,
+            long timeCost,
+            boolean success,
+            String clientId,
+            InterfaceType messageType,
+            String traceId,
+            InterfaceScope interfaceScope) {
         if (!judgeBinderEnabled()) {
             return;
         }
@@ -71,8 +77,13 @@ public class MetricLoggerUtil {
     /**
      * print monitor metric info
      */
-    public static void countError(String url, long timeCost, String clientId,
-                                  InterfaceType messageType, String traceId, ResultCode errorCode) {
+    public static void countError(
+            String url,
+            long timeCost,
+            String clientId,
+            InterfaceType messageType,
+            String traceId,
+            ResultCode errorCode) {
         if (!judgeBinderEnabled()) {
             return;
         }
@@ -90,8 +101,8 @@ public class MetricLoggerUtil {
 
     /**
      * build tags from hash map
-
-
+     *
+     *
      */
     //    private static Tag[] buildTags(Map<String, String> tagMap) {
     //        Tag[] tags = new Tag[tagMap.size()];
@@ -110,7 +121,7 @@ public class MetricLoggerUtil {
     }
 
     /**
-     * 
+     *
      */
     @Value("${spring.cloud.antfin.metric.bindings.monitor.binder-name:}")
     public void setMetricBinder(String metricBinder) {
@@ -118,9 +129,9 @@ public class MetricLoggerUtil {
     }
 
     /**
-     * 
      *
-
+     *
+     *
      */
     //    @Resource(required = false)
     //    public void setMetricBinding(MetricBinding metricBinding) {

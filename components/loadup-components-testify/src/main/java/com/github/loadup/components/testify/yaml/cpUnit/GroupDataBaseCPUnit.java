@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.yaml.cpUnit;
 
 /*-
@@ -30,20 +27,19 @@ package com.github.loadup.components.testify.yaml.cpUnit;
  * #L%
  */
 
+import com.github.loadup.components.testify.constant.TestifyPathConstants;
+import com.github.loadup.components.testify.yaml.enums.CPUnitTypeEnum;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import org.apache.commons.lang3.StringUtils;
-import com.github.loadup.components.testify.constant.TestifyPathConstants;
-import com.github.loadup.components.testify.yaml.enums.CPUnitTypeEnum;
 
 /**
  * 组数据CheckPoint单位
  *
- * 
+ *
  *
  */
 public class GroupDataBaseCPUnit extends BaseCPUnit {
@@ -76,7 +72,7 @@ public class GroupDataBaseCPUnit extends BaseCPUnit {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of conditionKeys
      */
@@ -85,7 +81,7 @@ public class GroupDataBaseCPUnit extends BaseCPUnit {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of dataList
      */
@@ -94,7 +90,7 @@ public class GroupDataBaseCPUnit extends BaseCPUnit {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of orderBy
      */

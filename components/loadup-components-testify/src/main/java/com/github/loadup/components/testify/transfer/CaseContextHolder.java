@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.transfer;
 
 /*-
@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * 测试用例相关信息上下文
  *
- * 
+ *
  *
  */
 public class CaseContextHolder {

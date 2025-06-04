@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.core;
 
 /*-
@@ -32,7 +33,6 @@ package com.github.loadup.commons.core;
  * @author Lise
  * @since 1.0.0
  */
-
 import java.lang.management.ManagementFactory;
 
 public enum Pid {

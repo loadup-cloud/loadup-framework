@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.communication.http.impl;
 
 /*-
@@ -45,16 +46,15 @@ import com.github.loadup.components.gateway.core.prototype.util.ExceptionUtil;
 import com.github.loadup.components.gateway.core.prototype.util.MetricLoggerUtil;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import jakarta.annotation.Resource;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.ConnectTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
-
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
-import java.util.List;
 
 /**
  * HTTP客户端服务实现
@@ -96,9 +96,10 @@ public class HttpClientServiceImpl implements CommunicationService, Initializing
     //    @Resource
     //    private InstproxyHandler    instproxyHandler;
     @Override
-    public MessageSendResult send(String traceId, CommunicationConfig communicationConfig, MessageEnvelope messageEnvelope) {
+    public MessageSendResult send(
+            String traceId, CommunicationConfig communicationConfig, MessageEnvelope messageEnvelope) {
         AssertUtil.isNotNull(communicationConfig, CommunicationErrorCode.CONFIG_ERROR);
-        //if (HttpConfigUtil.isRest(conmunicationConfig)) {
+        // if (HttpConfigUtil.isRest(conmunicationConfig)) {
         //    String params = String.valueOf(messageEnvelope.getContent());
         //    String url = conmunicationConfig.getUri().getUrl();
         //    url = url.concat(params);
@@ -106,7 +107,7 @@ public class HttpClientServiceImpl implements CommunicationService, Initializing
         //    TransportURI transportURI = new TransportURI(url, schema);
         //    conmunicationConfig.setUri(transportURI);
         //
-        //}
+        // }
         boolean timeout = false;
         MessageEnvelope handlerResult = null;
         String protocol = communicationConfig.getProtocol();
@@ -116,7 +117,8 @@ public class HttpClientServiceImpl implements CommunicationService, Initializing
         ResultCode errorCode = null;
         try {
             if (StringUtils.equals(TransportProtocol.INSTPROXY, protocol.toUpperCase())) {
-                //                handlerResult = instproxyHandler.handler(traceId, communicationConfig,messageEnvelope);
+                //                handlerResult = instproxyHandler.handler(traceId,
+                // communicationConfig,messageEnvelope);
             } else {
                 handlerResult = httpClientHandler.handler(traceId, communicationConfig, messageEnvelope);
             }
@@ -159,10 +161,17 @@ public class HttpClientServiceImpl implements CommunicationService, Initializing
                 DigestLoggerUtil.printSimpleDigestLog(communicationConfig.getUrl(), callRespMsg, time);
             } else {
                 String clientId = messageEnvelope.getHeaders().get(KEY_HTTP_CLIENT_ID);
-                MetricLoggerUtil.monitor(communicationConfig.getUrl(), time, success, clientId, InterfaceType.SPI,
-                        traceId, InterfaceScope.OUTBOUND);
+                MetricLoggerUtil.monitor(
+                        communicationConfig.getUrl(),
+                        time,
+                        success,
+                        clientId,
+                        InterfaceType.SPI,
+                        traceId,
+                        InterfaceScope.OUTBOUND);
                 if (!success) {
-                    MetricLoggerUtil.countError(communicationConfig.getUrl(), time, clientId, InterfaceType.SPI, traceId, errorCode);
+                    MetricLoggerUtil.countError(
+                            communicationConfig.getUrl(), time, clientId, InterfaceType.SPI, traceId, errorCode);
                 }
             }
         }
@@ -210,14 +219,14 @@ public class HttpClientServiceImpl implements CommunicationService, Initializing
     }
 
     /**
-     * 
+     *
      */
     public void setHttpClientHandler(HttpClientHandler httpClientHandler) {
         this.httpClientHandler = httpClientHandler;
     }
 
     /**
-     * 
+     *
      */
     public void setHttpClientCache(HttpClientCache httpClientCache) {
         this.httpClientCache = httpClientCache;
@@ -235,9 +244,9 @@ public class HttpClientServiceImpl implements CommunicationService, Initializing
     }
 
     /**
-     * 
      *
-
+     *
+     *
      */
     //    public void setInstproxyHandler(InstproxyHandler instproxyHandler) {
     //        this.instproxyHandler = instproxyHandler;

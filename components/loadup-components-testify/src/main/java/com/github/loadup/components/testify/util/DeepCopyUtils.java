@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -35,18 +32,18 @@ import com.rits.cloning.Cloner;
 /**
  * 封装Cloner的deepCopy方法实现的深拷贝
  *
- * 
+ *
  *
  */
 public class DeepCopyUtils {
 
-    //深拷贝工具
+    // 深拷贝工具
     public static <T> T deepCopy(T obj) {
         try {
             return Cloner.shared().deepClone(obj);
         } catch (Exception e) {
-//            Kryo kryo = new Kryo();
-//            return kryo.copy(obj);
+            //            Kryo kryo = new Kryo();
+            //            return kryo.copy(obj);
             e.printStackTrace();
             return null;
         }

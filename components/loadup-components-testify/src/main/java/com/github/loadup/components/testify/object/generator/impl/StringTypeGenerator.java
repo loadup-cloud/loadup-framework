@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.generator.impl;
 
 /*-
@@ -26,24 +27,22 @@ package com.github.loadup.components.testify.object.generator.impl;
  * #L%
  */
 
-import java.io.File;
-import java.lang.reflect.Type;
-
-import org.testng.Assert;
-
-import org.apache.commons.lang3.StringUtils;
 import com.github.loadup.components.testify.constant.TestifyYamlConstants;
 import com.github.loadup.components.testify.object.generator.ObjectGenerator;
+import java.io.File;
+import java.lang.reflect.Type;
+import org.apache.commons.lang3.StringUtils;
+import org.testng.Assert;
 
 /**
  * 字符串类型处理器
  *
- * 
+ *
  *
  */
 public class StringTypeGenerator implements ObjectGenerator {
 
-    private final static String lineSeparator = File.separator;
+    private static final String lineSeparator = File.separator;
 
     @Override
     public boolean isSimpleType() {
@@ -57,8 +56,7 @@ public class StringTypeGenerator implements ObjectGenerator {
             return "";
         }
         if (referedCSVValue.contains(TestifyYamlConstants.LINESEPARATOR)) {
-            referedCSVValue = referedCSVValue.replace(TestifyYamlConstants.LINESEPARATOR,
-                    lineSeparator);
+            referedCSVValue = referedCSVValue.replace(TestifyYamlConstants.LINESEPARATOR, lineSeparator);
         }
 
         return referedCSVValue.trim();
@@ -75,14 +73,12 @@ public class StringTypeGenerator implements ObjectGenerator {
 
     @Override
     public Class<?> getItemClass(Type collectionItemType, Class<?> clz) {
-        //简单类型不实现
+        // 简单类型不实现
         return null;
     }
 
     @Override
-    public void setObjectValue(Object collectionObject, Object value, String originalValue,
-                               int index) {
-        //简单类型不实现
+    public void setObjectValue(Object collectionObject, Object value, String originalValue, int index) {
+        // 简单类型不实现
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.service.impl;
 
 /*-
@@ -26,11 +27,9 @@ package com.github.loadup.components.gateway.service.impl;
  * #L%
  */
 
-import com.github.loadup.commons.result.Result;
 import com.github.loadup.commons.template.ServiceTemplate;
 import com.github.loadup.commons.util.ValidateUtils;
 import com.github.loadup.components.gateway.common.convertor.SecurityManageConvertor;
-import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.facade.api.SecurityManageService;
 import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExtPt;
 import com.github.loadup.components.gateway.facade.model.SecurityConfigDto;
@@ -39,13 +38,12 @@ import com.github.loadup.components.gateway.facade.request.CertConfigQueryReques
 import com.github.loadup.components.gateway.facade.request.CertConfigRemoveRequest;
 import com.github.loadup.components.gateway.facade.request.CertConfigUpdateRequest;
 import com.github.loadup.components.gateway.facade.response.*;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -53,11 +51,10 @@ import java.util.List;
 @Component("gatewaySecurityManageService")
 public class SecurityManageServiceImpl implements SecurityManageService {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(SecurityManageServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(SecurityManageServiceImpl.class);
 
     private RepositoryServiceExtPt getRepositoryService() {
-        RepositoryServiceExtPt result = null;// ExtensionPointLoader.get(RepositoryServiceExt.class,
+        RepositoryServiceExtPt result = null; // ExtensionPointLoader.get(RepositoryServiceExt.class,
         //            SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE));
         return result;
     }
@@ -71,8 +68,7 @@ public class SecurityManageServiceImpl implements SecurityManageService {
                 (Void) -> ValidateUtils.validate(request),
                 // process
                 () -> {
-                    getRepositoryService()
-                            .addSecurity(SecurityManageConvertor.certConfigAddRequest2Dto(request));
+                    getRepositoryService().addSecurity(SecurityManageConvertor.certConfigAddRequest2Dto(request));
                     response.setAlgoName(request.getClientId());
                     response.setOperationType(request.getOperateType());
                     response.setClientId(request.getClientId());
@@ -80,11 +76,13 @@ public class SecurityManageServiceImpl implements SecurityManageService {
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+                (result) -> {
+                    CertConfigAddResponse clientConfigAddResponse = new CertConfigAddResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                },
                 // compose digest log
-                (Void) -> {
-                }
-        );
+                (Void) -> {});
     }
 
     @Override
@@ -96,17 +94,17 @@ public class SecurityManageServiceImpl implements SecurityManageService {
                 (Void) -> ValidateUtils.validate(request),
                 // process
                 () -> {
-
-                    getRepositoryService()
-                            .updateSecurity(SecurityManageConvertor.certConfigUpdateRequest2Dto(request));
+                    getRepositoryService().updateSecurity(SecurityManageConvertor.certConfigUpdateRequest2Dto(request));
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+                (result) -> {
+                    CertConfigUpdateResponse clientConfigAddResponse = new CertConfigUpdateResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                },
                 // compose digest log
-                (Void) -> {
-                }
-        );
+                (Void) -> {});
     }
 
     @Override
@@ -118,26 +116,25 @@ public class SecurityManageServiceImpl implements SecurityManageService {
                 (Void) -> ValidateUtils.validate(request),
                 // process
                 () -> {
-
-                    List<SecurityConfigDto> queryResult = getRepositoryService()
-                            .querySecurityByClient(request.getClientId());
+                    List<SecurityConfigDto> queryResult =
+                            getRepositoryService().querySecurityByClient(request.getClientId());
                     List<CertConfigInnerResponse> configInnerResponses = new ArrayList<>();
                     if (!CollectionUtils.isEmpty(queryResult)) {
                         for (SecurityConfigDto securityConfigDto : queryResult) {
-                            configInnerResponses.add(SecurityManageConvertor
-                                    .convertToCertConfigInnerResponse(securityConfigDto));
+                            configInnerResponses.add(
+                                    SecurityManageConvertor.convertToCertConfigInnerResponse(securityConfigDto));
                         }
                         response.setCertConfigList(configInnerResponses);
                     }
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
-
+                (result) -> {
+                    CertConfigQueryResponse clientConfigAddResponse = new CertConfigQueryResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                }, // compose digest log
+                (Void) -> {});
     }
 
     @Override
@@ -149,17 +146,15 @@ public class SecurityManageServiceImpl implements SecurityManageService {
                 (Void) -> ValidateUtils.validate(request),
                 // process
                 () -> {
-                    getRepositoryService()
-                            .removeSecurity(SecurityManageConvertor.certConfigRemoveRequest2Dto(request));
+                    getRepositoryService().removeSecurity(SecurityManageConvertor.certConfigRemoveRequest2Dto(request));
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
-
+                (result) -> {
+                    CertConfigRemoveResponse clientConfigAddResponse = new CertConfigRemoveResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                }, // compose digest log
+                (Void) -> {});
     }
-
 }

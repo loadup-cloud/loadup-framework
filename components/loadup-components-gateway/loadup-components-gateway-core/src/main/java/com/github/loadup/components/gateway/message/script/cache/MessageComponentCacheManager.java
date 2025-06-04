@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.script.cache;
 
 /*-
@@ -38,16 +39,15 @@ import com.github.loadup.components.gateway.message.script.parser.groovy.GroovyI
 import com.github.loadup.components.gateway.message.script.parser.groovy.GroovyInnerCache;
 import com.github.loadup.components.gateway.message.script.util.GroovyInfoConvertor;
 import jakarta.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -219,7 +219,7 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
             }
         }
 
-        return new List[]{addedList, updatedList, deleteddList};
+        return new List[] {addedList, updatedList, deleteddList};
     }
 
     /**
@@ -227,7 +227,7 @@ public class MessageComponentCacheManager extends AbstractReshfreshableComponent
      */
     @Override
     public CacheName[] getCacheDomains() {
-        return new CacheName[]{CacheName.INTERFACE, CacheName.MESSAGE_PROCESS, CacheName.DYNAMIC_SCRIPT_BEAN_CONFIG};
+        return new CacheName[] {CacheName.INTERFACE, CacheName.MESSAGE_PROCESS, CacheName.DYNAMIC_SCRIPT_BEAN_CONFIG};
     }
 
     /**

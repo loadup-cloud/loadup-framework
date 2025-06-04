@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.common.enums;
 
 /*-
@@ -84,21 +85,21 @@ public enum RepositoryType {
     }
 
     /**
-     * 
+     *
      */
     public String getCode() {
         return code;
     }
 
     /**
-     * 
+     *
      */
     public boolean isConfigInInternalCache() {
         return configInInternalCache;
     }
 
     /**
-     * 
+     *
      */
     public String getMessage() {
         return message;

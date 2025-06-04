@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.file.service.impl;
 
 /*-
@@ -33,6 +34,13 @@ import com.github.loadup.components.gateway.core.common.Constant;
 import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.plugin.repository.file.service.ConfigFileBuilder;
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.io.FileUtils;
@@ -41,14 +49,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.io.*;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.jar.JarInputStream;
 
 /**
  * configuration file builder
@@ -59,34 +59,34 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
     /**
      * logger
      */
-    private final static Logger logger = LoggerFactory.getLogger(ConfigFileBuilderImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigFileBuilderImpl.class);
 
-    private final static String CLASS_JAR_FILE_SUFFIX = ".jar!";
+    private static final String CLASS_JAR_FILE_SUFFIX = ".jar!";
 
-    private final static String JAR_FILE_SUFFIX = ".jar";
+    private static final String JAR_FILE_SUFFIX = ".jar";
 
-    private final static String CLASSPATH_PREFIX = "classpath:";
+    private static final String CLASSPATH_PREFIX = "classpath:";
 
     /**
      * config file header validator
      */
     @Override
     public boolean isValidHeaderFormat(List<String> fileRows) {
-        //0. validate if empty file or only has 1 row as header
+        // 0. validate if empty file or only has 1 row as header
         if (CollectionUtils.isEmpty(fileRows) || fileRows.size() == 1) {
-            //log sys error
+            // log sys error
             LogUtil.error(logger, "failed reading empty file or only header.");
             return false;
         }
-        //1. read first line as column header if valid file
+        // 1. read first line as column header if valid file
         String headerStr = fileRows.get(0);
         if (StringUtils.isBlank(headerStr)) {
-            //log sys error
+            // log sys error
             LogUtil.error(logger, "The first row should be header and not blank.");
             return false;
         }
-        //TODO add more validation for header
-        //4. isValidHeaderFormat successfully
+        // TODO add more validation for header
+        // 4. isValidHeaderFormat successfully
         return true;
     }
 
@@ -96,15 +96,15 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
     @Override
     public Map<String, String> readToStringForDirectory(File file) {
         Map<String, String> fileContentMap = new HashMap<String, String>();
-        //if file exists
+        // if file exists
         if (file.exists()) {
             // check if it's a directory
             if (file.isDirectory()) {
                 File[] files = file.listFiles();
 
-                //validate empty file directory
+                // validate empty file directory
                 if (null == files || files.length == 0) {
-                    //log warn empty directory
+                    // log warn empty directory
                     LogUtil.info(logger, "failed reading empty file=", file.getName());
                     return fileContentMap;
                 }
@@ -130,16 +130,16 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
 
         String configPath = buildFilePath(fileRootPath, directory);
         Map<String, String> resultMap = new HashMap<String, String>();
-        //read config from current path
+        // read config from current path
         resultMap = readToStringForDirectory(new File(configPath));
 
-        //read config from jar
+        // read config from jar
         if (MapUtils.isEmpty(resultMap)) {
             LogUtil.info(logger, "There is not path in path=", configPath);
             resultMap = readToStringForJar(fileRootPath, directory);
         }
 
-        //read config from embedded jar
+        // read config from embedded jar
         if (MapUtils.isEmpty(resultMap)) {
             LogUtil.info(logger, "There is not path in jar=", fileRootPath);
             resultMap = readToStringForJar(fileRootPath, directory, resultMap);
@@ -158,7 +158,8 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
                 String content = FileUtil.getFileContent(filePath, this);
                 resultMap.put(fileName, content);
             } catch (Exception e) {
-                LogUtil.error(logger, e, "failed reading file in root path=" + fileRootPath + ", file path=" + directory);
+                LogUtil.error(
+                        logger, e, "failed reading file in root path=" + fileRootPath + ", file path=" + directory);
             }
         });
         return resultMap;
@@ -178,14 +179,16 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
                         JarEntry entry = jisJar2.getNextJarEntry();
                         if (null == entry) {
                             inLoop = false;
-                        } else if (StringUtils.contains(entry.getName(), directory) && !StringUtils.endsWith(entry.getName(),
-                                File.separator)) {
+                        } else if (StringUtils.contains(entry.getName(), directory)
+                                && !StringUtils.endsWith(entry.getName(), File.separator)) {
                             String entryName = entry.getName();
-                            InputStream inputFileStream = this.getClass().getClassLoader().getResourceAsStream(
-                                    CLASSPATH_PREFIX.concat(entryName));
+                            InputStream inputFileStream = this.getClass()
+                                    .getClassLoader()
+                                    .getResourceAsStream(CLASSPATH_PREFIX.concat(entryName));
                             StringWriter writer = new StringWriter();
                             IOUtils.copy(inputFileStream, writer, StandardCharsets.UTF_8.name());
-                            String fileName = StringUtils.substring(entryName, StringUtils.lastIndexOf(entryName, File.separator) + 1);
+                            String fileName = StringUtils.substring(
+                                    entryName, StringUtils.lastIndexOf(entryName, File.separator) + 1);
                             map.put(fileName, writer.toString());
                         }
                     } while (inLoop);
@@ -208,7 +211,7 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
         try {
             fileContent = FileUtils.readFileToString(file);
         } catch (Exception e) {
-            //log warn
+            // log warn
             LogUtil.error(logger, e, "failed reading file=" + file.getName());
         }
         return fileContent;
@@ -319,7 +322,7 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
         URL url = this.getClass().getClassLoader().getResource(filePath);
         if (null == url) {
             LogUtil.error(logger, "Invalid file path, filePath=", filePath);
-            //throw new GatewayliteException(GatewayliteErrorCode.SYSTEM_ERROR, "Invalid file path");
+            // throw new GatewayliteException(GatewayliteErrorCode.SYSTEM_ERROR, "Invalid file path");
         }
         return url;
     }
@@ -329,7 +332,9 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
         List<String> lines = new ArrayList<String>();
         try {
             inputFileStream = this.getClass().getClassLoader().getResourceAsStream(CLASSPATH_PREFIX.concat(filePath));
-            AssertUtil.isNotNull(inputFileStream, GatewayErrorCode.SYSTEM_ERROR,
+            AssertUtil.isNotNull(
+                    inputFileStream,
+                    GatewayErrorCode.SYSTEM_ERROR,
                     String.format("can not find file, path: %s", filePath));
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputFileStream));
             bufferedReader.lines().forEach(line -> {
@@ -388,7 +393,7 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
                     continue;
                 }
 
-                if (fileName.contains(directory)) { //ASSEMBLE_DIRECTORY
+                if (fileName.contains(directory)) { // ASSEMBLE_DIRECTORY
                     parserFileName.add(fileName);
                 }
             }
@@ -398,5 +403,4 @@ public class ConfigFileBuilderImpl implements ConfigFileBuilder {
         }
         return parserFileName;
     }
-
 }

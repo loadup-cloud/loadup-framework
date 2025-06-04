@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data;
 
 /*-
@@ -32,14 +29,13 @@ package com.github.loadup.components.testify.data;
 
 import com.github.loadup.components.testify.data.biz.BizMetaInitItemBuilder;
 import com.github.loadup.components.testify.data.db.DBMetaInitItemBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 统一原子项构造器。
  *
- * 
+ *
  *
  */
 public class UnifiedMetaInitItemBuilder implements MetaInitItemBuilder {
@@ -66,5 +62,4 @@ public class UnifiedMetaInitItemBuilder implements MetaInitItemBuilder {
         }
         return initItems;
     }
-
 }

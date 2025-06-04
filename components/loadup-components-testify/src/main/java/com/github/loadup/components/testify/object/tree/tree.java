@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.tree;
 
 /*-
@@ -27,19 +28,18 @@ package com.github.loadup.components.testify.object.tree;
  */
 
 /**
- * 
+ *
  *
  */
 public class tree<T> {
 
     public treeNode<T> root;
 
-    public tree() {
-    }
+    public tree() {}
 
     public static void main(String[] args) {
 
-        //�?�?
+        // �?�?
         /*
          * string
          *         hello
@@ -67,7 +67,7 @@ public class tree<T> {
     }
 
     public void addNode(treeNode<T> node, T newNode) {
-        //�??????��?????
+        // �??????��?????
         if (null == node) {
             if (null == root) {
                 root = new treeNode(newNode);
@@ -105,7 +105,7 @@ public class tree<T> {
 
     public void showNode(treeNode<T> node) {
         if (null != node) {
-            //�??????????node?????????
+            // �??????????node?????????
             System.out.println(node.t.toString());
 
             for (int i = 0; i < node.nodelist.size(); i++) {
@@ -113,5 +113,4 @@ public class tree<T> {
             }
         }
     }
-
 }

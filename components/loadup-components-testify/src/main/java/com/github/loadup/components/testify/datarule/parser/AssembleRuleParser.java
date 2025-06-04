@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.parser;
 
 /*-
@@ -42,7 +39,7 @@ import com.github.loadup.components.testify.exception.RuleParseException;
 /**
  * 组装规则解析器。
  *
- * 
+ *
  *
  */
 public class AssembleRuleParser extends RuleParser<AssembleRule> {
@@ -111,9 +108,7 @@ public class AssembleRuleParser extends RuleParser<AssembleRule> {
                 throw new RuleParseException("EOF");
             default:
                 throw new RuleParseException(getParseException(tok, null));
-
         }
-
     }
 
     /**
@@ -151,13 +146,12 @@ public class AssembleRuleParser extends RuleParser<AssembleRule> {
             } else if (lexer.token() == RuleToken.LBRACE) {
                 break;
             } else {
-                throw new RuleParseException(getParseException(lexer.token(),
-                        "expect compare expr like aa==aa1&&bb==23||cc=cc1"));
+                throw new RuleParseException(
+                        getParseException(lexer.token(), "expect compare expr like aa==aa1&&bb==23||cc=cc1"));
             }
         }
         if (paren_count != 0) {
-            throw new RuleParseException(
-                    getParseException(lexer.token(), "parenthesis not in pair"));
+            throw new RuleParseException(getParseException(lexer.token(), "parenthesis not in pair"));
         }
         return condition;
     }
@@ -172,11 +166,10 @@ public class AssembleRuleParser extends RuleParser<AssembleRule> {
 
         item.setField(scanFieldName());
 
-        AssembleConditionOperator operator = AssembleConditionOperator
-                .getBySymbol(lexer.token().name);
+        AssembleConditionOperator operator = AssembleConditionOperator.getBySymbol(lexer.token().name);
         if (operator == null) {
-            throw new RuleParseException(getParseException(lexer.token(),
-                    "illegal compare symbol, expect ==,>,>=,<=,<,!="));
+            throw new RuleParseException(
+                    getParseException(lexer.token(), "illegal compare symbol, expect ==,>,>=,<=,<,!="));
         }
         item.setOperator(operator);
 
@@ -198,8 +191,8 @@ public class AssembleRuleParser extends RuleParser<AssembleRule> {
                 lexer.nextToken();
                 break;
             default:
-                throw new RuleParseException(getParseException(lexer.token(),
-                        "compare value must be a string or number"));
+                throw new RuleParseException(
+                        getParseException(lexer.token(), "compare value must be a string or number"));
         }
 
         return item;
@@ -229,11 +222,10 @@ public class AssembleRuleParser extends RuleParser<AssembleRule> {
             } else if (lexer.token() == RuleToken.RBRACE) {
                 break;
             } else {
-                throw new RuleParseException(getParseException(lexer.token(),
-                        "expect rule like 'aa={aa1,aa2},bb=[100-200]'"));
+                throw new RuleParseException(
+                        getParseException(lexer.token(), "expect rule like 'aa={aa1,aa2},bb=[100-200]'"));
             }
         }
-
     }
 
     /**
@@ -246,7 +238,6 @@ public class AssembleRuleParser extends RuleParser<AssembleRule> {
         if (msg == null) {
             msg = "expect pattern like assemble(a=a1&&b=b1{c={c1,c2},d=[100-500]},{e={e1,e2}})";
         }
-        return "assemble rule parse ERROR[token=" + tok + ",pos=" + lexer.pos() + "]," + msg
-                + ",rule=" + lexer.text;
+        return "assemble rule parse ERROR[token=" + tok + ",pos=" + lexer.pos() + "]," + msg + ",rule=" + lexer.text;
     }
 }

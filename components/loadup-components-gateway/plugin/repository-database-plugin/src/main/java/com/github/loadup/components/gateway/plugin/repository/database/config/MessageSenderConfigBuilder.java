@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.database.config;
 
 /*-
@@ -26,6 +27,8 @@ package com.github.loadup.components.gateway.plugin.repository.database.config;
  * #L%
  */
 
+import static com.github.loadup.components.gateway.core.common.Constant.URI_SEPARATOR;
+
 import com.github.loadup.components.gateway.facade.model.MessageSenderConfigDto;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.repository.common.AbstractInterfaceConfigBuilder;
@@ -34,17 +37,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import static com.github.loadup.components.gateway.core.common.Constant.URI_SEPARATOR;
-
 /**
  * message sender config builder
  */
 @Component("databaseMessageSenderConfigBuilder")
-public class MessageSenderConfigBuilder extends
-        AbstractInterfaceConfigBuilder<MessageSenderConfigDto> {
+public class MessageSenderConfigBuilder extends AbstractInterfaceConfigBuilder<MessageSenderConfigDto> {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(MessageSenderConfigBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageSenderConfigBuilder.class);
 
     /**
      * @see AbstractInterfaceConfigBuilder#validate(String, String)
@@ -65,7 +64,6 @@ public class MessageSenderConfigBuilder extends
         }
 
         return isValidUri;
-
     }
 
     /**
@@ -85,5 +83,4 @@ public class MessageSenderConfigBuilder extends
 
         return msgSender;
     }
-
 }

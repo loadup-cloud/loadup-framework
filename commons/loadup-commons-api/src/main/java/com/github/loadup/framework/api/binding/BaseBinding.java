@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.framework.api.binding;
 
 /*-
@@ -27,9 +28,7 @@ package com.github.loadup.framework.api.binding;
  */
 
 public interface BaseBinding {
-    default void init() {
-    }
+    default void init() {}
 
-    default void destroy() {
-    }
+    default void destroy() {}
 }

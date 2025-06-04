@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.generator.impl;
 
 /*-
@@ -32,22 +33,20 @@ import com.github.loadup.components.testify.log.TestifyLogUtil;
 import com.github.loadup.components.testify.object.generator.ObjectGenerator;
 import com.github.loadup.components.testify.object.manager.ObjectTypeManager;
 import com.google.common.reflect.TypeToken;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 列表类型处理器
  */
 @Slf4j
 public class ArrayListTypeGenerator implements ObjectGenerator {
-
 
     @Override
     public boolean isSimpleType() {
@@ -79,8 +78,7 @@ public class ArrayListTypeGenerator implements ObjectGenerator {
             for (int i = 0; i < ((List) obj).size(); i++) {
                 try {
                     int index = CSVHelper.insertObjDataAndReturnIndex(((List) obj).get(i), csvPath);
-                    collectionString = collectionString + tempCollectionString
-                            + String.valueOf(index) + ";";
+                    collectionString = collectionString + tempCollectionString + String.valueOf(index) + ";";
                 } catch (Exception e) {
                     TestifyLogUtil.fail(log, "复杂类型的List转换为String出错！");
                 }
@@ -126,14 +124,12 @@ public class ArrayListTypeGenerator implements ObjectGenerator {
     }
 
     @Override
-    public void setObjectValue(Object collectionObject, Object value, String originalValue,
-                               int index) {
+    public void setObjectValue(Object collectionObject, Object value, String originalValue, int index) {
         if (collectionObject instanceof List) {
             ((List) collectionObject).add(value);
         } else {
-            TestifyLogUtil
-                    .fail(log, "给对象【" + collectionObject + "】失败，对象是【" + collectionObject.getClass()
-                            + "】类型而不是List");
+            TestifyLogUtil.fail(
+                    log, "给对象【" + collectionObject + "】失败，对象是【" + collectionObject.getClass() + "】类型而不是List");
         }
     }
 }

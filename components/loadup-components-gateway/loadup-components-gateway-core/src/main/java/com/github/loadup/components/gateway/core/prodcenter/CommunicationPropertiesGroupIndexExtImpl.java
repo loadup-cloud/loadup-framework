@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.prodcenter;
 
 /*-
@@ -28,11 +29,10 @@ package com.github.loadup.components.gateway.core.prodcenter;
 
 import com.github.loadup.components.gateway.facade.config.model.CommunicationPropertiesGroup;
 import com.github.loadup.components.gateway.facade.config.model.Constant;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 /**
  * communication properties group index
@@ -40,8 +40,8 @@ import java.util.List;
 @Component
 public class CommunicationPropertiesGroupIndexExtImpl {
 
-    public List<List<String>> customIndexKeys(String tntInstId, String configName,
-                                              CommunicationPropertiesGroup communicationPropertiesGroup) {
+    public List<List<String>> customIndexKeys(
+            String tntInstId, String configName, CommunicationPropertiesGroup communicationPropertiesGroup) {
 
         List<String> indexList = new ArrayList<>();
         indexList.add(Constant.URL_INDEX_COLUMN);

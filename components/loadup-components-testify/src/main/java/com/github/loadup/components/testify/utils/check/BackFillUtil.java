@@ -1,6 +1,4 @@
-/**
- * Copyright (c) 2004-2021 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.check;
 
 /*-
@@ -35,15 +33,13 @@ import com.github.loadup.components.testify.util.FileUtils;
 import com.github.loadup.components.testify.utils.file.CsvUtils;
 import com.github.loadup.components.testify.utils.file.JsonUtils;
 import com.github.loadup.components.testify.utils.file.YamlUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 /**
  * 预跑反填工具包括结果、db等，可以直接通过工具类进行预跑反填
@@ -54,7 +50,7 @@ public class BackFillUtil {
     /**
      * 数据处理
      */
-//    public static DBDatasProcessor dbDatasProcessor = ActsTestBase.dbDatasProcessor;
+    //    public static DBDatasProcessor dbDatasProcessor = ActsTestBase.dbDatasProcessor;
 
     /**
      * 对象的预跑反填工具
@@ -75,7 +71,7 @@ public class BackFillUtil {
         try {
             FileUtils.writeStringToFile(new File(filePath), data);
         } catch (Exception e) {
-//            LOGGER.error(e);
+            //            LOGGER.error(e);
         }
     }
 
@@ -86,11 +82,10 @@ public class BackFillUtil {
      * @param filePath 生成文件的路径地址,只支持csv文件
      */
     public static void doSingleDbBackFill(String sql, String filePath) {
-        String tableName = StringUtils.substringBetween(
-                StringUtils.toRootLowerCase(sql),
-                "from", "where").trim();
+        String tableName = StringUtils.substringBetween(StringUtils.toRootLowerCase(sql), "from", "where")
+                .trim();
         log.info(String.format("ACTS:查询sql= %s", sql));
-        List<Map<String, Object>> tableList = null;// dbDatasProcessor.queryForList(tableName, sql);
+        List<Map<String, Object>> tableList = null; // dbDatasProcessor.queryForList(tableName, sql);
         if (CollectionUtils.isEmpty(tableList)) {
             log.info(String.format("ACTS:该表%s没有查询到结果", tableName));
         }
@@ -117,11 +112,9 @@ public class BackFillUtil {
         }
 
         for (String sql : sqlList) {
-            String tableName = StringUtils.substringBetween(
-                    StringUtils.toRootLowerCase(sql),
-                    "from", "where").trim();
+            String tableName = StringUtils.substringBetween(StringUtils.toRootLowerCase(sql), "from", "where")
+                    .trim();
             doSingleDbBackFill(sql, folderPath + "/" + tableName + ".csv");
         }
     }
-
 }

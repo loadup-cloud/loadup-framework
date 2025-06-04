@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.enums;
 
 /*-
@@ -30,24 +30,31 @@ package com.github.loadup.components.testify.enums;
 /**
  * 用于标记yaml不同区域的标题
  *
- * 
- * 
+ *
+ *
  */
 public enum YamlFieldEnum {
-
     ARGS("# Case Desc: 用例描述填这行\n\n# Arguments: List<Object>\n", "入参列表", 0, "[\n\n]\n"),
     FLAGS("# Flags: Map<String, Map<String, String>>\n", "比对标记列表", 1, "{\n\n}\n"),
     RESULT("# Result: Object\n", "结果对象", 2, "null\n"),
     EXCEPTION("# Exception: Object\n", "异常对象", 2, "null\n"),
     EVENTS("# Message Event: List<Map<String, Object>>\n", "消息事件列表", 3, "null\n"),
-    PARAMS("# User-defined Params: Map<String, Object>\n", "自定义变量", 4, "{\nval1: \"sampleVal1\",\nval2: \"sampleVal2\"\n}\n"),
-    COMPOS("# Virtual Components: List<Map<String, Object>>\n", "组件化列表", 6, "[\n"
-            + "  {\n"
-            + "    useOrigData: true,\n"
-            + "    caseId: null,\n"
-            + "    componentClass: null\n"
-            + "  }\n"
-            + "]\n");
+    PARAMS(
+            "# User-defined Params: Map<String, Object>\n",
+            "自定义变量",
+            4,
+            "{\nval1: \"sampleVal1\",\nval2: \"sampleVal2\"\n}\n"),
+    COMPOS(
+            "# Virtual Components: List<Map<String, Object>>\n",
+            "组件化列表",
+            6,
+            "[\n"
+                    + "  {\n"
+                    + "    useOrigData: true,\n"
+                    + "    caseId: null,\n"
+                    + "    componentClass: null\n"
+                    + "  }\n"
+                    + "]\n");
 
     /**
      * code

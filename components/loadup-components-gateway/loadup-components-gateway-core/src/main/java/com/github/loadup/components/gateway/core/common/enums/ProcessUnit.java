@@ -1,7 +1,4 @@
-/**
- * Alipy.com Inc.
- * Copyright (c) 2004-2013 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.common.enums;
 
 /*-
@@ -30,12 +27,11 @@ package com.github.loadup.components.gateway.core.common.enums;
  * #L%
  */
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * <P>文件加工处理单元</P>

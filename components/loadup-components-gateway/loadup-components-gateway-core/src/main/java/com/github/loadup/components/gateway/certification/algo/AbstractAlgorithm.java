@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.algo;
 
 /*-
@@ -29,11 +30,10 @@ package com.github.loadup.components.gateway.certification.algo;
 import com.github.loadup.components.gateway.certification.exception.CertificationErrorCode;
 import com.github.loadup.components.gateway.certification.exception.CertificationException;
 import com.github.loadup.components.gateway.certification.util.CommonUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * 抽象类
@@ -128,8 +128,7 @@ public class AbstractAlgorithm implements Algorithm, InitializingBean {
      *
      */
     @Override
-    public boolean verify(byte[] unSignedData, byte[] signedData, byte[] key, String algorithm,
-                          boolean attach) {
+    public boolean verify(byte[] unSignedData, byte[] signedData, byte[] key, String algorithm, boolean attach) {
         throw new CertificationException(CertificationErrorCode.UNSUPPORTED_OPERATION, algorithm);
     }
 
@@ -172,9 +171,14 @@ public class AbstractAlgorithm implements Algorithm, InitializingBean {
      * @throws Exception the exception
      */
     @Override
-    public byte[] signXmlElement(byte[] priKeyData, byte[] certData, byte[] xmlDocBytes,
-                                 String encode, String elementTagName, String algorithm,
-                                 int signatureAppendMode) {
+    public byte[] signXmlElement(
+            byte[] priKeyData,
+            byte[] certData,
+            byte[] xmlDocBytes,
+            String encode,
+            String elementTagName,
+            String algorithm,
+            int signatureAppendMode) {
         throw new CertificationException(CertificationErrorCode.UNSUPPORTED_OPERATION, algorithm);
     }
 
@@ -207,9 +211,7 @@ public class AbstractAlgorithm implements Algorithm, InitializingBean {
     /**
      * 注册算法类到对应manager接口
      */
-    protected void doRegisterManager() {
-
-    }
+    protected void doRegisterManager() {}
 
     /**
      * 初始化向量
@@ -229,5 +231,4 @@ public class AbstractAlgorithm implements Algorithm, InitializingBean {
     public boolean isCBCMode(String algoStr) {
         return StringUtils.contains(algoStr, "CBC");
     }
-
 }

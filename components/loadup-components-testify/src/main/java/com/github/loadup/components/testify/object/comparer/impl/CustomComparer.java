@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.comparer.impl;
 
 /*-
@@ -32,8 +33,8 @@ import com.github.loadup.components.testify.object.comparer.UnitComparer;
 /**
  * 自定义校验器
  *
- * 
- * 
+ *
+ *
  */
 public class CustomComparer implements UnitComparer {
 

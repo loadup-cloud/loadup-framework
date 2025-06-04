@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule;
 
 /*-
@@ -30,7 +27,6 @@ package com.github.loadup.components.testify.datarule;
  * #L%
  */
 
-
 import com.github.loadup.components.testify.datarule.handler.RuleHandler;
 import com.github.loadup.components.testify.datarule.handler.RuleHandlerFactory;
 import com.github.loadup.components.testify.datarule.parser.RuleObjectParser;
@@ -39,7 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * 数据规则操作统一入口。
  *
- * 
+ *
  *
  */
 public class RULE {

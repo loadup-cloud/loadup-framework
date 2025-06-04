@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -27,7 +28,6 @@ package com.github.loadup.components.testify.util;
  */
 
 import java.util.Properties;
-
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -44,7 +44,7 @@ public class PropertyFileUtil {
      *
      * @param path
      * @return
-     * 
+     *
      */
     public static Properties readProperties(String path) {
         // 读properties文件

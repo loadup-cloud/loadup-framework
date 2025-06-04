@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.dal.dataobject;
 
 /*-
@@ -27,12 +28,11 @@ package com.github.loadup.modules.upms.dal.dataobject;
  */
 
 import com.github.loadup.commons.dataobject.BaseDO;
+import java.io.Serial;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
-
-import java.io.Serial;
 
 @Getter
 @Setter
@@ -40,6 +40,7 @@ import java.io.Serial;
 public class DepartDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = -5905118473496026853L;
+
     @Id
     private String id;
 
@@ -47,11 +48,11 @@ public class DepartDO extends BaseDO {
      * 父机构ID
      */
     private String parentId;
+
     private String departName;
     private String departCode;
     private String departType;
     private String description;
     private String status;
     private int orderIndex;
-
 }

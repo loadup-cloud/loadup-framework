@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data.db;
 
 /*-
@@ -39,16 +36,15 @@ import com.github.loadup.components.testify.data.enums.MetaInitType;
 import com.github.loadup.components.testify.db.offlineService.AbstractDBService;
 import com.github.loadup.components.testify.exception.RuleExecuteException;
 import com.github.loadup.components.testify.manage.TestLogger;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 原子项db仓储。
  *
- * 
+ *
  *
  */
 public class MetaItemRepository {
@@ -58,8 +54,10 @@ public class MetaItemRepository {
     static {
         AbstractDBService dbs = null;
         try {
-            dbs = AbstractDBService.getService(TestifyDBConstants.DB_URL,
-                    TestifyDBConstants.DB_USER_NAME, TestifyDBConstants.DB_PASSWORD,
+            dbs = AbstractDBService.getService(
+                    TestifyDBConstants.DB_URL,
+                    TestifyDBConstants.DB_USER_NAME,
+                    TestifyDBConstants.DB_PASSWORD,
                     TestifyDBConstants.DB_SCHEMA);
         } catch (Exception e) {
             dbs = null;
@@ -71,25 +69,35 @@ public class MetaItemRepository {
 
     private final String SQL_GET_META_ITEMS = "select source_data from org_db where system='?'";
 
-    private final String SQL_GET_META_ITEM = "select system,source_data,keywords,source_rule from org_db where system='?' and source_data='?'";
+    private final String SQL_GET_META_ITEM =
+            "select system,source_data,keywords,source_rule from org_db where system='?' and source_data='?'";
 
-    private final String SQL_GET_META_INIT_ITEM = "select system,category,model_obj,model_data,model_type from obj_relate where system='?' and model_obj='?' and model_data='?'";
+    private final String SQL_GET_META_INIT_ITEM =
+            "select system,category,model_obj,model_data,model_type from obj_relate where system='?' and model_obj='?' and model_data='?'";
 
-    private final String SQL_GET_META_ITEM_MAPPING_BY_META = "select system,category,model_obj,model_data,model_type,source_data from obj_relate where system='?' and source_data='?'";
+    private final String SQL_GET_META_ITEM_MAPPING_BY_META =
+            "select system,category,model_obj,model_data,model_type,source_data from obj_relate where system='?' and source_data='?'";
 
-    private final String SQL_GET_META_ITEM_MAPPING_BY_INIT = "select system,category,model_obj,model_data,model_type,source_data from obj_relate where system='?' and model_obj='?' and model_data='?'";
+    private final String SQL_GET_META_ITEM_MAPPING_BY_INIT =
+            "select system,category,model_obj,model_data,model_type,source_data from obj_relate where system='?' and model_obj='?' and model_data='?'";
 
-    private final String SQL_INSERT_META_ITEM = "insert into org_db(system,source_data,keywords,source_rule,source_id) values('?','?','?','?','?')";
+    private final String SQL_INSERT_META_ITEM =
+            "insert into org_db(system,source_data,keywords,source_rule,source_id) values('?','?','?','?','?')";
 
-    private final String SQL_INSERT_META_INIT_ITEM = "insert into obj_relate(system,category,model_obj,model_data,model_type,id) values('?','?','?','?','?','?')";
+    private final String SQL_INSERT_META_INIT_ITEM =
+            "insert into obj_relate(system,category,model_obj,model_data,model_type,id) values('?','?','?','?','?','?')";
 
-    private final String SQL_INSERT_META_ITEM_MAPPING = "insert into obj_relate(system,category,model_obj,model_data,source_data,model_type,id) values('?','?','?','?','?','?','?')";
+    private final String SQL_INSERT_META_ITEM_MAPPING =
+            "insert into obj_relate(system,category,model_obj,model_data,source_data,model_type,id) values('?','?','?','?','?','?','?')";
 
-    private final String SQL_UPDATE_META_ITEM_MAPPING = "update obj_relate set source_data='?' where system='?' and model_obj='?' and model_data='?'";
+    private final String SQL_UPDATE_META_ITEM_MAPPING =
+            "update obj_relate set source_data='?' where system='?' and model_obj='?' and model_data='?'";
 
-    private final String SQL_UPDATE_META_ITEM = "update org_db set keywords='?', source_rule='?' where system='?' and source_data='?'";
+    private final String SQL_UPDATE_META_ITEM =
+            "update org_db set keywords='?', source_rule='?' where system='?' and source_data='?'";
 
-    private final String SQL_UPDATE_META_INIT_ITEM = "update obj_relate set model_type='?',category='?' where system='?' and model_obj='?' and model_data='?'";
+    private final String SQL_UPDATE_META_INIT_ITEM =
+            "update obj_relate set model_type='?',category='?' where system='?' and model_obj='?' and model_data='?'";
 
     /**
      * 获取所有原子项。
@@ -127,8 +135,7 @@ public class MetaItemRepository {
         if (result.size() > 0) {
 
             Map<String, Object> entry = result.get(0);
-            MetaItem metaItem = new MetaItem((String) entry.get("system"),
-                    (String) entry.get("source_data"));
+            MetaItem metaItem = new MetaItem((String) entry.get("system"), (String) entry.get("source_data"));
 
             metaItem.setDataRule((String) entry.get("source_rule"));
 
@@ -216,12 +223,10 @@ public class MetaItemRepository {
 
             Map<String, Object> entry = result.get(0);
 
-            return loadMetaItemMapping((String) entry.get("system"),
-                    (String) entry.get("source_data"));
+            return loadMetaItemMapping((String) entry.get("system"), (String) entry.get("source_data"));
         }
 
         return null;
-
     }
 
     /**
@@ -231,8 +236,13 @@ public class MetaItemRepository {
      */
     public void storeMetaItem(MetaItem metaItem) {
         String keywords = StringUtils.join(metaItem.getKeywords().iterator(), ";");
-        String sql = paramReplace(SQL_INSERT_META_ITEM, metaItem.getSystem(), metaItem.getId(),
-                keywords, metaItem.getDataRule(), metaItem.getSystem() + "_" + metaItem.getId());
+        String sql = paramReplace(
+                SQL_INSERT_META_ITEM,
+                metaItem.getSystem(),
+                metaItem.getId(),
+                keywords,
+                metaItem.getDataRule(),
+                metaItem.getSystem() + "_" + metaItem.getId());
 
         getDbService().executeUpdateSql(sql);
     }
@@ -244,8 +254,8 @@ public class MetaItemRepository {
      */
     public int reStoreMetaItem(MetaItem metaItem) {
         String keywords = StringUtils.join(metaItem.getKeywords().iterator(), ";");
-        String sql = paramReplace(SQL_UPDATE_META_ITEM, keywords, metaItem.getDataRule(),
-                metaItem.getSystem(), metaItem.getId());
+        String sql = paramReplace(
+                SQL_UPDATE_META_ITEM, keywords, metaItem.getDataRule(), metaItem.getSystem(), metaItem.getId());
 
         int i = getDbService().executeUpdateSql(sql);
         return i;
@@ -258,9 +268,13 @@ public class MetaItemRepository {
      */
     public void storeMetaInitItem(MetaInitItem initItem) {
 
-        String sql = paramReplace(SQL_INSERT_META_INIT_ITEM, initItem.getSystem(),
-                initItem.getHost(), initItem.getField(), initItem.getInitType().name(), initItem
-                        .getFieldType().getTypeDesc());
+        String sql = paramReplace(
+                SQL_INSERT_META_INIT_ITEM,
+                initItem.getSystem(),
+                initItem.getHost(),
+                initItem.getField(),
+                initItem.getInitType().name(),
+                initItem.getFieldType().getTypeDesc());
 
         getDbService().executeUpdateSql(sql);
     }
@@ -271,9 +285,13 @@ public class MetaItemRepository {
      * @param metaInitItem
      */
     public void reStoreMetaInitItem(MetaInitItem metaInitItem) {
-        String sql = paramReplace(SQL_UPDATE_META_INIT_ITEM, metaInitItem.getFieldType()
-                        .getTypeDesc(), metaInitItem.getInitType().name(), metaInitItem.getSystem(),
-                metaInitItem.getHost(), metaInitItem.getField());
+        String sql = paramReplace(
+                SQL_UPDATE_META_INIT_ITEM,
+                metaInitItem.getFieldType().getTypeDesc(),
+                metaInitItem.getInitType().name(),
+                metaInitItem.getSystem(),
+                metaInitItem.getHost(),
+                metaInitItem.getField());
 
         getDbService().executeUpdateSql(sql);
     }
@@ -285,40 +303,47 @@ public class MetaItemRepository {
      */
     public void storeMetaItemMapping(MetaItemMapping metaItemMapping) {
 
-        MetaItem metaItem = loadMetaItem(metaItemMapping.getMetaItem().getSystem(), metaItemMapping
-                .getMetaItem().getId());
+        MetaItem metaItem = loadMetaItem(
+                metaItemMapping.getMetaItem().getSystem(),
+                metaItemMapping.getMetaItem().getId());
         if (metaItem == null) {
             metaItem = metaItemMapping.getMetaItem();
             storeMetaItem(metaItem);
         }
 
         for (MetaInitItem initItem : metaItemMapping.getInitItems()) {
-            MetaInitItem im = loadMetaInitItem(initItem.getSystem(), initItem.getHost(),
-                    initItem.getField());
+            MetaInitItem im = loadMetaInitItem(initItem.getSystem(), initItem.getHost(), initItem.getField());
             if (im == null) {
                 im = initItem;
                 storeMetaInitItem(im);
             }
 
-            MetaItemMapping mapping = loadMetaItemMapping(initItem.getSystem(), initItem.getHost(),
-                    initItem.getField());
+            MetaItemMapping mapping =
+                    loadMetaItemMapping(initItem.getSystem(), initItem.getHost(), initItem.getField());
 
             if (mapping == null) {
-                String insertMappingSql = paramReplace(SQL_INSERT_META_ITEM_MAPPING,
-                        metaItem.getSystem(), "", initItem.getHost(), initItem.getField(),
-                        metaItem.getId(), initItem.getFieldType().getTypeDesc(),
+                String insertMappingSql = paramReplace(
+                        SQL_INSERT_META_ITEM_MAPPING,
+                        metaItem.getSystem(),
+                        "",
+                        initItem.getHost(),
+                        initItem.getField(),
+                        metaItem.getId(),
+                        initItem.getFieldType().getTypeDesc(),
                         metaItem.getSystem() + "_" + initItem.getHost() + "_" + initItem.getField());
 
                 getDbService().executeUpdateSql(insertMappingSql);
             } else {
-                String updateMappingSql = paramReplace(SQL_UPDATE_META_ITEM_MAPPING,
-                        metaItem.getId(), metaItem.getSystem(), initItem.getHost(), initItem.getField());
+                String updateMappingSql = paramReplace(
+                        SQL_UPDATE_META_ITEM_MAPPING,
+                        metaItem.getId(),
+                        metaItem.getSystem(),
+                        initItem.getHost(),
+                        initItem.getField());
 
                 getDbService().executeUpdateSql(updateMappingSql);
             }
-
         }
-
     }
 
     /**
@@ -346,8 +371,8 @@ public class MetaItemRepository {
      * @param entry
      */
     private MetaInitItem composeMetaInitItem(Map<String, Object> entry) {
-        MetaInitItem metaInitItem = new MetaInitItem((String) entry.get("system"),
-                (String) entry.get("model_obj"), (String) entry.get("model_data"));
+        MetaInitItem metaInitItem = new MetaInitItem(
+                (String) entry.get("system"), (String) entry.get("model_obj"), (String) entry.get("model_data"));
 
         String category = (String) entry.get("category");
         if (!StringUtils.isEmpty(category)) {
@@ -369,5 +394,4 @@ public class MetaItemRepository {
         }
         return dbService;
     }
-
 }

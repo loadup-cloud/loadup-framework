@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.data;
 
 /*-
@@ -37,8 +34,8 @@ import java.util.Map;
  * <p>
  * 文本的形式表示对象。
  *
- * 
- * 
+ *
+ *
  */
 public class TextValue {
 
@@ -86,5 +83,4 @@ public class TextValue {
     public String getText() {
         return text;
     }
-
 }

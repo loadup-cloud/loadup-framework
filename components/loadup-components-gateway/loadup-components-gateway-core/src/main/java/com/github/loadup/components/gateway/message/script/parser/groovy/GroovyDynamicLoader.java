@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.script.parser.groovy;
 
 /*-
@@ -32,6 +33,10 @@ import com.github.loadup.components.gateway.core.prototype.util.ExceptionUtil;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.lang3.time.StopWatch;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.slf4j.Logger;
@@ -45,11 +50,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * <p>
@@ -68,6 +68,7 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
      * 日志类
      */
     private static final Logger logger = LoggerFactory.getLogger(GroovyDynamicLoader.class);
+
     public static GroovyClassLoader classLoader = new GroovyClassLoader();
     /**
      * Spring 上下文环境
@@ -106,7 +107,7 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
      * @see DisposableBean#destroy()
      */
     public void destroy() {
-        //do nothing
+        // do nothing
     }
 
     /**
@@ -124,16 +125,16 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
                     Class<GroovyObject> clazz = (Class<GroovyObject>) groovyClass;
                     GroovyObject instance = clazz.getDeclaredConstructor().newInstance();
                     if (beanFactory.containsBean(groovyInfo.getClassName())) {
-                        throw new CommonException(GatewayErrorCode.CONFIGURATION_LOAD_ERROR,
-                                groovyInfo.getClassName() + " bean exist!");
+                        throw new CommonException(
+                                GatewayErrorCode.CONFIGURATION_LOAD_ERROR, groovyInfo.getClassName() + " bean exist!");
                     }
                     beanFactory.registerSingleton(groovyInfo.getClassName(), instance);
                     LogUtil.info(logger, "initialize groovy bean:" + groovyInfo.getClassName());
                 } else {
-                    //                    throw new GatewayliteException(GatewayliteErrorCode.CONFIGURATION_LOAD_ERROR, groovyInfo
+                    //                    throw new GatewayliteException(GatewayliteErrorCode.CONFIGURATION_LOAD_ERROR,
+                    // groovyInfo
                     //                    .getClassName() + " not a groovy script!");
                 }
-
             }
 
             // 把脚本缓存一下，在删除的时候需要使用脚本源代码
@@ -164,12 +165,12 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
             destroyTemplates.addAll(updatedGroovyInfos);
             destroyTemplates.addAll(deletedGroovyInfos);
 
-            //删除bean
+            // 删除bean
             destroyBeanDefinition(destroyTemplates);
-            //新增bean的spring定义
-            //更新缓存
+            // 新增bean的spring定义
+            // 更新缓存
             GroovyInnerCache.update2map(groovyInfos);
-            //加载spring bean
+            // 加载spring bean
         } catch (CommonException e) {
             LogUtil.error(logger, e, "update groovy script error:" + groovyInfos);
             throw e;
@@ -180,7 +181,6 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
             //            Profiler.release();
             writeLock.unlock();
         }
-
     }
 
     /**
@@ -225,7 +225,8 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
      * 销毁删除的BEAN定义，变更的BEAN在重新以后会自动生效
      */
     private void destroyBeanDefinition(GroovyInfoGroup group) {
-        DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
+        DefaultListableBeanFactory beanFactory =
+                (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
         List<GroovyInfo> destoryList = new ArrayList();
         destoryList.addAll(group.getDeletedGroovy());
         destoryList.addAll(group.getModifiedGroovy());
@@ -242,10 +243,13 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
      * 销毁删除的BEAN定义，变更的BEAN在重新以后会自动生效
      */
     private void destroyBeanDefinition(List<GroovyInfo> groovyInfos) {
-        DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
-        String[] postProcessorNames = applicationContext.getBeanFactory().getBeanNamesForType(CustomScriptFactoryPostProcessor.class, true,
-                false);
-        CustomScriptFactoryPostProcessor processor = (CustomScriptFactoryPostProcessor) applicationContext.getBean(postProcessorNames[0]);
+        DefaultListableBeanFactory beanFactory =
+                (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
+        String[] postProcessorNames = applicationContext
+                .getBeanFactory()
+                .getBeanNamesForType(CustomScriptFactoryPostProcessor.class, true, false);
+        CustomScriptFactoryPostProcessor processor =
+                (CustomScriptFactoryPostProcessor) applicationContext.getBean(postProcessorNames[0]);
         for (GroovyInfo groovy : groovyInfos) {
             try {
                 beanFactory.removeBeanDefinition(groovy.getClassName());
@@ -264,13 +268,16 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
 
-            try (GroovyClassLoader groovyClassLoader = new GroovyClassLoader(GroovyDynamicLoader.class.getClassLoader())) {
+            try (GroovyClassLoader groovyClassLoader =
+                    new GroovyClassLoader(GroovyDynamicLoader.class.getClassLoader())) {
                 groovyClassLoader.parseClass(groovyInfo.getGroovyContent());
 
                 stopWatch.split();
 
-                LogUtil.info(logger,
-                        "Groovy syntax check success,class=" + groovyInfo.getClassName() + ",cost:" + stopWatch.getSplitTime() + "ms");
+                LogUtil.info(
+                        logger,
+                        "Groovy syntax check success,class=" + groovyInfo.getClassName() + ",cost:"
+                                + stopWatch.getSplitTime() + "ms");
             }
 
         } catch (CompilationFailedException e) {
@@ -296,7 +303,7 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
 
         Assert.notNull(scriptName, "parser className cannot be empty!");
 
-        //设置bean的属性，这里只有id和script-source。
+        // 设置bean的属性，这里只有id和script-source。
         bean.put("id", scriptName);
         bean.put("script-source", GroovyConstant.SCRIPT_SOURCE_PREFIX + scriptName);
 
@@ -307,12 +314,14 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
      * 销毁脚本Bean工厂
      */
     private void destroyScriptBeanFactory() {
-        String[] postProcessorNames = applicationContext.getBeanFactory().getBeanNamesForType(CustomScriptFactoryPostProcessor.class, true,
-                false);
+        String[] postProcessorNames = applicationContext
+                .getBeanFactory()
+                .getBeanNamesForType(CustomScriptFactoryPostProcessor.class, true, false);
 
-        //将所有的解析脚本从spring上下文销毁
+        // 将所有的解析脚本从spring上下文销毁
         for (String postProcessorName : postProcessorNames) {
-            CustomScriptFactoryPostProcessor processor = (CustomScriptFactoryPostProcessor) applicationContext.getBean(postProcessorName);
+            CustomScriptFactoryPostProcessor processor =
+                    (CustomScriptFactoryPostProcessor) applicationContext.getBean(postProcessorName);
             processor.destroy();
         }
     }
@@ -332,8 +341,8 @@ public class GroovyDynamicLoader implements ApplicationContextAware, DisposableB
 
     /**
      * @see ApplicationContextAware#setApplicationContext(ApplicationContext)
-     */ public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+     */
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = (ConfigurableApplicationContext) applicationContext;
     }
-
 }

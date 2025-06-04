@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.model;
 
 /*-
@@ -31,7 +32,7 @@ public class VirtualList {
     private Object virtualList;
 
     /**
-     * 
+     *
      *
      * @return property value of virtualList
      */
@@ -47,5 +48,4 @@ public class VirtualList {
     public void setVirtualList(Object virtualList) {
         this.virtualList = virtualList;
     }
-
 }

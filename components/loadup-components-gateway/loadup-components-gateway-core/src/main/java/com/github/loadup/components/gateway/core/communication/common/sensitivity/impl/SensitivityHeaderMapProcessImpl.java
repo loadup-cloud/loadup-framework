@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.communication.common.sensitivity.impl;
 
 /*-
@@ -30,21 +31,18 @@ import com.github.loadup.components.gateway.core.communication.common.sensitivit
 import com.github.loadup.components.gateway.core.model.SensitivityProcessType;
 import com.github.loadup.components.gateway.core.model.ShieldType;
 import com.github.loadup.components.gateway.core.prototype.util.MaskUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 /**
  *
  */
 @Component("sensitivityHeaderMapProcessImpl")
-public class SensitivityHeaderMapProcessImpl implements
-        SensitivityDataProcess<Map<String, String>> {
+public class SensitivityHeaderMapProcessImpl implements SensitivityDataProcess<Map<String, String>> {
     @Override
-    public Map<String, String> mask(Map<String, String> maskContent,
-                                    Map<String, ShieldType> shieldRule) {
+    public Map<String, String> mask(Map<String, String> maskContent, Map<String, ShieldType> shieldRule) {
 
         Map<String, String> result = new HashMap<>();
 

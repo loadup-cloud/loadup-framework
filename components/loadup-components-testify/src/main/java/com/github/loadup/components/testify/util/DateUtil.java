@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -26,106 +27,115 @@ package com.github.loadup.components.testify.util;
  * #L%
  */
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 /**
  * 时期处理类
  *
- * 
+ *
  *
  */
 public class DateUtil {
-    public final static long ONE_DAY_SECONDS = 86400;
-    public final static long ONE_DAY_MILL_SECONDS = 86400000;
+    public static final long ONE_DAY_SECONDS = 86400;
+    public static final long ONE_DAY_MILL_SECONDS = 86400000;
     public static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone("GMT");
     public static final long MILLIS_PER_SECOND = 1000;
     public static final long MILLIS_PER_MINUTE = 60 * MILLIS_PER_SECOND;
     public static final long MILLIS_PER_HOUR = 60 * MILLIS_PER_MINUTE;
     public static final long MILLIS_PER_DAY = 24 * MILLIS_PER_HOUR;
-    public final static String monthFormat = "yyyyMM";
-    public final static String chineseDtFormat = "yyyy年MM月dd日";
-    public final static String noSecondFormat = "yyyy-MM-dd HH:mm";
+    public static final String monthFormat = "yyyyMM";
+    public static final String chineseDtFormat = "yyyy年MM月dd日";
+    public static final String noSecondFormat = "yyyy-MM-dd HH:mm";
+
     /**
      * 完整时间 yyyy-MM-dd HH:mm:ss
      */
     public static final String simple = "yyyy-MM-dd HH:mm:ss";
+
     /**
      * 年月日 yyyy-MM-dd
      */
     public static final String dbSimple = "yyyy-MM-dd";
+
     /**
      * 年月日(中文) yyyy年MM月dd日
      */
     public static final String dtSimpleChinese = "yyyy年MM月dd日";
+
     public static final String week = "EEEE";
+
     /**
      * 年月日(无下划线) yyyyMMdd
      */
     public static final String dtShort = "yyyyMMdd";
+
     /**
      * 年月日时分秒(无下划线) yyyyMMddHHmmss
      */
     public static final String dtLong = "yyyyMMddHHmmss";
+
     /**
      * 时分秒 HH:mm:ss
      */
     public static final String hmsFormat = "HH:mm:ss";
+
     /**
      * 年-月-日 小时:分钟 yyyy-MM-dd HH:mm
      */
     public static final String simpleFormat = "yyyy-MM-dd HH:mm";
+
     // 年月日时分秒毫秒(无下划线)
     public static final String dtLongMill = "yyyyMMddHHmmssS";
     // 时分秒
-    public final static String timeFormat = "HHmmss";
+    public static final String timeFormat = "HHmmss";
     private static Logger logger = LoggerFactory.getLogger(DateUtil.class);
+
     /**
      * yyyyMMdd
      */
-    public final static String SHORT_FORMAT = "yyyyMMdd";
+    public static final String SHORT_FORMAT = "yyyyMMdd";
 
     /**
      * yyyyMMddHHmmss
      */
-    public final static String LONG_FORMAT = "yyyyMMddHHmmss";
+    public static final String LONG_FORMAT = "yyyyMMddHHmmss";
 
     /**
      * yyyy-MM-dd
      */
-    public final static String WEB_FORMAT = "yyyy-MM-dd";
+    public static final String WEB_FORMAT = "yyyy-MM-dd";
 
     /**
      * HHmmss
      */
-    public final static String TIME_FORMAT = "HHmmss";
+    public static final String TIME_FORMAT = "HHmmss";
 
     /**
      * yyyyMM
      */
-    public final static String MONTH_FORMAT = "yyyyMM";
+    public static final String MONTH_FORMAT = "yyyyMM";
 
     /**
      * yyyy年MM月dd日
      */
-    public final static String CHINA_FORMAT = "yyyy年MM月dd日";
+    public static final String CHINA_FORMAT = "yyyy年MM月dd日";
 
     /**
      * yyyy-MM-dd HH:mm:ss
      */
-    public final static String LONG_WEB_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String LONG_WEB_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * yyyy-MM-dd HH:mm
      */
-    public final static String LONG_WEB_FORMAT_NO_SEC = "yyyy-MM-dd HH:mm";
+    public static final String LONG_WEB_FORMAT_NO_SEC = "yyyy-MM-dd HH:mm";
 
     /**
      * 日期对象解析成日期字符串基础方法，可以据此封装出多种便捷的方法直接使用
@@ -185,8 +195,7 @@ public class DateUtil {
      * @return 已经格式化的字符串
      * @throws ParseException
      */
-    public static String format(String dateStr, String formatIn, String formatOut)
-            throws ParseException {
+    public static String format(String dateStr, String formatIn, String formatOut) throws ParseException {
 
         Date date = parse(dateStr, formatIn);
         return format(date, formatOut);
@@ -304,7 +313,6 @@ public class DateUtil {
      * @param secs
      * @return
      */
-
     public static Date addSeconds(Date date1, long secs) {
         return new Date(date1.getTime() + (secs * 1000));
     }
@@ -316,8 +324,7 @@ public class DateUtil {
      * @param afterDate
      * @return int（天数）
      */
-    public static final int calculateDecreaseDate(String beforDate, String afterDate)
-            throws ParseException {
+    public static final int calculateDecreaseDate(String beforDate, String afterDate) throws ParseException {
         Date date1 = getFormat(dbSimple).parse(beforDate);
         Date date2 = getFormat(dbSimple).parse(afterDate);
         long decrease = getDateBetween(date1, date2) / 1000 / 3600 / 24;
@@ -493,7 +500,6 @@ public class DateUtil {
      */
     public static boolean dateLessThanNowAddMin(Date date, long min) {
         return addMinutes(date, min).before(new Date());
-
     }
 
     /**
@@ -641,7 +647,6 @@ public class DateUtil {
         return getFormat(dbSimple).format(date);
     }
 
-
     /**
      * 把日期2007/06/14转换为20070614
      *
@@ -674,8 +679,6 @@ public class DateUtil {
 
         return getFormat(format).format(date);
     }
-
-
 
     public static String formatTimeRange(Date startDate, Date endDate, String format) {
         if ((endDate == null) || (startDate == null)) {
@@ -870,7 +873,7 @@ public class DateUtil {
      *
      * @param date
      * @return dayOfWeek
-     * 
+     *
      */
     public static int getDayOfWeek(Date date) {
         Calendar cal = Calendar.getInstance();
@@ -1082,8 +1085,7 @@ public class DateUtil {
      * @param interval
      * @return
      */
-    public static Map<String, String> getLastWeek(String StringDate, int interval)
-            throws ParseException {
+    public static Map<String, String> getLastWeek(String StringDate, int interval) throws ParseException {
         Map<String, String> lastWeek = new HashMap<String, String>();
         Date tempDate = shortstring2Date(StringDate);
         Calendar cad = Calendar.getInstance();
@@ -1386,8 +1388,7 @@ public class DateUtil {
     }
 
     public static boolean isBeforeNow(Date date) {
-        if (date == null)
-            return false;
+        if (date == null) return false;
         return date.compareTo(new Date()) < 0;
     }
 
@@ -1412,7 +1413,6 @@ public class DateUtil {
      */
     public static final boolean isLeapYear(int year) {
         return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
-
     }
 
     /**
@@ -1595,8 +1595,7 @@ public class DateUtil {
         return dateFormat.parse(sDate);
     }
 
-    public static Date parseDateNoTimeWithDelimit(String sDate, String delimit)
-            throws ParseException {
+    public static Date parseDateNoTimeWithDelimit(String sDate, String delimit) throws ParseException {
         sDate = sDate.replaceAll(delimit, "");
 
         DateFormat dateFormat = new SimpleDateFormat(dtShort);
@@ -1793,14 +1792,10 @@ public class DateUtil {
         if (stringDate == null) {
             return null;
         }
-        if (stringDate.length() == 11)
-            stringDate = stringDate + "23:59:59";
-        else if (stringDate.length() == 13)
-            stringDate = stringDate + ":59:59";
-        else if (stringDate.length() == 16)
-            stringDate = stringDate + ":59";
-        else if (stringDate.length() == 10)
-            stringDate = stringDate + " 23:59:59";
+        if (stringDate.length() == 11) stringDate = stringDate + "23:59:59";
+        else if (stringDate.length() == 13) stringDate = stringDate + ":59:59";
+        else if (stringDate.length() == 16) stringDate = stringDate + ":59";
+        else if (stringDate.length() == 10) stringDate = stringDate + " 23:59:59";
 
         return getFormat(simple).parse(stringDate);
     }
@@ -1816,14 +1811,10 @@ public class DateUtil {
         if (stringDate == null) {
             return null;
         }
-        if (stringDate.length() == 11)
-            stringDate = stringDate + "00:00:00";
-        else if (stringDate.length() == 13)
-            stringDate = stringDate + ":00:00";
-        else if (stringDate.length() == 16)
-            stringDate = stringDate + ":00";
-        else if (stringDate.length() == 10)
-            stringDate = stringDate + " 00:00:00";
+        if (stringDate.length() == 11) stringDate = stringDate + "00:00:00";
+        else if (stringDate.length() == 13) stringDate = stringDate + ":00:00";
+        else if (stringDate.length() == 16) stringDate = stringDate + ":00";
+        else if (stringDate.length() == 10) stringDate = stringDate + " 00:00:00";
 
         return getFormat(simple).parse(stringDate);
     }
@@ -1879,7 +1870,6 @@ public class DateUtil {
         } else {
             return strToDtSimpleFormat(strDate);
         }
-
     }
 
     /**
@@ -1926,5 +1916,4 @@ public class DateUtil {
 
         return dateNotLessThan(date1, date2, df);
     }
-
 }

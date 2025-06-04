@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule;
 
 /*-
@@ -33,8 +30,8 @@ package com.github.loadup.components.testify.datarule;
 /**
  * 范围取值规则。
  *
- * 
- * 
+ *
+ *
  */
 public class RangeRule implements RuleObject {
 
@@ -68,7 +65,7 @@ public class RangeRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @param minValue value to be assigned to property minValue
      */
@@ -86,7 +83,7 @@ public class RangeRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @param maxValue value to be assigned to property maxValue
      */
@@ -104,7 +101,7 @@ public class RangeRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @param containsMin value to be assigned to property containsMin
      */
@@ -122,12 +119,11 @@ public class RangeRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @param containsMax value to be assigned to property containsMax
      */
     public void setContainsMax(boolean containsMax) {
         this.containsMax = containsMax;
     }
-
 }

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.event.ssh;
 
 /*-
@@ -35,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author jie.peng
- * 
+ *
  */
 public class RemoteLogFecther {
 
@@ -48,6 +45,7 @@ public class RemoteLogFecther {
      * 默认使用log用户
      */
     private static String USER_NAME = "log";
+
     private static String PASS_WORD = "log_xixihaha";
 
     /**
@@ -59,22 +57,22 @@ public class RemoteLogFecther {
      */
     public String getServerLog(String serverHost, String commands) {
         return "";
-//        Connection conn = null;
-//        Session sess = null;
-//        String result = null;
-//
-//        try {
-//            conn = new Connection(serverHost);
-//            sess = connectToServer(conn, USER_NAME, PASS_WORD);
-//            sess.execCommand(commands);
-//            result = getStringResult(sess);
-//
-//        } catch (Exception e) {
-//            logger.error("Exception obtaining server info" + e.getMessage());
-//        } finally {
-//            disConnect(sess, conn);
-//        }
-//        return result;
+        //        Connection conn = null;
+        //        Session sess = null;
+        //        String result = null;
+        //
+        //        try {
+        //            conn = new Connection(serverHost);
+        //            sess = connectToServer(conn, USER_NAME, PASS_WORD);
+        //            sess.execCommand(commands);
+        //            result = getStringResult(sess);
+        //
+        //        } catch (Exception e) {
+        //            logger.error("Exception obtaining server info" + e.getMessage());
+        //        } finally {
+        //            disConnect(sess, conn);
+        //        }
+        //        return result;
     }
 
     /**
@@ -106,11 +104,13 @@ public class RemoteLogFecther {
 
     }
 
-    *//**
+    */
+    /**
      * 连接应用服务器
      * 参数Connection conn用于返回conn
      * @return
-     *//*
+     */
+    /*
     private Session connectToServer(Connection conn, String userName, String passWord) {
 
         try {
@@ -128,11 +128,13 @@ public class RemoteLogFecther {
         }
     }
 
-    *//**
+    */
+    /**
      * 关闭链接
      * @param sess
      * @param conn
-     *//*
+     */
+    /*
     private void disConnect(Session sess, Connection conn) {
         if (null != sess) {
             sess.close();
@@ -142,13 +144,15 @@ public class RemoteLogFecther {
         }
     }
 
-    *//**
+    */
+    /**
      * 从日志信息中提取target字段的值
      *
      * @param log 待提取的原始日志
      * @param target 代提取的字段，如cardNo
      * @return
-     *//*
+     */
+    /*
     protected String pickup(String log, String target) {
 
         String pickResult = null;

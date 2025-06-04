@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.domain;
 
 /*-
@@ -28,11 +29,10 @@ package com.github.loadup.modules.upms.domain;
 
 import com.github.loadup.commons.domain.BaseDomain;
 import com.github.loadup.commons.util.ToStringUtils;
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-
-import java.io.Serializable;
 
 /**
  * @author lise
@@ -74,8 +74,9 @@ public class UpmsContactAddress extends BaseDomain implements Serializable {
         } else if (!StringUtils.equals(contactAddress.getCity(), this.city)) {
             return false;
         } else {
-            return !StringUtils.equals(contactAddress.getProvince(), this.province) ? false : StringUtils.equals(
-                    contactAddress.getZipcode(), this.zipcode);
+            return !StringUtils.equals(contactAddress.getProvince(), this.province)
+                    ? false
+                    : StringUtils.equals(contactAddress.getZipcode(), this.zipcode);
         }
     }
 

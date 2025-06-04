@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.extpoint;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.components.gateway.facade.extpoint;
 
 import com.alibaba.cola.extension.ExtensionPointI;
 import com.github.loadup.components.gateway.facade.model.*;
-
 import java.util.List;
 
 /**
@@ -108,9 +108,15 @@ public interface RepositoryServiceExtPt extends ExtensionPointI {
      * query present interface(API or SPI).
      * </p>
      */
-    List<InterfaceDto> queryInterface(Integer pageSize, Integer page, String tntInstId,
-                                      String interfaceId, String clientId, String type,
-                                      String status, String interfaceName);
+    List<InterfaceDto> queryInterface(
+            Integer pageSize,
+            Integer page,
+            String tntInstId,
+            String interfaceId,
+            String clientId,
+            String type,
+            String status,
+            String interfaceName);
 
     /**
      * <p>

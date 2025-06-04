@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.manager;
 
 /*-
@@ -31,10 +32,9 @@ import com.github.loadup.components.gateway.certification.impl.CertificationServ
 import com.github.loadup.components.gateway.certification.model.AlgorithmEnum;
 import com.github.loadup.components.gateway.certification.model.CertificationFactor;
 import com.github.loadup.components.gateway.facade.enums.CertTypeEnum;
-import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.stereotype.Component;
 
 /**
  * 摘要算法管理类
@@ -69,14 +69,13 @@ public class DigestManager extends AbstractAlgoManager {
     protected byte[] doDigest(byte[] srcInput, CertificationFactor certificationFactor) {
         Algorithm algorithm = getAlgorithm(certificationFactor);
         // todo xiaokai.sxk  2016/12/8-18:43  摘要支持加盐改造
-        if (certificationFactor.getCertMap() == null || certificationFactor.getCertMap().isEmpty()) {
+        if (certificationFactor.getCertMap() == null
+                || certificationFactor.getCertMap().isEmpty()) {
             return algorithm.digest(srcInput, certificationFactor.getAlgoString());
         } else {
-            byte[] key = (byte[]) certificationFactor.getCertMap().get(
-                    CertTypeEnum.DIGEST_KEY.getCertType());
+            byte[] key = (byte[]) certificationFactor.getCertMap().get(CertTypeEnum.DIGEST_KEY.getCertType());
             return algorithm.digest(srcInput, key, certificationFactor.getAlgoString());
         }
-
     }
 
     /**

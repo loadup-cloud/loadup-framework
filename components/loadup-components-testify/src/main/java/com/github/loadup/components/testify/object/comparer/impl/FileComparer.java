@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.comparer.impl;
 
 /*-
@@ -26,10 +27,10 @@ package com.github.loadup.components.testify.object.comparer.impl;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
 import com.github.loadup.components.testify.log.TestifyLogUtil;
 import com.github.loadup.components.testify.object.comparer.UnitComparer;
 import com.github.loadup.components.testify.util.FileUtil;
+import org.apache.commons.lang3.StringUtils;
 
 public class FileComparer implements UnitComparer {
 
@@ -47,5 +48,4 @@ public class FileComparer implements UnitComparer {
         }
         return true;
     }
-
 }

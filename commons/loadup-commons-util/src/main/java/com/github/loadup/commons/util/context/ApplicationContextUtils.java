@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.util.context;
 
 /*-
@@ -26,14 +27,13 @@ package com.github.loadup.commons.util.context;
  * #L%
  */
 
+import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 /**
  * Spring上下文工具类
@@ -76,7 +76,6 @@ public class ApplicationContextUtils implements ApplicationContextAware {
             }
         }
         return bean;
-
     }
 
     /**

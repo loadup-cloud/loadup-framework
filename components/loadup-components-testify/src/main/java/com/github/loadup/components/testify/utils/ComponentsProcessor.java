@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils;
 
 /*-
@@ -27,13 +27,13 @@ package com.github.loadup.components.testify.utils;
  * #L%
  */
 
-import com.github.loadup.components.testify.runtime.TestifyRuntimeContext;
-import org.apache.commons.lang3.StringUtils;
 import com.github.loadup.components.testify.model.VirtualComponent;
+import com.github.loadup.components.testify.runtime.TestifyRuntimeContext;
 import com.github.loadup.components.testify.template.TestifyTestBase;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * 
+ *
  *
  */
 public class ComponentsProcessor {
@@ -43,13 +43,13 @@ public class ComponentsProcessor {
      *
      * @param testifyRuntimeContext
      */
-    public static void getIndexForPreComp(TestifyRuntimeContext testifyRuntimeContext,
-                                          TestifyTestBase testifyTestBase,
-                                          VirtualComponent virtualComponent) {
+    public static void getIndexForPreComp(
+            TestifyRuntimeContext testifyRuntimeContext,
+            TestifyTestBase testifyTestBase,
+            VirtualComponent virtualComponent) {
 
         String cmdCmpExcuteIndex = virtualComponent.getNodeGroup();
-        if (StringUtils.isEmpty(cmdCmpExcuteIndex)
-                || StringUtils.equals(cmdCmpExcuteIndex, "Before数据准备")) {
+        if (StringUtils.isEmpty(cmdCmpExcuteIndex) || StringUtils.equals(cmdCmpExcuteIndex, "Before数据准备")) {
             testifyRuntimeContext.BeforePreparePreList.add(testifyTestBase);
         } else if (StringUtils.equals(cmdCmpExcuteIndex, "After数据准备")) {
             testifyRuntimeContext.AfterPreparePreList.add(testifyTestBase);

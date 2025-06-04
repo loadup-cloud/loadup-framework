@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.helper;
 
 /*-
@@ -30,14 +31,13 @@ import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.plugin.exception.IllegalBeanMethodException;
 import com.github.loadup.components.gateway.plugin.exception.IllegalBeanUriException;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Helper for SpringBean call communication plugin extension. And bean uri is expected to be: SPRINGBEAN://{spingBean_id}/{method}
@@ -98,8 +98,8 @@ public class BeanApiHelper {
         if (foundMethods.size() == 0) {
             throw new IllegalBeanMethodException("Could not find target method " + methodName);
         }
-        throw new IllegalBeanMethodException("Class method overloading is not allowed now, target method is "
-                + methodName);
+        throw new IllegalBeanMethodException(
+                "Class method overloading is not allowed now, target method is " + methodName);
     }
 
     /**
@@ -113,7 +113,9 @@ public class BeanApiHelper {
         if (paramTypes.length != 1) {
             throw new RuntimeException("invalid parameter types");
         }
-        LogUtil.info(log, "The class of parameter is " + paramTypes[0].getName() + "The requestMessage is " + requestMessage);
+        LogUtil.info(
+                log,
+                "The class of parameter is " + paramTypes[0].getName() + "The requestMessage is " + requestMessage);
         return JsonUtil.parseObject(requestMessage, paramTypes[0]);
     }
 

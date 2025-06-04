@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.common.util;
 
 /*-
@@ -27,15 +28,14 @@ package com.github.loadup.components.gateway.common.util;
  */
 
 import com.github.loadup.components.gateway.core.prototype.util.ExceptionUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.DateUtils;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 /**
  * Data tools
@@ -45,62 +45,62 @@ public final class DateUtil {
     /**
      * yyyyMMdd
      */
-    public final static String SHORT_FORMAT = "yyyyMMdd";
+    public static final String SHORT_FORMAT = "yyyyMMdd";
 
     /**
      * yyyyMMddHHmmss
      */
-    public final static String LONG_FORMAT = "yyyyMMddHHmmss";
+    public static final String LONG_FORMAT = "yyyyMMddHHmmss";
 
     /**
      * yyyy-MM-dd
      */
-    public final static String WEB_FORMAT = "yyyy-MM-dd";
+    public static final String WEB_FORMAT = "yyyy-MM-dd";
 
     /**
      * HHmmss
      */
-    public final static String TIME_FORMAT = "HHmmss";
+    public static final String TIME_FORMAT = "HHmmss";
 
     /**
      * yyyyMM
      */
-    public final static String MONTH_FORMAT = "yyyyMM";
+    public static final String MONTH_FORMAT = "yyyyMM";
 
     /**
      * yyyy年MM月dd日
      */
-    public final static String CHINA_FORMAT = "yyyy年MM月dd日";
+    public static final String CHINA_FORMAT = "yyyy年MM月dd日";
 
     /**
      * yyyyMMddTHH:mm:ssZ
      */
-    public final static String STANDARD_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
+    public static final String STANDARD_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
     /**
      * yyyyMMdd HH:mm:ss
      */
-    public final static String DATE_TIME_FORMAT = "yyyyMMdd HH:mm:ss";
+    public static final String DATE_TIME_FORMAT = "yyyyMMdd HH:mm:ss";
 
     /**
      * yyyy-MM-dd HH:mm:ss
      */
-    public final static String LONG_WEB_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String LONG_WEB_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * yyyy-MM-dd HH:mm
      */
-    public final static String LONG_WEB_FORMAT_NO_SEC = "yyyy-MM-dd HH:mm";
+    public static final String LONG_WEB_FORMAT_NO_SEC = "yyyy-MM-dd HH:mm";
 
     /**
      * yyyy-MM-dd'T'HH:mm:ss
      */
-    public final static String CNAPS_STANDARD_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String CNAPS_STANDARD_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
     /**
      * ISO datetime
      */
-    private final static int ISO_DATE_LENGTH = 25;
+    private static final int ISO_DATE_LENGTH = 25;
 
     /**
      * simple data format tool
@@ -125,7 +125,6 @@ public final class DateUtil {
             if (dateStr.length() >= ISO_DATE_LENGTH) {
                 return verifyData(dateStr);
             }
-
         }
 
         if (locale == null) {
@@ -148,8 +147,7 @@ public final class DateUtil {
      *
      * @throws ParseException
      */
-    public static String format(String dateStr, String formatIn, String formatOut)
-            throws ParseException {
+    public static String format(String dateStr, String formatIn, String formatOut) throws ParseException {
 
         Date date = parse(dateStr, formatIn);
         return DateFormatUtils.format(date, formatOut);
@@ -160,8 +158,8 @@ public final class DateUtil {
      *
      * @throws ParseException
      */
-    public static String format(String dateStr, String formatIn, String zoneIn, String formatOut,
-                                String zoneOut) throws ParseException {
+    public static String format(String dateStr, String formatIn, String zoneIn, String formatOut, String zoneOut)
+            throws ParseException {
         Date date = parse(dateStr, formatIn, zoneIn);
         return format(date, formatOut, zoneOut);
     }
@@ -211,7 +209,6 @@ public final class DateUtil {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public static String getISODatetimeString(Date date) {

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.parser;
 
 /*-
@@ -37,7 +34,7 @@ import com.github.loadup.components.testify.exception.RuleParseException;
 /**
  * 自定义规则解析器。
  *
- * 
+ *
  *
  */
 public class CustomRuleParser extends RuleParser<CustomRule> {
@@ -146,5 +143,4 @@ public class CustomRuleParser extends RuleParser<CustomRule> {
                 return null;
         }
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.db.model;
 
 /*-
@@ -31,7 +32,7 @@ import java.util.*;
 /**
  * 数据库同步模型
  *
- * 
+ *
  *
  */
 public class DBSyncModel {
@@ -119,12 +120,11 @@ public class DBSyncModel {
     }
 
     /**
-     * 
+     *
      *
      * @param schemaColumnList value to be assigned to property schemaColumnList
      */
     public void setSchemaColumnList(List<String> schemaColumnList) {
         this.schemaColumnList = schemaColumnList;
     }
-
 }

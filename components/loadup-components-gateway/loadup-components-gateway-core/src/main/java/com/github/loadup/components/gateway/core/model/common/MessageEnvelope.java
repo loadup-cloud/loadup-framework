@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.model.common;
 
 /*-
@@ -27,13 +28,12 @@ package com.github.loadup.components.gateway.core.model.common;
  */
 
 import com.github.loadup.components.gateway.core.common.enums.MessageFormat;
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 报文信息载体，可以简单理解为“信封”<br>
@@ -241,7 +241,7 @@ public final class MessageEnvelope implements Cloneable, Serializable {
     }
 
     /**
-     * 
+     *
      */
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
@@ -255,7 +255,7 @@ public final class MessageEnvelope implements Cloneable, Serializable {
     }
 
     /**
-     * 
+     *
      */
     public void setLogContent(String logContent) {
         this.logContent = logContent;
@@ -267,9 +267,8 @@ public final class MessageEnvelope implements Cloneable, Serializable {
     @Override
     public String toString() {
 
-        return " MessageEnvelope[" + "messageFormat=" + this.messageFormat + ',' +
-                ",extraContent=" + this.headers +
-                ']';
+        return " MessageEnvelope[" + "messageFormat=" + this.messageFormat + ',' + ",extraContent=" + this.headers
+                + ']';
     }
 
     /**
@@ -280,7 +279,7 @@ public final class MessageEnvelope implements Cloneable, Serializable {
     }
 
     /**
-     * 
+     *
      */
     public void setContent(Object content) {
         this.content = content;

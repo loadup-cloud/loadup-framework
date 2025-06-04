@@ -62,5 +62,9 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-relational</artifactId>
         </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
     </dependencies>
 </project>

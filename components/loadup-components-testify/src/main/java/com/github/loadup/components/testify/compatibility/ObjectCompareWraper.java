@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.compatibility;
 
 /*-
@@ -29,8 +29,6 @@ package com.github.loadup.components.testify.compatibility;
 
 import com.github.loadup.components.testify.utils.ObjectUtil;
 import com.github.loadup.components.testify.utils.check.ObjectCompareUtil;
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -40,17 +38,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * 
- * 
+ *
+ *
  */
 public class ObjectCompareWraper extends ObjectCompareUtil {
     private static StringBuilder reportStr = new StringBuilder();
 
-    public static boolean compareMessageWithFlag(Object oldObject, Object newObject,
-                                                 Map<String, Map<String, String>> flags,
-                                                 Map<String, Object> paramMap) {
+    public static boolean compareMessageWithFlag(
+            Object oldObject, Object newObject, Map<String, Map<String, String>> flags, Map<String, Object> paramMap) {
 
         varParaMapHolder.set(paramMap);
         varFlagMapHolder.set(flags);
@@ -140,8 +138,7 @@ public class ObjectCompareWraper extends ObjectCompareUtil {
             for (Class<?> c = objType; c != null; c = c.getSuperclass()) {
                 for (Field field : c.getDeclaredFields()) {
                     int modifiers = field.getModifiers();
-                    if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)
-                            && !fields.contains(field)) {
+                    if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && !fields.contains(field)) {
                         fields.add(field);
                     }
                 }
@@ -164,8 +161,11 @@ public class ObjectCompareWraper extends ObjectCompareUtil {
                         }
                     }
                     if (!compareByFields(oldField, newField)) {
-                        reportStr.append("\n" + fieldName + "消息成员校验失败,老的值"
-                                + ObjectUtil.toJson(oldField) + "新的值"
+                        reportStr.append("\n"
+                                + fieldName
+                                + "消息成员校验失败,老的值"
+                                + ObjectUtil.toJson(oldField)
+                                + "新的值"
                                 + ObjectUtil.toJson(newField));
 
                         isSame = false;
@@ -181,7 +181,6 @@ public class ObjectCompareWraper extends ObjectCompareUtil {
             }
         }
         return isSame;
-
     }
 
     public static boolean compare(Object oldObject, Object newObject) {
@@ -217,5 +216,4 @@ public class ObjectCompareWraper extends ObjectCompareUtil {
     public static String getReportResult() {
         return reportStr.toString();
     }
-
 }

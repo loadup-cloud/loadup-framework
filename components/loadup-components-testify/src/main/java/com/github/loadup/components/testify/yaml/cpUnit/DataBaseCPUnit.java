@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.yaml.cpUnit;
 
 /*-
@@ -30,17 +27,6 @@ package com.github.loadup.components.testify.yaml.cpUnit;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.apache.commons.lang3.StringUtils;
 import com.github.loadup.components.testify.constant.TestifyPathConstants;
 import com.github.loadup.components.testify.constant.TestifySpecialMapConstants;
 import com.github.loadup.components.testify.context.TestifyCaseContextHolder;
@@ -50,17 +36,23 @@ import com.github.loadup.components.testify.log.TestifyLogUtil;
 import com.github.loadup.components.testify.object.enums.UnitFlagEnum;
 import com.github.loadup.components.testify.yaml.cpUnit.property.BaseUnitProperty;
 import com.github.loadup.components.testify.yaml.enums.CPUnitTypeEnum;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.testng.Assert;
 
 /**
  * 数据库CheckPoint单位
  *
- * 
+ *
  *
  */
 @Slf4j
 public class DataBaseCPUnit extends BaseCPUnit {
-
 
     private final Map<String, BaseUnitProperty> modifyMap = new LinkedHashMap<String, BaseUnitProperty>();
 
@@ -84,8 +76,7 @@ public class DataBaseCPUnit extends BaseCPUnit {
                     flagCode = keyName.substring(keyName.indexOf('[') + 1, keyName.length() - 1);
                     keyName = keyName.substring(0, keyName.indexOf('['));
                 }
-                BaseUnitProperty property = new BaseUnitProperty(keyName, this.unitName + "."
-                        + keyName, value);
+                BaseUnitProperty property = new BaseUnitProperty(keyName, this.unitName + "." + keyName, value);
                 if (flagCode != null) {
                     property.setFlagCode(flagCode);
                 }
@@ -142,8 +133,7 @@ public class DataBaseCPUnit extends BaseCPUnit {
     @SuppressWarnings("rawtypes")
     private void loadCSVFile() {
         List tableList = CSVHelper.readFromCsv(this.targetCSVPath);
-        if (tableList == null || tableList.size() == 0)
-            TestifyLogUtil.fail(log, this.targetCSVPath + "文件内容为空");
+        if (tableList == null || tableList.size() == 0) TestifyLogUtil.fail(log, this.targetCSVPath + "文件内容为空");
         String[] labels = (String[]) tableList.get(0);
         int baseIndex = 0, colNameCol = 0, commentCol = 0, typeCol = 0, flagCol = 0, indexCol = -1;
         for (int i = 0; i < labels.length; i++) {
@@ -177,8 +167,9 @@ public class DataBaseCPUnit extends BaseCPUnit {
             }
         }
         if (indexCol == -1) {
-            Assert.assertTrue(StringUtils.isNumeric(this.description), this.unitName + "若无法匹配列名，则desc必须为数字，当前为" + this.description
-            );
+            Assert.assertTrue(
+                    StringUtils.isNumeric(this.description),
+                    this.unitName + "若无法匹配列名，则desc必须为数字，当前为" + this.description);
             indexCol = baseIndex + Integer.valueOf(this.description) - 1;
         }
 
@@ -223,7 +214,7 @@ public class DataBaseCPUnit extends BaseCPUnit {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of modifyMap
      */
@@ -232,7 +223,7 @@ public class DataBaseCPUnit extends BaseCPUnit {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of conditionKeys
      */
@@ -241,12 +232,11 @@ public class DataBaseCPUnit extends BaseCPUnit {
     }
 
     /**
-     * 
+     *
      *
      * @param conditionKeys value to be assigned to property conditionKeys
      */
     public void setConditionKeys(List<String> conditionKeys) {
         this.conditionKeys = conditionKeys;
     }
-
 }

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data;
 
 /*-
@@ -30,15 +27,14 @@ package com.github.loadup.components.testify.data;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 原子项，定义数据生成规则。
  *
- * 
+ *
  *
  */
 public class MetaItem {
@@ -86,7 +82,7 @@ public class MetaItem {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of id
      */
@@ -95,7 +91,7 @@ public class MetaItem {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of keywords
      */
@@ -104,7 +100,7 @@ public class MetaItem {
     }
 
     /**
-     * 
+     *
      *
      * @param keywords value to be assigned to property keywords
      */
@@ -113,7 +109,7 @@ public class MetaItem {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of dataRule
      */
@@ -122,7 +118,7 @@ public class MetaItem {
     }
 
     /**
-     * 
+     *
      *
      * @param dataRule value to be assigned to property dataRule
      */
@@ -131,7 +127,7 @@ public class MetaItem {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of system
      */
@@ -200,5 +196,4 @@ public class MetaItem {
         builder.append("]");
         return builder.toString();
     }
-
 }

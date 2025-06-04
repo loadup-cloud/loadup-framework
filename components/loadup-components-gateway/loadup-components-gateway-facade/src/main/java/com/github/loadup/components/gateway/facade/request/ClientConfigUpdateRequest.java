@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -28,13 +29,11 @@ package com.github.loadup.components.gateway.facade.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
 import java.util.Map;
 
 /**
  *
  */
-
 public class ClientConfigUpdateRequest extends BaseRequest {
 
     @NotBlank(message = "clientId can not be blank")
@@ -47,7 +46,7 @@ public class ClientConfigUpdateRequest extends BaseRequest {
     private Map<String, String> properties;
 
     /**
-     * 
+     *
      */
     public String getClientId() {
         return clientId;
@@ -61,7 +60,7 @@ public class ClientConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getName() {
         return name;
@@ -75,7 +74,7 @@ public class ClientConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public Map<String, String> getProperties() {
         return properties;

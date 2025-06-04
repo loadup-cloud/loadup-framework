@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.exception;
 
 /*-
@@ -29,7 +30,7 @@ package com.github.loadup.components.testify.exception;
 /**
  * modle csv file
  *
- * 
+ *
  *
  */
 public class ModleFileException extends TestifyException {
@@ -45,13 +46,10 @@ public class ModleFileException extends TestifyException {
     public ModleFileException(String modleFilePath) {
 
         super(modleFilePath + " is error!");
-
     }
 
     public ModleFileException(String modleFilePath, Exception e) {
 
         super(modleFilePath + "加载出现问题", e);
-
     }
-
 }

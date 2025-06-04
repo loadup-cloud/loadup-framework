@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.response;
 
 /*-
@@ -57,7 +58,7 @@ public class CertConfigAddResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;
@@ -71,7 +72,7 @@ public class CertConfigAddResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
@@ -85,7 +86,7 @@ public class CertConfigAddResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setAlgoName(String algoName) {
         this.algoName = algoName;
@@ -99,7 +100,7 @@ public class CertConfigAddResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setOperationType(OperationType operationType) {
         this.operationType = operationType;

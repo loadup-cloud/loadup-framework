@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.api;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.components.gateway.facade.api;
 
 import com.github.loadup.components.gateway.facade.request.SPIRequest;
 import com.github.loadup.components.gateway.facade.response.SPIResponse;
-
 import java.util.Map;
 
 /**

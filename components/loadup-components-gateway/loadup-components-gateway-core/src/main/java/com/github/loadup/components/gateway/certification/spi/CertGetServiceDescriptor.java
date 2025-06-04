@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.spi;
 
 /*-
@@ -60,7 +61,7 @@ public class CertGetServiceDescriptor {
     }
 
     /**
-     * 
+     *
      */
     public void setName(String name) {
         this.name = name;
@@ -74,7 +75,7 @@ public class CertGetServiceDescriptor {
     }
 
     /**
-     * 
+     *
      */
     public void setCertGetService(CertGetService certGetService) {
         this.certGetService = certGetService;

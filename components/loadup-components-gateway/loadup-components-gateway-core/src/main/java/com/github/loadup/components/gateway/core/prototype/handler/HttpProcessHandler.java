@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.prototype.handler;
 
 /*-
@@ -26,6 +27,9 @@ package com.github.loadup.components.gateway.core.prototype.handler;
  * #L%
  */
 
+import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_HTTP_INTEGRATION_URL;
+import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_HTTP_INTERFACE_ID;
+
 import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.util.CommonUtil;
 import com.github.loadup.components.gateway.core.common.Constant;
@@ -51,6 +55,7 @@ import io.opentelemetry.api.trace.Span;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,11 +63,6 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
-
-import java.util.Map;
-
-import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_HTTP_INTEGRATION_URL;
-import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_HTTP_INTERFACE_ID;
 
 /**
  * Http Client Handler
@@ -77,8 +77,8 @@ public class HttpProcessHandler {
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(HttpProcessHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpProcessHandler.class);
+
     @Resource
     @Qualifier("httpServiceAction")
     private HttpServiceAction httpServiceAction;
@@ -99,13 +99,11 @@ public class HttpProcessHandler {
      * 3. invoke the integrationUrl.
      * 4. assemble the response message.
      */
-    public void handler(InterfaceType messageType, HttpServletRequest httpRequest,
-                        HttpServletResponse httpResponse) {
+    public void handler(InterfaceType messageType, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         String requestURI = httpRequest.getRequestURI();
         StopWatch stopWatch = new StopWatch(requestURI);
         stopWatch.start();
-        GatewayRuntimeProcessContext runtimeProcessContext = RuntimeProcessContextHolder
-                .createRuntimeProcessContext();
+        GatewayRuntimeProcessContext runtimeProcessContext = RuntimeProcessContextHolder.createRuntimeProcessContext();
         runtimeProcessContext.setTransactionType(messageType.getCode());
         if (messageType == InterfaceType.SPI) {
             runtimeProcessContext.setNeedStatus(false);
@@ -115,7 +113,7 @@ public class HttpProcessHandler {
         boolean success = false;
         String tracerId = null;
         try {
-            //init tracer
+            // init tracer
             Span span = TraceUtil.getSpan();
             if (null != span) {
                 runtimeProcessContext.setTraceId(TraceUtil.getTracerId());
@@ -129,19 +127,14 @@ public class HttpProcessHandler {
             MDC.put(Constant.TRACER_KEY, runtimeProcessContext.getTraceId());
             byte[] requestBody = HttpToolUtil.getDataFromHttpRequest(httpRequest);
             String requestContent = new String(requestBody);
-            MessageEnvelope messageRequestEnvelope = new MessageEnvelope(MessageFormat.TEXT,
-                    requestContent);
+            MessageEnvelope messageRequestEnvelope = new MessageEnvelope(MessageFormat.TEXT, requestContent);
             Map<String, String> headers = HttpToolUtil.getHeaderFromHttpRequest(httpRequest);
             messageRequestEnvelope.setHeaders(headers);
 
-            String signatureStr = signatureService.getSignatureInfo(httpRequest,
-                    messageRequestEnvelope);
-            String originSignatureStr = signatureService.getOriginSignatureInfo(httpRequest,
-                    messageRequestEnvelope);
-            messageRequestEnvelope.putExtMap(ProcessConstants.KEY_HTTP_REQUEST_URI,
-                    httpRequest.getRequestURI());
-            messageRequestEnvelope.putExtMap(ProcessConstants.KEY_HTTP_METHOD,
-                    httpRequest.getMethod());
+            String signatureStr = signatureService.getSignatureInfo(httpRequest, messageRequestEnvelope);
+            String originSignatureStr = signatureService.getOriginSignatureInfo(httpRequest, messageRequestEnvelope);
+            messageRequestEnvelope.putExtMap(ProcessConstants.KEY_HTTP_REQUEST_URI, httpRequest.getRequestURI());
+            messageRequestEnvelope.putExtMap(ProcessConstants.KEY_HTTP_METHOD, httpRequest.getMethod());
             messageRequestEnvelope.setSignatureContent(signatureStr);
             messageRequestEnvelope.setOriginSignContent(originSignatureStr);
 
@@ -165,52 +158,61 @@ public class HttpProcessHandler {
             exceptionAssembleAction.process(runtimeProcessContext);
             callRespMsg = e.getMessage();
 
-            MetricLoggerUtil.countError(httpRequest.getRequestURI(),
-                    stopWatch.getTotalTimeMillis(), runtimeProcessContext.getRequesterClientId(),
-                    messageType, runtimeProcessContext.getTraceId(), e.getResultCode());
+            MetricLoggerUtil.countError(
+                    httpRequest.getRequestURI(),
+                    stopWatch.getTotalTimeMillis(),
+                    runtimeProcessContext.getRequesterClientId(),
+                    messageType,
+                    runtimeProcessContext.getTraceId(),
+                    e.getResultCode());
         } catch (Throwable e) {
             stopWatch.stop();
             LogUtil.error(logger, e, "Http process handler fail! throw exception");
-            CommonException commonException = new CommonException(
-                    GatewayErrorCode.UNKNOWN_EXCEPTION, e);
+            CommonException commonException = new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION, e);
             runtimeProcessContext.setBusinessException(commonException);
             exceptionAssembleAction.process(runtimeProcessContext);
             callRespMsg = e.getMessage();
 
-            MetricLoggerUtil.countError(httpRequest.getRequestURI(),
-                    stopWatch.getTotalTimeMillis(), runtimeProcessContext.getRequesterClientId(),
-                    messageType, runtimeProcessContext.getTraceId(),
+            MetricLoggerUtil.countError(
+                    httpRequest.getRequestURI(),
+                    stopWatch.getTotalTimeMillis(),
+                    runtimeProcessContext.getRequesterClientId(),
+                    messageType,
+                    runtimeProcessContext.getTraceId(),
                     commonException.getResultCode());
         } finally {
             if (stopWatch.isRunning()) {
                 stopWatch.stop();
             }
             MessageEnvelope httpResponseMessage = runtimeProcessContext.getResponseMessage();
-            CommunicationConfig requesterCommunicationConfig = runtimeProcessContext
-                    .getRequesterCommunicationConfig();
-            HttpToolUtil.returnResponse(httpResponse, httpResponseMessage,
-                    requesterCommunicationConfig);
-            String interfaceId = requesterCommunicationConfig != null
-                    ? requesterCommunicationConfig.getInterfaceId()
-                    : "";
-            String url = requesterCommunicationConfig != null
-                    ? requesterCommunicationConfig.getUrl()
-                    : "";
-            MessageLoggerUtil.printHttpReceiveLog(interfaceId, InterfaceType.OPENAPI,
-                    runtimeProcessContext.getTraceId(), url, httpRequest.getMethod(),
-                    CommonUtil.getMsgContent(httpResponseMessage), httpResponseMessage.getHeaders());
+            CommunicationConfig requesterCommunicationConfig = runtimeProcessContext.getRequesterCommunicationConfig();
+            HttpToolUtil.returnResponse(httpResponse, httpResponseMessage, requesterCommunicationConfig);
+            String interfaceId =
+                    requesterCommunicationConfig != null ? requesterCommunicationConfig.getInterfaceId() : "";
+            String url = requesterCommunicationConfig != null ? requesterCommunicationConfig.getUrl() : "";
+            MessageLoggerUtil.printHttpReceiveLog(
+                    interfaceId,
+                    InterfaceType.OPENAPI,
+                    runtimeProcessContext.getTraceId(),
+                    url,
+                    httpRequest.getMethod(),
+                    CommonUtil.getMsgContent(httpResponseMessage),
+                    httpResponseMessage.getHeaders());
 
-            DigestLoggerUtil.printInfoLog(runtimeProcessContext,
-                    stopWatch.getTotalTimeMillis());
+            DigestLoggerUtil.printInfoLog(runtimeProcessContext, stopWatch.getTotalTimeMillis());
 
             if (!MetricLoggerUtil.judgeBinderEnabled()) {
-                DigestLoggerUtil.printSimpleDigestLog(httpRequest.getRequestURI(), callRespMsg,
-                        stopWatch.getTotalTimeMillis());
+                DigestLoggerUtil.printSimpleDigestLog(
+                        httpRequest.getRequestURI(), callRespMsg, stopWatch.getTotalTimeMillis());
             } else {
-                MetricLoggerUtil.monitor(httpRequest.getRequestURI(),
-                        stopWatch.getTotalTimeMillis(), success,
-                        runtimeProcessContext.getRequesterClientId(), messageType,
-                        runtimeProcessContext.getTraceId(), InterfaceScope.INBOUND);
+                MetricLoggerUtil.monitor(
+                        httpRequest.getRequestURI(),
+                        stopWatch.getTotalTimeMillis(),
+                        success,
+                        runtimeProcessContext.getRequesterClientId(),
+                        messageType,
+                        runtimeProcessContext.getTraceId(),
+                        InterfaceScope.INBOUND);
             }
             RuntimeProcessContextHolder.cleanActionContext();
             MDC.clear();
@@ -223,22 +225,23 @@ public class HttpProcessHandler {
                 //                }
             }
         }
-
     }
 
-    private void printHttpRequestLog(HttpServletRequest httpRequest,
-                                     GatewayRuntimeProcessContext runtimeProcessContext) {
+    private void printHttpRequestLog(
+            HttpServletRequest httpRequest, GatewayRuntimeProcessContext runtimeProcessContext) {
         MessageEnvelope httpRequestMessage = runtimeProcessContext.getRequestMessage();
-        CommunicationConfig integratorCommunicationConfig = runtimeProcessContext
-                .getIntegratorCommunicationConfig();
-        String interfaceId = integratorCommunicationConfig != null
-                ? integratorCommunicationConfig.getInterfaceId()
-                : "";
+        CommunicationConfig integratorCommunicationConfig = runtimeProcessContext.getIntegratorCommunicationConfig();
+        String interfaceId =
+                integratorCommunicationConfig != null ? integratorCommunicationConfig.getInterfaceId() : "";
         interfaceId = StringUtils.defaultIfBlank(interfaceId, httpRequest.getRequestURI());
-        MessageLoggerUtil.printHttpLog("get request attributes", interfaceId, InterfaceType.OPENAPI,
-                runtimeProcessContext.getTraceId(), httpRequest.getRequestURI(),
-                httpRequest.getMethod(), CommonUtil.getMsgContent(httpRequestMessage),
+        MessageLoggerUtil.printHttpLog(
+                "get request attributes",
+                interfaceId,
+                InterfaceType.OPENAPI,
+                runtimeProcessContext.getTraceId(),
+                httpRequest.getRequestURI(),
+                httpRequest.getMethod(),
+                CommonUtil.getMsgContent(httpRequestMessage),
                 httpRequestMessage.getHeaders());
     }
-
 }

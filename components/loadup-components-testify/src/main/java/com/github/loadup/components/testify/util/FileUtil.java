@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -29,16 +30,15 @@ package com.github.loadup.components.testify.util;
 import com.github.loadup.components.testify.api.LogApis;
 import com.github.loadup.components.testify.context.TestifySuiteContextHolder;
 import com.github.loadup.components.testify.log.TestifyLogUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * 用于处理文件相关内容
@@ -89,8 +89,7 @@ public class FileUtil {
             String line = null;
             StringBuilder sb = new StringBuilder();
             while ((line = reader.readLine()) != null) {
-                if (sb.length() > 0)
-                    sb.append("\n");
+                if (sb.length() > 0) sb.append("\n");
                 sb.append(line);
             }
             return sb.toString();
@@ -113,28 +112,29 @@ public class FileUtil {
             originFilePath = "";
         } else {
             originFilePath = originFilePath.contains("/")
-                    ? originFilePath.substring(0, originFilePath.lastIndexOf("/") + 1) : "";
+                    ? originFilePath.substring(0, originFilePath.lastIndexOf("/") + 1)
+                    : "";
         }
         String finalFilePath = originFilePath + targetFilePath;
         File file = new File(finalFilePath);
         if (file.exists()) {
-            //test bundle下相对路径
+            // test bundle下相对路径
             return finalFilePath;
         } else {
             if (TestifySuiteContextHolder.exists()) {
                 finalFilePath = TestifySuiteContextHolder.get().getCsvFolderPath() + targetFilePath;
                 file = getTestResourceFile(finalFilePath);
                 if (file.exists())
-                    //驱动文件夹相对路径
+                    // 驱动文件夹相对路径
                     return finalFilePath;
             }
             file = getTestResourceFile(targetFilePath);
             if (file.exists()) {
-                //驱动文件夹旧相对路径
+                // 驱动文件夹旧相对路径
                 return targetFilePath;
             } else {
-                TestifyLogUtil.fail(log, "无法找到对应路径，targetFilePath = " + targetFilePath
-                        + ", originFolderPath = " + originFilePath);
+                TestifyLogUtil.fail(
+                        log, "无法找到对应路径，targetFilePath = " + targetFilePath + ", originFolderPath = " + originFilePath);
             }
         }
         return null;
@@ -159,7 +159,8 @@ public class FileUtil {
                         return true;
                     case 0:
                         TestifyLogUtil.debug(log, "文件已经存在,添加分隔符续写");
-                        fileContent = "\n\n========================================================================\n\n"
+                        fileContent = "\n\n"
+                                + "========================================================================\n\n"
                                 + fileContent;
                         break;
                     case 1:

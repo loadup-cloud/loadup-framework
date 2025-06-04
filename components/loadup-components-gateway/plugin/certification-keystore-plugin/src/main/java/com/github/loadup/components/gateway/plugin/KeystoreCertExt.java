@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin;
 
 /*-
@@ -30,6 +31,15 @@ import com.alibaba.cola.extension.Extension;
 import com.github.loadup.components.gateway.facade.enums.CertTypeEnum;
 import com.github.loadup.components.gateway.facade.extpoint.CertificationAccessExt;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
+import java.security.*;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.util.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.jasypt.util.text.StrongTextEncryptor;
@@ -41,23 +51,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
-import java.security.*;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.util.Base64;
-
 /**
  * Certification Access service extension to fetch the certitication content from keystore
  */
 @Extension(bizId = "CERT_JKS_EXT")
 @Component
-public class KeystoreCertExt implements ApplicationContextAware,
-        CertificationAccessExt {
+public class KeystoreCertExt implements ApplicationContextAware, CertificationAccessExt {
 
     /**
      * logger
@@ -89,10 +88,10 @@ public class KeystoreCertExt implements ApplicationContextAware,
     public String getCertContent(String certAliasName, CertTypeEnum certType) throws IOException {
         LogUtil.info(logger, "KeystoreCertExt is executed");
         // The actual environment variable need to be set in configurations.
-        //omitted in test
-        //this test case is to ensure different extension point can be loaded.
+        // omitted in test
+        // this test case is to ensure different extension point can be loaded.
 
-        //1. get keystore file
+        // 1. get keystore file
         URL uri = this.getClass().getResource("/");
 
         File keyFile = new File(uri.getPath().concat(keystorePath));
@@ -104,7 +103,7 @@ public class KeystoreCertExt implements ApplicationContextAware,
             fis = new FileInputStream(keyFile);
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 
-            //2. get keystore password
+            // 2. get keystore password
             TextEncryptor textEncryptor = getEncryptor(encryptAlgorithm, encryptSalt);
 
             String pwd = textEncryptor.decrypt(keystorePassword);

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.data;
 
 /*-
@@ -30,15 +27,14 @@ package com.github.loadup.components.testify.component.data;
  * #L%
  */
 
+import com.github.loadup.components.testify.manage.TestLogger;
 import ognl.Ognl;
 import ognl.OgnlException;
-
-import com.github.loadup.components.testify.manage.TestLogger;
 
 /**
  * ognl形式的值对象。
  *
- * 
+ *
  *
  */
 public class OgnlValue {

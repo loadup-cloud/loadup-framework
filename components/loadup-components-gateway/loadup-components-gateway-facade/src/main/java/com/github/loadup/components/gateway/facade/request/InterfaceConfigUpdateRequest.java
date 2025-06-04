@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -79,7 +80,7 @@ public class InterfaceConfigUpdateRequest extends BaseRequest {
     private MessageProcessConfigRequest processConfig;
 
     /**
-     * 
+     *
      */
     public String getInterfaceId() {
         return interfaceId;
@@ -93,7 +94,7 @@ public class InterfaceConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getInterfaceName() {
         return interfaceName;
@@ -107,7 +108,7 @@ public class InterfaceConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public InterfaceType getInterfaceType() {
         return interfaceType;
@@ -121,7 +122,7 @@ public class InterfaceConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getSecurityStrategyCode() {
         return securityStrategyCode;
@@ -135,7 +136,7 @@ public class InterfaceConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public CommunicationConfigRequest getCommunicationConfig() {
         return communicationConfig;
@@ -149,7 +150,7 @@ public class InterfaceConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public MessageProcessConfigRequest getProcessConfig() {
         return processConfig;
@@ -163,7 +164,7 @@ public class InterfaceConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getTenantId() {
         return tenantId;
@@ -177,7 +178,7 @@ public class InterfaceConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getVersion() {
         return version;

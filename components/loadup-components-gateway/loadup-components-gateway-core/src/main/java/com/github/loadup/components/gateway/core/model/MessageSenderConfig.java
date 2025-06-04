@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.model;
 
 /*-
@@ -62,7 +63,7 @@ public class MessageSenderConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setMessageSenderId(String messageSenderId) {
         this.messageSenderId = messageSenderId;
@@ -76,7 +77,7 @@ public class MessageSenderConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setMessageSenderName(String messageSenderName) {
         this.messageSenderName = messageSenderName;
@@ -90,7 +91,7 @@ public class MessageSenderConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setCertCode(String certCode) {
         this.certCode = certCode;
@@ -104,7 +105,7 @@ public class MessageSenderConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setProperties(Properties properties) {
         this.properties = properties;

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.script.cache;
 
 /*-
@@ -40,17 +41,16 @@ import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.message.base.model.AssembleTemplate;
 import com.github.loadup.components.gateway.message.base.model.MessageStruct;
 import jakarta.annotation.Resource;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Velocity组装模板缓存
@@ -193,7 +193,7 @@ public class VelocityScriptCache {
     }
 
     /**
-     * 
+     *
      */
     @Resource
     public void setInterfaceProdCenterQueryService(InterfaceProdCenterQueryService interfaceProdCenterQueryService) {

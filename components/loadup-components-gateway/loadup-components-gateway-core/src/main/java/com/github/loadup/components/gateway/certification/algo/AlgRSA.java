@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.algo;
 
 /*-
@@ -31,12 +32,6 @@ import com.github.loadup.components.gateway.certification.exception.Certificatio
 import com.github.loadup.components.gateway.certification.manager.AsymmetricEncryptionManager;
 import com.github.loadup.components.gateway.certification.model.AlgorithmEnum;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import javax.crypto.Cipher;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -47,6 +42,11 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
+import javax.crypto.Cipher;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * RSA非对称算法实现
@@ -116,10 +116,9 @@ public class AlgRSA extends AbstractAlgorithm {
         } catch (Exception e) {
             LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "recover privateKey error:");
 
-            throw new CertificationException(CertificationErrorCode.RECOVER_PRIVATE_KEY_ERROR,
-                    genLogSign(KEY_ALGO_NAME), e);
+            throw new CertificationException(
+                    CertificationErrorCode.RECOVER_PRIVATE_KEY_ERROR, genLogSign(KEY_ALGO_NAME), e);
         }
-
     }
 
     /**
@@ -134,8 +133,8 @@ public class AlgRSA extends AbstractAlgorithm {
         } catch (Exception e) {
             LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "recover publicKey error:");
 
-            throw new CertificationException(CertificationErrorCode.RECOVER_PUBLIC_KEY_ERROR,
-                    genLogSign(KEY_ALGO_NAME), e);
+            throw new CertificationException(
+                    CertificationErrorCode.RECOVER_PUBLIC_KEY_ERROR, genLogSign(KEY_ALGO_NAME), e);
         }
     }
 
@@ -145,9 +144,9 @@ public class AlgRSA extends AbstractAlgorithm {
     @Override
     public byte[] encrypt(byte[] data, byte[] key, String algorithm, boolean isPrivateKey) {
         try {
-            Key secretKey = null; //key
-            int length = 0; //key length
-            //load key and get key length
+            Key secretKey = null; // key
+            int length = 0; // key length
+            // load key and get key length
             if (isPrivateKey) {
                 secretKey = recoverPrivateKey(key);
                 length = ((RSAPrivateKey) secretKey).getModulus().bitLength();
@@ -191,9 +190,9 @@ public class AlgRSA extends AbstractAlgorithm {
     @Override
     public byte[] decrypt(byte[] data, byte[] key, String algorithm, boolean isPrivateKey) {
         try {
-            Key secretKey = null; //key
-            int length = 0; //key length
-            //load key and get key length
+            Key secretKey = null; // key
+            int length = 0; // key length
+            // load key and get key length
             if (isPrivateKey) {
                 secretKey = recoverPrivateKey(key);
                 length = ((RSAPrivateKey) secretKey).getModulus().bitLength();

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.extpoint;
 
 /*-
@@ -27,7 +28,6 @@ package com.github.loadup.components.gateway.facade.extpoint;
  */
 
 import com.alibaba.cola.extension.Extension;
-
 import java.util.Map;
 
 /**
@@ -44,13 +44,11 @@ public interface SignatureExtensible {
     /**
      * 3rd party signature method used by extension loader
      */
-    String thirdPartySign(String bizCode, String certKey, String content,
-                          Map<String, String> message);
+    String thirdPartySign(String bizCode, String certKey, String content, Map<String, String> message);
 
     /**
      * 3rd party signature verify method used by extension loader
      */
-    boolean thirdPartyVerify(String certKey, String srcContent, String signature,
-                             String signedContent, Map<String, String> message);
-
+    boolean thirdPartyVerify(
+            String certKey, String srcContent, String signature, String signedContent, Map<String, String> message);
 }

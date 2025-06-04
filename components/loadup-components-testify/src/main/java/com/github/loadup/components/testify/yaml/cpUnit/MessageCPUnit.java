@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.yaml.cpUnit;
 
 /*-
@@ -30,18 +27,17 @@ package com.github.loadup.components.testify.yaml.cpUnit;
  * #L%
  */
 
+import com.github.loadup.components.testify.cache.TestifyCacheData;
+import com.github.loadup.components.testify.msg.model.MessageModel;
+import com.github.loadup.components.testify.yaml.enums.CPUnitTypeEnum;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.github.loadup.components.testify.cache.TestifyCacheData;
-import com.github.loadup.components.testify.msg.model.MessageModel;
-import com.github.loadup.components.testify.yaml.enums.CPUnitTypeEnum;
-
 /**
  * 消息CheckPoint单位
  *
- * 
+ *
  *
  */
 public class MessageCPUnit extends BaseCPUnit {
@@ -73,13 +69,23 @@ public class MessageCPUnit extends BaseCPUnit {
      */
     @Override
     public String toString() {
-        return "MessageCPUnit [attributeList=" + attributeList + ", messageKey=" + messageKey
-                + ", eventTopic=" + eventTopic + ", eventCode=" + eventCode + ", unitName="
-                + unitName + ", unitType=" + unitType + "]";
+        return "MessageCPUnit [attributeList="
+                + attributeList
+                + ", messageKey="
+                + messageKey
+                + ", eventTopic="
+                + eventTopic
+                + ", eventCode="
+                + eventCode
+                + ", unitName="
+                + unitName
+                + ", unitType="
+                + unitType
+                + "]";
     }
 
     /**
-     * 
+     *
      *
      * @return property value of attributeMap
      */
@@ -88,7 +94,7 @@ public class MessageCPUnit extends BaseCPUnit {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of eventTopic
      */
@@ -106,7 +112,7 @@ public class MessageCPUnit extends BaseCPUnit {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of eventCode
      */
@@ -124,7 +130,7 @@ public class MessageCPUnit extends BaseCPUnit {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of messageKey
      */
@@ -141,5 +147,4 @@ public class MessageCPUnit extends BaseCPUnit {
         }
         return objList;
     }
-
 }

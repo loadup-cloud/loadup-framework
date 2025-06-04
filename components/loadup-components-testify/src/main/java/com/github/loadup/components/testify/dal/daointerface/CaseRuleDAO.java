@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.dal.daointerface;
 
 /*-
@@ -37,7 +34,6 @@ import com.github.loadup.components.testify.dal.dataobject.CaseRuleDO;
 import com.github.loadup.components.testify.dal.table.CaseRule;
 import com.github.loadup.components.testify.db.offlineService.AbstractDBService;
 import com.github.loadup.components.testify.util.JsonUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +41,7 @@ import java.util.Map;
 /**
  * 用例规则数据表操作对象
  *
- * 
+ *
  *
  */
 public class CaseRuleDAO {
@@ -67,21 +63,24 @@ public class CaseRuleDAO {
      * @param status
      * @return
      */
-    public List<CaseRuleDO> queryBySystemAndModelObj(String system, String methodName,
-                                                     String modelObj, String status) {
+    public List<CaseRuleDO> queryBySystemAndModelObj(String system, String methodName, String modelObj, String status) {
 
         List<CaseRuleDO> caseRuleDOs = new ArrayList<CaseRuleDO>();
-        String querySql = "select * from case_rule where system='" + system + "' and method='"
-                + methodName + "' and model_obj='" + modelObj + "' and status='" + status
+        String querySql = "select * from case_rule where system='"
+                + system
+                + "' and method='"
+                + methodName
+                + "' and model_obj='"
+                + modelObj
+                + "' and status='"
+                + status
                 + "' order by priority";
         List<Map<String, Object>> res = dbService.executeQuerySql(querySql);
         for (Map<String, Object> row : res) {
-            CaseRule caseRule = JsonUtil.genObjectFromJsonString(JSON.toJSONString(row),
-                    CaseRule.class);
+            CaseRule caseRule = JsonUtil.genObjectFromJsonString(JSON.toJSONString(row), CaseRule.class);
             caseRuleDOs.add(CaseRuleConvertor.convert2DO(caseRule));
         }
 
         return caseRuleDOs;
     }
-
 }

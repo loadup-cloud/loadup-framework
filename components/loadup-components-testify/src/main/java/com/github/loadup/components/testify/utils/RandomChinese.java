@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils;
 
 /*-
@@ -29,7 +30,6 @@ package com.github.loadup.components.testify.utils;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Random;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,5 +105,4 @@ public class RandomChinese {
         }
         return str;
     }
-
 }

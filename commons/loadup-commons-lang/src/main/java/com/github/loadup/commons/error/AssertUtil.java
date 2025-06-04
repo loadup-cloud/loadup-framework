@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.error;
 
 /*-
@@ -28,25 +29,22 @@ package com.github.loadup.commons.error;
 
 import com.github.loadup.commons.result.ResultCode;
 import com.github.loadup.commons.util.StringUtils;
+import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.*;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 /**
  * @author Lise
  * @since 1.0.0
  */
-
 public class AssertUtil {
     private static final String TEMPLATE_VALUE_MUST_BE_BETWEEN_AND = "The value must be between {} and {}.";
 
-    private AssertUtil() {
-    }
+    private AssertUtil() {}
 
     public static void isTrue(boolean expValue, ResultCode resultCode, Object... objs) {
         if (!expValue) {
@@ -166,7 +164,8 @@ public class AssertUtil {
      *
      * @throws X if expression is {@code false}
      */
-    public static <X extends Throwable> void isTrue(final boolean expression, final Supplier<? extends X> supplier) throws X {
+    public static <X extends Throwable> void isTrue(final boolean expression, final Supplier<? extends X> supplier)
+            throws X {
         if (!expression) {
             throw supplier.get();
         }
@@ -212,7 +211,8 @@ public class AssertUtil {
      * @throws X if expression is {@code false}
      * @since 5.4.5
      */
-    public static <X extends Throwable> void isFalse(final boolean expression, final Supplier<X> errorSupplier) throws X {
+    public static <X extends Throwable> void isFalse(final boolean expression, final Supplier<X> errorSupplier)
+            throws X {
         if (expression) {
             throw errorSupplier.get();
         }
@@ -272,7 +272,8 @@ public class AssertUtil {
      *
      * @throws IllegalArgumentException if the object is not {@code null}
      */
-    public static void isNull(final Object object, final String errorMsgTemplate, final Object... params) throws IllegalArgumentException {
+    public static void isNull(final Object object, final String errorMsgTemplate, final Object... params)
+            throws IllegalArgumentException {
         isNull(object, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
     }
 
@@ -288,7 +289,8 @@ public class AssertUtil {
         isNull(object, "[Assertion failed] - the object argument must be null");
     }
 
-    // ----------------------------------------------------------------------------------------------------------- Check not null
+    // ----------------------------------------------------------------------------------------------------------- Check
+    // not null
 
     /**
      * 断言对象是否不为{@code null} ，如果为{@code null} 抛出指定类型异常
@@ -318,7 +320,8 @@ public class AssertUtil {
      *
      * @throws IllegalArgumentException if the object is {@code null}
      */
-    public static <T> T notNull(final T object, final String errorMsgTemplate, final Object... params) throws IllegalArgumentException {
+    public static <T> T notNull(final T object, final String errorMsgTemplate, final Object... params)
+            throws IllegalArgumentException {
         return notNull(object, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
     }
 
@@ -334,7 +337,8 @@ public class AssertUtil {
         return notNull(object, "[Assertion failed] - this argument is required; it must not be null");
     }
 
-    // ----------------------------------------------------------------------------------------------------------- Check empty
+    // ----------------------------------------------------------------------------------------------------------- Check
+    // empty
 
     /**
      * 检查给定字符串是否为空，为空抛出自定义异常，并使用指定的函数获取错误信息返回。
@@ -349,7 +353,8 @@ public class AssertUtil {
      * @see StringUtils#isNotEmpty(CharSequence)
      * @since 5.4.5
      */
-    public static <T extends CharSequence, X extends Throwable> T notEmpty(final T text, final Supplier<X> errorSupplier) throws X {
+    public static <T extends CharSequence, X extends Throwable> T notEmpty(
+            final T text, final Supplier<X> errorSupplier) throws X {
         if (StringUtils.isEmpty(text)) {
             throw errorSupplier.get();
         }
@@ -366,8 +371,8 @@ public class AssertUtil {
      * @throws IllegalArgumentException 被检查字符串为空
      * @see StringUtils#isNotEmpty(CharSequence)
      */
-    public static <T extends CharSequence> T notEmpty(final T text, final String errorMsgTemplate, final Object... params)
-            throws IllegalArgumentException {
+    public static <T extends CharSequence> T notEmpty(
+            final T text, final String errorMsgTemplate, final Object... params) throws IllegalArgumentException {
         return notEmpty(text, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
     }
 
@@ -382,7 +387,8 @@ public class AssertUtil {
      * @see StringUtils#isNotEmpty(CharSequence)
      */
     public static <T extends CharSequence> T notEmpty(final T text) throws IllegalArgumentException {
-        return notEmpty(text, "[Assertion failed] - this String argument must have length; it must not be null or empty");
+        return notEmpty(
+                text, "[Assertion failed] - this String argument must have length; it must not be null or" + " empty");
     }
 
     /**
@@ -398,7 +404,8 @@ public class AssertUtil {
      * @throws X 被检查字符串为空白
      * @see StringUtils#isNotBlank(CharSequence)
      */
-    public static <T extends CharSequence, X extends Throwable> T notBlank(final T text, final Supplier<X> errorMsgSupplier) throws X {
+    public static <T extends CharSequence, X extends Throwable> T notBlank(
+            final T text, final Supplier<X> errorMsgSupplier) throws X {
         if (StringUtils.isBlank(text)) {
             throw errorMsgSupplier.get();
         }
@@ -415,8 +422,8 @@ public class AssertUtil {
      * @throws IllegalArgumentException 被检查字符串为空白
      * @see StringUtils#isNotBlank(CharSequence)
      */
-    public static <T extends CharSequence> T notBlank(final T text, final String errorMsgTemplate, final Object... params)
-            throws IllegalArgumentException {
+    public static <T extends CharSequence> T notBlank(
+            final T text, final String errorMsgTemplate, final Object... params) throws IllegalArgumentException {
         return notBlank(text, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
     }
 
@@ -431,7 +438,9 @@ public class AssertUtil {
      * @see StringUtils#isNotBlank(CharSequence)
      */
     public static <T extends CharSequence> T notBlank(final T text) throws IllegalArgumentException {
-        return notBlank(text, "[Assertion failed] - this String argument must have text; it must not be null, empty, or blank");
+        return notBlank(
+                text,
+                "[Assertion failed] - this String argument must have text; it must not be null," + " empty, or blank");
     }
 
     /**
@@ -448,8 +457,8 @@ public class AssertUtil {
      * @see StringUtils#contains(CharSequence, CharSequence)
      * @since 5.4.5
      */
-    public static <T extends CharSequence, X extends Throwable> T notContain(final CharSequence textToSearch, final T substring,
-                                                                             final Supplier<X> errorSupplier) throws X {
+    public static <T extends CharSequence, X extends Throwable> T notContain(
+            final CharSequence textToSearch, final T substring, final Supplier<X> errorSupplier) throws X {
         if (StringUtils.contains(textToSearch, substring)) {
             throw errorSupplier.get();
         }
@@ -465,9 +474,13 @@ public class AssertUtil {
      *
      * @throws IllegalArgumentException 非子串抛出异常
      */
-    public static String notContain(final String textToSearch, final String subString, final String errorMsgTemplate,
-                                    final Object... params) throws IllegalArgumentException {
-        return notContain(textToSearch, subString, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
+    public static String notContain(
+            final String textToSearch, final String subString, final String errorMsgTemplate, final Object... params)
+            throws IllegalArgumentException {
+        return notContain(
+                textToSearch,
+                subString,
+                () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
     }
 
     /**
@@ -480,7 +493,10 @@ public class AssertUtil {
      * @throws IllegalArgumentException 非子串抛出异常
      */
     public static String notContain(final String textToSearch, final String subString) throws IllegalArgumentException {
-        return notContain(textToSearch, subString, "[Assertion failed] - this String argument must not contain the substring [{}]",
+        return notContain(
+                textToSearch,
+                subString,
+                "[Assertion failed] - this String argument must not contain the substring [{}]",
                 subString);
     }
 
@@ -512,7 +528,8 @@ public class AssertUtil {
      *
      * @throws IllegalArgumentException if the object array is {@code null} or has no elements
      */
-    public static <T> T[] notEmpty(final T[] array, final String errorMsgTemplate, final Object... params) throws IllegalArgumentException {
+    public static <T> T[] notEmpty(final T[] array, final String errorMsgTemplate, final Object... params)
+            throws IllegalArgumentException {
         return notEmpty(array, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
     }
 
@@ -525,7 +542,8 @@ public class AssertUtil {
      * @throws IllegalArgumentException if the object array is {@code null} or has no elements
      */
     public static <T> T[] notEmpty(final T[] array) throws IllegalArgumentException {
-        return notEmpty(array, "[Assertion failed] - this array must not be empty: it must contain at least 1 element");
+        return notEmpty(
+                array, "[Assertion failed] - this array must not be empty: it must contain at least 1" + " element");
     }
 
     /**
@@ -541,7 +559,8 @@ public class AssertUtil {
      * @throws X if the object array contains a {@code null} element
      * @since 5.4.5
      */
-    public static <T, X extends Throwable> T[] noNullElements(final T[] array, final Supplier<X> errorSupplier) throws X {
+    public static <T, X extends Throwable> T[] noNullElements(final T[] array, final Supplier<X> errorSupplier)
+            throws X {
         if (ArrayUtils.contains(array, null)) {
             throw errorSupplier.get();
         }
@@ -586,7 +605,8 @@ public class AssertUtil {
      * @throws X if the collection is {@code null} or has no elements
      * @since 5.4.5
      */
-    public static <E, T extends Iterable<E>, X extends Throwable> T notEmpty(final T collection, final Supplier<X> errorSupplier) throws X {
+    public static <E, T extends Iterable<E>, X extends Throwable> T notEmpty(
+            final T collection, final Supplier<X> errorSupplier) throws X {
         if (Objects.isNull(collection) || IteratorUtils.isEmpty((Iterator<?>) collection)) {
             throw errorSupplier.get();
         }
@@ -601,8 +621,8 @@ public class AssertUtil {
      *
      * @throws IllegalArgumentException if the collection is {@code null} or has no elements
      */
-    public static <E, T extends Iterable<E>> T notEmpty(final T collection, final String errorMsgTemplate, final Object... params)
-            throws IllegalArgumentException {
+    public static <E, T extends Iterable<E>> T notEmpty(
+            final T collection, final String errorMsgTemplate, final Object... params) throws IllegalArgumentException {
         return notEmpty(collection, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
     }
 
@@ -615,7 +635,9 @@ public class AssertUtil {
      * @throws IllegalArgumentException if the collection is {@code null} or has no elements
      */
     public static <E, T extends Iterable<E>> T notEmpty(final T collection) throws IllegalArgumentException {
-        return notEmpty(collection, "[Assertion failed] - this collection must not be empty: it must contain at least 1 element");
+        return notEmpty(
+                collection,
+                "[Assertion failed] - this collection must not be empty: it must contain at least 1" + " element");
     }
 
     /**
@@ -631,7 +653,8 @@ public class AssertUtil {
      * @throws X if the map is {@code null} or has no entries
      * @since 5.4.5
      */
-    public static <K, V, T extends Map<K, V>, X extends Throwable> T notEmpty(final T map, final Supplier<X> errorSupplier) throws X {
+    public static <K, V, T extends Map<K, V>, X extends Throwable> T notEmpty(
+            final T map, final Supplier<X> errorSupplier) throws X {
         if (MapUtils.isEmpty(map)) {
             throw errorSupplier.get();
         }
@@ -646,8 +669,8 @@ public class AssertUtil {
      *
      * @throws IllegalArgumentException if the map is {@code null} or has no entries
      */
-    public static <K, V, T extends Map<K, V>> T notEmpty(final T map, final String errorMsgTemplate, final Object... params)
-            throws IllegalArgumentException {
+    public static <K, V, T extends Map<K, V>> T notEmpty(
+            final T map, final String errorMsgTemplate, final Object... params) throws IllegalArgumentException {
         return notEmpty(map, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
     }
 
@@ -660,7 +683,8 @@ public class AssertUtil {
      * @throws IllegalArgumentException if the map is {@code null} or has no entries
      */
     public static <K, V, T extends Map<K, V>> T notEmpty(final T map) throws IllegalArgumentException {
-        return notEmpty(map, "[Assertion failed] - this map must not be empty; it must contain at least one entry");
+        return notEmpty(
+                map, "[Assertion failed] - this map must not be empty; it must contain at least one" + " entry");
     }
 
     /**
@@ -685,7 +709,8 @@ public class AssertUtil {
      * @throws IllegalArgumentException if the object is not an instance of clazz
      * @see Class#isInstance(Object)
      */
-    public static <T> T isInstanceOf(final Class<?> type, final T obj, final String errorMsgTemplate, final Object... params)
+    public static <T> T isInstanceOf(
+            final Class<?> type, final T obj, final String errorMsgTemplate, final Object... params)
             throws IllegalArgumentException {
         notNull(type, "Type to check against must not be null");
         if (!type.isInstance(obj)) {
@@ -714,7 +739,8 @@ public class AssertUtil {
      *
      * @throws IllegalArgumentException 如果子类非继承父类，抛出此异常
      */
-    public static void isAssignable(final Class<?> superType, final Class<?> subType, final String errorMsgTemplate, final Object... params)
+    public static void isAssignable(
+            final Class<?> superType, final Class<?> subType, final String errorMsgTemplate, final Object... params)
             throws IllegalArgumentException {
         notNull(superType, "Type to check against must not be null");
         if (subType == null || !superType.isAssignableFrom(subType)) {
@@ -734,7 +760,8 @@ public class AssertUtil {
      *
      * @throws IllegalStateException 表达式为 {@code false} 抛出此异常
      */
-    public static void state(final boolean expression, final Supplier<String> errorMsgSupplier) throws IllegalStateException {
+    public static void state(final boolean expression, final Supplier<String> errorMsgSupplier)
+            throws IllegalStateException {
         if (!expression) {
             throw new IllegalStateException(errorMsgSupplier.get());
         }
@@ -748,7 +775,8 @@ public class AssertUtil {
      *
      * @throws IllegalStateException 表达式为 {@code false} 抛出此异常
      */
-    public static void state(final boolean expression, final String errorMsgTemplate, final Object... params) throws IllegalStateException {
+    public static void state(final boolean expression, final String errorMsgTemplate, final Object... params)
+            throws IllegalStateException {
         if (!expression) {
             throw new IllegalStateException(StringUtils.format(errorMsgTemplate, params));
         }
@@ -777,7 +805,8 @@ public class AssertUtil {
      * @throws IndexOutOfBoundsException 如果index &lt; 0或者 index &ge; size 抛出此异常
      * @since 4.1.9
      */
-    public static int checkIndex(final int index, final int size) throws IllegalArgumentException, IndexOutOfBoundsException {
+    public static int checkIndex(final int index, final int size)
+            throws IllegalArgumentException, IndexOutOfBoundsException {
         return checkIndex(index, size, "[Assertion failed]");
     }
 
@@ -806,8 +835,8 @@ public class AssertUtil {
      * @throws X if value is out of bound
      * @since 5.7.15
      */
-    public static <X extends Throwable> int checkBetween(final int value, final int min, final int max,
-                                                         final Supplier<? extends X> errorSupplier) throws X {
+    public static <X extends Throwable> int checkBetween(
+            final int value, final int min, final int max, final Supplier<? extends X> errorSupplier) throws X {
         if (value < min || value > max) {
             throw errorSupplier.get();
         }
@@ -820,8 +849,10 @@ public class AssertUtil {
      *
      * @since 5.7.15
      */
-    public static int checkBetween(final int value, final int min, final int max, final String errorMsgTemplate, final Object... params) {
-        return checkBetween(value, min, max, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
+    public static int checkBetween(
+            final int value, final int min, final int max, final String errorMsgTemplate, final Object... params) {
+        return checkBetween(
+                value, min, max, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
     }
 
     /**
@@ -839,8 +870,8 @@ public class AssertUtil {
      * @throws X if value is out of bound
      * @since 5.7.15
      */
-    public static <X extends Throwable> long checkBetween(final long value, final long min, final long max,
-                                                          final Supplier<? extends X> errorSupplier) throws X {
+    public static <X extends Throwable> long checkBetween(
+            final long value, final long min, final long max, final Supplier<? extends X> errorSupplier) throws X {
         if (value < min || value > max) {
             throw errorSupplier.get();
         }
@@ -853,9 +884,10 @@ public class AssertUtil {
      *
      * @since 5.7.15
      */
-    public static long checkBetween(final long value, final long min, final long max, final String errorMsgTemplate,
-                                    final Object... params) {
-        return checkBetween(value, min, max, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
+    public static long checkBetween(
+            final long value, final long min, final long max, final String errorMsgTemplate, final Object... params) {
+        return checkBetween(
+                value, min, max, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
     }
 
     /**
@@ -873,8 +905,9 @@ public class AssertUtil {
      * @throws X if value is out of bound
      * @since 5.7.15
      */
-    public static <X extends Throwable> double checkBetween(final double value, final double min, final double max,
-                                                            final Supplier<? extends X> errorSupplier) throws X {
+    public static <X extends Throwable> double checkBetween(
+            final double value, final double min, final double max, final Supplier<? extends X> errorSupplier)
+            throws X {
         if (value < min || value > max) {
             throw errorSupplier.get();
         }
@@ -887,9 +920,14 @@ public class AssertUtil {
      *
      * @since 5.7.15
      */
-    public static double checkBetween(final double value, final double min, final double max, final String errorMsgTemplate,
-                                      final Object... params) {
-        return checkBetween(value, min, max, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
+    public static double checkBetween(
+            final double value,
+            final double min,
+            final double max,
+            final String errorMsgTemplate,
+            final Object... params) {
+        return checkBetween(
+                value, min, max, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
     }
 
     /**
@@ -939,7 +977,8 @@ public class AssertUtil {
      *
      * @throws IllegalArgumentException obj1 must be not equals obj2
      */
-    public static void notEquals(final Object obj1, final Object obj2, final String errorMsgTemplate, final Object... params)
+    public static void notEquals(
+            final Object obj1, final Object obj2, final String errorMsgTemplate, final Object... params)
             throws IllegalArgumentException {
         notEquals(obj1, obj2, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
     }
@@ -949,12 +988,15 @@ public class AssertUtil {
      *
      * @throws X obj1 must be not equals obj2
      */
-    public static <X extends Throwable> void notEquals(final Object obj1, final Object obj2, final Supplier<X> errorSupplier) throws X {
+    public static <X extends Throwable> void notEquals(
+            final Object obj1, final Object obj2, final Supplier<X> errorSupplier) throws X {
         if (Objects.equals(obj1, obj2)) {
             throw errorSupplier.get();
         }
     }
-    // ----------------------------------------------------------------------------------------------------------- Check not equals
+
+    // ----------------------------------------------------------------------------------------------------------- Check
+    // not equals
 
     /**
      * 断言两个对象是否相等,如果两个对象不相等 抛出IllegalArgumentException 异常
@@ -976,7 +1018,8 @@ public class AssertUtil {
      *
      * @throws IllegalArgumentException obj1 must be equals obj2
      */
-    public static void equals(final Object obj1, final Object obj2, final String errorMsgTemplate, final Object... params)
+    public static void equals(
+            final Object obj1, final Object obj2, final String errorMsgTemplate, final Object... params)
             throws IllegalArgumentException {
         equals(obj1, obj2, () -> new IllegalArgumentException(StringUtils.format(errorMsgTemplate, params)));
     }
@@ -986,13 +1029,15 @@ public class AssertUtil {
      *
      * @throws X obj1 must be equals obj2
      */
-    public static <X extends Throwable> void equals(final Object obj1, final Object obj2, final Supplier<X> errorSupplier) throws X {
+    public static <X extends Throwable> void equals(
+            final Object obj1, final Object obj2, final Supplier<X> errorSupplier) throws X {
         if (!Objects.equals(obj1, obj2)) {
             throw errorSupplier.get();
         }
     }
 
-    // ----------------------------------------------------------------------------------------------------------- Check is equals
+    // ----------------------------------------------------------------------------------------------------------- Check
+    // is equals
 
     // -------------------------------------------------------------------------------------------------------------------------------------------- Private method start
 
@@ -1005,8 +1050,8 @@ public class AssertUtil {
         } else if (size < 0) {
             throw new IllegalArgumentException("negative size: " + size);
         } else { // index >= size
-            return StringUtils.format("{} ({}) must be less than size ({})", StringUtils.format(desc, params), index, size);
+            return StringUtils.format(
+                    "{} ({}) must be less than size ({})", StringUtils.format(desc, params), index, size);
         }
     }
-
 }

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.constant;
 
 /*-
@@ -33,43 +30,43 @@ package com.github.loadup.components.testify.constant;
 /**
  * 路径相关常量
  *
- * 
- * 
+ *
+ *
  */
 public class TestifyPathConstants {
 
     /**
      * 数据库加载默认路径
      */
-    public final static String DB_DATA_PATH = "model/dbModel/";
+    public static final String DB_DATA_PATH = "model/dbModel/";
 
     /**
      * 对象加载默认路径
      */
-    public final static String OBJECT_DATA_PATH = "model/objModel/";
+    public static final String OBJECT_DATA_PATH = "model/objModel/";
 
     /**
      * 对象加载默认路径
      */
-    public final static String OBJECT_MOCK_PATH = "model/mockModel/";
+    public static final String OBJECT_MOCK_PATH = "model/mockModel/";
 
     /**
      * 缓存同步默认存储路径
      */
-    public final static String CACHE_DB_DATA_PATH = "cacheData/";
+    public static final String CACHE_DB_DATA_PATH = "cacheData/";
 
     /**
      * 测试日志存放目录
      */
-    public final static String LOG_FOLDER_PATH = "TestLog";
+    public static final String LOG_FOLDER_PATH = "TestLog";
 
     /**
      *  dbConfigKey 分表配置规则路径
      */
-    public final static String DBCONFIG_PATH = "config/DBConfigKey.properties";
+    public static final String DBCONFIG_PATH = "config/DBConfigKey.properties";
 
     /**
      * 消息配置文件路径
      */
-    public final static String MSGCONFIG_PATH = "config/MessageConfig.yaml";
+    public static final String MSGCONFIG_PATH = "config/MessageConfig.yaml";
 }

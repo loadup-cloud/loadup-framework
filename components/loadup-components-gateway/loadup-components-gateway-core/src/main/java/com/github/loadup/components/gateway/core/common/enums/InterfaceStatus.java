@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.common.enums;
 
 /*-
@@ -73,14 +74,14 @@ public enum InterfaceStatus {
     }
 
     /**
-     * 
+     *
      */
     public String getCode() {
         return code;
     }
 
     /**
-     * 
+     *
      */
     public String getMessage() {
         return message;

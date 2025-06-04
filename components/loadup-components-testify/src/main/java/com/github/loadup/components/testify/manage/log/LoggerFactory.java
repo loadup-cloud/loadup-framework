@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.manage.log;
 
 /*-
@@ -30,26 +27,26 @@ package com.github.loadup.components.testify.manage.log;
  * #L%
  */
 
+import com.github.loadup.components.testify.manage.enums.LoggerType;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.loadup.components.testify.manage.enums.LoggerType;
-
 /**
  * 获取日志对象。
  *
- * 
+ *
  *
  */
 public class LoggerFactory {
 
-    final static String appName = "appName";
+    static final String appName = "appName";
     /**
      * logger管理
      */
     private static final Map<String, Logger> loggers = new HashMap<String, Logger>();
+
     private static String SERVER_HOST = "10.244.42.84";
     private static String SERVER_URL = "/logmonitor/remoteLog";
 
@@ -80,13 +77,13 @@ public class LoggerFactory {
      */
     private static Logger createLogger(String appName, LoggerType loggerType) {
 
-        Log4jLogger logger = new Log4jLogger(loggerType.getName(), new File(getLogDir(),
-                loggerType.getName() + ".log"));
+        Log4jLogger logger =
+                new Log4jLogger(loggerType.getName(), new File(getLogDir(), loggerType.getName() + ".log"));
 
         RemoteAppender ra = new RemoteAppender();
-//        ra.setAppName(appName);
-//        ra.setLoggerType(loggerType);
-//        ra.setLogService(new HttpClientLogServiceImpl(SERVER_HOST, SERVER_URL));
+        //        ra.setAppName(appName);
+        //        ra.setLoggerType(loggerType);
+        //        ra.setLogService(new HttpClientLogServiceImpl(SERVER_HOST, SERVER_URL));
 
         logger.addRemoteAppender(ra);
 
@@ -106,12 +103,18 @@ public class LoggerFactory {
         // 类装载器的通用方式
         if (logDir == null) {
             try {
-                URL url = Thread.currentThread().getContextClassLoader()
+                URL url = Thread.currentThread()
+                        .getContextClassLoader()
                         .getResource("sofaconfig/sofa-test-config.properties");
                 File configFile = new File(url.toURI());
 
-                logDir = new File(configFile.getParentFile().getParentFile().getParentFile()
-                        .getParentFile(), "/logs/");
+                logDir = new File(
+                        configFile
+                                .getParentFile()
+                                .getParentFile()
+                                .getParentFile()
+                                .getParentFile(),
+                        "/logs/");
             } catch (Throwable e) {
             }
         }
@@ -122,5 +125,4 @@ public class LoggerFactory {
 
         return logDir;
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.annotation;
 
 /*-
@@ -30,7 +31,6 @@ import com.github.loadup.components.testify.component.db.DBDatasProcessor;
 import com.github.loadup.components.testify.component.handler.TestUnitHandler;
 import com.github.loadup.components.testify.model.PrepareData;
 import com.github.loadup.components.testify.runtime.TestifyRuntimeContext;
-
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,13 +64,15 @@ public class TestContextBuilder {
      * @param testedObj
      * @return
      */
-    public TestifyRuntimeContext buildTestContext(String caseId, PrepareData prepareData,
-                                                  Map<String, Object> componentContext,
-                                                  DBDatasProcessor dbDatasProcessor, Method testedMethod,
-                                                  Object testedObj) {
+    public TestifyRuntimeContext buildTestContext(
+            String caseId,
+            PrepareData prepareData,
+            Map<String, Object> componentContext,
+            DBDatasProcessor dbDatasProcessor,
+            Method testedMethod,
+            Object testedObj) {
 
-        return new TestifyRuntimeContext(caseId, prepareData,
-                new HashMap<String, Object>(), dbDatasProcessor, testedMethod, testedObj);
-
+        return new TestifyRuntimeContext(
+                caseId, prepareData, new HashMap<String, Object>(), dbDatasProcessor, testedMethod, testedObj);
     }
 }

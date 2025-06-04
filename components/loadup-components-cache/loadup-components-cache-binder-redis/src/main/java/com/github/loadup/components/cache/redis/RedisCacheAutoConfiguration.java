@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.cache.redis;
 
 /*-
@@ -32,6 +33,8 @@ import com.github.loadup.commons.util.date.DurationUtils;
 import com.github.loadup.components.cache.api.CacheBinder;
 import com.github.loadup.components.cache.redis.cfg.LoadUpRedisCacheProperties;
 import com.github.loadup.components.cache.redis.impl.RedisCacheBinderImpl;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -47,9 +50,6 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 @EnableCaching
@@ -83,7 +83,8 @@ public class RedisCacheAutoConfiguration {
 
         LoadUpRedisCacheManager loadUpRedisCacheManager = new LoadUpRedisCacheManager(
                 RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory),
-                redisCacheConfiguration(cacheProperties), cacheConfigurations);
+                redisCacheConfiguration(cacheProperties),
+                cacheConfigurations);
         return loadUpRedisCacheManager;
     }
 

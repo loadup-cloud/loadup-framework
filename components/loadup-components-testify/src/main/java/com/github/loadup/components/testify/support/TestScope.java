@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.support;
 
 /*-
@@ -38,7 +35,7 @@ import java.util.Map;
  * <p>
  * 用于支撑区域化需求，设置只范围内有效。
  *
- * 
+ *
  *
  */
 public class TestScope {
@@ -131,12 +128,11 @@ public class TestScope {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of parent
      */
     public TestScope getParent() {
         return parent;
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -29,17 +30,15 @@ package com.github.loadup.components.testify.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-
+import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * pom.xml  依赖关系解析
  *
- * 
+ *
  *
  */
 class PomDependencyAnalysisHandler extends DefaultHandler {
@@ -59,23 +58,22 @@ class PomDependencyAnalysisHandler extends DefaultHandler {
 
     @Override
     public void startDocument() throws SAXException {
-        //System.out.println("start document -> parse begin");
+        // System.out.println("start document -> parse begin");
     }
 
     @Override
     public void endDocument() throws SAXException {
 
-        //System.out.println("end document -> parse finished");
+        // System.out.println("end document -> parse finished");
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes)
-            throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         //        System.out.println("start element-----------");
         //        System.out.println("    localName: " + localName);
         //        System.out.println("    qName: " + qName);
 
-        //过滤非bundle的pom
+        // 过滤非bundle的pom
         if (StringUtils.equals(qName, "modules")) {
             isBundlePom = false;
         }
@@ -88,7 +86,7 @@ class PomDependencyAnalysisHandler extends DefaultHandler {
             findParent = true;
         }
 
-        //找到依赖bundle的groupId和artifactId
+        // 找到依赖bundle的groupId和artifactId
 
         if (findDependency && StringUtils.equals(qName, "groupId")) {
             findGroupId = true;
@@ -98,7 +96,7 @@ class PomDependencyAnalysisHandler extends DefaultHandler {
             findArtifactId = true;
         }
 
-        //找到当前bundle的groupId和artifactId
+        // 找到当前bundle的groupId和artifactId
         if (!findParent && !findDependency && StringUtils.equals(qName, "groupId")) {
             findCurrentBundleGroupId = true;
         }
@@ -129,20 +127,19 @@ class PomDependencyAnalysisHandler extends DefaultHandler {
 
         if (findCurrentBundleGroupId) {
             String s = new String(ch, start, length);
-            //当前bundle的artifactId放在第二个位置
-            //findArtifactIdList.add(1, s);
+            // 当前bundle的artifactId放在第二个位置
+            // findArtifactIdList.add(1, s);
             currentBundleGroupId = s;
             findCurrentBundleGroupId = false;
         }
 
         if (findCurrentBundleArtifactId) {
             String s = new String(ch, start, length);
-            //当前bundle的artifactId放在第二个位置
-            //findArtifactIdList.add(1, s);
+            // 当前bundle的artifactId放在第二个位置
+            // findArtifactIdList.add(1, s);
             currentBundleArtifactId = s;
             findCurrentBundleArtifactId = false;
         }
-
     }
 
     @Override
@@ -168,14 +165,13 @@ class PomDependencyAnalysisHandler extends DefaultHandler {
     public List<String> getDependencyBundleList() {
 
         List<String> dependencyProjectBundleList = new ArrayList<String>();
-        //过滤
+        // 过滤
         String filtString = getFiltString();
         for (int i = 0; i < findArtifactIdList.size(); i++) {
             if (findArtifactIdList.get(i).contains(filtString)) {
 
-                //拼接依赖bundle name
-                dependencyProjectBundleList.add(getFuzzyBundleName(findGroupIdList.get(i),
-                        findArtifactIdList.get(i)));
+                // 拼接依赖bundle name
+                dependencyProjectBundleList.add(getFuzzyBundleName(findGroupIdList.get(i), findArtifactIdList.get(i)));
             }
         }
         return dependencyProjectBundleList;
@@ -197,7 +193,7 @@ class PomDependencyAnalysisHandler extends DefaultHandler {
      * @return
      */
     public String getFiltString() {
-        //获取当前pom的artifactId如“fcfinancecore-common-service-facade”，按“－”分割后取第一个字符串作为过滤字串
+        // 获取当前pom的artifactId如“fcfinancecore-common-service-facade”，按“－”分割后取第一个字符串作为过滤字串
         String filtString = (currentBundleArtifactId.split("-"))[0];
         return filtString;
     }
@@ -208,27 +204,25 @@ class PomDependencyAnalysisHandler extends DefaultHandler {
      * @return
      */
     public String getBundleName(String groupId, String artifactId) {
-        //获得分割字串
+        // 获得分割字串
         String bundleName = null;
         String[] groupIdList = StringUtils.split(groupId, ".");
         String spiltString = groupIdList[groupIdList.length - 1];
 
-        //用分割字串分割artifactId
+        // 用分割字串分割artifactId
         String artifactIdTemp = StringUtils.substringAfterLast(artifactId, spiltString);
 
         String[] artifactIdList = artifactIdTemp.split("-");
 
-        //拼接bundleName
+        // 拼接bundleName
         bundleName = groupId;
         for (String s : artifactIdList) {
             if (!s.isEmpty()) {
                 bundleName = bundleName + "." + s;
             }
-
         }
         return bundleName;
     }
-
 
     /**
      * 模糊Bundle名称拼接，直接将groupId和artifactId的字段拼接
@@ -236,28 +230,26 @@ class PomDependencyAnalysisHandler extends DefaultHandler {
      * @return
      */
     public String getFuzzyBundleName(String groupId, String artifactId) {
-        //获得分割字串
+        // 获得分割字串
         String bundleName = "";
 
-        //用分割字串分割groupId
+        // 用分割字串分割groupId
         String[] groupIdList = StringUtils.split(groupId, ".");
 
-        //用分割字串分割artifactId
+        // 用分割字串分割artifactId
         String[] artifactIdList = artifactId.split("-");
 
-        //拼接bundleName
+        // 拼接bundleName
         for (String s : groupIdList) {
             if (!s.isEmpty()) {
                 bundleName = bundleName + "." + s;
             }
-
         }
 
         for (String s : artifactIdList) {
             if (!s.isEmpty()) {
                 bundleName = bundleName + "." + s;
             }
-
         }
         return bundleName;
     }
@@ -272,7 +264,7 @@ class PomDependencyAnalysisHandler extends DefaultHandler {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of findArtifactIdList
      */

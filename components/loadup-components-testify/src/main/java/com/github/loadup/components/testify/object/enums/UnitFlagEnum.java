@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.enums;
 
 /*-
@@ -33,11 +30,10 @@ package com.github.loadup.components.testify.object.enums;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * 
- * 
+ *
+ *
  */
 public enum UnitFlagEnum {
-
     Y("Y", "常规比较器"),
 
     N("N", "不校验"),
@@ -97,5 +93,4 @@ public enum UnitFlagEnum {
     public String getDescription() {
         return description;
     }
-
 }

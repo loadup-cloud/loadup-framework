@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.domain;
 
 /*-
@@ -28,11 +29,10 @@ package com.github.loadup.modules.upms.domain;
 
 import com.github.loadup.commons.domain.BaseDomain;
 import com.github.loadup.commons.util.ToStringUtils;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Serial;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author lise
@@ -49,7 +49,7 @@ public class UpmsRole extends BaseDomain {
     private String roleType;
     private String roleCode;
     private String description;
-    private String         status;
+    private String status;
     private List<UpmsUser> userList;
 
     @Override

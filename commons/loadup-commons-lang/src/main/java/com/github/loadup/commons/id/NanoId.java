@@ -1,4 +1,6 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.id;
+
 /*-
  * #%L
  * loadup-commons-lang
@@ -37,7 +39,6 @@ package com.github.loadup.commons.id;
  */
 
 import com.github.loadup.commons.util.RandomUtil;
-
 import java.security.SecureRandom;
 import java.util.Random;
 
@@ -53,7 +54,7 @@ import java.util.Random;
  * <p>
  * 此实现的逻辑基于JavaScript的NanoId实现，见：<a href="https://github.com/ai/nanoid">https://github.com/ai/nanoid</a>
  *
- * 
+ *
  */
 public class NanoId {
 
@@ -61,10 +62,12 @@ public class NanoId {
      * 默认长度
      */
     public static final int DEFAULT_SIZE = 21;
+
     /**
      * 默认随机数生成器，使用{@link SecureRandom}确保健壮性
      */
     private static final SecureRandom DEFAULT_NUMBER_GENERATOR = RandomUtil.getSecureRandom();
+
     /**
      * 默认随机字母表，使用URL安全的Base64字符
      */

@@ -1,6 +1,4 @@
-/**
- * Copyright (c) 2005-2008 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.db;
 
 /*-
@@ -32,13 +30,12 @@ package com.github.loadup.components.testify.db;
 import com.github.loadup.components.testify.constant.TestifyPathConstants;
 import com.github.loadup.components.testify.db.model.DBConnection;
 import com.github.loadup.components.testify.log.TestifyLogUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.testng.Assert;
-
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.testng.Assert;
 
 /**
  * 数据库操作工具类
@@ -72,8 +69,7 @@ public class TestifyDBUtil {
         if (StringUtils.isNotBlank(dbConfigKey)) {
             return dbConfigKey.trim();
         } else {
-            if (DBConfigKeyProperties.isEmpty())
-                loadDBConfigKeyMap();
+            if (DBConfigKeyProperties.isEmpty()) loadDBConfigKeyMap();
             dbConfigKey = DBConfigKeyProperties.getProperty(tableName);
             Assert.assertNotNull("数据配置Key不能为空", dbConfigKey);
             return dbConfigKey;
@@ -85,12 +81,11 @@ public class TestifyDBUtil {
      */
     public static void loadDBConfigKeyMap() {
         try {
-            InputStream is = TestifyDBUtil.class.getClassLoader().getResourceAsStream(
-                    TestifyPathConstants.DBCONFIG_PATH);
+            InputStream is =
+                    TestifyDBUtil.class.getClassLoader().getResourceAsStream(TestifyPathConstants.DBCONFIG_PATH);
             DBConfigKeyProperties.load(is);
         } catch (Exception e) {
-            TestifyLogUtil.error(log, "无法从" + TestifyPathConstants.DBCONFIG_PATH
-                    + "加载DBConfigKeyMap.properties", e);
+            TestifyLogUtil.error(log, "无法从" + TestifyPathConstants.DBCONFIG_PATH + "加载DBConfigKeyMap.properties", e);
         }
     }
 
@@ -117,8 +112,7 @@ public class TestifyDBUtil {
      * @param dbConfigKey
      * @return
      */
-    public static List<Map<String, Object>> getMultiQueryResultMap(String sql, String tableName,
-                                                                   String dbConfigKey) {
+    public static List<Map<String, Object>> getMultiQueryResultMap(String sql, String tableName, String dbConfigKey) {
         DBConnection conn = initConnection(getDBConfigKey(tableName, dbConfigKey));
         return conn.executeQuery(sql);
     }
@@ -131,8 +125,7 @@ public class TestifyDBUtil {
      * @param dbConfigKey
      * @return
      */
-    public static Map<String, Object> getQueryResultMap(String sql, String tableName,
-                                                        String dbConfigKey) {
+    public static Map<String, Object> getQueryResultMap(String sql, String tableName, String dbConfigKey) {
         DBConnection conn = initConnection(getDBConfigKey(tableName, dbConfigKey));
         return conn.executeSingleQuery(sql, false);
     }
@@ -183,7 +176,7 @@ public class TestifyDBUtil {
      * @return
      */
     public static Map<String, Object> lockForUpdate(String sql, String tableName, String dbConfigKey) {
-        //这里必须新建链接，以防止其他sql不提交
+        // 这里必须新建链接，以防止其他sql不提交
         DBConnection conn = new DBConnection(dbConfigKey);
         connMap.put(dbConfigKey + "_lock", conn);
         return conn.executeSingleQuery(sql, true);
@@ -234,5 +227,4 @@ public class TestifyDBUtil {
     public static Map<String, DBConnection> getConnMap() {
         return connMap;
     }
-
 }

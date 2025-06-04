@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule;
 
 /*-
@@ -33,11 +30,10 @@ package com.github.loadup.components.testify.datarule;
 /**
  * 条件操作符。
  *
- * 
+ *
  *
  */
 public enum AssembleConditionOperator {
-
     EQUAL("=="),
 
     NOT_EQUAL("!="),
@@ -82,5 +78,4 @@ public enum AssembleConditionOperator {
 
         return null;
     }
-
 }

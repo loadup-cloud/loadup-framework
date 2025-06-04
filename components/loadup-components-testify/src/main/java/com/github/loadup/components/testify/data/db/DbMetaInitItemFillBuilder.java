@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data.db;
 
 /*-
@@ -33,20 +30,19 @@ package com.github.loadup.components.testify.data.db;
 import com.github.loadup.components.testify.dal.table.CsvFillObject;
 import com.github.loadup.components.testify.util.FileUtil;
 import com.opencsv.CSVReader;
-import org.apache.commons.io.FileUtils;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 
 /**
  * 业务模型元数据项构造器。
  *
- * 
+ *
  *
  */
 public class DbMetaInitItemFillBuilder {
-    //根据csv获取当前模型的名字,用来填充model_obj这一列
+    // 根据csv获取当前模型的名字,用来填充model_obj这一列
     private String readCurrentModelObj(File csvPath) {
 
         String name = csvPath.getName();
@@ -64,7 +60,7 @@ public class DbMetaInitItemFillBuilder {
         List<CsvFillObject> initItems = new ArrayList<CsvFillObject>();
 
         @SuppressWarnings("unchecked")
-        List<File> allCSV = (List<File>) FileUtils.listFiles(dir, new String[]{"csv"}, true);
+        List<File> allCSV = (List<File>) FileUtils.listFiles(dir, new String[] {"csv"}, true);
         for (File f : allCSV) {
             InputStream in = null;
             try {

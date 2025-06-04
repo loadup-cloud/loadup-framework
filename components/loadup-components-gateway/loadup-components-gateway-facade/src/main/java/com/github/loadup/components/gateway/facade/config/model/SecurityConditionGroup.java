@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.config.model;
 
 /*-
@@ -26,15 +27,13 @@ package com.github.loadup.components.gateway.facade.config.model;
  * #L%
  */
 
+import java.io.Serializable;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.io.Serializable;
 
 /**
  * 网关密钥配置条件组
  */
-
 public class SecurityConditionGroup implements Serializable {
 
     private static final long serialVersionUID = 8555071210094258364L;
@@ -70,84 +69,84 @@ public class SecurityConditionGroup implements Serializable {
     private String securityStrategyKey;
 
     /**
-     * 
+     *
      */
     public String getSecurityStrategyCode() {
         return securityStrategyCode;
     }
 
     /**
-     * 
+     *
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
     }
 
     /**
-     * 
+     *
      */
     public String getSecurityStrategyOperateType() {
         return securityStrategyOperateType;
     }
 
     /**
-     * 
+     *
      */
     public void setSecurityStrategyOperateType(String securityStrategyOperateType) {
         this.securityStrategyOperateType = securityStrategyOperateType;
     }
 
     /**
-     * 
+     *
      */
     public String getSecurityStrategyAlgorithm() {
         return securityStrategyAlgorithm;
     }
 
     /**
-     * 
+     *
      */
     public void setSecurityStrategyAlgorithm(String securityStrategyAlgorithm) {
         this.securityStrategyAlgorithm = securityStrategyAlgorithm;
     }
 
     /**
-     * 
+     *
      */
     public String getSecurityStrategyKeyType() {
         return securityStrategyKeyType;
     }
 
     /**
-     * 
+     *
      */
     public void setSecurityStrategyKeyType(String securityStrategyKeyType) {
         this.securityStrategyKeyType = securityStrategyKeyType;
     }
 
     /**
-     * 
+     *
      */
     public String getCertType() {
         return certType;
     }
 
     /**
-     * 
+     *
      */
     public void setCertType(String certType) {
         this.certType = certType;
     }
 
     /**
-     * 
+     *
      */
     public String getSecurityStrategyKey() {
         return securityStrategyKey;
     }
 
     /**
-     * 
+     *
      */
     public void setSecurityStrategyKey(String securityStrategyKey) {
         this.securityStrategyKey = securityStrategyKey;

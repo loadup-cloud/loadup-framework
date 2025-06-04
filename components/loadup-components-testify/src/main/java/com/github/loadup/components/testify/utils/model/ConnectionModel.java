@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.model;
 
 /*-
@@ -30,10 +30,9 @@ package com.github.loadup.components.testify.utils.model;
 import java.sql.Connection;
 import java.sql.Driver;
 
-
 /**
- * 
- * 
+ *
+ *
  */
 public class ConnectionModel {
 
@@ -41,27 +40,33 @@ public class ConnectionModel {
      * mysql prefix
      */
     private static final String MYSQL_URL_PREFIX = "jdbc:mysql://";
+
     /**
      * jdbc userName
      */
     private String username;
+
     /**
      * jdbc password
      */
     private String password;
+
     /**
      * jdbc url
      */
     private String url;
-    //= new OracleDriver();
+
+    // = new OracleDriver();
     /**
      * oracle driver
      */
     private Driver driver;
+
     /**
      * schema info
      */
     private String schema;
+
     /**
      * connect info
      */
@@ -85,12 +90,11 @@ public class ConnectionModel {
                 // logger.error("",e);
                 this.driver = null;
             }
-
         }
     }
 
     /**
-     * 
+     *
      *
      * @return property value of username
      */
@@ -108,7 +112,7 @@ public class ConnectionModel {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of password
      */
@@ -126,7 +130,7 @@ public class ConnectionModel {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of url
      */
@@ -144,7 +148,7 @@ public class ConnectionModel {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of driver
      */
@@ -162,7 +166,7 @@ public class ConnectionModel {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of schema
      */
@@ -180,7 +184,7 @@ public class ConnectionModel {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of connection
      */
@@ -196,6 +200,4 @@ public class ConnectionModel {
     public void setConnection(Connection connection) {
         this.connection = connection;
     }
-
-
 }

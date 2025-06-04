@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.dal.repository;
 
 /*-
@@ -27,14 +28,13 @@ package com.github.loadup.modules.upms.dal.repository;
  */
 
 import com.github.loadup.modules.upms.dal.dataobject.UserRoleDO;
+import java.util.Collection;
+import java.util.List;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.Collection;
-import java.util.List;
 
 @Repository
 public interface UserRoleRepository extends ListCrudRepository<UserRoleDO, String> {

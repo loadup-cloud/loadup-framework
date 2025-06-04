@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.parser;
 
 /*-
@@ -56,14 +53,14 @@ import java.util.Arrays;
 /**
  * 词法分析器。
  *
- * 
- * 
+ *
+ *
  */
 public class RuleLexer {
 
     private static final long MULTMIN_RADIX_TEN = Long.MIN_VALUE / 10;
     private static final long N_MULTMAX_RADIX_TEN = -Long.MAX_VALUE / 10;
-    private final static int[] digits = new int['9' + 1];
+    private static final int[] digits = new int['9' + 1];
 
     static {
         for (int i = '0'; i <= '9'; ++i) {
@@ -367,8 +364,7 @@ public class RuleLexer {
                     return;
                 case '#':
                     scanSharp();
-                    if ((token() == RuleToken.LINE_COMMENT || token() == RuleToken.MULTI_LINE_COMMENT)
-                            && skipComment) {
+                    if ((token() == RuleToken.LINE_COMMENT || token() == RuleToken.MULTI_LINE_COMMENT) && skipComment) {
                         bufPos = 0;
                         continue;
                     }
@@ -463,7 +459,6 @@ public class RuleLexer {
                     return;
             }
         }
-
     }
 
     protected void scanLBracket() {
@@ -1044,7 +1039,8 @@ public class RuleLexer {
                     return (int) result;
                 }
                 return result;
-            } else { /* Only got "-" */
+            } else {
+                /* Only got "-" */
                 throw new NumberFormatException(numberString());
             }
         } else {

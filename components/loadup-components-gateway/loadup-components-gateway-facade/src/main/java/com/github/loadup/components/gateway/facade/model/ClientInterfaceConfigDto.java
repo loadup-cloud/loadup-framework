@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.model;
 
 /*-
@@ -41,7 +42,7 @@ public class ClientInterfaceConfigDto {
     private String interfaceId;
 
     /**
-     * 
+     *
      */
     public String getClientId() {
         return clientId;
@@ -55,7 +56,7 @@ public class ClientInterfaceConfigDto {
     }
 
     /**
-     * 
+     *
      */
     public String getInterfaceId() {
         return interfaceId;

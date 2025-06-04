@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.components.gateway.facade.request;
  * #L%
  */
 
+import java.util.Map;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.Map;
 
 /**
  *
@@ -46,8 +46,7 @@ public class SPIRequest {
      */
     private Map<String, String> message;
 
-    public SPIRequest() {
-    }
+    public SPIRequest() {}
 
     public SPIRequest(String integrationUrl, Map<String, String> message) {
         this.integrationUrl = integrationUrl;
@@ -62,7 +61,7 @@ public class SPIRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationUrl(String integrationUrl) {
         this.integrationUrl = integrationUrl;
@@ -76,7 +75,7 @@ public class SPIRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setMessage(Map<String, String> message) {
         this.message = message;

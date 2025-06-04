@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.file.config;
 
 /*-
@@ -46,8 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-
 /**
  * CertConfig builder
  */
@@ -57,8 +56,8 @@ public class CertConfigBuilder extends AbstractCertAlgorithmConfigBuilder<CertCo
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(CertConfigBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(CertConfigBuilder.class);
+
     @Resource
     private ExtensionExecutor extensionExecutor;
 
@@ -131,8 +130,7 @@ public class CertConfigBuilder extends AbstractCertAlgorithmConfigBuilder<CertCo
         }
         certConfigDto.setCertType(securityStrategyKeyType);
         certConfigDto.setCertStatus("Y");
-        certConfigDto.setCertContent(
-                getCertContent(securityStrategyKeyType, certTypeEnum, securityStrategyKey));
+        certConfigDto.setCertContent(getCertContent(securityStrategyKeyType, certTypeEnum, securityStrategyKey));
         certConfigDto.setProperties(fileColumns[7]);
 
         return certConfigDto;
@@ -142,11 +140,10 @@ public class CertConfigBuilder extends AbstractCertAlgorithmConfigBuilder<CertCo
      * 获取对应的证书内容，如果证书内容本地存储，则已经进行过base64处理，
      * 别名存储则调用外部接口获取证书，默认返回的格式是证书byte[] base64encode处理
      */
-    //TODO refactor parameter
+    // TODO refactor parameter
     public String getCertContent(String bizScene, CertTypeEnum certType, String certContentString) {
         try {
-            if (StringUtils.equalsIgnoreCase(
-                    CertContentType.CERT_OFFICIAL_CONTENT.getCertContentType(), bizScene)) {
+            if (StringUtils.equalsIgnoreCase(CertContentType.CERT_OFFICIAL_CONTENT.getCertContentType(), bizScene)) {
                 return certContentString;
             } else {
                 return extensionExecutor.execute(CertificationAccessExt.class, BizScenario.valueOf(bizScene), ext -> {
@@ -159,8 +156,8 @@ public class CertConfigBuilder extends AbstractCertAlgorithmConfigBuilder<CertCo
                 });
             }
         } catch (ExtensionException e) {
-            throw new CertificationException(CertificationErrorCode.GET_CERT_CONTENT_ERROR,
-                    "no ext for bizScene=" + bizScene);
+            throw new CertificationException(
+                    CertificationErrorCode.GET_CERT_CONTENT_ERROR, "no ext for bizScene=" + bizScene);
         } catch (CertificationException e) {
             LogUtil.error(logger, e, "get certContent CertificationException,bizScene=", bizScene);
         } catch (Exception e) {

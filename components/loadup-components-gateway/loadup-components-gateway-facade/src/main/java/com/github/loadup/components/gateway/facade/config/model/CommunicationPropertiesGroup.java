@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.config.model;
 
 /*-
@@ -26,15 +27,13 @@ package com.github.loadup.components.gateway.facade.config.model;
  * #L%
  */
 
+import java.io.Serializable;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.io.Serializable;
 
 /**
  *
  */
-
 public class CommunicationPropertiesGroup implements Serializable {
 
     private static final long serialVersionUID = -4878291431746947060L;
@@ -81,126 +80,126 @@ public class CommunicationPropertiesGroup implements Serializable {
     private String shieldKeys;
 
     /**
-     * 
+     *
      */
     public Integer getLimitValue() {
         return limitValue;
     }
 
     /**
-     * 
+     *
      */
     public void setLimitValue(Integer limitValue) {
         this.limitValue = limitValue;
     }
 
     /**
-     * 
+     *
      */
     public String getLimitTimeRule() {
         return limitTimeRule;
     }
 
     /**
-     * 
+     *
      */
     public void setLimitTimeRule(String limitTimeRule) {
         this.limitTimeRule = limitTimeRule;
     }
 
     /**
-     * 
+     *
      */
     public String getLimitType() {
         return limitType;
     }
 
     /**
-     * 
+     *
      */
     public void setLimitType(String limitType) {
         this.limitType = limitType;
     }
 
     /**
-     * 
+     *
      */
     public String getDistributedFallbackStrategy() {
         return distributedFallbackStrategy;
     }
 
     /**
-     * 
+     *
      */
     public void setDistributedFallbackStrategy(String distributedFallbackStrategy) {
         this.distributedFallbackStrategy = distributedFallbackStrategy;
     }
 
     /**
-     * 
+     *
      */
     public Integer getDistributedFallbackStrategyLimitValue() {
         return distributedFallbackStrategyLimitValue;
     }
 
     /**
-     * 
+     *
      */
     public void setDistributedFallbackStrategyLimitValue(Integer distributedFallbackStrategyLimitValue) {
         this.distributedFallbackStrategyLimitValue = distributedFallbackStrategyLimitValue;
     }
 
     /**
-     * 
+     *
      */
     public Integer getConnectTimeout() {
         return connectTimeout;
     }
 
     /**
-     * 
+     *
      */
     public void setConnectTimeout(Integer connectTimeout) {
         this.connectTimeout = connectTimeout;
     }
 
     /**
-     * 
+     *
      */
     public Integer getReadTimeout() {
         return readTimeout;
     }
 
     /**
-     * 
+     *
      */
     public void setReadTimeout(Integer readTimeout) {
         this.readTimeout = readTimeout;
     }
 
     /**
-     * 
+     *
      */
     public String getShieldKeys() {
         return shieldKeys;
     }
 
     /**
-     * 
+     *
      */
     public void setShieldKeys(String shieldKeys) {
         this.shieldKeys = shieldKeys;
     }
 
     /**
-     * 
+     *
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * 
+     *
      */
     public void setUrl(String url) {
         this.url = url;

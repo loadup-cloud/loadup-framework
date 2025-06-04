@@ -1,7 +1,4 @@
-/*
- * Ant Group
- * Copyright (c) 2004-2024 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.boot.launcher;
 
 /*-

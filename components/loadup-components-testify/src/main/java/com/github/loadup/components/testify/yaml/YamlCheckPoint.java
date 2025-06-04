@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.yaml;
 
 /*-
@@ -30,13 +27,6 @@ package com.github.loadup.components.testify.yaml;
  * #L%
  */
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.testng.Assert;
-
 import com.github.loadup.components.testify.cache.TestifyCacheData;
 import com.github.loadup.components.testify.yaml.cpUnit.BaseCPUnit;
 import com.github.loadup.components.testify.yaml.cpUnit.DataBaseCPUnit;
@@ -46,12 +36,17 @@ import com.github.loadup.components.testify.yaml.cpUnit.ListObjectCPUnit;
 import com.github.loadup.components.testify.yaml.cpUnit.MessageCPUnit;
 import com.github.loadup.components.testify.yaml.cpUnit.ObjectCPUnit;
 import com.github.loadup.components.testify.yaml.enums.CPUnitTypeEnum;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import org.testng.Assert;
 
 /**
  * CP点模型
  *
- * 
- * 
+ *
+ *
  */
 public class YamlCheckPoint {
 
@@ -59,6 +54,7 @@ public class YamlCheckPoint {
      * CP点数据Map
      */
     private final Map<String, BaseCPUnit> checkPointUnitMap = new LinkedHashMap<String, BaseCPUnit>();
+
     /**
      * CP点名称, 建议直接写为描述形式
      */
@@ -80,8 +76,7 @@ public class YamlCheckPoint {
                     case DATABASE:
                         Object value = entry.getValue();
                         if (value instanceof Map) {
-                            unit = new DataBaseCPUnit(unitName,
-                                    (Map<String, Object>) entry.getValue());
+                            unit = new DataBaseCPUnit(unitName, (Map<String, Object>) entry.getValue());
                         } else if (value instanceof List) {
                             unit = new ListDataBaseCPUnit(unitName, (List<Object>) value);
                         } else {
@@ -89,16 +84,13 @@ public class YamlCheckPoint {
                         }
                         break;
                     case GROUP:
-                        unit = new GroupDataBaseCPUnit(unitName,
-                                (Map<String, Object>) entry.getValue());
+                        unit = new GroupDataBaseCPUnit(unitName, (Map<String, Object>) entry.getValue());
                         break;
                     case OBJECT:
                         if (entry.getValue() instanceof Map) {
-                            unit = new ObjectCPUnit(unitName,
-                                    (Map<String, Object>) entry.getValue());
+                            unit = new ObjectCPUnit(unitName, (Map<String, Object>) entry.getValue());
                         } else if (entry.getValue() instanceof List) {
-                            unit = new ListObjectCPUnit(unitName,
-                                    (List<Map<String, Object>>) entry.getValue());
+                            unit = new ListObjectCPUnit(unitName, (List<Map<String, Object>>) entry.getValue());
                         } else if (entry.getValue() != null) {
                             Assert.fail("准备对象格式未知异常");
                         }
@@ -128,8 +120,7 @@ public class YamlCheckPoint {
      */
     @Override
     public String toString() {
-        return "YamlCheckPoint [checkPointName=" + checkPointName + ", checkPointUnitMap="
-                + checkPointUnitMap + "]";
+        return "YamlCheckPoint [checkPointName=" + checkPointName + ", checkPointUnitMap=" + checkPointUnitMap + "]";
     }
 
     // ~~~ 容器方法
@@ -144,7 +135,7 @@ public class YamlCheckPoint {
     }
 
     /**
-     * 
+     *
      *
      * @param checkPointName value to be assigned to property checkPointName
      */
@@ -160,5 +151,4 @@ public class YamlCheckPoint {
     public Map<String, BaseCPUnit> getCheckPointUnitMap() {
         return checkPointUnitMap;
     }
-
 }

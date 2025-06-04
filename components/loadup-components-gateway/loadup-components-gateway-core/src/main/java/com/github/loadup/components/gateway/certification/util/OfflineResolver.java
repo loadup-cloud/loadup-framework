@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.util;
 
 /*-
@@ -26,17 +27,15 @@ package com.github.loadup.components.gateway.certification.util;
  * #L%
  */
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.xml.security.signature.XMLSignatureInput;
 import org.apache.xml.security.utils.resolver.ResourceResolverException;
 import org.apache.xml.security.utils.resolver.ResourceResolverSpi;
 import org.apache.xml.utils.URI;
 import org.w3c.dom.Attr;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class helps us home users to resolve http URIs without a network
@@ -46,8 +45,8 @@ public class OfflineResolver extends ResourceResolverSpi {
     /**
      * {@link org.apache.commons.logging} logging facility
      */
-    static org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
-            .getLog(OfflineResolver.class.getName());
+    static org.apache.commons.logging.Log log =
+            org.apache.commons.logging.LogFactory.getLog(OfflineResolver.class.getName());
 
     /**
      * Field _uriMap
@@ -65,17 +64,24 @@ public class OfflineResolver extends ResourceResolverSpi {
         uriMap = new HashMap<String, String>();
         mimeMap = new HashMap<String, String>();
 
-        OfflineResolver.register("http://www.w3.org/TR/xml-stylesheet",
-                "data/org/w3c/www/TR/xml-stylesheet.html", "text/html");
-        OfflineResolver.register("http://www.w3.org/TR/2000/REC-xml-20001006",
-                "data/org/w3c/www/TR/2000/REC-xml-20001006", "text/xml");
-        OfflineResolver.register("http://www.nue.et-inf.uni-siegen.de/index.html",
-                "data/org/apache/xml/security/temp/nuehomepage", "text/html");
-        OfflineResolver.register("http://www.nue.et-inf.uni-siegen.de/~geuer-pollmann/id2.xml",
-                "data/org/apache/xml/security/temp/id2.xml", "text/xml");
-        OfflineResolver.register("http://xmldsig.pothole.com/xml-stylesheet.txt",
-                "data/com/pothole/xmldsig/xml-stylesheet.txt", "text/xml");
-        OfflineResolver.register("http://www.w3.org/Signature/2002/04/xml-stylesheet.b64",
+        OfflineResolver.register(
+                "http://www.w3.org/TR/xml-stylesheet", "data/org/w3c/www/TR/xml-stylesheet.html", "text/html");
+        OfflineResolver.register(
+                "http://www.w3.org/TR/2000/REC-xml-20001006", "data/org/w3c/www/TR/2000/REC-xml-20001006", "text/xml");
+        OfflineResolver.register(
+                "http://www.nue.et-inf.uni-siegen.de/index.html",
+                "data/org/apache/xml/security/temp/nuehomepage",
+                "text/html");
+        OfflineResolver.register(
+                "http://www.nue.et-inf.uni-siegen.de/~geuer-pollmann/id2.xml",
+                "data/org/apache/xml/security/temp/id2.xml",
+                "text/xml");
+        OfflineResolver.register(
+                "http://xmldsig.pothole.com/xml-stylesheet.txt",
+                "data/com/pothole/xmldsig/xml-stylesheet.txt",
+                "text/xml");
+        OfflineResolver.register(
+                "http://www.w3.org/Signature/2002/04/xml-stylesheet.b64",
                 "data/ie/baltimore/merlin-examples/merlin-xmldsig-twenty-three/xml-stylesheet.b64",
                 "text/plain");
     }
@@ -94,8 +100,7 @@ public class OfflineResolver extends ResourceResolverSpi {
      * @throws ResourceResolverException
      */
     @Override
-    public XMLSignatureInput engineResolve(Attr uri, String BaseURI)
-            throws ResourceResolverException {
+    public XMLSignatureInput engineResolve(Attr uri, String BaseURI) throws ResourceResolverException {
 
         try {
             String URI = uri.getNodeValue();
@@ -157,10 +162,8 @@ public class OfflineResolver extends ResourceResolverSpi {
             }
         } catch (URI.MalformedURIException ex) {
             log.error("URI地址解析失败！", ex);
-
         }
 
         return false;
     }
-
 }

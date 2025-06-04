@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.common.util;
 
 /*-
@@ -44,13 +45,12 @@ import com.github.loadup.components.gateway.facade.enums.LimitTimeRuleEnum;
 import com.github.loadup.components.gateway.facade.enums.LimitTypeEnum;
 import com.github.loadup.components.gateway.facade.model.LimitConfig;
 import jakarta.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -125,7 +125,7 @@ public class LimitUtil {
     private InterfaceProdCenterQueryService interfaceProdCenterQueryService;
 
     /**
-     * 
+     *
      */
     public Boolean getOpenLimitService() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
@@ -135,7 +135,7 @@ public class LimitUtil {
     }
 
     /**
-     * 
+     *
      */
     public String getLimitType() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
@@ -145,7 +145,7 @@ public class LimitUtil {
     }
 
     /**
-     * 
+     *
      */
     @Deprecated
     public String getInterfaceMaxLimitStr() {
@@ -160,7 +160,7 @@ public class LimitUtil {
         if (!getOpenLimitService()) {
             return limitConfigList;
         }
-        String tenantId = "";//TenantUtil.getTenantId();
+        String tenantId = ""; // TenantUtil.getTenantId();
         String entryKeyId;
         String url;
 
@@ -176,22 +176,22 @@ public class LimitUtil {
             interfaceLimitConfig = new LimitConfig();
             interfaceLimitConfig.setEntryKeyId(entryKeyId);
             Properties properties = interfaceConfig.getProperties();
-            String currentInterfaceMaxLimitStr = PropertiesUtil.getProperty(properties,
-                    Constant.INTERFACE_LIMIT_KEY);
-            String maxLimit = getMaxLimit(interfaceConfig.getInterfaceId(), getInterfaceMaxLimitStr(),
-                    currentInterfaceMaxLimitStr);
+            String currentInterfaceMaxLimitStr = PropertiesUtil.getProperty(properties, Constant.INTERFACE_LIMIT_KEY);
+            String maxLimit = getMaxLimit(
+                    interfaceConfig.getInterfaceId(), getInterfaceMaxLimitStr(), currentInterfaceMaxLimitStr);
             if (StringUtils.isBlank(maxLimit)) {
                 interfaceLimitConfig.setEnableLimit(Boolean.FALSE);
             } else {
                 interfaceLimitConfig.setLimitValue(Integer.parseInt(maxLimit));
-                interfaceLimitConfig.setLimitTimeRule(
-                        LimitTimeRuleEnum.getTimeRuleByString(getLimitTimeRule()));
+                interfaceLimitConfig.setLimitTimeRule(LimitTimeRuleEnum.getTimeRuleByString(getLimitTimeRule()));
                 interfaceLimitConfig.setLimitType(LimitTypeEnum.getLimitType(getLimitType()));
                 interfaceLimitConfig.setDistributedFallbackStrategy(
                         DistributedExceptionStrategy.getByCode(getFallbackStrategy()));
                 String fallbackInterfaceMaxLimit = getFallbackInterfaceMaxLimit();
-                interfaceLimitConfig.setDistributedFallbackStrategyLimitValue(StringUtils.isBlank(fallbackInterfaceMaxLimit) ?
-                        null : Integer.parseInt(fallbackInterfaceMaxLimit));
+                interfaceLimitConfig.setDistributedFallbackStrategyLimitValue(
+                        StringUtils.isBlank(fallbackInterfaceMaxLimit)
+                                ? null
+                                : Integer.parseInt(fallbackInterfaceMaxLimit));
                 interfaceLimitConfig.setEnableLimit(true);
             }
         }
@@ -223,18 +223,16 @@ public class LimitUtil {
         return buildLimitConfig(communicationPropertiesGroup, entryKeyId);
     }
 
-    private LimitConfig buildLimitConfig(
-            CommunicationPropertiesGroup communicationPropertiesGroup, String entryKeyId) {
+    private LimitConfig buildLimitConfig(CommunicationPropertiesGroup communicationPropertiesGroup, String entryKeyId) {
         LimitConfig limitConfig = null;
         if (communicationPropertiesGroup != null) {
             limitConfig = new LimitConfig();
             limitConfig.setLimitValue(communicationPropertiesGroup.getLimitValue());
-            limitConfig.setLimitTimeRule(LimitTimeRuleEnum
-                    .getTimeRuleByString(communicationPropertiesGroup.getLimitTimeRule()));
-            limitConfig.setLimitType(
-                    LimitTypeEnum.getLimitType(communicationPropertiesGroup.getLimitType()));
-            limitConfig.setDistributedFallbackStrategy(DistributedExceptionStrategy
-                    .getByCode(communicationPropertiesGroup.getDistributedFallbackStrategy()));
+            limitConfig.setLimitTimeRule(
+                    LimitTimeRuleEnum.getTimeRuleByString(communicationPropertiesGroup.getLimitTimeRule()));
+            limitConfig.setLimitType(LimitTypeEnum.getLimitType(communicationPropertiesGroup.getLimitType()));
+            limitConfig.setDistributedFallbackStrategy(DistributedExceptionStrategy.getByCode(
+                    communicationPropertiesGroup.getDistributedFallbackStrategy()));
             limitConfig.setDistributedFallbackStrategyLimitValue(
                     communicationPropertiesGroup.getDistributedFallbackStrategyLimitValue());
             limitConfig.setEntryKeyId(entryKeyId);
@@ -250,12 +248,13 @@ public class LimitUtil {
      * <p>
      * If currentEntityMaxLimitStr is blank, will use globalMaxLimitStr.
      */
-    private String getMaxLimit(String key, String globalMaxLimitStr,
-                               String currentEntityMaxLimitStr) {
+    private String getMaxLimit(String key, String globalMaxLimitStr, String currentEntityMaxLimitStr) {
         try {
             if (StringUtils.isNotBlank(currentEntityMaxLimitStr)) {
                 int currentEntityMaxLimit = Integer.parseInt(currentEntityMaxLimitStr);
-                AssertUtil.isTrue(currentEntityMaxLimit != 0, LimitRuleErrorCode.LIMIT_NO_TOKEN,
+                AssertUtil.isTrue(
+                        currentEntityMaxLimit != 0,
+                        LimitRuleErrorCode.LIMIT_NO_TOKEN,
                         "currentEntityMaxLimitStr is zero, no token:" + key);
                 return currentEntityMaxLimitStr;
             }
@@ -264,20 +263,22 @@ public class LimitUtil {
                 return currentEntityMaxLimitStr;
             }
             int globalMaxLimit = Integer.parseInt(globalMaxLimitStr);
-            AssertUtil.isTrue(globalMaxLimit != 0, LimitRuleErrorCode.LIMIT_NO_TOKEN,
+            AssertUtil.isTrue(
+                    globalMaxLimit != 0,
+                    LimitRuleErrorCode.LIMIT_NO_TOKEN,
                     "globalMaxLimitStr is zero, no token:" + key);
             return globalMaxLimitStr;
         } catch (CommonException ex) {
-            DigestLoggerUtil.printLimitDigestLog(key,
-                    StringUtils.isNotBlank(currentEntityMaxLimitStr) ? currentEntityMaxLimitStr
-                            : globalMaxLimitStr,
+            DigestLoggerUtil.printLimitDigestLog(
+                    key,
+                    StringUtils.isNotBlank(currentEntityMaxLimitStr) ? currentEntityMaxLimitStr : globalMaxLimitStr,
                     ex.getResultCode());
             throw ex;
         }
     }
 
     /**
-     * 
+     *
      */
     public String getTenantMaxLimitStr() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
@@ -287,7 +288,7 @@ public class LimitUtil {
     }
 
     /**
-     * 
+     *
      */
     public String getClientMaxLimitStr() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
@@ -297,56 +298,53 @@ public class LimitUtil {
     }
 
     /**
-     * 
+     *
      */
     public String getLimitTimeRule() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
-            return limitProdCenterQueryService.queryLimitConditionGroup()
-                    .getDistributedLimitTimeRule();
+            return limitProdCenterQueryService.queryLimitConditionGroup().getDistributedLimitTimeRule();
         }
         return limitTimeRule;
     }
 
     /**
-     * 
+     *
      */
     public String getFallbackStrategy() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
-            return limitProdCenterQueryService.queryLimitConditionGroup()
-                    .getDistributedFallbackStrategy();
+            return limitProdCenterQueryService.queryLimitConditionGroup().getDistributedFallbackStrategy();
         }
         return fallbackStrategy;
     }
 
     /**
-     * 
+     *
      */
     public String getFallbackInterfaceMaxLimit() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
-            return limitProdCenterQueryService.queryLimitConditionGroup()
+            return limitProdCenterQueryService
+                    .queryLimitConditionGroup()
                     .getDistributedFallbackStandaloneInterfaceLimit();
         }
         return fallbackInterfaceMaxLimit;
     }
 
     /**
-     * 
+     *
      */
     public String getFallbackClientMaxLimit() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
-            return limitProdCenterQueryService.queryLimitConditionGroup()
-                    .getDistributedFallbackStandaloneClientLimit();
+            return limitProdCenterQueryService.queryLimitConditionGroup().getDistributedFallbackStandaloneClientLimit();
         }
         return fallbackClientMaxLimit;
     }
 
     /**
-     * 
+     *
      */
     public String getFallbackTenantMaxLimit() {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
-            return limitProdCenterQueryService.queryLimitConditionGroup()
-                    .getDistributedFallbackStandaloneTenantLimit();
+            return limitProdCenterQueryService.queryLimitConditionGroup().getDistributedFallbackStandaloneTenantLimit();
         }
         return fallbackTenantMaxLimit;
     }

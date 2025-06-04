@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.gateway.impl;
 
 /*-
@@ -28,28 +29,21 @@ package com.github.loadup.modules.upms.gateway.impl;
 
 import com.github.loadup.modules.upms.domain.UpmsPosition;
 import com.github.loadup.modules.upms.gateway.PositionGateway;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @Slf4j
 public class PositionGatewayImpl implements PositionGateway {
     @Override
-    public void create(UpmsPosition domain) {
-
-    }
+    public void create(UpmsPosition domain) {}
 
     @Override
-    public void update(UpmsPosition domain) {
-
-    }
+    public void update(UpmsPosition domain) {}
 
     @Override
-    public void delete(String id) {
-
-    }
+    public void delete(String id) {}
 
     @Override
     public UpmsPosition getById(String id) {

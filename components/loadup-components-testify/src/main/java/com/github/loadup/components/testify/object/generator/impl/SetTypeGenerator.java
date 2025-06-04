@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.generator.impl;
 
 /*-
@@ -31,21 +32,19 @@ import com.github.loadup.components.testify.log.TestifyLogUtil;
 import com.github.loadup.components.testify.object.generator.ObjectGenerator;
 import com.github.loadup.components.testify.object.manager.ObjectTypeManager;
 import com.google.common.reflect.TypeToken;
-import lombok.extern.slf4j.Slf4j;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Set类型处理器
  */
 @Slf4j
 public class SetTypeGenerator implements ObjectGenerator {
-
 
     @Override
     public boolean isSimpleType() {
@@ -93,12 +92,12 @@ public class SetTypeGenerator implements ObjectGenerator {
             genericType = (ParameterizedType) collectionItemType;
         }
 
-//        Assert.assertNotNull("解析Set的具体类型失败。", genericType);
+        //        Assert.assertNotNull("解析Set的具体类型失败。", genericType);
 
         Type[] typeArguments = genericType.getActualTypeArguments();
 
-//        Assert.assertEquals("解析Set的具体类型失败。泛化的类型必须只有一个，实际值【" + typeArguments.length + "】个",
-//            typeArguments.length, 1);
+        //        Assert.assertEquals("解析Set的具体类型失败。泛化的类型必须只有一个，实际值【" + typeArguments.length + "】个",
+        //            typeArguments.length, 1);
 
         if (typeArguments[0] instanceof ParameterizedType) {
             ObjectTypeManager subMng = new ObjectTypeManager();
@@ -113,7 +112,7 @@ public class SetTypeGenerator implements ObjectGenerator {
             //  return Object.class; 这里暂时返回空
             return Object.class;
         } else if (typeArguments[0] instanceof WildcardType) {
-            //return Object.class;
+            // return Object.class;
             return Object.class;
         } else {
             return (Class<?>) typeArguments[0];
@@ -123,13 +122,12 @@ public class SetTypeGenerator implements ObjectGenerator {
     }
 
     @Override
-    public void setObjectValue(Object collectionObject, Object value, String originalValue,
-                               int index) {
+    public void setObjectValue(Object collectionObject, Object value, String originalValue, int index) {
         if (collectionObject instanceof Set) {
             ((Set) collectionObject).add(value);
         } else {
-            TestifyLogUtil.fail(log,
-                    "给对象【" + collectionObject + "】失败，对象是【" + collectionObject.getClass() + "】类型而不是Set");
+            TestifyLogUtil.fail(
+                    log, "给对象【" + collectionObject + "】失败，对象是【" + collectionObject.getClass() + "】类型而不是Set");
         }
     }
 }

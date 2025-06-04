@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2023 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.db.enums;
 
 /*-
@@ -31,8 +28,8 @@ package com.github.loadup.components.testify.db.enums;
  */
 
 /**
- * 
- * 
+ *
+ *
  */
 public enum DBFlagEnum {
     /**
@@ -103,6 +100,4 @@ public enum DBFlagEnum {
      */
     F,
     ;
-
-
 }

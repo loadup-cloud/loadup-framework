@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.dal.repository;
 
 /*-
@@ -27,19 +28,18 @@ package com.github.loadup.modules.upms.dal.repository;
  */
 
 import com.github.loadup.modules.upms.dal.dataobject.UserSocialDO;
+import java.util.List;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public interface UserSocialRepository extends ListCrudRepository<UserSocialDO, String> {
 
-    @Query("select * from upms_user_social where account_type = :accountType and social_account = :socialAccount ")
-    UserSocialDO findByAccountType(@Param("accountType") String accountType, @Param("socialAccount") String socialAccount);
+    @Query("select * from upms_user_social where account_type = :accountType and social_account =" + " :socialAccount ")
+    UserSocialDO findByAccountType(
+            @Param("accountType") String accountType, @Param("socialAccount") String socialAccount);
 
     List<UserSocialDO> findAllByUserId(String userId);
-
 }

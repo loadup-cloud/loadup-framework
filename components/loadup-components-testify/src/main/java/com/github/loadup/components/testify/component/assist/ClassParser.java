@@ -1,8 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.assist;
 
 /*-
@@ -31,18 +27,17 @@ package com.github.loadup.components.testify.component.assist;
  * #L%
  */
 
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.NotFoundException;
-import javassist.bytecode.*;
-
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.NotFoundException;
+import javassist.bytecode.*;
 
 /**
  * 类解析工具
@@ -62,22 +57,19 @@ public class ClassParser {
      * @return
      * @throws Throwable
      */
-    public static CtClass[] getClassesWithAnnotation(ClassPool pool, String classPath,
-                                                     String packageName, Class annotationType) {
+    public static CtClass[] getClassesWithAnnotation(
+            ClassPool pool, String classPath, String packageName, Class annotationType) {
 
-        List<CtClass> classes = getClassesWithAnnotationHelper(pool, classPath, packageName,
-                annotationType);
+        List<CtClass> classes = getClassesWithAnnotationHelper(pool, classPath, packageName, annotationType);
         return classes.toArray(new CtClass[classes.size()]);
     }
 
-    private static List<CtClass> getClassesWithAnnotationHelper(ClassPool pool, String classPath,
-                                                                String packageName,
-                                                                Class annotationType) {
+    private static List<CtClass> getClassesWithAnnotationHelper(
+            ClassPool pool, String classPath, String packageName, Class annotationType) {
         List<CtClass> classes = new ArrayList<CtClass>();
         String path = classPath + packageName.replace(".", File.separator);
         File dir = new File(path);
-        if (!dir.exists())
-            return classes;
+        if (!dir.exists()) return classes;
         for (File file : dir.listFiles()) {
             if (file.isFile()) {
                 CtClass cls;
@@ -90,10 +82,8 @@ public class ClassParser {
                     classes.add(cls);
                 }
             } else if (file.isDirectory()) {
-                classes.addAll(getClassesWithAnnotationHelper(pool, classPath, packageName + "."
-                                + file.getName(),
-                        annotationType));
-
+                classes.addAll(getClassesWithAnnotationHelper(
+                        pool, classPath, packageName + "." + file.getName(), annotationType));
             }
         }
         return classes;
@@ -106,21 +96,17 @@ public class ClassParser {
      * @return
      * @throws Throwable
      */
-    public static CtClass[] getClassesExtendCCBase(ClassPool pool, String classPath,
-                                                   String packageName) {
+    public static CtClass[] getClassesExtendCCBase(ClassPool pool, String classPath, String packageName) {
         List<CtClass> classes = getClassesExtendCCBaseHelper(pool, classPath, packageName);
         return classes.toArray(new CtClass[classes.size()]);
-
     }
 
-    private static List<CtClass> getClassesExtendCCBaseHelper(ClassPool pool, String classPath,
-                                                              String packageName) {
+    private static List<CtClass> getClassesExtendCCBaseHelper(ClassPool pool, String classPath, String packageName) {
 
         List<CtClass> classes = new ArrayList<CtClass>();
         String path = classPath + packageName.replace(".", File.separator);
         File dir = new File(path);
-        if (!dir.exists())
-            return classes;
+        if (!dir.exists()) return classes;
         for (File file : dir.listFiles()) {
             if (file.isFile()) {
                 CtClass cls = null;
@@ -144,8 +130,7 @@ public class ClassParser {
                             break;
                         }
                     }
-                    if (find)
-                        break;
+                    if (find) break;
                     try {
                         temp = temp.getSuperclass();
                     } catch (NotFoundException e) {
@@ -156,8 +141,7 @@ public class ClassParser {
                     classes.add(cls);
                 }
             } else if (file.isDirectory()) {
-                classes.addAll(getClassesExtendCCBaseHelper(pool, classPath, packageName + "."
-                        + file.getName()));
+                classes.addAll(getClassesExtendCCBaseHelper(pool, classPath, packageName + "." + file.getName()));
             }
         }
         return classes;
@@ -248,5 +232,4 @@ public class ClassParser {
         }
         return null;
     }
-
 }

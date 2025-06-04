@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.db.offlineService;
 
 /*-
@@ -28,9 +29,6 @@ package com.github.loadup.components.testify.db.offlineService;
 
 import com.github.loadup.components.testify.db.enums.DataBaseTypeEnum;
 import com.github.loadup.components.testify.log.TestifyLogUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.testng.Assert;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -39,13 +37,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.testng.Assert;
 
 /**
  * 线下DB抽象基类，不需要启动框架
  */
 @Slf4j
 public abstract class AbstractDBService {
-
 
     protected Connection conn;
 
@@ -59,12 +58,10 @@ public abstract class AbstractDBService {
 
     protected DataBaseTypeEnum dbType;
 
-    public static AbstractDBService getService(String url, String userName, String password,
-                                               String schema) {
+    public static AbstractDBService getService(String url, String userName, String password, String schema) {
         Assert.assertNotNull("数据库链接不能为空", url);
         DataBaseTypeEnum dbType = null;
-       if (url.contains("mysql"))
-            dbType = DataBaseTypeEnum.MYSQL;
+        if (url.contains("mysql")) dbType = DataBaseTypeEnum.MYSQL;
         else {
             Assert.fail("不支持的数据库类型");
         }
@@ -135,8 +132,7 @@ public abstract class AbstractDBService {
      * @return 数据结果
      */
     public List<Map<String, Object>> executeQuerySql(String sql) {
-        if (isConnClosed())
-            initConnection();
+        if (isConnClosed()) initConnection();
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
@@ -166,8 +162,7 @@ public abstract class AbstractDBService {
      * @return 影响行数
      */
     public int executeUpdateSql(String sql) {
-        if (isConnClosed())
-            initConnection();
+        if (isConnClosed()) initConnection();
         try {
             Statement stmt = this.conn.createStatement();
             return stmt.executeUpdate(sql);
@@ -218,5 +213,4 @@ public abstract class AbstractDBService {
     public DataBaseTypeEnum getDbType() {
         return dbType;
     }
-
 }

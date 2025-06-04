@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.script.parser.groovy;
 
 /*-
@@ -26,12 +27,11 @@ package com.github.loadup.components.gateway.message.script.parser.groovy;
  * #L%
  */
 
-import org.springframework.core.io.AbstractResource;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import org.springframework.core.io.AbstractResource;
 
 /**
  * 内存资源，主要用来将编译后的解析脚本存于内存
@@ -86,5 +86,4 @@ public class InMemoryResource extends AbstractResource {
 
         return Arrays.equals(source, ((InMemoryResource) res).source);
     }
-
 }

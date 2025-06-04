@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.client.dto;
 
 /*-
@@ -26,11 +27,10 @@ package com.github.loadup.modules.upms.client.dto;
  * #L%
  */
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Serial;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -41,5 +41,4 @@ public class UserDTO extends SimpleUserDTO {
     private List<SimpleRoleDTO> roleList;
     private List<SimplePositionDTO> positionList;
     private List<SimpleDepartDTO> departList;
-
 }

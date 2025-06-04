@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.db.enums;
 
 /*-
@@ -29,11 +30,10 @@ package com.github.loadup.components.testify.db.enums;
 /**
  * 数据库列类型枚举
  *
- * 
+ *
  *
  */
 public enum ColumnTypeEnum {
-
     VARCHAR("VARCHAR", "字符类型"),
 
     INT("INT", "数字类型"),
@@ -68,5 +68,4 @@ public enum ColumnTypeEnum {
     public String getDescription() {
         return description;
     }
-
 }

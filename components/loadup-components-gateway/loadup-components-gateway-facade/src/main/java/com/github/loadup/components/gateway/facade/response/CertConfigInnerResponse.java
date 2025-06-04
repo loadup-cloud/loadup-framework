@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.response;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.components.gateway.facade.response;
 
 import com.github.loadup.components.gateway.facade.enums.CertTypeEnum;
 import com.github.loadup.components.gateway.facade.enums.OperationType;
-
 import java.util.Map;
 
 /**
@@ -110,7 +110,7 @@ public class CertConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setCertCode(String certCode) {
         this.certCode = certCode;
@@ -124,7 +124,7 @@ public class CertConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setCertType(CertTypeEnum certType) {
         this.certType = certType;
@@ -138,7 +138,7 @@ public class CertConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setCertContent(String certContent) {
         this.certContent = certContent;
@@ -152,7 +152,7 @@ public class CertConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setCertStatus(String certStatus) {
         this.certStatus = certStatus;
@@ -161,16 +161,16 @@ public class CertConfigInnerResponse extends BaseResponse {
     /**
      *
      *
-
+     *
      */
     /*public Map<String, String> getCertProperties() {
         return certProperties;
     }*/
 
     /**
-     * 
      *
-
+     *
+     *
      */
     /*public void setCertProperties(Map<String, String> certProperties) {
         this.certProperties = certProperties;
@@ -184,7 +184,7 @@ public class CertConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setAlgorithmProperties(Map<String, String> algorithmProperties) {
         this.algorithmProperties = algorithmProperties;
@@ -198,7 +198,7 @@ public class CertConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
@@ -212,7 +212,7 @@ public class CertConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;
@@ -226,7 +226,7 @@ public class CertConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setOperateType(OperationType operateType) {
         this.operateType = operateType;
@@ -240,7 +240,7 @@ public class CertConfigInnerResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setAlgoName(String algoName) {
         this.algoName = algoName;

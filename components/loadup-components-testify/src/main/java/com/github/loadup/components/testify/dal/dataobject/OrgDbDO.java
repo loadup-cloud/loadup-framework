@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.dal.dataobject;
 
 /*-
@@ -35,8 +32,8 @@ import java.util.Date;
 /**
  * 原子数据对象DO
  *
- * 
- * 
+ *
+ *
  */
 public class OrgDbDO {
 
@@ -76,7 +73,7 @@ public class OrgDbDO {
     private String memo;
 
     /**
-     * 
+     *
      *
      * @return property value of sourceId
      */
@@ -85,7 +82,7 @@ public class OrgDbDO {
     }
 
     /**
-     * 
+     *
      *
      * @param sourceId value to be assigned to property sourceId
      */
@@ -94,7 +91,7 @@ public class OrgDbDO {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of system
      */
@@ -103,7 +100,7 @@ public class OrgDbDO {
     }
 
     /**
-     * 
+     *
      *
      * @param system value to be assigned to property system
      */
@@ -112,7 +109,7 @@ public class OrgDbDO {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of sourceData
      */
@@ -121,7 +118,7 @@ public class OrgDbDO {
     }
 
     /**
-     * 
+     *
      *
      * @param sourceData value to be assigned to property sourceData
      */
@@ -130,7 +127,7 @@ public class OrgDbDO {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of sourceRule
      */
@@ -139,7 +136,7 @@ public class OrgDbDO {
     }
 
     /**
-     * 
+     *
      *
      * @param sourceRule value to be assigned to property sourceRule
      */
@@ -148,7 +145,7 @@ public class OrgDbDO {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of gmtCreate
      */
@@ -157,7 +154,7 @@ public class OrgDbDO {
     }
 
     /**
-     * 
+     *
      *
      * @param gmtCreate value to be assigned to property gmtCreate
      */
@@ -166,7 +163,7 @@ public class OrgDbDO {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of gmtModify
      */
@@ -175,7 +172,7 @@ public class OrgDbDO {
     }
 
     /**
-     * 
+     *
      *
      * @param gmtModify value to be assigned to property gmtModify
      */
@@ -184,7 +181,7 @@ public class OrgDbDO {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of memo
      */
@@ -193,12 +190,11 @@ public class OrgDbDO {
     }
 
     /**
-     * 
+     *
      *
      * @param memo value to be assigned to property memo
      */
     public void setMemo(String memo) {
         this.memo = memo;
     }
-
 }

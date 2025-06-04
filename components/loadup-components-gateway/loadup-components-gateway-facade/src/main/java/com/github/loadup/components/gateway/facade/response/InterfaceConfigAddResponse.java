@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.response;
 
 /*-
@@ -44,7 +45,7 @@ public class InterfaceConfigAddResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceId(String interfaceId) {
         this.interfaceId = interfaceId;

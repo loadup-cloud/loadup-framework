@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.check;
 
 /*-
@@ -26,15 +27,11 @@ package com.github.loadup.components.testify.utils.check;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.loadup.components.testify.util.VelocityUtil;
 import com.github.loadup.components.testify.utils.DetailCollectUtils;
 import com.github.loadup.components.testify.utils.ObjectUtil;
 import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -43,20 +40,39 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ObjectCompareUtil {
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(ObjectCompareUtil.class);
-    private static final String[] comparableTypes = {"int", "float", "double",
-            "long", "short", "byte", "boolean", "char", "java.lang.Integer", "java.lang.Float",
-            "java.lang.Double", "java.lang.Long", "java.lang.Short", "java.lang.Byte",
-            "java.lang.Boolean", "java.lang.Character", "java.lang.String", "java.math.BigDecimal",
-            "java.util.Date"};
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectCompareUtil.class);
+    private static final String[] comparableTypes = {
+        "int",
+        "float",
+        "double",
+        "long",
+        "short",
+        "byte",
+        "boolean",
+        "char",
+        "java.lang.Integer",
+        "java.lang.Float",
+        "java.lang.Double",
+        "java.lang.Long",
+        "java.lang.Short",
+        "java.lang.Byte",
+        "java.lang.Boolean",
+        "java.lang.Character",
+        "java.lang.String",
+        "java.math.BigDecimal",
+        "java.util.Date"
+    };
     // 预期结果变量替换
     public static ThreadLocal<Map<String, Object>> varParaMapHolder = new ThreadLocal<Map<String, Object>>();
 
     // 字段校验方法Y：普通校验，N：不校验，R：正则校验<className,<fieldName,flag>>
-    public static ThreadLocal<Map<String, Map<String, String>>> varFlagMapHolder = new ThreadLocal<Map<String, Map<String, String>>>();
+    public static ThreadLocal<Map<String, Map<String, String>>> varFlagMapHolder =
+            new ThreadLocal<Map<String, Map<String, String>>>();
 
     // 自定义flag方法
     public static ThreadLocal<Map<String, Method>> flagMethodsHolder = new ThreadLocal<Map<String, Method>>();
@@ -65,23 +81,23 @@ public class ObjectCompareUtil {
     public static ThreadLocal<Object> flagMethodObjHolder = new ThreadLocal<Object>();
     private static ThreadLocal<StringBuffer> reportStrHolder = ThreadLocal.withInitial(() -> new StringBuffer());
 
-    public static void compare(Object actual, Object expect,
-                               Map<String, Map<String, String>> flags, Map<String, Object> paramMap) {
+    public static void compare(
+            Object actual, Object expect, Map<String, Map<String, String>> flags, Map<String, Object> paramMap) {
 
         varParaMapHolder.set(paramMap);
         varFlagMapHolder.set(flags);
         reportStrHolder.set(new StringBuffer());
-        DetailCollectUtils.appendAndLog("\nexpect:" + ObjectUtil.toJson(expect) + "\nactual:"
-                + ObjectUtil.toJson(actual), LOGGER);
+        DetailCollectUtils.appendAndLog(
+                "\nexpect:" + ObjectUtil.toJson(expect) + "\nactual:" + ObjectUtil.toJson(actual), LOGGER);
 
         if (!compareByFields(actual, expect)) {
-            throw new AssertionError("[CheckFailed]比对失败，详情如下：" + reportStrHolder.get().toString());
+            throw new AssertionError(
+                    "[CheckFailed]比对失败，详情如下：" + reportStrHolder.get().toString());
         }
     }
 
-    public static boolean matchObj(Object actual, Object expect,
-                                   Map<String, Map<String, String>> flags,
-                                   Map<String, Object> paramMap) {
+    public static boolean matchObj(
+            Object actual, Object expect, Map<String, Map<String, String>> flags, Map<String, Object> paramMap) {
 
         varParaMapHolder.set(paramMap);
         varFlagMapHolder.set(flags);
@@ -94,15 +110,13 @@ public class ObjectCompareUtil {
         if (actual == null && expect == null) {
             return true;
         }
-        if ((actual == null && expect != null)
-                || (expect == null && actual != null)) {
+        if ((actual == null && expect != null) || (expect == null && actual != null)) {
             appendCmpReport("比对值为空，实际值：" + actual + ", 预期值：" + expect);
             return false;
         }
 
         /* 1.2 特殊场景：如果对象类型是Throwable/StackTraceElement[],,打条日志,直接认为成功 */
-        if (actual.getClass().equals(Throwable.class)
-                || actual.getClass().equals(StackTraceElement[].class)) {
+        if (actual.getClass().equals(Throwable.class) || actual.getClass().equals(StackTraceElement[].class)) {
             appendCmpReport("合理情况,跳过当前类型校验" + actual.getClass().getName());
             return true;
         }
@@ -120,7 +134,6 @@ public class ObjectCompareUtil {
         /* 2.2 前置准备：变量初始化 */
         String objName = actual.getClass().getName();
         Class<?> objType = actual.getClass();
-
 
         /* 3.1 正式校验：根据对象类型开启正式比对 */
         if (isComparable(objType)) {
@@ -160,8 +173,8 @@ public class ObjectCompareUtil {
                 return false;
             }
 
-            //双向严格一致校验、支持乱序
-            //以期望Map为准校验实际值
+            // 双向严格一致校验、支持乱序
+            // 以期望Map为准校验实际值
             for (Entry<Object, Object> entry : expectMap.entrySet()) {
                 Object expectVal = entry.getValue();
                 Object actualVal = actualMap.get(entry.getKey());
@@ -171,7 +184,7 @@ public class ObjectCompareUtil {
                 }
             }
 
-            //以实际Map为准校验期望值
+            // 以实际Map为准校验期望值
             for (Entry<Object, Object> entry : actualMap.entrySet()) {
                 Object actualVal = entry.getValue();
                 Object expectVal = expectMap.get(entry.getKey());
@@ -189,7 +202,7 @@ public class ObjectCompareUtil {
                 return false;
             }
 
-            //以实际List为准校验实际值
+            // 以实际List为准校验实际值
             for (Object objActual : actualList) {
                 boolean isFound = false;
                 // 记录报告起始位置
@@ -198,7 +211,9 @@ public class ObjectCompareUtil {
                     if (compareByFields(objActual, objExpect)) {
                         isFound = true;
                         // 消除列表错位比对造成的噪音报告
-                        reportStrHolder.get().delete(reportStart, reportStrHolder.get().length());
+                        reportStrHolder
+                                .get()
+                                .delete(reportStart, reportStrHolder.get().length());
                         // 防止多个相同实际元素对应到一个预期元素
                         expectListCpy.remove(objExpect);
                         break;
@@ -228,31 +243,28 @@ public class ObjectCompareUtil {
         for (Class<?> c = objType; c != null; c = c.getSuperclass()) {
             for (Field field : c.getDeclaredFields()) {
                 int modifiers = field.getModifiers();
-                if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)
-                        && !fields.contains(field)) {
+                if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && !fields.contains(field)) {
                     fields.add(field);
                 }
             }
         }
 
         // 内部Fields逐一比对
-        StringBuilder flagSuggest = new StringBuilder("可在yaml文件的flag标签下添加如下内容以忽略校验（供参考，若无效可反馈@浦墨）:" + "\n" + objName + ": {\n\t");
+        StringBuilder flagSuggest = new StringBuilder("可在yaml文件的flag标签下添加如下内容以忽略校验:" + "\n" + objName + ": {\n\t");
         String addFlag = "";
         for (Field field : fields) {
             String fieldName = field.getName();
             String fieldCoord = objName + "#" + fieldName; // 字段坐标，用于标注比对位置
 
-            //如果对象类型是Throwable/StackTraceElement[],,打条日志,直接认为成功
+            // 如果对象类型是Throwable/StackTraceElement[],,打条日志,直接认为成功
             if (StringUtils.equals(fieldName, "suppressedExceptions")
                     || field.getType().equals(Throwable.class)) {
                 appendCmpReport("合理情况,跳过当前类型校验" + actual.getClass().getName());
                 continue;
             }
 
-            if (StringUtils.equals(fieldName, "stackTrace")
-                    && field.getType().equals(StackTraceElement[].class)) {
-                appendCmpReport("合理情况,跳过当前类型校验object类型是:" + actual.getClass().getName()
-                        + ",字段是:" + fieldName);
+            if (StringUtils.equals(fieldName, "stackTrace") && field.getType().equals(StackTraceElement[].class)) {
+                appendCmpReport("合理情况,跳过当前类型校验object类型是:" + actual.getClass().getName() + ",字段是:" + fieldName);
                 continue;
             }
 
@@ -262,7 +274,8 @@ public class ObjectCompareUtil {
                 Object objExpect = field.get(expect);
 
                 // 未设置flag的字段直接比对
-                if (objFlag == null || objFlag.get(fieldName) == null
+                if (objFlag == null
+                        || objFlag.get(fieldName) == null
                         || objFlag.get(fieldName).equals("Y")) {
 
                     if (!compareByFields(objActual, objExpect)) {
@@ -301,16 +314,14 @@ public class ObjectCompareUtil {
                     if (null == objActual && null == objExpect) {
                         continue;
                     }
-                    if ((null == objActual && null != objExpect)
-                            || (null != objActual && null == objExpect)) {
+                    if ((null == objActual && null != objExpect) || (null != objActual && null == objExpect)) {
                         appendCmpReport(fieldCoord + "时间校验失败,\n实际值:" + objActual + "\n期望值:" + objExpect);
                         isSame = false;
                         continue;
                     }
 
                     // 2. 比对的时间类型校验
-                    if (!objActual.getClass().getName()
-                            .equalsIgnoreCase("java.util.Date")) {
+                    if (!objActual.getClass().getName().equalsIgnoreCase("java.util.Date")) {
                         appendCmpReport(fieldCoord + "打了D标签但不是正常的java.util.Date类型！");
                         continue;
                     }
@@ -318,7 +329,7 @@ public class ObjectCompareUtil {
                     Date actualDate = (Date) objActual;
                     Date expectDate = (Date) objExpect;
 
-                    //存在两种情况，一种直接是D，一种是D200情况分别处理，D就直接按照yaml中存储的时间比对，D200和当前时间比对
+                    // 存在两种情况，一种直接是D，一种是D200情况分别处理，D就直接按照yaml中存储的时间比对，D200和当前时间比对
                     if (flag.equals("D")) {
                         if (!actualDate.equals(expectDate)) {
                             appendCmpReport(fieldCoord + "时间校验失败,\n实际值:" + objActual + "\n期望值:" + objExpect);
@@ -327,7 +338,7 @@ public class ObjectCompareUtil {
                         continue;
                     } else {
                         long timeFlow = Long.valueOf(flag.replace("D", "").trim());
-                        //相差多少秒与给定值比较
+                        // 相差多少秒与给定值比较
                         if (Math.abs((actualDate.getTime() - expectDate.getTime()) / 1000) > timeFlow) {
                             isSame = false;
                             appendCmpReport(fieldCoord + "时间校验失败,\n实际值:" + objActual + "\n期望值:" + objExpect);
@@ -336,7 +347,7 @@ public class ObjectCompareUtil {
                     }
 
                 } else if (flag.equalsIgnoreCase("ME")) {
-                    //针对map类型的特殊比对
+                    // 针对map类型的特殊比对
                     Map<Object, Object> tarMap = (Map) objActual;
                     Map<Object, Object> expMap = (Map) objExpect;
 
@@ -344,7 +355,7 @@ public class ObjectCompareUtil {
                         continue;
                     }
 
-                    //以期望Map为准校验实际值，此处的风险在于期望值写少了，校验的内容也变少。仅支持属性为Map的情况
+                    // 以期望Map为准校验实际值，此处的风险在于期望值写少了，校验的内容也变少。仅支持属性为Map的情况
                     for (Entry<Object, Object> entry : expMap.entrySet()) {
                         Object expectVal = entry.getValue();
                         Object actualVal = tarMap.get(entry.getKey());
@@ -377,8 +388,12 @@ public class ObjectCompareUtil {
                     JSONObject actualJson = JSONObject.parseObject(objActual.toString());
                     if (!expectJson.equals(actualJson)) {
                         isSame = false;
-                        appendCmpReport("JSON对象全量校验失败: " + fieldCoord
-                                + ", \n实际值: " + actualJson.toJSONString() + "\n期望值: " + expectJson.toJSONString());
+                        appendCmpReport("JSON对象全量校验失败: "
+                                + fieldCoord
+                                + ", \n实际值: "
+                                + actualJson.toJSONString()
+                                + "\n期望值: "
+                                + expectJson.toJSONString());
                     }
                     continue;
                 } else if (flag.equalsIgnoreCase("JE")) {
@@ -398,14 +413,19 @@ public class ObjectCompareUtil {
                     // size不一致就不用比对了，上面key缺失已录入report
                     if (compareJson.size() == expectJson.size() && !compareJson.equals(expectJson)) {
                         isSame = false;
-                        appendCmpReport("JSON对象全量校验失败: " + fieldCoord
-                                + ", \n实际值: " + actualJson.toJSONString() + "\n期望值: " + expectJson.toJSONString());
+                        appendCmpReport("JSON对象全量校验失败: "
+                                + fieldCoord
+                                + ", \n实际值: "
+                                + actualJson.toJSONString()
+                                + "\n期望值: "
+                                + expectJson.toJSONString());
                     }
 
                     continue;
                 } else {
                     // 搜索并尝试自定义flag方法
-                    if (flagMethodsHolder.get() != null && flagMethodObjHolder.get() != null
+                    if (flagMethodsHolder.get() != null
+                            && flagMethodObjHolder.get() != null
                             && flagMethodsHolder.get().containsKey(flag)) {
                         Method flagMethod = flagMethodsHolder.get().get(flag);
                         String cmpMsg = (String) flagMethod.invoke(flagMethodObjHolder.get(), objExpect, objActual);
@@ -507,5 +527,4 @@ public class ObjectCompareUtil {
 
         reportStrHolder.get().append("\n" + msg);
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.context;
 
 /*-
@@ -26,53 +27,52 @@ package com.github.loadup.components.testify.context;
  * #L%
  */
 
+import com.github.loadup.components.testify.driver.enums.SuiteFlag;
+import com.github.loadup.components.testify.yaml.YamlTestData;
+import com.github.loadup.components.testify.yaml.cpUnit.DataBaseCPUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.github.loadup.components.testify.driver.enums.SuiteFlag;
-import com.github.loadup.components.testify.yaml.YamlTestData;
-import com.github.loadup.components.testify.yaml.cpUnit.DataBaseCPUnit;
-
 /**
  * 用例上下文
  *
- * 
+ *
  *
  */
 public class TestifyCaseContext {
 
-    //用例当前CP点替换字段
+    // 用例当前CP点替换字段
     private final Map<String, Object> uniqueMap = new HashMap<String, Object>();
-    //过程日志信息
+    // 过程日志信息
     private final List<String> logData = new ArrayList<String>();
-    //数据待清除区域行对象
+    // 数据待清除区域行对象
     private final List<DataBaseCPUnit> preCleanContent = new ArrayList<DataBaseCPUnit>();
-    //CP点当前错误列表
+    // CP点当前错误列表
     private final List<String> processErrorLog = new ArrayList<String>();
-    //用例caseID
+    // 用例caseID
     private String caseId;
-    //用例描述
+    // 用例描述
     private String caseDesc;
-    //用例执行标识
+    // 用例执行标识
     private SuiteFlag suiteFlag;
-    //用例当前入参
+    // 用例当前入参
     private Map<String, Object> parameterMap;
-    //是否已加载公共准备数据字段
+    // 是否已加载公共准备数据字段
     private boolean needLoadCommonSection = false;
 
-    //需要比较数据库表长度
+    // 需要比较数据库表长度
     private boolean needCompareTableLength = true;
 
-    //当前用例驱动yaml文件名，可以为空
+    // 当前用例驱动yaml文件名，可以为空
     private String yamlPath;
 
-    //Yaml加载对象
+    // Yaml加载对象
     private YamlTestData yamlTestData;
 
     /**
-     * 
+     *
      *
      * @return property value of caseId
      */
@@ -90,7 +90,7 @@ public class TestifyCaseContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of parameterMap
      */
@@ -108,7 +108,7 @@ public class TestifyCaseContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of needLoadCommonSection
      */
@@ -126,7 +126,7 @@ public class TestifyCaseContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of logData
      */
@@ -135,7 +135,7 @@ public class TestifyCaseContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of preCleanContent
      */
@@ -144,7 +144,7 @@ public class TestifyCaseContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of caseDesc
      */
@@ -162,7 +162,7 @@ public class TestifyCaseContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of suiteFlag
      */
@@ -180,7 +180,7 @@ public class TestifyCaseContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of uniqueMap
      */
@@ -189,7 +189,7 @@ public class TestifyCaseContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of processErrorLog
      */
@@ -198,7 +198,7 @@ public class TestifyCaseContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of needCompareTableLength
      */
@@ -216,7 +216,7 @@ public class TestifyCaseContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of yamlTestData
      */
@@ -234,7 +234,7 @@ public class TestifyCaseContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of yamlPath
      */
@@ -250,5 +250,4 @@ public class TestifyCaseContext {
     public void setYamlPath(String yamlPath) {
         this.yamlPath = yamlPath;
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.helper;
 
 /*-
@@ -26,6 +27,8 @@ package com.github.loadup.components.gateway.plugin.helper;
  * #L%
  */
 
+import static com.github.loadup.components.gateway.core.common.Constant.PATH_CONJUNCTION;
+
 import com.github.loadup.components.gateway.facade.spi.OpenApi;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import jakarta.annotation.Resource;
@@ -35,8 +38,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import static com.github.loadup.components.gateway.core.common.Constant.PATH_CONJUNCTION;
-
 /**
  *
  */
@@ -45,8 +46,7 @@ public class RpcClientHelper {
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(RpcClientHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger(RpcClientHelper.class);
 
     /**
      * environment
@@ -72,8 +72,7 @@ public class RpcClientHelper {
             String openApiServiceName = StringUtils.split(interfaceId, PATH_CONJUNCTION)[1];
             openApi = getOpenApiInstance(openApiServiceName, timeout);
         } catch (Exception e) {
-            LogUtil.error(logger, "create open api service instance error, interfaceId=",
-                    interfaceId, e);
+            LogUtil.error(logger, "create open api service instance error, interfaceId=", interfaceId, e);
         }
         return openApi;
     }

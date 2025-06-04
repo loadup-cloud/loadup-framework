@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.common.enums;
 
 /*-
@@ -67,14 +68,14 @@ public enum RoleType {
     }
 
     /**
-     * 
+     *
      */
     public String getCode() {
         return code;
     }
 
     /**
-     * 
+     *
      */
     public String getMessage() {
         return message;

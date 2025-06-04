@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.domain;
 
 /*-
@@ -29,15 +30,14 @@ package com.github.loadup.modules.upms.domain;
 import com.github.loadup.commons.domain.BaseDomain;
 import com.github.loadup.commons.util.ToStringUtils;
 import com.github.loadup.modules.upms.enums.SocialAccountTypeEnum;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.Serial;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author lise
@@ -49,20 +49,20 @@ public class UpmsUser extends BaseDomain {
     @Serial
     private static final long serialVersionUID = 5534160252441899151L;
 
-    private String             id;
-    private String             account;
-    private String             nickName;
-    private UserName           englishName;
-    private UserName           officialName;
-    private String             password;
-    private String             avatar;
-    private LocalDate          birthday;
-    private LocalDateTime      registeredTime;
-    private String             userType;
-    private List<UpmsRole>     roleList;
+    private String id;
+    private String account;
+    private String nickName;
+    private UserName englishName;
+    private UserName officialName;
+    private String password;
+    private String avatar;
+    private LocalDate birthday;
+    private LocalDateTime registeredTime;
+    private String userType;
+    private List<UpmsRole> roleList;
     private List<UpmsPosition> positionList;
-    private List<UpmsDepart>   departList;
-    private List<UpmsSocial>   socialList;
+    private List<UpmsDepart> departList;
+    private List<UpmsSocial> socialList;
 
     public String mobile() {
         if (CollectionUtils.isNotEmpty(socialList)) {

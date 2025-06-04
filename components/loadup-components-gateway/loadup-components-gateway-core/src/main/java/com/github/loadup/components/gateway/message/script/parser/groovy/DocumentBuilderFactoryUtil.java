@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.script.parser.groovy;
 
 /*-
@@ -27,11 +28,10 @@ package com.github.loadup.components.gateway.message.script.parser.groovy;
  */
 
 import com.github.loadup.components.gateway.facade.util.LogUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -54,7 +54,7 @@ public class DocumentBuilderFactoryUtil {
             dbf.setFeature(EGE, false);
             dbf.setFeature(EPE, false);
         } catch (ParserConfigurationException e) {
-            //请自行填充异常捕获逻辑
+            // 请自行填充异常捕获逻辑
             LogUtil.error(logger, e, "Failed to set xml document features.");
         }
         return dbf;

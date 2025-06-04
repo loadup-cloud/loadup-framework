@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.result;
 
 /*-
@@ -27,12 +28,11 @@ package com.github.loadup.commons.result;
  */
 
 import com.github.loadup.commons.dto.DTO;
+import java.io.Serial;
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-
-import java.io.Serial;
-import java.io.Serializable;
 
 /**
  * @author Lise

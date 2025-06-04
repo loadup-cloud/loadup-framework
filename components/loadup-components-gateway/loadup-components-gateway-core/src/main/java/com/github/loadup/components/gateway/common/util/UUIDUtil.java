@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.common.util;
 
 /*-
@@ -26,9 +27,8 @@ package com.github.loadup.components.gateway.common.util;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.UUID;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *

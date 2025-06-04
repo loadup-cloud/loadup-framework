@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.common.exception.util;
 
 /*-
@@ -29,9 +30,8 @@ package com.github.loadup.components.gateway.common.exception.util;
 import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.commons.result.ResultCode;
 import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Arrays;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Assert Util
@@ -56,11 +56,9 @@ public final class AssertUtil {
 
         for (String item : itemArray) {
             if (StringUtils.isBlank(item)) {
-                throw new CommonException(GatewayErrorCode.PARAM_ILLEGAL,
-                        Arrays.toString(itemArray) + " exist blank");
+                throw new CommonException(GatewayErrorCode.PARAM_ILLEGAL, Arrays.toString(itemArray) + " exist blank");
             }
         }
-
     }
 
     /**
@@ -88,8 +86,7 @@ public final class AssertUtil {
      */
     public static void isNotNull(Object object, String msg) {
         if (object == null) {
-            throw new IllegalArgumentException(
-                    (StringUtils.isBlank(msg) ? "Parameter should not be null！" : msg));
+            throw new IllegalArgumentException((StringUtils.isBlank(msg) ? "Parameter should not be null！" : msg));
         }
     }
 
@@ -98,8 +95,7 @@ public final class AssertUtil {
      *
      * @throws CommonException
      */
-    public static void isNotNull(Object object, GatewayErrorCode resutlCode,
-                                 String message) throws CommonException {
+    public static void isNotNull(Object object, GatewayErrorCode resutlCode, String message) throws CommonException {
         if (object == null) {
             throw new CommonException(resutlCode, message);
         }
@@ -142,5 +138,4 @@ public final class AssertUtil {
             throw new CommonException(errorCode, message);
         }
     }
-
 }

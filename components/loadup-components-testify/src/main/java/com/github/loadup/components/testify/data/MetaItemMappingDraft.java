@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data;
 
 /*-
@@ -31,7 +28,6 @@ package com.github.loadup.components.testify.data;
  */
 
 import com.github.loadup.components.testify.data.enums.MatchDegree;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +36,7 @@ import java.util.List;
  * <p>
  * 根据算法自动生成匹配结果。
  *
- * 
+ *
  *
  */
 public class MetaItemMappingDraft {
@@ -49,6 +45,7 @@ public class MetaItemMappingDraft {
      * 候选
      */
     private final List<Candidate> candidates = new ArrayList<Candidate>();
+
     /**
      * 元数据项
      */
@@ -83,7 +80,7 @@ public class MetaItemMappingDraft {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of metaItem
      */
@@ -92,7 +89,7 @@ public class MetaItemMappingDraft {
     }
 
     /**
-     * 
+     *
      *
      * @param metaItem value to be assigned to property metaItem
      */
@@ -101,7 +98,7 @@ public class MetaItemMappingDraft {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of candidates
      */
@@ -139,7 +136,5 @@ public class MetaItemMappingDraft {
         public String toString() {
             return "Candidate [matchDegree=" + matchDegree + ", initItems=" + initItems + "]";
         }
-
     }
-
 }

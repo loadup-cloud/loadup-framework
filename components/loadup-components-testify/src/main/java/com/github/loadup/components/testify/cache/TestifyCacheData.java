@@ -1,6 +1,4 @@
-/**
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.cache;
 
 /*-
@@ -36,11 +34,10 @@ import com.github.loadup.components.testify.object.comparer.UnitComparer;
 import com.github.loadup.components.testify.object.generator.CustomGenerator;
 import com.github.loadup.components.testify.util.FileUtil;
 import com.github.loadup.components.testify.yaml.enums.CPUnitTypeEnum;
-import org.springframework.util.CollectionUtils;
-
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
+import org.springframework.util.CollectionUtils;
 
 /**
  * 缓存字段
@@ -51,19 +48,23 @@ public class TestifyCacheData {
     /**
      * 自定义数据库表名集合
      */
-    private final static Set<String> dbDataSet = new HashSet<String>();
+    private static final Set<String> dbDataSet = new HashSet<String>();
+
     /**
      * 自定义对象类名集合
      */
-    private final static Set<String> objectDataSet = new HashSet<String>();
+    private static final Set<String> objectDataSet = new HashSet<String>();
+
     /**
      * 消息unit名称集合，需要在基类手动预加载
      */
-    private final static Map<String, MessageModel> messageDataMap = new HashMap<String, MessageModel>();
+    private static final Map<String, MessageModel> messageDataMap = new HashMap<String, MessageModel>();
+
     /**
      * 自定义字段生成器集合
      */
     private static Map<String, CustomGenerator> customGenerators = new HashMap<String, CustomGenerator>();
+
     /**
      * 自定义字段比较器集合
      */
@@ -79,7 +80,7 @@ public class TestifyCacheData {
     @SuppressWarnings("unchecked")
     public static void loadDataSet() {
 
-        //搜集表名
+        // 搜集表名
         collectDbTableName();
 
         File folder = FileUtil.getTestResourceFile(TestifyPathConstants.OBJECT_DATA_PATH);
@@ -154,8 +155,7 @@ public class TestifyCacheData {
             return CPUnitTypeEnum.MESSAGE;
         } else if (unitName.startsWith(TestifyYamlConstants.GROUPKEY)) {
             return CPUnitTypeEnum.GROUP;
-        } else
-            return null;
+        } else return null;
     }
 
     /**

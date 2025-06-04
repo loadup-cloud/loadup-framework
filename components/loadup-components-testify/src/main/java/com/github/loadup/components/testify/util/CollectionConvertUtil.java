@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -33,7 +34,7 @@ import java.util.List;
 /**
  * 提供集合之间相互转换的功能
  *
- * 
+ *
  *
  */
 public class CollectionConvertUtil {
@@ -54,7 +55,6 @@ public class CollectionConvertUtil {
             resultString = resultString + s + ",";
         }
         return resultString;
-
     }
 
     /**
@@ -66,6 +66,5 @@ public class CollectionConvertUtil {
     public static List<Object> arrayConvertToList(Object[] array) {
 
         return Arrays.asList(array);
-
     }
 }

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.dal.table;
 
 /*-
@@ -33,8 +30,8 @@ package com.github.loadup.components.testify.dal.table;
 import java.util.Date;
 
 /**
- * 
- * 
+ *
+ *
  */
 public class OrgDb {
 
@@ -83,7 +80,7 @@ public class OrgDb {
     }
 
     /**
-     * 
+     *
      *
      * @param source_id value to be assigned to property source_id
      */
@@ -101,7 +98,7 @@ public class OrgDb {
     }
 
     /**
-     * 
+     *
      *
      * @param system value to be assigned to property system
      */
@@ -119,7 +116,7 @@ public class OrgDb {
     }
 
     /**
-     * 
+     *
      *
      * @param source_data value to be assigned to property source_data
      */
@@ -137,7 +134,7 @@ public class OrgDb {
     }
 
     /**
-     * 
+     *
      *
      * @param source_rule value to be assigned to property source_rule
      */
@@ -155,7 +152,7 @@ public class OrgDb {
     }
 
     /**
-     * 
+     *
      *
      * @param gmt_create value to be assigned to property gmt_create
      */
@@ -173,7 +170,7 @@ public class OrgDb {
     }
 
     /**
-     * 
+     *
      *
      * @param gmt_modify value to be assigned to property gmt_modify
      */
@@ -191,7 +188,7 @@ public class OrgDb {
     }
 
     /**
-     * 
+     *
      *
      * @param memo value to be assigned to property memo
      */
@@ -204,9 +201,20 @@ public class OrgDb {
      */
     @Override
     public String toString() {
-        return "OrgDb [source_id=" + source_id + ", system=" + system + ", source_data="
-                + source_data + ", source_rule=" + source_rule + ", gmt_create=" + gmt_create
-                + ", gmt_modify=" + gmt_modify + ", memo=" + memo + "]";
+        return "OrgDb [source_id="
+                + source_id
+                + ", system="
+                + system
+                + ", source_data="
+                + source_data
+                + ", source_rule="
+                + source_rule
+                + ", gmt_create="
+                + gmt_create
+                + ", gmt_modify="
+                + gmt_modify
+                + ", memo="
+                + memo
+                + "]";
     }
-
 }

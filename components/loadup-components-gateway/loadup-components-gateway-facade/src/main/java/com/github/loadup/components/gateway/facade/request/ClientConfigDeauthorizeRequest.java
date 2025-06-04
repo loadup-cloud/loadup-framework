@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -43,7 +44,7 @@ public class ClientConfigDeauthorizeRequest extends BaseRequest {
     private String interfaceId;
 
     /**
-     * 
+     *
      */
     public String getClientId() {
         return clientId;
@@ -57,7 +58,7 @@ public class ClientConfigDeauthorizeRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getInterfaceId() {
         return interfaceId;

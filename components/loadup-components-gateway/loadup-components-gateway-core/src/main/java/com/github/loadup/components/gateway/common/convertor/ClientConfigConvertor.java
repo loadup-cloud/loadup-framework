@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.common.convertor;
 
 /*-
@@ -33,7 +34,6 @@ import com.github.loadup.components.gateway.facade.request.ClientConfigAddReques
 import com.github.loadup.components.gateway.facade.request.ClientConfigAuthorizeRequest;
 import com.github.loadup.components.gateway.facade.request.ClientConfigDeauthorizeRequest;
 import com.github.loadup.components.gateway.facade.request.ClientConfigUpdateRequest;
-
 import java.util.Date;
 
 /**

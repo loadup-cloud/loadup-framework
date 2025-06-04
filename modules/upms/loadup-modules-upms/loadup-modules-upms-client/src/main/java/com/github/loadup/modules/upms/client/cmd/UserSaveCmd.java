@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.client.cmd;
 
 /*-
@@ -27,7 +28,8 @@ package com.github.loadup.modules.upms.client.cmd;
  */
 
 import com.github.loadup.commons.request.BaseRequest;
-import com.github.loadup.modules.upms.client.dto.SimpleUserDTO;
+import com.github.loadup.modules.upms.client.dto.UserSaveDTO;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,5 +38,6 @@ import lombok.Setter;
 @Setter
 public class UserSaveCmd extends BaseRequest {
     @NotNull
-    private SimpleUserDTO user;
+    @Valid
+    private UserSaveDTO user;
 }

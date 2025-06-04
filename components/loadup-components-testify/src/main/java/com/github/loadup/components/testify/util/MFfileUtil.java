@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -26,20 +27,18 @@ package com.github.loadup.components.testify.util;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 获取选中bundle的bundleName
  *
- * 
+ *
  *
  */
 public class MFfileUtil {
@@ -51,17 +50,17 @@ public class MFfileUtil {
 
             Manifest mf = new Manifest(is);
             Attributes attributes = mf.getMainAttributes();
-            String bundleSymbolicNameString = attributes.getValue("Module-Name") == null ? attributes
-                    .getValue("Bundle-SymbolicName") : attributes.getValue("Module-Name");
-            bundleSymbolicNameString = (bundleSymbolicNameString.split(";"))[0].trim();//去掉singleton:=true部分
+            String bundleSymbolicNameString = attributes.getValue("Module-Name") == null
+                    ? attributes.getValue("Bundle-SymbolicName")
+                    : attributes.getValue("Module-Name");
+            bundleSymbolicNameString = (bundleSymbolicNameString.split(";"))[0].trim(); // 去掉singleton:=true部分
             return bundleSymbolicNameString;
 
         } catch (Exception e) {
-            //log.error("", e);
+            // log.error("", e);
         }
         return null;
     }
-
 
     public static String getAppPath(String prjPath, String prjName) {
 
@@ -69,10 +68,10 @@ public class MFfileUtil {
 
         String appPath = "";
         if (!StringUtils.equals(StringUtils.substringAfterLast(prjPath, sepratorString), "")) {
-            //sofa4用app分割
+            // sofa4用app分割
             appPath = StringUtils.substringBeforeLast(prjPath, sepratorString);
         } else {
-            //sofa3用系统名分割
+            // sofa3用系统名分割
             sepratorString = (prjName.split("-"))[0];
             appPath = StringUtils.substringBeforeLast(prjPath, sepratorString);
         }
@@ -82,7 +81,7 @@ public class MFfileUtil {
 
     /*
      * 获取指定命名规则的File
-     * 
+     *
      * @param scriptPath
      * @param scriptFileNameRegex
      * @return

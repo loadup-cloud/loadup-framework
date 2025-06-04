@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.support.enums;
 
 /*-
@@ -35,7 +32,7 @@ package com.github.loadup.components.testify.support.enums;
  * <p>
  * 对应测试执行的各阶段。
  *
- * 
+ *
  *
  */
 public enum ActionType {
@@ -59,5 +56,4 @@ public enum ActionType {
      * 清理动作
      */
     CLEAR;
-
 }

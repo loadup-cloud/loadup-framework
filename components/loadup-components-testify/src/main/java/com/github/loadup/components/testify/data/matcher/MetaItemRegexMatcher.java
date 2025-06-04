@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data.matcher;
 
 /*-
@@ -36,8 +33,8 @@ import com.github.loadup.components.testify.data.MetaItemMatcher;
 /**
  * 规则表达式匹配。
  *
- * 
- * 
+ *
+ *
  */
 public class MetaItemRegexMatcher implements MetaItemMatcher {
 
@@ -48,5 +45,4 @@ public class MetaItemRegexMatcher implements MetaItemMatcher {
     public int match(MetaInitItem initItem, String keyword) {
         return 0;
     }
-
 }

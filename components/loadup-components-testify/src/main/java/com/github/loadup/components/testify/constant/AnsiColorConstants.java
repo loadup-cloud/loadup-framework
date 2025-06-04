@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.constant;
 
 /*-
@@ -31,7 +31,7 @@ package com.github.loadup.components.testify.constant;
  * ANSI COLOR
  *
  * @author yuanzhen.chen
- * 
+ *
  */
 public class AnsiColorConstants {
 

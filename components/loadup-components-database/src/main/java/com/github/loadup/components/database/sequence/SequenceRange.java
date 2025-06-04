@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.database.sequence;
 
 /*-
@@ -26,11 +27,10 @@ package com.github.loadup.components.database.sequence;
  * #L%
  */
 
+import java.util.concurrent.atomic.AtomicLong;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 @Getter
 public class SequenceRange {
@@ -64,5 +64,4 @@ public class SequenceRange {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }
-
 }

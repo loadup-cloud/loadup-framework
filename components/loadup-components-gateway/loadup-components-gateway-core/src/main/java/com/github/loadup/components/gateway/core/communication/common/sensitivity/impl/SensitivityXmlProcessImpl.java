@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.communication.common.sensitivity.impl;
 
 /*-
@@ -30,14 +31,13 @@ import com.github.loadup.components.gateway.core.communication.common.sensitivit
 import com.github.loadup.components.gateway.core.model.SensitivityProcessType;
 import com.github.loadup.components.gateway.core.model.ShieldType;
 import com.github.loadup.components.gateway.core.prototype.util.MaskUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 /**
  *
@@ -60,7 +60,7 @@ public class SensitivityXmlProcessImpl implements SensitivityDataProcess<String>
         Matcher m = p.matcher(message);
         while (m.find()) {
             String value = m.group(2);
-            //兼容message为Json格式，且value为数字，无双引号包括的情况
+            // 兼容message为Json格式，且value为数字，无双引号包括的情况
             if (value == null && m.groupCount() == 3) {
                 value = m.group(3);
             }
@@ -69,7 +69,7 @@ public class SensitivityXmlProcessImpl implements SensitivityDataProcess<String>
                 String maskValue = MaskUtil.mask(value.trim(), shieldType.name());
                 String oriContext = m.group(0);
                 String replace = null;
-                //json脱敏
+                // json脱敏
                 replace = oriContext.replace(">" + value + "<", ">" + maskValue + "<");
                 m.appendReplacement(sb, replace);
             } else {
@@ -88,8 +88,8 @@ public class SensitivityXmlProcessImpl implements SensitivityDataProcess<String>
     public String mask(String maskContent, Map<String, ShieldType> shieldRule) {
 
         Map<ShieldType, List<String>> maskRules = shieldRule.entrySet().stream()
-                .collect(Collectors.groupingBy(Map.Entry::getValue,
-                        Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getValue, Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
 
         String result = maskContent;
         for (Map.Entry<ShieldType, List<String>> entry : maskRules.entrySet()) {

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.common.facade;
 
 /*-
@@ -51,7 +52,7 @@ public abstract class AbstractReshfreshableComponent implements Refreshable {
     }
 
     /**
-     * 
+     *
      */
     public void setInitOk(boolean isInitOk) {
         this.isInitOk = isInitOk;

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.dal.dataobject;
 
 /*-
@@ -27,32 +28,32 @@ package com.github.loadup.modules.upms.dal.dataobject;
  */
 
 import com.github.loadup.commons.dataobject.BaseDO;
+import java.io.Serial;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
-
-import java.io.Serial;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Table("upms_user")
 public class UserDO extends BaseDO {
     @Serial
-    private static final long          serialVersionUID = 3152323013685154107L;
-    @Id
-    private              String        id;
-    private              String        account;
-    private              String        nickName;
-    private              String        englishName;
-    private              String        officialName;
-    private              String        password;
-    private              String        salt;
-    private              String        avatar;
-    private              LocalDate     birthday;
-    private              LocalDateTime registeredTime;
-    private              String        userType;
+    private static final long serialVersionUID = 3152323013685154107L;
 
+    @Id
+    private String id;
+
+    private String account;
+    private String nickName;
+    private String englishName;
+    private String officialName;
+    private String password;
+    private String salt;
+    private String avatar;
+    private LocalDate birthday;
+    private LocalDateTime registeredTime;
+    private String userType;
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.driver.model;
 
 /*-
@@ -31,16 +32,15 @@ import com.github.loadup.components.testify.driver.AtsConfiguration;
 import com.github.loadup.components.testify.driver.constants.AtsConstants;
 import com.github.loadup.components.testify.log.TestifyLogUtil;
 import com.opencsv.CSVReader;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.ConvertUtils;
-import org.apache.commons.beanutils.Converter;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Iterator;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.Converter;
 
 /**
  * 测试数据驱动
@@ -55,8 +55,8 @@ public class DriverDataProvider implements Iterator<Object[]> {
     /**
      * 冒烟测试模式，执行指定的测试集
      */
-    public static final String smokeFlag = AtsConfiguration.atsConfigMap
-            .get(AtsConstants.SMOKE_TEST_FLAG);
+    public static final String smokeFlag = AtsConfiguration.atsConfigMap.get(AtsConstants.SMOKE_TEST_FLAG);
+
     /**
      * 默认环境分割数据分割符
      * <p>
@@ -65,6 +65,7 @@ public class DriverDataProvider implements Iterator<Object[]> {
      * <b>注：该功能仅在envSwitch为true时有效（默认为false，可调用{@link #(boolean)}设置）</b>
      */
     public static final String DEFAULT_ENV_SEPARATOR = "|&|";
+
     public int sum = 0;
     CSVReader reader = null;
     private Class<?>[] parameterTypes;
@@ -90,7 +91,7 @@ public class DriverDataProvider implements Iterator<Object[]> {
         try {
             smokeMatcher = new SmokeMatcher(smokeFlag);
             InputStreamReader isr = new InputStreamReader(is);
-//            reader = new CSVReader(isr, ',', '\"', 0);// 跳过data title;
+            //            reader = new CSVReader(isr, ',', '\"', 0);// 跳过data title;
             reader = new CSVReader(isr);
             TestifySuiteContextHolder.get().setParameterKeyList(Arrays.asList(reader.readNext()));
             parameterTypes = method.getParameterTypes();
@@ -100,10 +101,8 @@ public class DriverDataProvider implements Iterator<Object[]> {
                 parameterConverters[i] = ConvertUtils.lookup(parameterTypes[i]);
             }
         } catch (Exception e) {
-            TestifyLogUtil.fail(log, cls.getName() + "." + method.getName()
-                    + " TestData is not exist!");
+            TestifyLogUtil.fail(log, cls.getName() + "." + method.getName() + " TestData is not exist!");
         }
-
     }
 
     @Override
@@ -117,8 +116,7 @@ public class DriverDataProvider implements Iterator<Object[]> {
             // 判断读取的驱动数据是否有效,如果无效则继续读取
             while (last != null) {
                 if (!smokeMatcher.match(last[0])) {
-                    TestifyLogUtil.warn(log, "测试用例 [" + last[0] + "] 已经被过滤 [smoke_test=" + smokeFlag
-                            + "]");
+                    TestifyLogUtil.warn(log, "测试用例 [" + last[0] + "] 已经被过滤 [smoke_test=" + smokeFlag + "]");
                     last = reader.readNext();
                 } else {
                     break;
@@ -169,8 +167,8 @@ public class DriverDataProvider implements Iterator<Object[]> {
     private Object[] parseLine(String[] svals) {
 
         if (svals.length != parameterTypes.length) {
-            TestifyLogUtil.fail(log, "驱动数据个数 [" + svals.length + "] 与参数个数 [" + parameterTypes.length
-                    + "] 不相等 , " + svals[0]);
+            TestifyLogUtil.fail(
+                    log, "驱动数据个数 [" + svals.length + "] 与参数个数 [" + parameterTypes.length + "] 不相等 , " + svals[0]);
         }
 
         int len = svals.length;
@@ -179,14 +177,13 @@ public class DriverDataProvider implements Iterator<Object[]> {
 
             String curSval = svals[i];
             result[i] = parameterConverters[i].convert(parameterTypes[i], curSval);
-//            log.debug(result[i]);
+            //            log.debug(result[i]);
         }
         return result;
     }
 
     @Override
-    public void remove() {
-    }
+    public void remove() {}
 
     /**
      * 获取reader的句柄，直接对之进行操作
@@ -196,5 +193,4 @@ public class DriverDataProvider implements Iterator<Object[]> {
     public CSVReader getReader() {
         return this.reader;
     }
-
 }

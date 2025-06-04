@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.db;
 
 /*-
@@ -32,17 +29,16 @@ package com.github.loadup.components.testify.component.db;
 
 import com.github.loadup.components.testify.model.VirtualTable;
 import com.github.loadup.components.testify.utils.config.ConfigrationFactory;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.jdbc.core.JdbcTemplate;
-
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * 
- * 
+ *
+ *
  */
 public class TestifyDBUtils {
 
@@ -58,7 +54,6 @@ public class TestifyDBUtils {
         JdbcTemplate jdbcTemplate = getJdbcTemplate(tableName, dbConfigKey);
         int result = jdbcTemplate.update(sql);
         return result;
-
     }
 
     /**
@@ -82,8 +77,7 @@ public class TestifyDBUtils {
      * @param tableName
      * @return
      */
-    public static List<Map<String, Object>> getQueryResultMap(String sql, String tableName,
-                                                              String dbConfigKey) {
+    public static List<Map<String, Object>> getQueryResultMap(String sql, String tableName, String dbConfigKey) {
 
         JdbcTemplate jdbcTemplate = getJdbcTemplate(tableName, dbConfigKey);
         List<Map<String, Object>> map = jdbcTemplate.queryForList(sql);
@@ -114,8 +108,8 @@ public class TestifyDBUtils {
      * @return
      */
     public static JdbcTemplate getJdbcTemplate(String tableName, String dbConfigKey) {
-        String bundleNameAndBeanName = ConfigrationFactory.getConfigration().getPropertyValue(
-                "datasource_bean_name_" + dbConfigKey);
+        String bundleNameAndBeanName =
+                ConfigrationFactory.getConfigration().getPropertyValue("datasource_bean_name_" + dbConfigKey);
 
         if (StringUtils.isBlank(bundleNameAndBeanName)) {
             throw new RuntimeException();
@@ -131,7 +125,6 @@ public class TestifyDBUtils {
 
         JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
         return jdbcTemplate;
-
     }
 
     /**
@@ -175,5 +168,4 @@ public class TestifyDBUtils {
         processor.initDataSource();
         processor.compare2DBDatas(depTables, groupIds);
     }
-
 }

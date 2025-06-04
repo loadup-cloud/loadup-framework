@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data;
 
 /*-
@@ -35,18 +32,17 @@ import com.github.loadup.components.testify.data.biz.BizMetaInitItemFillBuilder;
 import com.github.loadup.components.testify.data.db.DbMetaInitItemFillBuilder;
 import com.github.loadup.components.testify.data.enums.MatchDegree;
 import com.github.loadup.components.testify.data.impl.DefaultMetaItemStore;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 原子项自动构造。
  * <p>
  * 内容来源于db 字典和业务模型。
  *
- * 
+ *
  *
  */
 public class MetaItemAutoBuilder {
@@ -73,15 +69,14 @@ public class MetaItemAutoBuilder {
      */
     public void build(String system, String projectPath) {
 
-        //第一步,先解析所有数据表,解析所有类信息,插入
+        // 第一步,先解析所有数据表,解析所有类信息,插入
         generateDataRule(system, projectPath);
-        /*第二步,导入objModel文件夹的规则内容,先组装出对象关系,根据    `system`,`model_obj`,`model_data` 
-                         查出source_data,然后根据source_data和system,查出org_db,然后更新*/
+        /*第二步,导入objModel文件夹的规则内容,先组装出对象关系,根据    `system`,`model_obj`,`model_data`
+        查出source_data,然后根据source_data和system,查出org_db,然后更新*/
         updateObjDataRule(system, projectPath);
-        //第三部,导入csvModel中的内容
+        // 第三部,导入csvModel中的内容
 
         updateDbDataRule(system, projectPath);
-
     }
 
     /**
@@ -107,7 +102,7 @@ public class MetaItemAutoBuilder {
      * @param projectPath
      */
     public void updateDbDataRule(String system, String projectPath) {
-        //第三部,导入csvModel中的内容
+        // 第三部,导入csvModel中的内容
         DbMetaInitItemFillBuilder dbfiller = new DbMetaInitItemFillBuilder();
         List<CsvFillObject> dblist = dbfiller.build(system, projectPath);
         updateDataRule(system, dblist);
@@ -120,8 +115,8 @@ public class MetaItemAutoBuilder {
      * @param projectPath
      */
     public void updateObjDataRule(String system, String projectPath) {
-        /*第二步,导入objModel文件夹的规则内容,先组装出对象关系,根据    `system`,`model_obj`,`model_data` 
-                           查出source_data,然后根据source_data和system,查出org_db,然后更新*/
+        /*第二步,导入objModel文件夹的规则内容,先组装出对象关系,根据    `system`,`model_obj`,`model_data`
+        查出source_data,然后根据source_data和system,查出org_db,然后更新*/
 
         BizMetaInitItemFillBuilder objfiller = new BizMetaInitItemFillBuilder();
         List<CsvFillObject> objlist = objfiller.build(system, projectPath);
@@ -140,8 +135,8 @@ public class MetaItemAutoBuilder {
             String hostName = csvObject.getModel_obj();
             String field = csvObject.getModel_data();
 
-            MetaItemMapping metaItemMapping = metaItemStore.getMetaItemMapping(new MetaInitItem(
-                    system, hostName, field));
+            MetaItemMapping metaItemMapping =
+                    metaItemStore.getMetaItemMapping(new MetaInitItem(system, hostName, field));
             if (metaItemMapping == null) {
 
                 MetaItem metaItem = new MetaItem(system, csvObject.getModel_data());
@@ -158,7 +153,7 @@ public class MetaItemAutoBuilder {
             } else {
 
                 MetaItem metaItem = metaItemMapping.getMetaItem();
-                //如果不为空,就不要操作了
+                // 如果不为空,就不要操作了
                 if (StringUtils.isEmpty(metaItem.getDataRule())) {
                     metaItem.setDataRule(csvObject.getData_rule());
                     metaItemStore.updateMetaItem(metaItem);
@@ -191,12 +186,11 @@ public class MetaItemAutoBuilder {
     }
 
     /**
-     * 
+     *
      *
      * @param metaInitItemBuilder value to be assigned to property metaInitItemBuilder
      */
     public void setMetaInitItemBuilder(MetaInitItemBuilder metaInitItemBuilder) {
         this.metaInitItemBuilder = metaInitItemBuilder;
     }
-
 }

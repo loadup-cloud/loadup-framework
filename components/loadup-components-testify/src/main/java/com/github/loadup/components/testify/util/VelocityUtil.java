@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -29,6 +29,11 @@ package com.github.loadup.components.testify.util;
 
 import com.github.loadup.components.testify.constant.VelocityExtendProperties;
 import com.github.loadup.components.testify.exception.TestifyException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
@@ -37,16 +42,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 /**
  * velocity统一工具类。
  *
- * 
+ *
  *
  */
 public class VelocityUtil {
@@ -130,8 +129,7 @@ public class VelocityUtil {
 
             addExtendProperties(velocityContext);
 
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(templateFile),
-                    charset));
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(templateFile), charset));
 
             Velocity.evaluate(velocityContext, writer, StringUtils.EMPTY, reader);
             return writer.toString();
@@ -149,12 +147,11 @@ public class VelocityUtil {
      * @param context
      */
     private static void addExtendProperties(VelocityContext context) {
-        //默认参数
+        // 默认参数
         context.put(VelocityExtendProperties.CUR_TIME_MILLIS_STR, System.currentTimeMillis());
         context.put(VelocityExtendProperties.CUR_DATE, DateUtil.getWebTodayString());
         context.put(VelocityExtendProperties.CUR_DATE_TIME, DateUtil.simpleFormat(new Date()));
         context.put(VelocityExtendProperties.CUR_YEAR, DateUtil.getCurYear());
         context.put(VelocityExtendProperties.CUR_VER, BaseDataUtil.getCurVer());
     }
-
 }

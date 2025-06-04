@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.manager;
 
 /*-
@@ -26,17 +27,6 @@ package com.github.loadup.components.testify.object.manager;
  * #L%
  */
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import com.github.loadup.components.testify.log.TestifyLogUtil;
 import com.github.loadup.components.testify.object.generator.ObjectGenerator;
 import com.github.loadup.components.testify.object.generator.impl.ArrayListTypeGenerator;
@@ -50,6 +40,16 @@ import com.github.loadup.components.testify.object.generator.impl.MapTypeGenerat
 import com.github.loadup.components.testify.object.generator.impl.SetTypeGenerator;
 import com.github.loadup.components.testify.object.generator.impl.StringTypeGenerator;
 import com.github.loadup.components.testify.util.CSVApisUtil;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 对象类型总控器类
@@ -59,7 +59,6 @@ import com.github.loadup.components.testify.util.CSVApisUtil;
  */
 @Slf4j
 public class ObjectTypeManager {
-
 
     private final Map<String, ObjectGenerator> objectHandlers = new HashMap<String, ObjectGenerator>();
 
@@ -112,8 +111,7 @@ public class ObjectTypeManager {
             simpleKey = clz.getName();
         }
 
-        if (clz.isPrimitive() || simpleHandlerSet.contains(simpleKey)
-                || simpleClassType.contains(simpleKey)) {
+        if (clz.isPrimitive() || simpleHandlerSet.contains(simpleKey) || simpleClassType.contains(simpleKey)) {
             result = true;
         }
         return result;
@@ -172,23 +170,18 @@ public class ObjectTypeManager {
 
         Object result = null;
 
-        if (StringUtils.equals("int", primitiveType)
-                || StringUtils.equals("java.lang.Integer", primitiveType)) {
+        if (StringUtils.equals("int", primitiveType) || StringUtils.equals("java.lang.Integer", primitiveType)) {
             result = Integer.parseInt(value);
-        } else if (StringUtils.equals("float", primitiveType)
-                || StringUtils.equals("java.lang.Float", primitiveType)) {
+        } else if (StringUtils.equals("float", primitiveType) || StringUtils.equals("java.lang.Float", primitiveType)) {
             result = Float.parseFloat(value);
         } else if (StringUtils.equals("double", primitiveType)
                 || StringUtils.equals("java.lang.Double", primitiveType)) {
             result = Double.parseDouble(value);
-        } else if (StringUtils.equals("long", primitiveType)
-                || StringUtils.equals("java.lang.Long", primitiveType)) {
+        } else if (StringUtils.equals("long", primitiveType) || StringUtils.equals("java.lang.Long", primitiveType)) {
             result = Long.parseLong(value);
-        } else if (StringUtils.equals("short", primitiveType)
-                || StringUtils.equals("java.lang.Short", primitiveType)) {
+        } else if (StringUtils.equals("short", primitiveType) || StringUtils.equals("java.lang.Short", primitiveType)) {
             result = Short.parseShort(value);
-        } else if (StringUtils.equals("byte", primitiveType)
-                || StringUtils.equals("java.lang.Byte", primitiveType)) {
+        } else if (StringUtils.equals("byte", primitiveType) || StringUtils.equals("java.lang.Byte", primitiveType)) {
             result = Byte.parseByte(value);
         } else if (StringUtils.equals("boolean", primitiveType)
                 || StringUtils.equals("java.lang.Boolean", primitiveType)) {
@@ -226,7 +219,7 @@ public class ObjectTypeManager {
      * 获取集合对象组件的class
      */
     public Class<?> getCollectionItemClass(Type genericType, Class<?> clz) {
-        //当前cls类型
+        // 当前cls类型
         ObjectGenerator generator = getObjectGenerator(clz);
 
         Class<?> result = null;
@@ -237,7 +230,6 @@ public class ObjectTypeManager {
 
             } else {
                 result = CSVApisUtil.getClass(genericType, 0);
-
             }
         }
         return result;
@@ -259,8 +251,8 @@ public class ObjectTypeManager {
     /*
      * 设置集合组件的值
      */
-    public void setCollectionObjectValue(Object collectionObject, Object value,
-                                         String originalValue, int index, Class<?> clz) {
+    public void setCollectionObjectValue(
+            Object collectionObject, Object value, String originalValue, int index, Class<?> clz) {
         ObjectGenerator generator = getObjectGenerator(clz);
 
         if (generator != null) {
@@ -271,8 +263,7 @@ public class ObjectTypeManager {
     /*
      * 获取集合转化的string
      */
-    public String getCollectionObjectString(Class<?> clz, Object collectionObject,
-                                            boolean isSimple, String csvPath) {
+    public String getCollectionObjectString(Class<?> clz, Object collectionObject, boolean isSimple, String csvPath) {
 
         ObjectGenerator generator = getObjectGenerator(clz);
 

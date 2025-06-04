@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data.impl;
 
 /*-
@@ -31,17 +28,16 @@ package com.github.loadup.components.testify.data.impl;
  */
 
 import com.github.loadup.components.testify.data.RuleDataStore;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 统一规则存储。
  * <p>
  * 控制多存储之间的优先级。
  *
- * 
+ *
  *
  */
 public class UnifiedRuleDataStore implements RuleDataStore {
@@ -90,5 +86,4 @@ public class UnifiedRuleDataStore implements RuleDataStore {
 
         return rule;
     }
-
 }

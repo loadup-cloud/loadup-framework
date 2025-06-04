@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.dal.repository;
 
 /*-
@@ -41,5 +42,4 @@ public interface UserRepository extends ListCrudRepository<UserDO, String>, User
     void changePassword(@Param("id") String id, @Param("password") String password);
 
     UserDO findByAccount(@Param("account") String account);
-
 }

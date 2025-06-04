@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -59,7 +60,7 @@ public class CertConfigRemoveRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;
@@ -73,7 +74,7 @@ public class CertConfigRemoveRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
@@ -87,7 +88,7 @@ public class CertConfigRemoveRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setAlgoName(String algoName) {
         this.algoName = algoName;
@@ -101,7 +102,7 @@ public class CertConfigRemoveRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setOperateType(OperationType operateType) {
         this.operateType = operateType;

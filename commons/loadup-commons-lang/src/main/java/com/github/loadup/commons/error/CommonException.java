@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.error;
 
 /*-
@@ -27,11 +28,10 @@ package com.github.loadup.commons.error;
  */
 
 import com.github.loadup.commons.result.ResultCode;
-import lombok.Getter;
-
 import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * @author Lise
@@ -42,6 +42,7 @@ public class CommonException extends RuntimeException {
 
     @Serial
     private static final long serialVersionUID = 2713503013175560520L;
+
     private final ResultCode resultCode;
 
     public CommonException(ResultCode resultCode) {

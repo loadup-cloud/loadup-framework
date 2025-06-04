@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.file;
 
 /*-
@@ -27,22 +27,21 @@ package com.github.loadup.components.testify.utils.file;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.TypeReference;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * JSON工具类
  *
- * 
+ *
  *
  */
 public class JsonUtils {
@@ -85,8 +84,7 @@ public class JsonUtils {
         if (StringUtils.isBlank(jsonStr)) {
             return null;
         }
-        return JSONObject.parseObject(jsonStr, new TypeReference<List<Map<String, Object>>>() {
-        });
+        return JSONObject.parseObject(jsonStr, new TypeReference<List<Map<String, Object>>>() {});
     }
 
     /**
@@ -99,8 +97,7 @@ public class JsonUtils {
         if (StringUtils.isBlank(jsonStr)) {
             return null;
         }
-        return JSONObject.parseObject(jsonStr, new TypeReference<List<Map<String, String>>>() {
-        });
+        return JSONObject.parseObject(jsonStr, new TypeReference<List<Map<String, String>>>() {});
     }
 
     /**
@@ -145,9 +142,10 @@ public class JsonUtils {
         }
 
         return JSONObject.toJSONString(object);
-//        return JSONObject.toJSONString(object, new SerializeConfig(true),
-//                SerializerFeature.IgnoreErrorGetter, SerializerFeature.WriteNonStringKeyAsString,
-//                SerializerFeature.DisableCircularReferenceDetect);
+        //        return JSONObject.toJSONString(object, new SerializeConfig(true),
+        //                SerializerFeature.IgnoreErrorGetter,
+        // SerializerFeature.WriteNonStringKeyAsString,
+        //                SerializerFeature.DisableCircularReferenceDetect);
     }
 
     /**
@@ -162,10 +160,13 @@ public class JsonUtils {
         }
 
         return JSONObject.toJSONString(object);
-//        return JSONObject.toJSONString(object, SerializerFeature.IgnoreErrorGetter,
-//                SerializerFeature.WriteNonStringKeyAsString, SerializerFeature.WriteMapNullValue,
-//                SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero,
-//                SerializerFeature.WriteNullListAsEmpty, SerializerFeature.WriteNullBooleanAsFalse);
+        //        return JSONObject.toJSONString(object, SerializerFeature.IgnoreErrorGetter,
+        //                SerializerFeature.WriteNonStringKeyAsString,
+        // SerializerFeature.WriteMapNullValue,
+        //                SerializerFeature.WriteNullStringAsEmpty,
+        // SerializerFeature.WriteNullNumberAsZero,
+        //                SerializerFeature.WriteNullListAsEmpty,
+        // SerializerFeature.WriteNullBooleanAsFalse);
     }
 
     /**
@@ -173,8 +174,7 @@ public class JsonUtils {
      *
      * @return
      */
-    public static Object parseObject(String json,
-                                     TypeReference<Map<String, String[]>> typeReference) {
+    public static Object parseObject(String json, TypeReference<Map<String, String[]>> typeReference) {
         if (StringUtils.isBlank(json)) {
             return null;
         }
@@ -208,7 +208,7 @@ public class JsonUtils {
         }
         return JSONObject.parseObject(json);
 
-//        return JSON.parseObject(json, Feature.IgnoreNotMatch, Feature.UseObjectArray);
+        //        return JSON.parseObject(json, Feature.IgnoreNotMatch, Feature.UseObjectArray);
     }
 
     /**
@@ -223,7 +223,8 @@ public class JsonUtils {
         }
         return JSONObject.parseObject(json);
 
-//        return JSON.parseObject(json, cls, Feature.IgnoreNotMatch, Feature.UseObjectArray);
+        //        return JSON.parseObject(json, cls, Feature.IgnoreNotMatch,
+        // Feature.UseObjectArray);
     }
 
     /**
@@ -287,11 +288,10 @@ public class JsonUtils {
      */
     public static boolean isJsonArray(String string) {
         try {
-//            JSONObject.parseArray(string);
+            //            JSONObject.parseArray(string);
             return true;
         } catch (Exception e) {
             return false;
         }
     }
-
 }

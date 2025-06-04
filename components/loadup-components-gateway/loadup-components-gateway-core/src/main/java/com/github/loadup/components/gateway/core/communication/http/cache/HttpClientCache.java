@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.communication.http.cache;
 
 /*-
@@ -30,16 +31,15 @@ import com.github.loadup.components.gateway.core.communication.http.impl.HttpCli
 import com.github.loadup.components.gateway.core.model.CommunicationConfig;
 import com.github.loadup.components.gateway.core.model.communication.TransportProtocol;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * http客户端缓存
@@ -50,8 +50,7 @@ public class HttpClientCache {
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(HttpClientServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpClientServiceImpl.class);
 
     /**
      * http客户端缓存map
@@ -61,7 +60,8 @@ public class HttpClientCache {
     /**
      * 通讯缓存配置
      */
-    private static Map<String, CommunicationConfig> communicationConfigMap = new ConcurrentHashMap<String, CommunicationConfig>();
+    private static Map<String, CommunicationConfig> communicationConfigMap =
+            new ConcurrentHashMap<String, CommunicationConfig>();
 
     /**
      * 是否初始化完成
@@ -78,7 +78,7 @@ public class HttpClientCache {
      */
     private static CloseableHttpClient constructClient(CommunicationConfig config) {
 
-        //注册https协议
+        // 注册https协议
         registerSSLProtocol(config);
         CloseableHttpClient client = HttpClients.createDefault();
         //        HttpConnectionManager httpConnectionManager = new CustomizeHttpConnectionManager(
@@ -108,7 +108,8 @@ public class HttpClientCache {
      * 注册SSL协议
      */
     private static void registerSSLProtocol(CommunicationConfig config) {
-        //        if (StringUtils.equals(config.getProtocol(), TransportProtocol.HTTPS) || StringUtils.equals(config.getProtocol(),
+        //        if (StringUtils.equals(config.getProtocol(), TransportProtocol.HTTPS) ||
+        // StringUtils.equals(config.getProtocol(),
         //        TransportProtocol.INSTPROXY)) {
         //            TransportURI url = config.getUri();
         //            String scheme = url.getSchema();
@@ -135,8 +136,9 @@ public class HttpClientCache {
         String communicationId = communicationConfig.getCommunicationId();
         String protocol = communicationConfig.getProtocol();
         if (StringUtils.isBlank(communicationId)
-                || (StringUtils.equals(TransportProtocol.HTTP, protocol) && StringUtils.equals(TransportProtocol.HTTPS, protocol)
-                && StringUtils.equals(TransportProtocol.INSTPROXY, protocol))) {
+                || (StringUtils.equals(TransportProtocol.HTTP, protocol)
+                        && StringUtils.equals(TransportProtocol.HTTPS, protocol)
+                        && StringUtils.equals(TransportProtocol.INSTPROXY, protocol))) {
             return null;
         }
         CloseableHttpClient client = map.get(communicationId);
@@ -147,8 +149,11 @@ public class HttpClientCache {
                         client = constructClient(communicationConfig);
                         map.put(communicationId, client);
                     } catch (Exception ex) {
-                        LogUtil.error(logger, ex,
-                                "failed init httpclient , current config is ,communicationConfig=" + communicationConfig);
+                        LogUtil.error(
+                                logger,
+                                ex,
+                                "failed init httpclient , current config is ,communicationConfig="
+                                        + communicationConfig);
                     }
                 }
             }
@@ -192,8 +197,8 @@ public class HttpClientCache {
                 continue;
             }
             try {
-                //刷新的时候删除对应key的实例, 因为获取的时候会自动构建
-                //不能使用入参的config来构建缓存, 推过来的配置没有appId, 会导致配置https连接证书的httpClient无法拿到对应证书
+                // 刷新的时候删除对应key的实例, 因为获取的时候会自动构建
+                // 不能使用入参的config来构建缓存, 推过来的配置没有appId, 会导致配置https连接证书的httpClient无法拿到对应证书
                 map.remove(cc.getCommunicationId());
             } catch (Exception ex) {
                 LogUtil.error(logger, ex, "failed init httpclient , ignore current config ,communicationConfig=" + cc);
@@ -209,16 +214,16 @@ public class HttpClientCache {
     }
 
     /**
-     * 
+     *
      */
     public void setInitOk(boolean isInitOk) {
         this.isInitOk = isInitOk;
     }
 
     /**
-     * 
      *
-
+     *
+     *
      */
     //    public void setsSLProtocolHelper(SSLProtocolHelper sSLProtocolHelper) {
     //        this.sSLProtocolHelper = sSLProtocolHelper;

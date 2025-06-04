@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.dal.dataobject;
 
 /*-
@@ -35,8 +32,8 @@ import java.util.Date;
 /**
  * 数据关联关系DO
  *
- * 
- * 
+ *
+ *
  */
 public class ObjectRelateDO {
 
@@ -74,7 +71,7 @@ public class ObjectRelateDO {
     }
 
     /**
-     * 
+     *
      *
      * @param id value to be assigned to property id
      */
@@ -92,7 +89,7 @@ public class ObjectRelateDO {
     }
 
     /**
-     * 
+     *
      *
      * @param system value to be assigned to property system
      */
@@ -110,7 +107,7 @@ public class ObjectRelateDO {
     }
 
     /**
-     * 
+     *
      *
      * @param modelType value to be assigned to property modelType
      */
@@ -128,7 +125,7 @@ public class ObjectRelateDO {
     }
 
     /**
-     * 
+     *
      *
      * @param modelObj value to be assigned to property modelObj
      */
@@ -146,7 +143,7 @@ public class ObjectRelateDO {
     }
 
     /**
-     * 
+     *
      *
      * @param modelData value to be assigned to property modelData
      */
@@ -164,7 +161,7 @@ public class ObjectRelateDO {
     }
 
     /**
-     * 
+     *
      *
      * @param dataDesc value to be assigned to property dataDesc
      */
@@ -182,7 +179,7 @@ public class ObjectRelateDO {
     }
 
     /**
-     * 
+     *
      *
      * @param objFlag value to be assigned to property objFlag
      */
@@ -200,7 +197,7 @@ public class ObjectRelateDO {
     }
 
     /**
-     * 
+     *
      *
      * @param relateSourceId value to be assigned to property relateSourceId
      */
@@ -218,7 +215,7 @@ public class ObjectRelateDO {
     }
 
     /**
-     * 
+     *
      *
      * @param sourceData value to be assigned to property sourceData
      */
@@ -236,7 +233,7 @@ public class ObjectRelateDO {
     }
 
     /**
-     * 
+     *
      *
      * @param memo value to be assigned to property memo
      */
@@ -254,7 +251,7 @@ public class ObjectRelateDO {
     }
 
     /**
-     * 
+     *
      *
      * @param gmtCreate value to be assigned to property gmtCreate
      */
@@ -272,12 +269,11 @@ public class ObjectRelateDO {
     }
 
     /**
-     * 
+     *
      *
      * @param gmtModify value to be assigned to property gmtModify
      */
     public void setGmtModify(Date gmtModify) {
         this.gmtModify = gmtModify;
     }
-
 }

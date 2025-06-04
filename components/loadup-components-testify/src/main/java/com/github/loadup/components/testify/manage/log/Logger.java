@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.manage.log;
 
 /*-
@@ -30,14 +27,14 @@ package com.github.loadup.components.testify.manage.log;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
 import com.github.loadup.components.testify.support.TestCase;
 import com.github.loadup.components.testify.support.TestCaseHolder;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 日志便捷接口。
  *
- * 
+ *
  *
  */
 public abstract class Logger {
@@ -187,5 +184,4 @@ public abstract class Logger {
      * @param objs   任意个要输出到日志的参数
      */
     public abstract void debug(Throwable e, Object... objs);
-
 }

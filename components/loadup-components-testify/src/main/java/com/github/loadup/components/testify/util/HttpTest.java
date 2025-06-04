@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -31,75 +31,75 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 
 /**
- * 
+ *
  *
  */
 public class HttpTest {
 
-
     public static void main(String[] args) {
         //
         //
-        //Map<String, Object> body = new HashMap<String, Object>();
-        //List<String> list = new ArrayList<String>();
+        // Map<String, Object> body = new HashMap<String, Object>();
+        // List<String> list = new ArrayList<String>();
         //
         //// app
-        //body.put("condition", Condition.APP);
-        //body.put("conditionValue", "cloancore");
+        // body.put("condition", Condition.APP);
+        // body.put("conditionValue", "cloancore");
         //
         //// api
-        //body.put("condition", Condition.API);
-        //body.put("conditionValue", JSON.toJSONString(list));
+        // body.put("condition", Condition.API);
+        // body.put("conditionValue", JSON.toJSONString(list));
         //
         ////// case
-        ////list.add("74e5cf1a3b107cd0b5350a3d4298229f");
-        ////body.put("condition", Condition.SCENE);
-        ////body.put("conditionValue", JSON.toJSONString(list));
+        //// list.add("74e5cf1a3b107cd0b5350a3d4298229f");
+        //// body.put("condition", Condition.SCENE);
+        //// body.put("conditionValue", JSON.toJSONString(list));
         //
         //
-        //String res = HttpUtil.doPost(host+"/playback/queryPlaybackCaseRefs.json", body);
+        // String res = HttpUtil.doPost(host+"/playback/queryPlaybackCaseRefs.json", body);
         //
-        //System.out.println(res);
-        //System.out.println("");
+        // System.out.println(res);
+        // System.out.println("");
         //
-        //JSONArray rtnObj = extractRtnObj(res);
+        // JSONArray rtnObj = extractRtnObj(res);
         //
-        //List caseRefs = new ArrayList<CaseRef>();
+        // List caseRefs = new ArrayList<CaseRef>();
         //
-        //for(Object caseRef : rtnObj) {
-        //    caseRefs.add(JsonUtil.stringToObject(((JSONObject)caseRef).toJSONString(), CaseRef.class));
-        //}
+        // for(Object caseRef : rtnObj) {
+        //    caseRefs.add(JsonUtil.stringToObject(((JSONObject)caseRef).toJSONString(),
+        // CaseRef.class));
+        // }
         //
-        //body.clear();
-        //body.put("caseRefs", caseRefs);
-        //res = HttpUtil.doPost(host+"/playback/queryPlaybackCaseDataByCaseRef.json", body);
-        //System.out.println(res);
-        //System.out.println("");
+        // body.clear();
+        // body.put("caseRefs", caseRefs);
+        // res = HttpUtil.doPost(host+"/playback/queryPlaybackCaseDataByCaseRef.json", body);
+        // System.out.println(res);
+        // System.out.println("");
         //
-        //rtnObj = extractRtnObj(res);
-        //List caseDatas = new ArrayList<CaseData>();
-        //for (Object caseData : rtnObj) {
-        //    caseDatas.add(JsonUtil.stringToObject(((JSONObject)caseData).toJSONString(), CaseData.class));
-        //}
+        // rtnObj = extractRtnObj(res);
+        // List caseDatas = new ArrayList<CaseData>();
+        // for (Object caseData : rtnObj) {
+        //    caseDatas.add(JsonUtil.stringToObject(((JSONObject)caseData).toJSONString(),
+        // CaseData.class));
+        // }
         //
         //
-        //body.clear();
-        //Map md5s = new HashMap<String, Map>();
-        //Map vals = new HashMap<String, String>();
-        //vals.put("runStatus", "F");
-        //vals.put("failCnt", "2");
-        //md5s.put("21a20c0b2697113e26cd4cd2001ad8c0", vals);
-        //body.put("md5s", md5s);
-        //res = HttpUtil.doPost(host+"/playback/updatePlaybackCaseData.json", body);
-        //System.out.println(res);
+        // body.clear();
+        // Map md5s = new HashMap<String, Map>();
+        // Map vals = new HashMap<String, String>();
+        // vals.put("runStatus", "F");
+        // vals.put("failCnt", "2");
+        // md5s.put("21a20c0b2697113e26cd4cd2001ad8c0", vals);
+        // body.put("md5s", md5s);
+        // res = HttpUtil.doPost(host+"/playback/updatePlaybackCaseData.json", body);
+        // System.out.println(res);
 
-        //body
+        // body
         JSONObject request = new JSONObject();
         request.put("app", "aeicore");
         String res = HttpUtil.doPost("http://etexxxx.net:80/sceneanalysis/scene/rule.json", request);
         res = res.replaceAll("&quot;", "\\\\\"");
         System.out.println(res);
-
     }
 
     public static JSONArray extractRtnObj(String res) {

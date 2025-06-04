@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data;
 
 /*-
@@ -33,14 +30,13 @@ package com.github.loadup.components.testify.data;
 import com.github.loadup.components.testify.data.impl.UnifiedRuleDataStore;
 import com.github.loadup.components.testify.datarule.RULE;
 import com.github.loadup.components.testify.datarule.RULE.ReferenceHandler;
-
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * 规则数据工厂。
  *
- * 
+ *
  *
  */
 public class RuleDataFactory {
@@ -85,8 +81,7 @@ public class RuleDataFactory {
      * @param names
      * @return
      */
-    public Map<String, String> getDataByOriginName(String system, RuleDataCallback callback,
-                                                   String... names) {
+    public Map<String, String> getDataByOriginName(String system, RuleDataCallback callback, String... names) {
 
         ReferenceHandler refHandler = createMappedHandler(callback, system);
 
@@ -100,7 +95,6 @@ public class RuleDataFactory {
         }
 
         return datas;
-
     }
 
     /**
@@ -110,8 +104,7 @@ public class RuleDataFactory {
      * @param names
      * @return
      */
-    public Map<String, String> getDataByName(String system, RuleDataCallback callback,
-                                             String... names) {
+    public Map<String, String> getDataByName(String system, RuleDataCallback callback, String... names) {
 
         ReferenceHandler refHandler = createHandler(callback, system);
 
@@ -125,7 +118,6 @@ public class RuleDataFactory {
         }
 
         return datas;
-
     }
 
     // ~~~ 私有实现
@@ -164,7 +156,6 @@ public class RuleDataFactory {
                     callback.setData(name, data);
                 }
             }
-
         };
     }
 
@@ -175,8 +166,7 @@ public class RuleDataFactory {
      * @param system
      * @return
      */
-    private ReferenceHandler createMappedHandler(final RuleDataCallback callback,
-                                                 final String system) {
+    private ReferenceHandler createMappedHandler(final RuleDataCallback callback, final String system) {
         return new ReferenceHandler() {
 
             @Override
@@ -203,7 +193,6 @@ public class RuleDataFactory {
                     callback.setData(name, data);
                 }
             }
-
         };
     }
 
@@ -217,5 +206,4 @@ public class RuleDataFactory {
     public void setDataStore(RuleDataStore dataStore) {
         this.dataStore = dataStore;
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.api;
 
 /*-
@@ -32,8 +33,8 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 日志操作入口API，若无日志模型，则只打印至console
  *
- * 
- * 
+ *
+ *
  */
 @Slf4j
 public class LogApis {

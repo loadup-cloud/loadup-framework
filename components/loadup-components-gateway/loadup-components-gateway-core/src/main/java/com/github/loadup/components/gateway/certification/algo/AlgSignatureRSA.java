@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.algo;
 
 /*-
@@ -31,16 +32,15 @@ import com.github.loadup.components.gateway.certification.exception.Certificatio
 import com.github.loadup.components.gateway.certification.manager.DigitalSignatureManager;
 import com.github.loadup.components.gateway.certification.model.AlgorithmEnum;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * 数字签名算法实现
@@ -110,10 +110,9 @@ public class AlgSignatureRSA extends AbstractAlgorithm {
         } catch (Exception e) {
             LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + " recover privateKey error:");
 
-            throw new CertificationException(CertificationErrorCode.RECOVER_PRIVATE_KEY_ERROR,
-                    genLogSign(KEY_ALGO_NAME), e);
+            throw new CertificationException(
+                    CertificationErrorCode.RECOVER_PRIVATE_KEY_ERROR, genLogSign(KEY_ALGO_NAME), e);
         }
-
     }
 
     /**
@@ -129,8 +128,8 @@ public class AlgSignatureRSA extends AbstractAlgorithm {
         } catch (Exception e) {
             LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + " recover publicKey error:");
 
-            throw new CertificationException(CertificationErrorCode.RECOVER_PUBLIC_KEY_ERROR,
-                    genLogSign(KEY_ALGO_NAME), e);
+            throw new CertificationException(
+                    CertificationErrorCode.RECOVER_PUBLIC_KEY_ERROR, genLogSign(KEY_ALGO_NAME), e);
         }
     }
 

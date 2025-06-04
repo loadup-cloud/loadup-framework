@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.collector.sqlLog;
 
 /*-
@@ -35,26 +32,24 @@ import com.github.loadup.components.testify.data.BbTableModelUtil;
 import com.github.loadup.components.testify.model.VirtualTable;
 import com.github.loadup.components.testify.util.BaseDataUtil;
 import com.github.loadup.components.testify.util.FileUtil;
+import java.io.File;
+import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
-import java.io.File;
-import java.util.*;
-
 /**
  * sql日志解析工厂
  *
- * 
+ *
  *
  * hongling.xiang Exp $
  */
 public class SqlLogParseFactory {
 
     /* logger* */
-    private static final Logger logger = LoggerFactory
-            .getLogger(SqlLogParseFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(SqlLogParseFactory.class);
 
     /**
      * SQL类型与对应解析器
@@ -62,10 +57,8 @@ public class SqlLogParseFactory {
     private static final Map<String, SqlLogParser> sqlParser = new HashMap<String, SqlLogParser>();
 
     static {
-        sqlParser.put(SqlTypeEnum.INSERT_SQL.getCode(),
-                new InsertSqlLogParser());
-        sqlParser.put(SqlTypeEnum.UPDATE_SQL.getCode(),
-                new UpdateSqlLogParser());
+        sqlParser.put(SqlTypeEnum.INSERT_SQL.getCode(), new InsertSqlLogParser());
+        sqlParser.put(SqlTypeEnum.UPDATE_SQL.getCode(), new UpdateSqlLogParser());
     }
 
     /**
@@ -76,8 +69,7 @@ public class SqlLogParseFactory {
      * @return
      * @throws ClassNotFoundException
      */
-    public static VirtualTable genVirtualTable(String sqlType,
-                                               List<String> sqlExecLog) throws ClassNotFoundException {
+    public static VirtualTable genVirtualTable(String sqlType, List<String> sqlExecLog) throws ClassNotFoundException {
 
         SqlLogParser sqlLogParser = sqlParser.get(sqlType);
 
@@ -106,8 +98,8 @@ public class SqlLogParseFactory {
         Map<String, String> fieldsFlag = fetchFieldFlagsFromDbModel(tableName);
         if (CollectionUtils.isEmpty(fieldsFlag)) {
             // 如果用户未定义此表模板，则解析SQL获取
-            fieldsFlag = sqlLogParser.parseTableFlags(sqlExecLog.get(0),
-                    tableDatas.get(0).keySet());
+            fieldsFlag = sqlLogParser.parseTableFlags(
+                    sqlExecLog.get(0), tableDatas.get(0).keySet());
         }
 
         // 组装生成VirtualTable
@@ -126,11 +118,9 @@ public class SqlLogParseFactory {
      * @param tableName
      * @return
      */
-    private static Map<String, String> fetchFieldFlagsFromDbModel(
-            String tableName) {
+    private static Map<String, String> fetchFieldFlagsFromDbModel(String tableName) {
 
-        File folder = FileUtil
-                .getTestResourceFile(TestifyPathConstants.DB_DATA_PATH);
+        File folder = FileUtil.getTestResourceFile(TestifyPathConstants.DB_DATA_PATH);
         if (!folder.exists()) {
             return null;
         }
@@ -140,13 +130,11 @@ public class SqlLogParseFactory {
         if (StringUtils.contains(dbModelFullPath, "\\")) {
             dbModelFullPath = StringUtils.replace(dbModelFullPath, "\\", "/");
         }
-        String dbModelRootPath = dbModelFullPath.substring(0,
-                dbModelFullPath.indexOf("model/dbModel"));
+        String dbModelRootPath = dbModelFullPath.substring(0, dbModelFullPath.indexOf("model/dbModel"));
         VirtualTable virtualTable = null;
         try {
-            virtualTable = BaseDataUtil.getVirtualTableFromBase(tableName,
-                    tableName, dbModelRootPath,
-                    System.getProperty("file.encoding"));
+            virtualTable = BaseDataUtil.getVirtualTableFromBase(
+                    tableName, tableName, dbModelRootPath, System.getProperty("file.encoding"));
         } catch (Throwable t) {
             logger.warn("query DB model exception!");
         }
@@ -165,8 +153,7 @@ public class SqlLogParseFactory {
      * @param sqlParamTypeStr
      * @return
      */
-    public static List<String> parseSqlParamValue(String sqlParamValueStr,
-                                                  String sqlParamTypeStr) {
+    public static List<String> parseSqlParamValue(String sqlParamValueStr, String sqlParamTypeStr) {
 
         // sql参数类型字符串中肯定不包含分割敏感字符串“， ”
         String[] paramTypes = sqlParamTypeStr.split(", ");
@@ -178,8 +165,7 @@ public class SqlLogParseFactory {
             return Arrays.asList(paramValues);
         }
         // 解决字符串最后是" "的情况
-        if ((paramValues.length == (paramTypes.length - 1))
-                && sqlParamValueStr.endsWith(" ")) {
+        if ((paramValues.length == (paramTypes.length - 1)) && sqlParamValueStr.endsWith(" ")) {
             sqlParamValueStr = sqlParamValueStr + " ";
             paramValues = sqlParamValueStr.split(", ");
         }
@@ -230,8 +216,7 @@ public class SqlLogParseFactory {
     private static boolean isAppTable(String tableName) {
 
         // 降级处理
-        boolean isApptable = !StringUtils.contains(tableName.toLowerCase(),
-                "seq_")
+        boolean isApptable = !StringUtils.contains(tableName.toLowerCase(), "seq_")
                 && !StringUtils.contains(tableName.toLowerCase(), "sequence_")
                 && !StringUtils.contains(tableName.toLowerCase(), "_sequence")
                 && !StringUtils.contains(tableName.toLowerCase(), "_seq");
@@ -242,7 +227,6 @@ public class SqlLogParseFactory {
             logger.warn(tableName + "is not Apptable !!!");
             return false;
         }
-
     }
 
     /**
@@ -267,32 +251,27 @@ public class SqlLogParseFactory {
         }
 
         if (StringUtils.contains(userDirPath, "app/test")) {
-            userDirPath = userDirPath.substring(0,
-                    userDirPath.indexOf("app/test"));
+            userDirPath = userDirPath.substring(0, userDirPath.indexOf("app/test"));
         } else {
             // 降级处理
-            logger.warn("Collecting case result-unknown exception while parsing SQL,tableName="
-                    + tableName + "未进行是否属于业务表校验！");
+            logger.warn("Collecting case result-unknown exception while parsing SQL,tableName=" + tableName
+                    + "未进行是否属于业务表校验！");
             return !StringUtils.contains(tableName.toLowerCase(), "seq_")
-                    && !StringUtils.contains(tableName.toLowerCase(),
-                    "sequence_")
-                    && !StringUtils.contains(tableName.toLowerCase(),
-                    "_sequence")
+                    && !StringUtils.contains(tableName.toLowerCase(), "sequence_")
+                    && !StringUtils.contains(tableName.toLowerCase(), "_sequence")
                     && !StringUtils.contains(tableName.toLowerCase(), "_seq");
         }
 
-        Set<String> tableNameSet = BbTableModelUtil
-                .generateAppTableModel(userDirPath);
+        Set<String> tableNameSet = BbTableModelUtil.generateAppTableModel(userDirPath);
         for (String table : tableNameSet) {
             if (table.equalsIgnoreCase(tableName)) {
                 return true;
             }
         }
 
-        logger.warn("Collecting case result-unknown exception while parsing SQL, tableName="
-                + tableName + "not belong to App Tables！");
+        logger.warn("Collecting case result-unknown exception while parsing SQL, tableName=" + tableName
+                + "not belong to App Tables！");
 
         return false;
     }
-
 }

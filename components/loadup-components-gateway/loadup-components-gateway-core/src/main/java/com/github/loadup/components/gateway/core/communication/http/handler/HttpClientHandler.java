@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.communication.http.handler;
 
 /*-
@@ -54,6 +55,11 @@ import com.github.loadup.components.gateway.core.prototype.util.MessageLoggerUti
 import com.github.loadup.components.gateway.facade.util.IOUtils;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import jakarta.annotation.Resource;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.classic.methods.*;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
@@ -69,12 +75,6 @@ import org.apache.hc.core5.net.URIBuilder;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.Map.Entry;
 
 /**
  * Http客户端处理类
@@ -103,15 +103,15 @@ public class HttpClientHandler {
     /**
      * common log message, mask off sensitive data
      */
-    public static void printHttpRecvLog(String interfaceId, String uuid, HttpUriRequestBase httpMethod,
-                                        MessageEnvelope messageEnvelope) {
+    public static void printHttpRecvLog(
+            String interfaceId, String uuid, HttpUriRequestBase httpMethod, MessageEnvelope messageEnvelope) {
 
         Map<String, String> httpHeader = messageEnvelope.getHeaders();
         try {
             String uri = httpMethod.getUri().toString();
             String message = CommonUtil.getMsgContent(messageEnvelope);
-            MessageLoggerUtil.printHttpReceiveLog(interfaceId, InterfaceType.SPI, uuid, uri,
-                    httpMethod.getMethod(), message, httpHeader);
+            MessageLoggerUtil.printHttpReceiveLog(
+                    interfaceId, InterfaceType.SPI, uuid, uri, httpMethod.getMethod(), message, httpHeader);
         } catch (Exception e) {
             ExceptionUtil.caught(e, "print exception log");
         }
@@ -123,9 +123,9 @@ public class HttpClientHandler {
      * @throws HttpException
      * @throws IOException
      */
-    public MessageEnvelope handler(String transUUID, CommunicationConfig communicationConfig,
-                                   MessageEnvelope messageEnvelope) throws Exception,
-            IOException {
+    public MessageEnvelope handler(
+            String transUUID, CommunicationConfig communicationConfig, MessageEnvelope messageEnvelope)
+            throws Exception, IOException {
         CloseableHttpClient client = httpClientCache.getClient(communicationConfig);
 
         AssertUtil.isNotNull(client, CommunicationErrorCode.CLIENT_ERROR);
@@ -134,13 +134,11 @@ public class HttpClientHandler {
 
         constructParams(messageEnvelope, httpMethod, communicationConfig);
 
-        printHttpSendLog(communicationConfig.getInterfaceId(), transUUID, httpMethod,
-                messageEnvelope);
+        printHttpSendLog(communicationConfig.getInterfaceId(), transUUID, httpMethod, messageEnvelope);
 
         Object resultContent = runTask(client, httpMethod, communicationConfig);
 
-        MessageEnvelope result = this.convertInMessage(resultContent, httpMethod,
-                communicationConfig);
+        MessageEnvelope result = this.convertInMessage(resultContent, httpMethod, communicationConfig);
 
         printHttpRecvLog(communicationConfig.getInterfaceId(), transUUID, httpMethod, result);
 
@@ -175,8 +173,9 @@ public class HttpClientHandler {
      * @throws UnsupportedEncodingException
      */
     @SuppressWarnings("unchecked")
-    public void constructParams(MessageEnvelope outMessage, HttpUriRequestBase httpMethod,
-                                CommunicationConfig communicationConfig) throws UnsupportedEncodingException {
+    public void constructParams(
+            MessageEnvelope outMessage, HttpUriRequestBase httpMethod, CommunicationConfig communicationConfig)
+            throws UnsupportedEncodingException {
         Map<String, String> headers = outMessage.getHeaders();
         Map<String, String> params = null;
         String content = null;
@@ -208,8 +207,9 @@ public class HttpClientHandler {
      * @throws HttpException
      * @throws IOException
      */
-    public Object runTask(final CloseableHttpClient client, final HttpUriRequestBase httpMethod,
-                          final CommunicationConfig config) throws Exception, IOException {
+    public Object runTask(
+            final CloseableHttpClient client, final HttpUriRequestBase httpMethod, final CommunicationConfig config)
+            throws Exception, IOException {
 
         try {
             String str = client.execute(httpMethod, res -> {
@@ -218,39 +218,36 @@ public class HttpClientHandler {
                 if (needConvertToErrorMessage(statusCode, config)) {
                     return convertErrorResponseBody(config.getHttpStatusErrorCode(statusCode));
                 }
-                if (!CommunicationConfigUtil.isNeedResponse(config) && statusCode != 200
+                if (!CommunicationConfigUtil.isNeedResponse(config)
+                        && statusCode != 200
                         && !HttpConfigUtil.isRest(config)) {
                     LogUtil.warn(logger, "HTTP status code error ,statusCode=", res, config);
-                    throw new CommonException(CommunicationErrorCode.HTTP_STATUS_ERROR,
-                            "HTTP status code error ,statusCode=" + res);
+                    throw new CommonException(
+                            CommunicationErrorCode.HTTP_STATUS_ERROR, "HTTP status code error ,statusCode=" + res);
                 }
                 if (CommunicationConfigUtil.isNeedResponse(config)) {
                     result = EntityUtils.toString(res.getEntity());
                 }
                 return result;
-
             });
 
-            //是否需要返回
+            // 是否需要返回
 
             return str;
         } finally {
-            //释放连接，实际上httpclient会做一个连接复用，并不是真正的的关闭
+            // 释放连接，实际上httpclient会做一个连接复用，并不是真正的的关闭
             //            client.close(CloseMode.GRACEFUL);
             //            if (HttpConfigUtil.isHttpShortConnection(config)) {
             //                client.getHttpConnectionManager().closeIdleConnections(0);
             //            }
         }
-
     }
 
     /**
      * judge whether need convert to error message
      */
-    private boolean needConvertToErrorMessage(int statusCode,
-                                              CommunicationConfig receiverCommunicationConfig) {
-        return statusCode != 200
-                && receiverCommunicationConfig.getHttpStatusErrorCode(statusCode) != null;
+    private boolean needConvertToErrorMessage(int statusCode, CommunicationConfig receiverCommunicationConfig) {
+        return statusCode != 200 && receiverCommunicationConfig.getHttpStatusErrorCode(statusCode) != null;
     }
 
     /**
@@ -264,7 +261,6 @@ public class HttpClientHandler {
         jsonObject.put("status", errorCode.getStatus());
         result.put("result", jsonObject);
         return result.toJSONString();
-
     }
 
     /**
@@ -272,8 +268,9 @@ public class HttpClientHandler {
      *
      * @throws Exception
      */
-    public MessageEnvelope convertInMessage(Object inMessage, HttpUriRequestBase httpMethod,
-                                            CommunicationConfig receiverCommunicationConfig) throws IOException {
+    public MessageEnvelope convertInMessage(
+            Object inMessage, HttpUriRequestBase httpMethod, CommunicationConfig receiverCommunicationConfig)
+            throws IOException {
 
         // if there is no need to response, return it directly
         if (!CommunicationConfigUtil.isNeedResponse(receiverCommunicationConfig)) {
@@ -283,7 +280,7 @@ public class HttpClientHandler {
         MessageFormat format = receiverCommunicationConfig.getRecvMessageFormat();
         Object content = null;
 
-        //set http header
+        // set http header
         Map<String, String> responseHeaders = new HashMap<String, String>();
         //        for (Header header : httpMethod.getResponseHeaders()) {
         //            if (header.getName() != null) {
@@ -325,7 +322,7 @@ public class HttpClientHandler {
 
         MessageEnvelope responseMsg = new MessageEnvelope(format, content, responseHeaders);
 
-        //if we need return the HTTP status, this will return the HTTP status
+        // if we need return the HTTP status, this will return the HTTP status
         if (HttpConfigUtil.needHttpStatusCode(receiverCommunicationConfig)) {
             //            responseMsg.getHeaders().put(HTTP_STATUS_CODE,
             //                    String.valueOf(httpMethod.getStatusCode()));
@@ -342,7 +339,8 @@ public class HttpClientHandler {
      */
     private String getCertCode(CommunicationConfig reveiverCommunicationConfig) {
         InterfaceConfig receiverInterfaceConfig = InterfaceConfigCache.getWithInterfaceId(
-                reveiverCommunicationConfig.getInterfaceId(), RoleType.RECEIVER,
+                reveiverCommunicationConfig.getInterfaceId(),
+                RoleType.RECEIVER,
                 RuntimeProcessContextHolder.getRuntimeProcessContext().getTransactionType());
         return receiverInterfaceConfig.getSecurityStrategyCode();
     }
@@ -374,23 +372,19 @@ public class HttpClientHandler {
             nvps.add(new BasicNameValuePair("username", "wdbyte.com"));
             nvps.add(new BasicNameValuePair("password", "secret"));
             // 添加map中的所有参数
-            for (Iterator<Entry<String, String>> iterator = params.entrySet().iterator(); iterator
-                    .hasNext(); ) {
+            for (Iterator<Entry<String, String>> iterator = params.entrySet().iterator(); iterator.hasNext(); ) {
                 Entry<String, String> entry = iterator.next();
                 queryString.append(entry.getKey()).append("=").append(entry.getValue());
                 nvps.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
             }
             URI uri = null;
             try {
-                uri = new URIBuilder(method.getUri())
-                        .addParameters(nvps)
-                        .build();
+                uri = new URIBuilder(method.getUri()).addParameters(nvps).build();
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
             method.setUri(uri);
         }
-
     }
 
     /**
@@ -417,13 +411,12 @@ public class HttpClientHandler {
      *
      * @throws UnsupportedEncodingException
      */
-    protected void addContent(String content, CommunicationConfig communicationConfig,
-                              HttpUriRequestBase method) throws UnsupportedEncodingException {
+    protected void addContent(String content, CommunicationConfig communicationConfig, HttpUriRequestBase method)
+            throws UnsupportedEncodingException {
         if (StringUtils.isBlank(content)) {
             return;
         }
-        String contentMethod = communicationConfig
-                .getProperty(CommunicationProperty.MESSAGE_FORMAT);
+        String contentMethod = communicationConfig.getProperty(CommunicationProperty.MESSAGE_FORMAT);
 
         if (StringUtils.equals(contentMethod, "byte")) {
             method.setEntity(
@@ -436,7 +429,6 @@ public class HttpClientHandler {
                 method.setEntity(new StringEntity(content, ContentType.APPLICATION_JSON, sendCharset, false));
             }
         }
-
     }
 
     /**
@@ -444,8 +436,7 @@ public class HttpClientHandler {
      *
      * @throws IOException
      */
-    protected String getStringByCharset(InputStream content, String charset,
-                                        int bufferSize) throws IOException {
+    protected String getStringByCharset(InputStream content, String charset, int bufferSize) throws IOException {
         if (null == content) {
             return StringUtils.EMPTY;
         }
@@ -460,8 +451,8 @@ public class HttpClientHandler {
     /**
      * print http send log
      */
-    public void printHttpSendLog(String interfaceId, String uuid, HttpUriRequestBase httpMethod,
-                                 MessageEnvelope outMessage) {
+    public void printHttpSendLog(
+            String interfaceId, String uuid, HttpUriRequestBase httpMethod, MessageEnvelope outMessage) {
         String url;
         String message;
         String method = httpMethod.getMethod();
@@ -469,12 +460,10 @@ public class HttpClientHandler {
         try {
             url = httpMethod.getUri().toString();
             message = CommonUtil.getMsgContent(outMessage);
-            MessageLoggerUtil.printHttpSendLog(interfaceId, InterfaceType.SPI, uuid, url, method,
-                    message, httpHeader);
+            MessageLoggerUtil.printHttpSendLog(interfaceId, InterfaceType.SPI, uuid, url, method, message, httpHeader);
         } catch (Exception e) {
             // 任何异常不再抛出
             ExceptionUtil.caught(e, "print exception log .");
         }
     }
-
 }

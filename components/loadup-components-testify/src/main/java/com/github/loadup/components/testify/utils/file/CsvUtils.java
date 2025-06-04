@@ -1,6 +1,4 @@
-/**
- * Copyright (c) 2004-2021 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.file;
 
 /*-
@@ -36,14 +34,13 @@ import com.github.loadup.components.testify.exception.TestifyException;
 import com.github.loadup.components.testify.helper.CSVHelper;
 import com.github.loadup.components.testify.model.VirtualTable;
 import com.github.loadup.components.testify.util.FileUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.LinkedCaseInsensitiveMap;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedCaseInsensitiveMap;
 
 /**
  * csv操作工具类
@@ -61,8 +58,8 @@ public class CsvUtils {
      */
     public static void genCsvFromObjData(Object actual, String csvPath) {
         if (csvPath == null) {
-            String csvFolder = TestifyPathConstants.OBJECT_DATA_PATH
-                    + actual.getClass().getSimpleName();
+            String csvFolder =
+                    TestifyPathConstants.OBJECT_DATA_PATH + actual.getClass().getSimpleName();
             File file = FileUtil.getTestResourceFile(csvFolder);
             if (!file.exists()) {
                 file.mkdir();
@@ -83,8 +80,7 @@ public class CsvUtils {
      */
     public static void genCsvFromObjTable(VirtualTable virtualTable, String csvPath) {
         if (csvPath == null) {
-            String csvFolder = TestifyPathConstants.DB_DATA_PATH
-                    + virtualTable.getTableName();
+            String csvFolder = TestifyPathConstants.DB_DATA_PATH + virtualTable.getTableName();
             File file = FileUtil.getTestResourceFile(csvFolder);
             if (!file.exists()) {
                 file.mkdir();
@@ -100,19 +96,19 @@ public class CsvUtils {
             throw new TestifyException("文件【" + csvPath + "】已经存在，请尝试输入新文件路径");
         }
         List<String[]> outputValues = new ArrayList<String[]>();
-        //组装CSV文件第一行，标题行
+        // 组装CSV文件第一行，标题行
         List<String> header = new ArrayList<String>();
         header.add(CSVColEnum.COLUMN.getCode());
         header.add(CSVColEnum.FLAG.getCode());
 
         List<Map<String, Object>> mapList = virtualTable.getTableData();
-        //先设置有几列valueheander标题
+        // 先设置有几列valueheander标题
         Map<String, List<Object>> valueMap = new LinkedCaseInsensitiveMap<>();
         for (int i = 0; i < mapList.size(); i++) {
             header.add(CSVColEnum.VALUE.getCode());
         }
         outputValues.add(header.toArray(new String[header.size()]));
-        //填充数据
+        // 填充数据
         for (int i = 0; i < mapList.size(); i++) {
             for (Map.Entry<String, Object> singleMap : mapList.get(i).entrySet()) {
                 List<Object> columValueList = new ArrayList<Object>();
@@ -127,8 +123,8 @@ public class CsvUtils {
         for (Map.Entry<String, List<Object>> columMap : valueMap.entrySet()) {
             List<String> list = new ArrayList<String>();
             list.add(columMap.getKey());
-            if (!CollectionUtils.isEmpty(columMap.getValue()) &&
-                    columMap.getValue().get(0) instanceof java.sql.Timestamp) {
+            if (!CollectionUtils.isEmpty(columMap.getValue())
+                    && columMap.getValue().get(0) instanceof java.sql.Timestamp) {
                 list.add(DBFlagConstant.N);
             } else {
                 String flag = virtualTable.getFlagByFieldNameIgnoreCase(columMap.getKey());
@@ -161,9 +157,8 @@ public class CsvUtils {
      * @param csvPath       -生成的csv文件地址
      * @param dbUrl         dburl
      */
-    public static void genDBCSVFile(String tableFullName, String csvPath, String dbUrl,
-                                    String userName, String password, String schema) {
-        CSVHelper.genDBCSVFile(tableFullName, csvPath, dbUrl,
-                userName, password, schema);
+    public static void genDBCSVFile(
+            String tableFullName, String csvPath, String dbUrl, String userName, String password, String schema) {
+        CSVHelper.genDBCSVFile(tableFullName, csvPath, dbUrl, userName, password, schema);
     }
 }

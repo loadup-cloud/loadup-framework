@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.components.testify.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-
 import org.apache.commons.beanutils.ContextClassLoaderLocal;
 
 /**
@@ -55,7 +55,7 @@ public class BeanUtilsBean {
      * This is a pseudo-singleton - an single instance is provided per (thread) context classloader.
      * This mechanism provides isolation for web apps deployed in the same container.
      */
-    public synchronized static BeanUtilsBean getInstance() {
+    public static synchronized BeanUtilsBean getInstance() {
         return (BeanUtilsBean) beansByClassLoader.get();
     }
 
@@ -64,7 +64,7 @@ public class BeanUtilsBean {
      * This is a pseudo-singleton - an single instance is provided per (thread) context classloader.
      * This mechanism provides isolation for web apps deployed in the same container.
      */
-    public synchronized static void setInstance(BeanUtilsBean newInstance) {
+    public static synchronized void setInstance(BeanUtilsBean newInstance) {
         beansByClassLoader.set(newInstance);
     }
 
@@ -78,13 +78,11 @@ public class BeanUtilsBean {
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      */
-    public void setProperty(Object bean, String name, Object value) throws SecurityException,
-            IllegalArgumentException,
-            IllegalAccessException {
+    public void setProperty(Object bean, String name, Object value)
+            throws SecurityException, IllegalArgumentException, IllegalAccessException {
         Field field = getField(bean.getClass(), name);
         field.setAccessible(true);
         field.set(bean, value);
-
     }
 
     /**
@@ -98,13 +96,11 @@ public class BeanUtilsBean {
      * @throws SecurityException
      * @throws NoSuchFieldException
      */
-    public Object getProperty(Object bean, String name) throws IllegalAccessException,
-            InvocationTargetException,
-            SecurityException, NoSuchFieldException {
+    public Object getProperty(Object bean, String name)
+            throws IllegalAccessException, InvocationTargetException, SecurityException, NoSuchFieldException {
         Field field = getField(bean.getClass(), name);
         field.setAccessible(true);
         return field.get(bean);
-
     }
 
     /**
@@ -130,5 +126,4 @@ public class BeanUtilsBean {
         }
         return field;
     }
-
 }

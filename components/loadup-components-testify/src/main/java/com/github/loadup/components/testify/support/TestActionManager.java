@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.support;
 
 /*-
@@ -30,19 +27,18 @@ package com.github.loadup.components.testify.support;
  * #L%
  */
 
+import com.github.loadup.components.testify.support.enums.ActionType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.github.loadup.components.testify.support.enums.ActionType;
 
 /**
  * 操作管理器。
  * <p>
  * 可注册不同阶段的测试动作。
  *
- * 
+ *
  *
  */
 public class TestActionManager {
@@ -76,5 +72,4 @@ public class TestActionManager {
         }
         return actions;
     }
-
 }

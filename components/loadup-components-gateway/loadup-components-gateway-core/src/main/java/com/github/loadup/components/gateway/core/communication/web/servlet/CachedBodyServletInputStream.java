@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.communication.web.servlet;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.components.gateway.core.communication.web.servlet;
 
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 

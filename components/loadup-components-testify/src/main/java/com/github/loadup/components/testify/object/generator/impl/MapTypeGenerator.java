@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.generator.impl;
 
 /*-
@@ -30,20 +31,18 @@ import com.github.loadup.components.testify.exception.GenericsException;
 import com.github.loadup.components.testify.helper.CSVHelper;
 import com.github.loadup.components.testify.log.TestifyLogUtil;
 import com.github.loadup.components.testify.object.generator.ObjectGenerator;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Map类型处理器
  */
 @Slf4j
 public class MapTypeGenerator implements ObjectGenerator {
-
 
     private static final String SEPERATOR = ":";
 
@@ -70,8 +69,8 @@ public class MapTypeGenerator implements ObjectGenerator {
 
         if (isSimple) {
             for (Object o : ((Map) obj).keySet()) {
-                collectionString = collectionString + String.valueOf(o) + ":"
-                        + String.valueOf(((Map) obj).get(o)) + ";";
+                collectionString =
+                        collectionString + String.valueOf(o) + ":" + String.valueOf(((Map) obj).get(o)) + ";";
             }
         } else {
             String reCsvPath = StringUtils.substringAfterLast(csvPath, "/");
@@ -79,8 +78,8 @@ public class MapTypeGenerator implements ObjectGenerator {
             for (Object o : ((Map) obj).keySet()) {
                 try {
                     int index = CSVHelper.insertObjDataAndReturnIndex(((Map) obj).get(o), csvPath);
-                    collectionString = collectionString + String.valueOf(o) + ":"
-                            + tempCollectionString + String.valueOf(index) + ";";
+                    collectionString = collectionString + String.valueOf(o) + ":" + tempCollectionString
+                            + String.valueOf(index) + ";";
                 } catch (Exception e) {
                     TestifyLogUtil.fail(log, "复杂类型的Map转换为String出错！", e);
                 }
@@ -111,13 +110,11 @@ public class MapTypeGenerator implements ObjectGenerator {
         } catch (Exception e) {
             throw new GenericsException("Map中含有暂时不支持的T类型");
         }
-
     }
 
     @SuppressWarnings("rawtypes")
     @Override
-    public void setObjectValue(Object collectionObject, Object value, String originalValue,
-                               int index) {
+    public void setObjectValue(Object collectionObject, Object value, String originalValue, int index) {
         String[] valueParts = originalValue.split(SEPERATOR, 2);
         if (valueParts.length == 0) {
             TestifyLogUtil.fail(log, "解析Map值失败，格式不合法");
@@ -126,8 +123,8 @@ public class MapTypeGenerator implements ObjectGenerator {
         if (collectionObject instanceof Map) {
             ((Map) collectionObject).put(valueParts[0], valueParts[1]);
         } else {
-            TestifyLogUtil.fail(log,
-                    "给对象【" + collectionObject + "】失败，对象是【" + collectionObject.getClass() + "】类型而不是Map");
+            TestifyLogUtil.fail(
+                    log, "给对象【" + collectionObject + "】失败，对象是【" + collectionObject.getClass() + "】类型而不是Map");
         }
     }
 }

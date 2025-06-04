@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.msg.model;
 
 /*-
@@ -33,7 +30,7 @@ package com.github.loadup.components.testify.msg.model;
 /**
  * 消息校验模型
  *
- * 
+ *
  *
  */
 public class MessageModel {
@@ -63,12 +60,12 @@ public class MessageModel {
      */
     @Override
     public String toString() {
-        return "MessageModel [messageKey=" + messageKey + ", eventCode=" + eventCode
-                + ", eventTopic=" + eventTopic + ", messageClass=" + messageClass + "]";
+        return "MessageModel [messageKey=" + messageKey + ", eventCode=" + eventCode + ", eventTopic=" + eventTopic
+                + ", messageClass=" + messageClass + "]";
     }
 
     /**
-     * 
+     *
      *
      * @return property value of messageKey
      */
@@ -77,7 +74,7 @@ public class MessageModel {
     }
 
     /**
-     * 
+     *
      *
      * @param messageKey value to be assigned to property messageKey
      */
@@ -86,7 +83,7 @@ public class MessageModel {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of eventCode
      */
@@ -95,7 +92,7 @@ public class MessageModel {
     }
 
     /**
-     * 
+     *
      *
      * @param eventCode value to be assigned to property eventCode
      */
@@ -104,7 +101,7 @@ public class MessageModel {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of eventTopic
      */
@@ -113,7 +110,7 @@ public class MessageModel {
     }
 
     /**
-     * 
+     *
      *
      * @param eventTopic value to be assigned to property eventTopic
      */
@@ -122,7 +119,7 @@ public class MessageModel {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of messageClass
      */
@@ -131,12 +128,11 @@ public class MessageModel {
     }
 
     /**
-     * 
+     *
      *
      * @param messageClass value to be assigned to property messageClass
      */
     public void setMessageClass(String messageClass) {
         this.messageClass = messageClass;
     }
-
 }

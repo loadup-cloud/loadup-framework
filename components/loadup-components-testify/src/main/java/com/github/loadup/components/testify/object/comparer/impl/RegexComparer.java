@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.comparer.impl;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.components.testify.object.comparer.impl;
  * #L%
  */
 
+import com.github.loadup.components.testify.object.comparer.UnitComparer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.github.loadup.components.testify.object.comparer.UnitComparer;
 
 /**
  * "R" flag 校验器（正则表达式）
@@ -55,5 +55,4 @@ public class RegexComparer implements UnitComparer {
         }
         return true;
     }
-
 }

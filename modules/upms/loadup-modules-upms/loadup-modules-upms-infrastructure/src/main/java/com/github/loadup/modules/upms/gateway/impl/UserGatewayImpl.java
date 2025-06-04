@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.gateway.impl;
 
 /*-
@@ -37,14 +38,13 @@ import com.github.loadup.modules.upms.domain.UpmsUser;
 import com.github.loadup.modules.upms.enums.SocialAccountTypeEnum;
 import com.github.loadup.modules.upms.gateway.UserGateway;
 import jakarta.annotation.Resource;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -98,7 +98,8 @@ public class UserGatewayImpl implements UserGateway {
 
     @Override
     public Optional<UpmsUser> findByMobile(String mobile) {
-        UserSocialDO userSocialDO = userSocialRepository.findByAccountType(SocialAccountTypeEnum.MOBILE.getCode(), mobile);
+        UserSocialDO userSocialDO =
+                userSocialRepository.findByAccountType(SocialAccountTypeEnum.MOBILE.getCode(), mobile);
         return findById(userSocialDO.getUserId());
     }
 
@@ -111,7 +112,6 @@ public class UserGatewayImpl implements UserGateway {
             PasswordUtils.encrypt(newPassword, newPassword, userDO.getSalt());
             userRepository.changePassword(userId, userDO.getPassword());
         }
-
     }
 
     @Override
@@ -129,7 +129,10 @@ public class UserGatewayImpl implements UserGateway {
 
     @Override
     public Optional<UpmsUser> findById(String userId) {
-        return userRepository.findById(userId).map(UserConvertor.INSTANCE::toUser).map(v -> assembleUserDetail(v));
+        return userRepository
+                .findById(userId)
+                .map(UserConvertor.INSTANCE::toUser)
+                .map(v -> assembleUserDetail(v));
     }
 
     private UpmsUser assembleUserDetail(UpmsUser user) {
@@ -137,13 +140,28 @@ public class UserGatewayImpl implements UserGateway {
         List<UserRoleDO> userRoleDOList = userRoleRepository.findAllByUserId(userId);
         List<UserDepartDO> userDepartDOList = userDepartRepository.findAllByUserId(userId);
         List<UserPositionDO> userPositionDOList = userPositionRepository.findAllByUserId(userId);
-        List<UpmsRole> roleList = userRoleDOList.stream().map(userRoleDO -> roleRepository.findById(userRoleDO.getRoleId())
-                .map(RoleConvertor.INSTANCE::toRole).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
+        List<UpmsRole> roleList = userRoleDOList.stream()
+                .map(userRoleDO -> roleRepository
+                        .findById(userRoleDO.getRoleId())
+                        .map(RoleConvertor.INSTANCE::toRole)
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
         user.setRoleList(roleList);
-        user.setDepartList(userDepartDOList.stream().map(userRoleDO -> departRepository.findById(userRoleDO.getDepartId())
-                .map(DepartConvertor.INSTANCE::toDepart).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList()));
-        user.setPositionList(userPositionDOList.stream().map(userRoleDO -> positionRepository.findById(userRoleDO.getPositionId())
-                .map(PositionConvertor.INSTANCE::toPosition).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList()));
+        user.setDepartList(userDepartDOList.stream()
+                .map(userRoleDO -> departRepository
+                        .findById(userRoleDO.getDepartId())
+                        .map(DepartConvertor.INSTANCE::toDepart)
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
+        user.setPositionList(userPositionDOList.stream()
+                .map(userRoleDO -> positionRepository
+                        .findById(userRoleDO.getPositionId())
+                        .map(PositionConvertor.INSTANCE::toPosition)
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
         return user;
     }
 
@@ -160,14 +178,18 @@ public class UserGatewayImpl implements UserGateway {
     }
 
     private List<UpmsUser> fetchUserList(List<UserRoleDO> userRoleDOList) {
-        return userRoleDOList.stream().map(
-                userRoleDO -> userRepository.findById(userRoleDO.getUserId()).map(UserConvertor.INSTANCE::toUser)).filter(
-                Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+        return userRoleDOList.stream()
+                .map(userRoleDO ->
+                        userRepository.findById(userRoleDO.getUserId()).map(UserConvertor.INSTANCE::toUser))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 
     @Override
     public void saveUserRoles(String userId, List<String> roleIds) {
-        List<UserRoleDO> userRoleDOList = roleIds.stream().map(roleId -> new UserRoleDO(userId, roleId)).collect(Collectors.toList());
+        List<UserRoleDO> userRoleDOList =
+                roleIds.stream().map(roleId -> new UserRoleDO(userId, roleId)).collect(Collectors.toList());
         userRoleRepository.removeAllByUserId(userId);
         userRoleRepository.saveAll(userRoleDOList);
     }
@@ -178,8 +200,12 @@ public class UserGatewayImpl implements UserGateway {
         if (CollectionUtils.isEmpty(userRoleList)) {
             return new ArrayList<>();
         }
-        return userRoleList.stream().map(v -> roleRepository.findById(v.getRoleId())).filter(Optional::isPresent).map(Optional::get).map(
-                RoleDO::getRoleCode).collect(Collectors.toList());
+        return userRoleList.stream()
+                .map(v -> roleRepository.findById(v.getRoleId()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(RoleDO::getRoleCode)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -202,15 +228,22 @@ public class UserGatewayImpl implements UserGateway {
     @Override
     public List<UpmsUser> findByDepartIdList(List<String> idList) {
         List<UserDepartDO> doList = userDepartRepository.findAllByDepartIdIn(idList);
-        return doList.stream().map(userRoleDO -> userRepository.findById(userRoleDO.getUserId()).map(UserConvertor.INSTANCE::toUser))
-                .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+        return doList.stream()
+                .map(userRoleDO ->
+                        userRepository.findById(userRoleDO.getUserId()).map(UserConvertor.INSTANCE::toUser))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<UpmsUser> findByDepartId(String departId) {
         List<UserDepartDO> doList = userDepartRepository.findAllByDepartId(departId);
-        return doList.stream().map(userRoleDO -> userRepository.findById(userRoleDO.getUserId()).map(UserConvertor.INSTANCE::toUser))
-                .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+        return doList.stream()
+                .map(userRoleDO ->
+                        userRepository.findById(userRoleDO.getUserId()).map(UserConvertor.INSTANCE::toUser))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
-
 }

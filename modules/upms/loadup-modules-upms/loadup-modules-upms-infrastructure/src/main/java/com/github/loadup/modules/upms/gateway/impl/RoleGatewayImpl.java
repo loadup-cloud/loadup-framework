@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.gateway.impl;
 
 /*-
@@ -37,14 +38,13 @@ import com.github.loadup.modules.upms.domain.UpmsRole;
 import com.github.loadup.modules.upms.domain.UpmsUser;
 import com.github.loadup.modules.upms.gateway.RoleGateway;
 import jakarta.annotation.Resource;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j

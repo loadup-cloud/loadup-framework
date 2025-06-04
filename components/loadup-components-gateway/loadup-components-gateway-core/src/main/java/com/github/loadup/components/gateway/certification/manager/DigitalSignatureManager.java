@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.manager;
 
 /*-
@@ -31,10 +32,9 @@ import com.github.loadup.components.gateway.certification.impl.CertificationServ
 import com.github.loadup.components.gateway.certification.model.AlgorithmEnum;
 import com.github.loadup.components.gateway.certification.model.CertificationFactor;
 import com.github.loadup.components.gateway.facade.enums.CertTypeEnum;
-import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.stereotype.Component;
 
 /**
  * 数字签名管理类
@@ -71,7 +71,6 @@ public class DigitalSignatureManager extends AbstractAlgoManager {
         Algorithm algorithm = getAlgorithm(certificationFactor);
         byte[] key = (byte[]) certificationFactor.getCertMap().get(CertTypeEnum.PRIVATE_KEY.getCertType());
         return algorithm.sign(srcInput, key, certificationFactor.getAlgoString());
-
     }
 
     /**

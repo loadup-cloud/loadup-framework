@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.enums;
 
 /*-
@@ -83,28 +84,28 @@ public enum OperationType {
     }
 
     /**
-     * 
+     *
      */
     public String getDesc() {
         return desc;
     }
 
     /**
-     * 
+     *
      */
     public void setDesc(String desc) {
         this.desc = desc;
     }
 
     /**
-     * 
+     *
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 
+     *
      */
     public void setName(String name) {
         this.name = name;

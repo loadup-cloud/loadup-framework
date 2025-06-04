@@ -1,6 +1,4 @@
-/**
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data.model;
 
 /*-
@@ -45,7 +43,7 @@ public class GenerateCondition {
 
     private String methodName;
 
-    //用来标识是否插件已经预算了属性结果.
+    // 用来标识是否插件已经预算了属性结果.
     private boolean isSpecAtom = false;
 
     private Map<String, List<Map<String, String>>> ruleMaps = new HashMap<String, List<Map<String, String>>>();
@@ -95,7 +93,7 @@ public class GenerateCondition {
         this.isSpecAtom = isSpecAtom;
     }
 
-    //添加Map
+    // 添加Map
     public void addRuleMap(String objName, List<Map<String, String>> mapList) {
         ruleMaps.put(objName, mapList);
     }
@@ -157,5 +155,4 @@ public class GenerateCondition {
     public void setMethodName(String methodName) {
         this.methodName = methodName;
     }
-
 }

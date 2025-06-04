@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.util;
 
 /*-
@@ -26,8 +27,6 @@ package com.github.loadup.commons.util;
  * #L%
  */
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.NoSuchAlgorithmException;
@@ -36,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * 随机工具类
@@ -46,14 +46,17 @@ public class RandomUtil {
      * 用于随机选的数字
      */
     public static final String BASE_NUMBER = "0123456789";
+
     /**
      * 用于随机选的字符
      */
     public static final String BASE_CHAR = "abcdefghijklmnopqrstuvwxyz";
+
     /**
      * 用于随机选的字符和数字（小写）
      */
     public static final String BASE_CHAR_NUMBER_LOWER = BASE_CHAR + BASE_NUMBER;
+
     /**
      * 用于随机选的字符和数字（包括大写和小写字母）
      */
@@ -162,6 +165,7 @@ public class RandomUtil {
     public static Random getRandom(final boolean isSecure) {
         return isSecure ? getSecureRandom() : getRandom();
     }
+
     // endregion
 
     /**
@@ -256,6 +260,7 @@ public class RandomUtil {
         }
         return range;
     }
+
     // endregion
 
     // region ----- randomLong
@@ -301,6 +306,7 @@ public class RandomUtil {
         }
         return getRandom().nextLong(min, max);
     }
+
     // endregion
 
     // region ----- randomFloat
@@ -333,6 +339,7 @@ public class RandomUtil {
 
         return minInclude + ((maxExclude - minInclude) * getRandom().nextFloat());
     }
+
     // endregion
 
     // region ----- randomDouble
@@ -352,9 +359,10 @@ public class RandomUtil {
      *
      * @since 4.0.8
      */
-    public static double randomDouble(final double minInclude, final double maxExclude, final int scale,
-                                      final RoundingMode roundingMode) {
-        return NumberUtil.round(randomDouble(minInclude, maxExclude), scale, roundingMode).doubleValue();
+    public static double randomDouble(
+            final double minInclude, final double maxExclude, final int scale, final RoundingMode roundingMode) {
+        return NumberUtil.round(randomDouble(minInclude, maxExclude), scale, roundingMode)
+                .doubleValue();
     }
 
     /**
@@ -394,6 +402,7 @@ public class RandomUtil {
     public static double randomDouble(final double limit, final int scale, final RoundingMode roundingMode) {
         return NumberUtil.round(randomDouble(limit), scale, roundingMode).doubleValue();
     }
+
     // endregion
 
     // region ----- randomBigDecimal
@@ -424,6 +433,7 @@ public class RandomUtil {
     public static BigDecimal randomBigDecimal(final BigDecimal minInclude, final BigDecimal maxExclude) {
         return NumberUtil.toBigDecimal(getRandom().nextDouble(minInclude.doubleValue(), maxExclude.doubleValue()));
     }
+
     // endregion
 
     // region ----- randomEle
@@ -572,6 +582,7 @@ public class RandomUtil {
         }
         return sb.toString();
     }
+
     // endregion
 
     // region ---- randomChar

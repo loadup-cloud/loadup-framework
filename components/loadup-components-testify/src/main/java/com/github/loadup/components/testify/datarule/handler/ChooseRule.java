@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.handler;
 
 /*-
@@ -30,10 +27,9 @@ package com.github.loadup.components.testify.datarule.handler;
  * #L%
  */
 
+import com.github.loadup.components.testify.datarule.RuleObject;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.github.loadup.components.testify.datarule.RuleObject;
 
 /**
  * 选择规则。
@@ -44,7 +40,7 @@ import com.github.loadup.components.testify.datarule.RuleObject;
  * choose(2,tradeType,paytool) 代表从交易类型和支付工具的排列组合中随机选择两条；<br>
  * choose(-1,paytool) 若count<=0代表全部穷举。
  *
- * 
+ *
  *
  */
 public class ChooseRule implements RuleObject {
@@ -81,7 +77,7 @@ public class ChooseRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @param defaultValues value to be assigned to property defaultValues
      */
@@ -109,7 +105,7 @@ public class ChooseRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @param itemCount value to be assigned to property itemCount
      */
@@ -127,12 +123,11 @@ public class ChooseRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @param fields value to be assigned to property fields
      */
     public void setFields(List<String> fields) {
         this.fields = fields;
     }
-
 }

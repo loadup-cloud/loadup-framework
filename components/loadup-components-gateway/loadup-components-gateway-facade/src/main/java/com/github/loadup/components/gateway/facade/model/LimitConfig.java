@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.model;
 
 /*-
@@ -68,98 +69,98 @@ public class LimitConfig {
     private Boolean enableLimit = Boolean.FALSE;
 
     /**
-     * 
+     *
      */
     public Integer getLimitValue() {
         return limitValue;
     }
 
     /**
-     * 
+     *
      */
     public void setLimitValue(Integer limitValue) {
         this.limitValue = limitValue;
     }
 
     /**
-     * 
+     *
      */
     public LimitTimeRuleEnum getLimitTimeRule() {
         return limitTimeRule;
     }
 
     /**
-     * 
+     *
      */
     public void setLimitTimeRule(LimitTimeRuleEnum limitTimeRule) {
         this.limitTimeRule = limitTimeRule;
     }
 
     /**
-     * 
+     *
      */
     public LimitTypeEnum getLimitType() {
         return limitType;
     }
 
     /**
-     * 
+     *
      */
     public void setLimitType(LimitTypeEnum limitType) {
         this.limitType = limitType;
     }
 
     /**
-     * 
+     *
      */
     public DistributedExceptionStrategy getDistributedFallbackStrategy() {
         return distributedFallbackStrategy;
     }
 
     /**
-     * 
+     *
      */
     public void setDistributedFallbackStrategy(DistributedExceptionStrategy distributedFallbackStrategy) {
         this.distributedFallbackStrategy = distributedFallbackStrategy;
     }
 
     /**
-     * 
+     *
      */
     public Integer getDistributedFallbackStrategyLimitValue() {
         return distributedFallbackStrategyLimitValue;
     }
 
     /**
-     * 
+     *
      */
     public void setDistributedFallbackStrategyLimitValue(Integer distributedFallbackStrategyLimitValue) {
         this.distributedFallbackStrategyLimitValue = distributedFallbackStrategyLimitValue;
     }
 
     /**
-     * 
+     *
      */
     public String getEntryKeyId() {
         return entryKeyId;
     }
 
     /**
-     * 
+     *
      */
     public void setEntryKeyId(String entryKeyId) {
         this.entryKeyId = entryKeyId;
     }
 
     /**
-     * 
+     *
      */
     public Boolean isEnableLimit() {
         return enableLimit;
     }
 
     /**
-     * 
+     *
      */
     public void setEnableLimit(Boolean enableLimit) {
         this.enableLimit = enableLimit;

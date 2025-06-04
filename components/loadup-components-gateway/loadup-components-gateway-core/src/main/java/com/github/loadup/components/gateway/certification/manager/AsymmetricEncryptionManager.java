@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.manager;
 
 /*-
@@ -33,10 +34,9 @@ import com.github.loadup.components.gateway.certification.impl.CertificationServ
 import com.github.loadup.components.gateway.certification.model.AlgorithmEnum;
 import com.github.loadup.components.gateway.certification.model.CertificationFactor;
 import com.github.loadup.components.gateway.facade.enums.CertTypeEnum;
-import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.stereotype.Component;
 
 /**
  * 非对称加密算法管理类
@@ -80,7 +80,6 @@ public class AsymmetricEncryptionManager extends AbstractAlgoManager {
 
             key = (byte[]) certificationFactor.getCertMap().get(CertTypeEnum.PRIVATE_KEY.getCertType());
             return algorithm.decrypt(srcInput, key, certificationFactor.getAlgoString(), true);
-
         }
 
         throw new CertificationException(CertificationErrorCode.CONFIG_ERROR);
@@ -111,7 +110,6 @@ public class AsymmetricEncryptionManager extends AbstractAlgoManager {
 
             key = (byte[]) certificationFactor.getCertMap().get(CertTypeEnum.PRIVATE_KEY.getCertType());
             return algorithm.encrypt(srcInput, key, certificationFactor.getAlgoString(), true);
-
         }
 
         throw new CertificationException(CertificationErrorCode.CONFIG_ERROR);

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin;
 
 /*-
@@ -26,6 +27,8 @@ package com.github.loadup.components.gateway.plugin;
  * #L%
  */
 
+import static com.github.loadup.components.gateway.core.common.Constant.*;
+
 import com.alibaba.cola.extension.Extension;
 import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
@@ -38,17 +41,14 @@ import com.github.loadup.components.gateway.facade.spi.OpenApi;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.plugin.helper.RpcClientHelper;
 import jakarta.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.github.loadup.components.gateway.core.common.Constant.*;
 
 /**
  *
@@ -59,8 +59,7 @@ public class RpcCommunicationExt implements CommunicationProxyExtPt {
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(RpcCommunicationExt.class);
+    private static final Logger logger = LoggerFactory.getLogger(RpcCommunicationExt.class);
 
     /**
      * default rpc time out
@@ -112,7 +111,9 @@ public class RpcCommunicationExt implements CommunicationProxyExtPt {
             }
             return SerializationUtil.serializeWithDateFormat(openApiTransResponse.getMessage(), dateFormat);
         } catch (Exception e) {
-            LogUtil.error(logger, e,
+            LogUtil.error(
+                    logger,
+                    e,
                     "RPC_CALL_ERROR_PREX, Failed to send message because of error occurs when trying to get rpc bean with config:"
                             + config.getUri());
             throw new RuntimeException("Failed to send message.", e);
@@ -143,8 +144,7 @@ public class RpcCommunicationExt implements CommunicationProxyExtPt {
         String[] configs = queryParams.split(KEY_VALUE_SEPARATOR);
         for (String config : configs) {
             int firstSplitorIndex = config.indexOf(VALUE_SEPARATOR);
-            String keyString = StringUtils.substring(config, 0,
-                    firstSplitorIndex);
+            String keyString = StringUtils.substring(config, 0, firstSplitorIndex);
             keyString = StringUtils.trim(keyString);
             configMap.put(keyString, config.substring(firstSplitorIndex + 1));
         }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.gateway;
 
 /*-
@@ -27,7 +28,6 @@ package com.github.loadup.modules.upms.gateway;
  */
 
 import com.github.loadup.modules.upms.domain.UpmsPosition;
-
 import java.util.List;
 
 public interface PositionGateway {
@@ -41,5 +41,4 @@ public interface PositionGateway {
     UpmsPosition getById(String id);
 
     List<UpmsPosition> getByUserId(String userId);
-
 }

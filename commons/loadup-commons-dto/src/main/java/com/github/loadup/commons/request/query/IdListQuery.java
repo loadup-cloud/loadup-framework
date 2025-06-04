@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.request.query;
 
 /*-
@@ -28,12 +29,10 @@ package com.github.loadup.commons.request.query;
 
 import com.github.loadup.commons.dto.DTO;
 import jakarta.validation.constraints.NotBlank;
+import java.io.Serial;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serial;
-import java.util.Collection;
-import java.util.List;
 
 @Getter
 @Setter

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.config.model;
 
 /*-
@@ -26,15 +27,13 @@ package com.github.loadup.components.gateway.facade.config.model;
  * #L%
  */
 
+import java.io.Serializable;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.io.Serializable;
 
 /**
  * 网关API配置条件组
  */
-
 public class APIConditionGroup implements Serializable {
 
     private static final long serialVersionUID = -4878291431746547062L;

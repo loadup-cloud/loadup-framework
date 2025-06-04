@@ -1,6 +1,4 @@
-/**
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.annotation;
 
 /*-
@@ -31,14 +29,11 @@ package com.github.loadup.components.testify.annotation;
 
 import com.github.loadup.components.testify.model.PrepareData;
 import com.github.loadup.components.testify.utils.CaseResultCollectUtil;
-import org.testng.annotations.Test;
-
 import java.util.HashMap;
 import java.util.Map;
-
+import org.testng.annotations.Test;
 
 public class TestSqlparse {
-
 
     @Test
     // 测试解析并保存成yaml
@@ -63,7 +58,7 @@ public class TestSqlparse {
         PrepareData prepareData = new PrepareData();
         String aa = prepareData.getDescription();
         aa = "测试";
-        //prepareData.setDescription(aa);
+        // prepareData.setDescription(aa);
         System.out.println(prepareData);
 
         CaseResultCollectUtil.collectSqlLog(caseId, prepareData);
@@ -76,7 +71,7 @@ public class TestSqlparse {
         caseDatas.put("case003", prepareData);
         // 保存到yaml中
         String relativePath = "logs/test.yaml";
-        //CaseResultCollector.saveCaseResult(relativePath, caseDatas);
+        // CaseResultCollector.saveCaseResult(relativePath, caseDatas);
         System.out.println(caseDatas);
     }
 
@@ -88,6 +83,4 @@ public class TestSqlparse {
         CaseResultCollectUtil.collectSqlLog(caseId, prepareData);
         System.out.println(prepareData);
     }
-
-
 }

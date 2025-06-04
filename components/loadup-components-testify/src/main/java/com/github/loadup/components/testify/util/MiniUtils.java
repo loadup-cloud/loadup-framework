@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -29,20 +30,13 @@ package com.github.loadup.components.testify.util;
 import com.github.loadup.components.testify.constant.TestifyConstants;
 import com.github.loadup.components.testify.driver.TestifyConfiguration;
 import com.github.loadup.components.testify.driver.constants.AtsConstants;
+import java.io.File;
+import java.util.*;
+import java.util.Map.Entry;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Properties;
-
 /**
- * ��Сҵ��ԪUtils
- *
- * 
  *
  */
 public class MiniUtils {
@@ -50,20 +44,20 @@ public class MiniUtils {
     /**
      * mini-bundle config
      */
-    public static String miniBundleConfig = TestifyConfiguration.getInstance().getConfigMap()
-            .get(TestifyConstants.MINI_BUNDLE);
+    public static String miniBundleConfig =
+            TestifyConfiguration.getInstance().getConfigMap().get(TestifyConstants.MINI_BUNDLE);
 
     /**
      * open_mini-bundle config
      */
-    public static String openMiniBundleConfig = TestifyConfiguration.getInstance().getConfigMap()
-            .get(TestifyConstants.OPEN_MINI_BUNDLE);
+    public static String openMiniBundleConfig =
+            TestifyConfiguration.getInstance().getConfigMap().get(TestifyConstants.OPEN_MINI_BUNDLE);
 
     /**
      * mini-replace-xml config
      */
-    public static String miniReplaceXmlConfig = TestifyConfiguration.getInstance().getConfigMap()
-            .get(AtsConstants.MINI_EXCLUDE_XML);
+    public static String miniReplaceXmlConfig =
+            TestifyConfiguration.getInstance().getConfigMap().get(AtsConstants.MINI_EXCLUDE_XML);
 
     /**
      * @return
@@ -71,7 +65,6 @@ public class MiniUtils {
     public static boolean isLoadMiniBundles() {
 
         return StringUtils.isNotBlank(miniBundleConfig);
-
     }
 
     /**
@@ -86,7 +79,6 @@ public class MiniUtils {
         } else {
             return false;
         }
-
     }
 
     /**
@@ -94,31 +86,28 @@ public class MiniUtils {
      */
     public static String[] loadMiniBundles() {
 
-        String[] excludedBundles = new String[]{};
+        String[] excludedBundles = new String[] {};
 
         if (StringUtils.isNotBlank(miniBundleConfig)) {
 
             // Get mini-bundle flag
-            List<?> miniBundlesFlagList = CollectionConvertUtil.arrayConvertToList(miniBundleConfig
-                    .split(","));
+            List<?> miniBundlesFlagList = CollectionConvertUtil.arrayConvertToList(miniBundleConfig.split(","));
 
             /*
              * basis of miniBundlesFlagList,read mini-bundle-config.properties
              * info, to get Require Bundle info
              */
-            Properties miniBundleConfig = PropertyFileUtil
-                    .readProperties("/config/miniConf/mini-bundle-config.properties");
+            Properties miniBundleConfig =
+                    PropertyFileUtil.readProperties("/config/miniConf/mini-bundle-config.properties");
 
             List<Object> requiredBundleList = new ArrayList<Object>();
 
             for (Entry<Object, Object> entry : miniBundleConfig.entrySet()) {
                 String key = (String) entry.getKey();
                 if (miniBundlesFlagList.contains(key)) {
-                    requiredBundleList.addAll(CollectionConvertUtil
-                            .arrayConvertToList(miniBundleConfig.getProperty(key).split(",")));
-
+                    requiredBundleList.addAll(CollectionConvertUtil.arrayConvertToList(
+                            miniBundleConfig.getProperty(key).split(",")));
                 }
-
             }
 
             // excludedBundles ͨ��ȫ����ȥrequiredBundleList��ȡ
@@ -132,7 +121,6 @@ public class MiniUtils {
                     continue;
                 }
                 requiredBundlesSet.add(bundle);
-
             }
         }
         return excludedBundles;
@@ -151,17 +139,16 @@ public class MiniUtils {
      */
     public static String[] loadReplaceXmls() {
 
-        String[] replaceStrs = new String[]{};
+        String[] replaceStrs = new String[] {};
 
         if (StringUtils.isNotBlank(miniReplaceXmlConfig)) {
 
             // Get mini-replace-xml flag
-            List<?> miniReplaceXmlflaglist = CollectionConvertUtil
-                    .arrayConvertToList(miniReplaceXmlConfig.split(","));
+            List<?> miniReplaceXmlflaglist = CollectionConvertUtil.arrayConvertToList(miniReplaceXmlConfig.split(","));
 
             // ��properties�ļ�
-            Properties miniReplaceXmlConfig = PropertyFileUtil
-                    .readProperties("/config/miniConf/mini-xml-config.properties");
+            Properties miniReplaceXmlConfig =
+                    PropertyFileUtil.readProperties("/config/miniConf/mini-xml-config.properties");
 
             // ѭ������properties
             for (Object object : miniReplaceXmlflaglist) {
@@ -172,11 +159,10 @@ public class MiniUtils {
                 if (StringUtils.isNotBlank(value)) {
                     String[] noNeedLoadXmls = value.split(",");
                     for (String noNeedLoadXml : noNeedLoadXmls) {
-                        replaceStrs = (String[]) ArrayUtils.add(replaceStrs,
-                                noNeedLoadXml + "!META-INF\\spring\\test-replace-empty.xml");
+                        replaceStrs = (String[]) ArrayUtils.add(
+                                replaceStrs, noNeedLoadXml + "!META-INF\\spring\\test-replace-empty.xml");
                     }
                 }
-
             }
         }
         return replaceStrs;
@@ -187,17 +173,16 @@ public class MiniUtils {
         String bundleName = "";
         for (File file : MFfiles) {
 
-            //忽略test-bundle的依赖分析
+            // 忽略test-bundle的依赖分析
             if (file.getPath().contains("test")) {
                 continue;
             }
 
-            String springPath = StringUtils.substringBeforeLast(file.getAbsolutePath(), "/")
-                    + "/spring";
+            String springPath = StringUtils.substringBeforeLast(file.getAbsolutePath(), "/") + "/spring";
 
             List<File> xmlBeanFileList = MFfileUtil.getSpeciFile(springPath, "(.*)xml$");
             for (File xmlFile : xmlBeanFileList) {
-                //解析xml的bean Id
+                // 解析xml的bean Id
                 BeanIdAnalysisHandler myHandler = new BeanIdAnalysisHandler();
                 try {
                     XMLParserUtil.parseXML(xmlFile, myHandler);
@@ -213,19 +198,17 @@ public class MiniUtils {
                         break;
                     }
                 }
-                //找到bean定义处，跳出循环
+                // 找到bean定义处，跳出循环
                 if (StringUtils.isNotBlank(bundleName)) {
                     break;
                 }
             }
-            //找到bean定义处，跳出循环
+            // 找到bean定义处，跳出循环
             if (StringUtils.isNotBlank(bundleName)) {
                 break;
             }
-
         }
 
         return bundleName;
     }
-
 }

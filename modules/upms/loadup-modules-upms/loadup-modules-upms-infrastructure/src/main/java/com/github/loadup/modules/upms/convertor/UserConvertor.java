@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.convertor;
 
 /*-
@@ -28,10 +29,9 @@ package com.github.loadup.modules.upms.convertor;
 
 import com.github.loadup.modules.upms.dal.dataobject.UserDO;
 import com.github.loadup.modules.upms.domain.UpmsUser;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
-
-import java.util.List;
 
 @Mapper(uses = {UserNameConvertor.class})
 public interface UserConvertor {
@@ -44,5 +44,4 @@ public interface UserConvertor {
     UserDO toUserDO(UpmsUser user);
 
     List<UserDO> toUserDOList(List<UpmsUser> user);
-
 }

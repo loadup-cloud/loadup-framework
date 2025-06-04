@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.context;
 
 /*-
@@ -26,41 +27,40 @@ package com.github.loadup.components.testify.context;
  * #L%
  */
 
-import java.util.List;
-
 import com.github.loadup.components.testify.yaml.YamlTestData;
+import java.util.List;
 
 /**
  * 脚本上下文
  *
- * 
+ *
  *
  */
 public class TestifySuiteContext {
 
-    //用例当前类名
+    // 用例当前类名
     private String className;
 
-    //用例当前方法名
+    // 用例当前方法名
     private String methodName;
 
-    //当前用例文件夹名
+    // 当前用例文件夹名
     private String csvFolderPath;
 
-    //当前用例驱动csv文件名
+    // 当前用例驱动csv文件名
     private String csvFilePath;
 
-    //csv入参名称列表
+    // csv入参名称列表
     private List<String> parameterKeyList;
 
-    //当前用例驱动yaml文件名，可以为空
+    // 当前用例驱动yaml文件名，可以为空
     private String yamlPath;
 
-    //Yaml加载对象
+    // Yaml加载对象
     private YamlTestData yamlTestData;
 
     /**
-     * 
+     *
      *
      * @return property value of className
      */
@@ -78,7 +78,7 @@ public class TestifySuiteContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of methodName
      */
@@ -96,7 +96,7 @@ public class TestifySuiteContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of csvFolderPath
      */
@@ -114,7 +114,7 @@ public class TestifySuiteContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of csvFilePath
      */
@@ -132,7 +132,7 @@ public class TestifySuiteContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of yamlPath
      */
@@ -150,7 +150,7 @@ public class TestifySuiteContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of yamlTestData
      */
@@ -168,7 +168,7 @@ public class TestifySuiteContext {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of parameterKeyList
      */
@@ -184,5 +184,4 @@ public class TestifySuiteContext {
     public void setParameterKeyList(List<String> parameterKeyList) {
         this.parameterKeyList = parameterKeyList;
     }
-
 }

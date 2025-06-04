@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.util;
 
 /*-
@@ -30,10 +31,9 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-
 import java.util.Set;
 
-//@Slf4j
+// @Slf4j
 public class ValidateUtils {
     private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
@@ -41,7 +41,7 @@ public class ValidateUtils {
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<Object>> constraintViolations = validator.validate(obj);
         if (!constraintViolations.isEmpty()) {
-            throw new RuntimeException("Validation failed: " + constraintViolations);
+            throw new IllegalArgumentException("Validation failed: " + constraintViolations);
         }
     }
 
@@ -49,6 +49,8 @@ public class ValidateUtils {
         try {
             validate(obj);
             return true;
+        } catch (IllegalArgumentException e) {
+            return false;
         } catch (RuntimeException e) {
             return false;
         }

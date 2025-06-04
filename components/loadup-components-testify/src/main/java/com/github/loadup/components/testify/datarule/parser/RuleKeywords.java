@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.parser;
 
 /*-
@@ -36,7 +33,7 @@ import java.util.Map;
 /**
  * 关键字定义。
  *
- * 
+ *
  *
  */
 public class RuleKeywords {
@@ -44,7 +41,7 @@ public class RuleKeywords {
     /**
      * 默认唯一实例
      */
-    public final static RuleKeywords DEFAULT_KEYWORDS;
+    public static final RuleKeywords DEFAULT_KEYWORDS;
 
     static {
         Map<String, RuleToken> map = new HashMap<String, RuleToken>();
@@ -94,5 +91,4 @@ public class RuleKeywords {
         key = key.toUpperCase();
         return keywords.get(key);
     }
-
 }

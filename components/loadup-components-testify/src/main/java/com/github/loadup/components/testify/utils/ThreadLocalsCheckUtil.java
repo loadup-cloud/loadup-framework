@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils;
 
 /*-
@@ -26,39 +27,31 @@ package com.github.loadup.components.testify.utils;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.github.loadup.components.testify.constant.TestifyConstants;
 import com.github.loadup.components.testify.driver.TestifyConfiguration;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 线程上下文校验工具类
  *
- * 
+ *
  *
  */
 public class ThreadLocalsCheckUtil {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(ThreadLocalsCheckUtil.class);
-    public static String threadLocalCheckConfig = TestifyConfiguration
-            .getInstance()
-            .getConfigMap()
-            .get(
-                    TestifyConstants.THREADLOCAL_CHECK_INFO);
-    public static String threadLocalNotCheckScript = TestifyConfiguration
-            .getInstance()
-            .getConfigMap()
-            .get(
-                    TestifyConstants.THREADLOCAL_NOT_CHECK_SCRIPT);
+    private static final Logger logger = LoggerFactory.getLogger(ThreadLocalsCheckUtil.class);
+    public static String threadLocalCheckConfig =
+            TestifyConfiguration.getInstance().getConfigMap().get(TestifyConstants.THREADLOCAL_CHECK_INFO);
+    public static String threadLocalNotCheckScript =
+            TestifyConfiguration.getInstance().getConfigMap().get(TestifyConstants.THREADLOCAL_NOT_CHECK_SCRIPT);
 
     /**
      * 校验acts-confif.properties中配置的线程变量已经清空
@@ -83,27 +76,26 @@ public class ThreadLocalsCheckUtil {
             Field f1 = clz.getDeclaredField(threadLocalName);
             f1.setAccessible(true);
 
-            //所有的线程变量都应该是static类型
+            // 所有的线程变量都应该是static类型
             ThreadLocal<?> tl = (ThreadLocal<?>) f1.get(null);
 
-            //获取当前线程下所有的线程变量
+            // 获取当前线程下所有的线程变量
             Thread t = Thread.currentThread();
             Field f2 = t.getClass().getDeclaredField("threadLocals");
             f2.setAccessible(true);
             Object threadLocals = f2.get(t);
-            Method method = threadLocals.getClass().getDeclaredMethod("getEntry",
-                    new Class[]{ThreadLocal.class});
+            Method method = threadLocals.getClass().getDeclaredMethod("getEntry", new Class[] {ThreadLocal.class});
 
             method.setAccessible(true);
 
-            Object threadLocalEntry = method.invoke(threadLocals, new Object[]{tl});
+            Object threadLocalEntry = method.invoke(threadLocals, new Object[] {tl});
 
             if (null == threadLocalEntry) {
                 return;
             } else {
                 Object threadLocalEntryValue = tl.get();
-//                Assert.assertNull(threadHolder + "中的线程变量" + threadLocalName + "未清理！",
-//                    threadLocalEntryValue);
+                //                Assert.assertNull(threadHolder + "中的线程变量" + threadLocalName + "未清理！",
+                //                    threadLocalEntryValue);
             }
 
         } catch (Exception e) {
@@ -115,16 +107,15 @@ public class ThreadLocalsCheckUtil {
 
         Map<String, List<String>> threadLocalCheckMap = new HashMap<String, List<String>>();
 
-
-        //黑名单,无黑名单默认全部开启,兼容老逻辑
+        // 黑名单,无黑名单默认全部开启,兼容老逻辑
         if (StringUtils.isNotBlank(threadLocalNotCheckScript)) {
 
-            //判断当前测试脚本是否需要进行线程变量清空校验
-            //多个脚本名称用分号分割
+            // 判断当前测试脚本是否需要进行线程变量清空校验
+            // 多个脚本名称用分号分割
             List<String> scriptList = Arrays.asList(threadLocalNotCheckScript.split(";"));
             if (scriptList.contains(scriptName)) {
 
-                //黑名单匹配成功,直接返回空map,表示check通过
+                // 黑名单匹配成功,直接返回空map,表示check通过
                 return threadLocalCheckMap;
             }
         }

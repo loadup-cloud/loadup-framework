@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -27,15 +28,14 @@ package com.github.loadup.components.testify.util;
  */
 
 import com.github.loadup.components.testify.log.TestifyLogUtil;
+import java.io.File;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
 
 /**
  * 用于搜索xml中指定的第一个属性名称
@@ -74,8 +74,7 @@ public class XMLUtil {
         if (nodeList != null) {
             for (int i = 0; i < nodeList.getLength(); i++) {
                 value = getNode(nodeList.item(i), attribute);
-                if (value != null)
-                    return value;
+                if (value != null) return value;
             }
         }
         return value;
@@ -100,16 +99,14 @@ public class XMLUtil {
                         return namedNodeMap.item(j + 1).getNodeValue();
                     }
                     value = getNode(node1, attribute);
-                    if (value != null)
-                        return value;
+                    if (value != null) return value;
                 }
             }
             if (childNodeList != null) {
                 for (int i = 0; i < childNodeList.getLength(); i++) {
                     Node node1 = childNodeList.item(i);
                     value = getNode(node1, attribute);
-                    if (value != null)
-                        return value;
+                    if (value != null) return value;
                 }
             }
         }

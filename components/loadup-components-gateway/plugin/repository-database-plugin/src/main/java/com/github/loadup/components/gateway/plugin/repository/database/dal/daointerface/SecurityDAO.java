@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.database.dal.daointerface;
 
 /*-
@@ -27,7 +28,6 @@ package com.github.loadup.components.gateway.plugin.repository.database.dal.daoi
  */
 
 import com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject.SecurityDO;
-
 import java.util.List;
 
 /**
@@ -82,5 +82,4 @@ public interface SecurityDAO {
      * Delete records from DB table <tt>gateway_security</tt>.
      */
     public int deleteByClientId(String clientId);
-
 }

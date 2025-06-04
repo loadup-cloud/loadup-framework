@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.service.impl;
 
 /*-
@@ -47,16 +48,15 @@ import com.github.loadup.components.gateway.facade.response.SPIResponse;
 import com.github.loadup.components.gateway.facade.spi.LimitRuleService;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import jakarta.annotation.Resource;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Message send service
@@ -65,8 +65,7 @@ import java.util.Map;
 @Component("messageService")
 public class MessageServiceImpl implements MessageService {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(MessageServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageServiceImpl.class);
 
     @Resource
     @Qualifier("springBeanServiceAction")
@@ -92,16 +91,14 @@ public class MessageServiceImpl implements MessageService {
     public SPIResponse send(SPIRequest request) {
 
         long timecost = System.currentTimeMillis();
-        SPIResponse spiResponse = new SPIResponse(StringUtils.EMPTY, new HashMap<>(),
-                ResultUtil.buildSuccessResult());
-        GatewayRuntimeProcessContext processContext = RuntimeProcessContextHolder
-                .createRuntimeProcessContext();
+        SPIResponse spiResponse = new SPIResponse(StringUtils.EMPTY, new HashMap<>(), ResultUtil.buildSuccessResult());
+        GatewayRuntimeProcessContext processContext = RuntimeProcessContextHolder.createRuntimeProcessContext();
         processContext.setTransactionType(InterfaceType.SPI.getCode());
 
         // init tracer
         String tracerIdByGatewaylite = null;
         //        Span span = Span.current();
-        //TracerUtil.getSpan();
+        // TracerUtil.getSpan();
         //        if (null != span) {
         ////            processContext.setTraceId(TracerUtil.getTracerId());
         //        } else {
@@ -135,41 +132,50 @@ public class MessageServiceImpl implements MessageService {
             exceptionAssembleAction.process(processContext);
             callRespMsg = e.getMessage();
             spiResponse.setResult(ResultUtil.buildResult(e.getResultCode()));
-            MetricLoggerUtil.countError(request.getIntegrationUrl(),
+            MetricLoggerUtil.countError(
+                    request.getIntegrationUrl(),
                     System.currentTimeMillis() - timecost,
-                    request.getMessage().get(Constant.KEY_HTTP_CLIENT_ID), InterfaceType.SPI,
-                    processContext.getTraceId(), e.getResultCode());
+                    request.getMessage().get(Constant.KEY_HTTP_CLIENT_ID),
+                    InterfaceType.SPI,
+                    processContext.getTraceId(),
+                    e.getResultCode());
         } catch (Throwable e) {
             LogUtil.error(logger, e, "Message Service send message fail! throw exception");
-            CommonException commonException = new CommonException(
-                    GatewayErrorCode.UNKNOWN_EXCEPTION, e);
+            CommonException commonException = new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION, e);
             processContext.setBusinessException(commonException);
             exceptionAssembleAction.process(processContext);
             callRespMsg = e.getMessage();
-            spiResponse.setResult(
-                    ResultUtil.buildResult(GatewayErrorCode.UNKNOWN_EXCEPTION, e.getMessage()));
+            spiResponse.setResult(ResultUtil.buildResult(GatewayErrorCode.UNKNOWN_EXCEPTION, e.getMessage()));
 
-            MetricLoggerUtil.countError(request.getIntegrationUrl(),
+            MetricLoggerUtil.countError(
+                    request.getIntegrationUrl(),
                     System.currentTimeMillis() - timecost,
-                    request.getMessage().get(Constant.KEY_HTTP_CLIENT_ID), InterfaceType.SPI,
-                    processContext.getTraceId(), commonException.getResultCode());
+                    request.getMessage().get(Constant.KEY_HTTP_CLIENT_ID),
+                    InterfaceType.SPI,
+                    processContext.getTraceId(),
+                    commonException.getResultCode());
         } finally {
-            //limitRuleService.resetToken(processContext.getIntegratorInterfaceId());
+            // limitRuleService.resetToken(processContext.getIntegratorInterfaceId());
             integrationReceiveResponse = processContext.getResponseMessage();
 
             spiResponse.setContent(CommonUtil.getMsgContent(integrationReceiveResponse));
-            Map<String, String> headers = integrationReceiveResponse == null ?
-                    Collections.emptyMap() : integrationReceiveResponse.getHeaders();
+            Map<String, String> headers = integrationReceiveResponse == null
+                    ? Collections.emptyMap()
+                    : integrationReceiveResponse.getHeaders();
             spiResponse.setHeaders(headers);
 
             if (!MetricLoggerUtil.judgeBinderEnabled()) {
-                DigestLoggerUtil.printSimpleDigestLog(request.getIntegrationUrl(), callRespMsg,
-                        System.currentTimeMillis() - timecost);
+                DigestLoggerUtil.printSimpleDigestLog(
+                        request.getIntegrationUrl(), callRespMsg, System.currentTimeMillis() - timecost);
             } else {
-                MetricLoggerUtil.monitor(request.getIntegrationUrl(),
-                        System.currentTimeMillis() - timecost, success,
-                        request.getMessage().get(Constant.KEY_HTTP_CLIENT_ID), InterfaceType.SPI,
-                        processContext.getTraceId(), InterfaceScope.INBOUND);
+                MetricLoggerUtil.monitor(
+                        request.getIntegrationUrl(),
+                        System.currentTimeMillis() - timecost,
+                        success,
+                        request.getMessage().get(Constant.KEY_HTTP_CLIENT_ID),
+                        InterfaceType.SPI,
+                        processContext.getTraceId(),
+                        InterfaceScope.INBOUND);
             }
             RuntimeProcessContextHolder.cleanActionContext();
             MDC.clear();
@@ -184,7 +190,5 @@ public class MessageServiceImpl implements MessageService {
         }
 
         return spiResponse;
-
     }
-
 }

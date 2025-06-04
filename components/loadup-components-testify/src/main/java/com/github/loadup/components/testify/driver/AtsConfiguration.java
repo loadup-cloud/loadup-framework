@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.driver;
 
 /*-
@@ -30,24 +27,22 @@ package com.github.loadup.components.testify.driver;
  * #L%
  */
 
+import com.github.loadup.components.testify.driver.constants.AtsConstants;
+import com.github.loadup.components.testify.log.TestifyLogUtil;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
-
 import org.apache.commons.lang3.StringUtils;
-import com.github.loadup.components.testify.driver.constants.AtsConstants;
-import com.github.loadup.components.testify.log.TestifyLogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * 用于存储ATS静态信息
  *
- * 
- * 
+ *
+ *
  */
 public class AtsConfiguration {
 
@@ -85,14 +80,14 @@ public class AtsConfiguration {
      */
     public static void loadAtsProperties() {
         if (atsConfigMap.isEmpty()) {
-            Properties atsProperties = getProperties(AtsConstants.ATS_CONFIG_BASE_DIR
-                    + AtsConstants.ATS_CONFIG_FILE_NAME);
+            Properties atsProperties =
+                    getProperties(AtsConstants.ATS_CONFIG_BASE_DIR + AtsConstants.ATS_CONFIG_FILE_NAME);
             Set<Map.Entry<Object, Object>> entrySet = atsProperties.entrySet();
             for (Map.Entry<Object, Object> entry : entrySet) {
                 Object keyObject = entry.getKey();
                 Object valueObject = entry.getValue();
-                String envConfigValue = System.getProperty(AtsConstants.ATS_CONFIG_SYSENV_PREFIX
-                        + keyObject.toString());
+                String envConfigValue =
+                        System.getProperty(AtsConstants.ATS_CONFIG_SYSENV_PREFIX + keyObject.toString());
                 if (StringUtils.isNotBlank(envConfigValue)) {
                     atsConfigMap.put(keyObject.toString(), envConfigValue);
                 } else {
@@ -142,10 +137,8 @@ public class AtsConfiguration {
                 TestifyLogUtil.warn(log, "ACTS配置项没有 [dbconf_file]！");
             }
 
-            testDataSourceFile = AtsConstants.TEST_DATA_SOURCE_DIR + DB_Mode
-                    + "-test-datasource.xml";
-            isTRMode = "true".equalsIgnoreCase(StringUtils.trim(atsConfigMap
-                    .get(AtsConstants.TR_MODE)));
+            testDataSourceFile = AtsConstants.TEST_DATA_SOURCE_DIR + DB_Mode + "-test-datasource.xml";
+            isTRMode = "true".equalsIgnoreCase(StringUtils.trim(atsConfigMap.get(AtsConstants.TR_MODE)));
         }
     }
 
@@ -164,9 +157,8 @@ public class AtsConfiguration {
      * 获取Sofa配置项
      */
     public static String getSofaConfig(String keyName) {
-        String sofaConfig = "";// TestUtils.getSofaConfig(keyName);
-        String envSofaValue = System.getProperty(AtsConstants.SOFA_CONFIG_SYSENV_PREFIX
-                + keyName.toString());
+        String sofaConfig = ""; // TestUtils.getSofaConfig(keyName);
+        String envSofaValue = System.getProperty(AtsConstants.SOFA_CONFIG_SYSENV_PREFIX + keyName.toString());
         if (StringUtils.isNotBlank(envSofaValue)) {
             return envSofaValue;
         } else {
@@ -189,9 +181,8 @@ public class AtsConfiguration {
         if (!StringUtils.isEmpty(sofaTestMode)) {
             configPattern = sofaTestMode + "-sofa-test-config.properties";
         }
-        TestifyLogUtil.info(log, "ACTS配置初始化：sofaTestConfigFile = " + AtsConstants.SOFA_TEST_CONFIG_DIR
-                + configPattern);
-        return new String[]{AtsConstants.SOFA_TEST_CONFIG_DIR, configPattern};
+        TestifyLogUtil.info(log, "ACTS配置初始化：sofaTestConfigFile = " + AtsConstants.SOFA_TEST_CONFIG_DIR + configPattern);
+        return new String[] {AtsConstants.SOFA_TEST_CONFIG_DIR, configPattern};
     }
 
     /**
@@ -217,7 +208,7 @@ public class AtsConfiguration {
      *
      * @param dbconfFile
      * @return
-     * 
+     *
      */
     private static String getDbMode(String dbconfFile) {
         String[] strs = dbconfFile.split(".conf");
@@ -231,5 +222,4 @@ public class AtsConfiguration {
         TestifyLogUtil.info(log, "ACTS配置初始化： DB_MODE = " + dbMode);
         return dbMode;
     }
-
 }

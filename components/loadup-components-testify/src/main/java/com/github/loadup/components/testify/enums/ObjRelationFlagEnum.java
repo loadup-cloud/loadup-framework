@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.enums;
 
 /*-
@@ -33,11 +30,10 @@ package com.github.loadup.components.testify.enums;
 /**
  * 对象关系标记位枚举
  *
- * 
- * 
+ *
+ *
  */
 public enum ObjRelationFlagEnum {
-
     COMPLEX_OBJECT("obj", "复杂对象"),
 
     CONDITION("C", "条件");
@@ -64,7 +60,7 @@ public enum ObjRelationFlagEnum {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of code
      */
@@ -73,12 +69,11 @@ public enum ObjRelationFlagEnum {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of desc
      */
     public String getDesc() {
         return desc;
     }
-
 }

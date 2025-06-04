@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.cache;
 
 /*-
@@ -37,14 +38,13 @@ import com.github.loadup.components.gateway.core.model.CertConfig;
 import com.github.loadup.components.gateway.core.prototype.constant.SwitchConstants;
 import com.github.loadup.components.gateway.core.service.SecurityProdCenterQueryService;
 import jakarta.annotation.Resource;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p>
@@ -107,16 +107,14 @@ public class CertConfigCache {
             // need to query cert config for platform config if no cert config for current tenant
             String securityStrategyOperateType = keys[1];
             String algorithm = keys[2];
-            String platformCertCode = CacheUtil.generateKey(securityStrategyCode,
-                    securityStrategyOperateType, algorithm);
+            String platformCertCode =
+                    CacheUtil.generateKey(securityStrategyCode, securityStrategyOperateType, algorithm);
             result = certConfigMap.get(platformCertCode);
             if (result != null) {
                 result.setClientId(TenantUtil.getCurrentClientId());
             }
             return result;
         }
-        throw new CommonException(GatewayErrorCode.CONFIGURATION_LOAD_ERROR,
-                "Unsupported repository.");
+        throw new CommonException(GatewayErrorCode.CONFIGURATION_LOAD_ERROR, "Unsupported repository.");
     }
-
 }

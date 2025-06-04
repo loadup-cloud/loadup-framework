@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.model;
 
 /*-
@@ -55,7 +56,7 @@ public class MessageReceiverConfig {
     private Properties properties = new Properties();
 
     /**
-     * 
+     *
      */
     public String getMessageReceiverId() {
         return MessageReceiverId;
@@ -69,7 +70,7 @@ public class MessageReceiverConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getMessageReceiverName() {
         return MessageReceiverName;
@@ -83,7 +84,7 @@ public class MessageReceiverConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getCertCode() {
         return certCode;
@@ -97,7 +98,7 @@ public class MessageReceiverConfig {
     }
 
     /**
-     * 
+     *
      */
     public Properties getProperties() {
         return properties;

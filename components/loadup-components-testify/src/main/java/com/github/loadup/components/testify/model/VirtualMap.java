@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.model;
 
 /*-
@@ -66,5 +67,4 @@ public class VirtualMap {
     public void setMapValue(Object mapValue) {
         this.mapValue = mapValue;
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.unimsg;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.components.gateway.message.unimsg;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.TypeReference;
-
 import java.util.Map;
 
 /**
@@ -39,11 +39,9 @@ import java.util.Map;
 public class UnifyMsgHelper {
 
     public static UnifyMsg fromJSonStr(String jsonStr) {
-        Map<String, String> messageMap = JSONObject.parseObject(jsonStr, new TypeReference<>() {
-        });
+        Map<String, String> messageMap = JSONObject.parseObject(jsonStr, new TypeReference<>() {});
         UnifyMsg unifyMsg = new UnifyMsg();
         unifyMsg.setMessageMap(messageMap);
         return unifyMsg;
-
     }
 }

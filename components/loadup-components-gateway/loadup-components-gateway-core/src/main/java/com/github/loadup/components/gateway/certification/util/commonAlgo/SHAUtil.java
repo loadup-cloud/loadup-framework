@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.util.commonAlgo;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.components.gateway.certification.util.commonAlgo;
  * #L%
  */
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
 import java.security.MessageDigest;
 import java.security.Security;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * SHA 系列摘要算法，支持算法, SHA-1,SHA-224,SHA-256,SHA-384,SHA-512
@@ -50,5 +50,4 @@ public class SHAUtil {
         MessageDigest md = MessageDigest.getInstance(algorithm);
         return md.digest(data);
     }
-
 }

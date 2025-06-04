@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.processor;
 
 /*-
@@ -30,38 +27,33 @@ package com.github.loadup.components.testify.object.processor;
  * #L%
  */
 
+import com.github.loadup.components.testify.exception.TestifyException;
+import com.github.loadup.components.testify.helper.CSVHelper;
+import com.github.loadup.components.testify.log.TestifyLogUtil;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-
 import org.apache.commons.lang3.StringUtils;
-import com.github.loadup.components.testify.exception.TestifyException;
-import com.github.loadup.components.testify.helper.CSVHelper;
-import com.github.loadup.components.testify.log.TestifyLogUtil;
 
 /***
  * flag 读取器
  *
- * 
+ *
  *
  */
 @Slf4j
 public class FlagProcessor {
 
-
     private final int CLASSNAMECOL = 0;
     private final int PROPERTYNAMECOL = 1;
     private final int FLAGVALUECOL = 4;
 
-    public FlagProcessor() {
-
-    }
+    public FlagProcessor() {}
 
     /***
      * 对外组装的方法
@@ -77,14 +69,13 @@ public class FlagProcessor {
     }
 
     @SuppressWarnings({"rawtypes"})
-    private Map<String, Map<String, String>> processCsvFolder(String csvPath, String encoding)
-            throws TestifyException {
+    private Map<String, Map<String, String>> processCsvFolder(String csvPath, String encoding) throws TestifyException {
         Map<String, Map<String, String>> result = new HashMap<String, Map<String, String>>();
         File csvFile = new File(csvPath);
 
         File folder = csvFile.getParentFile();
 
-        Collection allFiles = FileUtils.listFiles(folder, new String[]{"csv"}, true);
+        Collection allFiles = FileUtils.listFiles(folder, new String[] {"csv"}, true);
         Iterator iterator = allFiles.iterator();
 
         while (iterator.hasNext()) {
@@ -92,13 +83,11 @@ public class FlagProcessor {
             if (isGeneric(currentFile)) {
                 continue;
             }
-            Map<String, Map<String, String>> oneMap = processCsvFile(currentFile.getAbsolutePath(),
-                    encoding);
+            Map<String, Map<String, String>> oneMap = processCsvFile(currentFile.getAbsolutePath(), encoding);
             result.putAll(oneMap);
         }
 
         return result;
-
     }
 
     /***
@@ -114,17 +103,15 @@ public class FlagProcessor {
             return true;
         }
         return false;
-
     }
 
     @SuppressWarnings({"rawtypes"})
     private Map<String, Map<String, String>> processCsvFile(String csvPath, String encoding) {
 
         Map<String, Map<String, String>> result = new HashMap<String, Map<String, String>>();
-        //1. 加载CSV数据
+        // 1. 加载CSV数据
         List tableList = CSVHelper.readFromCsv(csvPath, encoding);
-        if (tableList == null || tableList.size() == 0)
-            TestifyLogUtil.fail(log, csvPath + "文件内容为空");
+        if (tableList == null || tableList.size() == 0) TestifyLogUtil.fail(log, csvPath + "文件内容为空");
         if (tableList.size() < 2) {
             throw new TestifyException("当前的CSV没有内容或者内容不全,文件名为" + csvPath);
         }
@@ -137,10 +124,7 @@ public class FlagProcessor {
             String fieldName = row[PROPERTYNAMECOL];
             String flagCode = row[FLAGVALUECOL];
             result.get(className).put(fieldName, flagCode);
-
         }
         return result;
-
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.database.converter;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.components.gateway.plugin.repository.database.converte
 
 import com.github.loadup.components.gateway.facade.model.ClientInterfaceConfigDto;
 import com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject.InstInterfaceMapDO;
-
 import java.util.Date;
 
 /**

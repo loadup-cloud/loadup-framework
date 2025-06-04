@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.driver.annotation;
 
 /*-
@@ -38,7 +39,7 @@ import java.lang.annotation.Target;
  * </p>
  *
  * @author fred.fanj
- * 
+ *
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

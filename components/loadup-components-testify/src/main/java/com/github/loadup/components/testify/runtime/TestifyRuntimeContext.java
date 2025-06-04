@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.runtime;
 
 /*-
@@ -31,13 +32,12 @@ import com.github.loadup.components.testify.exception.TestifyException;
 import com.github.loadup.components.testify.model.*;
 import com.github.loadup.components.testify.template.TestifyTestBase;
 import com.github.loadup.components.testify.util.VelocityUtil;
-import lombok.extern.slf4j.Slf4j;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Acts框架运行时上下文，可以设置数据，获取返回值
@@ -92,12 +92,14 @@ public class TestifyRuntimeContext {
      */
     public Map<String, Object> paramMap = new LinkedHashMap<String, Object>();
     /** mock列表 */
-//    public Map<VirtualMock, AtsSingleMock>  mocks                = new LinkedHashMap<VirtualMock, AtsSingleMock>();
+    //    public Map<VirtualMock, AtsSingleMock>  mocks                = new LinkedHashMap<VirtualMock,
+    // AtsSingleMock>();
 
     /**
      * command组件分组存放List
      */
     public List<String> prepareCommandList = new ArrayList<String>();
+
     public List<String> clearCommandList = new ArrayList<String>();
     public List<String> checkCommandList = new ArrayList<String>();
     public List<String> defaultCommandList = new ArrayList<String>();
@@ -106,27 +108,28 @@ public class TestifyRuntimeContext {
      * preparData组件分组存放List
      */
     public List<TestifyTestBase> BeforeClearPreList = new ArrayList<TestifyTestBase>();
+
     public List<TestifyTestBase> AfterClearPreList = new ArrayList<TestifyTestBase>();
     public List<TestifyTestBase> BeforeCheckPreList = new ArrayList<TestifyTestBase>();
     public List<TestifyTestBase> AfterCheckPreList = new ArrayList<TestifyTestBase>();
     public List<TestifyTestBase> BeforePreparePreList = new ArrayList<TestifyTestBase>();
     public List<TestifyTestBase> AfterPreparePreList = new ArrayList<TestifyTestBase>();
 
-    //定义一个MAP用来存放组件化运行结果
+    // 定义一个MAP用来存放组件化运行结果
     public Map<String, Map<String, Object>> componentsResultMap = new LinkedHashMap<String, Map<String, Object>>();
 
-    //存放预跑反填的sqlList
+    // 存放预跑反填的sqlList
     public List<String> backFillSqlList = new ArrayList<String>();
 
+    public TestifyRuntimeContext() {}
 
-    public TestifyRuntimeContext() {
-
-    }
-
-    public TestifyRuntimeContext(String caseId, PrepareData prepareData,
-                                 Map<String, Object> componentContext,
-                                 DBDatasProcessor dbDatasProcessor, Method testedMethod,
-                                 Object testedObj) {
+    public TestifyRuntimeContext(
+            String caseId,
+            PrepareData prepareData,
+            Map<String, Object> componentContext,
+            DBDatasProcessor dbDatasProcessor,
+            Method testedMethod,
+            Object testedObj) {
         super();
         this.caseId = caseId;
         this.prepareData = prepareData;
@@ -143,7 +146,8 @@ public class TestifyRuntimeContext {
      * @return
      */
     public VirtualObject getArg(int i) {
-        if (prepareData == null || prepareData.getArgs() == null
+        if (prepareData == null
+                || prepareData.getArgs() == null
                 || prepareData.getArgs().getVirtualObjects() == null) {
             return null;
         }
@@ -163,7 +167,8 @@ public class TestifyRuntimeContext {
      * @return
      */
     public Object getArgValue(int i) {
-        if (prepareData == null || prepareData.getArgs() == null
+        if (prepareData == null
+                || prepareData.getArgs() == null
                 || prepareData.getArgs().getInputArgs() == null) {
             return null;
         }
@@ -183,13 +188,13 @@ public class TestifyRuntimeContext {
      * @return
      */
     public Object getUserDefParams(String virParsName) {
-        if (prepareData == null || prepareData.getVirtualParams() == null
+        if (prepareData == null
+                || prepareData.getVirtualParams() == null
                 || prepareData.getVirtualParams().getParams() == null) {
             return null;
         }
 
-        VirtualObject virRet = (VirtualObject) prepareData.getVirtualParams().getByParaName(
-                virParsName);
+        VirtualObject virRet = (VirtualObject) prepareData.getVirtualParams().getByParaName(virParsName);
         if (null == virRet) {
             return null;
         }
@@ -243,7 +248,8 @@ public class TestifyRuntimeContext {
      * @return
      */
     public VirtualObject getException() {
-        if (prepareData == null || prepareData.getExpectException() == null
+        if (prepareData == null
+                || prepareData.getExpectException() == null
                 || prepareData.getExpectException().getExpectException() == null) {
             return null;
         }
@@ -265,12 +271,19 @@ public class TestifyRuntimeContext {
         }
 
         prepareData.getExpectException().getExpectException().setObject(e);
-        prepareData.getExpectException().getVirtualObject().getFlagSetter(Throwable.class)
-                .set("stackTrace", "N").set("cause", "N");
-        prepareData.getExpectException().getVirtualObject().getFlagSetter(e.getClass())
-                .set("stackTrace", "N").set("cause", "N");
+        prepareData
+                .getExpectException()
+                .getVirtualObject()
+                .getFlagSetter(Throwable.class)
+                .set("stackTrace", "N")
+                .set("cause", "N");
+        prepareData
+                .getExpectException()
+                .getVirtualObject()
+                .getFlagSetter(e.getClass())
+                .set("stackTrace", "N")
+                .set("cause", "N");
     }
-
 
     /**
      * 获取当前期望结果对象
@@ -310,7 +323,6 @@ public class TestifyRuntimeContext {
         return true;
     }
 
-
     /**
      * 更新表中的变量
      */
@@ -318,15 +330,13 @@ public class TestifyRuntimeContext {
         if (prepareData == null) {
             return;
         }
-        if (prepareData.getDepDataSet() != null
-                && prepareData.getDepDataSet().getVirtualTables() != null) {
+        if (prepareData.getDepDataSet() != null && prepareData.getDepDataSet().getVirtualTables() != null) {
             refreshAllTableParam(prepareData.getDepDataSet().getVirtualTables());
         }
         if (prepareData.getExpectDataSet() != null
                 && prepareData.getExpectDataSet().getVirtualTables() != null) {
             refreshAllTableParam(prepareData.getExpectDataSet().getVirtualTables());
         }
-
     }
 
     public void refreshAllTableParam(List<VirtualTable> tables) {
@@ -349,13 +359,11 @@ public class TestifyRuntimeContext {
                     // 无变量引用，直接跳过
                     continue;
                 }
-                String newVal = VelocityUtil.evaluateString(
-                        this.paramMap, String.valueOf(rowData.get(key)));
+                String newVal = VelocityUtil.evaluateString(this.paramMap, String.valueOf(rowData.get(key)));
                 rowData.put(key, newVal);
             }
         }
     }
-
 
     public PrepareData getPrepareData() {
         return prepareData;
@@ -449,7 +457,6 @@ public class TestifyRuntimeContext {
         this.caseId = caseId;
     }
 
-
     public List<TestifyTestBase> getTestifyComponents() {
         return testifyComponents;
     }
@@ -490,8 +497,7 @@ public class TestifyRuntimeContext {
      * 按位置获取入参
      */
     public Object getInputParamByPos(int i) {
-        if (null == prepareData.getArgs()
-                || null == prepareData.getArgs().getVirtualObjects()) {
+        if (null == prepareData.getArgs() || null == prepareData.getArgs().getVirtualObjects()) {
             return null;
         }
         if (i >= prepareData.getArgs().inputArgs.size()) {
@@ -524,7 +530,8 @@ public class TestifyRuntimeContext {
         if (i >= prepareData.getVirtualComponentSet().getComponents().size()) {
             return null;
         }
-        PrepareData prepareDataComponent = prepareData.getVirtualComponentSet().getComponents().get(i).getPrepareData();
+        PrepareData prepareDataComponent =
+                prepareData.getVirtualComponentSet().getComponents().get(i).getPrepareData();
         if (null == prepareDataComponent || null == prepareDataComponent.getArgs()) {
             return null;
         }
@@ -547,13 +554,13 @@ public class TestifyRuntimeContext {
         if (i >= prepareData.getVirtualComponentSet().getComponents().size()) {
             return null;
         }
-        PrepareData prepareDataComponent = prepareData.getVirtualComponentSet().getComponents().get(i).getPrepareData();
+        PrepareData prepareDataComponent =
+                prepareData.getVirtualComponentSet().getComponents().get(i).getPrepareData();
         if (null == prepareDataComponent || null == prepareDataComponent.getExpectResult()) {
             return null;
         }
         return prepareDataComponent.getExpectResult().getResultObj();
     }
-
 
     /**
      * 获取db准备数据

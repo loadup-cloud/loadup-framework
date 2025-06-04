@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.dal.convertor;
 
 /*-
@@ -36,7 +33,7 @@ import com.github.loadup.components.testify.dal.table.CaseRule;
 /**
  * 用例规则表与DO对象转换
  *
- * 
+ *
  *
  */
 public class CaseRuleConvertor {

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.yaml;
 
 /*-
@@ -30,14 +27,6 @@ package com.github.loadup.components.testify.yaml;
  * #L%
  */
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import lombok.extern.slf4j.Slf4j;
-import org.testng.Assert;
-
-import org.apache.commons.lang3.StringUtils;
 import com.github.loadup.components.testify.constant.TestifySpecialMapConstants;
 import com.github.loadup.components.testify.context.TestifyCaseContextHolder;
 import com.github.loadup.components.testify.db.TestifyDBUtil;
@@ -57,24 +46,25 @@ import com.github.loadup.components.testify.yaml.cpUnit.property.BaseUnitPropert
 import com.github.loadup.components.testify.yaml.cpUnit.property.ListObjectUnitProperty;
 import com.github.loadup.components.testify.yaml.cpUnit.property.ObjectUnitProperty;
 import com.github.loadup.components.testify.yaml.enums.CheckPointActionEnum;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.testng.Assert;
 
 /**
  * Yaml对象处理工具类
  *
- * 
+ *
  *
  */
 @Slf4j
 public class YamlTestUtil {
 
+    private static boolean skipCompareDBLength = StringUtils.equalsIgnoreCase("", "true");
 
-    private static boolean skipCompareDBLength = StringUtils
-            .equalsIgnoreCase("",
-                    "true");
-
-    private static boolean isSingleYaml = !StringUtils
-            .equalsIgnoreCase("",
-                    "false");
+    private static boolean isSingleYaml = !StringUtils.equalsIgnoreCase("", "false");
 
     /**
      * 准备数据
@@ -83,25 +73,24 @@ public class YamlTestUtil {
      */
     public static void prepareDB(BaseCPUnit unit) {
 
-        //1. 加载预期数据
+        // 1. 加载预期数据
         DataBaseCPUnit dbUnit = (DataBaseCPUnit) unit;
         dbUnit.loadUniqueMap();
 
-        //2. 待清理上下文添加列
+        // 2. 待清理上下文添加列
         TestifyCaseContextHolder.get().getPreCleanContent().add(dbUnit);
 
-        //3. 预清理数据
+        // 3. 预清理数据
         clean(dbUnit);
 
-        //4. 如果特殊标记只删不插，直接返回
-        boolean onlyDelete = parseBoolean(dbUnit.getSpecialMap().get(
-                TestifySpecialMapConstants.ONLYDELETE));
+        // 4. 如果特殊标记只删不插，直接返回
+        boolean onlyDelete = parseBoolean(dbUnit.getSpecialMap().get(TestifySpecialMapConstants.ONLYDELETE));
         if (onlyDelete) {
-            //标记ONLYDELETE的数据，仅在准备数据时预清理
+            // 标记ONLYDELETE的数据，仅在准备数据时预清理
             return;
         }
 
-        //5. 连接数据库，生成并执行语句
+        // 5. 连接数据库，生成并执行语句
         executeUpdate(dbUnit, CheckPointActionEnum.PREPARE);
     }
 
@@ -111,30 +100,29 @@ public class YamlTestUtil {
      * @param unit
      */
     public static void checkDB(BaseCPUnit unit) {
-        //1. 加载预期数据
+        // 1. 加载预期数据
         DataBaseCPUnit dbUnit = (DataBaseCPUnit) unit;
         dbUnit.loadUniqueMap();
 
-        //2. 待清理上下文添加列
+        // 2. 待清理上下文添加列
         TestifyCaseContextHolder.get().getPreCleanContent().add(dbUnit);
 
-        //3. 连接数据库，生成并执行语句
+        // 3. 连接数据库，生成并执行语句
         List<Map<String, Object>> rawResult = executeQuery(dbUnit);
 
-        //4. 校验数据库数据
+        // 4. 校验数据库数据
         if (parseBoolean(dbUnit.getSpecialMap().get(TestifySpecialMapConstants.NOTEXIST))) {
-            //标记NOTEXIST的数据，仅校验其不存在于数据库
+            // 标记NOTEXIST的数据，仅校验其不存在于数据库
             if (rawResult.size() == 0) {
-                TestifyLogUtil.info(log, dbUnit.getUnitName() + "已不存在'" + dbUnit.getDescription()
-                        + "'数据，符合预期");
+                TestifyLogUtil.info(log, dbUnit.getUnitName() + "已不存在'" + dbUnit.getDescription() + "'数据，符合预期");
             } else {
-                TestifyLogUtil.error(log, dbUnit.getUnitName() + "仍然存在'" + dbUnit.getDescription()
-                        + "'数据，不符合预期");
+                TestifyLogUtil.error(log, dbUnit.getUnitName() + "仍然存在'" + dbUnit.getDescription() + "'数据，不符合预期");
             }
             return;
         } else if (rawResult.size() != 1) {
-            TestifyLogUtil.error(log, dbUnit.getUnitName() + "检索出'" + dbUnit.getDescription()
-                    + "'数据为" + rawResult.size() + "条，不符合预期");
+            TestifyLogUtil.error(
+                    log,
+                    dbUnit.getUnitName() + "检索出'" + dbUnit.getDescription() + "'数据为" + rawResult.size() + "条，不符合预期");
             return;
         } else {
             compareDBResult(dbUnit, rawResult.get(0), -1);
@@ -148,7 +136,7 @@ public class YamlTestUtil {
      */
     @SuppressWarnings("unchecked")
     public static void groupCheckDB(BaseCPUnit unit) {
-        //1. 加载预期数据
+        // 1. 加载预期数据
         GroupDataBaseCPUnit cpUnit = (GroupDataBaseCPUnit) unit;
         List<String> conditionKeys = List.of(cpUnit.getConditionKeys());
         for (DataBaseCPUnit dbUnit : cpUnit.getDataList()) {
@@ -159,23 +147,27 @@ public class YamlTestUtil {
         DataBaseCPUnit dbUnit = cpUnit.getDataList().get(0);
         dbUnit.getSpecialMap().put(TestifySpecialMapConstants.ORDERBY, cpUnit.getOrderBy());
 
-        //2. 待清理上下文添加列
+        // 2. 待清理上下文添加列
         TestifyCaseContextHolder.get().getPreCleanContent().add(dbUnit);
 
-        //3. 连接数据库，生成并执行语句
+        // 3. 连接数据库，生成并执行语句
         List<Map<String, Object>> rawResult = executeQuery(dbUnit);
 
         if (rawResult.size() != cpUnit.getDataList().size()) {
-            TestifyLogUtil.error(log, cpUnit.getUnitName() + "组数据校验获取数据条数不符合预期，期望值"
-                    + cpUnit.getDataList().size() + "条，实际值" + rawResult.size()
-                    + "条");
+            TestifyLogUtil.error(
+                    log,
+                    cpUnit.getUnitName()
+                            + "组数据校验获取数据条数不符合预期，期望值"
+                            + cpUnit.getDataList().size()
+                            + "条，实际值"
+                            + rawResult.size()
+                            + "条");
             return;
         }
-        //4. 校验数据库数据
+        // 4. 校验数据库数据
         for (int i = 0; i < cpUnit.getDataList().size(); i++) {
             compareDBResult(cpUnit.getDataList().get(i), rawResult.get(i), i + 1);
         }
-
     }
 
     /**
@@ -187,15 +179,13 @@ public class YamlTestUtil {
     public static Object prepareObj(BaseCPUnit unit) {
         Object prepareObj = null;
         if (unit instanceof ObjectCPUnit) {
-            TestifyLogUtil.info(log, "从" + unit.getTargetCSVPath() + "第" + unit.getDescription()
-                    + "列准备对象" + unit.getUnitName());
+            TestifyLogUtil.info(
+                    log, "从" + unit.getTargetCSVPath() + "第" + unit.getDescription() + "列准备对象" + unit.getUnitName());
             ObjectUnitProperty property = ((ObjectCPUnit) unit).getProperty();
             prepareObj = property.genObject(YamlTestUtil.class.getClassLoader());
         } else if (unit instanceof ListObjectCPUnit) {
-            TestifyLogUtil.info(log,
-                    "从" + unit.getTargetCSVPath() + "准备对象列表List<" + unit.getUnitName() + ">");
-            ListObjectUnitProperty listProperty = new ListObjectUnitProperty(
-                    (ListObjectCPUnit) unit);
+            TestifyLogUtil.info(log, "从" + unit.getTargetCSVPath() + "准备对象列表List<" + unit.getUnitName() + ">");
+            ListObjectUnitProperty listProperty = new ListObjectUnitProperty((ListObjectCPUnit) unit);
             prepareObj = listProperty.genObject(YamlTestUtil.class.getClassLoader());
         } else {
             TestifyLogUtil.fail(log, unit + "入参类型不合法");
@@ -212,20 +202,24 @@ public class YamlTestUtil {
      */
     @SuppressWarnings("rawtypes")
     public static void checkObj(BaseCPUnit unit, Object object) {
-//        Assert.assertNotNull("差异化数据不能为空（前置会处理）", unit);
-//        Assert.assertNotNull("待比较对象不能为空（前置会处理）", object);
+        //        Assert.assertNotNull("差异化数据不能为空（前置会处理）", unit);
+        //        Assert.assertNotNull("待比较对象不能为空（前置会处理）", object);
         if (unit instanceof ObjectCPUnit) {
             Assert.assertNotNull("生成对象路径或列标识为空且未被上层拦截", unit.getDescription());
             ObjectUnitProperty property = ((ObjectCPUnit) unit).getProperty();
             property.compare(object);
         } else if (unit instanceof ListObjectCPUnit) {
-//            Assert.assertTrue("待校验对象必须为列表类型", object instanceof List);
+            //            Assert.assertTrue("待校验对象必须为列表类型", object instanceof List);
             ListObjectCPUnit listUnit = (ListObjectCPUnit) unit;
             List listObj = (List) object;
             if (listObj.size() != listUnit.getAttributeList().size()) {
-                TestifyLogUtil.error(log,
-                        unit.getUnitName() + "列对象长度不同，期望值:" + listUnit.getAttributeList().size()
-                                + "，实际值:" + listObj.size());
+                TestifyLogUtil.error(
+                        log,
+                        unit.getUnitName()
+                                + "列对象长度不同，期望值:"
+                                + listUnit.getAttributeList().size()
+                                + "，实际值:"
+                                + listObj.size());
             }
             for (int i = 0; i < listObj.size(); i++) {
                 checkObj(listUnit.getAttributeList().get(i), listObj.get(i));
@@ -240,24 +234,24 @@ public class YamlTestUtil {
      *
      * @param unit
      */
-//    public static void checkMsg(BaseCPUnit unit) {
-//        MessageCPUnit msgUnit = (MessageCPUnit) unit;
-//        ActsLogUtil.addProcessLog("开始进行消息校验：[Topic=" + msgUnit.getEventTopic() + ",eventCode="
-//                                  + msgUnit.getEventCode() + "]");
-//        List<UniformEvent> eventList = UniformEventUtil.getMsgs(msgUnit.getEventTopic(),
-//            msgUnit.getEventCode());
-//        ActsLogUtil.addProcessLog(eventList);
-//        ListObjectCPUnit listUnit = new ListObjectCPUnit(msgUnit);
-//        if (StringUtils.equals(msgUnit.getUnitName(), "UniformEvent")) {
-//            checkObj(listUnit, eventList);
-//        } else {
-//            List<Object> payloads = new ArrayList<Object>();
-//            for (UniformEvent event : eventList) {
-//                payloads.add(event.getEventPayload());
-//            }
-//            checkObj(listUnit, payloads);
-//        }
-//    }
+    //    public static void checkMsg(BaseCPUnit unit) {
+    //        MessageCPUnit msgUnit = (MessageCPUnit) unit;
+    //        ActsLogUtil.addProcessLog("开始进行消息校验：[Topic=" + msgUnit.getEventTopic() + ",eventCode="
+    //                                  + msgUnit.getEventCode() + "]");
+    //        List<UniformEvent> eventList = UniformEventUtil.getMsgs(msgUnit.getEventTopic(),
+    //            msgUnit.getEventCode());
+    //        ActsLogUtil.addProcessLog(eventList);
+    //        ListObjectCPUnit listUnit = new ListObjectCPUnit(msgUnit);
+    //        if (StringUtils.equals(msgUnit.getUnitName(), "UniformEvent")) {
+    //            checkObj(listUnit, eventList);
+    //        } else {
+    //            List<Object> payloads = new ArrayList<Object>();
+    //            for (UniformEvent event : eventList) {
+    //                payloads.add(event.getEventPayload());
+    //            }
+    //            checkObj(listUnit, payloads);
+    //        }
+    //    }
 
     /**
      * 数据清理
@@ -265,7 +259,7 @@ public class YamlTestUtil {
      * @param dataRow
      */
     public static void clean(DataBaseCPUnit unit) {
-        //1. 连接数据库，生成并执行语句
+        // 1. 连接数据库，生成并执行语句
         executeUpdate(unit, CheckPointActionEnum.CLEAN);
     }
 
@@ -276,24 +270,24 @@ public class YamlTestUtil {
      * @return
      */
     private static List<Map<String, Object>> executeQuery(DataBaseCPUnit unit) {
-        //1. 基于表名获取dbConfigKey
+        // 1. 基于表名获取dbConfigKey
         String dbConfigKey = TestifyDBUtil.getDBConfigKey(unit.getUnitName(), null);
 
-        //2. 初始化数据库连接，获取数据库类型
+        // 2. 初始化数据库连接，获取数据库类型
         DBConnection conn = TestifyDBUtil.initConnection(dbConfigKey);
         DataBaseTypeEnum dbType = conn.getDbType();
 
-        //3. 生成数据库执行语句
+        // 3. 生成数据库执行语句
         String sql = DataRowConvertor.rowToSqL(unit, CheckPointActionEnum.CHECK, dbType);
 
-        //4. 设定虚拟分库分表（如果有）
+        // 4. 设定虚拟分库分表（如果有）
         setVirtualTddlRule(unit);
 
-        //5. 执行语句
+        // 5. 执行语句
         List<Map<String, Object>> rawResult = conn.executeQuery(sql);
         TestifyLogUtil.addProcessLog(rawResult);
 
-        //6. 清理虚拟分库分表
+        // 6. 清理虚拟分库分表
         clearVirtualTddlRule();
         return rawResult;
     }
@@ -305,26 +299,26 @@ public class YamlTestUtil {
      * @param action
      */
     private static void executeUpdate(DataBaseCPUnit unit, CheckPointActionEnum action) {
-//        Assert.assertTrue("操作类型只能是清理或准备", action == CheckPointActionEnum.CLEAN
-//                                          || action == CheckPointActionEnum.PREPARE);
+        //        Assert.assertTrue("操作类型只能是清理或准备", action == CheckPointActionEnum.CLEAN
+        //                                          || action == CheckPointActionEnum.PREPARE);
 
-        //1. 基于表名获取dbConfigKey
+        // 1. 基于表名获取dbConfigKey
         String dbConfigKey = TestifyDBUtil.getDBConfigKey(unit.getUnitName(), null);
 
-        //2. 初始化数据库连接，获取数据库类型
+        // 2. 初始化数据库连接，获取数据库类型
         DBConnection conn = TestifyDBUtil.initConnection(dbConfigKey);
         DataBaseTypeEnum dbType = conn.getDbType();
 
-        //3. 生成数据库执行语句
+        // 3. 生成数据库执行语句
         String sql = DataRowConvertor.rowToSqL(unit, action, dbType);
 
-        //4. 设定虚拟分库分表（如果有）
+        // 4. 设定虚拟分库分表（如果有）
         setVirtualTddlRule(unit);
 
-        //5. 执行语句
+        // 5. 执行语句
         int i = conn.executeUpdate(sql);
 
-        //6. 清理虚拟分库分表
+        // 6. 清理虚拟分库分表
         clearVirtualTddlRule();
         if (i != -1) {
             TestifyLogUtil.info(log, "影响了" + i + "行");
@@ -343,11 +337,9 @@ public class YamlTestUtil {
             int actSize = data.size();
             int expSize = unit.getModifyMap().size();
             if (skipCompareDBLength) {
-                TestifyLogUtil.warn(log, unit.getUnitName() + "表长度期望值:" + expSize + ",实际值:"
-                        + actSize);
+                TestifyLogUtil.warn(log, unit.getUnitName() + "表长度期望值:" + expSize + ",实际值:" + actSize);
             } else if (actSize != expSize) {
-                TestifyLogUtil.error(log, unit.getUnitName() + "表长度期望值:" + expSize + ",实际值:"
-                        + actSize);
+                TestifyLogUtil.error(log, unit.getUnitName() + "表长度期望值:" + expSize + ",实际值:" + actSize);
                 return;
             }
         }
@@ -355,23 +347,44 @@ public class YamlTestUtil {
             String columnName = entry.getKey();
             Object value = entry.getValue();
             BaseUnitProperty property = unit.getModifyMap().get(columnName);
-            UnitComparer comparer = ObjectCompareManager.getComparerManager().get(
-                    UnitFlagEnum.getByCode(property.getFlagCode()));
-            boolean cpResult = comparer.compare(property.getExpectValue(), value,
-                    property.getFlagCode());
+            UnitComparer comparer =
+                    ObjectCompareManager.getComparerManager().get(UnitFlagEnum.getByCode(property.getFlagCode()));
+            boolean cpResult = comparer.compare(property.getExpectValue(), value, property.getFlagCode());
             if (!cpResult) {
                 if (groupId == -1) {
-                    TestifyLogUtil.error(log,
-                            "检查表:" + unit.getUnitName() + "@" + unit.getDescription() + "---"
-                                    + property.getKeyName() + " " + property.getDbColumnComment()
-                                    + "---" + " 期望值=" + property.getExpectValue() + " 实际值=" + value);
+                    TestifyLogUtil.error(
+                            log,
+                            "检查表:"
+                                    + unit.getUnitName()
+                                    + "@"
+                                    + unit.getDescription()
+                                    + "---"
+                                    + property.getKeyName()
+                                    + " "
+                                    + property.getDbColumnComment()
+                                    + "---"
+                                    + " 期望值="
+                                    + property.getExpectValue()
+                                    + " 实际值="
+                                    + value);
                 } else {
                     TestifyLogUtil.error(
                             log,
-                            "第" + groupId + "行组数据检查表:" + unit.getUnitName() + "@"
-                                    + unit.getDescription() + "---" + property.getKeyName() + " "
-                                    + property.getDbColumnComment() + "---" + " 期望值="
-                                    + property.getExpectValue() + " 实际值=" + value);
+                            "第"
+                                    + groupId
+                                    + "行组数据检查表:"
+                                    + unit.getUnitName()
+                                    + "@"
+                                    + unit.getDescription()
+                                    + "---"
+                                    + property.getKeyName()
+                                    + " "
+                                    + property.getDbColumnComment()
+                                    + "---"
+                                    + " 期望值="
+                                    + property.getExpectValue()
+                                    + " 实际值="
+                                    + value);
                 }
                 property.setCompareSuccess(false);
                 property.setActualValue(value);
@@ -411,14 +424,13 @@ public class YamlTestUtil {
             return;
         }
 
-        if (splitKey == null)
-            splitKey = "split_id";
-//
-//        SimpleCondition simpleCondition = new SimpleCondition();
-//        simpleCondition.setVirtualTableName(unit.getUnitName());
-//        simpleCondition.put(splitKey, splitValue);
-//        ActsLogUtil.info(logger, "设置虚拟分库分表位[" + splitKey + "=" + splitValue + "]");
-//        ThreadLocalMap.put(ThreadLocalString.ROUTE_CONDITION, simpleCondition);
+        if (splitKey == null) splitKey = "split_id";
+        //
+        //        SimpleCondition simpleCondition = new SimpleCondition();
+        //        simpleCondition.setVirtualTableName(unit.getUnitName());
+        //        simpleCondition.put(splitKey, splitValue);
+        //        ActsLogUtil.info(logger, "设置虚拟分库分表位[" + splitKey + "=" + splitValue + "]");
+        //        ThreadLocalMap.put(ThreadLocalString.ROUTE_CONDITION, simpleCondition);
     }
 
     /**
@@ -428,16 +440,15 @@ public class YamlTestUtil {
      * @param splitId
      */
     private static void clearVirtualTddlRule() {
-//        ThreadLocalMap.put(ThreadLocalString.ROUTE_CONDITION, null);
+        //        ThreadLocalMap.put(ThreadLocalString.ROUTE_CONDITION, null);
     }
 
     /**
-     * 
+     *
      *
      * @return property value of isSingleYaml
      */
     public static boolean isSingleYaml() {
         return isSingleYaml;
     }
-
 }

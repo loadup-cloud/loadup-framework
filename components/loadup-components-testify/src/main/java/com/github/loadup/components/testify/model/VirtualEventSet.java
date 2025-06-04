@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.model;
 
 /*-
@@ -91,5 +92,4 @@ public class VirtualEventSet extends TestUnit {
     public String toString() {
         return "VirtualEventSet [virtualEventObjects=" + virtualEventObjects + "]";
     }
-
 }

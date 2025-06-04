@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.util.commonAlgo;
 
 /*-
@@ -26,16 +27,15 @@ package com.github.loadup.components.gateway.certification.util.commonAlgo;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
+import java.security.Security;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
-import java.security.Security;
+import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * DES对称加密算法类
@@ -71,7 +71,6 @@ public class DESUtil {
         }
 
         return cipher.doFinal(data);
-
     }
 
     /**
@@ -101,7 +100,6 @@ public class DESUtil {
         SecretKey secretKey = keyGenerator.generateKey();
 
         return secretKey.getEncoded();
-
     }
 
     /**

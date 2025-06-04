@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.database.dal.ibatis;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.components.gateway.plugin.repository.database.dal.ibat
 
 import com.github.loadup.components.gateway.plugin.repository.database.dal.daointerface.SecurityDAO;
 import com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject.SecurityDO;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +59,6 @@ public class IbatisSecurityDAO implements SecurityDAO {
         param.put("algoName", algoName);
 
         return null;
-
     }
 
     /**
@@ -75,7 +74,6 @@ public class IbatisSecurityDAO implements SecurityDAO {
         param.put("algoName", algoName);
 
         return null;
-
     }
 
     /**
@@ -85,7 +83,6 @@ public class IbatisSecurityDAO implements SecurityDAO {
     public List<SecurityDO> loadAll() {
 
         return null;
-
     }
 
     /**
@@ -95,7 +92,6 @@ public class IbatisSecurityDAO implements SecurityDAO {
     public List<SecurityDO> loadByClientId(String clientId) {
 
         return null;
-
     }
 
     /**
@@ -131,5 +127,4 @@ public class IbatisSecurityDAO implements SecurityDAO {
 
         return 0;
     }
-
 }

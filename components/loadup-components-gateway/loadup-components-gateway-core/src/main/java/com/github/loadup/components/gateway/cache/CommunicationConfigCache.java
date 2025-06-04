@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.cache;
 
 /*-
@@ -41,12 +42,11 @@ import com.github.loadup.components.gateway.core.service.InterfaceProdCenterQuer
 import com.github.loadup.components.gateway.facade.config.model.APIConditionGroup;
 import com.github.loadup.components.gateway.facade.config.model.SPIConditionGroup;
 import jakarta.annotation.Resource;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 /**
  * <p>
@@ -128,13 +128,12 @@ public class CommunicationConfigCache {
             switch (interfaceType) {
                 case SPI:
                     // 传过来的url是接收方integrationUrl。想要获取接收方的CommunicationConfig
-                    SPIConditionGroup spiConditionGroup = interfaceProdCenterQueryService
-                            .querySPIConditionGroup(url);
+                    SPIConditionGroup spiConditionGroup = interfaceProdCenterQueryService.querySPIConditionGroup(url);
                     return CommunicationConfigConvertor.convertToReceiverConfig(spiConditionGroup);
                 case OPENAPI:
                     // 传过来的url是发送方url。想要获取发送方的CommunicationConfig
-                    APIConditionGroup apiConditionGroup = interfaceProdCenterQueryService
-                            .queryAPIConditionGroup(url, null);
+                    APIConditionGroup apiConditionGroup =
+                            interfaceProdCenterQueryService.queryAPIConditionGroup(url, null);
                     return CommunicationConfigConvertor.convertToSenderConfig(apiConditionGroup);
                 default:
                     break;
@@ -146,15 +145,13 @@ public class CommunicationConfigCache {
     /**
      * Gets get with url.
      */
-    public static CommunicationConfig getFromProdCenterWithOpenUrls(RoleType roleType,
-                                                                    String... openUrls) {
+    public static CommunicationConfig getFromProdCenterWithOpenUrls(RoleType roleType, String... openUrls) {
         CommunicationConfig result = null;
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
             for (String openUrl : openUrls) {
                 APIConditionGroup apiConditionGroup = null;
                 try {
-                    apiConditionGroup = interfaceProdCenterQueryService
-                            .queryAPIConditionGroup(openUrl, null);
+                    apiConditionGroup = interfaceProdCenterQueryService.queryAPIConditionGroup(openUrl, null);
                 } catch (CommonException ex) {
                     if (ex.getResultCode() != GatewayErrorCode.CONFIGURATION_LOAD_ERROR) {
                         throw ex;
@@ -164,8 +161,7 @@ public class CommunicationConfigCache {
                     continue;
                 }
                 if (roleType == RoleType.RECEIVER) {
-                    result = CommunicationConfigConvertor
-                            .convertToReceiverConfig(apiConditionGroup);
+                    result = CommunicationConfigConvertor.convertToReceiverConfig(apiConditionGroup);
                 } else {
                     result = CommunicationConfigConvertor.convertToSenderConfig(apiConditionGroup);
                 }
@@ -176,7 +172,7 @@ public class CommunicationConfigCache {
     }
 
     /**
-     * 
+     *
      */
     @Resource
     public void setInterfaceProdCenterQueryService(InterfaceProdCenterQueryService interfaceProdCenterQueryService) {

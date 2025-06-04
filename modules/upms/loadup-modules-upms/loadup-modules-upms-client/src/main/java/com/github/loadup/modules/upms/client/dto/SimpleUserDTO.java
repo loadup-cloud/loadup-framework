@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.client.dto;
 
 /*-
@@ -28,12 +29,11 @@ package com.github.loadup.modules.upms.client.dto;
 
 import com.github.loadup.commons.dto.DTO;
 import com.github.loadup.modules.upms.domain.UserName;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Serial;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -41,15 +41,14 @@ public class SimpleUserDTO extends DTO {
     @Serial
     private static final long serialVersionUID = -3669783060494947628L;
 
-    private String        id;
-    private String        account;
-    private String        nickName;
-    private UserName      englishName;
-    private UserName      officialName;
-    private String        password;
-    private String        avatar;
-    private LocalDate     birthday;
+    private String id;
+    private String account;
+    private String nickName;
+    private UserName englishName;
+    private UserName officialName;
+    private String password;
+    private String avatar;
+    private LocalDate birthday;
     private LocalDateTime registeredTime;
-    private String        userType;
+    private String userType;
 }
-

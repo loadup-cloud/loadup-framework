@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.compare;
 
 /*-
@@ -26,14 +27,13 @@ package com.github.loadup.components.testify.utils.compare;
  * #L%
  */
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 比较两个对象的工具类
@@ -60,8 +60,7 @@ public class CompareTwoObject {
 
         String srcJson = JSON.toJSONString(src);
 
-        String targetJson = JSON.toJSONString(target
-        );
+        String targetJson = JSON.toJSONString(target);
 
         if (srcJson.equals(targetJson)) {
             return new CompareResult(true);
@@ -87,8 +86,7 @@ public class CompareTwoObject {
         return filterCompareResult(cr, flag);
     }
 
-    private static void compareJson(String parent, String key, Object srcObj, Object targetObj,
-                                    CompareResult cr) {
+    private static void compareJson(String parent, String key, Object srcObj, Object targetObj, CompareResult cr) {
         if (srcObj instanceof JSONObject) {
             compareJsonObj(parent, (JSONObject) srcObj, (JSONObject) targetObj, cr);
         } else if (srcObj instanceof JSONArray) {
@@ -98,8 +96,7 @@ public class CompareTwoObject {
         }
     }
 
-    private static void compareJsonObj(String parent, JSONObject srcObj, JSONObject targetObj,
-                                       CompareResult cr) {
+    private static void compareJsonObj(String parent, JSONObject srcObj, JSONObject targetObj, CompareResult cr) {
 
         if (targetObj == null) {
             compareJsonString(parent, srcObj.toString(), null, cr);
@@ -107,13 +104,16 @@ public class CompareTwoObject {
         }
         Set<String> keys = srcObj.keySet();
         for (String key1 : keys) {
-            compareJson(genKeyPath(parent, key1), key1, srcObj.get(key1), targetObj == null ? null
-                    : targetObj.get(key1), cr);
+            compareJson(
+                    genKeyPath(parent, key1),
+                    key1,
+                    srcObj.get(key1),
+                    targetObj == null ? null : targetObj.get(key1),
+                    cr);
         }
     }
 
-    private static void compareJsonString(String parent, Object srcObj, Object targetObj,
-                                          CompareResult cr) {
+    private static void compareJsonString(String parent, Object srcObj, Object targetObj, CompareResult cr) {
         if (!srcObj.equals(targetObj)) {
             if (FORWARD.get() == null || FORWARD.get()) {
                 cr.addCompareDetail(parent, srcObj, targetObj);
@@ -123,8 +123,7 @@ public class CompareTwoObject {
         }
     }
 
-    private static void compareJsonArray(String parent, JSONArray json1, JSONArray json2,
-                                         CompareResult cr) {
+    private static void compareJsonArray(String parent, JSONArray json1, JSONArray json2, CompareResult cr) {
         Iterator<Object> i1 = json1.iterator();
         Iterator<Object> i2 = null;
         if (json2 != null) {
@@ -151,7 +150,6 @@ public class CompareTwoObject {
             return key;
         }
         return parent + "." + key;
-
     }
 
     private static CompareResult filterCompareResult(CompareResult cr, Map<String, String> flag) {

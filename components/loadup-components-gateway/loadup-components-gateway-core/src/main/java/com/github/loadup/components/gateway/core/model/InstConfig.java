@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.model;
 
 /*-
@@ -26,12 +27,11 @@ package com.github.loadup.components.gateway.core.model;
  * #L%
  */
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  *
@@ -73,7 +73,7 @@ public class InstConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;
@@ -87,7 +87,7 @@ public class InstConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setName(String name) {
         this.name = name;
@@ -101,7 +101,7 @@ public class InstConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceMap(Map<String, InterfaceConfig> interfaceMap) {
         this.interfaceMap = interfaceMap;
@@ -122,7 +122,7 @@ public class InstConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setGmtCreate(Date gmtCreate) {
         this.gmtCreate = gmtCreate;
@@ -136,7 +136,7 @@ public class InstConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setGmtModified(Date gmtModified) {
         this.gmtModified = gmtModified;

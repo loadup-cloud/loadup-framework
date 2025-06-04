@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.config;
 
 /*-
@@ -30,16 +27,16 @@ package com.github.loadup.components.testify.utils.config;
  * #L%
  */
 
+import com.github.loadup.components.testify.constant.TestifyConstants;
+import com.github.loadup.components.testify.utils.config.impl.TestXMode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.github.loadup.components.testify.constant.TestifyConstants;
-import com.github.loadup.components.testify.utils.config.impl.TestXMode;
 
 /**
  * 读取系统配置参数缓存
  *
- * 
+ *
  *
  * Exp $
  */
@@ -78,14 +75,12 @@ public class PropertyConfig {
                     ConfigrationFactory.loadFromConfig(dbconfFile);
                 }
             } else {
-                dbconfFile = TestifyConstants.TESTIFY_CONFIG_BASE_DIR
-                        + TestifyConstants.TESTIFY_CONFIG_FILE_NAME;
+                dbconfFile = TestifyConstants.TESTIFY_CONFIG_BASE_DIR + TestifyConstants.TESTIFY_CONFIG_FILE_NAME;
                 logger.info("ACTS is not contain [dbconf_file]!");
             }
             // 默认按照用例进行控制
             testConfigs.setProperty("filePath", "");
         }
-
     }
 
     /**
@@ -102,9 +97,8 @@ public class PropertyConfig {
         if (!StringUtils.isEmpty(sofaTestMode)) {
             configPattern = sofaTestMode + "-sofa-test-config.properties";
         }
-        logger.info("ACTS config init :sofaTestConfigFile = " + TestifyConstants.SOFA_TEST_CONFIG_DIR
-                + configPattern);
-        return new String[]{TestifyConstants.SOFA_TEST_CONFIG_DIR, configPattern};
+        logger.info("ACTS config init :sofaTestConfigFile = " + TestifyConstants.SOFA_TEST_CONFIG_DIR + configPattern);
+        return new String[] {TestifyConstants.SOFA_TEST_CONFIG_DIR, configPattern};
     }
 
     /**
@@ -112,7 +106,7 @@ public class PropertyConfig {
      *
      * @param dbconfFile
      * @return
-     * 
+     *
      */
     private static String getDbMode(String dbconfFile) {
         String[] strs = dbconfFile.split(".conf");
@@ -150,11 +144,14 @@ public class PropertyConfig {
         if (null == testConfigs) {
             initConfigs();
         }
-        if (null != testConfigs && testConfigs.getPropertyValue(TestifyConstants.TR_MODE) != null
-                && "true".equals(testConfigs.getPropertyValue(TestifyConstants.TR_MODE).trim())) {
+        if (null != testConfigs
+                && testConfigs.getPropertyValue(TestifyConstants.TR_MODE) != null
+                && "true"
+                        .equals(testConfigs
+                                .getPropertyValue(TestifyConstants.TR_MODE)
+                                .trim())) {
             return true;
-        } else
-            return false;
+        } else return false;
     }
 
     /**
@@ -166,8 +163,12 @@ public class PropertyConfig {
         if (null == testConfigs) {
             initConfigs();
         }
-        if (null != testConfigs && testConfigs.getPropertyValue(TestifyConstants.SWITCH_ENV) != null
-                && "false".equals(testConfigs.getPropertyValue(TestifyConstants.SWITCH_ENV).trim())) {
+        if (null != testConfigs
+                && testConfigs.getPropertyValue(TestifyConstants.SWITCH_ENV) != null
+                && "false"
+                        .equals(testConfigs
+                                .getPropertyValue(TestifyConstants.SWITCH_ENV)
+                                .trim())) {
             return false;
         }
         return true;
@@ -225,5 +226,4 @@ public class PropertyConfig {
         }
         return dbconfFile;
     }
-
 }

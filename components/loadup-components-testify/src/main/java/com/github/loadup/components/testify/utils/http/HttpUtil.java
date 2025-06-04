@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.http;
 
 /*-
@@ -26,10 +27,20 @@ package com.github.loadup.components.testify.utils.http;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
 import com.github.loadup.components.testify.exception.TestifyException;
 import com.github.loadup.components.testify.util.JsonUtil;
 import com.google.common.base.Joiner;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -51,24 +62,12 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
-import java.nio.charset.Charset;
-import java.nio.charset.UnsupportedCharsetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-
 /**
  * HttpClient工具类
  *
  * @author lizhan.wl
  * @version 1.0
  */
-
 public class HttpUtil {
     // 编码格式。发送编码格式统一用UTF-8
     private static final String ENCODING = "UTF-8";
@@ -119,7 +118,6 @@ public class HttpUtil {
         } catch (Exception e) {
             throw new TestifyException("HttpClient调用异常", e);
         }
-
     }
 
     /**
@@ -133,7 +131,8 @@ public class HttpUtil {
     public static Map<String, Object> doGet(String url, Map headers, Map<String, String> data) {
 
         // 拼接参数列表
-        String joinedData = Joiner.on("&").useForNull("").withKeyValueSeparator("=").join(data);
+        String joinedData =
+                Joiner.on("&").useForNull("").withKeyValueSeparator("=").join(data);
         // 拼接URL地址
         String joinedUrl = String.format("%s?%s", url, joinedData);
 
@@ -305,13 +304,12 @@ public class HttpUtil {
                 String value = String.valueOf(headers.get(name));
                 httpPost.setHeader(name, value);
             }
-            //设置参数
+            // 设置参数
             List<NameValuePair> nvps = new ArrayList<NameValuePair>();
             for (Iterator iter = body.keySet().iterator(); iter.hasNext(); ) {
                 String name = (String) iter.next();
                 String value = String.valueOf(body.get(name));
                 nvps.add(new BasicNameValuePair(name, value));
-
             }
             httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
 
@@ -369,7 +367,7 @@ public class HttpUtil {
                 }
             }
 
-            //设置参数
+            // 设置参数
             if (StringUtils.isNotBlank(encoding)) {
                 charset = Charset.forName(encoding);
             }
@@ -415,9 +413,11 @@ public class HttpUtil {
 
         // 构造HttpClient客户端
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        //设置请求和传输超时时间
-        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(SOCKET_TIMEOUT)
-                .setConnectTimeout(CONNECT_TIMEOUT).build();
+        // 设置请求和传输超时时间
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setSocketTimeout(SOCKET_TIMEOUT)
+                .setConnectTimeout(CONNECT_TIMEOUT)
+                .build();
 
         HttpPost httpPost = new HttpPost(url);
         httpPost.setConfig(requestConfig);
@@ -472,7 +472,5 @@ public class HttpUtil {
                 }
             }
         }
-
     }
-
 }

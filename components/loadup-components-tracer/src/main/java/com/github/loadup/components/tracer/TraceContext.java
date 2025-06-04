@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.tracer;
 
 /*-
@@ -27,15 +28,13 @@ package com.github.loadup.components.tracer;
  */
 
 import io.opentelemetry.api.trace.Span;
-
 import java.util.EmptyStackException;
 import java.util.Objects;
 
 public class TraceContext {
     private final ThreadLocal<Span> threadLocal = new ThreadLocal();
 
-    public TraceContext() {
-    }
+    public TraceContext() {}
 
     public void push(Span span) {
         if (span != null) {

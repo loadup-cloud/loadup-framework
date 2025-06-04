@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.repository.common;
 
 /*-
@@ -30,31 +31,29 @@ import com.github.loadup.components.gateway.common.util.UriUtil;
 import com.github.loadup.components.gateway.core.common.Constant;
 import com.github.loadup.components.gateway.core.model.communication.ProtocolType;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Abstract interface relevant configuration builder
  */
 public abstract class AbstractInterfaceConfigBuilder<T> {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(AbstractInterfaceConfigBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractInterfaceConfigBuilder.class);
 
-    private final static String URI_STRING = "uri";
+    private static final String URI_STRING = "uri";
 
-    private final static String SECURITY_STRATEGY_CODE = "security_strategy_code";
+    private static final String SECURITY_STRATEGY_CODE = "security_strategy_code";
 
-    private final static String HEADER_ASSEMBLE = "integration_service_request_header_assemble";
+    private static final String HEADER_ASSEMBLE = "integration_service_request_header_assemble";
 
-    private final static String BODY_ASSEMBLE = "integration_service_request_assemble";
+    private static final String BODY_ASSEMBLE = "integration_service_request_assemble";
 
-    private final static String RESPONSE_PARSE = "integration_service_response_parser";
+    private static final String RESPONSE_PARSE = "integration_service_response_parser";
 
     /**
      * generate biz key
@@ -78,7 +77,7 @@ public abstract class AbstractInterfaceConfigBuilder<T> {
          * http://wf.rate.query would be splited into [http, wf.rate.query]
          * http://wf.com/rate/query.htm would be splited into [http, wf.com, rate, query.htm]
          */
-        //domainName.path || class.method
+        // domainName.path || class.method
         return StringUtils.replace(UriUtil.getURIPath(url), Constant.PATH_SEPARATOR, Constant.PATH_CONJUNCTION);
     }
 
@@ -174,7 +173,9 @@ public abstract class AbstractInterfaceConfigBuilder<T> {
         }
 
         if (CollectionUtils.isNotEmpty(invalidFieldList)) {
-            LogUtil.error(logger, "There are some invalid fields=",
+            LogUtil.error(
+                    logger,
+                    "There are some invalid fields=",
                     StringUtils.join(invalidFieldList.iterator(), Constant.COMMA_SEPARATOR));
             return false;
         } else {

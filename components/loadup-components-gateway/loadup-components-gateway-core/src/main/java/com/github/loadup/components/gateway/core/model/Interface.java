@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.model;
 
 /*-
@@ -96,7 +97,7 @@ public class Interface {
     }
 
     /**
-     * 
+     *
      */
     public void setApiConfig(InterfaceConfig apiConfig) {
         this.apiConfig = apiConfig;
@@ -110,7 +111,7 @@ public class Interface {
     }
 
     /**
-     * 
+     *
      */
     public void setApiSenderConfig(MessageSenderConfig apiSenderConfig) {
         this.apiSenderConfig = apiSenderConfig;
@@ -124,7 +125,7 @@ public class Interface {
     }
 
     /**
-     * 
+     *
      */
     public void setStatus(String status) {
         this.status = status;
@@ -138,7 +139,7 @@ public class Interface {
     }
 
     /**
-     * 
+     *
      */
     public void setType(InterfaceType type) {
         this.type = type;
@@ -152,7 +153,7 @@ public class Interface {
     }
 
     /**
-     * 
+     *
      */
     public void setApiReceiverConfig(MessageReceiverConfig apiReceiverConfig) {
         this.apiReceiverConfig = apiReceiverConfig;
@@ -166,7 +167,7 @@ public class Interface {
     }
 
     /**
-     * 
+     *
      */
     public void setApiProcessConfig(MessageProcessConfig apiProcessConfig) {
         this.apiProcessConfig = apiProcessConfig;
@@ -180,7 +181,7 @@ public class Interface {
     }
 
     /**
-     * 
+     *
      */
     public void setApiCommunicationConfig(CommunicationConfig apiCommunicationConfig) {
         this.apiCommunicationConfig = apiCommunicationConfig;
@@ -194,7 +195,7 @@ public class Interface {
     }
 
     /**
-     * 
+     *
      */
     public void setSpiConfig(InterfaceConfig spiConfig) {
         this.spiConfig = spiConfig;
@@ -208,7 +209,7 @@ public class Interface {
     }
 
     /**
-     * 
+     *
      */
     public void setSpiReceiverConfig(MessageReceiverConfig spiReceiverConfig) {
         this.spiReceiverConfig = spiReceiverConfig;
@@ -222,7 +223,7 @@ public class Interface {
     }
 
     /**
-     * 
+     *
      */
     public void setSpiProcessConfig(MessageProcessConfig spiProcessConfig) {
         this.spiProcessConfig = spiProcessConfig;
@@ -236,7 +237,7 @@ public class Interface {
     }
 
     /**
-     * 
+     *
      */
     public void setSpiCommunicationConfig(CommunicationConfig spiCommunicationConfig) {
         this.spiCommunicationConfig = spiCommunicationConfig;

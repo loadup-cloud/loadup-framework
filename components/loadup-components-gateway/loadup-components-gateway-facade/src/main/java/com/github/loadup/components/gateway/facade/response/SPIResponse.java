@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.response;
 
 /*-
@@ -27,10 +28,9 @@ package com.github.loadup.components.gateway.facade.response;
  */
 
 import com.github.loadup.components.gateway.facade.model.Result;
+import java.util.Map;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.Map;
 
 /**
  *
@@ -52,8 +52,7 @@ public class SPIResponse {
      */
     private Result result;
 
-    public SPIResponse() {
-    }
+    public SPIResponse() {}
 
     public SPIResponse(String content, Map<String, String> headers, Result result) {
         this.content = content;
@@ -69,7 +68,7 @@ public class SPIResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setContent(String content) {
         this.content = content;
@@ -83,7 +82,7 @@ public class SPIResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
@@ -97,7 +96,7 @@ public class SPIResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setResult(Result result) {
         this.result = result;
@@ -110,5 +109,4 @@ public class SPIResponse {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }
-
 }

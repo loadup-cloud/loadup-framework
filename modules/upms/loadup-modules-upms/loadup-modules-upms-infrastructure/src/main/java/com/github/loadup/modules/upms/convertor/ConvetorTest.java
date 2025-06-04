@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.convertor;
 
 /*-
@@ -26,9 +27,9 @@ package com.github.loadup.modules.upms.convertor;
  * #L%
  */
 
-import com.github.loadup.modules.upms.domain.UserName;
 import com.github.loadup.modules.upms.dal.dataobject.UserDO;
 import com.github.loadup.modules.upms.domain.UpmsUser;
+import com.github.loadup.modules.upms.domain.UserName;
 
 public class ConvetorTest {
     public static void main(String[] args) {

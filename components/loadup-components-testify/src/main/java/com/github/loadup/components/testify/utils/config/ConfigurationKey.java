@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.config;
 
 /*-
@@ -30,11 +30,10 @@ package com.github.loadup.components.testify.utils.config;
 /**
  * 配置项枚举值
  *
- * 
- * 
+ *
+ *
  */
 public enum ConfigurationKey {
-
     DB_DEL_LIMITATION("db_del_limitation", "数据删除机制");
 
     private String code;

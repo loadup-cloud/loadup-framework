@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.yaml.enums;
 
 /*-
@@ -35,11 +32,10 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * CP单位点的属性类型
  *
- * 
+ *
  *
  */
 public enum CPUnitTypeEnum {
-
     OBJECT("OBJECT"),
 
     DATABASE("DATABASE"),
@@ -77,5 +73,4 @@ public enum CPUnitTypeEnum {
     public String getCode() {
         return code;
     }
-
 }

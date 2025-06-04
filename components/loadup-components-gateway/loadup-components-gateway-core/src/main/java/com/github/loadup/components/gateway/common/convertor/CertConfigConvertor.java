@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.common.convertor;
 
 /*-
@@ -26,6 +27,8 @@ package com.github.loadup.components.gateway.common.convertor;
  * #L%
  */
 
+import static com.github.loadup.components.gateway.facade.config.model.Constant.PLATFORM_TENANT_ID;
+
 import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.certification.cache.CacheUtil;
 import com.github.loadup.components.gateway.common.util.TenantUtil;
@@ -39,8 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import static com.github.loadup.components.gateway.facade.config.model.Constant.PLATFORM_TENANT_ID;
-
 /**
  *
  */
@@ -50,14 +51,12 @@ public class CertConfigConvertor {
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(CertConfigConvertor.class);
+    private static final Logger logger = LoggerFactory.getLogger(CertConfigConvertor.class);
 
     /**
      * convert ConditionGroup to CertConfig
      */
-    public static CertConfig convertToCertConfig(SecurityConditionGroup securityConditionGroup,
-                                                 String tenantId) {
+    public static CertConfig convertToCertConfig(SecurityConditionGroup securityConditionGroup, String tenantId) {
         if (securityConditionGroup == null) {
             return null;
         }
@@ -65,15 +64,18 @@ public class CertConfigConvertor {
         String certCode = null;
         if (StringUtils.equals(tenantId, PLATFORM_TENANT_ID)) {
             // platform config key for PUBLIC tenant in prodcenter
-            certCode = CacheUtil.generateKey(securityConditionGroup.getSecurityStrategyCode(),
+            certCode = CacheUtil.generateKey(
+                    securityConditionGroup.getSecurityStrategyCode(),
                     securityConditionGroup.getSecurityStrategyOperateType(),
                     securityConditionGroup.getSecurityStrategyAlgorithm());
         } else {
             // current tenant config key for tenant in prodcenter
             String clientId = TenantUtil.getClientIdByTenantId(tenantId);
-            certCode = CacheUtil.generateKey(securityConditionGroup.getSecurityStrategyCode(),
+            certCode = CacheUtil.generateKey(
+                    securityConditionGroup.getSecurityStrategyCode(),
                     securityConditionGroup.getSecurityStrategyOperateType(),
-                    securityConditionGroup.getSecurityStrategyAlgorithm(), clientId);
+                    securityConditionGroup.getSecurityStrategyAlgorithm(),
+                    clientId);
             result.setClientId(clientId);
         }
         result.setCertCode(certCode);
@@ -86,12 +88,10 @@ public class CertConfigConvertor {
             //                    securityConditionGroup.getCertType());
             //            result.setCertContent(actualCertContent);
         } catch (Exception ex) {
-            LogUtil.error(logger, "error to get actual cert content. SecurityConditionGroup=",
-                    result);
+            LogUtil.error(logger, "error to get actual cert content. SecurityConditionGroup=", result);
             throw new CommonException(GatewayErrorCode.CONFIGURATION_LOAD_ERROR, ex);
         }
         result.setCertStatus(Constant.DEFAULT_CERT_STATUS);
         return result;
     }
-
 }

@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.encryption;
 
 /*-
@@ -27,12 +27,11 @@ package com.github.loadup.components.testify.encryption;
  * #L%
  */
 
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * 
+ *
  *
  */
 public class EncryptUtil {
@@ -52,5 +51,4 @@ public class EncryptUtil {
         byte[] digest = hmac.doFinal(data.getBytes());
         return new String("UTF-8");
     }
-
 }

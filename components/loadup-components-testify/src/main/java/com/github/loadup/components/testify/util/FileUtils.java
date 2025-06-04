@@ -1,19 +1,4 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -82,7 +67,7 @@ import java.util.List;
  * @author Jim Harrington
  * @author Niall Pemberton
  * @author Sandy McArthur
- * 
+ *
  */
 public class FileUtils {
 
@@ -110,7 +95,7 @@ public class FileUtils {
         super();
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Reads the contents of a file into a String using the default encoding for the VM.
@@ -172,7 +157,6 @@ public class FileUtils {
         return readLines(file, null);
     }
 
-
     /**
      * Writes a String to a file creating the file if it does not exist using the default encoding for the VM.
      *
@@ -216,7 +200,7 @@ public class FileUtils {
         return new FileInputStream(file);
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Opens a {@link FileOutputStream} for the specified file, checking and
@@ -257,7 +241,7 @@ public class FileUtils {
         return new FileOutputStream(file);
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Returns a human-readable version of the file size, where the input
@@ -281,7 +265,7 @@ public class FileUtils {
         return displaySize;
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Implements the same behaviour as the "touch" utility on Unix. It creates
@@ -306,7 +290,7 @@ public class FileUtils {
         }
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Converts a Collection containing java.io.File instanced into array
@@ -320,7 +304,7 @@ public class FileUtils {
         return (File[]) files.toArray(new File[files.size()]);
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Converts an array of file extensions to suffixes for use
@@ -337,7 +321,7 @@ public class FileUtils {
         return suffixes;
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Compares the contents of two files to determine if they are equal or not.
@@ -393,7 +377,7 @@ public class FileUtils {
         }
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Convert from a <code>URL</code> to a <code>File</code>.
@@ -452,8 +436,7 @@ public class FileUtils {
             URL url = urls[i];
             if (url != null) {
                 if (url.getProtocol().equals("file") == false) {
-                    throw new IllegalArgumentException("URL could not be converted to a File: "
-                            + url);
+                    throw new IllegalArgumentException("URL could not be converted to a File: " + url);
                 }
                 files[i] = toFile(url);
             }
@@ -480,7 +463,7 @@ public class FileUtils {
         return urls;
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Copies a file to a directory preserving the file date.
@@ -519,8 +502,7 @@ public class FileUtils {
      * @see #copyFile(File, File, boolean)
      * @since Commons IO 1.3
      */
-    public static void copyFileToDirectory(File srcFile, File destDir, boolean preserveFileDate)
-            throws IOException {
+    public static void copyFileToDirectory(File srcFile, File destDir, boolean preserveFileDate) throws IOException {
         if (destDir == null) {
             throw new NullPointerException("Destination must not be null");
         }
@@ -566,8 +548,7 @@ public class FileUtils {
      * @throws IOException          if an IO error occurs during copying
      * @see #copyFileToDirectory(File, File, boolean)
      */
-    public static void copyFile(File srcFile, File destFile, boolean preserveFileDate)
-            throws IOException {
+    public static void copyFile(File srcFile, File destFile, boolean preserveFileDate) throws IOException {
         if (srcFile == null) {
             throw new NullPointerException("Source must not be null");
         }
@@ -581,8 +562,7 @@ public class FileUtils {
             throw new IOException("Source '" + srcFile + "' exists but is a directory");
         }
         if (srcFile.getCanonicalPath().equals(destFile.getCanonicalPath())) {
-            throw new IOException("Source '" + srcFile + "' and destination '" + destFile
-                    + "' are the same");
+            throw new IOException("Source '" + srcFile + "' and destination '" + destFile + "' are the same");
         }
         if (destFile.getParentFile() != null && destFile.getParentFile().exists() == false) {
             if (destFile.getParentFile().mkdirs() == false) {
@@ -603,8 +583,7 @@ public class FileUtils {
      * @param preserveFileDate whether to preserve the file date
      * @throws IOException if an error occurs
      */
-    private static void doCopyFile(File srcFile, File destFile, boolean preserveFileDate)
-            throws IOException {
+    private static void doCopyFile(File srcFile, File destFile, boolean preserveFileDate) throws IOException {
         if (destFile.exists() && destFile.isDirectory()) {
             throw new IOException("Destination '" + destFile + "' exists but is a directory");
         }
@@ -622,15 +601,14 @@ public class FileUtils {
         }
 
         if (srcFile.length() != destFile.length()) {
-            throw new IOException("Failed to copy full contents from '" + srcFile + "' to '"
-                    + destFile + "'");
+            throw new IOException("Failed to copy full contents from '" + srcFile + "' to '" + destFile + "'");
         }
         if (preserveFileDate) {
             destFile.setLastModified(srcFile.lastModified());
         }
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Copies a directory to within another directory preserving the file dates.
@@ -706,8 +684,7 @@ public class FileUtils {
      * @throws IOException          if an IO error occurs during copying
      * @since Commons IO 1.1
      */
-    public static void copyDirectory(File srcDir, File destDir, boolean preserveFileDate)
-            throws IOException {
+    public static void copyDirectory(File srcDir, File destDir, boolean preserveFileDate) throws IOException {
         copyDirectory(srcDir, destDir, null, preserveFileDate);
     }
 
@@ -749,8 +726,7 @@ public class FileUtils {
      * @throws IOException          if an IO error occurs during copying
      * @since Commons IO 1.4
      */
-    public static void copyDirectory(File srcDir, File destDir, FileFilter filter)
-            throws IOException {
+    public static void copyDirectory(File srcDir, File destDir, FileFilter filter) throws IOException {
         copyDirectory(srcDir, destDir, filter, true);
     }
 
@@ -793,8 +769,8 @@ public class FileUtils {
      * @throws IOException          if an IO error occurs during copying
      * @since Commons IO 1.4
      */
-    public static void copyDirectory(File srcDir, File destDir, FileFilter filter,
-                                     boolean preserveFileDate) throws IOException {
+    public static void copyDirectory(File srcDir, File destDir, FileFilter filter, boolean preserveFileDate)
+            throws IOException {
         if (srcDir == null) {
             throw new NullPointerException("Source must not be null");
         }
@@ -808,8 +784,7 @@ public class FileUtils {
             throw new IOException("Source '" + srcDir + "' exists but is not a directory");
         }
         if (srcDir.getCanonicalPath().equals(destDir.getCanonicalPath())) {
-            throw new IOException("Source '" + srcDir + "' and destination '" + destDir
-                    + "' are the same");
+            throw new IOException("Source '" + srcDir + "' and destination '" + destDir + "' are the same");
         }
 
         // Cater for destination being directory within the source directory (see IO-141)
@@ -838,8 +813,8 @@ public class FileUtils {
      * @throws IOException if an error occurs
      * @since Commons IO 1.1
      */
-    private static void doCopyDirectory(File srcDir, File destDir, FileFilter filter,
-                                        boolean preserveFileDate, List exclusionList)
+    private static void doCopyDirectory(
+            File srcDir, File destDir, FileFilter filter, boolean preserveFileDate, List exclusionList)
             throws IOException {
         if (destDir.exists()) {
             if (destDir.isDirectory() == false) {
@@ -873,7 +848,7 @@ public class FileUtils {
         }
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Copies bytes from the URL <code>source</code> to a file
@@ -904,7 +879,7 @@ public class FileUtils {
         }
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Deletes a directory recursively.
@@ -994,7 +969,7 @@ public class FileUtils {
         }
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Waits for NFS to propagate a file creation, imposing a timeout.
@@ -1049,7 +1024,7 @@ public class FileUtils {
         }
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Writes a String to a file creating the file if it does not exist.
@@ -1063,8 +1038,7 @@ public class FileUtils {
      * @throws IOException                  in case of an I/O error
      * @throws UnsupportedEncodingException if the encoding is not supported by the VM
      */
-    public static void writeStringToFile(File file, String data, String encoding)
-            throws IOException {
+    public static void writeStringToFile(File file, String data, String encoding) throws IOException {
         OutputStream out = null;
         try {
             out = openOutputStream(file);
@@ -1083,10 +1057,10 @@ public class FileUtils {
      * @param append    文件是否续写，false直接覆盖
      * @throws Exception
      */
-    public static void writeStringToFile(String filePath, String addString, String encoding, boolean append) throws Exception {
+    public static void writeStringToFile(String filePath, String addString, String encoding, boolean append)
+            throws Exception {
         try {
-            OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(filePath, append),
-                    encoding);
+            OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(filePath, append), encoding);
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write(addString + "\r\n ");
             bw.close();
@@ -1095,7 +1069,6 @@ public class FileUtils {
             throw e;
         }
     }
-
 
     /**
      * Writes a byte array to a file creating the file if it does not exist.
@@ -1167,8 +1140,7 @@ public class FileUtils {
      * @throws UnsupportedEncodingException if the encoding is not supported by the VM
      * @since Commons IO 1.1
      */
-    public static void writeLines(File file, String encoding, Collection lines, String lineEnding)
-            throws IOException {
+    public static void writeLines(File file, String encoding, Collection lines, String lineEnding) throws IOException {
         OutputStream out = null;
         try {
             out = openOutputStream(file);
@@ -1189,12 +1161,11 @@ public class FileUtils {
      * @throws IOException in case of an I/O error
      * @since Commons IO 1.3
      */
-    public static void writeLines(File file, Collection lines, String lineEnding)
-            throws IOException {
+    public static void writeLines(File file, Collection lines, String lineEnding) throws IOException {
         writeLines(file, null, lines, lineEnding);
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Deletes a file. If file is a directory, delete it and all sub-directories.
@@ -1308,8 +1279,8 @@ public class FileUtils {
     public static void forceMkdir(File directory) throws IOException {
         if (directory.exists()) {
             if (directory.isFile()) {
-                String message = "File " + directory + " exists and is "
-                        + "not a directory. Unable to create directory.";
+                String message =
+                        "File " + directory + " exists and is " + "not a directory. Unable to create directory.";
                 throw new IOException(message);
             }
         } else {
@@ -1320,7 +1291,7 @@ public class FileUtils {
         }
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Counts the size of a directory recursively (sum of the length of all files).
@@ -1359,7 +1330,7 @@ public class FileUtils {
         return size;
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Tests if the specified <code>File</code> is newer than the reference
@@ -1425,7 +1396,7 @@ public class FileUtils {
         return file.lastModified() > timeMillis;
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Tests if the specified <code>File</code> is older than the reference
@@ -1524,8 +1495,8 @@ public class FileUtils {
             copyDirectory(srcDir, destDir);
             deleteDirectory(srcDir);
             if (srcDir.exists()) {
-                throw new IOException("Failed to delete original directory '" + srcDir
-                        + "' after copy to '" + destDir + "'");
+                throw new IOException(
+                        "Failed to delete original directory '" + srcDir + "' after copy to '" + destDir + "'");
             }
         }
     }
@@ -1542,8 +1513,7 @@ public class FileUtils {
      * @throws IOException          if an IO error occurs moving the file
      * @since Commons IO 1.4
      */
-    public static void moveDirectoryToDirectory(File src, File destDir, boolean createDestDir)
-            throws IOException {
+    public static void moveDirectoryToDirectory(File src, File destDir, boolean createDestDir) throws IOException {
         if (src == null) {
             throw new NullPointerException("Source must not be null");
         }
@@ -1554,15 +1524,13 @@ public class FileUtils {
             destDir.mkdirs();
         }
         if (!destDir.exists()) {
-            throw new FileNotFoundException("Destination directory '" + destDir
-                    + "' does not exist [createDestDir=" + createDestDir
-                    + "]");
+            throw new FileNotFoundException(
+                    "Destination directory '" + destDir + "' does not exist [createDestDir=" + createDestDir + "]");
         }
         if (!destDir.isDirectory()) {
             throw new IOException("Destination '" + destDir + "' is not a directory");
         }
         moveDirectory(src, new File(destDir, src.getName()));
-
     }
 
     /**
@@ -1601,8 +1569,8 @@ public class FileUtils {
             copyFile(srcFile, destFile);
             if (!srcFile.delete()) {
                 FileUtils.deleteQuietly(destFile);
-                throw new IOException("Failed to delete original file '" + srcFile
-                        + "' after copy to '" + destFile + "'");
+                throw new IOException(
+                        "Failed to delete original file '" + srcFile + "' after copy to '" + destFile + "'");
             }
         }
     }
@@ -1619,8 +1587,7 @@ public class FileUtils {
      * @throws IOException          if an IO error occurs moving the file
      * @since Commons IO 1.4
      */
-    public static void moveFileToDirectory(File srcFile, File destDir, boolean createDestDir)
-            throws IOException {
+    public static void moveFileToDirectory(File srcFile, File destDir, boolean createDestDir) throws IOException {
         if (srcFile == null) {
             throw new NullPointerException("Source must not be null");
         }
@@ -1631,9 +1598,8 @@ public class FileUtils {
             destDir.mkdirs();
         }
         if (!destDir.exists()) {
-            throw new FileNotFoundException("Destination directory '" + destDir
-                    + "' does not exist [createDestDir=" + createDestDir
-                    + "]");
+            throw new FileNotFoundException(
+                    "Destination directory '" + destDir + "' does not exist [createDestDir=" + createDestDir + "]");
         }
         if (!destDir.isDirectory()) {
             throw new IOException("Destination '" + destDir + "' is not a directory");
@@ -1655,8 +1621,7 @@ public class FileUtils {
      * @throws IOException          if an IO error occurs moving the file
      * @since Commons IO 1.4
      */
-    public static void moveToDirectory(File src, File destDir, boolean createDestDir)
-            throws IOException {
+    public static void moveToDirectory(File src, File destDir, boolean createDestDir) throws IOException {
         if (src == null) {
             throw new NullPointerException("Source must not be null");
         }
@@ -1672,5 +1637,4 @@ public class FileUtils {
             moveFileToDirectory(src, destDir, createDestDir);
         }
     }
-
 }

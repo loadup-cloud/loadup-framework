@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.db.convertor;
 
 /*-
@@ -34,18 +35,17 @@ import com.github.loadup.components.testify.object.enums.UnitFlagEnum;
 import com.github.loadup.components.testify.yaml.cpUnit.DataBaseCPUnit;
 import com.github.loadup.components.testify.yaml.cpUnit.property.BaseUnitProperty;
 import com.github.loadup.components.testify.yaml.enums.CheckPointActionEnum;
-import org.apache.commons.lang3.StringUtils;
-import org.testng.Assert;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import org.apache.commons.lang3.StringUtils;
+import org.testng.Assert;
 
 /**
  * 数据转换sql接口
  *
- * 
+ *
  *
  */
 public class DataRowConvertor {
@@ -56,22 +56,19 @@ public class DataRowConvertor {
      * @param dataRow
      * @return
      */
-    public static String rowToSqL(DataBaseCPUnit unit, CheckPointActionEnum action,
-                                  DataBaseTypeEnum dbType) {
-//        Assert.assertNotNull("action不能为空", action);
-//        Assert.assertNotNull("dbType不能为空", dbType);
+    public static String rowToSqL(DataBaseCPUnit unit, CheckPointActionEnum action, DataBaseTypeEnum dbType) {
+        //        Assert.assertNotNull("action不能为空", action);
+        //        Assert.assertNotNull("dbType不能为空", dbType);
         StringBuffer sb = new StringBuffer();
         switch (action) {
             case CHECK:
-                sb.append("SELECT * FROM " + unit.getUnitName() + " WHERE "
-                        + convertToWhere(unit, dbType));
+                sb.append("SELECT * FROM " + unit.getUnitName() + " WHERE " + convertToWhere(unit, dbType));
                 if (unit.getSpecialMap().containsKey(TestifySpecialMapConstants.ORDERBY)) {
                     sb.append(" " + unit.getSpecialMap().get(TestifySpecialMapConstants.ORDERBY));
                 }
                 break;
             case CLEAN:
-                sb.append("DELETE FROM " + unit.getUnitName() + " WHERE "
-                        + convertToWhere(unit, dbType));
+                sb.append("DELETE FROM " + unit.getUnitName() + " WHERE " + convertToWhere(unit, dbType));
                 break;
             case PREPARE:
                 String tableName = unit.getUnitName();
@@ -81,8 +78,12 @@ public class DataRowConvertor {
                     String key = entry.getKey();
                     Keys.add(key);
                     BaseUnitProperty cell = entry.getValue();
-                    Values.add(getDBValue(cell.getExpectValue(), tableName + "." + key,
-                            cell.getDbColumnType(), cell.getFlagCode(), dbType));
+                    Values.add(getDBValue(
+                            cell.getExpectValue(),
+                            tableName + "." + key,
+                            cell.getDbColumnType(),
+                            cell.getFlagCode(),
+                            dbType));
                 }
 
                 String key = convertToString(Keys);
@@ -109,8 +110,12 @@ public class DataRowConvertor {
         for (Iterator iterator = unit.getConditionKeys().iterator(); iterator.hasNext(); ) {
             String key = (String) iterator.next();
             BaseUnitProperty cell = unit.getModifyMap().get(key);
-            String value = getDBValue(cell.getExpectValue(), unit.getUnitName() + "." + key,
-                    cell.getDbColumnType(), cell.getFlagCode(), dbType);
+            String value = getDBValue(
+                    cell.getExpectValue(),
+                    unit.getUnitName() + "." + key,
+                    cell.getDbColumnType(),
+                    cell.getFlagCode(),
+                    dbType);
             if (StringUtils.isNotBlank(value)) {
                 if (sb.length() != 0) {
                     sb.append(" and ");
@@ -131,8 +136,8 @@ public class DataRowConvertor {
      * @param dbType
      * @return
      */
-    private static String getDBValue(Object value, String keyPath, String type, String flagCode,
-                                     DataBaseTypeEnum dbType) {
+    private static String getDBValue(
+            Object value, String keyPath, String type, String flagCode, DataBaseTypeEnum dbType) {
         String realValue = "null";
         if (value != null) {
             switch (ColumnTypeEnum.getByPrefix(type)) {
@@ -143,9 +148,9 @@ public class DataRowConvertor {
                 case NULL:
                     if (UnitFlagEnum.getByCode(flagCode) == null
                             && TestifyCacheData.getCustomGenerator(flagCode) != null) {
-                        //生成自定义flagCode数值
-                        realValue = (String) TestifyCacheData.getCustomGenerator(flagCode).generater(
-                                keyPath, value, type);
+                        // 生成自定义flagCode数值
+                        realValue = (String)
+                                TestifyCacheData.getCustomGenerator(flagCode).generater(keyPath, value, type);
                     } else {
                         Assert.fail("找不到合适的生成回调函数");
                     }
@@ -184,7 +189,7 @@ public class DataRowConvertor {
         return realValue;
     }
 
-    //列表转换成字符串
+    // 列表转换成字符串
     private static String convertToString(List<String> list) {
         String str = "";
         if (list != null && list.size() > 0) {

@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data.matcher;
 
 /*-
@@ -37,8 +34,8 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * 根据字段名称匹配。
  *
- * 
- * 
+ *
+ *
  */
 public class MetaItemNameMatcher implements MetaItemMatcher {
 

@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -35,13 +35,6 @@ import com.github.loadup.components.testify.enums.TestifyActionEnum;
 import com.github.loadup.components.testify.enums.YamlFieldEnum;
 import com.github.loadup.components.testify.exception.TestifyException;
 import com.github.loadup.components.testify.util.comparison.TextRenderUtil;
-import org.yaml.snakeyaml.Yaml;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.ResourceUtils;
-
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -49,11 +42,17 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.*;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.ResourceUtils;
+import org.yaml.snakeyaml.Yaml;
 
 /**
- * 
+ *
  *
  */
 public class TestifyCommonUtil {
@@ -61,8 +60,7 @@ public class TestifyCommonUtil {
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(TestifyCommonUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestifyCommonUtil.class);
 
     private static final String APP_NAME_LOW = "appname";
     private static final String APP_NAME_UP = "AppName";
@@ -86,9 +84,9 @@ public class TestifyCommonUtil {
     // 初始化时需要在文件内进行续写而非覆盖的文件名集合
     private static final String APPEND_FILE_COLLECTION = "sofa-log4j.properties";
 
-    //public static void main(String[] args) throws Exception {
+    // public static void main(String[] args) throws Exception {
     //    initActs("pmtest");
-    //}
+    // }
 
     /**
      * 初始化ACTS框架必要文件
@@ -117,13 +115,14 @@ public class TestifyCommonUtil {
         velocityContext.put(TEST_BASE_NAME, VelocityUtil.evaluateString(velocityContext, TEST_BASE_TEMPLATE));
 
         String testScript;
-        try (InputStream inputStream = ResourceUtils.getURL("classpath:" + "templates/AppTestBase.vm").openStream()) {
+        try (InputStream inputStream =
+                ResourceUtils.getURL("classpath:" + "templates/AppTestBase.vm").openStream()) {
             byte[] bytes = FileCopyUtils.copyToByteArray(inputStream);
             testScript = new String(bytes, StandardCharsets.UTF_8);
         }
 
-
-        String pkgName = VelocityUtil.evaluateString(velocityContext, BASE_PACKAGE_TEMPLATE).toLowerCase();
+        String pkgName = VelocityUtil.evaluateString(velocityContext, BASE_PACKAGE_TEMPLATE)
+                .toLowerCase();
         velocityContext.put(PACKAGE_NAME, pkgName);
 
         // merge customized context
@@ -133,7 +132,13 @@ public class TestifyCommonUtil {
 
         // 判断是否需要跳过已存在的文件
         if (new File(methodFile).exists()) {
-            System.out.println("[Skipped]Test script already exists at " + pkgName + "." + scriptName + " (" + scriptName + ":20)");
+            System.out.println("[Skipped]Test script already exists at "
+                    + pkgName
+                    + "."
+                    + scriptName
+                    + " ("
+                    + scriptName
+                    + ":20)");
         }
 
         // create folder if not exist
@@ -144,7 +149,6 @@ public class TestifyCommonUtil {
 
         String content = VelocityUtil.evaluateString(velocityContext, testScript);
         FileUtils.writeStringToFile(methodFile, content, encoding, false);
-
     }
 
     /**
@@ -182,14 +186,14 @@ public class TestifyCommonUtil {
         is.close();
     }
 
-    private static void checkVersion() {
-    }
+    private static void checkVersion() {}
 
     public static void genTestScript(Class interfaceClass, String appName, String moduleName) throws Exception {
         genTestScript(interfaceClass, null, appName, moduleName);
     }
 
-    public static void genTestScript(Class interfaceClass, String mName, String appName, String moduleName) throws Exception {
+    public static void genTestScript(Class interfaceClass, String mName, String appName, String moduleName)
+            throws Exception {
         genTestScript(interfaceClass, mName, appName, moduleName, null, null, null);
     }
 
@@ -202,8 +206,15 @@ public class TestifyCommonUtil {
      * @param context        自定义的模板上下文
      * @throws Exception
      */
-    public static void genTestScript(Class interfaceClass, String mName, String appName, String moduleName,
-                                     String path, String template, Map<String, Object> context) throws Exception {
+    public static void genTestScript(
+            Class interfaceClass,
+            String mName,
+            String appName,
+            String moduleName,
+            String path,
+            String template,
+            Map<String, Object> context)
+            throws Exception {
 
         /**** 2. 初始化所需变量 ****/
         // 需要在项目的test bundle下执行，获取的目录参考：/工程目录/应用名/app/test
@@ -240,17 +251,18 @@ public class TestifyCommonUtil {
 
         // 获取测试脚本内容
         // 原始代码：
-        // String testScript = org.apache.commons.io.FileUtils.readFileToString(new File("MethodNameActsTest.vm")); //(String) HttpUtil.doGet(SCRIPT_URL, "UTF-8");
+        // String testScript = org.apache.commons.io.FileUtils.readFileToString(new
+        // File("MethodNameActsTest.vm")); //(String) HttpUtil.doGet(SCRIPT_URL, "UTF-8");
         // 修改为通过classpath加载：
         String testScript;
-        try (InputStream inputStream = ResourceUtils.getURL("classpath:" + "templates/MethodNameTest.vm").openStream()) {
+        try (InputStream inputStream = ResourceUtils.getURL("classpath:" + "templates/MethodNameTest.vm")
+                .openStream()) {
             byte[] bytes = FileCopyUtils.copyToByteArray(inputStream);
             testScript = new String(bytes, StandardCharsets.UTF_8);
         }
         if (template != null) {
             testScript = template;
         }
-
 
         /**** 3. 提取所有被测方法，准备依次生成测试脚本 ****/
         List<Method> methodList = new ArrayList<Method>();
@@ -268,7 +280,6 @@ public class TestifyCommonUtil {
         } catch (Exception e) {
             System.out.println("[Exception]遍历父类方法时报错，先跳过不影响正常执行\n" + e.getMessage());
         }
-
 
         if (methodList.size() < 1) {
             throw new TestifyException("方法数为0，无法生成对应用例！");
@@ -297,7 +308,8 @@ public class TestifyCommonUtil {
             velocityContext.put(METHOD_NAME_LOW, methodName);
             velocityContext.put(METHOD_NAME_UP, methodName.substring(0, 1).toUpperCase() + methodName.substring(1));
             velocityContext.put(ARGS_TYPE, argsType);
-            String pkgName = VelocityUtil.evaluateString(velocityContext, PACKAGE_TEMPLATE).toLowerCase();
+            String pkgName = VelocityUtil.evaluateString(velocityContext, PACKAGE_TEMPLATE)
+                    .toLowerCase();
             velocityContext.put(PACKAGE_NAME, pkgName);
 
             // merge customized context
@@ -311,7 +323,13 @@ public class TestifyCommonUtil {
 
             // 判断是否需要跳过已存在的文件
             if (new File(methodFile).exists()) {
-                System.out.println("[Skipped]Test script already exists at " + pkgName + "." + scriptName + " (" + scriptName + ":20)");
+                System.out.println("[Skipped]Test script already exists at "
+                        + pkgName
+                        + "."
+                        + scriptName
+                        + " ("
+                        + scriptName
+                        + ":20)");
                 continue;
             }
 
@@ -335,7 +353,13 @@ public class TestifyCommonUtil {
 
             genCount++;
 
-            System.out.println("[Success]Test script has been generated at " + pkgName + "." + scriptName + " (" + scriptName + ":20)");
+            System.out.println("[Success]Test script has been generated at "
+                    + pkgName
+                    + "."
+                    + scriptName
+                    + " ("
+                    + scriptName
+                    + ":20)");
         }
 
         if (genCount == 0) {
@@ -353,22 +377,36 @@ public class TestifyCommonUtil {
                 inputs.add(arg);
 
             } catch (Exception e) {
-                System.out.println("【ERROR】自动生成" + type.getTypeName() + "对象失败, => " + e.toString()
+                System.out.println("【ERROR】自动生成"
+                        + type.getTypeName()
+                        + "对象失败, => "
+                        + e.toString()
                         + ", 需要手动通过 ActsCommonUtil.genObjToYamlStr 方法构建入参对象并塞入YAML对应的入参位置");
                 inputs.add(null);
             } catch (Error err) {
-                System.out.println("【ERROR】自动生成" + type.getTypeName() + "对象失败, => " + err.toString()
+                System.out.println("【ERROR】自动生成"
+                        + type.getTypeName()
+                        + "对象失败, => "
+                        + err.toString()
                         + ", 需要手动通过 ActsCommonUtil.genObjToYamlStr 方法构建入参对象并塞入YAML对应的入参位置");
                 inputs.add(null);
             }
         }
 
         String initYamlStr = YamlFieldEnum.ARGS.getCode() + genArgumentsToYamlStr(inputs);
-        initYamlStr += TestifyYamlConstants.YAML_SEPARATOR + YamlFieldEnum.FLAGS.getCode() + YamlFieldEnum.FLAGS.getInitVal();
-        initYamlStr += TestifyYamlConstants.YAML_SEPARATOR + YamlFieldEnum.RESULT.getCode() + YamlFieldEnum.RESULT.getInitVal();
-        initYamlStr += TestifyYamlConstants.YAML_SEPARATOR + YamlFieldEnum.EVENTS.getCode() + YamlFieldEnum.EVENTS.getInitVal();
-        initYamlStr += TestifyYamlConstants.YAML_SEPARATOR + YamlFieldEnum.PARAMS.getCode() + YamlFieldEnum.PARAMS.getInitVal();
-        //initYamlStr += ActsYamlConstants.YAML_SEPARATOR + YamlFieldEnum.COMPOS.getCode() + YamlFieldEnum.COMPOS.getInitVal();
+        initYamlStr +=
+                TestifyYamlConstants.YAML_SEPARATOR + YamlFieldEnum.FLAGS.getCode() + YamlFieldEnum.FLAGS.getInitVal();
+        initYamlStr += TestifyYamlConstants.YAML_SEPARATOR
+                + YamlFieldEnum.RESULT.getCode()
+                + YamlFieldEnum.RESULT.getInitVal();
+        initYamlStr += TestifyYamlConstants.YAML_SEPARATOR
+                + YamlFieldEnum.EVENTS.getCode()
+                + YamlFieldEnum.EVENTS.getInitVal();
+        initYamlStr += TestifyYamlConstants.YAML_SEPARATOR
+                + YamlFieldEnum.PARAMS.getCode()
+                + YamlFieldEnum.PARAMS.getInitVal();
+        // initYamlStr += ActsYamlConstants.YAML_SEPARATOR + YamlFieldEnum.COMPOS.getCode() +
+        // YamlFieldEnum.COMPOS.getInitVal();
         return initYamlStr;
     }
 
@@ -378,32 +416,34 @@ public class TestifyCommonUtil {
         Object obj = null;
 
         // 参数化泛型处理
-//        if (tmpType instanceof ParameterizedTypeImpl) {
-//            Class rawType = ((ParameterizedTypeImpl) tmpType).getRawType();
-//            Type[] args = ((ParameterizedTypeImpl) tmpType).getActualTypeArguments();
-//
-//            //System.out.println("泛型处理：" + rawType.getName());
-//
-//            if (rawType == List.class) {
-//
-//                obj = new ArrayList();
-//                ((ArrayList) obj).add(autoGenObj(args[0], fieldName + "#" + args[0].getTypeName()));
-//
-//            } else if (rawType == Map.class) {
-//                obj = new HashMap();
-//                Object key = autoGenObj(args[0], fieldName + "#" + args[0].getTypeName());
-//                Object val = autoGenObj(args[1], fieldName + "#" + args[1].getTypeName());
-//                ((HashMap) obj).put(key, val);
-//
-//            } else if (rawType == Set.class) {
-//                obj = new HashSet();
-//                ((HashSet) obj).add(autoGenObj(args[0], fieldName + "#" + args[0].getTypeName()));
-//
-//            } else {
-//                System.out.println("-------------unable to handle it: " + rawType.getName() + "----------------");
-//            }
-//        }
-
+        //        if (tmpType instanceof ParameterizedTypeImpl) {
+        //            Class rawType = ((ParameterizedTypeImpl) tmpType).getRawType();
+        //            Type[] args = ((ParameterizedTypeImpl) tmpType).getActualTypeArguments();
+        //
+        //            //System.out.println("泛型处理：" + rawType.getName());
+        //
+        //            if (rawType == List.class) {
+        //
+        //                obj = new ArrayList();
+        //                ((ArrayList) obj).add(autoGenObj(args[0], fieldName + "#" +
+        // args[0].getTypeName()));
+        //
+        //            } else if (rawType == Map.class) {
+        //                obj = new HashMap();
+        //                Object key = autoGenObj(args[0], fieldName + "#" + args[0].getTypeName());
+        //                Object val = autoGenObj(args[1], fieldName + "#" + args[1].getTypeName());
+        //                ((HashMap) obj).put(key, val);
+        //
+        //            } else if (rawType == Set.class) {
+        //                obj = new HashSet();
+        //                ((HashSet) obj).add(autoGenObj(args[0], fieldName + "#" +
+        // args[0].getTypeName()));
+        //
+        //            } else {
+        //                System.out.println("-------------unable to handle it: " +
+        // rawType.getName() + "----------------");
+        //            }
+        //        }
 
         // 基础数据类型处理
         if (tmpType instanceof Class && ((Class) tmpType).isPrimitive()) {
@@ -425,11 +465,11 @@ public class TestifyCommonUtil {
             obj = Array.newInstance(clz, 1);
             Array.set(obj, 0, autoGenObj(clz, clz.getTypeName()));
             return obj;
-
         }
 
         if (tmpType instanceof Class && ((Class) tmpType).isEnum()) {
-            Object[] enumList = (Object[]) ((Class) tmpType).getDeclaredMethod("values").invoke(tmpType);
+            Object[] enumList =
+                    (Object[]) ((Class) tmpType).getDeclaredMethod("values").invoke(tmpType);
             if (enumList.length > 0) {
                 obj = enumList[0];
             }
@@ -472,16 +512,18 @@ public class TestifyCommonUtil {
                         } catch (Exception anyE) {
 
                         }
-
                     }
                 } else {
                     // 无任何构造器，无法进行实例化
-                    System.out.println("该对象【" + e.getMessage() + "】无任何构造器，无法自动进行实例化，"
-                            + "请使用genObjYaml工具类方法手动生成Yaml字符串！坐标：" + fieldName);
+                    System.out.println("该对象【"
+                            + e.getMessage()
+                            + "】无任何构造器，无法自动进行实例化，"
+                            + "请使用genObjYaml工具类方法手动生成Yaml字符串！坐标："
+                            + fieldName);
                 }
             }
 
-            //遍历设值
+            // 遍历设值
             Map<String, Field> fields = CSVApisUtil.findTargetClsFields((Class) tmpType);
             if (null != fields) {
                 for (String key : fields.keySet()) {
@@ -558,7 +600,7 @@ public class TestifyCommonUtil {
         if (arn.startsWith("acs:")) {
             dbmodel = genDBTableColsByArn(arn);
 
-            //再尝试guid获取表结构
+            // 再尝试guid获取表结构
             if (dbmodel == null || dbmodel.size() == 0) {
                 dbmodel = genDBTableColsByGuid(arn);
             }
@@ -567,7 +609,7 @@ public class TestifyCommonUtil {
             // 尝试老的guid获取
             dbmodel = genDBTableColsByGuid(arn);
 
-            //再尝试arn获取表结构
+            // 再尝试arn获取表结构
             if (dbmodel == null || dbmodel.size() == 0) {
                 dbmodel = genDBTableColsByArn(arn);
             }
@@ -577,13 +619,17 @@ public class TestifyCommonUtil {
         if (dbmodel != null && dbmodel.size() > 1) {
             String tableName = arn.substring(arn.lastIndexOf(".") + 1);
             // write to csv
-            //生成db模型默认包目录
+            // 生成db模型默认包目录
             String folder = System.getProperty("user.dir") + "/src/test/resources/model/";
             new File(folder).mkdirs();
             String filePath = folder + tableName + ".csv";
-            DbTableModelUtil.writeToCsv(new File(filePath), dbmodel, Charset.defaultCharset().displayName());
+            DbTableModelUtil.writeToCsv(
+                    new File(filePath), dbmodel, Charset.defaultCharset().displayName());
         } else {
-            throw new Exception("当前guid/arn信息：" + arn + "获取不到对应表结构，GUID方式将逐步下线，请使用ARN唯一标识生成表结构数据，详情：https://yuque.antfin.com/acts/user_guide/manual#cni1D");
+            throw new Exception(
+                    "当前guid/arn信息："
+                            + arn
+                            + "获取不到对应表结构，GUID方式将逐步下线，请使用ARN唯一标识生成表结构数据，详情：https://yuque.antfin.com/acts/user_guide/manual#cni1D");
         }
     }
 
@@ -595,24 +641,30 @@ public class TestifyCommonUtil {
      * @return: java.util.List<java.lang.String [ ]>
      **/
     public static List<String[]> genDBTableColsByArn(String arn) throws Exception {
-        //注意是不带域名的，同时uri是不带请求参数的！！！！！
+        // 注意是不带域名的，同时uri是不带请求参数的！！！！！
         // 但是在路径参数如  /api/meta/topology/IDB_L_test   是需要当成路径一起鉴权的
         String api = "/api/openOmc/rds/v1/listColumnMetaByTableArn";
         String host = "http://";
         // timeout默认15秒
-//        OmcClientParams clientParams = new OmcClientParams(host, ACCESS_ID, new String(Base64Util.decode(new String(Base64Util.decode(ACCESS_KEY)))));
-//        OmcHttpClient client = new OmcHttpClient(clientParams);
-//        Map<String, Object> params = new HashMap<>();
-//        params.put("tableArn", arn);
+        //        OmcClientParams clientParams = new OmcClientParams(host, ACCESS_ID, new
+        // String(Base64Util.decode(new String(Base64Util.decode(ACCESS_KEY)))));
+        //        OmcHttpClient client = new OmcHttpClient(clientParams);
+        //        Map<String, Object> params = new HashMap<>();
+        //        params.put("tableArn", arn);
         // 基础模式
-        JSONObject res = new JSONObject();//client.get(api, params);
+        JSONObject res = new JSONObject(); // client.get(api, params);
         List<String[]> dbmodel = new ArrayList<String[]>();
         if (Boolean.valueOf(String.valueOf(res.get("success")))) {
             // dbmodel headers
-            String[] headers = {CSVColEnum.COLUMN.getCode(), CSVColEnum.TYPE.getCode(),
-                    CSVColEnum.COMMENT.getCode(), CSVColEnum.PRIMARY.getCode(),
-                    CSVColEnum.NULLABLE.getCode(), CSVColEnum.FLAG.getCode(),
-                    CSVColEnum.VALUE.getCode()};
+            String[] headers = {
+                CSVColEnum.COLUMN.getCode(),
+                CSVColEnum.TYPE.getCode(),
+                CSVColEnum.COMMENT.getCode(),
+                CSVColEnum.PRIMARY.getCode(),
+                CSVColEnum.NULLABLE.getCode(),
+                CSVColEnum.FLAG.getCode(),
+                CSVColEnum.VALUE.getCode()
+            };
             dbmodel.add(headers);
             JSONArray cols = (JSONArray) res.get("data");
 
@@ -655,16 +707,22 @@ public class TestifyCommonUtil {
      * @return: java.util.List<java.lang.String [ ]>
      **/
     public static List<String[]> genDBTableColsByGuid(String guid) throws Exception {
-//        OmcClientParams clientParams = new OmcClientParams(host, ACCESS_ID, new String(Base64Util.decode(new String(Base64Util.decode(ACCESS_KEY)))));
-//        OmcHttpClient client = new OmcHttpClient(clientParams);
-        JSONObject res = new JSONObject();//client.get(api, null);
+        //        OmcClientParams clientParams = new OmcClientParams(host, ACCESS_ID, new
+        // String(Base64Util.decode(new String(Base64Util.decode(ACCESS_KEY)))));
+        //        OmcHttpClient client = new OmcHttpClient(clientParams);
+        JSONObject res = new JSONObject(); // client.get(api, null);
         List<String[]> dbmodel = new ArrayList<String[]>();
         if (Boolean.valueOf(String.valueOf(res.get("success")))) {
             // dbmodel headers
-            String[] headers = {CSVColEnum.COLUMN.getCode(), CSVColEnum.TYPE.getCode(),
-                    CSVColEnum.COMMENT.getCode(), CSVColEnum.PRIMARY.getCode(),
-                    CSVColEnum.NULLABLE.getCode(), CSVColEnum.FLAG.getCode(),
-                    CSVColEnum.VALUE.getCode()};
+            String[] headers = {
+                CSVColEnum.COLUMN.getCode(),
+                CSVColEnum.TYPE.getCode(),
+                CSVColEnum.COMMENT.getCode(),
+                CSVColEnum.PRIMARY.getCode(),
+                CSVColEnum.NULLABLE.getCode(),
+                CSVColEnum.FLAG.getCode(),
+                CSVColEnum.VALUE.getCode()
+            };
             dbmodel.add(headers);
             JSONArray cols = (JSONArray) res.get("root");
 
@@ -689,7 +747,9 @@ public class TestifyCommonUtil {
             return null;
         }
 
-        TextRenderUtil.print(TextRenderUtil.RED_BOLD, "iDB即将下线，新版ODC平台请使用ARN唯一标识生成表结构数据，详情：https://yuque.antfin.com/acts/user_guide/manual#cni1D");
+        TextRenderUtil.print(
+                TextRenderUtil.RED_BOLD,
+                "iDB即将下线，新版ODC平台请使用ARN唯一标识生成表结构数据，详情：https://yuque.antfin.com/acts/user_guide/manual#cni1D");
         return dbmodel;
     }
 
@@ -709,7 +769,6 @@ public class TestifyCommonUtil {
         if (!defaultObjs.exists() || !defaultObjs.isDirectory()) {
             defaultObjs.mkdirs();
         }
-
 
         FileUtils.writeStringToFile(filePath, yamlStr, Charset.defaultCharset().displayName(), false);
         return yamlStr;

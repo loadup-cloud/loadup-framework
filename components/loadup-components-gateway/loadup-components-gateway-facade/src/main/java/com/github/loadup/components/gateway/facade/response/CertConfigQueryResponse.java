@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.response;
 
 /*-
@@ -43,7 +44,7 @@ public class CertConfigQueryResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setCertConfigList(List<CertConfigInnerResponse> certConfigList) {
         this.certConfigList = certConfigList;

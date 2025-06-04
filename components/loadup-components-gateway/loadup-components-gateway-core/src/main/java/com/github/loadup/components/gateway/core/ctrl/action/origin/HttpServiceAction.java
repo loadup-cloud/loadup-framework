@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.ctrl.action.origin;
 
 /*-
@@ -42,11 +43,10 @@ import com.github.loadup.components.gateway.core.model.CommunicationConfig;
 import com.github.loadup.components.gateway.core.model.InterfaceConfig;
 import com.github.loadup.components.gateway.core.prototype.util.SupergwGatewayConfigurationUtils;
 import jakarta.annotation.Resource;
+import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
 
 /**
  * <p>
@@ -70,21 +70,21 @@ public class HttpServiceAction extends AbstractBusinessAction {
         if (StringUtils.isBlank(integratorUrl) && StringUtils.isBlank(interfaceId)) {
             integratorUrl = fillUpRequesterConfig(gatewayRuntimeProcessContext);
 
-            //remove all extend information
-            integratorUrl = SupergwGatewayConfigurationUtils.getStrBeforeCharset(integratorUrl,
-                    "?");
-            receiverCommunicationConfig = CommunicationConfigCache.getWithUrl(integratorUrl,
-                    gatewayRuntimeProcessContext.getTransactionType());
+            // remove all extend information
+            integratorUrl = SupergwGatewayConfigurationUtils.getStrBeforeCharset(integratorUrl, "?");
+            receiverCommunicationConfig = CommunicationConfigCache.getWithUrl(
+                    integratorUrl, gatewayRuntimeProcessContext.getTransactionType());
         } else {
-            receiverCommunicationConfig = getCommunicationConfigWithUrlOrInterfaceId(gatewayRuntimeProcessContext, integratorUrl,
-                    interfaceId);
+            receiverCommunicationConfig = getCommunicationConfigWithUrlOrInterfaceId(
+                    gatewayRuntimeProcessContext, integratorUrl, interfaceId);
         }
         AssertUtil.isNotNull(receiverCommunicationConfig, "integrator communication config is not found");
 
         InterfaceConfig integratorInterfaceConfig = null;
 
         integratorInterfaceConfig = InterfaceConfigCache.getWithInterfaceId(
-                receiverCommunicationConfig.getInterfaceId(), RoleType.RECEIVER,
+                receiverCommunicationConfig.getInterfaceId(),
+                RoleType.RECEIVER,
                 gatewayRuntimeProcessContext.getTransactionType());
 
         gatewayRuntimeProcessContext.setIntegratorInterfaceConfig(integratorInterfaceConfig);
@@ -94,15 +94,14 @@ public class HttpServiceAction extends AbstractBusinessAction {
     /**
      * fetch communication config with url or interface id
      */
-    private CommunicationConfig getCommunicationConfigWithUrlOrInterfaceId(GatewayRuntimeProcessContext gatewayRuntimeProcessContext,
-                                                                           String integratorUrl,
-                                                                           String interfaceId) {
+    private CommunicationConfig getCommunicationConfigWithUrlOrInterfaceId(
+            GatewayRuntimeProcessContext gatewayRuntimeProcessContext, String integratorUrl, String interfaceId) {
         CommunicationConfig receiverCommunicationConfig;
         if (StringUtils.isNotBlank(interfaceId)) {
             receiverCommunicationConfig = CommunicationConfigCache.getWithInterfaceId(interfaceId);
         } else {
-            receiverCommunicationConfig = CommunicationConfigCache.getWithUrl(integratorUrl,
-                    gatewayRuntimeProcessContext.getTransactionType());
+            receiverCommunicationConfig = CommunicationConfigCache.getWithUrl(
+                    integratorUrl, gatewayRuntimeProcessContext.getTransactionType());
         }
         return receiverCommunicationConfig;
     }
@@ -113,7 +112,7 @@ public class HttpServiceAction extends AbstractBusinessAction {
     private String fillUpRequesterConfig(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) {
         CommunicationConfig senderCommunicationConfig = getSenderCommunicationConfig(gatewayRuntimeProcessContext);
         InterfaceConfig senderInterfaceConfig = getSenderInterfaceConfig(gatewayRuntimeProcessContext);
-        //FIXME Temp plan, set the integrator in the message receiver interface id
+        // FIXME Temp plan, set the integrator in the message receiver interface id
         String integratorInterfaceId = senderInterfaceConfig.getMessageReceiverInterfaceId();
         String senderCertCode = senderInterfaceConfig.getSecurityStrategyCode();
         gatewayRuntimeProcessContext.setRequesterInterfaceConfig(senderInterfaceConfig);
@@ -124,11 +123,11 @@ public class HttpServiceAction extends AbstractBusinessAction {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
             // get receiver communication config from product center
             receiverCommunicationConfig = CommunicationConfigCache.getFromProdCenterWithOpenUrls(
-                    RoleType.RECEIVER, gatewayRuntimeProcessContext.getRequesterUri(),
+                    RoleType.RECEIVER,
+                    gatewayRuntimeProcessContext.getRequesterUri(),
                     gatewayRuntimeProcessContext.getRequesterUrl());
         } else {
-            receiverCommunicationConfig = CommunicationConfigCache
-                    .getWithInterfaceId(integratorInterfaceId);
+            receiverCommunicationConfig = CommunicationConfigCache.getWithInterfaceId(integratorInterfaceId);
         }
         AssertUtil.isNotNull(receiverCommunicationConfig);
         return receiverCommunicationConfig.getUrl();
@@ -138,22 +137,24 @@ public class HttpServiceAction extends AbstractBusinessAction {
      * get sender interface config
      */
     private InterfaceConfig getSenderInterfaceConfig(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) {
-        CommunicationConfig senderCommunicationConfig = getSenderCommunicationConfig(
-                gatewayRuntimeProcessContext);
-        return InterfaceConfigCache.getWithInterfaceId(senderCommunicationConfig.getInterfaceId(),
-                RoleType.SENDER, gatewayRuntimeProcessContext.getTransactionType());
+        CommunicationConfig senderCommunicationConfig = getSenderCommunicationConfig(gatewayRuntimeProcessContext);
+        return InterfaceConfigCache.getWithInterfaceId(
+                senderCommunicationConfig.getInterfaceId(),
+                RoleType.SENDER,
+                gatewayRuntimeProcessContext.getTransactionType());
     }
 
     /**
      * get sender communication config
      */
-    private CommunicationConfig getSenderCommunicationConfig(GatewayRuntimeProcessContext gatewayRuntimeProcessContext) {
+    private CommunicationConfig getSenderCommunicationConfig(
+            GatewayRuntimeProcessContext gatewayRuntimeProcessContext) {
         CommunicationConfig senderCommunicationConfig = null;
-        for (String url : Arrays.asList(gatewayRuntimeProcessContext.getRequesterUri(),
-                gatewayRuntimeProcessContext.getRequesterUrl())) {
+        for (String url : Arrays.asList(
+                gatewayRuntimeProcessContext.getRequesterUri(), gatewayRuntimeProcessContext.getRequesterUrl())) {
             try {
-                senderCommunicationConfig = CommunicationConfigCache.getWithUrl(url,
-                        gatewayRuntimeProcessContext.getTransactionType());
+                senderCommunicationConfig =
+                        CommunicationConfigCache.getWithUrl(url, gatewayRuntimeProcessContext.getTransactionType());
             } catch (CommonException ex) {
                 if (ex.getResultCode() != GatewayErrorCode.CONFIGURATION_LOAD_ERROR) {
                     throw ex;
@@ -163,8 +164,10 @@ public class HttpServiceAction extends AbstractBusinessAction {
                 break;
             }
         }
-        AssertUtil.isNotNull(senderCommunicationConfig,
-                GatewayErrorCode.CONFIGURATION_NOT_FOUND, "senderCommunicationConfig is null");
+        AssertUtil.isNotNull(
+                senderCommunicationConfig,
+                GatewayErrorCode.CONFIGURATION_NOT_FOUND,
+                "senderCommunicationConfig is null");
         return senderCommunicationConfig;
     }
 

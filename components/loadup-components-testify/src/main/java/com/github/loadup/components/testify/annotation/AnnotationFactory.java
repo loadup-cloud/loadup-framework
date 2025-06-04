@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.annotation;
 
 /*-
@@ -30,15 +30,14 @@ package com.github.loadup.components.testify.annotation;
 import com.github.loadup.components.testify.annotation.testify.*;
 import com.github.loadup.components.testify.component.db.DBDatasProcessor;
 import com.github.loadup.components.testify.template.TestifyTestBase;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  */
@@ -50,10 +49,12 @@ public class AnnotationFactory {
      * 数据处理器
      */
     public DBDatasProcessor dbDatasProcessor;
+
     /**
      * 当前注册的注解方法
      */
     protected Map<String, List<TestifyMethod>> annotationMethods;
+
     /**
      *  builder工厂
      */
@@ -65,8 +66,7 @@ public class AnnotationFactory {
      * @param annotationMethods
      * @param dbDatasProcessor
      */
-    public AnnotationFactory(Map<String, List<TestifyMethod>> annotationMethods,
-                             DBDatasProcessor dbDatasProcessor) {
+    public AnnotationFactory(Map<String, List<TestifyMethod>> annotationMethods, DBDatasProcessor dbDatasProcessor) {
         this.annotationMethods = annotationMethods;
         this.dbDatasProcessor = dbDatasProcessor;
     }
@@ -90,31 +90,27 @@ public class AnnotationFactory {
             addTestifyMethod(method, AfterPrepare.class, annotationMethods, template);
             addTestifyMethod(method, Executor.class, annotationMethods, template);
 
-            //@BeforeTable, @AfterTable 属于特殊类的标签
-            //如果包含如下方法，需要对它进行支持
+            // @BeforeTable, @AfterTable 属于特殊类的标签
+            // 如果包含如下方法，需要对它进行支持
             if (method.isAnnotationPresent(BeforeTable.class)) {
 
                 this.dbDatasProcessor
-                        .getBeforeVTableExecuteMethodList().add(
-                                new IVTableGroupCmdMethodImpl(template, method));
+                        .getBeforeVTableExecuteMethodList()
+                        .add(new IVTableGroupCmdMethodImpl(template, method));
             }
 
             if (method.isAnnotationPresent(AfterTable.class)) {
 
                 this.dbDatasProcessor
-                        .getAfterVTableExecuteMethodList().add(
-                                new IVTableGroupCmdMethodImpl(template, method));
+                        .getAfterVTableExecuteMethodList()
+                        .add(new IVTableGroupCmdMethodImpl(template, method));
             }
 
             if (method.isAnnotationPresent(BeforeExecSql.class)) {
 
-                this.dbDatasProcessor
-                        .getBeforeExecSqlMethodList().add(
-                                new IVTableGroupCmdMethodImpl(template, method));
+                this.dbDatasProcessor.getBeforeExecSqlMethodList().add(new IVTableGroupCmdMethodImpl(template, method));
             }
-
         }
-
     }
 
     /**
@@ -123,9 +119,11 @@ public class AnnotationFactory {
      * @param m
      * @param clsz
      */
-    private void addTestifyMethod(Method m, Class<? extends Annotation> clsz,
-                                  Map<String, List<TestifyMethod>> annoationMethods,
-                                  TestifyTestBase template) {
+    private void addTestifyMethod(
+            Method m,
+            Class<? extends Annotation> clsz,
+            Map<String, List<TestifyMethod>> annoationMethods,
+            TestifyTestBase template) {
 
         if (!annoationMethods.containsKey(clsz.getSimpleName())) {
 
@@ -143,13 +141,12 @@ public class AnnotationFactory {
      * @param m
      * @param clsz
      */
-    private void addTestifyMethod(List<TestifyMethod> methodList, Method m,
-                                  Class<? extends Annotation> clsz, TestifyTestBase template) {
+    private void addTestifyMethod(
+            List<TestifyMethod> methodList, Method m, Class<? extends Annotation> clsz, TestifyTestBase template) {
         if (m.isAnnotationPresent(clsz)) {
             Annotation annotaion = m.getAnnotation(clsz);
 
-            TestifyMethod testifyMethod = testifyMethodBuilder.buildTestifyMethod(m, template, clsz,
-                    annotaion);
+            TestifyMethod testifyMethod = testifyMethodBuilder.buildTestifyMethod(m, template, clsz, annotaion);
             int i = 0;
             for (i = 0; i < methodList.size(); i++) {
                 if (methodList.get(i).getOrder() > testifyMethod.getOrder()) {
@@ -160,9 +157,4 @@ public class AnnotationFactory {
             methodList.add(i, testifyMethod);
         }
     }
-
-
-
-
-
 }

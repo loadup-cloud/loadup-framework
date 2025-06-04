@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.model;
 
 /*-
@@ -80,28 +81,28 @@ public enum CertContentType {
     }
 
     /**
-     * 
+     *
      */
     public String getCertContentType() {
         return certContentType;
     }
 
     /**
-     * 
+     *
      */
     public void setCertContentType(String certContentType) {
         this.certContentType = certContentType;
     }
 
     /**
-     * 
+     *
      */
     public String getDesc() {
         return desc;
     }
 
     /**
-     * 
+     *
      */
     public void setDesc(String desc) {
         this.desc = desc;

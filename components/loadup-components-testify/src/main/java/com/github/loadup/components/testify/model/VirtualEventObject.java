@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.model;
 
 /*-
@@ -32,7 +29,7 @@ package com.github.loadup.components.testify.model;
 
 /**
  * @author tantian.wc
- * 
+ *
  */
 public class VirtualEventObject extends TestNode {
 
@@ -93,8 +90,7 @@ public class VirtualEventObject extends TestNode {
      */
     @Override
     public String toString() {
-        return "VirtualEventObject [eventObject=" + eventObject + ", eventCode=" + eventCode
-                + ", topicId=" + topicId + ", isExist=" + isExist + "]";
+        return "VirtualEventObject [eventObject=" + eventObject + ", eventCode=" + eventCode + ", topicId=" + topicId
+                + ", isExist=" + isExist + "]";
     }
-
 }

@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.transfer;
 
 /*-
@@ -34,13 +34,6 @@ import com.github.loadup.components.testify.model.VirtualDataSet;
 import com.github.loadup.components.testify.model.VirtualTable;
 import com.github.loadup.components.testify.util.BaseDataUtil;
 import com.github.loadup.components.testify.util.DeepCopyUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,14 +44,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
 
 /**
- * 
+ *
  *
  */
 public class TransferApi {
-    final static String endRegex = "执行用例.*结束";
-    final static String startRegex = "开始执行用例";
+    static final String endRegex = "执行用例.*结束";
+    static final String startRegex = "开始执行用例";
     private static final Logger Logger = LoggerFactory.getLogger(TransferApi.class);
 
     /***
@@ -70,14 +69,13 @@ public class TransferApi {
      * @param caseIdPrefix caseId的前缀
      * @return
      */
-    public static boolean transfer(String argsYamlPath, String tableFilePath, String yamlPath,
-                                   String caseIdPrefix) {
+    public static boolean transfer(String argsYamlPath, String tableFilePath, String yamlPath, String caseIdPrefix) {
 
         boolean success = true;
         try {
             File argsYaml = new File(argsYamlPath);
-            Map<String, PrepareData> args = BaseDataUtil.loadFromYaml(argsYaml,
-                    TransferApi.class.getClassLoader(), "GBK");
+            Map<String, PrepareData> args =
+                    BaseDataUtil.loadFromYaml(argsYaml, TransferApi.class.getClassLoader(), "GBK");
 
             Logger.info("拦截到的args结果:" + args);
             Map<String, PrepareData> tables = parseInsertLog(tableFilePath);
@@ -95,7 +93,6 @@ public class TransferApi {
 
         }
         return success;
-
     }
 
     /***
@@ -105,8 +102,7 @@ public class TransferApi {
      * @param caseIdPrefix
      * @return
      */
-    private static Map<String, PrepareData> replaceAllCaseId(Map<String, PrepareData> result,
-                                                             String caseIdPrefix) {
+    private static Map<String, PrepareData> replaceAllCaseId(Map<String, PrepareData> result, String caseIdPrefix) {
 
         int caseStart = 1;
 
@@ -123,12 +119,10 @@ public class TransferApi {
             replaceedResult.put(newCaseId, caseEntry.getValue());
 
             caseStart++;
-
         }
 
         Logger.info("合并后的结构:" + replaceedResult);
         return replaceedResult;
-
     }
 
     /***
@@ -155,9 +149,8 @@ public class TransferApi {
      * @param tables
      * @return
      */
-    private static Map<String, PrepareData> mergeArgsAndTables(Map<String, PrepareData> args,
-                                                               Map<String, PrepareData> tables) {
-
+    private static Map<String, PrepareData> mergeArgsAndTables(
+            Map<String, PrepareData> args, Map<String, PrepareData> tables) {
 
         for (String caseId : args.keySet()) {
 
@@ -170,11 +163,8 @@ public class TransferApi {
                 args.get(caseId).setDescription(caseId);
                 args.get(caseId).setDepDataSet(copyed);
             }
-
-
         }
         return args;
-
     }
 
     /***
@@ -187,25 +177,24 @@ public class TransferApi {
 
         Map<String, PrepareData> map = new HashMap<String, PrepareData>();
 
-        //1.拆分log日志,解析到一个Map<String,List<String>> 列表,key是caseId,List<String>是所有当前case相关的列
+        // 1.拆分log日志,解析到一个Map<String,List<String>> 列表,key是caseId,List<String>是所有当前case相关的列
 
         Map<String, List<String>> contentMap = splitLogContent(logFilePath);
 
-        //2.开始过滤List<String> ,过滤后的结果为List<String>,里面都是insert语句,顺便清洗掉
+        // 2.开始过滤List<String> ,过滤后的结果为List<String>,里面都是insert语句,顺便清洗掉
 
         contentMap = filterInvalidInfo(contentMap, null);
 
-        //3.开始解析insert语句
+        // 3.开始解析insert语句
         Map<String, List<VirtualTable>> tables = new HashMap<String, List<VirtualTable>>();
 
         tables = parseInsertSqls(contentMap);
 
-        //4.开始填充到Map<String, PrepareData>中
+        // 4.开始填充到Map<String, PrepareData>中
         fillPrepareMap(tables, map);
 
         Logger.info("解析到的table结果:" + map);
         return map;
-
     }
 
     /***
@@ -214,8 +203,7 @@ public class TransferApi {
      * @param tables
      * @param map
      */
-    private static void fillPrepareMap(Map<String, List<VirtualTable>> tables,
-                                       Map<String, PrepareData> map) {
+    private static void fillPrepareMap(Map<String, List<VirtualTable>> tables, Map<String, PrepareData> map) {
 
         for (String caseId : tables.keySet()) {
 
@@ -246,25 +234,23 @@ public class TransferApi {
                 value.add(vt);
             }
 
-            //替换所有的flag标志位
+            // 替换所有的flag标志位
             replaceFlag(value);
 
             tables.put(caseId, value);
         }
         return tables;
-
     }
 
-    //替换flag
+    // 替换flag
     @SuppressWarnings({"unchecked"})
     private static void replaceFlag(List<VirtualTable> vtbs) {
 
         Method m = null;
         try {
-            m = SqlLogParseFactory.class.getDeclaredMethod("fetchFieldFlagsFromDbModel",
-                    new Class<?>[]{String.class});
+            m = SqlLogParseFactory.class.getDeclaredMethod("fetchFieldFlagsFromDbModel", new Class<?>[] {String.class});
         } catch (Exception e) {
-//            Logger.error(e);
+            //            Logger.error(e);
         }
 
         for (VirtualTable vtb : vtbs) {
@@ -278,7 +264,7 @@ public class TransferApi {
                     vtb.setFlags(fieldsFlag);
                 }
             } catch (Exception e) {
-//                Logger.error(e);
+                //                Logger.error(e);
             }
         }
     }
@@ -297,30 +283,35 @@ public class TransferApi {
         String tableNameFields = "";
         if (StringUtils.contains(insertSql, " into ") && StringUtils.contains(insertSql, " values")) {
 
-            tableNameFields = insertSql.substring(insertSql.indexOf(" into ") + 6,
-                    insertSql.indexOf(" values")).trim();
-        } else if (StringUtils.contains(insertSql, " INTO ")
-                && StringUtils.contains(insertSql, " VALUES")) {
-            tableNameFields = insertSql.substring(insertSql.indexOf(" INTO ") + 6,
-                    insertSql.indexOf(" VALUES")).trim();
+            tableNameFields = insertSql
+                    .substring(insertSql.indexOf(" into ") + 6, insertSql.indexOf(" values"))
+                    .trim();
+        } else if (StringUtils.contains(insertSql, " INTO ") && StringUtils.contains(insertSql, " VALUES")) {
+            tableNameFields = insertSql
+                    .substring(insertSql.indexOf(" INTO ") + 6, insertSql.indexOf(" VALUES"))
+                    .trim();
         }
-        String tableFields = tableNameFields.substring(tableNameFields.indexOf("(") + 1,
-                tableNameFields.indexOf(")")).trim();
+        String tableFields = tableNameFields
+                .substring(tableNameFields.indexOf("(") + 1, tableNameFields.indexOf(")"))
+                .trim();
 
-        //字段值
+        // 字段值
         String tableValues = "";
         if (StringUtils.contains(insertSql, " values")) {
 
-            tableValues = StringUtils.substring(insertSql, insertSql.indexOf(" values") + 7).trim();
+            tableValues = StringUtils.substring(insertSql, insertSql.indexOf(" values") + 7)
+                    .trim();
         } else if (StringUtils.contains(insertSql, " VALUES")) {
-            tableValues = StringUtils.substring(insertSql, insertSql.indexOf(" VALUES") + 7).trim();
+            tableValues = StringUtils.substring(insertSql, insertSql.indexOf(" VALUES") + 7)
+                    .trim();
         }
 
         String[] tableFieldsArray = tableFields.split(",");
-        //-2是有);两个符号
-        String[] tableValuesArray = tableValues.substring(1, tableValues.length() - 1).split(",");
+        // -2是有);两个符号
+        String[] tableValuesArray =
+                tableValues.substring(1, tableValues.length() - 1).split(",");
 
-        //然后对于map需要特殊处理
+        // 然后对于map需要特殊处理
 
         String[] parsedArray = new String[tableFieldsArray.length];
         int indexResult = 0;
@@ -346,7 +337,7 @@ public class TransferApi {
 
         for (int index = 0; index < tableFieldsArray.length; index++) {
 
-            //过滤掉首位单引号
+            // 过滤掉首位单引号
             String field = tableFieldsArray[index];
             field = StringUtils.trim(field);
             String value = tableValuesArray[index];
@@ -371,8 +362,7 @@ public class TransferApi {
      * @param object
      * @return
      */
-    private static Map<String, List<String>> filterInvalidInfo(Map<String, List<String>> contentMap,
-                                                               Object object) {
+    private static Map<String, List<String>> filterInvalidInfo(Map<String, List<String>> contentMap, Object object) {
 
         final String startStr = "执行SQL语句: ";
         final String endStr = " 表名";
@@ -392,7 +382,6 @@ public class TransferApi {
             }
 
             contentMap.put(caseId, newInsertSql);
-
         }
         return contentMap;
     }
@@ -400,8 +389,8 @@ public class TransferApi {
     private static String parseTableName(String sql) {
 
         sql = StringUtils.lowerCase(sql);
-        String tableNameFields = sql.substring(sql.indexOf(" into") + 5, sql.indexOf(" values"))
-                .trim();
+        String tableNameFields =
+                sql.substring(sql.indexOf(" into") + 5, sql.indexOf(" values")).trim();
         return tableNameFields.substring(0, tableNameFields.indexOf("(")).trim();
     }
 
@@ -423,8 +412,7 @@ public class TransferApi {
             while ((curLine = logReader.readLine()) != null) {
 
                 if (curLine.contains(startRegex)) {
-                    caseId = StringUtils.substring(curLine, curLine.indexOf(startRegex)
-                            + startRegex.length() + 1);
+                    caseId = StringUtils.substring(curLine, curLine.indexOf(startRegex) + startRegex.length() + 1);
                     List<String> list = new ArrayList<String>();
                     map.put(caseId, list);
                 } else if (curLine.matches(endRegex)) {
@@ -432,7 +420,6 @@ public class TransferApi {
                 } else if (StringUtils.isNotEmpty(caseId)) {
                     map.get(caseId).add(curLine);
                 }
-
             }
 
         } catch (FileNotFoundException e) {

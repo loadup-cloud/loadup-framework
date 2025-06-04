@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils;
 
 /*-
@@ -30,29 +27,27 @@ package com.github.loadup.components.testify.utils;
  * #L%
  */
 
-import com.github.loadup.components.testify.model.*;
-import com.github.loadup.components.testify.runtime.TestifyRuntimeContext;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.github.loadup.components.testify.collector.sqlLog.SqlLogCollector;
 import com.github.loadup.components.testify.component.db.DBDatasProcessor;
 import com.github.loadup.components.testify.constant.TestifyPathConstants;
+import com.github.loadup.components.testify.model.*;
+import com.github.loadup.components.testify.runtime.TestifyRuntimeContext;
 import com.github.loadup.components.testify.util.BaseDataUtil;
 import com.github.loadup.components.testify.util.DeepCopyUtils;
 import com.github.loadup.components.testify.util.FileUtil;
 import com.github.loadup.components.testify.utils.config.ConfigrationFactory;
-
-import org.springframework.util.CollectionUtils;
-
 import java.io.File;
 import java.util.*;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 /**
  * 用例结果收集工具类
  *
  * @author chao.gao
- * 
+ *
  *
  * hongling.xiang Exp $
  */
@@ -61,8 +56,7 @@ public class CaseResultCollectUtil {
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(CaseResultCollectUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(CaseResultCollectUtil.class);
 
     /**
      * sql日志文件
@@ -95,13 +89,12 @@ public class CaseResultCollectUtil {
      * @param events
      * @param clsLoader
      */
-    public static void holdProcessData(TestifyRuntimeContext testifyRuntimeContext,
-                                       Map<String, List<Object>> events,
-                                       ClassLoader clsLoader) {
+    public static void holdProcessData(
+            TestifyRuntimeContext testifyRuntimeContext, Map<String, List<Object>> events, ClassLoader clsLoader) {
 
         String caseId = testifyRuntimeContext.getCaseId();
         Object actualResultObj = testifyRuntimeContext.getResultObj();
-        //Object actualExceptionObj = actsRuntimeContext.getExceptionObj();
+        // Object actualExceptionObj = actsRuntimeContext.getExceptionObj();
 
         // 不收集用例执行结果，则不保存中间数据
         if (!isCollectCaseResultOpen()) {
@@ -122,34 +115,32 @@ public class CaseResultCollectUtil {
                 newPrepareData.setExpectResult(expectResult);
             }
 
-            //if (null != actualExceptionObj) {
+            // if (null != actualExceptionObj) {
             //    VirtualException virtualException = new VirtualException();
             //    virtualException.setExpectException(new VirtualObject(actualExceptionObj));
             //    newPrepareData.setExpectException(virtualException);
-            //}
+            // }
 
             // 设置预期事件
             if (!CollectionUtils.isEmpty(events)) {
                 newPrepareData.setExpectEventSet(buildExpEvents(events, clsLoader));
             }
 
-            //设置组件反填结果
+            // 设置组件反填结果
             if (isCollectComponentResultOpen()) {
-                Map<String, Map<String, Object>> componentsResultMap = testifyRuntimeContext
-                        .getComponentsResultMap();
+                Map<String, Map<String, Object>> componentsResultMap = testifyRuntimeContext.getComponentsResultMap();
                 if (!CollectionUtils.isEmpty(componentsResultMap)) {
-                    List<VirtualComponent> VirtualComponents = buildComponentResult(
-                            componentsResultMap, newPrepareData, clsLoader);
+                    List<VirtualComponent> VirtualComponents =
+                            buildComponentResult(componentsResultMap, newPrepareData, clsLoader);
                     newPrepareData.getVirtualComponentSet().setComponents(VirtualComponents);
-
                 }
             }
 
             // 收集数据库操作表数据
             if (!CollectionUtils.isEmpty(testifyRuntimeContext.getBackFillSqlList())) {
                 VirtualDataSet expectDataSet = new VirtualDataSet();
-                expectDataSet.addTables(
-                        collectDbDataBySql(testifyRuntimeContext.getDbDatasProcessor(), testifyRuntimeContext.getBackFillSqlList()));
+                expectDataSet.addTables(collectDbDataBySql(
+                        testifyRuntimeContext.getDbDatasProcessor(), testifyRuntimeContext.getBackFillSqlList()));
                 newPrepareData.setExpectDataSet(expectDataSet);
             } else {
                 // 收集数据库操作表数据
@@ -162,12 +153,9 @@ public class CaseResultCollectUtil {
             caseDatas.put(caseId, newPrepareData);
 
         } catch (Throwable t) {
-            logger
-                    .warn("Collecting case result-unknown exception parsing SQL, caseId=" + caseId, t);
+            logger.warn("Collecting case result-unknown exception parsing SQL, caseId=" + caseId, t);
         }
-
     }
-
 
     /**
      * 通过db直接查询出db数据
@@ -182,12 +170,13 @@ public class CaseResultCollectUtil {
         }
 
         for (String sql : sqlList) {
-            //解析出sql中的tableName
-            String tableName = StringUtils.substringBetween(StringUtils.toRootLowerCase(sql), "from", "where").trim();
+            // 解析出sql中的tableName
+            String tableName = StringUtils.substringBetween(StringUtils.toRootLowerCase(sql), "from", "where")
+                    .trim();
             if (StringUtils.isEmpty(tableName)) {
                 continue;
             }
-            //解析出where条件后续对应字段默认打C
+            // 解析出where条件后续对应字段默认打C
             String conditions = sql.substring(sql.toLowerCase().indexOf("where"));
 
             logger.info("ACTS:查询sql= " + sql);
@@ -222,8 +211,7 @@ public class CaseResultCollectUtil {
      * @param actualResultObj
      * @return
      */
-    public static Map<String, Map<String, String>> getObjectFlag(ClassLoader cl,
-                                                                 Object actualResultObj) {
+    public static Map<String, Map<String, String>> getObjectFlag(ClassLoader cl, Object actualResultObj) {
 
         String ObjectBaseName = actualResultObj.getClass().getSimpleName();
         File folder = FileUtil.getTestResourceFile(TestifyPathConstants.OBJECT_DATA_PATH);
@@ -234,8 +222,8 @@ public class CaseResultCollectUtil {
         // 兼容处理
         String dbModelFullPath = folder.getAbsolutePath();
 
-        Map<String, Map<String, String>> flags = BaseDataUtil.getObjBaseFlags(cl, ObjectBaseName,
-                null, dbModelFullPath, "GBK");
+        Map<String, Map<String, String>> flags =
+                BaseDataUtil.getObjBaseFlags(cl, ObjectBaseName, null, dbModelFullPath, "GBK");
 
         return flags;
     }
@@ -247,20 +235,20 @@ public class CaseResultCollectUtil {
         PrepareData prepareData = rootPrepareData;
 
         // 解析生成用例对应的所有表
-        Map<String, List<List<String>>> passedCaseSqlLog = SqlLogCollector.collectConcernedSqlLog(
-                SQL_LOG_PATH_NAME, caseId);
+        Map<String, List<List<String>>> passedCaseSqlLog =
+                SqlLogCollector.collectConcernedSqlLog(SQL_LOG_PATH_NAME, caseId);
 
-        //此处做轮询，获取所有含caseId的sql,包含组件，格式为（主被测方法Id||组件Id）
+        // 此处做轮询，获取所有含caseId的sql,包含组件，格式为（主被测方法Id||组件Id）
         Map<String, List<List<String>>> singlePassedCaseSqlLog = new HashMap<String, List<List<String>>>();
         for (String key : passedCaseSqlLog.keySet()) {
 
-            //筛选目标caseId对应数据，避免解析脏数据
+            // 筛选目标caseId对应数据，避免解析脏数据
             if (StringUtils.contains(key, caseId)) {
                 singlePassedCaseSqlLog.put(key, passedCaseSqlLog.get(key));
             }
         }
 
-        //循环反填包含组件的所有内容
+        // 循环反填包含组件的所有内容
         for (String key : singlePassedCaseSqlLog.keySet()) {
 
             List<List<String>> curCaseSqlLog = singlePassedCaseSqlLog.get(key);
@@ -271,7 +259,7 @@ public class CaseResultCollectUtil {
             // 解析当前用例sql日志获取表数据
             List<VirtualTable> caseVirtualTables = SqlLogCollector.parseSqlLog(curCaseSqlLog);
 
-            //对于相同的表,进行合并
+            // 对于相同的表,进行合并
             caseVirtualTables = mergeAllSameTables(caseVirtualTables);
 
             if (CollectionUtils.isEmpty(caseVirtualTables)) {
@@ -282,7 +270,7 @@ public class CaseResultCollectUtil {
             VirtualDataSet expectDataSet = new VirtualDataSet();
             expectDataSet.addTables(caseVirtualTables);
 
-            //循环填充组件结果
+            // 循环填充组件结果
             String[] keyStrs = key.split("\\|");
             for (int i = 0; i < keyStrs.length; i++) {
                 if (i == (keyStrs.length - 1)) {
@@ -291,11 +279,8 @@ public class CaseResultCollectUtil {
                     prepareData = getComponentPreparedata(prepareData, keyStrs[i]);
                 }
             }
-
         }
-
     }
-
 
     /**
      * 返回嵌套的组件preparedata
@@ -309,7 +294,6 @@ public class CaseResultCollectUtil {
         for (VirtualComponent virtualComponent : components) {
             if (virtualComponent.getComponentId().equals(key)) {
                 return virtualComponent.getPrepareData();
-
             }
         }
         //
@@ -346,7 +330,7 @@ public class CaseResultCollectUtil {
         if (caseVirtualTables != null && caseVirtualTables.size() > 0) {
             result = DeepCopyUtils.deepCopy(caseVirtualTables.get(0));
         }
-        //清空表的内容,然后再加
+        // 清空表的内容,然后再加
         result.getTableData().clear();
         for (VirtualTable vt : caseVirtualTables) {
             result.getTableData().addAll(vt.getTableData());
@@ -367,7 +351,6 @@ public class CaseResultCollectUtil {
             distinctTableNames.add(vt.getTableName());
         }
         return distinctTableNames;
-
     }
 
     /***
@@ -377,8 +360,7 @@ public class CaseResultCollectUtil {
      * @param tableName
      * @return
      */
-    private static List<VirtualTable> filterByTableName(List<VirtualTable> caseVirtualTables,
-                                                        String tableName) {
+    private static List<VirtualTable> filterByTableName(List<VirtualTable> caseVirtualTables, String tableName) {
         List<VirtualTable> result = new ArrayList<VirtualTable>();
         for (VirtualTable vt : caseVirtualTables) {
             if (StringUtils.equalsIgnoreCase(vt.getTableName(), tableName)) {
@@ -387,7 +369,6 @@ public class CaseResultCollectUtil {
         }
 
         return DeepCopyUtils.deepCopy(result);
-
     }
 
     /**
@@ -399,11 +380,12 @@ public class CaseResultCollectUtil {
      */
     private static VirtualResult buildVirtualObject(Object actualResultObj, ClassLoader clsLoader) {
 
-        VirtualObject virtualObject = new VirtualObject(actualResultObj, actualResultObj.getClass()
-                .getSimpleName());
+        VirtualObject virtualObject =
+                new VirtualObject(actualResultObj, actualResultObj.getClass().getSimpleName());
         virtualObject.setDescription(actualResultObj.getClass().getSimpleName());
-        //获取模板中的flag
-        //        Map<String, Map<String, String>> flags = getObjectFlag(clsLoader, actualResultObj);
+        // 获取模板中的flag
+        //        Map<String, Map<String, String>> flags = getObjectFlag(clsLoader,
+        // actualResultObj);
         //        virtualObject.setFlags(flags);
 
         VirtualResult virtualResult = new VirtualResult();
@@ -418,8 +400,7 @@ public class CaseResultCollectUtil {
      * @param events
      * @return
      */
-    public static VirtualEventSet buildExpEvents(Map<String, List<Object>> events,
-                                                 ClassLoader clsLoader) {
+    public static VirtualEventSet buildExpEvents(Map<String, List<Object>> events, ClassLoader clsLoader) {
 
         VirtualEventSet virtualEventSet = new VirtualEventSet();
         for (String key : events.keySet()) {
@@ -427,15 +408,16 @@ public class CaseResultCollectUtil {
             List<Object> payloads = events.get(key);
             for (Object payload : payloads) {
                 virtualEventSet.addEventObject(payload, keys[0], (keys.length == 2) ? keys[1] : "");
-
             }
         }
 
-        //给每个消息体赋值flag
-        //        for (VirtualEventObject virtualEventObject : virtualEventSet.getVirtualEventObjects()) {
+        // 给每个消息体赋值flag
+        //        for (VirtualEventObject virtualEventObject :
+        // virtualEventSet.getVirtualEventObjects()) {
         //
         //            VirtualObject eventObject = virtualEventObject.getEventObject();
-        //            Map<String, Map<String, String>> flags = getObjectFlag(clsLoader, eventObject);
+        //            Map<String, Map<String, String>> flags = getObjectFlag(clsLoader,
+        // eventObject);
         //            eventObject.setFlags(flags);
         //            virtualEventObject.setEventObject(eventObject);
         //        }
@@ -450,13 +432,12 @@ public class CaseResultCollectUtil {
      * @param prepareData
      * @param clsLoader
      */
-    private static List<VirtualComponent> buildComponentResult(Map<String, Map<String, Object>> componentsResultMap,
-                                                               PrepareData prepareData,
-                                                               ClassLoader clsLoader) {
+    private static List<VirtualComponent> buildComponentResult(
+            Map<String, Map<String, Object>> componentsResultMap, PrepareData prepareData, ClassLoader clsLoader) {
 
         List<VirtualComponent> components = new LinkedList<VirtualComponent>();
         components = prepareData.getVirtualComponentSet().getComponents();
-        //遍历perpare中的组件和运行组件结果做匹配
+        // 遍历perpare中的组件和运行组件结果做匹配
         for (VirtualComponent virtualComponent : components) {
             String ComponentId = virtualComponent.getComponentId();
             for (String key : componentsResultMap.keySet()) {
@@ -464,25 +445,21 @@ public class CaseResultCollectUtil {
                     Map<String, Object> componentResult = componentsResultMap.get(key);
                     for (String resultKey : componentResult.keySet()) {
                         if (resultKey.equals("virtualResult")) {
-                            //匹配上做组件运行结果填充
-                            VirtualResult expectResult = buildVirtualObject(
-                                    componentResult.get(resultKey), clsLoader);
+                            // 匹配上做组件运行结果填充
+                            VirtualResult expectResult = buildVirtualObject(componentResult.get(resultKey), clsLoader);
                             virtualComponent.getPrepareData().setExpectResult(expectResult);
                         }
                         if (key.equals("virtualEventSet")) {
-                            //匹配上组件消息结果填充
-                            virtualComponent.getPrepareData().setExpectEventSet(
-                                    (VirtualEventSet) componentResult.get(resultKey));
+                            // 匹配上组件消息结果填充
+                            virtualComponent.getPrepareData().setExpectEventSet((VirtualEventSet)
+                                    componentResult.get(resultKey));
                         }
-
                     }
                 }
             }
-
         }
 
         return components;
-
     }
 
     /**
@@ -501,8 +478,7 @@ public class CaseResultCollectUtil {
      */
     public static boolean isCollectCaseResultOpen() {
 
-        String isCollectCaseResult = ConfigrationFactory.getConfigration().getPropertyValue(
-                "collect_case_result");
+        String isCollectCaseResult = ConfigrationFactory.getConfigration().getPropertyValue("collect_case_result");
 
         // 默认搜集
         if (StringUtils.isBlank(isCollectCaseResult)) {
@@ -519,8 +495,7 @@ public class CaseResultCollectUtil {
      */
     public static boolean isGenActualYaml() {
 
-        String gen_actual_yaml = ConfigrationFactory.getConfigration().getPropertyValue(
-                "gen_actual_yaml");
+        String gen_actual_yaml = ConfigrationFactory.getConfigration().getPropertyValue("gen_actual_yaml");
 
         // 默认搜集
         if (StringUtils.isBlank(gen_actual_yaml)) {
@@ -528,7 +503,6 @@ public class CaseResultCollectUtil {
         }
 
         return StringUtils.equalsIgnoreCase(gen_actual_yaml.trim(), Boolean.TRUE.toString());
-
     }
 
     /**
@@ -538,16 +512,14 @@ public class CaseResultCollectUtil {
      */
     public static boolean isCollectComponentResultOpen() {
 
-        String isCollectComponentResult = ConfigrationFactory.getConfigration().getPropertyValue(
-                "collect_case_component_result");
+        String isCollectComponentResult =
+                ConfigrationFactory.getConfigration().getPropertyValue("collect_case_component_result");
 
         // 默认collect_case_component_result为空时不进行组件反填
         if (StringUtils.isBlank(isCollectComponentResult)) {
             return true;
         }
 
-        return StringUtils
-                .equalsIgnoreCase(isCollectComponentResult.trim(), Boolean.TRUE.toString());
+        return StringUtils.equalsIgnoreCase(isCollectComponentResult.trim(), Boolean.TRUE.toString());
     }
-
 }

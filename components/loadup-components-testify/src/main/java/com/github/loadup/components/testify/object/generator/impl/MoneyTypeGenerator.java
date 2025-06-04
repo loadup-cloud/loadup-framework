@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.generator.impl;
 
 /*-
@@ -26,18 +27,15 @@ package com.github.loadup.components.testify.object.generator.impl;
  * #L%
  */
 
+import com.github.loadup.components.testify.object.generator.ObjectGenerator;
 import java.lang.reflect.Type;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.github.loadup.components.testify.object.generator.ObjectGenerator;
-
 
 /**
  * Money类型处理器
  *
- * 
+ *
  *
  */
 public class MoneyTypeGenerator implements ObjectGenerator {
@@ -62,13 +60,12 @@ public class MoneyTypeGenerator implements ObjectGenerator {
 
     @Override
     public Class<?> getItemClass(Type collectionItemType, Class<?> clz) {
-        //简单类型不实现
+        // 简单类型不实现
         return null;
     }
 
     @Override
-    public void setObjectValue(Object collectionObject, Object value, String originalValue,
-                               int index) {
-        //简单类型不实现
+    public void setObjectValue(Object collectionObject, Object value, String originalValue, int index) {
+        // 简单类型不实现
     }
 }

@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.parser;
 
 /*-
@@ -33,7 +30,7 @@ package com.github.loadup.components.testify.datarule.parser;
 /**
  * 规则解析器自身异常。
  *
- * 
+ *
  *
  */
 public class RuleParserException extends RuntimeException {
@@ -71,5 +68,4 @@ public class RuleParserException extends RuntimeException {
     public RuleParserException(Throwable cause) {
         super(cause);
     }
-
 }

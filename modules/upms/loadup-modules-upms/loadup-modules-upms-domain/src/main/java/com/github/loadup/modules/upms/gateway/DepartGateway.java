@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.gateway;
 
 /*-
@@ -27,7 +28,6 @@ package com.github.loadup.modules.upms.gateway;
  */
 
 import com.github.loadup.modules.upms.domain.UpmsDepart;
-
 import java.util.List;
 
 public interface DepartGateway {
@@ -41,5 +41,4 @@ public interface DepartGateway {
     UpmsDepart getById(String id);
 
     List<UpmsDepart> getByUserId(String userId);
-
 }

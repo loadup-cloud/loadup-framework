@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.yaml;
 
 /*-
@@ -30,14 +27,13 @@ package com.github.loadup.components.testify.yaml;
  * #L%
  */
 
+import com.github.loadup.components.testify.constant.TestifyYamlConstants;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.github.loadup.components.testify.constant.TestifyYamlConstants;
-
 /**
- * 
+ *
  *
  */
 public class YamlTestCase {
@@ -46,16 +42,18 @@ public class YamlTestCase {
      * CP列表
      */
     private final Map<String, YamlCheckPoint> checkPointMap = new LinkedHashMap<String, YamlCheckPoint>();
+
     /**
      * 用例ID
      */
     private String caseId;
+
     /**
      * 用例描述
      */
     private String description;
 
-    //~~~ 构造方法
+    // ~~~ 构造方法
     @SuppressWarnings("unchecked")
     public YamlTestCase(String caseId, Map<String, Object> testCaseData) {
         this.caseId = caseId;
@@ -63,12 +61,11 @@ public class YamlTestCase {
         testCaseData.remove("__desc");
 
         if (this.caseId.equals(TestifyYamlConstants.COMMONKEY)) {
-            //加载通用区域
-            YamlCheckPoint checkPoint = new YamlCheckPoint(TestifyYamlConstants.COMMONKEY,
-                    testCaseData);
+            // 加载通用区域
+            YamlCheckPoint checkPoint = new YamlCheckPoint(TestifyYamlConstants.COMMONKEY, testCaseData);
             this.checkPointMap.put(TestifyYamlConstants.COMMONKEY, checkPoint);
         } else {
-            //加载用例区域
+            // 加载用例区域
             for (Entry<String, Object> entry : testCaseData.entrySet()) {
                 String checkPointName = entry.getKey();
                 Map<String, Object> checkPointData = (Map<String, Object>) entry.getValue();
@@ -82,7 +79,8 @@ public class YamlTestCase {
     public Map dump() {
         Map dumpMap = new LinkedHashMap();
         if (this.caseId.equals(TestifyYamlConstants.COMMONKEY)) {
-            dumpMap.putAll(this.checkPointMap.get(TestifyYamlConstants.COMMONKEY).dump());
+            dumpMap.putAll(
+                    this.checkPointMap.get(TestifyYamlConstants.COMMONKEY).dump());
         } else {
             for (Entry<String, YamlCheckPoint> entry : this.checkPointMap.entrySet()) {
                 String unitName = entry.getKey();
@@ -93,21 +91,26 @@ public class YamlTestCase {
         return dumpMap;
     }
 
-    //~~~ 公用方法
+    // ~~~ 公用方法
 
     public YamlCheckPoint getCheckPoint(String checkPointName) {
         return checkPointMap.get(checkPointName);
     }
 
-    //~~~ 容器方法
+    // ~~~ 容器方法
 
     /**
      * @see Object#toString()
      */
     @Override
     public String toString() {
-        return "YamlTestCase [caseId=" + caseId + ", description=" + description
-                + ", checkPointMap=" + checkPointMap + "]";
+        return "YamlTestCase [caseId="
+                + caseId
+                + ", description="
+                + description
+                + ", checkPointMap="
+                + checkPointMap
+                + "]";
     }
 
     /**
@@ -120,7 +123,7 @@ public class YamlTestCase {
     }
 
     /**
-     * 
+     *
      *
      * @param caseId value to be assigned to property caseId
      */
@@ -138,7 +141,7 @@ public class YamlTestCase {
     }
 
     /**
-     * 
+     *
      *
      * @param description value to be assigned to property description
      */
@@ -154,5 +157,4 @@ public class YamlTestCase {
     public Map<String, YamlCheckPoint> getCheckPointMap() {
         return checkPointMap;
     }
-
 }

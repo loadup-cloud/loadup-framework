@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.communication.common.proxy;
 
 /*-
@@ -92,8 +93,7 @@ public class ProxyClientServiceImpl implements CommunicationService, Initializin
      * @see CommunicationService#init(Object...)
      */
     @Override
-    public void init(Object... obj) {
-    }
+    public void init(Object... obj) {}
 
     /**
      * @see CommunicationService#isInitOk()
@@ -107,15 +107,13 @@ public class ProxyClientServiceImpl implements CommunicationService, Initializin
      * @see CommunicationService#refresh(Object...)
      */
     @Override
-    public void refresh(Object... obj) {
-    }
+    public void refresh(Object... obj) {}
 
     /**
      * @see CommunicationService#refreshById(String, Object...)
      */
     @Override
-    public void refreshById(String id, Object... obj) {
-    }
+    public void refreshById(String id, Object... obj) {}
 
     /**
      * @see InitializingBean#afterPropertiesSet()

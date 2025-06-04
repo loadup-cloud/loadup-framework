@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.manage.log.impl;
 
 /*-
@@ -30,13 +27,11 @@ package com.github.loadup.components.testify.manage.log.impl;
  * #L%
  */
 
-import java.io.IOException;
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.github.loadup.components.testify.manage.enums.LoggerType;
 import com.github.loadup.components.testify.manage.log.RemoteLogService;
+import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 基于HttpClient写入远程日志
@@ -110,19 +105,20 @@ public class HttpClientLogServiceImpl implements RemoteLogService {
      * @throws IOException
      */
     private void postLogData(LoggerType logType, String projectId, String logData) {
-//        HttpClient httpClient = new HttpClient();
-//        httpClient.getHostConfiguration().setHost(host, 80, "http");
-//
-//        PostMethod post = getPostMethod(logType, projectId, logData);
-//
-//        try {
-//            httpClient.executeMethod(post);
-//        } catch (Throwable e) {
-//            logger.error("httpClient post log data fail[host=" + host + ",url=" + serverURL + "]",
-//                e);
-//        } finally {
-//            post.releaseConnection();
-//        }
+        //        HttpClient httpClient = new HttpClient();
+        //        httpClient.getHostConfiguration().setHost(host, 80, "http");
+        //
+        //        PostMethod post = getPostMethod(logType, projectId, logData);
+        //
+        //        try {
+        //            httpClient.executeMethod(post);
+        //        } catch (Throwable e) {
+        //            logger.error("httpClient post log data fail[host=" + host + ",url=" +
+        // serverURL + "]",
+        //                e);
+        //        } finally {
+        //            post.releaseConnection();
+        //        }
     }
 
     /**
@@ -133,23 +129,24 @@ public class HttpClientLogServiceImpl implements RemoteLogService {
      * @param logData       日志内容
      * @return
      */
-//    private PostMethod getPostMethod(LoggerType logType, String appName, String logData) {
-//        NameValuePair[] param = new NameValuePair[3];
-//        param[0] = new NameValuePair("logType", logType.toString());
-//        param[1] = new NameValuePair("appName", appName);
-//        param[2] = new NameValuePair("logData", logData);
-//
-//        PostMethod post = new PostMethod(serverURL);
-//        post.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=gbk");
-//        post.setRequestBody(param);
-//
-//        return post;
-//    }
+    //    private PostMethod getPostMethod(LoggerType logType, String appName, String logData) {
+    //        NameValuePair[] param = new NameValuePair[3];
+    //        param[0] = new NameValuePair("logType", logType.toString());
+    //        param[1] = new NameValuePair("appName", appName);
+    //        param[2] = new NameValuePair("logData", logData);
+    //
+    //        PostMethod post = new PostMethod(serverURL);
+    //        post.setRequestHeader("Content-Type",
+    // "application/x-www-form-urlencoded;charset=gbk");
+    //        post.setRequestBody(param);
+    //
+    //        return post;
+    //    }
 
     //  ~~setter & getter
 
     /**
-     * 
+     *
      *
      * @return property value of serverURL
      */
@@ -158,12 +155,11 @@ public class HttpClientLogServiceImpl implements RemoteLogService {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of host
      */
     public String getHost() {
         return host;
     }
-
 }

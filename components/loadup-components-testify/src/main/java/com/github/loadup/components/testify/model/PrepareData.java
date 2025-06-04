@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.model;
 
 /*-
@@ -34,25 +35,25 @@ package com.github.loadup.components.testify.model;
  */
 public class PrepareData {
 
-    //description
+    // description
     private String description;
-    //入参
+    // 入参
     private VirtualArgs args;
-    //前置的db数据
+    // 前置的db数据
     private VirtualDataSet depDataSet;
-    //预期的db数据
+    // 预期的db数据
     private VirtualDataSet expectDataSet;
-    //预期结果
+    // 预期结果
     private VirtualResult expectResult;
-    //预期事件
+    // 预期事件
     private VirtualEventSet expectEventSet;
-    //异常预期
+    // 异常预期
     private VirtualException expectException;
-    //mock信息
-//    private VirtualMockSet      virtualMockSet;
-    //自定义参数
+    // mock信息
+    //    private VirtualMockSet      virtualMockSet;
+    // 自定义参数
     private VirtualParams virtualParams;
-    //组件
+    // 组件
     private VirtualComponentSet virtualComponentSet = new VirtualComponentSet();
 
     /**
@@ -60,15 +61,24 @@ public class PrepareData {
      * set all object members to not null
      */
     public PrepareData() {
-        this(new VirtualArgs(), new VirtualDataSet(), new VirtualDataSet(), new VirtualResult(),
-                new VirtualEventSet(), new VirtualException(),
+        this(
+                new VirtualArgs(),
+                new VirtualDataSet(),
+                new VirtualDataSet(),
+                new VirtualResult(),
+                new VirtualEventSet(),
+                new VirtualException(),
                 new VirtualParams());
     }
 
-    private PrepareData(VirtualArgs virtualArgs, VirtualDataSet virtualDataSet,
-                        VirtualDataSet virtualDataSet2, VirtualResult virtualResult,
-                        VirtualEventSet virtualEventSet, VirtualException virtualException,
-                        VirtualParams virtualParams) {
+    private PrepareData(
+            VirtualArgs virtualArgs,
+            VirtualDataSet virtualDataSet,
+            VirtualDataSet virtualDataSet2,
+            VirtualResult virtualResult,
+            VirtualEventSet virtualEventSet,
+            VirtualException virtualException,
+            VirtualParams virtualParams) {
         this.args = virtualArgs;
         this.depDataSet = virtualDataSet;
         this.expectDataSet = virtualDataSet2;
@@ -79,7 +89,7 @@ public class PrepareData {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of description
      */
@@ -88,7 +98,7 @@ public class PrepareData {
     }
 
     /**
-     * 
+     *
      *
      * @param description value to be assigned to property description
      */
@@ -127,7 +137,6 @@ public class PrepareData {
     public void setExpectResult(VirtualResult expectResult) {
         this.expectResult = expectResult;
     }
-
 
     public VirtualException getExpectException() {
         return expectException;
@@ -168,5 +177,4 @@ public class PrepareData {
     public void setVirtualComponentSet(VirtualComponentSet virtualComponentSet) {
         this.virtualComponentSet = virtualComponentSet;
     }
-
 }

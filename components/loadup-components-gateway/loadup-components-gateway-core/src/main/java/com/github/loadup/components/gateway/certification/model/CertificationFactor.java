@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.model;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.components.gateway.certification.model;
  * #L%
  */
 
+import java.util.Map;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.Map;
 
 /**
  * 加解密要素
@@ -74,7 +74,7 @@ public class CertificationFactor {
     }
 
     /**
-     * 
+     *
      */
     public void setAlgoParameter(Map<String, String> algoParameter) {
         this.algoParameter = algoParameter;
@@ -88,7 +88,7 @@ public class CertificationFactor {
     }
 
     /**
-     * 
+     *
      */
     public void setAlgoString(String algoString) {
         this.algoString = algoString;
@@ -102,7 +102,7 @@ public class CertificationFactor {
     }
 
     /**
-     * 
+     *
      */
     public void setBizKey(String bizKey) {
         this.bizKey = bizKey;
@@ -116,7 +116,7 @@ public class CertificationFactor {
     }
 
     /**
-     * 
+     *
      */
     public void setCertMap(Map<String, Object> certMap) {
         this.certMap = certMap;
@@ -130,7 +130,7 @@ public class CertificationFactor {
     }
 
     /**
-     * 
+     *
      */
     public void setOperationType(OperationType operationType) {
         this.operationType = operationType;
@@ -144,7 +144,7 @@ public class CertificationFactor {
     }
 
     /**
-     * 
+     *
      */
     public void setCertAliasNameMap(Map<String, String> certAliasNameMap) {
         this.certAliasNameMap = certAliasNameMap;
@@ -153,6 +153,5 @@ public class CertificationFactor {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-
     }
 }

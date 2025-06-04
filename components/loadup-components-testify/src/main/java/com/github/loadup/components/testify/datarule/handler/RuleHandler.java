@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.handler;
 
 /*-
@@ -36,8 +33,8 @@ import com.github.loadup.components.testify.datarule.RuleObject;
 /**
  * 规则处理器。
  *
- * 
- * 
+ *
+ *
  */
 public interface RuleHandler<R extends RuleObject> {
 
@@ -49,5 +46,4 @@ public interface RuleHandler<R extends RuleObject> {
      * @return
      */
     public String handle(R rule, ReferenceHandler refHandler);
-
 }

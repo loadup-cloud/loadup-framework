@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.cache;
 
 /*-
@@ -28,11 +29,10 @@ package com.github.loadup.components.gateway.cache;
 
 import com.github.loadup.components.gateway.common.util.CacheLogUtil;
 import com.github.loadup.components.gateway.core.model.MessageProcessConfig;
-import org.apache.commons.collections4.CollectionUtils;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.commons.collections4.CollectionUtils;
 
 /**
  * <p>
@@ -67,5 +67,4 @@ public final class MessageProcessConfigCache {
     public static MessageProcessConfig getWithMessageProcessId(String messageProcessId) {
         return messageProcessMap.get(messageProcessId);
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.response;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.components.gateway.facade.response;
  * #L%
  */
 
+import java.util.Map;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.Map;
 
 /**
  *
@@ -47,28 +47,28 @@ public class PluginAPIResponse {
     private Map<String, String> extendInfo;
 
     /**
-     * 
+     *
      */
     public String getMessage() {
         return message;
     }
 
     /**
-     * 
+     *
      */
     public void setMessage(String message) {
         this.message = message;
     }
 
     /**
-     * 
+     *
      */
     public Map<String, String> getExtendInfo() {
         return extendInfo;
     }
 
     /**
-     * 
+     *
      */
     public void setExtendInfo(Map<String, String> extendInfo) {
         this.extendInfo = extendInfo;

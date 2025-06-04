@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data.enums;
 
 /*-
@@ -33,11 +30,10 @@ package com.github.loadup.components.testify.data.enums;
 /**
  * 原子初始类型。包含db和业务模型。
  *
- * 
+ *
  *
  */
 public enum MetaInitType {
-
     DB,
 
     BIZ;

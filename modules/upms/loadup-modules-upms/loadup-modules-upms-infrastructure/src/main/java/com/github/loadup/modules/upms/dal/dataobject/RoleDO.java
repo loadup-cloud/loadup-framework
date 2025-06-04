@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.dal.dataobject;
 
 /*-
@@ -27,12 +28,11 @@ package com.github.loadup.modules.upms.dal.dataobject;
  */
 
 import com.github.loadup.commons.dataobject.BaseDO;
+import java.io.Serial;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
-
-import java.io.Serial;
 
 @Getter
 @Setter
@@ -43,6 +43,7 @@ public class RoleDO extends BaseDO {
 
     @Id
     private String id;
+
     /**
      * 角色名称
      */
@@ -57,5 +58,6 @@ public class RoleDO extends BaseDO {
      * 描述
      */
     private String description;
+
     private String status;
 }

@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.model;
 
 /*-
@@ -27,14 +27,17 @@ package com.github.loadup.components.testify.model;
  * #L%
  */
 
+import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.testify.enums.YamlFieldEnum;
-
-import java.util.List;
-import java.util.Map;
+import com.google.gson.Gson;
+import java.util.*;
+import java.util.Map.Entry;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.ClassUtils;
 
 /**
- * 
- * 
+ *
  */
 public class CaseObjectSet {
 
@@ -53,7 +56,6 @@ public class CaseObjectSet {
     // 自定义变量
     private Map<String, Object> params;
 
-
     // 组件化列表
     private List<Map<String, Object>> components;
 
@@ -63,12 +65,71 @@ public class CaseObjectSet {
      * @param yamlObjs
      */
     public CaseObjectSet(List<Object> yamlObjs) {
-        args = yamlObjs.size() > YamlFieldEnum.ARGS.getPos() ?
-                (List<Object>) yamlObjs.get(YamlFieldEnum.ARGS.getPos()) : null;
-        flags = yamlObjs.size() > YamlFieldEnum.FLAGS.getPos() ?
-                (Map<String, Map<String, String>>) yamlObjs.get(YamlFieldEnum.FLAGS.getPos()) : null;
-        retObj = yamlObjs.size() > YamlFieldEnum.RESULT.getPos() ?
-                yamlObjs.get(YamlFieldEnum.RESULT.getPos()) : null;
+        List<Object> tempArgs = yamlObjs.size() > YamlFieldEnum.ARGS.getPos()
+                ? (List<Object>) yamlObjs.get(YamlFieldEnum.ARGS.getPos())
+                : null;
+        List<Object> convertedArgs = new ArrayList<>();
+        tempArgs.forEach(obj -> {
+            if (obj instanceof LinkedHashMap map) {
+                Set<Entry<String, Map>> entrySet = map.entrySet();
+                for (Entry<String, Map> entry : entrySet) {
+                    if (entry.getKey().contains(".")) {
+                        String className = entry.getKey();
+                        Class<?> aClass = null;
+                        try {
+                            aClass = ClassUtils.forName(
+                                    className, this.getClass().getClassLoader());
+                        } catch (ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                        Object o1 = JsonUtil.parseObject(entry.getValue(), aClass);
+                        convertedArgs.add(o1);
+                    }
+                }
+            }
+        });
+        args = CollectionUtils.isEmpty(convertedArgs) ? tempArgs : convertedArgs;
+        flags = yamlObjs.size() > YamlFieldEnum.FLAGS.getPos()
+                ? (Map<String, Map<String, String>>) yamlObjs.get(YamlFieldEnum.FLAGS.getPos())
+                : null;
+        Object tempRetObj =
+                yamlObjs.size() > YamlFieldEnum.RESULT.getPos() ? yamlObjs.get(YamlFieldEnum.RESULT.getPos()) : null;
+        Object convertedRetObj = tempRetObj;
+        if (tempRetObj instanceof LinkedHashMap map) {
+            Set<Entry<String, Map>> entrySet = map.entrySet();
+            for (Entry<String, Map> entry : entrySet) {
+                if (entry.getKey().contains(".")) {
+                    String classNameKey = entry.getKey();
+                    String className = classNameKey;
+                    String fieldName = null;
+                    if (StringUtils.containsAny(classNameKey, "<", ">")) {
+                        className = StringUtils.substringBefore(classNameKey, "<");
+                        fieldName = StringUtils.substringBetween(classNameKey, "<", ">");
+                    }
+                    Class<?> aClass;
+                    Class<?> subClass;
+                    try {
+                        aClass = ClassUtils.forName(className, this.getClass().getClassLoader());
+                        if (StringUtils.isNotBlank(fieldName)) {
+                            subClass = ClassUtils.forName(
+                                    fieldName, this.getClass().getClassLoader());
+                        }
+
+                        Object o = aClass.getDeclaredConstructor().newInstance();
+                        Gson gson = new Gson();
+                        // Type listType = new TypeToken<o>() {}.getType();
+                        gson.fromJson(JsonUtil.toJSONString(entry.getValue()), aClass);
+                        // convertedRetObj = JsonUtil.parseObject(JsonUtil.toJSONString(entry.getValue()), new
+                        // TypeReference<>() {});
+                        // convertedRetObj = JsonUtil.parseObject(entry.getValue(), aClass, subClass);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+
+        retObj = convertedRetObj;
 
         if (yamlObjs.size() > YamlFieldEnum.EVENTS.getPos()
                 && yamlObjs.get(YamlFieldEnum.EVENTS.getPos()) != null
@@ -78,8 +139,9 @@ public class CaseObjectSet {
             events = null;
         }
 
-        params = yamlObjs.size() > YamlFieldEnum.PARAMS.getPos() ?
-                (Map<String, Object>) yamlObjs.get(YamlFieldEnum.PARAMS.getPos()) : null;
+        params = yamlObjs.size() > YamlFieldEnum.PARAMS.getPos()
+                ? (Map<String, Object>) yamlObjs.get(YamlFieldEnum.PARAMS.getPos())
+                : null;
 
         if (yamlObjs.size() > YamlFieldEnum.COMPOS.getPos()
                 && yamlObjs.get(YamlFieldEnum.COMPOS.getPos()) != null
@@ -88,7 +150,6 @@ public class CaseObjectSet {
         } else {
             components = null;
         }
-
     }
 
     public boolean isException() {
@@ -141,7 +202,6 @@ public class CaseObjectSet {
     public void setParams(Map<String, Object> params) {
         this.params = params;
     }
-
 
     public List<Map<String, Object>> getComponents() {
         return components;

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule;
 
 /*-
@@ -42,7 +39,7 @@ import java.util.List;
  * choose(2,tradeType,paytool) 代表从交易类型和支付工具的排列组合中随机选择两条；<br>
  * choose(-1,paytool) 若count<=0代表全部穷举。
  *
- * 
+ *
  *
  */
 public class ChooseRule implements RuleObject {
@@ -74,7 +71,6 @@ public class ChooseRule implements RuleObject {
         f.setRule(rule);
 
         this.fields.add(f);
-
     }
 
     /**
@@ -139,5 +135,4 @@ public class ChooseRule implements RuleObject {
     public void setAssembleRules(List<AssembleRule> assembleRules) {
         this.assembleRules = assembleRules;
     }
-
 }

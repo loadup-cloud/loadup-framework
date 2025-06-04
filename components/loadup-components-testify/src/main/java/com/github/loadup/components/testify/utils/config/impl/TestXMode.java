@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.config.impl;
 
 /*-
@@ -33,12 +30,12 @@ package com.github.loadup.components.testify.utils.config.impl;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * 
+ *
  *
  */
 public enum TestXMode {
-
-    JVM("jvm"), RPC("rpc");
+    JVM("jvm"),
+    RPC("rpc");
 
     private String name;
 

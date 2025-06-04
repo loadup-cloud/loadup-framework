@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -30,6 +27,7 @@ package com.github.loadup.components.testify.util;
  * #L%
  */
 
+import com.github.loadup.components.testify.exception.TestifyException;
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -43,14 +41,12 @@ import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.LocalVariableAttribute;
 import javassist.bytecode.MethodInfo;
 
-import com.github.loadup.components.testify.exception.TestifyException;
-
 /**
  * assist 工具类。
  *
- * 
+ *
  * @author ming.cm
- * 
+ *
  */
 public class JavassistUtil {
     /**
@@ -77,8 +73,7 @@ public class JavassistUtil {
 
             return getMethodParamNames(cm);
         } catch (NotFoundException e) {
-            throw new TestifyException("can't find method[name=" + methodName + ",class=" + clazz
-                    + "]", e);
+            throw new TestifyException("can't find method[name=" + methodName + ",class=" + clazz + "]", e);
         }
     }
 
@@ -142,14 +137,12 @@ public class JavassistUtil {
     public static String[] getMethodParamNames(CtMethod ctMethod) {
         MethodInfo methodInfo = ctMethod.getMethodInfo();
         CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
-        LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute
-                .getAttribute(LocalVariableAttribute.tag);
+        LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag);
         String[] paramNames;
         try {
             paramNames = new String[ctMethod.getParameterTypes().length];
         } catch (NotFoundException e) {
-            throw new TestifyException("can't get method param types[method=" + ctMethod.getName()
-                    + "]", e);
+            throw new TestifyException("can't get method param types[method=" + ctMethod.getName() + "]", e);
         }
         int pos = Modifier.isStatic(ctMethod.getModifiers()) ? 0 : 1;
 
@@ -216,5 +209,4 @@ public class JavassistUtil {
             }
         }
     }
-
 }

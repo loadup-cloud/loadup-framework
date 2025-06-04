@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.service.impl.convertor;
 
 /*-
@@ -30,10 +31,9 @@ import com.github.loadup.modules.upms.client.dto.SimpleUserDTO;
 import com.github.loadup.modules.upms.client.dto.UserDTO;
 import com.github.loadup.modules.upms.convertor.UserNameConvertor;
 import com.github.loadup.modules.upms.domain.UpmsUser;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
-
-import java.util.List;
 
 @Mapper(uses = {UserNameConvertor.class, DepartDTOConvertor.class, PositionDTOConvertor.class})
 public interface UserDTOConvertor {
@@ -52,5 +52,4 @@ public interface UserDTOConvertor {
     SimpleUserDTO toSimpleUserDTO(UpmsUser domain);
 
     List<SimpleUserDTO> toSimpleUserDTOList(List<UpmsUser> domainList);
-
 }

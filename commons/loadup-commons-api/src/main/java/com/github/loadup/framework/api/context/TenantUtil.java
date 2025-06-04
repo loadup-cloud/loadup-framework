@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.framework.api.context;
 
 /*-
@@ -27,7 +28,6 @@ package com.github.loadup.framework.api.context;
  */
 
 import com.github.loadup.framework.api.util.MDCUtils;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;

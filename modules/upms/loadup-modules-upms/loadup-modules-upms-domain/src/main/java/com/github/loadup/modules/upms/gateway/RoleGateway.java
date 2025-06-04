@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.gateway;
 
 /*-
@@ -30,7 +31,6 @@ import com.github.loadup.modules.upms.domain.UpmsRole;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-
 import java.util.List;
 
 public interface RoleGateway {

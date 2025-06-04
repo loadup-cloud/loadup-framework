@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.ctrl.action.extra;
 
 /*-
@@ -38,10 +39,9 @@ import com.github.loadup.components.gateway.core.prototype.util.DigestLoggerUtil
 import com.github.loadup.components.gateway.facade.model.LimitConfig;
 import com.github.loadup.components.gateway.facade.spi.LimitRuleService;
 import jakarta.annotation.Resource;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * <p>
@@ -65,8 +65,7 @@ public class LimitCheckAction extends AbstractBusinessAction {
 
         InterfaceConfig interfaceConfig = context.getIntegratorInterfaceConfig();
 
-        List<LimitConfig> limitConfigList =
-                limitUtil.getLimitConfig(interfaceConfig, context.getTransactionType());
+        List<LimitConfig> limitConfigList = limitUtil.getLimitConfig(interfaceConfig, context.getTransactionType());
 
         int size = limitConfigList.size();
 
@@ -76,8 +75,8 @@ public class LimitCheckAction extends AbstractBusinessAction {
                 try {
                     applyLimitToken(limitConfig);
                 } catch (CommonException ex) {
-                    DigestLoggerUtil.printLimitDigestLog(interfaceConfig.getInterfaceId(),
-                            limitConfig.getLimitValue() + "", ex.getResultCode());
+                    DigestLoggerUtil.printLimitDigestLog(
+                            interfaceConfig.getInterfaceId(), limitConfig.getLimitValue() + "", ex.getResultCode());
                     throw ex;
                 }
             }
@@ -91,11 +90,15 @@ public class LimitCheckAction extends AbstractBusinessAction {
      */
     private void applyLimitToken(LimitConfig limitConfig) {
 
-        AssertUtil.isTrue(limitConfig.getLimitValue() != 0, LimitRuleErrorCode.LIMIT_NO_TOKEN,
+        AssertUtil.isTrue(
+                limitConfig.getLimitValue() != 0,
+                LimitRuleErrorCode.LIMIT_NO_TOKEN,
                 "limit value is zero, no token:" + limitConfig.getEntryKeyId());
         if (limitConfig.getLimitValue() > 0) {
             boolean result = limitRuleService.applyToken(limitConfig);
-            AssertUtil.isTrue(result, LimitRuleErrorCode.LIMIT_NO_TOKEN,
+            AssertUtil.isTrue(
+                    result,
+                    LimitRuleErrorCode.LIMIT_NO_TOKEN,
                     "limit result is not pass, no token:" + limitConfig.getEntryKeyId());
         }
     }
@@ -106,5 +109,4 @@ public class LimitCheckAction extends AbstractBusinessAction {
     public void setNextAction(BusinessAction sendToIntegratorAction) {
         this.nextAction = sendToIntegratorAction;
     }
-
 }

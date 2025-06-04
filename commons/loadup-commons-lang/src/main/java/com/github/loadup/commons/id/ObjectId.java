@@ -1,4 +1,6 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.id;
+
 /*-
  * #%L
  * loadup-commons-lang
@@ -37,7 +39,6 @@ package com.github.loadup.commons.id;
  */
 
 import com.github.loadup.commons.util.StringUtils;
-
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -67,11 +68,16 @@ public class ObjectId {
     /**
      * 16进制字符
      */
-    private static final char[] HEX_UNIT = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    private static final char[] HEX_UNIT = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+    };
+
     /**
      * 线程安全的下一个随机数,每次生成自增+1
      */
-    private static final AtomicInteger NEXT_INC = new AtomicInteger(ThreadLocalRandom.current().nextInt());
+    private static final AtomicInteger NEXT_INC =
+            new AtomicInteger(ThreadLocalRandom.current().nextInt());
+
     /**
      * 机器信息
      */

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.model;
 
 /*-
@@ -40,16 +41,15 @@ import com.github.loadup.components.gateway.core.model.communication.ConnectionT
 import com.github.loadup.components.gateway.core.model.communication.TransportURI;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.message.common.errorr.ParserErrorCode;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
 
 /**
  * 通信配置
@@ -233,7 +233,7 @@ public class CommunicationConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setRecvMessageFormat(MessageFormat recvMessageFormat) {
         this.recvMessageFormat = recvMessageFormat;
@@ -247,7 +247,7 @@ public class CommunicationConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setSendMessageFormat(MessageFormat sendMessageFormat) {
         this.sendMessageFormat = sendMessageFormat;
@@ -261,7 +261,7 @@ public class CommunicationConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setCommunicationId(String communicationId) {
         this.communicationId = communicationId;
@@ -275,7 +275,7 @@ public class CommunicationConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setUri(TransportURI uri) {
         this.uri = uri;
@@ -289,7 +289,7 @@ public class CommunicationConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
@@ -303,7 +303,7 @@ public class CommunicationConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setReadTimeout(int readTimeout) {
         this.readTimeout = readTimeout;
@@ -317,7 +317,7 @@ public class CommunicationConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setProperties(String properties) {
         try {
@@ -325,7 +325,6 @@ public class CommunicationConfig {
         } catch (Exception e) {
             LogUtil.error(logger, e, "Communication Config properties is ");
         }
-
     }
 
     /**
@@ -336,14 +335,14 @@ public class CommunicationConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setErrorCodeMap(Map<Integer, ResultCode> errorCodeMap) {
         this.errorCodeMap = errorCodeMap;
     }
 
     /**
-     * 
+     *
      */
     public void setErrorCodeMap(String errorCodeMapString) {
         if (StringUtils.isEmpty(errorCodeMapString)) {
@@ -357,10 +356,10 @@ public class CommunicationConfig {
             if (-1 == firstSplitIndex) {
                 continue;
             }
-            Integer keyString = Integer.valueOf(config.substring(0, firstSplitIndex).trim());
+            Integer keyString =
+                    Integer.valueOf(config.substring(0, firstSplitIndex).trim());
             for (ResultCode errorCode : RESULT_CODES) {
-                if (StringUtils.equals(errorCode.getCode(),
-                        config.substring(firstSplitIndex + 1))) {
+                if (StringUtils.equals(errorCode.getCode(), config.substring(firstSplitIndex + 1))) {
                     codeMap.put(keyString, errorCode);
                     break;
                 }
@@ -380,7 +379,7 @@ public class CommunicationConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setPropertiesByMap(Map<String, String> properties) {
         try {
@@ -388,7 +387,6 @@ public class CommunicationConfig {
         } catch (Exception e) {
             LogUtil.error(logger, e, "Communication Config properties is ", properties);
         }
-
     }
 
     /**
@@ -399,7 +397,7 @@ public class CommunicationConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setProtocol(String protocol) {
         this.protocol = protocol;
@@ -413,7 +411,7 @@ public class CommunicationConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setConnectionType(ConnectionType connectionType) {
         this.connectionType = connectionType;
@@ -427,7 +425,7 @@ public class CommunicationConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceId(String interfaceId) {
         this.interfaceId = interfaceId;
@@ -449,7 +447,7 @@ public class CommunicationConfig {
     }
 
     /**
-     * 
+     *
      */
     public void setAppId(String appId) {
         this.appId = appId;

@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.test.base;
 
 /*-
@@ -13,10 +13,10 @@ package com.github.loadup.modules.upms.test.base;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,21 +29,20 @@ package com.github.loadup.modules.upms.test.base;
 
 import com.github.loadup.components.testify.template.TestifyTestBase;
 import com.github.loadup.modules.upms.test.TestApplication;
-import org.springframework.boot.test.context.SpringBootTest;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = TestApplication.class)
 public class LoadupUpmsTestBase extends TestifyTestBase {
 
-    //启动时需要加载的测试依赖
+    // 启动时需要加载的测试依赖
     static {
-        System.setProperty("test_artifacts",
+        System.setProperty(
+                "test_artifacts",
                 "commons-pool-,commons-beanutils-,commons-dbcp-,guava-,ats-common-,cmmons-io-,atd-app-server-,cloning,objenesis,"
                         + "acts-common-util-,acts-common-dto,acts-core-,itest-common-lang-");
     }
-
 
     /**
      * DB预跑反填：覆写该方法，通过设置指定表的select语句条件来捞取该表对应数据，框架会自动将数据返填至用例的CheckDBData目录下作为后续DB比对的依据
@@ -62,8 +61,8 @@ public class LoadupUpmsTestBase extends TestifyTestBase {
         - 结果的获取方式为：$result.getMasterOrderNo()
         */
 
-        //sqlList.add("select * from fas_order where order_no = '$result.getOrderNo()';");
-        //sqlList.add("select * from fas_note where order_no = '$result.getOrderNo()';");
+        // sqlList.add("select * from fas_order where order_no = '$result.getOrderNo()';");
+        // sqlList.add("select * from fas_note where order_no = '$result.getOrderNo()';");
 
         return sqlList;
     }
@@ -80,14 +79,10 @@ public class LoadupUpmsTestBase extends TestifyTestBase {
         List<String> ignoreCheckFields = new ArrayList<String>();
 
         // DemoResponse这个类的errMsg字段跳过校验
-        //ignoreCheckFields.add("com.xxx.DemoResponse#errMsg#N");
+        // ignoreCheckFields.add("com.xxx.DemoResponse#errMsg#N");
         // DemoResponse这个类的errMsg字段进行正则匹配校验，正则表达式填写至yaml该字段区域
-        //ignoreCheckFields.add("com.xxx.DemoResponse#errMsg#R");
+        // ignoreCheckFields.add("com.xxx.DemoResponse#errMsg#R");
 
         return ignoreCheckFields;
     }
-
-
 }
-
- 

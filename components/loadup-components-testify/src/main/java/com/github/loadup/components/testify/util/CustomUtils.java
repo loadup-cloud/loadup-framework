@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -62,9 +63,10 @@ public class CustomUtils {
      */
     public static String genRandomNum(int length) {
 
-        String[] EM = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "q", "w", "e", "r", "t",
-                "y", "u", "i", "o", "p", "a", "s", "d", "f", "g", "h", "j", "k", "l", "z", "x",
-                "c", "v", "b", "n", "m"};
+        String[] EM = {
+            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "a",
+            "s", "d", "f", "g", "h", "j", "k", "l", "z", "x", "c", "v", "b", "n", "m"
+        };
 
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < length; i++) {
@@ -147,5 +149,4 @@ public class CustomUtils {
     public static DateFormat getFormat(String format) {
         return new SimpleDateFormat(format);
     }
-
 }

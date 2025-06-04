@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.script.parser.groovy;
 
 /*-
@@ -27,13 +28,12 @@ package com.github.loadup.components.gateway.message.script.parser.groovy;
  */
 
 import com.github.loadup.components.gateway.facade.util.LogUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -44,8 +44,7 @@ public class GroovyInnerCache {
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(GroovyInnerCache.class);
+    private static final Logger logger = LoggerFactory.getLogger(GroovyInnerCache.class);
 
     /**
      * 脚本列表

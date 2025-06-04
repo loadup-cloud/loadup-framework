@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.constant;
 
 /*-
@@ -39,21 +36,20 @@ public class TestifyYamlConstants {
     /**
      * 用于标记是否为通用加载字段
      */
-    public final static String COMMONKEY = "COMMON";
+    public static final String COMMONKEY = "COMMON";
 
     /**
      * 用于在校验数据时，标明当前CP单元是否使用组数据校验逻辑
      */
-    public final static String GROUPKEY = "group_";
+    public static final String GROUPKEY = "group_";
 
     /**
      * csv文件换行符
      */
-    public final static String LINESEPARATOR = "\\n";
+    public static final String LINESEPARATOR = "\\n";
 
     /**
      * yaml文件内的对象分隔符
      */
-    public final static String YAML_SEPARATOR = "\n---\n";
-
+    public static final String YAML_SEPARATOR = "\n---\n";
 }

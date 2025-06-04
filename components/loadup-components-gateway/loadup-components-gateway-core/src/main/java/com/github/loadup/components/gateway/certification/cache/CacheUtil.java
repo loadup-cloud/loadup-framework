@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.cache;
 
 /*-
@@ -37,13 +38,12 @@ import com.github.loadup.components.gateway.core.model.CertAlogMap;
 import com.github.loadup.components.gateway.core.model.CertConfig;
 import com.github.loadup.components.gateway.facade.enums.CertTypeEnum;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 缓存相关工具
@@ -97,17 +97,19 @@ public class CacheUtil {
     /**
      * 生成安全组件操作要素
      */
-    public static CertificationFactor generateCertFactor(String bizKey, CertAlogMap certAlogMap,
-                                                         Map<String, String> certMap,
-                                                         Map<String, CertConfig> certConfigMap) {
+    public static CertificationFactor generateCertFactor(
+            String bizKey,
+            CertAlogMap certAlogMap,
+            Map<String, String> certMap,
+            Map<String, CertConfig> certConfigMap) {
 
         CertificationFactor certificationFactor = new CertificationFactor();
 
         certificationFactor.setBizKey(bizKey);
         OperationType operationType = OperationType.getByName(certAlogMap.getOperateType());
         if (operationType == null) {
-            throw new CertificationException(CertificationErrorCode.CONFIG_ERROR,
-                    "unknown operation type:" + certAlogMap.getOperateType());
+            throw new CertificationException(
+                    CertificationErrorCode.CONFIG_ERROR, "unknown operation type:" + certAlogMap.getOperateType());
         }
         certificationFactor.setOperationType(operationType);
         certificationFactor.setAlgoString(certAlogMap.getAlgoName());
@@ -122,25 +124,27 @@ public class CacheUtil {
             for (String item : certList) {
                 if (!CollectionUtils.isEmpty(certMap) && certMap.containsKey(item)) {
                     if (needGetByte(item)) {
-                        tmpCertMap.put(item,
-                                CertUtil.getRealKeyBytes(certMap.get(item), certConfigMap.get(item)));
+                        tmpCertMap.put(item, CertUtil.getRealKeyBytes(certMap.get(item), certConfigMap.get(item)));
                     } else {
                         tmpCertMap.put(item, certMap.get(item));
                     }
                     if (StringUtils.equals(item, CertTypeEnum.PUBLIC_CERT.getCertType())) {
-                        tmpCertMap.put(CertTypeEnum.PUBLIC_KEY.getCertType(),
-                                CertUtil.publicCert2KeyBytes((byte[]) tmpCertMap.get(item)));
+                        tmpCertMap.put(CertTypeEnum.PUBLIC_KEY.getCertType(), CertUtil.publicCert2KeyBytes((byte[])
+                                tmpCertMap.get(item)));
                     }
                 } else {
-                    LogUtil.warn(logger, CommonUtil.decorateBySquareBrackets("certificationComponent") +
-                            "No cert defined in certConfig:" + certAlogMap);
+                    LogUtil.warn(
+                            logger,
+                            CommonUtil.decorateBySquareBrackets("certificationComponent")
+                                    + "No cert defined in certConfig:" + certAlogMap);
                     return null;
                 }
 
                 CertConfig curCertConfig = certConfigMap.get(item);
                 if (curCertConfig != null
-                        && StringUtils.equals(curCertConfig.getCertContentType(),
-                        CertContentType.CERT_ALIAS_NAME.getCertContentType())) {
+                        && StringUtils.equals(
+                                curCertConfig.getCertContentType(),
+                                CertContentType.CERT_ALIAS_NAME.getCertContentType())) {
                     tmpCertAliasName.put(item, curCertConfig.getCertContent());
                 }
             }
@@ -159,9 +163,9 @@ public class CacheUtil {
 
         if (StringUtils.isNotBlank(certType)
                 && (StringUtils.equals(certType, CertTypeEnum.PUBLIC_KEY_ID.getCertType())
-                || StringUtils.equals(certType, CertTypeEnum.PRIVATE_KEY_PWD.getCertType())
-                || StringUtils.equals(certType, CertTypeEnum.PRIVATE_KEY_ID.getCertType()) || StringUtils
-                .equals(certType, CertTypeEnum.CERT_PRIVATE_KEY_PWD.getCertType()))) {
+                        || StringUtils.equals(certType, CertTypeEnum.PRIVATE_KEY_PWD.getCertType())
+                        || StringUtils.equals(certType, CertTypeEnum.PRIVATE_KEY_ID.getCertType())
+                        || StringUtils.equals(certType, CertTypeEnum.CERT_PRIVATE_KEY_PWD.getCertType()))) {
             return false;
         }
 

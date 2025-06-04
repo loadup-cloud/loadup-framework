@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.communication.web;
 
 /*-
@@ -25,6 +26,9 @@ package com.github.loadup.components.gateway.core.communication.web;
  * THE SOFTWARE.
  * #L%
  */
+
+import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_HTTP_INTEGRATION_URL;
+import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_HTTP_INTERFACE_ID;
 
 import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.util.CommonUtil;
@@ -54,6 +58,8 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,23 +67,20 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.StopWatch;
 
-import java.io.IOException;
-import java.util.Map;
-
-import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_HTTP_INTEGRATION_URL;
-import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_HTTP_INTERFACE_ID;
-
 @WebFilter(urlPatterns = "/*")
 public class GatewayFilter implements Filter {
 
     public static final String KEY_HTTP_CLIENT_ID = "client-id";
     private static final Logger logger = LoggerFactory.getLogger(GatewayFilter.class);
+
     @Resource
     @Qualifier("acSignatureInfoParserImpl")
     private SignatureService signatureService;
+
     @Resource
     @Qualifier("httpServiceAction")
     private HttpServiceAction httpServiceAction;
+
     @Resource
     @Qualifier("exceptionAssembleAction")
     private ExceptionAssembleAction exceptionAssembleAction;
@@ -91,8 +94,7 @@ public class GatewayFilter implements Filter {
         String requestURI = cachedRequest.getRequestURI();
         StopWatch stopWatch = new StopWatch(requestURI);
         stopWatch.start();
-        GatewayRuntimeProcessContext runtimeProcessContext = RuntimeProcessContextHolder
-                .createRuntimeProcessContext();
+        GatewayRuntimeProcessContext runtimeProcessContext = RuntimeProcessContextHolder.createRuntimeProcessContext();
         InterfaceType messageType = InterfaceType.OPENAPI;
         runtimeProcessContext.setTransactionType(messageType.getCode());
         if (messageType == InterfaceType.SPI) {
@@ -103,7 +105,7 @@ public class GatewayFilter implements Filter {
         boolean success = false;
         String tracerId = null;
         try {
-            //init tracer
+            // init tracer
             Span span = TraceUtil.getSpan();
             if (null != span) {
                 runtimeProcessContext.setTraceId(TraceUtil.getTracerId());
@@ -116,19 +118,14 @@ public class GatewayFilter implements Filter {
 
             MDC.put(Constant.TRACER_KEY, runtimeProcessContext.getTraceId());
             String requestContent = new String(cachedRequest.getCachedBody());
-            MessageEnvelope messageRequestEnvelope = new MessageEnvelope(MessageFormat.TEXT,
-                    requestContent);
+            MessageEnvelope messageRequestEnvelope = new MessageEnvelope(MessageFormat.TEXT, requestContent);
             Map<String, String> headers = HttpToolUtil.getHeaderFromHttpRequest(httpRequest);
             messageRequestEnvelope.setHeaders(headers);
 
-            String signatureStr = signatureService.getSignatureInfo(cachedRequest,
-                    messageRequestEnvelope);
-            String originSignatureStr = signatureService.getOriginSignatureInfo(cachedRequest,
-                    messageRequestEnvelope);
-            messageRequestEnvelope.putExtMap(ProcessConstants.KEY_HTTP_REQUEST_URI,
-                    httpRequest.getRequestURI());
-            messageRequestEnvelope.putExtMap(ProcessConstants.KEY_HTTP_METHOD,
-                    httpRequest.getMethod());
+            String signatureStr = signatureService.getSignatureInfo(cachedRequest, messageRequestEnvelope);
+            String originSignatureStr = signatureService.getOriginSignatureInfo(cachedRequest, messageRequestEnvelope);
+            messageRequestEnvelope.putExtMap(ProcessConstants.KEY_HTTP_REQUEST_URI, httpRequest.getRequestURI());
+            messageRequestEnvelope.putExtMap(ProcessConstants.KEY_HTTP_METHOD, httpRequest.getMethod());
             messageRequestEnvelope.setSignatureContent(signatureStr);
             messageRequestEnvelope.setOriginSignContent(originSignatureStr);
 
@@ -152,52 +149,61 @@ public class GatewayFilter implements Filter {
             exceptionAssembleAction.process(runtimeProcessContext);
             callRespMsg = e.getMessage();
 
-            MetricLoggerUtil.countError(httpRequest.getRequestURI(),
-                    stopWatch.getTotalTimeMillis(), runtimeProcessContext.getRequesterClientId(),
-                    messageType, runtimeProcessContext.getTraceId(), e.getResultCode());
+            MetricLoggerUtil.countError(
+                    httpRequest.getRequestURI(),
+                    stopWatch.getTotalTimeMillis(),
+                    runtimeProcessContext.getRequesterClientId(),
+                    messageType,
+                    runtimeProcessContext.getTraceId(),
+                    e.getResultCode());
         } catch (Throwable e) {
             stopWatch.stop();
             LogUtil.error(logger, e, "Http process handler fail! throw exception");
-            CommonException commonException = new CommonException(
-                    GatewayErrorCode.UNKNOWN_EXCEPTION, e);
+            CommonException commonException = new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION, e);
             runtimeProcessContext.setBusinessException(commonException);
             exceptionAssembleAction.process(runtimeProcessContext);
             callRespMsg = e.getMessage();
 
-            MetricLoggerUtil.countError(httpRequest.getRequestURI(),
-                    stopWatch.getTotalTimeMillis(), runtimeProcessContext.getRequesterClientId(),
-                    messageType, runtimeProcessContext.getTraceId(),
+            MetricLoggerUtil.countError(
+                    httpRequest.getRequestURI(),
+                    stopWatch.getTotalTimeMillis(),
+                    runtimeProcessContext.getRequesterClientId(),
+                    messageType,
+                    runtimeProcessContext.getTraceId(),
                     commonException.getResultCode());
         } finally {
             if (stopWatch.isRunning()) {
                 stopWatch.stop();
             }
             MessageEnvelope httpResponseMessage = runtimeProcessContext.getResponseMessage();
-            CommunicationConfig requesterCommunicationConfig = runtimeProcessContext
-                    .getRequesterCommunicationConfig();
-            HttpToolUtil.returnResponse(httpResponse, httpResponseMessage,
-                    requesterCommunicationConfig);
-            String interfaceId = requesterCommunicationConfig != null
-                    ? requesterCommunicationConfig.getInterfaceId()
-                    : "";
-            String url = requesterCommunicationConfig != null
-                    ? requesterCommunicationConfig.getUrl()
-                    : "";
-            MessageLoggerUtil.printHttpReceiveLog(interfaceId, messageType,
-                    runtimeProcessContext.getTraceId(), url, httpRequest.getMethod(),
-                    CommonUtil.getMsgContent(httpResponseMessage), httpResponseMessage.getHeaders());
+            CommunicationConfig requesterCommunicationConfig = runtimeProcessContext.getRequesterCommunicationConfig();
+            HttpToolUtil.returnResponse(httpResponse, httpResponseMessage, requesterCommunicationConfig);
+            String interfaceId =
+                    requesterCommunicationConfig != null ? requesterCommunicationConfig.getInterfaceId() : "";
+            String url = requesterCommunicationConfig != null ? requesterCommunicationConfig.getUrl() : "";
+            MessageLoggerUtil.printHttpReceiveLog(
+                    interfaceId,
+                    messageType,
+                    runtimeProcessContext.getTraceId(),
+                    url,
+                    httpRequest.getMethod(),
+                    CommonUtil.getMsgContent(httpResponseMessage),
+                    httpResponseMessage.getHeaders());
 
-            DigestLoggerUtil.printInfoLog(runtimeProcessContext,
-                    stopWatch.getTotalTimeMillis());
+            DigestLoggerUtil.printInfoLog(runtimeProcessContext, stopWatch.getTotalTimeMillis());
 
             if (!MetricLoggerUtil.judgeBinderEnabled()) {
-                DigestLoggerUtil.printSimpleDigestLog(httpRequest.getRequestURI(), callRespMsg,
-                        stopWatch.getTotalTimeMillis());
+                DigestLoggerUtil.printSimpleDigestLog(
+                        httpRequest.getRequestURI(), callRespMsg, stopWatch.getTotalTimeMillis());
             } else {
-                MetricLoggerUtil.monitor(httpRequest.getRequestURI(),
-                        stopWatch.getTotalTimeMillis(), success,
-                        runtimeProcessContext.getRequesterClientId(), messageType,
-                        runtimeProcessContext.getTraceId(), InterfaceScope.INBOUND);
+                MetricLoggerUtil.monitor(
+                        httpRequest.getRequestURI(),
+                        stopWatch.getTotalTimeMillis(),
+                        success,
+                        runtimeProcessContext.getRequesterClientId(),
+                        messageType,
+                        runtimeProcessContext.getTraceId(),
+                        InterfaceScope.INBOUND);
             }
             RuntimeProcessContextHolder.cleanActionContext();
             MDC.clear();
@@ -212,18 +218,21 @@ public class GatewayFilter implements Filter {
         }
     }
 
-    private void printHttpRequestLog(HttpServletRequest httpRequest,
-                                     GatewayRuntimeProcessContext runtimeProcessContext) {
+    private void printHttpRequestLog(
+            HttpServletRequest httpRequest, GatewayRuntimeProcessContext runtimeProcessContext) {
         MessageEnvelope httpRequestMessage = runtimeProcessContext.getRequestMessage();
-        CommunicationConfig integratorCommunicationConfig = runtimeProcessContext
-                .getIntegratorCommunicationConfig();
-        String interfaceId = integratorCommunicationConfig != null
-                ? integratorCommunicationConfig.getInterfaceId()
-                : "";
+        CommunicationConfig integratorCommunicationConfig = runtimeProcessContext.getIntegratorCommunicationConfig();
+        String interfaceId =
+                integratorCommunicationConfig != null ? integratorCommunicationConfig.getInterfaceId() : "";
         interfaceId = StringUtils.defaultIfBlank(interfaceId, httpRequest.getRequestURI());
-        MessageLoggerUtil.printHttpLog("get request attributes", interfaceId, InterfaceType.OPENAPI,
-                runtimeProcessContext.getTraceId(), httpRequest.getRequestURI(),
-                httpRequest.getMethod(), CommonUtil.getMsgContent(httpRequestMessage),
+        MessageLoggerUtil.printHttpLog(
+                "get request attributes",
+                interfaceId,
+                InterfaceType.OPENAPI,
+                runtimeProcessContext.getTraceId(),
+                httpRequest.getRequestURI(),
+                httpRequest.getMethod(),
+                CommonUtil.getMsgContent(httpRequestMessage),
                 httpRequestMessage.getHeaders());
     }
 }

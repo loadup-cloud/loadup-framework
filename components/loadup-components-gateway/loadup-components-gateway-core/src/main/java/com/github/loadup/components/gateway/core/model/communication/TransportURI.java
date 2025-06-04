@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.model.communication;
 
 /*-
@@ -29,10 +30,9 @@ package com.github.loadup.components.gateway.core.model.communication;
 import com.github.loadup.components.gateway.common.exception.util.AssertUtil;
 import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.prototype.util.ExceptionUtil;
+import java.net.InetSocketAddress;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-
-import java.net.InetSocketAddress;
 
 /**
  * <p>URL封装，对URL进行协议、地址、格式的进行合法性校验并进行格式转换</p>
@@ -94,10 +94,10 @@ public class TransportURI {
 
         AssertUtil.isNotBlank(url, GatewayErrorCode.PARAM_ILLEGAL, "URL不能为空");
 
-        //1. 解析传输协议
+        // 1. 解析传输协议
         parseTransportURL(url, schemaId);
 
-        //2. 重置检查Host信息
+        // 2. 重置检查Host信息
         reCheckHostInfo();
     }
 
@@ -146,10 +146,9 @@ public class TransportURI {
             this.host = protocolInfo[0];
             if (protocolInfo.length == 3) {
                 int idx = -1;
-                //里面含有代理端口
+                // 里面含有代理端口
                 if ((idx = protocolInfo[1].indexOf(',')) > -1) {
-                    this.url = schema + "://" + this.host + ":" + protocolInfo[1].substring(0, idx)
-                            + protocolInfo[2];
+                    this.url = schema + "://" + this.host + ":" + protocolInfo[1].substring(0, idx) + protocolInfo[2];
                     this.port = NumberUtils.toInt(protocolInfo[1].substring(idx + 1), -1);
                 } else {
                     this.url = uri;
@@ -158,8 +157,9 @@ public class TransportURI {
             }
 
             int schemaIndex = uri.indexOf("://");
-            //HTTPS的情况，重新定义schemaId
-            if (StringUtils.equals(transport, TransportProtocol.HTTPS) && !StringUtils.isBlank(schemaId)
+            // HTTPS的情况，重新定义schemaId
+            if (StringUtils.equals(transport, TransportProtocol.HTTPS)
+                    && !StringUtils.isBlank(schemaId)
                     && schemaIndex != -1) {
                 uri = uri.substring(schemaIndex + 3, uri.length());
                 this.url = schemaId + "://" + uri;
@@ -171,7 +171,6 @@ public class TransportURI {
 
             throw new IllegalArgumentException("解析协议错误.");
         }
-
     }
 
     /**
@@ -189,7 +188,7 @@ public class TransportURI {
         String subUrl = inputUrl.substring(idx1 + 3);
         int idx2 = subUrl.indexOf('/');
         String queryPart = "";
-        //如果不存在，以最后长度结尾
+        // 如果不存在，以最后长度结尾
         if (idx2 < 0) {
             idx2 = subUrl.length();
         } else {
@@ -204,21 +203,21 @@ public class TransportURI {
     }
 
     /**
-     * 
+     *
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * 
+     *
      */
     public String getHost() {
         return host;
     }
 
     /**
-     * 
+     *
      */
     public int getPort() {
         return port;
@@ -239,14 +238,14 @@ public class TransportURI {
     }
 
     /**
-     * 
+     *
      */
     public String getSchema() {
         return schema;
     }
 
     /**
-     * 
+     *
      */
     public void setSchema(String schema) {
         this.schema = schema;
@@ -268,22 +267,22 @@ public class TransportURI {
         int idx2 = url.indexOf('/', idx1 + 3);
         url = newDomain + url.substring(idx2);
 
-        //1. 解析传输协议
+        // 1. 解析传输协议
         parseTransportURL(url, null);
 
-        //2. 重置检查Host信息
+        // 2. 重置检查Host信息
         reCheckHostInfo();
     }
 
     /**
-     * 
+     *
      */
     public String getTransport() {
         return transport;
     }
 
     /**
-     * 
+     *
      */
     public void setTransport(String transport) {
         this.transport = transport;

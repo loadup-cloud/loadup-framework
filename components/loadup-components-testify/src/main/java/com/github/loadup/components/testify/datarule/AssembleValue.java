@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule;
 
 /*-
@@ -33,8 +30,8 @@ package com.github.loadup.components.testify.datarule;
 /**
  * 组装值。
  *
- * 
- * 
+ *
+ *
  */
 public class AssembleValue {
 
@@ -83,5 +80,4 @@ public class AssembleValue {
     public void setRule(RuleObject rule) {
         this.rule = rule;
     }
-
 }

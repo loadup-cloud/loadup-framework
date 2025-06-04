@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.communication.http.util;
 
 /*-
@@ -29,7 +30,6 @@ package com.github.loadup.components.gateway.core.communication.http.util;
 import com.github.loadup.components.gateway.core.communication.http.model.HttpProperty;
 import com.github.loadup.components.gateway.core.model.CommunicationConfig;
 import com.github.loadup.components.gateway.core.prototype.util.ExceptionUtil;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 

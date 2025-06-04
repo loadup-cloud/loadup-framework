@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.cache.manager;
 
 /*-
@@ -36,14 +37,13 @@ import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.message.script.cache.MessageComponentCacheManager;
 import com.github.loadup.components.gateway.repository.RepositoryManager;
 import jakarta.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -79,31 +79,33 @@ public class CacheManager {
         }
         try {
 
-            //1. 查询所有列表结果
+            // 1. 查询所有列表结果
             Map<CacheName, List> resultMap = repositoryManager.load();
             List<InterfaceConfig> interfaceConfigList = resultMap.get(CacheName.INTERFACE);
-            List<MessageProcessConfig> messageProcessConfigList = resultMap
-                    .get(CacheName.MESSAGE_PROCESS);
-            List<CommunicationConfig> communicationConfigList = resultMap
-                    .get(CacheName.COMMUNICATION);
-            List<MessageReceiverConfig> messageReceiverConfigList = resultMap
-                    .get(CacheName.MESSAGE_RECEIVER);
-            List<MessageSenderConfig> messageSenderConfigList = resultMap
-                    .get(CacheName.MESSAGE_SENDER);
+            List<MessageProcessConfig> messageProcessConfigList = resultMap.get(CacheName.MESSAGE_PROCESS);
+            List<CommunicationConfig> communicationConfigList = resultMap.get(CacheName.COMMUNICATION);
+            List<MessageReceiverConfig> messageReceiverConfigList = resultMap.get(CacheName.MESSAGE_RECEIVER);
+            List<MessageSenderConfig> messageSenderConfigList = resultMap.get(CacheName.MESSAGE_SENDER);
             List<CertConfig> certConfigList = resultMap.get(CacheName.CERT_CONFIG);
-            List<CertAlgorithmConfig> certAlgorithmConfigList = resultMap
-                    .get(CacheName.CERT_ALGO_CONFIG);
+            List<CertAlgorithmConfig> certAlgorithmConfigList = resultMap.get(CacheName.CERT_ALGO_CONFIG);
             List<InstConfig> instConfigList = resultMap.get(CacheName.INST);
 
-            //2. 推送到对应Cache中
-            pushToCache(interfaceConfigList, messageProcessConfigList, communicationConfigList,
-                    messageReceiverConfigList, messageSenderConfigList, certConfigList,
-                    certAlgorithmConfigList, instConfigList);
+            // 2. 推送到对应Cache中
+            pushToCache(
+                    interfaceConfigList,
+                    messageProcessConfigList,
+                    communicationConfigList,
+                    messageReceiverConfigList,
+                    messageSenderConfigList,
+                    certConfigList,
+                    certAlgorithmConfigList,
+                    instConfigList);
         } catch (Exception e) {
-            LogUtil.error(logger, e,
+            LogUtil.error(
+                    logger,
+                    e,
                     "CacheManager init fail, pls check the business-component-dependencies and upgrade to 1.0.5 or the latest");
             this.isInitOk = false;
-
         }
         this.isInitOk = true;
     }
@@ -111,21 +113,29 @@ public class CacheManager {
     /**
      * push new configs to cache
      */
-    public void pushToCache(List<InterfaceConfig> interfaceConfigList,
-                            List<MessageProcessConfig> messageProcessConfigList,
-                            List<CommunicationConfig> communicationConfigList,
-                            List<MessageReceiverConfig> messageReceiverConfigList,
-                            List<MessageSenderConfig> messageSenderConfigList,
-                            List<CertConfig> certConfigList,
-                            List<CertAlgorithmConfig> certAlgorithmConfigList,
-                            List<InstConfig> instConfigList) {
-        initCacheInfo(false, interfaceConfigList, messageProcessConfigList, communicationConfigList,
-                messageReceiverConfigList, messageSenderConfigList, certConfigList,
-                certAlgorithmConfigList, instConfigList);
+    public void pushToCache(
+            List<InterfaceConfig> interfaceConfigList,
+            List<MessageProcessConfig> messageProcessConfigList,
+            List<CommunicationConfig> communicationConfigList,
+            List<MessageReceiverConfig> messageReceiverConfigList,
+            List<MessageSenderConfig> messageSenderConfigList,
+            List<CertConfig> certConfigList,
+            List<CertAlgorithmConfig> certAlgorithmConfigList,
+            List<InstConfig> instConfigList) {
+        initCacheInfo(
+                false,
+                interfaceConfigList,
+                messageProcessConfigList,
+                communicationConfigList,
+                messageReceiverConfigList,
+                messageSenderConfigList,
+                certConfigList,
+                certAlgorithmConfigList,
+                instConfigList);
 
         // 2. push new configs to script cache
-        messageComponentCacheManager.init(interfaceConfigList, messageProcessConfigList,
-                new ArrayList<DynamicScriptBeanConfig>());
+        messageComponentCacheManager.init(
+                interfaceConfigList, messageProcessConfigList, new ArrayList<DynamicScriptBeanConfig>());
         // 3. init communication
         httpClientCache.init(communicationConfigList);
     }
@@ -144,40 +154,46 @@ public class CacheManager {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
             return;
         }
-        //1. 查询所有列表结果
+        // 1. 查询所有列表结果
         Map<CacheName, List> resultMap = repositoryManager.load();
 
         List<InterfaceConfig> interfaceConfigList = resultMap.get(CacheName.INTERFACE);
-        List<MessageProcessConfig> messageProcessConfigList = resultMap
-                .get(CacheName.MESSAGE_PROCESS);
+        List<MessageProcessConfig> messageProcessConfigList = resultMap.get(CacheName.MESSAGE_PROCESS);
         List<CommunicationConfig> communicationConfigList = resultMap.get(CacheName.COMMUNICATION);
-        List<MessageReceiverConfig> messageReceiverConfigList = resultMap
-                .get(CacheName.MESSAGE_RECEIVER);
+        List<MessageReceiverConfig> messageReceiverConfigList = resultMap.get(CacheName.MESSAGE_RECEIVER);
         List<MessageSenderConfig> messageSenderConfigList = resultMap.get(CacheName.MESSAGE_SENDER);
         List<CertConfig> certConfigList = resultMap.get(CacheName.CERT_CONFIG);
-        List<CertAlgorithmConfig> certAlgorithmConfigList = resultMap
-                .get(CacheName.CERT_ALGO_CONFIG);
+        List<CertAlgorithmConfig> certAlgorithmConfigList = resultMap.get(CacheName.CERT_ALGO_CONFIG);
         List<InstConfig> instConfigList = resultMap.get(CacheName.INST);
 
-        //2. 推送到对应Cache中
-        initCacheInfo(true, interfaceConfigList, messageProcessConfigList, communicationConfigList,
-                messageReceiverConfigList, messageSenderConfigList, certConfigList,
-                certAlgorithmConfigList, instConfigList);
+        // 2. 推送到对应Cache中
+        initCacheInfo(
+                true,
+                interfaceConfigList,
+                messageProcessConfigList,
+                communicationConfigList,
+                messageReceiverConfigList,
+                messageSenderConfigList,
+                certConfigList,
+                certAlgorithmConfigList,
+                instConfigList);
 
-        messageComponentCacheManager.refresh(interfaceConfigList, messageProcessConfigList,
-                new ArrayList<DynamicScriptBeanConfig>());
-        //4. refresh communication
+        messageComponentCacheManager.refresh(
+                interfaceConfigList, messageProcessConfigList, new ArrayList<DynamicScriptBeanConfig>());
+        // 4. refresh communication
         httpClientCache.refresh(communicationConfigList);
     }
 
-    private void initCacheInfo(boolean clear, List<InterfaceConfig> interfaceConfigList,
-                               List<MessageProcessConfig> messageProcessConfigList,
-                               List<CommunicationConfig> communicationConfigList,
-                               List<MessageReceiverConfig> messageReceiverConfigList,
-                               List<MessageSenderConfig> messageSenderConfigList,
-                               List<CertConfig> certConfigList,
-                               List<CertAlgorithmConfig> certAlgorithmConfigList,
-                               List<InstConfig> instConfigList) {
+    private void initCacheInfo(
+            boolean clear,
+            List<InterfaceConfig> interfaceConfigList,
+            List<MessageProcessConfig> messageProcessConfigList,
+            List<CommunicationConfig> communicationConfigList,
+            List<MessageReceiverConfig> messageReceiverConfigList,
+            List<MessageSenderConfig> messageSenderConfigList,
+            List<CertConfig> certConfigList,
+            List<CertAlgorithmConfig> certAlgorithmConfigList,
+            List<InstConfig> instConfigList) {
         InterfaceConfigCache.putAll(clear, interfaceConfigList);
         MessageProcessConfigCache.putAll(clear, messageProcessConfigList);
         CommunicationConfigCache.putAll(clear, communicationConfigList);
@@ -195,24 +211,30 @@ public class CacheManager {
         if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
             return;
         }
-        //1. 查询所有列表结果
+        // 1. 查询所有列表结果
         Map<CacheName, List> resultMap = repositoryManager.loadByInterfaceId(interfaceId);
 
         List<InterfaceConfig> interfaceConfigList = resultMap.get(CacheName.INTERFACE);
-        List<MessageProcessConfig> messageProcessConfigList = resultMap
-                .get(CacheName.MESSAGE_PROCESS);
+        List<MessageProcessConfig> messageProcessConfigList = resultMap.get(CacheName.MESSAGE_PROCESS);
         List<CommunicationConfig> communicationConfigList = resultMap.get(CacheName.COMMUNICATION);
-        List<MessageReceiverConfig> messageReceiverConfigList = resultMap
-                .get(CacheName.MESSAGE_RECEIVER);
+        List<MessageReceiverConfig> messageReceiverConfigList = resultMap.get(CacheName.MESSAGE_RECEIVER);
         List<MessageSenderConfig> messageSenderConfigList = resultMap.get(CacheName.MESSAGE_SENDER);
 
-        //2. 推送到对应Cache中
-        initCacheInfo(false, interfaceConfigList, messageProcessConfigList, communicationConfigList,
-                messageReceiverConfigList, messageSenderConfigList, null, null, null);
+        // 2. 推送到对应Cache中
+        initCacheInfo(
+                false,
+                interfaceConfigList,
+                messageProcessConfigList,
+                communicationConfigList,
+                messageReceiverConfigList,
+                messageSenderConfigList,
+                null,
+                null,
+                null);
 
-        messageComponentCacheManager.refresh(interfaceConfigList, messageProcessConfigList,
-                new ArrayList<DynamicScriptBeanConfig>());
-        //4. refresh communication
+        messageComponentCacheManager.refresh(
+                interfaceConfigList, messageProcessConfigList, new ArrayList<DynamicScriptBeanConfig>());
+        // 4. refresh communication
         httpClientCache.refresh(communicationConfigList);
     }
 
@@ -221,15 +243,12 @@ public class CacheManager {
      */
     public void refreshCert(String clientId) {
 
-        //1. 查询所有列表结果
+        // 1. 查询所有列表结果
         Map<CacheName, List> resultMap = repositoryManager.loadCertByClientId(clientId);
         List<CertConfig> certConfigList = resultMap.get(CacheName.CERT_CONFIG);
-        List<CertAlgorithmConfig> certAlgorithmConfigList = resultMap
-                .get(CacheName.CERT_ALGO_CONFIG);
+        List<CertAlgorithmConfig> certAlgorithmConfigList = resultMap.get(CacheName.CERT_ALGO_CONFIG);
 
-        //2. 推送到对应Cache中
-        initCacheInfo(true, null, null, null, null, null, certConfigList, certAlgorithmConfigList,
-                null);
+        // 2. 推送到对应Cache中
+        initCacheInfo(true, null, null, null, null, null, certConfigList, certAlgorithmConfigList, null);
     }
-
 }

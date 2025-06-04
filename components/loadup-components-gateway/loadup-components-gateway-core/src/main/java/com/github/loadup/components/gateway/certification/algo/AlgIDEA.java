@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.algo;
 
 /*-
@@ -31,16 +32,15 @@ import com.github.loadup.components.gateway.certification.exception.Certificatio
 import com.github.loadup.components.gateway.certification.manager.SymmetricEncryptionManager;
 import com.github.loadup.components.gateway.certification.model.AlgorithmEnum;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
+import java.security.Security;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.Security;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * IDEA对称加解密算法类
@@ -96,8 +96,7 @@ public class AlgIDEA extends AbstractAlgorithm {
         } catch (Exception e) {
             LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "recovery key error:");
 
-            throw new CertificationException(CertificationErrorCode.RECOVER_KEY_ERROR,
-                    genLogSign(KEY_ALGO_NAME), e);
+            throw new CertificationException(CertificationErrorCode.RECOVER_KEY_ERROR, genLogSign(KEY_ALGO_NAME), e);
         }
     }
 
@@ -117,8 +116,7 @@ public class AlgIDEA extends AbstractAlgorithm {
 
         } catch (Exception e) {
             LogUtil.error(logger, e, genLogSign(algorithm) + "encrypt error:");
-            throw new CertificationException(CertificationErrorCode.ENCRYPT_ERROR,
-                    genLogSign(algorithm), e);
+            throw new CertificationException(CertificationErrorCode.ENCRYPT_ERROR, genLogSign(algorithm), e);
         }
     }
 
@@ -138,8 +136,7 @@ public class AlgIDEA extends AbstractAlgorithm {
         } catch (Exception e) {
             LogUtil.error(logger, e, genLogSign(algorithm) + "encrypt error:");
 
-            throw new CertificationException(CertificationErrorCode.DECRYPT_ERROR,
-                    genLogSign(algorithm), e);
+            throw new CertificationException(CertificationErrorCode.DECRYPT_ERROR, genLogSign(algorithm), e);
         }
     }
 

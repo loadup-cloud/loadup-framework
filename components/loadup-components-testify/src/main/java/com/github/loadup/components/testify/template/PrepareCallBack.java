@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.template;
 
 /*-
@@ -46,6 +47,6 @@ public interface PrepareCallBack {
     public VirtualArgs prepareExpectInvokeOutArgs();
 
     // mock对象准备-jvm模式下使用
-//    public VirtualMockSet prepareMockResult();
+    //    public VirtualMockSet prepareMockResult();
 
 }

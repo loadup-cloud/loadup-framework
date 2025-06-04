@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.generator.impl;
 
 /*-
@@ -29,12 +30,11 @@ package com.github.loadup.components.testify.object.generator.impl;
 import com.github.loadup.components.testify.log.TestifyLogUtil;
 import com.github.loadup.components.testify.object.generator.ObjectGenerator;
 import com.github.loadup.components.testify.util.DateUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class DateTypeGenerator implements ObjectGenerator {
@@ -49,7 +49,7 @@ public class DateTypeGenerator implements ObjectGenerator {
 
     @Override
     public Object generateFieldObject(Class<?> clz, String fieldName, String referedCSVValue) {
-//        Assert.assertEquals("传入属性类必须为Date", clz, Date.class);
+        //        Assert.assertEquals("传入属性类必须为Date", clz, Date.class);
         Date retDate = null;
         if (!StringUtils.isBlank(referedCSVValue) && !referedCSVValue.equals("null")) {
             if (referedCSVValue.equalsIgnoreCase("today")) {
@@ -57,11 +57,13 @@ public class DateTypeGenerator implements ObjectGenerator {
             } else if (referedCSVValue.startsWith("today")) {
                 String diffString;
                 if (referedCSVValue.contains("+")) {
-                    diffString = referedCSVValue.substring(referedCSVValue.lastIndexOf("+") + 1)
+                    diffString = referedCSVValue
+                            .substring(referedCSVValue.lastIndexOf("+") + 1)
                             .trim();
                 } else {
                     diffString = referedCSVValue
-                            .substring(referedCSVValue.lastIndexOf("today") + 5).trim();
+                            .substring(referedCSVValue.lastIndexOf("today") + 5)
+                            .trim();
                 }
                 int diff = 0;
                 try {
@@ -75,8 +77,7 @@ public class DateTypeGenerator implements ObjectGenerator {
                 try {
                     retDate = sdf.parse(referedCSVValue.trim());
                 } catch (Exception e) {
-                    TestifyLogUtil.fail(log, "解析GMT字段【" + fieldName + "】失败。日期值【" + referedCSVValue
-                            + "】", e);
+                    TestifyLogUtil.fail(log, "解析GMT字段【" + fieldName + "】失败。日期值【" + referedCSVValue + "】", e);
                 }
             }
         }
@@ -104,14 +105,12 @@ public class DateTypeGenerator implements ObjectGenerator {
 
     @Override
     public Class<?> getItemClass(Type collectionItemType, Class<?> clz) {
-        //简单类型不实现
+        // 简单类型不实现
         return null;
     }
 
     @Override
-    public void setObjectValue(Object collectionObject, Object value, String originalValue,
-                               int index) {
-        //简单类型不实现
+    public void setObjectValue(Object collectionObject, Object value, String originalValue, int index) {
+        // 简单类型不实现
     }
-
 }

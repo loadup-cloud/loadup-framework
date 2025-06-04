@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.db.model;
 
 /*-
@@ -29,24 +30,24 @@ package com.github.loadup.components.testify.db.model;
 /**
  * 用于同步数据库缓存信息表的数据库字段模型
  *
- * 
- * 
+ *
+ *
  */
 public class DBDataModel {
 
-    //字段注释
+    // 字段注释
     private String comment;
 
-    //字段类型
+    // 字段类型
     private String type;
 
-    //数据库字段是否为主键
+    // 数据库字段是否为主键
     private boolean isPrimary;
 
-    //字段是否为索引
+    // 字段是否为索引
     private boolean isUnique;
 
-    //模型构建方法
+    // 模型构建方法
     public DBDataModel(String comment, String type, boolean isPrimary, boolean isUnique) {
         this.comment = comment;
         this.type = type;
@@ -85,5 +86,4 @@ public class DBDataModel {
     public void setUnique(boolean isUnique) {
         this.isUnique = isUnique;
     }
-
 }

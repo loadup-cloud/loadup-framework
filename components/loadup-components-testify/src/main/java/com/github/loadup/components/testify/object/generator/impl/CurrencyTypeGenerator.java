@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.generator.impl;
 
 /*-
@@ -26,11 +27,10 @@ package com.github.loadup.components.testify.object.generator.impl;
  * #L%
  */
 
+import com.github.loadup.components.testify.object.generator.ObjectGenerator;
 import java.lang.reflect.Type;
 import java.util.Currency;
-
 import org.apache.commons.lang3.StringUtils;
-import com.github.loadup.components.testify.object.generator.ObjectGenerator;
 
 public class CurrencyTypeGenerator implements ObjectGenerator {
 
@@ -55,14 +55,12 @@ public class CurrencyTypeGenerator implements ObjectGenerator {
 
     @Override
     public Class<?> getItemClass(Type collectionItemType, Class<?> clz) {
-        //简单类型不实现
+        // 简单类型不实现
         return null;
     }
 
     @Override
-    public void setObjectValue(Object collectionObject, Object value, String originalValue,
-                               int index) {
-        //简单类型不实现
+    public void setObjectValue(Object collectionObject, Object value, String originalValue, int index) {
+        // 简单类型不实现
     }
-
 }

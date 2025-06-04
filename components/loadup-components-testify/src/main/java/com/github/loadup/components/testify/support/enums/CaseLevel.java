@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.support.enums;
 
 /*-
@@ -33,11 +30,10 @@ package com.github.loadup.components.testify.support.enums;
 /**
  * 用例等级。
  *
- * 
+ *
  *
  */
 public enum CaseLevel {
-
     HIGH("H", "high"),
 
     MEDIUM("M", "medium"),
@@ -75,7 +71,7 @@ public enum CaseLevel {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of alias
      */
@@ -84,12 +80,11 @@ public enum CaseLevel {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of code
      */
     public String getCode() {
         return code;
     }
-
 }

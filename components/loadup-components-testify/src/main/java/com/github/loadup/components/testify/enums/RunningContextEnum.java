@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2021 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.enums;
 
 /*-
@@ -33,8 +30,8 @@ package com.github.loadup.components.testify.enums;
 /**
  * 系统默认执行时会把入参和结果放入上下文的map，下面定义入参的key和结果的key
  *
- * 
- * 
+ *
+ *
  */
 public enum RunningContextEnum {
     ARGS("args", "上下文入参key"),
@@ -69,7 +66,7 @@ public enum RunningContextEnum {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of code
      */
@@ -78,7 +75,7 @@ public enum RunningContextEnum {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of desc
      */

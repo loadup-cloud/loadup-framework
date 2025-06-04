@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.common.util;
 
 /*-
@@ -26,15 +27,14 @@ package com.github.loadup.components.gateway.common.util;
  * #L%
  */
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * MD5文件摘要 适用于大文件。
@@ -44,7 +44,7 @@ public class MD5Util {
     /**
      * MD5
      */
-    public final static String MD5 = "MD5";
+    public static final String MD5 = "MD5";
     /**
      * 日志
      */
@@ -52,12 +52,12 @@ public class MD5Util {
     /**
      * 缓冲大小
      */
-    private final static int BUFFER_SIZE = 8192;
+    private static final int BUFFER_SIZE = 8192;
     /**
      * 默认的密码字符串组合，apache校验下载的文件的正确性用的就是默认的这个组合
      */
-    protected static char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            'a', 'b', 'c', 'd', 'e', 'f'};
+    protected static char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+    };
 
     /**
      * 生成信息摘要
@@ -94,7 +94,7 @@ public class MD5Util {
         MessageDigest messagedigest = digestInit(digestType);
 
         try {
-            //fileContent
+            // fileContent
             in = new FileInputStream(file);
             bufferInputStream = new BufferedInputStream(in);
             byte[] byet = new byte[BUFFER_SIZE];
@@ -161,5 +161,4 @@ public class MD5Util {
         stringbuffer.append(c0);
         stringbuffer.append(c1);
     }
-
 }

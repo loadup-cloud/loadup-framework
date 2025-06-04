@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.cache.common;
 
 /*-
@@ -28,6 +29,8 @@ package com.github.loadup.components.gateway.cache.common;
 
 import com.github.loadup.components.gateway.core.common.Constant;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +39,6 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p>
@@ -49,8 +49,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Order(Integer.MIN_VALUE)
 public class SystemParameter implements ApplicationListener<ApplicationStartedEvent> {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(SystemParameter.class);
+    private static final Logger logger = LoggerFactory.getLogger(SystemParameter.class);
     /**
      * system parameters
      */
@@ -85,8 +84,10 @@ public class SystemParameter implements ApplicationListener<ApplicationStartedEv
      */
     @Value("${parse.template.file.directory:config/gateway/parser/}")
     private String parseTemplateFileDirectory;
+
     @Value("${repository.extend.point:FILE}")
     private String repositoryExtendPoint;
+
     @Value("${print.log.max.length:10000}")
     private String maxLogLength;
 
@@ -113,9 +114,10 @@ public class SystemParameter implements ApplicationListener<ApplicationStartedEv
 
     @Override
     public void onApplicationEvent(ApplicationStartedEvent event) {
-        //check if there is an argument declared with configRootPathPropertyName in JVM
-        String configRootPath = StringUtils.defaultIfBlank(System.getProperty(configRootPathPropertyName)
-                , this.getClass().getResource("/").getPath());
+        // check if there is an argument declared with configRootPathPropertyName in JVM
+        String configRootPath = StringUtils.defaultIfBlank(
+                System.getProperty(configRootPathPropertyName),
+                this.getClass().getResource("/").getPath());
 
         SystemParameter.putParameter("configRootPathPropertyName", configRootPathPropertyName);
         SystemParameter.putParameter("certAlgorithmConfigFilePath", certAlgorithmConfigFilePath);

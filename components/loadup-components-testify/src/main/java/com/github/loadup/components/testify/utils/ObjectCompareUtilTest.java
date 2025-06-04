@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils;
 
 /*-
@@ -28,31 +28,32 @@ package com.github.loadup.components.testify.utils;
  */
 
 import com.github.loadup.components.testify.utils.check.ObjectCompareUtil;
-import org.testng.annotations.Test;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.testng.annotations.Test;
 
 /**
- * 
+ *
  *
  */
 public class ObjectCompareUtilTest {
     @Test
     public void testCompare() {
-        List actual = new ArrayList<String>() {{
-            add("test1");
-            add("test1");
-            add("test2");
-        }};
-        List expect = new ArrayList<String>() {{
-            add("test2");
-            add("test2");
-            add("test1");
-        }};
+        List actual = new ArrayList<String>() {
+            {
+                add("test1");
+                add("test1");
+                add("test2");
+            }
+        };
+        List expect = new ArrayList<String>() {
+            {
+                add("test2");
+                add("test2");
+                add("test1");
+            }
+        };
 
         ObjectCompareUtil.compare(actual, expect, null, null);
-
-
     }
 }

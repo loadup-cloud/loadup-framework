@@ -1,6 +1,4 @@
-/**
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.processor;
 
 /*-
@@ -48,6 +46,10 @@ import com.github.loadup.components.testify.yaml.cpUnit.property.BaseUnitPropert
 import com.github.loadup.components.testify.yaml.cpUnit.property.ListObjectUnitProperty;
 import com.github.loadup.components.testify.yaml.cpUnit.property.MapObjectUnitProperty;
 import com.github.loadup.components.testify.yaml.cpUnit.property.ObjectUnitProperty;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.Map.Entry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -59,11 +61,6 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.FilterBuilder;
 import org.testng.Assert;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.Map.Entry;
-
 /**
  * 对象处理器
  */
@@ -71,7 +68,6 @@ import java.util.Map.Entry;
 @Getter
 @Setter
 public class ObjectProcessor {
-
 
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
 
@@ -105,6 +101,7 @@ public class ObjectProcessor {
      * 当前属性类名
      */
     private Class<?> classType;
+
     private ClassLoader classLoader;
 
     public ObjectProcessor(ClassLoader classLoader, String csvPath, String description) {
@@ -116,8 +113,7 @@ public class ObjectProcessor {
         this.keyPath = this.className;
     }
 
-    public ObjectProcessor(ClassLoader classLoader, String csvPath, String description,
-                           String encoding) {
+    public ObjectProcessor(ClassLoader classLoader, String csvPath, String description, String encoding) {
         this.csvPath = csvPath;
         this.description = description;
         this.attributeMap = new HashMap<String, BaseUnitProperty>();
@@ -155,14 +151,14 @@ public class ObjectProcessor {
      */
     public Object genObject() throws Exception {
 
-        //3. 锁定对象实际类名
+        // 3. 锁定对象实际类名
         Class<?> objClass = null;
         String realClassName = this.className;
 
-        //构造一个map用来存放flag
+        // 构造一个map用来存放flag
         Map<String, String> flagMap = new HashMap<String, String>();
         if (this.classType == null || realClassName.contains(".")) {
-            //3.1 只有第一层对象, 或在csv文件标识为qualifiedName时可以走到这里
+            // 3.1 只有第一层对象, 或在csv文件标识为qualifiedName时可以走到这里
             try {
                 objClass = classLoader.loadClass(realClassName);
             } catch (ClassNotFoundException e) {
@@ -170,11 +166,13 @@ public class ObjectProcessor {
                 throw new Exception("对象QualifiedName无法加载:" + realClassName + "建议mvn一下");
             }
         } else if (!this.classType.getSimpleName().equals(realClassName)) {
-            //3.2 类名不匹配，用反射在包内查找对应子类
+            // 3.2 类名不匹配，用反射在包内查找对应子类
             String packageName = this.classType.getPackage().getName();
             String prefix = packageName.substring(0, packageName.lastIndexOf('.'));
-            Reflections reflections = new Reflections(ClasspathHelper.forPackage(prefix),
-                    new SubTypesScanner(), new FilterBuilder().includePackage(prefix));
+            Reflections reflections = new Reflections(
+                    ClasspathHelper.forPackage(prefix),
+                    new SubTypesScanner(),
+                    new FilterBuilder().includePackage(prefix));
             for (Class<?> subClass : reflections.getSubTypesOf(objClass)) {
                 if (StringUtils.equals(subClass.getSimpleName(), realClassName.trim())) {
                     objClass = subClass;
@@ -185,58 +183,57 @@ public class ObjectProcessor {
             objClass = this.classType;
         }
 
-        //4. 构造类对象
+        // 4. 构造类对象
         Object objValue = TestifyObjectUtil.genInstance(objClass);
 
-        //5. 逐个填充属性
+        // 5. 逐个填充属性
         for (Entry<String, BaseUnitProperty> entry : this.attributeMap.entrySet()) {
             String fieldName = entry.getKey();
             if (StringUtils.isBlank(fieldName)) {
-                //空的就跳过
+                // 空的就跳过
                 continue;
             }
             BaseUnitProperty property = entry.getValue();
             String flagCode = property.getFlagCode();
             Object referedValue = property.getExpectValue();
 
-            //5.2 反射获取field
+            // 5.2 反射获取field
             Field field = TestifyObjectUtil.getField(objClass, fieldName);
             Class<?> propertyClass = TestifyObjectUtil.getClass(objClass, fieldName);
             flagMap.put(fieldName, flagCode);
 
             if (field == null || propertyClass == null) {
-                TestifyLogUtil.error(log, "字段【" + fieldName + "】不存在类【" + objClass.getSimpleName()
-                        + "】及其父类中");
+                TestifyLogUtil.error(log, "字段【" + fieldName + "】不存在类【" + objClass.getSimpleName() + "】及其父类中");
                 throw new Exception("请检查模板或者去掉字段" + fieldName + "类为" + objClass.getSimpleName());
             }
 
             Class<?> fieldType = field.getType();
 
-            //5.3 初始化属性对象
+            // 5.3 初始化属性对象
             Object fieldValue = null;
 
-            //5.3 基于差异化数据找到当前属性flag标识
-            flagCode = (property != null && property.getFlagCode() != null) ? property
-                    .getFlagCode() : flagCode;
+            // 5.3 基于差异化数据找到当前属性flag标识
+            flagCode = (property != null && property.getFlagCode() != null) ? property.getFlagCode() : flagCode;
 
-            //5.4当flagCode不为N时，需要进行填充数据
+            // 5.4当flagCode不为N时，需要进行填充数据
             if (UnitFlagEnum.getByCode(flagCode) != UnitFlagEnum.N
                     && !referedValue.toString().equals("null")) {
                 if (UnitFlagEnum.getByCode(flagCode) == UnitFlagEnum.CUSTOM) {
-                    //5.4.1自定义标识走自定义生成器
-                    fieldValue = TestifyCacheData.getCustomGenerator(flagCode).generater(
-                            this.keyPath + "." + fieldName, property.getExpectValue(),
-                            fieldType.getSimpleName());
+                    // 5.4.1自定义标识走自定义生成器
+                    fieldValue = TestifyCacheData.getCustomGenerator(flagCode)
+                            .generater(
+                                    this.keyPath + "." + fieldName,
+                                    property.getExpectValue(),
+                                    fieldType.getSimpleName());
                 } else if (objectTypeManager.isSimpleType(fieldType)) {
-                    //5.4.2简单类型处理，即当前属性为简单类型
-                    fieldValue = generateSimpleProperty(fieldName, fieldType, flagCode,
-                            referedValue);
+                    // 5.4.2简单类型处理，即当前属性为简单类型
+                    fieldValue = generateSimpleProperty(fieldName, fieldType, flagCode, referedValue);
                 } else {
                     if (objectTypeManager.isCollectionType(fieldType)) {
-                        //5.4.3.1 复合类型处理，即当前属性为数组、List或Map类型
-                        //获取子对象属性
-                        //这里开始特殊逻辑的判断，分别对新框架下的MapConvert
-                        //ListConvert 开始处理
+                        // 5.4.3.1 复合类型处理，即当前属性为数组、List或Map类型
+                        // 获取子对象属性
+                        // 这里开始特殊逻辑的判断，分别对新框架下的MapConvert
+                        // ListConvert 开始处理
                         String csvDir = StringUtils.substringBeforeLast(csvPath, "/");
                         String exceptValue = (String) property.getExpectValue();
                         String desc = StringUtils.substringAfterLast(exceptValue, "@");
@@ -244,71 +241,63 @@ public class ObjectProcessor {
                         if (StringUtils.substringBefore(exceptValue, "@").contains(":")) {
                             convertCsv = csvDir
                                     + "/"
-                                    + StringUtils.substringAfter(
-                                    (StringUtils.substringBefore(exceptValue, "@")), ":");
+                                    + StringUtils.substringAfter((StringUtils.substringBefore(exceptValue, "@")), ":");
                         } else {
-                            convertCsv = csvDir + "/"
-                                    + StringUtils.substringBefore(exceptValue, "@");
+                            convertCsv = csvDir + "/" + StringUtils.substringBefore(exceptValue, "@");
                         }
 
                         if (Map.class.isAssignableFrom(fieldType)
                                 && ObjHandUtil.isSubListConvert(convertCsv, VirtualMap.class.getName())) {
 
-                            //VirtualMap的情况单独处理，加载所有key－value
+                            // VirtualMap的情况单独处理，加载所有key－value
                             Map<Object, Object> map = new HashMap<Object, Object>();
                             List<String> descList = BaseDataUtil.loadDesc(convertCsv);
 
                             for (String descTemp : descList) {
-                                ObjectProcessor processorTemp = new ObjectProcessor(classLoader,
-                                        convertCsv, descTemp);
-                                Map<Object, Object> descMap = (Map<Object, Object>) processorTemp
-                                        .genObject();
+                                ObjectProcessor processorTemp = new ObjectProcessor(classLoader, convertCsv, descTemp);
+                                Map<Object, Object> descMap = (Map<Object, Object>) processorTemp.genObject();
                                 map.putAll(descMap);
                             }
 
                             fieldValue = map;
 
                         } else if (Collection.class.isAssignableFrom(fieldType)
-                                && ObjHandUtil.isSubListConvert(convertCsv,
-                                VirtualList.class.getName())) {
-                            ObjectProcessor processor = new ObjectProcessor(classLoader,
-                                    convertCsv, desc);
+                                && ObjHandUtil.isSubListConvert(convertCsv, VirtualList.class.getName())) {
+                            ObjectProcessor processor = new ObjectProcessor(classLoader, convertCsv, desc);
                             fieldValue = processor.genObject();
                         } else {
-                            Class<?> argumentClass = objectTypeManager.getCollectionItemClass(
-                                    field.getGenericType(), fieldType);
+                            Class<?> argumentClass =
+                                    objectTypeManager.getCollectionItemClass(field.getGenericType(), fieldType);
 
-                            //Array 数组的情况
+                            // Array 数组的情况
                             if (fieldType.isArray()) {
                                 argumentClass = fieldType.getComponentType();
                             }
 
                             if (objectTypeManager.isSimpleType(argumentClass)) {
-                                //复合子属性为简单对象
-                                fieldValue = generateSimpleCollection(property, argumentClass,
-                                        fieldType, fieldName, referedValue);
+                                // 复合子属性为简单对象
+                                fieldValue = generateSimpleCollection(
+                                        property, argumentClass, fieldType, fieldName, referedValue);
                             } else {
-                                //符合子属性为复杂对象
-                                fieldValue = generateComplexCollection(property, argumentClass,
-                                        fieldType, fieldName, referedValue);
+                                // 符合子属性为复杂对象
+                                fieldValue = generateComplexCollection(
+                                        property, argumentClass, fieldType, fieldName, referedValue);
                             }
                         }
                     } else {
-                        //5.4.3.2 复杂对象处理
-                        fieldValue = generateChildObject(property, fieldType, fieldName,
-                                referedValue);
+                        // 5.4.3.2 复杂对象处理
+                        fieldValue = generateChildObject(property, fieldType, fieldName, referedValue);
                     }
                 }
                 property.setActualValue(fieldValue);
                 TestifyObjectUtil.setProperty(objValue, fieldName, fieldValue);
-            } else if (StringUtils.equals(referedValue == null ? "null" : referedValue.toString(),
-                    "null")) {
+            } else if (StringUtils.equals(referedValue == null ? "null" : referedValue.toString(), "null")) {
                 property.setActualValue(fieldValue);
                 TestifyObjectUtil.setProperty(objValue, fieldName, fieldValue);
             }
         }
 
-        //存放当前对象的flag值
+        // 存放当前对象的flag值
         flags.put(realClassName, flagMap);
 
         if (StringUtils.equals(objClass.getName(), "com.github.loadup.components.test.model.VirtualMap")) {
@@ -332,7 +321,7 @@ public class ObjectProcessor {
             String flagCode = property.getFlagCode();
             Object expectValue = property.getExpectValue();
 
-            //同上下文动态Map替换
+            // 同上下文动态Map替换
             Map<String, Object> uniqueMap = TestifyCaseContextHolder.get().getUniqueMap();
             if (uniqueMap.containsKey(this.keyPath + "." + columnName)) {
                 expectValue = uniqueMap.get(this.keyPath + "." + columnName);
@@ -341,24 +330,26 @@ public class ObjectProcessor {
             }
 
             Object actualField = null;
-            //1. 获取到传进来的对象中所对应列属性值
+            // 1. 获取到传进来的对象中所对应列属性值
             try {
                 actualField = TestifyObjectUtil.getProperty(actual, columnName);
             } catch (OgnlException e) {
-                TestifyLogUtil.error(log, String.format("使用ongl获取:%s对象的属性:%s时报错,csv文件路径为:%s",
-                        actual, columnName, csvPath), e);
+                TestifyLogUtil.error(
+                        log, String.format("使用ongl获取:%s对象的属性:%s时报错,csv文件路径为:%s", actual, columnName, csvPath), e);
                 continue;
             }
 
             if (actualField == null) {
                 if (!StringUtils.isBlank(String.valueOf(expectValue))) {
-                    TestifyLogUtil.error(log, this.keyPath + "." + columnName + "同" + this.csvPath
-                            + "列" + this.description + "校验失败, 期望值:" + expectValue
-                            + ",实际值:" + String.valueOf(actualField) + ",校验标识:"
-                            + flagCode);
+                    TestifyLogUtil.error(
+                            log,
+                            this.keyPath + "." + columnName + "同" + this.csvPath
+                                    + "列" + this.description + "校验失败, 期望值:" + expectValue
+                                    + ",实际值:" + String.valueOf(actualField) + ",校验标识:"
+                                    + flagCode);
                 }
             } else {
-                //差异化对象递归比较
+                // 差异化对象递归比较
                 property.compare(actualField);
             }
         }
@@ -373,8 +364,8 @@ public class ObjectProcessor {
      * @param referedValue
      * @return
      */
-    protected Object generateChildObject(BaseUnitProperty property, Class<?> fieldType,
-                                         String fieldName, Object referedValue) {
+    protected Object generateChildObject(
+            BaseUnitProperty property, Class<?> fieldType, String fieldName, Object referedValue) {
 
         if (StringUtils.isBlank(String.valueOf(referedValue))) {
             return null;
@@ -385,7 +376,6 @@ public class ObjectProcessor {
                 return referedValue;
             }
         }
-
     }
 
     /**
@@ -398,9 +388,12 @@ public class ObjectProcessor {
      * @param referedValue
      * @return
      */
-    protected Object generateComplexCollection(BaseUnitProperty property, Class<?> argumentClass,
-                                               Class<?> fieldClass, String fieldName,
-                                               Object referedValue) {
+    protected Object generateComplexCollection(
+            BaseUnitProperty property,
+            Class<?> argumentClass,
+            Class<?> fieldClass,
+            String fieldName,
+            Object referedValue) {
         Object fieldValue = null;
         if (property.getExpectValue() == null) {
             return null;
@@ -408,15 +401,15 @@ public class ObjectProcessor {
 
         if (property instanceof ListObjectUnitProperty) {
             ListObjectUnitProperty listProperty = (ListObjectUnitProperty) property;
-            listProperty.setTargetCSVPath(FileUtil.getRelativePath(argumentClass.getSimpleName()
-                    + ".csv", this.csvPath));
+            listProperty.setTargetCSVPath(
+                    FileUtil.getRelativePath(argumentClass.getSimpleName() + ".csv", this.csvPath));
             listProperty.setClassType(argumentClass);
             return listProperty.genObject(classLoader);
         } else if (property instanceof MapObjectUnitProperty) {
             MapObjectUnitProperty mapProperty = (MapObjectUnitProperty) property;
             if (String.valueOf(mapProperty.getBaseValue()).contains(".csv@")) {
-                mapProperty.setTargetCSVPath(FileUtil.getRelativePath(argumentClass.getSimpleName()
-                        + ".csv", this.csvPath));
+                mapProperty.setTargetCSVPath(
+                        FileUtil.getRelativePath(argumentClass.getSimpleName() + ".csv", this.csvPath));
             }
             mapProperty.setClassType(argumentClass);
             return mapProperty.genObject(classLoader);
@@ -432,7 +425,7 @@ public class ObjectProcessor {
             return objectTypeManager.getCollectionObject(fieldClass);
         } else {
             String[] valueParts = value.split("@");
-//            Assert.assertTrue("复杂对象描述字符串必须包含且只包含一个@", valueParts.length == 2);
+            //            Assert.assertTrue("复杂对象描述字符串必须包含且只包含一个@", valueParts.length == 2);
             String[] values = valueParts[1].trim().split(";");
 
             if (fieldClass.isArray()) {
@@ -441,10 +434,9 @@ public class ObjectProcessor {
                 fieldValue = objectTypeManager.getCollectionObject(fieldClass);
             }
             for (int i = 0; i < values.length; i++) {
-                Object valuePart = generateChildObject(property, argumentClass, fieldName,
-                        valueParts[0].trim() + "@" + values[i].trim());
-                objectTypeManager.setCollectionObjectValue(fieldValue, valuePart, values[i], i,
-                        fieldClass);
+                Object valuePart = generateChildObject(
+                        property, argumentClass, fieldName, valueParts[0].trim() + "@" + values[i].trim());
+                objectTypeManager.setCollectionObjectValue(fieldValue, valuePart, values[i], i, fieldClass);
             }
         }
 
@@ -462,9 +454,12 @@ public class ObjectProcessor {
      * @return
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    protected Object generateSimpleCollection(BaseUnitProperty property, Class<?> argumentClass,
-                                              Class<?> fieldClass, String fieldName,
-                                              Object referedValue) {
+    protected Object generateSimpleCollection(
+            BaseUnitProperty property,
+            Class<?> argumentClass,
+            Class<?> fieldClass,
+            String fieldName,
+            Object referedValue) {
         Object fieldValue = null;
         if (property.getExpectValue() == null) {
             return null;
@@ -488,8 +483,7 @@ public class ObjectProcessor {
         } else if (StringUtils.equals("@element_empty@", value)) {
             return objectTypeManager.getCollectionObject(fieldClass);
         } else if (value.startsWith("{") || value.startsWith("[")) {
-            return JSON.parseObject(value, new TypeReference<Map<String, String>>() {
-            });
+            return JSON.parseObject(value, new TypeReference<Map<String, String>>() {});
         } else {
             String[] valueParts = value.split(";");
             if (fieldClass.isArray()) {
@@ -498,10 +492,9 @@ public class ObjectProcessor {
                 fieldValue = objectTypeManager.getCollectionObject(fieldClass);
             }
             for (int i = 0; i < valueParts.length; i++) {
-                Object valuePart = objectTypeManager.getSimpleObject(argumentClass, valueParts[i],
-                        fieldName, argumentClass.getName());
-                objectTypeManager.setCollectionObjectValue(fieldValue, valuePart, valueParts[i], i,
-                        fieldClass);
+                Object valuePart = objectTypeManager.getSimpleObject(
+                        argumentClass, valueParts[i], fieldName, argumentClass.getName());
+                objectTypeManager.setCollectionObjectValue(fieldValue, valuePart, valueParts[i], i, fieldClass);
             }
         }
 
@@ -517,25 +510,24 @@ public class ObjectProcessor {
      * @param referedValue
      * @return
      */
-    protected Object generateSimpleProperty(String fieldName, Class<?> fieldType, String flagCode,
-                                            Object referedValue) {
+    protected Object generateSimpleProperty(
+            String fieldName, Class<?> fieldType, String flagCode, Object referedValue) {
 
         Object fieldValue = null;
         if (referedValue == null || StringUtils.isBlank(String.valueOf(referedValue))) {
 
-            return objectTypeManager.getSimpleObject(fieldType, String.valueOf(referedValue),
-                    fieldName, fieldType.getName());
+            return objectTypeManager.getSimpleObject(
+                    fieldType, String.valueOf(referedValue), fieldName, fieldType.getName());
         }
 
         switch (UnitFlagEnum.getByCode(flagCode)) {
             case F:
-                return FileUtil.readFile(FileUtil.getRelativePath(String.valueOf(referedValue),
-                        this.csvPath));
+                return FileUtil.readFile(FileUtil.getRelativePath(String.valueOf(referedValue), this.csvPath));
             case D:
             case C:
             case Y:
-                return objectTypeManager.getSimpleObject(fieldType, String.valueOf(referedValue),
-                        fieldName, fieldType.getName());
+                return objectTypeManager.getSimpleObject(
+                        fieldType, String.valueOf(referedValue), fieldName, fieldType.getName());
             default:
                 Assert.fail(this.keyPath + "." + fieldName + "生成对象时，需要对标识" + flagCode + "进行替换");
                 break;
@@ -545,14 +537,13 @@ public class ObjectProcessor {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void loadCSVFile() throws TestifyException {
-        //1. 加载CSV数据
+        // 1. 加载CSV数据
         List tableList = CSVHelper.readFromCsv(this.csvPath);
-        if (tableList == null || tableList.size() == 0)
-            TestifyLogUtil.fail(log, this.csvPath + "文件内容为空");
+        if (tableList == null || tableList.size() == 0) TestifyLogUtil.fail(log, this.csvPath + "文件内容为空");
         if (tableList.size() < 2) {
             throw new TestifyException("当前的CSV没有内容或者内容不全,文件名为" + csvPath);
         }
-        //2. 锁定列实际序号
+        // 2. 锁定列实际序号
         String[] labels = (String[]) tableList.get(0);
         int baseIndex = 0, classNameCol = 0, colNameCol = 0, flagCol = 0, indexCol = -1;
         for (int i = 0; i < labels.length; i++) {
@@ -604,7 +595,7 @@ public class ObjectProcessor {
             String flagCode = row[flagCol];
             String referedValue = noValue ? null : row[indexCol];
 
-            //5.1 CSV加载值中对引号需要过滤处理
+            // 5.1 CSV加载值中对引号需要过滤处理
             referedValue = StringUtils.replace(referedValue, "\"\"", "\"");
             BaseUnitProperty property = null;
             if (!this.attributeMap.containsKey(fieldName)) {
@@ -612,7 +603,7 @@ public class ObjectProcessor {
                     if (!referedValue.contains(":")) {
                         String[] valueParts = referedValue.split(".csv@");
 
-                        //list<复杂对象>有多列时，获取复杂对象的desc的列号
+                        // list<复杂对象>有多列时，获取复杂对象的desc的列号
                         String[] descParts = referedValue.split(";");
                         for (int index = 0; index < descParts.length; index++) {
                             String temp = StringUtils.substringAfter(descParts[index], "@");
@@ -622,22 +613,22 @@ public class ObjectProcessor {
                         if (descParts.length == 1) {
                             Map<String, Object> attribute = new HashMap<String, Object>();
                             attribute.put("__desc", valueParts[0] + "@" + valueParts[1]);
-                            property = new ObjectUnitProperty(fieldName, this.keyPath + "."
-                                    + fieldName, this.csvPath,
-                                    attribute);
+                            property = new ObjectUnitProperty(
+                                    fieldName, this.keyPath + "." + fieldName, this.csvPath, attribute);
                         } else {
 
-                            //list<Object>的情况,Set<Object>暂不支持
-                            property = new ListObjectUnitProperty(fieldName, this.keyPath + "."
-                                    + fieldName,
-                                    this.csvPath, new ArrayList());
+                            // list<Object>的情况,Set<Object>暂不支持
+                            property = new ListObjectUnitProperty(
+                                    fieldName, this.keyPath + "." + fieldName, this.csvPath, new ArrayList());
                             ListObjectUnitProperty listProperty = (ListObjectUnitProperty) property;
                             for (int j = 0; j < descParts.length; j++) {
                                 Map<String, Object> attribute = new HashMap<String, Object>();
                                 attribute.put("__desc", valueParts[0] + "@" + descParts[j]);
                                 ObjectUnitProperty childProperty = new ObjectUnitProperty(
-                                        fieldName, this.keyPath + "." + fieldName + "[" + j + "]",
-                                        this.csvPath, attribute);
+                                        fieldName,
+                                        this.keyPath + "." + fieldName + "[" + j + "]",
+                                        this.csvPath,
+                                        attribute);
                                 listProperty.getObjectList().add(childProperty);
                             }
                         }
@@ -655,21 +646,20 @@ public class ObjectProcessor {
                             String desc = baseInfo[1];
                             Map<String, Object> attribute = new HashMap<String, Object>();
                             attribute.put("__desc", baseName + "@" + desc);
-                            BaseUnitProperty mapProperty = new ObjectUnitProperty(fieldName,
-                                    this.keyPath + "." + fieldName + "[" + index + "]", this.csvPath,
+                            BaseUnitProperty mapProperty = new ObjectUnitProperty(
+                                    fieldName,
+                                    this.keyPath + "." + fieldName + "[" + index + "]",
+                                    this.csvPath,
                                     attribute);
                             tmpMap.put(key, mapProperty);
                             index++;
-
                         }
-                        property = new MapObjectUnitProperty(fieldName, this.keyPath + "."
-                                + fieldName, this.csvPath,
-                                tmpMap);
+                        property = new MapObjectUnitProperty(
+                                fieldName, this.keyPath + "." + fieldName, this.csvPath, tmpMap);
                     }
                 } else {
                     if (!referedValue.contains(":")) {
-                        property = new BaseUnitProperty(fieldName, this.keyPath + "." + fieldName,
-                                referedValue);
+                        property = new BaseUnitProperty(fieldName, this.keyPath + "." + fieldName, referedValue);
                     } else {
                         String[] parts = referedValue.split(";");
                         Map<String, BaseUnitProperty> tmpMap = new LinkedHashMap<String, BaseUnitProperty>();
@@ -678,12 +668,11 @@ public class ObjectProcessor {
                             String[] mapParts = part.split("\\:");
                             String key = mapParts[0];
                             String value = mapParts[1];
-                            BaseUnitProperty mapProperty = new BaseUnitProperty(fieldName,
-                                    this.keyPath + "." + fieldName + "[" + index + "]", value);
+                            BaseUnitProperty mapProperty = new BaseUnitProperty(
+                                    fieldName, this.keyPath + "." + fieldName + "[" + index + "]", value);
                             tmpMap.put(key, mapProperty);
-                            property = new MapObjectUnitProperty(fieldName, this.keyPath + "."
-                                    + fieldName,
-                                    this.csvPath, tmpMap);
+                            property = new MapObjectUnitProperty(
+                                    fieldName, this.keyPath + "." + fieldName, this.csvPath, tmpMap);
                         }
                     }
                 }
@@ -705,14 +694,13 @@ public class ObjectProcessor {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void loadCSVFile(String encoding) throws TestifyException {
-        //1. 加载CSV数据
+        // 1. 加载CSV数据
         List tableList = CSVHelper.readFromCsv(this.csvPath, encoding);
-        if (tableList == null || tableList.size() == 0)
-            TestifyLogUtil.fail(log, this.csvPath + "文件内容为空");
+        if (tableList == null || tableList.size() == 0) TestifyLogUtil.fail(log, this.csvPath + "文件内容为空");
         if (tableList.size() < 2) {
             throw new TestifyException("当前的CSV没有内容或者内容不全,文件名为" + csvPath);
         }
-        //2. 锁定列实际序号
+        // 2. 锁定列实际序号
         String[] labels = (String[]) tableList.get(0);
         int baseIndex = 0, classNameCol = 0, colNameCol = 0, flagCol = 0, indexCol = -1;
         for (int i = 0; i < labels.length; i++) {
@@ -764,7 +752,7 @@ public class ObjectProcessor {
             String flagCode = row[flagCol];
             String referedValue = noValue ? null : row[indexCol];
 
-            //5.1 CSV加载值中对引号需要过滤处理
+            // 5.1 CSV加载值中对引号需要过滤处理
             referedValue = StringUtils.replace(referedValue, "\"\"", "\"");
             BaseUnitProperty property = null;
             if (!this.attributeMap.containsKey(fieldName)) {
@@ -772,7 +760,7 @@ public class ObjectProcessor {
                     if (!referedValue.contains(":")) {
                         String[] valueParts = referedValue.split(".csv@");
 
-                        //list<复杂对象>有多列时，获取复杂对象的desc的列号
+                        // list<复杂对象>有多列时，获取复杂对象的desc的列号
                         String[] descParts = referedValue.split(";");
                         for (int index = 0; index < descParts.length; index++) {
                             String temp = StringUtils.substringAfter(descParts[index], "@");
@@ -782,22 +770,22 @@ public class ObjectProcessor {
                         if (descParts.length == 1) {
                             Map<String, Object> attribute = new HashMap<String, Object>();
                             attribute.put("__desc", valueParts[0] + "@" + valueParts[1]);
-                            property = new ObjectUnitProperty(fieldName, this.keyPath + "."
-                                    + fieldName, this.csvPath,
-                                    attribute);
+                            property = new ObjectUnitProperty(
+                                    fieldName, this.keyPath + "." + fieldName, this.csvPath, attribute);
                         } else {
 
-                            //list<Object>的情况,Set<Object>暂不支持
-                            property = new ListObjectUnitProperty(fieldName, this.keyPath + "."
-                                    + fieldName,
-                                    this.csvPath, new ArrayList());
+                            // list<Object>的情况,Set<Object>暂不支持
+                            property = new ListObjectUnitProperty(
+                                    fieldName, this.keyPath + "." + fieldName, this.csvPath, new ArrayList());
                             ListObjectUnitProperty listProperty = (ListObjectUnitProperty) property;
                             for (int j = 0; j < descParts.length; j++) {
                                 Map<String, Object> attribute = new HashMap<String, Object>();
                                 attribute.put("__desc", valueParts[0] + "@" + descParts[j]);
                                 ObjectUnitProperty childProperty = new ObjectUnitProperty(
-                                        fieldName, this.keyPath + "." + fieldName + "[" + j + "]",
-                                        this.csvPath, attribute);
+                                        fieldName,
+                                        this.keyPath + "." + fieldName + "[" + j + "]",
+                                        this.csvPath,
+                                        attribute);
                                 listProperty.getObjectList().add(childProperty);
                             }
                         }
@@ -815,21 +803,20 @@ public class ObjectProcessor {
                             String desc = baseInfo[1];
                             Map<String, Object> attribute = new HashMap<String, Object>();
                             attribute.put("__desc", baseName + "@" + desc);
-                            BaseUnitProperty mapProperty = new ObjectUnitProperty(fieldName,
-                                    this.keyPath + "." + fieldName + "[" + index + "]", this.csvPath,
+                            BaseUnitProperty mapProperty = new ObjectUnitProperty(
+                                    fieldName,
+                                    this.keyPath + "." + fieldName + "[" + index + "]",
+                                    this.csvPath,
                                     attribute);
                             tmpMap.put(key, mapProperty);
                             index++;
-
                         }
-                        property = new MapObjectUnitProperty(fieldName, this.keyPath + "."
-                                + fieldName, this.csvPath,
-                                tmpMap);
+                        property = new MapObjectUnitProperty(
+                                fieldName, this.keyPath + "." + fieldName, this.csvPath, tmpMap);
                     }
                 } else {
                     if (!referedValue.contains(":")) {
-                        property = new BaseUnitProperty(fieldName, this.keyPath + "." + fieldName,
-                                referedValue);
+                        property = new BaseUnitProperty(fieldName, this.keyPath + "." + fieldName, referedValue);
                     } else {
                         String[] parts = referedValue.split(";");
                         Map<String, BaseUnitProperty> tmpMap = new LinkedHashMap<String, BaseUnitProperty>();
@@ -838,12 +825,11 @@ public class ObjectProcessor {
                             String[] mapParts = part.split("\\:");
                             String key = mapParts[0];
                             String value = mapParts[1];
-                            BaseUnitProperty mapProperty = new BaseUnitProperty(fieldName,
-                                    this.keyPath + "." + fieldName + "[" + index + "]", value);
+                            BaseUnitProperty mapProperty = new BaseUnitProperty(
+                                    fieldName, this.keyPath + "." + fieldName + "[" + index + "]", value);
                             tmpMap.put(key, mapProperty);
-                            property = new MapObjectUnitProperty(fieldName, this.keyPath + "."
-                                    + fieldName,
-                                    this.csvPath, tmpMap);
+                            property = new MapObjectUnitProperty(
+                                    fieldName, this.keyPath + "." + fieldName, this.csvPath, tmpMap);
                         }
                     }
                 }
@@ -862,5 +848,4 @@ public class ObjectProcessor {
             this.attributeMap.put(fieldName, property);
         }
     }
-
 }

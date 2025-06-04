@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.model;
 
 /*-
@@ -34,8 +35,7 @@ public class Result {
     private String resultStatus;
     private String resultMessage;
 
-    public Result() {
-    }
+    public Result() {}
 
     public String getResultCode() {
         return this.resultCode;

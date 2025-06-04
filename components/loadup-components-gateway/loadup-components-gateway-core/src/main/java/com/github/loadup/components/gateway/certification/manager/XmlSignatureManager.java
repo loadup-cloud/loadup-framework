@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.manager;
 
 /*-
@@ -36,13 +37,12 @@ import com.github.loadup.components.gateway.certification.model.CommonParameter;
 import com.github.loadup.components.gateway.certification.model.XmlSignatureAppendMode;
 import com.github.loadup.components.gateway.certification.util.CommonUtil;
 import com.github.loadup.components.gateway.facade.enums.CertTypeEnum;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.xml.security.signature.XMLSignature;
-import org.springframework.stereotype.Component;
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.xml.security.signature.XMLSignature;
+import org.springframework.stereotype.Component;
 
 /**
  * xml报文签名manager
@@ -76,38 +76,34 @@ public class XmlSignatureManager extends AbstractAlgoManager {
     @Override
     protected byte[] doSign(byte[] srcInput, CertificationFactor certificationFactor) {
         Algorithm algorithm = getAlgorithm(certificationFactor);
-        byte[] key = (byte[]) certificationFactor.getCertMap().get(
-                CertTypeEnum.PRIVATE_KEY.getCertType());
+        byte[] key = (byte[]) certificationFactor.getCertMap().get(CertTypeEnum.PRIVATE_KEY.getCertType());
         int appentMode = getAppendMode(certificationFactor);
         String eleTagName = getElementTagName(certificationFactor);
         String algoString = getAlgoStr(certificationFactor.getAlgoString());
-        String encode = (null == certificationFactor.getAlgoParameter()) ? null
+        String encode = (null == certificationFactor.getAlgoParameter())
+                ? null
                 : certificationFactor.getAlgoParameter().get(CommonParameter.INPUT_ENCODE);
         byte[] certData = null;
         if (needAppendIssuerSerial(certificationFactor)) {
-            certData = (byte[]) certificationFactor.getCertMap().get(
-                    CertTypeEnum.PUBLIC_CERT.getCertType());
+            certData = (byte[]) certificationFactor.getCertMap().get(CertTypeEnum.PUBLIC_CERT.getCertType());
         }
-        return algorithm.signXmlElement(key, certData, srcInput, encode, eleTagName, algoString,
-                appentMode);
+        return algorithm.signXmlElement(key, certData, srcInput, encode, eleTagName, algoString, appentMode);
     }
 
     private boolean needAppendIssuerSerial(CertificationFactor certificationFactor) {
         if (null == certificationFactor.getAlgoParameter()
-                || StringUtils.isEmpty(certificationFactor.getAlgoParameter().get(
-                CommonParameter.NEED_ISSUER_SERIAL))) {
+                || StringUtils.isEmpty(
+                        certificationFactor.getAlgoParameter().get(CommonParameter.NEED_ISSUER_SERIAL))) {
             return false;
         }
-        return Boolean.parseBoolean(certificationFactor.getAlgoParameter().get(
-                CommonParameter.NEED_ISSUER_SERIAL));
+        return Boolean.parseBoolean(certificationFactor.getAlgoParameter().get(CommonParameter.NEED_ISSUER_SERIAL));
     }
 
     /**
      * 验签接口, 对于xml验签操作，报文和签名结果在一起存放，都存放在signedContent中，srcContent == null
      */
     @Override
-    public boolean verify(String srcContent, String signedContent,
-                          CertificationFactor certificationFactor) {
+    public boolean verify(String srcContent, String signedContent, CertificationFactor certificationFactor) {
         return (Boolean) doOperation(certificationFactor, srcContent, signedContent);
     }
 
@@ -115,12 +111,11 @@ public class XmlSignatureManager extends AbstractAlgoManager {
      * 执行验签操作 对于xml验签操作，报文和签名结果在一起存放，都存放在unsignedData中，signedContent输入为null
      */
     @Override
-    protected Boolean doVerify(byte[] unsignedData, byte[] signedData,
-                               CertificationFactor certificationFactor) {
+    protected Boolean doVerify(byte[] unsignedData, byte[] signedData, CertificationFactor certificationFactor) {
         Algorithm algorithm = getAlgorithm(certificationFactor);
-        byte[] key = (byte[]) certificationFactor.getCertMap().get(
-                CertTypeEnum.PUBLIC_KEY.getCertType());
-        String encode = (null == certificationFactor.getAlgoParameter()) ? null
+        byte[] key = (byte[]) certificationFactor.getCertMap().get(CertTypeEnum.PUBLIC_KEY.getCertType());
+        String encode = (null == certificationFactor.getAlgoParameter())
+                ? null
                 : certificationFactor.getAlgoParameter().get(CommonParameter.UNSIGNED_DATA_ENCODE);
         return algorithm.verifyXmlElement(key, signedData, encode);
     }
@@ -142,8 +137,8 @@ public class XmlSignatureManager extends AbstractAlgoManager {
             field.setAccessible(true);
             return (String) field.get(XMLSignature.class);
         } catch (Exception e) {
-            throw new CertificationException(CertificationErrorCode.UNSUPPORTED_ALGORITHM, CommonUtil
-                    .decorateBySquareBrackets("xml algo"), e);
+            throw new CertificationException(
+                    CertificationErrorCode.UNSUPPORTED_ALGORITHM, CommonUtil.decorateBySquareBrackets("xml algo"), e);
         }
     }
 
@@ -163,8 +158,7 @@ public class XmlSignatureManager extends AbstractAlgoManager {
      * 获取签名部分内容的tag名
      */
     private String getElementTagName(CertificationFactor certificationFactor) {
-        String tagName = certificationFactor.getAlgoParameter().get(
-                CommonParameter.XML_ELE_TAG_NAME);
+        String tagName = certificationFactor.getAlgoParameter().get(CommonParameter.XML_ELE_TAG_NAME);
         if (tagName == null) {
             return CommonParameter.XML_ELE_TAG_DEFAULT;
         }

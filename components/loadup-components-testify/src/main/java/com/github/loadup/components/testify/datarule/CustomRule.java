@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule;
 
 /*-
@@ -36,7 +33,7 @@ import java.util.List;
 /**
  * 自定义规则。
  *
- * 
+ *
  *
  */
 public class CustomRule implements RuleObject {
@@ -60,7 +57,7 @@ public class CustomRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of methodName
      */
@@ -69,7 +66,7 @@ public class CustomRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @param methodName value to be assigned to property methodName
      */
@@ -78,12 +75,11 @@ public class CustomRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of params
      */
     public List<Object> getParams() {
         return params;
     }
-
 }

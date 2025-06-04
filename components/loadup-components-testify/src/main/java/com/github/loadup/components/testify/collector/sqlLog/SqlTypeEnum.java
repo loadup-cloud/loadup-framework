@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.collector.sqlLog;
 
 /*-
@@ -33,11 +30,10 @@ package com.github.loadup.components.testify.collector.sqlLog;
 /**
  * SQL类型枚举
  *
- * 
+ *
  *
  */
 public enum SqlTypeEnum {
-
     INSERT_SQL("insert", "insert sql"),
 
     UPDATE_SQL("update", "update sql");
@@ -80,5 +76,4 @@ public enum SqlTypeEnum {
     public String getDesc() {
         return desc;
     }
-
 }

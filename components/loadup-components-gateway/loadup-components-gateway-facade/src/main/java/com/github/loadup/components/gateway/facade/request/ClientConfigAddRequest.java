@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.components.gateway.facade.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
 import java.util.Map;
 
 /**
@@ -53,7 +53,7 @@ public class ClientConfigAddRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;
@@ -67,7 +67,7 @@ public class ClientConfigAddRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setName(String name) {
         this.name = name;
@@ -81,7 +81,7 @@ public class ClientConfigAddRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;

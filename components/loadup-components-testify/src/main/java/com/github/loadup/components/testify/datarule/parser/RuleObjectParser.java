@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.parser;
 
 /*-
@@ -36,7 +33,7 @@ import com.github.loadup.components.testify.exception.RuleParseException;
 /**
  * 规则对象解析统一入口，适配各种表达式。
  *
- * 
+ *
  *
  */
 public class RuleObjectParser extends RuleParser<RuleObject> {
@@ -91,10 +88,9 @@ public class RuleObjectParser extends RuleParser<RuleObject> {
             case EOF:
                 throw new RuleParseException("EOF");
             default:
-                throw new RuleParseException("rule parse ERROR[token=" + tok + ",pos="
-                        + lexer.pos() + "],rule=" + lexer.text);
+                throw new RuleParseException(
+                        "rule parse ERROR[token=" + tok + ",pos=" + lexer.pos() + "],rule=" + lexer.text);
         }
         return ruleObject;
     }
-
 }

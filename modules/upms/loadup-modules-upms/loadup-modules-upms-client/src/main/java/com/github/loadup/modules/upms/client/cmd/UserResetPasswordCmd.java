@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.client.cmd;
 
 /*-
@@ -32,6 +33,4 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserResetPasswordCmd extends IdQuery {
-
-}
+public class UserResetPasswordCmd extends IdQuery {}

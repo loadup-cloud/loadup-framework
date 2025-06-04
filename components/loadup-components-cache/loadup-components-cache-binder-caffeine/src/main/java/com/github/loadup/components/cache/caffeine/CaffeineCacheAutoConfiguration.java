@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.cache.caffeine;
 
 /*-
@@ -33,6 +34,8 @@ import com.github.loadup.components.cache.caffeine.binder.CaffeineCacheBinderImp
 import com.github.loadup.components.cache.caffeine.cfg.LoadUpCaffeineCacheProperties;
 import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
 import jakarta.annotation.Resource;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
@@ -46,9 +49,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @EnableCaching
 @EnableConfigurationProperties(CacheProperties.class)

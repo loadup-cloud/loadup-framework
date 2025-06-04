@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.driver.enums;
 
 /*-
@@ -31,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * 用例标签枚举
  *
- * 
+ *
  *
  */
 public enum SuiteFlag {
@@ -129,5 +130,4 @@ public enum SuiteFlag {
     public String getDescription() {
         return description;
     }
-
 }

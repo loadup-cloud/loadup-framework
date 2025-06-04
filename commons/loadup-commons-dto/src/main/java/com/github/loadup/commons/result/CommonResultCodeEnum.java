@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.result;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.commons.result;
  * #L%
  */
 
+import java.util.Arrays;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Arrays;
 
 @Getter
 public enum CommonResultCodeEnum implements ResultCode {
@@ -51,8 +51,10 @@ public enum CommonResultCodeEnum implements ResultCode {
     }
 
     public static CommonResultCodeEnum getByResultCode(String resultCode) {
-        return Arrays.stream(CommonResultCodeEnum.values()).filter(value -> StringUtils.equals(value.getCode(), resultCode))
-                .findFirst().orElse(null);
+        return Arrays.stream(CommonResultCodeEnum.values())
+                .filter(value -> StringUtils.equals(value.getCode(), resultCode))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -69,5 +71,4 @@ public enum CommonResultCodeEnum implements ResultCode {
     public String getMessage() {
         return message;
     }
-
 }

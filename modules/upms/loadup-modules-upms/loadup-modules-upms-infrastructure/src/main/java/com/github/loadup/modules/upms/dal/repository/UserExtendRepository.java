@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.dal.repository;
 
 /*-
@@ -29,5 +30,4 @@ package com.github.loadup.modules.upms.dal.repository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserExtendRepository {
-}
+public interface UserExtendRepository {}

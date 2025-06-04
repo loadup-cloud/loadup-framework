@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data;
 
 /*-
@@ -29,18 +30,17 @@ package com.github.loadup.components.testify.data;
 import com.github.loadup.components.testify.helper.CSVHelper;
 import com.github.loadup.components.testify.util.FileOperateUtils;
 import com.github.loadup.components.testify.util.FullTableAnalysis;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 数据模版生成工具
  *
- * 
+ *
  *
  */
 public class BbTableModelUtil {
@@ -72,6 +72,5 @@ public class BbTableModelUtil {
             tableSet.addAll(FullTableAnalysis.getFullTableByDalConfig(dalConfigXml));
         }
         return tableSet;
-
     }
 }

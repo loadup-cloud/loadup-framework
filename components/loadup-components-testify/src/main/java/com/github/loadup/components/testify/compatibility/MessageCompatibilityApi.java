@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.compatibility;
 
 /*-
@@ -30,17 +30,16 @@ package com.github.loadup.components.testify.compatibility;
 import com.github.loadup.components.testify.model.PrepareData;
 import com.github.loadup.components.testify.model.VirtualEventObject;
 import com.github.loadup.components.testify.util.BaseDataUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 消息兼容性对外api
  *
- * 
+ *
  *
  */
 public class MessageCompatibilityApi {
@@ -58,21 +57,19 @@ public class MessageCompatibilityApi {
      * @param newCaseId
      * @return
      */
-    public static boolean compareMessage(String oldYamlPath, String oldCaseId, String newYamlPath,
-                                         String newCaseId) {
+    public static boolean compareMessage(String oldYamlPath, String oldCaseId, String newYamlPath, String newCaseId) {
 
         ClassLoader cl = getCustomClassLoader();
-        //获取两个拦截到的消息
+        // 获取两个拦截到的消息
         List<VirtualEventObject> oldEventObjects = getEventObjects(cl, oldYamlPath, oldCaseId);
 
         List<VirtualEventObject> newEventObjects = getEventObjects(cl, newYamlPath, newCaseId);
 
-        //开始比较消息体
+        // 开始比较消息体
 
         boolean result = compareEventObjects(oldEventObjects, newEventObjects);
 
         return result;
-
     }
 
     /***
@@ -82,8 +79,8 @@ public class MessageCompatibilityApi {
      * @param newEventObjects
      * @return
      */
-    public static boolean compareEventObjects(List<VirtualEventObject> oldEventObjects,
-                                              List<VirtualEventObject> newEventObjects) {
+    public static boolean compareEventObjects(
+            List<VirtualEventObject> oldEventObjects, List<VirtualEventObject> newEventObjects) {
 
         boolean result = true;
         if (oldEventObjects.size() != newEventObjects.size()) {
@@ -101,13 +98,12 @@ public class MessageCompatibilityApi {
 
             boolean oneResult = compareEventObject(ev, find);
 
-            //只要有一次返回false,就设置结果为false,否则结果就为true
+            // 只要有一次返回false,就设置结果为false,否则结果就为true
             if (oneResult == false) {
                 result = false;
             }
         }
         return result;
-
     }
 
     /***
@@ -118,8 +114,8 @@ public class MessageCompatibilityApi {
      * @param eventCode
      * @return
      */
-    private static VirtualEventObject findSpecialEvent(List<VirtualEventObject> eventObjects,
-                                                       String topic, String eventCode) {
+    private static VirtualEventObject findSpecialEvent(
+            List<VirtualEventObject> eventObjects, String topic, String eventCode) {
 
         for (VirtualEventObject ev : eventObjects) {
             if (ev.getTopicId().equals(topic) && ev.getEventCode().equals(eventCode)) {
@@ -129,7 +125,6 @@ public class MessageCompatibilityApi {
 
         logger.error("topic=" + topic + ",eventCode=" + eventCode + ",在新的消息体中不存在");
         return null;
-
     }
 
     private static List<String> getTopicAndCodes(List<VirtualEventObject> eventObjects) {
@@ -148,8 +143,7 @@ public class MessageCompatibilityApi {
      * @param newEventObject
      * @return
      */
-    public static boolean compareEventObject(VirtualEventObject oldEventObject,
-                                             VirtualEventObject newEventObject) {
+    public static boolean compareEventObject(VirtualEventObject oldEventObject, VirtualEventObject newEventObject) {
         boolean result = true;
         // 消息对比
         logger.info("开始校验消息");
@@ -178,7 +172,6 @@ public class MessageCompatibilityApi {
 
         logger.warn("消息比对结果" + str);
         return result;
-
     }
 
     /***
@@ -189,7 +182,6 @@ public class MessageCompatibilityApi {
     private static ClassLoader getCustomClassLoader() {
         ClassLoader cl = MessageCompatibilityApi.class.getClassLoader();
         return cl;
-
     }
 
     /***
@@ -200,14 +192,11 @@ public class MessageCompatibilityApi {
      * @param caseId
      * @return
      */
-    private static List<VirtualEventObject> getEventObjects(ClassLoader cl, String yamlPath,
-                                                            String caseId) {
+    private static List<VirtualEventObject> getEventObjects(ClassLoader cl, String yamlPath, String caseId) {
 
         Map<String, PrepareData> caseMap = BaseDataUtil.loadFromYaml(yamlPath, cl);
         PrepareData prepareData = caseMap.get(caseId);
-        List<VirtualEventObject> eventObjects = prepareData.getExpectEventSet()
-                .getVirtualEventObjects();
+        List<VirtualEventObject> eventObjects = prepareData.getExpectEventSet().getVirtualEventObjects();
         return eventObjects;
-
     }
 }

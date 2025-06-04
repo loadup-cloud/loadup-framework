@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.service.impl;
 
 /*-
@@ -34,18 +35,17 @@ import com.github.loadup.commons.template.ServiceTemplate;
 import com.github.loadup.commons.util.ValidateUtils;
 import com.github.loadup.modules.upms.client.api.UserService;
 import com.github.loadup.modules.upms.client.cmd.*;
-import com.github.loadup.modules.upms.client.dto.SimpleUserDTO;
-import com.github.loadup.modules.upms.client.dto.UserDTO;
+import com.github.loadup.modules.upms.client.dto.*;
 import com.github.loadup.modules.upms.client.query.*;
 import com.github.loadup.modules.upms.domain.UpmsUser;
 import com.github.loadup.modules.upms.gateway.UserGateway;
 import com.github.loadup.modules.upms.service.impl.convertor.UserDTOConvertor;
+import com.github.loadup.modules.upms.service.impl.convertor.UserSaveDTOConvertor;
 import jakarta.annotation.Resource;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -64,8 +64,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public MultiResponse<UserDTO> listByIds(IdListQuery query) {
-        List<UserDTO> dtoList = query.getIdList().stream().map(v -> userGateway.findById(v)).map(
-                v -> UserDTOConvertor.INSTANCE.toUserDTO(v.get())).collect(Collectors.toList());
+        List<UserDTO> dtoList = query.getIdList().stream()
+                .map(v -> userGateway.findById(v))
+                .map(v -> UserDTOConvertor.INSTANCE.toUserDTO(v.get()))
+                .collect(Collectors.toList());
         return MultiResponse.of(dtoList);
     }
 
@@ -88,18 +90,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public MultiResponse<SimpleUserDTO> listByRoleIds(UserRoleListQuery query) {
-        return ServiceTemplate.execute((Void) -> ValidateUtils.validate(query), // check parameter
+        return ServiceTemplate.execute(
+                (Void) -> ValidateUtils.validate(query), // check parameter
                 () -> { // process
                     List<UpmsUser> userList = userGateway.findByRoleIdList(query.getIdList());
                     List<SimpleUserDTO> userDTOList = UserDTOConvertor.INSTANCE.toSimpleUserDTOList(userList);
                     return MultiResponse.of(userDTOList);
                 },
-                //build failure
-                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
-                //compose log
-                (Void) -> {
-                });
+                // build failure
+                (result) -> MultiResponse.buildFailure(result),
 
+                // compose log
+                (Void) -> {});
     }
 
     @Override
@@ -114,26 +116,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public SingleResponse<SimpleUserDTO> save(UserSaveCmd cmd) {
-        return ServiceTemplate.execute((Void) -> ValidateUtils.validate(cmd), // check parameter
+        return ServiceTemplate.execute(
+                (Void) -> ValidateUtils.validate(cmd), // check parameter
                 () -> { // process
-                    SimpleUserDTO dto = cmd.getUser();
-                    UpmsUser user = UserDTOConvertor.INSTANCE.toUser(dto);
+                    UserSaveDTO dto = cmd.getUser();
+                    UpmsUser user = UserSaveDTOConvertor.INSTANCE.toUser(dto);
                     String plantPassword = dto.getPassword();
                     user.setPassword(plantPassword);
                     user = userGateway.create(user);
                     return SingleResponse.of(UserDTOConvertor.INSTANCE.toSimpleUserDTO(user));
                 },
-                //build failure
-                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
-                //compose log
-                (Void) -> {
-                });
+                // build failure
+                (result) -> SingleResponse.buildFailure(result),
+                // compose log
+                (Void) -> {});
     }
 
     @Override
     public SingleResponse<UserDTO> saveUserRoles(UserRolesSaveCmd cmd) {
-        return ServiceTemplate.execute((Void) -> ValidateUtils.validate(cmd), // check parameter
-
+        return ServiceTemplate.execute(
+                (Void) -> ValidateUtils.validate(cmd), // check parameter
                 () -> { // process
                     Optional<UpmsUser> user = userGateway.findById(cmd.getUserId());
                     if (user.isEmpty()) {
@@ -143,10 +145,10 @@ public class UserServiceImpl implements UserService {
                     return findById(IdQuery.of(cmd.getUserId()));
                 },
                 //
-                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
+                (result) -> SingleResponse.buildFailure(result),
+
                 //
-                (Void) -> {
-                });
+                (Void) -> {});
     }
 
     @Override
@@ -154,7 +156,6 @@ public class UserServiceImpl implements UserService {
         return ServiceTemplate.execute(
                 // check parameter
                 (Void) -> {
-
                     ValidateUtils.validate(cmd);
                     AssertUtil.equals(cmd.getNewPassword(), cmd.getConfirmPassword());
                 },
@@ -171,10 +172,10 @@ public class UserServiceImpl implements UserService {
                     return Response.buildSuccess();
                 },
                 //
-                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
+                (result) -> SingleResponse.buildFailure(result),
+
                 //
-                (Void) -> {
-                });
+                (Void) -> {});
     }
 
     @Override

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.model;
 
 /*-
@@ -26,16 +27,15 @@ package com.github.loadup.components.gateway.facade.model;
  * #L%
  */
 
+import java.util.Date;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.Date;
 
 /**
  *
  */
 public class SecurityConfigDto {
-    //========== properties ==========
+    // ========== properties ==========
 
     /**
      * This property corresponds to db column <tt>tenant_id</tt>.
@@ -112,7 +112,7 @@ public class SecurityConfigDto {
      */
     private Date gmtModified;
 
-    //========== getters and setters ==========
+    // ========== getters and setters ==========
 
     /**
      *

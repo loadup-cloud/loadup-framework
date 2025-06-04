@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.cache;
 
 /*-
@@ -40,12 +41,11 @@ import com.github.loadup.components.gateway.core.service.InterfaceProdCenterQuer
 import com.github.loadup.components.gateway.facade.config.model.APIConditionGroup;
 import com.github.loadup.components.gateway.facade.config.model.SPIConditionGroup;
 import jakarta.annotation.Resource;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 /**
  * <p>
@@ -83,8 +83,7 @@ public class InterfaceConfigCache {
     /**
      * get with interface Id
      */
-    public static InterfaceConfig getWithInterfaceId(String interfaceId, RoleType roleType,
-                                                     String interfaceTypeStr) {
+    public static InterfaceConfig getWithInterfaceId(String interfaceId, RoleType roleType, String interfaceTypeStr) {
         RepositoryType repositoryType = RepositoryUtil.getRepositoryType();
         if (repositoryType.isConfigInInternalCache()) {
             return interfaceConfigMap.get(interfaceId);
@@ -96,19 +95,19 @@ public class InterfaceConfigCache {
             switch (interfaceType) {
                 case SPI:
                     // 传过来的interfaceId是接收方integrationUrl。想要获取接收方的CommunicationConfig
-                    SPIConditionGroup spiConditionGroup = interfaceProdCenterQueryService
-                            .querySPIConditionGroup(interfaceId);
+                    SPIConditionGroup spiConditionGroup =
+                            interfaceProdCenterQueryService.querySPIConditionGroup(interfaceId);
                     return InterfaceConfigConvertor.convertToReceiverConfig(spiConditionGroup);
                 case OPENAPI:
                     if (roleType == RoleType.SENDER) {
                         // 传过来的url是发送方url。想要获取发送方的CommunicationConfig
-                        APIConditionGroup apiConditionGroup = interfaceProdCenterQueryService
-                                .queryAPIConditionGroup(interfaceId, null);
+                        APIConditionGroup apiConditionGroup =
+                                interfaceProdCenterQueryService.queryAPIConditionGroup(interfaceId, null);
                         return InterfaceConfigConvertor.convertToSenderConfig(apiConditionGroup);
                     } else {
                         // 传过来的url是integrationUrl。想要获取接收方的CommunicationConfig
-                        APIConditionGroup apiConditionGroup = interfaceProdCenterQueryService
-                                .queryAPIConditionGroup(null, interfaceId);
+                        APIConditionGroup apiConditionGroup =
+                                interfaceProdCenterQueryService.queryAPIConditionGroup(null, interfaceId);
                         return InterfaceConfigConvertor.convertToReceiverConfig(apiConditionGroup);
                     }
                 default:
@@ -127,8 +126,7 @@ public class InterfaceConfigCache {
             for (String openUrl : openUrls) {
                 APIConditionGroup apiConditionGroup = null;
                 try {
-                    apiConditionGroup = interfaceProdCenterQueryService
-                            .queryAPIConditionGroup(openUrl, null);
+                    apiConditionGroup = interfaceProdCenterQueryService.queryAPIConditionGroup(openUrl, null);
                 } catch (CommonException ex) {
                     if (ex.getResultCode() != GatewayErrorCode.CONFIGURATION_LOAD_ERROR) {
                         throw ex;

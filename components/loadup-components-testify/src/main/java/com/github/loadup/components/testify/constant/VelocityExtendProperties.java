@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.constant;
 
 /*-
@@ -35,7 +32,7 @@ package com.github.loadup.components.testify.constant;
  * <p>
  * 丰富velocity默认处理能力。
  *
- * 
+ *
  *
  */
 public class VelocityExtendProperties {
@@ -64,5 +61,4 @@ public class VelocityExtendProperties {
      * 内置当前版本，格式：2.x.x
      */
     public static final String CUR_VER = "curVer";
-
 }

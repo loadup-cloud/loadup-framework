@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.common.convertor;
 
 /*-
@@ -41,13 +42,12 @@ import com.github.loadup.components.gateway.facade.request.InterfaceConfigUpgrad
 import com.github.loadup.components.gateway.facade.response.CommunicationConfigResponse;
 import com.github.loadup.components.gateway.facade.response.InterfaceConfigInnerResponse;
 import com.github.loadup.components.gateway.facade.response.MessageProcessConfigResponse;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -64,8 +64,7 @@ public class InterfaceConfigConvertor {
         interfaceConfig.setMessageProcessorId(item.getMessageProcessId());
         interfaceConfig.setMessageReceiverInterfaceId(item.getMessageReceiverInterfaceId());
         // 需要考虑如何构建,包括默认版本
-        interfaceConfig.setVersion(
-                StringUtils.isBlank(item.getVersion()) ? StringUtils.EMPTY : item.getVersion());
+        interfaceConfig.setVersion(StringUtils.isBlank(item.getVersion()) ? StringUtils.EMPTY : item.getVersion());
         interfaceConfig.setSecurityStrategyCode(item.getCertCode());
         interfaceConfig.setEnable(Boolean.parseBoolean(item.getIsEnable()));
         interfaceConfig.setProperties(item.getProperties());
@@ -165,17 +164,12 @@ public class InterfaceConfigConvertor {
         InterfaceDto dto = new InterfaceDto();
         dto.setCommunicationProperties(request.getCommunicationConfig().getProperties());
         dto.setTenantId(request.getTenantId());
-        dto.setIntegrationRequestBodyAssemble(
-                request.getProcessConfig().getReceiverRequestBodyAssembleTemplate());
-        dto.setIntegrationRequestHeaderAssemble(
-                request.getProcessConfig().getReceiverRequestHeaderAssembleTemplate());
-        dto.setIntegrationResponseParser(
-                request.getProcessConfig().getReceiverResponseParserTemplate());
+        dto.setIntegrationRequestBodyAssemble(request.getProcessConfig().getReceiverRequestBodyAssembleTemplate());
+        dto.setIntegrationRequestHeaderAssemble(request.getProcessConfig().getReceiverRequestHeaderAssembleTemplate());
+        dto.setIntegrationResponseParser(request.getProcessConfig().getReceiverResponseParserTemplate());
         dto.setInterfaceRequestParser(request.getProcessConfig().getSenderRequestParserTemplate());
-        dto.setInterfaceResponseBodyAssemble(
-                request.getProcessConfig().getSenderResponseBodyAssembleTemplate());
-        dto.setInterfaceResponseHeaderAssemble(
-                request.getProcessConfig().getSenderResponseHeaderAssembleTemplate());
+        dto.setInterfaceResponseBodyAssemble(request.getProcessConfig().getSenderResponseBodyAssembleTemplate());
+        dto.setInterfaceResponseHeaderAssemble(request.getProcessConfig().getSenderResponseHeaderAssembleTemplate());
         dto.setInterfaceName(request.getInterfaceName());
         dto.setUrl(request.getCommunicationConfig().getUri());
         dto.setIntegrationUrl(request.getCommunicationConfig().getIntegrationUri());
@@ -184,8 +178,11 @@ public class InterfaceConfigConvertor {
         dto.setType(request.getInterfaceType().getCode());
         dto.setStatus(InterfaceStatus.INVALID.getCode());
         String interfaceId = InterfaceConfigUtil.generateInterfaceId(
-                request.getCommunicationConfig().getUri(), request.getTenantId(), dto.getVersion(),
-                request.getInterfaceType().getCode(), request.getCommunicationConfig().getProperties());
+                request.getCommunicationConfig().getUri(),
+                request.getTenantId(),
+                dto.getVersion(),
+                request.getInterfaceType().getCode(),
+                request.getCommunicationConfig().getProperties());
         dto.setInterfaceId(interfaceId);
         return dto;
     }
@@ -200,17 +197,12 @@ public class InterfaceConfigConvertor {
         InterfaceDto dto = new InterfaceDto();
         dto.setCommunicationProperties(request.getCommunicationConfig().getProperties());
         dto.setTenantId(request.getTenantId());
-        dto.setIntegrationRequestBodyAssemble(
-                request.getProcessConfig().getReceiverRequestBodyAssembleTemplate());
-        dto.setIntegrationRequestHeaderAssemble(
-                request.getProcessConfig().getReceiverRequestHeaderAssembleTemplate());
-        dto.setIntegrationResponseParser(
-                request.getProcessConfig().getReceiverResponseParserTemplate());
+        dto.setIntegrationRequestBodyAssemble(request.getProcessConfig().getReceiverRequestBodyAssembleTemplate());
+        dto.setIntegrationRequestHeaderAssemble(request.getProcessConfig().getReceiverRequestHeaderAssembleTemplate());
+        dto.setIntegrationResponseParser(request.getProcessConfig().getReceiverResponseParserTemplate());
         dto.setInterfaceRequestParser(request.getProcessConfig().getSenderRequestParserTemplate());
-        dto.setInterfaceResponseBodyAssemble(
-                request.getProcessConfig().getSenderResponseBodyAssembleTemplate());
-        dto.setInterfaceResponseHeaderAssemble(
-                request.getProcessConfig().getSenderResponseHeaderAssembleTemplate());
+        dto.setInterfaceResponseBodyAssemble(request.getProcessConfig().getSenderResponseBodyAssembleTemplate());
+        dto.setInterfaceResponseHeaderAssemble(request.getProcessConfig().getSenderResponseHeaderAssembleTemplate());
         dto.setInterfaceName(request.getInterfaceName());
         dto.setUrl(request.getCommunicationConfig().getUri());
         dto.setIntegrationUrl(request.getCommunicationConfig().getIntegrationUri());
@@ -232,17 +224,12 @@ public class InterfaceConfigConvertor {
         InterfaceDto dto = new InterfaceDto();
         dto.setCommunicationProperties(request.getCommunicationConfig().getProperties());
         dto.setTenantId(request.getTenantId());
-        dto.setIntegrationRequestBodyAssemble(
-                request.getProcessConfig().getReceiverRequestBodyAssembleTemplate());
-        dto.setIntegrationRequestHeaderAssemble(
-                request.getProcessConfig().getReceiverRequestHeaderAssembleTemplate());
-        dto.setIntegrationResponseParser(
-                request.getProcessConfig().getReceiverResponseParserTemplate());
+        dto.setIntegrationRequestBodyAssemble(request.getProcessConfig().getReceiverRequestBodyAssembleTemplate());
+        dto.setIntegrationRequestHeaderAssemble(request.getProcessConfig().getReceiverRequestHeaderAssembleTemplate());
+        dto.setIntegrationResponseParser(request.getProcessConfig().getReceiverResponseParserTemplate());
         dto.setInterfaceRequestParser(request.getProcessConfig().getSenderRequestParserTemplate());
-        dto.setInterfaceResponseBodyAssemble(
-                request.getProcessConfig().getSenderResponseBodyAssembleTemplate());
-        dto.setInterfaceResponseHeaderAssemble(
-                request.getProcessConfig().getSenderResponseHeaderAssembleTemplate());
+        dto.setInterfaceResponseBodyAssemble(request.getProcessConfig().getSenderResponseBodyAssembleTemplate());
+        dto.setInterfaceResponseHeaderAssemble(request.getProcessConfig().getSenderResponseHeaderAssembleTemplate());
 
         dto.setInterfaceName(request.getInterfaceName());
         dto.setUrl(request.getCommunicationConfig().getUri());
@@ -275,25 +262,18 @@ public class InterfaceConfigConvertor {
             communicationConfigResponse.setReadTimeout(map.get("readTimeout"));
             communicationConfigResponse.setUri(map.get("url"));
             communicationConfigResponse.setProperties(map.get("properties"));
-            communicationConfigResponse
-                    .setRecvMessageFormat(MessageFormat.getEnumByCode(map.get("recvMessageFormat")));
-            communicationConfigResponse
-                    .setSendMessageFormat(MessageFormat.getEnumByCode(map.get("rendMessageFormat")));
+            communicationConfigResponse.setRecvMessageFormat(MessageFormat.getEnumByCode(map.get("recvMessageFormat")));
+            communicationConfigResponse.setSendMessageFormat(MessageFormat.getEnumByCode(map.get("rendMessageFormat")));
             innerResponse.setCommunicationConfig(communicationConfigResponse);
 
             // build process config
             MessageProcessConfigResponse processConfigResponse = new MessageProcessConfigResponse();
             processConfigResponse.setSenderRequestParserTemplate(dto.getInterfaceRequestParser());
-            processConfigResponse
-                    .setSenderResponseBodyAssembleTemplate(dto.getInterfaceResponseBodyAssemble());
-            processConfigResponse
-                    .setSenderResponseHeaderAssembleTemplate(dto.getInterfaceResponseHeaderAssemble());
-            processConfigResponse
-                    .setReceiverRequestBodyAssembleTemplate(dto.getIntegrationRequestBodyAssemble());
-            processConfigResponse.setReceiverRequestHeaderAssembleTemplate(
-                    dto.getIntegrationRequestHeaderAssemble());
-            processConfigResponse
-                    .setReceiverResponseParserTemplate(dto.getIntegrationResponseParser());
+            processConfigResponse.setSenderResponseBodyAssembleTemplate(dto.getInterfaceResponseBodyAssemble());
+            processConfigResponse.setSenderResponseHeaderAssembleTemplate(dto.getInterfaceResponseHeaderAssemble());
+            processConfigResponse.setReceiverRequestBodyAssembleTemplate(dto.getIntegrationRequestBodyAssemble());
+            processConfigResponse.setReceiverRequestHeaderAssembleTemplate(dto.getIntegrationRequestHeaderAssemble());
+            processConfigResponse.setReceiverResponseParserTemplate(dto.getIntegrationResponseParser());
             innerResponse.setProcessConfig(processConfigResponse);
 
             responses.add(innerResponse);

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.service.test;
 
 /*-
@@ -34,29 +35,28 @@ import com.github.loadup.commons.util.RandomUtil;
 import com.github.loadup.modules.upms.client.api.RoleService;
 import com.github.loadup.modules.upms.client.api.UserService;
 import com.github.loadup.modules.upms.client.cmd.*;
-import com.github.loadup.modules.upms.client.dto.SimpleRoleDTO;
-import com.github.loadup.modules.upms.client.dto.SimpleUserDTO;
-import com.github.loadup.modules.upms.client.dto.UserDTO;
+import com.github.loadup.modules.upms.client.dto.*;
 import com.github.loadup.modules.upms.client.query.UserRoleListQuery;
 import com.github.loadup.modules.upms.dal.dataobject.UserDO;
 import com.github.loadup.modules.upms.dal.repository.UserRepository;
 import com.github.loadup.modules.upms.test.TestApplication;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @SpringBootTest(classes = TestApplication.class)
 public class UserServiceTest {
 
     @Autowired
     UserService userService;
+
     @Autowired
     UserRepository userRepository;
+
     @Autowired
     RoleService roleService;
 
@@ -78,13 +78,13 @@ public class UserServiceTest {
         changeCmd.setOldPassword(oldPwd);
         changeCmd.setNewPassword(newPwd);
         changeCmd.setConfirmPassword(newPwd);
-        //ThreadUtils.sleep(Duration.ofSeconds(2));
+        // ThreadUtils.sleep(Duration.ofSeconds(2));
         Response response = userService.changePassword(changeCmd);
         Assertions.assertTrue(response.getResult().getCode() == "SUCCESS");
         Optional<UserDO> userDO = userRepository.findById(userId);
         Assertions.assertTrue(response.getResult().getCode() == "SUCCESS");
-        userDO.ifPresent(
-                user -> Assertions.assertEquals(newPwd, PasswordUtils.decrypt(user.getPassword(), newPwd, user.getSalt())));
+        userDO.ifPresent(user ->
+                Assertions.assertEquals(newPwd, PasswordUtils.decrypt(user.getPassword(), newPwd, user.getSalt())));
     }
 
     @Test
@@ -104,7 +104,6 @@ public class UserServiceTest {
         SingleResponse<UserDTO> response2 = userService.saveUserRoles(userRolesSaveCmd);
         Assertions.assertEquals("SUCCESS", response2.getResult().getCode());
         Assertions.assertEquals(1, response2.getData().getRoleList().size());
-
     }
 
     @Test
@@ -129,7 +128,6 @@ public class UserServiceTest {
 
         UserDeleteCmd cmd = new UserDeleteCmd();
         userService.deleteUser(cmd);
-
     }
 
     private SingleResponse<SimpleRoleDTO> createRole() {
@@ -144,8 +142,8 @@ public class UserServiceTest {
 
     private SingleResponse<SimpleUserDTO> createUser() {
         UserSaveCmd cmd = new UserSaveCmd();
-        SimpleUserDTO dto = new SimpleUserDTO();
-        dto.setNickName("ls");
+        UserSaveDTO dto = new UserSaveDTO();
+        dto.setAccount("ls");
         dto.setPassword("123456");
         cmd.setUser(dto);
         SingleResponse<SimpleUserDTO> userDTO = userService.save(cmd);

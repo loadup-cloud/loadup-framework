@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.result;
 
 /*-
@@ -26,11 +27,10 @@ package com.github.loadup.commons.result;
  * #L%
  */
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Serial;
 import java.util.Objects;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -86,5 +86,4 @@ public class SingleResponse<T> extends Response {
         response.setResult(Result.buildFailure(errCode, errMessage));
         return response;
     }
-
 }

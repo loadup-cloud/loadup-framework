@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data.impl;
 
 /*-
@@ -35,7 +32,6 @@ import com.github.loadup.components.testify.data.MetaItem;
 import com.github.loadup.components.testify.data.MetaItemMapping;
 import com.github.loadup.components.testify.data.MetaItemStore;
 import com.github.loadup.components.testify.data.db.MetaItemRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +40,7 @@ import java.util.List;
  * <p>
  * 依赖DB
  *
- * 
+ *
  *
  */
 public class DefaultMetaItemStore implements MetaItemStore {
@@ -102,8 +98,7 @@ public class DefaultMetaItemStore implements MetaItemStore {
      */
     @Override
     public MetaItemMapping getMetaItemMapping(MetaInitItem initItem) {
-        return metaItemRepository.loadMetaItemMapping(initItem.getSystem(), initItem.getHost(),
-                initItem.getField());
+        return metaItemRepository.loadMetaItemMapping(initItem.getSystem(), initItem.getHost(), initItem.getField());
     }
 
     /**
@@ -113,7 +108,6 @@ public class DefaultMetaItemStore implements MetaItemStore {
     public void addMetaItemMapping(MetaItemMapping metaItemMapping) {
 
         metaItemRepository.storeMetaItemMapping(metaItemMapping);
-
     }
 
     /**
@@ -133,5 +127,4 @@ public class DefaultMetaItemStore implements MetaItemStore {
 
         return metaItemRepository.reStoreMetaItem(metaItem);
     }
-
 }

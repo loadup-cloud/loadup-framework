@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.util;
 
 /*-
@@ -27,7 +28,6 @@ package com.github.loadup.components.gateway.certification.util;
  */
 
 import com.github.loadup.components.gateway.certification.model.CharsetEnum;
-
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -74,5 +74,4 @@ public class Base64Util {
         byte[] input = data.getBytes(inputEncode.getCharSet());
         return new String(decode(input), outputEncode.getCharSet());
     }
-
 }

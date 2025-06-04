@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.enums;
 
 /*-
@@ -28,11 +28,10 @@ package com.github.loadup.components.testify.enums;
  */
 
 /**
- * 
+ *
  *
  */
 public enum TestifyActionEnum {
-
     GEN_TEST_SCRIPT("genTestScript", "生成测试用例脚本"),
 
     RUN_TEST("runTest", "执行测试用例");

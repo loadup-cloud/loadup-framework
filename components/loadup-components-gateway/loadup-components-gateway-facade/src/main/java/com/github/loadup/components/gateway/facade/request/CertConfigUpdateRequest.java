@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -31,13 +32,11 @@ import com.github.loadup.components.gateway.facade.enums.OperationType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
 import java.util.Map;
 
 /**
  *
  */
-
 public class CertConfigUpdateRequest extends BaseRequest {
 
     /**
@@ -101,7 +100,7 @@ public class CertConfigUpdateRequest extends BaseRequest {
     private Map<String, String> algorithmProperties;
 
     /**
-     * 
+     *
      */
     public CertTypeEnum getCertType() {
         return certType;
@@ -115,7 +114,7 @@ public class CertConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getCertContent() {
         return certContent;
@@ -129,7 +128,7 @@ public class CertConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getCertStatus() {
         return certStatus;
@@ -143,7 +142,7 @@ public class CertConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public Map<String, String> getProperties() {
         return properties;
@@ -157,7 +156,7 @@ public class CertConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public Map<String, String> getAlgorithmProperties() {
         return algorithmProperties;
@@ -171,7 +170,7 @@ public class CertConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getSecurityStrategyCode() {
         return securityStrategyCode;
@@ -185,7 +184,7 @@ public class CertConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getClientId() {
         return clientId;
@@ -199,7 +198,7 @@ public class CertConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public OperationType getOperateType() {
         return operateType;
@@ -213,7 +212,7 @@ public class CertConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getAlgoName() {
         return algoName;
@@ -227,7 +226,7 @@ public class CertConfigUpdateRequest extends BaseRequest {
     }
 
     /**
-     * 
+     *
      */
     public String getKeyType() {
         return keyType;

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.prototype.model;
 
 /*-
@@ -27,7 +28,6 @@ package com.github.loadup.components.gateway.core.prototype.model;
  */
 
 import com.github.loadup.components.gateway.core.common.Constant;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;

@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.processor;
 
 /*-
@@ -30,6 +27,12 @@ package com.github.loadup.components.testify.object.processor;
  * #L%
  */
 
+import com.github.loadup.components.testify.helper.CSVHelper;
+import com.github.loadup.components.testify.log.TestifyLogUtil;
+import com.github.loadup.components.testify.model.VirtualList;
+import com.github.loadup.components.testify.model.VirtualMap;
+import com.github.loadup.components.testify.util.CSVApisUtil;
+import com.github.loadup.components.testify.util.ReflectUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,16 +40,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import com.github.loadup.components.testify.helper.CSVHelper;
-import com.github.loadup.components.testify.log.TestifyLogUtil;
-import com.github.loadup.components.testify.model.VirtualList;
-import com.github.loadup.components.testify.model.VirtualMap;
-import com.github.loadup.components.testify.util.CSVApisUtil;
-import com.github.loadup.components.testify.util.ReflectUtil;
 
 /**
  * @author 马洪良
@@ -55,14 +50,14 @@ import com.github.loadup.components.testify.util.ReflectUtil;
 @Slf4j
 public final class ObjHandUtil {
 
-
     /**
      * @param convertCsv
      * @param clsName
      * @return
      */
     public static boolean isSubListConvert(String convertCsv, String clsName) {
-        if (StringUtils.isBlank(convertCsv) || !StringUtils.contains(convertCsv, ".csv")
+        if (StringUtils.isBlank(convertCsv)
+                || !StringUtils.contains(convertCsv, ".csv")
                 || StringUtils.isBlank(clsName)) {
             return false;
         }
@@ -91,7 +86,8 @@ public final class ObjHandUtil {
                 if (CSVApisUtil.isWrapClass(typeCls) && null == obj.getVirtualList()) {
                     retList.add(ReflectUtil.valueByCorrectType(null, typeCls, "1"));
                 }
-                if (CSVApisUtil.isWrapClass(typeCls) && typeCls.getName().equals("java.lang.String")
+                if (CSVApisUtil.isWrapClass(typeCls)
+                        && typeCls.getName().equals("java.lang.String")
                         && StringUtils.isBlank((String) obj.getVirtualList())) {
                     retList.add("demo");
                 } else {
@@ -104,7 +100,8 @@ public final class ObjHandUtil {
                 if (CSVApisUtil.isWrapClass(typeCls) && null == obj.getVirtualList()) {
                     retSet.add(ReflectUtil.valueByCorrectType(null, typeCls, "1"));
                 }
-                if (CSVApisUtil.isWrapClass(typeCls) && typeCls.getName().equals("java.lang.String")
+                if (CSVApisUtil.isWrapClass(typeCls)
+                        && typeCls.getName().equals("java.lang.String")
                         && StringUtils.isBlank((String) obj.getVirtualList())) {
                     retSet.add("demo");
                 } else {
@@ -134,5 +131,4 @@ public final class ObjHandUtil {
         }
         return retMap;
     }
-
 }

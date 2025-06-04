@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.components.testify.util;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.*;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
@@ -37,8 +37,7 @@ import java.util.List;
 @Slf4j
 public class FileOperateUtils {
 
-    public static void findFileRecursive(final String findDir, final String fileNameRegex,
-                                         List<File> fileList) {
+    public static void findFileRecursive(final String findDir, final String fileNameRegex, List<File> fileList) {
         if (fileList == null) {
             return;
         }
@@ -55,9 +54,7 @@ public class FileOperateUtils {
         }
     }
 
-
-    public static void findFolderRecursive(final String findDir, final String fileNameRegex,
-                                           List<File> fileList) {
+    public static void findFolderRecursive(final String findDir, final String fileNameRegex, List<File> fileList) {
         if (fileList == null) {
             return;
         }
@@ -85,9 +82,7 @@ public class FileOperateUtils {
         String bakFileName = fromFile.getName() + ".bak";
 
         return renameFile(fromFile, bakFileName);
-
     }
-
 
     public static boolean backupFileToDel(File fromFile) {
 
@@ -96,9 +91,7 @@ public class FileOperateUtils {
         }
 
         return backupFile(fromFile) && fromFile.delete();
-
     }
-
 
     public static boolean renameFile(File fromFile, String newName) {
 
@@ -116,7 +109,6 @@ public class FileOperateUtils {
             log.error(fromFile.getName() + "" + newFile.getName() + "");
             return false;
         }
-
     }
 
     /**
@@ -136,7 +128,6 @@ public class FileOperateUtils {
             int c;
             while ((c = bin.read()) != -1) {
                 bout.write(c);
-
             }
             bin.close();
             bout.close();
@@ -145,6 +136,5 @@ public class FileOperateUtils {
             log.error(fromFile.getAbsolutePath() + "");
             return false;
         }
-
     }
 }

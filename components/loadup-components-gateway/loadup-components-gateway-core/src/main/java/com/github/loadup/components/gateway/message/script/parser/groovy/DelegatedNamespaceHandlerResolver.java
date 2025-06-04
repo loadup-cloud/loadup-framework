@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.script.parser.groovy;
 
 /*-
@@ -26,21 +27,20 @@ package com.github.loadup.components.gateway.message.script.parser.groovy;
  * #L%
  */
 
-import org.springframework.beans.factory.xml.NamespaceHandler;
-import org.springframework.beans.factory.xml.NamespaceHandlerResolver;
-
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.springframework.beans.factory.xml.NamespaceHandler;
+import org.springframework.beans.factory.xml.NamespaceHandlerResolver;
 
 /**
  * CE专用Groovy兼容处理类
  */
 public class DelegatedNamespaceHandlerResolver implements NamespaceHandlerResolver {
 
-    private final Map<NamespaceHandlerResolver, String> resolvers = new LinkedHashMap<NamespaceHandlerResolver, String>(
-            2);
+    private final Map<NamespaceHandlerResolver, String> resolvers =
+            new LinkedHashMap<NamespaceHandlerResolver, String>(2);
 
     /**
      * CE兼容性处理
@@ -55,8 +55,9 @@ public class DelegatedNamespaceHandlerResolver implements NamespaceHandlerResolv
     @Override
     public NamespaceHandler resolve(String namespaceUri) {
 
-        for (Iterator<Entry<NamespaceHandlerResolver, String>> iterator = resolvers.entrySet()
-                .iterator(); iterator.hasNext(); ) {
+        for (Iterator<Entry<NamespaceHandlerResolver, String>> iterator =
+                        resolvers.entrySet().iterator();
+                iterator.hasNext(); ) {
             Entry<NamespaceHandlerResolver, String> entry = iterator.next();
             NamespaceHandlerResolver handlerResolver = entry.getKey();
             NamespaceHandler handler = handlerResolver.resolve(namespaceUri);
@@ -64,7 +65,6 @@ public class DelegatedNamespaceHandlerResolver implements NamespaceHandlerResolv
             if (handler != null) {
                 return handler;
             }
-
         }
         return null;
     }

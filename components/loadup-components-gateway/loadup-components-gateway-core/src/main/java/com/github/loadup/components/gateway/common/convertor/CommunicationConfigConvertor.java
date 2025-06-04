@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.common.convertor;
 
 /*-
@@ -26,6 +27,8 @@ package com.github.loadup.components.gateway.common.convertor;
  * #L%
  */
 
+import static com.github.loadup.components.gateway.core.common.Constant.*;
+
 import com.github.loadup.components.gateway.certification.util.CommonUtil;
 import com.github.loadup.components.gateway.core.common.Constant;
 import com.github.loadup.components.gateway.core.common.enums.InterfaceType;
@@ -40,17 +43,14 @@ import com.github.loadup.components.gateway.facade.config.model.SPIConditionGrou
 import com.github.loadup.components.gateway.facade.model.CommunicationConfigDto;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import jakarta.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static com.github.loadup.components.gateway.core.common.Constant.*;
 
 /**
  *
@@ -61,8 +61,7 @@ public class CommunicationConfigConvertor {
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(CommunicationConfigConvertor.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommunicationConfigConvertor.class);
     /**
      * Communication Properties product center query service
      */
@@ -83,18 +82,19 @@ public class CommunicationConfigConvertor {
             model.setUri(new TransportURI(getURLPath(item.getUri())));
             if (StringUtils.isNotBlank(item.getProperties())) {
                 Map<String, String> propertyMap = CommonUtil.Str2Kv(item.getProperties());
-                model.setConnectTimeout(StringUtils.isBlank(propertyMap.get(CONNECTION_TIMEOUT))
-                        ? DEFAULT_CONNECTION_TIMEOUT
-                        : Integer.valueOf(propertyMap.get(CONNECTION_TIMEOUT)));
-                model.setReadTimeout(StringUtils.isBlank(propertyMap.get(Constant.READ_TIMEOUT))
-                        ? Constant.DEFAULT_READ_TIMEOUT
-                        : Integer.valueOf(propertyMap.get(Constant.READ_TIMEOUT)));
+                model.setConnectTimeout(
+                        StringUtils.isBlank(propertyMap.get(CONNECTION_TIMEOUT))
+                                ? DEFAULT_CONNECTION_TIMEOUT
+                                : Integer.valueOf(propertyMap.get(CONNECTION_TIMEOUT)));
+                model.setReadTimeout(
+                        StringUtils.isBlank(propertyMap.get(Constant.READ_TIMEOUT))
+                                ? Constant.DEFAULT_READ_TIMEOUT
+                                : Integer.valueOf(propertyMap.get(Constant.READ_TIMEOUT)));
                 model.setProperties(item.getProperties());
             }
         } catch (Exception e) {
-            //log error
-            LogUtil.error(logger, e,
-                    "failed building communication config for interfaceId=" + item.getInterfaceId());
+            // log error
+            LogUtil.error(logger, e, "failed building communication config for interfaceId=" + item.getInterfaceId());
         }
         return model;
     }
@@ -209,12 +209,14 @@ public class CommunicationConfigConvertor {
     /**
      * set timeout communication config
      */
-    public static void setTimeoutToCommunication(String transactionType, CommunicationConfig interfaceConfig, String item) {
+    public static void setTimeoutToCommunication(
+            String transactionType, CommunicationConfig interfaceConfig, String item) {
         if (StringUtils.isNotBlank(item)) {
             Map<String, String> propertyMap = CommonUtil.Str2Kv(item);
-            interfaceConfig.setReadTimeout(StringUtils.isBlank(propertyMap.get(Constant.READ_TIMEOUT))
-                    ? Constant.DEFAULT_READ_TIMEOUT
-                    : Integer.valueOf(propertyMap.get(Constant.READ_TIMEOUT)));
+            interfaceConfig.setReadTimeout(
+                    StringUtils.isBlank(propertyMap.get(Constant.READ_TIMEOUT))
+                            ? Constant.DEFAULT_READ_TIMEOUT
+                            : Integer.valueOf(propertyMap.get(Constant.READ_TIMEOUT)));
             interfaceConfig.setProperties(item);
         }
         List<String> urls = new ArrayList<>();
@@ -222,11 +224,11 @@ public class CommunicationConfigConvertor {
         urls.add(transactionType);
         urls.add(Constant.TENANT_COMMUNICATION_PROPERTIES_GROUP_URL);
         for (String url : urls) {
-            CommunicationPropertiesGroup communicationPropertiesGroup = interfaceProdCenterQueryService.
-                    queryCommunicationPropertiesGroup(url);
-            if (communicationPropertiesGroup != null && communicationPropertiesGroup.getConnectTimeout() != null
-                    && communicationPropertiesGroup.getReadTimeout() != null
-            ) {
+            CommunicationPropertiesGroup communicationPropertiesGroup =
+                    interfaceProdCenterQueryService.queryCommunicationPropertiesGroup(url);
+            if (communicationPropertiesGroup != null
+                    && communicationPropertiesGroup.getConnectTimeout() != null
+                    && communicationPropertiesGroup.getReadTimeout() != null) {
                 interfaceConfig.setReadTimeout(communicationPropertiesGroup.getReadTimeout());
                 interfaceConfig.setConnectTimeout(communicationPropertiesGroup.getConnectTimeout());
                 break;

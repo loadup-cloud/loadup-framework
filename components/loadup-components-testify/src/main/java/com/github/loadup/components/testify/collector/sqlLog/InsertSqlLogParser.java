@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.collector.sqlLog;
 
 /*-
@@ -31,16 +28,15 @@ package com.github.loadup.components.testify.collector.sqlLog;
  */
 
 import com.github.loadup.components.testify.util.ReflectUtil;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.*;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * insert sql log resolver
  *
  * @author chao.gao
- * 
- * 
+ *
+ *
  * hongling.xiang Exp $
  */
 public class InsertSqlLogParser implements SqlLogParser {
@@ -51,29 +47,28 @@ public class InsertSqlLogParser implements SqlLogParser {
      * String, String)
      */
     @Override
-    public List<Map<String, Object>> parseGenTableDatas(String sql,
-                                                        List<String> paramValue, List<String> paramType) {
+    public List<Map<String, Object>> parseGenTableDatas(String sql, List<String> paramValue, List<String> paramType) {
 
         List<Map<String, Object>> tableDatas = new ArrayList<Map<String, Object>>();
         Map<String, Object> tableRow = new HashMap<String, Object>();
 
         // --resolve all fields of table
         // field name
-        String tableNameFields = sql.substring(sql.indexOf(" into ") + 6,
-                sql.indexOf(" values")).trim();
-        String tableFields = tableNameFields.substring(
-                        tableNameFields.indexOf("(") + 1, tableNameFields.indexOf(")"))
+        String tableNameFields =
+                sql.substring(sql.indexOf(" into ") + 6, sql.indexOf(" values")).trim();
+        String tableFields = tableNameFields
+                .substring(tableNameFields.indexOf("(") + 1, tableNameFields.indexOf(")"))
                 .trim();
 
         // field value
-        String tableValues = StringUtils.substring(sql,
-                sql.indexOf(" values") + 7).trim();
+        String tableValues =
+                StringUtils.substring(sql, sql.indexOf(" values") + 7).trim();
 
         // 字段名称、值、类型顺序对应
         int index = 0;
         String[] tableFieldsArray = tableFields.split(",");
-        String[] tableValuesArray = tableValues.substring(1,
-                tableValues.length() - 1).split(",");
+        String[] tableValuesArray =
+                tableValues.substring(1, tableValues.length() - 1).split(",");
         /*
          * //----------然后对于map需要特殊处理-------------
          *
@@ -95,22 +90,19 @@ public class InsertSqlLogParser implements SqlLogParser {
         Object[] tableValuesObj = new Object[tableValuesArray.length];
         for (int i = 0; i < tableValuesArray.length; i++) {
             String fieldValue = tableValuesArray[i].trim();
-            if (StringUtils.equals(fieldValue, "?")
-                    || StringUtils.equals(fieldValue, "null")) {
+            if (StringUtils.equals(fieldValue, "?") || StringUtils.equals(fieldValue, "null")) {
                 // 特殊处理字段为空或者为null的情况
                 if (StringUtils.isBlank(paramType.get(index))) {
                     tableValuesObj[i] = null;
-                } else if (StringUtils.equalsIgnoreCase("",
-                        paramValue.get(index))) {
+                } else if (StringUtils.equalsIgnoreCase("", paramValue.get(index))) {
                     tableValuesObj[i] = StringUtils.EMPTY;
-                } else if (StringUtils.equalsIgnoreCase("null",
-                        paramValue.get(index))) {
+                } else if (StringUtils.equalsIgnoreCase("null", paramValue.get(index))) {
                     tableValuesObj[i] = null;
                 } else {
-                    Class<?> clazz = ReflectUtil.getClassForName(paramType.get(
-                            index).trim());
-                    Object obj = ReflectUtil.valueByCorrectType(null, clazz,
-                            paramValue.get(index).trim());
+                    Class<?> clazz =
+                            ReflectUtil.getClassForName(paramType.get(index).trim());
+                    Object obj = ReflectUtil.valueByCorrectType(
+                            null, clazz, paramValue.get(index).trim());
                     tableValuesObj[i] = obj;
                 }
 
@@ -135,10 +127,9 @@ public class InsertSqlLogParser implements SqlLogParser {
      */
     @Override
     public String parseTableName(String sql) {
-        String tableNameFields = sql.substring(sql.indexOf(" into") + 5,
-                sql.indexOf(" values")).trim();
-        return tableNameFields.substring(0, tableNameFields.indexOf("("))
-                .trim();
+        String tableNameFields =
+                sql.substring(sql.indexOf(" into") + 5, sql.indexOf(" values")).trim();
+        return tableNameFields.substring(0, tableNameFields.indexOf("(")).trim();
     }
 
     /**
@@ -146,8 +137,7 @@ public class InsertSqlLogParser implements SqlLogParser {
      * Set)
      */
     @Override
-    public Map<String, String> parseTableFlags(String sql,
-                                               Set<String> tableFields) {
+    public Map<String, String> parseTableFlags(String sql, Set<String> tableFields) {
 
         Map<String, String> fieldFlag = new HashMap<String, String>();
 
@@ -163,5 +153,4 @@ public class InsertSqlLogParser implements SqlLogParser {
 
         return fieldFlag;
     }
-
 }

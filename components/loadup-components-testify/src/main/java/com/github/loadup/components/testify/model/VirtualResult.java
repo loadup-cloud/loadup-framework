@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.model;
 
 /*-
@@ -46,7 +47,6 @@ public class VirtualResult extends TestUnit {
     public VirtualResult(Object resultObj) {
 
         this.result = new VirtualObject(resultObj);
-
     }
 
     public VirtualObject getVirtualObject() {
@@ -63,7 +63,6 @@ public class VirtualResult extends TestUnit {
     public void setResultClazz(String resultClazz) {
         if (this.result == null) {
             this.result = new VirtualObject();
-
         }
         result.setObjClass(resultClazz);
     }
@@ -90,5 +89,4 @@ public class VirtualResult extends TestUnit {
     public String toString() {
         return "VirtualResult [result=" + result + "]";
     }
-
 }

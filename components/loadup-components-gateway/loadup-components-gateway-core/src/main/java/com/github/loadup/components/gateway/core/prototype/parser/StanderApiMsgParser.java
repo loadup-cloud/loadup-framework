@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.prototype.parser;
 
 /*-
@@ -26,24 +27,23 @@ package com.github.loadup.components.gateway.core.prototype.parser;
  * #L%
  */
 
+import static com.github.loadup.components.gateway.core.common.GatewayErrorCode.INVALID_SIGNATURE;
+import static com.github.loadup.components.gateway.core.common.GatewayErrorCode.PARAM_ILLEGAL;
+import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_PARSE_RESULT;
+import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_REQUEST_BODY;
+
 import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.message.script.parser.MessageParser;
 import com.github.loadup.components.gateway.message.unimsg.UnifyMsg;
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.github.loadup.components.gateway.core.common.GatewayErrorCode.INVALID_SIGNATURE;
-import static com.github.loadup.components.gateway.core.common.GatewayErrorCode.PARAM_ILLEGAL;
-import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_PARSE_RESULT;
-import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_REQUEST_BODY;
 
 /**
  * Customer Parser Template

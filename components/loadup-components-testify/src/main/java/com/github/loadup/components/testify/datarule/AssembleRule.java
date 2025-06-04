@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule;
 
 /*-
@@ -45,8 +42,8 @@ import java.util.List;
  * 返回结果：若上下文中，aa=aa1&bb=bb2 则返回aa1,bb2,(cc1,cc2,cc3),dd1,ee1,ff2，共3条记录
  * 否则，则返回aa,bb,cc,dd当前值 + ee1,ff2
  *
- * 
- * 
+ *
+ *
  */
 public class AssembleRule implements RuleObject {
 
@@ -65,7 +62,7 @@ public class AssembleRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of items
      */
@@ -74,12 +71,11 @@ public class AssembleRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @param items value to be assigned to property items
      */
     public void setItems(List<AssembleItem> items) {
         this.items = items;
     }
-
 }

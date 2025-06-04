@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.database.dal.ibatis;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.components.gateway.plugin.repository.database.dal.ibat
 
 import com.github.loadup.components.gateway.plugin.repository.database.dal.daointerface.InterfaceDAO;
 import com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject.InterfaceDO;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +63,6 @@ public class IbatisInterfaceDAO implements InterfaceDAO {
     public InterfaceDO loadByInterfaceId(String interfaceId) {
 
         return null;
-
     }
 
     /**
@@ -72,7 +71,6 @@ public class IbatisInterfaceDAO implements InterfaceDAO {
     public InterfaceDO lockByInterfaceId(String interfaceId) {
 
         return null;
-
     }
 
     /**
@@ -87,7 +85,6 @@ public class IbatisInterfaceDAO implements InterfaceDAO {
         param.put("tenantId", tenantId);
 
         return null;
-
     }
 
     /**
@@ -97,7 +94,6 @@ public class IbatisInterfaceDAO implements InterfaceDAO {
     public List<InterfaceDO> loadAll() {
 
         return null;
-
     }
 
     /**
@@ -112,8 +108,15 @@ public class IbatisInterfaceDAO implements InterfaceDAO {
      * @see InterfaceDAO#loadByPage(String, String, String, String, String, String, int, int)
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public List<InterfaceDO> loadByPage(String tenantId, String interfaceId, String clientId, String type, String status,
-                                        String interfaceName, int offset, int rowcount) {
+    public List<InterfaceDO> loadByPage(
+            String tenantId,
+            String interfaceId,
+            String clientId,
+            String type,
+            String status,
+            String interfaceName,
+            int offset,
+            int rowcount) {
         Map param = new HashMap();
 
         param.put("tenantId", tenantId);
@@ -126,7 +129,5 @@ public class IbatisInterfaceDAO implements InterfaceDAO {
         param.put("rowcount", rowcount);
 
         return null;
-
     }
-
 }

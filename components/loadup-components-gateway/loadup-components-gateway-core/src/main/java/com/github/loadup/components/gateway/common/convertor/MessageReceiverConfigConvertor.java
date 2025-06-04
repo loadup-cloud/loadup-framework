@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.common.convertor;
 
 /*-
@@ -28,10 +29,9 @@ package com.github.loadup.components.gateway.common.convertor;
 
 import com.github.loadup.components.gateway.core.model.MessageReceiverConfig;
 import com.github.loadup.components.gateway.facade.model.MessageReceiverConfigDto;
-import org.apache.commons.collections4.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.collections4.CollectionUtils;
 
 /**
  *
@@ -51,7 +51,8 @@ public class MessageReceiverConfigConvertor {
     /**
      * convert dto models to domain models
      */
-    public static List<MessageReceiverConfig> dtoList2ModelList(List<MessageReceiverConfigDto> messageReceiverConfigDtos) {
+    public static List<MessageReceiverConfig> dtoList2ModelList(
+            List<MessageReceiverConfigDto> messageReceiverConfigDtos) {
         List<MessageReceiverConfig> models = new ArrayList<>();
         if (CollectionUtils.isEmpty(messageReceiverConfigDtos)) {
             return models;

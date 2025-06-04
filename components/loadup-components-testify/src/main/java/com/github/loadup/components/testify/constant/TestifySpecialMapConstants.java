@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.constant;
 
 /*-
@@ -36,31 +33,31 @@ import java.util.Set;
 /**
  * 一些自定义字段常量，用于数据库数据准备和校验
  *
- * 
+ *
  *
  */
 public class TestifySpecialMapConstants {
 
-    //数据校验时只校验不存在，只在使用check方法时生效
-    public final static String NOTEXIST = "$NotExist";
+    // 数据校验时只校验不存在，只在使用check方法时生效
+    public static final String NOTEXIST = "$NotExist";
 
-    //数据准备时只预删除数据，只在使用insert方法时生效
-    public final static String ONLYDELETE = "$OnlyDelete";
+    // 数据准备时只预删除数据，只在使用insert方法时生效
+    public static final String ONLYDELETE = "$OnlyDelete";
 
-    //数据源信息
-    public final static String DBCONFIGKEY = "$DBConfigKey";
+    // 数据源信息
+    public static final String DBCONFIGKEY = "$DBConfigKey";
 
-    //虚拟分库分表键名
-    public final static String SPLITKEY = "$SplitKey";
+    // 虚拟分库分表键名
+    public static final String SPLITKEY = "$SplitKey";
 
-    //虚拟分库分表键值
-    public final static String SPLITVALUE = "$SplitValue";
+    // 虚拟分库分表键值
+    public static final String SPLITVALUE = "$SplitValue";
 
-    //组数据校验，内部用来对sql进行补充排序，不供外部使用
-    public final static String ORDERBY = "$OrderBy";
+    // 组数据校验，内部用来对sql进行补充排序，不供外部使用
+    public static final String ORDERBY = "$OrderBy";
 
-    //特殊字段集合，添加新字段时，需要将字段填入此集合
-    public final static Set<String> specialConstantSet = new HashSet<String>();
+    // 特殊字段集合，添加新字段时，需要将字段填入此集合
+    public static final Set<String> specialConstantSet = new HashSet<String>();
 
     static {
         specialConstantSet.add(NOTEXIST);

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.model;
 
 /*-
@@ -90,7 +91,7 @@ public enum FormatType {
     }
 
     /**
-     * 
+     *
      */
     public void setName(String name) {
         this.name = name;
@@ -104,7 +105,7 @@ public enum FormatType {
     }
 
     /**
-     * 
+     *
      */
     public void setDesc(String desc) {
         this.desc = desc;

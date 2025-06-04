@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.annotation.testify;
 
 /*-
@@ -32,7 +33,7 @@ import java.lang.annotation.Target;
 /**
  * group executor
  *
- * 
+ *
  *
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)

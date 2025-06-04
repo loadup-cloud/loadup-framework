@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.api;
 
 /*-
@@ -31,14 +28,13 @@ package com.github.loadup.components.testify.api;
  */
 
 import com.github.loadup.components.testify.yaml.YamlTestData;
-
 import java.io.File;
 
 /**
  * 用于给ATHelper使用
  *
- * 
- * 
+ *
+ *
  */
 public class ATHelperApis {
 
@@ -61,5 +57,4 @@ public class ATHelperApis {
     public static String generateYamlString(YamlTestData data) {
         return data.dump();
     }
-
 }

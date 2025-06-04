@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.communication.common.model;
 
 /*-
@@ -58,21 +59,21 @@ public class MessageSendResult {
     }
 
     /**
-     * 
+     *
      */
     public MessageEnvelope getMessageEnvelope() {
         return messageEnvelope;
     }
 
     /**
-     * 
+     *
      */
     public boolean isTimeout() {
         return timeout;
     }
 
     /**
-     * 
+     *
      */
     public boolean isResponse() {
         return response;

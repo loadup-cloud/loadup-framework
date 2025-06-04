@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.starter;
 
 /*-
@@ -36,5 +37,4 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @AutoConfigureOrder(0)
 @ComponentScan(basePackages = "com.github.loadup.components.gateway.*")
-public class GatewayCoreAutoConfiguration {
-}
+public class GatewayCoreAutoConfiguration {}

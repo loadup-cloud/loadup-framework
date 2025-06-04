@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2014 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.template;
 
 /*-
@@ -77,6 +74,4 @@ public class AbstractPrepareCallBackImpl implements PrepareCallBack {
     public VirtualArgs prepareExpectInvokeOutArgs() {
         return null;
     }
-
-
 }

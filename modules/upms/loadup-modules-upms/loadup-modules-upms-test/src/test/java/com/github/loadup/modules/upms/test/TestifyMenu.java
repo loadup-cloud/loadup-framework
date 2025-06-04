@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.test;
 
 /*-
@@ -13,10 +13,10 @@ package com.github.loadup.modules.upms.test;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,12 +29,14 @@ package com.github.loadup.modules.upms.test;
 
 import com.github.loadup.components.testify.util.TestifyCommonUtil;
 import com.github.loadup.modules.upms.client.api.UserService;
-import org.testng.annotations.Test;
-
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.collections.IteratorUtils;
+import org.testng.annotations.Test;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * 菜单类
@@ -70,7 +72,7 @@ public class TestifyMenu {
         // 方式三：高阶用法，可自定义生成路径和测试脚本模板
         // 第四个参数为自定义路径，第五个参数为Velocity模板内容，第六个参数为模板替换上下文
         // 具体入参类型详见接口实现，无需自定义的部分可直接填写null
-        // ActsCommonUtil.genTestScript(YourFacade.class, "yourMethodName", appName, 
+        // ActsCommonUtil.genTestScript(YourFacade.class, "yourMethodName", appName,
         //        "com.xxx.xx", null, null);
     }
 
@@ -88,7 +90,13 @@ public class TestifyMenu {
         list.add(m);
 
         // 转换成yaml字符串，执行后会自动复制内容到剪切板
-        TestifyCommonUtil.genObjToYamlStr(list);
+        // TestifyCommonUtil.genObjToYamlStr(list);
+
+        Yaml yaml = new Yaml();
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("customer_with_type.yaml");
+        Iterable customer = yaml.loadAll(inputStream);
+        List list1 = IteratorUtils.toList(customer.iterator());
+        System.out.println(list1);
     }
 
     /**
@@ -98,12 +106,12 @@ public class TestifyMenu {
     public void genFlags() {
         List flag = new ArrayList<String>();
         // 需要配置flag的字段
-        //flag.add("errMsg");
-        //flag.add("success");
+        // flag.add("errMsg");
+        // flag.add("success");
         //
         //// 转换成yaml字符串，执行后会自动复制内容，请手动粘贴至yaml文件内对应位置
-        //String flags = ActsCommonUtil.genFlags(YourResponse.class, flag);
-        //System.out.println(flags);
+        // String flags = ActsCommonUtil.genFlags(YourResponse.class, flag);
+        // System.out.println(flags);
     }
 
     /**

@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.yaml.cpUnit.property;
 
 /*-
@@ -32,28 +29,29 @@ package com.github.loadup.components.testify.yaml.cpUnit.property;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * 列表对象基础属性
  *
- * 
- * 
+ *
+ *
  */
 public class MapObjectUnitProperty extends BaseUnitProperty {
     private static final Logger log = LoggerFactory.getLogger(MapObjectUnitProperty.class);
+
     /**
      * 对象属性列表
      */
     private final Map<String, BaseUnitProperty> objectMap = new LinkedHashMap<String, BaseUnitProperty>();
+
     private String targetCSVPath;
     private Class<?> classType;
 
     @SuppressWarnings("unchecked")
-    public MapObjectUnitProperty(String keyName, String keyPath, String parentCSVPath,
-                                 Map<String, BaseUnitProperty> value) {
+    public MapObjectUnitProperty(
+            String keyName, String keyPath, String parentCSVPath, Map<String, BaseUnitProperty> value) {
         super(keyName, keyPath, null);
         if (value != null) {
             for (String key : value.keySet()) {
@@ -63,7 +61,6 @@ public class MapObjectUnitProperty extends BaseUnitProperty {
 
                 this.objectMap.put(key, property);
             }
-
         }
     }
 
@@ -88,8 +85,15 @@ public class MapObjectUnitProperty extends BaseUnitProperty {
      */
     @Override
     public String toString() {
-        return "MapObjectUnitProperty [objectMap=" + objectMap + ", keyName=" + keyName
-                + ", flagCode=" + flagCode + ", keyPath=" + keyPath + "]";
+        return "MapObjectUnitProperty [objectMap="
+                + objectMap
+                + ", keyName="
+                + keyName
+                + ", flagCode="
+                + flagCode
+                + ", keyPath="
+                + keyPath
+                + "]";
     }
 
     /**
@@ -111,7 +115,7 @@ public class MapObjectUnitProperty extends BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @param targetCSVPath value to be assigned to property targetCSVPath
      */
@@ -129,12 +133,11 @@ public class MapObjectUnitProperty extends BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @param classType value to be assigned to property classType
      */
     public void setClassType(Class<?> classType) {
         this.classType = classType;
     }
-
 }

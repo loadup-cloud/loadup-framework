@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data;
 
 /*-
@@ -35,7 +32,7 @@ package com.github.loadup.components.testify.data;
  * <p>
  * 根据某种规则进行匹配度计算。
  *
- * 
+ *
  *
  */
 public interface MetaItemMatcher {

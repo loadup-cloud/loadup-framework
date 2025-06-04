@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.util.commonAlgo;
 
 /*-
@@ -26,14 +27,13 @@ package com.github.loadup.components.gateway.certification.util.commonAlgo;
  * #L%
  */
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
+import java.security.Key;
+import java.security.Security;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.Key;
-import java.security.Security;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * 国密算法
@@ -80,5 +80,4 @@ public class SMecbUtil {
         SecretKey secretKey = keyGenerator.generateKey();
         return secretKey.getEncoded();
     }
-
 }

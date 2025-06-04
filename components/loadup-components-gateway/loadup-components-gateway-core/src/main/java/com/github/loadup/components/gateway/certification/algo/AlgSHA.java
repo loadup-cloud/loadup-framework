@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.algo;
 
 /*-
@@ -31,13 +32,12 @@ import com.github.loadup.components.gateway.certification.exception.Certificatio
 import com.github.loadup.components.gateway.certification.manager.DigestManager;
 import com.github.loadup.components.gateway.certification.model.AlgorithmEnum;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
+import java.security.MessageDigest;
+import java.security.Security;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.security.MessageDigest;
-import java.security.Security;
 
 /**
  * SHA 系列摘要算法，支持算法, SHA-1,SHA-224,SHA-256,SHA-384,SHA-512
@@ -70,7 +70,6 @@ public class AlgSHA extends AbstractAlgorithm {
 
             throw new CertificationException(CertificationErrorCode.DIGEST_ERROR, genLogSign(algorithm), e);
         }
-
     }
 
     /**

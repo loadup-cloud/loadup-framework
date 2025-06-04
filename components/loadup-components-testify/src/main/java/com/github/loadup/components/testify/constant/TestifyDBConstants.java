@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.constant;
 
 /*-
@@ -33,7 +30,7 @@ package com.github.loadup.components.testify.constant;
 /**
  * 数据库常量
  *
- * 
+ *
  *
  */
 public class TestifyDBConstants {
@@ -57,5 +54,4 @@ public class TestifyDBConstants {
      * 数据库schema
      */
     public static final String DB_SCHEMA = "acts";
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.helper;
 
 /*-
@@ -39,11 +40,6 @@ import com.github.loadup.components.testify.util.FileUtil;
 import com.google.common.reflect.TypeToken;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
-import lombok.extern.slf4j.Slf4j;
-import ognl.OgnlException;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -52,6 +48,10 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import ognl.OgnlException;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * CSV辅助工具
@@ -59,13 +59,12 @@ import java.util.Map;
 @Slf4j
 public class CSVHelper {
 
-
     private static final int STATIC = 0x00000008;
     private static final int FINAL = 0x00000010;
-    private static final String MAP_CONTENT_TEMPLATE = "a:1";                     //多个元素的情况："a:1;b:2"
-    private static final String LIST_CONTENT_TEMPLATE = "1";                       //多个元素的情况："1;2;3"
-    private static final String COMPLEX_LIST_CONTENT_TEMPLATE = "FILE@1";                  //多个元素的情况："FILE@1;FILE@2"
-    private static final String COMPLEX_MAP_CONTENT_TEMPLATE = "a:FILE@1";                //多个元素的情况："a:FILE@1;b:FILE@2"
+    private static final String MAP_CONTENT_TEMPLATE = "a:1"; // 多个元素的情况："a:1;b:2"
+    private static final String LIST_CONTENT_TEMPLATE = "1"; // 多个元素的情况："1;2;3"
+    private static final String COMPLEX_LIST_CONTENT_TEMPLATE = "FILE@1"; // 多个元素的情况："FILE@1;FILE@2"
+    private static final String COMPLEX_MAP_CONTENT_TEMPLATE = "a:FILE@1"; // 多个元素的情况："a:FILE@1;b:FILE@2"
     private static final String COMPLEX_TYPE_CONTENT_TEMPLATE = "FILE@1";
     private static final String FILE_WORDS = "FILE";
 
@@ -90,8 +89,13 @@ public class CSVHelper {
         dbConfigKey = TestifyDBUtil.getDBConfigKey(tableName, dbConfigKey);
         DBConnection conn = new DBConnection(dbConfigKey);
 
-        genDBCSVFile(tableFullName, TestifyPathConstants.DB_DATA_PATH + tableName + ".csv",
-                conn.getUrl(), conn.getUserName(), conn.getPassword(), conn.getSchema());
+        genDBCSVFile(
+                tableFullName,
+                TestifyPathConstants.DB_DATA_PATH + tableName + ".csv",
+                conn.getUrl(),
+                conn.getUserName(),
+                conn.getPassword(),
+                conn.getSchema());
     }
 
     /**
@@ -103,8 +107,8 @@ public class CSVHelper {
      * @param userName      Oracle或Mysql的用户名
      * @param password      Oracle或Mysql的密码
      */
-    public static void genDBCSVFile(String tableFullName, String csvPath, String dbUrl,
-                                    String userName, String password, String schema) {
+    public static void genDBCSVFile(
+            String tableFullName, String csvPath, String dbUrl, String userName, String password, String schema) {
         if (StringUtils.isBlank(csvPath)) {
             throw new TestifyException("路径为空，无法生成CSV文件" + csvPath);
         }
@@ -114,7 +118,7 @@ public class CSVHelper {
             throw new TestifyException("文件【" + csvPath + "】已经存在，请尝试输入新文件路径");
         }
         List<String[]> outputValues = new ArrayList<String[]>();
-        //组装CSV文件第一行，标题行
+        // 组装CSV文件第一行，标题行
         List<String> header = new ArrayList<String>();
         header.add(CSVColEnum.COLUMN.getCode());
         header.add(CSVColEnum.COMMENT.getCode());
@@ -124,19 +128,18 @@ public class CSVHelper {
         outputValues.add(header.toArray(new String[header.size()]));
         List<Map<String, Object>> map = null;
         try {
-            AbstractDBService service = AbstractDBService.getService(dbUrl, userName, password,
-                    schema);
+            AbstractDBService service = AbstractDBService.getService(dbUrl, userName, password, schema);
             if (null == service) {
                 throw new TestifyException("数据库服务不能为空");
             }
             map = service.getTableInfo(tableFullName);
 
-            //兼容多表的情况
+            // 兼容多表的情况
             if (map.size() == 0) {
                 map = service.getTableInfo(tableFullName + "_000");
             }
 
-            //兼容多表的情况，部分系统表后缀两位，如主站acctrans
+            // 兼容多表的情况，部分系统表后缀两位，如主站acctrans
             if (map.size() == 0) {
                 map = service.getTableInfo(tableFullName + "_00");
             }
@@ -147,26 +150,21 @@ public class CSVHelper {
         for (Map<String, Object> childMap : map) {
             List<String> value = new ArrayList<String>();
             String columnName = childMap.get("field").toString();
-            boolean primaryFlag = Integer.valueOf(childMap.get("key").toString()) > 0 ? true
-                    : false;
+            boolean primaryFlag = Integer.valueOf(childMap.get("key").toString()) > 0 ? true : false;
             String comment = childMap.get("comment").toString();
             String columnType = childMap.get("type").toString();
             String flag;
-            if (primaryFlag)
-                flag = "C";
+            if (primaryFlag) flag = "C";
             else if (columnType.equals("TIMESTAMP")) {
                 flag = "D";
-            } else
-                flag = "Y";
+            } else flag = "Y";
 
             value.add(columnName);
             value.add(comment);
             value.add(columnType);
             value.add(flag);
-            if (flag.equals("D"))
-                value.add("today");
-            else if (columnName.equals("currency"))
-                value.add("156");
+            if (flag.equals("D")) value.add("today");
+            else if (columnName.equals("currency")) value.add("156");
             outputValues.add(value.toArray(new String[value.size()]));
         }
         writeToCsv(file, outputValues);
@@ -178,8 +176,12 @@ public class CSVHelper {
      * @param objClass
      * @param rootCsvPath
      */
-    public static void genObjCSVFile(Class<?> objClass, String rootCsvPath, Class<?> variableType,
-                                     final String clazzType, Map<String, Object> map) {
+    public static void genObjCSVFile(
+            Class<?> objClass,
+            String rootCsvPath,
+            Class<?> variableType,
+            final String clazzType,
+            Map<String, Object> map) {
 
         if (null == rootCsvPath) {
             throw new TestifyException("路径为空，无法生成CSV文件");
@@ -195,7 +197,7 @@ public class CSVHelper {
         }
 
         List<String[]> outputValues = new ArrayList<String[]>();
-        //组装CSV文件第一行，标题行
+        // 组装CSV文件第一行，标题行
         List<String> header = new ArrayList<String>();
         header.add(CSVColEnum.CLASS.getCode());
         header.add(CSVColEnum.PROPERTY.getCode());
@@ -206,7 +208,7 @@ public class CSVHelper {
         outputValues.add(header.toArray(new String[header.size()]));
 
         map.put(objClass.getName(), objClass);
-        //支持类继承
+        // 支持类继承
         List<Field> fields = new ArrayList<Field>();
         try {
             fields = TestifyObjectUtil.getAllFields(objClass);
@@ -218,13 +220,13 @@ public class CSVHelper {
         int i = 1;
 
         for (Field field : fields) {
-            //如果字段是static或者final，不生成在CSV文件里
+            // 如果字段是static或者final，不生成在CSV文件里
             if ((field.getModifiers() & STATIC) > 0 || (field.getModifiers() & FINAL) > 0) {
                 continue;
             }
             List<String> value = new ArrayList<String>();
             if (1 == i) {
-                //如果是第一个生成字段，则内容需要包含class名
+                // 如果是第一个生成字段，则内容需要包含class名
                 value.add(objClass.getName());
             } else {
                 value.add("");
@@ -232,17 +234,17 @@ public class CSVHelper {
             value.add(field.getName());
             value.add(field.getType().getName());
 
-            value.add(""); //原子数据规则
+            value.add(""); // 原子数据规则
 
             if (objectTypeManager.isSimpleType(field.getType())) {
                 /*包括Integer,Float,Double,Long,Short,Byte,Boolean,Character*/
                 addSimpleValue(objClass, field, value);
             } else if (objectTypeManager.isCollectionType(field.getType())) {
-                //如果是当前的Filed集合对象,包括List,Map,ARRAY
+                // 如果是当前的Filed集合对象,包括List,Map,ARRAY
                 try {
                     addCollectionValue(rootCsvPath, map, field, value);
                 } catch (Throwable exp) {
-                    //解析失败设置成空，flag为N.
+                    // 解析失败设置成空，flag为N.
                     value.add("N");
                     value.add("null");
                     outputValues.add(value.toArray(new String[value.size()]));
@@ -252,11 +254,11 @@ public class CSVHelper {
                 }
 
             } else if ((field.getGenericType() instanceof TypeVariable) && (variableType != null)) {
-                //如果当前的Filed范型,明确的指导当前的是例如LIST<T>
+                // 如果当前的Filed范型,明确的指导当前的是例如LIST<T>
                 try {
                     addParameterizedValue(rootCsvPath, variableType, clazzType, map, field, value);
                 } catch (Throwable exp) {
-                    //解析失败设置成空，flag为N.
+                    // 解析失败设置成空，flag为N.
                     value.add("N");
                     value.add("null");
                     outputValues.add(value.toArray(new String[value.size()]));
@@ -265,8 +267,8 @@ public class CSVHelper {
                     continue;
                 }
             } else {
-                //复杂对象
-                //如果argumentClass与被解析类同类型，为了避免读模版时死循环，设置成空
+                // 复杂对象
+                // 如果argumentClass与被解析类同类型，为了避免读模版时死循环，设置成空
                 if (null != map.get(field.getType().getName())) {
                     value.add("N");
                     value.add("");
@@ -275,7 +277,7 @@ public class CSVHelper {
                     try {
                         genObjCSVFile(field.getType(), subCsvPath, null, null, map);
                     } catch (Throwable exp) {
-                        //解析失败设置成空，flag为N.
+                        // 解析失败设置成空，flag为N.
                         value.add("N");
                         value.add("null");
                         outputValues.add(value.toArray(new String[value.size()]));
@@ -284,14 +286,14 @@ public class CSVHelper {
                         continue;
                     }
                     value.add("Y");
-                    value.add(COMPLEX_TYPE_CONTENT_TEMPLATE.replace(FILE_WORDS, field.getType()
-                            .getSimpleName() + ".csv"));
+                    value.add(COMPLEX_TYPE_CONTENT_TEMPLATE.replace(
+                            FILE_WORDS, field.getType().getSimpleName() + ".csv"));
                 }
             }
             outputValues.add(value.toArray(new String[value.size()]));
             i++;
         }
-        //复杂对象没有field的情况
+        // 复杂对象没有field的情况
         if (fields.size() == 0) {
             List<String> value = new ArrayList<String>();
             value.add(objClass.getName());
@@ -300,7 +302,6 @@ public class CSVHelper {
             value.add("");
             value.add("");
             value.add("");
-
         }
         writeToCsv(file, outputValues);
     }
@@ -313,22 +314,27 @@ public class CSVHelper {
      * @param field
      * @param value
      */
-    private static void addParameterizedValue(String rootCsvPath, Class<?> variableType,
-                                              final String clazzType, Map<String, Object> map,
-                                              Field field, List<String> value) {
+    private static void addParameterizedValue(
+            String rootCsvPath,
+            Class<?> variableType,
+            final String clazzType,
+            Map<String, Object> map,
+            Field field,
+            List<String> value) {
         if (objectTypeManager.isSimpleType(variableType)) {
-            //范型为简单类型
+            // 范型为简单类型
             addGSimpleValue(variableType, field, value);
         } else if (objectTypeManager.isCollectionType(variableType)) {
-            //范型是集合对象,包括List,Map,ARRAY
-            Class<?> argumentClass = objectTypeManager.getCollectionItemClass(
-                    variableType.getComponentType(), variableType);
+            // 范型是集合对象,包括List,Map,ARRAY
+            Class<?> argumentClass =
+                    objectTypeManager.getCollectionItemClass(variableType.getComponentType(), variableType);
 
-            //如果参数是简单类型
+            // 如果参数是简单类型
             if (objectTypeManager.isSimpleType(argumentClass)) {
                 if (StringUtils.equals(Map.class.getName(), variableType.getName())
-                        || StringUtils.equals(java.util.HashMap.class.getName(), field.getType()
-                        .getName())) {
+                        || StringUtils.equals(
+                                java.util.HashMap.class.getName(),
+                                field.getType().getName())) {
                     value.add("M");
                     value.add(MAP_CONTENT_TEMPLATE);
                 } else {
@@ -336,36 +342,34 @@ public class CSVHelper {
                     value.add(LIST_CONTENT_TEMPLATE);
                 }
             } else {
-                //如果argumentClass与被解析类同类型，为了避免读模版时死循环，设置成空
-                //暂存当前对象,避免死循环生成对象
+                // 如果argumentClass与被解析类同类型，为了避免读模版时死循环，设置成空
+                // 暂存当前对象,避免死循环生成对象
                 if (null != map.get(argumentClass.getName())) {
                     value.add("N");
                     value.add("");
                 } else {
-                    //如果是复杂对象集合,那么继续递归.
+                    // 如果是复杂对象集合,那么继续递归.
                     String subCsvPath = getCsvFileName(argumentClass, rootCsvPath);
                     genObjCSVFile(argumentClass, subCsvPath, null, null, map);
                     value.add("Y");
-                    value.add(COMPLEX_LIST_CONTENT_TEMPLATE.replace(FILE_WORDS,
-                            argumentClass.getSimpleName() + ".csv"));
+                    value.add(
+                            COMPLEX_LIST_CONTENT_TEMPLATE.replace(FILE_WORDS, argumentClass.getSimpleName() + ".csv"));
                 }
             }
         } else {
-            //范型是复杂对象
-            //如果argumentClass与被解析类同类型，为了避免读模版时死循环，设置成空
-            //暂存当前对象,避免死循环生成对象
+            // 范型是复杂对象
+            // 如果argumentClass与被解析类同类型，为了避免读模版时死循环，设置成空
+            // 暂存当前对象,避免死循环生成对象
             if (null != map.get(variableType.getName())) {
                 value.add("Y");
                 value.add("");
             } else {
                 String subCsvPath = getCsvFileName(variableType, rootCsvPath);
                 genObjCSVFile(variableType, subCsvPath, null, null, map);
-                String clsName = StringUtils.isBlank(clazzType) ? variableType.getName()
-                        : clazzType;
+                String clsName = StringUtils.isBlank(clazzType) ? variableType.getName() : clazzType;
                 value.set(2, clsName);
                 value.add("Y");
-                value.add(COMPLEX_TYPE_CONTENT_TEMPLATE.replace(FILE_WORDS,
-                        variableType.getSimpleName() + ".csv"));
+                value.add(COMPLEX_TYPE_CONTENT_TEMPLATE.replace(FILE_WORDS, variableType.getSimpleName() + ".csv"));
             }
         }
     }
@@ -395,14 +399,14 @@ public class CSVHelper {
      * @param field
      * @param value
      */
-    private static void addCollectionValue(String rootCsvPath, Map<String, Object> map,
-                                           Field field, List<String> value) {
-        Class<?> argumentClass = objectTypeManager.getCollectionItemClass(field.getGenericType(),
-                field.getType());
-        //如果参数是简单类型
+    private static void addCollectionValue(
+            String rootCsvPath, Map<String, Object> map, Field field, List<String> value) {
+        Class<?> argumentClass = objectTypeManager.getCollectionItemClass(field.getGenericType(), field.getType());
+        // 如果参数是简单类型
         if (objectTypeManager.isSimpleType(argumentClass)) {
             if (StringUtils.equals(Map.class.getName(), field.getType().getName())
-                    || StringUtils.equals(java.util.HashMap.class.getName(), field.getType().getName())) {
+                    || StringUtils.equals(
+                            java.util.HashMap.class.getName(), field.getType().getName())) {
                 value.add("M");
                 value.add(MAP_CONTENT_TEMPLATE);
             } else {
@@ -410,28 +414,26 @@ public class CSVHelper {
                 value.add(LIST_CONTENT_TEMPLATE);
             }
         } else {
-            //如果argumentClass与被解析类同类型，为了避免读模版时死循环，设置成空
-            //暂存当前对象,避免死循环生成对象
+            // 如果argumentClass与被解析类同类型，为了避免读模版时死循环，设置成空
+            // 暂存当前对象,避免死循环生成对象
             if (null != map.get(argumentClass.getName())) {
                 value.add("N");
                 value.add("");
             } else {
-                //如果是复杂对象集合,那么继续递归.
+                // 如果是复杂对象集合,那么继续递归.
                 String subCsvPath = getCsvFileName(argumentClass, rootCsvPath);
                 genObjCSVFile(argumentClass, subCsvPath, null, null, map);
 
-                //判断是List<Object>还是<String,Object>
+                // 判断是List<Object>还是<String,Object>
                 if (StringUtils.equals(Map.class.getName(), field.getType().getName())
-                        || StringUtils.equals(java.util.HashMap.class.getName(), field.getType()
-                        .getName())) {
+                        || StringUtils.equals(
+                                java.util.HashMap.class.getName(),
+                                field.getType().getName())) {
                     value.add("M");
-                    value.add(COMPLEX_MAP_CONTENT_TEMPLATE.replace(FILE_WORDS,
-                            argumentClass.getSimpleName() + ".csv"));
-                } else if (StringUtils
-                        .equals(Map.class.getName(), argumentClass.getName())
-                        || StringUtils.equals(java.util.HashMap.class.getName(),
-                        argumentClass.getName())) {
-                    //这儿有个坑，只支持LIST<MAP<STRING,STRING>>
+                    value.add(COMPLEX_MAP_CONTENT_TEMPLATE.replace(FILE_WORDS, argumentClass.getSimpleName() + ".csv"));
+                } else if (StringUtils.equals(Map.class.getName(), argumentClass.getName())
+                        || StringUtils.equals(java.util.HashMap.class.getName(), argumentClass.getName())) {
+                    // 这儿有个坑，只支持LIST<MAP<STRING,STRING>>
                     value.set(2, "java.util.List<java.util.Map>");
                     value.add("M");
                     value.add("key:value;");
@@ -440,8 +442,8 @@ public class CSVHelper {
                     TypeToken<?> superType = TypeToken.of(genType);
                     value.set(2, superType.resolveType(genType).getType().toString());
                     value.add("Y");
-                    value.add(COMPLEX_LIST_CONTENT_TEMPLATE.replace(FILE_WORDS,
-                            argumentClass.getSimpleName() + ".csv"));
+                    value.add(
+                            COMPLEX_LIST_CONTENT_TEMPLATE.replace(FILE_WORDS, argumentClass.getSimpleName() + ".csv"));
                 }
             }
         }
@@ -456,7 +458,8 @@ public class CSVHelper {
         if (StringUtils.equals(java.util.Date.class.getName(), field.getType().getName())) {
             value.add("D");
             value.add("today");
-        } else if (StringUtils.equals(java.util.Currency.class.getName(), field.getType().getName())) {
+        } else if (StringUtils.equals(
+                java.util.Currency.class.getName(), field.getType().getName())) {
 
             value.add("Y");
             value.add("CNY");
@@ -464,7 +467,7 @@ public class CSVHelper {
         } else if (StringUtils.equals(objClass.getSimpleName(), "MultiCurrencyMoney")
                 && StringUtils.equals(field.getName(), "currencyValue")) {
 
-            //对MultiCurrencyMoney中的currencyValue赋值默认156，否则加载模版和写yaml有问题
+            // 对MultiCurrencyMoney中的currencyValue赋值默认156，否则加载模版和写yaml有问题
             value.add("Y");
             value.add("156");
 
@@ -526,22 +529,22 @@ public class CSVHelper {
             header.add(CSVColEnum.FLAG.getCode());
             outputValues.add(header.toArray(new String[header.size()]));
 
-            //Field[] fields = actual.getClass().getDeclaredFields();
-            //增加父类支持
+            // Field[] fields = actual.getClass().getDeclaredFields();
+            // 增加父类支持
             List<Field> fields = TestifyObjectUtil.getAllFields(actual.getClass());
 
             int i = 1;
 
-            //填充非value部分
+            // 填充非value部分
             for (Field field : fields) {
 
-                //如果字段是static或者final，不生成在CSV文件里
+                // 如果字段是static或者final，不生成在CSV文件里
                 if ((field.getModifiers() & STATIC) > 0 || (field.getModifiers() & FINAL) > 0) {
                     continue;
                 }
                 List<String> value = new ArrayList<String>();
                 if (1 == i) {
-                    //如果是第一个生成字段，则内容需要包含class名
+                    // 如果是第一个生成字段，则内容需要包含class名
                     value.add(actual.getClass().getName());
                 } else {
                     value.add("");
@@ -555,7 +558,7 @@ public class CSVHelper {
             }
         }
 
-        //填充value部分
+        // 填充value部分
         int index = outputValues.get(0).length - 4;
         int row = outputValues.size();
 
@@ -579,42 +582,40 @@ public class CSVHelper {
                 if (actualField == null) {
                     value.add("null");
                 } else {
-                    //增加父类支持
+                    // 增加父类支持
                     Field field = TestifyObjectUtil.getField(actual.getClass(), value.get(1));
                     Class<?> clz = field.getType();
 
                     if (objectTypeManager.isSimpleType(clz)) {
 
-                        //简单类型
-                        String simpleValue = objectTypeManager.getSimpleObjValue(clz, actualField,
-                                value.get(1));
+                        // 简单类型
+                        String simpleValue = objectTypeManager.getSimpleObjValue(clz, actualField, value.get(1));
                         value.add(simpleValue);
                     } else if (objectTypeManager.isCollectionType(clz)) {
 
                         Class<?> argumentClass;
 
                         if (clz.isArray()) {
-                            //Array 数组的情况
+                            // Array 数组的情况
                             argumentClass = clz.getComponentType();
                         } else {
-                            //集合类型
-                            argumentClass = objectTypeManager.getCollectionItemClass(
-                                    field.getGenericType(), clz);
+                            // 集合类型
+                            argumentClass = objectTypeManager.getCollectionItemClass(field.getGenericType(), clz);
                         }
                         if (objectTypeManager.isSimpleType(argumentClass)) {
-                            String collectionStr = objectTypeManager.getCollectionObjectString(clz,
-                                    actualField, true, null);
+                            String collectionStr =
+                                    objectTypeManager.getCollectionObjectString(clz, actualField, true, null);
                             value.add(collectionStr);
                         } else {
 
                             String subCsvPath = getCsvFileName(argumentClass, csvPath);
-                            String collectionStr = objectTypeManager.getCollectionObjectString(clz,
-                                    actualField, false, subCsvPath);
+                            String collectionStr =
+                                    objectTypeManager.getCollectionObjectString(clz, actualField, false, subCsvPath);
                             value.add(collectionStr);
                         }
                     } else {
 
-                        //复杂类型
+                        // 复杂类型
                         String subCsvPath = getCsvFileName(clz, csvPath);
                         int subIndex = insertObjDataAndReturnIndex(actualField, subCsvPath);
                         value.add(clz.getSimpleName() + ".csv@" + String.valueOf(subIndex));
@@ -656,7 +657,7 @@ public class CSVHelper {
      */
     public static void writeToCsv(File file, List<String[]> outputValues) {
 
-        //初始化写入文件
+        // 初始化写入文件
         OutputStream outputStream = null;
         try {
             outputStream = new FileOutputStream(file);
@@ -665,7 +666,7 @@ public class CSVHelper {
             TestifyLogUtil.warn(log, "初始化写入文件【" + file.getName() + "】失败" + e);
             throw new RuntimeException(e);
         }
-        //将生成内容写入CSV文件
+        // 将生成内容写入CSV文件
         try {
             OutputStreamWriter osw = null;
             osw = new OutputStreamWriter(outputStream);
@@ -718,7 +719,7 @@ public class CSVHelper {
         if (!file.exists()) {
             throw new TestifyException(file.getAbsolutePath() + "文件不存在");
         }
-        //初始化读入文件
+        // 初始化读入文件
         InputStream inputStream = null;
         try {
             inputStream = new FileInputStream(file);
@@ -726,7 +727,7 @@ public class CSVHelper {
             TestifyLogUtil.fail(log, "读入文件【" + file.getName() + "】初始化失败", e);
         }
 
-        //读取文件内容
+        // 读取文件内容
         List tableList = null;
         try {
             InputStreamReader isr = new InputStreamReader(inputStream);
@@ -757,7 +758,7 @@ public class CSVHelper {
         if (!file.exists()) {
             throw new TestifyException(file.getAbsolutePath() + "文件不存在");
         }
-        //初始化读入文件
+        // 初始化读入文件
         InputStream inputStream = null;
         try {
             inputStream = new FileInputStream(file);
@@ -765,7 +766,7 @@ public class CSVHelper {
             TestifyLogUtil.fail(log, "读入文件【" + file.getName() + "】初始化失败", e);
         }
 
-        //读取文件内容
+        // 读取文件内容
         List tableList = null;
         try {
             InputStreamReader isr = new InputStreamReader(inputStream, Charset.forName(encode));
@@ -779,5 +780,4 @@ public class CSVHelper {
         }
         return tableList;
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.database.service.impl;
 
 /*-
@@ -30,17 +31,18 @@ import com.github.loadup.components.database.repository.SequenceRepository;
 import com.github.loadup.components.database.sequence.SequenceRange;
 import com.github.loadup.components.database.service.SequenceService;
 import jakarta.annotation.Resource;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import org.springframework.stereotype.Service;
 
 @Service
 public class SequenceServiceImpl implements SequenceService {
     private final Lock lock = new ReentrantLock();
+
     @Resource
     private SequenceRepository sequenceRepository;
+
     private volatile SequenceRange currentRange;
 
     @Override

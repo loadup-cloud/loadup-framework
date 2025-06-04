@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.handler;
 
 /*-
@@ -34,26 +31,23 @@ import com.alibaba.fastjson2.JSON;
 import com.github.loadup.components.testify.datarule.ListChooseRule;
 import com.github.loadup.components.testify.datarule.RULE.ReferenceHandler;
 import com.github.loadup.components.testify.datarule.RuleObject;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 选择规则处理器。
  *
- * 
- * 
+ *
+ *
  */
-public class ListChooseRuleHandler implements RuleHandler<ListChooseRule>,
-        BatchRuleHandler<ListChooseRule> {
+public class ListChooseRuleHandler implements RuleHandler<ListChooseRule>, BatchRuleHandler<ListChooseRule> {
 
     /**
      * @see RuleHandler#handle(RuleObject, ReferenceHandler)
      */
-
     @Override
     public String handle(ListChooseRule rule, ReferenceHandler refHandler) {
 
@@ -90,8 +84,7 @@ public class ListChooseRuleHandler implements RuleHandler<ListChooseRule>,
 
         ChooseRuleHandler choooseRuleHandler = new ChooseRuleHandler();
 
-        Map<String, List<String>> fieldDatas = choooseRuleHandler.getFieldData(rule.getFields(),
-                refHandler);
+        Map<String, List<String>> fieldDatas = choooseRuleHandler.getFieldData(rule.getFields(), refHandler);
 
         for (Entry<String, List<String>> entry : fieldDatas.entrySet()) {
             List<String> map = combination(entry.getValue());
@@ -107,7 +100,6 @@ public class ListChooseRuleHandler implements RuleHandler<ListChooseRule>,
         }
 
         return rowDatas;
-
     }
 
     /***
@@ -119,14 +111,14 @@ public class ListChooseRuleHandler implements RuleHandler<ListChooseRule>,
     private List<String> combination(List<String> data) {
 
         List<String> result = new ArrayList<String>();
-        int n = data.size(); //元素个数。
-        //求出位图全组合的结果个数：2^n
+        int n = data.size(); // 元素个数。
+        // 求出位图全组合的结果个数：2^n
         int nbit = 1 << n; // “<<” 表示 左移:各二进位全部左移若干位，高位丢弃，低位补0。:即求出2^n=2Bit。
-        for (int i = 0; i < nbit; i++) { //结果有nbit个。输出结果从数字小到大输出：即输出0,1,2,3,....2^n。
+        for (int i = 0; i < nbit; i++) { // 结果有nbit个。输出结果从数字小到大输出：即输出0,1,2,3,....2^n。
             List<String> oneLine = new ArrayList<String>();
-            for (int j = 0; j < n; j++) { //每个数二进制最多可以左移n次，即遍历完所有可能的变化新二进制数值了
+            for (int j = 0; j < n; j++) { // 每个数二进制最多可以左移n次，即遍历完所有可能的变化新二进制数值了
                 int tmp = 1 << j;
-                if ((tmp & i) != 0) { //& 表示与。两个位都为1时，结果才为1
+                if ((tmp & i) != 0) { // & 表示与。两个位都为1时，结果才为1
                     oneLine.add(data.get(j));
                 }
             }
@@ -136,5 +128,4 @@ public class ListChooseRuleHandler implements RuleHandler<ListChooseRule>,
         }
         return result;
     }
-
 }

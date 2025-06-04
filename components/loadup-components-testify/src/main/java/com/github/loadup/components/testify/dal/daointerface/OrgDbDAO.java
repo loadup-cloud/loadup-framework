@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.dal.daointerface;
 
 /*-
@@ -37,17 +34,16 @@ import com.github.loadup.components.testify.dal.dataobject.OrgDbDO;
 import com.github.loadup.components.testify.dal.table.OrgDb;
 import com.github.loadup.components.testify.db.offlineService.AbstractDBService;
 import com.github.loadup.components.testify.util.JsonUtil;
-import org.springframework.dao.DataAccessException;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.springframework.dao.DataAccessException;
 
 /**
  * 原子数据对象DAO操作
  *
- * 
+ *
  *
  */
 public class OrgDbDAO {
@@ -68,14 +64,12 @@ public class OrgDbDAO {
      */
     public OrgDbDO selectBySystemAndSourceData(String system, String sourceData) {
 
-        String querySql = "select * from org_db where system='" + system + "' and source_data='"
-                + sourceData + "'";
+        String querySql = "select * from org_db where system='" + system + "' and source_data='" + sourceData + "'";
         List<Map<String, Object>> res = dbService.executeQuerySql(querySql);
         if (res.size() != 1) {
             return null;
         }
-        return OrgDbConvertor.convert2DO(JsonUtil.genObjectFromJsonString(
-                JSON.toJSONString(res.get(0)), OrgDb.class));
+        return OrgDbConvertor.convert2DO(JsonUtil.genObjectFromJsonString(JSON.toJSONString(res.get(0)), OrgDb.class));
     }
 
     /**
@@ -92,8 +86,7 @@ public class OrgDbDAO {
         if (res.size() != 1) {
             throw new Error("存在多条数据");
         }
-        return OrgDbConvertor.convert2DO(JsonUtil.genObjectFromJsonString(
-                JSON.toJSONString(res.get(0)), OrgDb.class));
+        return OrgDbConvertor.convert2DO(JsonUtil.genObjectFromJsonString(JSON.toJSONString(res.get(0)), OrgDb.class));
     }
 
     /**
@@ -110,8 +103,8 @@ public class OrgDbDAO {
         String querySql = "select * from org_db where system='" + system + "'";
         List<Map<String, Object>> res = dbService.executeQuerySql(querySql);
         for (Map<String, Object> row : res) {
-            orgDbDOs.add(OrgDbConvertor.convert2DO(JsonUtil.genObjectFromJsonString(
-                    JSON.toJSONString(row), OrgDb.class)));
+            orgDbDOs.add(
+                    OrgDbConvertor.convert2DO(JsonUtil.genObjectFromJsonString(JSON.toJSONString(row), OrgDb.class)));
         }
 
         return orgDbDOs;
@@ -133,14 +126,15 @@ public class OrgDbDAO {
         String gmtCreate = tamp.toString();
         tamp.setTime(orgDbDO.getGmtModify().getTime());
         String gmtModify = tamp.toString();
-        String querySql = "INSERT INTO org_db (`source_id`, `system`, `source_data`, `source_rule`, `gmt_create`, `gmt_modify`, `memo`, `keywords`) VALUES ('"
-                + sourceId
-                + "', '"
-                + system
-                + "', '"
-                + sourceData
-                + "', '', '"
-                + gmtCreate + "', '" + gmtModify + "', NULL, '" + sourceData + "');";
+        String querySql =
+                "INSERT INTO org_db (`source_id`, `system`, `source_data`, `source_rule`, `gmt_create`, `gmt_modify`, `memo`, `keywords`) VALUES ('"
+                        + sourceId
+                        + "', '"
+                        + system
+                        + "', '"
+                        + sourceData
+                        + "', '', '"
+                        + gmtCreate + "', '" + gmtModify + "', NULL, '" + sourceData + "');";
         int i = dbService.executeUpdateSql(querySql);
         return i;
     }

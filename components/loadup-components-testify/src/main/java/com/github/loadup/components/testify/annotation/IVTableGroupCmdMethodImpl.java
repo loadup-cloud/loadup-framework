@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.annotation;
 
 /*-
@@ -26,16 +27,15 @@ package com.github.loadup.components.testify.annotation;
  * #L%
  */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 牛逼的代码不需要注释
  *
- * 
+ *
  */
 public class IVTableGroupCmdMethodImpl implements IVTableGroupCmdMethod {
 
@@ -45,8 +45,7 @@ public class IVTableGroupCmdMethodImpl implements IVTableGroupCmdMethod {
 
     private Method targetMethod;
 
-    public IVTableGroupCmdMethodImpl() {
-    }
+    public IVTableGroupCmdMethodImpl() {}
 
     public IVTableGroupCmdMethodImpl(Object instance, Method targetMethod) {
         this.instance = instance;
@@ -59,14 +58,14 @@ public class IVTableGroupCmdMethodImpl implements IVTableGroupCmdMethod {
         try {
             if (this.targetMethod.getParameterTypes().length == 0) {
                 this.targetMethod.setAccessible(true);
-                this.targetMethod.invoke(instance, new Object[]{});
+                this.targetMethod.invoke(instance, new Object[] {});
                 return;
             }
 
             if (this.targetMethod.getParameterTypes().length == 1
                     && this.targetMethod.getParameterTypes()[0].equals(String.class)) {
                 this.targetMethod.setAccessible(true);
-                this.targetMethod.invoke(instance, new Object[]{tableName});
+                this.targetMethod.invoke(instance, new Object[] {tableName});
                 return;
             }
 
@@ -74,7 +73,7 @@ public class IVTableGroupCmdMethodImpl implements IVTableGroupCmdMethod {
                     && this.targetMethod.getParameterTypes()[0].equals(String.class)
                     && this.targetMethod.getParameterTypes()[1].equals(String.class)) {
                 this.targetMethod.setAccessible(true);
-                this.targetMethod.invoke(instance, new Object[]{tableName, groupId});
+                this.targetMethod.invoke(instance, new Object[] {tableName, groupId});
                 return;
             }
 
@@ -102,5 +101,4 @@ public class IVTableGroupCmdMethodImpl implements IVTableGroupCmdMethod {
     public void setTargetMethod(Method targetMethod) {
         this.targetMethod = targetMethod;
     }
-
 }

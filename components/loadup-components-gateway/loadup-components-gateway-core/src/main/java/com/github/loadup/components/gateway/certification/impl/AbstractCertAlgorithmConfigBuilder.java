@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.impl;
 
 /*-
@@ -29,26 +30,25 @@ package com.github.loadup.components.gateway.certification.impl;
 import com.github.loadup.components.gateway.certification.model.OperationType;
 import com.github.loadup.components.gateway.core.common.Constant;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
  */
 public abstract class AbstractCertAlgorithmConfigBuilder<T> {
 
-    private final static String SECURITY_STRATEGY_CODE = "security_strategy_code";
-    private final static String SECURITY_STRATEGY_OPERATE_TYPE = "security_strategy_operate_type";
-    private final static String SECURITY_STRATEGY_ALGORITHM = "security_strategy_algorithm";
-    private final static String SECURITY_STRATEGY_KEY_TYPE = "security_strategy_key_type";
-    private final static String CERT_TYPE = "cert_type";
-    private final static String SECURITY_STRATEGY_KEY = "security_strategy_key";
-    private final static String CLIENT_ID = "client_id";
+    private static final String SECURITY_STRATEGY_CODE = "security_strategy_code";
+    private static final String SECURITY_STRATEGY_OPERATE_TYPE = "security_strategy_operate_type";
+    private static final String SECURITY_STRATEGY_ALGORITHM = "security_strategy_algorithm";
+    private static final String SECURITY_STRATEGY_KEY_TYPE = "security_strategy_key_type";
+    private static final String CERT_TYPE = "cert_type";
+    private static final String SECURITY_STRATEGY_KEY = "security_strategy_key";
+    private static final String CLIENT_ID = "client_id";
     private static Logger logger = LoggerFactory.getLogger(AbstractCertAlgorithmConfigBuilder.class);
 
     /**
@@ -73,7 +73,8 @@ public abstract class AbstractCertAlgorithmConfigBuilder<T> {
 
         if (StringUtils.isBlank(fileColumns[1])) {
             invalidFieldList.add(SECURITY_STRATEGY_OPERATE_TYPE);
-        } else if (StringUtils.equals(OperationType.OP_VERIFY.getName(), fileColumns[1]) && StringUtils.isBlank(fileColumns[6])) {
+        } else if (StringUtils.equals(OperationType.OP_VERIFY.getName(), fileColumns[1])
+                && StringUtils.isBlank(fileColumns[6])) {
             invalidFieldList.add(CLIENT_ID);
         }
 
@@ -93,14 +94,15 @@ public abstract class AbstractCertAlgorithmConfigBuilder<T> {
             invalidFieldList.add(SECURITY_STRATEGY_KEY);
         }
 
-        //TODO error msg
+        // TODO error msg
         if (CollectionUtils.isNotEmpty(invalidFieldList)) {
-            LogUtil.error(logger, "There are some Empty fields=" +
-                    StringUtils.join(invalidFieldList.iterator(), Constant.COMMA_SEPARATOR));
+            LogUtil.error(
+                    logger,
+                    "There are some Empty fields="
+                            + StringUtils.join(invalidFieldList.iterator(), Constant.COMMA_SEPARATOR));
             return false;
         } else {
             return true;
         }
     }
-
 }

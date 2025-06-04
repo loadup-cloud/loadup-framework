@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.dal.daointerface;
 
 /*-
@@ -37,17 +34,16 @@ import com.github.loadup.components.testify.dal.dataobject.ObjectRelateDO;
 import com.github.loadup.components.testify.dal.table.ObjectRelate;
 import com.github.loadup.components.testify.db.offlineService.AbstractDBService;
 import com.github.loadup.components.testify.util.JsonUtil;
-import org.springframework.dao.DataAccessException;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.springframework.dao.DataAccessException;
 
 /**
  * 数据对象关联关系DAO
  *
- * 
+ *
  *
  */
 public class ObjRelateDAO {
@@ -68,12 +64,10 @@ public class ObjRelateDAO {
     public List<ObjectRelateDO> queryBySystemAndModelObj(String system, String modelObj) {
 
         List<ObjectRelateDO> objectRelateDOs = new ArrayList<ObjectRelateDO>();
-        String querySql = "select * from obj_relate where system='" + system + "' and model_obj='"
-                + modelObj + "'";
+        String querySql = "select * from obj_relate where system='" + system + "' and model_obj='" + modelObj + "'";
         List<Map<String, Object>> res = dbService.executeQuerySql(querySql);
         for (Map<String, Object> row : res) {
-            ObjectRelate objectRelate = JsonUtil.genObjectFromJsonString(JSON.toJSONString(row),
-                    ObjectRelate.class);
+            ObjectRelate objectRelate = JsonUtil.genObjectFromJsonString(JSON.toJSONString(row), ObjectRelate.class);
             objectRelateDOs.add(ObjectRelateConvertor.convert2DO(objectRelate));
         }
 
@@ -102,27 +96,28 @@ public class ObjRelateDAO {
         String gmtCreate = tamp.toString();
         tamp.setTime(objectRelateDO.getGmtModify().getTime());
         String gmtModify = tamp.toString();
-        String executeSql = "INSERT INTO `acts`.`obj_relate` (`id`, `system`, `model_obj`, `model_data`, `model_type`, `data_dsc`, `obj_flag`, `relate_source_id`, `source_data`, `gmt_create`, `gmt_modify`, `memo`) VALUES ('"
-                + id
-                + "', '"
-                + system
-                + "', '"
-                + modelObj
-                + "', '"
-                + modelData
-                + "', '"
-                + modelType
-                + "', '', '"
-                + objFlag
-                + "', '"
-                + relateSourceId
-                + "', '"
-                + sourceData
-                + "', '"
-                + gmtCreate
-                + "', '"
-                + gmtModify
-                + "', NULL);";
+        String executeSql =
+                "INSERT INTO `acts`.`obj_relate` (`id`, `system`, `model_obj`, `model_data`, `model_type`, `data_dsc`, `obj_flag`, `relate_source_id`, `source_data`, `gmt_create`, `gmt_modify`, `memo`) VALUES ('"
+                        + id
+                        + "', '"
+                        + system
+                        + "', '"
+                        + modelObj
+                        + "', '"
+                        + modelData
+                        + "', '"
+                        + modelType
+                        + "', '', '"
+                        + objFlag
+                        + "', '"
+                        + relateSourceId
+                        + "', '"
+                        + sourceData
+                        + "', '"
+                        + gmtCreate
+                        + "', '"
+                        + gmtModify
+                        + "', NULL);";
         int i = dbService.executeUpdateSql(executeSql);
         return i;
     }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.communication.common.impl;
 
 /*-
@@ -31,10 +32,9 @@ import com.github.loadup.components.gateway.core.communication.common.model.Mess
 import com.github.loadup.components.gateway.core.model.CommunicationConfig;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
 import com.github.loadup.components.gateway.core.model.communication.TransportProtocol;
-import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.stereotype.Component;
 
 /**
  * 通信api服务实现
@@ -58,12 +58,12 @@ public class CommunicationServiceImpl implements CommunicationService {
      * Send message send result.
      */
     @Override
-    public MessageSendResult send(String traceId, CommunicationConfig communicationConfig,
-                                  MessageEnvelope messageEnvelope) {
+    public MessageSendResult send(
+            String traceId, CommunicationConfig communicationConfig, MessageEnvelope messageEnvelope) {
         String protocol = communicationConfig.getProtocol();
 
         CommunicationService service = handler.get(protocol.toUpperCase());
-        //如果为空，默认使用代理方式运行
+        // 如果为空，默认使用代理方式运行
         if (service == null) {
             service = handler.get(TransportProtocol.PROXY);
         }
@@ -79,7 +79,6 @@ public class CommunicationServiceImpl implements CommunicationService {
             CommunicationService service = handler.get(key);
             service.init(obj);
         }
-
     }
 
     /**
@@ -116,5 +115,4 @@ public class CommunicationServiceImpl implements CommunicationService {
         }
         return result;
     }
-
 }

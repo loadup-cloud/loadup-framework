@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule;
 
 /*-
@@ -33,9 +30,7 @@ package com.github.loadup.components.testify.datarule;
 /**
  * 规则对象定义。
  *
- * 
- * 
+ *
+ *
  */
-public interface RuleObject {
-
-}
+public interface RuleObject {}

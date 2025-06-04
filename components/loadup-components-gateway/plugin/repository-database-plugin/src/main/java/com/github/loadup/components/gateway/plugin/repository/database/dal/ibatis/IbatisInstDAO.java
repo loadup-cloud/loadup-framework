@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.database.dal.ibatis;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.components.gateway.plugin.repository.database.dal.ibat
 
 import com.github.loadup.components.gateway.plugin.repository.database.dal.daointerface.InstDAO;
 import com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject.InstDO;
-
 import java.util.List;
 
 public class IbatisInstDAO implements InstDAO {
@@ -41,7 +41,7 @@ public class IbatisInstDAO implements InstDAO {
             throw new IllegalArgumentException("Can't insert a null data object into db.");
         }
 
-        //getSqlMapClientTemplate().insert("MS-INST-INSERT", inst);
+        // getSqlMapClientTemplate().insert("MS-INST-INSERT", inst);
 
         return inst.getClientId();
     }
@@ -64,7 +64,6 @@ public class IbatisInstDAO implements InstDAO {
     public List<InstDO> loadAll() {
 
         return null;
-
     }
 
     /**
@@ -73,7 +72,6 @@ public class IbatisInstDAO implements InstDAO {
     public InstDO load(String clientId) {
 
         return null;
-
     }
 
     /**
@@ -82,7 +80,6 @@ public class IbatisInstDAO implements InstDAO {
     public InstDO lock(String clientId) {
 
         return null;
-
     }
 
     /**
@@ -92,5 +89,4 @@ public class IbatisInstDAO implements InstDAO {
 
         return 0;
     }
-
 }

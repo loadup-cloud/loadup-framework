@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.yaml.cpUnit.property;
 
 /*-
@@ -30,21 +27,20 @@ package com.github.loadup.components.testify.yaml.cpUnit.property;
  * #L%
  */
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
 import com.github.loadup.components.testify.cache.TestifyCacheData;
 import com.github.loadup.components.testify.object.TestifyObjectUtil;
 import com.github.loadup.components.testify.object.comparer.UnitComparer;
 import com.github.loadup.components.testify.object.enums.UnitFlagEnum;
 import com.github.loadup.components.testify.object.manager.ObjectCompareManager;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 数据库字段基础属性
  *
- * 
- * 
+ *
+ *
  */
 public class BaseUnitProperty {
 
@@ -126,8 +122,7 @@ public class BaseUnitProperty {
         if (flag == UnitFlagEnum.CUSTOM) {
             comparer = TestifyCacheData.getCustomComparer(this.flagCode);
         } else {
-            comparer = ObjectCompareManager.getComparerManager().get(
-                    UnitFlagEnum.getByCode(this.flagCode));
+            comparer = ObjectCompareManager.getComparerManager().get(UnitFlagEnum.getByCode(this.flagCode));
         }
         if (!comparer.compare(this.expectValue, object, this.flagCode)) {
             this.setCompareSuccess(false);
@@ -142,13 +137,13 @@ public class BaseUnitProperty {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public Object dump() {
-        Object exp = this.expectValue; //未校验则用当前期望值
+        Object exp = this.expectValue; // 未校验则用当前期望值
         if (!this.compareSuccess) {
             if (this.isUnique) {
-                //uniqueMap替换，则dump替换前的值
+                // uniqueMap替换，则dump替换前的值
                 exp = this.oldExpectValue;
             } else {
-                //未用uniqueMap替换，则dump真实值
+                // 未用uniqueMap替换，则dump真实值
                 exp = this.actualValue;
             }
         }
@@ -174,7 +169,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of keyName
      */
@@ -183,7 +178,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @param keyName value to be assigned to property keyName
      */
@@ -192,7 +187,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of flagCode
      */
@@ -201,7 +196,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @param flagCode value to be assigned to property flagCode
      */
@@ -210,7 +205,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of expectValue
      */
@@ -219,7 +214,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @param expectValue value to be assigned to property expectValue
      */
@@ -228,7 +223,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of keyPath
      */
@@ -237,7 +232,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @param keyPath value to be assigned to property keyPath
      */
@@ -246,7 +241,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of baseValue
      */
@@ -255,7 +250,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @param baseValue value to be assigned to property baseValue
      */
@@ -264,7 +259,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of dbColumnType
      */
@@ -273,7 +268,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @param dbColumnType value to be assigned to property dbColumnType
      */
@@ -282,7 +277,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of dbColumnComment
      */
@@ -291,7 +286,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @param dbColumnComment value to be assigned to property dbColumnComment
      */
@@ -300,7 +295,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of baseFlagCode
      */
@@ -309,7 +304,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @param baseFlagCode value to be assigned to property baseFlagCode
      */
@@ -318,7 +313,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of isUnique
      */
@@ -327,7 +322,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @param isUnique value to be assigned to property isUnique
      */
@@ -336,7 +331,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of oldExpectValue
      */
@@ -345,7 +340,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @param oldExpectValue value to be assigned to property oldExpectValue
      */
@@ -354,7 +349,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of actualValue
      */
@@ -363,7 +358,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @param actualValue value to be assigned to property actualValue
      */
@@ -372,7 +367,7 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of compareSuccess
      */
@@ -381,12 +376,11 @@ public class BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @param compareSuccess value to be assigned to property compareSuccess
      */
     public void setCompareSuccess(boolean compareSuccess) {
         this.compareSuccess = compareSuccess;
     }
-
 }

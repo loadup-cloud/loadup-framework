@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.event.ssh;
 
 /*-
@@ -31,12 +28,11 @@ package com.github.loadup.components.testify.component.event.ssh;
  */
 
 import com.github.loadup.components.testify.utils.config.ConfigrationFactory;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author jie.peng
@@ -61,8 +57,8 @@ public class AppServerLogFetcher extends RemoteLogFecther {
             return result;
         }
         for (String target : targets) {
-            //若没有过滤出目标内容，则不放进结果map
-            String targetValue = "";// pickup(log, target);
+            // 若没有过滤出目标内容，则不放进结果map
+            String targetValue = ""; // pickup(log, target);
             if (StringUtils.isBlank(targetValue)) {
                 continue;
             }
@@ -83,10 +79,9 @@ public class AppServerLogFetcher extends RemoteLogFecther {
 
         String hostName = getOpencoreServer();
 
-        //commands = StringUtils.replace(commands, "opencoreHost", "opencore");
+        // commands = StringUtils.replace(commands, "opencoreHost", "opencore");
 
         return getServerLog(hostName, commands);
-
     }
 
     /**
@@ -109,5 +104,4 @@ public class AppServerLogFetcher extends RemoteLogFecther {
         }
         return null;
     }
-
 }

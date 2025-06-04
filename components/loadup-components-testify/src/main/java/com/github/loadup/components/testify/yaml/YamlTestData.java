@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.yaml;
 
 /*-
@@ -30,6 +27,7 @@ package com.github.loadup.components.testify.yaml;
  * #L%
  */
 
+import com.github.loadup.components.testify.api.LogApis;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -42,14 +40,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import com.github.loadup.components.testify.api.LogApis;
-
 /**
- * 
+ *
  *
  */
 public class YamlTestData {
@@ -64,7 +59,7 @@ public class YamlTestData {
      */
     private String filePath;
 
-    //~~~ 构造方法
+    // ~~~ 构造方法
     @SuppressWarnings("unchecked")
     public YamlTestData(File yamlFile) {
         this.filePath = yamlFile.getAbsolutePath();
@@ -92,14 +87,14 @@ public class YamlTestData {
         }
     }
 
-    //~~~ 公用方法
+    // ~~~ 公用方法
 
     public YamlTestCase getTestCase(String caseId) {
         YamlTestCase testCase = this.testCaseMap.get(caseId);
         return testCase;
     }
 
-    //~~~ 容器方法
+    // ~~~ 容器方法
 
     /**
      * @see Object#toString()
@@ -125,7 +120,7 @@ public class YamlTestData {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of testCaseMap
      */
@@ -134,7 +129,7 @@ public class YamlTestData {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of filePath
      */
@@ -150,5 +145,4 @@ public class YamlTestData {
     public void setFilePath(String filePath) {
         this.filePath = filePath;
     }
-
 }

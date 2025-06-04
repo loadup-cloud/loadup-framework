@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.util;
 
 /*-
@@ -39,15 +40,14 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.github.loadup.commons.constant.CommonConstants;
+import com.github.loadup.commons.result.SingleResponse;
 import com.github.loadup.commons.util.json.MultiDateDeserializer;
-import org.apache.commons.collections4.MapUtils;
-
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import org.apache.commons.collections4.MapUtils;
 
 public class JsonUtil {
 
@@ -55,26 +55,32 @@ public class JsonUtil {
 
     public static ObjectMapper initObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
-        //忽略 在json字符串中存在，但是在java对象中不存在对应属性的情况。防止错误
+        // 忽略 在json字符串中存在，但是在java对象中不存在对应属性的情况。防止错误
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        //忽略空Bean转json的错误
+        // 忽略空Bean转json的错误
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        //取消默认转换timestamps形式
+        // 取消默认转换timestamps形式
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        //对象的所有字段全部列入
+        // 对象的所有字段全部列入
         mapper.setSerializationInclusion(Include.ALWAYS);
-        //所有的日期格式都统一为以下的样式，即yyyy-MM-dd HH:mm:ss
+        // 所有的日期格式都统一为以下的样式，即yyyy-MM-dd HH:mm:ss
         mapper.setDateFormat(new SimpleDateFormat(CommonConstants.DEFAULT_DATE_FORMAT));
+        // mapper.activateDefaultTypingAsProperty(mapper.getPolymorphicTypeValidator(),
+        // ObjectMapper.DefaultTyping.NON_FINAL, "@type");
 
         // 注册 JavaTimeModule 处理 java.time 包的类
         JavaTimeModule javaTimeModule = new JavaTimeModule();
-        javaTimeModule.addSerializer(LocalDate.class,
+        javaTimeModule.addSerializer(
+                LocalDate.class,
                 new LocalDateSerializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_FORMAT)));
-        javaTimeModule.addDeserializer(LocalDate.class,
+        javaTimeModule.addDeserializer(
+                LocalDate.class,
                 new LocalDateDeserializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_FORMAT)));
-        javaTimeModule.addSerializer(LocalDateTime.class,
+        javaTimeModule.addSerializer(
+                LocalDateTime.class,
                 new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_TIME_FORMAT)));
-        javaTimeModule.addDeserializer(LocalDateTime.class,
+        javaTimeModule.addDeserializer(
+                LocalDateTime.class,
                 new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_TIME_FORMAT)));
         mapper.registerModule(javaTimeModule);
 
@@ -99,19 +105,19 @@ public class JsonUtil {
         }
     }
 
-
     public static <T> String toJSONStringPretty(T obj) {
 
         if (obj == null) {
             return null;
         }
         try {
-            return obj instanceof String ? (String) obj : objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+            return obj instanceof String
+                    ? (String) obj
+                    : objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-
     }
 
     /**
@@ -136,12 +142,12 @@ public class JsonUtil {
         }
 
         try {
-            return (T) (typeReference.getType().equals(String.class) ? str : objectMapper.readValue(str, typeReference));
+            return (T)
+                    (typeReference.getType().equals(String.class) ? str : objectMapper.readValue(str, typeReference));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-
     }
 
     public static <T> T parseObject(String str, Class<?> collectionClass, Class<?>... elementClasses) {
@@ -180,6 +186,14 @@ public class JsonUtil {
         }
         String jsonString = toJSONString(map);
         return parseObject(jsonString, valueType);
+    }
+
+    public static <T> T parseObject(Map map, Class<?> collectionClass, Class<?>... elementClasses) {
+        if (MapUtils.isEmpty(map) || collectionClass == null) {
+            return null;
+        }
+        String jsonString = toJSONString(map);
+        return parseObject(jsonString, collectionClass, elementClasses);
     }
 
     /**
@@ -251,8 +265,7 @@ public class JsonUtil {
             return new HashMap<>();
         }
         try {
-            return objectMapper.readValue(jsonString, new TypeReference<>() {
-            });
+            return objectMapper.readValue(jsonString, new TypeReference<>() {});
         } catch (Exception e) {
             e.printStackTrace();
             return new HashMap<>();
@@ -264,11 +277,29 @@ public class JsonUtil {
             return new HashMap<>();
         }
         try {
-            return objectMapper.readValue(jsonString, new TypeReference<>() {
-            });
+            return objectMapper.readValue(jsonString, new TypeReference<>() {});
         } catch (Exception e) {
             e.printStackTrace();
             return new HashMap<>();
         }
+    }
+
+    public static void main(String[] args) {
+        Map<String, String> map = new HashMap<>();
+        map.put("aaa", "aaa");
+        map.put("bbb", "bbb");
+        map.put("bcc", "ccc");
+        String jsonString = "{\n"
+                + "  \"data\" : {\n"
+                + "    \"account\" : \"123\",\n"
+                + "    \"birthday\" : \"$today\"\n"
+                + "  },\n"
+                + "  \"result\" : {\n"
+                + "    \"code\" : \"SUCCESS\",\n"
+                + "    \"message\" : \"Success.\",\n"
+                + "    \"status\" : \"S\"\n"
+                + "  }\n"
+                + "}";
+        System.out.println(JsonUtil.parseObject(jsonString, SingleResponse.class));
     }
 }

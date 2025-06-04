@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule;
 
 /*-
@@ -36,8 +33,8 @@ import java.util.List;
 /**
  * 组装项。
  *
- * 
- * 
+ *
+ *
  */
 public class AssembleItem {
 
@@ -61,7 +58,7 @@ public class AssembleItem {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of condition
      */
@@ -70,7 +67,7 @@ public class AssembleItem {
     }
 
     /**
-     * 
+     *
      *
      * @param condition value to be assigned to property condition
      */
@@ -79,7 +76,7 @@ public class AssembleItem {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of values
      */
@@ -88,12 +85,11 @@ public class AssembleItem {
     }
 
     /**
-     * 
+     *
      *
      * @param values value to be assigned to property values
      */
     public void setValues(List<AssembleValue> values) {
         this.values = values;
     }
-
 }

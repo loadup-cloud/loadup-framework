@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2023 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.encryption;
 
 /*-
@@ -30,14 +27,6 @@ package com.github.loadup.components.testify.encryption;
  * #L%
  */
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
-
-import javax.crypto.*;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -45,7 +34,13 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
 
 public class AesUtil {
     private final int keySize;
@@ -113,9 +108,9 @@ public class AesUtil {
             cipher.init(encryptMode, key, new IvParameterSpec(hex(iv)));
             return cipher.doFinal(bytes);
         } catch (InvalidKeyException
-                 | InvalidAlgorithmParameterException
-                 | IllegalBlockSizeException
-                 | BadPaddingException e) {
+                | InvalidAlgorithmParameterException
+                | IllegalBlockSizeException
+                | BadPaddingException e) {
             throw fail(e);
         }
     }

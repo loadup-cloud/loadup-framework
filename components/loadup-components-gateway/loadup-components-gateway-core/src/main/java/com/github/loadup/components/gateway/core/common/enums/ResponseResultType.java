@@ -1,7 +1,4 @@
-/**
- * Alipy.com Inc.
- * Copyright (c) 2004-2013 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.common.enums;
 
 /*-

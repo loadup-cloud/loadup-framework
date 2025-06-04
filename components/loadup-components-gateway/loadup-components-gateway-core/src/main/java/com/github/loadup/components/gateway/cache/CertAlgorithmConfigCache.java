@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.cache;
 
 /*-
@@ -28,11 +29,10 @@ package com.github.loadup.components.gateway.cache;
 
 import com.github.loadup.components.gateway.common.util.CacheLogUtil;
 import com.github.loadup.components.gateway.core.model.CertAlgorithmConfig;
-import org.springframework.util.CollectionUtils;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.util.CollectionUtils;
 
 /**
  * <p>

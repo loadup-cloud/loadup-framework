@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.api;
 
 /*-
@@ -34,15 +31,14 @@ import com.github.loadup.components.testify.constant.TestifyPathConstants;
 import com.github.loadup.components.testify.helper.CSVHelper;
 import com.github.loadup.components.testify.util.CSVApisUtil;
 import com.github.loadup.components.testify.util.FileUtil;
-
 import java.io.File;
 import java.util.Set;
 
 /**
  * CSV文件操作入口
  *
- * 
- * 
+ *
+ *
  */
 public class CSVApis {
 
@@ -57,14 +53,11 @@ public class CSVApis {
      * @return
      * @throws ClassNotFoundException
      */
-    public static Set<String> genCsvFromSpeciMethodByRootPath(String genRootPath,
-                                                              ClassLoader clsLoader,
-                                                              String clsName, String methodName,
-                                                              boolean isResultOnly)
+    public static Set<String> genCsvFromSpeciMethodByRootPath(
+            String genRootPath, ClassLoader clsLoader, String clsName, String methodName, boolean isResultOnly)
             throws ClassNotFoundException {
 
-        return CSVApisUtil.paraClassSpeciMethodToCscFile(clsName, clsLoader, genRootPath,
-                methodName, isResultOnly);
+        return CSVApisUtil.paraClassSpeciMethodToCscFile(clsName, clsLoader, genRootPath, methodName, isResultOnly);
     }
 
     /**
@@ -75,11 +68,10 @@ public class CSVApis {
      * @param csvPath     -CSV文件路径
      * @throws ClassNotFoundException
      */
-    public static Set<String> genCsvFromObjClassByRootPath(String genRootPath,
-                                                           ClassLoader clsLoader, String clsName)
+    public static Set<String> genCsvFromObjClassByRootPath(String genRootPath, ClassLoader clsLoader, String clsName)
             throws ClassNotFoundException {
 
-        //暂存当前对象及嵌套对象
+        // 暂存当前对象及嵌套对象
         return CSVApisUtil.paraClassToCscFile(clsName, clsLoader, genRootPath);
     }
 
@@ -94,11 +86,10 @@ public class CSVApis {
      */
     public static void genCsvFromObjData(Object actual, String csvPath) {
         if (csvPath == null) {
-            String csvFolder = TestifyPathConstants.OBJECT_DATA_PATH
-                    + actual.getClass().getSimpleName();
+            String csvFolder =
+                    TestifyPathConstants.OBJECT_DATA_PATH + actual.getClass().getSimpleName();
             File file = FileUtil.getTestResourceFile(csvFolder);
-            if (!file.exists())
-                file.mkdir();
+            if (!file.exists()) file.mkdir();
             csvPath = csvFolder + "/" + actual.getClass().getSimpleName() + ".csv";
         }
         CSVHelper.genObjCSVFileWithData(actual, csvPath);
@@ -137,8 +128,8 @@ public class CSVApis {
      * @param csvPath     -CSV文件路径
      * @param dbConfigKey -可选参数，默认OB时输入null即可
      */
-    public static void genDBCsvFile(String tableFullName, String csvPath, String dbUrl,
-                                    String userName, String password, String schema) {
+    public static void genDBCsvFile(
+            String tableFullName, String csvPath, String dbUrl, String userName, String password, String schema) {
         CSVHelper.genDBCSVFile(tableFullName, csvPath, dbUrl, userName, password, schema);
     }
 }

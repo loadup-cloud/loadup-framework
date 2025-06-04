@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.yaml.cpUnit;
 
 /*-
@@ -30,20 +27,19 @@ package com.github.loadup.components.testify.yaml.cpUnit;
  * #L%
  */
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.github.loadup.components.testify.constant.TestifyPathConstants;
 import com.github.loadup.components.testify.yaml.cpUnit.property.BaseUnitProperty;
 import com.github.loadup.components.testify.yaml.cpUnit.property.ListObjectUnitProperty;
 import com.github.loadup.components.testify.yaml.cpUnit.property.ObjectUnitProperty;
 import com.github.loadup.components.testify.yaml.enums.CPUnitTypeEnum;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * 对象CheckPoint单位
  *
- * 
+ *
  *
  */
 public class ObjectCPUnit extends BaseCPUnit {
@@ -62,8 +58,7 @@ public class ObjectCPUnit extends BaseCPUnit {
         this.unitName = unitName;
         this.description = "" + rawData.get("__desc");
         this.unitType = CPUnitTypeEnum.OBJECT;
-        this.targetCSVPath = TestifyPathConstants.OBJECT_DATA_PATH + this.unitName + "/"
-                + this.unitName + ".csv";
+        this.targetCSVPath = TestifyPathConstants.OBJECT_DATA_PATH + this.unitName + "/" + this.unitName + ".csv";
         for (Entry<String, Object> entry : rawData.entrySet()) {
             String keyName = entry.getKey();
             if (keyName.startsWith("$")) {
@@ -71,8 +66,7 @@ public class ObjectCPUnit extends BaseCPUnit {
                 rawData.remove(keyName);
             }
         }
-        this.property = new ObjectUnitProperty(this.unitName, this.unitName, this.targetCSVPath,
-                rawData);
+        this.property = new ObjectUnitProperty(this.unitName, this.unitName, this.targetCSVPath, rawData);
         this.attributeMap = this.property.getAttributeMap();
     }
 
@@ -81,9 +75,19 @@ public class ObjectCPUnit extends BaseCPUnit {
      */
     @Override
     public String toString() {
-        return "ObjectCPUnit [unitType=" + unitType + ", attributeMap=" + attributeMap
-                + ", unitName=" + unitName + ", description=" + description + ", targetCSVPath="
-                + targetCSVPath + ", specialMap=" + specialMap + "]";
+        return "ObjectCPUnit [unitType="
+                + unitType
+                + ", attributeMap="
+                + attributeMap
+                + ", unitName="
+                + unitName
+                + ", description="
+                + description
+                + ", targetCSVPath="
+                + targetCSVPath
+                + ", specialMap="
+                + specialMap
+                + "]";
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.database.dal.ibatis;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.components.gateway.plugin.repository.database.dal.ibat
 
 import com.github.loadup.components.gateway.plugin.repository.database.dal.daointerface.InstInterfaceMapDAO;
 import com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject.InstInterfaceMapDO;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +53,6 @@ public class IbatisInstInterfaceMapDAO implements InstInterfaceMapDAO {
     public List<InstInterfaceMapDO> loadAll() {
 
         return null;
-
     }
 
     /**
@@ -63,7 +62,6 @@ public class IbatisInstInterfaceMapDAO implements InstInterfaceMapDAO {
     public List<InstInterfaceMapDO> loadByClientId(String clientId) {
 
         return null;
-
     }
 
     /**
@@ -73,7 +71,6 @@ public class IbatisInstInterfaceMapDAO implements InstInterfaceMapDAO {
     public List<InstInterfaceMapDO> loadByInterfaceId(String interfaceId) {
 
         return null;
-
     }
 
     /**
@@ -87,7 +84,6 @@ public class IbatisInstInterfaceMapDAO implements InstInterfaceMapDAO {
         param.put("interfaceId", interfaceId);
 
         return null;
-
     }
 
     /**
@@ -118,5 +114,4 @@ public class IbatisInstInterfaceMapDAO implements InstInterfaceMapDAO {
 
         return 0;
     }
-
 }

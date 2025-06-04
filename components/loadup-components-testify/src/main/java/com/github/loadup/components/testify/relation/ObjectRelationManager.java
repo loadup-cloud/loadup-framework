@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.relation;
 
 /*-
@@ -35,16 +32,15 @@ import com.github.loadup.components.testify.dal.daointerface.OrgDbDAO;
 import com.github.loadup.components.testify.dal.dataobject.ObjectRelateDO;
 import com.github.loadup.components.testify.dal.dataobject.OrgDbDO;
 import com.github.loadup.components.testify.enums.ObjRelationFlagEnum;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 对象关联关系管理
  *
- * 
+ *
  *
  */
 public class ObjectRelationManager {
@@ -66,11 +62,10 @@ public class ObjectRelationManager {
      */
     public Map<String, Object> loadObjectRelation(String system, String modelObj) {
 
-        //查询
-        List<ObjectRelateDO> allObjectRelation = objRelateDAO.queryBySystemAndModelObj(system,
-                modelObj);
+        // 查询
+        List<ObjectRelateDO> allObjectRelation = objRelateDAO.queryBySystemAndModelObj(system, modelObj);
 
-        //构建数据对象关系
+        // 构建数据对象关系
         return buildObjectRelation(system, allObjectRelation);
     }
 
@@ -79,17 +74,15 @@ public class ObjectRelationManager {
      *
      * @param allObjectRelation
      */
-    private Map<String, Object> buildObjectRelation(String system,
-                                                    List<ObjectRelateDO> allObjectRelation) {
+    private Map<String, Object> buildObjectRelation(String system, List<ObjectRelateDO> allObjectRelation) {
 
         /** 所有数据对象关联关系集合 */
         Map<String, Object> allObjectRelationSet = new HashMap<String, Object>();
 
         for (ObjectRelateDO objectRelate : allObjectRelation) {
-            //此对象为复杂数据对象
-            if (StringUtils.equals(objectRelate.getObjFlag(),
-                    ObjRelationFlagEnum.COMPLEX_OBJECT.getCode())) {
-                //递归构造子对象关联关系
+            // 此对象为复杂数据对象
+            if (StringUtils.equals(objectRelate.getObjFlag(), ObjRelationFlagEnum.COMPLEX_OBJECT.getCode())) {
+                // 递归构造子对象关联关系
                 putSubObjectRelate(allObjectRelationSet, objectRelate, system);
             } else {
                 putBaseObjectRelate(allObjectRelationSet, objectRelate);
@@ -104,18 +97,17 @@ public class ObjectRelationManager {
      * @param allObjectRelationSet
      * @param objectRelate
      */
-    private void putSubObjectRelate(Map<String, Object> allObjectRelationSet,
-                                    ObjectRelateDO objectRelate, String system) {
+    private void putSubObjectRelate(
+            Map<String, Object> allObjectRelationSet, ObjectRelateDO objectRelate, String system) {
         if (allObjectRelationSet.containsKey(objectRelate.getModelData())) {
             return;
         }
 
-        //构造子对象数据模型关系
-        List<ObjectRelateDO> allSubObjectRelation = objRelateDAO.queryBySystemAndModelObj(system,
-                objectRelate.getModelType());
+        // 构造子对象数据模型关系
+        List<ObjectRelateDO> allSubObjectRelation =
+                objRelateDAO.queryBySystemAndModelObj(system, objectRelate.getModelType());
 
-        allObjectRelationSet.put(objectRelate.getModelData(),
-                buildObjectRelation(system, allSubObjectRelation));
+        allObjectRelationSet.put(objectRelate.getModelData(), buildObjectRelation(system, allSubObjectRelation));
     }
 
     /**
@@ -123,18 +115,15 @@ public class ObjectRelationManager {
      *
      * @param objectRelate
      */
-    private void putBaseObjectRelate(Map<String, Object> allObjectRelationSet,
-                                     ObjectRelateDO objectRelate) {
+    private void putBaseObjectRelate(Map<String, Object> allObjectRelationSet, ObjectRelateDO objectRelate) {
 
         if (allObjectRelationSet.containsKey(objectRelate.getModelObj())) {
             return;
         }
 
-        OrgDbDO orgDbDO = orgDbDAO.selectBySystemAndSourceData(objectRelate.getSystem(),
-                objectRelate.getSourceData());
+        OrgDbDO orgDbDO = orgDbDAO.selectBySystemAndSourceData(objectRelate.getSystem(), objectRelate.getSourceData());
         if (orgDbDO != null) {
             allObjectRelationSet.put(objectRelate.getModelData(), orgDbDO);
         }
     }
-
 }

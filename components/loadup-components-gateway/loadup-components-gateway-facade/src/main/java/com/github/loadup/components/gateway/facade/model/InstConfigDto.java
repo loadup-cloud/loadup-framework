@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.model;
 
 /*-
@@ -49,42 +50,42 @@ public class InstConfigDto {
     private String properties;
 
     /**
-     * 
+     *
      */
     public String getClientId() {
         return clientId;
     }
 
     /**
-     * 
+     *
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;
     }
 
     /**
-     * 
+     *
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 
+     *
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
+     *
      */
     public String getProperties() {
         return properties;
     }
 
     /**
-     * 
+     *
      */
     public void setProperties(String properties) {
         this.properties = properties;

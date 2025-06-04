@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.handler;
 
 /*-
@@ -35,14 +32,13 @@ import com.github.loadup.components.testify.datarule.RULE;
 import com.github.loadup.components.testify.datarule.RULE.ReferenceHandler;
 import com.github.loadup.components.testify.datarule.Reference;
 import com.github.loadup.components.testify.datarule.RuleObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 序列规则处理。
  *
- * 
+ *
  *
  */
 public class ArrayRuleHandler implements RuleHandler<ArrayRule>, BatchRuleHandler<ArrayRule> {

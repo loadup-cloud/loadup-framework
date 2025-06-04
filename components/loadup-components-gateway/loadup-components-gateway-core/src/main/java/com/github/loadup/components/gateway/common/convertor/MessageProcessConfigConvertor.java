@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.common.convertor;
 
 /*-
@@ -29,10 +30,9 @@ package com.github.loadup.components.gateway.common.convertor;
 import com.github.loadup.components.gateway.core.model.MessageProcessConfig;
 import com.github.loadup.components.gateway.facade.model.MessageProcessConfigDto;
 import com.github.loadup.components.gateway.message.base.model.MessageStruct;
-import org.apache.commons.collections4.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.collections4.CollectionUtils;
 
 /**
  *

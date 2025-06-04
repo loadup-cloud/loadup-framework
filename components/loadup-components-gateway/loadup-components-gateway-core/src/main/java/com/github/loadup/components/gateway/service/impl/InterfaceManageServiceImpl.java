@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.service.impl;
 
 /*-
@@ -26,20 +27,17 @@ package com.github.loadup.components.gateway.service.impl;
  * #L%
  */
 
-import com.github.loadup.commons.result.Result;
 import com.github.loadup.commons.template.ServiceTemplate;
 import com.github.loadup.commons.util.ValidateUtils;
 import com.github.loadup.components.gateway.common.convertor.InterfaceConfigConvertor;
 import com.github.loadup.components.gateway.core.common.Constant;
-import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.facade.api.InterfaceManageService;
 import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExtPt;
 import com.github.loadup.components.gateway.facade.model.InterfaceDto;
 import com.github.loadup.components.gateway.facade.request.*;
 import com.github.loadup.components.gateway.facade.response.*;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 /**
  *
@@ -55,19 +53,19 @@ public class InterfaceManageServiceImpl implements InterfaceManageService {
                 (Void) -> ValidateUtils.validate(request),
                 // process
                 () -> {
-
                     InterfaceDto interfaceAddConfigDto = InterfaceConfigConvertor.convertToDto(request);
                     getRepositoryService().addInterface(interfaceAddConfigDto);
                     response.setInterfaceId(interfaceAddConfigDto.getInterfaceId());
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+                (result) -> {
+                    InterfaceConfigAddResponse clientConfigAddResponse = new InterfaceConfigAddResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                },
                 // compose digest log
-                (Void) -> {
-                }
-        );
-
+                (Void) -> {});
     }
 
     @Override
@@ -78,19 +76,18 @@ public class InterfaceManageServiceImpl implements InterfaceManageService {
                 (Void) -> ValidateUtils.validate(request),
                 // process
                 () -> {
-
                     InterfaceDto interfaceDto = InterfaceConfigConvertor.convertToDto(request);
                     getRepositoryService().updateInterface(interfaceDto);
                     response.setInterfaceId(request.getInterfaceId());
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
-
+                (result) -> {
+                    InterfaceConfigUpdateResponse clientConfigAddResponse = new InterfaceConfigUpdateResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                }, // compose digest log
+                (Void) -> {});
     }
 
     @Override
@@ -109,12 +106,12 @@ public class InterfaceManageServiceImpl implements InterfaceManageService {
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                }
-        );
-
+                (result) -> {
+                    InterfaceConfigUpgradeResponse clientConfigAddResponse = new InterfaceConfigUpgradeResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                }, // compose digest log
+                (Void) -> {});
     }
 
     @Override
@@ -125,25 +122,31 @@ public class InterfaceManageServiceImpl implements InterfaceManageService {
                 (Void) -> ValidateUtils.validate(request),
                 // process
                 () -> {
-                    request
-                            .setPage(request.getPage() == null ? Constant.DEFAULT_PAGE : request.getPage());
-                    request.setPageSize(request.getPageSize() == null ? Constant.DEFAULT_PAGE_SIZE
-                            : request.getPageSize());
+                    request.setPage(request.getPage() == null ? Constant.DEFAULT_PAGE : request.getPage());
+                    request.setPageSize(
+                            request.getPageSize() == null ? Constant.DEFAULT_PAGE_SIZE : request.getPageSize());
 
-                    List<InterfaceDto> dto = getRepositoryService().queryInterface(
-                            request.getPageSize(), request.getPage(), request.getTntInstId(),
-                            request.getInterfaceId(), request.getClientId(), request.getType(),
-                            request.getStatus(), request.getInterfaceName());
-                    response
-                            .setInterfaceConfigList(InterfaceConfigConvertor.buildinterfaceConfigList(dto));
+                    List<InterfaceDto> dto = getRepositoryService()
+                            .queryInterface(
+                                    request.getPageSize(),
+                                    request.getPage(),
+                                    request.getTntInstId(),
+                                    request.getInterfaceId(),
+                                    request.getClientId(),
+                                    request.getType(),
+                                    request.getStatus(),
+                                    request.getInterfaceName());
+                    response.setInterfaceConfigList(InterfaceConfigConvertor.buildinterfaceConfigList(dto));
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+                (result) -> {
+                    InterfaceConfigQueryResponse clientConfigAddResponse = new InterfaceConfigQueryResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                },
                 // compose digest log
-                (Void) -> {
-                }
-        );
+                (Void) -> {});
     }
 
     @Override
@@ -158,12 +161,13 @@ public class InterfaceManageServiceImpl implements InterfaceManageService {
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+                (result) -> {
+                    InterfaceConfigRemoveResponse clientConfigAddResponse = new InterfaceConfigRemoveResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                },
                 // compose digest log
-                (Void) -> {
-                }
-        );
-
+                (Void) -> {});
     }
 
     @Override
@@ -174,18 +178,18 @@ public class InterfaceManageServiceImpl implements InterfaceManageService {
                 (Void) -> ValidateUtils.validate(request),
                 // process
                 () -> {
-
                     getRepositoryService().onlineInterface(request.getInterfaceId());
                     response.setInterfaceId(request.getInterfaceId());
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+                (result) -> {
+                    InterfaceConfigOnlineResponse clientConfigAddResponse = new InterfaceConfigOnlineResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                },
                 // compose digest log
-                (Void) -> {
-                }
-        );
-
+                (Void) -> {});
     }
 
     @Override
@@ -202,19 +206,18 @@ public class InterfaceManageServiceImpl implements InterfaceManageService {
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+                (result) -> {
+                    InterfaceConfigOfflineResponse clientConfigAddResponse = new InterfaceConfigOfflineResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                },
                 // compose digest log
-                (Void) -> {
-                }
-        );
-
+                (Void) -> {});
     }
 
     private RepositoryServiceExtPt getRepositoryService() {
-        RepositoryServiceExtPt result = null;//ExtensionPointLoader.get(RepositoryServiceExt.class,
+        RepositoryServiceExtPt result = null; // ExtensionPointLoader.get(RepositoryServiceExt.class,
         //            SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE));
         return result;
-
     }
-
 }

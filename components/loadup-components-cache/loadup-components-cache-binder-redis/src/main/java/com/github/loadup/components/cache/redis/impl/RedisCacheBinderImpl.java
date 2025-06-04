@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.cache.redis.impl;
 
 /*-
@@ -29,14 +30,13 @@ package com.github.loadup.components.cache.redis.impl;
 import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.cache.api.CacheBinder;
 import jakarta.annotation.Resource;
+import java.util.Map;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-
-import java.util.Map;
-import java.util.Objects;
 
 public class RedisCacheBinderImpl implements CacheBinder {
 

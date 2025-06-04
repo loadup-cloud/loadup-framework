@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.script.parser.groovy;
 
 /*-
@@ -27,6 +28,9 @@ package com.github.loadup.components.gateway.message.script.parser.groovy;
  */
 
 import com.github.loadup.components.gateway.facade.util.LogUtil;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import net.sf.cglib.core.Signature;
 import net.sf.cglib.proxy.InterfaceMaker;
 import org.apache.commons.lang3.StringUtils;
@@ -61,10 +65,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * 修改自ScriptFactoryPostProcessor
  * 实现定制的Groovy脚本后处理器，用来定制数据库的脚本加载处理
@@ -73,34 +73,31 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings({"rawtypes", "unchecked"})
 @Component
 public class CustomScriptFactoryPostProcessor
-        implements
-        BeanPostProcessor,
-        BeanClassLoaderAware,
-        BeanFactoryAware,
-        ResourceLoaderAware,
-        DisposableBean,
-        Ordered {
+        implements BeanPostProcessor,
+                BeanClassLoaderAware,
+                BeanFactoryAware,
+                ResourceLoaderAware,
+                DisposableBean,
+                Ordered {
 
     protected static final String INLINE_SCRIPT_PREFIX = "inline:";
     protected static final String SCRIPT_FACTORY_NAME_PREFIX = "scriptFactory.";
     protected static final String SCRIPTED_OBJECT_NAME_PREFIX = "scriptedObject.";
-    protected static final String REFRESH_CHECK_DELAY_ATTRIBUTE = Conventions
-            .getQualifiedAttributeName(
-                    ScriptFactoryPostProcessor.class,
-                    "refreshCheckDelay");
+    protected static final String REFRESH_CHECK_DELAY_ATTRIBUTE =
+            Conventions.getQualifiedAttributeName(ScriptFactoryPostProcessor.class, "refreshCheckDelay");
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(CustomScriptFactoryPostProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(CustomScriptFactoryPostProcessor.class);
+
     protected final DefaultListableBeanFactory scriptBeanFactory = new DefaultListableBeanFactory();
     /**
      * Map from bean name String to ScriptSource object
      */
     private final Map<String, ScriptSource> scriptSourceCache = new ConcurrentHashMap<String, ScriptSource>();
+
     private long defaultRefreshCheckDelay = -1;
-    private ClassLoader beanClassLoader = ClassUtils
-            .getDefaultClassLoader();
+    private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
     private ConfigurableBeanFactory beanFactory;
     private ResourceLoader resourceLoader = new DefaultResourceLoader();
 
@@ -125,10 +122,9 @@ public class CustomScriptFactoryPostProcessor
     @Override
     public void setBeanFactory(BeanFactory beanFactory) {
         if (!(beanFactory instanceof ConfigurableBeanFactory)) {
-            throw new IllegalStateException(
-                    "ScriptFactoryPostProcessor doesn't work with a BeanFactory "
-                            + "which does not implement ConfigurableBeanFactory: "
-                            + beanFactory.getClass());
+            throw new IllegalStateException("ScriptFactoryPostProcessor doesn't work with a BeanFactory "
+                    + "which does not implement ConfigurableBeanFactory: "
+                    + beanFactory.getClass());
         }
         this.beanFactory = (ConfigurableBeanFactory) beanFactory;
 
@@ -146,7 +142,6 @@ public class CustomScriptFactoryPostProcessor
                 this.scriptBeanFactory.getBeanPostProcessors().remove(item);
             }
         });
-
     }
 
     @Override
@@ -173,18 +168,15 @@ public class CustomScriptFactoryPostProcessor
             String scriptedObjectBeanName = SCRIPTED_OBJECT_NAME_PREFIX + beanName;
             prepareScriptBeans(bd, scriptFactoryBeanName, scriptedObjectBeanName);
 
-            ScriptFactory scriptFactory = this.scriptBeanFactory.getBean(scriptFactoryBeanName,
-                    ScriptFactory.class);
-            ScriptSource scriptSource = getScriptSource(scriptFactoryBeanName,
-                    scriptFactory.getScriptSourceLocator());
+            ScriptFactory scriptFactory = this.scriptBeanFactory.getBean(scriptFactoryBeanName, ScriptFactory.class);
+            ScriptSource scriptSource = getScriptSource(scriptFactoryBeanName, scriptFactory.getScriptSourceLocator());
             Class[] interfaces = scriptFactory.getScriptInterfaces();
 
             Class scriptedType = scriptFactory.getScriptedObjectType(scriptSource);
             if (scriptedType != null) {
                 return scriptedType;
             } else if (!ObjectUtils.isEmpty(interfaces)) {
-                return (interfaces.length == 1 ? interfaces[0]
-                        : createCompositeInterface(interfaces));
+                return (interfaces.length == 1 ? interfaces[0] : createCompositeInterface(interfaces));
             } else {
                 if (bd.isSingleton()) {
                     Object bean = this.scriptBeanFactory.getBean(scriptedObjectBeanName);
@@ -195,12 +187,12 @@ public class CustomScriptFactoryPostProcessor
             }
         } catch (BeanCreationException ex) {
             if (ex.getMostSpecificCause() instanceof BeanCurrentlyInCreationException) {
-                LogUtil.debug(logger, "Could not determine scripted object type for bean '" +
-                        beanName + "': " + ex.getMessage());
+                LogUtil.debug(
+                        logger,
+                        "Could not determine scripted object type for bean '" + beanName + "': " + ex.getMessage());
             }
         } catch (Exception ex) {
-            LogUtil.debug(logger, "Could not determine scripted object type for bean '" +
-                    beanName + "'", ex);
+            LogUtil.debug(logger, "Could not determine scripted object type for bean '" + beanName + "'", ex);
         }
 
         return null;
@@ -218,10 +210,8 @@ public class CustomScriptFactoryPostProcessor
         String scriptedObjectBeanName = SCRIPTED_OBJECT_NAME_PREFIX + beanName;
         prepareScriptBeans(bd, scriptFactoryBeanName, scriptedObjectBeanName);
 
-        ScriptFactory scriptFactory = this.scriptBeanFactory.getBean(scriptFactoryBeanName,
-                ScriptFactory.class);
-        ScriptSource scriptSource = getScriptSource(scriptFactoryBeanName,
-                scriptFactory.getScriptSourceLocator());
+        ScriptFactory scriptFactory = this.scriptBeanFactory.getBean(scriptFactoryBeanName, ScriptFactory.class);
+        ScriptSource scriptSource = getScriptSource(scriptFactoryBeanName, scriptFactory.getScriptSourceLocator());
         boolean isFactoryBean = false;
         try {
             Class scriptedObjectType = scriptFactory.getScriptedObjectType(scriptSource);
@@ -230,16 +220,15 @@ public class CustomScriptFactoryPostProcessor
                 isFactoryBean = FactoryBean.class.isAssignableFrom(scriptedObjectType);
             }
         } catch (Exception ex) {
-            throw new BeanCreationException(beanName,
-                    "Could not determine scripted object type for " + scriptFactory, ex);
+            throw new BeanCreationException(
+                    beanName, "Could not determine scripted object type for " + scriptFactory, ex);
         }
 
         long refreshCheckDelay = resolveRefreshCheckDelay(bd);
         if (refreshCheckDelay >= 0) {
             Class[] interfaces = scriptFactory.getScriptInterfaces();
             RefreshableScriptTargetSource ts = new RefreshableScriptTargetSource(
-                    this.scriptBeanFactory, scriptedObjectBeanName, scriptFactory, scriptSource,
-                    isFactoryBean);
+                    this.scriptBeanFactory, scriptedObjectBeanName, scriptFactory, scriptSource, isFactoryBean);
             ts.setRefreshCheckDelay(refreshCheckDelay);
             return createRefreshableProxy(ts, interfaces);
         }
@@ -255,27 +244,23 @@ public class CustomScriptFactoryPostProcessor
      * post-processor uses. Each original bean definition will be split
      * into a ScriptFactory definition and a scripted object definition.
      */
-    protected void prepareScriptBeans(BeanDefinition bd, String scriptFactoryBeanName,
-                                      String scriptedObjectBeanName) {
+    protected void prepareScriptBeans(BeanDefinition bd, String scriptFactoryBeanName, String scriptedObjectBeanName) {
         if (!this.scriptBeanFactory.containsBeanDefinition(scriptedObjectBeanName)) {
 
-            this.scriptBeanFactory.registerBeanDefinition(scriptFactoryBeanName,
-                    createScriptFactoryBeanDefinition(bd));
-            ScriptFactory scriptFactory = this.scriptBeanFactory.getBean(scriptFactoryBeanName,
-                    ScriptFactory.class);
-            ScriptSource scriptSource = getScriptSource(scriptFactoryBeanName,
-                    scriptFactory.getScriptSourceLocator());
+            this.scriptBeanFactory.registerBeanDefinition(scriptFactoryBeanName, createScriptFactoryBeanDefinition(bd));
+            ScriptFactory scriptFactory = this.scriptBeanFactory.getBean(scriptFactoryBeanName, ScriptFactory.class);
+            ScriptSource scriptSource = getScriptSource(scriptFactoryBeanName, scriptFactory.getScriptSourceLocator());
             Class[] interfaces = scriptFactory.getScriptInterfaces();
 
             Class[] scriptedInterfaces = interfaces;
-            if (scriptFactory.requiresConfigInterface() && !bd.getPropertyValues().isEmpty()) {
+            if (scriptFactory.requiresConfigInterface()
+                    && !bd.getPropertyValues().isEmpty()) {
                 Class configInterface = createConfigInterface(bd, interfaces);
-                scriptedInterfaces = (Class[]) ObjectUtils.addObjectToArray(interfaces,
-                        configInterface);
+                scriptedInterfaces = (Class[]) ObjectUtils.addObjectToArray(interfaces, configInterface);
             }
 
-            BeanDefinition objectBd = createScriptedObjectBeanDefinition(bd,
-                    scriptFactoryBeanName, scriptSource, scriptedInterfaces);
+            BeanDefinition objectBd =
+                    createScriptedObjectBeanDefinition(bd, scriptFactoryBeanName, scriptSource, scriptedInterfaces);
             long refreshCheckDelay = resolveRefreshCheckDelay(bd);
             if (refreshCheckDelay >= 0) {
                 objectBd.setScope(BeanDefinition.SCOPE_PROTOTYPE);
@@ -319,8 +304,7 @@ public class CustomScriptFactoryPostProcessor
     protected BeanDefinition createScriptFactoryBeanDefinition(BeanDefinition bd) {
         GenericBeanDefinition scriptBd = new GenericBeanDefinition();
         scriptBd.setBeanClassName(bd.getBeanClassName());
-        scriptBd.getConstructorArgumentValues()
-                .addArgumentValues(bd.getConstructorArgumentValues());
+        scriptBd.getConstructorArgumentValues().addArgumentValues(bd.getConstructorArgumentValues());
         return scriptBd;
     }
 
@@ -362,20 +346,17 @@ public class CustomScriptFactoryPostProcessor
             String propertyName = pv.getName();
             Class propertyType = BeanUtils.findPropertyType(propertyName, interfaces);
             String setterName = "set" + StringUtils.capitalize(propertyName);
-            Signature signature = new Signature(setterName, Type.VOID_TYPE,
-                    new Type[]{Type.getType(propertyType)});
+            Signature signature = new Signature(setterName, Type.VOID_TYPE, new Type[] {Type.getType(propertyType)});
             maker.add(signature, new Type[0]);
         }
         if (bd instanceof AbstractBeanDefinition) {
             AbstractBeanDefinition abd = (AbstractBeanDefinition) bd;
             if (abd.getInitMethodName() != null) {
-                Signature signature = new Signature(abd.getInitMethodName(), Type.VOID_TYPE,
-                        new Type[0]);
+                Signature signature = new Signature(abd.getInitMethodName(), Type.VOID_TYPE, new Type[0]);
                 maker.add(signature, new Type[0]);
             }
             if (abd.getDestroyMethodName() != null) {
-                Signature signature = new Signature(abd.getDestroyMethodName(), Type.VOID_TYPE,
-                        new Type[0]);
+                Signature signature = new Signature(abd.getDestroyMethodName(), Type.VOID_TYPE, new Type[0]);
                 maker.add(signature, new Type[0]);
             }
         }
@@ -401,10 +382,8 @@ public class CustomScriptFactoryPostProcessor
      *
      * @see ScriptFactory#getScriptedObject
      */
-    protected BeanDefinition createScriptedObjectBeanDefinition(BeanDefinition bd,
-                                                                String scriptFactoryBeanName,
-                                                                ScriptSource scriptSource,
-                                                                Class[] interfaces) {
+    protected BeanDefinition createScriptedObjectBeanDefinition(
+            BeanDefinition bd, String scriptFactoryBeanName, ScriptSource scriptSource, Class[] interfaces) {
 
         GenericBeanDefinition objectBd = new GenericBeanDefinition(bd);
         objectBd.setFactoryBeanName(scriptFactoryBeanName);
@@ -429,8 +408,7 @@ public class CustomScriptFactoryPostProcessor
         proxyFactory.setTargetSource(ts);
 
         if (interfaces == null) {
-            proxyFactory.setInterfaces(ClassUtils.getAllInterfacesForClass(ts.getTargetClass(),
-                    this.beanClassLoader));
+            proxyFactory.setInterfaces(ClassUtils.getAllInterfacesForClass(ts.getTargetClass(), this.beanClassLoader));
         } else {
             proxyFactory.setInterfaces(interfaces);
         }
@@ -445,11 +423,9 @@ public class CustomScriptFactoryPostProcessor
     /**
      * 根据beanName转换成ScriptSource
      */
-    protected ScriptSource convertToScriptSource(String beanName, String scriptSourceLocator,
-                                                 ResourceLoader loader) {
+    protected ScriptSource convertToScriptSource(String beanName, String scriptSourceLocator, ResourceLoader loader) {
         if (scriptSourceLocator.startsWith(INLINE_SCRIPT_PREFIX)) {
-            return new StaticScriptSource(scriptSourceLocator.substring(INLINE_SCRIPT_PREFIX
-                    .length()), beanName);
+            return new StaticScriptSource(scriptSourceLocator.substring(INLINE_SCRIPT_PREFIX.length()), beanName);
         } else if (scriptSourceLocator.startsWith(GroovyConstant.SCRIPT_SOURCE_PREFIX)) {
             String scriptName = getScriptName(scriptSourceLocator);
             return new DatabaseScriptSource(scriptName);
@@ -462,8 +438,7 @@ public class CustomScriptFactoryPostProcessor
      * 获取脚本名称
      */
     private String getScriptName(String scriptSourceLocator) {
-        String scriptName = StringUtils.substringAfter(scriptSourceLocator,
-                GroovyConstant.SCRIPT_SOURCE_PREFIX);
+        String scriptName = StringUtils.substringAfter(scriptSourceLocator, GroovyConstant.SCRIPT_SOURCE_PREFIX);
         return StringUtils.lowerCase(scriptName);
     }
 
@@ -473,7 +448,7 @@ public class CustomScriptFactoryPostProcessor
     public void destoryBean(String beanName) {
         String customedBeanName = SCRIPTED_OBJECT_NAME_PREFIX + beanName;
         this.destoryScriptFactoryBean(customedBeanName);
-        //destory SCRIPT_FACTORY bean added by yiyao
+        // destory SCRIPT_FACTORY bean added by yiyao
         customedBeanName = SCRIPT_FACTORY_NAME_PREFIX + beanName;
         this.destoryScriptFactoryBean(customedBeanName);
     }
@@ -486,7 +461,7 @@ public class CustomScriptFactoryPostProcessor
         try {
             this.scriptBeanFactory.removeBeanDefinition(beanName);
         } catch (NoSuchBeanDefinitionException e) {
-            //do not throw Exception
+            // do not throw Exception
             LogUtil.warn(logger, "Destroy bean: " + beanName, e);
             return;
         }
@@ -499,5 +474,4 @@ public class CustomScriptFactoryPostProcessor
     public void destroy() {
         this.scriptBeanFactory.destroySingletons();
     }
-
 }

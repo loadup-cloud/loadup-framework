@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.support;
 
 /*-
@@ -33,7 +30,7 @@ package com.github.loadup.components.testify.support;
 /**
  * 测试用例持有者，贯穿用例执行过程。
  *
- * 
+ *
  *
  */
 public final class TestCaseHolder {
@@ -41,13 +38,12 @@ public final class TestCaseHolder {
     /**
      * 本地存储
      */
-    private final static ThreadLocal<TestCase> threadLocal = new ThreadLocal<TestCase>();
+    private static final ThreadLocal<TestCase> threadLocal = new ThreadLocal<TestCase>();
 
     /**
      * 对外界不可见。
      */
-    private TestCaseHolder() {
-    }
+    private TestCaseHolder() {}
 
     /**
      * 获取测试用例。
@@ -73,5 +69,4 @@ public final class TestCaseHolder {
     public static void clear() {
         threadLocal.set(null);
     }
-
 }

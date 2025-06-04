@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.model;
 
 /*-
@@ -185,7 +186,7 @@ public class InterfaceConfigDto {
     }
 
     /**
-     * 
+     *
      */
     public void setVersion(String version) {
         this.version = version;
@@ -199,7 +200,7 @@ public class InterfaceConfigDto {
     }
 
     /**
-     * 
+     *
      */
     public void setStatus(String status) {
         this.status = status;

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.response;
 
 /*-
@@ -40,42 +41,42 @@ public class ClientConfigQueryResponse extends BaseResponse {
     private Map<String, String> properties;
 
     /**
-     * 
+     *
      */
     public String getClientId() {
         return clientId;
     }
 
     /**
-     * 
+     *
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;
     }
 
     /**
-     * 
+     *
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 
+     *
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
+     *
      */
     public Map<String, String> getProperties() {
         return properties;
     }
 
     /**
-     * 
+     *
      */
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;

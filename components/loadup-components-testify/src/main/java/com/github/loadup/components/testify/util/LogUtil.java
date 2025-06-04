@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -28,12 +29,11 @@ package com.github.loadup.components.testify.util;
 
 import com.github.loadup.components.testify.constant.AnsiColorConstants;
 import com.github.loadup.components.testify.driver.TestifyConfiguration;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 /**
  * 存放Log相关公用方法
@@ -106,7 +106,6 @@ public class LogUtil {
         }
     }
 
-
     /**
      * 打印关键info信息，蓝色
      *
@@ -141,8 +140,8 @@ public class LogUtil {
          * ANSI_COLOR_BEGIN   some text3  ANSI_COLOR_END\n
          * */
         return color
-                + StringUtils.replace(textWithLf, "\n", AnsiColorConstants.ANSI_COLOR_END + "\n"
-                + color) + AnsiColorConstants.ANSI_COLOR_END;
+                + StringUtils.replace(textWithLf, "\n", AnsiColorConstants.ANSI_COLOR_END + "\n" + color)
+                + AnsiColorConstants.ANSI_COLOR_END;
     }
 
     /**

@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data;
 
 /*-
@@ -34,13 +31,12 @@ import com.github.loadup.components.testify.data.enums.MatchDegree;
 import com.github.loadup.components.testify.data.impl.DefaultMetaItemStore;
 import com.github.loadup.components.testify.data.matcher.MetaItemNameMatcher;
 import com.github.loadup.components.testify.data.matcher.MetaItemRegexMatcher;
-
 import java.util.*;
 
 /**
  * 自动智能匹配器。
  *
- * 
+ *
  *
  */
 public class AutoMatcher {
@@ -137,8 +133,7 @@ public class AutoMatcher {
      * @param metaItem
      * @return
      */
-    private boolean addToDraft(Map<MetaItem, MetaItemMappingDraft> drafts, MetaInitItem initItem,
-                               MetaItem metaItem) {
+    private boolean addToDraft(Map<MetaItem, MetaItemMappingDraft> drafts, MetaInitItem initItem, MetaItem metaItem) {
         boolean isAdded = false;
         MatchDegree degree = getMatchDegree(initItem, metaItem);
 
@@ -157,8 +152,7 @@ public class AutoMatcher {
      * @param metaItem
      * @return
      */
-    private MetaItemMappingDraft getDraft(Map<MetaItem, MetaItemMappingDraft> drafts,
-                                          MetaItem metaItem) {
+    private MetaItemMappingDraft getDraft(Map<MetaItem, MetaItemMappingDraft> drafts, MetaItem metaItem) {
         MetaItemMappingDraft draft = drafts.get(metaItem);
         if (draft == null) {
             draft = new MetaItemMappingDraft();
@@ -194,5 +188,4 @@ public class AutoMatcher {
 
         return null;
     }
-
 }

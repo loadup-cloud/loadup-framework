@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.response;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.components.gateway.facade.response;
 
 import com.github.loadup.components.gateway.facade.enums.CertTypeEnum;
 import com.github.loadup.components.gateway.facade.enums.OperationType;
-
 import java.util.Date;
 import java.util.Map;
 
@@ -96,7 +96,7 @@ public class CertConfigResponse {
     private String algoName;
 
     /**
-     * 
+     *
      */
     public String getCertCode() {
         return certCode;
@@ -110,7 +110,7 @@ public class CertConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public CertTypeEnum getCertType() {
         return certType;
@@ -124,7 +124,7 @@ public class CertConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public String getCertContent() {
         return certContent;
@@ -138,7 +138,7 @@ public class CertConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public String getCertStatus() {
         return certStatus;
@@ -152,7 +152,7 @@ public class CertConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public Date getGmtValid() {
         return gmtValid;
@@ -166,7 +166,7 @@ public class CertConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public Date getGmtInValid() {
         return gmtInValid;
@@ -180,7 +180,7 @@ public class CertConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public Map<String, String> getCertProperties() {
         return certProperties;
@@ -194,7 +194,7 @@ public class CertConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public Map<String, String> getAlgorithmProperties() {
         return algorithmProperties;
@@ -208,7 +208,7 @@ public class CertConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public String getSecurityStrategyCode() {
         return securityStrategyCode;
@@ -222,7 +222,7 @@ public class CertConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public String getClientId() {
         return clientId;
@@ -236,7 +236,7 @@ public class CertConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public OperationType getOperateType() {
         return operateType;
@@ -250,7 +250,7 @@ public class CertConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public String getAlgoName() {
         return algoName;

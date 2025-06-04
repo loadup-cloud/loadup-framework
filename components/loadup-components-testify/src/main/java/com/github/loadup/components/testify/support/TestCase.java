@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.support;
 
 /*-
@@ -30,10 +27,10 @@ package com.github.loadup.components.testify.support;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
 import com.github.loadup.components.testify.manage.TestLogger;
 import com.github.loadup.components.testify.support.enums.CaseCategory;
 import com.github.loadup.components.testify.support.enums.CaseLevel;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 测试用例。
@@ -53,7 +50,7 @@ import com.github.loadup.components.testify.support.enums.CaseLevel;
  *     </tr>
  * </table>
  *
- * 
+ *
  *
  */
 public class TestCase {
@@ -125,7 +122,6 @@ public class TestCase {
         }
         digest.append("]");
         return digest.toString();
-
     }
 
     /**
@@ -166,8 +162,7 @@ public class TestCase {
 
         CaseCategory category = CaseCategory.getCaseCategoryByCode(caseIdInfo[0]);
         if (category == null) {
-            TestLogger.getLogger().warn(
-                    "case category define error, value must be NM, FE, PE or SE");
+            TestLogger.getLogger().warn("case category define error, value must be NM, FE, PE or SE");
         }
         CaseLevel level = CaseLevel.getLevelByCode(caseIdInfo[1]);
         if (level == null) {

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils;
 
 /*-
@@ -30,9 +31,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
 import org.apache.commons.lang3.RandomStringUtils;
-
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -44,42 +43,42 @@ public class DateUtil {
     /**
      * yyyyMMdd
      */
-    public final static String SHORT_FORMAT = "yyyyMMdd";
+    public static final String SHORT_FORMAT = "yyyyMMdd";
 
     /**
      * yyyyMMddHHmmss
      */
-    public final static String LONG_FORMAT = "yyyyMMddHHmmss";
+    public static final String LONG_FORMAT = "yyyyMMddHHmmss";
 
     /**
      * yyyy-MM-dd
      */
-    public final static String WEB_FORMAT = "yyyy-MM-dd";
+    public static final String WEB_FORMAT = "yyyy-MM-dd";
 
     /**
      * HHmmss
      */
-    public final static String TIME_FORMAT = "HHmmss";
+    public static final String TIME_FORMAT = "HHmmss";
 
     /**
      * yyyyMM
      */
-    public final static String MONTH_FORMAT = "yyyyMM";
+    public static final String MONTH_FORMAT = "yyyyMM";
 
     /**
      * yyyy年MM月dd日
      */
-    public final static String CHINA_FORMAT = "yyyy年MM月dd日";
+    public static final String CHINA_FORMAT = "yyyy年MM月dd日";
 
     /**
      * yyyy-MM-dd HH:mm:ss
      */
-    public final static String LONG_WEB_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String LONG_WEB_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * yyyy-MM-dd HH:mm
      */
-    public final static String LONG_WEB_FORMAT_NO_SEC = "yyyy-MM-dd HH:mm";
+    public static final String LONG_WEB_FORMAT_NO_SEC = "yyyy-MM-dd HH:mm";
 
     /**
      * 日期对象解析成日期字符串基础方法，可以据此封装出多种便捷的方法直接使用
@@ -139,8 +138,7 @@ public class DateUtil {
      * @return 已经格式化的字符串
      * @throws ParseException
      */
-    public static String format(String dateStr, String formatIn, String formatOut)
-            throws ParseException {
+    public static String format(String dateStr, String formatIn, String formatOut) throws ParseException {
 
         Date date = parse(dateStr, formatIn);
         return format(date, formatOut);

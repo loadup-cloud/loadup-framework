@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.tree;
 
 /*-
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *
  *
  */
 public class treeNode<T> {

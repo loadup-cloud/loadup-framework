@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.model;
 
 /*-
@@ -33,7 +34,7 @@ import java.util.List;
  * 虚拟数据库对象
  *
  * @author tantian.wc
- * 
+ *
  */
 public class VirtualDataSet extends TestUnit {
 
@@ -62,7 +63,6 @@ public class VirtualDataSet extends TestUnit {
             this.virtualTables.add(virtualTable);
         }
         return this;
-
     }
 
     /**
@@ -78,7 +78,6 @@ public class VirtualDataSet extends TestUnit {
 
         for (VirtualTable virtualTable : virtualTables) {
             this.virtualTables.add(virtualTable);
-
         }
         return this;
     }
@@ -129,5 +128,4 @@ public class VirtualDataSet extends TestUnit {
     public String toString() {
         return "VirtualDataSet [virtualTables=" + virtualTables + "]";
     }
-
 }

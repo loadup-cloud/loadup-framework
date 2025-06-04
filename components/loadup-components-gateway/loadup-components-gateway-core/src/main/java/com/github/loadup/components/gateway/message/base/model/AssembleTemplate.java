@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.base.model;
 
 /*-
@@ -79,7 +80,7 @@ public class AssembleTemplate {
     }
 
     /**
-     * 
+     *
      */
     public void setMessageProcessId(String messageProcessId) {
         this.messageProcessId = messageProcessId;
@@ -93,7 +94,7 @@ public class AssembleTemplate {
     }
 
     /**
-     * 
+     *
      */
     public void setMessageStruct(MessageStruct messageStruct) {
         this.messageStruct = messageStruct;
@@ -107,7 +108,7 @@ public class AssembleTemplate {
     }
 
     /**
-     * 
+     *
      */
     public void setMainTemplate(String mainTemplate) {
         this.mainTemplate = mainTemplate;
@@ -121,7 +122,7 @@ public class AssembleTemplate {
     }
 
     /**
-     * 
+     *
      */
     public void setSubTemplate(String subTemplate) {
         this.subTemplate = subTemplate;
@@ -135,7 +136,7 @@ public class AssembleTemplate {
     }
 
     /**
-     * 
+     *
      */
     public void setHeaderTemplate(String headerTemplate) {
         this.headerTemplate = headerTemplate;
@@ -149,7 +150,7 @@ public class AssembleTemplate {
     }
 
     /**
-     * 
+     *
      */
     public void setExtraTemplate(String extraTemplate) {
         this.extraTemplate = extraTemplate;
@@ -163,7 +164,7 @@ public class AssembleTemplate {
     }
 
     /**
-     * 
+     *
      */
     public void setErrorTemplate(String errorTemplate) {
         this.errorTemplate = errorTemplate;
@@ -177,7 +178,7 @@ public class AssembleTemplate {
     }
 
     /**
-     * 
+     *
      */
     public void setErrorSubTemplate(String errorSubTemplate) {
         this.errorSubTemplate = errorSubTemplate;

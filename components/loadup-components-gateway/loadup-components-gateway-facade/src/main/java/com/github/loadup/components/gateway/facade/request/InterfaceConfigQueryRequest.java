@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -64,112 +65,112 @@ public class InterfaceConfigQueryRequest extends BaseRequest {
     private String interfaceName;
 
     /**
-     * 
+     *
      */
     public String getInterfaceId() {
         return interfaceId;
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceId(String interfaceId) {
         this.interfaceId = interfaceId;
     }
 
     /**
-     * 
+     *
      */
     public String getClientId() {
         return clientId;
     }
 
     /**
-     * 
+     *
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;
     }
 
     /**
-     * 
+     *
      */
     public Integer getPageSize() {
         return pageSize;
     }
 
     /**
-     * 
+     *
      */
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
     }
 
     /**
-     * 
+     *
      */
     public Integer getPage() {
         return page;
     }
 
     /**
-     * 
+     *
      */
     public void setPage(Integer page) {
         this.page = page;
     }
 
     /**
-     * 
+     *
      */
     public String getTntInstId() {
         return tntInstId;
     }
 
     /**
-     * 
+     *
      */
     public void setTntInstId(String tntInstId) {
         this.tntInstId = tntInstId;
     }
 
     /**
-     * 
+     *
      */
     public String getType() {
         return type;
     }
 
     /**
-     * 
+     *
      */
     public void setType(String type) {
         this.type = type;
     }
 
     /**
-     * 
+     *
      */
     public String getStatus() {
         return status;
     }
 
     /**
-     * 
+     *
      */
     public void setStatus(String status) {
         this.status = status;
     }
 
     /**
-     * 
+     *
      */
     public String getInterfaceName() {
         return interfaceName;
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceName(String interfaceName) {
         this.interfaceName = interfaceName;

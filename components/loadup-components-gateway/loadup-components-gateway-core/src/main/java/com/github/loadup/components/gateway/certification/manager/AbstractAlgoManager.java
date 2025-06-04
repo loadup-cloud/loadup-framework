@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.manager;
 
 /*-
@@ -33,11 +34,10 @@ import com.github.loadup.components.gateway.certification.model.AlgorithmEnum;
 import com.github.loadup.components.gateway.certification.model.CertificationFactor;
 import com.github.loadup.components.gateway.certification.model.CommonParameter;
 import com.github.loadup.components.gateway.certification.util.Convertor;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-
-import java.util.Map;
 
 /**
  * 抽象算法管理类
@@ -85,10 +85,8 @@ public class AbstractAlgoManager implements AlgoManager, InitializingBean {
      * 验签接口
      */
     @Override
-    public boolean verify(String srcContent, String signedContent,
-                          CertificationFactor certificationFactor) {
+    public boolean verify(String srcContent, String signedContent, CertificationFactor certificationFactor) {
         throw new CertificationException(CertificationErrorCode.UNSUPPORTED_OPERATION);
-
     }
 
     /**
@@ -103,10 +101,8 @@ public class AbstractAlgoManager implements AlgoManager, InitializingBean {
      * 特殊验签接口
      */
     @Override
-    public String decode(String srcContent, String signedContent,
-                         CertificationFactor certificationFactor) {
+    public String decode(String srcContent, String signedContent, CertificationFactor certificationFactor) {
         throw new CertificationException(CertificationErrorCode.UNSUPPORTED_OPERATION);
-
     }
 
     /**
@@ -121,32 +117,27 @@ public class AbstractAlgoManager implements AlgoManager, InitializingBean {
         switch (certificationFactor.getOperationType()) {
             case OP_SIGN:
                 arg1 = (String) objects[1];
-                output = doSign(Convertor.converInput(arg1, certificationFactor),
-                        certificationFactor);
+                output = doSign(Convertor.converInput(arg1, certificationFactor), certificationFactor);
                 return Convertor.convertOutput(output, certificationFactor);
 
             case OP_ENCODE:
                 arg1 = (String) objects[1];
-                output = doEncode(Convertor.converInput(arg1, certificationFactor),
-                        certificationFactor);
+                output = doEncode(Convertor.converInput(arg1, certificationFactor), certificationFactor);
                 return Convertor.convertOutput(output, certificationFactor);
 
             case OP_ENCRYPT:
                 arg1 = (String) objects[1];
-                output = doEncrypt(Convertor.converInput(arg1, certificationFactor),
-                        certificationFactor);
+                output = doEncrypt(Convertor.converInput(arg1, certificationFactor), certificationFactor);
                 return Convertor.convertOutput(output, certificationFactor);
 
             case OP_DECRYPT:
                 arg1 = (String) objects[1];
-                output = doDecrypt(Convertor.converInput(arg1, certificationFactor),
-                        certificationFactor);
+                output = doDecrypt(Convertor.converInput(arg1, certificationFactor), certificationFactor);
                 return Convertor.convertOutput(output, certificationFactor);
 
             case OP_DIGEST:
                 arg1 = (String) objects[1];
-                output = doDigest(Convertor.converInput(arg1, certificationFactor),
-                        certificationFactor);
+                output = doDigest(Convertor.converInput(arg1, certificationFactor), certificationFactor);
                 return Convertor.convertOutput(output, certificationFactor);
 
             case OP_VERIFY:
@@ -155,10 +146,11 @@ public class AbstractAlgoManager implements AlgoManager, InitializingBean {
                     unsignedData = (String) objects[1];
                 }
                 String signedData = (String) objects[2];
-                Map<String, byte[]> inputs = Convertor.converInput(unsignedData, signedData,
+                Map<String, byte[]> inputs = Convertor.converInput(unsignedData, signedData, certificationFactor);
+                return doVerify(
+                        inputs.get(CommonParameter.UNSIGNED_DATA),
+                        inputs.get(CommonParameter.SIGNED_DATA),
                         certificationFactor);
-                return doVerify(inputs.get(CommonParameter.UNSIGNED_DATA),
-                        inputs.get(CommonParameter.SIGNED_DATA), certificationFactor);
 
             case OP_DECODE:
                 String unsignedData1 = null;
@@ -166,10 +158,11 @@ public class AbstractAlgoManager implements AlgoManager, InitializingBean {
                     unsignedData1 = (String) objects[1];
                 }
                 String signedData1 = (String) objects[2];
-                Map<String, byte[]> inputs1 = Convertor.converInput(unsignedData1, signedData1,
+                Map<String, byte[]> inputs1 = Convertor.converInput(unsignedData1, signedData1, certificationFactor);
+                return doDecode(
+                        inputs1.get(CommonParameter.UNSIGNED_DATA),
+                        inputs1.get(CommonParameter.SIGNED_DATA),
                         certificationFactor);
-                return doDecode(inputs1.get(CommonParameter.UNSIGNED_DATA),
-                        inputs1.get(CommonParameter.SIGNED_DATA), certificationFactor);
 
             default:
                 break;
@@ -187,8 +180,7 @@ public class AbstractAlgoManager implements AlgoManager, InitializingBean {
     /**
      * 执行验签操作
      */
-    protected Boolean doVerify(byte[] unsignedData, byte[] signedData,
-                               CertificationFactor certificationFactor) {
+    protected Boolean doVerify(byte[] unsignedData, byte[] signedData, CertificationFactor certificationFactor) {
         return false;
     }
 
@@ -202,8 +194,7 @@ public class AbstractAlgoManager implements AlgoManager, InitializingBean {
     /**
      * 执行特殊验签操作
      */
-    protected String doDecode(byte[] unsignedData, byte[] signedData,
-                              CertificationFactor certificationFactor) {
+    protected String doDecode(byte[] unsignedData, byte[] signedData, CertificationFactor certificationFactor) {
         return null;
     }
 
@@ -254,8 +245,5 @@ public class AbstractAlgoManager implements AlgoManager, InitializingBean {
      *                   as failure to set an essential property) or if initialization fails.
      */
     @Override
-    public void afterPropertiesSet() throws Exception {
-
-    }
-
+    public void afterPropertiesSet() throws Exception {}
 }

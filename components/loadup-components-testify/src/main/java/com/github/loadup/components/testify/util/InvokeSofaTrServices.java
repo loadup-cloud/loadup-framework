@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2014 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -51,8 +48,7 @@ public class InvokeSofaTrServices {
      *
      */
     @SuppressWarnings("rawtypes")
-    public static Object invoke(String servicesUrl, Class service, String methodname,
-                                Object... parameters) {
+    public static Object invoke(String servicesUrl, Class service, String methodname, Object... parameters) {
 
         String targetURL = servicesUrl;
 
@@ -62,13 +58,10 @@ public class InvokeSofaTrServices {
         }
 
         return invokeTr(targetURL, service, methodname, parameters);
-
     }
 
     @SuppressWarnings("rawtypes")
-    private static Object invokeTr(String serviceUrl, Class service, String method,
-                                   Object... objects) {
-
+    private static Object invokeTr(String serviceUrl, Class service, String method, Object... objects) {
 
         return null;
     }

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -33,20 +30,19 @@ package com.github.loadup.components.testify.util;
 import com.github.loadup.components.testify.api.CSVApis;
 import com.github.loadup.components.testify.exception.TestifyException;
 import com.github.loadup.components.testify.object.manager.ObjectTypeManager;
-import org.apache.commons.lang3.ClassUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author ming.cm
  * @author batuo.zxm
- * 
+ *
  */
 public class ReflectUtil {
     private static final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
@@ -59,13 +55,11 @@ public class ReflectUtil {
         return isAbstractClass(clazz);
     }
 
-    public static Object instantiateClass(Class<?> clazz) throws InstantiationException,
-            IllegalAccessException,
-            ClassNotFoundException {
+    public static Object instantiateClass(Class<?> clazz)
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         String className = clazz.getName();
         Object object = clazz.getClassLoader().loadClass(className).newInstance();
         return object;
-
     }
 
     /**
@@ -124,14 +118,12 @@ public class ReflectUtil {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-
     }
 
     @SuppressWarnings("deprecation")
     public static Object valueByCorrectType(Object object, Class<?> clazz, Object value) {
         Object newValue = null;
-        if (value == null)
-            return null;
+        if (value == null) return null;
         if (clazz.equals(int.class) || clazz.equals(Integer.class)) {
             try {
                 newValue = Integer.valueOf(value.toString());
@@ -222,15 +214,13 @@ public class ReflectUtil {
     }
 
     public static void setFieldValue(Object object, Field field, Object value)
-            throws IllegalArgumentException,
-            IllegalAccessException {
+            throws IllegalArgumentException, IllegalAccessException {
         Object newValue = valueByCorrectType(object, field, value);
         if (newValue == null) {
             return;
         } else {
             field.set(object, newValue);
         }
-
     }
 
     /**
@@ -250,13 +240,11 @@ public class ReflectUtil {
                     result = field.get(object);
                 } catch (Exception e) {
                     throw new RuntimeException(e.getMessage(), e);
-
                 }
                 break;
             }
         }
         return result;
-
     }
 
     /**
@@ -282,7 +270,6 @@ public class ReflectUtil {
         }
 
         throw new RuntimeException("method not find" + clazz + "|" + methodName);
-
     }
 
     /**
@@ -297,12 +284,10 @@ public class ReflectUtil {
         for (Method method : methods) {
             if (method.getName().equals(methodName)) {
                 Class<?>[] params = method.getParameterTypes();
-                if (params.length == parameterTypes.length
-                        && list.containsAll(Arrays.asList(params))) {
+                if (params.length == parameterTypes.length && list.containsAll(Arrays.asList(params))) {
                     method.setAccessible(true);
                     return method;
                 }
-
             }
         }
 
@@ -310,17 +295,14 @@ public class ReflectUtil {
         for (Method method : methods) {
             if (method.getName().equals(methodName)) {
                 Class<?>[] params = method.getParameterTypes();
-                if (params.length == parameterTypes.length
-                        && list.containsAll(Arrays.asList(params))) {
+                if (params.length == parameterTypes.length && list.containsAll(Arrays.asList(params))) {
                     method.setAccessible(true);
                     return method;
                 }
-
             }
         }
 
         throw new RuntimeException("method not find" + clazz + "|" + methodName);
-
     }
 
     /**
@@ -335,7 +317,6 @@ public class ReflectUtil {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-
     }
 
     /**
@@ -352,7 +333,6 @@ public class ReflectUtil {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-
     }
 
     /**
@@ -362,8 +342,7 @@ public class ReflectUtil {
      * @param args
      * @return
      */
-    public static Object invokeMethod(Class<?> clazz, String methodName, Class<?>[] parameterTypes,
-                                      Object[] args) {
+    public static Object invokeMethod(Class<?> clazz, String methodName, Class<?>[] parameterTypes, Object[] args) {
         try {
             Method method = findMethod(clazz, methodName, parameterTypes);
             method.setAccessible(true);
@@ -371,7 +350,6 @@ public class ReflectUtil {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-
     }
 
     /**
@@ -381,8 +359,7 @@ public class ReflectUtil {
      * @param args
      * @return
      */
-    public static Object invokeMethod(Object object, String methodName, Class<?>[] parameterTypes,
-                                      Object[] args) {
+    public static Object invokeMethod(Object object, String methodName, Class<?>[] parameterTypes, Object[] args) {
         try {
             Method method = findMethod(object.getClass(), methodName, parameterTypes);
             method.setAccessible(true);
@@ -390,7 +367,6 @@ public class ReflectUtil {
         } catch (Exception e) {
             throw new RuntimeException(methodName + "|" + Arrays.toString(parameterTypes), e);
         }
-
     }
 
     /**
@@ -403,7 +379,6 @@ public class ReflectUtil {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-
     }
 
     /**
@@ -413,12 +388,10 @@ public class ReflectUtil {
      * @param className
      * @return
      */
-    public static String genModelForCls(String csvModelRootPath, ClassLoader classLoader,
-                                        String className) {
+    public static String genModelForCls(String csvModelRootPath, ClassLoader classLoader, String className) {
 
         try {
-            Set<String> setWarnMsg = CSVApis.genCsvFromObjClassByRootPath(csvModelRootPath,
-                    classLoader, className);
+            Set<String> setWarnMsg = CSVApis.genCsvFromObjClassByRootPath(csvModelRootPath, classLoader, className);
 
             return StringUtils.join(setWarnMsg, ";");
         } catch (ClassNotFoundException e) {
@@ -426,16 +399,18 @@ public class ReflectUtil {
         } catch (Exception exp) {
             throw new TestifyException("模板生成失败" + exp.getMessage());
         }
-
     }
 
-    public static String genModelForSpeciMethod(String csvModelRootPath, ClassLoader classLoader,
-                                                String className, String methodName,
-                                                boolean isResultOnly) {
+    public static String genModelForSpeciMethod(
+            String csvModelRootPath,
+            ClassLoader classLoader,
+            String className,
+            String methodName,
+            boolean isResultOnly) {
 
         try {
-            Set<String> setWarnMsg = CSVApis.genCsvFromSpeciMethodByRootPath(csvModelRootPath,
-                    classLoader, className, methodName, isResultOnly);
+            Set<String> setWarnMsg = CSVApis.genCsvFromSpeciMethodByRootPath(
+                    csvModelRootPath, classLoader, className, methodName, isResultOnly);
 
             return StringUtils.join(setWarnMsg, ";");
         } catch (ClassNotFoundException e) {
@@ -443,7 +418,6 @@ public class ReflectUtil {
         } catch (Exception exp) {
             throw new TestifyException("模板生成失败" + exp.getMessage());
         }
-
     }
 
     /**
@@ -456,15 +430,13 @@ public class ReflectUtil {
 
         try {
 
-            Set<String> setWarnMsg = CSVApis.genCsvFromObjClassByRootPath(csvModelRootPath,
-                    getClassForName(className).getClass().getClassLoader(), className);
+            Set<String> setWarnMsg = CSVApis.genCsvFromObjClassByRootPath(
+                    csvModelRootPath, getClassForName(className).getClass().getClassLoader(), className);
             return setWarnMsg.toString();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("找不到该类:" + className, e);
         } catch (Exception exp) {
             throw new TestifyException("模板生成失败" + exp.getMessage());
         }
-
     }
-
 }

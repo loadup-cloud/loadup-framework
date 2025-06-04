@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.model;
 
 /*-
@@ -83,7 +84,7 @@ public class AppInterfaceMap {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceId(String interfaceId) {
         this.interfaceId = interfaceId;
@@ -97,7 +98,7 @@ public class AppInterfaceMap {
     }
 
     /**
-     * 
+     *
      */
     public void setAppId(String appId) {
         this.appId = appId;
@@ -111,7 +112,7 @@ public class AppInterfaceMap {
     }
 
     /**
-     * 
+     *
      */
     public void setCommunicationId(String communicationId) {
         this.communicationId = communicationId;
@@ -125,7 +126,7 @@ public class AppInterfaceMap {
     }
 
     /**
-     * 
+     *
      */
     public void setRouteId(String routeId) {
         this.routeId = routeId;
@@ -139,7 +140,7 @@ public class AppInterfaceMap {
     }
 
     /**
-     * 
+     *
      */
     public void setEnable(boolean enable) {
         this.enable = enable;
@@ -153,7 +154,7 @@ public class AppInterfaceMap {
     }
 
     /**
-     * 
+     *
      */
     public void setBizProperties(String bizProperties) {
         this.bizProperties.setProperties(bizProperties);
@@ -167,7 +168,7 @@ public class AppInterfaceMap {
     }
 
     /**
-     * 
+     *
      */
     public void setExtProperties(String extProperties) {
         this.extProperties.setProperties(extProperties);
@@ -181,7 +182,7 @@ public class AppInterfaceMap {
     }
 
     /**
-     * 
+     *
      */
     public void setTntInstId(String tntInstId) {
         this.tntInstId = tntInstId;

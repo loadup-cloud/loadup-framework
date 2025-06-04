@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.response;
 
 /*-
@@ -62,7 +63,7 @@ public class MessageProcessConfigResponse {
     private String receiverRequestHeaderAssembleTemplate;
 
     /**
-     * 
+     *
      */
     public String getSenderRequestParserTemplate() {
         return senderRequestParserTemplate;
@@ -76,7 +77,7 @@ public class MessageProcessConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public String getSenderResponseBodyAssembleTemplate() {
         return senderResponseBodyAssembleTemplate;
@@ -90,7 +91,7 @@ public class MessageProcessConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public String getSenderResponseHeaderAssembleTemplate() {
         return senderResponseHeaderAssembleTemplate;
@@ -104,7 +105,7 @@ public class MessageProcessConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public String getReceiverResponseParserTemplate() {
         return receiverResponseParserTemplate;
@@ -118,7 +119,7 @@ public class MessageProcessConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public String getReceiverRequestBodyAssembleTemplate() {
         return receiverRequestBodyAssembleTemplate;
@@ -132,7 +133,7 @@ public class MessageProcessConfigResponse {
     }
 
     /**
-     * 
+     *
      */
     public String getReceiverRequestHeaderAssembleTemplate() {
         return receiverRequestHeaderAssembleTemplate;

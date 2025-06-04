@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2011 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils;
 
 /*-
@@ -32,53 +29,51 @@ package com.github.loadup.components.testify.utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringUtils;
-
 
 /**
  * 通用的格式校验工具类
  *
- * 
- * 
+ *
+ *
  * $
  */
 public class ValidateUtil {
     // 手机格式的正则表达式
-    public final static String REGEX_MOBILE = "^[1](3|4|5|8)[0-9]{9}$";
+    public static final String REGEX_MOBILE = "^[1](3|4|5|8)[0-9]{9}$";
 
     // Email格式的正则表达式
-    public final static String REGEX_EMAIL = "^([a-zA-Z0-9_\\.\\-\\+])+\\@(([a-zA-Z0-9\\-])+\\.)+([a-zA-Z0-9]{2,4})+$";
+    public static final String REGEX_EMAIL = "^([a-zA-Z0-9_\\.\\-\\+])+\\@(([a-zA-Z0-9\\-])+\\.)+([a-zA-Z0-9]{2,4})+$";
 
     // 手机6位数字校验码
-    public final static String REGUX_VALIDATE_CODE = "^\\d{6}$";
+    public static final String REGUX_VALIDATE_CODE = "^\\d{6}$";
 
     // 手机6位数字校验码，字母与数字混合
-    public final static String REGUX_VALIDATE_CODE_EX = "^[a-zA-Z0-9]{6}$";
+    public static final String REGUX_VALIDATE_CODE_EX = "^[a-zA-Z0-9]{6}$";
 
     // 16位纯数字流水号
-    public final static String REGEX_VALIDATE_BIZ_NO = "^\\d{16}$";
+    public static final String REGEX_VALIDATE_BIZ_NO = "^\\d{16}$";
 
     // 电话号码，只能由数字和"-"组成，6到20位
-    public final static String REGEX_PHONE = "^[0-9,-]{5,20}$";
+    public static final String REGEX_PHONE = "^[0-9,-]{5,20}$";
 
     // 邮政编码
-    public final static String POST = "^[a-zA-Z0-9,-]{1,12}$";
+    public static final String POST = "^[a-zA-Z0-9,-]{1,12}$";
 
     // 用户姓名，只能由中文汉字、大写英文字母或.构成
-    public final static String REGEX_USER_NAME = "^([\u4e00-\u9fa5|A-Z]+\\s*\\.?\\s*)+[\u4e00-\u9fa5|A-Z]$";
+    public static final String REGEX_USER_NAME = "^([\u4e00-\u9fa5|A-Z]+\\s*\\.?\\s*)+[\u4e00-\u9fa5|A-Z]$";
 
     // 银行卡全卡号必须是15到19位数字
-    public final static String REGEX_BANK_CARD_NO = "^\\d{15,19}$";
+    public static final String REGEX_BANK_CARD_NO = "^\\d{15,19}$";
 
     // 纯数字
-    public final static String NUM = "^(\\d)+$";
+    public static final String NUM = "^(\\d)+$";
 
     // 银行卡全卡号必须是13-16位数字
-    public final static String REGEX_CREDIT_CARD_NO = "^\\d{13,16}$";
+    public static final String REGEX_CREDIT_CARD_NO = "^\\d{13,16}$";
 
     // CVV2是3-4位数字
-    public final static String REGEX_CVV2 = "^\\d{3}$";
+    public static final String REGEX_CVV2 = "^\\d{3}$";
 
     /**
      * 密码解密时间戳(local)
@@ -204,7 +199,7 @@ public class ValidateUtil {
         }
 
         try {
-//            new Money(inSrc);
+            //            new Money(inSrc);
             return true;
         } catch (Exception ex) {
             return false;

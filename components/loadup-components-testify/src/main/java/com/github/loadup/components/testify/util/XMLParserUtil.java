@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -27,16 +28,14 @@ package com.github.loadup.components.testify.util;
  */
 
 import java.io.File;
-
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * xml解析器
  *
- * 
+ *
  *
  */
 public class XMLParserUtil {
@@ -52,7 +51,6 @@ public class XMLParserUtil {
         // step 3: 开始进行解析
 
         parser.parse(xml, handler);
-
     }
 
     public static void main(String[] args) throws Exception {
@@ -63,6 +61,5 @@ public class XMLParserUtil {
         for (String s : myHandler.getBeanMap().keySet()) {
             System.out.print(s + ":" + myHandler.getBeanMap().get(s) + "\n");
         }
-
     }
 }

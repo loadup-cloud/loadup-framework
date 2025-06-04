@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.dal.table;
 
 /*-
@@ -35,8 +32,8 @@ import java.util.Date;
 /**
  * 用例生成规则表
  *
- * 
- * 
+ *
+ *
  */
 public class CaseRule {
 
@@ -95,7 +92,7 @@ public class CaseRule {
     }
 
     /**
-     * 
+     *
      *
      * @param id value to be assigned to property id
      */
@@ -113,7 +110,7 @@ public class CaseRule {
     }
 
     /**
-     * 
+     *
      *
      * @param system value to be assigned to property system
      */
@@ -131,7 +128,7 @@ public class CaseRule {
     }
 
     /**
-     * 
+     *
      *
      * @param model_obj value to be assigned to property model_obj
      */
@@ -149,7 +146,7 @@ public class CaseRule {
     }
 
     /**
-     * 
+     *
      *
      * @param case_rule value to be assigned to property case_rule
      */
@@ -167,7 +164,7 @@ public class CaseRule {
     }
 
     /**
-     * 
+     *
      *
      * @param priority value to be assigned to property priority
      */
@@ -185,7 +182,7 @@ public class CaseRule {
     }
 
     /**
-     * 
+     *
      *
      * @param memo value to be assigned to property memo
      */
@@ -203,7 +200,7 @@ public class CaseRule {
     }
 
     /**
-     * 
+     *
      *
      * @param gmt_modify value to be assigned to property gmt_modify
      */
@@ -221,7 +218,7 @@ public class CaseRule {
     }
 
     /**
-     * 
+     *
      *
      * @param gmt_create value to be assigned to property gmt_create
      */
@@ -239,12 +236,11 @@ public class CaseRule {
     }
 
     /**
-     * 
+     *
      *
      * @param status value to be assigned to property status
      */
     public void setStatus(String status) {
         this.status = status;
     }
-
 }

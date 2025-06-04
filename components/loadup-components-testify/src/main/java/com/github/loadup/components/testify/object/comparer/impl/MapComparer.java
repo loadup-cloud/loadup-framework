@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.comparer.impl;
 
 /*-
@@ -26,16 +27,15 @@ package com.github.loadup.components.testify.object.comparer.impl;
  * #L%
  */
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.TypeReference;
+import com.github.loadup.components.testify.object.comparer.UnitComparer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
-
 import org.apache.commons.lang3.StringUtils;
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.TypeReference;
-import com.github.loadup.components.testify.object.comparer.UnitComparer;
 
 public class MapComparer implements UnitComparer {
 
@@ -67,8 +67,7 @@ public class MapComparer implements UnitComparer {
             actualMap = string2Map(actual.toString());
         }
         HashMap<String, String> expectMap = string2Map(exp);
-        if (expectMap == null || actualMap == null)
-            return false;
+        if (expectMap == null || actualMap == null) return false;
         for (Iterator<?> iterator = expectMap.entrySet().iterator(); iterator.hasNext(); ) {
             Entry<String, String> entry = (Entry<String, String>) iterator.next();
             String key = entry.getKey().toString();
@@ -95,14 +94,14 @@ public class MapComparer implements UnitComparer {
         }
         if (str.startsWith("{") && str.endsWith("}")) {
             str = str.replace("\"\"", "\"");
-            map = JSON.parseObject(str, new TypeReference<HashMap<String, String>>() {
-            });
+            map = JSON.parseObject(str, new TypeReference<HashMap<String, String>>() {});
             return map;
         }
 
         StringTokenizer items;
-        for (StringTokenizer entrys = new StringTokenizer(str, ";"); entrys.hasMoreTokens(); map
-                .put(items.nextToken(), (items.hasMoreTokens() ? ((items.nextToken())) : null)))
+        for (StringTokenizer entrys = new StringTokenizer(str, ";");
+                entrys.hasMoreTokens();
+                map.put(items.nextToken(), (items.hasMoreTokens() ? ((items.nextToken())) : null)))
             items = new StringTokenizer(entrys.nextToken(), ":");
         return map;
     }
@@ -119,10 +118,8 @@ public class MapComparer implements UnitComparer {
             entry = (Entry<String, String>) iterator.next();
             Object value = entry.getValue();
             String valueStr = "";
-            if (value != null)
-                valueStr = value.toString();
-            sb.append(entry.getKey().toString()).append(":").append(valueStr)
-                    .append(iterator.hasNext() ? ";" : "");
+            if (value != null) valueStr = value.toString();
+            sb.append(entry.getKey().toString()).append(":").append(valueStr).append(iterator.hasNext() ? ";" : "");
         }
         return sb.toString();
     }

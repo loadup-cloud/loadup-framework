@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.annotation;
 
 /*-
@@ -31,7 +32,7 @@ import com.github.loadup.components.testify.runtime.TestifyRuntimeContext;
 /**
  * 扩展方法与实现
  *
- * 
+ *
  */
 public interface TestifyMethod {
 

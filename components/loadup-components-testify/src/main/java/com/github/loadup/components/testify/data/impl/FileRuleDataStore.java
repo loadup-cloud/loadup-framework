@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data.impl;
 
 /*-
@@ -32,14 +29,13 @@ package com.github.loadup.components.testify.data.impl;
 
 import com.github.loadup.components.testify.data.RuleDataStore;
 import com.github.loadup.components.testify.manage.TestLogger;
-
 import java.util.Properties;
 
 /**
  * 文件类规则数据存储。
  *
- * 
- * 
+ *
+ *
  */
 public class FileRuleDataStore implements RuleDataStore {
 
@@ -59,8 +55,7 @@ public class FileRuleDataStore implements RuleDataStore {
         if (props == null) {
             props = new Properties();
             try {
-                props.load(this.getClass().getClassLoader()
-                        .getResourceAsStream("ruledata/rule_data.properties"));
+                props.load(this.getClass().getClassLoader().getResourceAsStream("ruledata/rule_data.properties"));
             } catch (Exception e) {
                 TestLogger.getLogger().warn("can't load file: ruledata/rule_data.properties");
             }
@@ -78,5 +73,4 @@ public class FileRuleDataStore implements RuleDataStore {
         // 暂不处理映射关系
         return null;
     }
-
 }

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data;
 
 /*-
@@ -37,8 +34,8 @@ import java.util.List;
  * <p>
  * 实际真实确定的内容。
  *
- * 
- * 
+ *
+ *
  */
 public interface MetaItemStore {
 
@@ -103,5 +100,4 @@ public interface MetaItemStore {
      * @param metaItem
      */
     public int updateMetaItem(MetaItem metaItem);
-
 }

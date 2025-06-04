@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -30,21 +31,18 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.loadup.components.testify.log.TestifyLogUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 用于处理Json
  *
- * 
+ *
  *
  */
 @Slf4j
@@ -99,7 +97,6 @@ public class JsonUtil {
         return JSON.parseObject(jsonString, clazz);
     }
 
-
     public static String toJSONString(Object input) {
         if (null == input) {
             return "";
@@ -109,7 +106,6 @@ public class JsonUtil {
         }
 
         return JSON.toJSONString(input);
-
     }
 
     public static <T> T stringToObject(String json, Class<T> clazz) {
@@ -118,7 +114,6 @@ public class JsonUtil {
         }
 
         return JSON.parseObject(json, clazz);
-
     }
 
     /**
@@ -178,5 +173,4 @@ public class JsonUtil {
         }
         return JSONObject.parseObject(jsonStr, HashMap.class);
     }
-
 }

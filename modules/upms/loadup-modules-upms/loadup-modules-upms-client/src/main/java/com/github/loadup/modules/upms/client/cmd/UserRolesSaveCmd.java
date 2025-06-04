@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.client.cmd;
 
 /*-
@@ -30,16 +31,16 @@ import com.github.loadup.commons.request.BaseRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 @Getter
 @Setter
 public class UserRolesSaveCmd extends BaseRequest {
     @NotBlank
     private String userId;
+
     @NotNull
     @NotEmpty
     private List<String> roleIdList;

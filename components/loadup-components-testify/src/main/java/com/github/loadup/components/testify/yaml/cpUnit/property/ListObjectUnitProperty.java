@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.yaml.cpUnit.property;
 
 /*-
@@ -30,21 +27,20 @@ package com.github.loadup.components.testify.yaml.cpUnit.property;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.github.loadup.components.testify.log.TestifyLogUtil;
 import com.github.loadup.components.testify.object.TestifyObjectUtil;
 import com.github.loadup.components.testify.yaml.cpUnit.ListObjectCPUnit;
 import com.github.loadup.components.testify.yaml.cpUnit.ObjectCPUnit;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * 列表对象基础属性
  *
- * 
+ *
  *
  */
 @Slf4j
@@ -60,8 +56,7 @@ public class ListObjectUnitProperty extends BaseUnitProperty {
     private List<BaseUnitProperty> objectList = new ArrayList<BaseUnitProperty>();
 
     @SuppressWarnings("unchecked")
-    public ListObjectUnitProperty(String keyName, String keyPath, String parentCSVPath,
-                                  List<Object> value) {
+    public ListObjectUnitProperty(String keyName, String keyPath, String parentCSVPath, List<Object> value) {
         super(keyName, keyPath, null);
         for (int i = 0; i < value.size(); i++) {
             Object obj = value.get(i);
@@ -70,17 +65,15 @@ public class ListObjectUnitProperty extends BaseUnitProperty {
             if (obj instanceof Map) {
                 Map<String, Object> mapObj = (Map<String, Object>) obj;
                 if (mapObj.get("__desc") != null) {
-                    //按复杂类处理
-                    property = new ObjectUnitProperty(keyName, currentKeyPath, parentCSVPath,
-                            mapObj);
+                    // 按复杂类处理
+                    property = new ObjectUnitProperty(keyName, currentKeyPath, parentCSVPath, mapObj);
                 } else {
-                    //按普通Map对象处理
+                    // 按普通Map对象处理
                     property = new BaseUnitProperty(keyName, currentKeyPath, value);
                 }
             } else if (obj instanceof List) {
                 List<Object> listObj = (List<Object>) obj;
-                property = new ListObjectUnitProperty(keyName, currentKeyPath, parentCSVPath,
-                        listObj);
+                property = new ListObjectUnitProperty(keyName, currentKeyPath, parentCSVPath, listObj);
             } else {
                 property = new BaseUnitProperty(keyName, currentKeyPath, value);
             }
@@ -98,7 +91,7 @@ public class ListObjectUnitProperty extends BaseUnitProperty {
      */
     public ListObjectUnitProperty(ListObjectCPUnit unit) {
         super(unit.getUnitName(), unit.getUnitName(), null);
-//        Assert.assertTrue("列表对象集合数字必须大于0", unit.getAttributeList().size() > 0);
+        //        Assert.assertTrue("列表对象集合数字必须大于0", unit.getAttributeList().size() > 0);
         List<BaseUnitProperty> objectList = new ArrayList<BaseUnitProperty>();
         for (ObjectCPUnit objUnit : unit.getAttributeList()) {
             ObjectUnitProperty property = objUnit.getProperty();
@@ -112,7 +105,8 @@ public class ListObjectUnitProperty extends BaseUnitProperty {
     public Object genObject(ClassLoader classLoader) {
         List list = new ArrayList();
         for (BaseUnitProperty property : this.getObjectList()) {
-//            Assert.assertTrue("本方法仅支持复杂List对象调用", property instanceof ObjectUnitProperty);
+            //            Assert.assertTrue("本方法仅支持复杂List对象调用", property instanceof
+            // ObjectUnitProperty);
             ObjectUnitProperty childUnit = (ObjectUnitProperty) property;
             childUnit.setClassType(this.classType);
             list.add(childUnit.genObject(classLoader));
@@ -131,8 +125,8 @@ public class ListObjectUnitProperty extends BaseUnitProperty {
     public void compare(Object object) {
         List actualList = (List) object;
         if (actualList.size() != this.objectList.size()) {
-            TestifyLogUtil.error(log, this.keyName + "列对象长度不同，期望值:" + this.objectList.size()
-                    + "，实际值:" + actualList.size());
+            TestifyLogUtil.error(
+                    log, this.keyName + "列对象长度不同，期望值:" + this.objectList.size() + "，实际值:" + actualList.size());
         }
         for (int i = 0; i < actualList.size(); i++) {
             ObjectUnitProperty childProperty = (ObjectUnitProperty) this.objectList.get(i);
@@ -148,7 +142,7 @@ public class ListObjectUnitProperty extends BaseUnitProperty {
         boolean needDump = false;
         String expect = "";
         for (BaseUnitProperty property : this.objectList) {
-            //注意，dump不允许list出现嵌套List模式
+            // 注意，dump不允许list出现嵌套List模式
             if (property instanceof ObjectUnitProperty) {
                 isComplexList = true;
                 ObjectUnitProperty objProperty = (ObjectUnitProperty) property;
@@ -180,12 +174,19 @@ public class ListObjectUnitProperty extends BaseUnitProperty {
      */
     @Override
     public String toString() {
-        return "ListObjectUnitProperty [objectList=" + objectList + ", keyName=" + keyName
-                + ", flagCode=" + flagCode + ", keyPath=" + keyPath + "]";
+        return "ListObjectUnitProperty [objectList="
+                + objectList
+                + ", keyName="
+                + keyName
+                + ", flagCode="
+                + flagCode
+                + ", keyPath="
+                + keyPath
+                + "]";
     }
 
     /**
-     * 
+     *
      *
      * @return property value of objectList
      */
@@ -194,7 +195,7 @@ public class ListObjectUnitProperty extends BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of targetCSVPath
      */
@@ -212,7 +213,7 @@ public class ListObjectUnitProperty extends BaseUnitProperty {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of classType
      */
@@ -228,5 +229,4 @@ public class ListObjectUnitProperty extends BaseUnitProperty {
     public void setClassType(Class<?> classType) {
         this.classType = classType;
     }
-
 }

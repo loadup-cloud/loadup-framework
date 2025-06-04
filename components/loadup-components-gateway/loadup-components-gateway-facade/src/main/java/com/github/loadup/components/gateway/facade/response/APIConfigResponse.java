@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.response;
 
 /*-
@@ -29,5 +30,4 @@ package com.github.loadup.components.gateway.facade.response;
 /**
  *
  */
-public class APIConfigResponse extends BaseResponse {
-}
+public class APIConfigResponse extends BaseResponse {}

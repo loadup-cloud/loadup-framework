@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2014 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.driver.listener;
 
 /*-
@@ -33,7 +30,6 @@ package com.github.loadup.components.testify.driver.listener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 
-
 /**
  * TestNG测试方法执行前监听器，目前用于完成TestNGTestActivator的代理
  *
@@ -46,6 +42,7 @@ public class TestNGBeforeTestConfig extends TestListenerAdapter {
      * TestNGTestActivator上一次代理对象存储
      */
     private static Object lastDelegatedTestActivator = null;
+
     private static byte[] delegateLock = new byte[0];
 
     /**
@@ -60,32 +57,32 @@ public class TestNGBeforeTestConfig extends TestListenerAdapter {
     private void delegateTestNGTestActivator() {
         synchronized (delegateLock) {
             try {
-                //设置OsgiTestMethodProxy testNGService字段为代理类
-//                Field testNgServiceField = OsgiTestMethodProxy.class
-//                    .getDeclaredField("testNGService");
-//                testNgServiceField.setAccessible(true);
-//                Object oriTestNGService = testNgServiceField.get(null);
-//                if (oriTestNGService == lastDelegatedTestActivator) {
-//                    oriTestNGService已经是代理过的对象则不用再代理
-//                    return;
-//                }
-//                Object delegatedTestNGService = TestNGTestActivatorProxyFactory
-//                    .getProxy(oriTestNGService);
-//                testNgServiceField.set(null, delegatedTestNGService);
-//                lastDelegatedTestActivator = delegatedTestNGService;
+                // 设置OsgiTestMethodProxy testNGService字段为代理类
+                //                Field testNgServiceField = OsgiTestMethodProxy.class
+                //                    .getDeclaredField("testNGService");
+                //                testNgServiceField.setAccessible(true);
+                //                Object oriTestNGService = testNgServiceField.get(null);
+                //                if (oriTestNGService == lastDelegatedTestActivator) {
+                //                    oriTestNGService已经是代理过的对象则不用再代理
+                //                    return;
+                //                }
+                //                Object delegatedTestNGService = TestNGTestActivatorProxyFactory
+                //                    .getProxy(oriTestNGService);
+                //                testNgServiceField.set(null, delegatedTestNGService);
+                //                lastDelegatedTestActivator = delegatedTestNGService;
 
-                //设置OsgiTestMethodProxy serviceTrigger字段为代理类
-//                Field serviceTriggerField = OsgiTestMethodProxy.class
-//                    .getDeclaredField("serviceTrigger");
-//                serviceTriggerField.setAccessible(true);
-//                Object delegatedServiceTrigger = delegatedTestNGService.getClass()
-//                    .getDeclaredMethod("invokeTestNGTestMethod", String.class, Method.class,
-//                        Object[].class);
-//                serviceTriggerField.set(null, delegatedServiceTrigger);
+                // 设置OsgiTestMethodProxy serviceTrigger字段为代理类
+                //                Field serviceTriggerField = OsgiTestMethodProxy.class
+                //                    .getDeclaredField("serviceTrigger");
+                //                serviceTriggerField.setAccessible(true);
+                //                Object delegatedServiceTrigger = delegatedTestNGService.getClass()
+                //                    .getDeclaredMethod("invokeTestNGTestMethod", String.class, Method.class,
+                //                        Object[].class);
+                //                serviceTriggerField.set(null, delegatedServiceTrigger);
 
                 System.out.println("delegate TestNGTestActivator finished.");
             } catch (Throwable e) {
-                //代理失败不抛出异常，不影响测试主流程
+                // 代理失败不抛出异常，不影响测试主流程
                 System.out.println("delegate TestNGTestActivator failed!");
                 e.printStackTrace();
             }

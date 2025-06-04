@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.manager;
 
 /*-
@@ -58,7 +59,7 @@ public class AlgoManagerDescriptor {
     }
 
     /**
-     * 
+     *
      */
     public void setAlgoManager(AlgoManager algoManager) {
         this.algoManager = algoManager;
@@ -72,7 +73,7 @@ public class AlgoManagerDescriptor {
     }
 
     /**
-     * 
+     *
      */
     public void setName(String name) {
         this.name = name;

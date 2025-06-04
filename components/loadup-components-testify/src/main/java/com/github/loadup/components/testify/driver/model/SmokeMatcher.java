@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.driver.model;
 
 /*-
@@ -31,13 +32,12 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Smoke用例匹配器
  *
- * 
+ *
  */
 public class SmokeMatcher {
     private String smokePrefixRegex = null;
 
-    public SmokeMatcher() {
-    }
+    public SmokeMatcher() {}
 
     public SmokeMatcher(String smokePrefix) {
         this.smokePrefixRegex = smokePrefix;

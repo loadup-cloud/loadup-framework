@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.components;
 
 /*-
@@ -26,11 +27,10 @@ package com.github.loadup.components.testify.component.components;
  * #L%
  */
 
+import java.lang.reflect.Method;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-
-import java.lang.reflect.Method;
 
 @Getter
 @Setter
@@ -68,9 +68,8 @@ public class TestifyComponentInvoker {
                 }
             }
         } else {
-            //不包含?,认为就是没有入参的方法
+            // 不包含?,认为就是没有入参的方法
         }
         return params;
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.cache;
 
 /*-
@@ -40,13 +41,12 @@ import com.github.loadup.components.gateway.core.model.CertAlogMap;
 import com.github.loadup.components.gateway.core.model.CertConfig;
 import com.github.loadup.components.gateway.facade.enums.CertTypeEnum;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
+import java.util.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.util.*;
 
 /**
  * 缓存管理
@@ -57,8 +57,7 @@ public class CacheManager implements Refreshable {
     /**
      * log
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger("CERT-CACHE");
+    private static final Logger logger = LoggerFactory.getLogger("CERT-CACHE");
 
     /**
      * 证书缓存  <certCode Map<certType, content>> 证书byte[]内容base64后的String形式存储
@@ -100,8 +99,7 @@ public class CacheManager implements Refreshable {
      */
     @Override
     public void init(Object... obj) {
-        LogUtil.info(logger, CommonUtil.decorateBySquareBrackets(this.getClass().getName()) +
-                "init Cache begin");
+        LogUtil.info(logger, CommonUtil.decorateBySquareBrackets(this.getClass().getName()) + "init Cache begin");
         List<AppConfig> appConfigs = (List<AppConfig>) obj[0];
         List<CertAlogMap> certAlogMaps = (List<CertAlogMap>) obj[1];
         List<CertConfig> certConfigs = (List<CertConfig>) obj[2];
@@ -118,13 +116,13 @@ public class CacheManager implements Refreshable {
 
         isInitOk = buildCache(appConfigs, certAlogMaps, certConfigs, true);
 
-        LogUtil.info(logger, CommonUtil.decorateBySquareBrackets(this.getClass().getName()) +
-                "init Cache result:" + isInitOk);
+        LogUtil.info(
+                logger,
+                CommonUtil.decorateBySquareBrackets(this.getClass().getName()) + "init Cache result:" + isInitOk);
 
         CacheLogUtil.printLog("certMapCache", certMapCache);
         CacheLogUtil.printLog("bizKeyCertCodeMap", bizKeyCertCodeMap);
         CacheLogUtil.printLog("certificationFactorMap", certificationFactorMap);
-
     }
 
     /**
@@ -132,8 +130,7 @@ public class CacheManager implements Refreshable {
      */
     @Override
     public void refresh(Object... obj) {
-        LogUtil.info(logger, CommonUtil.decorateBySquareBrackets(this.getClass().getName()) +
-                "refresh Cache begin");
+        LogUtil.info(logger, CommonUtil.decorateBySquareBrackets(this.getClass().getName()) + "refresh Cache begin");
 
         List<AppConfig> appConfigs = (List<AppConfig>) obj[0];
         List<CertAlogMap> certAlogMaps = (List<CertAlogMap>) obj[1];
@@ -141,8 +138,9 @@ public class CacheManager implements Refreshable {
 
         boolean tmpResult = buildCache(appConfigs, certAlogMaps, certConfigs, false);
 
-        LogUtil.info(logger, CommonUtil.decorateBySquareBrackets(this.getClass().getName()) +
-                "refresh Cache result:" + tmpResult);
+        LogUtil.info(
+                logger,
+                CommonUtil.decorateBySquareBrackets(this.getClass().getName()) + "refresh Cache result:" + tmpResult);
 
         CacheLogUtil.printLog("certMapCache", certMapCache);
         CacheLogUtil.printLog("bizKeyCertCodeMap", bizKeyCertCodeMap);
@@ -155,8 +153,7 @@ public class CacheManager implements Refreshable {
     @Override
     public void refreshById(String id, Object... obj) {
 
-        LogUtil.info(logger, CommonUtil.decorateBySquareBrackets(this.getClass().getName()) +
-                "refresh by Id:" + id);
+        LogUtil.info(logger, CommonUtil.decorateBySquareBrackets(this.getClass().getName()) + "refresh by Id:" + id);
 
         List<AppConfig> appConfigs = (List<AppConfig>) obj[0];
         List<CertAlogMap> certAlogMaps = (List<CertAlogMap>) obj[1];
@@ -164,8 +161,8 @@ public class CacheManager implements Refreshable {
 
         boolean tmpResult = buildCache(appConfigs, certAlogMaps, certConfigs, false);
 
-        LogUtil.info(logger, CommonUtil.decorateBySquareBrackets(this.getClass().getName()) +
-                "refresh result:" + tmpResult);
+        LogUtil.info(
+                logger, CommonUtil.decorateBySquareBrackets(this.getClass().getName()) + "refresh result:" + tmpResult);
 
         CacheLogUtil.printLog("certMapCache", certMapCache);
         CacheLogUtil.printLog("bizKeyCertCodeMap", bizKeyCertCodeMap);
@@ -200,8 +197,7 @@ public class CacheManager implements Refreshable {
     /**
      * 基于 instId，appId，operationType获取对应操作要素
      */
-    public CertificationFactor getOperationFactor(String instId, String appId,
-                                                  String operationType) {
+    public CertificationFactor getOperationFactor(String instId, String appId, String operationType) {
         String key = CacheUtil.generateKey(instId, appId, operationType);
         return certificationFactorMap.get(key);
     }
@@ -209,8 +205,8 @@ public class CacheManager implements Refreshable {
     /**
      * 全量构建缓存
      */
-    private boolean buildCache(List<AppConfig> appConfigs, List<CertAlogMap> certAlogMaps,
-                               List<CertConfig> certConfigs, boolean isAll) {
+    private boolean buildCache(
+            List<AppConfig> appConfigs, List<CertAlogMap> certAlogMaps, List<CertConfig> certConfigs, boolean isAll) {
         boolean buildResult = true;
 
         try {
@@ -251,12 +247,10 @@ public class CacheManager implements Refreshable {
             Map<String, Set<String>> addAppConfig = Convertor.convertAppConf(appConfigs);
             LogUtil.debug(logger, "converted appConfig:" + addAppConfig);
 
-            Map<String, Map<String, CertAlogMap>> addCertAlogMap = Convertor
-                    .convertCertAlgoMap(certAlogMaps);
+            Map<String, Map<String, CertAlogMap>> addCertAlogMap = Convertor.convertCertAlgoMap(certAlogMaps);
             LogUtil.debug(logger, "added certAlgoMap:" + addCertAlogMap);
 
-            Map<String, Map<String, CertConfig>> certConfigMap = Convertor
-                    .convertCertConf(certConfigs);
+            Map<String, Map<String, CertConfig>> certConfigMap = Convertor.convertCertConf(certConfigs);
             LogUtil.debug(logger, "certConfigMap:" + certConfigMap);
 
             Map<String, CertificationFactor> addCertificationFactor = new HashMap<String, CertificationFactor>();
@@ -278,8 +272,10 @@ public class CacheManager implements Refreshable {
 
                         try {
 
-                            CertificationFactor curFactor = CacheUtil.generateCertFactor(curBizKey,
-                                    certAlogMapEntry.getValue(), relatedCert,
+                            CertificationFactor curFactor = CacheUtil.generateCertFactor(
+                                    curBizKey,
+                                    certAlogMapEntry.getValue(),
+                                    relatedCert,
                                     certConfigMap.get(addCertCode));
 
                             if (curFactor == null) {
@@ -290,8 +286,11 @@ public class CacheManager implements Refreshable {
 
                             addCertificationFactor.put(factorKey, curFactor);
                         } catch (Exception e) {
-                            LogUtil.error(logger, e, CommonUtil.decorateBySquareBrackets(certAlogMapEntry) +
-                                    "generate CertificationFactor error!");
+                            LogUtil.error(
+                                    logger,
+                                    e,
+                                    CommonUtil.decorateBySquareBrackets(certAlogMapEntry)
+                                            + "generate CertificationFactor error!");
                             continue;
                         }
                     }
@@ -304,11 +303,9 @@ public class CacheManager implements Refreshable {
                 LogUtil.info(logger, "[init] certificationFactorMap:" + addCertificationFactor);
 
             } else {
-                LogUtil.debug(logger, "[update] added certificationFactorMap:" +
-                        addCertificationFactor);
+                LogUtil.debug(logger, "[update] added certificationFactorMap:" + addCertificationFactor);
                 this.certificationFactorMap.putAll(addCertificationFactor);
-                LogUtil.info(logger, "[update] updated certificationFactorMap:" +
-                        this.certificationFactorMap);
+                LogUtil.info(logger, "[update] updated certificationFactorMap:" + this.certificationFactorMap);
 
                 LogUtil.info(logger, "[update] added bizKeyCertCodeMap:" + addAppConfig);
                 for (Map.Entry<String, Set<String>> setEntry : addAppConfig.entrySet()) {
@@ -321,8 +318,10 @@ public class CacheManager implements Refreshable {
                 LogUtil.info(logger, "[update] added bizKeyCertCodeMap:" + addAppConfig);
             }
         } catch (Exception e) {
-            LogUtil.error(logger, e, CommonUtil.decorateBySquareBrackets(this.getClass().getName()) +
-                    "build cache error!");
+            LogUtil.error(
+                    logger,
+                    e,
+                    CommonUtil.decorateBySquareBrackets(this.getClass().getName()) + "build cache error!");
             buildResult = false;
         }
 
@@ -335,42 +334,53 @@ public class CacheManager implements Refreshable {
      */
     public String getCertContent(CertConfig certConfig) {
         try {
-            CertContentType certContentType = CertContentType
-                    .getByName(certConfig.getCertContentType());
+            CertContentType certContentType = CertContentType.getByName(certConfig.getCertContentType());
 
             switch (certContentType) {
                 case CERT_ALIAS_NAME:
                     for (int i = 0; i < 5; ++i) {
                         try {
-                            String certContent = certGetServiceMap.get(CertContentType.CERT_ALIAS_NAME.getCertContentType())
-                                    .getCert(certConfig.getCertContent(), CertTypeEnum.getEnumByType(certConfig
-                                            .getCertType()), certConfig.getCertCode());
-                            LogUtil.debug(logger, "get CertContent from outter service(CERT_ALIAS_NAME):" +
-                                    certConfig + " result:" + certContent);
+                            String certContent = certGetServiceMap
+                                    .get(CertContentType.CERT_ALIAS_NAME.getCertContentType())
+                                    .getCert(
+                                            certConfig.getCertContent(),
+                                            CertTypeEnum.getEnumByType(certConfig.getCertType()),
+                                            certConfig.getCertCode());
+                            LogUtil.debug(
+                                    logger,
+                                    "get CertContent from outter service(CERT_ALIAS_NAME):" + certConfig + " result:"
+                                            + certContent);
 
                             if (StringUtils.isBlank(certContent)) {
-                                LogUtil.warn(logger, "unable to get cert Content, certConfig=" +
-                                        certConfig);
+                                LogUtil.warn(logger, "unable to get cert Content, certConfig=" + certConfig);
                             }
                             return certContent;
                         } catch (Exception e) {
-                            LogUtil.error(logger, e, CommonUtil.decorateBySquareBrackets(this.getClass().getName()) + certConfig +
-                                    ",get certContent by aliasName error, time:" + i);
+                            LogUtil.error(
+                                    logger,
+                                    e,
+                                    CommonUtil.decorateBySquareBrackets(
+                                                    this.getClass().getName()) + certConfig
+                                            + ",get certContent by aliasName error, time:" + i);
                         }
                     }
-                    throw new CertificationException(CertificationErrorCode.GET_CERT_CONTENT_ERROR,
-                            certConfig.toString());
+                    throw new CertificationException(
+                            CertificationErrorCode.GET_CERT_CONTENT_ERROR, certConfig.toString());
                 case CERT_OFFICIAL_CONTENT:
                     return certConfig.getCertContent();
                 case KMI_KEY_ALIAS_NAME:
-                    String certContent = certGetServiceMap.get(CertContentType.KMI_KEY_ALIAS_NAME.getCertContentType())
-                            .getCert(certConfig.getCertContent(), CertTypeEnum.getEnumByType(certConfig
-                                    .getCertType()), certConfig.getCertCode());
-                    LogUtil.debug(logger, "get CertContent from outter service(KMI_KEY_ALIAS_NAME):" +
-                            certConfig + " result:" + certContent);
+                    String certContent = certGetServiceMap
+                            .get(CertContentType.KMI_KEY_ALIAS_NAME.getCertContentType())
+                            .getCert(
+                                    certConfig.getCertContent(),
+                                    CertTypeEnum.getEnumByType(certConfig.getCertType()),
+                                    certConfig.getCertCode());
+                    LogUtil.debug(
+                            logger,
+                            "get CertContent from outter service(KMI_KEY_ALIAS_NAME):" + certConfig + " result:"
+                                    + certContent);
                     if (StringUtils.isBlank(certContent)) {
-                        LogUtil.warn(logger, "unable to get cert Content, certConfig=" +
-                                certConfig);
+                        LogUtil.warn(logger, "unable to get cert Content, certConfig=" + certConfig);
                     }
                     return certContent;
                 default:
@@ -391,8 +401,8 @@ public class CacheManager implements Refreshable {
         return null;
     }
 
-    //@Override
-    //public void registerExtension(Extension extension) throws Exception {
+    // @Override
+    // public void registerExtension(Extension extension) throws Exception {
     //    Object[] contribs = extension.getContributions();
     //    if (contribs.length == 0) {
     //        LogUtil.error(logger, "[register extension]nothing to register, extension=", extension);
@@ -420,7 +430,7 @@ public class CacheManager implements Refreshable {
     //        LogUtil.error(logger, "cannot find CertGetServiceDescriptor extension point process  ，descriptor=",
     //                contribs);
     //    }
-    //}
+    // }
 
     /**
      * @see Refreshable#isInitOk()
@@ -443,8 +453,7 @@ public class CacheManager implements Refreshable {
     /**
      *
      */
-    public void setCertGetServiceMap(
-            Map<String, CertGetService> certGetServiceMap) {
+    public void setCertGetServiceMap(Map<String, CertGetService> certGetServiceMap) {
         this.certGetServiceMap = certGetServiceMap;
     }
 

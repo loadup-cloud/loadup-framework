@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -76,98 +77,98 @@ public class InterfaceConfigAddRequest extends BaseRequest {
     private MessageProcessConfigRequest processConfig;
 
     /**
-     * 
+     *
      */
     public String getInterfaceName() {
         return interfaceName;
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceName(String interfaceName) {
         this.interfaceName = interfaceName;
     }
 
     /**
-     * 
+     *
      */
     public InterfaceType getInterfaceType() {
         return interfaceType;
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceType(InterfaceType interfaceType) {
         this.interfaceType = interfaceType;
     }
 
     /**
-     * 
+     *
      */
     public String getSecurityStrategyCode() {
         return securityStrategyCode;
     }
 
     /**
-     * 
+     *
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
     }
 
     /**
-     * 
+     *
      */
     public CommunicationConfigRequest getCommunicationConfig() {
         return communicationConfig;
     }
 
     /**
-     * 
+     *
      */
     public void setCommunicationConfig(CommunicationConfigRequest communicationConfig) {
         this.communicationConfig = communicationConfig;
     }
 
     /**
-     * 
+     *
      */
     public MessageProcessConfigRequest getProcessConfig() {
         return processConfig;
     }
 
     /**
-     * 
+     *
      */
     public void setProcessConfig(MessageProcessConfigRequest processConfig) {
         this.processConfig = processConfig;
     }
 
     /**
-     * 
+     *
      */
     public String getTenantId() {
         return tenantId;
     }
 
     /**
-     * 
+     *
      */
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
     }
 
     /**
-     * 
+     *
      */
     public String getVersion() {
         return version;
     }
 
     /**
-     * 
+     *
      */
     public void setVersion(String version) {
         this.version = version;

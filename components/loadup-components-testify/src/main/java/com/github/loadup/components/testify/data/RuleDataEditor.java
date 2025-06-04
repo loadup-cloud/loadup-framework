@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data;
 
 /*-
@@ -36,18 +33,17 @@ import com.github.loadup.components.testify.exception.TestifyException;
 import com.github.loadup.components.testify.helper.CSVHelper;
 import com.github.loadup.components.testify.manage.TestLogger;
 import com.github.loadup.components.testify.util.FileUtil;
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 规则数据编辑器。
  * <p>
  * 采取乐观版本控制方式，表级锁。
  *
- * 
+ *
  *
  */
 public class RuleDataEditor {
@@ -65,8 +61,10 @@ public class RuleDataEditor {
     static {
         AbstractDBService dbs = null;
         try {
-            dbs = AbstractDBService.getService(TestifyDBConstants.DB_URL,
-                    TestifyDBConstants.DB_USER_NAME, TestifyDBConstants.DB_PASSWORD,
+            dbs = AbstractDBService.getService(
+                    TestifyDBConstants.DB_URL,
+                    TestifyDBConstants.DB_USER_NAME,
+                    TestifyDBConstants.DB_PASSWORD,
                     TestifyDBConstants.DB_SCHEMA);
         } catch (Exception e) {
             dbs = null;
@@ -80,8 +78,7 @@ public class RuleDataEditor {
         Properties vers = new Properties();
         FileInputStream inputStream = null;
         try {
-            inputStream = new FileInputStream(
-                    FileUtil.getTestResourceFile("ruledata/versions.properties"));
+            inputStream = new FileInputStream(FileUtil.getTestResourceFile("ruledata/versions.properties"));
             vers.load(inputStream);
         } catch (Exception e) {
             TestLogger.getLogger().warn("can't load file: ruledata/versions.properties");
@@ -212,8 +209,12 @@ public class RuleDataEditor {
      * @param keys
      * @return
      */
-    private int doUpdate(String tableName, String[] rowData, Map<String, Integer> indexes,
-                         List<String> updateColumns, String... keys) {
+    private int doUpdate(
+            String tableName,
+            String[] rowData,
+            Map<String, Integer> indexes,
+            List<String> updateColumns,
+            String... keys) {
         StringBuilder updateSql = new StringBuilder("update ");
         updateSql.append(tableName);
         updateSql.append(" set ");
@@ -289,5 +290,4 @@ public class RuleDataEditor {
         }
         return keys.toArray(new String[0]);
     }
-
 }

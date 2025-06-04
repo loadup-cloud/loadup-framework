@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -28,16 +29,13 @@ package com.github.loadup.components.testify.util;
 
 import java.io.File;
 import java.util.HashSet;
-
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 获取系统的表结构
  *
- * 
- * 
+ *
+ *
  */
 @Slf4j
 public class FullTableAnalysis {
@@ -52,7 +50,7 @@ public class FullTableAnalysis {
 
         HashSet<String> tableSet = new HashSet<String>();
 
-        //1. 解析dalConfigXml
+        // 1. 解析dalConfigXml
         DalConfigAnalysisHandler handler = new DalConfigAnalysisHandler();
         try {
             XMLParserUtil.parseXML(dalConfigXml, handler);
@@ -61,7 +59,5 @@ public class FullTableAnalysis {
             log.error("解析dal-config.Xml出错！", e);
         }
         return tableSet;
-
     }
-
 }

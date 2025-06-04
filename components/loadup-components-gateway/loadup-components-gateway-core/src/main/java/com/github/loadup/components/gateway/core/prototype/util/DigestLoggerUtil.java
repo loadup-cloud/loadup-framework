@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.prototype.util;
 
 /*-
@@ -59,8 +60,7 @@ public class DigestLoggerUtil {
     /**
      * 通用日志打印方法，屏蔽敏感日志
      */
-    public static void printInfoLog(GatewayRuntimeProcessContext processContext, long timeCost) {
-    }
+    public static void printInfoLog(GatewayRuntimeProcessContext processContext, long timeCost) {}
 
     /**
      * 通用日志打印方法, 打印调用方耗时信息

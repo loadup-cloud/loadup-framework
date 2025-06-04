@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -31,22 +31,21 @@ import com.github.loadup.components.testify.exception.TestifyException;
 import com.github.vincentrussell.json.datagenerator.JsonDataGeneratorException;
 import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorImpl;
 import com.google.common.io.Closer;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 /**
  * 参数过滤器
  *
  * @author yuli.qyl
- * 
+ *
  */
 public class ParamFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(ParamFilter.class);
@@ -116,7 +115,7 @@ public class ParamFilter {
         if (StringUtils.isEmpty(jsonText) || CollectionUtils.isEmpty(param)) {
             return jsonText;
         }
-        //这里可以先替换随机参数
+        // 这里可以先替换随机参数
         String resultString = filterJson(jsonText);
         matcher = pattern.matcher(jsonText);
         while (matcher.find()) {
@@ -133,5 +132,4 @@ public class ParamFilter {
         }
         return resultString;
     }
-
 }

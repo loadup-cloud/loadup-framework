@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.db.enums;
 
 /*-
@@ -33,11 +30,10 @@ package com.github.loadup.components.testify.db.enums;
 /**
  * csv数据库文件列值枚举
  *
- * 
+ *
  *
  */
 public enum CSVColEnum {
-
     COLUMN("columnName", "数据库CSV文件列名"),
 
     COMMENT("comment", "数据库CSV文件注释"),
@@ -77,7 +73,7 @@ public enum CSVColEnum {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of code
      */
@@ -86,12 +82,11 @@ public enum CSVColEnum {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of description
      */
     public String getDescription() {
         return description;
     }
-
 }

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.support;
 
 /*-
@@ -37,8 +34,8 @@ import org.springframework.context.ApplicationContext;
  * <p>
  * 依赖sofa版本，可获取bundle bean。
  *
- * 
- * 
+ *
+ *
  */
 public class SofaRuntimeReference {
 
@@ -54,35 +51,37 @@ public class SofaRuntimeReference {
 
     public static Object getBean(String name, Class<?> requiredType, String moduleName) {
 
-//        Collection<ComponentInfo> componentInfos = (Collection<ComponentInfo>) getCurrentSofaRuntime()
-//            .getComponentManager().getComponents();
-//
-//        for (ComponentInfo componentInfo : componentInfos) {
-//            Object bean = null;
-//            try {
-//                ApplicationContext applicationContext = (ApplicationContext) (componentInfo
-//                    .getImplementation().getTarget());
-//                if (applicationContext != null) {
-//                    if (!StringUtils.isEmpty(moduleName)
-//                        && !componentInfo.dump().contains(moduleName)) {
-//                        continue;
-//                    }
-//                    if (name != null && requiredType != null) {
-//                        bean = applicationContext.getBean(name, requiredType);
-//                    } else if (name != null) {
-//                        bean = applicationContext.getBean(name);
-//                    } else if (requiredType != null) {
-//                        bean = applicationContext.getBean(requiredType);
-//                    }
-//                }
-//            } catch (Exception e) {
-//            }
-//            if (bean != null) {
-//                TestLogger.getLogger().info("find bean in bundle[name=", name, ",type=",
-//                    requiredType, ",bundle=", componentInfo.dump(), "]");
-//                return bean;
-//            }
-//        }
+        //        Collection<ComponentInfo> componentInfos = (Collection<ComponentInfo>)
+        // getCurrentSofaRuntime()
+        //            .getComponentManager().getComponents();
+        //
+        //        for (ComponentInfo componentInfo : componentInfos) {
+        //            Object bean = null;
+        //            try {
+        //                ApplicationContext applicationContext = (ApplicationContext)
+        // (componentInfo
+        //                    .getImplementation().getTarget());
+        //                if (applicationContext != null) {
+        //                    if (!StringUtils.isEmpty(moduleName)
+        //                        && !componentInfo.dump().contains(moduleName)) {
+        //                        continue;
+        //                    }
+        //                    if (name != null && requiredType != null) {
+        //                        bean = applicationContext.getBean(name, requiredType);
+        //                    } else if (name != null) {
+        //                        bean = applicationContext.getBean(name);
+        //                    } else if (requiredType != null) {
+        //                        bean = applicationContext.getBean(requiredType);
+        //                    }
+        //                }
+        //            } catch (Exception e) {
+        //            }
+        //            if (bean != null) {
+        //                TestLogger.getLogger().info("find bean in bundle[name=", name, ",type=",
+        //                    requiredType, ",bundle=", componentInfo.dump(), "]");
+        //                return bean;
+        //            }
+        //        }
         return null;
     }
 
@@ -155,5 +154,4 @@ public class SofaRuntimeReference {
 
         return runtimeLocal.get() != null;
     }
-
 }

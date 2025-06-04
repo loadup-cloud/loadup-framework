@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.model;
 
 /*-
@@ -61,7 +62,7 @@ public class VirtualException extends TestUnit {
 
     @Deprecated
     public void setExceptionClass(String exceptionClass) {
-        //该方法已废弃，为了兼容暂时保留；请不要添加方法实现，否则会导致yaml dump异常
+        // 该方法已废弃，为了兼容暂时保留；请不要添加方法实现，否则会导致yaml dump异常
     }
 
     public Object getExpectExceptionObject() {
@@ -73,7 +74,7 @@ public class VirtualException extends TestUnit {
 
     @Deprecated
     public void setExpectExceptionObject(Object expectException) {
-        //该方法已废弃，为了兼容暂时保留；请不要添加方法实现，否则会导致yaml dump异常
+        // 该方法已废弃，为了兼容暂时保留；请不要添加方法实现，否则会导致yaml dump异常
     }
 
     public VirtualObject getExpectException() {
@@ -92,5 +93,4 @@ public class VirtualException extends TestUnit {
     public String toString() {
         return "VirtualException [expectException=" + expectException + "]";
     }
-
 }

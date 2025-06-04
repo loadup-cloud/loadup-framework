@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.event;
 
 /*-
@@ -37,7 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * 消息发送器拦截器
  *
- * 
+ *
  *
  */
 public class EventPublisherInterceptor implements MethodInterceptor {
@@ -62,24 +59,24 @@ public class EventPublisherInterceptor implements MethodInterceptor {
             return invocation.proceed();
         }
 
-        //获取当前方法执行参数
+        // 获取当前方法执行参数
         Object[] params = invocation.getArguments();
         for (Object o : params) {
-//            if (o instanceof UniformEvent) {
-//                //拦截并报错事件
-//                String topicId = ((UniformEvent) o).getTopic();
-//                String eventCode = (((UniformEvent) o).getEventCode());
-//                Object payLoad = (((UniformEvent) o).getEventPayload());
-//                EventContextHolder.setEvent(eventCode, topicId, payLoad);
-//            }
+            //            if (o instanceof UniformEvent) {
+            //                //拦截并报错事件
+            //                String topicId = ((UniformEvent) o).getTopic();
+            //                String eventCode = (((UniformEvent) o).getEventCode());
+            //                Object payLoad = (((UniformEvent) o).getEventPayload());
+            //                EventContextHolder.setEvent(eventCode, topicId, payLoad);
+            //            }
         }
 
-        //然后开始判断是否需要mock掉消息中心,如果用户要求发送到,就给他发送
+        // 然后开始判断是否需要mock掉消息中心,如果用户要求发送到,就给他发送
         if (sendToMsgbroker) {
             return invocation.proceed();
         }
 
-        //否则就不发送了.直接返回true
+        // 否则就不发送了.直接返回true
         else {
             return true;
         }
@@ -95,12 +92,11 @@ public class EventPublisherInterceptor implements MethodInterceptor {
     }
 
     /**
-     * 
+     *
      *
      * @param sendToMsgbroker value to be assigned to property sendToMsgbroker
      */
     public void setSendToMsgbroker(boolean sendToMsgbroker) {
         this.sendToMsgbroker = sendToMsgbroker;
     }
-
 }

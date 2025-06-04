@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -30,15 +27,14 @@ package com.github.loadup.components.testify.util;
  * #L%
  */
 
+import com.github.loadup.components.testify.callback.GenerateCacheDataCallBack;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.github.loadup.components.testify.callback.GenerateCacheDataCallBack;
 
 /**
  * 本地内存缓存工具类
  *
- * 
+ *
  *
  */
 public class LocalCacheUtil {
@@ -57,22 +53,22 @@ public class LocalCacheUtil {
      */
     public static Object getObject(String key, GenerateCacheDataCallBack callback) {
 
-        //首先直接从缓存中获取值
+        // 首先直接从缓存中获取值
         Object cacheObject = cacheObjects.get(key);
         if (null != cacheObject) {
             return cacheObject;
         }
 
-        //从缓存中取不到值，则通过其他方式获取值，然后在将新取出的值放到缓存中，并发控制
+        // 从缓存中取不到值，则通过其他方式获取值，然后在将新取出的值放到缓存中，并发控制
         Object newCacheObject = null;
         synchronized (new Object()) {
-            //重新获取缓存中的值。此处重新获取的原因，是避免并发等待时，缓存中的值被更新
+            // 重新获取缓存中的值。此处重新获取的原因，是避免并发等待时，缓存中的值被更新
             newCacheObject = cacheObjects.get(key);
 
             if (null == cacheObject) {
-                //重新获取值
+                // 重新获取值
                 newCacheObject = callback.getCacheValue(key);
-                //将取出的值存放至缓存中
+                // 将取出的值存放至缓存中
                 cacheObjects.put(key, newCacheObject);
             }
         }

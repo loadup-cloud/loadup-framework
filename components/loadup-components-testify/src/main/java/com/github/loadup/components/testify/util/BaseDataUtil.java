@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -44,21 +45,6 @@ import com.github.loadup.components.testify.model.*;
 import com.github.loadup.components.testify.object.processor.ObjectProcessor;
 import com.github.loadup.components.testify.object.result.Result;
 import com.opencsv.CSVReader;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.springframework.util.CollectionUtils;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.LoaderOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
-import org.yaml.snakeyaml.introspector.Property;
-import org.yaml.snakeyaml.nodes.*;
-import org.yaml.snakeyaml.representer.Representer;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -68,6 +54,18 @@ import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.util.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.springframework.util.CollectionUtils;
+import org.yaml.snakeyaml.*;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
+import org.yaml.snakeyaml.introspector.Property;
+import org.yaml.snakeyaml.nodes.*;
+import org.yaml.snakeyaml.representer.Representer;
 
 @Slf4j
 public class BaseDataUtil {
@@ -81,8 +79,8 @@ public class BaseDataUtil {
      * @param origYamlFileAbsolutePath 需要拆分的yaml文件的绝对路径
      * @param encoding                 编码如 "UTF-8" "GBK"
      */
-    public static void saveYamlDataToCaseByCase(String testScriptSimpleName,
-                                                String origYamlFileAbsolutePath, String encoding) {
+    public static void saveYamlDataToCaseByCase(
+            String testScriptSimpleName, String origYamlFileAbsolutePath, String encoding) {
 
         File yamlFile = new File(origYamlFileAbsolutePath);
 
@@ -90,15 +88,14 @@ public class BaseDataUtil {
             throw new RuntimeException("指定yaml文件不存在！");
         }
 
-        Map<String, PrepareData> prepareDatas = loadFromYaml(yamlFile, Thread.currentThread()
-                .getContextClassLoader());
+        Map<String, PrepareData> prepareDatas =
+                loadFromYaml(yamlFile, Thread.currentThread().getContextClassLoader());
 
-        String yamlFolderPath = StringUtils.substringBeforeLast(origYamlFileAbsolutePath, "/") + "/"
-                + testScriptSimpleName;
+        String yamlFolderPath =
+                StringUtils.substringBeforeLast(origYamlFileAbsolutePath, "/") + "/" + testScriptSimpleName;
         File yamlFolder = new File(yamlFolderPath);
 
         storeToYamlByCase(prepareDatas, yamlFolder, encoding);
-
     }
 
     /**
@@ -108,18 +105,16 @@ public class BaseDataUtil {
      * @param folder
      * @param encoding
      */
-    public static void storeToYamlByCase(Map<String, PrepareData> prepareDatas, File folder,
-                                         String encoding) {
-        TreeMap<String, PrepareData> treeMap = new TreeMap<String, PrepareData>(
-                new Comparator<String>() {
-                    @Override
-                    public int compare(String str1, String str2) {
-                        return str1.compareTo(str2);
-                    }
-                });
+    public static void storeToYamlByCase(Map<String, PrepareData> prepareDatas, File folder, String encoding) {
+        TreeMap<String, PrepareData> treeMap = new TreeMap<String, PrepareData>(new Comparator<String>() {
+            @Override
+            public int compare(String str1, String str2) {
+                return str1.compareTo(str2);
+            }
+        });
         treeMap.putAll(prepareDatas);
 
-        //清理yaml文件夹
+        // 清理yaml文件夹
         try {
             if (folder.exists()) {
                 FileUtils.cleanDirectory(folder);
@@ -155,13 +150,12 @@ public class BaseDataUtil {
      * @param encoding
      */
     public static void storeToYaml(Map<String, PrepareData> prepareDatas, File file, String encoding) {
-        TreeMap<String, PrepareData> treeMap = new TreeMap<String, PrepareData>(
-                new Comparator<String>() {
-                    @Override
-                    public int compare(String str1, String str2) {
-                        return str1.compareTo(str2);
-                    }
-                });
+        TreeMap<String, PrepareData> treeMap = new TreeMap<String, PrepareData>(new Comparator<String>() {
+            @Override
+            public int compare(String str1, String str2) {
+                return str1.compareTo(str2);
+            }
+        });
         treeMap.putAll(prepareDatas);
 
         Yaml yaml = new Yaml(new MyRepresenter());
@@ -180,13 +174,12 @@ public class BaseDataUtil {
      * @param file
      */
     public static void storeToYaml(Map<String, PrepareData> prepareDatas, File file) {
-        TreeMap<String, PrepareData> treeMap = new TreeMap<String, PrepareData>(
-                new Comparator<String>() {
-                    @Override
-                    public int compare(String str1, String str2) {
-                        return str1.compareTo(str2);
-                    }
-                });
+        TreeMap<String, PrepareData> treeMap = new TreeMap<String, PrepareData>(new Comparator<String>() {
+            @Override
+            public int compare(String str1, String str2) {
+                return str1.compareTo(str2);
+            }
+        });
         treeMap.putAll(prepareDatas);
         Yaml yaml = new Yaml(new MyRepresenter());
         String str = yaml.dump(treeMap);
@@ -208,8 +201,8 @@ public class BaseDataUtil {
         Yaml yaml = getStdYaml();
 
         // prepare res yaml str
-        String retObjTitle = caseObjectSet.isException() ?
-                YamlFieldEnum.EXCEPTION.getCode() : YamlFieldEnum.RESULT.getCode();
+        String retObjTitle =
+                caseObjectSet.isException() ? YamlFieldEnum.EXCEPTION.getCode() : YamlFieldEnum.RESULT.getCode();
         String res = retObjTitle + yaml.dump(caseObjectSet.getRetObj());
         // prepare msg yaml str
         String msg = YamlFieldEnum.EVENTS.getCode() + yaml.dump(caseObjectSet.getEvents());
@@ -296,8 +289,7 @@ public class BaseDataUtil {
      * @param encoding
      * @return
      */
-    public static Map<String, PrepareData> loadFromYamlByCase(File folder, ClassLoader classLoader,
-                                                              String encoding) {
+    public static Map<String, PrepareData> loadFromYamlByCase(File folder, ClassLoader classLoader, String encoding) {
 
         Map<String, PrepareData> caseMap = new HashMap<String, PrepareData>();
         if (folder.exists()) {
@@ -308,33 +300,30 @@ public class BaseDataUtil {
                     if (file.getAbsolutePath().endsWith("yaml")) {
                         String str = FileUtils.readFileToString(file, encoding);
 
-                        caseMap.putAll((Map<String, PrepareData>) getStdYaml(classLoader).load(str));
+                        caseMap.putAll((Map<String, PrepareData>)
+                                getStdYaml(classLoader).load(str));
                     }
                 }
 
             } catch (Exception e) {
                 String sberr = e.getMessage();
                 if (StringUtils.contains(sberr, " Cannot create property=")) {
-                    String filedName = StringUtils.substringBetween(sberr,
-                            "Unable to find property '", "' on class");
+                    String filedName = StringUtils.substringBetween(sberr, "Unable to find property '", "' on class");
                     if (StringUtils.isBlank(filedName)) {
                         if (StringUtils.contains(sberr, "Class not found")) {
-                            String clsName = StringUtils.substringBetween(sberr, "Class not found:",
-                                    ";");
+                            String clsName = StringUtils.substringBetween(sberr, "Class not found:", ";");
                             throw new YamlFileException("类" + clsName + "加载失败，建议重新mvn后导入工程!");
                         }
                     } else {
                         throw new YamlFileException("该类定义中未发现以下字段：" + StringUtils.trim(filedName)
                                 + "，请确认该字段getter/setter方法或该类的本地jar包已更新至最新状态");
                     }
-
                 }
                 throw new YamlFileException("读取yaml的时候抛出异常", e);
             }
         }
 
         return caseMap;
-
     }
 
     /**
@@ -345,8 +334,7 @@ public class BaseDataUtil {
      * @param encoding
      * @return
      */
-    public static Map<String, PrepareData> loadFromYaml(File file, ClassLoader classLoader,
-                                                        String encoding) {
+    public static Map<String, PrepareData> loadFromYaml(File file, ClassLoader classLoader, String encoding) {
         if (file.exists()) {
             try {
                 String str = FileUtils.readFileToString(file, encoding);
@@ -356,19 +344,16 @@ public class BaseDataUtil {
             } catch (Exception e) {
                 String sberr = e.getMessage();
                 if (StringUtils.contains(sberr, " Cannot create property=")) {
-                    String filedName = StringUtils.substringBetween(sberr,
-                            "Unable to find property '", "' on class");
+                    String filedName = StringUtils.substringBetween(sberr, "Unable to find property '", "' on class");
                     if (StringUtils.isBlank(filedName)) {
                         if (StringUtils.contains(sberr, "Class not found")) {
-                            String clsName = StringUtils.substringBetween(sberr, "Class not found:",
-                                    ";");
+                            String clsName = StringUtils.substringBetween(sberr, "Class not found:", ";");
                             throw new YamlFileException("类" + clsName + "加载失败，建议重新mvn后导入工程!");
                         }
                     } else {
                         throw new YamlFileException("该类定义中未发现以下字段：" + StringUtils.trim(filedName)
                                 + "，请确认该字段getter/setter方法或该类的本地jar包已更新至最新状态");
                     }
-
                 }
                 throw new YamlFileException("读取yaml的时候抛出异常", e);
             }
@@ -392,19 +377,16 @@ public class BaseDataUtil {
             } catch (Exception e) {
                 String sberr = e.getMessage();
                 if (StringUtils.contains(sberr, " Cannot create property=")) {
-                    String filedName = StringUtils.substringBetween(sberr,
-                            "Unable to find property '", "' on class");
+                    String filedName = StringUtils.substringBetween(sberr, "Unable to find property '", "' on class");
                     if (StringUtils.isBlank(filedName)) {
                         if (StringUtils.contains(sberr, "Class not found")) {
-                            String clsName = StringUtils.substringBetween(sberr, "Class not found:",
-                                    ";");
+                            String clsName = StringUtils.substringBetween(sberr, "Class not found:", ";");
                             throw new YamlFileException("类" + clsName + "加载失败，建议重新mvn后导入工程!");
                         }
                     } else {
                         throw new YamlFileException("该类定义中未发现以下字段：" + StringUtils.trim(filedName)
                                 + "，请确认该字段getter/setter方法或该类的本地jar包已更新至最新状态");
                     }
-
                 }
                 throw new YamlFileException("读取yaml的时候抛出异常", e);
             }
@@ -427,27 +409,22 @@ public class BaseDataUtil {
         } catch (Exception e) {
             String sberr = e.getMessage();
             if (StringUtils.contains(sberr, " Cannot create property=")) {
-                String filedName = StringUtils.substringBetween(sberr, "Unable to find property '",
-                        "' on class");
+                String filedName = StringUtils.substringBetween(sberr, "Unable to find property '", "' on class");
                 if (StringUtils.isBlank(filedName)) {
                     if (StringUtils.contains(sberr, "Class not found")) {
-                        String clsName = StringUtils
-                                .substringBetween(sberr, "Class not found:", ";");
+                        String clsName = StringUtils.substringBetween(sberr, "Class not found:", ";");
                         throw new YamlFileException("类" + clsName + "加载失败，建议重新mvn后导入工程!");
                     }
                 } else {
-                    throw new YamlFileException("该类定义中未发现以下字段：" + StringUtils.trim(filedName)
-                            + "，请确认该字段getter/setter方法或该类的本地jar包已更新至最新状态");
+                    throw new YamlFileException(
+                            "该类定义中未发现以下字段：" + StringUtils.trim(filedName) + "，请确认该字段getter/setter方法或该类的本地jar包已更新至最新状态");
                 }
-
             }
             throw new YamlFileException("读取yaml的时候抛出异常", e);
         }
-
     }
 
     /**************************** ACTS 2.0 Utils ****************************/
-
     public static Yaml getStdYaml() {
         return getStdYaml(Thread.currentThread().getContextClassLoader());
     }
@@ -465,13 +442,13 @@ public class BaseDataUtil {
         myRepresenter.addClassTag(JSONObject.class, new Tag(JSONObject.class));
         myRepresenter.addClassTag(Long.class, new Tag(Long.class));
 
-
         Yaml yaml = new Yaml(new SelectiveConstructor(classLoader), myRepresenter, dumperOptions);
         return yaml;
     }
 
-    public static void genCaseFolderStucture(File dir, String caseName, String yamlStr,
-                                             List<VirtualTable> prepareTables, List<VirtualTable> checkTables) throws Exception {
+    public static void genCaseFolderStucture(
+            File dir, String caseName, String yamlStr, List<VirtualTable> prepareTables, List<VirtualTable> checkTables)
+            throws Exception {
         // generate case folder
         File caseFolder = new File(dir, caseName);
         caseFolder.mkdir();
@@ -479,7 +456,8 @@ public class BaseDataUtil {
         // generate case yaml
         File caseYaml = new File(caseFolder, TestifyConstants.CASE_YAML_NAME);
         caseYaml.createNewFile();
-        FileUtils.writeStringToFile(caseYaml.getPath(), yamlStr, Charset.defaultCharset().displayName(), false);
+        FileUtils.writeStringToFile(
+                caseYaml.getPath(), yamlStr, Charset.defaultCharset().displayName(), false);
 
         // generate prepare db data
         File prepareFolder = new File(caseFolder, TestifyConstants.PREPARE_DB_FOLDER);
@@ -498,11 +476,12 @@ public class BaseDataUtil {
                 writeTableData(checkTable, checkFolder);
             }
         }
-
     }
 
     public static void writeTableData(VirtualTable table, File folder) {
-        if (table == null || table.getTableData() == null || table.getTableData().size() < 1) {
+        if (table == null
+                || table.getTableData() == null
+                || table.getTableData().size() < 1) {
             log.error("[ConvertDataError]Table is empty.");
             return;
         }
@@ -511,20 +490,23 @@ public class BaseDataUtil {
         List<Map<String, Object>> rows = table.getTableData();
         Set<String> keys = rows.get(0).keySet();
 
-
         List<String[]> dbmodel = new ArrayList<String[]>();
 
-        List<String> headers = new ArrayList<String>(Arrays.asList(CSVColEnum.COLUMN.getCode(), CSVColEnum.TYPE.getCode(),
-                CSVColEnum.COMMENT.getCode(), CSVColEnum.PRIMARY.getCode(),
-                CSVColEnum.NULLABLE.getCode(), CSVColEnum.FLAG.getCode()));
+        List<String> headers = new ArrayList<String>(Arrays.asList(
+                CSVColEnum.COLUMN.getCode(),
+                CSVColEnum.TYPE.getCode(),
+                CSVColEnum.COMMENT.getCode(),
+                CSVColEnum.PRIMARY.getCode(),
+                CSVColEnum.NULLABLE.getCode(),
+                CSVColEnum.FLAG.getCode()));
         for (int i = 0; i < rows.size(); i++) {
             headers.add(CSVColEnum.VALUE.getCode());
         }
         dbmodel.add(headers.toArray(new String[headers.size()]));
 
         for (String key : keys) {
-            List<String> fieldInfo = new ArrayList<String>(Arrays.asList(key, "",
-                    "", "", "", table.getFlagByFieldNameIgnoreCase(key)));
+            List<String> fieldInfo =
+                    new ArrayList<String>(Arrays.asList(key, "", "", "", "", table.getFlagByFieldNameIgnoreCase(key)));
             for (int i = 0; i < rows.size(); i++) {
                 Object val = rows.get(i).get(key);
                 if (val == null) {
@@ -537,11 +519,11 @@ public class BaseDataUtil {
             dbmodel.add(fieldInfo.toArray(new String[fieldInfo.size()]));
         }
 
-        DbTableModelUtil.writeToCsv(new File(folder, tableName + ".csv"), dbmodel, Charset.defaultCharset().displayName());
+        DbTableModelUtil.writeToCsv(
+                new File(folder, tableName + ".csv"),
+                dbmodel,
+                Charset.defaultCharset().displayName());
     }
-
-
-
 
     /**
      * A从所有用例目录读取用例集数据
@@ -571,7 +553,8 @@ public class BaseDataUtil {
 
         // retrieve target files
         for (File file : caseFolder.listFiles()) {
-            if (file.isFile() && (file.getName().endsWith(".yaml") || file.getName().endsWith(".yml"))) {
+            if (file.isFile()
+                    && (file.getName().endsWith(".yaml") || file.getName().endsWith(".yml"))) {
                 if (file.getName().endsWith("_actual.yaml") || file.getName().endsWith("_actual.yml")) {
                     // 此处跳过备用比较文件，防止误读当用例数据
                     continue;
@@ -586,7 +569,6 @@ public class BaseDataUtil {
             }
         }
 
-
         if (null == yamlFile) {
             return null;
         }
@@ -599,7 +581,8 @@ public class BaseDataUtil {
         String caseId = caseFolder.getName();
         try {
             String yamlContent = FileUtils.readFileToString(yamlFile);
-            String desc = StringUtils.substringBetween(yamlContent, "Case Desc:", "\n").trim();
+            String desc = StringUtils.substringBetween(yamlContent, "Case Desc:", "\n")
+                    .trim();
             if (!desc.equals("用例描述填这行")) {
                 caseId = desc;
             }
@@ -608,8 +591,7 @@ public class BaseDataUtil {
         }
         prepareData.setDescription(caseId);
 
-
-        //load db data
+        // load db data
         if (null != prepareDBFolder) {
             prepareData.setDepDataSet(readDBDataFromCsv(prepareDBFolder));
         }
@@ -617,7 +599,6 @@ public class BaseDataUtil {
         if (null != checkDBFolder) {
             prepareData.setExpectDataSet(readDBDataFromCsv(checkDBFolder));
         }
-
 
         return prepareData;
     }
@@ -643,9 +624,9 @@ public class BaseDataUtil {
         prepareData.setVirtualParams(new VirtualParams(caseObjectSet.getParams()));
 
         // load virtual mocks
-//        VirtualMockSet virtualMockSet = new VirtualMockSet();
-//        virtualMockSet.setVirtualMockList(caseObjectSet.getVirtualMocks());
-//        prepareData.setVirtualMockSet(virtualMockSet);
+        //        VirtualMockSet virtualMockSet = new VirtualMockSet();
+        //        virtualMockSet.setVirtualMockList(caseObjectSet.getVirtualMocks());
+        //        prepareData.setVirtualMockSet(virtualMockSet);
 
         // load virtual components
         VirtualComponentSet virtualComponentSet = parseComponentSetFromList(caseObjectSet.getComponents());
@@ -655,7 +636,6 @@ public class BaseDataUtil {
         if (null != caseObjectSet.getFlags()) {
             setFlags(prepareData, caseObjectSet.getFlags());
         }
-
     }
 
     /**
@@ -675,17 +655,16 @@ public class BaseDataUtil {
         // set exception flag
         if (prepareData.getExpectException() != null
                 && prepareData.getExpectException().getVirtualObject() != null) {
-            mergeFlagMap(flags, prepareData.getExpectException().getVirtualObject().getFlags());
+            mergeFlagMap(
+                    flags, prepareData.getExpectException().getVirtualObject().getFlags());
         }
 
         // set event flag
         if (prepareData.getExpectEventSet() != null) {
-            for (VirtualEventObject obj :
-                    prepareData.getExpectEventSet().getVirtualEventObjects()) {
+            for (VirtualEventObject obj : prepareData.getExpectEventSet().getVirtualEventObjects()) {
                 mergeFlagMap(flags, obj.getEventObject().getFlags());
             }
         }
-
     }
 
     /**
@@ -694,15 +673,17 @@ public class BaseDataUtil {
      * @param srcFlags
      * @param destFlags
      */
-    private static void mergeFlagMap(Map<String, Map<String, String>> srcFlags,
-                                     Map<String, Map<String, String>> destFlags) {
+    private static void mergeFlagMap(
+            Map<String, Map<String, String>> srcFlags, Map<String, Map<String, String>> destFlags) {
         if (null == srcFlags || null == destFlags) {
             return;
         }
         for (String objName : srcFlags.keySet()) {
             if (destFlags.containsKey(objName)) {
                 for (String key : srcFlags.get(objName).keySet()) {
-                    destFlags.get(objName).putIfAbsent(key, srcFlags.get(objName).get(key));
+                    destFlags
+                            .get(objName)
+                            .putIfAbsent(key, srcFlags.get(objName).get(key));
                 }
             } else {
                 destFlags.put(objName, srcFlags.get(objName));
@@ -759,7 +740,6 @@ public class BaseDataUtil {
         return virtualComponentSet;
     }
 
-
     /**
      * 将VirtualEventSet转换成2.0数据模式中的消息存储类型：List<Map<String, Object>>
      *
@@ -803,29 +783,30 @@ public class BaseDataUtil {
     public static CaseObjectSet loadListFromYaml(File yamlFile, ClassLoader classLoader) {
 
         try {
-            Yaml yaml = new Yaml(new SelectiveConstructor(classLoader),
-                    new MyRepresenter());
-            Iterator<Object> yamlContent = yaml.loadAll(ParamFilter.filterJson(FileUtils.readFileToString(yamlFile))).iterator();
-
+            LoaderOptions loaderOptions = new LoaderOptions();
+            loaderOptions.setTagInspector(tag -> true);
+            Yaml yaml = new Yaml(loaderOptions);
+            // yaml.addTypeDescription(new
+            // TypeDescription(Class.forName("com.github.loadup.modules.upms.client.cmd.UserSaveCmd"),
+            // "tag:yaml.org,2002:com.github.loadup.modules.upms.client.cmd.UserSaveCmd"));
+            Iterator<Object> yamlContent = yaml.loadAll(ParamFilter.filterJson(FileUtils.readFileToString(yamlFile)))
+                    .iterator();
             CaseObjectSet caseObjectSet = new CaseObjectSet(IteratorUtils.toList(yamlContent));
 
             return caseObjectSet;
         } catch (Exception e) {
             String sberr = e.getMessage();
             if (StringUtils.contains(sberr, " Cannot create property=")) {
-                String filedName = StringUtils.substringBetween(sberr, "Unable to find property '",
-                        "' on class");
+                String filedName = StringUtils.substringBetween(sberr, "Unable to find property '", "' on class");
                 if (StringUtils.isBlank(filedName)) {
                     if (StringUtils.contains(sberr, "Class not found")) {
-                        String clsName = StringUtils
-                                .substringBetween(sberr, "Class not found:", ";");
+                        String clsName = StringUtils.substringBetween(sberr, "Class not found:", ";");
                         throw new YamlFileException("类" + clsName + "加载失败，建议重新mvn后导入工程!");
                     }
                 } else {
-                    throw new YamlFileException("该类定义中未发现以下字段：" + StringUtils.trim(filedName)
-                            + "，请确认该字段getter/setter方法或该类的本地jar包已更新至最新状态");
+                    throw new YamlFileException(
+                            "该类定义中未发现以下字段：" + StringUtils.trim(filedName) + "，请确认该字段getter/setter方法或该类的本地jar包已更新至最新状态");
                 }
-
             }
             throw new YamlFileException("读取yaml的时候抛出异常", e);
         }
@@ -853,7 +834,7 @@ public class BaseDataUtil {
             String[] firstRow = (String[]) dbdata.get(0);
             List<String> titles = new ArrayList<String>();
 
-            //对标题行进行特殊处理，防止格式化影响（但数据无法消除格式化影响，最好是引导用户不要去格式化csv文件内容）
+            // 对标题行进行特殊处理，防止格式化影响（但数据无法消除格式化影响，最好是引导用户不要去格式化csv文件内容）
             for (String title : firstRow) {
                 titles.add(title.replaceAll("\"", "").trim());
             }
@@ -885,7 +866,6 @@ public class BaseDataUtil {
                 for (int j = 0; j < valCount; j++) {
                     tableData.get(j).put(colName, ParamFilter.filterJson(colData[valIndex + j]));
                 }
-
             }
 
             // 添加单表数据到DB数据集，如果包含M标签，则每一条数据用一个VirtualTable单独进行存储
@@ -945,18 +925,20 @@ public class BaseDataUtil {
      * @param originalCases 原始用例集合
      * @param resultCases   结果用例集合
      */
-    public static void fillCaseResult(String caseFilePath, String encoding,
-                                      Map<String, PrepareData> originalCases,
-                                      Map<String, PrepareData> resultCases) {
+    public static void fillCaseResult(
+            String caseFilePath,
+            String encoding,
+            Map<String, PrepareData> originalCases,
+            Map<String, PrepareData> resultCases) {
 
-        //结果用例替换原有用例
+        // 结果用例替换原有用例
         for (String caseId : originalCases.keySet()) {
             if (resultCases.containsKey(caseId)) {
                 originalCases.put(caseId, resultCases.get(caseId));
             }
         }
 
-        //重写原始用例文件
+        // 重写原始用例文件
         // storeToYaml(originalCases, new File(caseFilePath), encoding);
     }
 
@@ -968,25 +950,27 @@ public class BaseDataUtil {
      * @param resultCases    结果用例集合
      * @param needFillTables 需要反填的表
      */
-    public static void fillCaseResult(String caseFilePath, String encoding,
-                                      Map<String, PrepareData> originalCases,
-                                      Map<String, PrepareData> resultCases,
-                                      Map<String, Set<String>> needFillTables) {
+    public static void fillCaseResult(
+            String caseFilePath,
+            String encoding,
+            Map<String, PrepareData> originalCases,
+            Map<String, PrepareData> resultCases,
+            Map<String, Set<String>> needFillTables) {
 
-        //先做一个操作,把 resultMap 中不需要填充的还原,先保留原始的表
+        // 先做一个操作,把 resultMap 中不需要填充的还原,先保留原始的表
 
-        //结果用例替换原有用例
+        // 结果用例替换原有用例
         for (String caseId : originalCases.keySet()) {
             if (resultCases.containsKey(caseId)) {
-                //先做一个操作,把 resultMap 中不需要填充的还原,这是原始的,用户自己填写的.
-                List<VirtualTable> virtualTables = originalCases.get(caseId).getExpectDataSet()
-                        .getVirtualTables();
+                // 先做一个操作,把 resultMap 中不需要填充的还原,这是原始的,用户自己填写的.
+                List<VirtualTable> virtualTables =
+                        originalCases.get(caseId).getExpectDataSet().getVirtualTables();
                 PrepareData resultPrepareData = resultCases.get(caseId);
 
-                //然后删掉不在needFillTables的表
+                // 然后删掉不在needFillTables的表
 
-                List<VirtualTable> resultExceptTable = resultPrepareData.getExpectDataSet()
-                        .getVirtualTables();
+                List<VirtualTable> resultExceptTable =
+                        resultPrepareData.getExpectDataSet().getVirtualTables();
 
                 if (resultExceptTable != null && !resultExceptTable.isEmpty()) {
                     Iterator<VirtualTable> iter = resultExceptTable.iterator();
@@ -1003,20 +987,18 @@ public class BaseDataUtil {
             }
         }
 
-        //重写原始用例文件
+        // 重写原始用例文件
         // storeToYaml(originalCases, new File(caseFilePath), encoding);
     }
 
-    public static Map<String, PrepareData> refreshBase(Map<String, PrepareData> tmp,
-                                                       ClassLoader classLoader, String rootPath,
-                                                       String encode) {
+    public static Map<String, PrepareData> refreshBase(
+            Map<String, PrepareData> tmp, ClassLoader classLoader, String rootPath, String encode) {
         for (Map.Entry<String, PrepareData> entry : tmp.entrySet()) {
             PrepareData prepareData = entry.getValue();
             for (VirtualObject virtualObject : prepareData.getArgs().getVirtualObjects()) {
                 refreshObjBase(virtualObject, classLoader, rootPath);
             }
-            refreshObjBase(prepareData.getExpectException().getVirtualObject(), classLoader,
-                    rootPath);
+            refreshObjBase(prepareData.getExpectException().getVirtualObject(), classLoader, rootPath);
             refreshObjBase(prepareData.getExpectResult().getVirtualObject(), classLoader, rootPath);
             for (VirtualTable virtualTable : prepareData.getDepDataSet().getVirtualTables()) {
                 refreshDBBase(virtualTable, rootPath, encode);
@@ -1028,8 +1010,7 @@ public class BaseDataUtil {
         return tmp;
     }
 
-    private static Object refreshObjBase(VirtualObject virtualObject, ClassLoader classLoader,
-                                         String rootPath) {
+    private static Object refreshObjBase(VirtualObject virtualObject, ClassLoader classLoader, String rootPath) {
         String baseName = virtualObject.objBaseName;
         String desc = virtualObject.getObjBaseDesc();
         Object object = virtualObject.getObject();
@@ -1069,8 +1050,8 @@ public class BaseDataUtil {
      * @param classQualifiedName 待修改Flag的类的全称
      * @param fieldName          待修改Flag的属性名
      */
-    public static void refreshAllObjFlagN(File file, ClassLoader classLoader,
-                                          String classQualifiedName, String fieldName) {
+    public static void refreshAllObjFlagN(
+            File file, ClassLoader classLoader, String classQualifiedName, String fieldName) {
         if (file.exists()) {
             if (file.isDirectory()) {
                 File[] files = file.listFiles();
@@ -1089,24 +1070,17 @@ public class BaseDataUtil {
                     for (VirtualObject virtualObject : prepareData.getArgs().getVirtualObjects()) {
                         refreshObjFlagN(virtualObject, classQualifiedName, fieldName);
                     }
-                    refreshObjFlagN(prepareData.getExpectException().getVirtualObject(),
-                            classQualifiedName, fieldName);
+                    refreshObjFlagN(prepareData.getExpectException().getVirtualObject(), classQualifiedName, fieldName);
 
-                    refreshObjFlagN(prepareData.getExpectResult().getVirtualObject(),
-                            classQualifiedName, fieldName);
-
+                    refreshObjFlagN(prepareData.getExpectResult().getVirtualObject(), classQualifiedName, fieldName);
                 }
 
                 storeToYaml(tmp, file);
-
             }
-
         }
-
     }
 
-    private static void refreshObjFlagN(VirtualObject virtualObject, String classQualifiedName,
-                                        String fieldName) {
+    private static void refreshObjFlagN(VirtualObject virtualObject, String classQualifiedName, String fieldName) {
         Map<String, Map<String, String>> currentFlag = virtualObject.getFlags();
 
         if (null != currentFlag.get(classQualifiedName)) {
@@ -1116,20 +1090,17 @@ public class BaseDataUtil {
             classFieldFlagMap.put(fieldName, "N");
             currentFlag.put(classQualifiedName, classFieldFlagMap);
         }
-
     }
 
-    private static VirtualTable refreshDBBase(VirtualTable virtualTable, String rootPath,
-                                              String encode) {
-        if (StringUtils.isBlank(virtualTable.getTableName())
-                || StringUtils.isBlank(virtualTable.getTableBaseDesc())) {
+    private static VirtualTable refreshDBBase(VirtualTable virtualTable, String rootPath, String encode) {
+        if (StringUtils.isBlank(virtualTable.getTableName()) || StringUtils.isBlank(virtualTable.getTableBaseDesc())) {
             return virtualTable;
         }
-        VirtualTable baseObjVirtualTable = getVirtualTableFromBase(virtualTable.getTableName(),
-                virtualTable.getTableBaseDesc(), rootPath, encode);
+        VirtualTable baseObjVirtualTable =
+                getVirtualTableFromBase(virtualTable.getTableName(), virtualTable.getTableBaseDesc(), rootPath, encode);
         Map<String, Object> baseRow = baseObjVirtualTable.getTableData().get(0);
 
-        //base里面多的要新增
+        // base里面多的要新增
         for (String key : baseRow.keySet()) {
             for (Map<String, Object> row : virtualTable.getTableData()) {
                 if (row.containsKey(key)) {
@@ -1139,7 +1110,7 @@ public class BaseDataUtil {
                 }
             }
         }
-        //base里面没有的要remove掉
+        // base里面没有的要remove掉
         for (Map<String, Object> row : virtualTable.getTableData()) {
             for (String key : row.keySet()) {
                 if (baseRow.containsKey(key)) {
@@ -1175,7 +1146,8 @@ public class BaseDataUtil {
             if (file.isDirectory() && file.listFiles() != null && file.listFiles().length == 0) {
                 continue;
             }
-            if (file.getName().contains("svn") || file.getName().contains("git")
+            if (file.getName().contains("svn")
+                    || file.getName().contains("git")
                     || file.getName().contains("DS_Store")) {
                 continue;
             }
@@ -1212,23 +1184,23 @@ public class BaseDataUtil {
      * @return
      * @throws Exception
      */
-    public static Object getVirtualObjectFromBase(Class<?> type, ClassLoader classLoader,
-                                                  String ObjectBaseName, String desc,
-                                                  String rootPath) throws Exception {
+    public static Object getVirtualObjectFromBase(
+            Class<?> type, ClassLoader classLoader, String ObjectBaseName, String desc, String rootPath)
+            throws Exception {
         if (StringUtils.isBlank(rootPath)) {
             throw new TestifyException("csvPath为空，构建" + ObjectBaseName + "失败");
         }
 
         ObjectProcessor processor;
 
-        //带范型的情况，模版文件夹带有范型的名字
+        // 带范型的情况，模版文件夹带有范型的名字
 
         if (type.equals(VirtualEventObject.class)) {
 
-            processor = new ObjectProcessor(classLoader, rootPath
-                    + TestifyPathConstants.OBJECT_DATA_PATH
-                    + ObjectBaseName + "/" + ObjectBaseName
-                    + ".csv", desc);
+            processor = new ObjectProcessor(
+                    classLoader,
+                    rootPath + TestifyPathConstants.OBJECT_DATA_PATH + ObjectBaseName + "/" + ObjectBaseName + ".csv",
+                    desc);
             Object obj = processor.genObject();
             VirtualEventObject virtualEventObject = new VirtualEventObject();
             VirtualObject vir = new VirtualObject(obj);
@@ -1236,24 +1208,23 @@ public class BaseDataUtil {
             virtualEventObject.setEventObject(vir);
             return virtualEventObject;
         } else if (type.equals(VirtualObject.class)) {
-            processor = new ObjectProcessor(classLoader, rootPath
-                    + TestifyPathConstants.OBJECT_DATA_PATH
-                    + ObjectBaseName + "/" + ObjectBaseName
-                    + ".csv", desc);
+            processor = new ObjectProcessor(
+                    classLoader,
+                    rootPath + TestifyPathConstants.OBJECT_DATA_PATH + ObjectBaseName + "/" + ObjectBaseName + ".csv",
+                    desc);
             Object obj = processor.genObject();
 
             VirtualObject virtualObject = new VirtualObject(obj, obj.getClass().getCanonicalName());
             virtualObject.setFlags(processor.getFlags());
             return virtualObject;
         } else {
-            processor = new ObjectProcessor(classLoader, rootPath
-                    + TestifyPathConstants.OBJECT_DATA_PATH
-                    + ObjectBaseName + "/" + ObjectBaseName
-                    + ".csv", desc);
+            processor = new ObjectProcessor(
+                    classLoader,
+                    rootPath + TestifyPathConstants.OBJECT_DATA_PATH + ObjectBaseName + "/" + ObjectBaseName + ".csv",
+                    desc);
             Object obj = processor.genObject();
             return obj;
         }
-
     }
 
     /**
@@ -1266,27 +1237,26 @@ public class BaseDataUtil {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static Object getObjectFromBase(ClassLoader classLoader, String ObjectBaseName,
-                                           String desc, String rootPath, String encoding) {
+    public static Object getObjectFromBase(
+            ClassLoader classLoader, String ObjectBaseName, String desc, String rootPath, String encoding) {
         if (StringUtils.isBlank(rootPath)) {
             throw new TestifyException("csvPath为空，构建" + ObjectBaseName + "失败");
         }
         Object obj = null;
         try {
 
-            String csvPath = rootPath + TestifyPathConstants.OBJECT_DATA_PATH + ObjectBaseName + "/"
-                    + ObjectBaseName + ".csv";
+            String csvPath =
+                    rootPath + TestifyPathConstants.OBJECT_DATA_PATH + ObjectBaseName + "/" + ObjectBaseName + ".csv";
             ObjectProcessor processor = new ObjectProcessor(classLoader, csvPath, desc, encoding);
 
-            //VirtualMap的情况单独处理，加载所有key－value
+            // VirtualMap的情况单独处理，加载所有key－value
             if (processor.getClassName().equals("com.github.loadup.components.test.model.VirtualMap")) {
 
                 Map<Object, Object> map = new HashMap<Object, Object>();
                 List<String> descList = loadDesc(csvPath);
 
                 for (String descTemp : descList) {
-                    ObjectProcessor processorTemp = new ObjectProcessor(classLoader, csvPath,
-                            descTemp, encoding);
+                    ObjectProcessor processorTemp = new ObjectProcessor(classLoader, csvPath, descTemp, encoding);
                     Map<Object, Object> descMap = (Map<Object, Object>) processorTemp.genObject();
                     map.putAll(descMap);
                 }
@@ -1313,10 +1283,8 @@ public class BaseDataUtil {
      * @param rootPath       base文件上层resource目录
      * @return
      */
-    public static Map<String, Map<String, String>> getObjBaseFlags(ClassLoader classLoader,
-                                                                   String ObjectBaseName,
-                                                                   String desc, String rootPath,
-                                                                   String encoding) {
+    public static Map<String, Map<String, String>> getObjBaseFlags(
+            ClassLoader classLoader, String ObjectBaseName, String desc, String rootPath, String encoding) {
 
         if (StringUtils.isBlank(rootPath)) {
             throw new TestifyException("csvPath为空，构建" + ObjectBaseName + "失败");
@@ -1325,11 +1293,11 @@ public class BaseDataUtil {
         Map<String, Map<String, String>> flagMap = new LinkedHashMap<String, Map<String, String>>();
         try {
 
-            String csvPath = rootPath + TestifyPathConstants.OBJECT_DATA_PATH + ObjectBaseName + "/"
-                    + ObjectBaseName + ".csv";
+            String csvPath =
+                    rootPath + TestifyPathConstants.OBJECT_DATA_PATH + ObjectBaseName + "/" + ObjectBaseName + ".csv";
             ObjectProcessor processor = new ObjectProcessor(classLoader, csvPath, desc, encoding);
 
-            //执行下模板执行，里面有获取flag变量
+            // 执行下模板执行，里面有获取flag变量
             processor.genObject();
 
             flagMap = processor.getFlags();
@@ -1340,7 +1308,6 @@ public class BaseDataUtil {
         }
 
         return flagMap;
-
     }
 
     /**
@@ -1353,27 +1320,26 @@ public class BaseDataUtil {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static Object getObjectFromBase(ClassLoader classLoader, String ObjectBaseName,
-                                           String desc, String rootPath) {
+    public static Object getObjectFromBase(
+            ClassLoader classLoader, String ObjectBaseName, String desc, String rootPath) {
         if (StringUtils.isBlank(rootPath)) {
             throw new TestifyException("csvPath为空，构建" + ObjectBaseName + "失败");
         }
         Object obj = null;
         try {
 
-            String csvPath = rootPath + TestifyPathConstants.OBJECT_DATA_PATH + ObjectBaseName + "/"
-                    + ObjectBaseName + ".csv";
+            String csvPath =
+                    rootPath + TestifyPathConstants.OBJECT_DATA_PATH + ObjectBaseName + "/" + ObjectBaseName + ".csv";
             ObjectProcessor processor = new ObjectProcessor(classLoader, csvPath, desc);
 
-            //VirtualMap的情况单独处理，加载所有key－value
+            // VirtualMap的情况单独处理，加载所有key－value
             if (processor.getClassName().equals("com.github.loadup.components.test.model.VirtualMap")) {
 
                 Map<Object, Object> map = new HashMap<Object, Object>();
                 List<String> descList = loadDesc(csvPath);
 
                 for (String descTemp : descList) {
-                    ObjectProcessor processorTemp = new ObjectProcessor(classLoader, csvPath,
-                            descTemp);
+                    ObjectProcessor processorTemp = new ObjectProcessor(classLoader, csvPath, descTemp);
                     Map<Object, Object> descMap = (Map<Object, Object>) processorTemp.genObject();
                     map.putAll(descMap);
                 }
@@ -1400,12 +1366,12 @@ public class BaseDataUtil {
      * @param encode       编码方式
      * @return base文件上层resource目录
      */
-    public static VirtualTable getVirtualTableFromBase(String dataBaseName, String desc,
-                                                       String rootPath, String encode) {
+    public static VirtualTable getVirtualTableFromBase(
+            String dataBaseName, String desc, String rootPath, String encode) {
         VirtualTable virtualTable = new VirtualTable(dataBaseName, dataBaseName);
         String targetCSVPath = rootPath + TestifyPathConstants.DB_DATA_PATH + dataBaseName + ".csv";
 
-        //List tableList = CSVHelper.readFromCsv(targetCSVPath);
+        // List tableList = CSVHelper.readFromCsv(targetCSVPath);
         List<?> tableList = CSVHelper.readFromCsv(new File(targetCSVPath), encode);
         if (tableList == null || tableList.size() == 0) {
             return null;
@@ -1465,7 +1431,6 @@ public class BaseDataUtil {
         virtualTable.addRow(tableRowData);
         virtualTable.setFlags(flags);
         return virtualTable;
-
     }
 
     /**
@@ -1474,15 +1439,14 @@ public class BaseDataUtil {
      * @param prepareData 入参为默认初始化模板类型
      * @return 返回一组PrepareData
      */
-    public static Map<String, PrepareData> generateAllPrepareData(GenerateCondition condition,
-                                                                  PrepareData prepareData,
-                                                                  ClassLoader clsLoader) {
+    public static Map<String, PrepareData> generateAllPrepareData(
+            GenerateCondition condition, PrepareData prepareData, ClassLoader clsLoader) {
 
         // TODO: 分为几步完成
         // 1. 从数据库加载填充默认模板PrepareData对象
         // loadPrepareDataModel(prepareData);
 
-        //获取当前系统的classloader
+        // 获取当前系统的classloader
         Thread.currentThread().setContextClassLoader(clsLoader);
 
         // 2. 根据DB中的用例规则生成全量数据
@@ -1491,7 +1455,7 @@ public class BaseDataUtil {
         tmp = assembleManager.assemblyAllData(condition, prepareData);
 
         // 3. 根据关联关系修正结果
-        //modifyParedata(tmp);
+        // modifyParedata(tmp);
 
         return tmp;
     }
@@ -1501,12 +1465,11 @@ public class BaseDataUtil {
      *
      * @param prepareData
      */
-    public static PrepareData generatePrepareData(String system, PrepareData prepareData,
-                                                  ClassLoader clsLoader) {
+    public static PrepareData generatePrepareData(String system, PrepareData prepareData, ClassLoader clsLoader) {
         // TODO: 分为几步完成
         // 1. 加载模板数据，设定随机生成值标示 TODO://
 
-        //获取当前系统的classloader
+        // 获取当前系统的classloader
         Thread.currentThread().setContextClassLoader(clsLoader);
 
         // 2. 随机生成数据修正
@@ -1524,14 +1487,13 @@ public class BaseDataUtil {
      * @param csvModelRootPath     测试bundle下resources/model/objModel/ 绝对目录
      * @param commonFacadeRootPath common－facade层的绝对路径
      */
-    public static Result generateServicesObjModel(String csvModelRootPath,
-                                                  String commonFacadeRootPath, String apiPackage) {
+    public static Result generateServicesObjModel(
+            String csvModelRootPath, String commonFacadeRootPath, String apiPackage) {
         Result result = new Result();
 
         try {
             // 1.获取包下的 .java文件
-            String targetApiPath = commonFacadeRootPath + "/src/main/java/"
-                    + apiPackage.replace(".", "/");
+            String targetApiPath = commonFacadeRootPath + "/src/main/java/" + apiPackage.replace(".", "/");
             File pakagefile = new File(targetApiPath);
 
             File[] files = pakagefile.listFiles();
@@ -1544,11 +1506,14 @@ public class BaseDataUtil {
                 if (StringUtils.isBlank(className)) {
                     continue;
                 }
-                //构造类加载器
+                // 构造类加载器
                 try {
 
-                    String genModelMsg = ReflectUtil.genModelForCls(csvModelRootPath, ReflectUtil
-                                    .getClassForName(apiPackage + "." + className).getClass().getClassLoader(),
+                    String genModelMsg = ReflectUtil.genModelForCls(
+                            csvModelRootPath,
+                            ReflectUtil.getClassForName(apiPackage + "." + className)
+                                    .getClass()
+                                    .getClassLoader(),
                             apiPackage + "." + className);
                     comment = comment + genModelMsg;
                     log.info("服务" + className + "生成对象模版成功!");
@@ -1575,15 +1540,14 @@ public class BaseDataUtil {
      * @param csvModelRootPath     测试bundle下resources/model/objModel/ 绝对目录
      * @param commonFacadeRootPath common－facade层的绝对路径
      */
-    public static Result generateServicesObjModel(ClassLoader classloader, String csvModelRootPath,
-                                                  String commonFacadeRootPath, String apiPackage) {
+    public static Result generateServicesObjModel(
+            ClassLoader classloader, String csvModelRootPath, String commonFacadeRootPath, String apiPackage) {
         Result result = new Result();
 
         try {
 
             // 1.获取包下的 .java文件
-            String targetApiPath = commonFacadeRootPath + "/src/main/java/"
-                    + apiPackage.replace(".", "/");
+            String targetApiPath = commonFacadeRootPath + "/src/main/java/" + apiPackage.replace(".", "/");
             File pakagefile = new File(targetApiPath);
 
             File[] files = pakagefile.listFiles();
@@ -1597,8 +1561,8 @@ public class BaseDataUtil {
                     continue;
                 }
                 try {
-                    String genModelMsg = ReflectUtil.genModelForCls(csvModelRootPath, classloader,
-                            apiPackage + "." + className);
+                    String genModelMsg =
+                            ReflectUtil.genModelForCls(csvModelRootPath, classloader, apiPackage + "." + className);
                     comment = comment + genModelMsg;
                     log.info("服务" + className + "生成对象模版完毕！");
                 } catch (Throwable e) {
@@ -1617,14 +1581,13 @@ public class BaseDataUtil {
         return result;
     }
 
-    public static Result generateServiceObjModel(String csvModelRootPath, ClassLoader classloader,
-                                                 String classFullName) {
+    public static Result generateServiceObjModel(
+            String csvModelRootPath, ClassLoader classloader, String classFullName) {
 
         Result result = new Result();
         try {
             // 根据java文件获取入参、出参对象，并对复杂对象生成模版
-            String genModelMsg = ReflectUtil.genModelForCls(csvModelRootPath, classloader,
-                    classFullName);
+            String genModelMsg = ReflectUtil.genModelForCls(csvModelRootPath, classloader, classFullName);
             result.setComment(genModelMsg);
             result.setSuccess(true);
         } catch (Exception e) {
@@ -1650,8 +1613,7 @@ public class BaseDataUtil {
      * @param clsLoader
      * @param fullClassName
      */
-    public static Result generateSingleObjModel(String csvModelRootPath, ClassLoader clsLoader,
-                                                String fullClassName) {
+    public static Result generateSingleObjModel(String csvModelRootPath, ClassLoader clsLoader, String fullClassName) {
         Result result = new Result();
         try {
             result.setSuccess(true);
@@ -1672,14 +1634,17 @@ public class BaseDataUtil {
      * @param fullClassName
      * @param isResultOnly
      */
-    public static Result generateSingleObjModel(String csvModelRootPath, ClassLoader clsLoader,
-                                                String fullClassName, String methodName,
-                                                boolean isResultOnly) {
+    public static Result generateSingleObjModel(
+            String csvModelRootPath,
+            ClassLoader clsLoader,
+            String fullClassName,
+            String methodName,
+            boolean isResultOnly) {
         Result result = new Result();
         try {
             result.setSuccess(true);
-            String resMsg = ReflectUtil.genModelForSpeciMethod(csvModelRootPath, clsLoader,
-                    fullClassName, methodName, isResultOnly);
+            String resMsg = ReflectUtil.genModelForSpeciMethod(
+                    csvModelRootPath, clsLoader, fullClassName, methodName, isResultOnly);
             result.setComment(resMsg);
         } catch (Exception e) {
             result.setComment("生成模版发生未知异常！" + e);
@@ -1699,8 +1664,7 @@ public class BaseDataUtil {
         Result result = new Result();
         result.setSuccess(true);
 
-        File mockModel = FileUtil.getTestResourceFileByRootPath(StringUtils.substringBeforeLast(
-                csvModelRootPath, "/"));
+        File mockModel = FileUtil.getTestResourceFileByRootPath(StringUtils.substringBeforeLast(csvModelRootPath, "/"));
         if (!mockModel.exists()) {
             mockModel.mkdir();
         }
@@ -1708,7 +1672,7 @@ public class BaseDataUtil {
         try {
             CSVHelper.genObjCSVFileWithData(actual, csvModelRootPath);
 
-            //String resMsg = ReflectUtil.genModelForCls(csvModelRootPath, clsLoader, fullClassName);
+            // String resMsg = ReflectUtil.genModelForCls(csvModelRootPath, clsLoader, fullClassName);
 
         } catch (Throwable e) {
             result.setSuccess(false);
@@ -1727,8 +1691,8 @@ public class BaseDataUtil {
      * @param dbType
      * @return
      */
-    public static boolean genDBCSVFile(String csvModelRootPath, Connection conn, String table,
-                                       String dataSql, String dbType, String encode) {
+    public static boolean genDBCSVFile(
+            String csvModelRootPath, Connection conn, String table, String dataSql, String dbType, String encode) {
         try {
             DbTableModelUtil.genDBCSVFile(csvModelRootPath, conn, table, dataSql, dbType, encode);
             log.info(table + "生成数据模版成功！");
@@ -1748,11 +1712,10 @@ public class BaseDataUtil {
      * @param encode
      * @return
      */
-    public static boolean genDOCSVFile(String csvModelRootPath, ClassLoader clsLoader,
-                                       String fullClassName, String encode) {
+    public static boolean genDOCSVFile(
+            String csvModelRootPath, ClassLoader clsLoader, String fullClassName, String encode) {
         try {
-            DbTableModelUtil.genDOCSVFile(csvModelRootPath, clsLoader,
-                    fullClassName, encode);
+            DbTableModelUtil.genDOCSVFile(csvModelRootPath, clsLoader, fullClassName, encode);
             log.info(fullClassName + "生成数据模版成功！");
             return true;
         } catch (Throwable e) {
@@ -1771,9 +1734,8 @@ public class BaseDataUtil {
 
             if (yamlFile.exists()) {
                 try {
-                    //String str = FileUtils.readFileToString(yamlFile, encode);
-                    Map<String, PrepareData> prepareDataMap = loadFromYaml(yamlFile, clsLoader,
-                            encode);
+                    // String str = FileUtils.readFileToString(yamlFile, encode);
+                    Map<String, PrepareData> prepareDataMap = loadFromYaml(yamlFile, clsLoader, encode);
 
                     for (PrepareData prepareData : prepareDataMap.values()) {
                         refreshDataSet(prepareData.getDepDataSet());
@@ -1782,21 +1744,19 @@ public class BaseDataUtil {
                     storeToYaml(prepareDataMap, yamlFile, encode);
 
                 } catch (Exception e) {
-                    throw new YamlFileException("读取yaml的时候抛出异常，yaml：" + yamlFile.getAbsolutePath(),
-                            e);
+                    throw new YamlFileException("读取yaml的时候抛出异常，yaml：" + yamlFile.getAbsolutePath(), e);
                 } finally {
 
                 }
             }
         }
-
     }
 
     private static String getBasePath(File file) {
         String filePath = file.getAbsolutePath();
         String separator = File.separator;
-        int index = filePath.indexOf("src" + separator + "test" + separator + "java" + separator
-                + "com" + separator + "");
+        int index =
+                filePath.indexOf("src" + separator + "test" + separator + "java" + separator + "com" + separator + "");
         return filePath.substring(0, index);
     }
 
@@ -1818,20 +1778,19 @@ public class BaseDataUtil {
 
             String flag = "Y";
             if (table.getFlags() != null) {
-                //兼容属性名大小写
+                // 兼容属性名大小写
                 String flagL = table.getFlags().get(field.toLowerCase());
                 String flagU = table.getFlags().get(field.toUpperCase());
 
                 flag = StringUtils.isBlank(flagL) ? flagU : flagL;
-
             }
 
             actualFlags.put(field, flag);
 
-            //将原yaml的值还原
+            // 将原yaml的值还原
             for (int i = 0; i < lines; i++) {
 
-                //兼容属性名大小写
+                // 兼容属性名大小写
                 Object valueL = table.getRow(i).get(field.toLowerCase());
                 Object valueU = table.getRow(i).get(field.toUpperCase());
                 Object value = valueL == null ? valueU : valueL;
@@ -1875,8 +1834,8 @@ public class BaseDataUtil {
         return sb.toString();
     }
 
-    public static void reportUsageStatus(String appName, String methodName, TestifyActionEnum action,
-                                         String caseId, String result) {
+    public static void reportUsageStatus(
+            String appName, String methodName, TestifyActionEnum action, String caseId, String result) {
         try {
 
         } catch (Exception e) {
@@ -1900,7 +1859,9 @@ public class BaseDataUtil {
         MavenXpp3Reader reader = new MavenXpp3Reader();
         String myPom = rootPath + File.separator + "pom.xml";
         Model model = reader.read(new FileReader(myPom));
-        String groupId = model.getGroupId() != null ? model.getGroupId() : model.getParent().getGroupId();
+        String groupId = model.getGroupId() != null
+                ? model.getGroupId()
+                : model.getParent().getGroupId();
         return groupId;
     }
 
@@ -1925,7 +1886,8 @@ public class BaseDataUtil {
                 for (String line; (line = br.readLine()) != null; sb.append(System.getProperty("line.separator"))) {
                     if (line.trim().startsWith("@AutoFill")) {
                         // 定位到需要替换的行，替换overwrite的值为false
-                        sb.append(line.substring(0, line.indexOf("overwrite")) + StringUtils.replace(line.substring(line.indexOf("overwrite")), "true", "false", 1));
+                        sb.append(line.substring(0, line.indexOf("overwrite"))
+                                + StringUtils.replace(line.substring(line.indexOf("overwrite")), "true", "false", 1));
                     } else {
                         sb.append(line);
                     }
@@ -1954,11 +1916,11 @@ public class BaseDataUtil {
         }
 
         @Override
-        protected NodeTuple representJavaBeanProperty(Object javaBean, Property property,
-                                                      Object propertyValue, Tag customTag) {
+        protected NodeTuple representJavaBeanProperty(
+                Object javaBean, Property property, Object propertyValue, Tag customTag) {
             if (property.getType().equals(Currency.class)) {
 
-                //特殊处理
+                // 特殊处理
                 Node node = null;
                 if (StringUtils.isBlank(String.valueOf(propertyValue))
                         || String.valueOf(propertyValue).equals("null")) {
@@ -1968,12 +1930,11 @@ public class BaseDataUtil {
                 }
                 return new NodeTuple(representScalar(Tag.STR, property.getName()), node);
             } else if (property.getType().equals(StackTraceElement[].class)) {
-                //Return null to skip theproperty
+                // Return null to skip theproperty
                 return null;
             } else {
                 super.getPropertyUtils().setSkipMissingProperties(true);
-                return super
-                        .representJavaBeanProperty(javaBean, property, propertyValue, customTag);
+                return super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
             }
         }
     }
@@ -2004,7 +1965,6 @@ public class BaseDataUtil {
             this(Object.class, cLoader);
             yamlClassConstructors.put(NodeId.scalar, new MyScalarConstruct());
             yamlClassConstructors.put(NodeId.mapping, new MyMappingContruct());
-
         }
 
         public SelectiveConstructor(Class<? extends Object> theRoot, ClassLoader theLoader) {
@@ -2053,8 +2013,5 @@ public class BaseDataUtil {
                 return obj;
             }
         }
-
     }
-
-
 }

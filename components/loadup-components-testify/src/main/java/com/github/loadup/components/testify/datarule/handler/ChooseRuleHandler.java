@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.handler;
 
 /*-
@@ -38,14 +35,13 @@ import com.github.loadup.components.testify.datarule.RULE.ReferenceHandler;
 import com.github.loadup.components.testify.datarule.RuleObject;
 import com.github.loadup.components.testify.datarule.parser.RuleObjectParser;
 import com.github.loadup.components.testify.exception.RuleExecuteException;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.*;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 选择规则处理器。
  *
- * 
+ *
  *
  */
 public class ChooseRuleHandler implements RuleHandler<ChooseRule> {
@@ -53,7 +49,6 @@ public class ChooseRuleHandler implements RuleHandler<ChooseRule> {
     /**
      * @see RuleHandler#handle(RuleObject, ReferenceHandler)
      */
-
     @Override
     public String handle(ChooseRule rule, ReferenceHandler refHandler) {
 
@@ -79,8 +74,8 @@ public class ChooseRuleHandler implements RuleHandler<ChooseRule> {
      * @param count
      * @return
      */
-    private List<Map<String, String>> partChoose(ChooseRule rule, ReferenceHandler refHandler,
-                                                 Map<String, List<String>> fieldDatas, int count) {
+    private List<Map<String, String>> partChoose(
+            ChooseRule rule, ReferenceHandler refHandler, Map<String, List<String>> fieldDatas, int count) {
 
         List<Map<String, String>> rowDatas = new ArrayList<Map<String, String>>();
 
@@ -88,8 +83,8 @@ public class ChooseRuleHandler implements RuleHandler<ChooseRule> {
 
         // 逐行处理assemble
         for (Map<String, String> row : fieldRowDatas) {
-            List<List<Map<String, String>>> assembleDatas = handleAssembleRule(
-                    rule.getAssembleRules(), refHandler, row);
+            List<List<Map<String, String>>> assembleDatas =
+                    handleAssembleRule(rule.getAssembleRules(), refHandler, row);
 
             // 全排列然后随机取出1条做连接
             if (!assembleDatas.isEmpty()) {
@@ -116,8 +111,8 @@ public class ChooseRuleHandler implements RuleHandler<ChooseRule> {
      * @param fieldDatas
      * @return
      */
-    private List<Map<String, String>> fullChoose(ChooseRule rule, ReferenceHandler refHandler,
-                                                 Map<String, List<String>> fieldDatas) {
+    private List<Map<String, String>> fullChoose(
+            ChooseRule rule, ReferenceHandler refHandler, Map<String, List<String>> fieldDatas) {
 
         List<Map<String, String>> rowDatas = new ArrayList<Map<String, String>>();
 
@@ -127,8 +122,8 @@ public class ChooseRuleHandler implements RuleHandler<ChooseRule> {
         // 逐行处理assemble
         for (Map<String, String> row : fieldRowDatas) {
             // 计算组装值
-            List<List<Map<String, String>>> assembleDatas = handleAssembleRule(
-                    rule.getAssembleRules(), refHandler, row);
+            List<List<Map<String, String>>> assembleDatas =
+                    handleAssembleRule(rule.getAssembleRules(), refHandler, row);
 
             // 全排列组装值
             if (!assembleDatas.isEmpty()) {
@@ -152,9 +147,8 @@ public class ChooseRuleHandler implements RuleHandler<ChooseRule> {
      * @param datas
      * @return
      */
-    List<List<Map<String, String>>> handleAssembleRule(List<AssembleRule> assembleRules,
-                                                       final ReferenceHandler refHandler,
-                                                       final Map<String, String> datas) {
+    List<List<Map<String, String>>> handleAssembleRule(
+            List<AssembleRule> assembleRules, final ReferenceHandler refHandler, final Map<String, String> datas) {
         if (assembleRules == null || assembleRules.isEmpty()) {
             return Collections.emptyList();
         }
@@ -186,11 +180,9 @@ public class ChooseRuleHandler implements RuleHandler<ChooseRule> {
             }
         };
 
-        List<List<Map<String, String>>> rowDatas = new ArrayList<List<Map<String, String>>>(
-                assembleRules.size());
+        List<List<Map<String, String>>> rowDatas = new ArrayList<List<Map<String, String>>>(assembleRules.size());
         for (AssembleRule rule : assembleRules) {
-            List<Map<String, String>> assembleData = new AssembleRuleHandler().innerHandle(rule,
-                    handlerProxy);
+            List<Map<String, String>> assembleData = new AssembleRuleHandler().innerHandle(rule, handlerProxy);
             if (!assembleData.isEmpty()) {
                 rowDatas.add(assembleData);
             }
@@ -278,10 +270,8 @@ public class ChooseRuleHandler implements RuleHandler<ChooseRule> {
      * @param right
      * @return
      */
-    private List<Map<String, String>> join(List<Map<String, String>> left,
-                                           List<Map<String, String>> right) {
-        List<Map<String, String>> rows = new ArrayList<Map<String, String>>(left.size()
-                * right.size());
+    private List<Map<String, String>> join(List<Map<String, String>> left, List<Map<String, String>> right) {
+        List<Map<String, String>> rows = new ArrayList<Map<String, String>>(left.size() * right.size());
 
         for (Map<String, String> l : left) {
             for (Map<String, String> r : right) {
@@ -303,11 +293,9 @@ public class ChooseRuleHandler implements RuleHandler<ChooseRule> {
      * @param values
      * @return
      */
-    private List<Map<String, String>> join(List<Map<String, String>> left, String key,
-                                           List<String> values) {
+    private List<Map<String, String>> join(List<Map<String, String>> left, String key, List<String> values) {
 
-        List<Map<String, String>> rows = new ArrayList<Map<String, String>>(left.size()
-                * values.size());
+        List<Map<String, String>> rows = new ArrayList<Map<String, String>>(left.size() * values.size());
         for (Map<String, String> m : left) {
             for (String v : values) {
                 Map<String, String> newMap = new HashMap<String, String>();
@@ -348,7 +336,6 @@ public class ChooseRuleHandler implements RuleHandler<ChooseRule> {
         }
 
         return sItems;
-
     }
 
     /**
@@ -402,14 +389,13 @@ public class ChooseRuleHandler implements RuleHandler<ChooseRule> {
             if (ruleObject == null) {
                 String r = refHandler.getRule(field.getFieldName());
                 if (StringUtils.isEmpty(r)) {
-                    throw new RuleExecuteException("can't find field rule[field="
-                            + field.getFieldName() + "]");
+                    throw new RuleExecuteException("can't find field rule[field=" + field.getFieldName() + "]");
                 }
                 ruleObject = new RuleObjectParser(r).parse();
             }
 
-            List<String> data = RuleHandlerFactory.getBatchHandler(ruleObject.getClass())
-                    .batchHandle(ruleObject, refHandler);
+            List<String> data =
+                    RuleHandlerFactory.getBatchHandler(ruleObject.getClass()).batchHandle(ruleObject, refHandler);
 
             datas.put(field.getFieldName(), data);
         }

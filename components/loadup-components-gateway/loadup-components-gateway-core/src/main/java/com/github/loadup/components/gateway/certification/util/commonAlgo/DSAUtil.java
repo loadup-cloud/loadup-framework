@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.util.commonAlgo;
 
 /*-
@@ -26,13 +27,12 @@ package com.github.loadup.components.gateway.certification.util.commonAlgo;
  * #L%
  */
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * DSA数字签名算法
@@ -69,21 +69,19 @@ public class DSAUtil {
         signature.update(data);
         rtn = signature.sign();
         return rtn;
-
     }
 
     /**
      * 公共验签接口
      */
-    public static boolean verify(byte[] unSignedData, byte[] signedData, byte[] key,
-                                 String algorithm) throws Exception {
+    public static boolean verify(byte[] unSignedData, byte[] signedData, byte[] key, String algorithm)
+            throws Exception {
         PublicKey publicKey = recoverPublicKey(key);
         Signature signature = Signature.getInstance(algorithm);
         signature.initVerify(publicKey);
 
         signature.update(unSignedData);
         return signature.verify(signedData);
-
     }
 
     /**
@@ -110,7 +108,6 @@ public class DSAUtil {
         PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(data);
         KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGO_NAME);
         return keyFactory.generatePrivate(pkcs8EncodedKeySpec);
-
     }
 
     /**
@@ -120,7 +117,5 @@ public class DSAUtil {
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(data);
         KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGO_NAME);
         return keyFactory.generatePublic(keySpec);
-
     }
-
 }

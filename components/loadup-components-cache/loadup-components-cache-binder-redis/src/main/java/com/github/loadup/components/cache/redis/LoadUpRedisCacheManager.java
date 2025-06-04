@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.cache.redis;
 
 /*-
@@ -26,14 +27,13 @@ package com.github.loadup.components.cache.redis;
  * #L%
  */
 
+import java.time.Duration;
+import java.util.Map;
 import org.springframework.data.redis.cache.RedisCache;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.util.StringUtils;
-
-import java.time.Duration;
-import java.util.Map;
 
 public class LoadUpRedisCacheManager extends RedisCacheManager {
     private final RedisCacheConfiguration defaultConfig;

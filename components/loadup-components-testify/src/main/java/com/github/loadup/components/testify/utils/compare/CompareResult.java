@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.compare;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.components.testify.utils.compare;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -98,9 +98,7 @@ public class CompareResult {
             sb.append("key=" + compareDetail.getKey() + "\n");
             sb.append("----expect=" + compareDetail.getExpect() + "\n");
             sb.append("----actual=" + compareDetail.getActual() + "\n");
-
         }
         return sb.toString();
     }
-
 }

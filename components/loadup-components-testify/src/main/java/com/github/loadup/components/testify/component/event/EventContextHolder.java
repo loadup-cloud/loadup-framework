@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.event;
 
 /*-
@@ -47,7 +44,6 @@ public class EventContextHolder {
      * 业务消息
      */
     private static Map<String, List<Object>> bizEvent = new HashMap<String, List<Object>>();
-
 
     /**
      * 获取线程变量中持有的event内容，获取的同时清除线程变量内的值，一个线程只使用一次，避免一个线程多个测试用例同时执行时数据窜掉

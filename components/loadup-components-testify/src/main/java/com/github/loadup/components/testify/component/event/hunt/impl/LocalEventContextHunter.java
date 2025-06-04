@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.event.hunt.impl;
 
 /*-
@@ -32,10 +29,9 @@ package com.github.loadup.components.testify.component.event.hunt.impl;
 
 import com.github.loadup.components.testify.component.event.hunt.EventContextHunter;
 import com.github.loadup.components.testify.component.event.hunt.HuntResult;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Set;
 
 /**
  * @author jie.peng
@@ -54,8 +50,8 @@ public class LocalEventContextHunter implements EventContextHunter {
     @Override
     public HuntResult hunt(String topic, String eventCode, Set<String> targets) {
         HuntResult result = new HuntResult();
-        //UniformEvent uEvent = EventContextHolder.getBizEvent();
-        //若事件内容为空或者事件不为指定的事件码，则直接返回
+        // UniformEvent uEvent = EventContextHolder.getBizEvent();
+        // 若事件内容为空或者事件不为指定的事件码，则直接返回
         //        if (uEvent == null || !StringUtils.equals(uEvent.getTopic(), topic)
         //            || !StringUtils.equals(uEvent.getEventCode(), eventCode)) {
         //            return result;

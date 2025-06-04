@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.database.converter;
 
 /*-
@@ -29,7 +30,6 @@ package com.github.loadup.components.gateway.plugin.repository.database.converte
 import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.gateway.facade.model.InterfaceDto;
 import com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject.InterfaceDO;
-
 import java.util.Date;
 
 /**
@@ -52,17 +52,12 @@ public class InterfaceConvertor {
         interfaceDO.setType(interfaceDto.getType());
         interfaceDO.setStatus(interfaceDto.getStatus());
         interfaceDO.setInterfaceRequestParser(interfaceDto.getInterfaceRequestParser());
-        interfaceDO.setIntegrationRequestHeaderAssemble(
-                interfaceDto.getIntegrationRequestHeaderAssemble());
-        interfaceDO
-                .setIntegrationRequestBodyAssemble(interfaceDto.getIntegrationRequestBodyAssemble());
+        interfaceDO.setIntegrationRequestHeaderAssemble(interfaceDto.getIntegrationRequestHeaderAssemble());
+        interfaceDO.setIntegrationRequestBodyAssemble(interfaceDto.getIntegrationRequestBodyAssemble());
         interfaceDO.setIntegrationResponseParser(interfaceDto.getIntegrationResponseParser());
-        interfaceDO
-                .setInterfaceResponseHeaderAssemble(interfaceDto.getInterfaceResponseHeaderAssemble());
-        interfaceDO
-                .setInterfaceResponseBodyAssemble(interfaceDto.getInterfaceResponseBodyAssemble());
-        interfaceDO.setCommunicationProperties(
-                JsonUtil.toJSONString(interfaceDto.getCommunicationProperties()));
+        interfaceDO.setInterfaceResponseHeaderAssemble(interfaceDto.getInterfaceResponseHeaderAssemble());
+        interfaceDO.setInterfaceResponseBodyAssemble(interfaceDto.getInterfaceResponseBodyAssemble());
+        interfaceDO.setCommunicationProperties(JsonUtil.toJSONString(interfaceDto.getCommunicationProperties()));
         interfaceDO.setGmtCreate(new Date());
         interfaceDO.setGmtModified(new Date());
         return interfaceDO;
@@ -74,18 +69,13 @@ public class InterfaceConvertor {
     public static InterfaceDto do2Dto(InterfaceDO interfaceDO) {
         InterfaceDto interfaceManageDto = new InterfaceDto();
         interfaceManageDto.setTenantId(interfaceDO.getTenantId());
-        interfaceManageDto.setCommunicationProperties(
-                JsonUtil.jsonToMap(interfaceDO.getCommunicationProperties()));
-        interfaceManageDto
-                .setIntegrationRequestBodyAssemble(interfaceDO.getIntegrationRequestBodyAssemble());
-        interfaceManageDto
-                .setIntegrationRequestHeaderAssemble(interfaceDO.getIntegrationRequestHeaderAssemble());
+        interfaceManageDto.setCommunicationProperties(JsonUtil.jsonToMap(interfaceDO.getCommunicationProperties()));
+        interfaceManageDto.setIntegrationRequestBodyAssemble(interfaceDO.getIntegrationRequestBodyAssemble());
+        interfaceManageDto.setIntegrationRequestHeaderAssemble(interfaceDO.getIntegrationRequestHeaderAssemble());
         interfaceManageDto.setIntegrationResponseParser(interfaceDO.getIntegrationResponseParser());
         interfaceManageDto.setInterfaceRequestParser(interfaceDO.getInterfaceRequestParser());
-        interfaceManageDto
-                .setInterfaceResponseBodyAssemble(interfaceDO.getInterfaceResponseBodyAssemble());
-        interfaceManageDto
-                .setInterfaceResponseHeaderAssemble(interfaceDO.getInterfaceResponseHeaderAssemble());
+        interfaceManageDto.setInterfaceResponseBodyAssemble(interfaceDO.getInterfaceResponseBodyAssemble());
+        interfaceManageDto.setInterfaceResponseHeaderAssemble(interfaceDO.getInterfaceResponseHeaderAssemble());
         interfaceManageDto.setInterfaceName(interfaceDO.getInterfaceName());
         interfaceManageDto.setUrl(interfaceDO.getUrl());
         interfaceManageDto.setIntegrationUrl(interfaceDO.getIntegrationUrl());
@@ -96,5 +86,4 @@ public class InterfaceConvertor {
         interfaceManageDto.setInterfaceId(interfaceDO.getInterfaceId());
         return interfaceManageDto;
     }
-
 }

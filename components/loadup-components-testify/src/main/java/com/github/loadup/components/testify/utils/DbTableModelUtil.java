@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils;
 
 /*-
@@ -36,12 +37,6 @@ import com.github.loadup.components.testify.util.FileOperateUtils;
 import com.github.loadup.components.testify.util.FileUtil;
 import com.github.loadup.components.testify.util.FullTableAnalysis;
 import com.opencsv.CSVWriter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.jdbc.core.JdbcTemplate;
-
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -51,13 +46,17 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.*;
+import javax.sql.DataSource;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * 数据模版生成工具
  */
 @Slf4j
 public class DbTableModelUtil {
-
 
     /**
      * 查询系统所有的业务表名
@@ -104,17 +103,16 @@ public class DbTableModelUtil {
             tableSet.addAll(FullTableAnalysis.getFullTableByDalConfig(dalConfigXml));
         }
 
-        //3. 加载数据源bean
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-                "config/acts.xml");
+        // 3. 加载数据源bean
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("config/acts.xml");
         applicationContext.refresh();
 
-        //4. 获取db连接并执行表结构查询
+        // 4. 获取db连接并执行表结构查询
         Connection conn = null;
         try {
 
-            DataAccessConfigManager dataAccessConfigManager = (DataAccessConfigManager) applicationContext
-                    .getBean("dataAccessConfigManager");
+            DataAccessConfigManager dataAccessConfigManager =
+                    (DataAccessConfigManager) applicationContext.getBean("dataAccessConfigManager");
 
             for (String jdbc : dataAccessConfigManager.dataSourceMap.keySet()) {
                 if (!jdbc.contains("direct")) {
@@ -140,28 +138,25 @@ public class DbTableModelUtil {
      */
     public static void generateSingleTableModel(String table, String dbType) {
 
-        //1. 加载数据源bean
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-                "config/acts.xml");
+        // 1. 加载数据源bean
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("config/acts.xml");
         applicationContext.refresh();
 
-        //2. 获取db连接并执行表结构查询
+        // 2. 获取db连接并执行表结构查询
         Connection conn = null;
         try {
-            Map<String, JdbcTemplate> jdbcMap = ((DBDatasProcessor) applicationContext
-                    .getBean("dbDatasProcessor")).getJdbcTemplateMap();
+            Map<String, JdbcTemplate> jdbcMap =
+                    ((DBDatasProcessor) applicationContext.getBean("dbDatasProcessor")).getJdbcTemplateMap();
             for (String jdbc : jdbcMap.keySet()) {
 
                 conn = jdbcMap.get(jdbc).getDataSource().getConnection();
 
                 genDBCSVFile(conn, table, dbType);
-
             }
 
         } catch (Exception e) {
             TestifyLogUtil.fail(log, "Exception obtaining DB connection", e);
         }
-
     }
 
     public static void genDBCSVFile(Connection conn, String table, String dbType) {
@@ -182,24 +177,60 @@ public class DbTableModelUtil {
         }
 
         if (StringUtils.equals(dbType, "ORACLE")) {
-            String sqlOracle = "SELECT A.COLUMN_NAME, DATA_TYPE||DECODE(DATA_TYPE,'DATE','','CLOB','','BLOB','','BFILE','','FLOAT','','LONG RAW','','LONG','','RAW','(' || TO_CHAR(DATA_LENGTH) || ')', (DECODE(SIGN(INSTR(DATA_TYPE, 'CHAR')),1, '(' || TO_CHAR(DATA_LENGTH) || ')',(DECODE(SUBSTR(DATA_TYPE, 1, 9), 'TIMESTAMP', '', (DECODE(NVL(DATA_PRECISION, -1), -1, '',(DECODE(NVL(DATA_SCALE, 0), 0, '(' || TO_CHAR(DATA_PRECISION) || ')', '(' || TO_CHAR(DATA_PRECISION) || ',' || TO_CHAR(DATA_SCALE) || ')'))))))))) , A.NULLABLE, A.DATA_DEFAULT , B.COMMENTS FROM ALL_TAB_COLUMNS A, ALL_COL_COMMENTS B WHERE B.TABLE_NAME=A.TABLE_NAME AND A.OWNER=B.OWNER AND A.COLUMN_NAME=B.COLUMN_NAME AND A.TABLE_NAME =UPPER('"
-                    + table + "') ORDER BY COLUMN_ID";
+            String sqlOracle = "SELECT A.COLUMN_NAME,"
+                    + " DATA_TYPE||DECODE(DATA_TYPE,'DATE','','CLOB','','BLOB','','BFILE','','FLOAT','','LONG"
+                    + " RAW','','LONG','','RAW','(' || TO_CHAR(DATA_LENGTH) || ')',"
+                    + " (DECODE(SIGN(INSTR(DATA_TYPE, 'CHAR')),1, '(' || TO_CHAR(DATA_LENGTH)"
+                    + " || ')',(DECODE(SUBSTR(DATA_TYPE, 1, 9), 'TIMESTAMP', '',"
+                    + " (DECODE(NVL(DATA_PRECISION, -1), -1, '',(DECODE(NVL(DATA_SCALE, 0), 0,"
+                    + " '(' || TO_CHAR(DATA_PRECISION) || ')', '(' || TO_CHAR(DATA_PRECISION)"
+                    + " || ',' || TO_CHAR(DATA_SCALE) || ')'))))))))) , A.NULLABLE,"
+                    + " A.DATA_DEFAULT , B.COMMENTS FROM ALL_TAB_COLUMNS A, ALL_COL_COMMENTS B"
+                    + " WHERE B.TABLE_NAME=A.TABLE_NAME AND A.OWNER=B.OWNER AND"
+                    + " A.COLUMN_NAME=B.COLUMN_NAME AND A.TABLE_NAME =UPPER('"
+                    + table
+                    + "') ORDER BY COLUMN_ID";
             result = executeQuerySql(conn, sqlOracle);
             if (result.size() == 0) {
-                sqlOracle = "SELECT A.COLUMN_NAME, DATA_TYPE||DECODE(DATA_TYPE,'DATE','','CLOB','','BLOB','','BFILE','','FLOAT','','LONG RAW','','LONG','','RAW','(' || TO_CHAR(DATA_LENGTH) || ')', (DECODE(SIGN(INSTR(DATA_TYPE, 'CHAR')),1, '(' || TO_CHAR(DATA_LENGTH) || ')',(DECODE(SUBSTR(DATA_TYPE, 1, 9), 'TIMESTAMP', '', (DECODE(NVL(DATA_PRECISION, -1), -1, '',(DECODE(NVL(DATA_SCALE, 0), 0, '(' || TO_CHAR(DATA_PRECISION) || ')', '(' || TO_CHAR(DATA_PRECISION) || ',' || TO_CHAR(DATA_SCALE) || ')'))))))))) , A.NULLABLE, A.DATA_DEFAULT , B.COMMENTS FROM ALL_TAB_COLUMNS A, ALL_COL_COMMENTS B WHERE B.TABLE_NAME=A.TABLE_NAME AND A.OWNER=B.OWNER AND A.COLUMN_NAME=B.COLUMN_NAME AND A.TABLE_NAME =UPPER('"
-                        + table + "_00" + "') ORDER BY COLUMN_ID";
+                sqlOracle = "SELECT A.COLUMN_NAME,"
+                        + " DATA_TYPE||DECODE(DATA_TYPE,'DATE','','CLOB','','BLOB','','BFILE','','FLOAT','','LONG"
+                        + " RAW','','LONG','','RAW','(' || TO_CHAR(DATA_LENGTH) || ')',"
+                        + " (DECODE(SIGN(INSTR(DATA_TYPE, 'CHAR')),1, '(' ||"
+                        + " TO_CHAR(DATA_LENGTH) || ')',(DECODE(SUBSTR(DATA_TYPE, 1, 9),"
+                        + " 'TIMESTAMP', '', (DECODE(NVL(DATA_PRECISION, -1), -1,"
+                        + " '',(DECODE(NVL(DATA_SCALE, 0), 0, '(' || TO_CHAR(DATA_PRECISION) ||"
+                        + " ')', '(' || TO_CHAR(DATA_PRECISION) || ',' || TO_CHAR(DATA_SCALE)"
+                        + " || ')'))))))))) , A.NULLABLE, A.DATA_DEFAULT , B.COMMENTS FROM"
+                        + " ALL_TAB_COLUMNS A, ALL_COL_COMMENTS B WHERE"
+                        + " B.TABLE_NAME=A.TABLE_NAME AND A.OWNER=B.OWNER AND"
+                        + " A.COLUMN_NAME=B.COLUMN_NAME AND A.TABLE_NAME =UPPER('"
+                        + table
+                        + "_00"
+                        + "') ORDER BY COLUMN_ID";
                 result = executeQuerySql(conn, sqlOracle);
             }
 
             if (result.size() == 0) {
-                sqlOracle = "SELECT A.COLUMN_NAME, DATA_TYPE||DECODE(DATA_TYPE,'DATE','','CLOB','','BLOB','','BFILE','','FLOAT','','LONG RAW','','LONG','','RAW','(' || TO_CHAR(DATA_LENGTH) || ')', (DECODE(SIGN(INSTR(DATA_TYPE, 'CHAR')),1, '(' || TO_CHAR(DATA_LENGTH) || ')',(DECODE(SUBSTR(DATA_TYPE, 1, 9), 'TIMESTAMP', '', (DECODE(NVL(DATA_PRECISION, -1), -1, '',(DECODE(NVL(DATA_SCALE, 0), 0, '(' || TO_CHAR(DATA_PRECISION) || ')', '(' || TO_CHAR(DATA_PRECISION) || ',' || TO_CHAR(DATA_SCALE) || ')'))))))))) , A.NULLABLE, A.DATA_DEFAULT , B.COMMENTS FROM ALL_TAB_COLUMNS A, ALL_COL_COMMENTS B WHERE B.TABLE_NAME=A.TABLE_NAME AND A.OWNER=B.OWNER AND A.COLUMN_NAME=B.COLUMN_NAME AND A.TABLE_NAME =UPPER('"
-                        + table + "_000" + "') ORDER BY COLUMN_ID";
+                sqlOracle = "SELECT A.COLUMN_NAME,"
+                        + " DATA_TYPE||DECODE(DATA_TYPE,'DATE','','CLOB','','BLOB','','BFILE','','FLOAT','','LONG"
+                        + " RAW','','LONG','','RAW','(' || TO_CHAR(DATA_LENGTH) || ')',"
+                        + " (DECODE(SIGN(INSTR(DATA_TYPE, 'CHAR')),1, '(' ||"
+                        + " TO_CHAR(DATA_LENGTH) || ')',(DECODE(SUBSTR(DATA_TYPE, 1, 9),"
+                        + " 'TIMESTAMP', '', (DECODE(NVL(DATA_PRECISION, -1), -1,"
+                        + " '',(DECODE(NVL(DATA_SCALE, 0), 0, '(' || TO_CHAR(DATA_PRECISION) ||"
+                        + " ')', '(' || TO_CHAR(DATA_PRECISION) || ',' || TO_CHAR(DATA_SCALE)"
+                        + " || ')'))))))))) , A.NULLABLE, A.DATA_DEFAULT , B.COMMENTS FROM"
+                        + " ALL_TAB_COLUMNS A, ALL_COL_COMMENTS B WHERE"
+                        + " B.TABLE_NAME=A.TABLE_NAME AND A.OWNER=B.OWNER AND"
+                        + " A.COLUMN_NAME=B.COLUMN_NAME AND A.TABLE_NAME =UPPER('"
+                        + table
+                        + "_000"
+                        + "') ORDER BY COLUMN_ID";
                 result = executeQuerySql(conn, sqlOracle);
             }
         }
 
         genDBCSVFile(TestifyPathConstants.DB_DATA_PATH + table + ".csv", result);
-
     }
 
     public static void genDBCSVFile(String csvPath, List<Map<String, Object>> map) {
@@ -212,7 +243,7 @@ public class DbTableModelUtil {
         }
 
         List<String[]> outputValues = new ArrayList<String[]>();
-        //组装CSV文件第一行，标题行
+        // 组装CSV文件第一行，标题行
         List<String> header = new ArrayList<String>();
         header.add(CSVColEnum.COLUMN.getCode());
         header.add(CSVColEnum.COMMENT.getCode());
@@ -225,10 +256,10 @@ public class DbTableModelUtil {
             List<String> value = new ArrayList<String>();
             String columnName = null;
             if (!(childMap.get("field") == null)) {
-                //ob或mysql
+                // ob或mysql
                 columnName = childMap.get("field").toString();
             } else {
-                //oracle
+                // oracle
                 columnName = childMap.get("COLUMN_NAME").toString();
             }
 
@@ -236,8 +267,7 @@ public class DbTableModelUtil {
             String columnType = "";
             String flag;
             if (childMap.get("key") != null) {
-                boolean primaryFlag = Integer.valueOf(childMap.get("key").toString()) > 0 ? true
-                        : false;
+                boolean primaryFlag = Integer.valueOf(childMap.get("key").toString()) > 0 ? true : false;
                 comment = childMap.get("comment").toString();
                 columnType = childMap.get("type").toString();
 
@@ -249,35 +279,31 @@ public class DbTableModelUtil {
                 //                    flag = "Y";
             }
 
-            //默认都校验
+            // 默认都校验
             flag = "Y";
 
             value.add(columnName);
             value.add(comment);
             value.add(columnType);
             value.add(flag);
-            if (flag.equals("D"))
-                value.add("today");
-            else if (columnName.equals("currency"))
-                value.add("156");
-            else
-                value.add("");
+            if (flag.equals("D")) value.add("today");
+            else if (columnName.equals("currency")) value.add("156");
+            else value.add("");
             outputValues.add(value.toArray(new String[value.size()]));
-
         }
         writeToCsv(file, outputValues);
     }
 
     public static void writeToCsv(File file, List<String[]> outputValues) {
 
-        //初始化写入文件
+        // 初始化写入文件
         OutputStream outputStream = null;
         try {
             outputStream = new FileOutputStream(file);
         } catch (Exception e) {
-            //ActsLogUtil.fail(LOG, "初始化写入文件【" + file.getName() + "】失败", e);
+            // ActsLogUtil.fail(LOG, "初始化写入文件【" + file.getName() + "】失败", e);
         }
-        //将生成内容写入CSV文件
+        // 将生成内容写入CSV文件
         try {
             OutputStreamWriter osw = null;
             osw = new OutputStreamWriter(outputStream);

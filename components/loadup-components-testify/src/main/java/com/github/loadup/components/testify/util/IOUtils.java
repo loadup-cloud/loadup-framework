@@ -1,19 +1,4 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -98,26 +83,32 @@ public class IOUtils {
      * The Unix directory separator character.
      */
     public static final char DIR_SEPARATOR_UNIX = '/';
+
     /**
      * The Windows directory separator character.
      */
     public static final char DIR_SEPARATOR_WINDOWS = '\\';
+
     /**
      * The system directory separator character.
      */
     public static final char DIR_SEPARATOR = File.separatorChar;
+
     /**
      * The Unix line separator string.
      */
     public static final String LINE_SEPARATOR_UNIX = "\n";
+
     /**
      * The Windows line separator string.
      */
     public static final String LINE_SEPARATOR_WINDOWS = "\r\n";
+
     /**
      * The system line separator string.
      */
     public static final String LINE_SEPARATOR;
+
     /**
      * The default buffer size to use.
      */
@@ -138,7 +129,7 @@ public class IOUtils {
         super();
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Unconditionally close an <code>Reader</code>.
@@ -230,7 +221,7 @@ public class IOUtils {
     }
 
     // read char[]
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Get the contents of an <code>InputStream</code> as a character array
@@ -293,7 +284,7 @@ public class IOUtils {
     }
 
     // read toString
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Get the contents of an <code>InputStream</code> as a String
@@ -391,7 +382,7 @@ public class IOUtils {
     }
 
     // readLines
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Get the contents of an <code>InputStream</code> as a list of Strings,
@@ -461,7 +452,7 @@ public class IOUtils {
         return list;
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Convert the specified string to an input stream, encoded as bytes
@@ -495,7 +486,7 @@ public class IOUtils {
     }
 
     // write byte[]
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Writes bytes from a <code>byte[]</code> to an <code>OutputStream</code>.
@@ -560,7 +551,7 @@ public class IOUtils {
     }
 
     // write char[]
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Writes chars from a <code>char[]</code> to a <code>Writer</code>
@@ -628,7 +619,7 @@ public class IOUtils {
     }
 
     // write String
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Writes chars from a <code>String</code> to a <code>Writer</code>.
@@ -691,7 +682,7 @@ public class IOUtils {
     }
 
     // write StringBuffer
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Writes chars from a <code>StringBuffer</code> to a <code>Writer</code>.
@@ -743,8 +734,7 @@ public class IOUtils {
      * @throws IOException          if an I/O error occurs
      * @since Commons IO 1.1
      */
-    public static void write(StringBuffer data, OutputStream output, String encoding)
-            throws IOException {
+    public static void write(StringBuffer data, OutputStream output, String encoding) throws IOException {
         if (data != null) {
             if (encoding == null) {
                 write(data, output);
@@ -755,7 +745,7 @@ public class IOUtils {
     }
 
     // writeLines
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Writes the <code>toString()</code> value of each item in a collection to
@@ -769,8 +759,7 @@ public class IOUtils {
      * @throws IOException          if an I/O error occurs
      * @since Commons IO 1.1
      */
-    public static void writeLines(Collection lines, String lineEnding, OutputStream output)
-            throws IOException {
+    public static void writeLines(Collection lines, String lineEnding, OutputStream output) throws IOException {
         if (lines == null) {
             return;
         }
@@ -802,8 +791,8 @@ public class IOUtils {
      * @throws IOException          if an I/O error occurs
      * @since Commons IO 1.1
      */
-    public static void writeLines(Collection lines, String lineEnding, OutputStream output,
-                                  String encoding) throws IOException {
+    public static void writeLines(Collection lines, String lineEnding, OutputStream output, String encoding)
+            throws IOException {
         if (encoding == null) {
             writeLines(lines, lineEnding, output);
         } else {
@@ -834,8 +823,7 @@ public class IOUtils {
      * @throws IOException          if an I/O error occurs
      * @since Commons IO 1.1
      */
-    public static void writeLines(Collection lines, String lineEnding, Writer writer)
-            throws IOException {
+    public static void writeLines(Collection lines, String lineEnding, Writer writer) throws IOException {
         if (lines == null) {
             return;
         }
@@ -852,7 +840,7 @@ public class IOUtils {
     }
 
     // copy from InputStream
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Copy bytes from an <code>InputStream</code> to an
@@ -956,7 +944,7 @@ public class IOUtils {
     }
 
     // copy from Reader
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Copy chars from a <code>Reader</code> to a <code>Writer</code>.
@@ -1072,7 +1060,7 @@ public class IOUtils {
     }
 
     // content equals
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     /**
      * Compare the contents of two Streams to determine if they are equal or
@@ -1144,5 +1132,4 @@ public class IOUtils {
         int ch2 = input2.read();
         return (ch2 == -1);
     }
-
 }

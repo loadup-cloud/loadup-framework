@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.client.dto;
 
 /*-
@@ -35,6 +36,7 @@ import lombok.Setter;
 public class SimplePositionDTO extends DTO {
 
     private String id;
+
     /**
      * 名称
      */
@@ -44,6 +46,7 @@ public class SimplePositionDTO extends DTO {
      * 编码
      */
     private String positionCode;
+
     /**
      * 级别
      */

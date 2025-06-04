@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.script.parser.groovy;
 
 /*-
@@ -26,9 +27,8 @@ package com.github.loadup.components.gateway.message.script.parser.groovy;
  * #L%
  */
 
-import org.springframework.scripting.ScriptSource;
-
 import java.io.IOException;
+import org.springframework.scripting.ScriptSource;
 
 /**
  * <P>copy from supergw,modified by gang.caogang
@@ -76,5 +76,4 @@ public final class DatabaseScriptSource implements ScriptSource {
     public String suggestedClassName() {
         return org.springframework.util.StringUtils.stripFilenameExtension(this.scriptName);
     }
-
 }

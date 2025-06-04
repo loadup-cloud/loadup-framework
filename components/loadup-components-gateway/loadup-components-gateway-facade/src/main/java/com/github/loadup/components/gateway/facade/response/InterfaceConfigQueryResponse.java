@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.response;
 
 /*-
@@ -43,7 +44,7 @@ public class InterfaceConfigQueryResponse extends BaseResponse {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceConfigList(List<InterfaceConfigInnerResponse> interfaceConfigList) {
         this.interfaceConfigList = interfaceConfigList;

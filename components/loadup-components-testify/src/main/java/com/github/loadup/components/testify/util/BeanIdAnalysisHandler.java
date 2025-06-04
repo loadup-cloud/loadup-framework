@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -28,20 +29,17 @@ package com.github.loadup.components.testify.util;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import org.apache.commons.lang3.StringUtils;
-
 
 /**
  * <bean id="lcDailyCutNoticeService"
  * <p>
  * 解析全量bean Id
  *
- * 
+ *
  *
  */
 public class BeanIdAnalysisHandler extends DefaultHandler {
@@ -50,36 +48,29 @@ public class BeanIdAnalysisHandler extends DefaultHandler {
 
     @Override
     public void startDocument() throws SAXException {
-        //System.out.println("start document -> parse begin");
+        // System.out.println("start document -> parse begin");
     }
 
     @Override
     public void endDocument() throws SAXException {
 
-        //System.out.println("end document -> parse finished");
+        // System.out.println("end document -> parse finished");
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes)
-            throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
         if (StringUtils.equals(qName, "bean")) {
 
             beanList.add(attributes.getValue(0));
-
         }
-
     }
 
     @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
-
-    }
+    public void characters(char[] ch, int start, int length) throws SAXException {}
 
     @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
-
-    }
+    public void endElement(String uri, String localName, String qName) throws SAXException {}
 
     /**
      * @return the beanList
@@ -87,6 +78,4 @@ public class BeanIdAnalysisHandler extends DefaultHandler {
     public List<String> getBeanList() {
         return beanList;
     }
-
-
 }

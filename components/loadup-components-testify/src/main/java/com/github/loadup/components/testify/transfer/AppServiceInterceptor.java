@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.transfer;
 
 /*-
@@ -28,12 +28,15 @@ package com.github.loadup.components.testify.transfer;
  */
 
 /**
- * 
+ *
  *
  */
-
 import com.github.loadup.components.testify.model.PrepareData;
 import com.github.loadup.components.testify.util.BaseDataUtil;
+import java.io.*;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang3.StringUtils;
@@ -42,24 +45,19 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
 public class AppServiceInterceptor implements MethodInterceptor {
     private static final Logger Logger = LoggerFactory.getLogger(AppServiceInterceptor.class);
 
-    //这里就是入参拦截到的地方,你可以写成D:/request.yaml,通过属性注入
+    // 这里就是入参拦截到的地方,你可以写成D:/request.yaml,通过属性注入
     private String argYamlPath;
 
-    //最后一个caseId的名称
+    // 最后一个caseId的名称
     private String lastCaseId;
 
-    //log日志的拦截路径
+    // log日志的拦截路径
     private String logPath;
 
-    //测试工程根路径
+    // 测试工程根路径
     private String testRootPath;
 
     private boolean firstFlag = true;
@@ -98,7 +96,7 @@ public class AppServiceInterceptor implements MethodInterceptor {
         for (int i = 0; i < args.length; i++) {
             prepareData.getArgs().addArg(args[i]);
         }
-        //将老脚本中的用例描述添加到新脚本中
+        // 将老脚本中的用例描述添加到新脚本中
         prepareData.setDescription(CaseContextHolder.get().get("desc"));
 
         Map<String, PrepareData> prepareDatas = new HashMap<String, PrepareData>();
@@ -143,7 +141,6 @@ public class AppServiceInterceptor implements MethodInterceptor {
         }
         Logger.info("首次文件删除操作成功");
         return true;
-
     }
 
     /**
@@ -167,8 +164,11 @@ public class AppServiceInterceptor implements MethodInterceptor {
      * @return
      */
     private String generateCasePrefix(Method method) {
-        String caseIdPrefix = method.getDeclaringClass().getSimpleName() + "_" + method.getName()
-                + "_" + CaseConstants.caseContainsStr;
+        String caseIdPrefix = method.getDeclaringClass().getSimpleName()
+                + "_"
+                + method.getName()
+                + "_"
+                + CaseConstants.caseContainsStr;
         return caseIdPrefix;
     }
 
@@ -186,16 +186,15 @@ public class AppServiceInterceptor implements MethodInterceptor {
      * @return
      */
     private String generateYamlPath(Method method) {
-        //获取方法名
+        // 获取方法名
 
         String methodName = method.getName();
 
-        //获取类名
+        // 获取类名
 
         String finalResultFile = consultYamlPath(methodName);
 
         return finalResultFile;
-
     }
 
     /**
@@ -215,7 +214,7 @@ public class AppServiceInterceptor implements MethodInterceptor {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of argYamlPath
      */
@@ -224,7 +223,7 @@ public class AppServiceInterceptor implements MethodInterceptor {
     }
 
     /**
-     * 
+     *
      *
      * @param argYamlPath value to be assigned to property argYamlPath
      */
@@ -233,7 +232,7 @@ public class AppServiceInterceptor implements MethodInterceptor {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of lastCaseId
      */
@@ -242,7 +241,7 @@ public class AppServiceInterceptor implements MethodInterceptor {
     }
 
     /**
-     * 
+     *
      *
      * @param lastCaseId value to be assigned to property lastCaseId
      */
@@ -251,7 +250,7 @@ public class AppServiceInterceptor implements MethodInterceptor {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of logPath
      */
@@ -260,7 +259,7 @@ public class AppServiceInterceptor implements MethodInterceptor {
     }
 
     /**
-     * 
+     *
      *
      * @param logPath value to be assigned to property logPath
      */
@@ -269,7 +268,7 @@ public class AppServiceInterceptor implements MethodInterceptor {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of testRootPath
      */
@@ -278,12 +277,11 @@ public class AppServiceInterceptor implements MethodInterceptor {
     }
 
     /**
-     * 
+     *
      *
      * @param testRootPath value to be assigned to property testRootPath
      */
     public void setTestRootPath(String testRootPath) {
         this.testRootPath = testRootPath;
     }
-
 }

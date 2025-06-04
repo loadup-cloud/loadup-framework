@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.communication.common.sensitivity.impl;
 
 /*-
@@ -28,9 +29,8 @@ package com.github.loadup.components.gateway.core.communication.common.sensitivi
 
 import com.github.loadup.components.gateway.core.model.SensitivityProcessType;
 import com.github.loadup.components.gateway.core.model.ShieldType;
-import org.springframework.stereotype.Component;
-
 import java.util.Map;
+import org.springframework.stereotype.Component;
 
 /**
  * 敏感Form数据处理

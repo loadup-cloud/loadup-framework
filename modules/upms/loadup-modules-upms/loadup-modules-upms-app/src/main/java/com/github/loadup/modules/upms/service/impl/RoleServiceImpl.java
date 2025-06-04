@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.service.impl;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.modules.upms.service.impl;
 
 import com.github.loadup.commons.result.CommonResultCodeEnum;
 import com.github.loadup.commons.result.MultiResponse;
-import com.github.loadup.commons.result.Result;
 import com.github.loadup.commons.result.SingleResponse;
 import com.github.loadup.commons.template.ServiceTemplate;
 import com.github.loadup.commons.util.ValidateUtils;
@@ -41,11 +41,10 @@ import com.github.loadup.modules.upms.domain.UpmsRole;
 import com.github.loadup.modules.upms.gateway.RoleGateway;
 import com.github.loadup.modules.upms.service.impl.convertor.RoleDTOConvertor;
 import jakarta.annotation.Resource;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -79,10 +78,8 @@ public class RoleServiceImpl implements RoleService {
                     role = roleGateway.create(role);
                     return SingleResponse.of(RoleDTOConvertor.INSTANCE.toSimpleRoleDTO(role));
                 },
-                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
-                (Void) -> {
-                }
-        );
+                (result) -> SingleResponse.buildFailure(result),
+                (Void) -> {});
     }
 
     @Override
@@ -97,9 +94,7 @@ public class RoleServiceImpl implements RoleService {
                     roleGateway.saveRoleUsers(cmd.getRoleId(), cmd.getUserIdList());
                     return getRoleById(role.getId());
                 },
-                (e) -> Result.buildFailure(CommonResultCodeEnum.UNKNOWN),
-                (Void) -> {
-                }
-        );
+                (result) -> SingleResponse.buildFailure(result),
+                (Void) -> {});
     }
 }

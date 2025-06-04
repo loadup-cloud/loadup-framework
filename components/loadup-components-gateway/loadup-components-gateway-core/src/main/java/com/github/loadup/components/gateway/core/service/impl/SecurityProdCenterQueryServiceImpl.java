@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.service.impl;
 
 /*-
@@ -31,9 +32,8 @@ import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.service.SecurityProdCenterQueryService;
 import com.github.loadup.components.gateway.facade.config.model.Constant;
 import com.github.loadup.components.gateway.facade.config.model.SecurityConditionGroup;
-import org.springframework.stereotype.Component;
-
 import java.util.Arrays;
+import org.springframework.stereotype.Component;
 
 /**
  *
@@ -51,38 +51,41 @@ public class SecurityProdCenterQueryServiceImpl implements SecurityProdCenterQue
      * @see SecurityProdCenterQueryService#querySecurityConditionGroup(String, String, String, String)
      */
     @Override
-    public SecurityConditionGroup querySecurityConditionGroup(String securityStrategyCode,
-                                                              String operateType, String algorithm,
-                                                              String clientId) {
+    public SecurityConditionGroup querySecurityConditionGroup(
+            String securityStrategyCode, String operateType, String algorithm, String clientId) {
         SecurityConditionGroup result = null;
-        for (String productCode : Arrays.asList(Constant.TENANT_GATEWAY_PRODUCT_CODE,
-                Constant.PLATFORM_GATEWAY_PRODUCT_CODE)) {
+        for (String productCode :
+                Arrays.asList(Constant.TENANT_GATEWAY_PRODUCT_CODE, Constant.PLATFORM_GATEWAY_PRODUCT_CODE)) {
 
             //            ClientResponse<SecurityConditionGroup> clientResponse = configDataQueryClientFacade
             //                .getConditionGroupConfig(buildConditionGroupQueryRequest(securityStrategyCode,
             //                    operateType, algorithm, productCode), SecurityConditionGroup.class);
             //            checkClientResponse(clientResponse, "SecurityConditionGroup");
 
-            result = null;// clientResponse.getResultObj();
+            result = null; // clientResponse.getResultObj();
             if (result == null) {
                 continue;
             }
-            AssertUtil.isNotBlank(result.getSecurityStrategyKey(),
+            AssertUtil.isNotBlank(
+                    result.getSecurityStrategyKey(),
                     GatewayErrorCode.CONFIGURATION_LOAD_ERROR,
                     "security config key query from config center is blank");
-            AssertUtil.isNotBlank(result.getCertType(),
+            AssertUtil.isNotBlank(
+                    result.getCertType(),
                     GatewayErrorCode.CONFIGURATION_LOAD_ERROR,
                     "security config cert type query from config center is blank");
             break;
         }
-        AssertUtil.isNotNull(result, GatewayErrorCode.CONFIGURATION_LOAD_ERROR,
+        AssertUtil.isNotNull(
+                result,
+                GatewayErrorCode.CONFIGURATION_LOAD_ERROR,
                 "SecurityConditionGroup query from config center is null");
         return result;
     }
 
     /**
      * build query request
-
+     *
      */
     //    private ClientConditionGroupRequest buildConditionGroupQueryRequest(String securityStrategyCode,
     //                                                                        String operateType,
@@ -106,9 +109,9 @@ public class SecurityProdCenterQueryServiceImpl implements SecurityProdCenterQue
 
     /**
      * validate response
-
-
-
+     *
+     *
+     *
      */
     //    private <T> void checkClientResponse(ClientResponse<T> clientResponse,
     //                                         String resultObjectName) {

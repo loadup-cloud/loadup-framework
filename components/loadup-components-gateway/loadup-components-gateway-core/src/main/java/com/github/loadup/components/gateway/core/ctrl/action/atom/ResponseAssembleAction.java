@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.ctrl.action.atom;
 
 /*-
@@ -26,6 +27,8 @@ package com.github.loadup.components.gateway.core.ctrl.action.atom;
  * #L%
  */
 
+import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.*;
+
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.loadup.commons.error.CommonException;
@@ -44,16 +47,13 @@ import com.github.loadup.components.gateway.message.base.api.MessageEngine;
 import com.github.loadup.components.gateway.message.script.cache.GroovyScriptCache;
 import com.github.loadup.components.gateway.message.unimsg.UnifyMsg;
 import jakarta.annotation.Resource;
+import java.util.Date;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
-import java.util.Map;
-
-import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.*;
 
 /**
  * <p>
@@ -99,13 +99,11 @@ public class ResponseAssembleAction extends AbstractBusinessAction {
                     JSONObject jsonResult = JSON.parseObject(content);
                     if (null == jsonResult.getJSONObject("result")) {
                         if (Boolean.parseBoolean(enableDefaultResultStructInResponse)) {
-                            JSONObject result = CommonUtil
-                                    .assembleAcResult(GatewayErrorCode.SUCCESS);
+                            JSONObject result = CommonUtil.assembleAcResult(GatewayErrorCode.SUCCESS);
                             // get switch
                             if (Boolean.parseBoolean(useAcFormatResultWhenGatewayException)) {
                                 // if correct ac format result switch is opened
-                                result = CommonUtil
-                                        .assembleAcResultWhenException(GatewayErrorCode.SUCCESS);
+                                result = CommonUtil.assembleAcResultWhenException(GatewayErrorCode.SUCCESS);
                             }
                             jsonResult.put("result", result);
                         }
@@ -116,27 +114,22 @@ public class ResponseAssembleAction extends AbstractBusinessAction {
                 throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION, content, e);
             }
         }
-        messageResponseMessage.putExtMap(KEY_HTTP_CLIENT_ID,
-                gatewayRuntimeProcessContext.getRequesterClientId());
-        messageResponseMessage.putExtMap(KEY_HTTP_METHOD,
-                gatewayRuntimeProcessContext.getRequesterHttpMethod());
-        messageResponseMessage.putExtMap(KEY_HTTP_REQUEST_URI,
-                gatewayRuntimeProcessContext.getRequesterUri());
-        messageResponseMessage
-                .setSignatureCertCode(gatewayRuntimeProcessContext.getRequesterCertCode());
+        messageResponseMessage.putExtMap(KEY_HTTP_CLIENT_ID, gatewayRuntimeProcessContext.getRequesterClientId());
+        messageResponseMessage.putExtMap(KEY_HTTP_METHOD, gatewayRuntimeProcessContext.getRequesterHttpMethod());
+        messageResponseMessage.putExtMap(KEY_HTTP_REQUEST_URI, gatewayRuntimeProcessContext.getRequesterUri());
+        messageResponseMessage.setSignatureCertCode(gatewayRuntimeProcessContext.getRequesterCertCode());
 
-        InterfaceConfig interfaceConfig = gatewayRuntimeProcessContext
-                .getRequesterInterfaceConfig();
+        InterfaceConfig interfaceConfig = gatewayRuntimeProcessContext.getRequesterInterfaceConfig();
         if (null == interfaceConfig) {
             // 对于通过MessageService.send发送的SPI，走到这里就结束了。
             assemble(messageResponseMessage);
             gatewayRuntimeProcessContext.setResponseMessage(messageResponseMessage);
             return;
         }
-        String requesterInterfaceId = gatewayRuntimeProcessContext.getRequesterInterfaceConfig()
-                .getInterfaceId();
-        String beanName = GroovyScriptCache.getBeanName(requesterInterfaceId, RoleType.SENDER,
-                gatewayRuntimeProcessContext.getTransactionType());
+        String requesterInterfaceId =
+                gatewayRuntimeProcessContext.getRequesterInterfaceConfig().getInterfaceId();
+        String beanName = GroovyScriptCache.getBeanName(
+                requesterInterfaceId, RoleType.SENDER, gatewayRuntimeProcessContext.getTransactionType());
         if (StringUtils.isBlank(beanName)) {
             assemble(messageResponseMessage);
         } else {
@@ -149,13 +142,16 @@ public class ResponseAssembleAction extends AbstractBusinessAction {
             unifyMsg.addField(KEY_HTTP_REQUEST_URI, gatewayRuntimeProcessContext.getRequesterUri());
             unifyMsg.addField(KEY_HTTP_METHOD, gatewayRuntimeProcessContext.getRequesterHttpMethod());
             unifyMsg.addField(KEY_HTTP_CLIENT_ID, messageResponseMessage.pullExtMapValue(KEY_HTTP_CLIENT_ID));
-            unifyMsg.addField(KEY_HTTP_RESPONSE_TIME,
+            unifyMsg.addField(
+                    KEY_HTTP_RESPONSE_TIME,
                     DateFormatUtils.format(new Date(), DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.getPattern()));
 
-            messageResponseMessage = messageEngine.assemble(requesterInterfaceId, RoleType.SENDER,
-                    gatewayRuntimeProcessContext, gatewayRuntimeProcessContext.getTransactionType(),
+            messageResponseMessage = messageEngine.assemble(
+                    requesterInterfaceId,
+                    RoleType.SENDER,
+                    gatewayRuntimeProcessContext,
+                    gatewayRuntimeProcessContext.getTransactionType(),
                     unifyMsg);
-
         }
         gatewayRuntimeProcessContext.setResponseMessage(messageResponseMessage);
     }

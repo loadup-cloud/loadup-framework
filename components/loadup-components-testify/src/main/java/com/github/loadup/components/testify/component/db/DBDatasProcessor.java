@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.db;
 
 /*-
@@ -37,23 +38,14 @@ import com.github.loadup.components.testify.db.enums.DBFlagEnum;
 import com.github.loadup.components.testify.driver.TestifyConfiguration;
 import com.github.loadup.components.testify.exception.TestifyException;
 import com.github.loadup.components.testify.model.VirtualTable;
-import com.github.loadup.components.testify.runtime.TestifyRuntimeContextThreadHold;
 import com.github.loadup.components.testify.runtime.ComponentsTestifyRuntimeContextThreadHold;
+import com.github.loadup.components.testify.runtime.TestifyRuntimeContextThreadHold;
 import com.github.loadup.components.testify.util.LogUtil;
 import com.github.loadup.components.testify.util.VelocityUtil;
 import com.github.loadup.components.testify.utils.DetailCollectUtils;
 import com.github.loadup.components.testify.utils.check.ObjectCompareUtil;
 import com.github.loadup.components.testify.utils.config.ConfigrationFactory;
 import com.github.loadup.components.testify.utils.config.ConfigurationKey;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
-
-import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
@@ -62,27 +54,39 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.sql.DataSource;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public class DBDatasProcessor {
 
-    protected static final Logger LOGGER = LoggerFactory
-            .getLogger(DBDatasProcessor.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(DBDatasProcessor.class);
+
     /**
      * before table do something
      */
     private final List<IVTableGroupCmdMethod> beforeVTableExecuteMethodList = new LinkedList<IVTableGroupCmdMethod>();
+
     /**
      * after table do something
      */
     private final List<IVTableGroupCmdMethod> afterVTableExecuteMethodList = new LinkedList<IVTableGroupCmdMethod>();
+
     /**
      * before exec sql do something
      */
     private final List<IVTableGroupCmdMethod> beforeExecSqlMethodList = new LinkedList<IVTableGroupCmdMethod>();
+
     /**
      * special groupid
      */
     private final List<String> specialGroupIds = new ArrayList<String>();
+
     protected Map<String, JdbcTemplate> jdbcTemplateMap;
     protected DataAccessConfigManager dataAccessConfigManager;
 
@@ -95,98 +99,105 @@ public class DBDatasProcessor {
     public static Map<String, String> transStringToMap(String mapString) {
         Map<String, String> map = new HashMap<String, String>();
         StringTokenizer items;
-        for (StringTokenizer entrys = new StringTokenizer(mapString, ";"); entrys.hasMoreTokens(); map
-                .put(items.nextToken(), items.hasMoreTokens() ? ((String) (items.nextToken())) : null))
+        for (StringTokenizer entrys = new StringTokenizer(mapString, ";");
+                entrys.hasMoreTokens();
+                map.put(items.nextToken(), items.hasMoreTokens() ? ((String) (items.nextToken())) : null))
             items = new StringTokenizer(entrys.nextToken(), "=");
         return map;
     }
 
     public void initDataSource() {
-//        dataAccessConfigManager =null;// (DataAccessConfigManager) BundleBeansManager.getBean(
-////            "dataAccessConfigManager", DataAccessConfigManager.class,
-////            null);
-//
-//        String[] bundleNames = ConfigrationFactory.getConfigration()
-//            .getPropertyValue("datasource_bundle_name").split(";");
-//
-//        ConfigrationFactory.loadFromConfig("config/dbConf/"
-//                                           + ConfigrationFactory.getSofaConfig("dbmode")
-//                                           + "db.conf");
-//        Map<String, String> configs = ConfigrationFactory.getConfigration().getConfig();
-//        if (configs == null) {
-//            Assert
-//                .assertTrue(
-//                    false,
-//                    "datasource config not exist, add config in [acts-config.properties] ,modify datasource config starting with [ds_]");
-//
-//        }
-//        for (String key : configs.keySet()) {
-//            if (key.startsWith("ds_")) {
-//                String dsName = key.replace("ds_", "");
-//                List<String> tables = new ArrayList<String>();
-//                for (String tableName : configs.get(key).split(",")) {
-//                    tables.add(tableName);
-//                }
-//
-//                DataSource ds = null;
-//                //先尝试从db.conf里读取
-//                if (configs.containsKey(dsName + "_url")) {
-//                    String db_url = configs.get(dsName + "_url");
-//                    String db_username = configs.get(dsName + "_username");
-//                    String db_password = configs.get(dsName + "_password");
-//                    BasicDataSource datasource = new BasicDataSource();
-//                    String type = getDBType(db_url);
-//
-//                    try {
-//                        if (type.equalsIgnoreCase("oracle")) {
-//                            Class.forName("oracle.jdbc.OracleDriver");
-//                            datasource.setDriverClassName("oracle.jdbc.OracleDriver");
-//                        } else {
-//                            Class.forName("com.mysql.jdbc.Driver");
-//                            datasource.setDriverClassName("com.mysql.jdbc.Driver");
-//                        }
-//                        datasource.setUrl(db_url);
-//                        datasource.setUsername(db_username);
-//                        datasource.setPassword(db_password);
-//                        ds = datasource;
-//                    } catch (Exception e) {
-//                        throw new ActsTestException("Failed obtaining datasource:" + dsName, e);
-//                    }
-//
-//                } else {
-//                    // 尝试从多个bundle中获取数据源bean
-//                    for (String bundleName : bundleNames) {
-//                        ds = null;//((DataSource) BundleBeansManager.getBean(dsName, bundleName));
-//                        if (ds != null) {
-//                            break;
-//                        }
-//                    }
-//                    if (ds == null) {
-//                        //默认on-the-fly-bundle
-//                        ds = null;//((DataSource) BundleBeansManager.getBean(dsName, null));
-//                    }
-//                }
-//                if (ds == null) {
-//                    Assert.assertTrue(false, "Failed obtaining datasource bean:[" + dsName
-//                                             + "] from the specified bundleName: " + Arrays.toString(bundleNames) + "，"
-//                            + "未能从对应bundle中获取数据源bean，请确认acts-config.properties文件中的bundleName/beanName是否配置正确");
-//                }
-//
-//                JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-//                if (jdbcTemplateMap == null) {
-//                    jdbcTemplateMap = new HashMap<String, JdbcTemplate>();
-//                }
-//                jdbcTemplateMap.put(dsName, jdbcTemplate);
-//                DataAccessConfigManager.dataSourceMap.put(dsName, tables);
-//            }
-//
-//        }
+        //        dataAccessConfigManager =null;// (DataAccessConfigManager)
+        // BundleBeansManager.getBean(
+        ////            "dataAccessConfigManager", DataAccessConfigManager.class,
+        ////            null);
+        //
+        //        String[] bundleNames = ConfigrationFactory.getConfigration()
+        //            .getPropertyValue("datasource_bundle_name").split(";");
+        //
+        //        ConfigrationFactory.loadFromConfig("config/dbConf/"
+        //                                           + ConfigrationFactory.getSofaConfig("dbmode")
+        //                                           + "db.conf");
+        //        Map<String, String> configs = ConfigrationFactory.getConfigration().getConfig();
+        //        if (configs == null) {
+        //            Assert
+        //                .assertTrue(
+        //                    false,
+        //                    "datasource config not exist, add config in [acts-config.properties]
+        // ,modify datasource config starting with [ds_]");
+        //
+        //        }
+        //        for (String key : configs.keySet()) {
+        //            if (key.startsWith("ds_")) {
+        //                String dsName = key.replace("ds_", "");
+        //                List<String> tables = new ArrayList<String>();
+        //                for (String tableName : configs.get(key).split(",")) {
+        //                    tables.add(tableName);
+        //                }
+        //
+        //                DataSource ds = null;
+        //                //先尝试从db.conf里读取
+        //                if (configs.containsKey(dsName + "_url")) {
+        //                    String db_url = configs.get(dsName + "_url");
+        //                    String db_username = configs.get(dsName + "_username");
+        //                    String db_password = configs.get(dsName + "_password");
+        //                    BasicDataSource datasource = new BasicDataSource();
+        //                    String type = getDBType(db_url);
+        //
+        //                    try {
+        //                        if (type.equalsIgnoreCase("oracle")) {
+        //                            Class.forName("oracle.jdbc.OracleDriver");
+        //                            datasource.setDriverClassName("oracle.jdbc.OracleDriver");
+        //                        } else {
+        //                            Class.forName("com.mysql.jdbc.Driver");
+        //                            datasource.setDriverClassName("com.mysql.jdbc.Driver");
+        //                        }
+        //                        datasource.setUrl(db_url);
+        //                        datasource.setUsername(db_username);
+        //                        datasource.setPassword(db_password);
+        //                        ds = datasource;
+        //                    } catch (Exception e) {
+        //                        throw new ActsTestException("Failed obtaining datasource:" +
+        // dsName, e);
+        //                    }
+        //
+        //                } else {
+        //                    // 尝试从多个bundle中获取数据源bean
+        //                    for (String bundleName : bundleNames) {
+        //                        ds = null;//((DataSource) BundleBeansManager.getBean(dsName,
+        // bundleName));
+        //                        if (ds != null) {
+        //                            break;
+        //                        }
+        //                    }
+        //                    if (ds == null) {
+        //                        //默认on-the-fly-bundle
+        //                        ds = null;//((DataSource) BundleBeansManager.getBean(dsName,
+        // null));
+        //                    }
+        //                }
+        //                if (ds == null) {
+        //                    Assert.assertTrue(false, "Failed obtaining datasource bean:[" + dsName
+        //                                             + "] from the specified bundleName: " +
+        // Arrays.toString(bundleNames) + "，"
+        //                            +
+        // "未能从对应bundle中获取数据源bean，请确认acts-config.properties文件中的bundleName/beanName是否配置正确");
+        //                }
+        //
+        //                JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+        //                if (jdbcTemplateMap == null) {
+        //                    jdbcTemplateMap = new HashMap<String, JdbcTemplate>();
+        //                }
+        //                jdbcTemplateMap.put(dsName, jdbcTemplate);
+        //                DataAccessConfigManager.dataSourceMap.put(dsName, tables);
+        //            }
+        //
+        //        }
         if (jdbcTemplateMap == null) {
             jdbcTemplateMap = new HashMap<String, JdbcTemplate>();
         }
         JdbcTemplate jdbcTemplate = ApplicationContextUtils.getBean("jdbcTemplate", JdbcTemplate.class);
         jdbcTemplateMap.put("dataSource", jdbcTemplate);
-
     }
 
     /**
@@ -202,8 +213,7 @@ public class DBDatasProcessor {
         DataAccessConfigManager.clearExtDataSourceMap();
         for (Entry<String, String> entry : extMapInfo.entrySet()) {
             String dataSourceName = "datasource_bean_name_" + entry.getValue();
-            JdbcTemplate jdbcTemplate = TestifyDBUtils.getJdbcTemplate(entry.getKey(),
-                    entry.getValue());
+            JdbcTemplate jdbcTemplate = TestifyDBUtils.getJdbcTemplate(entry.getKey(), entry.getValue());
             jdbcTemplateMap.put(dataSourceName, jdbcTemplate);
             DataAccessConfigManager.updateExtDataSourceMap(dataSourceName, entry.getKey());
         }
@@ -217,7 +227,7 @@ public class DBDatasProcessor {
 
         List<VirtualTable> tables = reorderTables(depTables);
 
-        //根据DO类属性前缀动态拼装SQL 并执行
+        // 根据DO类属性前缀动态拼装SQL 并执行
         for (int i = 0; i < tables.size(); i++) {
 
             VirtualTable table = tables.get(i);
@@ -231,19 +241,19 @@ public class DBDatasProcessor {
                 String sql = genInsertSql(table, table.getTableName(), fields, null);
                 DetailCollectUtils.appendDetail(sql);
 
-                //表执行前执行
+                // 表执行前执行
                 Execute(beforeVTableExecuteMethodList, table.getTableName(), table.getNodeGroup());
 
                 // 替换相互引用的变量值
                 TestifyRuntimeContextThreadHold.getContext().refreshSingleTableParam(table);
 
-                //组装参数执行SQL
+                // 组装参数执行SQL
                 doImport(table, sql, fields);
 
-                //更新变量map
+                // 更新变量map
                 doSelectAndUpdateParams(table);
 
-                //表执行后执行
+                // 表执行后执行
                 Execute(afterVTableExecuteMethodList, table.getTableName(), table.getNodeGroup());
             }
         }
@@ -281,7 +291,8 @@ public class DBDatasProcessor {
             Map<String, Object> dbRowResult = doSelect(table, rowData).get(0);
 
             for (String field : fieldParams.keySet()) {
-                TestifyRuntimeContextThreadHold.getContext().addOneParam(fieldParams.get(field), dbRowResult.get(field));
+                TestifyRuntimeContextThreadHold.getContext()
+                        .addOneParam(fieldParams.get(field), dbRowResult.get(field));
             }
         }
     }
@@ -299,12 +310,13 @@ public class DBDatasProcessor {
         String sql = genSelectSql(table, fields);
         Object[] valsOfArgs = getValsForSelectKeys(selectKeys, rowData, table.getTableName());
 
-        List<Map<String, Object>> dbRowsResult = getJdbcTemplate(table.getTableName()).queryForList(sql, valsOfArgs);
+        List<Map<String, Object>> dbRowsResult =
+                getJdbcTemplate(table.getTableName()).queryForList(sql, valsOfArgs);
         return dbRowsResult;
     }
 
     public boolean importDepDBDatasWithDao(List<VirtualTable> depTables) {
-        //TODO: DAO的方式
+        // TODO: DAO的方式
         //        if (CollectionUtils.isEmpty(depTables)) {
         //            return true;
         //        }
@@ -334,7 +346,7 @@ public class DBDatasProcessor {
 
     @SuppressWarnings("rawtypes")
     public void deleteDBDatasWithDao(List<VirtualTable> depTables) {
-        //TODO  DAO的方式
+        // TODO  DAO的方式
         //        if (CollectionUtils.isEmpty(depTables)) {
         //            return;
         //        }
@@ -370,15 +382,14 @@ public class DBDatasProcessor {
      * @param row
      * @return
      */
-    protected String genInsertSql(VirtualTable table, String tableName, List<String> fields,
-                                  Map<String, Object> row) {
+    protected String genInsertSql(VirtualTable table, String tableName, List<String> fields, Map<String, Object> row) {
         StringBuffer fieldBuffer = new StringBuffer();
         StringBuffer fieldPlaceholderBuffer = new StringBuffer();
 
         for (String field : fields) {
             Object val = (null != row) ? row.get(field) : null;
 
-            //获取flag兼容大小写不一致问题
+            // 获取flag兼容大小写不一致问题
             String currentFlag = table.getFlags().get(field);
             if (StringUtils.isBlank(currentFlag)) {
                 currentFlag = table.getFlags().get(field.toLowerCase());
@@ -407,16 +418,15 @@ public class DBDatasProcessor {
                         val = null;
                     } else {
                         throw new TestifyException(
-                                "[M_Flag]字段对应值解析失败，请保证M flag的字段内容格式为 {flag}|{value}，如Y|actual_cotent");
+                                "[M_Flag]字段对应值解析失败，请保证M flag的字段内容格式为" + " {flag}|{value}，如Y|actual_cotent");
                     }
-
                 }
 
                 if (currentFlag.equalsIgnoreCase(DBFlagEnum.F.name())) {
                     if (row == null || val == null) {
                         return null;
                     }
-                    //系统函数原样写入sql
+                    // 系统函数原样写入sql
                     fieldBuffer.append(field).append(",");
                     fieldPlaceholderBuffer.append(val).append(",");
                 } else if (!currentFlag.equalsIgnoreCase(DBFlagEnum.N.name())) {
@@ -428,15 +438,12 @@ public class DBDatasProcessor {
                 fieldBuffer.append(field).append(",");
                 fieldPlaceholderBuffer.append("?").append(",");
             }
-
         }
 
-        String fieldPart = "insert into " + tableName + " ("
-                + fieldBuffer.substring(0, fieldBuffer.length() - 1) + ") ";
+        String fieldPart =
+                "insert into " + tableName + " (" + fieldBuffer.substring(0, fieldBuffer.length() - 1) + ") ";
 
-        String placeholderPart = " ("
-                + fieldPlaceholderBuffer.substring(0,
-                fieldPlaceholderBuffer.length() - 1) + ") ";
+        String placeholderPart = " (" + fieldPlaceholderBuffer.substring(0, fieldPlaceholderBuffer.length() - 1) + ") ";
         return fieldPart + "values" + placeholderPart;
     }
 
@@ -459,11 +466,10 @@ public class DBDatasProcessor {
             Map<String, Object> rowData = rows.get(rowNum);
             List<Object> args = new ArrayList<Object>();
             if (insertSql == null) {
-                //SQL为空，代表每行都需要拼接一次
+                // SQL为空，代表每行都需要拼接一次
                 insertSql = genInsertSql(table, table.getTableName(), fields, rows.get(rowNum));
                 if (insertSql == null) {
-                    throw new TestifyException(
-                            "tagged with F，but no [function name] in [value]但是值里面没有对应的函数名");
+                    throw new TestifyException("tagged with F，but no [function name] in [value]但是值里面没有对应的函数名");
                 }
             }
 
@@ -489,32 +495,31 @@ public class DBDatasProcessor {
                     }
 
                     // 这一坨前人留下的 !条件组合 以后有机会再改吧。。。
-                    if (!flag.equalsIgnoreCase(DBFlagEnum.N.name()) && !flag.equalsIgnoreCase(DBFlagEnum.F.name())
+                    if (!flag.equalsIgnoreCase(DBFlagEnum.N.name())
+                            && !flag.equalsIgnoreCase(DBFlagEnum.F.name())
                             && !flag.equalsIgnoreCase(DBFlagEnum.L.name())) {
-                        //F是系统函数，拼接的时候已经放入sql,L☞换行大字段，单独处理
+                        // F是系统函数，拼接的时候已经放入sql,L☞换行大字段，单独处理
                         if (StringUtils.isBlank(arg.toString()) || StringUtils.equals(arg.toString(), "null")) {
                             args.add(null);
                         } else {
                             args.add(arg);
                         }
                     } else if (flag.equalsIgnoreCase(DBFlagEnum.L.name())) {
-                        String fieldValue = "";// PropertiesUtil.convert2String(
-//                            transStringToMap((String) arg), false);
+                        String fieldValue = ""; // PropertiesUtil.convert2String(
+                        //                            transStringToMap((String) arg), false);
                         args.add(fieldValue);
                     }
                 } else {
                     args.add(arg);
                 }
-
             }
-            //执行SQL
+            // 执行SQL
             getJdbcTemplate(table.getTableName()).update(insertSql, args.toArray());
             String message = "";
             for (Object arg : args) {
                 message += arg + ",";
             }
-            DetailCollectUtils.appendAndLog(
-                    "Executing sql:" + insertSql + ",parameters:" + message, LOGGER);
+            DetailCollectUtils.appendAndLog("Executing sql:" + insertSql + ",parameters:" + message, LOGGER);
         }
     }
 
@@ -537,8 +542,8 @@ public class DBDatasProcessor {
 
         for (int i = 0; i < depTables.size(); i++) {
 
-            //生成SQL
-            //根据DO类属性前缀动态拼装SQL 并执行
+            // 生成SQL
+            // 根据DO类属性前缀动态拼装SQL 并执行
             VirtualTable table = depTables.get(i);
             if (table == null) {
                 continue;
@@ -547,19 +552,18 @@ public class DBDatasProcessor {
                     || ArrayUtils.contains(groupIds, table.getNodeGroup())) {
                 List<String> fields = new ArrayList(table.getTableData().get(0).keySet());
 
-                //拼装SQL
+                // 拼装SQL
                 String sql = genDeleteSql(table, fields);
 
-                //表执行前执行
+                // 表执行前执行
                 Execute(beforeVTableExecuteMethodList, table.getTableName(), table.getNodeGroup());
-                //组装参数执行SQL
+                // 组装参数执行SQL
                 doDelete(table, sql, fields, tableRows.get(table.getTableName()));
 
-                //表执行之后执行
+                // 表执行之后执行
                 Execute(afterVTableExecuteMethodList, table.getTableName(), table.getNodeGroup());
             }
         }
-
     }
 
     /**
@@ -607,8 +611,10 @@ public class DBDatasProcessor {
             int i = 0;
             for (; i < args.length; ++i) {
                 if (String.valueOf(rowData.get(keys[i])).startsWith("=")) {
-                    throw new TestifyException("tableName " + table.getTableName()
-                            + " condition: " + keys[i]
+                    throw new TestifyException("tableName "
+                            + table.getTableName()
+                            + " condition: "
+                            + keys[i]
                             + "cannot be assignment statement for deleting");
                 }
                 if (String.valueOf(rowData.get(keys[i])).startsWith("$")) {
@@ -616,7 +622,7 @@ public class DBDatasProcessor {
                     if (paramBuffer.containsKey(key)) {
                         args[i] = paramBuffer.get(key);
                     } else {
-                        //没有找到变量就跳出
+                        // 没有找到变量就跳出
                         break;
                     }
                 } else {
@@ -624,7 +630,7 @@ public class DBDatasProcessor {
                 }
             }
             if (i < args.length) {
-                //这里如果删除的时候参数不足，则不进行删除，执行下一条语句
+                // 这里如果删除的时候参数不足，则不进行删除，执行下一条语句
                 continue;
             }
 
@@ -634,26 +640,31 @@ public class DBDatasProcessor {
             }
 
             // 删除熔断机制：先捞一把确保不会有额外的其他数据被意外删除
-            String checkBeforeDel = ConfigrationFactory.getConfigration().
-                    getPropertyValue(ConfigurationKey.DB_DEL_LIMITATION.getCode(), "true");
+            String checkBeforeDel = ConfigrationFactory.getConfigration()
+                    .getPropertyValue(ConfigurationKey.DB_DEL_LIMITATION.getCode(), "true");
             if (StringUtils.equalsIgnoreCase(checkBeforeDel.trim(), Boolean.TRUE.toString())) {
-                List dataList = getJdbcTemplate(table.getTableName()).queryForList(sql.replaceFirst("delete ", "select * "), args);
+                List dataList = getJdbcTemplate(table.getTableName())
+                        .queryForList(sql.replaceFirst("delete ", "select * "), args);
                 if (dataList.size() > limits) {
                     String errMsg = "Executing sql:" + sql + ",parameters:" + argVals;
-                    errMsg += "\n" + "Actual deleted rows: " + dataList.size() + "; Expected deleted rows: " + table.getTableData().size();
-                    errMsg += "\nPlease check fields with C/CN flag, make sure the scope of selected data is not out of your controll!";
+                    errMsg += "\n"
+                            + "Actual deleted rows: "
+                            + dataList.size()
+                            + "; Expected deleted rows: "
+                            + table.getTableData().size();
+                    errMsg += "\n"
+                            + "Please check fields with C/CN flag, make sure the scope of"
+                            + " selected data is not out of your controll!";
                     DetailCollectUtils.appendAndLog(errMsg, LOGGER);
                     LOGGER.error(errMsg);
                     return;
                 }
             }
 
-            //执行删除SQL
+            // 执行删除SQL
             getJdbcTemplate(table.getTableName()).update(sql, args);
-            DetailCollectUtils.appendAndLog("Executing sql:" + sql + ",parameters:" + argVals,
-                    LOGGER);
+            DetailCollectUtils.appendAndLog("Executing sql:" + sql + ",parameters:" + argVals, LOGGER);
             LOGGER.info("Executing sql:" + sql + ",parameters:" + argVals);
-
         }
     }
 
@@ -672,16 +683,16 @@ public class DBDatasProcessor {
                 // 提取数据表的字段名
                 List<String> fields = new ArrayList(table.getTableData().get(0).keySet());
 
-                //拼装SQL
+                // 拼装SQL
                 String sql = genSelectSql(table, fields);
                 DetailCollectUtils.appendDetail(sql);
 
-                //表执行前执行
+                // 表执行前执行
                 Execute(beforeVTableExecuteMethodList, table.getTableName(), table.getNodeGroup());
-                //组装参数执行SQL
+                // 组装参数执行SQL
                 boolean isTableSame = doSelectAndCompare(table, fields, sql, allErr);
 
-                //表执行后执行
+                // 表执行后执行
                 Execute(afterVTableExecuteMethodList, table.getTableName(), table.getNodeGroup());
 
                 if (!isTableSame) {
@@ -693,7 +704,6 @@ public class DBDatasProcessor {
         if (!isAllTableSame) {
             throw new AssertionError("[CheckFailed]Failed checking DB!\n" + allErr);
         }
-
     }
 
     /**
@@ -763,7 +773,6 @@ public class DBDatasProcessor {
             }
         }
 
-
         return sortedTables;
     }
 
@@ -771,22 +780,23 @@ public class DBDatasProcessor {
 
         String tableName = table.getTableName();
 
-        //生成查询列
+        // 生成查询列
         StringBuffer queryCoulumsBuffer = new StringBuffer();
 
         for (String field : fields) {
-            //拼装查询列部分
+            // 拼装查询列部分
             queryCoulumsBuffer.append(field + " as " + field).append(",");
         }
 
         String queryCoulums = queryCoulumsBuffer.substring(0, queryCoulumsBuffer.length() - 1);
 
-        //生成查询条件 （先只支持默认查询条件）
+        // 生成查询条件 （先只支持默认查询条件）
         StringBuffer wherePartBuffer = new StringBuffer();
         String[] selectKeys = getSelectKeys(table, fields);
 
         for (String selectKey : selectKeys) {
-            //                wherePartBuffer.append(convertFieldName2ColumnName(selectKey) + " = ? and ");
+            //                wherePartBuffer.append(convertFieldName2ColumnName(selectKey) + " = ?
+            // and ");
             wherePartBuffer.append("(" + selectKey + " = ? " + " ) and ");
         }
 
@@ -795,8 +805,7 @@ public class DBDatasProcessor {
         return "select " + queryCoulums + " from " + tableName + " where " + wherePart;
     }
 
-    protected boolean doSelectAndCompare(VirtualTable table, List<String> fields, String sql,
-                                         StringBuilder allErr) {
+    protected boolean doSelectAndCompare(VirtualTable table, List<String> fields, String sql, StringBuilder allErr) {
         // 提取待校验的多条表数据
         List<Map<String, Object>> rows = table.getTableData();
         String[] selectKeys = getSelectKeys(table, fields);
@@ -830,26 +839,33 @@ public class DBDatasProcessor {
                 LOGGER.info("Executing sql:" + sql + ",parameters:" + message);
                 if (assertEmpty && dbRowsResult.size() > 0) {
                     isSame = false;
-                    err.append("Failed checking db, tableName" + table.getTableName()
-                            + "has unexpected data " + dbRowsResult + "\n");
+                    err.append("Failed checking db, tableName"
+                            + table.getTableName()
+                            + "has unexpected data "
+                            + dbRowsResult
+                            + "\n");
                 } else if (!assertEmpty && dbRowsResult.size() <= 0) {
                     isSame = false;
-                    err.append("Failed checking DB, tableName: " + table.getTableName()
-                            + " does not contains data: " + rowData + "\n");
+                    err.append("Failed checking DB, tableName: "
+                            + table.getTableName()
+                            + " does not contains data: "
+                            + rowData
+                            + "\n");
                 }
 
             } catch (Exception e) {
                 isSame = false;
-                throw new TestifyException("sql="
-                        + sql
-                        + ",args="
-                        + ToStringBuilder.reflectionToString(valsOfArgs,
-                        ToStringStyle.SHORT_PREFIX_STYLE), e);
+                throw new TestifyException(
+                        "sql="
+                                + sql
+                                + ",args="
+                                + ToStringBuilder.reflectionToString(valsOfArgs, ToStringStyle.SHORT_PREFIX_STYLE),
+                        e);
             }
 
             // 开启表数据比对流程
             for (Map<String, Object> dbOneRowResult : dbRowsResult) {
-                //多个结果要求所有结果都满足期望
+                // 多个结果要求所有结果都满足期望
                 Iterator<String> iterator = rowData.keySet().iterator();
                 // 逐个字段比对，前辈们在这个while里精心写了200多行if-else，走读代码请做好心理准备
                 while (iterator.hasNext()) {
@@ -857,27 +873,29 @@ public class DBDatasProcessor {
                     Object expectedFieldValue = rowData.get(fieldName);
                     Object actualFieldValue = dbOneRowResult.get(fieldName);
 
-                    //【提取变量值】先处理变量赋值，把原先数据表期望中定义的变量，加入到上下文参数列表中
+                    // 【提取变量值】先处理变量赋值，把原先数据表期望中定义的变量，加入到上下文参数列表中
                     if (String.valueOf(expectedFieldValue).startsWith("=")) {
-                        paramBuffer.put(String.valueOf(expectedFieldValue).replace("=", ""),
-                                actualFieldValue);
+                        paramBuffer.put(String.valueOf(expectedFieldValue).replace("=", ""), actualFieldValue);
                         continue;
                     }
 
                     // 统一使用velocity做变量替换
                     String expectedFieldValueStr = String.valueOf(expectedFieldValue);
                     if (expectedFieldValueStr.indexOf("$") != -1) {
-                        String parsedValue = VelocityUtil.evaluateString(paramBuffer,
-                                expectedFieldValueStr);
+                        String parsedValue = VelocityUtil.evaluateString(paramBuffer, expectedFieldValueStr);
                         if (parsedValue.indexOf("$") != -1) { // 说明还有无法解析的变量，也可能是真实值含$
-                            LOGGER.error("[PARAM_WARNING]unable to resolve param in value [" + parsedValue
-                                    + "] from " + table.getTableName() + "." + fieldName
+                            LOGGER.error("[PARAM_WARNING]unable to resolve param in value ["
+                                    + parsedValue
+                                    + "] from "
+                                    + table.getTableName()
+                                    + "."
+                                    + fieldName
                                     + ", will process the value as a plain string.");
                         }
                         expectedFieldValue = parsedValue;
                     }
 
-                    //获取当前flag 兼容大小写问题
+                    // 获取当前flag 兼容大小写问题
                     String currentFlag = table.getFlagByFieldNameIgnoreCase(fieldName);
 
                     if (currentFlag != null) {
@@ -896,16 +914,14 @@ public class DBDatasProcessor {
                                 expectedFieldValue = null;
                             } else {
                                 throw new TestifyException(
-                                        "[M_Flag]字段对应值解析失败，请保证M flag的字段内容格式为 {flag}|{value}，如Y|actual_cotent");
+                                        "[M_Flag]字段对应值解析失败，请保证M flag的字段内容格式为" + " {flag}|{value}，如Y|actual_cotent");
                             }
-
                         }
-
 
                         if (currentFlag.equalsIgnoreCase(DBFlagEnum.N.name())) {
                             continue;
                         } else if (currentFlag.startsWith(DBFlagEnum.D.name())) {
-                            //日期的逻辑
+                            // 日期的逻辑
                             long timeFlow = Long.valueOf(currentFlag.replace(DBFlagEnum.D.name(), ""));
                             Date real = null;
                             Date expect = null;
@@ -926,22 +942,30 @@ public class DBDatasProcessor {
                                     expect = sdf.parse((String) expectedFieldValue);
                                 }
                             } catch (ParseException e) {
-                                throw new TestifyException(table.getTableName() + " key:  "
+                                throw new TestifyException(table.getTableName()
+                                        + " key:  "
                                         + fieldName
                                         + " is not Date or valid date format"
                                         + err);
                             }
                             Long realTime = real.getTime();
                             Long expectTime = expect.getTime();
-                            //相差多少秒与给定值比较
+                            // 相差多少秒与给定值比较
                             if (Math.abs((realTime - expectTime) / 1000) > timeFlow) {
                                 isSame = false;
                                 err.append("Failed checking db param, tableName: "
-                                        + table.getTableName() + " key:  " + fieldName
-                                        + " ,value is " + real + " expect value is " + expect
-                                        + "time shift: " + real.compareTo(expect) + " is over "
-                                        + timeFlow + "\n");
-
+                                        + table.getTableName()
+                                        + " key:  "
+                                        + fieldName
+                                        + " ,value is "
+                                        + real
+                                        + " expect value is "
+                                        + expect
+                                        + "time shift: "
+                                        + real.compareTo(expect)
+                                        + " is over "
+                                        + timeFlow
+                                        + "\n");
                             }
                             continue;
                         } else if (currentFlag.startsWith(DBFlagEnum.R.name())) {
@@ -950,39 +974,48 @@ public class DBDatasProcessor {
                             boolean matchRes = matcher.matches();
                             if (!matchRes) {
                                 isSame = false;
-                                err.append("db字段比对失败，表为：" + table.getTableName() + " key为 "
-                                        + fieldName + " ,value is "
-                                        + actualFieldValue + " expect value is "
-                                        + expectedFieldValue + "\n");
+                                err.append("db字段比对失败，表为："
+                                        + table.getTableName()
+                                        + " key为 "
+                                        + fieldName
+                                        + " ,value is "
+                                        + actualFieldValue
+                                        + " expect value is "
+                                        + expectedFieldValue
+                                        + "\n");
                             }
                             continue;
                         } else if (currentFlag.equalsIgnoreCase(DBFlagEnum.J.name())) {
-                            //JSON字符串的对比
+                            // JSON字符串的对比
                             String valueExp = String.valueOf(expectedFieldValue);
                             String valueDb = String.valueOf(actualFieldValue);
-                            if (!JSONObject.parseObject(valueExp).equals(
-                                    JSONObject.parseObject(valueDb))) {
+                            if (!JSONObject.parseObject(valueExp).equals(JSONObject.parseObject(valueDb))) {
                                 isSame = false;
-                                err.append("db字段(JSON字符串)比对失败，表为：" + table.getTableName()
-                                        + " key为 " + fieldName + " ,value is "
-                                        + actualFieldValue + " expect value is "
-                                        + expectedFieldValue + "\n");
+                                err.append("db字段(JSON字符串)比对失败，表为："
+                                        + table.getTableName()
+                                        + " key为 "
+                                        + fieldName
+                                        + " ,value is "
+                                        + actualFieldValue
+                                        + " expect value is "
+                                        + expectedFieldValue
+                                        + "\n");
                             }
                             continue;
                         } else if (currentFlag.equalsIgnoreCase(DBFlagEnum.JB.name())) {
-                            //JSON字符串的对比 新增key黑名单
+                            // JSON字符串的对比 新增key黑名单
                             String valueExp = String.valueOf(expectedFieldValue);
                             String valueDb = String.valueOf(actualFieldValue);
 
                             JSONObject jsonExp = JSONObject.parseObject(valueExp);
                             JSONObject jsonDb = JSONObject.parseObject(valueDb);
 
-                            //读取黑名单key列表
+                            // 读取黑名单key列表
                             String blackTag = "####";
                             String blackEle = (String) jsonExp.remove(blackTag);
                             String[] blackList = StringUtils.split(blackEle, "#");
 
-                            //剔除黑名单key
+                            // 剔除黑名单key
                             for (String blackKey : blackList) {
                                 jsonDb.remove(blackKey);
                                 jsonExp.remove(blackKey);
@@ -990,14 +1023,19 @@ public class DBDatasProcessor {
 
                             if (!jsonExp.equals(jsonDb)) {
                                 isSame = false;
-                                err.append("db字段(JSON字符串)比对失败，表为：" + table.getTableName()
-                                        + " key为 " + fieldName + " ,value is "
-                                        + actualFieldValue + " expect value is "
-                                        + expectedFieldValue + "\n");
+                                err.append("db字段(JSON字符串)比对失败，表为："
+                                        + table.getTableName()
+                                        + " key为 "
+                                        + fieldName
+                                        + " ,value is "
+                                        + actualFieldValue
+                                        + " expect value is "
+                                        + expectedFieldValue
+                                        + "\n");
                             }
                             continue;
                         } else if (currentFlag.equalsIgnoreCase(DBFlagEnum.JA.name())) {
-                            //JSONArray的对比
+                            // JSONArray的对比
                             String valueExp = String.valueOf(expectedFieldValue);
                             String valueDb = String.valueOf(actualFieldValue);
 
@@ -1006,23 +1044,34 @@ public class DBDatasProcessor {
 
                             if (!jsonArrayExp.equals(jsonArrayDB)) {
                                 isSame = false;
-                                err.append("db字段(JSONArray字符串)比对失败，表为：" + table.getTableName()
-                                        + " key为 " + fieldName + " ,value is "
-                                        + actualFieldValue + " expect value is "
-                                        + expectedFieldValue + "\n");
+                                err.append("db字段(JSONArray字符串)比对失败，表为："
+                                        + table.getTableName()
+                                        + " key为 "
+                                        + fieldName
+                                        + " ,value is "
+                                        + actualFieldValue
+                                        + " expect value is "
+                                        + expectedFieldValue
+                                        + "\n");
                             }
                             continue;
                         } else if (currentFlag.equalsIgnoreCase(DBFlagEnum.L.name())) {
-                            //大字段换行问题
-                            String valueExp = "";//PropertiesUtil.convert2String(
-//                                transStringToMap(String.valueOf(expectedFieldValue)), false);
+                            // 大字段换行问题
+                            String valueExp = ""; // PropertiesUtil.convert2String(
+                            //
+                            // transStringToMap(String.valueOf(expectedFieldValue)), false);
                             String valueDb = String.valueOf(actualFieldValue);
                             if (!StringUtils.equals(valueExp, valueDb)) {
                                 isSame = false;
-                                err.append("db字段比对失败，表为：" + table.getTableName() + " key为 "
-                                        + fieldName + " ,value is "
-                                        + actualFieldValue + " expect value is "
-                                        + expectedFieldValue + "\n");
+                                err.append("db字段比对失败，表为："
+                                        + table.getTableName()
+                                        + " key为 "
+                                        + fieldName
+                                        + " ,value is "
+                                        + actualFieldValue
+                                        + " expect value is "
+                                        + expectedFieldValue
+                                        + "\n");
                             }
                             continue;
                         } else if (currentFlag.startsWith(DBFlagEnum.P.name())) {
@@ -1034,40 +1083,52 @@ public class DBDatasProcessor {
                                 customSeparator = currentFlag.substring(1);
                             }
 
-                            //根据exp的扩展字段去匹配db里的字段
-                            Map<String, String> valueExpMap = convertToMap(
-                                    String.valueOf(expectedFieldValue), customSeparator);
+                            // 根据exp的扩展字段去匹配db里的字段
+                            Map<String, String> valueExpMap =
+                                    convertToMap(String.valueOf(expectedFieldValue), customSeparator);
 
                             String valueDbStr = String.valueOf(actualFieldValue);
-                            Map<String, String> valueDbMap = new HashMap<>();//PropertiesUtil
-//                                .toMap(PropertiesUtil
-//                                    .restoreFromString(valueDbStr));
+                            Map<String, String> valueDbMap = new HashMap<>(); // PropertiesUtil
+                            //                                .toMap(PropertiesUtil
+                            //                                    .restoreFromString(valueDbStr));
                             for (Entry<String, String> entry : valueExpMap.entrySet()) {
                                 String extKey = entry.getKey();
                                 String valueExp = entry.getValue();
                                 String valueDb = valueDbMap.get(extKey);
                                 if (!StringUtils.equals(valueExp, valueDb)) {
-                                    //判断是否unicode
+                                    // 判断是否unicode
                                     if (valueExp != null && valueExp.startsWith("\\u")) {
                                         String decodeValueExp = decodeUnicodeStr(valueExp);
-                                        if (StringUtils.equals(decodeValueExp, valueDb))
-                                            continue;
+                                        if (StringUtils.equals(decodeValueExp, valueDb)) continue;
                                     }
                                     isSame = false;
-                                    err.append("db字段比对失败，表为：" + table.getTableName() + " key为 "
-                                            + fieldName + "." + extKey + " ,value is " + valueDb
-                                            + " expect value is " + valueExp + "\n");
+                                    err.append("db字段比对失败，表为："
+                                            + table.getTableName()
+                                            + " key为 "
+                                            + fieldName
+                                            + "."
+                                            + extKey
+                                            + " ,value is "
+                                            + valueDb
+                                            + " expect value is "
+                                            + valueExp
+                                            + "\n");
                                 }
                             }
 
                             continue;
-                        } else if (ObjectCompareUtil.flagMethodsHolder.get() != null && ObjectCompareUtil.flagMethodObjHolder.get() != null
+                        } else if (ObjectCompareUtil.flagMethodsHolder.get() != null
+                                && ObjectCompareUtil.flagMethodObjHolder.get() != null
                                 && ObjectCompareUtil.flagMethodsHolder.get().containsKey(currentFlag)) {
                             // 搜索并尝试自定义flag方法，此处复用对象比对的自定义flag
-                            Method flagMethod = ObjectCompareUtil.flagMethodsHolder.get().get(currentFlag);
+                            Method flagMethod =
+                                    ObjectCompareUtil.flagMethodsHolder.get().get(currentFlag);
                             String cmpMsg = null;
                             try {
-                                cmpMsg = (String) flagMethod.invoke(ObjectCompareUtil.flagMethodObjHolder.get(), expectedFieldValue, actualFieldValue);
+                                cmpMsg = (String) flagMethod.invoke(
+                                        ObjectCompareUtil.flagMethodObjHolder.get(),
+                                        expectedFieldValue,
+                                        actualFieldValue);
                             } catch (IllegalAccessException e) {
                                 throw new RuntimeException(e);
                             } catch (InvocationTargetException e) {
@@ -1075,9 +1136,19 @@ public class DBDatasProcessor {
                             }
                             if (StringUtils.isNotEmpty(cmpMsg)) {
                                 isSame = false;
-                                err.append("db字段比对失败，表为：" + table.getTableName() + " key为 "
-                                        + fieldName + "." + fieldName + " ,value is " + actualFieldValue
-                                        + " expect value is " + expectedFieldValue + "\n" + cmpMsg + "\n");
+                                err.append("db字段比对失败，表为："
+                                        + table.getTableName()
+                                        + " key为 "
+                                        + fieldName
+                                        + "."
+                                        + fieldName
+                                        + " ,value is "
+                                        + actualFieldValue
+                                        + " expect value is "
+                                        + expectedFieldValue
+                                        + "\n"
+                                        + cmpMsg
+                                        + "\n");
                             }
                             continue;
                         }
@@ -1091,8 +1162,15 @@ public class DBDatasProcessor {
 
                         if (real.compareTo(expect) != 0) {
                             isSame = false;
-                            err.append("db字段比对失败，表为：" + table.getTableName() + " key为 " + fieldName
-                                    + " ,value is " + real + " expect value is " + expect + "\n");
+                            err.append("db字段比对失败，表为："
+                                    + table.getTableName()
+                                    + " key为 "
+                                    + fieldName
+                                    + " ,value is "
+                                    + real
+                                    + " expect value is "
+                                    + expect
+                                    + "\n");
                             continue;
                         }
                     } else {
@@ -1100,53 +1178,64 @@ public class DBDatasProcessor {
                             expectedFieldValue = new Date();
                         }
 
-                        //数据库字符串字段“”与null不做区分
+                        // 数据库字符串字段“”与null不做区分
                         if (!isNullBlankDiff()
-                                && (expectedFieldValue == null || StringUtils.equals(
-                                String.valueOf(expectedFieldValue), ""))) {
+                                && (expectedFieldValue == null
+                                        || StringUtils.equals(String.valueOf(expectedFieldValue), ""))) {
 
                             if (actualFieldValue != null) {
 
                                 if (!StringUtils.equals(String.valueOf(actualFieldValue), "null")
                                         && !StringUtils.equals(String.valueOf(actualFieldValue), "")) {
                                     isSame = false;
-                                    err.append("db字段比对失败，表为：" + table.getTableName() + " key为 "
-                                            + fieldName + " ,value is " + actualFieldValue
-                                            + " expect value is " + expectedFieldValue + "\n");
-
+                                    err.append("db字段比对失败，表为："
+                                            + table.getTableName()
+                                            + " key为 "
+                                            + fieldName
+                                            + " ,value is "
+                                            + actualFieldValue
+                                            + " expect value is "
+                                            + expectedFieldValue
+                                            + "\n");
                                 }
-
                             }
 
                             continue;
-
                         }
 
                         if (!String.valueOf(expectedFieldValue).equals(String.valueOf(actualFieldValue))) {
                             isSame = false;
-                            err.append("db字段比对失败，表为：" + table.getTableName() + " key为 " + fieldName
-                                    + " ,value is " + actualFieldValue
-                                    + " expect value is " + expectedFieldValue + "\n");
+                            err.append("db字段比对失败，表为："
+                                    + table.getTableName()
+                                    + " key为 "
+                                    + fieldName
+                                    + " ,value is "
+                                    + actualFieldValue
+                                    + " expect value is "
+                                    + expectedFieldValue
+                                    + "\n");
                             continue;
                         }
-
                     }
-                    LOGGER.info("db字段比成功，表为：" + table.getTableName() + " ,key为 " + fieldName
-                            + " ,value is " + actualFieldValue
-                            + " expect value is " + expectedFieldValue);
-
+                    LOGGER.info("db字段比成功，表为："
+                            + table.getTableName()
+                            + " ,key为 "
+                            + fieldName
+                            + " ,value is "
+                            + actualFieldValue
+                            + " expect value is "
+                            + expectedFieldValue);
                 }
             }
         }
 
         if (!isSame) {
-            //throw new ActsTestException("Failed checking DB" + err);
+            // throw new ActsTestException("Failed checking DB" + err);
             allErr.append(err);
             LogUtil.printColoredError(LOGGER, "Failed checking DB:\n" + err);
         }
 
         return isSame;
-
     }
 
     /**
@@ -1172,7 +1261,7 @@ public class DBDatasProcessor {
     private boolean willAssertEmpty(VirtualTable table, List<String> fields) {
         if (table.getFlags() != null) {
             for (String field : fields) {
-                //兼容flag大小写问题
+                // 兼容flag大小写问题
                 String currentFlag = table.getFlagByFieldNameIgnoreCase(field);
 
                 if (currentFlag != null) {
@@ -1181,7 +1270,6 @@ public class DBDatasProcessor {
                     }
                 }
             }
-
         }
 
         return false;
@@ -1194,8 +1282,7 @@ public class DBDatasProcessor {
      * @param rowData    数据库中表的一行数据
      * @param tableName  数据库表名
      */
-    private Object[] getValsForSelectKeys(String[] selectKeys, Map<String, Object> rowData,
-                                          String tableName) {
+    private Object[] getValsForSelectKeys(String[] selectKeys, Map<String, Object> rowData, String tableName) {
         Object[] vals = new Object[selectKeys.length];
         Map<String, Object> paramBuffer = TestifyRuntimeContextThreadHold.getContext().paramMap;
         for (int i = 0; i < selectKeys.length; i++) {
@@ -1204,20 +1291,23 @@ public class DBDatasProcessor {
             Object actualVal = rowData.get(selectKeys[i]);
 
             if (val.startsWith("=")) {
-                throw new TestifyException("tableName: " + tableName + " condition: "
-                        + selectKeys[i] + "cannot be assignment statement!");
+                throw new TestifyException(
+                        "tableName: " + tableName + " condition: " + selectKeys[i] + "cannot be assignment statement!");
             }
 
             if (val.startsWith("$")) {
                 String key = val.replace("$", "");
                 if (!paramBuffer.containsKey(key)) {
-                    LOGGER.error("[PARAM_WARNING]unable to resolve param in value [" + val
-                            + "] from " + tableName + "." + selectKeys[i]
+                    LOGGER.error("[PARAM_WARNING]unable to resolve param in value ["
+                            + val
+                            + "] from "
+                            + tableName
+                            + "."
+                            + selectKeys[i]
                             + ", will process the value as a plain string.");
                 }
 
-                actualVal = VelocityUtil.evaluateString(
-                        paramBuffer, String.valueOf(actualVal));
+                actualVal = VelocityUtil.evaluateString(paramBuffer, String.valueOf(actualVal));
             }
 
             vals[i] = actualVal;
@@ -1238,18 +1328,15 @@ public class DBDatasProcessor {
         List<String> tmpSelectKeys = new ArrayList<String>();
         if (table.getFlags() != null) {
             for (String field : fields) {
-                //获取当前field的flag，看是否能获取到，兼容Flag，Value大小写
+                // 获取当前field的flag，看是否能获取到，兼容Flag，Value大小写
                 String currentFlag = table.getFlagByFieldNameIgnoreCase(field);
-                if (currentFlag != null &&
-                        (currentFlag.equalsIgnoreCase("c") || currentFlag.equalsIgnoreCase("cn"))) {
+                if (currentFlag != null && (currentFlag.equalsIgnoreCase("c") || currentFlag.equalsIgnoreCase("cn"))) {
                     tmpSelectKeys.add(field);
                 }
             }
-
         }
         if (dataAccessConfigManager != null) {
-            DataAccessConfig dataAccessConfig = dataAccessConfigManager.findDataAccessConfig(table
-                    .getDataObjClazz());
+            DataAccessConfig dataAccessConfig = dataAccessConfigManager.findDataAccessConfig(table.getDataObjClazz());
 
             if (dataAccessConfig != null) {
                 for (String configKey : dataAccessConfig.getSelectKeys()) {
@@ -1280,7 +1367,6 @@ public class DBDatasProcessor {
         } else {
             return "mysql";
         }
-
     }
 
     /**
@@ -1299,14 +1385,14 @@ public class DBDatasProcessor {
             dsName = tableName.split("#")[0];
             tableName = tableName.split("#")[1];
         } else {
-//            dsName = DataAccessConfigManager.findDataSourceName(tableName);
+            //            dsName = DataAccessConfigManager.findDataSourceName(tableName);
         }
 
         if (StringUtils.isBlank(dsName)) {
-            LOGGER
-                    .error("Table not Found. tableName="
-                            + tableName
-                            + "add datasource config in [acts-config.properties], modify variable [ds_datasource]");
+            LOGGER.error("Table not Found. tableName="
+                    + tableName
+                    + "add datasource config in [acts-config.properties], modify variable"
+                    + " [ds_datasource]");
         }
 
         try {
@@ -1316,7 +1402,6 @@ public class DBDatasProcessor {
         } catch (NullPointerException ne) {
             throw new TestifyException("[datasource缺失]请提前在acts-config.properties中配置数据源！", ne);
         }
-
     }
 
     /**
@@ -1327,11 +1412,11 @@ public class DBDatasProcessor {
      * @return
      */
     public DataSource getDataSource(String dsName, String bundleName) {
-        DataSource ds = null;// ((DataSource) BundleBeansManager.getBean(dsName, bundleName));
-//        if (ds == null) {
-//            默认on-the-fly-bundle
-//            ds = ((DataSource) BundleBeansManager.getBean(dsName, null));
-//        }
+        DataSource ds = null; // ((DataSource) BundleBeansManager.getBean(dsName, bundleName));
+        //        if (ds == null) {
+        //            默认on-the-fly-bundle
+        //            ds = ((DataSource) BundleBeansManager.getBean(dsName, null));
+        //        }
 
         return ds;
     }
@@ -1365,8 +1450,7 @@ public class DBDatasProcessor {
     }
 
     private boolean isNullBlankDiff() {
-        String isdiff = TestifyConfiguration.getInstance().getConfigMap()
-                .get(TestifyConstants.IS_DB_NULL_BLANK_DIFF);
+        String isdiff = TestifyConfiguration.getInstance().getConfigMap().get(TestifyConstants.IS_DB_NULL_BLANK_DIFF);
 
         if (StringUtils.isNotBlank(isdiff)) {
             return Boolean.valueOf(isdiff).booleanValue();
@@ -1444,5 +1528,4 @@ public class DBDatasProcessor {
     public void addSpecialGroupIds(String[] groupIds) {
         this.specialGroupIds.addAll(Arrays.asList(groupIds));
     }
-
 }

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.event.hunt.impl;
 
 /*-
@@ -34,9 +31,8 @@ import com.github.loadup.components.testify.component.event.hunt.EventContextHun
 import com.github.loadup.components.testify.component.event.hunt.HuntResult;
 import com.github.loadup.components.testify.component.event.ssh.AppServerLogFetcher;
 import com.github.loadup.components.testify.utils.config.ConfigrationFactory;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author jie.peng
@@ -47,8 +43,7 @@ public class RemoteEventContextHunter implements EventContextHunter {
     /**
      * 打印应用变更事件的日志文件
      */
-    private final static String EVENT_LOGGER_NAME = ConfigrationFactory
-            .getSofaConfig("event_log_name");
+    private static final String EVENT_LOGGER_NAME = ConfigrationFactory.getSofaConfig("event_log_name");
 
     /**
      * @see EventContextHunter#hunt(String, String, Set)
@@ -57,16 +52,16 @@ public class RemoteEventContextHunter implements EventContextHunter {
     public HuntResult hunt(String topic, String eventCode, Set<String> targets) {
         HuntResult result = new HuntResult();
         AppServerLogFetcher fecther = new AppServerLogFetcher();
-        //组装日期提取命令
+        // 组装日期提取命令
         String command = assembleCommand(topic, eventCode);
-        //获取hunt的事件内容
+        // 获取hunt的事件内容
         result.setEventContext(StringUtils.trimToNull(fecther.getLog(command)));
-        //若期望获取的事件目标属性为空,则直接返回
+        // 若期望获取的事件目标属性为空,则直接返回
         if (targets == null || targets.isEmpty()) {
             return result;
         }
-        //设置获取的事件的实际属性值
-        result.setActual(fecther.getInfoFromLog(command, targets.toArray(new String[]{})));
+        // 设置获取的事件的实际属性值
+        result.setActual(fecther.getInfoFromLog(command, targets.toArray(new String[] {})));
         return result;
     }
 
@@ -79,7 +74,5 @@ public class RemoteEventContextHunter implements EventContextHunter {
      */
     private String assembleCommand(String topic, String eventCode) {
         return "grep " + topic + " " + EVENT_LOGGER_NAME + "|grep " + eventCode;
-
     }
-
 }

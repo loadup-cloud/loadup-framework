@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.comparer.impl;
 
 /*-
@@ -32,7 +33,7 @@ import com.github.loadup.components.testify.object.comparer.UnitComparer;
  * "N" flag 校验器
  *
  * @author midang
- * 
+ *
  */
 public class NoCheckComparer implements UnitComparer {
 
@@ -47,5 +48,4 @@ public class NoCheckComparer implements UnitComparer {
     public boolean compare(Object expect, Object actual, String comparerFlagCode) {
         return true;
     }
-
 }

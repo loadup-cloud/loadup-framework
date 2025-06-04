@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.parser;
 
 /*-
@@ -36,7 +33,7 @@ import com.github.loadup.components.testify.exception.RuleParseException;
 /**
  * rule解析基类。
  *
- * 
+ *
  *
  */
 public abstract class RuleParser<E> {
@@ -69,8 +66,8 @@ public abstract class RuleParser<E> {
             lexer.nextToken();
         } else {
             setErrorEndPos(lexer.pos());
-            throw new RuleParseException("syntax error[expect=" + text + ",actual=" + lexer.token()
-                    + "],rule=" + lexer.text);
+            throw new RuleParseException(
+                    "syntax error[expect=" + text + ",actual=" + lexer.token() + "],rule=" + lexer.text);
         }
     }
 
@@ -79,8 +76,8 @@ public abstract class RuleParser<E> {
             lexer.nextToken();
         } else {
             setErrorEndPos(lexer.pos());
-            throw new CcilParseException("syntax error[expect=" + token + ",actual="
-                    + lexer.token() + "],rule=" + lexer.text);
+            throw new CcilParseException(
+                    "syntax error[expect=" + token + ",actual=" + lexer.token() + "],rule=" + lexer.text);
         }
     }
 
@@ -102,5 +99,4 @@ public abstract class RuleParser<E> {
 
         return field;
     }
-
 }

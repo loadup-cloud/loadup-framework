@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils;
 
 /*-
@@ -40,7 +37,7 @@ import java.util.List;
  * Annotation Utils
  *
  * @author yuanren.syr
- * 
+ *
  */
 public class AnnotationUtils {
 
@@ -51,8 +48,7 @@ public class AnnotationUtils {
      * @param annotationClass
      * @return
      */
-    public static <T extends Annotation> List<Method> findMethods(Class<?> clazz,
-                                                                  Class<T> annotationClass) {
+    public static <T extends Annotation> List<Method> findMethods(Class<?> clazz, Class<T> annotationClass) {
         if (clazz == null || annotationClass == null) {
             throw new NullPointerException();
         }
@@ -72,8 +68,7 @@ public class AnnotationUtils {
      * @param annotationClass
      * @return
      */
-    public static <T extends Annotation> List<Field> findFields(Class<?> clazz,
-                                                                Class<T> annotationClass) {
+    public static <T extends Annotation> List<Field> findFields(Class<?> clazz, Class<T> annotationClass) {
         if (clazz == null || annotationClass == null) {
             throw new NullPointerException();
         }

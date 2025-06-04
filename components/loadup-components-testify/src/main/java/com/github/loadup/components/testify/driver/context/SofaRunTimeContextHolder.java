@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.driver.context;
 
 /*-
@@ -26,16 +27,15 @@ package com.github.loadup.components.testify.driver.context;
  * #L%
  */
 
-
 /**
  * ATS启动时初始化的sofa上下文
  *
- * 
+ *
  *
  */
 public class SofaRunTimeContextHolder {
 
-    //sofa线程上下文
+    // sofa线程上下文
     private static ThreadLocal<Object> sofaRunTimeContextLocal = new ThreadLocal<Object>();
 
     /**
@@ -44,7 +44,7 @@ public class SofaRunTimeContextHolder {
      * @return 上下文
      */
     public static Object get() {
-//        Assert.assertNotNull("sofa上下文不存在", sofaRunTimeContextLocal.get());
+        //        Assert.assertNotNull("sofa上下文不存在", sofaRunTimeContextLocal.get());
         return sofaRunTimeContextLocal.get();
     }
 

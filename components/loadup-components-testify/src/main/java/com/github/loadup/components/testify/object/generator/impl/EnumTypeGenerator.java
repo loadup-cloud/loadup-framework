@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.generator.impl;
 
 /*-
@@ -26,14 +27,13 @@ package com.github.loadup.components.testify.object.generator.impl;
  * #L%
  */
 
-import java.lang.reflect.Type;
-
 import com.github.loadup.components.testify.object.generator.ObjectGenerator;
+import java.lang.reflect.Type;
 
 /**
  * 枚举类型处理器
  *
- * 
+ *
  *
  */
 public class EnumTypeGenerator implements ObjectGenerator {
@@ -61,13 +61,12 @@ public class EnumTypeGenerator implements ObjectGenerator {
 
     @Override
     public Class<?> getItemClass(Type collectionItemType, Class<?> clz) {
-        //简单类型不实现
+        // 简单类型不实现
         return null;
     }
 
     @Override
-    public void setObjectValue(Object collectionObject, Object value, String originalValue,
-                               int index) {
-        //简单类型不实现
+    public void setObjectValue(Object collectionObject, Object value, String originalValue, int index) {
+        // 简单类型不实现
     }
 }

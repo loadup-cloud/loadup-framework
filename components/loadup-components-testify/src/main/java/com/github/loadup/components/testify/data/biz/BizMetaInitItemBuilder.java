@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data.biz;
 
 /*-
@@ -36,21 +33,20 @@ import com.github.loadup.components.testify.data.MetaInitItemBuilder;
 import com.github.loadup.components.testify.data.enums.MetaInitType;
 import com.github.loadup.components.testify.util.FileUtil;
 import com.opencsv.CSVReader;
-import org.apache.commons.io.FileUtils;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 
 /**
  * 业务模型元数据项构造器。
  *
- * 
- * 
+ *
+ *
  */
 public class BizMetaInitItemBuilder implements MetaInitItemBuilder {
 
-    //根据csv获取当前模型的名字,用来填充model_obj这一列
+    // 根据csv获取当前模型的名字,用来填充model_obj这一列
     private String readCurrentModelObj(String csvPath) {
         String CurrentQuafiedName = "";
         File f = new File(csvPath);
@@ -65,7 +61,7 @@ public class BizMetaInitItemBuilder implements MetaInitItemBuilder {
         CSVReader csvReader = new CSVReader(isr);
 
         try {
-            //这是header部分
+            // 这是header部分
             csvReader.readNext();
             String[] firstLine = csvReader.readNext();
 
@@ -100,7 +96,7 @@ public class BizMetaInitItemBuilder implements MetaInitItemBuilder {
         List<MetaInitItem> initItems = new ArrayList<MetaInitItem>();
 
         @SuppressWarnings("unchecked")
-        List<File> allCSV = (List<File>) FileUtils.listFiles(dir, new String[]{"csv"}, true);
+        List<File> allCSV = (List<File>) FileUtils.listFiles(dir, new String[] {"csv"}, true);
         for (File f : allCSV) {
             InputStream in = null;
             try {

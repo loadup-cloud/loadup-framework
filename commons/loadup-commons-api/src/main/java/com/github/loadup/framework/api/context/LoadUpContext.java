@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.framework.api.context;
 
 /*-
@@ -28,14 +29,13 @@ package com.github.loadup.framework.api.context;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import io.opentelemetry.api.trace.Span;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.Getter;
+import lombok.Setter;
 
 public class LoadUpContext {
     private static ThreadLocal<LoadUpContext> threadLocal = new TransmittableThreadLocal<>();

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.model;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.components.gateway.facade.model;
  * #L%
  */
 
+import java.util.Date;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.Date;
 
 /**
  * <p>
@@ -38,7 +38,7 @@ import java.util.Date;
  */
 public class InterfaceManageDto {
 
-    //========== properties ==========
+    // ========== properties ==========
 
     /**
      * This property corresponds to db column <tt>tenant_id</tt>.
@@ -132,7 +132,7 @@ public class InterfaceManageDto {
      */
     private Date gmtModified;
 
-    //========== getters and setters ==========
+    // ========== getters and setters ==========
 
     /**
      *
@@ -142,7 +142,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
@@ -156,7 +156,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceId(String interfaceId) {
         this.interfaceId = interfaceId;
@@ -170,7 +170,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceName(String interfaceName) {
         this.interfaceName = interfaceName;
@@ -184,7 +184,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setUrl(String url) {
         this.url = url;
@@ -198,7 +198,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationUrl(String integrationUrl) {
         this.integrationUrl = integrationUrl;
@@ -212,7 +212,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
@@ -226,7 +226,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setVersion(String version) {
         this.version = version;
@@ -240,7 +240,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setType(String type) {
         this.type = type;
@@ -254,7 +254,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setStatus(String status) {
         this.status = status;
@@ -268,7 +268,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceRequestParser(String interfaceRequestParser) {
         this.interfaceRequestParser = interfaceRequestParser;
@@ -282,7 +282,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationRequestHeaderAssemble(String integrationRequestHeaderAssemble) {
         this.integrationRequestHeaderAssemble = integrationRequestHeaderAssemble;
@@ -296,7 +296,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationRequestBodyAssemble(String integrationRequestBodyAssemble) {
         this.integrationRequestBodyAssemble = integrationRequestBodyAssemble;
@@ -310,7 +310,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationResponseParser(String integrationResponseParser) {
         this.integrationResponseParser = integrationResponseParser;
@@ -324,7 +324,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceResponseHeaderAssemble(String interfaceResponseHeaderAssemble) {
         this.interfaceResponseHeaderAssemble = interfaceResponseHeaderAssemble;
@@ -338,7 +338,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceResponseBodyAssemble(String interfaceResponseBodyAssemble) {
         this.interfaceResponseBodyAssemble = interfaceResponseBodyAssemble;
@@ -352,7 +352,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setCommunicationProperties(String communicationProperties) {
         this.communicationProperties = communicationProperties;
@@ -366,7 +366,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setGmtCreate(Date gmtCreate) {
         this.gmtCreate = gmtCreate;
@@ -380,7 +380,7 @@ public class InterfaceManageDto {
     }
 
     /**
-     * 
+     *
      */
     public void setGmtModified(Date gmtModified) {
         this.gmtModified = gmtModified;

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.model;
 
 /*-
@@ -99,168 +100,168 @@ public class MessageProcessConfig {
     private String sensitiveFields;
 
     /**
-     * 
+     *
      */
     public String getParserTemplate() {
         return parserTemplate;
     }
 
     /**
-     * 
+     *
      */
     public void setParserTemplate(String parserTemplate) {
         this.parserTemplate = parserTemplate;
     }
 
     /**
-     * 
+     *
      */
     public String getHeaderTemplate() {
         return headerTemplate;
     }
 
     /**
-     * 
+     *
      */
     public void setHeaderTemplate(String headerTemplate) {
         this.headerTemplate = headerTemplate;
     }
 
     /**
-     * 
+     *
      */
     public String getValidateTemplate() {
         return validateTemplate;
     }
 
     /**
-     * 
+     *
      */
     public void setValidateTemplate(String validateTemplate) {
         this.validateTemplate = validateTemplate;
     }
 
     /**
-     * 
+     *
      */
     public String getSensitiveFields() {
         return sensitiveFields;
     }
 
     /**
-     * 
+     *
      */
     public void setSensitiveFields(String sensitiveFields) {
         this.sensitiveFields = sensitiveFields;
     }
 
     /**
-     * 
+     *
      */
     public String getMessageProcessId() {
         return messageProcessId;
     }
 
     /**
-     * 
+     *
      */
     public void setMessageProcessId(String messageProcessId) {
         this.messageProcessId = messageProcessId;
     }
 
     /**
-     * 
+     *
      */
     public String getAssembleTemplate() {
         return assembleTemplate;
     }
 
     /**
-     * 
+     *
      */
     public void setAssembleTemplate(String assembleTemplate) {
         this.assembleTemplate = assembleTemplate;
     }
 
     /**
-     * 
+     *
      */
     public String getAssembleSubTemplate() {
         return assembleSubTemplate;
     }
 
     /**
-     * 
+     *
      */
     public void setAssembleSubTemplate(String assembleSubTemplate) {
         this.assembleSubTemplate = assembleSubTemplate;
     }
 
     /**
-     * 
+     *
      */
     public String getAssembleExtTemplate() {
         return assembleExtTemplate;
     }
 
     /**
-     * 
+     *
      */
     public void setAssembleExtTemplate(String assembleExtTemplate) {
         this.assembleExtTemplate = assembleExtTemplate;
     }
 
     /**
-     * 
+     *
      */
     public String getErrorTemplate() {
         return errorTemplate;
     }
 
     /**
-     * 
+     *
      */
     public void setErrorTemplate(String errorTemplate) {
         this.errorTemplate = errorTemplate;
     }
 
     /**
-     * 
+     *
      */
     public String getErrorSubTemplate() {
         return errorSubTemplate;
     }
 
     /**
-     * 
+     *
      */
     public void setErrorSubTemplate(String errorSubTemplate) {
         this.errorSubTemplate = errorSubTemplate;
     }
 
     /**
-     * 
+     *
      */
     public String getParserClassName() {
         return parserClassName;
     }
 
     /**
-     * 
+     *
      */
     public void setParserClassName(String parserClassName) {
         this.parserClassName = parserClassName;
     }
 
     /**
-     * 
+     *
      */
     public String getAssembleType() {
         return assembleType;
     }
 
     /**
-     * 
+     *
      */
     public void setAssembleType(String assembleType) {
         this.assembleType = assembleType;

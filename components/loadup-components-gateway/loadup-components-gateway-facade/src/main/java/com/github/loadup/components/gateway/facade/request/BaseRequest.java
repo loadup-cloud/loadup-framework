@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -29,5 +30,4 @@ package com.github.loadup.components.gateway.facade.request;
 /**
  *
  */
-public abstract class BaseRequest {
-}
+public abstract class BaseRequest {}

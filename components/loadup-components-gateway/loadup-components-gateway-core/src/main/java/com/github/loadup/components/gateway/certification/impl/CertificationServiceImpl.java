@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.impl;
 
 /*-
@@ -32,12 +33,11 @@ import com.github.loadup.components.gateway.certification.facade.CertificationSe
 import com.github.loadup.components.gateway.certification.manager.AlgoManager;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import jakarta.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 安全组件服务实现
@@ -73,8 +73,8 @@ public class CertificationServiceImpl implements CertificationService {
         }
     }
 
-    //@Override
-    //public void registerExtension(Extension extension) throws Exception {
+    // @Override
+    // public void registerExtension(Extension extension) throws Exception {
     //    Object[] contribs = extension.getContributions();
     //    if (contribs.length == 0) {
     //        LogUtil.error(logger, "没有扩展信息注册, extension=" + extension);
@@ -104,7 +104,7 @@ public class CertificationServiceImpl implements CertificationService {
     //    } else {
     //        LogUtil.error(logger, "没有找到AlgoManagerDescriptor对应的扩展点处理方式，descriptor=" + contribs);
     //    }
-    //}
+    // }
 
     /**
      * 获取证书内容, 从缓存获取证书内容，证书内容以byte[]的base64Encode后的String格式
@@ -112,13 +112,14 @@ public class CertificationServiceImpl implements CertificationService {
      * @throws CertificationException
      */
     @Override
-    public String getCert(String securityStrategyCode,
-                          String securityStrategyOperateType,
-                          String securityStrategyAlgorithm,
-                          String clientId)
+    public String getCert(
+            String securityStrategyCode,
+            String securityStrategyOperateType,
+            String securityStrategyAlgorithm,
+            String clientId)
             throws CertificationException {
-        return certAlgorithmCacheManager.getCertContentString(securityStrategyCode,
-                securityStrategyOperateType, securityStrategyAlgorithm, clientId);
+        return certAlgorithmCacheManager.getCertContentString(
+                securityStrategyCode, securityStrategyOperateType, securityStrategyAlgorithm, clientId);
     }
 
     /**
@@ -127,5 +128,4 @@ public class CertificationServiceImpl implements CertificationService {
     public void setProcessComponent(String processComponent) {
         this.processComponent = processComponent;
     }
-
 }

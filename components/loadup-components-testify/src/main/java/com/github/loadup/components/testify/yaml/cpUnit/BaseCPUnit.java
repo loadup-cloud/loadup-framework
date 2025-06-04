@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.yaml.cpUnit;
 
 /*-
@@ -30,15 +27,14 @@ package com.github.loadup.components.testify.yaml.cpUnit;
  * #L%
  */
 
+import com.github.loadup.components.testify.yaml.enums.CPUnitTypeEnum;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import com.github.loadup.components.testify.yaml.enums.CPUnitTypeEnum;
 
 /**
  * CP基准单位
  *
- * 
+ *
  *
  */
 public abstract class BaseCPUnit {
@@ -47,18 +43,22 @@ public abstract class BaseCPUnit {
      * 自定义规则Map
      */
     protected final Map<String, Object> specialMap = new LinkedHashMap<String, Object>();
+
     /**
      * 单位名称
      */
     protected String unitName;
+
     /**
      * 单位描述，同时用作序列号
      */
     protected String description;
+
     /**
      * 目标csv路径
      */
     protected String targetCSVPath;
+
     /**
      * CP单元类型
      */
@@ -69,9 +69,17 @@ public abstract class BaseCPUnit {
      */
     @Override
     public String toString() {
-        return "BaseCPUnit [unitName=" + unitName + ", description=" + description
-                + ", targetCSVPath=" + targetCSVPath + ", specialMap=" + specialMap + ", unitType="
-                + unitType + "]";
+        return "BaseCPUnit [unitName="
+                + unitName
+                + ", description="
+                + description
+                + ", targetCSVPath="
+                + targetCSVPath
+                + ", specialMap="
+                + specialMap
+                + ", unitType="
+                + unitType
+                + "]";
     }
 
     /**

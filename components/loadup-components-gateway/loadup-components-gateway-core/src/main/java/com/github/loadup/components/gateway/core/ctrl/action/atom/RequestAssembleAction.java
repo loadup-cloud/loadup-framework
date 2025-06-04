@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.ctrl.action.atom;
 
 /*-
@@ -40,12 +41,11 @@ import com.github.loadup.components.gateway.message.base.api.MessageEngine;
 import com.github.loadup.components.gateway.message.unimsg.UnifyMsg;
 import com.github.loadup.components.gateway.message.unimsg.UnifyMsgHelper;
 import jakarta.annotation.Resource;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-
-import java.util.Map;
 
 /**
  * <p>
@@ -92,8 +92,8 @@ public class RequestAssembleAction extends AbstractBusinessAction {
             context.setIntegratorCommunicationConfig(cloneConfig);
         }
         String interfaceId = integratorInterfaceConfig.getInterfaceId();
-        MessageEnvelope msgEnvelope = messageEngine.assemble(interfaceId, RoleType.RECEIVER, context,
-                context.getTransactionType(), unifyMsg);
+        MessageEnvelope msgEnvelope =
+                messageEngine.assemble(interfaceId, RoleType.RECEIVER, context, context.getTransactionType(), unifyMsg);
         context.setResultMessage(msgEnvelope);
     }
 
@@ -120,5 +120,4 @@ public class RequestAssembleAction extends AbstractBusinessAction {
     public void setNextAction(BusinessAction sendToIntegrationAction) {
         this.nextAction = sendToIntegrationAction;
     }
-
 }

@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.aop;
 
 /*-
@@ -31,7 +28,6 @@ package com.github.loadup.components.testify.utils.aop;
  */
 
 import java.lang.reflect.Field;
-
 import org.springframework.aop.framework.AdvisedSupport;
 import org.springframework.aop.framework.AopProxy;
 import org.springframework.aop.support.AopUtils;
@@ -53,15 +49,14 @@ public class AopTargetUtils {
     public static Object getTarget(Object proxy) throws Exception {
 
         if (!AopUtils.isAopProxy(proxy)) {
-            return proxy;//不是代理对象  
+            return proxy; // 不是代理对象
         }
 
         if (AopUtils.isJdkDynamicProxy(proxy)) {
             return getJdkDynamicProxyTargetObject(proxy);
-        } else { //cglib  
+        } else { // cglib
             return getCglibProxyTargetObject(proxy);
         }
-
     }
 
     private static Object getCglibProxyTargetObject(Object proxy) throws Exception {
@@ -72,7 +67,8 @@ public class AopTargetUtils {
         Field advised = dynamicAdvisedInterceptor.getClass().getDeclaredField("advised");
         advised.setAccessible(true);
 
-        Object target = ((AdvisedSupport) advised.get(dynamicAdvisedInterceptor)).getTargetSource()
+        Object target = ((AdvisedSupport) advised.get(dynamicAdvisedInterceptor))
+                .getTargetSource()
                 .getTarget();
 
         return target;
@@ -86,7 +82,8 @@ public class AopTargetUtils {
         Field advised = aopProxy.getClass().getDeclaredField("advised");
         advised.setAccessible(true);
 
-        Object target = ((AdvisedSupport) advised.get(aopProxy)).getTargetSource().getTarget();
+        Object target =
+                ((AdvisedSupport) advised.get(aopProxy)).getTargetSource().getTarget();
 
         return target;
     }

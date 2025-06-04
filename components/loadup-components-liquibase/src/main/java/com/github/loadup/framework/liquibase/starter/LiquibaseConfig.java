@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.framework.liquibase.starter;
 
 /*-
@@ -26,12 +27,11 @@ package com.github.loadup.framework.liquibase.starter;
  * #L%
  */
 
+import javax.sql.DataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import javax.sql.DataSource;
 
 /**
  * Configuration initialization when ApplicationStartedEvent
@@ -46,11 +46,10 @@ public class LiquibaseConfig {
     public SpringLiquibase liquibase(DataSource dataSource) {
         SpringLiquibase liquibase = new SpringLiquibase();
         liquibase.setDataSource(dataSource);
-        //指定changelog的位置，这里使用的一个master文件引用其他文件的方式
+        // 指定changelog的位置，这里使用的一个master文件引用其他文件的方式
         liquibase.setChangeLog("classpath:db/changelog/db.changelog-master.yaml");
-        //liquibase.setContexts("development,test,production");
+        // liquibase.setContexts("development,test,production");
         liquibase.setShouldRun(true);
         return liquibase;
-
     }
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.communication.http.util;
 
 /*-
@@ -30,15 +31,14 @@ import com.github.loadup.components.gateway.core.communication.common.sensitivit
 import com.github.loadup.components.gateway.core.model.SensitivityProcessType;
 import com.github.loadup.components.gateway.core.model.ShieldType;
 import jakarta.annotation.Resource;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 敏感日志工具
@@ -64,15 +64,14 @@ public class SensitivityUtil {
      * FROM header checker
      */
     public static final String FORM_CHECKER = "=";
-    protected static final Logger logger = LoggerFactory
-            .getLogger(SensitivityUtil.class);
+
+    protected static final Logger logger = LoggerFactory.getLogger(SensitivityUtil.class);
     private static Map<SensitivityProcessType, SensitivityDataProcess> sensitivityDataProcessMap;
 
     /**
      *
      */
-    public static <T> T mask(T content, Map<String, ShieldType> rules,
-                             SensitivityProcessType type) {
+    public static <T> T mask(T content, Map<String, ShieldType> rules, SensitivityProcessType type) {
         if (MapUtils.isEmpty(rules) || type == null) {
             return content;
         }
@@ -91,7 +90,7 @@ public class SensitivityUtil {
      * is xml
      */
     private static boolean isXml(String message) {
-        //取出message前后的空格字符和换行符
+        // 取出message前后的空格字符和换行符
         String fixedMessage = StringUtils.trim(message);
         return fixedMessage != null && fixedMessage.startsWith(XML_HEADER_CHECKER);
     }
@@ -100,7 +99,7 @@ public class SensitivityUtil {
      * is json
      */
     private static boolean isJson(String message) {
-        //取出message前后的空格字符和换行符
+        // 取出message前后的空格字符和换行符
         String fixedMessage = StringUtils.trim(message);
         return fixedMessage != null && fixedMessage.startsWith(JSON_HEADER_CHECKER);
     }
@@ -130,12 +129,11 @@ public class SensitivityUtil {
     }
 
     /**
-     * 
+     *
      */
     @Resource
     public void setSensitivityDataProcessList(List<SensitivityDataProcess> sensitivityDataProcessList) {
-        sensitivityDataProcessMap = sensitivityDataProcessList.stream()
-                .collect(Collectors.toMap(SensitivityDataProcess::getTag, m -> m));
+        sensitivityDataProcessMap =
+                sensitivityDataProcessList.stream().collect(Collectors.toMap(SensitivityDataProcess::getTag, m -> m));
     }
-
 }

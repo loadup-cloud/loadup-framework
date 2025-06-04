@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.config.model;
 
 /*-
@@ -26,15 +27,13 @@ package com.github.loadup.components.gateway.facade.config.model;
  * #L%
  */
 
+import java.io.Serializable;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.io.Serializable;
 
 /**
  * 网关通用产品基础配置条件组
  */
-
 public class BasicGatewayConditionGroup implements Serializable {
 
     private static final long serialVersionUID = 4099359934469430937L;
@@ -57,7 +56,7 @@ public class BasicGatewayConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public void setShieldKeys(String shieldKeys) {
         this.shieldKeys = shieldKeys;
@@ -71,7 +70,7 @@ public class BasicGatewayConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public void setNeedFillDefaultACResult(Boolean needFillDefaultACResult) {
         this.needFillDefaultACResult = needFillDefaultACResult;

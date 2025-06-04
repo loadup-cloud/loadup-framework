@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.cache.caffeine.binder;
 
 /*-
@@ -28,12 +29,11 @@ package com.github.loadup.components.cache.caffeine.binder;
 
 import com.github.loadup.components.cache.api.CacheBinder;
 import jakarta.annotation.Resource;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.util.Assert;
-
-import java.util.Objects;
 
 public class CaffeineCacheBinderImpl implements CacheBinder {
 

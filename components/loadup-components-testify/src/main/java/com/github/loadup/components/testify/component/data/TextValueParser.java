@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.data;
 
 /*-
@@ -32,7 +29,6 @@ package com.github.loadup.components.testify.component.data;
 
 import com.alibaba.fastjson2.JSON;
 import com.github.loadup.components.testify.util.VelocityUtil;
-
 import java.util.Map;
 
 /**
@@ -40,7 +36,7 @@ import java.util.Map;
  * <p>
  * 支持多种类型文本转换，包含yaml、json等，同时支持自定义对象转换。
  *
- * 
+ *
  *
  */
 public class TextValueParser {
@@ -62,5 +58,4 @@ public class TextValueParser {
         String ttext = VelocityUtil.evaluateString(context, text);
         return parse(ttext);
     }
-
 }

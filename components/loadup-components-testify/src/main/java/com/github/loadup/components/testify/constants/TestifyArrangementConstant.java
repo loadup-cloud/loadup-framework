@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.constants;
 
 /*-
@@ -38,5 +39,4 @@ public class TestifyArrangementConstant {
     public static final String EXECUTE = "execute";
     public static final String CHECK = "check";
     public static final String CLEAR = "clear";
-
 }

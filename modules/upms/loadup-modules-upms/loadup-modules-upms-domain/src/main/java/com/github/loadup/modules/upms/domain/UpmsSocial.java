@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.domain;
 
 /*-
@@ -29,10 +30,9 @@ package com.github.loadup.modules.upms.domain;
 import com.github.loadup.commons.domain.BaseDomain;
 import com.github.loadup.commons.util.ToStringUtils;
 import com.github.loadup.modules.upms.enums.SocialAccountTypeEnum;
+import java.io.Serial;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serial;
 
 /**
  * @author lise
@@ -44,11 +44,11 @@ public class UpmsSocial extends BaseDomain {
     @Serial
     private static final long serialVersionUID = -4502529453357041857L;
 
-    private String                id;
+    private String id;
     private SocialAccountTypeEnum accountType;
-    private String                socialAccount;
-    private String                socialNickName;
-    private String                socialToken;
+    private String socialAccount;
+    private String socialNickName;
+    private String socialToken;
 
     @Override
     public String toString() {

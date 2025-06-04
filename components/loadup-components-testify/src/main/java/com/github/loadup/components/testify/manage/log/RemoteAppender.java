@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.manage.log;
 
 /*-
@@ -26,15 +27,14 @@ package com.github.loadup.components.testify.manage.log;
  * #L%
  */
 
-
+import com.github.loadup.components.testify.manage.enums.LoggerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.github.loadup.components.testify.manage.enums.LoggerType;
 
 /**
  * 远程日志 appender
  *
- * 
+ *
  *
  */
 public class RemoteAppender {
@@ -59,108 +59,108 @@ public class RemoteAppender {
      */
     private RemoteLogService logService;
 
-//    @Override
-//    protected void append(LoggingEvent event) {
-//        init();
-//
-//        String logData = this.getLayout().format(event);
-//
-//        try {
-//            switch (loggerType) {
-//                case ACTS_LOG:
-//                    logService.writeLog(appName, logData);
-//                    break;
-//                case ACTS_PROFILE:
-//                    logService.writeProfile(appName, logData);
-//                    break;
-//                case ACTS_DIEGEST:
-//                    logService.writeDigest(appName, logData);
-//                    break;
-//            }
-//        } catch (Throwable e) {
-//            logger.warn("remote write error", e);
-//        }
-//
-//    }
-//
-//    @Override
-//    public void activateOptions() {
-//        init();
-//    }
-//
-//    @Override
-//    public void close() {
-//    }
-//
-//    @Override
-//    public boolean requiresLayout() {
-//        return true;
-//    }
-//
-//    // ~~~ 内部方法
-//    /**
-//     * 初始化
-//     */
-//    private void init() {
-//        if (this.layout == null) {
-//            String pattern = "%d - %m%n";
-//            this.setLayout(new org.apache.log4j.PatternLayout(pattern));
-//        }
-//    }
-//
-//    // ~~~ getter & setter
-//    /**
-//     * 
-//     *
-//     * @return property value of appName
-//     */
-//    public String getAppName() {
-//        return appName;
-//    }
-//
-//    /**
-//     *
-//     *
-//     * @param appName value to be assigned to property appName
-//     */
-//    public void setAppName(String appName) {
-//        this.appName = appName;
-//    }
-//
-//    /**
-//     * 
-//     *
-//     * @return property value of loggerType
-//     */
-//    public LoggerType getLoggerType() {
-//        return loggerType;
-//    }
-//
-//    /**
-//     *
-//     *
-//     * @param loggerType value to be assigned to property loggerType
-//     */
-//    public void setLoggerType(LoggerType loggerType) {
-//        this.loggerType = loggerType;
-//    }
-//
-//    /**
-//     * 
-//     *
-//     * @return property value of logService
-//     */
-//    public RemoteLogService getLogService() {
-//        return logService;
-//    }
-//
-//    /**
-//     *
-//     *
-//     * @param logService value to be assigned to property logService
-//     */
-//    public void setLogService(RemoteLogService logService) {
-//        this.logService = logService;
-//    }
+    //    @Override
+    //    protected void append(LoggingEvent event) {
+    //        init();
+    //
+    //        String logData = this.getLayout().format(event);
+    //
+    //        try {
+    //            switch (loggerType) {
+    //                case ACTS_LOG:
+    //                    logService.writeLog(appName, logData);
+    //                    break;
+    //                case ACTS_PROFILE:
+    //                    logService.writeProfile(appName, logData);
+    //                    break;
+    //                case ACTS_DIEGEST:
+    //                    logService.writeDigest(appName, logData);
+    //                    break;
+    //            }
+    //        } catch (Throwable e) {
+    //            logger.warn("remote write error", e);
+    //        }
+    //
+    //    }
+    //
+    //    @Override
+    //    public void activateOptions() {
+    //        init();
+    //    }
+    //
+    //    @Override
+    //    public void close() {
+    //    }
+    //
+    //    @Override
+    //    public boolean requiresLayout() {
+    //        return true;
+    //    }
+    //
+    //    // ~~~ 内部方法
+    //    /**
+    //     * 初始化
+    //     */
+    //    private void init() {
+    //        if (this.layout == null) {
+    //            String pattern = "%d - %m%n";
+    //            this.setLayout(new org.apache.log4j.PatternLayout(pattern));
+    //        }
+    //    }
+    //
+    //    // ~~~ getter & setter
+    //    /**
+    //     *
+    //     *
+    //     * @return property value of appName
+    //     */
+    //    public String getAppName() {
+    //        return appName;
+    //    }
+    //
+    //    /**
+    //     *
+    //     *
+    //     * @param appName value to be assigned to property appName
+    //     */
+    //    public void setAppName(String appName) {
+    //        this.appName = appName;
+    //    }
+    //
+    //    /**
+    //     *
+    //     *
+    //     * @return property value of loggerType
+    //     */
+    //    public LoggerType getLoggerType() {
+    //        return loggerType;
+    //    }
+    //
+    //    /**
+    //     *
+    //     *
+    //     * @param loggerType value to be assigned to property loggerType
+    //     */
+    //    public void setLoggerType(LoggerType loggerType) {
+    //        this.loggerType = loggerType;
+    //    }
+    //
+    //    /**
+    //     *
+    //     *
+    //     * @return property value of logService
+    //     */
+    //    public RemoteLogService getLogService() {
+    //        return logService;
+    //    }
+    //
+    //    /**
+    //     *
+    //     *
+    //     * @param logService value to be assigned to property logService
+    //     */
+    //    public void setLogService(RemoteLogService logService) {
+    //        this.logService = logService;
+    //    }
 
 }

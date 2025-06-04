@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.msg.interceptor;
 
 /*-
@@ -36,17 +37,14 @@ import org.aopalliance.intercept.MethodInvocation;
  * @author chao.gao
  *
  */
-
 public class UniformEventInterceptor implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation innovation) throws Throwable {
 
-        if (!innovation.getMethod().getName().equals("publishUniformEvent"))
-            return innovation.proceed();
+        if (!innovation.getMethod().getName().equals("publishUniformEvent")) return innovation.proceed();
 
         Object[] args = innovation.getArguments();
-
 
         return innovation.proceed();
     }

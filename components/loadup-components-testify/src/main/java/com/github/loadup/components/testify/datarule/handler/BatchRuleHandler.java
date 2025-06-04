@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.handler;
 
 /*-
@@ -32,14 +29,13 @@ package com.github.loadup.components.testify.datarule.handler;
 
 import com.github.loadup.components.testify.datarule.RULE.ReferenceHandler;
 import com.github.loadup.components.testify.datarule.RuleObject;
-
 import java.util.List;
 
 /**
  * 支持批量生成结果。
  *
- * 
- * 
+ *
+ *
  */
 public interface BatchRuleHandler<R extends RuleObject> {
     /**

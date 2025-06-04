@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.util;
 
 /*-
@@ -12,10 +13,10 @@ package com.github.loadup.commons.util;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,7 +26,6 @@ package com.github.loadup.commons.util;
  * THE SOFTWARE.
  * #L%
  */
-
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -45,8 +45,7 @@ public class AnnotationUtils {
      * @param annotationClass
      * @return
      */
-    public static <T extends Annotation> List<Method> findMethods(Class<?> clazz,
-                                                                  Class<T> annotationClass) {
+    public static <T extends Annotation> List<Method> findMethods(Class<?> clazz, Class<T> annotationClass) {
         if (clazz == null || annotationClass == null) {
             throw new NullPointerException();
         }
@@ -66,8 +65,7 @@ public class AnnotationUtils {
      * @param annotationClass
      * @return
      */
-    public static <T extends Annotation> List<Field> findFields(Class<?> clazz,
-                                                                Class<T> annotationClass) {
+    public static <T extends Annotation> List<Field> findFields(Class<?> clazz, Class<T> annotationClass) {
         if (clazz == null || annotationClass == null) {
             throw new NullPointerException();
         }

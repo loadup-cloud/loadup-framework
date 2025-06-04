@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.handler;
 
 /*-
@@ -34,15 +31,14 @@ import com.alibaba.fastjson2.JSON;
 import com.github.loadup.components.testify.datarule.*;
 import com.github.loadup.components.testify.datarule.RULE.ReferenceHandler;
 import com.github.loadup.components.testify.exception.RuleExecuteException;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.*;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 组装规则处理器。
  *
- * 
- * 
+ *
+ *
  */
 public class AssembleRuleHandler implements RuleHandler<AssembleRule> {
 
@@ -96,8 +92,8 @@ public class AssembleRuleHandler implements RuleHandler<AssembleRule> {
      * @param refHandler
      * @return
      */
-    private boolean meetCondition(AssembleCondition condition, Map<String, String> values,
-                                  ReferenceHandler refHandler) {
+    private boolean meetCondition(
+            AssembleCondition condition, Map<String, String> values, ReferenceHandler refHandler) {
         if (condition == null) {
             return true;
         }
@@ -106,15 +102,12 @@ public class AssembleRuleHandler implements RuleHandler<AssembleRule> {
         Stack<Object> operateStack = new Stack<Object>();
         for (Object item : items) {
             if (item instanceof AssembleConditionItem) {
-                boolean thiz = executeConditionItem((AssembleConditionItem) item, values,
-                        refHandler);
+                boolean thiz = executeConditionItem((AssembleConditionItem) item, values, refHandler);
 
-                if (operateStack.isEmpty()
-                        || operateStack.peek() == AssembleConditionOperator.LEFT_PAREN) {
+                if (operateStack.isEmpty() || operateStack.peek() == AssembleConditionOperator.LEFT_PAREN) {
                     operateStack.push(thiz);
                 } else {
-                    AssembleConditionOperator operator = (AssembleConditionOperator) operateStack
-                            .peek();
+                    AssembleConditionOperator operator = (AssembleConditionOperator) operateStack.peek();
                     if (AssembleConditionOperator.AND == operator) {
                         operateStack.pop();
                         Boolean that = (Boolean) operateStack.pop();
@@ -127,8 +120,9 @@ public class AssembleRuleHandler implements RuleHandler<AssembleRule> {
                 if (AssembleConditionOperator.RIGHT_PAREN == item) {
 
                     Boolean bool = null;
-                    for (Object element = operateStack.pop(); element != AssembleConditionOperator.LEFT_PAREN; element = operateStack
-                            .pop()) {
+                    for (Object element = operateStack.pop();
+                            element != AssembleConditionOperator.LEFT_PAREN;
+                            element = operateStack.pop()) {
                         if (element instanceof Boolean) {
                             bool = (Boolean) element;
                         } else if (element == AssembleConditionOperator.OR) {
@@ -172,8 +166,8 @@ public class AssembleRuleHandler implements RuleHandler<AssembleRule> {
      * @param refHandler
      * @return
      */
-    private boolean executeConditionItem(AssembleConditionItem item, Map<String, String> values,
-                                         ReferenceHandler refHandler) {
+    private boolean executeConditionItem(
+            AssembleConditionItem item, Map<String, String> values, ReferenceHandler refHandler) {
         if (item == null) {
             return true;
         }
@@ -246,11 +240,9 @@ public class AssembleRuleHandler implements RuleHandler<AssembleRule> {
      * @param values
      * @return
      */
-    private List<Map<String, String>> join(List<Map<String, String>> left, String key,
-                                           List<String> values) {
+    private List<Map<String, String>> join(List<Map<String, String>> left, String key, List<String> values) {
 
-        List<Map<String, String>> rows = new ArrayList<Map<String, String>>(left.size()
-                * values.size());
+        List<Map<String, String>> rows = new ArrayList<Map<String, String>>(left.size() * values.size());
         for (Map<String, String> m : left) {
             for (String v : values) {
                 Map<String, String> newMap = new HashMap<String, String>();
@@ -270,16 +262,15 @@ public class AssembleRuleHandler implements RuleHandler<AssembleRule> {
      * @return
      */
     @SuppressWarnings("unchecked")
-    private Map<String, List<String>> getDemensionData(AssembleItem item,
-                                                       ReferenceHandler refHandler) {
+    private Map<String, List<String>> getDemensionData(AssembleItem item, ReferenceHandler refHandler) {
         Map<String, List<String>> datas = new HashMap<String, List<String>>();
 
         for (AssembleValue value : item.getValues()) {
             String field = value.getField();
             RuleObject ruleObject = value.getRule();
 
-            List<String> data = RuleHandlerFactory.getBatchHandler(ruleObject.getClass())
-                    .batchHandle(ruleObject, refHandler);
+            List<String> data =
+                    RuleHandlerFactory.getBatchHandler(ruleObject.getClass()).batchHandle(ruleObject, refHandler);
 
             datas.put(field, data);
         }

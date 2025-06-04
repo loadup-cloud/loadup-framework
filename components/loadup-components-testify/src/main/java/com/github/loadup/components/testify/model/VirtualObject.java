@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.model;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.components.testify.model;
  * #L%
  */
 
+import com.github.loadup.components.testify.setter.FlagSetter;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import com.github.loadup.components.testify.setter.FlagSetter;
 
 /**
  * 抽象对象
@@ -43,30 +43,33 @@ public class VirtualObject extends TestNode {
      * 描述
      */
     public String description;
+
     /**
      * 类名
      */
     public String objClass;
+
     /**
      * 模板csv的名称
      */
     public String objBaseName;
+
     /**
      * 模板的数据列
      */
     public String objBaseDesc;
+
     /**
      * 对象实例
      */
     public Object object;
+
     /**
      * 对象flag,<类名，<fiel名，flag值>>
      */
     public Map<String, Map<String, String>> flags = new LinkedHashMap<String, Map<String, String>>();
 
-    public VirtualObject() {
-
-    }
+    public VirtualObject() {}
 
     public VirtualObject(Object obj) {
         if (obj != null) {
@@ -75,7 +78,6 @@ public class VirtualObject extends TestNode {
             this.objClass = null;
         }
         this.object = obj;
-
     }
 
     public VirtualObject(Object obj, String desc) {
@@ -157,9 +159,18 @@ public class VirtualObject extends TestNode {
      */
     @Override
     public String toString() {
-        return "VirtualObject [description=" + description + ", objClass=" + objClass
-                + ", objBaseName=" + objBaseName + ", objBaseDesc=" + objBaseDesc + ", object="
-                + object + ", flags=" + flags + "]";
+        return "VirtualObject [description="
+                + description
+                + ", objClass="
+                + objClass
+                + ", objBaseName="
+                + objBaseName
+                + ", objBaseDesc="
+                + objBaseDesc
+                + ", object="
+                + object
+                + ", flags="
+                + flags
+                + "]";
     }
-
 }

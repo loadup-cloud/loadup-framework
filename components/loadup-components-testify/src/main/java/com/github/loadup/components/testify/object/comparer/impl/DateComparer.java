@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.comparer.impl;
 
 /*-
@@ -27,21 +28,15 @@ package com.github.loadup.components.testify.object.comparer.impl;
  */
 
 /**
-
+ *
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-
-import java.util.Date;
-
-
-import com.github.loadup.components.testify.util.DateUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.apache.commons.lang3.StringUtils;
 import com.github.loadup.components.testify.log.TestifyLogUtil;
 import com.github.loadup.components.testify.object.comparer.UnitComparer;
+import com.github.loadup.components.testify.util.DateUtil;
+import java.util.Date;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * "D" flag 校验器（日期）
@@ -51,7 +46,7 @@ import com.github.loadup.components.testify.object.comparer.UnitComparer;
  * 这里为避免侵入修改原有接口暂时将误差数字作为属性在此comparer中存在，可通过此compare构造器传入（当然这样控制粒度就没有在比较时传入额外参数细了），
  * 同时由于此额外参数，此校验器默认没有加入ObjectCheck的comparers，使用时自己传入</p>
  *
- * 
+ *
  *
  */
 @Slf4j
@@ -109,7 +104,7 @@ public class DateComparer implements UnitComparer {
             actDate = (Date) actual;
         } catch (Exception e1) {
             try {
-//                Timestamp tt = ((TIMESTAMP) actual).timestampValue();
+                //                Timestamp tt = ((TIMESTAMP) actual).timestampValue();
                 actDate = new Date();
             } catch (Exception e2) {
                 TestifyLogUtil.fail(log, "时间格式转化未知错误" + actual, e1);
@@ -145,15 +140,18 @@ public class DateComparer implements UnitComparer {
         if (null == actDate || null == actString) {
             actString = "null";
         }
-        if (StringUtils.isNumeric(exp) && StringUtils.isNumeric(actString) && exp.length() == 14
-                && actString.length() == 14 && errSec > 0) {
+        if (StringUtils.isNumeric(exp)
+                && StringUtils.isNumeric(actString)
+                && exp.length() == 14
+                && actString.length() == 14
+                && errSec > 0) {
             // 对于 exp 为长时间格式的时候,支持误差判断
             long expTime = DateUtil.parseDateLongFormat(exp).getTime() / 1000;
             long actTime = DateUtil.parseDateLongFormat(actString).getTime() / 1000;
             if (Math.abs(expTime - actTime) > errSec) {
                 return false;
             }
-            //errSec = Integer.valueOf(errorSeconds);
+            // errSec = Integer.valueOf(errorSeconds);
         } else if (!exp.equals(actString)) {
             return false;
         }

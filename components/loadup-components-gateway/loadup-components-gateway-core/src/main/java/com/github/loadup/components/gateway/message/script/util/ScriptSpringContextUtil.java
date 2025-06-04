@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.script.util;
 
 /*-
@@ -27,6 +28,7 @@ package com.github.loadup.components.gateway.message.script.util;
  */
 
 import com.github.loadup.components.gateway.facade.util.LogUtil;
+import java.lang.reflect.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -34,8 +36,6 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-
-import java.lang.reflect.Method;
 
 /**
  *

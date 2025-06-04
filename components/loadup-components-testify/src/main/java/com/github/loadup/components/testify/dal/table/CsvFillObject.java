@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.dal.table;
 
 /*-
@@ -33,7 +30,7 @@ package com.github.loadup.components.testify.dal.table;
 /**
  * 用于从csv中填充规则的时候使用
  *
- * 
+ *
  *
  */
 public class CsvFillObject {
@@ -113,8 +110,14 @@ public class CsvFillObject {
      */
     @Override
     public String toString() {
-        return "CsvFillObject [system=" + system + ", model_obj=" + model_obj + ", model_data="
-                + model_data + ", data_rule=" + data_rule + "]";
+        return "CsvFillObject [system="
+                + system
+                + ", model_obj="
+                + model_obj
+                + ", model_data="
+                + model_data
+                + ", data_rule="
+                + data_rule
+                + "]";
     }
-
 }

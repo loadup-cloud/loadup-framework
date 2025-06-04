@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object.manager;
 
 /*-
@@ -26,9 +27,6 @@ package com.github.loadup.components.testify.object.manager;
  * #L%
  */
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.github.loadup.components.testify.object.comparer.UnitComparer;
 import com.github.loadup.components.testify.object.comparer.impl.AvailableComparer;
 import com.github.loadup.components.testify.object.comparer.impl.ConditionComparer;
@@ -40,11 +38,13 @@ import com.github.loadup.components.testify.object.comparer.impl.NoCheckComparer
 import com.github.loadup.components.testify.object.comparer.impl.RegexComparer;
 import com.github.loadup.components.testify.object.comparer.impl.SimpleComparer;
 import com.github.loadup.components.testify.object.enums.UnitFlagEnum;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 单元比较器管理器
  *
- * 
+ *
  *
  */
 public class ObjectCompareManager {
@@ -66,5 +66,4 @@ public class ObjectCompareManager {
     public static Map<UnitFlagEnum, UnitComparer> getComparerManager() {
         return comparerManager;
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.database;
 
 /*-
@@ -50,6 +51,10 @@ import com.github.loadup.components.gateway.plugin.repository.database.dal.datao
 import com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject.InterfaceDO;
 import com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject.SecurityDO;
 import jakarta.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,11 +66,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  *

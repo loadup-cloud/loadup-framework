@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.collector;
 
 /*-
@@ -36,15 +33,14 @@ import com.github.loadup.components.testify.model.*;
 import com.github.loadup.components.testify.util.BaseDataUtil;
 import com.github.loadup.components.testify.util.FileUtils;
 import com.github.loadup.components.testify.utils.file.CsvUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 /**
  * 用例执行结果收集器
@@ -58,7 +54,7 @@ import java.util.Map;
  * 结果收集完成后，组装一个新的PrepareData集合，用于结果反向结果
  * </p>
  *
- * 
+ *
  *
  * hongling.xiang Exp $
  */
@@ -67,8 +63,7 @@ public class CaseResultCollector {
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(CaseResultCollector.class);
+    private static final Logger logger = LoggerFactory.getLogger(CaseResultCollector.class);
 
     /**
      * sql日志文件
@@ -102,7 +97,6 @@ public class CaseResultCollector {
             // 后置动作：删除用于保存用例执行结果相关文件
             clearTemporaryData();
         }
-
     }
 
     /**
@@ -129,7 +123,6 @@ public class CaseResultCollector {
                     logger.error("No valid yaml file found!");
                     break;
                 }
-
 
                 // 只返填RunOnly指定运行的用例
                 if (!caseDatas.containsKey(caseId)) {
@@ -161,7 +154,8 @@ public class CaseResultCollector {
      * @param overwrite
      * @param hasDBData
      */
-    public static void saveCaseResult(List<File> caseFolders, Map<String, PrepareData> caseDatas, boolean overwrite, boolean hasDBData) {
+    public static void saveCaseResult(
+            List<File> caseFolders, Map<String, PrepareData> caseDatas, boolean overwrite, boolean hasDBData) {
 
         try {
             for (File caseFolder : caseFolders) {
@@ -181,7 +175,6 @@ public class CaseResultCollector {
                     logger.error("[AutoFill]No valid yaml file found!");
                     break;
                 }
-
 
                 // 只返填RunOnly指定运行的用例
                 if (!caseDatas.containsKey(caseId)) {
@@ -203,25 +196,26 @@ public class CaseResultCollector {
                     continue;
                 }
 
-                //确保checkDB文件夹存在
+                // 确保checkDB文件夹存在
                 new File(caseFolder, TestifyConstants.CHECK_DB_FOLDER).mkdirs();
 
                 try {
-                    //对db进行预跑反填
+                    // 对db进行预跑反填
                     for (File file : caseFolder.listFiles()) {
                         if (file.getName().contains(TestifyConstants.CHECK_DB_FOLDER)) {
-                            //对于db数据进行预跑反填
-                            VirtualDataSet virtualDataSet = caseDatas.get(caseId).getExpectDataSet();
+                            // 对于db数据进行预跑反填
+                            VirtualDataSet virtualDataSet =
+                                    caseDatas.get(caseId).getExpectDataSet();
                             for (VirtualTable virtualTable : virtualDataSet.getVirtualTables()) {
                                 String filePath = file.getPath() + "/" + virtualTable.getTableName() + ".csv";
-                                //如果该校验文件已经存在
+                                // 如果该校验文件已经存在
                                 if (new File(filePath).exists()) {
-                                    //如果是需要复写则再生成预跑反填结果
+                                    // 如果是需要复写则再生成预跑反填结果
                                     if (overwrite) {
                                         CsvUtils.genCsvFromObjTable(virtualTable, filePath);
                                     }
                                 } else {
-                                    //如果没有该文件则直接预跑反填完成
+                                    // 如果没有该文件则直接预跑反填完成
                                     CsvUtils.genCsvFromObjTable(virtualTable, filePath);
                                     logger.info("ACTS:" + virtualTable + "预跑反填db结果成功，路径=" + filePath);
                                 }
@@ -232,7 +226,6 @@ public class CaseResultCollector {
                     // db返填异常不中断流程
                     logger.error("以下用例db返填失败（若已存在db数据不会进行覆盖，强制返填需要删除对应csv文件后再进行返填）", e);
                 }
-
             }
         } catch (Throwable e) {
             logger.warn("unknow exception while saving case result保存用例结果未知异常", e);
@@ -240,7 +233,6 @@ public class CaseResultCollector {
             // 后置动作：删除用于保存用例执行结果相关文件
             clearTemporaryData();
         }
-
     }
 
     /**
@@ -253,7 +245,7 @@ public class CaseResultCollector {
             boolean r = sqlLogFile.delete();
 
             if (!r) {
-                //尝试再删除一次
+                // 尝试再删除一次
                 try {
                     FileUtils.forceDeleteOnExit(sqlLogFile);
                 } catch (Exception e) {
@@ -281,7 +273,6 @@ public class CaseResultCollector {
 
         // 保存用例结果到临时文件(自动覆盖原有内容)
         BaseDataUtil.storeToYaml(caseDatas, caseResFile);
-
     }
 
     /**
@@ -293,10 +284,10 @@ public class CaseResultCollector {
      * @param events
      * @param overwrite
      */
-    private static void doSaveCaseResult(File yamlFile, Object resObj,
-                                         VirtualEventSet events, boolean overwrite) {
+    private static void doSaveCaseResult(File yamlFile, Object resObj, VirtualEventSet events, boolean overwrite) {
         // read file content
-        CaseObjectSet caseObjectSet = BaseDataUtil.loadListFromYaml(yamlFile, Thread.currentThread().getContextClassLoader());
+        CaseObjectSet caseObjectSet =
+                BaseDataUtil.loadListFromYaml(yamlFile, Thread.currentThread().getContextClassLoader());
         boolean isUpdated = false;
 
         if (caseObjectSet.isEmpty()) {
@@ -308,8 +299,9 @@ public class CaseResultCollector {
             isUpdated = true;
         }
 
-        if (overwrite || (null == caseObjectSet.getEvents() &&
-                0 != events.getVirtualEventObjects().size())) {
+        if (overwrite
+                || (null == caseObjectSet.getEvents()
+                        && 0 != events.getVirtualEventObjects().size())) {
             caseObjectSet.setEvents(BaseDataUtil.convertEventSetToList(events));
             isUpdated = true;
         }
@@ -323,6 +315,5 @@ public class CaseResultCollector {
                 logger.warn("Please check auto filled case result or events in your case yaml file.");
             }
         }
-
     }
 }

@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.template;
 
 /*-
@@ -33,20 +30,18 @@ package com.github.loadup.components.testify.template;
 import com.github.loadup.components.testify.model.VirtualArgs;
 import com.github.loadup.components.testify.model.VirtualDataSet;
 import com.github.loadup.components.testify.model.VirtualEventSet;
-
 import java.util.List;
 
 /**
  * 带消息检查的CallBack
  *
  * @author fenglei.fl
- * 
+ *
  * fenglei.fl Exp $
  */
 public class PrepareCallBackWithEvent implements PrepareCallBack {
     // 事件校验
-    public VirtualEventSet prepareExpectEventSet(VirtualArgs args, VirtualDataSet depDataSet,
-                                                 Object expectResult) {
+    public VirtualEventSet prepareExpectEventSet(VirtualArgs args, VirtualDataSet depDataSet, Object expectResult) {
         return null;
     }
 
@@ -75,7 +70,6 @@ public class PrepareCallBackWithEvent implements PrepareCallBack {
         return null;
     }
 
-
     public List<String> prepareComponent() {
         return null;
     }
@@ -91,5 +85,4 @@ public class PrepareCallBackWithEvent implements PrepareCallBack {
     public List<String> clearComponent() {
         return null;
     }
-
 }

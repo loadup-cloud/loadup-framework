@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.client.dto;
 
 /*-
@@ -27,10 +28,9 @@ package com.github.loadup.modules.upms.client.dto;
  */
 
 import com.github.loadup.commons.dto.DTO;
+import java.io.Serial;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serial;
 
 /**
  * @author lise
@@ -41,8 +41,8 @@ import java.io.Serial;
 public class MobileNoInfo extends DTO {
     @Serial
     private static final long serialVersionUID = 7329171068311954009L;
+
     private String mobileId;
     private String mobileNo;
     private boolean verified;
-
 }

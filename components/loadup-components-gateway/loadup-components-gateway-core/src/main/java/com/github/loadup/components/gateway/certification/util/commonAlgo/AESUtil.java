@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.util.commonAlgo;
 
 /*-
@@ -27,15 +28,14 @@ package com.github.loadup.components.gateway.certification.util.commonAlgo;
  */
 
 import com.github.loadup.components.gateway.certification.util.Base64Util;
-import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
+import java.security.Security;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.Security;
+import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * AES 对称加解密算法类
@@ -77,11 +77,10 @@ public class AESUtil {
      *
      * @throws Exception
      */
-    public static byte[] encrypt(byte[] data, byte[] key, String salt,
-                                 String algorithm) throws Exception {
+    public static byte[] encrypt(byte[] data, byte[] key, String salt, String algorithm) throws Exception {
         Cipher cipher = Cipher.getInstance(algorithm);
         IvParameterSpec iv = convertIv(cipher, salt);
-        if (isCBCMode(algorithm)) { //只有cbc才能带盐
+        if (isCBCMode(algorithm)) { // 只有cbc才能带盐
             cipher.init(Cipher.ENCRYPT_MODE, recovertKey(key), iv);
         } else {
             cipher.init(Cipher.ENCRYPT_MODE, recovertKey(key));
@@ -110,12 +109,11 @@ public class AESUtil {
      *
      * @throws Exception
      */
-    public static byte[] decrypt(byte[] data, byte[] key, String salt,
-                                 String algorithm) throws Exception {
+    public static byte[] decrypt(byte[] data, byte[] key, String salt, String algorithm) throws Exception {
         Cipher cipher = Cipher.getInstance(algorithm);
         IvParameterSpec iv = convertIv(cipher, salt);
 
-        if (isCBCMode(algorithm)) { //只有CBC才需要带盐
+        if (isCBCMode(algorithm)) { // 只有CBC才需要带盐
             cipher.init(Cipher.DECRYPT_MODE, recovertKey(key), iv);
         } else {
             cipher.init(Cipher.DECRYPT_MODE, recovertKey(key));
@@ -135,7 +133,6 @@ public class AESUtil {
         SecretKey secretKey = keyGenerator.generateKey();
 
         return secretKey.getEncoded();
-
     }
 
     /**

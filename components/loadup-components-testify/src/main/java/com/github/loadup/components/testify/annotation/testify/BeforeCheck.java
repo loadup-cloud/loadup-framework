@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.annotation.testify;
 
 /*-
@@ -32,11 +33,9 @@ import java.lang.annotation.Target;
 /**
  * before check do something
  *
- * 
- * 
+ *
+ *
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target(java.lang.annotation.ElementType.METHOD)
-public @interface BeforeCheck {
-
-}
+public @interface BeforeCheck {}

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.model;
 
 /*-
@@ -34,6 +35,7 @@ public class TestNode {
      * for test framework to decide if this part should be counted
      */
     String nodeGroup;
+
     /**
      * description
      */
@@ -54,5 +56,4 @@ public class TestNode {
     public void setNodeDesc(String nodeDesc) {
         this.nodeDesc = nodeDesc;
     }
-
 }

@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.handler;
 
 /*-
@@ -34,16 +31,15 @@ import com.github.loadup.components.testify.datarule.RULE.ReferenceHandler;
 import com.github.loadup.components.testify.datarule.RangeRule;
 import com.github.loadup.components.testify.datarule.RuleObject;
 import com.github.loadup.components.testify.exception.RuleExecuteException;
-import org.apache.commons.lang3.StringUtils;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 范围规则处理器。
  *
- * 
+ *
  *
  */
 public class RangeRuleHandler implements RuleHandler<RangeRule>, BatchRuleHandler<RangeRule> {
@@ -91,8 +87,8 @@ public class RangeRuleHandler implements RuleHandler<RangeRule>, BatchRuleHandle
         }
 
         if (minValue.compareTo(maxValue) > 0) {
-            throw new RuleExecuteException("range rule config error[minValue=" + minValue
-                    + ",maxValue=" + maxValue + "]");
+            throw new RuleExecuteException(
+                    "range rule config error[minValue=" + minValue + ",maxValue=" + maxValue + "]");
         }
 
         // 如果包含边界，保证高频率返回
@@ -104,16 +100,14 @@ public class RangeRuleHandler implements RuleHandler<RangeRule>, BatchRuleHandle
         }
 
         if (minValue.compareTo(maxValue) == 0 && (!rule.isContainsMax() || !rule.isContainsMin())) {
-            throw new RuleExecuteException(
-                    "range rule config error, same value but not allowed[minValue=" + minValue
-                            + ",maxValue=" + maxValue + "]");
+            throw new RuleExecuteException("range rule config error, same value but not allowed[minValue=" + minValue
+                    + ",maxValue=" + maxValue + "]");
         }
 
         // 不包含边界，居中取一个
         BigDecimal margin = maxValue.subtract(minValue);
 
-        BigDecimal m2 = margin.multiply(BigDecimal.valueOf(random)).setScale(2,
-                BigDecimal.ROUND_CEILING);
+        BigDecimal m2 = margin.multiply(BigDecimal.valueOf(random)).setScale(2, BigDecimal.ROUND_CEILING);
 
         if (m2.compareTo(BigDecimal.ZERO) == 0 || m2.compareTo(margin) == 0) {
             m2 = margin.multiply(BigDecimal.valueOf(0.5));
@@ -122,8 +116,8 @@ public class RangeRuleHandler implements RuleHandler<RangeRule>, BatchRuleHandle
         BigDecimal data = minValue.add(m2);
 
         if (data.compareTo(minValue) < 0 || data.compareTo(maxValue) > 0) {
-            throw new RuleExecuteException("range rule execute error[minValue=" + minValue
-                    + ",maxValue=" + maxValue + ",value=" + data + "]");
+            throw new RuleExecuteException(
+                    "range rule execute error[minValue=" + minValue + ",maxValue=" + maxValue + ",value=" + data + "]");
         }
 
         return data.toPlainString();
@@ -155,5 +149,4 @@ public class RangeRuleHandler implements RuleHandler<RangeRule>, BatchRuleHandle
 
         return items;
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.model;
 
 /*-
@@ -42,7 +43,7 @@ public class Cert {
     private CertAlgorithmConfig certAlgorithmConfig;
 
     /**
-     * 
+     *
      */
     public CertConfig getCertConfig() {
         return certConfig;
@@ -56,7 +57,7 @@ public class Cert {
     }
 
     /**
-     * 
+     *
      */
     public CertAlgorithmConfig getCertAlgorithmConfig() {
         return certAlgorithmConfig;

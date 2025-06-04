@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.collector.sqlLog;
 
 /*-
@@ -31,24 +28,23 @@ package com.github.loadup.components.testify.collector.sqlLog;
  */
 
 import com.github.loadup.components.testify.model.VirtualTable;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 /**
  * SQL log collector
  *
  * @author chao.gao
- * 
+ *
  *
  * hongling.xiang Exp $
  */
@@ -62,14 +58,14 @@ public class SqlLogCollector {
     /**
      * insert sql regex
      */
-    private static final Pattern insertSqlParttner = Pattern
-            .compile("insert([\\s\\S]*) into([\\s\\S]*) values([\\s\\S]*)");
+    private static final Pattern insertSqlParttner =
+            Pattern.compile("insert([\\s\\S]*) into([\\s\\S]*) values([\\s\\S]*)");
 
     /**
      * update sql regex
      */
-    private static final Pattern updateSqlParttner = Pattern
-            .compile("update([\\s\\S]*) set([\\s\\S]*) where([\\s\\S]*) ");
+    private static final Pattern updateSqlParttner =
+            Pattern.compile("update([\\s\\S]*) set([\\s\\S]*) where([\\s\\S]*) ");
 
     /**
      * collect sql logs in specified logfile
@@ -82,8 +78,7 @@ public class SqlLogCollector {
      * @return
      * @throws IOException
      */
-    public static Map<String, List<List<String>>> collectConcernedSqlLog(String sqlLogfileName,
-                                                                         String caseId) {
+    public static Map<String, List<List<String>>> collectConcernedSqlLog(String sqlLogfileName, String caseId) {
 
         Map<String, List<List<String>>> caseSqlLogLines = new HashMap<String, List<List<String>>>();
 
@@ -118,25 +113,28 @@ public class SqlLogCollector {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    private static void doCollectSqlLog(String sqlLogfileName, BufferedReader logReader,
-                                        Map<String, List<List<String>>> caseSqlLogLines,
-                                        String orgCaseId) throws FileNotFoundException, IOException {
+    private static void doCollectSqlLog(
+            String sqlLogfileName,
+            BufferedReader logReader,
+            Map<String, List<List<String>>> caseSqlLogLines,
+            String orgCaseId)
+            throws FileNotFoundException, IOException {
 
         String curLine = StringUtils.EMPTY;
         String caseId = StringUtils.EMPTY;
         List<List<String>> singleCaseSqlLogs = new ArrayList<List<String>>();
         boolean isValiable = false;
 
-        //截取组件Id
+        // 截取组件Id
         caseId = getLastCaseId(orgCaseId);
         List<List<String>> caseSqlLogs = new ArrayList<List<String>>();
         caseSqlLogLines.put(orgCaseId, caseSqlLogs);
 
         while ((curLine = logReader.readLine()) != null) {
-            // 发现含有caseID就是运行结束了           
+            // 发现含有caseID就是运行结束了
             if (StringUtils.contains(curLine, caseId) && StringUtils.contains(curLine, "Finish")
                     || (StringUtils.contains(curLine, caseId) && StringUtils.contains(curLine, "组件执行结束"))) {
-                //清除便于下次循环使用
+                // 清除便于下次循环使用
                 singleCaseSqlLogs.clear();
                 if (StringUtils.contains(orgCaseId, "|")) {
                     orgCaseId = orgCaseId.substring(0, orgCaseId.lastIndexOf("|"));
@@ -145,17 +143,16 @@ public class SqlLogCollector {
                 continue;
             }
 
-            //如果是组件就循环调用
+            // 如果是组件就循环调用
             else if (StringUtils.contains(curLine, "开始执行组件caseId=")) {
-                String currentCompentId = curLine.substring(curLine.indexOf("caseId=") + 7,
-                        curLine.indexOf(":"));
+                String currentCompentId = curLine.substring(curLine.indexOf("caseId=") + 7, curLine.indexOf(":"));
                 caseId = orgCaseId + "|" + currentCompentId;
                 doCollectSqlLog(sqlLogfileName, logReader, caseSqlLogLines, caseId);
                 singleCaseSqlLogs.clear();
                 caseId = orgCaseId;
 
             } else {
-                //执行真正的运行sql解析,将当前行及后面的两行.解析之后,放到singleCaseSqlLogs中
+                // 执行真正的运行sql解析,将当前行及后面的两行.解析之后,放到singleCaseSqlLogs中
                 paseExtSql(curLine, logReader, singleCaseSqlLogs);
 
                 if (!CollectionUtils.isEmpty(singleCaseSqlLogs)) {
@@ -209,10 +206,8 @@ public class SqlLogCollector {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static void paseExtSql(String curLine, BufferedReader logReader,
-                                  List<List<String>> singleCaseSqlLogs)
-            throws FileNotFoundException,
-            IOException {
+    public static void paseExtSql(String curLine, BufferedReader logReader, List<List<String>> singleCaseSqlLogs)
+            throws FileNotFoundException, IOException {
 
         if (StringUtils.contains(curLine, "Executing Statement:")) {
             List<String> singleSqlExecLog = new ArrayList<String>();
@@ -221,11 +216,11 @@ public class SqlLogCollector {
             // sql param line
             String paramFirstLine = logReader.readLine();
 
-            //复杂类型的数据组装
+            // 复杂类型的数据组装
             String currentLine = logReader.readLine();
             while (currentLine != null) {
                 if (!StringUtils.contains(currentLine, "Types:")) {
-                    //换行类型的大字段用;号分割，和flag匹配
+                    // 换行类型的大字段用;号分割，和flag匹配
                     paramFirstLine += ";";
                     paramFirstLine += currentLine;
                     currentLine = logReader.readLine();
@@ -238,11 +233,11 @@ public class SqlLogCollector {
             // sql param type line
             singleSqlExecLog.add(currentLine);
 
-            //将脚本转换为小写
+            // 将脚本转换为小写
             singleSqlExecLog = parseToLow(singleSqlExecLog);
 
             if (isConcernedSql(singleSqlExecLog)) {
-                //System.out.println(singleSqlExecLog);
+                // System.out.println(singleSqlExecLog);
                 singleCaseSqlLogs.add(singleSqlExecLog);
             }
         }
@@ -283,8 +278,7 @@ public class SqlLogCollector {
     public static List<VirtualTable> parseSqlLog(List<List<String>> curCaseSqlLogLines) {
 
         // thread safe List
-        final List<VirtualTable> virtualTableSet = Collections
-                .synchronizedList(new ArrayList<VirtualTable>());
+        final List<VirtualTable> virtualTableSet = Collections.synchronizedList(new ArrayList<VirtualTable>());
 
         // resolve all tables associated with a single case
         parseSingleCaseSqlLog(curCaseSqlLogLines, virtualTableSet);
@@ -308,7 +302,7 @@ public class SqlLogCollector {
 
         Iterator<VirtualTable> tableIters = virtualTableSet.iterator();
 
-        //临时保存原始数据集合
+        // 临时保存原始数据集合
         List<VirtualTable> originalTableSet = new ArrayList<VirtualTable>();
         originalTableSet.addAll(virtualTableSet);
 
@@ -317,24 +311,22 @@ public class SqlLogCollector {
             VirtualTable virtualTable = tableIters.next();
             index++;
             for (int i = index; i < originalTableSet.size(); i++) {
-                if (StringUtils.equalsIgnoreCase(virtualTable.getTableName(), originalTableSet
-                        .get(i).getTableName())) {
+                if (StringUtils.equalsIgnoreCase(
+                        virtualTable.getTableName(), originalTableSet.get(i).getTableName())) {
                     List<Map<String, Object>> target = virtualTable.getTableData();
                     List<Map<String, Object>> other = originalTableSet.get(i).getTableData();
 
-                    //若除本对象外其余还有重复数据，则删除本重复数据
+                    // 若除本对象外其余还有重复数据，则删除本重复数据
                     doExclueRepeatTableData(target, other);
 
-                    //如果targe内容全部重复
+                    // 如果targe内容全部重复
                     if (CollectionUtils.isEmpty(target)) {
                         tableIters.remove();
                     }
                     break;
                 }
             }
-
         }
-
     }
 
     /**
@@ -343,8 +335,7 @@ public class SqlLogCollector {
      * @return
      */
     @SuppressWarnings("unchecked")
-    private static void doExclueRepeatTableData(List<Map<String, Object>> target,
-                                                List<Map<String, Object>> other) {
+    private static void doExclueRepeatTableData(List<Map<String, Object>> target, List<Map<String, Object>> other) {
 
         Iterator<Map<String, Object>> targetIter = target.iterator();
         while (targetIter.hasNext()) {
@@ -357,9 +348,7 @@ public class SqlLogCollector {
                     break;
                 }
             }
-
         }
-
     }
 
     /**
@@ -369,8 +358,8 @@ public class SqlLogCollector {
      * @param caseId
      * @param virtualTableSet
      */
-    private static void parseSingleCaseSqlLog(List<List<String>> curCaseSqlLogLines,
-                                              final List<VirtualTable> virtualTableSet) {
+    private static void parseSingleCaseSqlLog(
+            List<List<String>> curCaseSqlLogLines, final List<VirtualTable> virtualTableSet) {
 
         for (final List<String> singleSqlExecLog : curCaseSqlLogLines) {
             try {
@@ -378,19 +367,19 @@ public class SqlLogCollector {
                 preprocessSqlLog(singleSqlExecLog);
 
                 // 解析sql生成VirtualTable
-                VirtualTable virtualTable = SqlLogParseFactory.genVirtualTable(
-                        getSqlType(singleSqlExecLog.get(0)), singleSqlExecLog);
+                VirtualTable virtualTable =
+                        SqlLogParseFactory.genVirtualTable(getSqlType(singleSqlExecLog.get(0)), singleSqlExecLog);
                 if (null != virtualTable) {
                     virtualTableSet.add(virtualTable);
                 }
 
             } catch (Throwable t) {
-                //解析当前sql失败则忽略
-                logger.warn("Collecting case result-unknown exception while parsing SQL ,SQL="
-                        + singleSqlExecLog.get(0), t);
+                // 解析当前sql失败则忽略
+                logger.warn(
+                        "Collecting case result-unknown exception while parsing SQL ,SQL=" + singleSqlExecLog.get(0),
+                        t);
             }
         }
-
     }
 
     /**
@@ -407,17 +396,18 @@ public class SqlLogCollector {
 
         // --去sql无关的字符
         // 去除执行sql前端无用字符串
-        execSqlLogLine = execSqlLogLine
-                .substring(execSqlLogLine.indexOf("Executing Statement:") + 20);
+        execSqlLogLine = execSqlLogLine.substring(execSqlLogLine.indexOf("Executing Statement:") + 20);
 
         // 仅截取sql参数字符
-        sqlParamLogLine = sqlParamLogLine.substring(sqlParamLogLine.indexOf("Parameters:") + 11)
+        sqlParamLogLine = sqlParamLogLine
+                .substring(sqlParamLogLine.indexOf("Parameters:") + 11)
                 .trim();
         sqlParamLogLine = sqlParamLogLine.substring(1, sqlParamLogLine.length() - 1);
 
         // 仅截取sql类型参数字符
-        sqlParamTypeLine = sqlParamTypeLine.substring(
-                StringUtils.lastIndexOf(sqlParamTypeLine, "Types:") + 6).trim();
+        sqlParamTypeLine = sqlParamTypeLine
+                .substring(StringUtils.lastIndexOf(sqlParamTypeLine, "Types:") + 6)
+                .trim();
         sqlParamTypeLine = sqlParamTypeLine.substring(1, sqlParamTypeLine.length() - 1);
 
         // 覆盖旧值
@@ -446,7 +436,10 @@ public class SqlLogCollector {
     }
 
     public static void main(String[] args) {
-        String sqlSelect = "select      id,gmt_create,gmt_modified,gmt_creator,gmt_modifier,app_shop_last_24_query_cnt,approve_last_24_query_cnt,approve_last_12_query_cnt,approve_last_6_query_cnt,approve_last_3_query_cnt,card_last_24_query_cnt,card_last_12_query_cnt,card_last_6_query_cnt,card_last_3_query_cnt,manage_last_24_query_cnt,manage_last_12_query_cnt,manage_last_6_query_cnt,manage_last_3_query_cnt,manage_last_6_query_rate,loan_gt_10000_rate,loan_max_amount,loan_oper_max_amount,loan_cur_ovd_amount,loan_delq_3mth_max,loan_delq_6mth_max,loan_delq_12mth_max,loan_wxh_6_24mth_cur_ovd_pct,scard_delq_3mth_max,scard_delq_6mth_max,scard_delq_12mth_max,decard_max_amount,card_wxh_his_utli_gt_90_cnt,card_cur_ovd_amt_amount,card_delq_3mth_max,card_delq_6mth_max,card_delq_12mth_max,card_delq_3_24mth_max,card_delq_15_24mth_count,card_wxh_cur_ovd_pct,contact_addr_if,marrage_flag,credit_his_year,loan_sum_amount,balance_sum,decard_sum_amount,sixm_avg_used_sum,loan_avg_amount,decard_avg_amount,no_loan_manage_num,normal_num,ovd_24_num,ovd_3_max,avg_util_act_woe,op_assure_loan_amt,house_loan_num,dpd_mth_num,repay_house_mon,repay_car_mon,ln_nca_pmo_avg,repay_else,book_dt,sum_repay_car_loan,sum_repay_house_loan,sum_assure_loan,sum_credit_amt,sum_consumption_amt_gt_100000,sum_consumption_amt_lt_100000,dull_count_credit,class_5_credit_mortgage,ovd_cont_credit_mortgage_m12,class_5_not_mortgage,ovd_cont_not_mortgage_m12,class_5_guarantee,ovd_cont_credit_m12,ovd_cont_loan_m12,cont_under_secondary_assure,approve_last_6_query_cnt_all,query_no,card_delq_13_24mth_max,card_100k_ovd_90pct_cnt,card_rmb_ovd_90pct_cnt,card_gt_100k_cnt,card_60day_unupdate_cnt,card_rmb_cnt,loan_60day_unupdate_cnt,loan_cur_ovd_amt_sum_other,loan_delq_12mth_max_other,loan_asset_class_other,card_last_6_query_org_cnt,card_last_3_query_org_cnt,approve_last_3_query_org_cnt,assure_under_attention_amt,assure_amt_sum,card_amt_sum,loan_ovd_max_bal,card_max_ovd_bal,entity_code,entity_name,compute_date,card_delq_3mth_lt_0_cnt,card_delq_12mth_lt_0_cnt,app_last_30d_query_cnt,app_last_180d_query_cnt,card_delq_3mth_max_cnt,card_delq_12mth_max_cnt,all_card_cur_ovd_amt_sum,all_card_cur_ovd_used,card_open_mth_avg,loan_house_bal_sum,loan_house_amt_sum,loan_delq_12mth_avg_cnt,loan_delq_3mth_avg_cnt,card_nca_hb_max,card_used_50pct_all_card_rate,app_last_90d_query_cnt,card_gt_100k_avg_used_90pct_rate,card_last_30d_query_org_cnt,card_loan_60day_unupdate_cnt,loan_ovd_max_bal_cpt,business_loan_sum_amount,business_loan_sum_balance,cont_under_attention_assure,card_last_90d_query_div_730d_query_cnt_rate,query_flag,cont_all_assure,all_card_cnt,all_loan_cnt,cont_dull_card_cnt,scard_max_ovd_month_cnt,dull_loan_cnt,dull_scard_cnt,car_loan_num,biz_loan_num,std_loan_num,os_house_loan_num,os_car_loan_num,os_biz_loan_num,os_std_loan_num,cust_education,fund_month_amt,pension_pay_base,card_issue_org_cnt,loan_max_ovd_month,card_max_ovd_month,cc_cd_max_24m,ln_cd_max_24m,cc_nca_cnt_sum,ln_nca_m1_max_12m,ln_nca_pmm_avg,ln_nca_rmm_avg,ln_nca_pmt_sum,ac_nca_lmt_avg,ac_nca_cu_avg,work_year,industry,credit_score,credit_prob,credit_lnodds,credit_level,credit_levels,credit_levels_reasons,in_nal_app_cnt_sum,cc_nca_o1w_cnt,cc_nca_cnt,ac_nml_lmt_avg,in_org_cnt_sum_360d,in_org_360d_pct_730d,in_cc_apprate_180d,ln_nca_amt_avg,cc_cnt_sum,cc_act_m1_cnt_3m,cc_m2_cnt_sum_24m_rmb,credit_opm_max,cc_nac_cnt_sum,cc_act_lmt_max,in_lnapp_org_cnt_sum_360d,in_lnapp_org_cnt_sum_730d,ln_bad_crd_cnt_sum,bpboc_iii_score,bpboc_iii_prob,cc_nca_m2_rcy,qc_act_cd_max_24m,as_cv2_bal_sum,os_all_loan_num,ln_nca_rbus_bal_sum,ac_nml_lmt_sum,ln_nca_rmm_min     from   agds_pboc_credit   where       (entity_name=? and    entity_code=?)";
+        String sqlSelect = "select     "
+                + " id,gmt_create,gmt_modified,gmt_creator,gmt_modifier,app_shop_last_24_query_cnt,approve_last_24_query_cnt,approve_last_12_query_cnt,approve_last_6_query_cnt,approve_last_3_query_cnt,card_last_24_query_cnt,card_last_12_query_cnt,card_last_6_query_cnt,card_last_3_query_cnt,manage_last_24_query_cnt,manage_last_12_query_cnt,manage_last_6_query_cnt,manage_last_3_query_cnt,manage_last_6_query_rate,loan_gt_10000_rate,loan_max_amount,loan_oper_max_amount,loan_cur_ovd_amount,loan_delq_3mth_max,loan_delq_6mth_max,loan_delq_12mth_max,loan_wxh_6_24mth_cur_ovd_pct,scard_delq_3mth_max,scard_delq_6mth_max,scard_delq_12mth_max,decard_max_amount,card_wxh_his_utli_gt_90_cnt,card_cur_ovd_amt_amount,card_delq_3mth_max,card_delq_6mth_max,card_delq_12mth_max,card_delq_3_24mth_max,card_delq_15_24mth_count,card_wxh_cur_ovd_pct,contact_addr_if,marrage_flag,credit_his_year,loan_sum_amount,balance_sum,decard_sum_amount,sixm_avg_used_sum,loan_avg_amount,decard_avg_amount,no_loan_manage_num,normal_num,ovd_24_num,ovd_3_max,avg_util_act_woe,op_assure_loan_amt,house_loan_num,dpd_mth_num,repay_house_mon,repay_car_mon,ln_nca_pmo_avg,repay_else,book_dt,sum_repay_car_loan,sum_repay_house_loan,sum_assure_loan,sum_credit_amt,sum_consumption_amt_gt_100000,sum_consumption_amt_lt_100000,dull_count_credit,class_5_credit_mortgage,ovd_cont_credit_mortgage_m12,class_5_not_mortgage,ovd_cont_not_mortgage_m12,class_5_guarantee,ovd_cont_credit_m12,ovd_cont_loan_m12,cont_under_secondary_assure,approve_last_6_query_cnt_all,query_no,card_delq_13_24mth_max,card_100k_ovd_90pct_cnt,card_rmb_ovd_90pct_cnt,card_gt_100k_cnt,card_60day_unupdate_cnt,card_rmb_cnt,loan_60day_unupdate_cnt,loan_cur_ovd_amt_sum_other,loan_delq_12mth_max_other,loan_asset_class_other,card_last_6_query_org_cnt,card_last_3_query_org_cnt,approve_last_3_query_org_cnt,assure_under_attention_amt,assure_amt_sum,card_amt_sum,loan_ovd_max_bal,card_max_ovd_bal,entity_code,entity_name,compute_date,card_delq_3mth_lt_0_cnt,card_delq_12mth_lt_0_cnt,app_last_30d_query_cnt,app_last_180d_query_cnt,card_delq_3mth_max_cnt,card_delq_12mth_max_cnt,all_card_cur_ovd_amt_sum,all_card_cur_ovd_used,card_open_mth_avg,loan_house_bal_sum,loan_house_amt_sum,loan_delq_12mth_avg_cnt,loan_delq_3mth_avg_cnt,card_nca_hb_max,card_used_50pct_all_card_rate,app_last_90d_query_cnt,card_gt_100k_avg_used_90pct_rate,card_last_30d_query_org_cnt,card_loan_60day_unupdate_cnt,loan_ovd_max_bal_cpt,business_loan_sum_amount,business_loan_sum_balance,cont_under_attention_assure,card_last_90d_query_div_730d_query_cnt_rate,query_flag,cont_all_assure,all_card_cnt,all_loan_cnt,cont_dull_card_cnt,scard_max_ovd_month_cnt,dull_loan_cnt,dull_scard_cnt,car_loan_num,biz_loan_num,std_loan_num,os_house_loan_num,os_car_loan_num,os_biz_loan_num,os_std_loan_num,cust_education,fund_month_amt,pension_pay_base,card_issue_org_cnt,loan_max_ovd_month,card_max_ovd_month,cc_cd_max_24m,ln_cd_max_24m,cc_nca_cnt_sum,ln_nca_m1_max_12m,ln_nca_pmm_avg,ln_nca_rmm_avg,ln_nca_pmt_sum,ac_nca_lmt_avg,ac_nca_cu_avg,work_year,industry,credit_score,credit_prob,credit_lnodds,credit_level,credit_levels,credit_levels_reasons,in_nal_app_cnt_sum,cc_nca_o1w_cnt,cc_nca_cnt,ac_nml_lmt_avg,in_org_cnt_sum_360d,in_org_360d_pct_730d,in_cc_apprate_180d,ln_nca_amt_avg,cc_cnt_sum,cc_act_m1_cnt_3m,cc_m2_cnt_sum_24m_rmb,credit_opm_max,cc_nac_cnt_sum,cc_act_lmt_max,in_lnapp_org_cnt_sum_360d,in_lnapp_org_cnt_sum_730d,ln_bad_crd_cnt_sum,bpboc_iii_score,bpboc_iii_prob,cc_nca_m2_rcy,qc_act_cd_max_24m,as_cv2_bal_sum,os_all_loan_num,ln_nca_rbus_bal_sum,ac_nml_lmt_sum,ln_nca_rmm_min"
+                + "     from   agds_pboc_credit   where       (entity_name=? and   "
+                + " entity_code=?)";
 
         String sqlUpdate = "update a set b = c where d=e";
         String sqlInsert = "insert into a values(b,c)";
@@ -467,7 +460,8 @@ public class SqlLogCollector {
         String sqlParamLogLine = singleSqlExecLog.get(1);
         String sqlParamTypeLine = singleSqlExecLog.get(2);
 
-        if (StringUtils.isBlank(execSqlLogLine) || StringUtils.isBlank(sqlParamLogLine)
+        if (StringUtils.isBlank(execSqlLogLine)
+                || StringUtils.isBlank(sqlParamLogLine)
                 || StringUtils.isBlank(sqlParamTypeLine)) {
             return false;
         }

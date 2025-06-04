@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.util;
 
 /*-
@@ -27,11 +28,10 @@ package com.github.loadup.commons.util;
  */
 
 import com.github.loadup.commons.error.AssertUtil;
+import java.util.Base64;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.encrypt.Encryptors;
-
-import java.util.Base64;
 
 /**
  * @Description: 密码工具类
@@ -77,7 +77,8 @@ public class PasswordUtils {
         System.out.println(randomSalt);
         String encrypt = PasswordUtils.encrypt("123456", "123456", randomSalt);
         System.out.println(encrypt);
-        String decrypt = PasswordUtils.decrypt("ay+RdxDHbBn/AW/bD80IhHJq6YKnFKNNfgXMCfNdjPf1v6/iwPQ=", "123456", "69496770");
+        String decrypt =
+                PasswordUtils.decrypt("ay+RdxDHbBn/AW/bD80IhHJq6YKnFKNNfgXMCfNdjPf1v6/iwPQ=", "123456", "69496770");
         System.out.println(decrypt);
     }
 }

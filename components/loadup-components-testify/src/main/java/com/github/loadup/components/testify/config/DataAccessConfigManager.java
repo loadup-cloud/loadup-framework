@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.config;
 
 /*-
@@ -26,16 +27,14 @@ package com.github.loadup.components.testify.config;
  * #L%
  */
 
+import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.util.*;
-
 public abstract class DataAccessConfigManager implements InitializingBean {
-    protected static final Logger LOGGER = LoggerFactory
-            .getLogger(DataAccessConfigManager.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(DataAccessConfigManager.class);
     public static Map<String, List<String>> dataSourceMap = new HashMap<String, List<String>>();
     public static Map<String, List<String>> extDataSourceMap = new HashMap<String, List<String>>();
     /**
@@ -51,112 +50,113 @@ public abstract class DataAccessConfigManager implements InitializingBean {
 
     public static String findDataSourceName(String targetTableName) {
         return "dataSource";
-//        String result = null;
-//        String tableName = targetTableName.toLowerCase().trim();
-//        String fullMatch = null;
-//        String regExpMatch = null;
-//
-//        for (String key : extDataSourceMap.keySet()) {
-//            //默认返回最后一个数据源
-//            result = key;
-//            for (String tableTmp : extDataSourceMap.get(key)) {
-//                String table = tableTmp.toLowerCase().trim();
-//                if (tableName.equals(table)) {
-//                    fullMatch = key;
-//                }
-//                if (table.startsWith("*") && !table.endsWith("*")) {
-//                    if (tableName.endsWith(table.replace("*", ""))) {
-//                        regExpMatch = key;
-//                    }
-//
-//                } else if (!table.startsWith("*") && table.endsWith("*")) {
-//                    if (tableName.startsWith(table.replace("*", ""))) {
-//                        regExpMatch = key;
-//                    }
-//
-//                } else if (table.startsWith("*") && table.endsWith("*")) {
-//                    if (tableName.contains(table.replace("*", ""))) {
-//                        regExpMatch = key;
-//                    }
-//                }
-//            }
-//        }
-//        for (String key : dataSourceMap.keySet()) {
-//            //默认返回最后一个数据源
-//            result = key;
-//            for (String tableTmp : dataSourceMap.get(key)) {
-//                String table = tableTmp.toLowerCase().trim();
-//                if (tableName.equals(table)) {
-//                    fullMatch = key;
-//                }
-//                if (table.startsWith("*") && !table.endsWith("*")) {
-//                    if (tableName.endsWith(table.replace("*", ""))) {
-//                        regExpMatch = key;
-//                    }
-//
-//                } else if (!table.startsWith("*") && table.endsWith("*")) {
-//                    if (tableName.startsWith(table.replace("*", ""))) {
-//                        regExpMatch = key;
-//                    }
-//
-//                } else if (table.startsWith("*") && table.endsWith("*")) {
-//                    if (tableName.contains(table.replace("*", ""))) {
-//                        regExpMatch = key;
-//                    }
-//
-//                }
-//            }
-//        }
-//
-//        // 优先匹配全名，其次是正则匹配
-//        if (fullMatch != null || regExpMatch != null) {
-//            return fullMatch != null ? fullMatch : regExpMatch;
-//        }
-//
-//        //增加正则表达式匹配，为了兼容老格式，原先的星号匹配不删除
-//        for (String key : extDataSourceMap.keySet()) {
-//            //默认返回最后一个数据源
-//            result = key;
-//            for (String tableTmp : extDataSourceMap.get(key)) {
-//                String table = tableTmp.toLowerCase().trim();
-//                try {
-//                    Pattern pattern = Pattern.compile(table);
-//                    Matcher matcher = pattern.matcher(tableName);
-//                    //匹配到，且匹配到的子字符串与被查字符串完全相等
-//                    if (matcher.find()
-//                            && StringUtils.equals(table, matcher.group())) {
-//                        return key;
-//                    }
-//                } catch (Exception e) {
-//                    // regex has problem on format, ignore and continue
-//                }
-//            }
-//        }
-//
-//
-//        for (String key : dataSourceMap.keySet()) {
-//            //默认返回最后一个数据源
-//            result = key;
-//            for (String tableTmp : dataSourceMap.get(key)) {
-//                String table = tableTmp.toLowerCase().trim();
-//                try {
-//                    Pattern pattern = Pattern.compile(table);
-//                    Matcher matcher = pattern.matcher(tableName);
-//                    //匹配到，且匹配到的子字符串与被查字符串完全相等
-//                    if (matcher.find()
-//                            && StringUtils.equals(table, matcher.group())) {
-//                        return key;
-//                    }
-//                } catch (Exception e) {
-//                    // regex has problem on format, ignore and continue
-//                }
-//            }
-//        }
-//
-//        LOGGER.info("Not found data source for table: " + tableName + ". Use default data source(last data source): "
-//                + result);
-//
-//        return result;
+        //        String result = null;
+        //        String tableName = targetTableName.toLowerCase().trim();
+        //        String fullMatch = null;
+        //        String regExpMatch = null;
+        //
+        //        for (String key : extDataSourceMap.keySet()) {
+        //            //默认返回最后一个数据源
+        //            result = key;
+        //            for (String tableTmp : extDataSourceMap.get(key)) {
+        //                String table = tableTmp.toLowerCase().trim();
+        //                if (tableName.equals(table)) {
+        //                    fullMatch = key;
+        //                }
+        //                if (table.startsWith("*") && !table.endsWith("*")) {
+        //                    if (tableName.endsWith(table.replace("*", ""))) {
+        //                        regExpMatch = key;
+        //                    }
+        //
+        //                } else if (!table.startsWith("*") && table.endsWith("*")) {
+        //                    if (tableName.startsWith(table.replace("*", ""))) {
+        //                        regExpMatch = key;
+        //                    }
+        //
+        //                } else if (table.startsWith("*") && table.endsWith("*")) {
+        //                    if (tableName.contains(table.replace("*", ""))) {
+        //                        regExpMatch = key;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        for (String key : dataSourceMap.keySet()) {
+        //            //默认返回最后一个数据源
+        //            result = key;
+        //            for (String tableTmp : dataSourceMap.get(key)) {
+        //                String table = tableTmp.toLowerCase().trim();
+        //                if (tableName.equals(table)) {
+        //                    fullMatch = key;
+        //                }
+        //                if (table.startsWith("*") && !table.endsWith("*")) {
+        //                    if (tableName.endsWith(table.replace("*", ""))) {
+        //                        regExpMatch = key;
+        //                    }
+        //
+        //                } else if (!table.startsWith("*") && table.endsWith("*")) {
+        //                    if (tableName.startsWith(table.replace("*", ""))) {
+        //                        regExpMatch = key;
+        //                    }
+        //
+        //                } else if (table.startsWith("*") && table.endsWith("*")) {
+        //                    if (tableName.contains(table.replace("*", ""))) {
+        //                        regExpMatch = key;
+        //                    }
+        //
+        //                }
+        //            }
+        //        }
+        //
+        //        // 优先匹配全名，其次是正则匹配
+        //        if (fullMatch != null || regExpMatch != null) {
+        //            return fullMatch != null ? fullMatch : regExpMatch;
+        //        }
+        //
+        //        //增加正则表达式匹配，为了兼容老格式，原先的星号匹配不删除
+        //        for (String key : extDataSourceMap.keySet()) {
+        //            //默认返回最后一个数据源
+        //            result = key;
+        //            for (String tableTmp : extDataSourceMap.get(key)) {
+        //                String table = tableTmp.toLowerCase().trim();
+        //                try {
+        //                    Pattern pattern = Pattern.compile(table);
+        //                    Matcher matcher = pattern.matcher(tableName);
+        //                    //匹配到，且匹配到的子字符串与被查字符串完全相等
+        //                    if (matcher.find()
+        //                            && StringUtils.equals(table, matcher.group())) {
+        //                        return key;
+        //                    }
+        //                } catch (Exception e) {
+        //                    // regex has problem on format, ignore and continue
+        //                }
+        //            }
+        //        }
+        //
+        //
+        //        for (String key : dataSourceMap.keySet()) {
+        //            //默认返回最后一个数据源
+        //            result = key;
+        //            for (String tableTmp : dataSourceMap.get(key)) {
+        //                String table = tableTmp.toLowerCase().trim();
+        //                try {
+        //                    Pattern pattern = Pattern.compile(table);
+        //                    Matcher matcher = pattern.matcher(tableName);
+        //                    //匹配到，且匹配到的子字符串与被查字符串完全相等
+        //                    if (matcher.find()
+        //                            && StringUtils.equals(table, matcher.group())) {
+        //                        return key;
+        //                    }
+        //                } catch (Exception e) {
+        //                    // regex has problem on format, ignore and continue
+        //                }
+        //            }
+        //        }
+        //
+        //        LOGGER.info("Not found data source for table: " + tableName + ". Use default data source(last data
+        // source): "
+        //                + result);
+        //
+        //        return result;
     }
 
     public static void updateExtDataSourceMap(String dataSourceName, String tableName) {
@@ -182,7 +182,6 @@ public abstract class DataAccessConfigManager implements InitializingBean {
         }
 
         return null;
-
     }
 
     public DataAccessConfig findDataAccessConfig(String className) {
@@ -195,7 +194,6 @@ public abstract class DataAccessConfigManager implements InitializingBean {
         }
 
         return null;
-
     }
 
     public Object getDAO(String className) {
@@ -210,5 +208,4 @@ public abstract class DataAccessConfigManager implements InitializingBean {
 
         return null;
     }
-
 }

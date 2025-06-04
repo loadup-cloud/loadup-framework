@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -31,8 +32,10 @@ package com.github.loadup.components.testify.util;
  * @Date: 10:36 AM 2019/4/9 04 2019
  * @ClassName HttpUtil
  */
-
 import com.google.common.base.Joiner;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.*;
 import org.apache.http.client.CookieStore;
@@ -50,10 +53,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
 
 public class HttpUtil {
 
@@ -101,7 +100,6 @@ public class HttpUtil {
         } catch (Exception e) {
             throw new RuntimeException("HttpClient调用异常", e);
         }
-
     }
 
     /**
@@ -136,7 +134,6 @@ public class HttpUtil {
         } catch (Exception e) {
             throw new RuntimeException("HttpClient调用异常", e);
         }
-
     }
 
     /**
@@ -150,7 +147,8 @@ public class HttpUtil {
     public static Map<String, Object> doGet(String url, Map headers, Map<String, String> data) {
 
         // 拼接参数列表
-        String joinedData = Joiner.on("&").useForNull("").withKeyValueSeparator("=").join(data);
+        String joinedData =
+                Joiner.on("&").useForNull("").withKeyValueSeparator("=").join(data);
         // 拼接URL地址
         String joinedUrl = String.format("%s?%s", url, joinedData);
 
@@ -207,7 +205,6 @@ public class HttpUtil {
         } catch (Exception e) {
             throw new RuntimeException("HttpClient调用异常", e);
         }
-
     }
 
     /**
@@ -331,13 +328,12 @@ public class HttpUtil {
                 httpPost.setHeader(name, value);
             }
 
-            //设置参数
+            // 设置参数
             List<NameValuePair> nvps = new ArrayList<NameValuePair>();
             for (Iterator iter = body.keySet().iterator(); iter.hasNext(); ) {
                 String name = (String) iter.next();
                 String value = String.valueOf(body.get(name));
                 nvps.add(new BasicNameValuePair(name, value));
-
             }
             httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
 
@@ -371,10 +367,14 @@ public class HttpUtil {
     /**
      * 构造 uri
      */
-    public static URI constructUri(String scheme, String host, int port, String path)
-            throws URISyntaxException {
+    public static URI constructUri(String scheme, String host, int port, String path) throws URISyntaxException {
 
-        return new URIBuilder().setScheme(scheme).setHost(host).setPort(port).setPath(path).build();
+        return new URIBuilder()
+                .setScheme(scheme)
+                .setHost(host)
+                .setPort(port)
+                .setPath(path)
+                .build();
     }
 
     /**
@@ -403,5 +403,4 @@ public class HttpUtil {
     private static String uk(String scheme, String host, int port, String path) {
         return scheme + host + port + path;
     }
-
 }

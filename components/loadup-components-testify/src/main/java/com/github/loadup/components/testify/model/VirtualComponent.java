@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.model;
 
 /*-
@@ -92,5 +93,4 @@ public class VirtualComponent extends TestNode {
     public void setUseOrigData(boolean useOrigData) {
         this.useOrigData = useOrigData;
     }
-
 }

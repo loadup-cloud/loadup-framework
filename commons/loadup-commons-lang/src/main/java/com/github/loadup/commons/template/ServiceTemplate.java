@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.template;
 
 /*-
@@ -28,49 +29,38 @@ package com.github.loadup.commons.template;
 
 import com.github.loadup.commons.error.AssertUtil;
 import com.github.loadup.commons.error.CommonException;
-import com.github.loadup.commons.result.CommonResultCodeEnum;
-import com.github.loadup.commons.result.Response;
-import com.github.loadup.commons.result.Result;
+import com.github.loadup.commons.result.*;
+import java.util.function.*;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 @Slf4j(topic = "SERVICE-LOGGER")
 public final class ServiceTemplate {
-    private ServiceTemplate() {
-    }
+    private ServiceTemplate() {}
 
-    public static <T extends Response> T execute(Consumer<Void> checkParameter, //checkParameter
-                                                 Supplier<T> process, //process
-                                                 Function<Exception, Result> composeExceptionResponse, // 修改为 Function<Throwable, T>
-                                                 Consumer<Void> composeDigestLog //composeDigestLog
-    ) {
+    public static <T extends Response> T execute(
+            Consumer<Void> checkParameter, // checkParameter
+            Supplier<T> process, // process
+            Function<Result, T> composeExceptionResponse, // 修改为 Function<Throwable, T>
+            Consumer<Void> composeDigestLog // composeDigestLog
+            ) {
         T response = null;
         try {
             checkParameter.accept(null); // 执行参数检查
-            response = process.get();   // 执行业务逻辑
+            response = process.get(); // 执行业务逻辑
             AssertUtil.notNull(response);
             response.setResult(Result.buildSuccess());
         } catch (CommonException exception) {
             log.error("service process, exception occurred:", exception.getMessage());
-            response.setResult(Result.buildFailure(exception.getResultCode()));
+            response = composeExceptionResponse.apply(Result.buildFailure(exception.getResultCode())); // 异常处理
         } catch (Exception throwable) {
-            log.error("service process,  exception occurred:", throwable.getMessage());
-            Result result = composeExceptionResponse.apply(throwable); // 异常处理
-            if (Objects.isNull(result)) {
-                result = Result.buildFailure(CommonResultCodeEnum.UNKNOWN);
-            }
-            response.setResult(result);
+            log.error("service process,  exception occurred:{}", throwable.getMessage());
+            response = composeExceptionResponse.apply(Result.buildFailure(CommonResultCodeEnum.UNKNOWN)); // 异常处理
         } catch (Throwable throwable) {
             log.error("service process, unknown exception occurred:", throwable.getMessage());
-            response.setResult(Result.buildFailure(CommonResultCodeEnum.UNKNOWN));
+            response = composeExceptionResponse.apply(Result.buildFailure(CommonResultCodeEnum.UNKNOWN)); // 异常处理
         } finally {
-            composeDigestLog.accept(null);  // 执行日志
+            composeDigestLog.accept(null); // 执行日志
         }
         return response;
     }
-
 }

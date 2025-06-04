@@ -1,6 +1,9 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
+package com.github.loadup.modules.upms.client.dto;
+
 /*-
  * #%L
- * loadup-components-gateway-core
+ * loadup-modules-upms-client
  * %%
  * Copyright (C) 2022 - 2025 loadup_cloud
  * %%
@@ -23,3 +26,16 @@
  * THE SOFTWARE.
  * #L%
  */
+
+import com.github.loadup.commons.dto.DTO;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Data;
+
+@Data
+public class UserSaveDTO extends DTO {
+    @NotEmpty
+    private String account;
+
+    @NotEmpty
+    private String password;
+}

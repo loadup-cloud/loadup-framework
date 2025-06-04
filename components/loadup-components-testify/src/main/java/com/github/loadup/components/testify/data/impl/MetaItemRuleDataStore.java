@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data.impl;
 
 /*-
@@ -36,7 +33,7 @@ import com.github.loadup.components.testify.exception.RuleExecuteException;
 /**
  * 基于原子库获取规则。
  *
- * 
+ *
  *
  */
 public class MetaItemRuleDataStore implements RuleDataStore {

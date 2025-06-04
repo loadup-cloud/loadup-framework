@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2021 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.database;
 
 /*-
@@ -30,16 +27,15 @@ package com.github.loadup.components.testify.utils.database;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
 import com.github.loadup.components.testify.component.db.DBDatasProcessor;
 import com.github.loadup.components.testify.template.TestifyTestBase;
-
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * 
- * 
+ *
+ *
  */
 public class DBUtils {
     /**
@@ -68,9 +64,8 @@ public class DBUtils {
      * @return
      */
     public static List<Map<String, Object>> queryList(String sql) {
-        String tableName = StringUtils.substringBetween(
-                StringUtils.toRootLowerCase(sql),
-                "from", "where").trim();
+        String tableName = StringUtils.substringBetween(StringUtils.toRootLowerCase(sql), "from", "where")
+                .trim();
         return queryList(tableName, sql);
     }
 
@@ -92,10 +87,9 @@ public class DBUtils {
      * @return
      */
     public static int update(String sql) {
-        String tableName = StringUtils.substringBetween(
-                StringUtils.toRootLowerCase(sql),
-                "update", "set").trim();
-        //执行SQL
+        String tableName = StringUtils.substringBetween(StringUtils.toRootLowerCase(sql), "update", "set")
+                .trim();
+        // 执行SQL
         return update(tableName, sql);
     }
 
@@ -106,7 +100,7 @@ public class DBUtils {
      * @return
      */
     public static int update(String tableName, String sql) {
-        //执行SQL
+        // 执行SQL
         return dbDatasProcessor.getJdbcTemplate(tableName).update(sql);
     }
 
@@ -118,14 +112,13 @@ public class DBUtils {
      */
     @Deprecated
     public static String getTableName(String sql) {
-        //先转小写
+        // 先转小写
         sql = StringUtils.toRootLowerCase(sql);
-        //解析出sql中的tableName
+        // 解析出sql中的tableName
         String tableName = StringUtils.substringBetween(sql, "from", "where").trim();
         if (StringUtils.isEmpty(tableName)) {
             return null;
         }
         return tableName;
     }
-
 }

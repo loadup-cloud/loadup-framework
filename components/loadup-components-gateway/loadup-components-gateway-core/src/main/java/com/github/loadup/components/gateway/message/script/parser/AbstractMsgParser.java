@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.script.parser;
 
 /*-
@@ -26,18 +27,17 @@ package com.github.loadup.components.gateway.message.script.parser;
  * #L%
  */
 
+import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_PARSE_RESULT;
+
 import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.commons.result.ResultCode;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.message.common.errorr.ParserErrorCode;
 import com.github.loadup.components.gateway.message.unimsg.UnifyMsg;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
-
-import static com.github.loadup.components.gateway.core.prototype.constant.ProcessConstants.KEY_PARSE_RESULT;
 
 public abstract class AbstractMsgParser implements MessageParser {
 

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.model;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.components.gateway.core.model;
  * #L%
  */
 
+import java.util.Map;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.Map;
 
 /**
  * 接口配置
@@ -72,7 +72,7 @@ public class InterfaceConfig {
     private boolean isEnable;
 
     /**
-     * 
+     *
      */
     public String getInterfaceId() {
         return interfaceId;
@@ -86,7 +86,7 @@ public class InterfaceConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getInterfaceName() {
         return interfaceName;
@@ -100,7 +100,7 @@ public class InterfaceConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getMessageProcessorId() {
         return messageProcessorId;
@@ -114,7 +114,7 @@ public class InterfaceConfig {
     }
 
     /**
-     * 
+     *
      */
     public Properties getProperties() {
         return properties;
@@ -135,7 +135,7 @@ public class InterfaceConfig {
     }
 
     /**
-     * 
+     *
      */
     public boolean isEnable() {
         return isEnable;
@@ -149,7 +149,7 @@ public class InterfaceConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getVersion() {
         return version;
@@ -163,7 +163,7 @@ public class InterfaceConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getMessageReceiverInterfaceId() {
         return messageReceiverInterfaceId;
@@ -177,7 +177,7 @@ public class InterfaceConfig {
     }
 
     /**
-     * 
+     *
      */
     public String getSecurityStrategyCode() {
         return securityStrategyCode;

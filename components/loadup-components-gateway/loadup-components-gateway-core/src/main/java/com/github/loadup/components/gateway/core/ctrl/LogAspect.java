@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.ctrl;
 
 /*-
@@ -32,6 +33,7 @@ import com.github.loadup.components.gateway.core.ctrl.context.GatewayRuntimeProc
 import com.github.loadup.components.gateway.core.model.ShieldConfig;
 import com.github.loadup.components.gateway.core.model.ShieldType;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
+import java.util.Map;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -40,8 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 /**
  * <p>
@@ -53,12 +53,10 @@ import java.util.Map;
 @Lazy(false)
 public class LogAspect {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger("DIGEST-MESSAGE-LOGGER");
+    private static final Logger logger = LoggerFactory.getLogger("DIGEST-MESSAGE-LOGGER");
 
     @Pointcut("@annotation(com.github.loadup.components.gateway.core.common.annotation.LogTraceId)")
-    public void logPointCut() {
-    }
+    public void logPointCut() {}
 
     @Around("logPointCut()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
@@ -72,34 +70,43 @@ public class LogAspect {
             String traceId = context.getTraceId();
             String resultContent = CommonUtil.getMsgContent(context.getResultMessage());
 
-            Map<String, ShieldType> shieldRules = ShieldConfig
-                    .getShieldRules(ShieldConfig.KEY_DEFAULT, null);
+            Map<String, ShieldType> shieldRules = ShieldConfig.getShieldRules(ShieldConfig.KEY_DEFAULT, null);
 
-            resultContent = SensitivityUtil.mask(resultContent, shieldRules,
-                    SensitivityUtil.matchProcessTypeByString(resultContent));
+            resultContent = SensitivityUtil.mask(
+                    resultContent, shieldRules, SensitivityUtil.matchProcessTypeByString(resultContent));
 
             String requestContent = CommonUtil.getMsgContent(context.getRequestMessage());
 
-            requestContent = SensitivityUtil.mask(requestContent, shieldRules,
-                    SensitivityUtil.matchProcessTypeByString(requestContent));
+            requestContent = SensitivityUtil.mask(
+                    requestContent, shieldRules, SensitivityUtil.matchProcessTypeByString(requestContent));
 
             String responseContent = CommonUtil.getMsgContent(context.getResponseMessage());
 
-            responseContent = SensitivityUtil.mask(responseContent, shieldRules,
-                    SensitivityUtil.matchProcessTypeByString(responseContent));
+            responseContent = SensitivityUtil.mask(
+                    responseContent, shieldRules, SensitivityUtil.matchProcessTypeByString(responseContent));
 
-            LogUtil.info(logger, "className:", className, ", traceId:", traceId, ", time cost is ",
-                    timeCost, "ms");
+            LogUtil.info(logger, "className:", className, ", traceId:", traceId, ", time cost is ", timeCost, "ms");
 
             if (logger.isDebugEnabled()) {
-                LogUtil.debug(logger, "className:", className, ", traceId:", traceId,
-                        ", request args:", requestContent, ", response:", responseContent, ", result:",
-                        resultContent, ", time cost is ", timeCost, "ms");
+                LogUtil.debug(
+                        logger,
+                        "className:",
+                        className,
+                        ", traceId:",
+                        traceId,
+                        ", request args:",
+                        requestContent,
+                        ", response:",
+                        responseContent,
+                        ", result:",
+                        resultContent,
+                        ", time cost is ",
+                        timeCost,
+                        "ms");
             }
         } catch (Throwable e) {
             LogUtil.error(logger, e, "Print message log fail.");
         }
         return result;
     }
-
 }

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.exception;
 
 /*-
@@ -32,7 +29,7 @@ package com.github.loadup.components.testify.exception;
 
 /**
  * @author 马洪良
- * 
+ *
  */
 public class YamlFileException extends TestifyException {
 

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.config;
 
 /*-
@@ -30,19 +27,18 @@ package com.github.loadup.components.testify.utils.config;
  * #L%
  */
 
+import com.github.loadup.components.testify.constant.TestifyConstants;
+import com.github.loadup.components.testify.utils.config.impl.ConfigrationImpl;
 import java.net.URL;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.github.loadup.components.testify.constant.TestifyConstants;
-import com.github.loadup.components.testify.utils.config.impl.ConfigrationImpl;
 
 /**
- * 
+ *
  *
  */
 public class ConfigrationFactory {
@@ -50,8 +46,7 @@ public class ConfigrationFactory {
     public static final String ATS_CONFIG_SYSENV_PREFIX = "ats.config.";
     public static final String SOFA_CONFIG_SYSENV_PREFIX = "sofatest.";
     public static final String ATS_EXT_CONFIG_KEY = "ext_config_file";
-    protected static Logger logger = LoggerFactory
-            .getLogger(ConfigrationFactory.class);
+    protected static Logger logger = LoggerFactory.getLogger(ConfigrationFactory.class);
     private static Configration configImpl;
 
     /**
@@ -64,9 +59,9 @@ public class ConfigrationFactory {
     public static Configration getConfigration() {
         if (configImpl == null) {
             configImpl = new ConfigrationImpl();
-            //从配置文件或环境变量中加载配置
-            //环境变量优先级高于配置文件
-            //环境变量是以 ats.config 为前缀的变量
+            // 从配置文件或环境变量中加载配置
+            // 环境变量优先级高于配置文件
+            // 环境变量是以 ats.config 为前缀的变量
             loadFromConfig(TestifyConstants.TESTIFY_CONFIG_BASE_DIR + TestifyConstants.TESTIFY_CONFIG_FILE_NAME);
         }
         // 允许加载额外配置文件
@@ -92,26 +87,25 @@ public class ConfigrationFactory {
 
         URL atsConfigUrl = currentClassLoader.getResource(confName);
 
-//        if (atsConfigUrl == null) {
-//            logger.error("can not find ats config [" + confName + "]!");
-//            return;
-//        }
+        //        if (atsConfigUrl == null) {
+        //            logger.error("can not find ats config [" + confName + "]!");
+        //            return;
+        //        }
 
         Properties atsProperties = new Properties();
-//        try {
-//            atsProperties.load(atsConfigUrl.openStream());
-//        } catch (Exception e) {
-//            logger.error("can not find ats config [" + confName + "] details [" + e.getMessage()
-//                         + "]");
-//            return;
-//        }
+        //        try {
+        //            atsProperties.load(atsConfigUrl.openStream());
+        //        } catch (Exception e) {
+        //            logger.error("can not find ats config [" + confName + "] details [" + e.getMessage()
+        //                         + "]");
+        //            return;
+        //        }
 
         Set<Map.Entry<Object, Object>> entrySet = atsProperties.entrySet();
         for (Map.Entry<Object, Object> entry : entrySet) {
             Object keyObject = entry.getKey();
             Object valueObject = entry.getValue();
-            String envConfigValue = System.getProperty(ATS_CONFIG_SYSENV_PREFIX
-                    + keyObject.toString());
+            String envConfigValue = System.getProperty(ATS_CONFIG_SYSENV_PREFIX + keyObject.toString());
             if (StringUtils.isNotBlank(envConfigValue)) {
                 configImpl.setProperty(keyObject.toString(), envConfigValue);
             } else {
@@ -124,7 +118,7 @@ public class ConfigrationFactory {
      * 获取Sofa配置项
      */
     public static String getSofaConfig(String keyName) {
-        String sofaConfig = "";// TestUtils.getSofaConfig(keyName);
+        String sofaConfig = ""; // TestUtils.getSofaConfig(keyName);
         String envSofaValue = System.getProperty(SOFA_CONFIG_SYSENV_PREFIX + keyName.toString());
         if (StringUtils.isNotBlank(envSofaValue)) {
             return envSofaValue;

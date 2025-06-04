@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.mock;
 
 /*-
@@ -34,6 +35,5 @@ public class AnyRequestMatcher implements ArgumentMatcher {
     public boolean matches(Object argument) {
 
         return true;
-
     }
 }

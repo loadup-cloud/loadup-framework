@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.dal.dataobject;
 
 /*-
@@ -27,12 +28,11 @@ package com.github.loadup.modules.upms.dal.dataobject;
  */
 
 import com.github.loadup.commons.dataobject.BaseDO;
+import java.io.Serial;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
-
-import java.io.Serial;
 
 @Getter
 @Setter
@@ -40,9 +40,10 @@ import java.io.Serial;
 public class UserPositionDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = -1032586075918703314L;
+
     @Id
     private String id;
+
     private String userId;
     private String positionId;
-
 }

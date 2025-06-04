@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.event;
 
 /*-
@@ -30,15 +27,14 @@ package com.github.loadup.components.testify.component.event;
  * #L%
  */
 
+import java.lang.reflect.Field;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.Field;
-
 /**
  * @author jie.peng
- * 
+ *
  */
 public class DtoPublisherInterceptor implements MethodInterceptor {
 
@@ -57,11 +53,11 @@ public class DtoPublisherInterceptor implements MethodInterceptor {
             return invocation.proceed();
         }
 
-        //获取当前方法执行参数
+        // 获取当前方法执行参数
         Object[] params = invocation.getArguments();
-//        if (params[0] instanceof UniformEvent) {
-//            return invocation.proceed();
-//        }
+        //        if (params[0] instanceof UniformEvent) {
+        //            return invocation.proceed();
+        //        }
         String eventCode = "";
 
         Object eventLog = params[0];
@@ -74,9 +70,8 @@ public class DtoPublisherInterceptor implements MethodInterceptor {
             }
         }
         EventContextHolder.setEvent(eventCode, "", params[1]);
-        //}
+        // }
 
         return invocation.proceed();
     }
-
 }

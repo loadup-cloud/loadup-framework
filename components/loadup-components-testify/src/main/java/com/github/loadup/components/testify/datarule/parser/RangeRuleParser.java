@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.parser;
 
 /*-
@@ -39,8 +36,8 @@ import com.github.loadup.components.testify.exception.RuleParseException;
  * <p> 支持(0-100),[0-100],(0-100],[0-100),[-],[1-],[-100)等格式。
  * <br> 括号代表不包含，方括号代表包含，无明确边界的可为空。
  *
- * 
- * 
+ *
+ *
  */
 public class RangeRuleParser extends RuleParser<RangeRule> {
 
@@ -86,7 +83,10 @@ public class RangeRuleParser extends RuleParser<RangeRule> {
                         lexer.nextToken();
                         break;
                     default:
-                        throw new RuleParseException("ERROR[token=" + tok + ",pos=" + lexer.pos()
+                        throw new RuleParseException("ERROR[token="
+                                + tok
+                                + ",pos="
+                                + lexer.pos()
                                 + "],expect a number or '-',rule="
                                 + lexer.text);
                 }
@@ -107,18 +107,23 @@ public class RangeRuleParser extends RuleParser<RangeRule> {
                         lexer.nextToken();
                         break;
                     default:
-                        throw new RuleParseException("ERROR[token=" + tok + ",pos=" + lexer.pos()
-                                + "],expect ']' or ')',rule=" + lexer.text);
+                        throw new RuleParseException("ERROR[token="
+                                + tok
+                                + ",pos="
+                                + lexer.pos()
+                                + "],expect ']' or ')',rule="
+                                + lexer.text);
                 }
                 return rangeRule;
             case EOF:
                 throw new RuleParseException("EOF");
             default:
-                throw new RuleParseException("range rule parse ERROR[token=" + tok + ",pos="
+                throw new RuleParseException("range rule parse ERROR[token="
+                        + tok
+                        + ",pos="
                         + lexer.pos()
                         + "],expect pattern like (0-100) or [0-100],rule="
                         + lexer.text);
         }
     }
-
 }

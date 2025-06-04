@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data;
 
 /*-
@@ -33,7 +30,7 @@ package com.github.loadup.components.testify.data;
 /**
  * 原子字段类型。
  *
- * 
+ *
  *
  */
 public class MetaFieldType {
@@ -80,5 +77,4 @@ public class MetaFieldType {
     public String toString() {
         return typeDesc;
     }
-
 }

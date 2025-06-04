@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.service.test;
 
 /*-
@@ -32,33 +33,29 @@ import com.github.loadup.modules.upms.client.api.UserService;
 import com.github.loadup.modules.upms.client.cmd.RoleSaveCmd;
 import com.github.loadup.modules.upms.client.cmd.RoleUsersSaveCmd;
 import com.github.loadup.modules.upms.client.cmd.UserSaveCmd;
-import com.github.loadup.modules.upms.client.dto.RoleDTO;
-import com.github.loadup.modules.upms.client.dto.SimpleRoleDTO;
-import com.github.loadup.modules.upms.client.dto.SimpleUserDTO;
+import com.github.loadup.modules.upms.client.dto.*;
 import com.github.loadup.modules.upms.test.TestApplication;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootTest(classes = TestApplication.class)
 public class RoleServiceTest {
 
     @Autowired
     private RoleService roleService;
+
     @Autowired
     private UserService userService;
 
     @Test
     public void testCreateRole() {
-        SingleResponse<SimpleRoleDTO> response
-                = createRole();
+        SingleResponse<SimpleRoleDTO> response = createRole();
         Assertions.assertEquals("SUCCESS", response.getResult().getCode());
         Assertions.assertEquals("test_role", response.getData().getRoleCode());
-
     }
 
     @Test
@@ -78,13 +75,12 @@ public class RoleServiceTest {
         SingleResponse<RoleDTO> response2 = roleService.saveRoleUsers(userRolesSaveCmd);
         Assertions.assertEquals("SUCCESS", response2.getResult().getCode());
         Assertions.assertEquals(1, response2.getData().getUserList().size());
-
     }
 
     private SingleResponse<SimpleUserDTO> createUser() {
         UserSaveCmd cmd = new UserSaveCmd();
-        SimpleUserDTO dto = new SimpleUserDTO();
-        dto.setNickName("ls");
+        UserSaveDTO dto = new UserSaveDTO();
+        dto.setAccount("ls");
         dto.setPassword("123456");
         cmd.setUser(dto);
         SingleResponse<SimpleUserDTO> userDTO = userService.save(cmd);

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.db;
 
 /*-
@@ -32,16 +33,15 @@ import com.github.loadup.components.testify.db.model.DBSyncModel;
 import com.github.loadup.components.testify.helper.CSVHelper;
 import com.github.loadup.components.testify.log.TestifyLogUtil;
 import com.github.loadup.components.testify.util.FileUtil;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 缓存配置表同步工具类，因sql不同，故仅支持mysql获取形式的数据库（OB，mysql）
  *
- * 
+ *
  *
  */
 @Slf4j
@@ -58,12 +58,12 @@ public class SyncDBUtil {
     @SuppressWarnings("rawtypes")
     public static void syncFromOB(String DBURL, String cacheCSVFolder, List<String> tableNames) {
         File file = FileUtil.getTestResourceFile(cacheCSVFolder);
-        if (!file.exists() || !file.isDirectory())
-            file.mkdir();
+        if (!file.exists() || !file.isDirectory()) file.mkdir();
 
         Map<String, List> fileMap = new HashMap<String, List>();
         for (File cacheFile : file.listFiles()) {
-            String fileName = cacheFile.getName().substring(0, cacheFile.getName().length() - 4);
+            String fileName =
+                    cacheFile.getName().substring(0, cacheFile.getName().length() - 4);
             for (String cacheName : tableNames) {
                 if (fileName.equals(cacheName)) {
                     try {
@@ -79,14 +79,12 @@ public class SyncDBUtil {
         for (String cacheName : tableNames) {
             try {
                 DBSyncModel dbModel = getSchema(cacheName);
-                if (dbModel == null)
-                    continue;
+                if (dbModel == null) continue;
                 fillDBData(dbModel);
 
                 fillCSVData(dbModel, fileMap.get(dbModel.getTableName()));
                 mergeLocalData(dbModel);
-                File csvFile = FileUtil.getTestResourceFile(cacheCSVFolder + "/"
-                        + dbModel.getTableName() + ".csv");
+                File csvFile = FileUtil.getTestResourceFile(cacheCSVFolder + "/" + dbModel.getTableName() + ".csv");
                 genCheckCsvFile(dbModel, csvFile);
             } catch (Exception e) {
                 log.error("OB获取数据异常", e);
@@ -126,8 +124,8 @@ public class SyncDBUtil {
      * @param cols，例如"1,2,3"，基准为1
      * @throws Exception
      */
-    public static void syncSelectedTableToOB(String DBURL, String cacheCSVFolder, String tableName,
-                                             String cols) throws Exception {
+    public static void syncSelectedTableToOB(String DBURL, String cacheCSVFolder, String tableName, String cols)
+            throws Exception {
         updateSelectTableWithCols(cacheCSVFolder, tableName, cols);
     }
 
@@ -149,8 +147,7 @@ public class SyncDBUtil {
     }
 
     @SuppressWarnings("rawtypes")
-    private static void updateSelectTableWithCols(String cacheCSVFolder, String cacheName,
-                                                  String cols) {
+    private static void updateSelectTableWithCols(String cacheCSVFolder, String cacheName, String cols) {
         String[] columns = cols.split(",");
 
         try {
@@ -159,25 +156,23 @@ public class SyncDBUtil {
             fillCSVData(dbModel, tableList);
             Map<String, DBDataModel> dbSchema = dbModel.getLocalSchema();
             for (String col : columns) {
-                Map<String, Object> dbData = dbModel.getLocalRowData()
-                        .get(Integer.valueOf(col) - 1);
+                Map<String, Object> dbData = dbModel.getLocalRowData().get(Integer.valueOf(col) - 1);
                 updateTable(cacheName, dbData, dbSchema, dbModel.getSchemaColumnList());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     @SuppressWarnings("rawtypes")
     private static void updateAllTables(String cacheCSVFolder) {
-        //更新所有缓存表
+        // 更新所有缓存表
         File file = FileUtil.getTestResourceFile(cacheCSVFolder);
         for (File cacheFile : file.listFiles()) {
             if (cacheFile.getName().endsWith(".csv")) {
                 try {
-                    String tableName = cacheFile.getName().substring(0,
-                            cacheFile.getName().length() - 4);
+                    String tableName =
+                            cacheFile.getName().substring(0, cacheFile.getName().length() - 4);
                     List tableList = CSVHelper.readFromCsv(cacheFile);
                     DBSyncModel dbModel = new DBSyncModel(tableName);
                     fillCSVData(dbModel, tableList);
@@ -194,8 +189,8 @@ public class SyncDBUtil {
         }
     }
 
-    private static void updateTable(String tableName, Map<String, Object> dbData,
-                                    Map<String, DBDataModel> dbSchema, List<String> columnList)
+    private static void updateTable(
+            String tableName, Map<String, Object> dbData, Map<String, DBDataModel> dbSchema, List<String> columnList)
             throws Exception {
         List<String> whereCondition = new ArrayList<String>();
         List<String> insertColumns = new ArrayList<String>();
@@ -209,35 +204,30 @@ public class SyncDBUtil {
             if (dbData.get(columnName) == null) {
                 columnTypeEnum = ColumnTypeEnum.NULL;
                 value = null;
-            } else
-                value = (String) (dbData.get(columnName));
+            } else value = (String) (dbData.get(columnName));
             insertColumns.add(columnName);
             switch (columnTypeEnum) {
                 case NULL:
                     insertCondition.add("null");
-                    if (columnSchema.isPrimary())
-                        whereCondition.add(String.format("%s is null", columnName));
+                    if (columnSchema.isPrimary()) whereCondition.add(String.format("%s is null", columnName));
                     break;
                 case TIMESTAMP:
                 case VARCHAR:
                     value = value.replace("'", "\\'");
                     insertCondition.add(String.format("'%s'", value));
-                    if (columnSchema.isPrimary())
-                        whereCondition.add(String.format("%s='%s'", columnName, value));
+                    if (columnSchema.isPrimary()) whereCondition.add(String.format("%s='%s'", columnName, value));
                     break;
                 case INT:
                     insertCondition.add(value);
-                    if (columnSchema.isPrimary())
-                        whereCondition.add(String.format("%s=%s", columnName, value));
+                    if (columnSchema.isPrimary()) whereCondition.add(String.format("%s=%s", columnName, value));
                     break;
                 default:
                     throw new Exception("需要配置列种类枚举再执行");
             }
         }
-        String delSql = "delete from " + tableName + " where "
-                + joinString(whereCondition, " and ");
-        String insertSql = "insert into " + tableName + "(" + joinString(insertColumns, ",") + ")"
-                + " values(" + joinString(insertCondition, ",") + ")";
+        String delSql = "delete from " + tableName + " where " + joinString(whereCondition, " and ");
+        String insertSql = "insert into " + tableName + "(" + joinString(insertColumns, ",") + ")" + " values("
+                + joinString(insertCondition, ",") + ")";
         TestifyLogUtil.info(log, "开始执行" + delSql);
         int result = TestifyDBUtil.getUpdateResultMap(delSql, tableName, null);
         if (result < 0) {
@@ -256,10 +246,8 @@ public class SyncDBUtil {
 
     private static void fillDBData(DBSyncModel dbModel) throws Exception {
         String tableName = dbModel.getTableName();
-        List<Map<String, Object>> results = TestifyDBUtil.getMultiQueryResultMap("select * from "
-                        + tableName
-                        + " order by id",
-                tableName, null);
+        List<Map<String, Object>> results =
+                TestifyDBUtil.getMultiQueryResultMap("select * from " + tableName + " order by id", tableName, null);
         if (results != null) {
             List<Map<String, Object>> dbRowData = new ArrayList<Map<String, Object>>();
             for (Map<String, Object> resultObj : results) {
@@ -271,8 +259,7 @@ public class SyncDBUtil {
 
     @SuppressWarnings("rawtypes")
     private static void fillCSVData(DBSyncModel dbModel, List tableList) {
-        if (tableList == null)
-            return;
+        if (tableList == null) return;
         List<Map<String, Object>> rowDataList = new ArrayList<Map<String, Object>>();
         Map<String, DBDataModel> localSchema = new HashMap<String, DBDataModel>();
         List<String> schemaColumnList = new ArrayList<String>();
@@ -291,23 +278,20 @@ public class SyncDBUtil {
             Map<String, Object> rowData = new HashMap<String, Object>();
             for (int columnIndex = 1; columnIndex < tableList.size(); columnIndex++) {
                 String[] data = (String[]) tableList.get(columnIndex);
-                if (data[dataIndex].equals("null"))
-                    rowData.put(data[0], null);
-                else
-                    rowData.put(data[0], data[dataIndex]);
+                if (data[dataIndex].equals("null")) rowData.put(data[0], null);
+                else rowData.put(data[0], data[dataIndex]);
             }
             rowDataList.add(rowData);
         }
         dbModel.setLocalSchema(localSchema);
         dbModel.setLocalRowData(rowDataList);
-        if (!schemaColumnList.isEmpty())
-            dbModel.setSchemaColumnList(schemaColumnList);
+        if (!schemaColumnList.isEmpty()) dbModel.setSchemaColumnList(schemaColumnList);
     }
 
     private static DBSyncModel getSchema(String tableName) throws Exception {
         DBSyncModel dbModel = new DBSyncModel(tableName);
-        List<Map<String, Object>> results = TestifyDBUtil.getMultiQueryResultMap(
-                String.format("show index from %s", tableName), tableName, null);
+        List<Map<String, Object>> results =
+                TestifyDBUtil.getMultiQueryResultMap(String.format("show index from %s", tableName), tableName, null);
 
         Set<String> uniqueKeySet = new HashSet<String>();
         for (Map<String, Object> result : results) {
@@ -322,8 +306,7 @@ public class SyncDBUtil {
             for (Map<String, Object> result : results) {
                 String columnName = result.get("field").toString();
                 String columnType = result.get("type").toString();
-                boolean isPrimary = Integer.valueOf(result.get("key").toString()) > 0 ? true
-                        : false;
+                boolean isPrimary = Integer.valueOf(result.get("key").toString()) > 0 ? true : false;
                 boolean isUnique = uniqueKeySet.contains(columnName) ? true : false;
                 String comment = result.get("comment").toString();
                 DBDataModel model = new DBDataModel(comment, columnType, isPrimary, isUnique);
@@ -332,8 +315,7 @@ public class SyncDBUtil {
             }
             dbModel.setDbSchema(dbSchema);
             dbModel.setSchemaColumnList(schemaColumnList);
-        } else
-            return null;
+        } else return null;
         return dbModel;
     }
 
@@ -344,7 +326,7 @@ public class SyncDBUtil {
         }
 
         List<String[]> outputValues = new ArrayList<String[]>();
-        //组装CSV文件第一行，标题行
+        // 组装CSV文件第一行，标题行
         List<String> header = new ArrayList<String>();
         header.add("Name");
         header.add("Type");
@@ -385,26 +367,24 @@ public class SyncDBUtil {
         List<Map<String, Object>> mergeRowData = new ArrayList<Map<String, Object>>();
         Map<String, Map<String, Object>> uniqueMap = new HashMap<String, Map<String, Object>>();
 
-        //将数据库数据放入uniqueMap
+        // 将数据库数据放入uniqueMap
         for (Map<String, Object> dbData : dbModel.getDbRowData()) {
             uniqueMap.put(genUniqueKey(dbModel, dbData), dbData);
         }
 
-        //将缓存表存在、数据库不存在的的数据放入uniqueMap，并按缓存表旧数据顺序逐个添加mergeRowData
+        // 将缓存表存在、数据库不存在的的数据放入uniqueMap，并按缓存表旧数据顺序逐个添加mergeRowData
         if (dbModel.getLocalRowData().size() != 0) {
             for (Map<String, Object> dbData : dbModel.getLocalRowData()) {
                 String uniqueKey = genUniqueKey(dbModel, dbData);
                 if (uniqueMap.containsKey(uniqueKey)) {
-                    log.info(String.format("数据%s已在表%s中,进行更新", dbData.toString(),
-                            dbModel.getTableName()));
+                    log.info(String.format("数据%s已在表%s中,进行更新", dbData.toString(), dbModel.getTableName()));
                     mergeRowData.add(uniqueMap.get(uniqueKey));
                     uniqueMap.remove(uniqueKey);
-                } else
-                    mergeRowData.add(dbData);
+                } else mergeRowData.add(dbData);
             }
         }
 
-        //将数据库多出来的数据保持顺序逐个添加到mergeRowData
+        // 将数据库多出来的数据保持顺序逐个添加到mergeRowData
         for (Map<String, Object> dbData : dbModel.getDbRowData()) {
             if (uniqueMap.containsKey(genUniqueKey(dbModel, dbData))) {
                 mergeRowData.add(dbData);
@@ -422,5 +402,4 @@ public class SyncDBUtil {
         }
         return uniqueKey.substring(1, uniqueKey.length());
     }
-
 }

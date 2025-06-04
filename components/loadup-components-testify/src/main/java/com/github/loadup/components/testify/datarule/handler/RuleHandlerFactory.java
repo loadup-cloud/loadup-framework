@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.handler;
 
 /*-
@@ -30,17 +27,16 @@ package com.github.loadup.components.testify.datarule.handler;
  * #L%
  */
 
-import com.github.loadup.components.testify.datarule.ChooseRule;
 import com.github.loadup.components.testify.datarule.*;
+import com.github.loadup.components.testify.datarule.ChooseRule;
 import com.github.loadup.components.testify.exception.RuleParseException;
-
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * 规则处理工厂。
  *
- * 
+ *
  *
  */
 public class RuleHandlerFactory {
@@ -49,13 +45,13 @@ public class RuleHandlerFactory {
      * 处理器配置。
      */
     @SuppressWarnings("rawtypes")
-    private final static Map<Class, RuleHandler> handlers = new HashMap<Class, RuleHandler>();
+    private static final Map<Class, RuleHandler> handlers = new HashMap<Class, RuleHandler>();
 
     /**
      * 批处理器配置。
      */
     @SuppressWarnings("rawtypes")
-    private final static Map<Class, BatchRuleHandler> batchHandlers = new HashMap<Class, BatchRuleHandler>();
+    private static final Map<Class, BatchRuleHandler> batchHandlers = new HashMap<Class, BatchRuleHandler>();
 
     static {
         handlers.put(RangeRule.class, new RangeRuleHandler());
@@ -100,5 +96,4 @@ public class RuleHandlerFactory {
         }
         return batchHandler;
     }
-
 }

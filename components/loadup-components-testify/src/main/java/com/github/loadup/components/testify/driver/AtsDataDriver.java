@@ -1,6 +1,4 @@
-/**
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.driver;
 
 /*-
@@ -37,15 +35,14 @@ import com.github.loadup.components.testify.log.TestifyLogUtil;
 import com.github.loadup.components.testify.util.FileUtil;
 import com.github.loadup.components.testify.yaml.YamlTestData;
 import com.github.loadup.components.testify.yaml.YamlTestUtil;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Iterator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
-
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.Iterator;
 
 /**
  * 测试驱动基类（简化版）
@@ -101,7 +98,7 @@ public class AtsDataDriver extends AbstractTestNGSpringContextTests {
         AtsConfiguration.loadAtsProperties();
         AtsConfiguration.loadDBConfiguration();
         // set the runtime field for bean get support
-        //SofaRunTimeContextHolder.set(con);
+        // SofaRunTimeContextHolder.set(con);
     }
 
     /**

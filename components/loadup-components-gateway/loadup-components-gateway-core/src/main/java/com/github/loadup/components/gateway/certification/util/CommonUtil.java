@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.util;
 
 /*-
@@ -27,14 +28,13 @@ package com.github.loadup.components.gateway.certification.util;
  */
 
 import com.github.loadup.components.gateway.certification.model.CertificationFactor;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 通用工具类
@@ -74,8 +74,11 @@ public class CommonUtil {
      * 用方括号包住具体值
      */
     public static String decorateBySquareBrackets(String data) {
-        return new StringBuilder().append(SQUARE_BRACKET_LEFT).append(data).append(
-                SQUARE_BRACKET_RIGHT).toString();
+        return new StringBuilder()
+                .append(SQUARE_BRACKET_LEFT)
+                .append(data)
+                .append(SQUARE_BRACKET_RIGHT)
+                .toString();
     }
 
     /**
@@ -132,5 +135,4 @@ public class CommonUtil {
         }
         return StringUtils.join(strs, SEMI_SEPARATOR);
     }
-
 }

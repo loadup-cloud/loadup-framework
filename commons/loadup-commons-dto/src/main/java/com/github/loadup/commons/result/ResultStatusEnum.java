@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.result;
 
 /*-
@@ -26,11 +27,10 @@ package com.github.loadup.commons.result;
  * #L%
  */
 
+import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
@@ -42,7 +42,9 @@ public enum ResultStatusEnum {
     private String code;
 
     public static ResultStatusEnum getByCode(String code) {
-        return Arrays.stream(ResultStatusEnum.values()).filter(resultStatusEnum -> StringUtils.equals(resultStatusEnum.getCode(), code))
-                .findFirst().orElse(null);
+        return Arrays.stream(ResultStatusEnum.values())
+                .filter(resultStatusEnum -> StringUtils.equals(resultStatusEnum.getCode(), code))
+                .findFirst()
+                .orElse(null);
     }
 }

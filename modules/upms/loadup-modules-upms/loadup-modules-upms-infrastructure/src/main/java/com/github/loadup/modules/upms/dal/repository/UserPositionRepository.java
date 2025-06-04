@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.dal.repository;
 
 /*-
@@ -27,10 +28,9 @@ package com.github.loadup.modules.upms.dal.repository;
  */
 
 import com.github.loadup.modules.upms.dal.dataobject.UserPositionDO;
+import java.util.List;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface UserPositionRepository extends ListCrudRepository<UserPositionDO, String> {

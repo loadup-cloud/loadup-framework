@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -39,14 +40,14 @@ public class ClientConfigQueryRequest extends BaseRequest {
     private String clientId;
 
     /**
-     * 
+     *
      */
     public String getClientId() {
         return clientId;
     }
 
     /**
-     * 
+     *
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;

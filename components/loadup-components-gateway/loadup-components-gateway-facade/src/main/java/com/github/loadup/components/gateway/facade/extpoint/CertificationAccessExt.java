@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.extpoint;
 
 /*-
@@ -28,7 +29,6 @@ package com.github.loadup.components.gateway.facade.extpoint;
 
 import com.alibaba.cola.extension.Extension;
 import com.github.loadup.components.gateway.facade.enums.CertTypeEnum;
-
 import java.io.IOException;
 
 /**

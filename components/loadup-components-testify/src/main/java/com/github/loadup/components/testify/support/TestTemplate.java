@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.support;
 
 /*-
@@ -35,11 +32,10 @@ package com.github.loadup.components.testify.support;
  * <p>
  * 明确测试用例执行阶段，完成整个生命周期管理。
  *
- * 
+ *
  *
  */
 public interface TestTemplate {
-
 
     /**
      * ccil方式实现用例。
@@ -50,7 +46,6 @@ public interface TestTemplate {
      * @param ccilCheck   检查ccil - 检查阶段
      * @param ccilClear   清除ccil - 清除阶段
      */
-    public void executeByCcil(String caseExpr, String ccilPrepare, String ccilExecute,
-                              String ccilCheck, String ccilClear);
-
+    public void executeByCcil(
+            String caseExpr, String ccilPrepare, String ccilExecute, String ccilCheck, String ccilClear);
 }

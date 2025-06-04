@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.algo;
 
 /*-
@@ -32,6 +33,18 @@ import com.github.loadup.components.gateway.certification.manager.XmlSignatureMa
 import com.github.loadup.components.gateway.certification.model.AlgorithmEnum;
 import com.github.loadup.components.gateway.certification.model.XmlSignatureAppendMode;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xml.security.keys.content.X509Data;
 import org.apache.xml.security.signature.XMLSignature;
@@ -46,19 +59,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 
 /**
  * xml的RSA签名算法
@@ -111,10 +111,9 @@ public class AlgXmlRSASignature extends AbstractAlgorithm {
         } catch (Exception e) {
             LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "recover privateKey error:");
 
-            throw new CertificationException(CertificationErrorCode.RECOVER_PRIVATE_KEY_ERROR,
-                    genLogSign(KEY_ALGO_NAME), e);
+            throw new CertificationException(
+                    CertificationErrorCode.RECOVER_PRIVATE_KEY_ERROR, genLogSign(KEY_ALGO_NAME), e);
         }
-
     }
 
     /**
@@ -129,8 +128,8 @@ public class AlgXmlRSASignature extends AbstractAlgorithm {
         } catch (Exception e) {
             LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "recover publicKey error:");
 
-            throw new CertificationException(CertificationErrorCode.RECOVER_PUBLIC_KEY_ERROR,
-                    genLogSign(KEY_ALGO_NAME), e);
+            throw new CertificationException(
+                    CertificationErrorCode.RECOVER_PUBLIC_KEY_ERROR, genLogSign(KEY_ALGO_NAME), e);
         }
     }
 
@@ -144,8 +143,7 @@ public class AlgXmlRSASignature extends AbstractAlgorithm {
             return (X509Certificate) cf.generateCertificate(certIn);
         } catch (Exception e) {
             LogUtil.error(logger, e, genLogSign(KEY_ALGO_NAME) + "recover certificate error:");
-            throw new CertificationException(CertificationErrorCode.RECOVER_KEY_ERROR,
-                    genLogSign(KEY_ALGO_NAME), e);
+            throw new CertificationException(CertificationErrorCode.RECOVER_KEY_ERROR, genLogSign(KEY_ALGO_NAME), e);
         }
     }
 
@@ -173,24 +171,26 @@ public class AlgXmlRSASignature extends AbstractAlgorithm {
      * @throws Exception the exception
      */
     @Override
-    public byte[] signXmlElement(byte[] priKeyData, byte[] certData, byte[] xmlDocBytes,
-                                 String encode, String elementTagName, String algorithm,
-                                 int signatureAppendMode) {
+    public byte[] signXmlElement(
+            byte[] priKeyData,
+            byte[] certData,
+            byte[] xmlDocBytes,
+            String encode,
+            String elementTagName,
+            String algorithm,
+            int signatureAppendMode) {
         try {
             Document xmlDocument = getXmlDocument(xmlDocBytes, encode);
-            XMLSignature xmlSignature = new XMLSignature(xmlDocument, xmlDocument.getDocumentURI(),
-                    algorithm);
+            XMLSignature xmlSignature = new XMLSignature(xmlDocument, xmlDocument.getDocumentURI(), algorithm);
 
             NodeList nodeList = xmlDocument.getElementsByTagName(elementTagName);
             if (nodeList == null || nodeList.getLength() - 1 < 0) {
-                throw new Exception("Document element with tag name " + elementTagName
-                        + " not fount");
+                throw new Exception("Document element with tag name " + elementTagName + " not fount");
             }
 
             Node elementNode = nodeList.item(0);
             if (elementNode == null) {
-                throw new Exception("Document element with tag name " + elementTagName
-                        + " not fount");
+                throw new Exception("Document element with tag name " + elementTagName + " not fount");
             }
             if (signatureAppendMode == XmlSignatureAppendMode.AS_CHILDREN) {
                 elementNode.appendChild(xmlSignature.getElement());
@@ -203,7 +203,7 @@ public class AlgXmlRSASignature extends AbstractAlgorithm {
             Transforms transforms = new Transforms(xmlDocument);
             transforms.addTransform(Transforms.TRANSFORM_ENVELOPED_SIGNATURE);
             xmlSignature.addDocument("", transforms, Constants.ALGO_ID_DIGEST_SHA1);
-            //添加证书签发者信息
+            // 添加证书签发者信息
             appendIssuerSerial(xmlSignature, certData);
             PrivateKey privateKey = recoverPrivateKey(priKeyData);
             xmlSignature.sign(privateKey);
@@ -225,8 +225,7 @@ public class AlgXmlRSASignature extends AbstractAlgorithm {
         if (certData != null) {
             X509Certificate certificate = this.recoverCertificate(certData);
             X509Data x509data = new X509Data(xmlSignature.getDocument());
-            x509data.addIssuerSerial(certificate.getIssuerDN().getName(), certificate
-                    .getSerialNumber());
+            x509data.addIssuerSerial(certificate.getIssuerDN().getName(), certificate.getSerialNumber());
             xmlSignature.getKeyInfo().add(x509data);
         }
     }
@@ -240,8 +239,7 @@ public class AlgXmlRSASignature extends AbstractAlgorithm {
     public boolean verifyXmlElement(byte[] pubKeyData, byte[] xmlDocBytes, String encode) {
         try {
             Document xmlDocument = getXmlDocument(xmlDocBytes, encode);
-            NodeList signatureNodes = xmlDocument.getElementsByTagNameNS(Constants.SignatureSpecNS,
-                    "Signature");
+            NodeList signatureNodes = xmlDocument.getElementsByTagNameNS(Constants.SignatureSpecNS, "Signature");
             if (signatureNodes == null || signatureNodes.getLength() < 1) {
                 throw new Exception("Signature element not found!");
             }

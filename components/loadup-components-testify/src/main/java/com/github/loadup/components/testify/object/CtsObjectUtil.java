@@ -1,6 +1,4 @@
-/**
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object;
 
 /*-
@@ -32,14 +30,13 @@ package com.github.loadup.components.testify.object;
 import com.github.loadup.components.testify.context.TestifyCaseContextHolder;
 import com.github.loadup.components.testify.log.TestifyLogUtil;
 import com.github.loadup.components.testify.object.processor.ObjectProcessor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.testng.Assert;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.testng.Assert;
 
 /**
  * 存储旧CTS支持对象相关方法，不再维护，不建议使用
@@ -50,7 +47,6 @@ import java.util.Map.Entry;
 @Deprecated
 @Slf4j
 public class CtsObjectUtil {
-
 
     /**
      * 根据CSV文件生成对象List
@@ -77,10 +73,8 @@ public class CtsObjectUtil {
             } catch (Exception e) {
                 log.error("添加当前的T对象失败", e);
             }
-
         }
-        TestifyLogUtil.info(log,
-                "从" + csvPath + "第" + csvCols + "列准备List对象" + objClass.getSimpleName());
+        TestifyLogUtil.info(log, "从" + csvPath + "第" + csvCols + "列准备List对象" + objClass.getSimpleName());
         TestifyLogUtil.addProcessLog(objs);
         check();
         return objs;
@@ -98,8 +92,7 @@ public class CtsObjectUtil {
      */
     @SuppressWarnings("unchecked")
     public static <T> T genObjectFromCSV(Class<T> objClass, String csvPath, String index)
-            throws NumberFormatException,
-            Exception {
+            throws NumberFormatException, Exception {
         if (StringUtils.isBlank(csvPath) || StringUtils.isBlank(index)) {
             TestifyLogUtil.info(log, "csvPath或列号为空，构建" + objClass.getSimpleName() + "为空");
             return null;
@@ -160,8 +153,7 @@ public class CtsObjectUtil {
      * @param map
      * @return 校验结果：true-校验成功     false-校验失败
      */
-    public static void checkObject(Object actual, String csvPath, String index,
-                                   Map<String, String> map) {
+    public static void checkObject(Object actual, String csvPath, String index, Map<String, String> map) {
         Map<String, Object> uniqueMap = TestifyCaseContextHolder.get().getUniqueMap();
         for (Entry<String, String> entry : map.entrySet()) {
             uniqueMap.put(entry.getKey(), entry.getValue());

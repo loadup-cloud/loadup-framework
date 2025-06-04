@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.db.offlineService;
 
 /*-
@@ -32,17 +29,16 @@ package com.github.loadup.components.testify.db.offlineService;
 
 import com.github.loadup.components.testify.db.enums.DataBaseTypeEnum;
 import com.github.loadup.components.testify.log.TestifyLogUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * MySQL服务
  *
- * 
+ *
  *
  */
 @Slf4j
@@ -79,5 +75,4 @@ public class MySQLService extends AbstractDBService {
             TestifyLogUtil.fail(log, "OB启动异常", e);
         }
     }
-
 }

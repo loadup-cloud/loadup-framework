@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.domain;
 
 /*-
@@ -28,10 +29,9 @@ package com.github.loadup.modules.upms.domain;
 
 import com.github.loadup.commons.domain.BaseDomain;
 import com.github.loadup.commons.util.ToStringUtils;
+import java.io.Serial;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serial;
 
 /**
  * @author lise
@@ -57,6 +57,7 @@ public class UpmsMenu extends BaseDomain {
      * 菜单权限编码，例如：“sys:schedule:list,sys:schedule:info”,多个逗号隔开
      */
     private String perms;
+
     /**
      * 权限策略1显示2禁用
      */
@@ -81,6 +82,7 @@ public class UpmsMenu extends BaseDomain {
      * 路径
      */
     private String url;
+
     /**
      * 一级菜单跳转地址
      */
@@ -105,14 +107,17 @@ public class UpmsMenu extends BaseDomain {
      * 是否路由菜单: 0:不是  1:是（默认值1）
      */
     private boolean route;
+
     /**
      * 是否缓存页面: 0:不是  1:是（默认值1）
      */
     private boolean keepAlive;
+
     /**
      * 描述
      */
     private String description;
+
     /**
      * 是否配置菜单的数据权限 1是0否 默认0
      */
@@ -127,6 +132,7 @@ public class UpmsMenu extends BaseDomain {
      * 是否隐藏Tab: 0否,1是（默认值0）
      */
     private boolean hideTab;
+
     /**
      * 按钮权限状态(0无效1有效)
      */

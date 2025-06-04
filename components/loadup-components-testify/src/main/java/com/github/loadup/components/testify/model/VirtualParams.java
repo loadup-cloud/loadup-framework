@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.model;
 
 /*-
@@ -85,5 +86,4 @@ public class VirtualParams extends TestUnit {
     public String toString() {
         return "VirtualParams [params=" + params + "]";
     }
-
 }

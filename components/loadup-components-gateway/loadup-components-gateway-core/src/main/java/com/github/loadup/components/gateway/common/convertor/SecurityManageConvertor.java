@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.common.convertor;
 
 /*-
@@ -34,9 +35,8 @@ import com.github.loadup.components.gateway.facade.request.CertConfigAddRequest;
 import com.github.loadup.components.gateway.facade.request.CertConfigRemoveRequest;
 import com.github.loadup.components.gateway.facade.request.CertConfigUpdateRequest;
 import com.github.loadup.components.gateway.facade.response.CertConfigInnerResponse;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Date;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -61,11 +61,11 @@ public class SecurityManageConvertor {
         addRequestDto.setGmtModified(new Date());
         addRequestDto.setKeyType(request.getKeyType());
         if (request.getProperties() != null) {
-            //addRequestDto.setProperties(CommonUtil.kv2Str(request.getProperties()));
+            // addRequestDto.setProperties(CommonUtil.kv2Str(request.getProperties()));
             addRequestDto.setProperties(JsonUtil.toJSONString(request.getProperties()));
         }
         if (request.getAlgorithmProperties() != null) {
-            //addRequestDto.setAlgoProperties(CommonUtil.kv2Str(request.getAlgorithmProperties()));
+            // addRequestDto.setAlgoProperties(CommonUtil.kv2Str(request.getAlgorithmProperties()));
             addRequestDto.setAlgoProperties(JsonUtil.toJSONString(request.getAlgorithmProperties()));
         }
         return addRequestDto;
@@ -88,11 +88,11 @@ public class SecurityManageConvertor {
         innerResponse.setKeyType(innerDto.getKeyType());
         innerResponse.setCertStatus(innerDto.getStatus());
         if (!StringUtils.isBlank(innerDto.getProperties())) {
-            //innerResponse.setProperties(CommonUtil.Str2Kv(innerDto.getProperties()));
+            // innerResponse.setProperties(CommonUtil.Str2Kv(innerDto.getProperties()));
             innerResponse.setProperties(JsonUtil.jsonToMap(innerDto.getProperties()));
         }
         if (!StringUtils.isBlank(innerDto.getAlgoProperties())) {
-            //innerResponse.setAlgorithmProperties(CommonUtil.Str2Kv(innerDto.getAlgoProperties()));
+            // innerResponse.setAlgorithmProperties(CommonUtil.Str2Kv(innerDto.getAlgoProperties()));
             innerResponse.setAlgorithmProperties(JsonUtil.jsonToMap(innerDto.getAlgoProperties()));
         }
         return innerResponse;

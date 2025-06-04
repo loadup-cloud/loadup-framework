@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.event.hunt;
 
 /*-
@@ -47,5 +44,4 @@ public interface EventContextHunter {
      * @return
      */
     HuntResult hunt(String topic, String eventCode, Set<String> targets);
-
 }

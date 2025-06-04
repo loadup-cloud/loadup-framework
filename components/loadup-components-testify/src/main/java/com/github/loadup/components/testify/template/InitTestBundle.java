@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.template;
 
 /*-
@@ -34,21 +31,18 @@ import java.io.*;
 import java.util.logging.Logger;
 
 /**
- * 
+ *
  *
  */
 public class InitTestBundle {
 
     public static String basePath = System.getProperty("user.dir");
 
-    public static String CONFIG_PATH = basePath
-            + "\\src\\main\\resources\\initTetsBundle";
+    public static String CONFIG_PATH = basePath + "\\src\\main\\resources\\initTetsBundle";
 
-    public static String SERVICE_TEST_PATH = basePath
-            + "\\src\\main\\resources\\initTetsBundle\\servicetest";
+    public static String SERVICE_TEST_PATH = basePath + "\\src\\main\\resources\\initTetsBundle\\servicetest";
 
-    public static String SOFA_CONFIG_PATH = basePath
-            + "\\src\\main\\resources\\initTetsBundle\\sofaconfig";
+    public static String SOFA_CONFIG_PATH = basePath + "\\src\\main\\resources\\initTetsBundle\\sofaconfig";
 
     private static Logger logger = Logger.getLogger("InitTestBundle");
 
@@ -74,7 +68,6 @@ public class InitTestBundle {
         } catch (Exception e) {
 
         }
-
     }
 
     /**
@@ -83,7 +76,7 @@ public class InitTestBundle {
     public void start() {
         logger.info("====================start===================");
         try {
-            //生成测试基类
+            // 生成测试基类
             String linuxPath = "\\\\100.81.64.60\\home";
             String str2 = "D:\\initTestBundleTest";
             genFileBase("生成测试基类", linuxPath, str2);
@@ -101,8 +94,7 @@ public class InitTestBundle {
      *
      * @throws IOException
      */
-    private void genFileBase(String stepMemo, String copyPath, String isCopyPath)
-            throws IOException {
+    private void genFileBase(String stepMemo, String copyPath, String isCopyPath) throws IOException {
         logger.info("++++++++++【1】" + stepMemo + "++++++++++");
 
         File localFile = new File(isCopyPath);
@@ -120,20 +112,19 @@ public class InitTestBundle {
      */
     private void genTestFile(String path, String fileName, String input) throws IOException {
 
-        //判断文件路径是否存在，不存在新建
+        // 判断文件路径是否存在，不存在新建
         File newFileDir = new File(path);
 
         if (!newFileDir.exists() && !newFileDir.isDirectory()) {
             newFileDir.mkdir();
         }
-        //判断问价是否存在不存在则新建
+        // 判断问价是否存在不存在则新建
         File file = new File(path + "//" + fileName);
         if (!file.exists()) {
             file.createNewFile();
         }
 
         WriteStringToFile(path + "//" + fileName, input, "UTF-8");
-
     }
 
     /**
@@ -147,10 +138,9 @@ public class InitTestBundle {
     public void WriteStringToFile(String filePath, String addString, String encoding) {
         try {
             //  FileWriter fw = new FileWriter(filePath);
-            OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(filePath, true),
-                    encoding);
+            OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(filePath, true), encoding);
             BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(addString + "\r\n ");// 往已有的文件上添加字符串
+            bw.write(addString + "\r\n "); // 往已有的文件上添加字符串
             bw.close();
             fw.close();
         } catch (Exception e) {
@@ -168,8 +158,7 @@ public class InitTestBundle {
             logger.info("exec cmd:" + paramString);
             Process localProcess = Runtime.getRuntime().exec(paramString);
             InputStream localInputStream = localProcess.getInputStream();
-            while (localInputStream.read() != -1) {
-            }
+            while (localInputStream.read() != -1) {}
             localInputStream.close();
             localProcess.waitFor();
         } catch (Exception localException) {

@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.support.enums;
 
 /*-
@@ -33,11 +30,10 @@ package com.github.loadup.components.testify.support.enums;
 /**
  * 用例分类。
  *
- * 
- * 
+ *
+ *
  */
 public enum CaseCategory {
-
     NORMAL("NM", "normal"),
 
     FUNC_EXP("FE", "funcExp"),
@@ -77,7 +73,7 @@ public enum CaseCategory {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of alias
      */
@@ -86,12 +82,11 @@ public enum CaseCategory {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of code
      */
     public String getCode() {
         return code;
     }
-
 }

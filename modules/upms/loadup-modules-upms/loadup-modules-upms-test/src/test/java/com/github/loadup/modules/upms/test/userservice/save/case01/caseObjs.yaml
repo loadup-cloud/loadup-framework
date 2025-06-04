@@ -2,17 +2,31 @@
 
 # Arguments: List<Object>
 [
-  null]
+  com.github.loadup.modules.upms.client.cmd.UserSaveCmd: {
+    user: { account: '123',password: '123456' }
+  }
+]
 
 ---
 # Flags: Map<String, Map<String, String>>
 {
+  com.github.loadup.modules.upms.client.dto.SimpleUserDTO: {
+    "account": "Y","birthday": "Y","id": "N","password": "N","registeredTime": "N"
+  },
+
+  com.github.loadup.commons.result.SingleResponse.result: {
+    "status": "Y","code": "Y","message": "Y"
+  }
 
 }
 
 ---
 # Result: Object
-null
+!!com.github.loadup.commons.result.SingleResponse {
+  "data": !!com.github.loadup.modules.upms.client.dto.SimpleUserDTO { "account": "123","birthday": "2025/01/01" },
+  "result": { "code": "SUCCESS","message": "Success.","status": "S" }
+}
+
 
 ---
 # Message Event: List<Map<String, Object>>
@@ -21,12 +35,9 @@ null
 ---
 # User-defined Params: Map<String, Object>
 {
-val1: "sampleVal1",
-val2: "sampleVal2"
+  val1: "sampleVal1",
+  val2: "sampleVal2"
 }
 
----
-# Virtual Mocks(Deprecated): List<VirtualMock>
-null
 
  

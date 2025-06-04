@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.config.model;
 
 /*-
@@ -26,15 +27,13 @@ package com.github.loadup.components.gateway.facade.config.model;
  * #L%
  */
 
+import java.io.Serializable;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.io.Serializable;
 
 /**
  * 网关限流产品基础配置条件组
  */
-
 public class LimitConditionGroup implements Serializable {
 
     private static final long serialVersionUID = -3736482110642580114L;
@@ -90,7 +89,7 @@ public class LimitConditionGroup implements Serializable {
     private String distributedFallbackStandaloneTenantLimit;
 
     /**
-     * 
+     *
      */
     public Boolean getOpenLimit() {
         return openLimit;
@@ -104,7 +103,7 @@ public class LimitConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getLimitType() {
         return limitType;
@@ -118,7 +117,7 @@ public class LimitConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getInterfaceLimit() {
         return interfaceLimit;
@@ -132,7 +131,7 @@ public class LimitConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getTenantLimit() {
         return tenantLimit;
@@ -146,7 +145,7 @@ public class LimitConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getClientLimit() {
         return clientLimit;
@@ -160,7 +159,7 @@ public class LimitConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getDistributedLimitTimeRule() {
         return distributedLimitTimeRule;
@@ -174,7 +173,7 @@ public class LimitConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getDistributedFallbackStrategy() {
         return distributedFallbackStrategy;
@@ -188,7 +187,7 @@ public class LimitConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getDistributedFallbackStandaloneInterfaceLimit() {
         return distributedFallbackStandaloneInterfaceLimit;
@@ -202,7 +201,7 @@ public class LimitConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getDistributedFallbackStandaloneClientLimit() {
         return distributedFallbackStandaloneClientLimit;
@@ -216,7 +215,7 @@ public class LimitConditionGroup implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getDistributedFallbackStandaloneTenantLimit() {
         return distributedFallbackStandaloneTenantLimit;

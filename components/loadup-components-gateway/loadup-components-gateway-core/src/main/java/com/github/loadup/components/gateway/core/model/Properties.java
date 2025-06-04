@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.core.model;
 
 /*-
@@ -27,12 +28,11 @@ package com.github.loadup.components.gateway.core.model;
  */
 
 import com.github.loadup.components.gateway.core.common.Constant;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * properties container
@@ -47,8 +47,7 @@ public class Properties {
     /**
      * Constructor.
      */
-    public Properties() {
-    }
+    public Properties() {}
 
     /**
      * Constructor for deep clone

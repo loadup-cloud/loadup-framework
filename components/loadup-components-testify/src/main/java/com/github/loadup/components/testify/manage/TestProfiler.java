@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.manage;
 
 /*-
@@ -30,23 +27,22 @@ package com.github.loadup.components.testify.manage;
  * #L%
  */
 
+import com.github.loadup.components.testify.manage.enums.LoggerType;
+import com.github.loadup.components.testify.manage.log.LoggerFactory;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import com.github.loadup.components.testify.manage.enums.LoggerType;
-import com.github.loadup.components.testify.manage.log.LoggerFactory;
 
 /**
  * 测试执行统计分析器。
  * <p>
  * 记录执行过程信息。
  *
- * 
- * 
+ *
+ *
  */
 public class TestProfiler {
 
@@ -163,8 +159,7 @@ public class TestProfiler {
 
         String prefix = "[" + (success ? "success" : "fail") + "]";
 
-        LoggerFactory.getLogger(LoggerType.TESTIFY_PROFILE).info(
-                "\r\n" + TestProfiler.dump(prefix, ""));
+        LoggerFactory.getLogger(LoggerType.TESTIFY_PROFILE).info("\r\n" + TestProfiler.dump(prefix, ""));
     }
 
     /**
@@ -508,12 +503,13 @@ public class TestProfiler {
             double percent = getPecentage();
             double percentOfAll = getPecentageOfAll();
 
-            Object[] params = new Object[]{message, // {0} - entry信息
-                    (startTime), // {1} - 起始时间
-                    (duration), // {2} - 持续总时间
-                    (durationOfSelf), // {3} - 自身消耗的时间
-                    (percent), // {4} - 在父entry中所占的时间比例
-                    (percentOfAll) // {5} - 在总时间中所旧的时间比例
+            Object[] params = new Object[] {
+                message, // {0} - entry信息
+                (startTime), // {1} - 起始时间
+                (duration), // {2} - 持续总时间
+                (durationOfSelf), // {3} - 自身消耗的时间
+                (percent), // {4} - 在父entry中所占的时间比例
+                (percentOfAll) // {5} - 在总时间中所旧的时间比例
             };
 
             StringBuffer pattern = new StringBuffer();
@@ -566,9 +562,9 @@ public class TestProfiler {
      * 显示消息的级别。
      */
     public static final class MessageLevel {
-        public static final MessageLevel NO_MESSAGE = null;//(MessageLevel) create();
-        public static final MessageLevel BRIEF_MESSAGE = null;// (MessageLevel) create();
-        public static final MessageLevel DETAILED_MESSAGE = null;//(MessageLevel) create();
+        public static final MessageLevel NO_MESSAGE = null; // (MessageLevel) create();
+        public static final MessageLevel BRIEF_MESSAGE = null; // (MessageLevel) create();
+        public static final MessageLevel DETAILED_MESSAGE = null; // (MessageLevel) create();
         private static final long serialVersionUID = 3257849896026388537L;
     }
 }

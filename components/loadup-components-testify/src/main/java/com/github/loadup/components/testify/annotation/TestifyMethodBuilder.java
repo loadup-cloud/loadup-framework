@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.annotation;
 
 /*-
@@ -28,19 +28,17 @@ package com.github.loadup.components.testify.annotation;
  */
 
 import com.github.loadup.components.testify.annotation.testify.Executor;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
- * 
+ *
  *
  */
 public class TestifyMethodBuilder {
 
-    public TestifyMethod buildTestifyMethod(Method method, Object instance,
-                                            Class<? extends Annotation> annotationClass,
-                                            Annotation annotation) {
+    public TestifyMethod buildTestifyMethod(
+            Method method, Object instance, Class<? extends Annotation> annotationClass, Annotation annotation) {
 
         if (annotationClass.equals(Executor.class)) {
             return new TestifyExecutorMethod(method, instance, (Executor) annotation);

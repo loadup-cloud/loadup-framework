@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.parser;
 
 /*-
@@ -35,15 +32,15 @@ import static com.github.loadup.components.testify.datarule.parser.RuleLayoutCha
 /**
  * 字符类型定义。
  *
- * 
- * 
+ *
+ *
  */
 public class RuleCharTypes {
 
-    private final static boolean[] hexFlags = new boolean[256];
-    private final static boolean[] firstIdentifierFlags = new boolean[256];
-    private final static boolean[] identifierFlags = new boolean[256];
-    private final static boolean[] whitespaceFlags = new boolean[256];
+    private static final boolean[] hexFlags = new boolean[256];
+    private static final boolean[] firstIdentifierFlags = new boolean[256];
+    private static final boolean[] identifierFlags = new boolean[256];
+    private static final boolean[] whitespaceFlags = new boolean[256];
 
     static {
         for (char c = 0; c < hexFlags.length; ++c) {
@@ -128,5 +125,4 @@ public class RuleCharTypes {
         return (c <= whitespaceFlags.length && whitespaceFlags[c]) //
                 || c == '　'; // Chinese space
     }
-
 }

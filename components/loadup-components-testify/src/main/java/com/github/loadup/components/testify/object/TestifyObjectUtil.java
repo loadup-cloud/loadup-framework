@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.object;
 
 /*-
@@ -30,6 +27,10 @@ package com.github.loadup.components.testify.object;
  * #L%
  */
 
+import com.github.loadup.components.testify.log.TestifyLogUtil;
+import com.github.loadup.components.testify.object.processor.ObjectProcessor;
+import com.github.loadup.components.testify.util.FileUtil;
+import com.github.loadup.components.testify.util.JsonUtil;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -37,25 +38,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import com.github.loadup.components.testify.log.TestifyLogUtil;
-import com.github.loadup.components.testify.object.processor.ObjectProcessor;
-import com.github.loadup.components.testify.util.FileUtil;
-import com.github.loadup.components.testify.util.JsonUtil;
-
 import ognl.OgnlException;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 对象操作工具类
  *
- * 
+ *
  *
  */
 @Slf4j
 public class TestifyObjectUtil {
-
 
     /**
      * 两个对象直接比较，支持预期目标为文本模式
@@ -105,10 +99,10 @@ public class TestifyObjectUtil {
      */
     public static void setProperty(Object object, String ognlExpression, Object value) {
         try {
-//            OgnlContext ognlContext = new OgnlContext();
-//            ognlContext.setMemberAccess(new DefaultMemberAccess(true));
-//            Object ognlExprObj = Ognl.parseExpression(ognlExpression);
-//            Ognl.setValue(ognlExprObj, ognlContext, object, value);
+            //            OgnlContext ognlContext = new OgnlContext();
+            //            ognlContext.setMemberAccess(new DefaultMemberAccess(true));
+            //            Object ognlExprObj = Ognl.parseExpression(ognlExpression);
+            //            Ognl.setValue(ognlExprObj, ognlContext, object, value);
         } catch (Exception e) {
             TestifyLogUtil.fail(log, "使用Ongl设置变量失败 : " + ognlExpression, e);
         }
@@ -123,10 +117,10 @@ public class TestifyObjectUtil {
      * @throws OgnlException
      */
     public static Object getProperty(Object object, String ognlExpression) throws OgnlException {
-//        OgnlContext ognlContext = new OgnlContext();
-//        ognlContext.setMemberAccess(new DefaultMemberAccess(true));
-//        Object ognlExprObj = Ognl.parseExpression(ognlExpression);
-//        return Ognl.getValue(ognlExprObj, ognlContext, object);
+        //        OgnlContext ognlContext = new OgnlContext();
+        //        ognlContext.setMemberAccess(new DefaultMemberAccess(true));
+        //        Object ognlExprObj = Ognl.parseExpression(ognlExpression);
+        //        return Ognl.getValue(ognlExprObj, ognlContext, object);
         return null;
     }
 
@@ -236,8 +230,7 @@ public class TestifyObjectUtil {
             }
             try {
                 objValue = constructor.newInstance(params);
-                if (objValue != null)
-                    break;
+                if (objValue != null) break;
             } catch (InstantiationException e) {
                 log.info("InstantiationException", e);
             } catch (IllegalAccessException e) {
@@ -249,8 +242,7 @@ public class TestifyObjectUtil {
             }
         }
         if (objValue == null) {
-            TestifyLogUtil.error(log, "对类【" + objClass.getSimpleName()
-                    + "】创建对象失败，请尝试使用实现类名或实现类Qualified Name填入csv");
+            TestifyLogUtil.error(log, "对类【" + objClass.getSimpleName() + "】创建对象失败，请尝试使用实现类名或实现类Qualified Name填入csv");
             throw new Exception("创建对象失败，请尝试手动创建csv或者给对象添加默认为空的构造函数");
         }
 

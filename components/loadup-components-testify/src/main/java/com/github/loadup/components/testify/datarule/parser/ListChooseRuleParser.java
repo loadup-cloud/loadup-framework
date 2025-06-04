@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.parser;
 
 /*-
@@ -38,7 +35,7 @@ import com.github.loadup.components.testify.exception.RuleParseException;
  * List选择规则分析器,解析list(2,a,b)。
  * 生成[1],[1,2],[3,2]这样的列表
  *
- * 
+ *
  *
  */
 public class ListChooseRuleParser extends RuleParser<ListChooseRule> {
@@ -83,9 +80,8 @@ public class ListChooseRuleParser extends RuleParser<ListChooseRule> {
                     chooseRule.setRowCount(sign * lexer.integerValue().intValue());
                     lexer.nextToken();
                 } else {
-                    throw new RuleParseException(
-                            "list rule parse ERROR[token=" + tok + ",pos=" + lexer.pos()
-                                    + "],expect pattern like list(2,aa,bb={b1,b2}),rule=" + lexer.text);
+                    throw new RuleParseException("list rule parse ERROR[token=" + tok + ",pos=" + lexer.pos()
+                            + "],expect pattern like list(2,aa,bb={b1,b2}),rule=" + lexer.text);
                 }
 
                 accept(RuleToken.COMMA);
@@ -100,10 +96,9 @@ public class ListChooseRuleParser extends RuleParser<ListChooseRule> {
                         }
                         chooseRule.addField(fieldName, fieldRule);
                     } else {
-                        throw new RuleParseException(
-                                "list rule parse ERROR[token=" + tok + ",pos=" + lexer.pos()
-                                        + "],expect pattern like list(2,aa,bb={b1,b2}),rule="
-                                        + lexer.text);
+                        throw new RuleParseException("list rule parse ERROR[token=" + tok + ",pos=" + lexer.pos()
+                                + "],expect pattern like list(2,aa,bb={b1,b2}),rule="
+                                + lexer.text);
                     }
                     if (lexer.token() == RuleToken.COMMA) {
                         lexer.nextToken();
@@ -124,6 +119,5 @@ public class ListChooseRuleParser extends RuleParser<ListChooseRule> {
                         + "],expect pattern like list(2,aa,bb={b1,b2}),rule="
                         + lexer.text);
         }
-
     }
 }

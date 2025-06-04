@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject;
 
 /*-
@@ -26,10 +27,9 @@ package com.github.loadup.components.gateway.plugin.repository.database.dal.data
  * #L%
  */
 
+import java.util.Date;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.Date;
 
 /**
  * A data object class directly models database table <tt>gateway_interface</tt>.
@@ -44,7 +44,7 @@ import java.util.Date;
  */
 public class InterfaceDO {
 
-    //========== properties ==========
+    // ========== properties ==========
 
     /**
      * This property corresponds to db column <tt>tenant_id</tt>.
@@ -136,7 +136,7 @@ public class InterfaceDO {
      */
     private Date gmtModified;
 
-    //========== getters and setters ==========
+    // ========== getters and setters ==========
 
     /**
      *
@@ -146,7 +146,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
@@ -160,7 +160,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceId(String interfaceId) {
         this.interfaceId = interfaceId;
@@ -174,7 +174,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceName(String interfaceName) {
         this.interfaceName = interfaceName;
@@ -188,7 +188,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setUrl(String url) {
         this.url = url;
@@ -202,7 +202,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationUrl(String integrationUrl) {
         this.integrationUrl = integrationUrl;
@@ -216,7 +216,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
@@ -230,7 +230,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setVersion(String version) {
         this.version = version;
@@ -244,7 +244,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setType(String type) {
         this.type = type;
@@ -258,7 +258,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setStatus(String status) {
         this.status = status;
@@ -272,7 +272,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceRequestParser(String interfaceRequestParser) {
         this.interfaceRequestParser = interfaceRequestParser;
@@ -286,7 +286,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationRequestHeaderAssemble(String integrationRequestHeaderAssemble) {
         this.integrationRequestHeaderAssemble = integrationRequestHeaderAssemble;
@@ -300,7 +300,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationRequestBodyAssemble(String integrationRequestBodyAssemble) {
         this.integrationRequestBodyAssemble = integrationRequestBodyAssemble;
@@ -314,7 +314,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setIntegrationResponseParser(String integrationResponseParser) {
         this.integrationResponseParser = integrationResponseParser;
@@ -328,7 +328,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceResponseHeaderAssemble(String interfaceResponseHeaderAssemble) {
         this.interfaceResponseHeaderAssemble = interfaceResponseHeaderAssemble;
@@ -342,7 +342,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setInterfaceResponseBodyAssemble(String interfaceResponseBodyAssemble) {
         this.interfaceResponseBodyAssemble = interfaceResponseBodyAssemble;
@@ -356,7 +356,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setCommunicationProperties(String communicationProperties) {
         this.communicationProperties = communicationProperties;
@@ -370,7 +370,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setGmtCreate(Date gmtCreate) {
         this.gmtCreate = gmtCreate;
@@ -384,7 +384,7 @@ public class InterfaceDO {
     }
 
     /**
-     * 
+     *
      */
     public void setGmtModified(Date gmtModified) {
         this.gmtModified = gmtModified;

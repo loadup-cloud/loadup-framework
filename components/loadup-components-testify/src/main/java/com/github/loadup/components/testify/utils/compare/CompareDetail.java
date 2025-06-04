@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.compare;
 
 /*-
@@ -30,7 +31,7 @@ package com.github.loadup.components.testify.utils.compare;
  * 比较结果详细
  *
  * @author rong.zhang
- * 
+ *
  */
 public class CompareDetail {
 
@@ -50,7 +51,7 @@ public class CompareDetail {
     private String actual;
 
     /**
-     * 
+     *
      *
      * @return property value of key
      */
@@ -59,7 +60,7 @@ public class CompareDetail {
     }
 
     /**
-     * 
+     *
      *
      * @param key value to be assigned to property key
      */
@@ -68,7 +69,7 @@ public class CompareDetail {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of expect
      */
@@ -77,7 +78,7 @@ public class CompareDetail {
     }
 
     /**
-     * 
+     *
      *
      * @param expect value to be assigned to property expect
      */
@@ -86,7 +87,7 @@ public class CompareDetail {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of actual
      */
@@ -95,7 +96,7 @@ public class CompareDetail {
     }
 
     /**
-     * 
+     *
      *
      * @param actual value to be assigned to property actual
      */

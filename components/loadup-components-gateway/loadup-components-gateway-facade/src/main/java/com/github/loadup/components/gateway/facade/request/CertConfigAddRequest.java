@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.facade.request;
 
 /*-
@@ -31,13 +32,11 @@ import com.github.loadup.components.gateway.facade.enums.OperationType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
 import java.util.Map;
 
 /**
  *
  */
-
 public class CertConfigAddRequest extends BaseRequest {
 
     /**
@@ -100,126 +99,126 @@ public class CertConfigAddRequest extends BaseRequest {
     private String keyType;
 
     /**
-     * 
+     *
      */
     public CertTypeEnum getCertType() {
         return certType;
     }
 
     /**
-     * 
+     *
      */
     public void setCertType(CertTypeEnum certType) {
         this.certType = certType;
     }
 
     /**
-     * 
+     *
      */
     public String getCertContent() {
         return certContent;
     }
 
     /**
-     * 
+     *
      */
     public void setCertContent(String certContent) {
         this.certContent = certContent;
     }
 
     /**
-     * 
+     *
      */
     public String getCertStatus() {
         return certStatus;
     }
 
     /**
-     * 
+     *
      */
     public void setCertStatus(String certStatus) {
         this.certStatus = certStatus;
     }
 
     /**
-     * 
+     *
      */
     public Map<String, String> getProperties() {
         return properties;
     }
 
     /**
-     * 
+     *
      */
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
 
     /**
-     * 
+     *
      */
     public Map<String, String> getAlgorithmProperties() {
         return algorithmProperties;
     }
 
     /**
-     * 
+     *
      */
     public void setAlgorithmProperties(Map<String, String> algorithmProperties) {
         this.algorithmProperties = algorithmProperties;
     }
 
     /**
-     * 
+     *
      */
     public String getSecurityStrategyCode() {
         return securityStrategyCode;
     }
 
     /**
-     * 
+     *
      */
     public void setSecurityStrategyCode(String securityStrategyCode) {
         this.securityStrategyCode = securityStrategyCode;
     }
 
     /**
-     * 
+     *
      */
     public String getClientId() {
         return clientId;
     }
 
     /**
-     * 
+     *
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;
     }
 
     /**
-     * 
+     *
      */
     public OperationType getOperateType() {
         return operateType;
     }
 
     /**
-     * 
+     *
      */
     public void setOperateType(OperationType operateType) {
         this.operateType = operateType;
     }
 
     /**
-     * 
+     *
      */
     public String getAlgoName() {
         return algoName;
     }
 
     /**
-     * 
+     *
      */
     public void setAlgoName(String algoName) {
         this.algoName = algoName;

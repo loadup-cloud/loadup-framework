@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.yaml.cpUnit;
 
 /*-
@@ -30,17 +27,16 @@ package com.github.loadup.components.testify.yaml.cpUnit;
  * #L%
  */
 
+import com.github.loadup.components.testify.yaml.enums.CPUnitTypeEnum;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.github.loadup.components.testify.yaml.enums.CPUnitTypeEnum;
-
 /**
  * 对象CheckPoint单位
  *
- * 
- * 
+ *
+ *
  */
 public class ListObjectCPUnit extends BaseCPUnit {
 
@@ -74,7 +70,7 @@ public class ListObjectCPUnit extends BaseCPUnit {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of attributeList
      */
@@ -87,8 +83,13 @@ public class ListObjectCPUnit extends BaseCPUnit {
      */
     @Override
     public String toString() {
-        return "ListObjectCPUnit [unitType=" + unitType + ", attributeList=" + attributeList
-                + ", unitName=" + unitName + "]";
+        return "ListObjectCPUnit [unitType="
+                + unitType
+                + ", attributeList="
+                + attributeList
+                + ", unitName="
+                + unitName
+                + "]";
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

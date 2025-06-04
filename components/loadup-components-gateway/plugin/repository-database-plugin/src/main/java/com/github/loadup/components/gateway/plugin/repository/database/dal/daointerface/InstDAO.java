@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.database.dal.daointerface;
 
 /*-
@@ -27,7 +28,6 @@ package com.github.loadup.components.gateway.plugin.repository.database.dal.daoi
  */
 
 import com.github.loadup.components.gateway.plugin.repository.database.dal.dataobject.InstDO;
-
 import java.util.List;
 
 /**
@@ -72,5 +72,4 @@ public interface InstDAO {
      * Delete records from DB table <tt>gateway_inst</tt>.
      */
     public int delete(String clientId);
-
 }

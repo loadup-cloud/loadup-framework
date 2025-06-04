@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.data;
 
 /*-
@@ -36,7 +33,7 @@ import java.util.List;
 /**
  * 原子项映射关系。
  *
- * 
+ *
  *
  */
 public class MetaItemMapping {
@@ -91,7 +88,7 @@ public class MetaItemMapping {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of metaItem
      */
@@ -100,7 +97,7 @@ public class MetaItemMapping {
     }
 
     /**
-     * 
+     *
      *
      * @param metaItem value to be assigned to property metaItem
      */
@@ -109,7 +106,7 @@ public class MetaItemMapping {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of initItems
      */
@@ -118,7 +115,7 @@ public class MetaItemMapping {
     }
 
     /**
-     * 
+     *
      *
      * @param initItems value to be assigned to property initItems
      */
@@ -133,5 +130,4 @@ public class MetaItemMapping {
     public String toString() {
         return "MetaItemMapping [metaItem=" + metaItem + ", initItems=" + initItems + "]";
     }
-
 }

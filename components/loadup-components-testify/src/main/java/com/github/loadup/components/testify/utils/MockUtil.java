@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils;
 
 /*-
@@ -27,67 +28,68 @@ package com.github.loadup.components.testify.utils;
  */
 
 public class MockUtil {
-//    public static AtsSingleMock doMock(VirtualMock virtualMock, MethodInterceptor methodInterceptor) {
-//        return fetchAtsSingleMock(virtualMock.getContainer(), virtualMock.getBeanName(),
-//            virtualMock.getBeanClass(), virtualMock.getMethodName(), virtualMock.getMockResult(),
-//            virtualMock,methodInterceptor);
-//
-//    }
-//
-//    public static AtsSingleMock fetchAtsSingleMock(String container, String beanName,
-//                                                   String beanClass, String methodName,
-//                                                   final VirtualObject mockResult,
-//                                                   final VirtualMock virtualMock,MethodInterceptor methodInterceptor) {
-//        AtsSingleMock atsSingleMock = null;
-//        try {
-//            Class<?> beanClazz = Class.forName(beanClass);
-//            atsSingleMock = new AtsSingleMock(container, beanName, beanClazz, methodName);
-//
-//            InterfaceMaker im = new InterfaceMaker();
-//            im.setClassLoader(MockUtil.class.getClassLoader());
-//            Method[] methods = beanClazz.getMethods();
-//            for (Method method : methods) {
-//                if (method.getName().equals(methodName)) {
-//                    im.add(method);
-//                }
-//            }
-//            Class<?> myInterface = im.create();
-//
-//            Enhancer enhancer = new Enhancer();
-//            enhancer.setClassLoader(MockUtil.class.getClassLoader());
-//            enhancer.setSuperclass(MockCallBack.class);
-//            enhancer.setInterfaces(new Class[] { myInterface, MockCallBack.class });
-//
-//            if(null!=methodInterceptor){
-//
-//                //支持自定义拦截操作
-//                enhancer.setCallback(methodInterceptor);
-//            }else {
-//                enhancer.setCallback(new MethodInterceptor() {
-//
-//                    @Override
-//                    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy)
-//                            throws Throwable {
-//                        virtualMock.setMockArgs(args);
-//                        if (null == mockResult.objClass || mockResult.objClass.equals("null")) {
-//                            return null;
-//                        } else if (mockResult.object instanceof Exception) {
-//                            //throw new RuntimeException((Exception) mockResult.object);
-//                            throw (Exception) mockResult.object;
-//                        } else {
-//
-//                            return mockResult.getObject();
-//
-//                        }
-//                    }
-//                });
-//            }
-//            atsSingleMock.addMock((MockCallBack) enhancer.create());
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new RuntimeException(e);
-//        }
-//        return atsSingleMock;
-//    }
+    //    public static AtsSingleMock doMock(VirtualMock virtualMock, MethodInterceptor methodInterceptor) {
+    //        return fetchAtsSingleMock(virtualMock.getContainer(), virtualMock.getBeanName(),
+    //            virtualMock.getBeanClass(), virtualMock.getMethodName(), virtualMock.getMockResult(),
+    //            virtualMock,methodInterceptor);
+    //
+    //    }
+    //
+    //    public static AtsSingleMock fetchAtsSingleMock(String container, String beanName,
+    //                                                   String beanClass, String methodName,
+    //                                                   final VirtualObject mockResult,
+    //                                                   final VirtualMock virtualMock,MethodInterceptor
+    // methodInterceptor) {
+    //        AtsSingleMock atsSingleMock = null;
+    //        try {
+    //            Class<?> beanClazz = Class.forName(beanClass);
+    //            atsSingleMock = new AtsSingleMock(container, beanName, beanClazz, methodName);
+    //
+    //            InterfaceMaker im = new InterfaceMaker();
+    //            im.setClassLoader(MockUtil.class.getClassLoader());
+    //            Method[] methods = beanClazz.getMethods();
+    //            for (Method method : methods) {
+    //                if (method.getName().equals(methodName)) {
+    //                    im.add(method);
+    //                }
+    //            }
+    //            Class<?> myInterface = im.create();
+    //
+    //            Enhancer enhancer = new Enhancer();
+    //            enhancer.setClassLoader(MockUtil.class.getClassLoader());
+    //            enhancer.setSuperclass(MockCallBack.class);
+    //            enhancer.setInterfaces(new Class[] { myInterface, MockCallBack.class });
+    //
+    //            if(null!=methodInterceptor){
+    //
+    //                //支持自定义拦截操作
+    //                enhancer.setCallback(methodInterceptor);
+    //            }else {
+    //                enhancer.setCallback(new MethodInterceptor() {
+    //
+    //                    @Override
+    //                    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy)
+    //                            throws Throwable {
+    //                        virtualMock.setMockArgs(args);
+    //                        if (null == mockResult.objClass || mockResult.objClass.equals("null")) {
+    //                            return null;
+    //                        } else if (mockResult.object instanceof Exception) {
+    //                            //throw new RuntimeException((Exception) mockResult.object);
+    //                            throw (Exception) mockResult.object;
+    //                        } else {
+    //
+    //                            return mockResult.getObject();
+    //
+    //                        }
+    //                    }
+    //                });
+    //            }
+    //            atsSingleMock.addMock((MockCallBack) enhancer.create());
+    //
+    //        } catch (Exception e) {
+    //            e.printStackTrace();
+    //            throw new RuntimeException(e);
+    //        }
+    //        return atsSingleMock;
+    //    }
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -28,17 +29,15 @@ package com.github.loadup.components.testify.util;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * 从spring的配置文件解析ref的外部系统bean
  *
- * 
+ *
  *
  */
 class MockBeanAnalysisHandler extends DefaultHandler {
@@ -47,36 +46,29 @@ class MockBeanAnalysisHandler extends DefaultHandler {
 
     @Override
     public void startDocument() throws SAXException {
-        //System.out.println("start document -> parse begin");
+        // System.out.println("start document -> parse begin");
     }
 
     @Override
     public void endDocument() throws SAXException {
 
-        //System.out.println("end document -> parse finished");
+        // System.out.println("end document -> parse finished");
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes)
-            throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
         if (StringUtils.equals(qName, "sofa:reference")) {
 
             beanMap.put(attributes.getValue(0), attributes.getValue(1));
-
         }
-
     }
 
     @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
-
-    }
+    public void characters(char[] ch, int start, int length) throws SAXException {}
 
     @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
-
-    }
+    public void endElement(String uri, String localName, String qName) throws SAXException {}
 
     /**
      *

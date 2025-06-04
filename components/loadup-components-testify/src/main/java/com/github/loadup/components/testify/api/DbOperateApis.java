@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.api;
 
 /*-
@@ -26,17 +27,16 @@ package com.github.loadup.components.testify.api;
  * #L%
  */
 
-import com.github.loadup.components.testify.db.TestifyDBUtil;
 import com.github.loadup.components.testify.db.SyncDBUtil;
+import com.github.loadup.components.testify.db.TestifyDBUtil;
 import com.github.loadup.components.testify.db.offlineService.AbstractDBService;
-
 import java.util.List;
 import java.util.Map;
 
 /**
  * 数据库操作工具类，注意，本类中所有方法均无需启用框架即可执行
  *
- * 
+ *
  *
  */
 public class DbOperateApis {
@@ -71,8 +71,8 @@ public class DbOperateApis {
      * @return
      * @throws Exception
      */
-    public static List<Map<String, Object>> executeQuery(String sql, String tableName,
-                                                         String dbConfigKey) throws Exception {
+    public static List<Map<String, Object>> executeQuery(String sql, String tableName, String dbConfigKey)
+            throws Exception {
         return TestifyDBUtil.getMultiQueryResultMap(sql, tableName, dbConfigKey);
     }
 
@@ -84,8 +84,7 @@ public class DbOperateApis {
      * @return
      * @throws Exception
      */
-    public static String querySingleValue(String sql, String tableName, String dbConfigKey)
-            throws Exception {
+    public static String querySingleValue(String sql, String tableName, String dbConfigKey) throws Exception {
         return TestifyDBUtil.getStringValue(sql, tableName, dbConfigKey);
     }
 
@@ -100,8 +99,7 @@ public class DbOperateApis {
      * @param schema   （oracle需要）
      * @return 线下数据库服务对象
      */
-    public static AbstractDBService getOfflineDBService(String url, String userName,
-                                                        String password, String schema) {
+    public static AbstractDBService getOfflineDBService(String url, String userName, String password, String schema) {
         return AbstractDBService.getService(url, userName, password, schema);
     }
 
@@ -135,8 +133,7 @@ public class DbOperateApis {
      * @param tableName
      * @throws Exception
      */
-    public static void syncSelectedTableToOB(String DBURL, String cacheCSVFolder, String tableName)
-            throws Exception {
+    public static void syncSelectedTableToOB(String DBURL, String cacheCSVFolder, String tableName) throws Exception {
         SyncDBUtil.syncSelectedTableToOB(DBURL, cacheCSVFolder, tableName);
     }
 
@@ -149,8 +146,8 @@ public class DbOperateApis {
      * @param cols，例如"1,2,3"，基准为1
      * @throws Exception
      */
-    public static void syncSelectedTableToOB(String DBURL, String cacheCSVFolder, String tableName,
-                                             String cols) throws Exception {
+    public static void syncSelectedTableToOB(String DBURL, String cacheCSVFolder, String tableName, String cols)
+            throws Exception {
         SyncDBUtil.syncSelectedTableToOB(DBURL, cacheCSVFolder, tableName, cols);
     }
 }

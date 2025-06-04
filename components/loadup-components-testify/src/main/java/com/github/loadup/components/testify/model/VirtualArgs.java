@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.model;
 
 /*-
@@ -109,7 +110,6 @@ public class VirtualArgs extends TestUnit {
     public Object getArg(int i) {
 
         return inputArgs.get(i).getObject();
-
     }
 
     public List<String> getArgTypes() {
@@ -148,7 +148,7 @@ public class VirtualArgs extends TestUnit {
         this.inputArgs = args;
     }
 
-    //获取虚拟入参,名称不能是get,否则yaml有问题
+    // 获取虚拟入参,名称不能是get,否则yaml有问题
     public List<VirtualObject> gainVirtualInputArgs() {
         if (inputArgs == null) {
             return null;
@@ -169,13 +169,11 @@ public class VirtualArgs extends TestUnit {
             inputArgs = new ArrayList<VirtualObject>();
         }
         inputArgs.set(index, new VirtualObject(obj));
-
     }
 
     public void setArg(int index, Object obj, String desc) {
         VirtualObject voToAdd = new VirtualObject(obj, desc);
         setArg(index, voToAdd);
-
     }
 
     public void setVirtualInputArgs(List<VirtualObject> inputArgs) {
@@ -206,5 +204,4 @@ public class VirtualArgs extends TestUnit {
     public String toString() {
         return "VirtualArgs [inputArgs=" + inputArgs + "]";
     }
-
 }

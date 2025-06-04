@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule;
 
 /*-
@@ -36,7 +33,7 @@ import java.util.List;
 /**
  * 序列取值规则。
  *
- * 
+ *
  *
  */
 public class ArrayRule implements RuleObject {
@@ -56,12 +53,11 @@ public class ArrayRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of items
      */
     public List<Object> getItems() {
         return items;
     }
-
 }

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2021 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils.check;
 
 /*-
@@ -30,24 +27,22 @@ package com.github.loadup.components.testify.utils.check;
  * #L%
  */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.github.loadup.components.testify.component.db.DBDatasProcessor;
 import com.github.loadup.components.testify.model.VirtualTable;
 import com.github.loadup.components.testify.template.TestifyTestBase;
-
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * db比对工具
  *
- * 
- * 
+ *
+ *
  */
 public class DbCompareUtil {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(DbCompareUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbCompareUtil.class);
 
     /**
      * 数据处理
@@ -63,6 +58,4 @@ public class DbCompareUtil {
     public static void compare2DBDatas(List<VirtualTable> tables) {
         dbDatasProcessor.compare2DBDatas(tables);
     }
-
-
 }

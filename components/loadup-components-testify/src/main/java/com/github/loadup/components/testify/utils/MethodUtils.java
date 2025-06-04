@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.utils;
 
 /*-
@@ -33,17 +30,15 @@ package com.github.loadup.components.testify.utils;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.testng.collections.Lists;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Method Utils
  *
  * @author yuanren.syr
- * 
+ *
  */
 public class MethodUtils {
 
@@ -53,15 +48,13 @@ public class MethodUtils {
      * @param methods
      * @return
      */
-    public static List<Method> filterMethod(List<Method> methods, Class<?>[] paramTypes,
-                                            Class<?> retType) {
+    public static List<Method> filterMethod(List<Method> methods, Class<?>[] paramTypes, Class<?> retType) {
         List<Method> result = Lists.newArrayList();
         if (CollectionUtils.isEmpty(methods)) {
             return result;
         }
         for (Method method : methods) {
-            if (Arrays.equals(method.getParameterTypes(), paramTypes)
-                    && method.getReturnType() == retType) {
+            if (Arrays.equals(method.getParameterTypes(), paramTypes) && method.getReturnType() == retType) {
                 result.add(method);
             }
         }

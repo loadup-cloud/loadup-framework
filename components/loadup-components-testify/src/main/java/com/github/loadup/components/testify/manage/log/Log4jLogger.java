@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.manage.log;
 
 /*-
@@ -30,18 +27,16 @@ package com.github.loadup.components.testify.manage.log;
  * #L%
  */
 
-import java.io.File;
-
 import ch.qos.logback.core.rolling.RollingFileAppender;
-import org.slf4j.Logger;
-
 import com.github.loadup.components.testify.exception.TestifyException;
+import java.io.File;
+import org.slf4j.Logger;
 
 /**
  * 自定义log，基于log4j。
  *
- * 
- * 
+ *
+ *
  */
 class Log4jLogger extends com.github.loadup.components.testify.manage.log.Logger {
 
@@ -61,13 +56,13 @@ class Log4jLogger extends com.github.loadup.components.testify.manage.log.Logger
 
     Log4jLogger(String name, String file) {
 
-//        logger = Logger.getLogger(name);
-//
-//        if (file != null && file.length() > 0) {
-//            initAppender(file);
-//        }
-//
-//        logger.setLevel(Level.ALL);
+        //        logger = Logger.getLogger(name);
+        //
+        //        if (file != null && file.length() > 0) {
+        //            initAppender(file);
+        //        }
+        //
+        //        logger.setLevel(Level.ALL);
     }
 
     /**
@@ -156,14 +151,14 @@ class Log4jLogger extends com.github.loadup.components.testify.manage.log.Logger
      * @param appender
      */
     void addRemoteAppender(RemoteAppender appender) {
-//        logger.addAppender(appender);
+        //        logger.addAppender(appender);
     }
 
     @Override
     protected void finalize() throws Throwable {
         if (appender != null) {
-//            logger.removeAppender(appender);
-//            appender.close();
+            //            logger.removeAppender(appender);
+            //            appender.close();
             appender = null;
         }
     }
@@ -176,20 +171,19 @@ class Log4jLogger extends com.github.loadup.components.testify.manage.log.Logger
     private void initAppender(String file) {
         try {
             // to add the appender
-//            PatternLayout layout = new PatternLayout("%d - %m%n");
-//            this.appender = new RollingFileAppender(layout, file, true);
-//
-//             if we successfully created the file appender,
-//             configure it and set the logger to use only it
-//            appender.setMaxBackupIndex(1);
-//            appender.setMaximumFileSize(100000);
-//
+            //            PatternLayout layout = new PatternLayout("%d - %m%n");
+            //            this.appender = new RollingFileAppender(layout, file, true);
+            //
+            //             if we successfully created the file appender,
+            //             configure it and set the logger to use only it
+            //            appender.setMaxBackupIndex(1);
+            //            appender.setMaximumFileSize(100000);
+            //
             // don't inherit appenders from higher in the logger heirarchy
-//            logger.setAdditivity(true);
-//            logger.addAppender(appender);
+            //            logger.setAdditivity(true);
+            //            logger.addAppender(appender);
         } catch (Exception ioe) {
             throw new TestifyException("error configuring Log4JLogChute[file=" + file + "]", ioe);
         }
     }
-
 }

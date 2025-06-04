@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.components;
 
 /*-
@@ -31,12 +32,11 @@ import com.github.loadup.components.testify.utils.config.ConfigrationFactory;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class TestifyComponentUtil {
@@ -44,7 +44,8 @@ public class TestifyComponentUtil {
     /**
      * 组件回调
      */
-    public static ThreadLocal<Map<String, TestifyComponentInvoker>> testifyComponentsHolder = new ThreadLocal<Map<String, TestifyComponentInvoker>>();
+    public static ThreadLocal<Map<String, TestifyComponentInvoker>> testifyComponentsHolder =
+            new ThreadLocal<Map<String, TestifyComponentInvoker>>();
 
     public static void init(String componentPackage, ClassLoader loader) {
         if (testifyComponentsHolder.get() != null) {
@@ -53,7 +54,7 @@ public class TestifyComponentUtil {
         Map<String, TestifyComponentInvoker> testifyComponents = new LinkedHashMap<String, TestifyComponentInvoker>();
         testifyComponentsHolder.set(testifyComponents);
 
-        //加载components
+        // 加载components
         ImmutableSet<ClassInfo> classes = null;
         try {
             classes = ClassPath.from(loader).getTopLevelClasses();
@@ -70,10 +71,8 @@ public class TestifyComponentUtil {
                                 testifyComponentInvoker.setTargetMethod(method);
                                 testifyComponentInvoker.setComponentObject(clazz.newInstance());
                                 testifyComponents.put(
-                                        (method.getAnnotation(TestComponent.class)).id(),
-                                        testifyComponentInvoker);
+                                        (method.getAnnotation(TestComponent.class)).id(), testifyComponentInvoker);
                             }
-
                         }
                     }
                 }
@@ -86,13 +85,12 @@ public class TestifyComponentUtil {
          */
         if (testifyComponents.isEmpty()) {
             try {
-                String components = ConfigrationFactory.getConfigration().getPropertyValue(
-                        "param_components");
+                String components = ConfigrationFactory.getConfigration().getPropertyValue("param_components");
                 if (StringUtils.isBlank(components)) {
                     return;
                 }
                 for (String comp : components.split(",")) {
-                    //剔除所有空格防止拼接的name不合法
+                    // 剔除所有空格防止拼接的name不合法
                     if (StringUtils.isEmpty((comp = comp.trim()))) {
                         continue;
                     }
@@ -105,8 +103,7 @@ public class TestifyComponentUtil {
                             TestifyComponentInvoker componentInvoker = new TestifyComponentInvoker();
                             componentInvoker.setComponentObject(cl.newInstance());
                             componentInvoker.setTargetMethod(method);
-                            testifyComponents.put((method.getAnnotation(TestComponent.class)).id(),
-                                    componentInvoker);
+                            testifyComponents.put((method.getAnnotation(TestComponent.class)).id(), componentInvoker);
                         }
                     }
                 }
@@ -118,7 +115,7 @@ public class TestifyComponentUtil {
 
     public static Object run(String command) {
         String id = "";
-        //判断是否是有入参的方法.
+        // 判断是否是有入参的方法.
         if (StringUtils.contains(command, "?")) {
             id = StringUtils.substringBetween(command, "@", "?");
         } else {

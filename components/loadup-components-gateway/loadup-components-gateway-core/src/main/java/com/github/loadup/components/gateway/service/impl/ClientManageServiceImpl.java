@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.service.impl;
 
 /*-
@@ -26,12 +27,10 @@ package com.github.loadup.components.gateway.service.impl;
  * #L%
  */
 
-import com.github.loadup.commons.result.Result;
 import com.github.loadup.commons.template.ServiceTemplate;
 import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.commons.util.ValidateUtils;
 import com.github.loadup.components.gateway.common.convertor.ClientConfigConvertor;
-import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.facade.api.ClientManageService;
 import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExtPt;
 import com.github.loadup.components.gateway.facade.model.ClientConfigDto;
@@ -72,10 +71,13 @@ public class ClientManageServiceImpl implements ClientManageService {
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+                (result) -> {
+                    ClientConfigAddResponse clientConfigAddResponse = new ClientConfigAddResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                },
                 // compose digest log
-                (Void) -> {
-                });
+                (Void) -> {});
     }
 
     @Override
@@ -92,11 +94,13 @@ public class ClientManageServiceImpl implements ClientManageService {
                     return authorizeResponse;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-
+                (result) -> {
+                    ClientConfigAuthorizeResponse clientConfigAddResponse = new ClientConfigAuthorizeResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                },
                 // compose digest log
-                (Void) -> {
-                });
+                (Void) -> {});
     }
 
     @Override
@@ -112,10 +116,13 @@ public class ClientManageServiceImpl implements ClientManageService {
                     return authorizeResponse;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+                (result) -> {
+                    ClientConfigDeauthorizeResponse clientConfigAddResponse = new ClientConfigDeauthorizeResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                },
                 // compose digest log
-                (Void) -> {
-                });
+                (Void) -> {});
     }
 
     @Override
@@ -132,10 +139,13 @@ public class ClientManageServiceImpl implements ClientManageService {
                     return authorizeResponse;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+                (result) -> {
+                    ClientConfigUpdateResponse clientConfigAddResponse = new ClientConfigUpdateResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                },
                 // compose digest log
-                (Void) -> {
-                });
+                (Void) -> {});
     }
 
     @Override
@@ -159,10 +169,13 @@ public class ClientManageServiceImpl implements ClientManageService {
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+                (result) -> {
+                    ClientConfigQueryResponse clientConfigAddResponse = new ClientConfigQueryResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                },
                 // compose digest log
-                (Void) -> {
-                });
+                (Void) -> {});
     }
 
     @Override
@@ -178,9 +191,11 @@ public class ClientManageServiceImpl implements ClientManageService {
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
-                // compose digest log
-                (Void) -> {
-                });
+                (result) -> {
+                    ClientConfigRemoveResponse clientConfigAddResponse = new ClientConfigRemoveResponse();
+                    clientConfigAddResponse.setResult(result);
+                    return clientConfigAddResponse;
+                }, // compose digest log
+                (Void) -> {});
     }
 }

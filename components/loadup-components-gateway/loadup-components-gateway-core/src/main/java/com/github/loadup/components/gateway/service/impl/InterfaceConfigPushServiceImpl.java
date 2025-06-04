@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.service.impl;
 
 /*-
@@ -31,7 +32,6 @@ import com.github.loadup.commons.template.ServiceTemplate;
 import com.github.loadup.commons.util.ValidateUtils;
 import com.github.loadup.components.gateway.common.util.InterfaceConfigUtil;
 import com.github.loadup.components.gateway.core.common.Constant;
-import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.common.enums.InterfaceStatus;
 import com.github.loadup.components.gateway.core.common.enums.InterfaceType;
 import com.github.loadup.components.gateway.facade.api.InterfaceConfigPushService;
@@ -42,14 +42,13 @@ import com.github.loadup.components.gateway.facade.response.APIConfigResponse;
 import com.github.loadup.components.gateway.facade.response.SPIConfigResponse;
 import com.github.loadup.components.gateway.repository.RepositoryManager;
 import jakarta.annotation.Resource;
+import java.util.HashMap;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
 
 /**
  * interface config push service
@@ -60,8 +59,7 @@ public class InterfaceConfigPushServiceImpl implements InterfaceConfigPushServic
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(InterfaceConfigPushServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(InterfaceConfigPushServiceImpl.class);
 
     /**
      * repository manager
@@ -81,7 +79,6 @@ public class InterfaceConfigPushServiceImpl implements InterfaceConfigPushServic
     @Override
     public APIConfigResponse pushAPIConfig(APIConfigRequest request) {
 
-        APIConfigResponse response = new APIConfigResponse();
         return ServiceTemplate.execute(
                 // check parameter
                 (Void) -> ValidateUtils.validate(request),
@@ -94,18 +91,23 @@ public class InterfaceConfigPushServiceImpl implements InterfaceConfigPushServic
                         request.setCommunicationProperties(new HashMap<>());
                     }
 
-                    request.getCommunicationProperties().putIfAbsent(Constant.INTERFACE_TYPE,
-                            Constant.PLUGIN_OPENAPI);
+                    request.getCommunicationProperties().putIfAbsent(Constant.INTERFACE_TYPE, Constant.PLUGIN_OPENAPI);
 
                     InterfaceDto interfaceDto = buildApiInterfaceDto(request);
                     repositoryManager.saveOrUpdateInterface(interfaceDto);
+                    APIConfigResponse response = new APIConfigResponse();
+                    response.setResult(Result.buildSuccess());
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+                (result) -> {
+                    APIConfigResponse apiConfigResponse = new APIConfigResponse();
+                    apiConfigResponse.setResult(result);
+                    return apiConfigResponse;
+                },
+
                 // compose digest log
-                (Void) -> {
-                });
+                (Void) -> {});
     }
 
     /**
@@ -129,10 +131,13 @@ public class InterfaceConfigPushServiceImpl implements InterfaceConfigPushServic
                     return response;
                 },
                 // compose exception response
-                (e) -> Result.buildFailure(GatewayErrorCode.UNKNOWN_EXCEPTION),
+                (result) -> {
+                    SPIConfigResponse apiConfigResponse = new SPIConfigResponse();
+                    apiConfigResponse.setResult(result);
+                    return apiConfigResponse;
+                },
                 // compose digest log
-                (Void) -> {
-                });
+                (Void) -> {});
     }
 
     /**
@@ -142,11 +147,13 @@ public class InterfaceConfigPushServiceImpl implements InterfaceConfigPushServic
 
         InterfaceDto apiInterfaceDto = new InterfaceDto();
         apiInterfaceDto.setTenantId(apiConfig.getTenantId());
-        String version = StringUtils.defaultIfBlank(apiConfig.getVersion(),
-                Constant.INTERFACE_DEFAULT_VERSION);
+        String version = StringUtils.defaultIfBlank(apiConfig.getVersion(), Constant.INTERFACE_DEFAULT_VERSION);
 
-        String interfaceId = InterfaceConfigUtil.generateInterfaceId(apiConfig.getIntegrationUrl(),
-                apiConfig.getTenantId(), version, InterfaceType.OPENAPI.getCode(),
+        String interfaceId = InterfaceConfigUtil.generateInterfaceId(
+                apiConfig.getIntegrationUrl(),
+                apiConfig.getTenantId(),
+                version,
+                InterfaceType.OPENAPI.getCode(),
                 apiConfig.getCommunicationProperties());
 
         apiInterfaceDto.setInterfaceId(interfaceId);
@@ -159,27 +166,21 @@ public class InterfaceConfigPushServiceImpl implements InterfaceConfigPushServic
         apiInterfaceDto.setType(InterfaceType.OPENAPI.getCode());
         apiInterfaceDto.setStatus(InterfaceStatus.VALID.getCode());
 
-        String openApiMsgParser = apiConfig.getCommunicationProperties()
-                .get(Constant.OPENAPI_MSG_PARSER);
-        String msgBodyAssemble = apiConfig.getCommunicationProperties()
-                .get(Constant.MES_BODY_ASSEMBLE);
-        String msgHeaderAssemble = apiConfig.getCommunicationProperties()
-                .get(Constant.MSG_HEADER_ASSEMBLE);
+        String openApiMsgParser = apiConfig.getCommunicationProperties().get(Constant.OPENAPI_MSG_PARSER);
+        String msgBodyAssemble = apiConfig.getCommunicationProperties().get(Constant.MES_BODY_ASSEMBLE);
+        String msgHeaderAssemble = apiConfig.getCommunicationProperties().get(Constant.MSG_HEADER_ASSEMBLE);
 
         apiInterfaceDto.setInterfaceRequestParser(openApiMsgParser);
         apiInterfaceDto.setInterfaceResponseHeaderAssemble(msgBodyAssemble);
         apiInterfaceDto.setInterfaceResponseBodyAssemble(msgHeaderAssemble);
 
-        apiInterfaceDto
-                .setIntegrationRequestHeaderAssemble(apiConfig.getIntegrationRequestHeaderAssemble());
-        apiInterfaceDto
-                .setIntegrationRequestBodyAssemble(apiConfig.getIntegrationRequestBodyAssemble());
+        apiInterfaceDto.setIntegrationRequestHeaderAssemble(apiConfig.getIntegrationRequestHeaderAssemble());
+        apiInterfaceDto.setIntegrationRequestBodyAssemble(apiConfig.getIntegrationRequestBodyAssemble());
         apiInterfaceDto.setIntegrationResponseParser(apiConfig.getIntegrationResponseParser());
 
         apiInterfaceDto.setCommunicationProperties(apiConfig.getCommunicationProperties());
 
         return apiInterfaceDto;
-
     }
 
     /**
@@ -189,11 +190,13 @@ public class InterfaceConfigPushServiceImpl implements InterfaceConfigPushServic
 
         InterfaceDto spiInterfaceDto = new InterfaceDto();
         spiInterfaceDto.setTenantId(spiConfig.getTenantId());
-        String version = StringUtils.defaultIfBlank(spiConfig.getVersion(),
-                Constant.INTERFACE_DEFAULT_VERSION);
+        String version = StringUtils.defaultIfBlank(spiConfig.getVersion(), Constant.INTERFACE_DEFAULT_VERSION);
 
-        String interfaceId = InterfaceConfigUtil.generateInterfaceId(spiConfig.getIntegrationUrl(),
-                spiConfig.getTenantId(), version, InterfaceType.SPI.getCode(),
+        String interfaceId = InterfaceConfigUtil.generateInterfaceId(
+                spiConfig.getIntegrationUrl(),
+                spiConfig.getTenantId(),
+                version,
+                InterfaceType.SPI.getCode(),
                 spiConfig.getCommunicationProperties());
 
         spiInterfaceDto.setInterfaceId(interfaceId);
@@ -209,16 +212,13 @@ public class InterfaceConfigPushServiceImpl implements InterfaceConfigPushServic
         spiInterfaceDto.setInterfaceResponseHeaderAssemble("");
         spiInterfaceDto.setInterfaceResponseBodyAssemble("");
 
-        spiInterfaceDto
-                .setIntegrationRequestHeaderAssemble(spiConfig.getIntegrationRequestHeaderAssemble());
-        spiInterfaceDto
-                .setIntegrationRequestBodyAssemble(spiConfig.getIntegrationRequestBodyAssemble());
+        spiInterfaceDto.setIntegrationRequestHeaderAssemble(spiConfig.getIntegrationRequestHeaderAssemble());
+        spiInterfaceDto.setIntegrationRequestBodyAssemble(spiConfig.getIntegrationRequestBodyAssemble());
         spiInterfaceDto.setIntegrationResponseParser(spiConfig.getIntegrationResponseParser());
 
         spiInterfaceDto.setCommunicationProperties(spiConfig.getCommunicationProperties());
 
         return spiInterfaceDto;
-
     }
 
     /**
@@ -232,8 +232,7 @@ public class InterfaceConfigPushServiceImpl implements InterfaceConfigPushServic
         if (StringUtils.isNotBlank(request.getTenantId())) {
             url.append(Constant.PATH_SEPARATOR).append(request.getTenantId());
         }
-        url.append(Constant.PATH_SEPARATOR)
-                .append(StringUtils.stripStart(request.getUrl(), Constant.PATH_SEPARATOR));
+        url.append(Constant.PATH_SEPARATOR).append(StringUtils.stripStart(request.getUrl(), Constant.PATH_SEPARATOR));
 
         request.setUrl(url.toString());
     }

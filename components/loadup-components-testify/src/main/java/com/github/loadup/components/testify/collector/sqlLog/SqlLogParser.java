@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.collector.sqlLog;
 
 /*-
@@ -37,7 +34,7 @@ import java.util.Set;
 /**
  * sql日志解析器
  *
- * 
+ *
  *
  */
 public interface SqlLogParser {
@@ -59,8 +56,7 @@ public interface SqlLogParser {
      * @return
      * @throws ClassNotFoundException
      */
-    public List<Map<String, Object>> parseGenTableDatas(String sql, List<String> paramValue,
-                                                        List<String> paramType);
+    public List<Map<String, Object>> parseGenTableDatas(String sql, List<String> paramValue, List<String> paramType);
 
     /**
      * 解析sql字段标记

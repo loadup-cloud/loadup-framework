@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.annotation.testify;
 
 /*-
@@ -33,8 +33,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 
- * 
+ *
+ *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
@@ -44,5 +44,4 @@ public @interface CheckCase {
      *
      */
     String value() default "";
-
 }

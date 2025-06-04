@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.template;
 
 /*-
@@ -31,5 +32,4 @@ import com.github.loadup.components.testify.model.PrepareData;
 public interface PrepareTemplate {
 
     public PrepareData prepare(PrepareCallBack callback);
-
 }

@@ -1,4 +1,4 @@
-
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.transfer;
 
 /*-
@@ -30,7 +30,7 @@ package com.github.loadup.components.testify.transfer;
 /**
  * case规则,后续重构为正则检测
  *
- * 
+ *
  *
  */
 public interface CaseConstants {

@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.manage;
 
 /*-
@@ -30,14 +27,12 @@ package com.github.loadup.components.testify.manage;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 import com.github.loadup.components.testify.component.enums.RepositoryType;
 import com.github.loadup.components.testify.manage.enums.LoggerType;
 import com.github.loadup.components.testify.manage.log.LoggerFactory;
 import com.github.loadup.components.testify.support.TestCaseHolder;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -85,8 +80,7 @@ public class TestRecorder {
      */
     public static boolean hasComponent() {
         List<String> list = componentList.get();
-        if (list != null && list.size() > 0)
-            return true;
+        if (list != null && list.size() > 0) return true;
         return false;
     }
 
@@ -95,7 +89,8 @@ public class TestRecorder {
      */
     public static void record() {
 
-        String caseId = TestCaseHolder.get() == null ? null : TestCaseHolder.get().getCaseId();
+        String caseId =
+                TestCaseHolder.get() == null ? null : TestCaseHolder.get().getCaseId();
 
         LoggerFactory.getLogger(LoggerType.TESTIFY_DIGEST).info(getDigest(caseId));
     }
@@ -120,5 +115,4 @@ public class TestRecorder {
 
         return sb.toString();
     }
-
 }

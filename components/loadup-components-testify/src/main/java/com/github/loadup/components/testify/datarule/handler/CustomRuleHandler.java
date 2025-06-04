@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule.handler;
 
 /*-
@@ -40,18 +37,17 @@ import com.github.loadup.components.testify.exception.RuleExecuteException;
 import com.github.loadup.components.testify.util.CustomUtils;
 import com.github.loadup.components.testify.util.DateUtil;
 import com.github.loadup.components.testify.util.SystemAssist;
-import org.springframework.util.ReflectionUtils;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * 自定义规则处理。
  *
- * 
+ *
  *
  */
 public class CustomRuleHandler implements RuleHandler<CustomRule> {
@@ -106,8 +102,8 @@ public class CustomRuleHandler implements RuleHandler<CustomRule> {
             Object value = method.invoke(null, params);
             return convertResult(value);
         } catch (Exception e) {
-            throw new RuleExecuteException("custom rule execute error,method invoke error[method="
-                    + method.toGenericString() + "]", e);
+            throw new RuleExecuteException(
+                    "custom rule execute error,method invoke error[method=" + method.toGenericString() + "]", e);
         }
     }
 
@@ -129,15 +125,14 @@ public class CustomRuleHandler implements RuleHandler<CustomRule> {
         for (Class<?> clazz : classes) {
             Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
             for (Method method : methods) {
-                if (methodName.equals(method.getName())
-                        && paramSize == method.getParameterTypes().length) {
+                if (methodName.equals(method.getName()) && paramSize == method.getParameterTypes().length) {
                     return method;
                 }
             }
         }
 
-        throw new RuleExecuteException("custom rule execute error,can't find method[name="
-                + rule.getMethodName() + ",paramSize=" + paramSize + "]");
+        throw new RuleExecuteException("custom rule execute error,can't find method[name=" + rule.getMethodName()
+                + ",paramSize=" + paramSize + "]");
     }
 
     /**
@@ -156,11 +151,11 @@ public class CustomRuleHandler implements RuleHandler<CustomRule> {
         List<String> packages = SystemAssist.getPossiblePackageList(system);
         for (String pack : packages) {
             try {
-                classes.add(Class.forName(pack + CUSTOM_CLASS_NAME, true, Thread.currentThread()
-                        .getContextClassLoader()));
+                classes.add(Class.forName(
+                        pack + CUSTOM_CLASS_NAME, true, Thread.currentThread().getContextClassLoader()));
             } catch (Exception e) {
-                //TODO:临时注释
-                //TestLogger.getLogger().info("not find custom class", pack, CUSTOM_CLASS_NAME);
+                // TODO:临时注释
+                // TestLogger.getLogger().info("not find custom class", pack, CUSTOM_CLASS_NAME);
             }
         }
 
@@ -213,9 +208,9 @@ public class CustomRuleHandler implements RuleHandler<CustomRule> {
             return (String) value;
         }
 
-//        if (value instanceof Date) {
-//            return JSON.toJSONStringWithDateFormat(value, JSON.DEFFAULT_DATE_FORMAT);
-//        }
+        //        if (value instanceof Date) {
+        //            return JSON.toJSONStringWithDateFormat(value, JSON.DEFFAULT_DATE_FORMAT);
+        //        }
 
         return JSON.toJSONString(value);
     }

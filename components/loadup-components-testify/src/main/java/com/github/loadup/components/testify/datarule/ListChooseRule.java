@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.datarule;
 
 /*-
@@ -42,9 +39,9 @@ import java.util.List;
  * list(2,tradeType,paytool) 代表从交易类型和支付工具的排列组合中随机选择两条；<br>
  * list(-1,paytool) 若count<=0代表全部穷举。
  *
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class ListChooseRule implements RuleObject {
 
@@ -70,11 +67,10 @@ public class ListChooseRule implements RuleObject {
         f.setRule(rule);
 
         this.fields.add(f);
-
     }
 
     /**
-     * 
+     *
      *
      * @return property value of rowCount
      */
@@ -83,7 +79,7 @@ public class ListChooseRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @param rowCount value to be assigned to property rowCount
      */
@@ -92,7 +88,7 @@ public class ListChooseRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @return property value of fields
      */
@@ -101,12 +97,11 @@ public class ListChooseRule implements RuleObject {
     }
 
     /**
-     * 
+     *
      *
      * @param fields value to be assigned to property fields
      */
     public void setFields(List<FieldRule> fields) {
         this.fields = fields;
     }
-
 }

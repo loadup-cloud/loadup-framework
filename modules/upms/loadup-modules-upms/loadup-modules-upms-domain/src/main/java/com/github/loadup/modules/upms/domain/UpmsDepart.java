@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.domain;
 
 /*-
@@ -28,11 +29,10 @@ package com.github.loadup.modules.upms.domain;
 
 import com.github.loadup.commons.domain.BaseDomain;
 import com.github.loadup.commons.util.ToStringUtils;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Serial;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author lise
@@ -44,14 +44,14 @@ public class UpmsDepart extends BaseDomain {
     @Serial
     private static final long serialVersionUID = 5928278866062804522L;
 
-    private String     id;
+    private String id;
     private UpmsDepart parent;
-    private String     departName;
-    private String     departCode;
-    private String     departType;
-    private String     description;
-    private String     status;
-    private int            orderIndex;
+    private String departName;
+    private String departCode;
+    private String departType;
+    private String description;
+    private String status;
+    private int orderIndex;
     private List<UpmsUser> userList;
 
     @Override

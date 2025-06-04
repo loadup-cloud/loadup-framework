@@ -1,7 +1,4 @@
-/**
- 
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.util;
 
 /*-
@@ -34,7 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * 
+ *
  *
  */
 public class GenerateIdUtil {
@@ -69,8 +66,8 @@ public class GenerateIdUtil {
             char[] c = new char[length];
             char[] x = s.toCharArray();
             if (x.length > length) {
-                throw new IllegalArgumentException("Numeric value is larger than intended length: "
-                        + s + " LEN " + length);
+                throw new IllegalArgumentException(
+                        "Numeric value is larger than intended length: " + s + " LEN " + length);
             }
             int lim = c.length - x.length;
             for (int i = 0; i < lim; i++) {
@@ -80,6 +77,5 @@ public class GenerateIdUtil {
             return new String(c);
         }
         return s.substring(0, length);
-
     }
 }

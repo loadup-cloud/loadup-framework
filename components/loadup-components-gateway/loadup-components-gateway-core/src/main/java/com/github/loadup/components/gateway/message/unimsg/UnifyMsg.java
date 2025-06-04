@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.message.unimsg;
 
 /*-
@@ -28,12 +29,11 @@ package com.github.loadup.components.gateway.message.unimsg;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import org.springframework.util.CollectionUtils;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.springframework.util.CollectionUtils;
 
 /**
  * <p>
@@ -61,7 +61,6 @@ public class UnifyMsg {
             Object value = param.getValue();
             addField(key, value);
         }
-
     }
 
     /**

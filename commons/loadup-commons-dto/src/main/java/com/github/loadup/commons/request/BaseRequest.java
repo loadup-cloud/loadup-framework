@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.request;
 
 /*-
@@ -28,5 +29,4 @@ package com.github.loadup.commons.request;
 
 import com.github.loadup.commons.dto.DTO;
 
-public class BaseRequest extends DTO {
-}
+public class BaseRequest extends DTO {}

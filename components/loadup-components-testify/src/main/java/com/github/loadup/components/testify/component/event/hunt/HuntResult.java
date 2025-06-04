@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.component.event.hunt;
 
 /*-
@@ -30,15 +27,14 @@ package com.github.loadup.components.testify.component.event.hunt;
  * #L%
  */
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author jie.peng
- * 
+ *
  */
 public class HuntResult {
 
@@ -79,5 +75,4 @@ public class HuntResult {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.DEFAULT_STYLE);
     }
-
 }

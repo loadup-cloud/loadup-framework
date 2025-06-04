@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.modules.upms.convertor;
 
 /*-
@@ -28,10 +29,9 @@ package com.github.loadup.modules.upms.convertor;
 
 import com.github.loadup.modules.upms.dal.dataobject.RoleDO;
 import com.github.loadup.modules.upms.domain.UpmsRole;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
-
-import java.util.List;
 
 @Mapper
 public interface RoleConvertor {
@@ -44,5 +44,4 @@ public interface RoleConvertor {
     RoleDO toRoleDO(UpmsRole role);
 
     List<RoleDO> toRoleDOList(List<UpmsRole> roleList);
-
 }

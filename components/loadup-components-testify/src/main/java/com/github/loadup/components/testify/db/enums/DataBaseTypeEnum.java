@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.db.enums;
 
 /*-
@@ -33,28 +30,24 @@ package com.github.loadup.components.testify.db.enums;
 /**
  * 数据库类型枚举
  *
- * 
- * 
+ *
+ *
  */
 public enum DataBaseTypeEnum {
-
-
     MYSQL("MySQL");
 
     private String code;
 
     private DataBaseTypeEnum(String code) {
         this.code = code;
-
     }
 
     /**
-     * 
+     *
      *
      * @return property value of code
      */
     public String getCode() {
         return code;
     }
-
 }

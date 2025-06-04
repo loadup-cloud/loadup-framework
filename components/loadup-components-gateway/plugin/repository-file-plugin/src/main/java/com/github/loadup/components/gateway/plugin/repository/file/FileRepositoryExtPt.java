@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.plugin.repository.file;
 
 /*-
@@ -41,6 +42,9 @@ import com.github.loadup.components.gateway.plugin.repository.file.model.CertCon
 import com.github.loadup.components.gateway.plugin.repository.file.model.SpiConfigRepository;
 import com.github.loadup.components.gateway.plugin.repository.file.service.impl.ConfigFileBuilderImpl;
 import jakarta.annotation.Resource;
+import java.io.File;
+import java.net.URL;
+import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,10 +53,6 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-
-import java.io.File;
-import java.net.URL;
-import java.util.*;
 
 /**
  * <p>
@@ -64,16 +64,15 @@ import java.util.*;
 @Order(-1)
 public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationListener<ApplicationStartedEvent> {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(FileRepositoryExtPt.class);
-    //组装脚本存在的路径
+    private static final Logger logger = LoggerFactory.getLogger(FileRepositoryExtPt.class);
+    // 组装脚本存在的路径
     private static Map<String, String> assembleTemplateCache = new HashMap<String, String>();
-    //groovy java 脚本存在的路径
+    // groovy java 脚本存在的路径
     private static Map<String, String> parseTemplateCache = new HashMap<String, String>();
     /**
      * 入参集合
      **/
-    //保存证书信息的文件内容
+    // 保存证书信息的文件内容
     public List<CertConfigRepository> certConfigRepositoryList = new ArrayList<>();
     /**
      * 结果集合
@@ -142,8 +141,8 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
 
     @Override
     public void saveOrUpdateInterface(InterfaceDto interfaceDto) {
-        throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
-                "fileRepositoryService not support saveOrUpdateInterface method");
+        throw new CommonException(
+                GatewayErrorCode.UNKNOWN_EXCEPTION, "fileRepositoryService not support saveOrUpdateInterface method");
     }
 
     /**
@@ -211,107 +210,104 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
 
     @Override
     public void addInterface(InterfaceDto dto) {
-        throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
-                "fileRepositoryService not support add interface");
+        throw new CommonException(
+                GatewayErrorCode.UNKNOWN_EXCEPTION, "fileRepositoryService not support add interface");
     }
 
     @Override
     public void updateInterface(InterfaceDto dto) {
-        throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
-                "fileRepositoryService not support update interface");
+        throw new CommonException(
+                GatewayErrorCode.UNKNOWN_EXCEPTION, "fileRepositoryService not support update interface");
     }
 
     @Override
-    public List<InterfaceDto> queryInterface(Integer pageSize, Integer page, String tntInstId,
-                                             String interfaceId, String clientId, String type,
-                                             String status, String interfaceName) {
-        throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
-                "fileRepositoryService not support query interface");
-
+    public List<InterfaceDto> queryInterface(
+            Integer pageSize,
+            Integer page,
+            String tntInstId,
+            String interfaceId,
+            String clientId,
+            String type,
+            String status,
+            String interfaceName) {
+        throw new CommonException(
+                GatewayErrorCode.UNKNOWN_EXCEPTION, "fileRepositoryService not support query interface");
     }
 
     @Override
     public void removeInterface(String interfaceId) {
-        throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
-                "fileRepositoryService not support remove interface");
+        throw new CommonException(
+                GatewayErrorCode.UNKNOWN_EXCEPTION, "fileRepositoryService not support remove interface");
     }
 
     @Override
     public void upgradeInterface(InterfaceDto dto) {
-        throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
-                "fileRepositoryService not support upgrade interface");
+        throw new CommonException(
+                GatewayErrorCode.UNKNOWN_EXCEPTION, "fileRepositoryService not support upgrade interface");
     }
 
     @Override
     public void onlineInterface(String interfaceId) {
-        throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
-                "fileRepositoryService not support online interface");
+        throw new CommonException(
+                GatewayErrorCode.UNKNOWN_EXCEPTION, "fileRepositoryService not support online interface");
     }
 
     @Override
     public void offlineInterface(String interfaceId) {
-        throw new CommonException(GatewayErrorCode.UNKNOWN_EXCEPTION,
-                "fileRepositoryService not support offline interface");
+        throw new CommonException(
+                GatewayErrorCode.UNKNOWN_EXCEPTION, "fileRepositoryService not support offline interface");
     }
 
     @Override
     public String addClient(ClientConfigDto clientConfigAddDto) {
-        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
-                "fileRepositoryService not support addmethod");
+        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION, "fileRepositoryService not support addmethod");
     }
 
     @Override
     public void authorizeClient(ClientInterfaceConfigDto clientConfigAuthorizeDto) {
-        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
-                "fileRepositoryService not support authrizemethod");
+        throw new CommonException(
+                GatewayErrorCode.SYSTEM_EXCEPTION, "fileRepositoryService not support authrizemethod");
     }
 
     @Override
     public void deauthorizeClient(ClientInterfaceConfigDto clientConfigDeauthorizeDto) {
-        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
-                "fileRepositoryService not support deauthrizemethod");
+        throw new CommonException(
+                GatewayErrorCode.SYSTEM_EXCEPTION, "fileRepositoryService not support deauthrizemethod");
     }
 
     @Override
     public void updateClient(ClientConfigDto clientConfigUpdateDto) {
-        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
-                "fileRepositoryService not support updatemethod");
+        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION, "fileRepositoryService not support updatemethod");
     }
 
     @Override
     public ClientConfigDto queryClient(String clientId) {
-        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
-                "fileRepositoryService not support querymethod");
+        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION, "fileRepositoryService not support querymethod");
     }
 
     @Override
     public int removeClient(String clientId) {
-        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
-                "fileRepositoryService not support removemethod");
+        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION, "fileRepositoryService not support removemethod");
     }
 
     @Override
     public SecurityConfigDto addSecurity(SecurityConfigDto dto) {
-        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
-                "fileRepositoryService not support addmethod");
+        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION, "fileRepositoryService not support addmethod");
     }
 
     @Override
     public void updateSecurity(SecurityConfigDto request) {
-        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
-                "fileRepositoryService not support updatemethod");
+        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION, "fileRepositoryService not support updatemethod");
     }
 
     @Override
     public List<SecurityConfigDto> querySecurityByClient(String clientId) {
-        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
-                "fileRepositoryService not support querymethod");
+        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION, "fileRepositoryService not support querymethod");
     }
 
     @Override
     public int removeSecurity(SecurityConfigDto certCode) {
-        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION,
-                "fileRepositoryService not support removemethod");
+        throw new CommonException(GatewayErrorCode.SYSTEM_EXCEPTION, "fileRepositoryService not support removemethod");
     }
 
     /**
@@ -325,7 +321,7 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
         List<String> apiLines = new ArrayList<String>();
         List<String> spiLines = new ArrayList<String>();
 
-        //1. get content from CSV file
+        // 1. get content from CSV file
         try {
             spiLines = configFileBuilder.readToStringList(rootPath, spiPath);
             apiLines = configFileBuilder.readToStringList(rootPath, apiPath);
@@ -333,7 +329,7 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
             LogUtil.error(logger, "failed reading file to rows", e);
         }
         if (apiLines.size() > 1) {
-            //apiLines -> apiConfigs
+            // apiLines -> apiConfigs
             List<ApiConfigRepository> apiConfigRepositories = new ArrayList<>(apiLines.size());
             apiLines = apiLines.subList(1, apiLines.size());
             apiLines.forEach(line -> {
@@ -346,7 +342,7 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
 
         if (spiLines.size() > 1) {
 
-            //spiLines -> spiConfigs
+            // spiLines -> spiConfigs
             List<SpiConfigRepository> spiConfigRepositories = new ArrayList<>(spiLines.size());
             spiLines = spiLines.subList(1, spiLines.size());
             spiLines.forEach(line -> {
@@ -356,7 +352,6 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
 
             buildSPIConfigNew(spiConfigRepositories);
         }
-
     }
 
     /**
@@ -370,7 +365,7 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
         Map<String, String> parseMap = new HashMap<String, String>();
         String assemblePath = "";
         String parsePath = "";
-        //1. get content from CSV file
+        // 1. get content from CSV file
         assemblePath = configFileBuilder.buildFilePath(rootPath, assembleFilePath);
         parsePath = configFileBuilder.buildFilePath(rootPath, parseFilePath);
         LogUtil.info(logger, "assemblePath config path is ", assemblePath);
@@ -394,11 +389,10 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
             assemblePath = assembleResource.getPath();
             parsePath = parseResource.getPath();
 
-            Map<String, String> assembleTemplateMap = configFileBuilder
-                    .readToStringForDirectory(assemblePath, assembleFilePath);
+            Map<String, String> assembleTemplateMap =
+                    configFileBuilder.readToStringForDirectory(assemblePath, assembleFilePath);
             assembleTemplateCache.putAll(assembleTemplateMap);
-            Map<String, String> parseTemplateMap = configFileBuilder
-                    .readToStringForDirectory(parsePath, parseFilePath);
+            Map<String, String> parseTemplateMap = configFileBuilder.readToStringForDirectory(parsePath, parseFilePath);
             parseTemplateCache.putAll(parseTemplateMap);
         }
         assembleTemplateCache.putAll(assembleMap);
@@ -414,8 +408,8 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
         List<String> lines = new ArrayList<String>();
         try {
             lines = configFileBuilder.readToStringList(rootPath, filePath);
-            //4. compute the config model from the 2nd line of content
-            //covert to the entry model
+            // 4. compute the config model from the 2nd line of content
+            // covert to the entry model
             List<String> bodyLines = lines.subList(1, lines.size());
             bodyLines.forEach(item -> {
                 CertConfigRepository certConfigRepository = new CertConfigRepository(item);
@@ -423,19 +417,21 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
             });
 
             certConfigRepositoryList.forEach(certConfigRepository -> {
-                //获取certConfig
+                // 获取certConfig
                 CertConfigDto certConfigDto = certConfigBuilder.buildDto(certConfigRepository);
                 if (null == certConfigDto) {
-                    LogUtil.error(logger, "failed building certConfig, securityStrategyCode: ",
+                    LogUtil.error(
+                            logger,
+                            "failed building certConfig, securityStrategyCode: ",
                             certConfigRepository.getSecurityStrategyCode());
                 } else {
                     this.certConfigDtoList.add(certConfigDto);
                 }
 
-                CertAlgorithmConfigDto certAlgorithmConfigDto = certAlgorithmConfigBuilder
-                        .build(certConfigRepository);
+                CertAlgorithmConfigDto certAlgorithmConfigDto = certAlgorithmConfigBuilder.build(certConfigRepository);
                 if (null == certAlgorithmConfigDto) {
-                    LogUtil.error(logger,
+                    LogUtil.error(
+                            logger,
                             "failed building certAlgorithmConfig, securityStrategyCode: ",
                             certConfigRepository.getSecurityStrategyCode());
                 } else {
@@ -446,38 +442,44 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
         } catch (Exception e) {
             LogUtil.error(logger, "init fail", e);
         }
-
     }
 
     private void buildAPIConfigNew(List<ApiConfigRepository> apiConfigs) {
         int index = 0;
         for (ApiConfigRepository apiConfig : apiConfigs) {
-            //index 0
+            // index 0
             String openURl = apiConfig.getOpenURl();
-            //index 1
+            // index 1
             String integrationUri = apiConfig.getIntegrationUri();
-            //index 2
+            // index 2
             String securityStrategyCode = apiConfig.getSecurityStrategyCode();
-            //index 3
+            // index 3
             String integrationHeaderAssemble = apiConfig.getIntegrationHeaderAssemble();
-            //index 4
+            // index 4
             String integrationAssemble = apiConfig.getIntegrationAssemble();
-            //index 5
+            // index 5
             String integrationParser = apiConfig.getIntegrationParser();
-            //index 6
+            // index 6
             String communicationProperties = apiConfig.getCommunicationProperties();
 
             MessageSenderConfigDto msgSender = messageSenderConfigBuilder.build(apiConfig);
             if (null != msgSender) {
                 messageSenderConfigDtoList.add(msgSender);
-                //messageSenderCache.put(msgSender.getMessageSenderId(), msgSender);
+                // messageSenderCache.put(msgSender.getMessageSenderId(), msgSender);
             }
 
-            //build SPI interface
-            buildConfig(integrationUri, securityStrategyCode, integrationHeaderAssemble,
-                    integrationAssemble, integrationParser, communicationProperties, null, index);
+            // build SPI interface
+            buildConfig(
+                    integrationUri,
+                    securityStrategyCode,
+                    integrationHeaderAssemble,
+                    integrationAssemble,
+                    integrationParser,
+                    communicationProperties,
+                    null,
+                    index);
 
-            //build OpenApi interface
+            // build OpenApi interface
             com.github.loadup.components.gateway.core.model.Properties properties = new Properties();
 
             properties.setProperties(communicationProperties);
@@ -486,8 +488,15 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
             String msgBodyAssemble = properties.getProperty("MES_BODY_ASSEMBLE");
             String msgHeaderAssemble = properties.getProperty("MSG_HEADER_ASSEMBLE");
 
-            buildConfig(openURl, securityStrategyCode, msgHeaderAssemble, msgBodyAssemble,
-                    openApiMsgParser, communicationProperties, integrationUri, index);
+            buildConfig(
+                    openURl,
+                    securityStrategyCode,
+                    msgHeaderAssemble,
+                    msgBodyAssemble,
+                    openApiMsgParser,
+                    communicationProperties,
+                    integrationUri,
+                    index);
 
             index++;
         }
@@ -497,25 +506,27 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
      *
      */
     @Deprecated
-    private void buildConfig(String url, String securityStrategyCode,
-                             String integrationServiceRequestHeaderAssemble,
-                             String integrationServiceRequestAssemble,
-                             String integrationServiceResponseParser,
-                             String communicationProperties, String integrationInterfaceId,
-                             int index) {
+    private void buildConfig(
+            String url,
+            String securityStrategyCode,
+            String integrationServiceRequestHeaderAssemble,
+            String integrationServiceRequestAssemble,
+            String integrationServiceResponseParser,
+            String communicationProperties,
+            String integrationInterfaceId,
+            int index) {
 
         Map<String, String> propertyMap = CommonUtil.Str2Kv(communicationProperties);
 
-        MessageReceiverConfigDto msgReceiver = messageReceiverConfigBuilder.build(url,
-                securityStrategyCode);
+        MessageReceiverConfigDto msgReceiver = messageReceiverConfigBuilder.build(url, securityStrategyCode);
         if (null != msgReceiver) {
             messageReceiverConfigDtoList.add(msgReceiver);
         }
 
         String interfaceId = propertyMap.get("INTERFACE_ID");
 
-        InterfaceConfigDto interfaceConfigDto = interfaceConfigBuilder.build(url,
-                securityStrategyCode, communicationProperties, integrationInterfaceId);
+        InterfaceConfigDto interfaceConfigDto = interfaceConfigBuilder.build(
+                url, securityStrategyCode, communicationProperties, integrationInterfaceId);
         if (StringUtils.isNotBlank(interfaceId)) {
             interfaceConfigDto.setInterfaceId(interfaceId);
             interfaceConfigDto.setMessageProcessId(interfaceId);
@@ -526,9 +537,12 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
 
         messageProcessConfigBuilder.setAssembleTemplateCache(assembleTemplateCache);
         messageProcessConfigBuilder.setParseTemplateCache(parseTemplateCache);
-        MessageProcessConfigDto messageProcessConfigDto = messageProcessConfigBuilder.build(url,
-                securityStrategyCode, integrationServiceRequestHeaderAssemble,
-                integrationServiceRequestAssemble, integrationServiceResponseParser);
+        MessageProcessConfigDto messageProcessConfigDto = messageProcessConfigBuilder.build(
+                url,
+                securityStrategyCode,
+                integrationServiceRequestHeaderAssemble,
+                integrationServiceRequestAssemble,
+                integrationServiceResponseParser);
         if (StringUtils.isNotBlank(interfaceId)) {
             messageProcessConfigDto.setMessageProcessId(interfaceId);
         }
@@ -536,36 +550,41 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
             messageProcessConfigDtoList.add(messageProcessConfigDto);
         }
 
-        CommunicationConfigDto communicationConfigDto = communicationConfigBuilder.build(url,
-                securityStrategyCode, communicationProperties, index);
+        CommunicationConfigDto communicationConfigDto =
+                communicationConfigBuilder.build(url, securityStrategyCode, communicationProperties, index);
         if (StringUtils.isNotBlank(interfaceId)) {
             communicationConfigDto.setInterfaceId(interfaceId);
         }
         if (null != communicationConfigDto) {
             communicationConfigDtoList.add(communicationConfigDto);
         }
-
     }
 
     private void buildSPIConfigNew(List<SpiConfigRepository> spiConfigs) {
         int index = 0;
         for (SpiConfigRepository spiConfig : spiConfigs) {
-            //index 0
+            // index 0
             String integrationUri = spiConfig.getIntegrationUri();
-            //index 1
+            // index 1
             String securityStrategyCode = spiConfig.getSecurityStrategyCode();
-            //index 2
+            // index 2
             String integrationHeaderAssemble = spiConfig.getIntegrationHeaderAssemble();
-            //index 3
+            // index 3
             String integrationAssemble = spiConfig.getIntegrationAssemble();
-            //index 4
+            // index 4
             String integrationParser = spiConfig.getIntegrationParser();
-            //index 5
+            // index 5
             String communicationProperties = spiConfig.getCommunicationProperties();
-            buildConfig(integrationUri, securityStrategyCode, integrationHeaderAssemble,
-                    integrationAssemble, integrationParser, communicationProperties, null, index);
+            buildConfig(
+                    integrationUri,
+                    securityStrategyCode,
+                    integrationHeaderAssemble,
+                    integrationAssemble,
+                    integrationParser,
+                    communicationProperties,
+                    null,
+                    index);
             index++;
         }
     }
-
 }

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.model;
 
 /*-
@@ -329,7 +330,7 @@ public enum AlgorithmEnum {
     }
 
     /**
-     * 
+     *
      */
     public String getDesc() {
         return desc;
@@ -343,7 +344,7 @@ public enum AlgorithmEnum {
     }
 
     /**
-     * 
+     *
      */
     public String getName() {
         return name;
@@ -357,7 +358,7 @@ public enum AlgorithmEnum {
     }
 
     /**
-     * 
+     *
      */
     public String getType() {
         return type;
@@ -371,7 +372,7 @@ public enum AlgorithmEnum {
     }
 
     /**
-     * 
+     *
      */
     public String getSubAlgo() {
         return subAlgo;

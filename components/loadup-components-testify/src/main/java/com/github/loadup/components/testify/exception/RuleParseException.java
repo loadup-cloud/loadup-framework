@@ -1,7 +1,4 @@
-/**
-
- * Copyright (c) 2004-2015 All Rights Reserved.
- */
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.exception;
 
 /*-
@@ -33,8 +30,8 @@ package com.github.loadup.components.testify.exception;
 /**
  * 数据规则解析异常，不符合规则定义。
  *
- * 
- * 
+ *
+ *
  */
 public class RuleParseException extends TestifyException {
 
@@ -71,5 +68,4 @@ public class RuleParseException extends TestifyException {
     public RuleParseException(Throwable cause) {
         super(cause);
     }
-
 }

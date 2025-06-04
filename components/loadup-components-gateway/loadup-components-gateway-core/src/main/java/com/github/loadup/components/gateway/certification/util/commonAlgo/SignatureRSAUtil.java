@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.gateway.certification.util.commonAlgo;
 
 /*-
@@ -26,13 +27,12 @@ package com.github.loadup.components.gateway.certification.util.commonAlgo;
  * #L%
  */
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * 数字签名算法实现,算法可做为入参输入，当前支持算法：
@@ -83,21 +83,19 @@ public class SignatureRSAUtil {
         signature.initSign(privateKey);
         signature.update(data);
         return signature.sign();
-
     }
 
     /**
      * 公共验签接口
      */
-    public static boolean verify(byte[] unSignedData, byte[] signedData, byte[] key,
-                                 String algorithm) throws Exception {
+    public static boolean verify(byte[] unSignedData, byte[] signedData, byte[] key, String algorithm)
+            throws Exception {
         PublicKey publicKey = recoverPublicKey(key);
         Signature signature = Signature.getInstance(algorithm);
         signature.initVerify(publicKey);
 
         signature.update(unSignedData);
         return signature.verify(signedData);
-
     }
 
     /**
@@ -126,7 +124,6 @@ public class SignatureRSAUtil {
         PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(data);
         KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGO_NAME);
         return keyFactory.generatePrivate(pkcs8EncodedKeySpec);
-
     }
 
     /**

@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.testify.log;
 
 /*-
@@ -38,21 +39,19 @@ import com.github.loadup.components.testify.util.JsonUtil;
 import com.github.loadup.components.testify.util.LogUtil;
 import com.github.loadup.components.testify.yaml.YamlTestData;
 import com.github.loadup.components.testify.yaml.YamlTestUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.testng.Assert;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.testng.Assert;
 
 /**
  * ActsLogUtil 测试日志文件操作类
  */
 @Slf4j
 public class TestifyLogUtil {
-
 
     /**
      * 基于脚本类名，进行日志模型文件夹准备，并清空之前上下文日志模型
@@ -62,7 +61,7 @@ public class TestifyLogUtil {
     public static void checkLogFolder(String className) {
         Assert.assertNotNull("类名不能为空", className);
 
-        //创建LogFolder
+        // 创建LogFolder
         File logFolder = new File(TestifyPathConstants.LOG_FOLDER_PATH);
         if (!logFolder.exists() || !logFolder.isDirectory()) {
             if (!logFolder.mkdir()) {
@@ -71,7 +70,7 @@ public class TestifyLogUtil {
             }
         }
 
-        //根据脚本类名创建日志文件夹
+        // 根据脚本类名创建日志文件夹
         File classFolder = new File(TestifyPathConstants.LOG_FOLDER_PATH + "/" + className);
         if (!classFolder.exists() || !classFolder.isDirectory()) {
             if (!classFolder.mkdir()) {
@@ -79,7 +78,6 @@ public class TestifyLogUtil {
                 return;
             }
         }
-
     }
 
     /**
@@ -88,7 +86,7 @@ public class TestifyLogUtil {
      * @param parameters
      */
     public static void initLogContext(Object[] parameters) {
-//        Assert.assertNotNull("参数不会为空", parameters);
+        //        Assert.assertNotNull("参数不会为空", parameters);
         TestifySuiteContext suiteContext = TestifySuiteContextHolder.get();
         List<String> parameterList = suiteContext.getParameterKeyList();
 
@@ -113,8 +111,7 @@ public class TestifyLogUtil {
         context.setSuiteFlag(suiteFlag);
         if (!YamlTestUtil.isSingleYaml()) {
             String caseYamlPath = suiteContext.getCsvFolderPath() + context.getCaseId() + ".yaml";
-            String commonYamlPath = suiteContext.getCsvFolderPath() + TestifyYamlConstants.COMMONKEY
-                    + ".yaml";
+            String commonYamlPath = suiteContext.getCsvFolderPath() + TestifyYamlConstants.COMMONKEY + ".yaml";
             context.setYamlPath(caseYamlPath);
             YamlTestData caseData = new YamlTestData(FileUtil.getTestResourceFile(caseYamlPath));
             File commonFile = FileUtil.getTestResourceFile(commonYamlPath);
@@ -128,8 +125,8 @@ public class TestifyLogUtil {
         TestifyCaseContextHolder.set(context);
         if (log.isInfoEnabled()) {
             log.info("\n================================================\n");
-            log.info("开始执行" + suiteContext.getClassName() + "类" + suiteContext.getMethodName()
-                    + "方法用例:" + context.getCaseId() + "," + context.getCaseDesc());
+            log.info("开始执行" + suiteContext.getClassName() + "类" + suiteContext.getMethodName() + "方法用例:"
+                    + context.getCaseId() + "," + context.getCaseDesc());
         }
     }
 
@@ -140,23 +137,21 @@ public class TestifyLogUtil {
         TestifySuiteContext suiteContext = TestifySuiteContextHolder.get();
         TestifyCaseContext caseContext = TestifyCaseContextHolder.get();
 
-        String folderPath = TestifyPathConstants.LOG_FOLDER_PATH + "/" + suiteContext.getClassName()
-                + "/";
+        String folderPath = TestifyPathConstants.LOG_FOLDER_PATH + "/" + suiteContext.getClassName() + "/";
         String caseId = caseContext.getCaseId();
         String filePath = folderPath + caseId + ".log";
-        String logData = "脚本" + suiteContext.getClassName() + "方法" + suiteContext.getMethodName()
-                + "测试日志:\n";
+        String logData = "脚本" + suiteContext.getClassName() + "方法" + suiteContext.getMethodName() + "测试日志:\n";
         logData += "==============脚本当前入参============\n";
-//        logData += JSON.toJSONString(caseContext.getParameterMap(), true)
-//                   + "\n==============以下为过程日志============\n";
+        //        logData += JSON.toJSONString(caseContext.getParameterMap(), true)
+        //                   + "\n==============以下为过程日志============\n";
         for (String data : caseContext.getLogData()) {
             logData += data + "\n";
         }
         File logFile = new File(filePath);
         FileUtil.writeFile(logFile, logData, 1);
         if (log.isInfoEnabled()) {
-            log.info(suiteContext.getClassName() + "类" + suiteContext.getMethodName() + "方法用例"
-                    + caseContext.getCaseId() + "执行完毕");
+            log.info(suiteContext.getClassName() + "类" + suiteContext.getMethodName() + "方法用例" + caseContext.getCaseId()
+                    + "执行完毕");
             log.info("\n================================================\n");
         }
 
@@ -182,8 +177,7 @@ public class TestifyLogUtil {
                 dumpData = data.dump();
                 yamlFilePath = caseContext.getYamlPath();
             }
-            String folderPath = TestifyPathConstants.LOG_FOLDER_PATH + "/"
-                    + suiteContext.getClassName() + "/";
+            String folderPath = TestifyPathConstants.LOG_FOLDER_PATH + "/" + suiteContext.getClassName() + "/";
             String fileName = FileUtil.getTestResourceFile(yamlFilePath).getName();
 
             File yamlFile = new File(folderPath + fileName);
@@ -201,8 +195,7 @@ public class TestifyLogUtil {
     public static void addProcessLog(Object message) {
         if (TestifyCaseContextHolder.exists()) {
             List<String> processData = TestifyCaseContextHolder.get().getLogData();
-            if (message instanceof String)
-                processData.add((String) message);
+            if (message instanceof String) processData.add((String) message);
             else {
                 processData.add(JsonUtil.toPrettyString(message));
             }
@@ -233,8 +226,7 @@ public class TestifyLogUtil {
      * @param message
      */
     public static void debug(Logger logger, String message) {
-        if (logger.isDebugEnabled())
-            logger.debug(message);
+        if (logger.isDebugEnabled()) logger.debug(message);
         addProcessLog(message);
     }
 
@@ -245,8 +237,7 @@ public class TestifyLogUtil {
      * @param message
      */
     public static void info(Logger logger, String message) {
-        if (logger.isInfoEnabled())
-            logger.info(message);
+        if (logger.isInfoEnabled()) logger.info(message);
         addProcessLog(message);
     }
 
@@ -313,5 +304,4 @@ public class TestifyLogUtil {
         addProcessLog(message, e);
         Assert.fail(message);
     }
-
 }
