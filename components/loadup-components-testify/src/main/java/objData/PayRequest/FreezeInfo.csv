@@ -1,7 +1,0 @@
-class,property,flag,exp
-FreezeInfo,freezeStartTime,Y,2014-12-20 00:00:00
-,freezeEndTime,Y,2018-12-20 00:00:00
-,amount,Y,testres/normal/Pay/PayRequest/MultiCurrencyMoney.csv@1
-,freezeCode,Y,12345678
-,memo,Y,活期冻结
-,freezeNo,Y,12345678

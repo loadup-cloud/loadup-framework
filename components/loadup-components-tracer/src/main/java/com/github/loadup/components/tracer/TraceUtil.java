@@ -34,6 +34,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -42,32 +43,40 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 public class TraceUtil {
+    private static final TraceContext TRACE_CONTEXT = new TraceContext();
 
-    private static TraceUtil traceUtil;
-    private static String staticApplicationName;
+    private static TraceUtil instance;
     private final Tracer tracer;
 
     @Value("${spring.application.name:''}")
     private String applicationName;
 
+    public static TraceContext getTraceContext() {
+        return TRACE_CONTEXT;
+    }
+
+    public static TraceUtil getInstance() {
+        return instance;
+    }
+
     public static Tracer getTracer() {
-        return traceUtil.tracer;
+        return instance.tracer;
     }
 
     public static Span getSpan() {
-        TraceContext sofaTraceContext = TraceContextHolder.getSofaTraceContext();
-        return sofaTraceContext.getCurrentSpan();
+        TraceContext traceContext = TraceUtil.getTraceContext();
+        return traceContext.getCurrentSpan();
     }
 
     public static Span createSpan(String moduleType) {
         Span span = getTracer().spanBuilder(moduleType).startSpan();
-        TraceContextHolder.getSofaTraceContext().push(span);
+        TraceUtil.getTraceContext().push(span);
         return span;
     }
 
     public static Span createSpan(String moduleType, Context parentContext) {
         Span span = getTracer().spanBuilder(moduleType).setParent(parentContext).startSpan();
-        TraceContextHolder.getSofaTraceContext().push(span);
+        TraceUtil.getTraceContext().push(span);
         return span;
     }
 
@@ -76,16 +85,15 @@ public class TraceUtil {
     }
 
     public static void logTraceId(Span span) {
-        // MDCUtil.logStartedSpan(span);
+        MDC.put("traceId", span.getSpanContext().getTraceId());
     }
 
     public static void clearTraceId() {
-        // MDCUtil.logStoppedSpan();
+        MDC.remove("traceId");
     }
 
     @PostConstruct
     public void initialize() {
-        traceUtil = this;
-        staticApplicationName = applicationName;
+        instance = this;
     }
 }

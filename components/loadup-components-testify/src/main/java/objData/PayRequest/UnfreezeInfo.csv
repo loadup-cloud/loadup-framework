@@ -1,5 +1,0 @@
-class,property,flag,exp,2
-UnfreezeInfo,freezeNo,Y,12345678,12345678
-,amount,Y,testres/normal/Pay/PayRequest/MultiCurrencyMoney.csv@1,testres/normal/Pay/PayRequest/MultiCurrencyMoney.csv@1
-,freezeCode,Y,12345678,12345678
-,memo,Y,活期解冻,余额解冻
