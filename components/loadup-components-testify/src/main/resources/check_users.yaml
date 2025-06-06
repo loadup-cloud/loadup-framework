@@ -1,0 +1,4 @@
+- query: "SELECT * FROM upms_user WHERE id IN ('1234567898789');"
+  expected:
+    - id: '1234567898789'
+      nick_name: ls

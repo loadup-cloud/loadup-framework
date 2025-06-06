@@ -1,5 +1,6 @@
 package com.github.loadup.components.testify.tests;
 
+import com.github.loadup.components.testify.annotation.DbCheck;
 import com.github.loadup.components.testify.annotation.DbProcess;
 import com.github.loadup.components.testify.listener.BaseTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,6 +12,7 @@ public class UserManagementTest extends BaseTest {
 
     @Test
     @DbProcess(init = "sql/init_user.sql", clear = "sql/clear_user.sql")
+    @DbCheck(value = "sql/check_users.yaml", after = true)
     public void testUserExistsAfterInsert() {
         JdbcTemplate jdbcTemplate = applicationContext.getBean(JdbcTemplate.class);
 

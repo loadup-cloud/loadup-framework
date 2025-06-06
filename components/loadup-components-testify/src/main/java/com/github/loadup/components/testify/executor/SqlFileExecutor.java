@@ -76,4 +76,15 @@ public class SqlFileExecutor {
         }
         return sqls;
     }
+
+    public static String readSqlFromFile(String filePath) {
+        try (InputStream is = SqlFileExecutor.class.getClassLoader().getResourceAsStream(filePath)) {
+            if (is == null) {
+                throw new IllegalArgumentException("SQL file not found: " + filePath);
+            }
+            return new String(is.readAllBytes());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read SQL file: " + filePath, e);
+        }
+    }
 }
