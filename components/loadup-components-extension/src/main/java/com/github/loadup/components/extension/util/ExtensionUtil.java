@@ -1,12 +1,12 @@
+/* Copyright (C) LoadUp Cloud 2025 */
 package com.github.loadup.components.extension.util;
 
 import com.github.loadup.components.extension.ExtensionRegistry;
+import java.util.Map;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 /**
  * 静态工具类，用于获取扩展点实现

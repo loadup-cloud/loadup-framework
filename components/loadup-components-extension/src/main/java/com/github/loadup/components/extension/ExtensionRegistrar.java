@@ -1,12 +1,10 @@
+/* Copyright (C) LoadUp Cloud 2025 */
 package com.github.loadup.components.extension;
 
 import com.github.loadup.components.extension.annotation.Extension;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 /**
  * 自动注册所有带有 @Extension 注解的 Bean

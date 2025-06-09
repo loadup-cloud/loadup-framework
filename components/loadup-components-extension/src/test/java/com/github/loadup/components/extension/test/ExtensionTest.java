@@ -1,4 +1,7 @@
+/* Copyright (C) LoadUp Cloud 2025 */
 package com.github.loadup.components.extension.test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.github.loadup.components.extension.ExtensionRegistry;
 import com.github.loadup.components.extension.test.service.GreetingService;
@@ -7,12 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest(classes = TestApplication.class)
 public class ExtensionTest {
-
-
 
     @Autowired
     private ExtensionRegistry extensionRegistry;
@@ -40,8 +39,9 @@ public class ExtensionTest {
 
     @Test
     public void testExtensionUtilWithNonExistentBizCode() {
-        assertThrows(IllegalArgumentException.class, () ->
-                ExtensionUtil.getExtension(GreetingService.class, "NoSuchGreeting"));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> ExtensionUtil.getExtension(GreetingService.class, "NoSuchGreeting"));
     }
 
     @Test
@@ -51,7 +51,6 @@ public class ExtensionTest {
 
         assertNotNull(registered);
         assertEquals(GreetingService.class, registered.getClass().getInterfaces()[0]);
-        assertEquals("Default", ((GreetingService)registered).greet());
-
+        assertEquals("Default", ((GreetingService) registered).greet());
     }
 }

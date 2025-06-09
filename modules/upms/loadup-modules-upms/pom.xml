@@ -23,7 +23,7 @@
         <module>loadup-modules-upms-client</module>
         <module>loadup-modules-upms-infrastructure</module>
         <module>loadup-modules-upms-app</module>
-<!--        <module>loadup-modules-upms-test</module>-->
+        <module>loadup-modules-upms-test</module>
     </modules>
     <dependencies>
         <dependency>

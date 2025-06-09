@@ -1,35 +1,31 @@
-# Case Desc: 用例描述填这行
-
-# Arguments: List<Object>
-[
-  !!com.github.loadup.commons.request.query.IdQuery {
-    id: '123'
-  }
-]
-
----
-# Flags: Map<String, Map<String, String>>
-{
-
-}
-
----
-# Result: Object
-null
-
----
-# Message Event: List<Map<String, Object>>
-null
-
----
-# User-defined Params: Map<String, Object>
-{
-  val1: "sampleVal1",
-  val2: "sampleVal2"
-}
-
----
-# Virtual Mocks(Deprecated): List<VirtualMock>
-null
-
- 
+description: xxx
+args:
+  com.github.loadup.commons.request.query.IdQuery:
+    id: "12"
+result:
+  com.github.loadup.commons.result.SingleResponse<com.github.loadup.modules.upms.client.dto.UserDTO>:
+    data:
+      id: '12'
+      nickName: 'test'
+    result:
+      code: SUCCESS
+      message: "Success."
+      status: S
+flags:
+  com.github.loadup.modules.upms.client.dto.UserDTO:
+    id: Y
+    nickName: Y
+    roleList: N
+    positionList: N
+    departList: N
+    englishName: N
+    officialName: N
+  com.github.loadup.commons.result.Result:
+    code: Y
+    status: Y
+    message: N
+exception: null
+#  name: com.github.loadup.components.testify.exception.TestifyException
+#  message: "test exception"
+params:
+  val1: "val1"

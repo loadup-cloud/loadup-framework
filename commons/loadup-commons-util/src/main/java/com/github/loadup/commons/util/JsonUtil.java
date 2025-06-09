@@ -196,6 +196,14 @@ public class JsonUtil {
         return parseObject(jsonString, collectionClass, elementClasses);
     }
 
+    public static Object parseObject(Map<String, String> value, JavaType javaType) {
+        String jsonString = toJSONString(value);
+        try {
+            return objectMapper.readValue(jsonString, javaType);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+    }
     /**
      * 从JSON字符串中获取指定路径下的子节点
      */

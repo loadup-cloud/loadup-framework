@@ -1,6 +1,5 @@
+/* Copyright (C) LoadUp Cloud 2025 */
 package com.github.loadup.components.extension;
-
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

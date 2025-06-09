@@ -1,20 +1,19 @@
+/* Copyright (C) LoadUp Cloud 2025 */
 package com.github.loadup.components.extension.test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.github.loadup.components.extension.ExtensionRegistry;
 import com.github.loadup.components.extension.test.service.GreetingService;
 import com.github.loadup.components.extension.util.ExtensionUtil;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest(classes = TestApplication.class)
 public class ExtensionUtilTest {
-
 
     @Autowired
     private ExtensionRegistry extensionRegistry;
@@ -38,8 +37,9 @@ public class ExtensionUtilTest {
 
     @Test
     void testGetNonExistentExtensionShouldThrowException() {
-        assertThrows(IllegalArgumentException.class, () ->
-                ExtensionUtil.getExtension(GreetingService.class, "NoSuchGreeting"));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> ExtensionUtil.getExtension(GreetingService.class, "NoSuchGreeting"));
     }
 
     @Test

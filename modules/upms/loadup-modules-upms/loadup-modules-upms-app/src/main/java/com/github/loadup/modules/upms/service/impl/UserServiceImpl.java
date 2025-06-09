@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     public SingleResponse<UserDTO> findById(IdQuery query) {
         Optional<UpmsUser> user = userGateway.findById(query.getId());
         if (user.isEmpty()) {
-            return SingleResponse.buildFailure();
+            return SingleResponse.buildFailure(CommonResultCodeEnum.NOT_FOUND);
         }
         UserDTO userDTO = UserDTOConvertor.INSTANCE.toUserDTO(user.get());
         return SingleResponse.of(userDTO);

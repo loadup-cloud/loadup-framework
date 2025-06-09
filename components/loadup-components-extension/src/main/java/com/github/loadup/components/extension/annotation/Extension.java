@@ -1,3 +1,4 @@
+/* Copyright (C) LoadUp Cloud 2025 */
 package com.github.loadup.components.extension.annotation;
 
 import java.lang.annotation.*;
