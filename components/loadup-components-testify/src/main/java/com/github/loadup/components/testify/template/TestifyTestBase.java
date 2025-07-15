@@ -1004,8 +1004,6 @@ public class TestifyTestBase extends AbstractTestNGSpringContextTests {
         testUnitHandler.prepareDepData(null);
         // Hbase数据准备
         //        testUnitHandler.prepareHbaseData();
-        // mock准备
-        //        testUnitHandler.prepareMocks();
         // 执行ccil准备组件
         //        testUnitHandler.excutePreCmdComponent(testTemplate);
         // 执行准备阶段之后的组件

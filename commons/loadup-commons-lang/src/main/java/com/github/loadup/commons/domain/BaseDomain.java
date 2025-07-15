@@ -45,9 +45,9 @@ public abstract class BaseDomain implements Serializable {
     @Serial
     private static final long serialVersionUID = -2885192493194863635L;
 
-    private String tenantId;
-    private LocalDateTime createTime;
-    private LocalDateTime modifiedTime;
+    private String        tenantId;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     @Override
     public String toString() {

@@ -42,10 +42,10 @@ public abstract class BaseDO implements Serializable {
 
     @CreatedDate
     @InsertOnlyProperty
-    private LocalDateTime createdTime;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private LocalDateTime modifiedTime;
+    private LocalDateTime updatedAt;
 
     public abstract String getId();
 

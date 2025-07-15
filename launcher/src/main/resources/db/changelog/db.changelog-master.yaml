@@ -13,12 +13,12 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: created_time
+                  name: created_at
                   type: datetime
                   constraints:
                     nullable: false
               - column:
-                  name: modified_time
+                  name: updated_at
                   type: datetime
                   constraints:
                     nullable: false
@@ -59,12 +59,12 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: created_time
+                  name: created_at
                   type: datetime
                   constraints:
                     nullable: false
               - column:
-                  name: modified_time
+                  name: updated_at
                   type: datetime
                   constraints:
                     nullable: false
@@ -90,12 +90,12 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: created_time
+                  name: created_at
                   type: datetime
                   constraints:
                     nullable: false
               - column:
-                  name: modified_time
+                  name: updated_at
                   type: datetime
                   constraints:
                     nullable: false
@@ -127,12 +127,12 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: created_time
+                  name: created_at
                   type: datetime
                   constraints:
                     nullable: false
               - column:
-                  name: modified_time
+                  name: updated_at
                   type: datetime
                   constraints:
                     nullable: false
@@ -158,12 +158,12 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: created_time
+                  name: created_at
                   type: datetime
                   constraints:
                     nullable: false
               - column:
-                  name: modified_time
+                  name: updated_at
                   type: datetime
                   constraints:
                     nullable: false
@@ -183,12 +183,12 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: created_time
+                  name: created_at
                   type: datetime
                   constraints:
                     nullable: false
               - column:
-                  name: modified_time
+                  name: updated_at
                   type: datetime
                   constraints:
                     nullable: false
@@ -208,12 +208,12 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: created_time
+                  name: created_at
                   type: datetime
                   constraints:
                     nullable: false
               - column:
-                  name: modified_time
+                  name: updated_at
                   type: datetime
                   constraints:
                     nullable: false
@@ -240,8 +240,8 @@ databaseChangeLog:
         - addNotNullConstraint:
             catalogName: loadup-boot
             columnDataType: datetime
-            columnName: created_time
-            constraintName: created_time
+            columnName: created_at
+            constraintName: created_at
             defaultNullValue: current_timestamp
             schemaName: loadup-boot
             tableName: upms_user
@@ -276,12 +276,12 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: created_time
+                  name: created_at
                   type: datetime
                   constraints:
                     nullable: false
               - column:
-                  name: modified_time
+                  name: updated_at
                   type: datetime
                   constraints:
                     nullable: false

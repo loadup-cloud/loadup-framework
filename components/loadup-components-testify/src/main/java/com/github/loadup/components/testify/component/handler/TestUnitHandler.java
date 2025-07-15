@@ -37,6 +37,7 @@ import com.github.loadup.components.testify.runtime.*;
 import com.github.loadup.components.testify.support.TestTemplate;
 import com.github.loadup.components.testify.template.TestifyTestBase;
 import com.github.loadup.components.testify.util.LogUtil;
+import com.github.loadup.components.testify.util.VelocityUtil;
 import com.github.loadup.components.testify.utils.*;
 import com.github.loadup.components.testify.utils.check.ObjectCompareUtil;
 import java.lang.reflect.*;
@@ -714,7 +715,6 @@ public class TestUnitHandler {
                         }
                     }
                 }
-                return;
             } else if (objType.isArray()) {
 
                 Object[] objArray = (Object[]) obj;
@@ -724,7 +724,6 @@ public class TestUnitHandler {
                 for (int i = 0; i < objArray.length; i++) {
                     replaceByFields(objArray[i], varParaMap);
                 }
-                return;
             } else if (obj instanceof Map) {
                 Map<Object, Object> objMap = (Map) obj;
                 if (objMap.size() == 0) {
@@ -746,7 +745,7 @@ public class TestUnitHandler {
                 }
             } else {
 
-                List<Field> fields = new ArrayList<Field>();
+                List<Field> fields = new ArrayList<>();
 
                 for (Class<?> c = objType; c != null; c = c.getSuperclass()) {
                     for (Field field : c.getDeclaredFields()) {
@@ -774,61 +773,53 @@ public class TestUnitHandler {
                 }
             }
         } catch (Exception e) {
-            return;
+            logger.warn("replaceByFields Exception!", e);
         }
     }
 
     public void replaceTableParam(List<VirtualTable> virtualTables, String... groupIds) {
-        //        for (VirtualTable virtualTable : virtualTables) {
-        //            if ((ArrayUtils.isEmpty(groupIds) && StringUtils.isEmpty(virtualTable.getNodeGroup()))
-        //                    || ArrayUtils.contains(groupIds, virtualTable.getNodeGroup())) {
-        //                for (Map<String, Object> row : virtualTable.getTableData()) {
-        //                    for (String key : row.keySet()) {
-        //                        if (String.valueOf(row.get(key)).contains("$")) {
-        //                            row.put(key, VelocityUtil.evaluateString(actsRuntimeContext.getParamMap(),
-        // String.valueOf(row.get
-        //                            (key))));
-        //                        } else if (String.valueOf(row.get(key)).startsWith("@")) {
-        //                            //解析组件中的变量及组件
-        //                            String str = String.valueOf(row.get(key));
-        //                            String callString = str;
-        //                            if (StringUtils.contains(str, "$")) {
-        //                                String query = StringUtils.substringAfter(str, "?");
-        //                                callString = StringUtils.substringBefore(str, "?") + "?";
-        //                                if (StringUtils.isNotBlank(query)) {
-        //                                    String[] pairs = StringUtils.split(query, "&");
-        //                                    for (String pair : pairs) {
-        //                                        if (StringUtils.isBlank(pair)) {
-        //                                            continue;
-        //                                        }
-        //                                        Object value = StringUtils.substringAfter(pair, "=");
-        //                                        replaceByFields(value, actsRuntimeContext.getParamMap());
-        //                                        callString = callString
-        //                                                + StringUtils.substringBefore(pair, "=") + "="
-        //                                                + value + "&";
-        //
-        //                                    }
-        //                                    callString = StringUtils.substring(callString, 0,
-        //                                            callString.length() - 1);
-        //
-        //                                }
-        //
-        //                            }
-        //                            //执行组件化参数
-        //                            //忽略列表的组件名不执行
-        //                            if (!ignoreCallStringList.contains(callString)) {
-        //                                String rs = (String) ActsComponentUtil.run(callString);
-        //
-        //                                logger.info("发现组件调用：" + callString + " 执行结果: " + rs);
-        //
-        //                                row.put(key, rs);
-        //
-        //                            }
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
+        for (VirtualTable virtualTable : virtualTables) {
+            if ((ArrayUtils.isEmpty(groupIds) && StringUtils.isEmpty(virtualTable.getNodeGroup()))
+                    || ArrayUtils.contains(groupIds, virtualTable.getNodeGroup())) {
+                for (Map<String, Object> row : virtualTable.getTableData()) {
+                    for (String key : row.keySet()) {
+                        if (String.valueOf(row.get(key)).contains("$")) {
+                            row.put(key, VelocityUtil.evaluateString(testifyRuntimeContext.getParamMap(), String.valueOf(row.get(key))));
+                        } else if (String.valueOf(row.get(key)).startsWith("@")) {
+                            // 解析组件中的变量及组件
+                            String str = String.valueOf(row.get(key));
+                            String callString = str;
+                            if (StringUtils.contains(str, "$")) {
+                                String query = StringUtils.substringAfter(str, "?");
+                                callString = StringUtils.substringBefore(str, "?") + "?";
+                                if (StringUtils.isNotBlank(query)) {
+                                    String[] pairs = StringUtils.split(query, "&");
+                                    for (String pair : pairs) {
+                                        if (StringUtils.isBlank(pair)) {
+                                            continue;
+                                        }
+                                        Object value = StringUtils.substringAfter(pair, "=");
+                                        replaceByFields(value, testifyRuntimeContext.getParamMap());
+                                        callString =
+                                                callString + StringUtils.substringBefore(pair, "=") + "=" + value + "&";
+                                    }
+                                    callString = StringUtils.substring(callString, 0, callString.length() - 1);
+                                }
+                            }
+                            // 执行组件化参数
+                            // 忽略列表的组件名不执行
+                            if (!ignoreCallStringList.contains(callString)) {
+                                String rs = (String) TestifyComponentUtil.run(callString);
+
+                                logger.info("发现组件调用：" + callString + " 执行结果: " + rs);
+
+                                row.put(key, rs);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -850,11 +841,10 @@ public class TestUnitHandler {
 
     public void replaceAllParam(Object obj, Map<String, Object> varParaMap) {
 
-        List<Object> newObj = new ArrayList<Object>();
+        List<Object> newObj = new ArrayList<>();
         if (obj instanceof List) {
             for (Object o : (List<?>) obj) {
                 String className = o.getClass().getName();
-                // SOFABoot3.x为javax.servlet包，SOFABoot4.x为jakarta.servlet包
                 // 比对类名字符串同时兼容掉
                 if (!className.endsWith("http.HttpServletRequest")
                         && !className.endsWith("http.HttpSession")
@@ -865,7 +855,7 @@ public class TestUnitHandler {
         } else {
             newObj.add(obj);
         }
-        scanList = new ArrayList<Object>();
+        scanList = new ArrayList<>();
         replaceByFields(newObj, varParaMap);
     }
 

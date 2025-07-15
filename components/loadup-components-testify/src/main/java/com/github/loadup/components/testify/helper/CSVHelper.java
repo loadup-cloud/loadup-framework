@@ -40,18 +40,15 @@ import com.github.loadup.components.testify.util.FileUtil;
 import com.google.common.reflect.TypeToken;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
-import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import ognl.OgnlException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import java.io.*;
+import java.lang.reflect.*;
+import java.nio.charset.Charset;
+import java.util.*;
 
 /**
  * CSV辅助工具
@@ -650,33 +647,38 @@ public class CSVHelper {
     }
 
     /**
-     * 写入csv文件
+     * 写入CSV文件，并支持指定编码格式，默认UTF-8
      *
-     * @param file
-     * @param outputValues
+     * @param file         输出文件
+     * @param outputValues 要写入的数据（二维数组）
      */
     public static void writeToCsv(File file, List<String[]> outputValues) {
+        writeToCsv(file, outputValues, "UTF-8");
+    }
 
-        // 初始化写入文件
-        OutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(file);
-        } catch (Exception e) {
-
-            TestifyLogUtil.warn(log, "初始化写入文件【" + file.getName() + "】失败" + e);
-            throw new RuntimeException(e);
+    /**
+     * 写入CSV文件，并支持指定编码格式
+     *
+     * @param file         输出文件
+     * @param outputValues 要写入的数据（二维数组）
+     * @param encoding     编码格式，如 UTF-8、GBK
+     */
+    public static void writeToCsv(File file, List<String[]> outputValues, String encoding) {
+        if (file == null) {
+            throw new TestifyException("输出文件不能为空");
         }
-        // 将生成内容写入CSV文件
-        try {
-            OutputStreamWriter osw = null;
-            osw = new OutputStreamWriter(outputStream);
-            CSVWriter csvWriter = new CSVWriter(osw);
+
+        try (FileOutputStream fos = new FileOutputStream(file);
+             OutputStreamWriter osw = new OutputStreamWriter(fos, Charset.forName(encoding));
+             CSVWriter csvWriter = new CSVWriter(osw)) {
+
             csvWriter.writeAll(outputValues);
-            csvWriter.close();
-            TestifyLogUtil.warn(log, file.getName() + "生成完毕");
+
+            log.info("{} 文件已成功写入", file.getAbsolutePath());
+
         } catch (Exception e) {
-            TestifyLogUtil.warn(log, "通过文件流输出数据失败:" + file.getName() + e);
-            throw new RuntimeException(e);
+            log.error("写入CSV文件 {} 失败: {}", file.getAbsolutePath(), e.getMessage(), e);
+            throw new TestifyException("写入CSV文件失败: " + file.getAbsolutePath(), e);
         }
     }
 
@@ -698,7 +700,6 @@ public class CSVHelper {
      * @param csvPath
      * @return
      */
-    @SuppressWarnings("rawtypes")
     public static List readFromCsv(String csvPath, String encoding) {
         File file = new File(csvPath);
         return readFromCsv(file, encoding);
@@ -711,34 +712,25 @@ public class CSVHelper {
      * @return
      * @throws Exception
      */
-    @SuppressWarnings("rawtypes")
-    public static List readFromCsv(File file) {
+    public static List readFromCsv(File file, String encode){
         if (null == file) {
             throw new TestifyException("文件不能为空");
         }
         if (!file.exists()) {
             throw new TestifyException(file.getAbsolutePath() + "文件不存在");
         }
-        // 初始化读入文件
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(file);
-        } catch (Exception e) {
-            TestifyLogUtil.fail(log, "读入文件【" + file.getName() + "】初始化失败", e);
-        }
+        List tableList;
+        try (InputStream inputStream = new FileInputStream(file);
+             InputStreamReader isr = new InputStreamReader(inputStream, Charset.forName(encode));
+             CSVReader csvReader = new CSVReader(isr)) {
 
-        // 读取文件内容
-        List tableList = null;
-        try {
-            InputStreamReader isr = new InputStreamReader(inputStream);
-            CSVReader csvReader = new CSVReader(isr);
             tableList = csvReader.readAll();
-            csvReader.close();
-            isr.close();
-            inputStream.close();
+
         } catch (Exception e) {
             TestifyLogUtil.fail(log, "通过CSV文件流读入数据失败", e);
+            throw new TestifyException("读取CSV文件失败，路径：" + file.getAbsolutePath(), e);
         }
+
         return tableList;
     }
 
@@ -746,38 +738,11 @@ public class CSVHelper {
      * 基于文件读取csv文件,带编码方式
      *
      * @param file
-     * @param encode 编码方式，如:UTF-8
      * @return
      * @throws Exception
      */
     @SuppressWarnings("rawtypes")
-    public static List readFromCsv(File file, String encode) {
-        if (null == file) {
-            throw new TestifyException("文件不能为空");
-        }
-        if (!file.exists()) {
-            throw new TestifyException(file.getAbsolutePath() + "文件不存在");
-        }
-        // 初始化读入文件
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(file);
-        } catch (Exception e) {
-            TestifyLogUtil.fail(log, "读入文件【" + file.getName() + "】初始化失败", e);
-        }
-
-        // 读取文件内容
-        List tableList = null;
-        try {
-            InputStreamReader isr = new InputStreamReader(inputStream, Charset.forName(encode));
-            CSVReader csvReader = new CSVReader(isr);
-            tableList = csvReader.readAll();
-            csvReader.close();
-            isr.close();
-            inputStream.close();
-        } catch (Exception e) {
-            TestifyLogUtil.fail(log, "通过CSV文件流读入数据失败", e);
-        }
-        return tableList;
+    public static List readFromCsv(File file)  {
+        return readFromCsv(file, "UTF-8");
     }
 }
