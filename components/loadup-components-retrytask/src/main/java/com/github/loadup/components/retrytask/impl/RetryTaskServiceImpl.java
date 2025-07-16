@@ -26,16 +26,17 @@ package com.github.loadup.components.retrytask.impl;
  * #L%
  */
 
-import com.github.loadup.components.retrytask.RetryComponentService;
+import com.github.loadup.commons.util.IdUtils;
+import com.github.loadup.components.retrytask.RetryTaskService;
 import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
-import com.github.loadup.components.retrytask.config.RetryTaskFactory;
-import com.github.loadup.components.retrytask.enums.ScheduleExecuteType;
-import com.github.loadup.components.retrytask.manager.TaskStrategyExecutor;
-import com.github.loadup.components.retrytask.manager.TaskStrategyExecutorFactory;
+import com.github.loadup.components.retrytask.constant.RetryTaskConstants;
 import com.github.loadup.components.retrytask.model.RetryTask;
 import com.github.loadup.components.retrytask.model.RetryTaskRequest;
+import com.github.loadup.components.retrytask.registry.TaskStrategyRegistry;
 import com.github.loadup.components.retrytask.repository.RetryTaskRepository;
+import com.github.loadup.components.retrytask.schedule.RetryTaskExecuter;
 import com.github.loadup.components.retrytask.util.RetryStrategyUtil;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,26 +47,25 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * The implement of Core Service of retry component
  */
 @Slf4j
-@Component("retryComponentService")
-public class RetryComponentServiceImpl implements RetryComponentService {
+@Component("retryTaskService")
+public class RetryTaskServiceImpl implements RetryTaskService {
 
     /**
      * the repository service of retry task
      */
-    @Autowired
+    @Resource
     private RetryTaskRepository retryTaskRepository;
 
     /**
      * the manager of retry strategy
      */
     @Autowired
-    private RetryTaskFactory retryTaskFactory;
+    private TaskStrategyRegistry retryTaskFactory;
 
     /**
      * the factory of transaction templete
@@ -73,11 +73,11 @@ public class RetryComponentServiceImpl implements RetryComponentService {
     @Autowired
     private TransactionTemplate transactionTemplate;
 
-    @Autowired
-    private TaskStrategyExecutorFactory taskStrategyExecutorFactory;
+    @Resource
+    private RetryTaskExecuter retryTaskExecuter;
 
     /**
-     * @see RetryComponentService#register(RetryTaskRequest)
+     * @see RetryTaskService#register(RetryTaskRequest)
      */
     @Override
     public RetryTask register(RetryTaskRequest retryTaskRequest) {
@@ -92,13 +92,13 @@ public class RetryComponentServiceImpl implements RetryComponentService {
         retryTaskRepository.save(retryTask);
 
         // process the task
-        processTask(retryTask, retryTaskRequest.getScheduleExecuteType());
+        processTask(retryTask);
 
         return retryTask;
     }
 
     /**
-     * @see RetryComponentService#delete(java.lang.String, java.lang.String)
+     * @see RetryTaskService#delete(java.lang.String, java.lang.String)
      */
     @Override
     public void delete(String bizId, String bizType) {
@@ -108,7 +108,7 @@ public class RetryComponentServiceImpl implements RetryComponentService {
     }
 
     /**
-     * @see RetryComponentService#update(java.lang.String, java.lang.String)
+     * @see RetryTaskService#update(java.lang.String, java.lang.String)
      */
     @Override
     public void update(final String bizId, final String bizType) {
@@ -116,7 +116,7 @@ public class RetryComponentServiceImpl implements RetryComponentService {
         // check params
         checkParams(bizId, bizType);
 
-        final RetryStrategyConfig retryStrategyConfig = retryTaskFactory.buildRetryStrategyConfig(bizType);
+        final RetryStrategyConfig retryStrategyConfig = retryTaskFactory.getStrategyConfig(bizType);
 
         // execute the transaction
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -152,51 +152,27 @@ public class RetryComponentServiceImpl implements RetryComponentService {
             throw new RuntimeException("parameter illegal,retryTaskRequest=null");
         }
 
-        checkParams(
-                retryTaskRequest.getBizId(), retryTaskRequest.getBizType(), retryTaskRequest.getScheduleExecuteType());
-    }
-
-    /**
-     * check parameter
-     */
-    private void checkParams(String bizId, String bizType, ScheduleExecuteType scheduleExecuteType) {
-
-        if (StringUtils.isBlank(bizId) || StringUtils.isBlank(bizType) || scheduleExecuteType == null) {
-            log.warn(
-                    "register parameter is null. bizId=",
-                    bizId,
-                    ",bizType=",
-                    bizType,
-                    ",scheduleExecuteType=",
-                    scheduleExecuteType);
-            throw new RuntimeException("register parameter is null");
-        }
-
-        if (bizId.length() < 12) {
-            log.warn("In the register process, the length of business id is illegal. bizId=", bizId);
-            throw new RuntimeException("In the register process, the length of business id is illegal");
-        }
+        checkParams(retryTaskRequest.getBizId(), retryTaskRequest.getBizType());
     }
 
     /**
      * construct retry task
      */
     private RetryTask constructRetryTask(RetryTaskRequest retryTaskRequest) {
-        Date now = new Date();
         RetryTask retryTask = new RetryTask();
         RetryStrategyConfig retryStrategyConfig =
-                retryTaskFactory.buildRetryStrategyConfig(retryTaskRequest.getBizType());
-        retryTask.setTaskId(""); // IdUtils.generateId(String.valueOf(retryTaskRequest.getBizId().hashCode() / 100)));
-        retryTask.setBizId(retryTaskRequest.getBizId());
-        retryTask.setBizType(retryTaskRequest.getBizType());
-        retryTask.setExecutedTimes(0);
-        retryTask.setNextExecuteTime(
+                retryTaskFactory.getStrategyConfig(retryTaskRequest.getBizType());
+        retryTask.setId(IdUtils.simpleUUID()); // IdUtils.generateId(String.valueOf(retryTaskRequest.getBizId().hashCode() / 100)));
+        retryTask.setBusinessId(retryTaskRequest.getBizId());
+        retryTask.setBusinessType(retryTaskRequest.getBizType());
+        retryTask.setRetryCount(0);
+        retryTask.setNextRetryTime(
                 LocalDateTime.now().plus(Duration.ofSeconds(retryTaskRequest.getStartExecuteInterval())));
-        retryTask.setMaxExecuteTimes(retryStrategyConfig.getMaxExecuteCount());
-        retryTask.setProcessing(false);
-        retryTask.setBizContext(retryTaskRequest.getBizContext());
+        retryTask.setMaxRetries(retryStrategyConfig.getMaxRetries());
+        retryTask.setIsProcessing(false);
+        retryTask.setPayload(retryTaskRequest.getPayload());
         retryTask.setCreatedTime(LocalDateTime.now());
-        retryTask.setModifiedTime(LocalDateTime.now());
+        retryTask.setUpdatedTime(LocalDateTime.now());
         retryTask.setPriority(retryTaskRequest.getPriority());
 
         return retryTask;
@@ -205,18 +181,17 @@ public class RetryComponentServiceImpl implements RetryComponentService {
     /**
      * process after executing the task
      */
-    private void processTask(RetryTask retryTask, ScheduleExecuteType scheduleExecuteType) {
+    private void processTask(RetryTask retryTask) {
 
-        RetryStrategyConfig retryStrategyConfig = retryTaskFactory.buildRetryStrategyConfig(retryTask.getBizType());
+        RetryStrategyConfig retryStrategyConfig = retryTaskFactory.getStrategyConfig(retryTask.getBusinessType());
 
         // is need execute immediately
         if (!retryStrategyConfig.isExecuteImmediately()) {
             return;
         }
 
-        TaskStrategyExecutor taskStrategyExecutor =
-                taskStrategyExecutorFactory.findTaskStrategyExecutor(scheduleExecuteType);
+        String businessKey = retryTask.getBusinessType() + RetryTaskConstants.INTERVAL_CHAR + retryTask.getBusinessId();
 
-        taskStrategyExecutor.execute(retryTask);
+        retryTaskExecuter.execute(businessKey);
     }
 }

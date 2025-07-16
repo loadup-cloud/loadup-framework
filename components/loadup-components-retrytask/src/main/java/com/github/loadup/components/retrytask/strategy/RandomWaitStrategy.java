@@ -26,18 +26,14 @@ package com.github.loadup.components.retrytask.strategy;
  * #L%
  */
 
-import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
 import com.github.loadup.components.retrytask.enums.RetryStrategyType;
-import com.github.loadup.components.retrytask.model.RetryTask;
+import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.RandomUtils;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.temporal.ChronoUnit;
 
-import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-
-@Component
+@AllArgsConstructor
 public class RandomWaitStrategy implements RetryTaskStrategy {
     /**
      * minimum
@@ -48,15 +44,8 @@ public class RandomWaitStrategy implements RetryTaskStrategy {
      */
     private long maximum = 10;
 
-    public static void main(String[] args) {
-        for (int i = 0; i < 100; i++) {
-
-            System.out.println(RandomUtils.nextLong() % 10);
-        }
-    }
-
     @Override
-    public RetryStrategyType getStrategyType() {
+    public String getStrategyType() {
         return RetryStrategyType.RANDOM_WAIT_STRATEGY;
     }
 
@@ -64,18 +53,9 @@ public class RandomWaitStrategy implements RetryTaskStrategy {
      * 随机时长等待策略，可以设置一个随机等待的最大时长，也可以设置一个随机等待的时长区间。
      */
     @Override
-    public LocalDateTime calculateNextExecuteTime(RetryTask retryTask, RetryStrategyConfig retryStrategyConfig) {
-        String[] intervals = StringUtils.split(retryStrategyConfig.getStrategyValue(), ",");
-        if (intervals.length == 1) {
-            maximum = Long.parseLong(intervals[0]);
-        } else if (intervals.length == 2) {
-            minimum = Long.parseLong(intervals[0]);
-            maximum = Long.parseLong(intervals[1]);
-        }
-        long result = Math.abs(RandomUtils.nextLong()) % (maximum - minimum);
-        return addTime(
-                retryTask.getNextExecuteTime(),
-                Math.toIntExact(result + minimum),
-                retryStrategyConfig.getStrategyValueUnit());
+    public LocalDateTime calculateNextRetryTime(int retryCount) {
+        long delay = Math.abs(RandomUtils.secureStrong().randomLong(minimum, maximum));
+        return LocalDateTime.now().plus(delay, ChronoUnit.MILLIS);
+
     }
 }

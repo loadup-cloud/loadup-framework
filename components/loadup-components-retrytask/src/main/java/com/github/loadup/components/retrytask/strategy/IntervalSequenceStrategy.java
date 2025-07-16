@@ -1,4 +1,4 @@
-package com.github.loadup.components.retrytask;
+package com.github.loadup.components.retrytask.strategy;
 
 /*-
  * #%L
@@ -26,26 +26,29 @@ package com.github.loadup.components.retrytask;
  * #L%
  */
 
-import com.github.loadup.components.retrytask.model.RetryTask;
-import com.github.loadup.components.retrytask.model.RetryTaskRequest;
+import com.github.loadup.components.retrytask.enums.RetryStrategyType;
+import lombok.AllArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 /**
- * Core Service of retry component
+ * @author Lise
  */
-public interface RetryComponentService {
+@AllArgsConstructor
+public class IntervalSequenceStrategy implements RetryTaskStrategy {
+    private long[] intervals;
 
-    /**
-     * The register of retry component
-     */
-    RetryTask register(RetryTaskRequest retryTaskRequest);
+    @Override
+    public String getStrategyType() {
+        return RetryStrategyType.INTERVAL_SEQUENCE_STRATEGY;
+    }
 
-    /**
-     * delete the retry task
-     */
-    void delete(String bizId, String bizType);
+    @Override
+    public LocalDateTime calculateNextRetryTime(int retryCount) {
 
-    /**
-     * update the retry task, increase the retry count, modify the next execute time
-     */
-    void update(String bizId, String bizType);
+        int index = Math.min(retryCount, intervals.length - 1);
+        long delay = intervals[index];
+        return LocalDateTime.now().plus(delay, ChronoUnit.MILLIS);
+    }
 }

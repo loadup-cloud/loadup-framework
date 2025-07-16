@@ -38,12 +38,4 @@ public interface TaskExecutor {
      */
     void execute(RetryTask retryTask);
 
-    /**
-     * execute the task without try catch
-     * we suggest you call this method within a transaction, try to catch exception outside of transcation, and then you can update the
-     * retry stategy
-     *
-     * @throws Exception exception
-     */
-    void plainExecute(RetryTask retryTask) throws Exception;
 }

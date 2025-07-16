@@ -26,8 +26,12 @@ package com.github.loadup.components.retrytask.config;
  * #L%
  */
 
+import com.github.loadup.components.retrytask.properties.RetryTaskProperties;
+import com.github.loadup.components.retrytask.registry.TaskStrategyRegistry;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -36,6 +40,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @AutoConfiguration
 @EnableAsync
 @EnableScheduling
+@EnableConfigurationProperties(RetryTaskProperties.class)
 public class RetryTaskAutoConfiguration {
     @Value("${retrytask.loader.thread.core_pool_size:5}")
     private int loaderCorePoolSize;
@@ -80,4 +85,17 @@ public class RetryTaskAutoConfiguration {
         threadPoolTaskExecutor.setQueueCapacity(executorQueueCapacity);
         return threadPoolTaskExecutor;
     }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RetryTaskProperties retryTaskProperties() {
+        return new RetryTaskProperties();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TaskStrategyRegistry taskStrategyRegistry() {
+        return new TaskStrategyRegistry();
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.github.loadup.components.retrytask.manager;
+package com.github.loadup.components.retrytask;
 
 /*-
  * #%L
@@ -26,18 +26,19 @@ package com.github.loadup.components.retrytask.manager;
  * #L%
  */
 
-import com.github.loadup.components.retrytask.enums.ScheduleExecuteType;
-import com.github.loadup.components.retrytask.model.RetryTask;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-/**
- * the executor of task strategy
- */
-public interface TaskStrategyExecutor {
+@SpringBootApplication
+@EnableAsync
+@EnableScheduling
+@ComponentScan(basePackages = {"com.github.loadup"})
+public class Application {
 
-    ScheduleExecuteType getExecuteType();
-
-    /**
-     * execute the task
-     */
-    void execute(RetryTask retryTask);
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 }

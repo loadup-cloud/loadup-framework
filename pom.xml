@@ -28,6 +28,7 @@
         <module>components/loadup-components-gateway</module>
         <module>components/loadup-components-testify</module>
         <module>components/loadup-components-extension</module>
+        <module>components/loadup-components-retrytask</module>
         <!--    <module>components/gateway/loadup-components-gateway-adaptor</module>-->
         <!--    <module>components/gateway/loadup-components-gateway-client</module>-->
         <!--    <module>components/gateway/loadup-components-gateway-domain</module>-->

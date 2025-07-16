@@ -1,4 +1,4 @@
-package com.github.loadup.components.retrytask.config;
+package com.github.loadup.components.retrytask.handler;
 
 /*-
  * #%L
@@ -26,30 +26,22 @@ package com.github.loadup.components.retrytask.config;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.springframework.stereotype.Component;
+import com.github.loadup.components.retrytask.model.RetryTask;
+import com.github.loadup.components.retrytask.model.RetryTaskExecuteResult;
 
 /**
- * @author Lise
+ * retry task callback
+ * the user must implement this interface
  */
-@ConfigurationProperties(prefix = "retrytask")
-@Getter
-@Setter
-@Component
-public class RetryTaskConfigProperties {
+public interface RetryTaskExecutorHandler {
+
     /**
-     * the prefix of table name
+     * fetch bizType
      */
-    private String tablePrefix = "";
+    String getTaskType();
 
-    private String dbType = "MYSQL";
-
-    @NestedConfigurationProperty
-    private List<RetryStrategyConfig> taskList = new ArrayList<>();
+    /**
+     * 重试任务执行回调方法
+     */
+    RetryTaskExecuteResult execute(RetryTask retryTask);
 }

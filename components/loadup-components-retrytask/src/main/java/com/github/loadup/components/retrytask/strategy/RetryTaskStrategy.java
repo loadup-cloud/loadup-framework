@@ -26,33 +26,10 @@ package com.github.loadup.components.retrytask.strategy;
  * #L%
  */
 
-import com.github.loadup.commons.enums.TimeUnitEnum;
-import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
-import com.github.loadup.components.retrytask.enums.RetryStrategyType;
-import com.github.loadup.components.retrytask.model.RetryTask;
-import org.apache.commons.lang3.StringUtils;
-
 import java.time.LocalDateTime;
 
 public interface RetryTaskStrategy {
-    RetryStrategyType getStrategyType();
+    String getStrategyType();
 
-    LocalDateTime calculateNextExecuteTime(RetryTask retryTask, RetryStrategyConfig retryStrategyConfig);
-
-    default LocalDateTime addTime(LocalDateTime date, int interval, String unit) {
-        if (StringUtils.equals(unit, TimeUnitEnum.SECOND.getCode())) {
-            return date.plusSeconds(interval);
-        } else if (StringUtils.equals(unit, TimeUnitEnum.MINUTE.getCode())) {
-            return date.plusMinutes(interval);
-        } else if (StringUtils.equals(unit, TimeUnitEnum.HOUR.getCode())) {
-            return date.plusHours(interval);
-        } else if (StringUtils.equals(unit, TimeUnitEnum.DAY.getCode())) {
-            return date.plusDays(interval);
-        } else if (StringUtils.equals(unit, TimeUnitEnum.MONTH.getCode())) {
-            return date.plusMonths(interval);
-        } else if (StringUtils.equals(unit, TimeUnitEnum.YEAR.getCode())) {
-            return date.plusYears(interval);
-        }
-        return date;
-    }
+    LocalDateTime calculateNextRetryTime(int retryCount);
 }

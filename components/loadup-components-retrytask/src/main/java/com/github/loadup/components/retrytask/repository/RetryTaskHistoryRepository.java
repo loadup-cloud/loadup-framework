@@ -1,4 +1,4 @@
-package com.github.loadup.components.retrytask.enums;
+package com.github.loadup.components.retrytask.repository;
 
 /*-
  * #%L
@@ -26,40 +26,14 @@ package com.github.loadup.components.retrytask.enums;
  * #L%
  */
 
-import com.github.loadup.commons.enums.IEnum;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import com.github.loadup.components.retrytask.model.RetryTaskHistory;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 /**
- * The schedule executation strategy
+ * Repository of retry task
  */
-@Getter
-@AllArgsConstructor
-public enum ScheduleExecuteType implements IEnum {
+@Repository
+public interface RetryTaskHistoryRepository extends CrudRepository<RetryTaskHistory, String> {
 
-    /**
-     * It does not execute when register until the schedule call
-     */
-    DEFAULT("DEFAULT", "It does not execute when register until the schedule call"),
-
-    /**
-     * It execute immediatelly when the transaction is commited
-     */
-    SYNC("SYNC", "It execute immediatelly synchronized when the transaction is commited"),
-
-    /**
-     * It execute immediatelly asynchronized when the transaction is commited
-     */
-    ASYNC("ASYNC", "It execute immediatelly asynchronized when the transaction is commited"),
-    ;
-
-    /**
-     * code
-     */
-    private String code;
-
-    /**
-     * description
-     */
-    private String description;
 }

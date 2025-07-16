@@ -28,55 +28,52 @@ package com.github.loadup.components.retrytask.util;
 
 import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
 import com.github.loadup.components.retrytask.model.RetryTask;
+import com.github.loadup.components.retrytask.registry.TaskStrategyRegistry;
 import com.github.loadup.components.retrytask.strategy.RetryTaskStrategy;
-import com.github.loadup.components.retrytask.strategy.RetryTaskStrategyFactory;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-
-import org.springframework.stereotype.Component;
 
 /**
  * 重试策略工具类
  */
 @Component
 public class RetryStrategyUtil {
-    /**
-     * 分隔符
-     */
-    public static final char SEPARATOR = ',';
 
-    private static RetryStrategyUtil instance;
-    //    @Resource
-    private RetryTaskStrategyFactory retryTaskStrategyFactory;
+    private static RetryStrategyUtil    instance;
+    @Resource
+    private        TaskStrategyRegistry taskStrategyRegistry;
 
     /**
      * 根据重试策略更新重试任务
      */
     public static void updateRetryTaskByStrategy(RetryTask retryTask, RetryStrategyConfig retryStrategyConfig) {
         RetryTaskStrategy retryTaskStrategy =
-                instance.retryTaskStrategyFactory.findRetryTaskStrategy(retryStrategyConfig.getStrategyType());
-        int executedTimes = retryTask.getExecutedTimes();
-        retryTask.setExecutedTimes(executedTimes + 1);
-        //        Date nextExecuteTime = retryTaskStrategy.calculateNextExecuteTime(retryTask, retryStrategyConfig);
-        //        retryTask.setNextExecuteTime(nextExecuteTime);
-        retryTask.setModifiedTime(LocalDateTime.now());
-        retryTask.setProcessing(false);
+                instance.taskStrategyRegistry.getTaskStrategy(retryStrategyConfig.getStrategyType());
+        int executedTimes = retryTask.getRetryCount();
+        retryTask.setRetryCount(executedTimes + 1);
+        LocalDateTime nextExecuteTime = retryTaskStrategy.calculateNextRetryTime(executedTimes);
+        retryTask.setReachedMaxRetries(isReachMaxExecuteTimes(executedTimes, retryStrategyConfig.getMaxRetries()));
+        retryTask.setNextRetryTime(nextExecuteTime);
+        retryTask.setUpdatedTime(LocalDateTime.now());
+        retryTask.setIsProcessing(false);
     }
 
     /**
      * 判断重试次数是否达到上限
      */
     private static boolean isReachMaxExecuteTimes(int executedTimes, int maxExecuteTimes) {
-
         if (maxExecuteTimes < 0) {
             return false;
         }
         return (executedTimes >= maxExecuteTimes);
     }
 
-    //    @PostConstruct
+    @PostConstruct
     public void init() {
         instance = this;
+        instance.taskStrategyRegistry = this.taskStrategyRegistry;
     }
 }

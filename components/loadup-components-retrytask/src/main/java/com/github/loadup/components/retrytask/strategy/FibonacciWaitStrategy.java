@@ -26,30 +26,28 @@ package com.github.loadup.components.retrytask.strategy;
  * #L%
  */
 
-import com.github.loadup.commons.core.StringPool;
-import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
 import com.github.loadup.components.retrytask.enums.RetryStrategyType;
-import com.github.loadup.components.retrytask.model.RetryTask;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.temporal.ChronoUnit;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-
-@Component
 public class FibonacciWaitStrategy implements RetryTaskStrategy {
     /**
      * 1 unit 作为指数
      */
-    private long multiplier = 1;
+    private long initialInterval = 1;
     /**
      * 最大重试到 50 unit
      */
-    private long maximumWait = 50;
+    private long maxInterval     = 50;
+
+    public FibonacciWaitStrategy(long initialInterval, long maxInterval) {
+        this.initialInterval = initialInterval;
+        this.maxInterval = maxInterval;
+    }
 
     @Override
-    public RetryStrategyType getStrategyType() {
+    public String getStrategyType() {
         return RetryStrategyType.FIBONACCI_WAIT_STRATEGY;
     }
 
@@ -57,24 +55,18 @@ public class FibonacciWaitStrategy implements RetryTaskStrategy {
      * 创建一个永久重试的重试器，每次重试失败时以斐波那契数列来计算等待时间，直到最多5分钟；5分钟后，每隔5分钟重试一次；
      * <p>
      * 第一次失败后，依次等待时长：1*1;1*1；2*1；3*1；5*1；...
-     * strategyValue 配置为multiplier，maximumWait 不填或填错则使用默认值
+     * strategyValue 配置为multiplier，maxInterval 不填或填错则使用默认值
      */
     @Override
-    public LocalDateTime calculateNextExecuteTime(RetryTask retryTask, RetryStrategyConfig retryStrategyConfig) {
-        String[] intervals = StringUtils.split(retryStrategyConfig.getStrategyValue(), StringPool.COMMA, 2);
-        if (intervals.length == 2) {
-            multiplier = Long.parseLong(intervals[0]);
-            maximumWait = Long.parseLong(intervals[1]);
-        }
-        int executedTimes = retryTask.getExecutedTimes();
-        long fib = fib(executedTimes);
-        long result = multiplier * fib;
+    public LocalDateTime calculateNextRetryTime(int retryCount) {
 
-        if (result > maximumWait || result < 0L) {
-            result = maximumWait;
+        long fib = fib(retryCount);
+        long delay = initialInterval * fib;
+
+        if (delay > maxInterval || delay < 0L) {
+            delay = maxInterval;
         }
-        return addTime(
-                retryTask.getNextExecuteTime(), Math.toIntExact(result), retryStrategyConfig.getStrategyValueUnit());
+        return LocalDateTime.now().plus(delay, ChronoUnit.MILLIS);
     }
 
     private long fib(long n) {

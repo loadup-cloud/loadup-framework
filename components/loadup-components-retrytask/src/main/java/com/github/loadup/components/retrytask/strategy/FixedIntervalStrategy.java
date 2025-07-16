@@ -1,4 +1,4 @@
-package com.github.loadup.components.retrytask.manager;
+package com.github.loadup.components.retrytask.strategy;
 
 /*-
  * #%L
@@ -26,32 +26,28 @@ package com.github.loadup.components.retrytask.manager;
  * #L%
  */
 
-import com.github.loadup.components.retrytask.enums.ScheduleExecuteType;
+import com.github.loadup.components.retrytask.enums.RetryStrategyType;
 
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.stereotype.Component;
+public class FixedIntervalStrategy implements RetryTaskStrategy {
+    private final long intervalMillis;
 
-/**
- * the factory of task executer
- */
-@Component
-@Getter
-@Setter
-public class TaskStrategyExecutorFactory {
+    public FixedIntervalStrategy(long intervalMillis) {
+        this.intervalMillis = intervalMillis;
+    }
 
-    /**
-     * the factory of task executer .key为ScheduleExecuteType.getCode()
-     */
-    private Map<String, TaskStrategyExecutor> taskStrategyExecutors;
+    @Override
+    public String getStrategyType() {
+        return RetryStrategyType.FIXED_WAIT_STRATEGY;
+    }
 
     /**
-     * obtain the task strategy executor by type
+     * 固定时长等待策略，失败后，将等待固定的时长进行重试；
      */
-    public TaskStrategyExecutor findTaskStrategyExecutor(ScheduleExecuteType scheduleExecuteType) {
-
-        return taskStrategyExecutors.get(scheduleExecuteType.getCode());
+    @Override
+    public LocalDateTime calculateNextRetryTime(int retryCount) {
+        return LocalDateTime.now().plus(intervalMillis, ChronoUnit.MILLIS);
     }
 }

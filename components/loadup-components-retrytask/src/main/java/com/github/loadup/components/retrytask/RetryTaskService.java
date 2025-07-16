@@ -1,4 +1,4 @@
-package com.github.loadup.components.retrytask.enums;
+package com.github.loadup.components.retrytask;
 
 /*-
  * #%L
@@ -26,30 +26,26 @@ package com.github.loadup.components.retrytask.enums;
  * #L%
  */
 
-import com.github.loadup.commons.enums.IEnum;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import com.github.loadup.components.retrytask.model.RetryTask;
+import com.github.loadup.components.retrytask.model.RetryTaskRequest;
 
 /**
- * The type of database
+ * Core Service of retry component
  */
-@Getter
-@AllArgsConstructor
-public enum DbType implements IEnum {
+public interface RetryTaskService {
 
     /**
-     * mysql
+     * The register of retry component
      */
-    MYSQL("MYSQL", "Mysql"),
-    ;
+    RetryTask register(RetryTaskRequest retryTaskRequest);
 
     /**
-     * code
+     * delete the retry task
      */
-    private String code;
+    void delete(String bizId, String bizType);
 
     /**
-     * description
+     * update the retry task, increase the retry count, modify the next execute time
      */
-    private String description;
+    void update(String bizId, String bizType);
 }

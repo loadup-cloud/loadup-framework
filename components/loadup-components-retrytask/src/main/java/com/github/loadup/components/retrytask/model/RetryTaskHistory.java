@@ -27,48 +27,89 @@ package com.github.loadup.components.retrytask.model;
  */
 
 import com.github.loadup.commons.dto.DTO;
-import com.github.loadup.commons.util.ToStringUtils;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.io.Serial;
+import java.time.LocalDateTime;
 
 /**
- * requet of retry task
+ * the domain model of retry task
  */
 @Getter
 @Setter
-public class RetryTaskRequest extends DTO {
+@Table("retry_task_history")
+public class RetryTaskHistory extends DTO {
+
+    @Serial
+    private static final long serialVersionUID = -1;
 
     /**
-     * business id，used as sharding index
+     * task serial id
      */
-    private String bizId;
+    @Id
+    private String id;
+
+    /**
+     * business id, used as sharding index
+     */
+    private String businessId;
 
     /**
      * business type, user can define themselves
      */
-    private String bizType;
+    private String businessType;
 
     /**
-     * the execute strategy of retry task
+     * the executed times
      */
+    private Integer retryCount;
 
     /**
-     * the interval between The first time to execute and now, the unit is seconds
+     * the time of next execution
      */
-    private int startExecuteInterval = 0;
+    private LocalDateTime nextRetryTime;
 
     /**
-     * business context, which is stored with json format
+     * the maximum of execute times
      */
-    private String payload;
+    private Integer maxRetries;
+
+    /**
+     * the flag of processing
+     */
+    private Boolean isProcessing;
+
+    /**
+     * reach to max count or not
+     */
+    private Boolean reachedMaxRetries;
+
+    /**
+     * business context
+     */
+    private String contextData;
+
+    /**
+     * create time
+     */
+    private LocalDateTime createdTime;
+
+    /**
+     * last modified time
+     */
+    private LocalDateTime updatedTime;
 
     /**
      * priority
      */
     private String priority;
 
-    @Override
-    public String toString() {
-        return ToStringUtils.reflectionToString(this);
-    }
+    public String traceId;
+    public String source;
+
+    private String        failureCallbackUrl;
+    private LocalDateTime finishedTime;
 }

@@ -26,22 +26,17 @@ package com.github.loadup.components.retrytask.enums;
  * #L%
  */
 
-import com.github.loadup.commons.enums.IEnum;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 /**
  * The type of retry strategy
  */
-@Getter
-@AllArgsConstructor
-public enum RetryStrategyType implements IEnum {
+public interface RetryStrategyType {
 
     /**
      * User can define interval
      * https://www.jianshu.com/p/a289dde63043
      */
-    INTERVAL_SEQUENCE("INTERVAL_SEQUENCE", "User can define interval"),
+    String INTERVAL_SEQUENCE_STRATEGY = "INTERVAL_SEQUENCE";
+
     /**
      * ExponentialWaitStrategy
      * 指数等待策略
@@ -49,39 +44,32 @@ public enum RetryStrategyType implements IEnum {
      * http://en.wikipedia.org/wiki/Exponential_backoff
      * ExponentialWaitStrategy
      */
-    EXPONENTIAL_WAIT_STRATEGY("EXPONENTIAL_WAIT_STRATEGY", "User can define interval"),
+    String EXPONENTIAL_WAIT_STRATEGY = "EXPONENTIAL_WAIT_STRATEGY";
+
     /**
      * FibonacciWaitStrategy
      * 斐波那契等待策略
      * 第一次失败后，依次等待时长：1*100;1*100；2*100；3*100；5*100；...
      */
-    FIBONACCI_WAIT_STRATEGY("FIBONACCI_WAIT_STRATEGY", "User can define interval"),
+    String FIBONACCI_WAIT_STRATEGY = "FIBONACCI_WAIT_STRATEGY";
+
     /**
      * FixedWaitStrategy
      * 固定时长等待策略
      */
-    FIXED_WAIT_STRATEGY("FIXED_WAIT_STRATEGY", "User can define interval"),
+    String FIXED_WAIT_STRATEGY = "FIXED_WAIT_STRATEGY";
 
     /**
      * RandomWaitStrategy
      * 随机时长等待策略
      */
-    RANDOM_WAIT_STRATEGY("RANDOM_WAIT_STRATEGY", "User can define interval"),
+    String RANDOM_WAIT_STRATEGY = "RANDOM_WAIT_STRATEGY";
+
     /**
      * IncrementingWaitStrategy
      * 递增等待策略
-     * 第一次失败后，将依次等待1s；6s(1+5)；11(1+5+5)s；16(1+5+5+5)s；...
+     * 第一次失败后，将依次等待1s；6s (1+5)；11(1+5+5)s；16(1+5+5+5)s；...
      */
-    INCREMENTING_WAIT_STRATEGY("INCREMENTING_WAIT_STRATEGY", "User can define interval"),
-    ;
+    String INCREMENTING_WAIT_STRATEGY = "INCREMENTING_WAIT_STRATEGY";
 
-    /**
-     * code
-     */
-    private String code;
-
-    /**
-     * description
-     */
-    private String description;
 }

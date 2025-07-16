@@ -26,11 +26,10 @@ package com.github.loadup.components.retrytask.model;
  * #L%
  */
 
-import com.github.loadup.commons.base.DTO;
+import com.github.loadup.commons.dto.DTO;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.io.Serial;
@@ -45,47 +44,53 @@ import java.time.LocalDateTime;
 public class RetryTask extends DTO {
 
     @Serial
-    private static final long serialVersionUID = -1317061799686036458L;
+    private static final long serialVersionUID = -1;
+
     /**
      * task serial id
      */
     @Id
-    private String taskId;
+    private String id;
 
     /**
      * business id, used as sharding index
      */
-    private String bizId;
+    private String businessId;
 
     /**
      * business type, user can define themselves
      */
-    private String bizType;
+    private String businessType;
 
     /**
      * the executed times
      */
-    private Integer executedTimes;
+    private Integer retryCount;
 
     /**
      * the time of next execution
      */
-    private LocalDateTime nextExecuteTime;
+    private LocalDateTime nextRetryTime;
 
     /**
      * the maximum of execute times
      */
-    private Integer maxExecuteTimes;
+    private Integer maxRetries;
 
     /**
      * the flag of processing
      */
-    private Boolean processing;
+    private Boolean isProcessing;
+
+    /**
+     * reach to max count or not
+     */
+    private Boolean reachedMaxRetries;
 
     /**
      * business context
      */
-    private String bizContext;
+    private String payload;
 
     /**
      * create time
@@ -95,15 +100,15 @@ public class RetryTask extends DTO {
     /**
      * last modified time
      */
-    private LocalDateTime modifiedTime;
+    private LocalDateTime updatedTime;
 
     /**
      * priority
      */
     private String priority;
 
-    /**
-     * suspended
-     */
-    private Boolean suspended;
+    public String traceId;
+    public String source;
+
+    private String failureCallbackUrl;
 }

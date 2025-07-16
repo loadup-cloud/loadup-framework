@@ -26,9 +26,8 @@ package com.github.loadup.components.retrytask.model;
  * #L%
  */
 
-// import com.github.loadup.commons.base.DTO;
 
-import com.github.loadup.commons.base.DTO;
+import com.github.loadup.commons.dto.DTO;
 import lombok.Getter;
 import lombok.Setter;
 

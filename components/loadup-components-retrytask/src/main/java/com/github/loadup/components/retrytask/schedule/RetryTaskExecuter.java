@@ -27,10 +27,11 @@ package com.github.loadup.components.retrytask.schedule;
  */
 
 import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
-import com.github.loadup.components.retrytask.config.RetryTaskFactory;
 import com.github.loadup.components.retrytask.constant.RetryTaskConstants;
+import com.github.loadup.components.retrytask.log.RetryTaskDigestLogger;
 import com.github.loadup.components.retrytask.manager.RetryTaskExecutor;
 import com.github.loadup.components.retrytask.model.RetryTask;
+import com.github.loadup.components.retrytask.registry.*;
 import com.github.loadup.components.retrytask.repository.RetryTaskRepository;
 import com.github.loadup.components.retrytask.util.RetryStrategyUtil;
 
@@ -58,7 +59,7 @@ public class RetryTaskExecuter {
      * the manager of retry strategy
      */
     @Autowired
-    private RetryTaskFactory retryTaskFactory;
+    private TaskStrategyRegistry retryTaskFactory;
 
     /**
      * the executor of retry task
@@ -66,6 +67,13 @@ public class RetryTaskExecuter {
     @Autowired
     private RetryTaskExecutor retryTaskExecutor;
 
+    @Autowired
+    private TaskHandlerRegistry taskHandlerRegistry;
+
+    @Autowired
+    private FailureNotifierRegistry failureNotifierRegistry;
+    @Autowired
+    private RetryTaskDigestLogger   digestLogger;
     /**
      * execute
      */
@@ -97,7 +105,7 @@ public class RetryTaskExecuter {
                 return null;
             }
 
-            retryTaskExecutor.plainExecute(retryTask);
+            retryTaskExecutor.execute(retryTask);
 
             // if process success, then return null, out layer will do postProcess by check whether retryTask is null or
             // not
@@ -119,7 +127,7 @@ public class RetryTaskExecuter {
             try {
                 // retry next time
                 RetryStrategyConfig retryStrategyConfig =
-                        retryTaskFactory.buildRetryStrategyConfig(retryTaskNeedUpdate.getBizType());
+                        retryTaskFactory.getStrategyConfig(retryTaskNeedUpdate.getBusinessType());
                 RetryStrategyUtil.updateRetryTaskByStrategy(retryTaskNeedUpdate, retryStrategyConfig);
                 retryTaskRepository.save(retryTaskNeedUpdate);
             } catch (Exception e) {

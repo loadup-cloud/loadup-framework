@@ -26,32 +26,40 @@ package com.github.loadup.components.retrytask.strategy;
  * #L%
  */
 
-import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
 import com.github.loadup.components.retrytask.enums.RetryStrategyType;
-import com.github.loadup.components.retrytask.model.RetryTask;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
-/**
- * @author Lise
- */
-@Component
-public class SequenceStrategy implements RetryTaskStrategy {
-    @Override
-    public RetryStrategyType getStrategyType() {
-        return RetryStrategyType.INTERVAL_SEQUENCE;
+public class ExponentialBackoffStrategy implements RetryTaskStrategy {
+    /**
+     * 1 unit 作为指数
+     */
+    private long initialInterval = 1;
+    /**
+     * 最大重试到 50 unit
+     */
+    private long maxInterval     = 50;
+
+    public ExponentialBackoffStrategy(long initialMillis, long maxMillis) {
+        this.initialInterval = initialInterval;
+        this.maxInterval = maxInterval;
     }
 
     @Override
-    public LocalDateTime calculateNextExecuteTime(RetryTask retryTask, RetryStrategyConfig retryStrategyConfig) {
+    public String getStrategyType() {
+        return RetryStrategyType.EXPONENTIAL_WAIT_STRATEGY;
+    }
 
-        String[] intervals = StringUtils.split(retryStrategyConfig.getStrategyValue(), ",");
-        int executedTimes = retryTask.getExecutedTimes();
-
-        int intervalsIdx = (executedTimes + 1) >= intervals.length ? intervals.length - 1 : executedTimes;
-        int nextInterval = Integer.parseInt(intervals[intervalsIdx]);
-        return addTime(retryTask.getNextExecuteTime(), nextInterval, retryStrategyConfig.getStrategyValueUnit());
+    /**
+     * 创建一个永久重试的重试器，每次重试失败时以递增的指数时间等待，直到最多5分钟。
+     * 5分钟后，每隔5分钟重试一次。
+     * 第一次失败后，依次等待时长：2^1 * 100;2^2 * 100；2^3 * 100;...
+     * strategyValue 配置为multiplier，maximumWait 不填或填错则使用默认值
+     */
+    @Override
+    public LocalDateTime calculateNextRetryTime(int retryCount) {
+        long delay = (long) Math.min(initialInterval * Math.pow(2, retryCount), maxInterval);
+        return LocalDateTime.now().plus(delay, ChronoUnit.MILLIS);
     }
 }

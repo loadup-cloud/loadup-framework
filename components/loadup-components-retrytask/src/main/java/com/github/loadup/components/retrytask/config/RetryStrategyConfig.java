@@ -26,20 +26,18 @@ package com.github.loadup.components.retrytask.config;
  * #L%
  */
 
-import com.github.loadup.commons.enums.TimeUnitEnum;
-import com.github.loadup.components.retrytask.constant.RetryTaskConstants;
-import com.github.loadup.components.retrytask.enums.RetryStrategyType;
-import com.github.loadup.components.retrytask.spi.RetryTaskExecutorSpi;
+import com.github.loadup.components.retrytask.annotation.RetryTask;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Objects;
 
 /**
  * The config of retry task strategy
  */
 @Getter
 @Setter
-@Component
 public class RetryStrategyConfig {
 
     /**
@@ -47,19 +45,19 @@ public class RetryStrategyConfig {
      * <p>
      * DEFAULT(in default)
      */
-    private String bizType = RetryTaskConstants.DEFAULT_BIZ_TYPE;
+    private String businessType;
 
     /**
      * the max retry task sum in every schedule. If user define more than one retry strategy , the sum of loading task in shedule is the
      * minimum one
      */
-    private int maxLoadNum = 1000;
+    private int maxLoadNum;
 
     /**
      * the type of retry strategy
      * INTERVAL_SEQUENCE(in default)
      */
-    private String strategyType = RetryStrategyType.INTERVAL_SEQUENCE.getCode();
+    private String strategyType;
 
     /**
      * the value of retry strategy
@@ -67,27 +65,27 @@ public class RetryStrategyConfig {
      * 1,1,2,5,9(in default).The unit is by minute, For example:"1,1,2,5,9"，
      * the interval between every retry task is the last digital of the retry strategy value
      */
-    private String strategyValue = "1,1,2,5,9";
+    private String strategyValue;
 
     /**
      * the value unit of retry strategy
      * S(SECOND),I(MINUTE),H(HOUR),D(DAY)
      * default is MINUTE
      */
-    private String strategyValueUnit = TimeUnitEnum.MINUTE.getCode();
+    private String intervalUnit;
 
     /**
      * the maximum of the sum of execution
      * -1 is infinite
      */
-    private int maxExecuteCount = -1;
+    private int maxRetries;
 
     /**
-     * extreme retryTime, used to load task when task.processingFlag = T, the unit is minute </br>
+     * extreme retryTime, used to load task when task.processingFlag ;
      * for example: when RetryTaskExecutor.beforeExecute update processingFlag = 'T', lately update processing = 'F' failed,
      * then the task.processing will be 'T' in DB. some system want to retry quickly, so we provided this params.
      */
-    private int extremeRetryTime = 1;
+    private int extremeRetryTime;
 
     /**
      * status, true is open. false is closed
@@ -97,17 +95,53 @@ public class RetryStrategyConfig {
     /**
      * is execute immediately
      */
-    private boolean isExecuteImmediately = true;
+    private boolean isExecuteImmediately;
 
     /**
      * is ignore priority
      */
-    private boolean isIgnorePriority = true;
+    private boolean isIgnorePriority;
 
     /**
      * 这个表示单次任务执行时间限制（如果单次任务执行超时，则终止执行当前任务）；
      */
     private String attemptTimeLimiter;
 
-    private RetryTaskExecutorSpi executor;
+    private String threadPool;
+
+    public static RetryStrategyConfig of(RetryTask task) {
+        RetryStrategyConfig config = new RetryStrategyConfig();
+        config.setBusinessType(task.businessType());
+        config.setStrategyType(task.strategyType());
+        config.setStrategyValue(task.strategyValue());
+        config.setMaxLoadNum(task.maxLoadNum());
+        config.setMaxRetries(task.maxRetries());
+        config.setIntervalUnit(task.intervalUnit());
+        config.setThreadPool(task.threadPool());
+        return config;
+    }
+
+    public void mergeFrom(RetryStrategyConfig task) {
+        if (StringUtils.isNotBlank(task.getBusinessType())) {
+            this.setBusinessType(task.getBusinessType());
+        }
+        if (StringUtils.isNotBlank(task.getStrategyType())) {
+            this.setStrategyType(task.getStrategyType());
+        }
+        if (StringUtils.isNotBlank(task.getStrategyValue())) {
+            this.setStrategyValue(task.getStrategyValue());
+        }
+        if (Objects.nonNull(task.getMaxLoadNum()) && task.getMaxLoadNum() > 0) {
+            this.setMaxLoadNum(task.getMaxLoadNum());
+        }
+        if (Objects.nonNull(task.getMaxRetries()) && task.getMaxRetries() > 0) {
+            this.setMaxRetries(task.getMaxRetries());
+        }
+        if (StringUtils.isNotBlank(task.getIntervalUnit())) {
+            this.setIntervalUnit(task.getIntervalUnit());
+        }
+        if (StringUtils.isNotBlank(task.getThreadPool())) {
+            this.setThreadPool(task.getThreadPool());
+        }
+    }
 }

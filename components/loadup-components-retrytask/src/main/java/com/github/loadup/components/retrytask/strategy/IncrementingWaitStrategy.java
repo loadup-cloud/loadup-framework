@@ -26,23 +26,19 @@ package com.github.loadup.components.retrytask.strategy;
  * #L%
  */
 
-import com.github.loadup.commons.core.StringPool;
-import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
 import com.github.loadup.components.retrytask.enums.RetryStrategyType;
-import com.github.loadup.components.retrytask.model.RetryTask;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-
-@Component
+@AllArgsConstructor
 public class IncrementingWaitStrategy implements RetryTaskStrategy {
     private long initialSleepTime = 1;
-    private long increment = 5;
+    private long increment        = 5;
 
     @Override
-    public RetryStrategyType getStrategyType() {
+    public String getStrategyType() {
         return RetryStrategyType.INCREMENTING_WAIT_STRATEGY;
     }
 
@@ -51,14 +47,9 @@ public class IncrementingWaitStrategy implements RetryTaskStrategy {
      * 第一次失败后，将依次等待1s；6s(1+5)；11(1+5+5)s；16(1+5+5+5)s；...
      */
     @Override
-    public LocalDateTime calculateNextExecuteTime(RetryTask retryTask, RetryStrategyConfig retryStrategyConfig) {
-        String[] intervals = StringUtils.split(retryStrategyConfig.getStrategyValue(), StringPool.COMMA);
-        if (intervals.length == 2) {
-            initialSleepTime = Long.parseLong(intervals[0]);
-            increment = Long.parseLong(intervals[1]);
-        }
-        long result = initialSleepTime + (increment * (retryTask.getExecutedTimes() - 1));
-        return addTime(
-                retryTask.getNextExecuteTime(), Math.toIntExact(result), retryStrategyConfig.getStrategyValueUnit());
+    public LocalDateTime calculateNextRetryTime(int retryCount) {
+
+        long delay = initialSleepTime + (increment * (retryCount - 1));
+        return LocalDateTime.now().plus(delay, ChronoUnit.MILLIS);
     }
 }

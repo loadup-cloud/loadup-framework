@@ -27,19 +27,18 @@ package com.github.loadup.components.retrytask.schedule;
  */
 
 import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
-import com.github.loadup.components.retrytask.config.RetryTaskFactory;
 import com.github.loadup.components.retrytask.constant.RetryTaskConstants;
 import com.github.loadup.components.retrytask.enums.TaskPriorityEnum;
 import com.github.loadup.components.retrytask.model.RetryTask;
+import com.github.loadup.components.retrytask.registry.TaskStrategyRegistry;
 import com.github.loadup.components.retrytask.repository.RetryTaskRepository;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * the retry task loader
@@ -58,7 +57,7 @@ public class RetryTaskLoader {
      * the manager of retry strategy
      */
     @Autowired
-    private RetryTaskFactory retryTaskFactory;
+    private TaskStrategyRegistry retryTaskFactory;
 
     /**
      * load items
@@ -82,7 +81,7 @@ public class RetryTaskLoader {
         }
 
         for (RetryTask retryTask : retryTasks) {
-            businessKeys.add(retryTask.getBizType() + RetryTaskConstants.INTERVAL_CHAR + retryTask.getBizId());
+            businessKeys.add(retryTask.getBusinessType() + RetryTaskConstants.INTERVAL_CHAR + retryTask.getBusinessId());
         }
         return businessKeys;
     }
@@ -94,7 +93,7 @@ public class RetryTaskLoader {
 
         List<RetryTask> resultTasks = new ArrayList<>();
 
-        RetryStrategyConfig retryStrategyConfig = retryTaskFactory.buildRetryStrategyConfig(bizType);
+        RetryStrategyConfig retryStrategyConfig = retryTaskFactory.getStrategyConfig(bizType);
 
         if (retryStrategyConfig == null) {
             return resultTasks;
@@ -104,7 +103,7 @@ public class RetryTaskLoader {
 
         List<RetryTask> retryTasks = null;
         // 生成虚拟业务id
-        if (retryStrategyConfig.isIgnorePriority()) {
+        if (!retryStrategyConfig.isIgnorePriority()) {
             retryTasks = retryTaskRepository.load(bizType, rowNum);
         } else {
             retryTasks = loadByPriority(bizType, rowNum);
@@ -131,7 +130,7 @@ public class RetryTaskLoader {
         List<RetryTask> retryTasks = new ArrayList<>();
 
         List<RetryTask> retryTaskHighLevel =
-                retryTaskRepository.loadByPriority(bizType, TaskPriorityEnum.H.getCode(), rowNum);
+                retryTaskRepository.loadByPriority(bizType, "0", rowNum);
 
         int remainSize = 0;
 
@@ -144,7 +143,7 @@ public class RetryTaskLoader {
 
         if (remainSize > 0) {
             List<RetryTask> retryTaskLowLevel =
-                    retryTaskRepository.loadByPriority(bizType, TaskPriorityEnum.L.getCode(), remainSize);
+                    retryTaskRepository.loadByPriority(bizType, "0", remainSize);
             if (!CollectionUtils.isEmpty(retryTaskLowLevel)) {
                 retryTasks.addAll(retryTaskLowLevel);
             }
