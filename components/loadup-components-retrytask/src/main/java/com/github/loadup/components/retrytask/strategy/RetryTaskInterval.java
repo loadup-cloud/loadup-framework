@@ -1,4 +1,4 @@
-package com.github.loadup.components.retrytask.executor;
+package com.github.loadup.components.retrytask.strategy;
 
 /*-
  * #%L
@@ -26,26 +26,10 @@ package com.github.loadup.components.retrytask.executor;
  * #L%
  */
 
-import com.github.loadup.components.retrytask.annotation.RetryTask;
-import com.github.loadup.components.retrytask.handler.RetryTaskExecutorHandler;
-import com.github.loadup.components.retrytask.model.RetryTaskDO;
-import com.github.loadup.components.retrytask.model.RetryTaskExecuteResult;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import java.time.LocalDateTime;
 
-@Component
-@Slf4j
-@RetryTask(businessType = "EXP")
-public class ExponentialExecutor implements RetryTaskExecutorHandler {
-    @Override
-    public RetryTaskExecuteResult execute(RetryTaskDO retryTask) {
-        RetryTaskExecuteResult result = new RetryTaskExecuteResult();
-        result.setSuccess(true);
-        if (retryTask.getRetryCount() >= 5) {
-            result.setSuccess(true);
-        }
-        log.info("retryTask run at {} times,result={}", retryTask.getRetryCount() + 1, result);
-        return result;
-    }
+public interface RetryTaskInterval {
+    String getStrategyType();
 
+    LocalDateTime calculateNextRetryTime(int retryCount);
 }

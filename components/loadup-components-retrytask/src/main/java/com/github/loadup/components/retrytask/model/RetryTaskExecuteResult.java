@@ -36,20 +36,28 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class RetryTaskExecuteResult extends DTO {
+public class RetryTaskExecuteResult<T> extends DTO {
 
     /**
      * process success or not
      */
-    protected boolean success;
+    protected Boolean success;
 
     /**
      * whether the task is processing, it is false when process synchronized, it is true when process asynchronized
      */
-    private boolean isProcessing = false;
+    private Boolean processing = false;
 
     /**
      * the result of business
      */
-    private String bizResult;
+    private T bizResult;
+
+    public boolean isProcessing() {
+        return processing;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
 }

@@ -26,7 +26,7 @@ package com.github.loadup.components.retrytask.manager;
  * #L%
  */
 
-import com.github.loadup.components.retrytask.model.RetryTask;
+import com.github.loadup.components.retrytask.model.RetryTaskDO;
 
 /**
  * the executor of task
@@ -36,6 +36,6 @@ public interface TaskExecutor {
     /**
      * execute the task with try catch and it will update retry strategy when failed
      */
-    void execute(RetryTask retryTask);
+    void execute(RetryTaskDO retryTask);
 
 }

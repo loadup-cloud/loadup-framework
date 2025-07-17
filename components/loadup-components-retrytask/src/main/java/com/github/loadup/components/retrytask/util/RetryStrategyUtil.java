@@ -27,9 +27,9 @@ package com.github.loadup.components.retrytask.util;
  */
 
 import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
-import com.github.loadup.components.retrytask.model.RetryTask;
-import com.github.loadup.components.retrytask.registry.TaskStrategyRegistry;
-import com.github.loadup.components.retrytask.strategy.RetryTaskStrategy;
+import com.github.loadup.components.retrytask.factory.RetryStrategyFactory;
+import com.github.loadup.components.retrytask.model.RetryTaskDO;
+import com.github.loadup.components.retrytask.strategy.RetryTaskInterval;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
@@ -44,21 +44,21 @@ public class RetryStrategyUtil {
 
     private static RetryStrategyUtil    instance;
     @Resource
-    private        TaskStrategyRegistry taskStrategyRegistry;
+    private RetryStrategyFactory taskStrategyFactory;
 
     /**
      * 根据重试策略更新重试任务
      */
-    public static void updateRetryTaskByStrategy(RetryTask retryTask, RetryStrategyConfig retryStrategyConfig) {
-        RetryTaskStrategy retryTaskStrategy =
-                instance.taskStrategyRegistry.getTaskStrategy(retryStrategyConfig.getStrategyType());
+    public static void updateRetryTaskByStrategy(RetryTaskDO retryTask, RetryStrategyConfig retryStrategyConfig) {
+        RetryTaskInterval retryTaskStrategy =
+                instance.taskStrategyFactory.getTaskInterval(retryStrategyConfig.getStrategyType());
         int executedTimes = retryTask.getRetryCount();
         retryTask.setRetryCount(executedTimes + 1);
         LocalDateTime nextExecuteTime = retryTaskStrategy.calculateNextRetryTime(executedTimes);
         retryTask.setReachedMaxRetries(isReachMaxExecuteTimes(executedTimes, retryStrategyConfig.getMaxRetries()));
         retryTask.setNextRetryTime(nextExecuteTime);
         retryTask.setUpdatedTime(LocalDateTime.now());
-        retryTask.setIsProcessing(false);
+        retryTask.setProcessing(false);
     }
 
     /**
@@ -74,6 +74,6 @@ public class RetryStrategyUtil {
     @PostConstruct
     public void init() {
         instance = this;
-        instance.taskStrategyRegistry = this.taskStrategyRegistry;
+        instance.taskStrategyFactory = this.taskStrategyFactory;
     }
 }

@@ -41,7 +41,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table("retry_task")
-public class RetryTask extends DTO {
+public class RetryTaskDO extends DTO {
 
     @Serial
     private static final long serialVersionUID = -1;
@@ -80,7 +80,7 @@ public class RetryTask extends DTO {
     /**
      * the flag of processing
      */
-    private Boolean isProcessing;
+    private Boolean processing;
 
     /**
      * reach to max count or not
@@ -107,8 +107,8 @@ public class RetryTask extends DTO {
      */
     private String priority;
 
-    public String traceId;
-    public String source;
+    private String traceId;
+    private String source;
 
     private String failureCallbackUrl;
 }

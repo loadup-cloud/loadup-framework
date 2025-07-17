@@ -28,13 +28,16 @@ package com.github.loadup.components.retrytask.manager;
 
 import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
 import com.github.loadup.components.retrytask.constant.RetryTaskLoggerConstants;
+import com.github.loadup.components.retrytask.factory.RetryStrategyFactory;
 import com.github.loadup.components.retrytask.handler.RetryTaskExecutorHandler;
+import com.github.loadup.components.retrytask.log.RetryTaskDigestLogger;
 import com.github.loadup.components.retrytask.model.*;
+import com.github.loadup.components.retrytask.registry.FailureNotifierRegistry;
 import com.github.loadup.components.retrytask.registry.TaskHandlerRegistry;
-import com.github.loadup.components.retrytask.registry.TaskStrategyRegistry;
 import com.github.loadup.components.retrytask.repository.RetryTaskHistoryRepository;
 import com.github.loadup.components.retrytask.repository.RetryTaskRepository;
 import com.github.loadup.components.retrytask.util.RetryStrategyUtil;
+import com.github.loadup.components.tracer.TraceUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,127 +47,135 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
- * the implement of retry task executor
+ * retry task executer
  */
 @Component
 @Slf4j(topic = RetryTaskLoggerConstants.EXECUTE_DIGEST_NAME)
 public class RetryTaskExecutor {
 
+    /**
+     * the repository of retry task
+     */
     @Autowired
-    private RetryTaskRepository        retryTaskRepository;
+    private RetryTaskRepository retryTaskRepository;
+
     @Autowired
     private RetryTaskHistoryRepository retryTaskHistoryRepository;
+    /**
+     * the manager of retry strategy
+     */
     @Autowired
-    private TaskStrategyRegistry       retryTaskFactory;
+    private RetryStrategyFactory retryStrategyFactory;
+
+
     @Autowired
-    private TaskHandlerRegistry        taskHandlerRegistry;
+    private TaskHandlerRegistry taskHandlerRegistry;
+
+    @Autowired
+    private FailureNotifierRegistry failureNotifierRegistry;
+    @Autowired
+    private RetryTaskDigestLogger   digestLogger;
 
     /**
-     * @see TaskExecutor#execute(RetryTask)
+     * execute
      */
-
-    public void execute(RetryTask retryTask) {
-
+    public void plainExecute(RetryTaskDO retryTask) {
         long startTime = System.currentTimeMillis();
         RetryTaskExecuteResult result = null;
 
-        RetryStrategyConfig retryStrategyConfig = retryTaskFactory.getStrategyConfig(retryTask.getBusinessType());
         try {
-
-            RetryTaskExecutorHandler retryTaskExecutorHandler = taskHandlerRegistry.get(retryTask.getBusinessType());
-            if (retryTaskExecutorHandler == null) {
-                throw new IllegalArgumentException("No handler found for taskType: " + retryTask.getBusinessType());
-            }
-            // prepose handler
-            beforeExecute(retryTask);
-
-            // execute the SPI callback service
-            result = retryTaskExecutorHandler.execute(retryTask);
-
-            // process the result
-            processResult(result, retryTask, retryStrategyConfig);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("RetryTaskExecutor execute system error,retryTask=", retryTask);
+            RetryStrategyConfig retryStrategyConfig = this.retryStrategyFactory.getStrategyConfig(retryTask.getBusinessType());
+            RetryTaskExecutorHandler<?> taskHandler = retryStrategyFactory.getTaskHandler(retryTask.getBusinessType());
+            this.beforeExecute(retryTask);
+            result = taskHandler.execute(retryTask);
+            this.processResult(result, retryTask, retryStrategyConfig);
         } finally {
             log.info(constructExecuteDigest(retryTask, result, startTime));
-            cleanMDC();
-            RetryStrategyUtil.updateRetryTaskByStrategy(retryTask, retryStrategyConfig);
-            retryTaskRepository.save(retryTask);
         }
     }
 
-    private void cleanMDC() {
-        // MDC.remove(MDC_TRACEID);
-        // MDC.remove(MDC_SOFA_TRACEID);
-        // MDC.remove(MDC_ISLOADTEST);
-    }
-
-    /**
-     * constuct the digest of execute
-     */
-    private String constructExecuteDigest(RetryTask retryTask, RetryTaskExecuteResult executeResult, long startTime) {
-
-        StringBuffer digest = new StringBuffer();
-        long elapseTime = System.currentTimeMillis() - startTime;
-        digest.append(retryTask.getBusinessId())
-                .append(',')
-                .append(retryTask.getId())
-                .append(',')
-                .append(retryTask.getBusinessType())
-                .append(',')
-                .append(retryTask.getRetryCount())
-                .append(',')
-                .append(executeResult != null && executeResult.isSuccess())
-                .append(',')
-                .append(elapseTime)
-                .append("ms");
-        return digest.toString();
-    }
-
-    /**
-     * prepose handler
-     */
-    private void processResult(
-            RetryTaskExecuteResult result, RetryTask retryTask, RetryStrategyConfig retryStrategyConfig) {
-
-        // the task is processing asynchronized, we need do nothing
-        if (result.isProcessing()) {
-            return;
-        }
-        if (result.isSuccess()) {
-            // delete the task
-            //retryTaskRepository.delete(retryTask.getBusinessId(), retryTask.getBusinessType());
-
-            // 成功后直接归档
-            asyncArchiveTask(retryTask);
-        } else {
-            // retry next time
-            RetryStrategyUtil.updateRetryTaskByStrategy(retryTask, retryStrategyConfig);
-            retryTaskRepository.save(retryTask);
+    private void processResult(RetryTaskExecuteResult result, RetryTaskDO retryTask, RetryStrategyConfig retryStrategyConfig) {
+        if (!result.isProcessing()) {
+            if (result.isSuccess()) {
+                asyncArchiveTask(retryTask);
+            } else {
+                RetryStrategyUtil.updateRetryTaskByStrategy(retryTask, retryStrategyConfig);
+                retryTaskRepository.save(retryTask);
+            }
         }
     }
 
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected void asyncArchiveTask(RetryTask task) {
-        RetryTaskHistory history = new RetryTaskHistory();
-        BeanUtils.copyProperties(task,history);
+    protected void asyncArchiveTask(RetryTaskDO task) {
+        RetryTaskHistoryDO history = new RetryTaskHistoryDO();
+        BeanUtils.copyProperties(task, history);
         history.setFinishedTime(LocalDateTime.now());
-        retryTaskHistoryRepository.save(history);
-        retryTaskRepository.deleteById(task.getId());
+        if (!retryTaskHistoryRepository.existsById(task.getId())) {
+            retryTaskHistoryRepository.save(history);
+        }
+        if (retryTaskRepository.existsById(task.getId())) {
+            retryTaskRepository.deleteById(task.getId());
+        }
+    }
+
+    private void beforeExecute(RetryTaskDO retryTask) {
+
+        if (retryTask.getTraceId() != null) {
+            TraceUtil.logTraceId(retryTask.getTraceId());
+        }
+        retryTask.setProcessing(true);
+        retryTask.setUpdatedTime(LocalDateTime.now());
+        this.retryTaskRepository.save(retryTask);
     }
 
     /**
-     * prepose handler
+     * process
      */
-    private void beforeExecute(RetryTask retryTask) {
-        // update the processing flag
-        retryTask.setIsProcessing(true);
-        retryTask.setUpdatedTime(LocalDateTime.now());
-        retryTaskRepository.save(retryTask);
+    private RetryTaskDO process(String businessKey) {
+        return null;
+    }
+
+    /**
+     * postProcess if retryTaskNeedUpdate is not null
+     */
+    private void doAfterProcess(RetryTaskDO retryTaskNeedUpdate, String businessKey) {
+        // if process fail, then
+        if (Objects.nonNull(retryTaskNeedUpdate)) {
+            try {
+                // retry next time
+                RetryStrategyConfig retryStrategyConfig = retryStrategyFactory.getStrategyConfig(retryTaskNeedUpdate.getBusinessType());
+                RetryStrategyUtil.updateRetryTaskByStrategy(retryTaskNeedUpdate, retryStrategyConfig);
+                retryTaskRepository.save(retryTaskNeedUpdate);
+            } catch (Exception e) {
+                //                LogUtils.error(log, "the task update failed when do after process, businessKey={}",
+                // businessKey);
+            }
+        }
+    }
+
+    public void execute(RetryTaskDO retryTask) {
+        RetryStrategyConfig retryStrategyConfig = this.retryStrategyFactory.getStrategyConfig(retryTask.getBusinessType());
+
+        try {
+            plainExecute(retryTask);
+        } catch (Exception e) {
+            log.error("RetryTaskExecutor execute system error,retryTask={}", retryTask);
+            //retryStrategyUtil.updateRetryTaskByStrategy(retryTask, retryStrategyConfig);
+            //retryTaskRepository.update(retryTask);
+        }
+    }
+
+    private String constructExecuteDigest(RetryTaskDO retryTask, RetryTaskExecuteResult<?> executeResult, long startTime) {
+
+        StringBuffer digest = new StringBuffer();
+        long elapseTime = System.currentTimeMillis() - startTime;
+        digest.append(retryTask.getBusinessId()).append(',').append(retryTask.getId()).append(',').append(retryTask.getBusinessType())
+                .append(',').append(retryTask.getRetryCount()).append(',').append(executeResult != null && executeResult.isSuccess())
+                .append(',').append(elapseTime).append("ms");
+        return digest.toString();
     }
 }

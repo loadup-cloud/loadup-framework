@@ -63,6 +63,10 @@ public class TraceUtil {
         return instance.tracer;
     }
 
+    public static String getApplicationName() {
+        return instance.applicationName;
+    }
+
     public static Span getSpan() {
         TraceContext traceContext = TraceUtil.getTraceContext();
         return traceContext.getCurrentSpan();
@@ -86,6 +90,10 @@ public class TraceUtil {
 
     public static void logTraceId(Span span) {
         MDC.put("traceId", span.getSpanContext().getTraceId());
+    }
+
+    public static void logTraceId(String traceId) {
+        MDC.put("traceId", traceId);
     }
 
     public static void clearTraceId() {

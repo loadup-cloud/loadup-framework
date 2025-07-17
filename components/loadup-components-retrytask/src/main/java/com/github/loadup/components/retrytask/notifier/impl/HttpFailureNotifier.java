@@ -1,6 +1,6 @@
 package com.github.loadup.components.retrytask.notifier.impl;
 
-import com.github.loadup.components.retrytask.model.RetryTask;
+import com.github.loadup.components.retrytask.model.RetryTaskDO;
 import com.github.loadup.components.retrytask.notifier.FailureNotifier;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -12,14 +12,14 @@ public class HttpFailureNotifier implements FailureNotifier {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public void notify(RetryTask task) {
+    public void notify(RetryTaskDO task) {
         if (task.getFailureCallbackUrl() == null) {return;}
 
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            HttpEntity<RetryTask> entity = new HttpEntity<>(task, headers);
+            HttpEntity<RetryTaskDO> entity = new HttpEntity<>(task, headers);
             ResponseEntity<String> response = restTemplate.postForEntity(
                     task.getFailureCallbackUrl(), entity, String.class);
 

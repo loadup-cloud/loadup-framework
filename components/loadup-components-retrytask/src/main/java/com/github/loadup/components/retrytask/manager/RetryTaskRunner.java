@@ -26,7 +26,7 @@ package com.github.loadup.components.retrytask.manager;
  * #L%
  */
 
-import com.github.loadup.components.retrytask.model.RetryTask;
+import com.github.loadup.components.retrytask.model.RetryTaskDO;
 
 /**
  * the thread executer of retry task
@@ -41,12 +41,12 @@ public class RetryTaskRunner implements Runnable {
     /**
      * retry task
      */
-    private RetryTask retryTask;
+    private RetryTaskDO retryTask;
 
     /**
      * construct method
      */
-    public RetryTaskRunner(RetryTaskExecutor retryTaskExecutor, RetryTask retryTask) {
+    public RetryTaskRunner(RetryTaskExecutor retryTaskExecutor, RetryTaskDO retryTask) {
         this.retryTask = retryTask;
         this.retryTaskExecutor = retryTaskExecutor;
     }

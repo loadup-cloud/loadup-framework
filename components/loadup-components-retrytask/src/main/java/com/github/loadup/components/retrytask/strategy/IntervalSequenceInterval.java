@@ -27,27 +27,28 @@ package com.github.loadup.components.retrytask.strategy;
  */
 
 import com.github.loadup.components.retrytask.enums.RetryStrategyType;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class FixedIntervalStrategy implements RetryTaskStrategy {
-    private final long intervalMillis;
-
-    public FixedIntervalStrategy(long intervalMillis) {
-        this.intervalMillis = intervalMillis;
-    }
+/**
+ * @author Lise
+ */
+@AllArgsConstructor
+public class IntervalSequenceInterval implements RetryTaskInterval {
+    private long[] intervals;
 
     @Override
     public String getStrategyType() {
-        return RetryStrategyType.FIXED_WAIT_STRATEGY;
+        return RetryStrategyType.INTERVAL_SEQUENCE_STRATEGY;
     }
 
-    /**
-     * 固定时长等待策略，失败后，将等待固定的时长进行重试；
-     */
     @Override
     public LocalDateTime calculateNextRetryTime(int retryCount) {
-        return LocalDateTime.now().plus(intervalMillis, ChronoUnit.MILLIS);
+
+        int index = Math.min(retryCount, intervals.length - 1);
+        long delay = intervals[index];
+        return LocalDateTime.now().plus(delay, ChronoUnit.MILLIS);
     }
 }

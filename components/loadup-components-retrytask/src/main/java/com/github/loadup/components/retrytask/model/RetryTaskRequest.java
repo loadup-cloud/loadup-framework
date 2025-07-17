@@ -28,6 +28,9 @@ package com.github.loadup.components.retrytask.model;
 
 import com.github.loadup.commons.dto.DTO;
 import com.github.loadup.commons.util.ToStringUtils;
+import com.github.loadup.components.retrytask.constant.ScheduleExecuteType;
+import com.github.loadup.components.retrytask.enums.TaskPriorityEnum;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,16 +44,14 @@ public class RetryTaskRequest extends DTO {
     /**
      * business id，used as sharding index
      */
-    private String bizId;
+    @NotBlank
+    private String businessId;
 
     /**
      * business type, user can define themselves
      */
-    private String bizType;
-
-    /**
-     * the execute strategy of retry task
-     */
+    @NotBlank
+    private String businessType;
 
     /**
      * the interval between The first time to execute and now, the unit is seconds
@@ -65,10 +66,22 @@ public class RetryTaskRequest extends DTO {
     /**
      * priority
      */
-    private String priority;
+    private String priority = TaskPriorityEnum.LOW.getCode();
+
+    /**
+     * source
+     */
+    public String source;
+
+    /**
+     * failure callback url
+     */
+    private String              failureCallbackUrl;
+    private ScheduleExecuteType scheduleExecuteType;
 
     @Override
     public String toString() {
         return ToStringUtils.reflectionToString(this);
     }
-}
+
+    }

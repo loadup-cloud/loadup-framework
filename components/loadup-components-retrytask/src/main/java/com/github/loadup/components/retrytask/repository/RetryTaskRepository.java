@@ -26,7 +26,7 @@ package com.github.loadup.components.retrytask.repository;
  * #L%
  */
 
-import com.github.loadup.components.retrytask.model.RetryTask;
+import com.github.loadup.components.retrytask.model.RetryTaskDO;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -39,30 +39,30 @@ import java.util.List;
  * Repository of retry task
  */
 @Repository
-public interface RetryTaskRepository extends CrudRepository<RetryTask, String> {
+public interface RetryTaskRepository extends CrudRepository<RetryTaskDO, String> {
 
     @Query("select * from retry_task where business_id=:businessId and business_type=:businessType for update")
-    RetryTask lockByBizId(@Param("businessId") String businessId, @Param("businessType") String businessType);
+    RetryTaskDO lockByBizId(@Param("businessId") String businessId, @Param("businessType") String businessType);
 
     @Query("select * from retry_task where business_id=:businessId and business_type=:businessType")
-    RetryTask findByBizId(@Param("businessId") String businessId, @Param("businessType") String businessType);
+    RetryTaskDO findByBizId(@Param("businessId") String businessId, @Param("businessType") String businessType);
 
     @Query("delete from retry_task where business_id=:businessId and business_type=:businessType")
     @Modifying
     void delete(@Param("businessId") String businessId, @Param("businessType") String businessType);
 
-    @Query("select * from retry_task where business_type=:businessType and reached_max_retries='0' and is_processing='0' and next_retry_time < "
+    @Query("select * from retry_task where business_type=:businessType and reached_max_retries='0' and processing='0' and next_retry_time < "
             + "now() order by priority desc limit :rowNum")
-    List<RetryTask> load(@Param("businessType") String businessType, @Param("rowNum") int rowNum);
+    List<RetryTaskDO> load(@Param("businessType") String businessType, @Param("rowNum") int rowNum);
 
-    @Query("select * from retry_task where business_type=:businessType and reached_max_retries='0' and is_processing='0' and next_retry_time < "
+    @Query("select * from retry_task where business_type=:businessType and reached_max_retries='0' and processing='0' and next_retry_time < "
             + "now() and priority=:priority limit :rowNum")
-    List<RetryTask> loadByPriority(@Param("businessType") String businessType, @Param("priority") String priority, @Param("rowNum") int rowNum);
+    List<RetryTaskDO> loadByPriority(@Param("businessType") String businessType, @Param("priority") String priority, @Param("rowNum") int rowNum);
 
-    @Query("select * from retry_task where business_type=:businessType and reached_max_retries='0' and is_processing='1' and updated_time < DATE_SUB"
+    @Query("select * from retry_task where business_type=:businessType and reached_max_retries='0' and processing='1' and updated_time < DATE_SUB"
             + "(NOW()" + ", INTERVAL :extremeRetryTime MINUTE) limit :rowNum")
-    List<RetryTask> loadUnusualTask(@Param("businessType") String businessType, @Param("extremeRetryTime") int extremeRetryTime,
-                                    @Param("rowNum") int rowNum);
+    List<RetryTaskDO> loadUnusualTask(@Param("businessType") String businessType, @Param("extremeRetryTime") int extremeRetryTime,
+                                      @Param("rowNum") int rowNum);
 
 
 }

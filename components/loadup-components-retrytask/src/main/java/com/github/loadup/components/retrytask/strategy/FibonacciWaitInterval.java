@@ -31,7 +31,7 @@ import com.github.loadup.components.retrytask.enums.RetryStrategyType;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class ExponentialBackoffStrategy implements RetryTaskStrategy {
+public class FibonacciWaitInterval implements RetryTaskInterval {
     /**
      * 1 unit 作为指数
      */
@@ -41,25 +41,52 @@ public class ExponentialBackoffStrategy implements RetryTaskStrategy {
      */
     private long maxInterval     = 50;
 
-    public ExponentialBackoffStrategy(long initialMillis, long maxMillis) {
+    public FibonacciWaitInterval(long initialInterval, long maxInterval) {
         this.initialInterval = initialInterval;
         this.maxInterval = maxInterval;
     }
 
     @Override
     public String getStrategyType() {
-        return RetryStrategyType.EXPONENTIAL_WAIT_STRATEGY;
+        return RetryStrategyType.FIBONACCI_WAIT_STRATEGY;
     }
 
     /**
-     * 创建一个永久重试的重试器，每次重试失败时以递增的指数时间等待，直到最多5分钟。
-     * 5分钟后，每隔5分钟重试一次。
-     * 第一次失败后，依次等待时长：2^1 * 100;2^2 * 100；2^3 * 100;...
-     * strategyValue 配置为multiplier，maximumWait 不填或填错则使用默认值
+     * 创建一个永久重试的重试器，每次重试失败时以斐波那契数列来计算等待时间，直到最多5分钟；5分钟后，每隔5分钟重试一次；
+     * <p>
+     * 第一次失败后，依次等待时长：1*1;1*1；2*1；3*1；5*1；...
+     * strategyValue 配置为multiplier，maxInterval 不填或填错则使用默认值
      */
     @Override
     public LocalDateTime calculateNextRetryTime(int retryCount) {
-        long delay = (long) Math.min(initialInterval * Math.pow(2, retryCount), maxInterval);
+
+        long fib = fib(retryCount);
+        long delay = initialInterval * fib;
+
+        if (delay > maxInterval || delay < 0L) {
+            delay = maxInterval;
+        }
         return LocalDateTime.now().plus(delay, ChronoUnit.MILLIS);
+    }
+
+    private long fib(long n) {
+        if (n == 0L) {
+            return 0L;
+        }
+        if (n == 1L) {
+            return 1L;
+        }
+
+        long prevPrev = 0L;
+        long prev = 1L;
+        long result = 0L;
+
+        for (long i = 2L; i <= n; i++) {
+            result = prev + prevPrev;
+            prevPrev = prev;
+            prev = result;
+        }
+
+        return result;
     }
 }

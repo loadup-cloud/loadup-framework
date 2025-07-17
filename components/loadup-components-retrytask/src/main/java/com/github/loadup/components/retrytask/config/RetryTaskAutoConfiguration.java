@@ -26,8 +26,8 @@ package com.github.loadup.components.retrytask.config;
  * #L%
  */
 
+import com.github.loadup.components.retrytask.factory.RetryStrategyFactory;
 import com.github.loadup.components.retrytask.properties.RetryTaskProperties;
-import com.github.loadup.components.retrytask.registry.TaskStrategyRegistry;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -94,8 +94,8 @@ public class RetryTaskAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public TaskStrategyRegistry taskStrategyRegistry() {
-        return new TaskStrategyRegistry();
+    public RetryStrategyFactory taskStrategyRegistry() {
+        return new RetryStrategyFactory();
     }
 
 }

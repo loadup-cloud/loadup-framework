@@ -29,16 +29,16 @@ package com.github.loadup.components.retrytask.schedule;
 import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
 import com.github.loadup.components.retrytask.constant.RetryTaskConstants;
 import com.github.loadup.components.retrytask.enums.TaskPriorityEnum;
-import com.github.loadup.components.retrytask.model.RetryTask;
-import com.github.loadup.components.retrytask.registry.TaskStrategyRegistry;
+import com.github.loadup.components.retrytask.factory.RetryStrategyFactory;
+import com.github.loadup.components.retrytask.model.RetryTaskDO;
 import com.github.loadup.components.retrytask.repository.RetryTaskRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * the retry task loader
@@ -57,7 +57,7 @@ public class RetryTaskLoader {
      * the manager of retry strategy
      */
     @Autowired
-    private TaskStrategyRegistry retryTaskFactory;
+    private RetryStrategyFactory retryTaskFactory;
 
     /**
      * load items
@@ -65,7 +65,7 @@ public class RetryTaskLoader {
     public List<String> load(String bizType) {
 
         // SQL执行捞取Task列表
-        List<RetryTask> retryTasks = loadTasks(bizType);
+        List<RetryTaskDO> retryTasks = loadTasks(bizType);
 
         return convertRetryTasks2BusinessKeys(retryTasks);
     }
@@ -73,25 +73,24 @@ public class RetryTaskLoader {
     /**
      * 生成对应的businessKeys，bizType-bizId
      */
-    private List<String> convertRetryTasks2BusinessKeys(List<RetryTask> retryTasks) {
+    private List<String> convertRetryTasks2BusinessKeys(List<RetryTaskDO> retryTasks) {
 
-        List<String> businessKeys = new ArrayList<>();
         if (CollectionUtils.isEmpty(retryTasks)) {
-            return businessKeys;
+            return Collections.EMPTY_LIST;
         }
 
-        for (RetryTask retryTask : retryTasks) {
-            businessKeys.add(retryTask.getBusinessType() + RetryTaskConstants.INTERVAL_CHAR + retryTask.getBusinessId());
-        }
+        List<String> businessKeys = retryTasks.stream().map(
+                retryTask -> retryTask.getBusinessType() + RetryTaskConstants.INTERVAL_CHAR + retryTask.getBusinessId()).collect(
+                Collectors.toList());
         return businessKeys;
     }
 
     /**
      * 捞取TaskId列表
      */
-    private List<RetryTask> loadTasks(String bizType) {
+    public List<RetryTaskDO> loadTasks(String bizType) {
 
-        List<RetryTask> resultTasks = new ArrayList<>();
+        List<RetryTaskDO> resultTasks = new ArrayList<>();
 
         RetryStrategyConfig retryStrategyConfig = retryTaskFactory.getStrategyConfig(bizType);
 
@@ -101,20 +100,19 @@ public class RetryTaskLoader {
 
         int rowNum = retryStrategyConfig.getMaxLoadNum();
 
-        List<RetryTask> retryTasks = null;
-        // 生成虚拟业务id
-        if (!retryStrategyConfig.isIgnorePriority()) {
-            retryTasks = retryTaskRepository.load(bizType, rowNum);
-        } else {
-            retryTasks = loadByPriority(bizType, rowNum);
+        // First load high priority tasks
+        List<RetryTaskDO> highPriorityTasks = loadByPriority(bizType, TaskPriorityEnum.HIGH, rowNum);
+        resultTasks.addAll(highPriorityTasks);
+        int remaining = rowNum - resultTasks.size();
+        // Then load low priority tasks if needed
+        if (remaining > 0) {
+            List<RetryTaskDO> lowPriorityTasks = loadByPriority(bizType, TaskPriorityEnum.LOW, remaining);
+            resultTasks.addAll(lowPriorityTasks);
         }
 
-        List<RetryTask> unusualRetryTasks =
+        //load exception tasks
+        List<RetryTaskDO> unusualRetryTasks =
                 retryTaskRepository.loadUnusualTask(bizType, retryStrategyConfig.getExtremeRetryTime(), rowNum);
-
-        if (!CollectionUtils.isEmpty(retryTasks)) {
-            resultTasks.addAll(retryTasks);
-        }
         if (!CollectionUtils.isEmpty(unusualRetryTasks)) {
             resultTasks.addAll(unusualRetryTasks);
         }
@@ -125,30 +123,8 @@ public class RetryTaskLoader {
     /**
      * load by priority
      */
-    private List<RetryTask> loadByPriority(String bizType, int rowNum) {
-
-        List<RetryTask> retryTasks = new ArrayList<>();
-
-        List<RetryTask> retryTaskHighLevel =
-                retryTaskRepository.loadByPriority(bizType, "0", rowNum);
-
-        int remainSize = 0;
-
-        if (CollectionUtils.isEmpty(retryTaskHighLevel)) {
-            remainSize = rowNum;
-        } else {
-            remainSize = rowNum - retryTaskHighLevel.size();
-            retryTasks.addAll(retryTaskHighLevel);
-        }
-
-        if (remainSize > 0) {
-            List<RetryTask> retryTaskLowLevel =
-                    retryTaskRepository.loadByPriority(bizType, "0", remainSize);
-            if (!CollectionUtils.isEmpty(retryTaskLowLevel)) {
-                retryTasks.addAll(retryTaskLowLevel);
-            }
-        }
-
-        return retryTasks;
+    private List<RetryTaskDO> loadByPriority(String bizType, TaskPriorityEnum priority, int rowNum) {
+        List<RetryTaskDO> tasks = retryTaskRepository.loadByPriority(bizType, priority.getCode(), rowNum);
+        return tasks != null ? tasks : new ArrayList<>();
     }
 }

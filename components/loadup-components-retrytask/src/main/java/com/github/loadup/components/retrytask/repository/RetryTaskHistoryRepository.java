@@ -26,7 +26,7 @@ package com.github.loadup.components.retrytask.repository;
  * #L%
  */
 
-import com.github.loadup.components.retrytask.model.RetryTaskHistory;
+import com.github.loadup.components.retrytask.model.RetryTaskHistoryDO;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -34,6 +34,6 @@ import org.springframework.stereotype.Repository;
  * Repository of retry task
  */
 @Repository
-public interface RetryTaskHistoryRepository extends CrudRepository<RetryTaskHistory, String> {
+public interface RetryTaskHistoryRepository extends CrudRepository<RetryTaskHistoryDO, String> {
 
 }

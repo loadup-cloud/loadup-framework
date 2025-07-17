@@ -1,6 +1,6 @@
 package com.github.loadup.components.retrytask.registry;
 
-import com.github.loadup.components.retrytask.model.RetryTask;
+import com.github.loadup.components.retrytask.model.RetryTaskDO;
 import com.github.loadup.components.retrytask.notifier.FailureNotifier;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ public class FailureNotifierRegistry {
         notifiers.add(notifier);
     }
 
-    public void notifyAll(RetryTask task) {
+    public void notifyAll(RetryTaskDO task) {
         for (FailureNotifier notifier : notifiers) {
             notifier.notify(task);
         }

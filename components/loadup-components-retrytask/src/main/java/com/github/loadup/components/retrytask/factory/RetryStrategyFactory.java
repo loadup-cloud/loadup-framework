@@ -1,4 +1,4 @@
-package com.github.loadup.components.retrytask.registry;
+package com.github.loadup.components.retrytask.factory;
 
 /*-
  * #%L
@@ -29,6 +29,7 @@ package com.github.loadup.components.retrytask.registry;
 import com.github.loadup.components.retrytask.annotation.RetryTask;
 import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
 import com.github.loadup.components.retrytask.enums.RetryStrategyType;
+import com.github.loadup.components.retrytask.handler.RetryTaskExecutorHandler;
 import com.github.loadup.components.retrytask.properties.RetryTaskProperties;
 import com.github.loadup.components.retrytask.strategy.*;
 import com.github.loadup.components.retrytask.util.TimeUnitUtils;
@@ -38,10 +39,21 @@ import lombok.Getter;
 import java.util.*;
 
 @Getter
-public class TaskStrategyRegistry {
+public class RetryStrategyFactory {
 
-    private Map<String, RetryTaskStrategy>   retryTaskStrategyMap  = new HashMap<>();
-    private Map<String, RetryStrategyConfig> taskStrategyConfigMap = new HashMap<>();
+    /**
+     * retry strategy config.key: bizType
+     */
+    private Map<String, RetryTaskInterval>        retryTaskIntervalMap  = new HashMap<>();
+    /**
+     * retry strategy config.key: bizType
+     */
+    private Map<String, RetryStrategyConfig>      taskStrategyConfigMap = new HashMap<>();
+    /**
+     * key: bizType
+     */
+    private Map<String, RetryTaskExecutorHandler> taskHandlerMap        = new HashMap<>();
+
     @Resource
     private RetryTaskProperties              retryTaskProperties;
 
@@ -53,15 +65,23 @@ public class TaskStrategyRegistry {
         return retryTaskStrategy;
     }
 
-    public RetryTaskStrategy getTaskStrategy(String retryStrategyType) {
-        RetryTaskStrategy retryTaskStrategy = retryTaskStrategyMap.get(retryStrategyType);
-        if (Objects.isNull(retryTaskStrategy)) {
-            throw new IllegalArgumentException("No strategy found for taskType: " + retryStrategyType);
+    public RetryTaskInterval getTaskInterval(String businessType) {
+        RetryTaskInterval retryTaskInterval = retryTaskIntervalMap.get(businessType);
+        if (Objects.isNull(retryTaskInterval)) {
+            throw new IllegalArgumentException("No strategy found for taskType: " + businessType);
         }
-        return retryTaskStrategy;
+        return retryTaskInterval;
     }
 
-    public void register(RetryTask annotation) {
+    public RetryTaskExecutorHandler getTaskHandler(String businessType) {
+        RetryTaskExecutorHandler taskExecutorHandler = taskHandlerMap.get(businessType);
+        if (Objects.isNull(taskExecutorHandler)) {
+            throw new IllegalArgumentException("No handler found for taskType: " + businessType);
+        }
+        return taskExecutorHandler;
+    }
+
+    public void registerStrategy(RetryTask annotation) {
         String strategyValue = annotation.strategyValue();
         String strategyType = annotation.strategyType();
         String intervalUnit = annotation.intervalUnit();
@@ -71,31 +91,31 @@ public class TaskStrategyRegistry {
         switch (strategyType.toUpperCase()) {
             case RetryStrategyType.FIXED_WAIT_STRATEGY:
                 long interval = TimeUnitUtils.toMillis(Long.parseLong(values[0]), intervalUnit);
-                retryTaskStrategyMap.put(strategyType, new FixedIntervalStrategy(interval));
+                retryTaskIntervalMap.put(businessType, new FixedIntervalInterval(interval));
                 break;
             case RetryStrategyType.EXPONENTIAL_WAIT_STRATEGY:
                 long initial = TimeUnitUtils.toMillis(Long.parseLong(values[0]), intervalUnit);
                 long max = TimeUnitUtils.toMillis(Long.parseLong(values[1]), intervalUnit);
-                retryTaskStrategyMap.put(strategyType, new ExponentialBackoffStrategy(initial, max));
+                retryTaskIntervalMap.put(businessType, new ExponentialBackoffInterval(initial, max));
                 break;
             case RetryStrategyType.RANDOM_WAIT_STRATEGY:
                 long min = TimeUnitUtils.toMillis(Long.parseLong(values[0]), intervalUnit);
                 long maxRand = TimeUnitUtils.toMillis(Long.parseLong(values[1]), intervalUnit);
-                retryTaskStrategyMap.put(strategyType, new RandomWaitStrategy(min, maxRand));
+                retryTaskIntervalMap.put(businessType, new RandomWaitInterval(min, maxRand));
                 break;
             case RetryStrategyType.INTERVAL_SEQUENCE_STRATEGY:
                 long[] intervals = TimeUnitUtils.toMillisArray(values, intervalUnit);
-                retryTaskStrategyMap.put(strategyType, new IntervalSequenceStrategy(intervals));
+                retryTaskIntervalMap.put(businessType, new IntervalSequenceInterval(intervals));
                 break;
             case RetryStrategyType.FIBONACCI_WAIT_STRATEGY:
                 long initInterval = TimeUnitUtils.toMillis(Long.parseLong(values[0]), intervalUnit);
                 long maxInterval = TimeUnitUtils.toMillis(Long.parseLong(values[1]), intervalUnit);
-                retryTaskStrategyMap.put(strategyType, new FibonacciWaitStrategy(initInterval, maxInterval));
+                retryTaskIntervalMap.put(businessType, new FibonacciWaitInterval(initInterval, maxInterval));
                 break;
             case RetryStrategyType.INCREMENTING_WAIT_STRATEGY:
                 long initialSleepTime = TimeUnitUtils.toMillis(Long.parseLong(values[0]), intervalUnit);
                 long increment = TimeUnitUtils.toMillis(Long.parseLong(values[1]), intervalUnit);
-                retryTaskStrategyMap.put(strategyType, new IncrementingWaitStrategy(initialSleepTime, increment));
+                retryTaskIntervalMap.put(businessType, new IncrementingWaitInterval(initialSleepTime, increment));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported strategy type: " + strategyType);
@@ -118,4 +138,7 @@ public class TaskStrategyRegistry {
         return retryTaskConfig;
     }
 
+    public void registerHandler(String businessType, RetryTaskExecutorHandler handler) {
+        taskHandlerMap.put(businessType, handler);
+    }
 }

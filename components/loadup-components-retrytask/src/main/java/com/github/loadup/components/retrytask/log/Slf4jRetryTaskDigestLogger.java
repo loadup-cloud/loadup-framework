@@ -1,6 +1,8 @@
 package com.github.loadup.components.retrytask.log;
 
-import com.github.loadup.components.retrytask.model.RetryTask;
+import com.github.loadup.components.retrytask.constant.RetryTaskLoggerConstants;
+import com.github.loadup.components.retrytask.model.RetryTaskDO;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@Slf4j(topic = RetryTaskLoggerConstants.EXECUTE_DIGEST_NAME)
 public class Slf4jRetryTaskDigestLogger implements RetryTaskDigestLogger {
 
     private static final Logger logger = LoggerFactory.getLogger("RetryTaskDigest");
@@ -20,7 +23,7 @@ public class Slf4jRetryTaskDigestLogger implements RetryTaskDigestLogger {
     private final String host = getLocalHost();
 
     @Override
-    public void logStart(RetryTask task) {
+    public void logStart(RetryTaskDO task) {
         Map<String, Object> context = createContext(task);
         context.put("status", "STARTED");
         context.put("start_time", LocalDateTime.now());
@@ -29,7 +32,7 @@ public class Slf4jRetryTaskDigestLogger implements RetryTaskDigestLogger {
     }
 
     @Override
-    public void logSuccess(RetryTask task) {
+    public void logSuccess(RetryTaskDO task) {
         Map<String, Object> context = createContext(task);
         context.put("status", "SUCCESS");
         context.put("end_time", LocalDateTime.now());
@@ -39,7 +42,7 @@ public class Slf4jRetryTaskDigestLogger implements RetryTaskDigestLogger {
     }
 
     @Override
-    public void logRetry(RetryTask task, Exception e) {
+    public void logRetry(RetryTaskDO task, Exception e) {
         Map<String, Object> context = createContext(task);
         context.put("status", "RETRYING");
         context.put("retry_count", task.getRetryCount() + 1);
@@ -49,7 +52,7 @@ public class Slf4jRetryTaskDigestLogger implements RetryTaskDigestLogger {
     }
 
     @Override
-    public void logFailed(RetryTask task, Exception e) {
+    public void logFailed(RetryTaskDO task, Exception e) {
         Map<String, Object> context = createContext(task);
         context.put("status", "FAILED");
         context.put("retry_count", task.getRetryCount());
@@ -58,7 +61,7 @@ public class Slf4jRetryTaskDigestLogger implements RetryTaskDigestLogger {
         logger.error("Task execution failed: {}", context, e);
     }
 
-    private Map<String, Object> createContext(RetryTask task) {
+    private Map<String, Object> createContext(RetryTaskDO task) {
         Map<String, Object> context = new HashMap<>();
         context.put("trace_id", task.getTraceId());
         context.put("task_id", task.getId());
@@ -70,7 +73,7 @@ public class Slf4jRetryTaskDigestLogger implements RetryTaskDigestLogger {
         return context;
     }
 
-    private long calculateDuration(RetryTask task) {
+    private long calculateDuration(RetryTaskDO task) {
         return Duration.between(task.getCreatedTime(), LocalDateTime.now()).toMillis();
 
     }

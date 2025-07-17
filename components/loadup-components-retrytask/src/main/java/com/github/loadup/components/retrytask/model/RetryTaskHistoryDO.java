@@ -30,6 +30,7 @@ import com.github.loadup.commons.dto.DTO;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.io.Serial;
@@ -41,7 +42,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table("retry_task_history")
-public class RetryTaskHistory extends DTO {
+public class RetryTaskHistoryDO extends DTO implements Persistable<String> {
 
     @Serial
     private static final long serialVersionUID = -1;
@@ -80,7 +81,7 @@ public class RetryTaskHistory extends DTO {
     /**
      * the flag of processing
      */
-    private Boolean isProcessing;
+    private Boolean processing;
 
     /**
      * reach to max count or not
@@ -90,7 +91,7 @@ public class RetryTaskHistory extends DTO {
     /**
      * business context
      */
-    private String contextData;
+    private String payload;
 
     /**
      * create time
@@ -112,4 +113,9 @@ public class RetryTaskHistory extends DTO {
 
     private String        failureCallbackUrl;
     private LocalDateTime finishedTime;
+
+    @Override
+    public boolean isNew() {
+        return true;
+    }
 }

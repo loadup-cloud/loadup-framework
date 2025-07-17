@@ -40,12 +40,12 @@ public enum TaskPriorityEnum implements IEnum {
     /**
      * High level
      */
-    H("H", "High level"),
+    HIGH("H", "High level"),
 
     /**
      * Low level
      */
-    L("L", "Low level"),
+    LOW("L", "Low level"),
     ;
 
     /**

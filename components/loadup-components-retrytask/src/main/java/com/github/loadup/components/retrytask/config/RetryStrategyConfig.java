@@ -27,6 +27,7 @@ package com.github.loadup.components.retrytask.config;
  */
 
 import com.github.loadup.components.retrytask.annotation.RetryTask;
+import com.github.loadup.components.retrytask.handler.RetryTaskExecutorHandler;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -93,22 +94,18 @@ public class RetryStrategyConfig {
     private String status;
 
     /**
-     * is execute immediately
-     */
-    private boolean isExecuteImmediately;
-
-    /**
-     * is ignore priority
-     */
-    private boolean isIgnorePriority;
-
-    /**
      * 这个表示单次任务执行时间限制（如果单次任务执行超时，则终止执行当前任务）；
      */
     private String attemptTimeLimiter;
 
     private String threadPool;
+    private Boolean runInTransaction;
 
+    private RetryTaskExecutorHandler<?> handler;
+
+    public Boolean runInTransaction() {
+        return runInTransaction == null ? false : runInTransaction;
+    }
     public static RetryStrategyConfig of(RetryTask task) {
         RetryStrategyConfig config = new RetryStrategyConfig();
         config.setBusinessType(task.businessType());

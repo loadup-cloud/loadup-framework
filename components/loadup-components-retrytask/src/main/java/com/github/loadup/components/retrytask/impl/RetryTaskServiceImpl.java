@@ -29,24 +29,28 @@ package com.github.loadup.components.retrytask.impl;
 import com.github.loadup.commons.util.IdUtils;
 import com.github.loadup.components.retrytask.RetryTaskService;
 import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
-import com.github.loadup.components.retrytask.constant.RetryTaskConstants;
-import com.github.loadup.components.retrytask.model.RetryTask;
+import com.github.loadup.components.retrytask.constant.ScheduleExecuteType;
+import com.github.loadup.components.retrytask.factory.RetryStrategyFactory;
+import com.github.loadup.components.retrytask.manager.RetryTaskExecuteManager;
+import com.github.loadup.components.retrytask.manager.RetryTaskExecutor;
+import com.github.loadup.components.retrytask.model.RetryTaskDO;
 import com.github.loadup.components.retrytask.model.RetryTaskRequest;
-import com.github.loadup.components.retrytask.registry.TaskStrategyRegistry;
 import com.github.loadup.components.retrytask.repository.RetryTaskRepository;
-import com.github.loadup.components.retrytask.schedule.RetryTaskExecuter;
+import com.github.loadup.components.retrytask.transaction.RetryTaskTransactionSynchronization;
 import com.github.loadup.components.retrytask.util.RetryStrategyUtil;
+import com.github.loadup.components.tracer.TraceUtil;
+import io.vavr.control.Try;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * The implement of Core Service of retry component
@@ -59,42 +63,49 @@ public class RetryTaskServiceImpl implements RetryTaskService {
      * the repository service of retry task
      */
     @Resource
-    private RetryTaskRepository retryTaskRepository;
+    private RetryTaskRepository     retryTaskRepository;
+    @Resource
+    private RetryTaskExecuteManager retryTaskExecuteManager;
 
     /**
      * the manager of retry strategy
      */
-    @Autowired
-    private TaskStrategyRegistry retryTaskFactory;
+    @Resource
+    private RetryStrategyFactory taskStrategyFactory;
 
     /**
      * the factory of transaction templete
      */
-    @Autowired
+    @Resource
     private TransactionTemplate transactionTemplate;
 
     @Resource
-    private RetryTaskExecuter retryTaskExecuter;
+    private RetryTaskExecutor retryTaskExecutor;
 
     /**
      * @see RetryTaskService#register(RetryTaskRequest)
      */
     @Override
-    public RetryTask register(RetryTaskRequest retryTaskRequest) {
+    public RetryTaskDO register(RetryTaskRequest retryTaskRequest) {
 
         // check parameter
         checkParams(retryTaskRequest);
+        return Try.of(() -> {
+            RetryTaskDO retryTask = constructRetryTask(retryTaskRequest);
+            retryTaskRepository.save(retryTask);
+            processTask(retryTask, retryTaskRequest.getScheduleExecuteType());
+            return retryTask;
+        }).recover(throwable -> {
+            RetryTaskDO existRetryTask = retryTaskRepository.findByBizId(retryTaskRequest.getBusinessId(),
+                    retryTaskRequest.getBusinessType());
+            if (Objects.nonNull(existRetryTask)) {
+                log.warn("repeat creating retry task.bizType={},bizId={}", retryTaskRequest.getBusinessType(),
+                        retryTaskRequest.getBusinessId());
+                return existRetryTask;
+            }
+            throw new RuntimeException(throwable);
+        }).get();
 
-        // construct the retry task
-        RetryTask retryTask = constructRetryTask(retryTaskRequest);
-
-        // store the retry task
-        retryTaskRepository.save(retryTask);
-
-        // process the task
-        processTask(retryTask);
-
-        return retryTask;
     }
 
     /**
@@ -102,7 +113,6 @@ public class RetryTaskServiceImpl implements RetryTaskService {
      */
     @Override
     public void delete(String bizId, String bizType) {
-
         checkParams(bizId, bizType);
         retryTaskRepository.delete(bizId, bizType);
     }
@@ -111,24 +121,16 @@ public class RetryTaskServiceImpl implements RetryTaskService {
      * @see RetryTaskService#update(java.lang.String, java.lang.String)
      */
     @Override
+    @Transactional
     public void update(final String bizId, final String bizType) {
-
         // check params
         checkParams(bizId, bizType);
 
-        final RetryStrategyConfig retryStrategyConfig = retryTaskFactory.getStrategyConfig(bizType);
+        final RetryStrategyConfig retryStrategyConfig = taskStrategyFactory.getStrategyConfig(bizType);
 
-        // execute the transaction
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-
-                RetryTask retryTask = retryTaskRepository.lockByBizId(bizId, bizType);
-                RetryStrategyUtil.updateRetryTaskByStrategy(retryTask, retryStrategyConfig);
-                retryTaskRepository.save(retryTask);
-            }
-        });
+        RetryTaskDO retryTask = retryTaskRepository.lockByBizId(bizId, bizType);
+        RetryStrategyUtil.updateRetryTaskByStrategy(retryTask, retryStrategyConfig);
+        retryTaskRepository.save(retryTask);
     }
 
     /**
@@ -138,7 +140,7 @@ public class RetryTaskServiceImpl implements RetryTaskService {
 
         if (StringUtils.isBlank(bizId) || StringUtils.isBlank(bizType)) {
             log.warn("handleTask parameter is null. bizId=", bizId, ",bizType=", bizType);
-            throw new RuntimeException("handleTask parameter is null");
+            throw new IllegalArgumentException("handleTask parameter is null");
         }
     }
 
@@ -149,31 +151,34 @@ public class RetryTaskServiceImpl implements RetryTaskService {
 
         if (retryTaskRequest == null) {
             log.warn("parameter illegal,retryTaskRequest=null");
-            throw new RuntimeException("parameter illegal,retryTaskRequest=null");
+            throw new IllegalArgumentException("parameter illegal,retryTaskRequest=null");
         }
 
-        checkParams(retryTaskRequest.getBizId(), retryTaskRequest.getBizType());
+        checkParams(retryTaskRequest.getBusinessId(), retryTaskRequest.getBusinessType());
     }
 
     /**
      * construct retry task
      */
-    private RetryTask constructRetryTask(RetryTaskRequest retryTaskRequest) {
-        RetryTask retryTask = new RetryTask();
+    private RetryTaskDO constructRetryTask(RetryTaskRequest retryTaskRequest) {
+        RetryTaskDO retryTask = new RetryTaskDO();
         RetryStrategyConfig retryStrategyConfig =
-                retryTaskFactory.getStrategyConfig(retryTaskRequest.getBizType());
+                taskStrategyFactory.getStrategyConfig(retryTaskRequest.getBusinessType());
         retryTask.setId(IdUtils.simpleUUID()); // IdUtils.generateId(String.valueOf(retryTaskRequest.getBizId().hashCode() / 100)));
-        retryTask.setBusinessId(retryTaskRequest.getBizId());
-        retryTask.setBusinessType(retryTaskRequest.getBizType());
+        retryTask.setBusinessId(retryTaskRequest.getBusinessId());
+        retryTask.setBusinessType(retryTaskRequest.getBusinessType());
         retryTask.setRetryCount(0);
         retryTask.setNextRetryTime(
                 LocalDateTime.now().plus(Duration.ofSeconds(retryTaskRequest.getStartExecuteInterval())));
         retryTask.setMaxRetries(retryStrategyConfig.getMaxRetries());
-        retryTask.setIsProcessing(false);
+        retryTask.setProcessing(false);
         retryTask.setPayload(retryTaskRequest.getPayload());
         retryTask.setCreatedTime(LocalDateTime.now());
         retryTask.setUpdatedTime(LocalDateTime.now());
         retryTask.setPriority(retryTaskRequest.getPriority());
+        retryTask.setSource(StringUtils.defaultIfBlank(retryTaskRequest.getSource(), TraceUtil.getApplicationName()));
+        retryTask.setFailureCallbackUrl(retryTaskRequest.getFailureCallbackUrl());
+        retryTask.setTraceId(TraceUtil.getTracerId());
 
         return retryTask;
     }
@@ -181,17 +186,12 @@ public class RetryTaskServiceImpl implements RetryTaskService {
     /**
      * process after executing the task
      */
-    private void processTask(RetryTask retryTask) {
-
-        RetryStrategyConfig retryStrategyConfig = retryTaskFactory.getStrategyConfig(retryTask.getBusinessType());
-
-        // is need execute immediately
-        if (!retryStrategyConfig.isExecuteImmediately()) {
-            return;
+    private void processTask(RetryTaskDO retryTask, ScheduleExecuteType scheduleExecuteType) {
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
+            TransactionSynchronizationManager.registerSynchronization(
+                    new RetryTaskTransactionSynchronization(retryTask, this.retryTaskExecuteManager, scheduleExecuteType));
+        } else {
+            this.retryTaskExecuteManager.execute(retryTask, scheduleExecuteType);
         }
-
-        String businessKey = retryTask.getBusinessType() + RetryTaskConstants.INTERVAL_CHAR + retryTask.getBusinessId();
-
-        retryTaskExecuter.execute(businessKey);
     }
 }

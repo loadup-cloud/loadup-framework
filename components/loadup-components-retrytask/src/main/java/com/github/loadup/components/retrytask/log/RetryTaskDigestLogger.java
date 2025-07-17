@@ -1,13 +1,13 @@
 package com.github.loadup.components.retrytask.log;
 
-import com.github.loadup.components.retrytask.model.RetryTask;
+import com.github.loadup.components.retrytask.model.RetryTaskDO;
 
 public interface RetryTaskDigestLogger {
-    void logStart(RetryTask task);
+    void logStart(RetryTaskDO task);
 
-    void logSuccess(RetryTask task);
+    void logSuccess(RetryTaskDO task);
 
-    void logRetry(RetryTask task, Exception e);
+    void logRetry(RetryTaskDO task, Exception e);
 
-    void logFailed(RetryTask task, Exception e);
+    void logFailed(RetryTaskDO task, Exception e);
 }

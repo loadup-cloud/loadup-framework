@@ -28,28 +28,34 @@ package com.github.loadup.components.retrytask.strategy;
 
 import com.github.loadup.components.retrytask.enums.RetryStrategyType;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.RandomUtils;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @AllArgsConstructor
-public class IncrementingWaitStrategy implements RetryTaskStrategy {
-    private long initialSleepTime = 1;
-    private long increment        = 5;
+public class RandomWaitInterval implements RetryTaskInterval {
+    /**
+     * minimum
+     */
+    private long minimum = 1;
+    /**
+     * maximum
+     */
+    private long maximum = 10;
 
     @Override
     public String getStrategyType() {
-        return RetryStrategyType.INCREMENTING_WAIT_STRATEGY;
+        return RetryStrategyType.RANDOM_WAIT_STRATEGY;
     }
 
     /**
-     * 递增等待策略，根据初始值和递增值，等待时长依次递增。就本例而言：
-     * 第一次失败后，将依次等待1s；6s(1+5)；11(1+5+5)s；16(1+5+5+5)s；...
+     * 随机时长等待策略，可以设置一个随机等待的最大时长，也可以设置一个随机等待的时长区间。
      */
     @Override
     public LocalDateTime calculateNextRetryTime(int retryCount) {
-
-        long delay = initialSleepTime + (increment * (retryCount - 1));
+        long delay = Math.abs(RandomUtils.secureStrong().randomLong(minimum, maximum));
         return LocalDateTime.now().plus(delay, ChronoUnit.MILLIS);
+
     }
 }

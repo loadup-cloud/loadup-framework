@@ -26,7 +26,7 @@ package com.github.loadup.components.retrytask;
  * #L%
  */
 
-import com.github.loadup.components.retrytask.model.RetryTask;
+import com.github.loadup.components.retrytask.model.RetryTaskDO;
 import com.github.loadup.components.retrytask.model.RetryTaskRequest;
 
 /**
@@ -37,7 +37,7 @@ public interface RetryTaskService {
     /**
      * The register of retry component
      */
-    RetryTask register(RetryTaskRequest retryTaskRequest);
+    RetryTaskDO register(RetryTaskRequest retryTaskRequest);
 
     /**
      * delete the retry task

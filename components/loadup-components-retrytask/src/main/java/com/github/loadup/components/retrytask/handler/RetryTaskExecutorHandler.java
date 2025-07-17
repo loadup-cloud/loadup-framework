@@ -26,22 +26,18 @@ package com.github.loadup.components.retrytask.handler;
  * #L%
  */
 
-import com.github.loadup.components.retrytask.model.RetryTask;
+import com.github.loadup.components.retrytask.model.RetryTaskDO;
 import com.github.loadup.components.retrytask.model.RetryTaskExecuteResult;
 
 /**
  * retry task callback
  * the user must implement this interface
  */
-public interface RetryTaskExecutorHandler {
+public interface RetryTaskExecutorHandler<T> {
 
-    /**
-     * fetch bizType
-     */
-    String getTaskType();
 
     /**
      * 重试任务执行回调方法
      */
-    RetryTaskExecuteResult execute(RetryTask retryTask);
+    RetryTaskExecuteResult<T> execute(RetryTaskDO retryTask);
 }
