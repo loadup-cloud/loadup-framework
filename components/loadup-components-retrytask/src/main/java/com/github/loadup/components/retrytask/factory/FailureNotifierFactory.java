@@ -1,4 +1,4 @@
-package com.github.loadup.components.retrytask.registry;
+package com.github.loadup.components.retrytask.factory;
 
 import com.github.loadup.components.retrytask.model.RetryTaskDO;
 import com.github.loadup.components.retrytask.notifier.FailureNotifier;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class FailureNotifierRegistry {
+public class FailureNotifierFactory {
 
     private final List<FailureNotifier> notifiers = new ArrayList<>();
 

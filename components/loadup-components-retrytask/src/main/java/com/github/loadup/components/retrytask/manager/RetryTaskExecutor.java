@@ -28,12 +28,11 @@ package com.github.loadup.components.retrytask.manager;
 
 import com.github.loadup.components.retrytask.config.RetryStrategyConfig;
 import com.github.loadup.components.retrytask.constant.RetryTaskLoggerConstants;
+import com.github.loadup.components.retrytask.factory.FailureNotifierFactory;
 import com.github.loadup.components.retrytask.factory.RetryStrategyFactory;
 import com.github.loadup.components.retrytask.handler.RetryTaskExecutorHandler;
 import com.github.loadup.components.retrytask.log.RetryTaskDigestLogger;
 import com.github.loadup.components.retrytask.model.*;
-import com.github.loadup.components.retrytask.registry.FailureNotifierRegistry;
-import com.github.loadup.components.retrytask.registry.TaskHandlerRegistry;
 import com.github.loadup.components.retrytask.repository.RetryTaskHistoryRepository;
 import com.github.loadup.components.retrytask.repository.RetryTaskRepository;
 import com.github.loadup.components.retrytask.util.RetryStrategyUtil;
@@ -71,13 +70,11 @@ public class RetryTaskExecutor {
     private RetryStrategyFactory retryStrategyFactory;
 
 
-    @Autowired
-    private TaskHandlerRegistry taskHandlerRegistry;
 
     @Autowired
-    private FailureNotifierRegistry failureNotifierRegistry;
+    private FailureNotifierFactory failureNotifierFactory;
     @Autowired
-    private RetryTaskDigestLogger   digestLogger;
+    private RetryTaskDigestLogger  digestLogger;
 
     /**
      * execute
