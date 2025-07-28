@@ -35,7 +35,7 @@
         <!--    <module>components/gateway/loadup-components-gateway-starter</module>-->
         <!--    <module>components/gateway/loadup-components-gateway-app</module>-->
         <module>bom</module>
-        <module>launcher</module>
+<!--        <module>launcher</module>-->
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
