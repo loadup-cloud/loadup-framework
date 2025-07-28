@@ -27,155 +27,55 @@ package com.github.loadup.components.gateway.plugin.repository.file.model;
  * #L%
  */
 
-import static com.github.loadup.components.gateway.plugin.repository.file.util.FileRepositoryUtil.getColumns;
+import com.opencsv.bean.CsvBindByName;
+import lombok.Getter;
+import lombok.Setter;
+
 
 /**
  * <p>
  * ApiConfigRepository.java
  * </p>
  */
+@Getter
+@Setter
 public class ApiConfigRepository {
 
     /**
-     * File index 0
+     * openURl
      */
+    @CsvBindByName(column = "open_url")
     private String openURl;
     /**
-     * File index 1
+     * integrationUri
      */
+    @CsvBindByName(column = "integration_uri")
     private String integrationUri;
     /**
-     * File index 2
+     * securityStrategyCode
      */
+    @CsvBindByName(column = "security_strategy_code")
     private String securityStrategyCode;
     /**
-     * File index 3
+     * headerAssembler
      */
-    private String integrationHeaderAssemble;
+    @CsvBindByName(column = "request_header_assembler")
+    private String headerAssembler;
     /**
-     * File index 4
+     * bodyAssembler
      */
-    private String integrationAssemble;
+    @CsvBindByName(column = "request_body_assembler")
+    private String bodyAssembler;
     /**
-     * File index 5
+     * responseParser
      */
-    private String integrationParser;
+    @CsvBindByName(column = "response_parser")
+    private String responseParser;
     /**
-     * File index 6
+     * properties
      */
+    @CsvBindByName(column = "properties")
     private String communicationProperties;
 
-    public ApiConfigRepository() {}
 
-    /**
-     * Constructor.
-     */
-    public ApiConfigRepository(String line) {
-        String[] columns = getColumns(line);
-        this.setOpenURl(columns[0]);
-        this.setIntegrationUri(columns[1]);
-        this.setSecurityStrategyCode(columns[2]);
-        this.setIntegrationHeaderAssemble(columns[3]);
-        this.setIntegrationAssemble(columns[4]);
-        this.setIntegrationParser(columns[5]);
-        this.setCommunicationProperties(columns[6]);
-    }
-
-    /**
-     * Gets get open u rl.
-     */
-    public String getOpenURl() {
-        return openURl;
-    }
-
-    /**
-     * Sets set open u rl.
-     */
-    public void setOpenURl(String openURl) {
-        this.openURl = openURl;
-    }
-
-    /**
-     * Gets get integration uri.
-     */
-    public String getIntegrationUri() {
-        return integrationUri;
-    }
-
-    /**
-     * Sets set integration uri.
-     */
-    public void setIntegrationUri(String integrationUri) {
-        this.integrationUri = integrationUri;
-    }
-
-    /**
-     * Gets get security strategy code.
-     */
-    public String getSecurityStrategyCode() {
-        return securityStrategyCode;
-    }
-
-    /**
-     * Sets set security strategy code.
-     */
-    public void setSecurityStrategyCode(String securityStrategyCode) {
-        this.securityStrategyCode = securityStrategyCode;
-    }
-
-    /**
-     * Gets get integration header assemble.
-     */
-    public String getIntegrationHeaderAssemble() {
-        return integrationHeaderAssemble;
-    }
-
-    /**
-     * Sets set integration header assemble.
-     */
-    public void setIntegrationHeaderAssemble(String integrationHeaderAssemble) {
-        this.integrationHeaderAssemble = integrationHeaderAssemble;
-    }
-
-    /**
-     * Gets get integration assemble.
-     */
-    public String getIntegrationAssemble() {
-        return integrationAssemble;
-    }
-
-    /**
-     * Sets set integration assemble.
-     */
-    public void setIntegrationAssemble(String integrationAssemble) {
-        this.integrationAssemble = integrationAssemble;
-    }
-
-    /**
-     * Gets get integration parser.
-     */
-    public String getIntegrationParser() {
-        return integrationParser;
-    }
-
-    /**
-     * Sets set integration parser.
-     */
-    public void setIntegrationParser(String integrationParser) {
-        this.integrationParser = integrationParser;
-    }
-
-    /**
-     * Gets get communication properties.
-     */
-    public String getCommunicationProperties() {
-        return communicationProperties;
-    }
-
-    /**
-     * Sets set communication properties.
-     */
-    public void setCommunicationProperties(String communicationProperties) {
-        this.communicationProperties = communicationProperties;
-    }
 }

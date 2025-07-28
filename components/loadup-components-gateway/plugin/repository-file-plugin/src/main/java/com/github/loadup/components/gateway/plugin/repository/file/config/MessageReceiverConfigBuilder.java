@@ -28,6 +28,7 @@ package com.github.loadup.components.gateway.plugin.repository.file.config;
  */
 
 import com.github.loadup.components.gateway.facade.model.MessageReceiverConfigDto;
+import com.github.loadup.components.gateway.plugin.repository.file.model.ApiConfigRepository;
 import com.github.loadup.components.gateway.repository.common.AbstractInterfaceConfigBuilder;
 import org.springframework.stereotype.Component;
 ;
@@ -53,5 +54,9 @@ public class MessageReceiverConfigBuilder extends AbstractInterfaceConfigBuilder
         msgReceiver.setCertCode(securityStrategyCode);
 
         return msgReceiver;
+    }
+
+    public MessageReceiverConfigDto build(ApiConfigRepository apiConfig) {
+        return build(apiConfig.getOpenURl(), apiConfig.getSecurityStrategyCode());
     }
 }

@@ -28,6 +28,8 @@ package com.github.loadup.components.gateway.plugin.repository.file.config;
  */
 
 import com.github.loadup.components.gateway.facade.model.InterfaceConfigDto;
+import com.github.loadup.components.gateway.facade.model.MessageSenderConfigDto;
+import com.github.loadup.components.gateway.plugin.repository.file.model.ApiConfigRepository;
 import com.github.loadup.components.gateway.repository.common.AbstractInterfaceConfigBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -68,5 +70,11 @@ public class InterfaceConfigBuilder extends AbstractInterfaceConfigBuilder<Inter
         }
         interfaceConfigDto.setProperties(communicationProperties);
         return interfaceConfigDto;
+    }
+
+    public InterfaceConfigDto build(ApiConfigRepository apiConfig) {
+        return build(apiConfig.getOpenURl(), apiConfig.getSecurityStrategyCode(), apiConfig.getCommunicationProperties(),
+                apiConfig.getIntegrationUri());
+
     }
 }

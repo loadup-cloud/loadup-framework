@@ -35,19 +35,23 @@ import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.model.Properties;
 import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExt;
 import com.github.loadup.components.gateway.facade.model.*;
+import com.github.loadup.components.gateway.facade.util.CsvUtil;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.plugin.repository.file.config.*;
 import com.github.loadup.components.gateway.plugin.repository.file.model.ApiConfigRepository;
 import com.github.loadup.components.gateway.plugin.repository.file.model.CertConfigRepository;
 import com.github.loadup.components.gateway.plugin.repository.file.model.SpiConfigRepository;
 import com.github.loadup.components.gateway.plugin.repository.file.service.impl.ConfigFileBuilderImpl;
+import io.vavr.control.Try;
 import jakarta.annotation.Resource;
 import java.io.File;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
@@ -62,13 +66,13 @@ import org.springframework.stereotype.Component;
 @Extension(bizCode = "FILE")
 @Component("loadUpFileRepositoryExtPt")
 @Order(-1)
+@Slf4j
 public class FileRepositoryExt implements RepositoryServiceExt, ApplicationListener<ApplicationStartedEvent> {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileRepositoryExt.class);
     // 组装脚本存在的路径
-    private static Map<String, String> assembleTemplateCache = new HashMap<String, String>();
+    private static Map<String, String> assembleTemplateCache = new HashMap<>();
     // groovy java 脚本存在的路径
-    private static Map<String, String> parseTemplateCache = new HashMap<String, String>();
+    private static Map<String, String> parseTemplateCache = new HashMap<>();
     /**
      * 入参集合
      **/
@@ -318,40 +322,20 @@ public class FileRepositoryExt implements RepositoryServiceExt, ApplicationListe
         String spiPath = DefaultGatewayConfigs.get("spiConfigFilePath");
         String apiPath = DefaultGatewayConfigs.get("openapiConfigFilePath");
 
-        List<String> apiLines = new ArrayList<String>();
-        List<String> spiLines = new ArrayList<String>();
+        Try.run(() -> {
+            List<ApiConfigRepository> apiConfig = CsvUtil.readCSVFile(configFileBuilder.buildFilePath(rootPath, apiPath),
+                    ApiConfigRepository.class);
+            buildAPIConfig(apiConfig);
 
-        // 1. get content from CSV file
-        try {
-            spiLines = configFileBuilder.readToStringList(rootPath, spiPath);
-            apiLines = configFileBuilder.readToStringList(rootPath, apiPath);
-        } catch (Exception e) {
-            LogUtil.error(logger, "failed reading file to rows", e);
-        }
-        if (apiLines.size() > 1) {
-            // apiLines -> apiConfigs
-            List<ApiConfigRepository> apiConfigRepositories = new ArrayList<>(apiLines.size());
-            apiLines = apiLines.subList(1, apiLines.size());
-            apiLines.forEach(line -> {
-                ApiConfigRepository apiConfigRepository = new ApiConfigRepository(line);
-                apiConfigRepositories.add(apiConfigRepository);
-            });
+            List<SpiConfigRepository> spiConfig = CsvUtil.readCSVFile(configFileBuilder.buildFilePath(rootPath, spiPath),
+                    SpiConfigRepository.class);
+            buildSPIConfig(spiConfig);
 
-            buildAPIConfigNew(apiConfigRepositories);
-        }
+        }).onFailure((e) -> {
+            log.error("failed reading csv file {}", e);
 
-        if (spiLines.size() > 1) {
+        });
 
-            // spiLines -> spiConfigs
-            List<SpiConfigRepository> spiConfigRepositories = new ArrayList<>(spiLines.size());
-            spiLines = spiLines.subList(1, spiLines.size());
-            spiLines.forEach(line -> {
-                SpiConfigRepository spiConfigRepository = new SpiConfigRepository(line);
-                spiConfigRepositories.add(spiConfigRepository);
-            });
-
-            buildSPIConfigNew(spiConfigRepositories);
-        }
     }
 
     /**
@@ -368,8 +352,8 @@ public class FileRepositoryExt implements RepositoryServiceExt, ApplicationListe
         // 1. get content from CSV file
         assemblePath = configFileBuilder.buildFilePath(rootPath, assembleFilePath);
         parsePath = configFileBuilder.buildFilePath(rootPath, parseFilePath);
-        LogUtil.info(logger, "assemblePath config path is ", assemblePath);
-        LogUtil.info(logger, "parsePath config path is ", parsePath);
+        log.info("assemblePath config path is {}", assemblePath);
+        log.info("parsePath config path is {}", parsePath);
         File assembleFile = new File(assemblePath);
         File parsePathFile = new File(parsePath);
         if (assembleFile.exists() && parsePathFile.exists()) {
@@ -420,8 +404,7 @@ public class FileRepositoryExt implements RepositoryServiceExt, ApplicationListe
                 // 获取certConfig
                 CertConfigDto certConfigDto = certConfigBuilder.buildDto(certConfigRepository);
                 if (null == certConfigDto) {
-                    LogUtil.error(
-                            logger,
+                    log.error(
                             "failed building certConfig, securityStrategyCode: ",
                             certConfigRepository.getSecurityStrategyCode());
                 } else {
@@ -430,8 +413,7 @@ public class FileRepositoryExt implements RepositoryServiceExt, ApplicationListe
 
                 CertAlgorithmConfigDto certAlgorithmConfigDto = certAlgorithmConfigBuilder.build(certConfigRepository);
                 if (null == certAlgorithmConfigDto) {
-                    LogUtil.error(
-                            logger,
+                    log.error(
                             "failed building certAlgorithmConfig, securityStrategyCode: ",
                             certConfigRepository.getSecurityStrategyCode());
                 } else {
@@ -440,81 +422,47 @@ public class FileRepositoryExt implements RepositoryServiceExt, ApplicationListe
             });
 
         } catch (Exception e) {
-            LogUtil.error(logger, "init fail", e);
+            log.error("init fail", e);
         }
     }
 
-    private void buildAPIConfigNew(List<ApiConfigRepository> apiConfigs) {
-        int index = 0;
-        for (ApiConfigRepository apiConfig : apiConfigs) {
-            // index 0
-            String openURl = apiConfig.getOpenURl();
-            // index 1
-            String integrationUri = apiConfig.getIntegrationUri();
-            // index 2
-            String securityStrategyCode = apiConfig.getSecurityStrategyCode();
-            // index 3
-            String integrationHeaderAssemble = apiConfig.getIntegrationHeaderAssemble();
-            // index 4
-            String integrationAssemble = apiConfig.getIntegrationAssemble();
-            // index 5
-            String integrationParser = apiConfig.getIntegrationParser();
-            // index 6
-            String communicationProperties = apiConfig.getCommunicationProperties();
+    private void buildAPIConfig(List<ApiConfigRepository> apiConfigs) {
+        messageSenderConfigDtoList.addAll(apiConfigs.stream()
+                .map(messageSenderConfigBuilder::build)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
 
-            MessageSenderConfigDto msgSender = messageSenderConfigBuilder.build(apiConfig);
-            if (null != msgSender) {
-                messageSenderConfigDtoList.add(msgSender);
-                // messageSenderCache.put(msgSender.getMessageSenderId(), msgSender);
-            }
+        interfaceConfigDtoList.addAll(apiConfigs.stream()
+                .map(interfaceConfigBuilder::build)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
 
-            // build SPI interface
-            buildConfig(
-                    integrationUri,
-                    securityStrategyCode,
-                    integrationHeaderAssemble,
-                    integrationAssemble,
-                    integrationParser,
-                    communicationProperties,
-                    null,
-                    index);
-
-            // build OpenApi interface
-            com.github.loadup.components.gateway.core.model.Properties properties = new Properties();
-
-            properties.setProperties(communicationProperties);
-
-            String openApiMsgParser = properties.getProperty("OPENAPI_MSG_PARSER");
-            String msgBodyAssemble = properties.getProperty("MES_BODY_ASSEMBLE");
-            String msgHeaderAssemble = properties.getProperty("MSG_HEADER_ASSEMBLE");
-
-            buildConfig(
-                    openURl,
-                    securityStrategyCode,
-                    msgHeaderAssemble,
-                    msgBodyAssemble,
-                    openApiMsgParser,
-                    communicationProperties,
-                    integrationUri,
-                    index);
-
-            index++;
-        }
+        messageReceiverConfigDtoList.addAll(apiConfigs.stream()
+                .map(messageReceiverConfigBuilder::build)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
+        messageProcessConfigDtoList.addAll(apiConfigs.stream()
+                .map(apiConfig -> {
+                    messageProcessConfigBuilder.setAssembleTemplateCache(assembleTemplateCache);
+                    messageProcessConfigBuilder.setParseTemplateCache(parseTemplateCache);
+                    return messageProcessConfigBuilder.build(apiConfig);
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
+        communicationConfigDtoList.addAll(apiConfigs.stream()
+                .map(communicationConfigBuilder::build)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
     }
 
     /**
      *
      */
     @Deprecated
-    private void buildConfig(
-            String url,
-            String securityStrategyCode,
-            String integrationServiceRequestHeaderAssemble,
-            String integrationServiceRequestAssemble,
-            String integrationServiceResponseParser,
-            String communicationProperties,
-            String integrationInterfaceId,
-            int index) {
+    private void buildConfig(String url, String securityStrategyCode,
+                             String integrationServiceRequestHeaderAssemble, String integrationServiceRequestAssemble,
+                             String integrationServiceResponseParser, String communicationProperties,
+                             String integrationInterfaceId, int index) {
 
         Map<String, String> propertyMap = CommonUtil.Str2Kv(communicationProperties);
 
@@ -551,7 +499,7 @@ public class FileRepositoryExt implements RepositoryServiceExt, ApplicationListe
         }
 
         CommunicationConfigDto communicationConfigDto =
-                communicationConfigBuilder.build(url, securityStrategyCode, communicationProperties, index);
+                communicationConfigBuilder.build(url, securityStrategyCode, communicationProperties);
         if (StringUtils.isNotBlank(interfaceId)) {
             communicationConfigDto.setInterfaceId(interfaceId);
         }
@@ -560,7 +508,7 @@ public class FileRepositoryExt implements RepositoryServiceExt, ApplicationListe
         }
     }
 
-    private void buildSPIConfigNew(List<SpiConfigRepository> spiConfigs) {
+    private void buildSPIConfig(List<SpiConfigRepository> spiConfigs) {
         int index = 0;
         for (SpiConfigRepository spiConfig : spiConfigs) {
             // index 0
@@ -568,11 +516,11 @@ public class FileRepositoryExt implements RepositoryServiceExt, ApplicationListe
             // index 1
             String securityStrategyCode = spiConfig.getSecurityStrategyCode();
             // index 2
-            String integrationHeaderAssemble = spiConfig.getIntegrationHeaderAssemble();
+            String integrationHeaderAssemble = spiConfig.getHeaderAssembler();
             // index 3
-            String integrationAssemble = spiConfig.getIntegrationAssemble();
+            String integrationAssemble = spiConfig.getBodyAssembler();
             // index 4
-            String integrationParser = spiConfig.getIntegrationParser();
+            String integrationParser = spiConfig.getResponseParser();
             // index 5
             String communicationProperties = spiConfig.getCommunicationProperties();
             buildConfig(

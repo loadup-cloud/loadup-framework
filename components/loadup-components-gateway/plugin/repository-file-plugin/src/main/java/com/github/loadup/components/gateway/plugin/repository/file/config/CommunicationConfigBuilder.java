@@ -29,6 +29,8 @@ package com.github.loadup.components.gateway.plugin.repository.file.config;
 
 import com.github.loadup.components.gateway.core.common.Constant;
 import com.github.loadup.components.gateway.facade.model.CommunicationConfigDto;
+import com.github.loadup.components.gateway.facade.model.MessageProcessConfigDto;
+import com.github.loadup.components.gateway.plugin.repository.file.model.ApiConfigRepository;
 import com.github.loadup.components.gateway.repository.common.AbstractInterfaceConfigBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +50,11 @@ public class CommunicationConfigBuilder extends AbstractInterfaceConfigBuilder<C
     /**
      * generic config builder
      */
-    public CommunicationConfigDto build(
-            String url, String securityStrategyCode, String communicationProperties, int index) {
+    public CommunicationConfigDto build(ApiConfigRepository apiConfig) {
+        return build(apiConfig.getOpenURl(), apiConfig.getSecurityStrategyCode(), apiConfig.getCommunicationProperties());
+    }
+
+    public CommunicationConfigDto build(String url, String securityStrategyCode, String communicationProperties) {
         if (!validate(url, securityStrategyCode)) {
             return null;
         }
@@ -57,8 +62,7 @@ public class CommunicationConfigBuilder extends AbstractInterfaceConfigBuilder<C
         String interfaceId = generateBizKey(url);
         String protocol = getProtocol(url);
         // interfaceId_index
-        communicationConfigDto.setCommunicationId(
-                interfaceId.concat(Constant.UNDERSCORE).concat(String.valueOf(index)));
+        communicationConfigDto.setCommunicationId(interfaceId.concat(Constant.UNDERSCORE).concat("communication"));
         communicationConfigDto.setInterfaceId(interfaceId);
         communicationConfigDto.setUri(url);
         communicationConfigDto.setProperties(communicationProperties);

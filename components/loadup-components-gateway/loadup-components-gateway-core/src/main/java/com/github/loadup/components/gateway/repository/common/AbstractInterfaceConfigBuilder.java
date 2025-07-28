@@ -30,30 +30,23 @@ package com.github.loadup.components.gateway.repository.common;
 import com.github.loadup.components.gateway.common.util.UriUtil;
 import com.github.loadup.components.gateway.core.common.Constant;
 import com.github.loadup.components.gateway.core.model.communication.ProtocolType;
-import com.github.loadup.components.gateway.facade.util.LogUtil;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract interface relevant configuration builder
  */
+@Slf4j
 public abstract class AbstractInterfaceConfigBuilder<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractInterfaceConfigBuilder.class);
 
     private static final String URI_STRING = "uri";
 
     private static final String SECURITY_STRATEGY_CODE = "security_strategy_code";
-
-    private static final String HEADER_ASSEMBLE = "integration_service_request_header_assemble";
-
-    private static final String BODY_ASSEMBLE = "integration_service_request_assemble";
-
-    private static final String RESPONSE_PARSE = "integration_service_response_parser";
 
     /**
      * generate biz key
@@ -69,15 +62,9 @@ public abstract class AbstractInterfaceConfigBuilder<T> {
     public String generateBizKey(String url) {
         /**
          * integration_uri follow the pattern of
-         * http://domaneName/path
-         * https://domainName/path
-         * TR://domainName:12000/class/method
-         * SPRINGSPRINGBEAN://class/method
-         *
-         * http://wf.rate.query would be splited into [http, wf.rate.query]
-         * http://wf.com/rate/query.htm would be splited into [http, wf.com, rate, query.htm]
+         * RPC://domainName/class/method
+         * SPRINGBEAN://class/method
          */
-        // domainName.path || class.method
         return StringUtils.replace(UriUtil.getURIPath(url), Constant.PATH_SEPARATOR, Constant.PATH_CONJUNCTION);
     }
 
@@ -89,11 +76,9 @@ public abstract class AbstractInterfaceConfigBuilder<T> {
          * integration_uri follow the pattern of
          * http://domaneName/path
          * https://domainName/path
-         * TR://domainName:12000/class/method
-         * SPRINGSPRINGBEAN://class/method
+         * RPC://domainName/class/method
+         * SPRINGBEAN://class/method
          *
-         * http://wf.rate.query would be splited into [http, wf.rate.query]
-         * http://wf.com/rate/query.htm would be splited into [http, wf.com, rate, query.htm]
          */
         int index = StringUtils.indexOf(uri, Constant.URI_SEPARATOR);
         if (index >= 0 && index < (uri.length() - 3)) {
@@ -122,11 +107,9 @@ public abstract class AbstractInterfaceConfigBuilder<T> {
          * integration_uri follow the pattern of
          * http://domaneName/path
          * https://domainName/path
-         * TR://domainName:12000/class/method
-         * SPRINGSPRINGBEAN://class/method
+         * RPC://domainName/class/method
+         * SPRINGBEAN://class/method
          *
-         * http://wf.rate.query would be splited into [http, wf.rate.query]
-         * http://wf.com/rate/query.htm would be splited into [http, wf.com, rate, query.htm]
          */
         int index = StringUtils.indexOf(url, Constant.URI_SEPARATOR);
         if (index >= 0 && index < (url.length() - 3)) {
@@ -144,11 +127,9 @@ public abstract class AbstractInterfaceConfigBuilder<T> {
          * integration_uri follow the pattern of
          * http://domaneName/path
          * https://domainName/path
-         * TR://domainName:12000/class/method
-         * SPRINGSPRINGBEAN://class/method
+         * RPC://domainName/class/method
+         * SPRINGBEAN://class/method
          *
-         * http://wf.rate.query would be splited into [http, wf.rate.query]
-         * http://wf.com/rate/query.htm would be splited into [http, wf.com, rate, query.htm]
          */
         String uriString = UriUtil.getURIPath(url);
         String[] domainPath = StringUtils.split(uriString, Constant.PATH_SEPARATOR, 2);
@@ -173,9 +154,7 @@ public abstract class AbstractInterfaceConfigBuilder<T> {
         }
 
         if (CollectionUtils.isNotEmpty(invalidFieldList)) {
-            LogUtil.error(
-                    logger,
-                    "There are some invalid fields=",
+            log.error("There are some invalid fields=",
                     StringUtils.join(invalidFieldList.iterator(), Constant.COMMA_SEPARATOR));
             return false;
         } else {

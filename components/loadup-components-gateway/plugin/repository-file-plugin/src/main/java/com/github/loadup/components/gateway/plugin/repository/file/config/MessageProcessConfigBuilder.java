@@ -28,9 +28,15 @@ package com.github.loadup.components.gateway.plugin.repository.file.config;
  */
 
 import com.github.loadup.components.gateway.facade.model.MessageProcessConfigDto;
+import com.github.loadup.components.gateway.facade.model.MessageReceiverConfigDto;
+import com.github.loadup.components.gateway.plugin.repository.file.model.ApiConfigRepository;
 import com.github.loadup.components.gateway.repository.common.AbstractInterfaceConfigBuilder;
 import java.util.HashMap;
 import java.util.Map;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,20 +46,21 @@ import org.springframework.stereotype.Component;
  * MessageProcessConfig builder
  */
 @Component("gatewayFileMessageProcessConfigBuilder")
+@Getter
+@Setter
+@Slf4j
 public class MessageProcessConfigBuilder extends AbstractInterfaceConfigBuilder<MessageProcessConfigDto> {
 
-    /**
-     * logger
-     */
-    private static final Logger logger = LoggerFactory.getLogger(MessageProcessConfigBuilder.class);
-    // 组装脚本存在的路径
-    private Map<String, String> assembleTemplateCache = new HashMap<String, String>();
-    // groovy java 脚本存在的路径
-    private Map<String, String> parseTemplateCache = new HashMap<String, String>();
+    private Map<String, String> assembleTemplateCache = new HashMap<>();
+    private Map<String, String> parseTemplateCache    = new HashMap<>();
 
     /**
      * generic config build from template map
      */
+    public MessageProcessConfigDto build(ApiConfigRepository apiConfig) {
+        return build(apiConfig.getOpenURl(), apiConfig.getSecurityStrategyCode(), apiConfig.getHeaderAssembler(),
+                apiConfig.getBodyAssembler(), apiConfig.getResponseParser());
+    }
     public MessageProcessConfigDto build(
             String url, String securityStrategyCode, String headerAssemble, String bodyAssemble, String parser) {
         if (!validate(url, securityStrategyCode) || StringUtils.isBlank(parser)) {
@@ -74,19 +81,5 @@ public class MessageProcessConfigBuilder extends AbstractInterfaceConfigBuilder<
         messageProcessConfigDto.setAssembleTemplate(assembleTemplateCache.get(bodyAssemble));
         messageProcessConfigDto.setAssembleClassName(StringUtils.removeEnd(bodyAssemble, ".java"));
         return messageProcessConfigDto;
-    }
-
-    /**
-     *
-     */
-    public void setAssembleTemplateCache(Map<String, String> assembleTemplateCache) {
-        this.assembleTemplateCache = assembleTemplateCache;
-    }
-
-    /**
-     *
-     */
-    public void setParseTemplateCache(Map<String, String> parseTemplateCache) {
-        this.parseTemplateCache = parseTemplateCache;
     }
 }
