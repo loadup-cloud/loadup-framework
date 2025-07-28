@@ -34,7 +34,7 @@ import com.github.loadup.components.gateway.facade.model.CommunicationConfigurat
  * Extension communication client which can be implemented to support different communication
  * protocol.
  */
-public interface CommunicationProxyExtPt extends IExtensionPoint {
+public interface CommunicationProxyExt extends IExtensionPoint {
 
     /**
      * send message based on different communication configurations, such as http, SPRINGBean, etc.

@@ -37,7 +37,7 @@ import com.github.loadup.components.gateway.core.communication.common.model.Mess
 import com.github.loadup.components.gateway.core.model.CommunicationConfig;
 import com.github.loadup.components.gateway.core.model.common.MessageEnvelope;
 import com.github.loadup.components.gateway.core.model.communication.TransportProtocol;
-import com.github.loadup.components.gateway.facade.extpoint.CommunicationProxyExtPt;
+import com.github.loadup.components.gateway.facade.extpoint.CommunicationProxyExt;
 import com.github.loadup.components.gateway.facade.model.CommunicationConfiguration;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
@@ -80,7 +80,7 @@ public class ProxyClientServiceImpl implements CommunicationService, Initializin
         communicationConfigDto.setProperties(communicationConfig.getProperties().getConfigMap());
 
         String resultContent = extensionExecutor.execute(
-                CommunicationProxyExtPt.class,
+                CommunicationProxyExt.class,
                 BizScenario.valueOf(protocol),
                 ext -> ext.sendMessage(communicationConfigDto, messageContent));
 

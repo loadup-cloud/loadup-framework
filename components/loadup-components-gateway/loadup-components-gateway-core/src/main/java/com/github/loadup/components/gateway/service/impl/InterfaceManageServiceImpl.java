@@ -32,7 +32,7 @@ import com.github.loadup.commons.util.ValidateUtils;
 import com.github.loadup.components.gateway.common.convertor.InterfaceConfigConvertor;
 import com.github.loadup.components.gateway.core.common.Constant;
 import com.github.loadup.components.gateway.facade.api.InterfaceManageService;
-import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExtPt;
+import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExt;
 import com.github.loadup.components.gateway.facade.model.InterfaceDto;
 import com.github.loadup.components.gateway.facade.request.*;
 import com.github.loadup.components.gateway.facade.response.*;
@@ -215,8 +215,8 @@ public class InterfaceManageServiceImpl implements InterfaceManageService {
                 (Void) -> {});
     }
 
-    private RepositoryServiceExtPt getRepositoryService() {
-        RepositoryServiceExtPt result = null; // ExtensionPointLoader.get(RepositoryServiceExt.class,
+    private RepositoryServiceExt getRepositoryService() {
+        RepositoryServiceExt result = null; // ExtensionPointLoader.get(RepositoryServiceExt.class,
         //            SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE));
         return result;
     }

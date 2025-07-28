@@ -33,7 +33,7 @@ import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.extension.annotation.Extension;
 import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.prototype.util.SerializationUtil;
-import com.github.loadup.components.gateway.facade.extpoint.CommunicationProxyExtPt;
+import com.github.loadup.components.gateway.facade.extpoint.CommunicationProxyExt;
 import com.github.loadup.components.gateway.facade.model.CommunicationConfiguration;
 import com.github.loadup.components.gateway.facade.request.OpenApiTransRequest;
 import com.github.loadup.components.gateway.facade.response.OpenApiTransResponse;
@@ -55,7 +55,7 @@ import org.springframework.stereotype.Component;
  */
 @Extension(bizCode = "RPC")
 @Component("rpcCommunicationExt")
-public class RpcCommunicationExt implements CommunicationProxyExtPt {
+public class RpcCommunicationExt implements CommunicationProxyExt {
     /**
      * logger
      */

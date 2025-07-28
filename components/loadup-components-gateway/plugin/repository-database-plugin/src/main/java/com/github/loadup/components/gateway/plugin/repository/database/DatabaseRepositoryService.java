@@ -34,7 +34,7 @@ import com.github.loadup.components.gateway.common.util.InterfaceConfigUtil;
 import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.facade.enums.InterfaceStatus;
 import com.github.loadup.components.gateway.facade.enums.InterfaceType;
-import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExtPt;
+import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExt;
 import com.github.loadup.components.gateway.facade.model.*;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.plugin.repository.database.config.*;
@@ -73,7 +73,7 @@ import org.springframework.util.CollectionUtils;
 @Extension(bizCode = "DATABASE")
 @Component("loadUpDatabaseRepositoryExtPt")
 @Order(-2)
-public class DatabaseRepositoryService implements RepositoryServiceExtPt, ApplicationListener<ApplicationStartedEvent> {
+public class DatabaseRepositoryService implements RepositoryServiceExt, ApplicationListener<ApplicationStartedEvent> {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseRepositoryService.class);
 

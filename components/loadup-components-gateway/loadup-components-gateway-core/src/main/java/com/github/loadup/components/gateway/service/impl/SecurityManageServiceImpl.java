@@ -31,7 +31,7 @@ import com.github.loadup.commons.template.ServiceTemplate;
 import com.github.loadup.commons.util.ValidateUtils;
 import com.github.loadup.components.gateway.common.convertor.SecurityManageConvertor;
 import com.github.loadup.components.gateway.facade.api.SecurityManageService;
-import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExtPt;
+import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExt;
 import com.github.loadup.components.gateway.facade.model.SecurityConfigDto;
 import com.github.loadup.components.gateway.facade.request.CertConfigAddRequest;
 import com.github.loadup.components.gateway.facade.request.CertConfigQueryRequest;
@@ -53,8 +53,8 @@ public class SecurityManageServiceImpl implements SecurityManageService {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityManageServiceImpl.class);
 
-    private RepositoryServiceExtPt getRepositoryService() {
-        RepositoryServiceExtPt result = null; // ExtensionPointLoader.get(RepositoryServiceExt.class,
+    private RepositoryServiceExt getRepositoryService() {
+        RepositoryServiceExt result = null; // ExtensionPointLoader.get(RepositoryServiceExt.class,
         //            SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE));
         return result;
     }

@@ -30,7 +30,7 @@ package com.github.loadup.components.gateway.plugin;
 import com.github.loadup.components.extension.annotation.Extension;
 import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.commons.util.context.ApplicationContextUtils;
-import com.github.loadup.components.gateway.facade.extpoint.CommunicationProxyExtPt;
+import com.github.loadup.components.gateway.facade.extpoint.CommunicationProxyExt;
 import com.github.loadup.components.gateway.facade.model.CommunicationConfiguration;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.plugin.helper.ApiDefinition;
@@ -45,12 +45,12 @@ import org.springframework.stereotype.Component;
  */
 @Extension(bizCode = "SPRINGBEAN")
 @Component
-public class SpringBeanCommunicationExtPt implements CommunicationProxyExtPt {
+public class SpringBeanCommunicationExt implements CommunicationProxyExt {
 
     /**
      * logger
      */
-    private static final Logger log = LoggerFactory.getLogger(SpringBeanCommunicationExtPt.class);
+    private static final Logger log = LoggerFactory.getLogger(SpringBeanCommunicationExt.class);
 
     private BeanApiHelper beanApiHelper = BeanApiHelper.getInstance();
 

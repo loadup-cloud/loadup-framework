@@ -37,7 +37,7 @@ import com.github.loadup.components.gateway.core.common.Constant;
 import com.github.loadup.components.gateway.core.common.cache.CacheName;
 import com.github.loadup.components.gateway.core.model.*;
 import com.github.loadup.components.gateway.core.model.CertConfig;
-import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExtPt;
+import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExt;
 import com.github.loadup.components.gateway.facade.model.*;
 import jakarta.annotation.Resource;
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ public class RepositoryManager {
     public void saveOrUpdateInterface(InterfaceDto interfaceDto) {
         String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         extensionExecutor.executeVoid(
-                RepositoryServiceExtPt.class,
+                RepositoryServiceExt.class,
                 BizScenario.valueOf(bizCode),
                 ext -> ext.saveOrUpdateInterface(interfaceDto));
     }
@@ -137,9 +137,9 @@ public class RepositoryManager {
     private List<CertAlgorithmConfig> getCertAlgorithmConfigList() {
         String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<CertAlgorithmConfigDto> tempItems = extensionExecutor.execute(
-                RepositoryServiceExtPt.class,
+                RepositoryServiceExt.class,
                 BizScenario.valueOf(bizCode),
-                RepositoryServiceExtPt::loadCertAlgorithmConfig);
+                RepositoryServiceExt::loadCertAlgorithmConfig);
 
         List<CertAlgorithmConfig> certAlgorithmConfigList = null;
         if (CollectionUtils.isNotEmpty(tempItems)) {
@@ -169,7 +169,7 @@ public class RepositoryManager {
     private List<CertConfig> getCertConfigList() {
         String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<CertConfigDto> tempItems = extensionExecutor.execute(
-                RepositoryServiceExtPt.class, BizScenario.valueOf(bizCode), RepositoryServiceExtPt::loadCertConfig);
+                RepositoryServiceExt.class, BizScenario.valueOf(bizCode), RepositoryServiceExt::loadCertConfig);
 
         List<CertConfig> certConfigList = null;
         if (CollectionUtils.isNotEmpty(tempItems)) {
@@ -200,9 +200,9 @@ public class RepositoryManager {
     private List<MessageSenderConfig> getMessageSenderConfigList() {
         String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<MessageSenderConfigDto> tempItems = extensionExecutor.execute(
-                RepositoryServiceExtPt.class,
+                RepositoryServiceExt.class,
                 BizScenario.valueOf(bizCode),
-                RepositoryServiceExtPt::loadMessageSenderConfig);
+                RepositoryServiceExt::loadMessageSenderConfig);
 
         List<MessageSenderConfig> messageSenderConfigList = null;
         if (CollectionUtils.isNotEmpty(tempItems)) {
@@ -214,9 +214,9 @@ public class RepositoryManager {
     private List<MessageReceiverConfig> getMessageReceiverConfigList() {
         String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<MessageReceiverConfigDto> tempItems = extensionExecutor.execute(
-                RepositoryServiceExtPt.class,
+                RepositoryServiceExt.class,
                 BizScenario.valueOf(bizCode),
-                RepositoryServiceExtPt::loadMessageReceiverConfig);
+                RepositoryServiceExt::loadMessageReceiverConfig);
         List<MessageReceiverConfig> messageReceiverConfigList = null;
         if (CollectionUtils.isNotEmpty(tempItems)) {
             messageReceiverConfigList = MessageReceiverConfigConvertor.dtoList2ModelList(tempItems);
@@ -228,9 +228,9 @@ public class RepositoryManager {
 
         String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<CommunicationConfigDto> tempItems = extensionExecutor.execute(
-                RepositoryServiceExtPt.class,
+                RepositoryServiceExt.class,
                 BizScenario.valueOf(bizCode),
-                RepositoryServiceExtPt::loadCommunicationConfig);
+                RepositoryServiceExt::loadCommunicationConfig);
 
         List<CommunicationConfig> communicationConfigList = null;
         if (CollectionUtils.isNotEmpty(tempItems)) {
@@ -246,11 +246,11 @@ public class RepositoryManager {
 
         String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<InstConfigDto> tempItems = extensionExecutor.execute(
-                RepositoryServiceExtPt.class, BizScenario.valueOf(bizCode), RepositoryServiceExtPt::loadInstConfig);
+                RepositoryServiceExt.class, BizScenario.valueOf(bizCode), RepositoryServiceExt::loadInstConfig);
         List<InstInterfaceConfigDto> instInterfaceConfigDtos = extensionExecutor.execute(
-                RepositoryServiceExtPt.class,
+                RepositoryServiceExt.class,
                 BizScenario.valueOf(bizCode),
-                RepositoryServiceExtPt::loadInstInterfaceConfig);
+                RepositoryServiceExt::loadInstInterfaceConfig);
 
         List<InstConfig> instConfigList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(tempItems)) {
@@ -288,9 +288,9 @@ public class RepositoryManager {
     private List<MessageProcessConfig> getMessageProcessConfigList() {
         String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<MessageProcessConfigDto> tempItems = extensionExecutor.execute(
-                RepositoryServiceExtPt.class,
+                RepositoryServiceExt.class,
                 BizScenario.valueOf(bizCode),
-                RepositoryServiceExtPt::loadMessageProcessConfig);
+                RepositoryServiceExt::loadMessageProcessConfig);
 
         List<MessageProcessConfig> messageProcessConfigList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(tempItems)) {
@@ -302,9 +302,9 @@ public class RepositoryManager {
     private List<InterfaceConfig> getInterfaceConfigList() {
         String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<InterfaceConfigDto> tempItems = extensionExecutor.execute(
-                RepositoryServiceExtPt.class,
+                RepositoryServiceExt.class,
                 BizScenario.valueOf(bizCode),
-                RepositoryServiceExtPt::loadInterfaceConfig);
+                RepositoryServiceExt::loadInterfaceConfig);
 
         List<InterfaceConfig> interfaceConfigList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(tempItems)) {

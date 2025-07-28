@@ -36,7 +36,7 @@ import java.util.List;
  * repositoryServiceExt.java
  * </p>
  */
-public interface RepositoryServiceExtPt extends IExtensionPoint {
+public interface RepositoryServiceExt extends IExtensionPoint {
 
     /**
      * persist the interface data

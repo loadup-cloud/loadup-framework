@@ -32,7 +32,7 @@ import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.commons.util.ValidateUtils;
 import com.github.loadup.components.gateway.common.convertor.ClientConfigConvertor;
 import com.github.loadup.components.gateway.facade.api.ClientManageService;
-import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExtPt;
+import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExt;
 import com.github.loadup.components.gateway.facade.model.ClientConfigDto;
 import com.github.loadup.components.gateway.facade.request.*;
 import com.github.loadup.components.gateway.facade.response.*;
@@ -52,8 +52,8 @@ public class ClientManageServiceImpl implements ClientManageService {
     /**
      * get repository service from extension
      */
-    private RepositoryServiceExtPt getRepositoryService() {
-        RepositoryServiceExtPt result = null; // ExtensionPointLoader.get(RepositoryServiceExt.class,
+    private RepositoryServiceExt getRepositoryService() {
+        RepositoryServiceExt result = null; // ExtensionPointLoader.get(RepositoryServiceExt.class,
         //            SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE));
         return result;
     }

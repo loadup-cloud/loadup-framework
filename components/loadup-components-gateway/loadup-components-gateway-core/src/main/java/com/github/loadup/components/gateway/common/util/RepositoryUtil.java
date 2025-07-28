@@ -33,7 +33,7 @@ import com.github.loadup.components.gateway.cache.common.DefaultGatewayConfigs;
 import com.github.loadup.components.gateway.core.common.Constant;
 import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.common.enums.RepositoryType;
-import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExtPt;
+import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExt;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,9 +47,9 @@ public class RepositoryUtil {
     /**
      * get repository service
      */
-    public static RepositoryServiceExtPt getRepositoryService() {
-        RepositoryServiceExtPt result = ExtensionPointLoader.get(
-                RepositoryServiceExtPt.class, DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE));
+    public static RepositoryServiceExt getRepositoryService() {
+        RepositoryServiceExt result = ExtensionPointLoader.get(
+                RepositoryServiceExt.class, DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE));
         if (result == null) {
             throw new CommonException(GatewayErrorCode.PARAM_ILLEGAL, "Can not find repositoryService.");
         }

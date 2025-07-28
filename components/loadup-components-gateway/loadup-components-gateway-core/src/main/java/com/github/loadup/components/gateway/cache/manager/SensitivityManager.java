@@ -38,7 +38,7 @@ import org.springframework.stereotype.Component;
  * <p>
  * SensitivityManager.java
  */
-@Component("gateway.cache.manager.sensitivityManager")
+@Component("gatewaySensitivityManager")
 public class SensitivityManager {
 
     @Value("${shieldKeys:mobile,bankcard,id}")

@@ -33,7 +33,7 @@ import com.github.loadup.components.gateway.cache.common.DefaultGatewayConfigs;
 import com.github.loadup.components.gateway.certification.util.CommonUtil;
 import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.model.Properties;
-import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExtPt;
+import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExt;
 import com.github.loadup.components.gateway.facade.model.*;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.plugin.repository.file.config.*;
@@ -62,9 +62,9 @@ import org.springframework.stereotype.Component;
 @Extension(bizCode = "FILE")
 @Component("loadUpFileRepositoryExtPt")
 @Order(-1)
-public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationListener<ApplicationStartedEvent> {
+public class FileRepositoryExt implements RepositoryServiceExt, ApplicationListener<ApplicationStartedEvent> {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileRepositoryExtPt.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileRepositoryExt.class);
     // 组装脚本存在的路径
     private static Map<String, String> assembleTemplateCache = new HashMap<String, String>();
     // groovy java 脚本存在的路径
