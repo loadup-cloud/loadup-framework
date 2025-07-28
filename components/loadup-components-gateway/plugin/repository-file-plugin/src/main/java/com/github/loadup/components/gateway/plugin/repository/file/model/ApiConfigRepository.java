@@ -44,7 +44,7 @@ public class ApiConfigRepository {
     /**
      * openURl
      */
-    @CsvBindByName(column = "open_url")
+    @CsvBindByName(column = "request_uri")
     private String openURl;
     /**
      * integrationUri

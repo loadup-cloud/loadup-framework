@@ -27,29 +27,19 @@ package com.github.loadup.components.gateway.plugin.repository.file;
  * #L%
  */
 
-import com.github.loadup.components.extension.annotation.Extension;
 import com.github.loadup.commons.error.CommonException;
+import com.github.loadup.components.extension.annotation.Extension;
 import com.github.loadup.components.gateway.cache.common.DefaultGatewayConfigs;
 import com.github.loadup.components.gateway.certification.util.CommonUtil;
 import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
-import com.github.loadup.components.gateway.core.model.Properties;
 import com.github.loadup.components.gateway.facade.extpoint.RepositoryServiceExt;
 import com.github.loadup.components.gateway.facade.model.*;
 import com.github.loadup.components.gateway.facade.util.CsvUtil;
-import com.github.loadup.components.gateway.facade.util.LogUtil;
 import com.github.loadup.components.gateway.plugin.repository.file.config.*;
-import com.github.loadup.components.gateway.plugin.repository.file.model.ApiConfigRepository;
-import com.github.loadup.components.gateway.plugin.repository.file.model.CertConfigRepository;
-import com.github.loadup.components.gateway.plugin.repository.file.model.SpiConfigRepository;
+import com.github.loadup.components.gateway.plugin.repository.file.model.*;
 import com.github.loadup.components.gateway.plugin.repository.file.service.impl.ConfigFileBuilderImpl;
 import io.vavr.control.Try;
 import jakarta.annotation.Resource;
-import java.io.File;
-import java.net.URL;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -57,6 +47,11 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.net.URL;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -345,42 +340,38 @@ public class FileRepositoryExt implements RepositoryServiceExt, ApplicationListe
         String rootPath = DefaultGatewayConfigs.get("configRootPath");
         String assembleFilePath = DefaultGatewayConfigs.get("assembleTemplateFileDirectory");
         String parseFilePath = DefaultGatewayConfigs.get("parseTemplateFileDirectory");
-        Map<String, String> assembleMap = new HashMap<String, String>();
-        Map<String, String> parseMap = new HashMap<String, String>();
-        String assemblePath = "";
-        String parsePath = "";
-        // 1. get content from CSV file
-        assemblePath = configFileBuilder.buildFilePath(rootPath, assembleFilePath);
-        parsePath = configFileBuilder.buildFilePath(rootPath, parseFilePath);
+        Map<String, String> assembleMap = new HashMap<>();
+        Map<String, String> parseMap = new HashMap<>();
+        String assemblePath = configFileBuilder.buildFilePath(rootPath, assembleFilePath);
+        String parsePath = configFileBuilder.buildFilePath(rootPath, parseFilePath);
         log.info("assemblePath config path is {}", assemblePath);
         log.info("parsePath config path is {}", parsePath);
+        readJarTemplates(assembleFilePath, parseFilePath);
+
         File assembleFile = new File(assemblePath);
         File parsePathFile = new File(parsePath);
         if (assembleFile.exists() && parsePathFile.exists()) {
             assembleMap = configFileBuilder.readToStringForDirectory(assembleFile);
             parseMap = configFileBuilder.readToStringForDirectory(parsePathFile);
-        } else {
-            ClassLoader classLoader = this.getClass().getClassLoader();
-            URL assembleResource = classLoader.getResource(assembleFilePath);
-            if (Objects.isNull(assembleResource)) {
-                throw new IllegalArgumentException("The resource '" + assembleFilePath + "' was not found.");
-            }
-            URL parseResource = classLoader.getResource(assembleFilePath);
-            if (Objects.isNull(parseResource)) {
-                throw new IllegalArgumentException("The resource '" + parseFilePath + "' was not found.");
-            }
-
-            assemblePath = assembleResource.getPath();
-            parsePath = parseResource.getPath();
-
-            Map<String, String> assembleTemplateMap =
-                    configFileBuilder.readToStringForDirectory(assemblePath, assembleFilePath);
-            assembleTemplateCache.putAll(assembleTemplateMap);
-            Map<String, String> parseTemplateMap = configFileBuilder.readToStringForDirectory(parsePath, parseFilePath);
-            parseTemplateCache.putAll(parseTemplateMap);
         }
         assembleTemplateCache.putAll(assembleMap);
         parseTemplateCache.putAll(parseMap);
+    }
+
+    private void readJarTemplates(String assembleFilePath, String parseFilePath) {
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        URL assembleResource = classLoader.getResource(assembleFilePath);
+        if (Objects.nonNull(assembleResource)) {
+            Map<String, String> assembleTemplateMap = configFileBuilder.readToStringForDirectory(assembleResource.getPath(),
+                    assembleFilePath);
+            assembleTemplateCache.putAll(assembleTemplateMap);
+        }
+        URL parseResource = classLoader.getResource(assembleFilePath);
+        if (Objects.nonNull(parseResource)) {
+            Map<String, String> parseTemplateMap = configFileBuilder.readToStringForDirectory(parseResource.getPath(), parseFilePath);
+            parseTemplateCache.putAll(parseTemplateMap);
+        }
+
     }
 
     /**
