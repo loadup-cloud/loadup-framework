@@ -28,19 +28,15 @@ package com.github.loadup.components.gateway.plugin.repository.file.config;
  */
 
 import com.github.loadup.components.gateway.facade.model.MessageProcessConfigDto;
-import com.github.loadup.components.gateway.facade.model.MessageReceiverConfigDto;
 import com.github.loadup.components.gateway.plugin.repository.file.model.ApiConfigRepository;
 import com.github.loadup.components.gateway.repository.common.AbstractInterfaceConfigBuilder;
-import java.util.HashMap;
-import java.util.Map;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import java.util.*;
 
 /**
  * MessageProcessConfig builder
@@ -57,9 +53,13 @@ public class MessageProcessConfigBuilder extends AbstractInterfaceConfigBuilder<
     /**
      * generic config build from template map
      */
-    public MessageProcessConfigDto build(ApiConfigRepository apiConfig) {
-        return build(apiConfig.getOpenURl(), apiConfig.getSecurityStrategyCode(), apiConfig.getHeaderAssembler(),
-                apiConfig.getBodyAssembler(), apiConfig.getResponseParser());
+    public List<MessageProcessConfigDto> build(ApiConfigRepository apiConfig) {
+        List<MessageProcessConfigDto> list = new ArrayList<>();
+        list.add(build(apiConfig.getOpenURl(), apiConfig.getSecurityStrategyCode(), apiConfig.getHeaderAssembler(),
+                apiConfig.getBodyAssembler(), apiConfig.getResponseParser()));
+        list.add(build(apiConfig.getIntegrationUri(), apiConfig.getSecurityStrategyCode(), apiConfig.getHeaderAssembler(),
+                apiConfig.getBodyAssembler(), apiConfig.getResponseParser()));
+        return list;
     }
     public MessageProcessConfigDto build(
             String url, String securityStrategyCode, String headerAssemble, String bodyAssemble, String parser) {

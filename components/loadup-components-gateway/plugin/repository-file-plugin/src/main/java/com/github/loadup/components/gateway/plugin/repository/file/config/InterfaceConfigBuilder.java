@@ -28,13 +28,15 @@ package com.github.loadup.components.gateway.plugin.repository.file.config;
  */
 
 import com.github.loadup.components.gateway.facade.model.InterfaceConfigDto;
-import com.github.loadup.components.gateway.facade.model.MessageSenderConfigDto;
 import com.github.loadup.components.gateway.plugin.repository.file.model.ApiConfigRepository;
 import com.github.loadup.components.gateway.repository.common.AbstractInterfaceConfigBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Interface Config Builder
@@ -72,9 +74,12 @@ public class InterfaceConfigBuilder extends AbstractInterfaceConfigBuilder<Inter
         return interfaceConfigDto;
     }
 
-    public InterfaceConfigDto build(ApiConfigRepository apiConfig) {
-        return build(apiConfig.getOpenURl(), apiConfig.getSecurityStrategyCode(), apiConfig.getCommunicationProperties(),
-                apiConfig.getIntegrationUri());
-
+    public List<InterfaceConfigDto> build(ApiConfigRepository apiConfig) {
+        List<InterfaceConfigDto> list = new ArrayList<>();
+        list.add(build(apiConfig.getOpenURl(), apiConfig.getSecurityStrategyCode(), apiConfig.getCommunicationProperties(),
+                apiConfig.getIntegrationUri()));
+        list.add(build(apiConfig.getIntegrationUri(), apiConfig.getSecurityStrategyCode(), apiConfig.getCommunicationProperties(),
+                apiConfig.getIntegrationUri()));
+        return list;
     }
 }

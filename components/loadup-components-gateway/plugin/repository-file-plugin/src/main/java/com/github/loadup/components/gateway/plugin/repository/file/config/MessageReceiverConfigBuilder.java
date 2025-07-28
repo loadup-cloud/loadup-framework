@@ -31,6 +31,10 @@ import com.github.loadup.components.gateway.facade.model.MessageReceiverConfigDt
 import com.github.loadup.components.gateway.plugin.repository.file.model.ApiConfigRepository;
 import com.github.loadup.components.gateway.repository.common.AbstractInterfaceConfigBuilder;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+
 ;
 
 /**
@@ -56,7 +60,10 @@ public class MessageReceiverConfigBuilder extends AbstractInterfaceConfigBuilder
         return msgReceiver;
     }
 
-    public MessageReceiverConfigDto build(ApiConfigRepository apiConfig) {
-        return build(apiConfig.getOpenURl(), apiConfig.getSecurityStrategyCode());
+    public List<MessageReceiverConfigDto> build(ApiConfigRepository apiConfig) {
+        List<MessageReceiverConfigDto> list = new ArrayList<>();
+        list.add(build(apiConfig.getOpenURl(), apiConfig.getSecurityStrategyCode()));
+        list.add(build(apiConfig.getIntegrationUri(), apiConfig.getSecurityStrategyCode()));
+        return list;
     }
 }

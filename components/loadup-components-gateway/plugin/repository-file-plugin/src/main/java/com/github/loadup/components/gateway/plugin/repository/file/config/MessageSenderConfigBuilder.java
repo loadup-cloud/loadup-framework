@@ -37,6 +37,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * message sender config builder
  */
@@ -85,12 +88,10 @@ public class MessageSenderConfigBuilder extends AbstractInterfaceConfigBuilder<M
         return msgSender;
     }
 
-    public MessageSenderConfigDto build(ApiConfigRepository apiConfig) {
-        String domainString = getURIPathWithUrl(apiConfig.getOpenURl());
-        MessageSenderConfigDto msgSender = new MessageSenderConfigDto();
-        msgSender.setMessageSenderId(domainString);
-        msgSender.setMessageSenderName(domainString);
-        msgSender.setCertCode(apiConfig.getSecurityStrategyCode());
-        return msgSender;
+    public List<MessageSenderConfigDto> build(ApiConfigRepository apiConfig) {
+        List<MessageSenderConfigDto> list = new ArrayList<>();
+        list.add(build(apiConfig.getOpenURl(), apiConfig.getSecurityStrategyCode()));
+        list.add(build(apiConfig.getIntegrationUri(), apiConfig.getSecurityStrategyCode()));
+        return list;
     }
 }

@@ -29,12 +29,14 @@ package com.github.loadup.components.gateway.plugin.repository.file.config;
 
 import com.github.loadup.components.gateway.core.common.Constant;
 import com.github.loadup.components.gateway.facade.model.CommunicationConfigDto;
-import com.github.loadup.components.gateway.facade.model.MessageProcessConfigDto;
 import com.github.loadup.components.gateway.plugin.repository.file.model.ApiConfigRepository;
 import com.github.loadup.components.gateway.repository.common.AbstractInterfaceConfigBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * CommunicationConfig Builder
@@ -50,8 +52,11 @@ public class CommunicationConfigBuilder extends AbstractInterfaceConfigBuilder<C
     /**
      * generic config builder
      */
-    public CommunicationConfigDto build(ApiConfigRepository apiConfig) {
-        return build(apiConfig.getOpenURl(), apiConfig.getSecurityStrategyCode(), apiConfig.getCommunicationProperties());
+    public List<CommunicationConfigDto> build(ApiConfigRepository apiConfig) {
+        List<CommunicationConfigDto> list = new ArrayList<>();
+        list.add(build(apiConfig.getOpenURl(), apiConfig.getSecurityStrategyCode(), apiConfig.getCommunicationProperties()));
+        list.add(build(apiConfig.getIntegrationUri(), apiConfig.getSecurityStrategyCode(), apiConfig.getCommunicationProperties()));
+        return list;
     }
 
     public CommunicationConfigDto build(String url, String securityStrategyCode, String communicationProperties) {

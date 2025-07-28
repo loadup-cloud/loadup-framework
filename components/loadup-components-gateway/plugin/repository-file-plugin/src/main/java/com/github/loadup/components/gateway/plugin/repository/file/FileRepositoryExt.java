@@ -51,7 +51,6 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.net.URL;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -418,32 +417,19 @@ public class FileRepositoryExt implements RepositoryServiceExt, ApplicationListe
     }
 
     private void buildAPIConfig(List<ApiConfigRepository> apiConfigs) {
-        messageSenderConfigDtoList.addAll(apiConfigs.stream()
-                .map(messageSenderConfigBuilder::build)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
 
-        interfaceConfigDtoList.addAll(apiConfigs.stream()
-                .map(interfaceConfigBuilder::build)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
+        apiConfigs.forEach(apiConfig -> {
+            messageSenderConfigDtoList.addAll(messageSenderConfigBuilder.build(apiConfig));
+            interfaceConfigDtoList.addAll(interfaceConfigBuilder.build(apiConfig));
+            messageReceiverConfigDtoList.addAll(messageReceiverConfigBuilder.build(apiConfig));
 
-        messageReceiverConfigDtoList.addAll(apiConfigs.stream()
-                .map(messageReceiverConfigBuilder::build)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
-        messageProcessConfigDtoList.addAll(apiConfigs.stream()
-                .map(apiConfig -> {
-                    messageProcessConfigBuilder.setAssembleTemplateCache(assembleTemplateCache);
-                    messageProcessConfigBuilder.setParseTemplateCache(parseTemplateCache);
-                    return messageProcessConfigBuilder.build(apiConfig);
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
-        communicationConfigDtoList.addAll(apiConfigs.stream()
-                .map(communicationConfigBuilder::build)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
+            messageProcessConfigBuilder.setAssembleTemplateCache(assembleTemplateCache);
+            messageProcessConfigBuilder.setParseTemplateCache(parseTemplateCache);
+            messageProcessConfigDtoList.addAll(messageProcessConfigBuilder.build(apiConfig));
+
+            communicationConfigDtoList.addAll(communicationConfigBuilder.build(apiConfig));
+        });
+
     }
 
     /**
