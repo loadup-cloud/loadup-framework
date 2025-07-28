@@ -10,7 +10,7 @@
         <relativePath/>
     </parent>
     <groupId>com.github.loadup.framework</groupId>
-    <artifactId>loadup-parent</artifactId>
+    <artifactId>loadup-framework-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
@@ -21,7 +21,7 @@
         <module>components/loadup-components-cache</module>
         <!--        <module>components/cache/loadup-components-cache-test</module>-->
         <!--            <module>components/cache/loadup-components-cache-binder-redis</module>-->
-        <module>modules/upms/loadup-modules-upms</module>
+<!--        <module>modules/upms/loadup-modules-upms</module>-->
         <module>components/loadup-components-liquibase</module>
         <module>components/loadup-components-tracer</module>
         <module>components/loadup-components-database</module>

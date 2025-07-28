@@ -1,5 +1,0 @@
-com.github.loadup.modules.upms.test.Customer: {
-  firstName: "John",
-  lastName: "Doe",
-  age: 20
-}

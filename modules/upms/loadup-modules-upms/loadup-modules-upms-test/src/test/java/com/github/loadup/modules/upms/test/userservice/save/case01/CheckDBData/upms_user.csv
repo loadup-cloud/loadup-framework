@@ -1,3 +1,0 @@
-"columnName","dataType","comment","primaryKey","nullable","flag","value"
-"account","varchar(128)","id","true","false","C","123"
-"birthday","date","avatar","false","true","Y","$curDate"

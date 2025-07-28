@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.github.loadup.framework</groupId>
-        <artifactId>loadup-parent</artifactId>
+        <artifactId>loadup-framework-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>

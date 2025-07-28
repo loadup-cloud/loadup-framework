@@ -100,11 +100,10 @@ public class RetryTaskScheduler {
 
             if (retryTask == null) {
                 log.warn("the task is not existed ,bizId={}, bizType={} ", businessId, bizType);
-                return null;
             } else {
                 retryTaskExecutor.plainExecute(retryTask);
-                return null;
             }
+            return null;
         } catch (Exception e) {
             log.warn("the task executed failed  ,bizId={}, bizType={},ex={} ", businessId, bizType, e);
             return retryTask;
