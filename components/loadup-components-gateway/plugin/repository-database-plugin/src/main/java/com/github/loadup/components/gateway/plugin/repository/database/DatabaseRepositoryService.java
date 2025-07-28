@@ -27,7 +27,7 @@ package com.github.loadup.components.gateway.plugin.repository.database;
  * #L%
  */
 
-import com.alibaba.cola.extension.Extension;
+import com.github.loadup.components.extension.annotation.Extension;
 import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.components.gateway.common.exception.util.AssertUtil;
 import com.github.loadup.components.gateway.common.util.InterfaceConfigUtil;
@@ -70,7 +70,7 @@ import org.springframework.util.CollectionUtils;
 /**
  *
  */
-@Extension(bizId = "DATABASE")
+@Extension(bizCode = "DATABASE")
 @Component("loadUpDatabaseRepositoryExtPt")
 @Order(-2)
 public class DatabaseRepositoryService implements RepositoryServiceExtPt, ApplicationListener<ApplicationStartedEvent> {

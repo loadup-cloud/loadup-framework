@@ -27,7 +27,7 @@ package com.github.loadup.components.gateway.plugin;
  * #L%
  */
 
-import com.alibaba.cola.extension.Extension;
+import com.github.loadup.components.extension.annotation.Extension;
 import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.commons.util.context.ApplicationContextUtils;
 import com.github.loadup.components.gateway.facade.extpoint.CommunicationProxyExtPt;
@@ -43,7 +43,7 @@ import org.springframework.stereotype.Component;
 /**
  * SpringBean call implementation of communication plugin extension.
  */
-@Extension(bizId = "SPRINGBEAN")
+@Extension(bizCode = "SPRINGBEAN")
 @Component
 public class SpringBeanCommunicationExtPt implements CommunicationProxyExtPt {
 

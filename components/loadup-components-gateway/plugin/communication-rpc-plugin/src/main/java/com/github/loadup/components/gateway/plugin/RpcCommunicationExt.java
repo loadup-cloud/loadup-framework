@@ -29,8 +29,8 @@ package com.github.loadup.components.gateway.plugin;
 
 import static com.github.loadup.components.gateway.core.common.Constant.*;
 
-import com.alibaba.cola.extension.Extension;
 import com.github.loadup.commons.error.CommonException;
+import com.github.loadup.components.extension.annotation.Extension;
 import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.prototype.util.SerializationUtil;
 import com.github.loadup.components.gateway.facade.extpoint.CommunicationProxyExtPt;
@@ -53,7 +53,7 @@ import org.springframework.stereotype.Component;
 /**
  *
  */
-@Extension(bizId = "RPC")
+@Extension(bizCode = "RPC")
 @Component("rpcCommunicationExt")
 public class RpcCommunicationExt implements CommunicationProxyExtPt {
     /**

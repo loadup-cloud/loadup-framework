@@ -27,7 +27,7 @@ package com.github.loadup.components.gateway.facade.extpoint;
  * #L%
  */
 
-import com.alibaba.cola.extension.ExtensionPointI;
+import com.github.loadup.components.extension.api.IExtensionPoint;
 import com.github.loadup.components.gateway.facade.model.*;
 import java.util.List;
 
@@ -36,7 +36,7 @@ import java.util.List;
  * repositoryServiceExt.java
  * </p>
  */
-public interface RepositoryServiceExtPt extends ExtensionPointI {
+public interface RepositoryServiceExtPt extends IExtensionPoint {
 
     /**
      * persist the interface data

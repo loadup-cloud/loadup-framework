@@ -27,8 +27,8 @@ package com.github.loadup.components.gateway.core.communication.common.proxy;
  * #L%
  */
 
-import com.alibaba.cola.extension.BizScenario;
-import com.alibaba.cola.extension.ExtensionExecutor;
+import com.github.loadup.components.extension.core.BizScenario;
+import com.github.loadup.components.extension.exector.ExtensionExecutor;
 import com.github.loadup.components.gateway.core.common.Constant;
 import com.github.loadup.components.gateway.core.common.enums.MessageFormat;
 import com.github.loadup.components.gateway.core.communication.common.facade.CommunicationService;

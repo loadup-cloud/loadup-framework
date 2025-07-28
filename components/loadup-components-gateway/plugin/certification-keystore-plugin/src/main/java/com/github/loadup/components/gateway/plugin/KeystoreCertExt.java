@@ -27,7 +27,7 @@ package com.github.loadup.components.gateway.plugin;
  * #L%
  */
 
-import com.alibaba.cola.extension.Extension;
+import com.github.loadup.components.extension.annotation.Extension;
 import com.github.loadup.components.gateway.facade.enums.CertTypeEnum;
 import com.github.loadup.components.gateway.facade.extpoint.CertificationAccessExt;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
@@ -54,7 +54,7 @@ import org.springframework.stereotype.Component;
 /**
  * Certification Access service extension to fetch the certitication content from keystore
  */
-@Extension(bizId = "CERT_JKS_EXT")
+@Extension(bizCode = "CERT_JKS_EXT")
 @Component
 public class KeystoreCertExt implements ApplicationContextAware, CertificationAccessExt {
 

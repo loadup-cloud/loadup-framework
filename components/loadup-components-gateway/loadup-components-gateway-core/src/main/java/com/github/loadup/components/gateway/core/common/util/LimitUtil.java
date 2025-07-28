@@ -128,7 +128,7 @@ public class LimitUtil {
      *
      */
     public Boolean getOpenLimitService() {
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             return limitProdCenterQueryService.queryLimitConditionGroup().getOpenLimit();
         }
         return Boolean.parseBoolean(openLimitService);
@@ -138,7 +138,7 @@ public class LimitUtil {
      *
      */
     public String getLimitType() {
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             return limitProdCenterQueryService.queryLimitConditionGroup().getLimitType();
         }
         return limitType;
@@ -149,7 +149,7 @@ public class LimitUtil {
      */
     @Deprecated
     public String getInterfaceMaxLimitStr() {
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             return limitProdCenterQueryService.queryLimitConditionGroup().getInterfaceLimit();
         }
         return interfaceMaxLimitStr;
@@ -168,7 +168,7 @@ public class LimitUtil {
         url = interfaceConfig.getInterfaceId();
         entryKeyId = tenantId + interfaceConfig.getInterfaceId() + transactionType;
         LimitConfig interfaceLimitConfig = null;
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             interfaceLimitConfig = getInterfaceLimitConfig(url, entryKeyId);
         }
         // 新老限流配置兼容，如果配置中心没有配置新的限流配置模型，则读取老模型
@@ -197,7 +197,7 @@ public class LimitUtil {
         }
         limitConfigList.add(interfaceLimitConfig);
 
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             // 租户整体限流配置
             url = Constant.TENANT_COMMUNICATION_PROPERTIES_GROUP_URL;
             entryKeyId = tenantId;
@@ -281,7 +281,7 @@ public class LimitUtil {
      *
      */
     public String getTenantMaxLimitStr() {
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             return limitProdCenterQueryService.queryLimitConditionGroup().getTenantLimit();
         }
         return tenantMaxLimitStr;
@@ -291,7 +291,7 @@ public class LimitUtil {
      *
      */
     public String getClientMaxLimitStr() {
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             return limitProdCenterQueryService.queryLimitConditionGroup().getClientLimit();
         }
         return clientMaxLimitStr;
@@ -301,7 +301,7 @@ public class LimitUtil {
      *
      */
     public String getLimitTimeRule() {
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             return limitProdCenterQueryService.queryLimitConditionGroup().getDistributedLimitTimeRule();
         }
         return limitTimeRule;
@@ -311,7 +311,7 @@ public class LimitUtil {
      *
      */
     public String getFallbackStrategy() {
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             return limitProdCenterQueryService.queryLimitConditionGroup().getDistributedFallbackStrategy();
         }
         return fallbackStrategy;
@@ -321,7 +321,7 @@ public class LimitUtil {
      *
      */
     public String getFallbackInterfaceMaxLimit() {
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             return limitProdCenterQueryService
                     .queryLimitConditionGroup()
                     .getDistributedFallbackStandaloneInterfaceLimit();
@@ -333,7 +333,7 @@ public class LimitUtil {
      *
      */
     public String getFallbackClientMaxLimit() {
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             return limitProdCenterQueryService.queryLimitConditionGroup().getDistributedFallbackStandaloneClientLimit();
         }
         return fallbackClientMaxLimit;
@@ -343,7 +343,7 @@ public class LimitUtil {
      *
      */
     public String getFallbackTenantMaxLimit() {
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             return limitProdCenterQueryService.queryLimitConditionGroup().getDistributedFallbackStandaloneTenantLimit();
         }
         return fallbackTenantMaxLimit;

@@ -93,7 +93,7 @@ public class ShieldConfig {
      */
     private static Map<String, ShieldType> getProdShieldRules(String interfaceId, InterfaceType type) {
         Map<String, ShieldType> rules = new HashMap<>();
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             //                && StringUtils.isNotBlank(TenantUtil.getTenantId())) {
 
             CommunicationPropertiesGroup propertiesGroup =

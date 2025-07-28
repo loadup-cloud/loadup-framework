@@ -88,10 +88,10 @@ public class CertConfigCache {
      */
     public CertConfig getWithCertCode(String certCode) {
         RepositoryType repositoryType = RepositoryUtil.getRepositoryType();
-        if (repositoryType.isConfigInInternalCache()) {
+        if (repositoryType.isCacheable()) {
             return certConfigMap.get(certCode);
         }
-        if (repositoryType == RepositoryType.PRODCENTER) {
+        if (repositoryType == RepositoryType.CONFIG_CENTER) {
             String[] keys = CacheUtil.splitKey(certCode);
             if (ArrayUtils.isEmpty(keys) || keys.length < 4) {
                 return null;

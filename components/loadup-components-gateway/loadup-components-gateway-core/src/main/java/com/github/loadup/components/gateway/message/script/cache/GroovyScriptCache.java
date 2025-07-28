@@ -139,7 +139,7 @@ public class GroovyScriptCache {
         Lock readlock = lock.readLock();
         readlock.lock();
         try {
-            if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+            if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
                 // beanName format: url-roleType-interfaceType
                 if (InterfaceType.getEnumByCode(interfaceTypeStr) == InterfaceType.OPENAPI) {
                     if (RoleType.RECEIVER == roleType) {
@@ -193,7 +193,7 @@ public class GroovyScriptCache {
         Lock readlock = lock.readLock();
         readlock.lock();
         try {
-            if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+            if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
                 // beanName format: url-roleType-interfaceType
                 if (InterfaceType.getEnumByCode(interfaceTypeStr) == InterfaceType.OPENAPI) {
                     APIConditionGroup apiConditionGroup = null;

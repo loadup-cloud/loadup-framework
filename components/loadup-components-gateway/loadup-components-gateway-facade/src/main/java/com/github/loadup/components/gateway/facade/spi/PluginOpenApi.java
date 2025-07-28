@@ -27,7 +27,7 @@ package com.github.loadup.components.gateway.facade.spi;
  * #L%
  */
 
-import com.alibaba.cola.extension.Extension;
+import com.github.loadup.components.extension.annotation.Extension;
 import com.github.loadup.components.gateway.facade.request.PluginAPIRequest;
 import com.github.loadup.components.gateway.facade.response.PluginAPIResponse;
 

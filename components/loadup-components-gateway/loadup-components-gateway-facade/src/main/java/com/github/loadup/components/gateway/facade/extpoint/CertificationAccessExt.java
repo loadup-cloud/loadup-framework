@@ -27,7 +27,8 @@ package com.github.loadup.components.gateway.facade.extpoint;
  * #L%
  */
 
-import com.alibaba.cola.extension.Extension;
+import com.github.loadup.components.extension.annotation.Extension;
+import com.github.loadup.components.extension.api.IExtensionPoint;
 import com.github.loadup.components.gateway.facade.enums.CertTypeEnum;
 import java.io.IOException;
 
@@ -36,7 +37,7 @@ import java.io.IOException;
  * certification content through the different ways.
  */
 @Extension
-public interface CertificationAccessExt {
+public interface CertificationAccessExt extends IExtensionPoint {
 
     /**
      * <p>

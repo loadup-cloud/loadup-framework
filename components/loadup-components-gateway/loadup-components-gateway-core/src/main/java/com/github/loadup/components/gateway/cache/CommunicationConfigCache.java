@@ -104,10 +104,10 @@ public class CommunicationConfigCache {
      */
     public static CommunicationConfig getWithInterfaceId(String interfaceId) {
         RepositoryType repositoryType = RepositoryUtil.getRepositoryType();
-        if (repositoryType.isConfigInInternalCache()) {
+        if (repositoryType.isCacheable()) {
             return communicationConfigMapWithInterface.get(interfaceId);
         }
-        if (repositoryType == RepositoryType.PRODCENTER) {
+        if (repositoryType == RepositoryType.CONFIG_CENTER) {
             // will not use interfaceId to query config from PRODCENTER
             return null;
         }
@@ -119,10 +119,10 @@ public class CommunicationConfigCache {
      */
     public static CommunicationConfig getWithUrl(String url, String interfaceTypeStr) {
         RepositoryType repositoryType = RepositoryUtil.getRepositoryType();
-        if (repositoryType.isConfigInInternalCache()) {
+        if (repositoryType.isCacheable()) {
             return communicationConfigMapWithUrl.get(url);
         }
-        if (repositoryType == RepositoryType.PRODCENTER) {
+        if (repositoryType == RepositoryType.CONFIG_CENTER) {
             InterfaceType interfaceType = InterfaceType.getEnumByCode(interfaceTypeStr);
             AssertUtil.isNotNull(interfaceType, GatewayErrorCode.CONFIGURATION_NOT_FOUND);
             switch (interfaceType) {
@@ -147,7 +147,7 @@ public class CommunicationConfigCache {
      */
     public static CommunicationConfig getFromProdCenterWithOpenUrls(RoleType roleType, String... openUrls) {
         CommunicationConfig result = null;
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             for (String openUrl : openUrls) {
                 APIConditionGroup apiConditionGroup = null;
                 try {

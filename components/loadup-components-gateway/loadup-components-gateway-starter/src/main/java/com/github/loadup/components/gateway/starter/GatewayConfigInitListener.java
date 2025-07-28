@@ -30,6 +30,7 @@ package com.github.loadup.components.gateway.starter;
 import com.github.loadup.components.gateway.cache.manager.CacheManager;
 import com.github.loadup.components.gateway.cache.manager.SensitivityManager;
 import com.github.loadup.components.gateway.facade.util.LogUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 
 /**
  * Configuration initialization when ApplicationStartedEvent
@@ -46,35 +48,29 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Order(0)
-public class ConfigInitListener implements ApplicationListener<ApplicationStartedEvent> {
-    /**
-     * logger
-     */
-    private static final Logger logger = LoggerFactory.getLogger(ConfigInitListener.class);
+@Slf4j
+public class GatewayConfigInitListener implements ApplicationListener<ApplicationStartedEvent> {
 
     @Autowired
     @Qualifier("gatewayCacheManager")
     private CacheManager cacheManager;
 
     @Autowired
-    @Qualifier("gateway.cache.manager.sensitivityManager")
+    @Qualifier("gatewaySensitivityManager")
     private SensitivityManager sensitivityManager;
 
     /**
-     * init configuration when ApplicationStartedEvent
+     * init configuration when ApplicationStarted
      */
     @Override
     public void onApplicationEvent(ApplicationStartedEvent applicationEvent) {
-        long timeCost = System.currentTimeMillis();
-        LogUtil.info(logger, "========= Begin load configuration===========");
-        // assemble all the paramter from the out side
-
-        // validate if each of config file path is blank
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        log.info("========= Begin load configuration===========");
 
         cacheManager.init();
         sensitivityManager.init();
-
-        LogUtil.info(logger, "========= Finish load configuration version 2.0.10 ===========");
-        LogUtil.info(logger, "========= time cost is ", System.currentTimeMillis() - timeCost, " ms===========");
+        stopWatch.stop();
+        log.info("=========Finish load configuration,time cost is {} ms", stopWatch.getTotalTimeMillis());
     }
 }

@@ -27,7 +27,7 @@ package com.github.loadup.components.gateway.core.prototype.util;
  * #L%
  */
 
-import com.github.loadup.components.gateway.cache.common.SystemParameter;
+import com.github.loadup.components.gateway.cache.common.DefaultGatewayConfigs;
 import com.github.loadup.components.gateway.core.common.enums.InterfaceType;
 import com.github.loadup.components.gateway.core.communication.http.util.SensitivityUtil;
 import com.github.loadup.components.gateway.core.model.SensitivityProcessType;
@@ -139,7 +139,7 @@ public class MessageLoggerUtil {
 
     public static String getMaxLengthLog(String message) {
         try {
-            String maxLogLength = SystemParameter.getParameter("maxLogLength");
+            String maxLogLength = DefaultGatewayConfigs.get("maxLogLength");
             int maxLength = Integer.parseInt(maxLogLength);
             if (message.length() > maxLength) {
                 message = StringUtils.substring(message, 0, maxLength) + "...";

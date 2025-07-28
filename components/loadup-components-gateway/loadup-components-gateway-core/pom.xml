@@ -166,6 +166,15 @@
             <artifactId>loadup-commons-util</artifactId>
             <version>${loadup.framework.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.loadup.framework</groupId>
+            <artifactId>loadup-components-extension</artifactId>
+            <version>${loadup.framework.version}</version>
+        </dependency>
 
     </dependencies>
 

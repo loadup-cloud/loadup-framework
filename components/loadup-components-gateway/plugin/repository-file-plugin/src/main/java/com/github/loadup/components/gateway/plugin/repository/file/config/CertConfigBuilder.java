@@ -27,9 +27,8 @@ package com.github.loadup.components.gateway.plugin.repository.file.config;
  * #L%
  */
 
-import com.alibaba.cola.extension.BizScenario;
-import com.alibaba.cola.extension.ExtensionException;
-import com.alibaba.cola.extension.ExtensionExecutor;
+import com.github.loadup.components.extension.core.BizScenario;
+import com.github.loadup.components.extension.exector.ExtensionExecutor;
 import com.github.loadup.components.gateway.certification.cache.CacheUtil;
 import com.github.loadup.components.gateway.certification.exception.CertificationErrorCode;
 import com.github.loadup.components.gateway.certification.exception.CertificationException;
@@ -155,9 +154,6 @@ public class CertConfigBuilder extends AbstractCertAlgorithmConfigBuilder<CertCo
                     return null;
                 });
             }
-        } catch (ExtensionException e) {
-            throw new CertificationException(
-                    CertificationErrorCode.GET_CERT_CONTENT_ERROR, "no ext for bizScene=" + bizScene);
         } catch (CertificationException e) {
             LogUtil.error(logger, e, "get certContent CertificationException,bizScene=", bizScene);
         } catch (Exception e) {

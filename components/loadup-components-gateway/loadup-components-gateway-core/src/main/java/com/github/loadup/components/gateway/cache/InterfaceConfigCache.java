@@ -85,10 +85,10 @@ public class InterfaceConfigCache {
      */
     public static InterfaceConfig getWithInterfaceId(String interfaceId, RoleType roleType, String interfaceTypeStr) {
         RepositoryType repositoryType = RepositoryUtil.getRepositoryType();
-        if (repositoryType.isConfigInInternalCache()) {
+        if (repositoryType.isCacheable()) {
             return interfaceConfigMap.get(interfaceId);
         }
-        if (repositoryType == RepositoryType.PRODCENTER) {
+        if (repositoryType == RepositoryType.CONFIG_CENTER) {
             // will not use interfaceId to query config from PRODCENTER
             InterfaceType interfaceType = InterfaceType.getEnumByCode(interfaceTypeStr);
             AssertUtil.isNotNull(interfaceType, GatewayErrorCode.CONFIGURATION_NOT_FOUND);
@@ -122,7 +122,7 @@ public class InterfaceConfigCache {
      */
     public static InterfaceConfig getIntegratorConfigWithOpenUrls(String... openUrls) {
         InterfaceConfig result = null;
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             for (String openUrl : openUrls) {
                 APIConditionGroup apiConditionGroup = null;
                 try {

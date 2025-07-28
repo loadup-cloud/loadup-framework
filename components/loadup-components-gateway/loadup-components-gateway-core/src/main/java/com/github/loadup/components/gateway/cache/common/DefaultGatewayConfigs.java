@@ -28,12 +28,12 @@ package com.github.loadup.components.gateway.cache.common;
  */
 
 import com.github.loadup.components.gateway.core.common.Constant;
-import com.github.loadup.components.gateway.facade.util.LogUtil;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
@@ -41,38 +41,33 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * <p>
- * SystemParameter.java
- * </p>
+ * DefaultGatewayConfigs
  */
 @Component("gatewaySystemParameter")
 @Order(Integer.MIN_VALUE)
-public class SystemParameter implements ApplicationListener<ApplicationStartedEvent> {
+@Slf4j
+public class DefaultGatewayConfigs implements ApplicationListener<ApplicationStartedEvent> {
 
-    private static final Logger logger = LoggerFactory.getLogger(SystemParameter.class);
-    /**
-     * system parameters
-     */
-    public static Map<String, String> systemParameters = new ConcurrentHashMap<>();
+    private static Map<String, String> parameters = new ConcurrentHashMap<>();
     /**
      * configRootPathPropertyName can be set in JVM argument for configuration root path
      */
     @Value("${gateway.config.root.path.property.name:gateway.config.rootpath}")
-    private String configRootPathPropertyName;
+    private        String              configRootPathPropertyName;
     /**
-     * the configuration file path of SECURITY_STRATEGY_CONF
+     * the configuration file path of SECURITY_STRATEGY
      */
-    @Value("${cert.algorithm.config.file.path:config/gateway/SECURITY_STRATEGY_CONF.csv}")
+    @Value("${cert.algorithm.config.file.path:config/gateway/SECURITY_STRATEGY.csv}")
     private String certAlgorithmConfigFilePath;
     /**
-     * the configuration file path of OPENAPI_CONF
+     * the configuration file path of OPENAPI
      */
-    @Value("${openapi.config.file.path:config/gateway/OPENAPI_CONF.csv}")
+    @Value("${openapi.config.file.path:config/gateway/OPENAPI.csv}")
     private String openapiConfigFilePath;
     /**
-     * the configuration file path of SPI_CONF
+     * the configuration file path of SPI
      */
-    @Value("${spi.config.file.path:config/gateway/SPI_CONF.csv}")
+    @Value("${spi.config.file.path:config/gateway/SPI.csv}")
     private String spiConfigFilePath;
     /**
      * the configuration file path of assembler
@@ -92,43 +87,41 @@ public class SystemParameter implements ApplicationListener<ApplicationStartedEv
     private String maxLogLength;
 
     /**
-     * Put parameter.
+     * Put parameter
      */
-    public static void putParameter(String key, String value) {
-        systemParameters.put(key, value);
+    public static void put(String key, String value) {
+        parameters.put(key, value);
     }
 
     /**
-     * Gets get parameter.
+     *  Get parameter
      */
-    public static String getParameter(String key) {
-        return systemParameters.get(key);
+    public static String get(String key) {
+        return parameters.get(key);
     }
 
     /**
-     * Print.
+     * Print
      */
-    public static void printLog() {
-        systemParameters.forEach((k, v) -> LogUtil.debug(logger, "system parameter key is ", k, ", value is ", v));
+    public static void log() {
+        parameters.forEach((k, v) -> log.debug("system parameter key is {}, value is {}", k, v));
     }
 
     @Override
     public void onApplicationEvent(ApplicationStartedEvent event) {
         // check if there is an argument declared with configRootPathPropertyName in JVM
-        String configRootPath = StringUtils.defaultIfBlank(
-                System.getProperty(configRootPathPropertyName),
+        String configRootPath = StringUtils.defaultIfBlank(System.getProperty(configRootPathPropertyName),
                 this.getClass().getResource("/").getPath());
 
-        SystemParameter.putParameter("configRootPathPropertyName", configRootPathPropertyName);
-        SystemParameter.putParameter("certAlgorithmConfigFilePath", certAlgorithmConfigFilePath);
-        SystemParameter.putParameter("openapiConfigFilePath", openapiConfigFilePath);
-        SystemParameter.putParameter("spiConfigFilePath", spiConfigFilePath);
-        SystemParameter.putParameter("assembleTemplateFileDirectory", assembleTemplateFileDirectory);
-        SystemParameter.putParameter("parseTemplateFileDirectory", parseTemplateFileDirectory);
-        SystemParameter.putParameter("configRootPath", configRootPath);
-        SystemParameter.putParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE, repositoryExtendPoint);
-        SystemParameter.putParameter("maxLogLength", maxLogLength);
-
-        SystemParameter.printLog();
+        DefaultGatewayConfigs.put("configRootPathPropertyName", configRootPathPropertyName);
+        DefaultGatewayConfigs.put("certAlgorithmConfigFilePath", certAlgorithmConfigFilePath);
+        DefaultGatewayConfigs.put("openapiConfigFilePath", openapiConfigFilePath);
+        DefaultGatewayConfigs.put("spiConfigFilePath", spiConfigFilePath);
+        DefaultGatewayConfigs.put("assembleTemplateFileDirectory", assembleTemplateFileDirectory);
+        DefaultGatewayConfigs.put("parseTemplateFileDirectory", parseTemplateFileDirectory);
+        DefaultGatewayConfigs.put("configRootPath", configRootPath);
+        DefaultGatewayConfigs.put(Constant.REPOSITORY_EXTPOINT_BIZCODE, repositoryExtendPoint);
+        DefaultGatewayConfigs.put("maxLogLength", maxLogLength);
+        DefaultGatewayConfigs.log();
     }
 }

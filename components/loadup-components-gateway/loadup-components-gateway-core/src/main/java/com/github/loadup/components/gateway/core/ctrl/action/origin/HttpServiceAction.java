@@ -120,7 +120,7 @@ public class HttpServiceAction extends AbstractBusinessAction {
         gatewayRuntimeProcessContext.getRequestMessage().setSignatureCertCode(senderCertCode);
         gatewayRuntimeProcessContext.setRequesterCommunicationConfig(senderCommunicationConfig);
         CommunicationConfig receiverCommunicationConfig = null;
-        if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+        if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
             // get receiver communication config from product center
             receiverCommunicationConfig = CommunicationConfigCache.getFromProdCenterWithOpenUrls(
                     RoleType.RECEIVER,

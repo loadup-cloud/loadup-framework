@@ -27,7 +27,8 @@ package com.github.loadup.components.gateway.facade.extpoint;
  * #L%
  */
 
-import com.alibaba.cola.extension.Extension;
+import com.github.loadup.components.extension.annotation.Extension;
+
 import java.util.Map;
 
 /**

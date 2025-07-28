@@ -27,81 +27,63 @@ package com.github.loadup.components.gateway.core.common.enums;
  * #L%
  */
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import java.util.Arrays;
+
 /**
  *
  */
+@Getter
+@AllArgsConstructor
 public enum RepositoryType {
 
     /**
      * file
      */
-    FILE("FILE", true, "file repository, config in gatewaylite local cache"),
+    FILE("FILE", true, "file repository, config in gateway local cache"),
 
     /**
      * database
      */
-    DATABASE("DATABASE", true, "database repository, config in gatewaylite local cache"),
+    DATABASE("DATABASE", true, "database repository, config in gateway local cache"),
 
     /**
-     * product center
+     * config center
      */
-    PRODCENTER("PRODCENTER", false, "product center repository, config in prodcenter query client"),
+    CONFIG_CENTER("CONFIG_CENTER", false, "config center repository, config in remote query client"),
     ;
 
     /**
-     * 代码
+     * code
      */
     private String code;
 
     /**
-     * whether config in gatewaylite internal cache
+     * whether config in  internal cache
      */
-    private boolean configInInternalCache;
+    private Boolean cacheable;
 
     /**
-     * 描述
+     * message
      */
     private String message;
 
     /**
-     * 构造方法
+     * getByCode
+     * @return RepositoryType, default RepositoryType.FILE
      */
-    private RepositoryType(String code, boolean configInInternalCache, String message) {
-        this.code = code;
-        this.configInInternalCache = configInInternalCache;
-        this.message = message;
+    public static RepositoryType getByCode(String code) {
+        return Arrays.stream(RepositoryType.values()).filter(status -> status.getCode().equalsIgnoreCase(code)).findFirst().orElse(
+                RepositoryType.FILE);
     }
 
     /**
-     * 根据代码获取枚举
+     * isCached or not
      */
-    public static RepositoryType getEnumByCode(String code) {
-        for (RepositoryType status : RepositoryType.values()) {
-            if (status.getCode().equalsIgnoreCase(code)) {
-                return status;
-            }
-        }
-        return null;
+    public boolean isCacheable() {
+        return cacheable;
     }
 
-    /**
-     *
-     */
-    public String getCode() {
-        return code;
-    }
-
-    /**
-     *
-     */
-    public boolean isConfigInInternalCache() {
-        return configInInternalCache;
-    }
-
-    /**
-     *
-     */
-    public String getMessage() {
-        return message;
-    }
 }

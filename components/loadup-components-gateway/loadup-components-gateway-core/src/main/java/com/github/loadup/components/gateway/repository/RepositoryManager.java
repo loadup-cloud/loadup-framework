@@ -27,9 +27,9 @@ package com.github.loadup.components.gateway.repository;
  * #L%
  */
 
-import com.alibaba.cola.extension.BizScenario;
-import com.alibaba.cola.extension.ExtensionExecutor;
-import com.github.loadup.components.gateway.cache.common.SystemParameter;
+import com.github.loadup.components.extension.core.BizScenario;
+import com.github.loadup.components.extension.exector.ExtensionExecutor;
+import com.github.loadup.components.gateway.cache.common.DefaultGatewayConfigs;
 import com.github.loadup.components.gateway.certification.cache.CacheUtil;
 import com.github.loadup.components.gateway.common.convertor.*;
 import com.github.loadup.components.gateway.common.util.UriUtil;
@@ -44,10 +44,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -55,16 +55,16 @@ import org.springframework.stereotype.Component;
  * RepositoryManager.java
  * </p>
  */
+@Slf4j
 @Component("repositoryManager")
 public class RepositoryManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(RepositoryManager.class);
 
     @Resource
     private ExtensionExecutor extensionExecutor;
 
     public void saveOrUpdateInterface(InterfaceDto interfaceDto) {
-        String bizCode = SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE);
+        String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         extensionExecutor.executeVoid(
                 RepositoryServiceExtPt.class,
                 BizScenario.valueOf(bizCode),
@@ -135,7 +135,7 @@ public class RepositoryManager {
     }
 
     private List<CertAlgorithmConfig> getCertAlgorithmConfigList() {
-        String bizCode = SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE);
+        String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<CertAlgorithmConfigDto> tempItems = extensionExecutor.execute(
                 RepositoryServiceExtPt.class,
                 BizScenario.valueOf(bizCode),
@@ -167,7 +167,7 @@ public class RepositoryManager {
     }
 
     private List<CertConfig> getCertConfigList() {
-        String bizCode = SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE);
+        String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<CertConfigDto> tempItems = extensionExecutor.execute(
                 RepositoryServiceExtPt.class, BizScenario.valueOf(bizCode), RepositoryServiceExtPt::loadCertConfig);
 
@@ -198,7 +198,7 @@ public class RepositoryManager {
     }
 
     private List<MessageSenderConfig> getMessageSenderConfigList() {
-        String bizCode = SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE);
+        String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<MessageSenderConfigDto> tempItems = extensionExecutor.execute(
                 RepositoryServiceExtPt.class,
                 BizScenario.valueOf(bizCode),
@@ -212,7 +212,7 @@ public class RepositoryManager {
     }
 
     private List<MessageReceiverConfig> getMessageReceiverConfigList() {
-        String bizCode = SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE);
+        String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<MessageReceiverConfigDto> tempItems = extensionExecutor.execute(
                 RepositoryServiceExtPt.class,
                 BizScenario.valueOf(bizCode),
@@ -226,7 +226,7 @@ public class RepositoryManager {
 
     private List<CommunicationConfig> getCommunicationConfigList() {
 
-        String bizCode = SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE);
+        String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<CommunicationConfigDto> tempItems = extensionExecutor.execute(
                 RepositoryServiceExtPt.class,
                 BizScenario.valueOf(bizCode),
@@ -244,7 +244,7 @@ public class RepositoryManager {
      */
     private List<InstConfig> getInstConfigList() {
 
-        String bizCode = SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE);
+        String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<InstConfigDto> tempItems = extensionExecutor.execute(
                 RepositoryServiceExtPt.class, BizScenario.valueOf(bizCode), RepositoryServiceExtPt::loadInstConfig);
         List<InstInterfaceConfigDto> instInterfaceConfigDtos = extensionExecutor.execute(
@@ -286,7 +286,7 @@ public class RepositoryManager {
     }
 
     private List<MessageProcessConfig> getMessageProcessConfigList() {
-        String bizCode = SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE);
+        String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<MessageProcessConfigDto> tempItems = extensionExecutor.execute(
                 RepositoryServiceExtPt.class,
                 BizScenario.valueOf(bizCode),
@@ -300,7 +300,7 @@ public class RepositoryManager {
     }
 
     private List<InterfaceConfig> getInterfaceConfigList() {
-        String bizCode = SystemParameter.getParameter(Constant.REPOSITORY_EXTPOINT_BIZCODE);
+        String bizCode = DefaultGatewayConfigs.get(Constant.REPOSITORY_EXTPOINT_BIZCODE);
         List<InterfaceConfigDto> tempItems = extensionExecutor.execute(
                 RepositoryServiceExtPt.class,
                 BizScenario.valueOf(bizCode),

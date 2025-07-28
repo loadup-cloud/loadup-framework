@@ -27,9 +27,9 @@ package com.github.loadup.components.gateway.plugin.repository.file;
  * #L%
  */
 
-import com.alibaba.cola.extension.Extension;
+import com.github.loadup.components.extension.annotation.Extension;
 import com.github.loadup.commons.error.CommonException;
-import com.github.loadup.components.gateway.cache.common.SystemParameter;
+import com.github.loadup.components.gateway.cache.common.DefaultGatewayConfigs;
 import com.github.loadup.components.gateway.certification.util.CommonUtil;
 import com.github.loadup.components.gateway.core.common.GatewayErrorCode;
 import com.github.loadup.components.gateway.core.model.Properties;
@@ -59,7 +59,7 @@ import org.springframework.stereotype.Component;
  * FileRepositoryService.java
  * </p>
  */
-@Extension(bizId = "FILE")
+@Extension(bizCode = "FILE")
 @Component("loadUpFileRepositoryExtPt")
 @Order(-1)
 public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationListener<ApplicationStartedEvent> {
@@ -314,9 +314,9 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
      * Init interface.
      */
     public void initInterface() {
-        String rootPath = SystemParameter.getParameter("configRootPath");
-        String spiPath = SystemParameter.getParameter("spiConfigFilePath");
-        String apiPath = SystemParameter.getParameter("openapiConfigFilePath");
+        String rootPath = DefaultGatewayConfigs.get("configRootPath");
+        String spiPath = DefaultGatewayConfigs.get("spiConfigFilePath");
+        String apiPath = DefaultGatewayConfigs.get("openapiConfigFilePath");
 
         List<String> apiLines = new ArrayList<String>();
         List<String> spiLines = new ArrayList<String>();
@@ -358,9 +358,9 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
      * Init template.
      */
     public void initTemplate() {
-        String rootPath = SystemParameter.getParameter("configRootPath");
-        String assembleFilePath = SystemParameter.getParameter("assembleTemplateFileDirectory");
-        String parseFilePath = SystemParameter.getParameter("parseTemplateFileDirectory");
+        String rootPath = DefaultGatewayConfigs.get("configRootPath");
+        String assembleFilePath = DefaultGatewayConfigs.get("assembleTemplateFileDirectory");
+        String parseFilePath = DefaultGatewayConfigs.get("parseTemplateFileDirectory");
         Map<String, String> assembleMap = new HashMap<String, String>();
         Map<String, String> parseMap = new HashMap<String, String>();
         String assemblePath = "";
@@ -403,8 +403,8 @@ public class FileRepositoryExtPt implements RepositoryServiceExtPt, ApplicationL
      * 加载certConf的文件
      */
     public void initCertFile() {
-        String rootPath = SystemParameter.getParameter("configRootPath");
-        String filePath = SystemParameter.getParameter("certAlgorithmConfigFilePath");
+        String rootPath = DefaultGatewayConfigs.get("configRootPath");
+        String filePath = DefaultGatewayConfigs.get("certAlgorithmConfigFilePath");
         List<String> lines = new ArrayList<String>();
         try {
             lines = configFileBuilder.readToStringList(rootPath, filePath);

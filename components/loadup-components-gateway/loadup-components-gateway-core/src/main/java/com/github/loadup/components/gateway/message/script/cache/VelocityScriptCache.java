@@ -146,7 +146,7 @@ public class VelocityScriptCache {
         Lock readlock = lock.readLock();
         readlock.lock();
         try {
-            if (RepositoryUtil.getRepositoryType() == RepositoryType.PRODCENTER) {
+            if (RepositoryUtil.getRepositoryType() == RepositoryType.CONFIG_CENTER) {
                 if (RoleType.SENDER == roleType
                         && InterfaceType.OPENAPI == InterfaceType.getEnumByCode(interfaceTypeStr)) {
                     APIConditionGroup apiConditionGroup =

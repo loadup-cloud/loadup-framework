@@ -27,14 +27,14 @@ package com.github.loadup.components.gateway.facade.extpoint;
  * #L%
  */
 
-import com.alibaba.cola.extension.ExtensionPointI;
+import com.github.loadup.components.extension.api.IExtensionPoint;
 import com.github.loadup.components.gateway.facade.model.CommunicationConfiguration;
 
 /**
  * Extension communication client which can be implemented to support different communication
  * protocol.
  */
-public interface CommunicationProxyExtPt extends ExtensionPointI {
+public interface CommunicationProxyExtPt extends IExtensionPoint {
 
     /**
      * send message based on different communication configurations, such as http, SPRINGBean, etc.
