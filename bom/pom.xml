@@ -10,49 +10,19 @@
         <relativePath/>
     </parent>
     <groupId>com.github.loadup.framework</groupId>
-    <artifactId>loadup-framework-parent</artifactId>
+    <artifactId>loadup-framework-bom</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <modules>
-        <module>commons/loadup-commons-api</module>
-        <module>commons/loadup-commons-dto</module>
-        <module>commons/loadup-commons-lang</module>
-        <module>commons/loadup-commons-util</module>
-        <module>components/loadup-components-cache</module>
-        <!--        <module>components/cache/loadup-components-cache-test</module>-->
-        <!--            <module>components/cache/loadup-components-cache-binder-redis</module>-->
-<!--        <module>modules/upms/loadup-modules-upms</module>-->
-        <module>components/loadup-components-liquibase</module>
-        <module>components/loadup-components-tracer</module>
-        <module>components/loadup-components-database</module>
-        <module>components/loadup-components-gateway</module>
-        <module>components/loadup-components-testify</module>
-        <module>components/loadup-components-extension</module>
-        <module>components/loadup-components-retrytask</module>
-        <!--    <module>components/gateway/loadup-components-gateway-adaptor</module>-->
-        <!--    <module>components/gateway/loadup-components-gateway-client</module>-->
-        <!--    <module>components/gateway/loadup-components-gateway-domain</module>-->
-        <!--    <module>components/gateway/loadup-components-gateway-starter</module>-->
-        <!--    <module>components/gateway/loadup-components-gateway-app</module>-->
-        <module>bom</module>
-        <module>launcher</module>
-    </modules>
     <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <loadup.framework.version>1.0.0-SNAPSHOT</loadup.framework.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>com.github.loadup.components</groupId>
-                <artifactId>loadup-components-database</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.loadup.components</groupId>
-                <artifactId>loadup-components-liquibase</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>com.github.loadup.commons</groupId>
@@ -77,6 +47,16 @@
 
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-database</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-liquibase</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.loadup.components</groupId>
                 <artifactId>loadup-components-gateway</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
@@ -85,15 +65,14 @@
                 <artifactId>loadup-components-testify</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
                 <artifactId>loadup-components-extension</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.loadup.modules</groupId>
-                <artifactId>loadup-modules-upms</artifactId>
+                <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-retrytask</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
         </dependencies>
@@ -111,25 +90,6 @@
             <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
         </snapshotRepository>
     </distributionManagement>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-            <groupId>com.diffplug.spotless</groupId>
-            <artifactId>spotless-maven-plugin</artifactId>
-            <version>${spotless.version}</version>
-            </plugin>
-        </plugins>
-    </build>
 
     <profiles>
         <profile>
