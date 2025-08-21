@@ -1,1 +1,0 @@
-DELETE FROM upms_user WHERE id = '1234567898789';

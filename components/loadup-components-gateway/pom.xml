@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -12,221 +13,53 @@
     <groupId>com.github.loadup.components</groupId>
     <artifactId>loadup-components-gateway</artifactId>
     <packaging>pom</packaging>
-    <description>Loadup Gateway Component</description>
+    <description>LoadUp Gateway Component</description>
     <name>loadup-components-gateway</name>
 
-    <properties>
-        <java.version>17</java.version>
-        <surefire.version>2.20</surefire.version>
-    </properties>
-
     <modules>
-        <module>loadup-components-gateway-facade</module>
         <module>loadup-components-gateway-core</module>
+        <module>loadup-components-gateway-facade</module>
         <module>loadup-components-gateway-starter</module>
-        <module>plugin/certification-keystore-plugin</module>
-        <module>plugin/communication-springbean-plugin</module>
-        <module>plugin/communication-rpc-plugin</module>
         <module>loadup-components-gateway-test</module>
-        <module>plugin/repository-file-plugin</module>
-        <module>plugin/repository-database-plugin</module>
+        <module>plugin</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>com.alibaba.fastjson2</groupId>
-                <artifactId>fastjson2</artifactId>
-                <version>${fastjson.version}</version>
-            </dependency>
-            <!--            <dependency>-->
-            <!--                <groupId>io.opentelemetry</groupId>-->
-            <!--                <artifactId>opentelemetry-bom</artifactId>-->
-            <!--                <version>1.39.0</version>-->
-            <!--                <type>pom</type>-->
-            <!--                <scope>import</scope>-->
-            <!--            </dependency>-->
-            <!--            <dependency>-->
-            <!--                <groupId>io.opentelemetry.instrumentation</groupId>-->
-            <!--                <artifactId>opentelemetry-instrumentation-bom-alpha</artifactId>-->
-            <!--                <version>2.5.0-alpha</version>-->
-            <!--                <type>pom</type>-->
-            <!--                <scope>import</scope>-->
-            <!--            </dependency>-->
-
-
-            <!-- sub projects start -->
-            <dependency>
-                <groupId>com.github.loadup.components</groupId>
-                <artifactId>loadup-components-gateway-facade</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.loadup.components</groupId>
-                <artifactId>loadup-components-gateway-starter</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.loadup.components</groupId>
-                <artifactId>loadup-components-gateway-core</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.loadup.components</groupId>
-                <artifactId>loadup-components-gateway-test</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.loadup.components.gateway</groupId>
-                <artifactId>certification-keystore-plugin</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.loadup.components.gateway</groupId>
-                <artifactId>communication-rpc-plugin</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.loadup.components.gateway</groupId>
-                <artifactId>communication-springbean-plugin</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-            </dependency>
-
-
-            <dependency>
-                <groupId>com.github.loadup.components.gateway</groupId>
-                <artifactId>repository-file-plugin</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.loadup.components.gateway</groupId>
-                <artifactId>repository-database-plugin</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-            </dependency>
-
-            <!-- sub projects end -->
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-collections4</artifactId>
-                <version>${commons-collections4.version}</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-stream -->
+            <!-- Spring Cloud Gateway -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-stream</artifactId>
+                <artifactId>spring-cloud-starter-gateway</artifactId>
+                <version>${spring-cloud.version}</version>
             </dependency>
 
+            <!-- Circuit Breaker -->
             <dependency>
-                <groupId>jakarta.validation</groupId>
-                <artifactId>jakarta.validation-api</artifactId>
-                <version>${jakarta-validation.version}</version>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
+                <version>${spring-cloud.version}</version>
             </dependency>
 
-
-            <!-- certification -->
-            <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on -->
+            <!-- Service Discovery -->
             <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk18on</artifactId>
-                <version>1.78.1</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on -->
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpkix-jdk18on</artifactId>
-                <version>1.78.1</version>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+                <version>${spring-cloud.version}</version>
             </dependency>
 
-            <!-- apache common-->
-            <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5 -->
+            <!-- Security -->
             <dependency>
-                <groupId>org.apache.httpcomponents.client5</groupId>
-                <artifactId>httpclient5</artifactId>
-                <version>5.3.1</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
+                <version>${spring-boot.version}</version>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
+            <!-- Rate Limiting -->
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-compress</artifactId>
-                <version>1.26.2</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+                <version>${spring-boot.version}</version>
             </dependency>
-
-            <!-- xml -->
-
-            <dependency>
-                <groupId>com.thoughtworks.xstream</groupId>
-                <artifactId>xstream</artifactId>
-                <version>1.3.1</version>
-            </dependency>
-            <dependency>
-                <groupId>xml-security</groupId>
-                <artifactId>xmlsec</artifactId>
-                <version>1.3.0</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.apache.groovy/groovy-all -->
-            <dependency>
-                <groupId>org.apache.groovy</groupId>
-                <artifactId>groovy</artifactId>
-                <version>4.0.22</version>
-            </dependency>
-
-
-            <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>${commons-io.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cglib</groupId>
-                <artifactId>cglib</artifactId>
-                <version>3.3.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.jettison</groupId>
-                <artifactId>jettison</artifactId>
-                <version>1.0.1</version>
-            </dependency>
-            <dependency>
-                <groupId>xalan</groupId>
-                <artifactId>xalan</artifactId>
-                <version>2.6.0</version>
-            </dependency>
-            <!-- financial special end -->
-            <dependency>
-                <groupId>org.testng</groupId>
-                <artifactId>testng</artifactId>
-                <version>7.11.0</version>
-                <scope>test</scope>
-            </dependency>
-            <!-- jasypt -->
-            <!-- https://mvnrepository.com/artifact/com.github.ulisesbocchio/jasypt-spring-boot-starter -->
-            <dependency>
-                <groupId>com.github.ulisesbocchio</groupId>
-                <artifactId>jasypt-spring-boot-starter</artifactId>
-                <version>3.0.5</version>
-            </dependency>
-
-
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${gson.version}</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
-            </dependency>
-
-
         </dependencies>
     </dependencyManagement>
-
 </project>

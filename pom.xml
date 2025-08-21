@@ -13,32 +13,24 @@
     <artifactId>loadup-framework-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <modules>
-        <module>commons/loadup-commons-api</module>
-        <module>commons/loadup-commons-dto</module>
-        <module>commons/loadup-commons-lang</module>
-        <module>commons/loadup-commons-util</module>
-        <module>components/loadup-components-cache</module>
-        <!--        <module>components/cache/loadup-components-cache-test</module>-->
-        <!--            <module>components/cache/loadup-components-cache-binder-redis</module>-->
-<!--        <module>modules/upms/loadup-modules-upms</module>-->
-        <module>components/loadup-components-liquibase</module>
-        <module>components/loadup-components-tracer</module>
-        <module>components/loadup-components-database</module>
-        <module>components/loadup-components-gateway</module>
-        <module>components/loadup-components-testify</module>
-        <module>components/loadup-components-extension</module>
-        <module>components/loadup-components-retrytask</module>
-        <!--    <module>components/gateway/loadup-components-gateway-adaptor</module>-->
-        <!--    <module>components/gateway/loadup-components-gateway-client</module>-->
-        <!--    <module>components/gateway/loadup-components-gateway-domain</module>-->
-        <!--    <module>components/gateway/loadup-components-gateway-starter</module>-->
-        <!--    <module>components/gateway/loadup-components-gateway-app</module>-->
-        <module>bom</module>
-<!--        <module>launcher</module>-->
-    </modules>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>17</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+
+        <!-- Framework Version -->
+        <loadup.framework.version>1.0.0-SNAPSHOT</loadup.framework.version>
+
+        <!-- Dependencies Versions -->
+        <spring-boot.version>3.1.2</spring-boot.version>
+        <spring-cloud.version>2022.0.4</spring-cloud.version>
+        <cola.version>4.3.2</cola.version>
+        <lombok.version>1.18.28</lombok.version>
+        <fastjson.version>2.0.39</fastjson.version>
+        <opentelemetry.version>1.39.0</opentelemetry.version>
+        <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
     </properties>
 
     <dependencyManagement>
