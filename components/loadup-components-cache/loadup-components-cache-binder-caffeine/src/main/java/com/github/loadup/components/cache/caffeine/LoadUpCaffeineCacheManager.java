@@ -27,24 +27,43 @@ package com.github.loadup.components.cache.caffeine;
  * #L%
  */
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.Cache;
+import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
-import org.springframework.util.StringUtils;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * Extended Caffeine Cache Manager with per-cache custom configurations
+ */
 public class LoadUpCaffeineCacheManager extends CaffeineCacheManager {
+
+    private final Map<String, Caffeine<Object, Object>> customCaffeineSpecs = new ConcurrentHashMap<>();
+
+    /**
+     * Register a custom Caffeine configuration for a specific cache
+     *
+     * @param cacheName Cache name
+     * @param caffeine  Custom Caffeine builder
+     */
+    public void registerCustomCache(String cacheName, Caffeine<Object, Object> caffeine) {
+        customCaffeineSpecs.put(cacheName, caffeine);
+    }
 
     @Override
     protected Cache createCaffeineCache(String name) {
-        String[] array = StringUtils.delimitedListToStringArray(name, "#");
-        name = array[0];
-        // 解析TTL
-        if (array.length > 1) {
-            String duration = array[1];
-            if (!StringUtils.startsWithIgnoreCase(duration, "PT")) {
-                duration = "PT" + duration;
-            }
+        // Check if there's a custom configuration for this cache
+        Caffeine<Object, Object> customCaffeine = customCaffeineSpecs.get(name);
+
+        if (customCaffeine != null) {
+            // Use custom configuration
+            return new CaffeineCache(name, customCaffeine.build(), isAllowNullValues());
         }
-        Cache caffeineCache = super.createCaffeineCache(name);
-        return caffeineCache;
+
+        // Fall back to default configuration
+        return super.createCaffeineCache(name);
     }
 }
+

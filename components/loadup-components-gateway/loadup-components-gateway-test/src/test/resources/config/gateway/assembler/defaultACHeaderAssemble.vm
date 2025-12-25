@@ -1,6 +1,0 @@
-<xml>
-    <map name="Content-Type">application/json;charset=UTF-8</map>
-    <map name="client-id">$!m.g('client-id')</map>
-    <map name="request-time">$!m.g('request-time')</map>
-    <map name="signature">algorithm=RSA256,keyVersion=2,signature=$!m.g("signature")</map>
-</xml>

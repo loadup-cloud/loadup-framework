@@ -29,15 +29,14 @@ package com.github.loadup.components.cache.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.loadup.commons.util.JsonUtil;
-import com.github.loadup.commons.util.date.DurationUtils;
 import com.github.loadup.components.cache.api.CacheBinder;
-import com.github.loadup.components.cache.redis.cfg.LoadUpRedisCacheProperties;
+import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
+import com.github.loadup.components.cache.config.CacheProperties;
 import com.github.loadup.components.cache.redis.impl.RedisCacheBinderImpl;
-import java.util.HashMap;
-import java.util.Map;
+import com.github.loadup.components.cache.util.CacheExpirationUtil;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.cache.CacheProperties;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
@@ -46,46 +45,89 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.*;
+import org.springframework.util.StringUtils;
 
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
+@Slf4j
 @Configuration
 @EnableCaching
 @EnableConfigurationProperties(CacheProperties.class)
+@ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = "redis")
 public class RedisCacheAutoConfiguration {
 
-    private final LoadUpRedisCacheProperties loadUpRedisCacheProperties;
+    @Resource
+    private CacheProperties cacheProperties;
 
-    public RedisCacheAutoConfiguration(LoadUpRedisCacheProperties loadUpRedisCacheProperties) {
-        this.loadUpRedisCacheProperties = loadUpRedisCacheProperties;
-    }
 
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory();
+        CacheProperties.RedisConfig redisConfig = cacheProperties.getRedis();
+
+        RedisStandaloneConfiguration redisStandaloneConfiguration =
+            new RedisStandaloneConfiguration(redisConfig.getHost(), redisConfig.getPort());
+
+        if (StringUtils.hasText(redisConfig.getPassword())) {
+            redisStandaloneConfiguration.setPassword(redisConfig.getPassword());
+        }
+
+        redisStandaloneConfiguration.setDatabase(redisConfig.getDatabase());
+
+        return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 
     @Bean
     @Qualifier("redisCacheManager")
-    public LoadUpRedisCacheManager redisCacheManager(
-            RedisConnectionFactory redisConnectionFactory, CacheProperties cacheProperties) {
+    public LoadUpRedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
         // 默认缓存配置
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
-        // 解析 application.yml 中的 cache-config
-        loadUpRedisCacheProperties
-                .getCacheConfig()
-                .forEach((cacheName, timeout) -> cacheConfigurations.put(
-                        cacheName,
-                        redisCacheConfiguration(cacheProperties)
-                                .entryTtl(DurationUtils.parse(timeout.getExpireAfterWrite()))));
 
-        LoadUpRedisCacheManager loadUpRedisCacheManager = new LoadUpRedisCacheManager(
+        // 为每个 cache name 配置不同的策略
+        cacheProperties.getRedis().getCacheConfig()
+            .forEach((cacheName, cacheConfig) -> {
+                RedisCacheConfiguration config = buildCacheConfiguration(cacheConfig);
+                cacheConfigurations.put(cacheName, config);
+
+                log.info("Configured Redis cache: name={}, config={}", cacheName, cacheConfig);
+            });
+
+        return new LoadUpRedisCacheManager(
                 RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory),
-                redisCacheConfiguration(cacheProperties),
+            redisCacheConfiguration(),
                 cacheConfigurations);
-        return loadUpRedisCacheManager;
+    }
+
+    /**
+     * Build cache configuration with anti-avalanche strategies
+     */
+    private RedisCacheConfiguration buildCacheConfiguration(LoadUpCacheConfig cacheConfig) {
+        RedisCacheConfiguration config = redisCacheConfiguration();
+
+        // 1. Configure base expiration time
+        if (cacheConfig.getExpireAfterWrite() != null) {
+            Duration baseDuration = CacheExpirationUtil.parseDuration(cacheConfig.getExpireAfterWrite());
+
+            // 2. Apply random offset to prevent cache avalanche
+            Duration finalDuration = CacheExpirationUtil.calculateExpirationWithRandomOffset(
+                baseDuration, cacheConfig);
+
+            config = config.entryTtl(finalDuration);
+
+            log.debug("Cache TTL: base={}s, final={}s (with random offset)",
+                baseDuration.getSeconds(), finalDuration.getSeconds());
+        }
+
+        // 3. Configure null value caching to prevent cache penetration
+        if (!cacheConfig.isCacheNullValues()) {
+            config = config.disableCachingNullValues();
+        }
+
+        return config;
     }
 
     @Bean
@@ -95,36 +137,29 @@ public class RedisCacheAutoConfiguration {
     }
 
     @Bean
-    public RedisCacheConfiguration redisCacheConfiguration(CacheProperties cacheProperties) {
-        // 获取Properties中Redis的配置信息
-        CacheProperties.Redis redisProperties = cacheProperties.getRedis();
+    public RedisCacheConfiguration redisCacheConfiguration() {
         // 获取RedisCacheConfiguration的默认配置对象
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
-        // 指定序列化器为GenericJackson2JsonRedisSerializer
 
+        // 指定序列化器为GenericJackson2JsonRedisSerializer
         config = config.serializeKeysWith(
                 RedisSerializationContext.SerializationPair.fromSerializer(RedisSerializer.string()));
         config = config.serializeValuesWith(
                 RedisSerializationContext.SerializationPair.fromSerializer(genericJackson2JsonRedisSerializer()));
-        // 过期时间设置
-        if (redisProperties.getTimeToLive() != null) {
-            config = config.entryTtl(redisProperties.getTimeToLive());
-        }
-        // 缓存空值配置
-        if (!redisProperties.isCacheNullValues()) {
-            config = config.disableCachingNullValues();
-        }
-        // 是否启用前缀
-        if (!redisProperties.isUseKeyPrefix()) {
-            config = config.disableKeyPrefix();
-        }
-        config = config.computePrefixWith(name -> name + ":"); // 覆盖默认key双冒号  CacheKeyPrefix#prefixed
+
+        // 默认过期时间设置为1小时
+        config = config.entryTtl(Duration.ofHours(1));
+
+        // 不缓存空值
+        config = config.disableCachingNullValues();
+
+        // 覆盖默认key双冒号
+        config = config.computePrefixWith(name -> name + ":");
+
         return config;
     }
 
     @Bean(name = "redisCacheBinder")
-    @ConditionalOnMissingBean(CacheBinder.class)
-    @ConditionalOnProperty(name = "spring.cache.type", havingValue = "redis")
     public CacheBinder cacheBinder() {
         return new RedisCacheBinderImpl();
     }

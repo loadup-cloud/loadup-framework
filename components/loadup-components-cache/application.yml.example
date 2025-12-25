@@ -1,0 +1,149 @@
+# ========================================
+# LoadUp Cache Configuration Examples (YAML)
+# ========================================
+
+# ========================================
+# Example 1: Caffeine Cache (In-Memory)
+# ========================================
+# Uncomment to use Caffeine cache for development or standalone applications
+#
+#loadup:
+#  cache:
+#    type: caffeine
+#    caffeine:
+#      initial-capacity: 1000        # Initial cache capacity
+#      maximum-size: 5000            # Maximum number of cache entries
+#      expire-after-access-seconds: 600   # Expire after last access (10 minutes)
+#      expire-after-write-seconds: 1200   # Expire after write (20 minutes)
+#      allow-null-value: false       # Allow null values in cache
+#      cache-config:
+#        # Per-cache configuration
+#        users:
+#          expire-after-write: 30m
+#          maximum-size: 10000
+#          enable-random-expiration: true
+#          random-offset-seconds: 300
+
+# ========================================
+# Example 2: Redis Cache (Distributed)
+# ========================================
+# Use this configuration for distributed applications or production environment
+#
+loadup:
+  cache:
+    type: redis
+    redis:
+      host: localhost     # Redis server host
+      port: 6379         # Redis server port
+      password:          # Redis password (optional)
+      database: 0        # Redis database index
+      cache-config:
+        # Per-cache configuration
+        users:
+          expire-after-write: 30m
+          maximum-size: 10000
+          enable-random-expiration: true
+          random-offset-seconds: 300
+
+# ========================================
+# Advanced Redis Cache Configuration
+# ========================================
+# Configure per-cache TTL and size limits
+#
+#loadup:
+#  cache:
+#    type: redis
+#    redis:
+#      host: localhost
+#      port: 6379
+#      cache-config:
+#        users:
+#          expire-after-write: 30m    # 30 minutes
+#          maximum-size: 10000
+#          enable-random-expiration: true
+#          random-offset-seconds: 300
+#          cache-null-values: true
+#          null-value-expire-after-write: 5m
+#          priority: 5
+#        products:
+#          expire-after-write: 1h     # 1 hour
+#          maximum-size: 5000
+#          enable-random-expiration: true
+#          random-offset-seconds: 600
+#          priority: 5
+#        sessions:
+#          expire-after-write: 24h    # 24 hours
+#          maximum-size: 50000
+#          enable-random-expiration: true
+#          random-offset-seconds: 7200
+#          priority: 7
+
+# ========================================
+# Advanced Caffeine Cache Configuration
+# ========================================
+# Configure per-cache TTL and size limits
+#
+#loadup:
+#  cache:
+#    type: caffeine
+#    caffeine:
+#      initial-capacity: 1000
+#      maximum-size: 10000
+#      expire-after-access-seconds: 600
+#      expire-after-write-seconds: 1800
+#      allow-null-value: false
+#      cache-config:
+#        users:
+#          expire-after-write: 30m    # 30 minutes
+#          maximum-size: 10000
+#          enable-random-expiration: true
+#          random-offset-seconds: 300
+#          cache-null-values: true
+#          null-value-expire-after-write: 5m
+#          priority: 5
+#        products:
+#          expire-after-write: 1h     # 1 hour
+#          maximum-size: 5000
+#          enable-random-expiration: true
+#          random-offset-seconds: 600
+#          priority: 5
+#        sessions:
+#          expire-after-write: 2h     # 2 hours
+#          maximum-size: 20000
+#          enable-random-expiration: true
+#          random-offset-seconds: 1200
+#          priority: 7
+
+# ========================================
+# Environment-specific Configuration
+# ========================================
+# You can use Spring profiles to manage different cache configurations
+#
+# Development Environment (application-dev.yml)
+#---
+#spring:
+#  config:
+#    activate:
+#      on-profile: dev
+#loadup:
+#  cache:
+#    type: caffeine
+#    caffeine:
+#      maximum-size: 1000
+#      expire-after-write-seconds: 300
+#
+# Production Environment (application-prod.yml)
+#---
+#spring:
+#  config:
+#    activate:
+#      on-profile: prod
+#loadup:
+#  cache:
+#    type: redis
+#    redis:
+#      host: ${REDIS_HOST:redis.prod.example.com}
+#      port: ${REDIS_PORT:6379}
+#      password: ${REDIS_PASSWORD}
+#      database: 0
+

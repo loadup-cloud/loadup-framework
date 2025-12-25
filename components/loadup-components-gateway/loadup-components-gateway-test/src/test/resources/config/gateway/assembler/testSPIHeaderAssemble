@@ -1,6 +1,0 @@
-<xml>
-    <map name="content-type">application/json</map>
-    <map name="client-id">$clientId</map>
-    <map name="request-time">$requestTime</map>
-    <map name="signature">$signature</map>
-</xml>

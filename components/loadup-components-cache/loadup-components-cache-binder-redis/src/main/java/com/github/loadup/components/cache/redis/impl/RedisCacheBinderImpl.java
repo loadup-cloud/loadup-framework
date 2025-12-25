@@ -30,13 +30,14 @@ package com.github.loadup.components.cache.redis.impl;
 import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.cache.api.CacheBinder;
 import jakarta.annotation.Resource;
-import java.util.Map;
-import java.util.Objects;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+
+import java.util.Map;
+import java.util.Objects;
 
 public class RedisCacheBinderImpl implements CacheBinder {
 
@@ -59,7 +60,7 @@ public class RedisCacheBinderImpl implements CacheBinder {
 
     @Override
     public Object get(String cacheName, String key) {
-        Cache cache = redisCacheManager.getCache(key);
+        Cache cache = redisCacheManager.getCache(cacheName);
         if (Objects.isNull(cache)) {
             return null;
         }
@@ -72,11 +73,12 @@ public class RedisCacheBinderImpl implements CacheBinder {
 
     @Override
     public <T> T get(String cacheName, String key, Class<T> clazz) {
-        Cache cache = redisCacheManager.getCache(key);
+        Cache cache = redisCacheManager.getCache(cacheName);
         if (Objects.isNull(cache)) {
             return null;
         }
-        Map map = cache.get(key, Map.class);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = cache.get(key, Map.class);
         if (CollectionUtils.isEmpty(map)) {
             return null;
         }
@@ -85,7 +87,10 @@ public class RedisCacheBinderImpl implements CacheBinder {
 
     @Override
     public boolean delete(String cacheName, String key) {
-        Cache cache = redisCacheManager.getCache(key);
+        Cache cache = redisCacheManager.getCache(cacheName);
+        if (Objects.isNull(cache)) {
+            return false;
+        }
         cache.evictIfPresent(key);
         return true;
     }
@@ -93,6 +98,9 @@ public class RedisCacheBinderImpl implements CacheBinder {
     @Override
     public boolean deleteAll(String cacheName) {
         Cache cache = redisCacheManager.getCache(cacheName);
+        if (Objects.isNull(cache)) {
+            return false;
+        }
         cache.clear();
         return true;
     }

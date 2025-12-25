@@ -5,7 +5,7 @@ package com.github.loadup.components.cache.binding;
  * #%L
  * loadup-components-cache-api
  * %%
- * Copyright (C) 2022 - 2023 loadup_cloud
+ * Copyright (C) 2022 - 2025 loadup_cloud
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
+import java.util.function.Supplier;
+
 @Slf4j(topic = "DIGEST_CACHE_LOGGER")
 @Component("cacheBinding")
 public class DefaultCacheBinding implements CacheBinding {
@@ -43,146 +45,48 @@ public class DefaultCacheBinding implements CacheBinding {
 
     @Override
     public boolean set(String cacheName, String key, Object value) {
-        boolean res;
-        StopWatch stopWatch = new StopWatch();
-        try {
-            stopWatch.start();
-            res = cacheBinder.set(cacheName, key, value);
-            stopWatch.stop();
-            log.info(
-                    "binder={},method={},key={},result={},cost={}",
-                    cacheBinder.getName(),
-                    "set",
-                    key,
-                    "success",
-                    stopWatch.getTotalTimeMillis());
-        } catch (Exception e) {
-            stopWatch.stop();
-            log.info(
-                    "binder={},method={},key={},result={},cost={}",
-                    cacheBinder.getName(),
-                    "set",
-                    key,
-                    "fail",
-                    stopWatch.getTotalTimeMillis());
-            throw e;
-        }
-        return res;
+        return execute(() -> cacheBinder.set(cacheName, key, value), "set", cacheName, key);
     }
 
     @Override
     public Object get(String cacheName, String key) {
-        Object res;
-        StopWatch stopWatch = new StopWatch();
-        try {
-            stopWatch.start();
-            res = cacheBinder.get(cacheName, key);
-            stopWatch.stop();
-            log.info(
-                    "binder={},method={},key={},result={},cost={}",
-                    cacheBinder.getName(),
-                    "get",
-                    key,
-                    "success",
-                    stopWatch.getTotalTimeMillis());
-        } catch (Exception e) {
-            stopWatch.stop();
-            log.info(
-                    "binder={},method={},key={},result={},cost={}",
-                    cacheBinder.getName(),
-                    "get",
-                    key,
-                    "fail",
-                    stopWatch.getTotalTimeMillis());
-            throw e;
-        }
-        return res;
+        return execute(() -> cacheBinder.get(cacheName, key), "get", cacheName, key);
     }
 
     @Override
     public <T> T get(String cacheName, String key, Class<T> cls) {
-        T res;
-        StopWatch stopWatch = new StopWatch();
-        try {
-            stopWatch.start();
-            res = cacheBinder.get(cacheName, key, cls);
-            stopWatch.stop();
-            log.info(
-                    "binder={},method={},key={},result={},cost={}",
-                    cacheBinder.getName(),
-                    "get",
-                    key,
-                    "success",
-                    stopWatch.getTotalTimeMillis());
-        } catch (Exception e) {
-            stopWatch.stop();
-            log.info(
-                    "binder={},method={},key={},result={},cost={}",
-                    cacheBinder.getName(),
-                    "get",
-                    key,
-                    "fail",
-                    stopWatch.getTotalTimeMillis());
-            throw e;
-        }
-        return res;
+        return execute(() -> cacheBinder.get(cacheName, key, cls), "get", cacheName, key);
     }
 
     @Override
     public boolean delete(String cacheName, String key) {
-        boolean res;
-        StopWatch stopWatch = new StopWatch();
-        try {
-            stopWatch.start();
-            res = cacheBinder.delete(cacheName, key);
-            stopWatch.stop();
-            log.info(
-                    "binder={},method={},key={},result={},cost={}",
-                    cacheBinder.getName(),
-                    "delete",
-                    key,
-                    "success",
-                    stopWatch.getTotalTimeMillis());
-        } catch (Exception e) {
-            stopWatch.stop();
-            log.info(
-                    "binder={},method={},key={},result={},cost={}",
-                    cacheBinder.getName(),
-                    "delete",
-                    key,
-                    "fail",
-                    stopWatch.getTotalTimeMillis());
-            throw e;
-        }
-        return res;
+        return execute(() -> cacheBinder.delete(cacheName, key), "delete", cacheName, key);
     }
 
     @Override
     public boolean deleteAll(String cacheName) {
-        boolean res;
+        return execute(() -> cacheBinder.deleteAll(cacheName), "deleteAll", cacheName, "all");
+    }
+
+    private <T> T execute(Supplier<T> supplier, String method, String cacheName, String key) {
         StopWatch stopWatch = new StopWatch();
+        String resultStatus = "success";
         try {
             stopWatch.start();
-            res = cacheBinder.deleteAll(cacheName);
-            stopWatch.stop();
-            log.info(
-                    "binder={},method={},key={},result={},cost={}",
-                    cacheBinder.getName(),
-                    "deleteAll",
-                    "all",
-                    "success",
-                    stopWatch.getTotalTimeMillis());
+            return supplier.get();
         } catch (Exception e) {
+            resultStatus = "fail";
+            throw e;
+        } finally {
             stopWatch.stop();
             log.info(
-                    "binder={},method={},key={},result={},cost={}",
-                    cacheBinder.getName(),
-                    "deleteAll",
-                    "all",
-                    "fail",
-                    stopWatch.getTotalTimeMillis());
-            throw e;
+                "binder={},method={},key={},result={},cost={}",
+                cacheBinder.getName(),
+                method,
+                key,
+                resultStatus,
+                stopWatch.getTotalTimeMillis());
         }
-        return res;
     }
 }
+

@@ -34,6 +34,57 @@ import lombok.Setter;
 @Setter
 public class LoadUpCacheConfig {
 
+    /**
+     * Maximum cache size
+     */
     private long maximumSize;
+
+    /**
+     * Base expiration time after write (e.g., "30m", "1h", "2d")
+     */
     private String expireAfterWrite;
+
+    /**
+     * Base expiration time after access (e.g., "30m", "1h", "2d")
+     */
+    private String expireAfterAccess;
+
+    /**
+     * Enable random expiration offset to prevent cache avalanche
+     * Default: true
+     */
+    private boolean enableRandomExpiration = true;
+
+    /**
+     * Random expiration offset range in seconds
+     * The actual expiration time will be: baseExpiration + random(0, randomOffsetSeconds)
+     * This helps prevent cache avalanche by distributing expiration times
+     * Default: 60 seconds (1 minute)
+     */
+    private long randomOffsetSeconds = 60;
+
+    /**
+     * Enable null value caching to prevent cache penetration
+     * Default: true
+     */
+    private boolean cacheNullValues = true;
+
+    /**
+     * Expiration time for null values (shorter than normal values)
+     * Default: "5m" (5 minutes)
+     */
+    private String nullValueExpireAfterWrite = "5m";
+
+    /**
+     * Cache warming strategy: preload data on startup
+     * Default: false
+     */
+    private boolean enableWarmup = false;
+
+    /**
+     * Cache priority level (1-10, higher is more important)
+     * Used for cache eviction priority
+     * Default: 5
+     */
+    private int priority = 5;
 }
