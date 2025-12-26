@@ -1,0 +1,57 @@
+# Liquibase Configuration Example
+# Copy this file to application.yml and customize as needed
+
+loadup:
+  liquibase:
+    # Enable or disable Liquibase
+    enabled: true
+
+    # Change log configuration file path
+    # Supports: .xml, .yaml, .json, .sql
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+    # Contexts to use (comma-separated)
+    # Example: development,test,production
+    contexts: development
+
+    # Labels to use for filtering change sets (comma-separated)
+    # labels: feature-1,feature-2
+
+    # Default database schema
+    # default-schema: public
+
+    # Schema to use for Liquibase objects
+    # liquibase-schema: public
+
+    # Tablespace to use for Liquibase objects (for Oracle)
+    # liquibase-tablespace: liquibase_tablespace
+
+    # Name of table to use for tracking change history
+    database-change-log-table: DATABASECHANGELOG
+
+    # Name of table to use for tracking concurrent Liquibase usage
+    database-change-log-lock-table: DATABASECHANGELOGLOCK
+
+    # Whether to drop the database schema first (DANGEROUS! Use only in development)
+    drop-first: false
+
+    # Whether to clear all checksums in the current changelog
+    clear-checksums: false
+
+    # Whether to validate checksums on migration
+    validate-on-migrate: true
+
+    # Tag to apply after migration
+    # tag: v1.0.0
+
+    # Test rollback tag (for testing purposes)
+    # test-rollback-on-update: v1.0.0
+
+# DataSource configuration (required for Liquibase)
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/mydb?useSSL=false&serverTimezone=UTC
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+

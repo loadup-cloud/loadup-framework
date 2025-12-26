@@ -29,10 +29,22 @@
         <cola.version>4.3.2</cola.version>
         <lombok.version>1.18.28</lombok.version>
         <fastjson.version>2.0.39</fastjson.version>
-        <opentelemetry.version>1.39.0</opentelemetry.version>
+        <opentelemetry.version>1.57.0</opentelemetry.version>
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
+        <commons.io.version>2.20.0</commons.io.version>
     </properties>
 
+    <modules>
+        <module>commons/loadup-commons-lang</module>
+        <module>commons/loadup-commons-dto</module>
+        <module>commons/loadup-commons-api</module>
+        <module>commons/loadup-commons-util</module>
+        <module>components/loadup-components-database</module>
+        <module>components/loadup-components-liquibase</module>
+        <module>components/loadup-components-extension</module>
+        <module>components/loadup-components-cache</module>
+        <module>components/loadup-components-captcha</module>
+    </modules>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -43,6 +55,11 @@
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
                 <artifactId>loadup-components-liquibase</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-captcha</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
 
@@ -114,11 +131,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>com.diffplug.spotless</groupId>
-                <artifactId>spotless-maven-plugin</artifactId>
-                <version>${spotless.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
