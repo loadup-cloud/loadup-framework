@@ -31,13 +31,17 @@ import com.github.loadup.components.database.repository.SequenceRepository;
 import com.github.loadup.components.database.sequence.SequenceRange;
 import com.github.loadup.components.database.service.SequenceService;
 import jakarta.annotation.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import org.springframework.stereotype.Service;
 
 @Service
 public class SequenceServiceImpl implements SequenceService {
+    private static final Logger log = LoggerFactory.getLogger(SequenceServiceImpl.class);
     private final Lock lock = new ReentrantLock();
 
     @Resource
@@ -63,7 +67,9 @@ public class SequenceServiceImpl implements SequenceService {
             try {
                 for (; ; ) {
                     if (currentRange.isOver()) {
+                        log.debug("Current sequence range exhausted for '{}', allocating new range", sequenceName);
                         currentRange = sequenceRepository.getNextRange(sequenceName);
+                        log.debug("New sequence range allocated for '{}': {}", sequenceName, currentRange);
                     }
                     value = currentRange.getAndIncrement();
                     if (value == -1) {
@@ -76,7 +82,9 @@ public class SequenceServiceImpl implements SequenceService {
             }
         }
         if (value < 0) {
-            throw new RuntimeException("Sequence value overflow, value = " + value);
+            throw new IllegalStateException(
+                String.format("Sequence '%s' value overflow or exhausted. Current value: %d",
+                    sequenceName, value));
         }
 
         return value;

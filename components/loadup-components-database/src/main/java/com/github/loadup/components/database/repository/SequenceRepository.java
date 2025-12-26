@@ -28,7 +28,10 @@ package com.github.loadup.components.database.repository;
  */
 
 import com.github.loadup.components.database.Sequence;
+import com.github.loadup.components.database.config.DatabaseProperties;
 import com.github.loadup.components.database.sequence.SequenceRange;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
@@ -36,16 +39,21 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class SequenceRepository {
-    private static final Long minValue = 0L;
-    private static final Long maxValue = Long.MAX_VALUE;
-    private static final Long step = 1000L;
+    private static final Logger log = LoggerFactory.getLogger(SequenceRepository.class);
+
+    private final Long minValue;
+    private final Long maxValue;
+    private final Long step;
     private final JdbcAggregateTemplate template;
 
-    public SequenceRepository(JdbcAggregateTemplate template) {
+    public SequenceRepository(JdbcAggregateTemplate template, DatabaseProperties properties) {
         this.template = template;
+        this.minValue = properties.getSequence().getMinValue();
+        this.maxValue = properties.getSequence().getMaxValue();
+        this.step = properties.getSequence().getStep();
     }
 
-    public SequenceRange getNextRange(String name) {
+    public synchronized SequenceRange getNextRange(String name) {
         Query query = Query.query(Criteria.where("name").is(name));
         Sequence sequence = template.findOne(query, Sequence.class).orElseGet(() -> {
             Sequence newSequence = new Sequence();
@@ -53,27 +61,30 @@ public class SequenceRepository {
             newSequence.setMaxValue(maxValue);
             newSequence.setStep(step);
             newSequence.setName(name);
-            template.save(newSequence);
-            return newSequence;
+            newSequence.setValue(minValue);
+            return template.insert(newSequence);
         });
-        Long oldValue = sequence.getValue();
-        if (oldValue < 0 || oldValue > maxValue || oldValue < minValue) {
-            throw new RuntimeException("Sequence Value Error!");
-        }
-        Long beginValue = calculateBeginValue(name, oldValue);
-        Long endValue = beginValue + step;
-        if (endValue > maxValue) {
-            endValue = maxValue;
-        } else {
-            endValue = endValue - 1;
-        }
-        if (beginValue > endValue) {
-            throw new RuntimeException("Sequence Value Error!");
-        }
-        return new SequenceRange(beginValue, endValue);
-    }
 
-    private Long calculateBeginValue(String name, Long oldValue) {
-        return 0L;
+        Long oldValue = sequence.getValue() != null ? sequence.getValue() : minValue;
+        if (oldValue < minValue || oldValue > maxValue) {
+            throw new IllegalStateException(
+                String.format("Sequence '%s' value %d is out of range [%d, %d]",
+                    name, oldValue, minValue, maxValue));
+        }
+
+        Long endValue = Math.min(oldValue + step - 1, maxValue);
+
+        if (oldValue > endValue) {
+            throw new IllegalStateException(
+                String.format("Sequence '%s' has been exhausted. Begin: %d, End: %d",
+                    name, oldValue, endValue));
+        }
+
+        // Update the sequence value for next range
+        sequence.setValue(endValue + 1);
+        template.update(sequence);
+
+        log.debug("Allocated sequence range for '{}': [{}, {}]", name, oldValue, endValue);
+        return new SequenceRange(oldValue, endValue);
     }
 }

@@ -1,5 +1,5 @@
 /* Copyright (C) LoadUp Cloud 2022-2025 */
-package com.github.loadup.components.database;
+package com.github.loadup.components.database.id;
 
 /*-
  * #%L
@@ -27,20 +27,31 @@ package com.github.loadup.components.database;
  * #L%
  */
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
+import com.github.loadup.commons.util.RandomUtil;
 
-@Getter
-@Setter
-@Table("sys_sequence")
-public class Sequence {
-    @Id
-    private Long id;
-    private String name;
-    private Long value;
-    private Long minValue;
-    private Long maxValue;
-    private Long step;
+/**
+ * 随机字符串 ID 生成器
+ * <p>生成指定长度的随机字符串作为 ID</p>
+ */
+public class RandomStringIdGenerator implements IdGenerator {
+
+    private final int length;
+
+    public RandomStringIdGenerator(int length) {
+        if (length <= 0) {
+            throw new IllegalArgumentException("Length must be positive, got: " + length);
+        }
+        this.length = length;
+    }
+
+    @Override
+    public String generate() {
+        return RandomUtil.randomString(length);
+    }
+
+    @Override
+    public String getName() {
+        return "random-" + length;
+    }
 }
+

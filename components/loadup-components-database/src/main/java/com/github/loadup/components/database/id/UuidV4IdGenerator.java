@@ -1,5 +1,5 @@
 /* Copyright (C) LoadUp Cloud 2022-2025 */
-package com.github.loadup.components.database;
+package com.github.loadup.components.database.id;
 
 /*-
  * #%L
@@ -27,20 +27,42 @@ package com.github.loadup.components.database;
  * #L%
  */
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
+import java.util.UUID;
 
-@Getter
-@Setter
-@Table("sys_sequence")
-public class Sequence {
-    @Id
-    private Long id;
-    private String name;
-    private Long value;
-    private Long minValue;
-    private Long maxValue;
-    private Long step;
+/**
+ * UUID v4 ID 生成器
+ * <p>使用标准的 UUID v4（随机 UUID）生成 ID</p>
+ * <p>生成的 ID 格式：xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx</p>
+ */
+public class UuidV4IdGenerator implements IdGenerator {
+
+    private final boolean withHyphens;
+
+    /**
+     * 创建 UUID v4 生成器
+     *
+     * @param withHyphens 是否保留连字符
+     */
+    public UuidV4IdGenerator(boolean withHyphens) {
+        this.withHyphens = withHyphens;
+    }
+
+    /**
+     * 创建 UUID v4 生成器（默认不保留连字符）
+     */
+    public UuidV4IdGenerator() {
+        this(false);
+    }
+
+    @Override
+    public String generate() {
+        String uuid = UUID.randomUUID().toString();
+        return withHyphens ? uuid : uuid.replace("-", "");
+    }
+
+    @Override
+    public String getName() {
+        return withHyphens ? "uuid-v4" : "uuid-v4-no-hyphens";
+    }
 }
+
