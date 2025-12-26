@@ -38,8 +38,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.jdbc.repository.config.*;
 import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @AutoConfiguration
 @EnableJdbcAuditing
@@ -48,6 +52,16 @@ import org.springframework.data.relational.core.mapping.event.BeforeConvertCallb
 public class DataJdbcConfiguration extends AbstractJdbcConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(DataJdbcConfiguration.class);
+
+    /**
+     * 提供当前时间给审计功能使用
+     * <p>用于自动填充 @CreatedDate 和 @LastModifiedDate 注解的字段</p>
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public DateTimeProvider dateTimeProvider() {
+        return () -> Optional.of(LocalDateTime.now());
+    }
 
     /**
      * 创建默认的 ID 生成器
