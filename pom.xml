@@ -35,6 +35,7 @@
     </properties>
 
     <modules>
+        <module>bom</module>
         <module>commons/loadup-commons-lang</module>
         <module>commons/loadup-commons-dto</module>
         <module>commons/loadup-commons-api</module>
@@ -44,6 +45,7 @@
         <module>components/loadup-components-extension</module>
         <module>components/loadup-components-cache</module>
         <module>components/loadup-components-captcha</module>
+        <module>components/loadup-components-tracer</module>
     </modules>
     <dependencyManagement>
         <dependencies>
