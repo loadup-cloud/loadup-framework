@@ -85,7 +85,11 @@ public class TraceUtil {
     }
 
     public static String getTracerId() {
-        return getSpan().getSpanContext().getTraceId();
+        Span span = getSpan();
+        if (span == null) {
+            return Span.current().getSpanContext().getTraceId();
+        }
+        return span.getSpanContext().getTraceId();
     }
 
     public static void logTraceId(Span span) {
