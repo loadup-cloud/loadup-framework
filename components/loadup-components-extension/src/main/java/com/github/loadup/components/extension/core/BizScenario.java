@@ -7,14 +7,19 @@ import lombok.Value;
 @Builder
 public class BizScenario {
 
-    public final static  String DEFAULT_BIZ_ID   = "#defaultBizCode#";
+    public final static String DEFAULT_BIZ_CODE = "#defaultBizCode#";
     public final static  String DEFAULT_USE_CASE = "#defaultUseCase#";
     public final static  String DEFAULT_SCENARIO = "#defaultScenario#";
     private final static String DOT_SEPARATOR    = ".";
 
-    private String bizCode;
-    private String useCase;
-    private String scenario;
+    @Builder.Default
+    String bizCode = DEFAULT_BIZ_CODE;
+
+    @Builder.Default
+    String useCase = DEFAULT_USE_CASE;
+
+    @Builder.Default
+    String scenario = DEFAULT_SCENARIO;
 
     public String getUniqueIdentity() {
         return bizCode + DOT_SEPARATOR + useCase + DOT_SEPARATOR + scenario;

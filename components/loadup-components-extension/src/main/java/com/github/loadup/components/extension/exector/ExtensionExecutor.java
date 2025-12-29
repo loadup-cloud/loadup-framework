@@ -5,8 +5,7 @@ import com.github.loadup.components.extension.api.IExtensionPoint;
 import com.github.loadup.components.extension.core.BizScenario;
 import com.github.loadup.components.extension.register.ExtensionCoordinate;
 import com.github.loadup.components.extension.register.ExtensionRegistry;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -14,6 +13,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * 扩展点执行器
+ */
+@Slf4j
 public class ExtensionExecutor {
 
     private final ExtensionRegistry extensionRegistry;
@@ -23,34 +26,78 @@ public class ExtensionExecutor {
     }
 
     /**
-     * 执行有返回值的扩展点方法
-     *
-     * @param <E>                 扩展点接口类型
-     * @param <R>                 返回值类型
-     * @param extensionPointClass 扩展点接口的Class
-     * @param scenario            业务场景
-     * @param action              要执行的业务逻辑
-     * @return 业务逻辑的返回值
+     * 执行单个最佳匹配的扩展点（有返回值）
+     * 使用降级匹配策略自动找到最合适的扩展点实现
      */
     public <E extends IExtensionPoint, R> R execute(Class<E> extensionPointClass, BizScenario scenario, Function<E, R> action) {
         E extension = findBestMatch(extensionPointClass, scenario);
+        log.debug("Executing extension {} for scenario {}", extension.getClass().getSimpleName(), scenario.getUniqueIdentity());
         return action.apply(extension);
     }
 
     /**
-     * 执行无返回值的扩展点方法
+     * 执行单个最佳匹配的扩展点（无返回值）
      */
-    public <E extends IExtensionPoint> void executeVoid(Class<E> extensionPointClass, BizScenario scenario, Consumer<E> action) {
+    public <E extends IExtensionPoint> void run(Class<E> extensionPointClass, BizScenario scenario, Consumer<E> action) {
         E extension = findBestMatch(extensionPointClass, scenario);
+        log.debug("Executing extension {} for scenario {}", extension.getClass().getSimpleName(), scenario.getUniqueIdentity());
         action.accept(extension);
     }
 
     /**
-     * 执行所有匹配的扩展点（类似责任链/观察者模式）
+     * 执行指定场景的所有匹配扩展点（精确匹配）
      */
     public <E extends IExtensionPoint> void executeAll(Class<E> extensionPointClass, BizScenario scenario, Consumer<E> action) {
-        List<E> extensions = findAllMatches(extensionPointClass, scenario);
+        List<E> extensions = findAllByScenario(extensionPointClass, scenario);
+        if (extensions.isEmpty()) {
+            log.warn("No extensions found for scenario: {}", scenario.getUniqueIdentity());
+            return;
+        }
+        log.debug("Executing {} extensions for scenario {}", extensions.size(), scenario.getUniqueIdentity());
         extensions.forEach(action);
+    }
+
+    /**
+     * 执行指定业务代码的所有扩展点（忽略 useCase 和 scenario）
+     */
+    public <E extends IExtensionPoint> void executeAll(Class<E> extensionPointClass, String bizCode, Consumer<E> action) {
+        List<E> extensions = findAllByBizCode(extensionPointClass, bizCode);
+        if (extensions.isEmpty()) {
+            log.warn("No extensions found for bizCode: {}", bizCode);
+            return;
+        }
+        log.debug("Executing {} extensions for bizCode {}", extensions.size(), bizCode);
+        extensions.forEach(action);
+    }
+
+    /**
+     * 收集指定场景所有扩展点的执行结果
+     */
+    public <E extends IExtensionPoint, R> List<R> collect(Class<E> extensionPointClass, BizScenario scenario, Function<E, R> action) {
+        List<E> extensions = findAllByScenario(extensionPointClass, scenario);
+        if (extensions.isEmpty()) {
+            log.warn("No extensions found for scenario: {}", scenario.getUniqueIdentity());
+            return Collections.emptyList();
+        }
+        log.debug("Collecting results from {} extensions for scenario {}", extensions.size(), scenario.getUniqueIdentity());
+        return extensions.stream()
+            .map(action)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * 收集指定业务代码所有扩展点的执行结果
+     */
+    public <E extends IExtensionPoint, R> List<R> collect(Class<E> extensionPointClass, String bizCode, Function<E, R> action) {
+        List<E> extensions = findAllByBizCode(extensionPointClass, bizCode);
+        if (extensions.isEmpty()) {
+            log.warn("No extensions found for bizCode: {}", bizCode);
+            return Collections.emptyList();
+        }
+        log.debug("Collecting results from {} extensions for bizCode {}", extensions.size(), bizCode);
+        return extensions.stream()
+            .map(action)
+            .collect(Collectors.toList());
     }
 
     @SuppressWarnings("unchecked")
@@ -80,19 +127,32 @@ public class ExtensionExecutor {
         }
 
         return (E) bestMatch.orElseThrow(() -> new ExtensionNotFoundException(
-                "No suitable extension found for " + extensionPointClass.getSimpleName() + " with scenario: " + scenario
+            "No suitable extension found for " + extensionPointClass.getSimpleName() + " with scenario: " + scenario.getUniqueIdentity()
         )).extensionInstance();
     }
 
     @SuppressWarnings("unchecked")
-    private <E extends IExtensionPoint> List<E> findAllMatches(Class<E> extensionPointClass, BizScenario scenario) {
-        List<ExtensionCoordinate> candidates = extensionRegistry.getExtensionCoordinates(extensionPointClass);
+    private <E extends IExtensionPoint> List<E> findAllByScenario(Class<E> extensionPointClass, BizScenario scenario) {
+        List<ExtensionCoordinate> candidates = extensionRegistry.getExtensionsByScenario(extensionPointClass, scenario);
         if (CollectionUtils.isEmpty(candidates)) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         return candidates.stream()
-                .filter(c -> match(c.extensionMetadata(), scenario, true, true)) // 可以根据需求定义匹配逻辑
+            .sorted(Comparator.comparingInt(c -> c.extensionMetadata().priority()))
+            .map(c -> (E) c.extensionInstance())
+            .collect(Collectors.toList());
+    }
+
+    @SuppressWarnings("unchecked")
+    private <E extends IExtensionPoint> List<E> findAllByBizCode(Class<E> extensionPointClass, String bizCode) {
+        List<ExtensionCoordinate> allCandidates = extensionRegistry.getExtensionsByBizCode(bizCode);
+        if (CollectionUtils.isEmpty(allCandidates)) {
+            return Collections.emptyList();
+        }
+
+        return allCandidates.stream()
+            .filter(c -> extensionPointClass.isAssignableFrom(c.extensionInstance().getClass()))
                 .sorted(Comparator.comparingInt(c -> c.extensionMetadata().priority()))
                 .map(c -> (E) c.extensionInstance())
                 .collect(Collectors.toList());
@@ -123,10 +183,10 @@ public class ExtensionExecutor {
         return !matchScenario || Objects.equals(meta.scenario(), scenario.getScenario());
     }
 
-    // 自定义异常
     public static class ExtensionNotFoundException extends RuntimeException {
         public ExtensionNotFoundException(String message) {
             super(message);
         }
     }
 }
+
