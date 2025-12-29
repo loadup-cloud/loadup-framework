@@ -27,55 +27,66 @@ package com.github.loadup.components.tracer;
  * #L%
  */
 
+import com.github.loadup.components.tracer.config.TracerProperties;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.baggage.propagation.W3CBaggagePropagator;
+import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.*;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
-import io.opentelemetry.exporter.logging.LoggingMetricExporter;
-import io.opentelemetry.exporter.logging.LoggingSpanExporter;
-import io.opentelemetry.exporter.logging.SystemOutLogRecordExporter;
+import io.opentelemetry.exporter.logging.*;
+import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.logs.SdkLoggerProvider;
 import io.opentelemetry.sdk.logs.export.BatchLogRecordProcessor;
 import io.opentelemetry.sdk.metrics.SdkMeterProvider;
 import io.opentelemetry.sdk.metrics.export.PeriodicMetricReader;
+import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
-import java.util.Arrays;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
+@ConditionalOnProperty(prefix = "loadup.tracer", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class OpenTelemetryConfig {
 
-    @Value("${spring.application.name:''}")
+    @Value("${spring.application.name:unknown-service}")
     private String applicationName;
 
-    @Value("${otel.exporter.otlp.endpoint:''}")
-    private String otelEndpoint;
+    private final TracerProperties tracerProperties;
 
     @Bean
     public OpenTelemetry openTelemetry() {
         LoggingSpanExporter logExporter = LoggingSpanExporter.create();
-        SpanExporter spanExporter = SpanExporter.composite(logExporter);
+        SpanExporter spanExporter = logExporter;
 
-        // if (StringUtils.hasText(otelEndpoint)) {
-        // OtlpGrpcSpanExporter otlpGrpcSpanExporter = OtlpGrpcSpanExporter.builder()
-        //        .setEndpoint(otelEndpoint)
-        //        .build();
-        // spanExporter = SpanExporter.composite(logExporter, otlpGrpcSpanExporter);
-        // }
+        // Configure OTLP exporter if endpoint is provided
+        if (StringUtils.hasText(tracerProperties.getOtlpEndpoint())) {
+            OtlpGrpcSpanExporter otlpGrpcSpanExporter = OtlpGrpcSpanExporter.builder()
+                .setEndpoint(tracerProperties.getOtlpEndpoint())
+                .build();
+            spanExporter = SpanExporter.composite(logExporter, otlpGrpcSpanExporter);
+        }
 
-        // Resource resource = Resource.getDefault().toBuilder().put(ResourceAttributes.SERVICE_NAME,
-        // applicationName).put(
-        //        ResourceAttributes.SERVICE_VERSION, "1.0.0").build();
+        // Create resource with service name and version
+        Resource resource = Resource.getDefault().toBuilder()
+            .put(AttributeKey.stringKey("service.name"), applicationName)
+            .put(AttributeKey.stringKey("service.version"), "1.0.0")
+            .build();
 
         SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
+            .setResource(resource)
                 .addSpanProcessor(BatchSpanProcessor.builder(spanExporter).build())
                 .build();
 
@@ -89,15 +100,13 @@ public class OpenTelemetryConfig {
                         .build())
                 .build();
 
-        OpenTelemetry openTelemetry = OpenTelemetrySdk.builder()
+        return OpenTelemetrySdk.builder()
                 .setTracerProvider(sdkTracerProvider)
                 .setMeterProvider(sdkMeterProvider)
                 .setLoggerProvider(sdkLoggerProvider)
                 .setPropagators(ContextPropagators.create(TextMapPropagator.composite(
                         W3CTraceContextPropagator.getInstance(), W3CBaggagePropagator.getInstance())))
                 .build();
-
-        return openTelemetry;
     }
 
     @Bean
@@ -122,6 +131,7 @@ public class OpenTelemetryConfig {
         private final W3CTraceContextPropagator w3cPropagator = W3CTraceContextPropagator.getInstance();
 
         @Override
+        @SuppressWarnings("unchecked")
         public void inject(
                 io.opentelemetry.context.Context context,
                 Object carrier,
@@ -135,6 +145,7 @@ public class OpenTelemetryConfig {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public io.opentelemetry.context.Context extract(
                 io.opentelemetry.context.Context context,
                 Object carrier,

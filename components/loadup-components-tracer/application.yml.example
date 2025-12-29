@@ -1,0 +1,90 @@
+# LoadUp Tracer Component - Configuration Example
+# 将此文件复制为 application.yml 并根据需要修改配置
+
+spring:
+  application:
+    name: your-service-name  # 必须：设置应用名称，将在追踪中显示
+
+# LoadUp Tracer 配置
+loadup:
+  tracer:
+    # 是否启用追踪器（默认：true）
+    enabled: true
+
+    # 是否启用 Web 请求追踪（默认：true）
+    enable-web-tracing: true
+
+    # 是否启用异步任务追踪（默认：true）
+    enable-async-tracing: true
+
+    # OTLP 导出器端点（例如：http://localhost:4317）
+    # 如果不配置，追踪数据只会输出到日志
+    otlp-endpoint: http://localhost:4317
+
+    # 是否在 Span 中包含请求头（默认：false）
+    # 注意：可能包含敏感信息，生产环境建议关闭
+    include-headers: false
+
+    # 是否在 Span 中包含请求参数（默认：false）
+    include-parameters: true
+
+    # 排除追踪的 URL 模式（逗号分隔）
+    # 默认排除健康检查和 actuator 端点
+    exclude-patterns: /actuator/**,/health,/metrics,/swagger-ui/**,/v3/api-docs/**
+
+    # 示例控制器开关（仅用于演示）
+    example:
+      enabled: false
+
+# OpenTelemetry 配置
+otel:
+  exporter:
+    otlp:
+      # OTLP 端点
+      endpoint: ${loadup.tracer.otlp-endpoint:}
+
+# 日志配置（可选）
+logging:
+  level:
+    # 查看 OpenTelemetry 详细日志
+    io.opentelemetry: INFO
+    # 查看追踪组件日志
+    com.github.loadup.components.tracer: DEBUG
+
+---
+# 开发环境配置
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+loadup:
+  tracer:
+    enabled: true
+    enable-web-tracing: true
+    include-parameters: true
+    # 开发环境可以使用本地 Jaeger
+    otlp-endpoint: http://localhost:4317
+
+---
+# 生产环境配置
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+loadup:
+  tracer:
+    enabled: true
+    enable-web-tracing: true
+    include-headers: false  # 生产环境不包含请求头
+    include-parameters: false  # 生产环境不包含请求参数
+    # 生产环境使用实际的追踪后端地址
+    otlp-endpoint: http://your-tempo-or-jaeger-host:4317
+    exclude-patterns: /actuator/**,/health,/metrics,/error
+
+logging:
+  level:
+    io.opentelemetry: WARN
+    com.github.loadup.components.tracer: INFO
+

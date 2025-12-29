@@ -1,0 +1,31 @@
+# LoadUp Tracer Configuration
+loadup:
+  tracer:
+    # Enable or disable the tracer
+    enabled: true
+
+    # Enable web request tracing
+    enable-web-tracing: true
+
+    # Enable async task tracing
+    enable-async-tracing: true
+
+    # OTLP exporter endpoint (e.g., http://localhost:4317)
+    otlp-endpoint:
+
+    # Include request headers in spans
+    include-headers: false
+
+    # Include request parameters in spans
+    include-parameters: false
+
+    # URL patterns to exclude from tracing (comma-separated)
+    exclude-patterns: /actuator/**,/health,/metrics
+
+# OpenTelemetry configuration
+otel:
+  exporter:
+    otlp:
+      # OTLP endpoint for exporting traces
+      endpoint: ${loadup.tracer.otlp-endpoint:}
+
