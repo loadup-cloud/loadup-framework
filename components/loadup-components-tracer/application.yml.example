@@ -19,6 +19,7 @@ loadup:
 
     # OTLP 导出器端点（例如：http://localhost:4317）
     # 如果不配置，追踪数据只会输出到日志
+    # 组件会自动将此配置应用到 OpenTelemetry，无需单独配置 otel.exporter.otlp.endpoint
     otlp-endpoint: http://localhost:4317
 
     # 是否在 Span 中包含请求头（默认：false）
@@ -36,12 +37,6 @@ loadup:
     example:
       enabled: false
 
-# OpenTelemetry 配置
-otel:
-  exporter:
-    otlp:
-      # OTLP 端点
-      endpoint: ${loadup.tracer.otlp-endpoint:}
 
 # 日志配置（可选）
 logging:
