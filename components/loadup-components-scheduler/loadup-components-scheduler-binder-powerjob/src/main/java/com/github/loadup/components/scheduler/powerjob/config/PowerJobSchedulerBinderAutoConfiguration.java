@@ -31,6 +31,7 @@ import com.github.loadup.components.scheduler.api.SchedulerBinder;
 import com.github.loadup.components.scheduler.powerjob.binder.PowerJobSchedulerBinder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -38,7 +39,7 @@ import org.springframework.context.annotation.Bean;
  */
 @Slf4j
 @AutoConfiguration
-@gConditionalOnClass(name = "tech.powerjob.worker.core.processor.sdk.BasicProcessor")
+@ConditionalOnClass(name = "tech.powerjob.worker.core.processor.sdk.BasicProcessor")
 @ConditionalOnProperty(
     prefix = "loadup.scheduler",
     name = "type",
