@@ -38,6 +38,12 @@ class SchedulerTaskRegistryTest {
             java.lang.reflect.Field field = SchedulerTaskRegistry.class.getDeclaredField("schedulerBinding");
             field.setAccessible(true);
             field.set(registry, schedulerBinding);
+
+            // Clear the static registry to ensure test isolation
+            java.lang.reflect.Field registryField = SchedulerTaskRegistry.class.getDeclaredField("TASK_REGISTRY");
+            registryField.setAccessible(true);
+            Map<String, SchedulerTask> taskRegistry = (Map<String, SchedulerTask>) registryField.get(null);
+            taskRegistry.clear();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

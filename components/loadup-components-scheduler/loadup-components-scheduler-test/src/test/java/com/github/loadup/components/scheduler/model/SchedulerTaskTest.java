@@ -63,7 +63,7 @@ class SchedulerTaskTest {
     @Test
     void testSchedulerTaskWithMethodAndBean() throws NoSuchMethodException {
         // Given
-        Method method = this.getClass().getMethod("testSchedulerTaskWithMethodAndBean");
+        Method method = SchedulerTaskTest.class.getMethod("helperMethod");
         Object bean = this;
 
         // When
@@ -77,6 +77,11 @@ class SchedulerTaskTest {
         // Then
         assertThat(task.getMethod()).isEqualTo(method);
         assertThat(task.getTargetBean()).isEqualTo(bean);
+    }
+
+    // Helper method for testing
+    public void helperMethod() {
+        // Test helper
     }
 
     @Test
