@@ -122,15 +122,22 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
         user2.setName("Updated Name");
 
         // When
-        cacheBinding.set(TEST_CACHE_NAME, key, user1);
+        boolean setResult1 = cacheBinding.set(TEST_CACHE_NAME, key, user1);
+        assertTrue(setResult1, "First set should succeed");
         User cachedUser1 = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
 
-        cacheBinding.set(TEST_CACHE_NAME, key, user2);
+        boolean setResult2 = cacheBinding.set(TEST_CACHE_NAME, key, user2);
+        assertTrue(setResult2, "Second set (overwrite) should succeed");
         User cachedUser2 = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
 
         // Then
-        assertEquals("Original Name", cachedUser1.getName());
-        assertEquals("Updated Name", cachedUser2.getName());
+        assertNotNull(cachedUser1, "First cached user should not be null");
+        assertNotNull(cachedUser2, "Second cached user should not be null");
+        assertEquals("Original Name", cachedUser1.getName(),
+            "First get should return original value");
+        assertEquals("Updated Name", cachedUser2.getName(),
+            "After overwrite, should return updated value");
+        assertEquals("4", cachedUser2.getId(), "ID should remain the same");
     }
 
     @Test

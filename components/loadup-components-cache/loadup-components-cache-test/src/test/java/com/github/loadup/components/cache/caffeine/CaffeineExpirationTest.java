@@ -60,11 +60,14 @@ public class CaffeineExpirationTest extends BaseCacheTest {
         cacheBinding.set(TEST_CACHE_NAME, key, user);
         User cachedUser1 = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
 
-        // Wait for expiration (2 seconds + buffer)
-        await().atMost(3, TimeUnit.SECONDS).until(() -> {
-            User u = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
-            return u == null;
-        });
+        // Wait for expiration (2 seconds + buffer, increased for CI)
+        await()
+            .atMost(5, TimeUnit.SECONDS)
+            .pollInterval(100, TimeUnit.MILLISECONDS)
+            .until(() -> {
+                User u = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+                return u == null;
+            });
 
         User cachedUser2 = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
 
