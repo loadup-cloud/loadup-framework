@@ -95,10 +95,10 @@ class SchedulerTaskRegistryTest {
         // Then
         assertThat(result).isSameAs(testBean);
 
-        // Verify task is registered in local registry with generated name
-        SchedulerTask task = registry.findByTaskName("TestBeanWithEmptyName.scheduledMethod");
+        // Verify task is registered in local registry with generated name (beanName.methodName)
+        SchedulerTask task = registry.findByTaskName("testBean.scheduledMethod");
         assertThat(task).isNotNull();
-        assertThat(task.getTaskName()).isEqualTo("TestBeanWithEmptyName.scheduledMethod");
+        assertThat(task.getTaskName()).isEqualTo("testBean.scheduledMethod");
 
         // Verify schedulerBinding.registerTask is NOT called yet (delayed until ContextRefreshedEvent)
         verify(schedulerBinding, never()).registerTask(any(SchedulerTask.class));
@@ -111,7 +111,7 @@ class SchedulerTaskRegistryTest {
         verify(schedulerBinding).registerTask(taskCaptor.capture());
 
         SchedulerTask capturedTask = taskCaptor.getValue();
-        assertThat(capturedTask.getTaskName()).isEqualTo("TestBeanWithEmptyName.scheduledMethod");
+        assertThat(capturedTask.getTaskName()).isEqualTo("testBean.scheduledMethod");
     }
 
     @Test

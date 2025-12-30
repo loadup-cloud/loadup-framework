@@ -58,6 +58,11 @@ public class SchedulerTaskRegistry implements BeanPostProcessor, ApplicationList
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        // Handle null bean
+        if (bean == null) {
+            return null;
+        }
+
         Method[] methods = bean.getClass().getDeclaredMethods();
         for (Method method : methods) {
             DistributedScheduler annotation =
@@ -65,7 +70,11 @@ public class SchedulerTaskRegistry implements BeanPostProcessor, ApplicationList
             if (annotation != null) {
                 String taskName = annotation.name();
                 if (taskName == null || taskName.trim().length() == 0) {
-                    taskName = bean.getClass().getSimpleName() + "." + method.getName();
+                    // Use beanName if available, otherwise use class name
+                    String prefix = (beanName != null && !beanName.trim().isEmpty())
+                        ? beanName
+                        : bean.getClass().getSimpleName();
+                    taskName = prefix + "." + method.getName();
                 }
                 String cron = annotation.cron();
 
@@ -153,6 +162,15 @@ public class SchedulerTaskRegistry implements BeanPostProcessor, ApplicationList
      */
     public SchedulerTask removeTask(String taskName) {
         return TASK_REGISTRY.remove(taskName);
+    }
+
+    /**
+     * Get all registered tasks.
+     *
+     * @return collection of all tasks
+     */
+    public java.util.Collection<SchedulerTask> getAllTasks() {
+        return new java.util.ArrayList<>(TASK_REGISTRY.values());
     }
 
     /**
