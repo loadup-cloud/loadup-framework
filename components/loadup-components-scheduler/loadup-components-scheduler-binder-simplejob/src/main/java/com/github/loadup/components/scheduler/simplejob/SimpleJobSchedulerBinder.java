@@ -35,6 +35,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -152,7 +153,9 @@ public class SimpleJobSchedulerBinder implements SchedulerBinder {
         String taskName = task.getTaskName();
         try {
             log.debug("Executing task: {}", taskName);
-            task.getMethod().invoke(task.getTargetBean());
+            Method method = task.getMethod();
+            method.setAccessible(true);  // Allow access to methods in nested classes
+            method.invoke(task.getTargetBean());
             log.debug("Task executed successfully: {}", taskName);
         } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Error executing task: {}", taskName, e);

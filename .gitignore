@@ -40,3 +40,4 @@ build/
 
 loadup-dependencies
 loadup-capability
+*.log

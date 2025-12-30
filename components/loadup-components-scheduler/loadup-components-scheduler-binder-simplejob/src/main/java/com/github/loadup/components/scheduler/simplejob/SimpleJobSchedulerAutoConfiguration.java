@@ -28,8 +28,10 @@ package com.github.loadup.components.scheduler.simplejob;
  */
 
 import com.github.loadup.components.scheduler.api.SchedulerBinder;
+import com.github.loadup.components.scheduler.config.SchedulerAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +42,7 @@ import org.springframework.scheduling.TaskScheduler;
  */
 @Slf4j
 @AutoConfiguration
+@AutoConfigureBefore(SchedulerAutoConfiguration.class)
 @ConditionalOnProperty(
     prefix = "loadup.scheduler",
     name = "type",

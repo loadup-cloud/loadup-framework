@@ -34,6 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Quartz scheduler binder implementation.
  * Supports distributed scheduling with Quartz features.
@@ -41,11 +44,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Slf4j
 public class QuartzSchedulerBinder implements SchedulerBinder {
 
-    private static final String BINDER_NAME   = "quartz";
+    private static final String BINDER_NAME = "quartz";
     private static final String DEFAULT_GROUP = "DEFAULT";
 
     @Autowired
     private Scheduler scheduler;
+
+    // Store task name to group mapping
+    private final Map<String, String> taskGroupMap = new ConcurrentHashMap<String, String>();
 
     @Override
     public String getName() {
@@ -109,6 +115,10 @@ public class QuartzSchedulerBinder implements SchedulerBinder {
 
             // Schedule job
             scheduler.scheduleJob(jobDetail, trigger);
+
+            // Store task group mapping
+            taskGroupMap.put(taskName, taskGroup);
+
             log.info("Successfully registered task: {} with cron: {}", taskName, task.getCron());
             return true;
 
@@ -121,9 +131,11 @@ public class QuartzSchedulerBinder implements SchedulerBinder {
     @Override
     public boolean unregisterTask(String taskName) {
         try {
-            JobKey jobKey = new JobKey(taskName, DEFAULT_GROUP);
+            String taskGroup = taskGroupMap.getOrDefault(taskName, DEFAULT_GROUP);
+            JobKey jobKey = new JobKey(taskName, taskGroup);
             boolean result = scheduler.deleteJob(jobKey);
             if (result) {
+                taskGroupMap.remove(taskName);
                 log.info("Successfully unregistered task: {}", taskName);
             } else {
                 log.warn("Task '{}' not found for unregistration", taskName);
@@ -138,7 +150,8 @@ public class QuartzSchedulerBinder implements SchedulerBinder {
     @Override
     public boolean pauseTask(String taskName) {
         try {
-            JobKey jobKey = new JobKey(taskName, DEFAULT_GROUP);
+            String taskGroup = taskGroupMap.getOrDefault(taskName, DEFAULT_GROUP);
+            JobKey jobKey = new JobKey(taskName, taskGroup);
             scheduler.pauseJob(jobKey);
             log.info("Successfully paused task: {}", taskName);
             return true;
@@ -151,7 +164,8 @@ public class QuartzSchedulerBinder implements SchedulerBinder {
     @Override
     public boolean resumeTask(String taskName) {
         try {
-            JobKey jobKey = new JobKey(taskName, DEFAULT_GROUP);
+            String taskGroup = taskGroupMap.getOrDefault(taskName, DEFAULT_GROUP);
+            JobKey jobKey = new JobKey(taskName, taskGroup);
             scheduler.resumeJob(jobKey);
             log.info("Successfully resumed task: {}", taskName);
             return true;
@@ -164,7 +178,8 @@ public class QuartzSchedulerBinder implements SchedulerBinder {
     @Override
     public boolean triggerTask(String taskName) {
         try {
-            JobKey jobKey = new JobKey(taskName, DEFAULT_GROUP);
+            String taskGroup = taskGroupMap.getOrDefault(taskName, DEFAULT_GROUP);
+            JobKey jobKey = new JobKey(taskName, taskGroup);
             scheduler.triggerJob(jobKey);
             log.info("Successfully triggered task: {}", taskName);
             return true;
@@ -177,7 +192,8 @@ public class QuartzSchedulerBinder implements SchedulerBinder {
     @Override
     public boolean updateTaskCron(String taskName, String cron) {
         try {
-            TriggerKey triggerKey = new TriggerKey(taskName + "_trigger", DEFAULT_GROUP);
+            String taskGroup = taskGroupMap.getOrDefault(taskName, DEFAULT_GROUP);
+            TriggerKey triggerKey = new TriggerKey(taskName + "_trigger", taskGroup);
             CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
 
             if (trigger == null) {
@@ -202,7 +218,8 @@ public class QuartzSchedulerBinder implements SchedulerBinder {
     @Override
     public boolean taskExists(String taskName) {
         try {
-            JobKey jobKey = new JobKey(taskName, DEFAULT_GROUP);
+            String taskGroup = taskGroupMap.getOrDefault(taskName, DEFAULT_GROUP);
+            JobKey jobKey = new JobKey(taskName, taskGroup);
             return scheduler.checkExists(jobKey);
         } catch (SchedulerException e) {
             log.error("Failed to check if task exists: {}", taskName, e);

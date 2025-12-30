@@ -32,8 +32,8 @@ import com.github.loadup.components.scheduler.binding.DefaultSchedulerBinding;
 import com.github.loadup.components.scheduler.core.SchedulerTaskRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -55,7 +55,7 @@ public class SchedulerAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean(SchedulerBinder.class)
+    @ConditionalOnSingleCandidate(SchedulerBinder.class)
     @ConditionalOnMissingBean
     public SchedulerBinding schedulerBinding(SchedulerBinder schedulerBinder) {
         log.info("Creating SchedulerBinding with binder: {}", schedulerBinder.getName());

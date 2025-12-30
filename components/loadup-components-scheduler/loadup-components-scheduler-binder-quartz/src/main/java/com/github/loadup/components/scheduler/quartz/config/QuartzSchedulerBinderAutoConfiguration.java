@@ -28,9 +28,11 @@ package com.github.loadup.components.scheduler.quartz.config;
  */
 
 import com.github.loadup.components.scheduler.api.SchedulerBinder;
+import com.github.loadup.components.scheduler.config.SchedulerAutoConfiguration;
 import com.github.loadup.components.scheduler.quartz.binder.QuartzSchedulerBinder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +42,7 @@ import org.springframework.context.annotation.Bean;
  */
 @Slf4j
 @AutoConfiguration(after = QuartzAutoConfiguration.class)
+@AutoConfigureBefore(SchedulerAutoConfiguration.class)
 @ConditionalOnClass(org.quartz.Scheduler.class)
 @ConditionalOnProperty(
     prefix = "loadup.scheduler",

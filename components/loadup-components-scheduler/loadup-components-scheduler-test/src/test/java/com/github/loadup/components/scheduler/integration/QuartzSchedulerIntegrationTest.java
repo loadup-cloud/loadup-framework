@@ -133,7 +133,7 @@ class QuartzSchedulerIntegrationTest {
         }
     }
 
-    static class TestScheduledTasks {
+    public static class TestScheduledTasks {
         private final AtomicInteger executionCount = new AtomicInteger(0);
 
         @DistributedScheduler(name = "quartzTestTask", cron = "*/2 * * * * ?")

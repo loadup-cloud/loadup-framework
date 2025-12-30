@@ -34,8 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -47,10 +48,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * Scans for @DistributedScheduler annotations and registers tasks.
  */
 @Slf4j
-@Component
-public class SchedulerTaskRegistry implements BeanPostProcessor {
+public class SchedulerTaskRegistry implements BeanPostProcessor, ApplicationListener<ContextRefreshedEvent> {
 
     private static final Map<String, SchedulerTask> TASK_REGISTRY = new ConcurrentHashMap<String, SchedulerTask>();
+    private static final Map<String, SchedulerTask> PENDING_TASKS = new ConcurrentHashMap<String, SchedulerTask>();
 
     @Autowired(required = false)
     private SchedulerBinding schedulerBinding;
@@ -78,18 +79,28 @@ public class SchedulerTaskRegistry implements BeanPostProcessor {
 
                 registerTask(task);
 
-                // Register with binder if available
-                if (schedulerBinding != null) {
-                    try {
-                        schedulerBinding.registerTask(task);
-                        log.info("Registered task '{}' with scheduler", taskName);
-                    } catch (Exception e) {
-                        log.error("Failed to register task '{}' with scheduler", taskName, e);
-                    }
-                }
+                // Store for later registration with scheduler binding
+                PENDING_TASKS.put(taskName, task);
             }
         }
         return bean;
+    }
+
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        // Register all pending tasks with scheduler binding after context is fully initialized
+        if (schedulerBinding != null && !PENDING_TASKS.isEmpty()) {
+            log.info("Context refreshed, registering {} pending tasks with scheduler", PENDING_TASKS.size());
+            for (SchedulerTask task : PENDING_TASKS.values()) {
+                try {
+                    schedulerBinding.registerTask(task);
+                    log.info("Registered task '{}' with scheduler", task.getTaskName());
+                } catch (Exception e) {
+                    log.error("Failed to register task '{}' with scheduler", task.getTaskName(), e);
+                }
+            }
+            PENDING_TASKS.clear();
+        }
     }
 
     /**

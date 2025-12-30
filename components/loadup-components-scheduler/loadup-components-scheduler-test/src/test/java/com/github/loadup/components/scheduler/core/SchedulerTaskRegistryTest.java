@@ -61,14 +61,26 @@ class SchedulerTaskRegistryTest {
         // Then
         assertThat(result).isSameAs(testBean);
 
+        // Verify task is registered in local registry
+        SchedulerTask task = registry.findByTaskName("testTask");
+        assertThat(task).isNotNull();
+        assertThat(task.getTaskName()).isEqualTo("testTask");
+        assertThat(task.getCron()).isEqualTo("0 0 12 * * ?");
+        assertThat(task.getMethod().getName()).isEqualTo("scheduledMethod");
+        assertThat(task.getTargetBean()).isSameAs(testBean);
+
+        // Verify schedulerBinding.registerTask is NOT called yet (delayed until ContextRefreshedEvent)
+        verify(schedulerBinding, never()).registerTask(any(SchedulerTask.class));
+
+        // Simulate context refresh event
+        registry.onApplicationEvent(mock(org.springframework.context.event.ContextRefreshedEvent.class));
+
+        // Now verify schedulerBinding.registerTask was called
         ArgumentCaptor<SchedulerTask> taskCaptor = ArgumentCaptor.forClass(SchedulerTask.class);
         verify(schedulerBinding).registerTask(taskCaptor.capture());
 
         SchedulerTask capturedTask = taskCaptor.getValue();
         assertThat(capturedTask.getTaskName()).isEqualTo("testTask");
-        assertThat(capturedTask.getCron()).isEqualTo("0 0 12 * * ?");
-        assertThat(capturedTask.getMethod().getName()).isEqualTo("scheduledMethod");
-        assertThat(capturedTask.getTargetBean()).isSameAs(testBean);
     }
 
     @Test
@@ -83,6 +95,18 @@ class SchedulerTaskRegistryTest {
         // Then
         assertThat(result).isSameAs(testBean);
 
+        // Verify task is registered in local registry with generated name
+        SchedulerTask task = registry.findByTaskName("TestBeanWithEmptyName.scheduledMethod");
+        assertThat(task).isNotNull();
+        assertThat(task.getTaskName()).isEqualTo("TestBeanWithEmptyName.scheduledMethod");
+
+        // Verify schedulerBinding.registerTask is NOT called yet (delayed until ContextRefreshedEvent)
+        verify(schedulerBinding, never()).registerTask(any(SchedulerTask.class));
+
+        // Simulate context refresh event
+        registry.onApplicationEvent(mock(org.springframework.context.event.ContextRefreshedEvent.class));
+
+        // Now verify schedulerBinding.registerTask was called
         ArgumentCaptor<SchedulerTask> taskCaptor = ArgumentCaptor.forClass(SchedulerTask.class);
         verify(schedulerBinding).registerTask(taskCaptor.capture());
 

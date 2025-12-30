@@ -3,14 +3,16 @@ package com.github.loadup.components.scheduler.integration;
 
 import com.github.loadup.components.scheduler.annotation.DistributedScheduler;
 import com.github.loadup.components.scheduler.api.SchedulerBinding;
-import com.github.loadup.components.scheduler.config.SchedulerAutoConfiguration;
 import com.github.loadup.components.scheduler.core.SchedulerTaskRegistry;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
-import com.github.loadup.components.scheduler.simplejob.SimpleJobSchedulerAutoConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -98,15 +100,24 @@ class SimpleJobSchedulerIntegrationTest {
     }
 
     @Configuration
-    @Import({SchedulerAutoConfiguration.class, SimpleJobSchedulerAutoConfiguration.class})
+    @EnableAutoConfiguration
     static class TestConfiguration {
         @Bean
         public TestScheduledTasks testScheduledTasks() {
             return new TestScheduledTasks();
         }
+
+        @Bean
+        public TaskScheduler taskScheduler() {
+            ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+            scheduler.setPoolSize(10);
+            scheduler.setThreadNamePrefix("scheduler-");
+            scheduler.initialize();
+            return scheduler;
+        }
     }
 
-    static class TestScheduledTasks {
+    public static class TestScheduledTasks {
         private final AtomicInteger executionCount = new AtomicInteger(0);
 
         @DistributedScheduler(name = "integrationTestTask", cron = "*/2 * * * * ?")

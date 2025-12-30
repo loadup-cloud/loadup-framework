@@ -56,6 +56,7 @@ public class SchedulerTaskJob implements Job {
             log.debug("Executing Quartz job for task: {}", taskName);
             long startTime = System.currentTimeMillis();
 
+            method.setAccessible(true);  // Allow access to methods in nested classes
             method.invoke(targetBean);
 
             long duration = System.currentTimeMillis() - startTime;
