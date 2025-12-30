@@ -48,6 +48,7 @@
         <module>components/loadup-components-captcha</module>
         <module>components/loadup-components-tracer</module>
         <module>components/loadup-components-scheduler</module>
+        <module>components/loadup-components-gotone</module>
         <!--        <module>modules/loadup-modules-user</module>-->
     </modules>
     <dependencyManagement>

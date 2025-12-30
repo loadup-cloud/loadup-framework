@@ -2,7 +2,7 @@
 
 ## 📋 概述
 
-Scheduler组件的��块。
+Scheduler组件的API模块。
 
 ## 📄 许可证
 

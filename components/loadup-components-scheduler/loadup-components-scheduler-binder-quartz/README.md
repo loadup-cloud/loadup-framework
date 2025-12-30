@@ -1,8 +1,8 @@
-# LoadUp Components Scheduler uinder quartz
+# LoadUp Components Scheduler binder quartz
 
 ## 📋 概述
 
-Scheduler组件的��块。
+Scheduler组件的 quartz 实现。
 
 ## 📄 许可证
 

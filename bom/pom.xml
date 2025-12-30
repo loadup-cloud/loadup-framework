@@ -100,17 +100,39 @@
             <!-- Components - Scheduler -->
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-scheduler</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.loadup.components</groupId>
                 <artifactId>loadup-components-scheduler-api</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
-                <artifactId>loadup-components-scheduler-quartz</artifactId>
+                <artifactId>loadup-components-scheduler-binder-quartz</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
-                <artifactId>loadup-components-scheduler-xxljob</artifactId>
+                <artifactId>loadup-components-scheduler-binder-xxljob</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-scheduler-binder-powerjob</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-scheduler-binder-simplejob</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+
+            <!-- Components - Gotone -->
+            <dependency>
+                <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-gotone</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
         </dependencies>

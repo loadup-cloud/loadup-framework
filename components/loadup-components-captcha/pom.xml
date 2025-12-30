@@ -11,6 +11,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
+    <groupId>com.github.loadup.components</groupId>
     <artifactId>loadup-components-captcha</artifactId>
     <packaging>jar</packaging>
     <description>Java web graphics verification code, support gif verification code.</description>

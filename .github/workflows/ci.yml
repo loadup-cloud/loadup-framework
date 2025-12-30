@@ -1,4 +1,4 @@
-name: Build and Package
+name: Build and Test
 
 on:
   push:
@@ -20,6 +20,12 @@ jobs:
       contents: read
       packages: write
 
+    # Testcontainers 需要 Docker 服务
+    services:
+      docker:
+        image: docker:24-dind
+        options: --privileged
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -34,15 +40,48 @@ jobs:
           server-username: GITHUB_ACTOR
           server-password: GITHUB_TOKEN
 
+      # 配置 Testcontainers 使用 GitHub Actions 的 Docker
+      - name: Configure Testcontainers
+        run: |
+          mkdir -p ~/.testcontainers
+          echo "docker.host=unix:///var/run/docker.sock" > ~/.testcontainers.properties
+          echo "testcontainers.reuse.enable=false" >> ~/.testcontainers.properties
 
-      - name: Build and package with Maven
-        run: mvn clean verify  -DskipTests
+      # 验证 Docker 可用
+      - name: Verify Docker
+        run: docker ps
+
+      # 构建和测试（包含 Testcontainers 测试）
+      - name: Build and Test with Maven
+        run: mvn clean verify
         env:
           GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
           GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
 
+      # 上传测试报告
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            **/target/surefire-reports/
+            **/target/failsafe-reports/
+          retention-days: 7
+
+      # 上传代码覆盖率报告
+      - name: Upload Coverage Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            **/target/site/jacoco/
+          retention-days: 7
+
+      # 部署到 GitHub Packages
       - name: Deploy to GitHub Packages
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
         run: mvn deploy -DskipTests
         env:
           GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}

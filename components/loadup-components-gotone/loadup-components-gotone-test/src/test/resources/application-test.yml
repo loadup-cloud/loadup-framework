@@ -1,0 +1,27 @@
+# Test Configuration with Testcontainers
+spring:
+  # Testcontainers 会自动配置 datasource，不需要手动配置
+  sql:
+    init:
+      mode: always
+
+  data:
+    jdbc:
+      repositories:
+        enabled: true
+
+# Testcontainers Configuration
+testcontainers:
+  reuse:
+    enable: true
+
+# Logging
+logging:
+  level:
+    com.github.loadup.components.gotone: DEBUG
+    org.springframework.jdbc: DEBUG
+    org.testcontainers: INFO
+    tc.mysql: INFO
+
+
+

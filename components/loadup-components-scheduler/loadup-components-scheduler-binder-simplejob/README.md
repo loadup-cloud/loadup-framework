@@ -1,8 +1,8 @@
-# LoadUp Components Scheduler uinder simplejob
+# LoadUp Components Scheduler binder simplejob
 
 ## 📋 概述
 
-Scheduler组件的��块。
+Scheduler组件的 spring scheduler 实现。
 
 ## 📄 许可证
 

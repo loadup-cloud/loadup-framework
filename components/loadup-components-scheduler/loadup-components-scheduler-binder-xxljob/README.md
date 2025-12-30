@@ -1,8 +1,8 @@
-# LoadUp Components Scheduler uinder xxljob
+# LoadUp Components Scheduler binder xxljob
 
 ## 📋 概述
 
-Scheduler组件的��块。
+Scheduler组件的 xxljob 实现。
 
 ## 📄 许可证
 

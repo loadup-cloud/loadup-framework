@@ -1,8 +1,8 @@
-# LoadUp Components Scheduler uinder powerjob
+# LoadUp Components Scheduler binder powerjob
 
 ## 📋 概述
 
-Scheduler组件的��块。
+Scheduler组件的 powerjob 实现。
 
 ## 📄 许可证
 

@@ -1,0 +1,51 @@
+# ============================================================================
+# Gotone 快速开始配置 - 最小化配置
+# ============================================================================
+# 说明: 这是一个最简化的配置文件，用于快速启动
+# 详细配置请参考 application.yml.example
+# ============================================================================
+
+spring:
+  application:
+    name: gotone-demo
+
+  # 数据源配置（必需）
+  datasource:
+    url: jdbc:mysql://localhost:3306/gotone?useUnicode=true&characterEncoding=utf8mb4
+    username: root
+    password: your-password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # 初始化数据库（首次运行时启用）
+  sql:
+    init:
+      mode: always  # 首次运行后改为 never
+      schema-locations: classpath:schema.sql
+
+  # Email 配置（如果需要邮件功能）
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: your-email@gmail.com
+    password: your-app-password
+    properties:
+      mail.smtp:
+        auth: true
+        starttls.enable: true
+
+# Gotone 配置
+loadup:
+  gotone:
+    # SMS 配置（至少配置一个）
+    sms:
+      aliyun:
+        enabled: true
+        access-key-id: ${ALIYUN_ACCESS_KEY_ID}
+        access-key-secret: ${ALIYUN_ACCESS_KEY_SECRET}
+        sign-name: 【您的签名】
+
+# 日志配置
+logging:
+  level:
+    com.github.loadup.components.gotone: DEBUG
+

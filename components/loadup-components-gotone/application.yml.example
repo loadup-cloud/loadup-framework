@@ -1,0 +1,285 @@
+# ============================================================================
+# Gotone 通知组件配置示例
+# ============================================================================
+# 版本: v1.0.0
+# 说明: 根据实际需要启用相应的配置项
+# ============================================================================
+
+# ============================================================================
+# Spring Boot 基础配置
+# ============================================================================
+spring:
+  application:
+    name: gotone-notification-service
+
+  # 数据源配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/gotone?useUnicode=true&characterEncoding=utf8mb4&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: your-password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    # HikariCP 连接池配置
+    hikari:
+      maximum-pool-size: 20        # 最大连接数
+      minimum-idle: 5              # 最小空闲连接
+      connection-timeout: 30000    # 连接超时（毫秒）
+      idle-timeout: 600000         # 空闲超时（毫秒）
+      max-lifetime: 1800000        # 最大生命周期（毫秒）
+      leak-detection-threshold: 60000  # 连接泄漏检测阈值
+
+  # Spring Data JDBC 配置
+  sql:
+    init:
+      mode: never  # never/always/embedded，生产环境使用 never
+      schema-locations: classpath:schema.sql
+
+  data:
+    jdbc:
+      repositories:
+        enabled: true
+
+  # Email 配置（使用 SMTP）
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: your-email@gmail.com
+    password: your-app-password  # Gmail 使用应用专用密码
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+          ssl:
+            trust: smtp.gmail.com
+
+  # 缓存配置
+  cache:
+    type: caffeine  # simple/caffeine/redis
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=3600s
+
+# ============================================================================
+# Gotone 组件配置
+# ============================================================================
+loadup:
+  gotone:
+    # 模板缓存配置
+    template:
+      cache-enabled: true
+      cache-ttl: 3600  # 缓存过期时间（秒）
+      cache-refresh-cron: "0 0 * * * ?"  # 每小时刷新缓存
+
+    # 重试配置
+    retry:
+      enabled: true
+      max-attempts: 3               # 最大重试次数
+      backoff-delay: 1000           # 退避延迟（毫秒）
+      max-retry: 3                  # 数据库记录的最大重试次数
+      scan-cron: "0 */30 * * * ?"   # 定时扫描可重试记录（每30分钟）
+      hours-ago: 24                 # 扫描最近24小时的失败记录
+
+    # ========================================================================
+    # SMS 提供商配置
+    # ========================================================================
+    sms:
+      # 阿里云短信
+      aliyun:
+        enabled: true
+        access-key-id: ${ALIYUN_ACCESS_KEY_ID:your-access-key-id}
+        access-key-secret: ${ALIYUN_ACCESS_KEY_SECRET:your-access-key-secret}
+        sign-name: 【您的签名】
+        region-id: cn-hangzhou  # 可选
+        endpoint: dysmsapi.aliyuncs.com  # 可选
+
+      # 腾讯云短信
+      tencent:
+        enabled: true
+        secret-id: ${TENCENT_SECRET_ID:your-secret-id}
+        secret-key: ${TENCENT_SECRET_KEY:your-secret-key}
+        sdk-app-id: 1400000000  # 替换为实际的 SDK APP ID
+        sign-name: 您的签名
+        region: ap-guangzhou  # 可选
+
+      # 华为云短信
+      huawei:
+        enabled: true
+        app-key: ${HUAWEI_APP_KEY:your-app-key}
+        app-secret: ${HUAWEI_APP_SECRET:your-app-secret}
+        sender: 106XXXXXXXX  # 通道号
+        signature: 【您的签名】
+        url: https://smsapi.cn-north-4.myhuaweicloud.com:443  # 可选
+
+      # 云片短信
+      yunpian:
+        enabled: true
+        api-key: ${YUNPIAN_API_KEY:your-api-key}
+        sign-name: 【您的签名】
+
+    # ========================================================================
+    # Email 提供商配置
+    # ========================================================================
+    email:
+      # SMTP 邮件（使用 spring.mail 配置）
+      smtp:
+        enabled: true
+        from: ${SMTP_FROM:noreply@example.com}
+        from-name: Gotone Notification
+
+    # ========================================================================
+    # Push 提供商配置
+    # ========================================================================
+    push:
+      # Firebase Cloud Messaging
+      fcm:
+        enabled: true
+        server-key: ${FCM_SERVER_KEY:your-server-key}
+        sender-id: ${FCM_SENDER_ID:your-sender-id}  # 可选
+        api-url: https://fcm.googleapis.com/fcm/send  # 可选
+        timeout: 5000  # 超时时间（毫秒）
+        validate-token: true  # 是否验证设备 Token
+        batch-size: 100  # 批量发送大小
+
+# ============================================================================
+# 监控和日志配置
+# ============================================================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.github.loadup.components.gotone: DEBUG
+    org.springframework.jdbc: INFO
+    org.springframework.data.jdbc: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/gotone.log
+    max-size: 100MB
+    max-history: 30
+
+# ============================================================================
+# 其他邮件服务商配置示例
+# ============================================================================
+# QQ 邮箱
+# spring:
+#   mail:
+#     host: smtp.qq.com
+#     port: 587  # 或 465（SSL）
+#     username: your-qq@qq.com
+#     password: your-authorization-code  # 使用授权码
+#     properties:
+#       mail.smtp:
+#         auth: true
+#         starttls.enable: true
+#         # 如果使用 465 端口，启用 SSL
+#         # ssl.enable: true
+
+# 163 邮箱
+# spring:
+#   mail:
+#     host: smtp.163.com
+#     port: 465
+#     username: your-email@163.com
+#     password: your-authorization-code  # 使用授权码
+#     properties:
+#       mail.smtp:
+#         auth: true
+#         ssl.enable: true
+
+# 阿里云邮件推送
+# spring:
+#   mail:
+#     host: smtpdm.aliyun.com
+#     port: 465
+#     username: your-email@example.com
+#     password: your-password
+#     properties:
+#       mail.smtp:
+#         auth: true
+#         ssl.enable: true
+
+# ============================================================================
+# 性能调优配置（可选）
+# ============================================================================
+# 线程池配置
+# loadup:
+#   gotone:
+#     executor:
+#       core-pool-size: 10
+#       max-pool-size: 50
+#       queue-capacity: 1000
+#       thread-name-prefix: "gotone-"
+#       keep-alive-seconds: 60
+
+# 限流配置
+# loadup:
+#   gotone:
+#     rate-limit:
+#       enabled: true
+#       per-phone: 5      # 每个号码每分钟最多 5 条短信
+#       per-ip: 100       # 每个 IP 每分钟最多 100 条
+#       per-user: 10      # 每个用户每分钟最多 10 条
+
+# ============================================================================
+# 开发环境配置（可选）
+# ============================================================================
+# spring:
+#   profiles:
+#     active: dev
+#
+# ---
+# spring:
+#   config:
+#     activate:
+#       on-profile: dev
+#   datasource:
+#     url: jdbc:mysql://localhost:3306/gotone_dev
+#   sql:
+#     init:
+#       mode: always  # 开发环境自动初始化数据库
+# logging:
+#   level:
+#     com.github.loadup.components.gotone: DEBUG
+
+# ============================================================================
+# 生产环境配置（可选）
+# ============================================================================
+# ---
+# spring:
+#   config:
+#     activate:
+#       on-profile: prod
+#   datasource:
+#     url: jdbc:mysql://prod-mysql:3306/gotone
+#     hikari:
+#       maximum-pool-size: 50
+#   sql:
+#     init:
+#       mode: never  # 生产环境不自动初始化
+# logging:
+#   level:
+#     com.github.loadup.components.gotone: INFO
+#     root: WARN
+#   file:
+#     name: /var/log/gotone/gotone.log
+
