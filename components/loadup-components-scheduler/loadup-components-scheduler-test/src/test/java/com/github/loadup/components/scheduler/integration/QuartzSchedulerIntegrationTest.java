@@ -3,14 +3,14 @@ package com.github.loadup.components.scheduler.integration;
 
 import com.github.loadup.components.scheduler.annotation.DistributedScheduler;
 import com.github.loadup.components.scheduler.api.SchedulerBinding;
-import com.github.loadup.components.scheduler.config.SchedulerAutoConfiguration;
 import com.github.loadup.components.scheduler.core.SchedulerTaskRegistry;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
-import com.github.loadup.components.scheduler.quartz.config.QuartzSchedulerBinderAutoConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -125,7 +125,7 @@ class QuartzSchedulerIntegrationTest {
     }
 
     @Configuration
-    @Import({SchedulerAutoConfiguration.class, QuartzSchedulerBinderAutoConfiguration.class})
+    @EnableAutoConfiguration
     static class TestConfiguration {
         @Bean
         public TestScheduledTasks testScheduledTasks() {
