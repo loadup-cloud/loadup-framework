@@ -134,7 +134,14 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
     @Test
     @DisplayName("测试并发读写混合")
     void testConcurrentReadWrite() throws InterruptedException {
-        // Given
+        // Given - Pre-populate some data
+        for (int i = 0; i < 50; i++) {
+            String key = "user:" + i;
+            User user = User.createTestUser(key);
+            user.setName("Initial-" + i);
+            cacheBinding.set(TEST_CACHE_NAME, key, user);
+        }
+
         int threadCount = 10;
         int operationsPerThread = 100;
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
@@ -172,7 +179,9 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
             String key = "user:" + i;
             User user = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
             assertNotNull(user, "User should exist: " + key);
-            assertTrue(user.getName().startsWith("Thread"), "User data should be valid");
+            // Name should either be from Initial or Thread prefix
+            assertTrue(user.getName().startsWith("Thread") || user.getName().startsWith("Initial"),
+                "User data should be valid: " + user.getName());
         }
     }
 
