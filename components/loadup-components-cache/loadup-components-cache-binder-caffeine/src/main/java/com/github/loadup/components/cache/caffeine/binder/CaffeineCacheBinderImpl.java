@@ -46,7 +46,7 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
     public boolean set(String cacheName, String key, Object value) {
         Cache cache = caffeineCacheManager.getCache(cacheName);
         Assert.notNull(cache, "cache is null");
-        cache.putIfAbsent(key, value);
+        cache.put(key, value);
         return true;
     }
 
