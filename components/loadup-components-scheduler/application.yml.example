@@ -1,0 +1,70 @@
+# LoadUp Scheduler Configuration Examples
+
+# ==================== SimpleJob Configuration (Default) ====================
+loadup:
+  scheduler:
+    type: simplejob
+
+# ==================== Quartz Configuration ====================
+loadup:
+  scheduler:
+    type: quartz
+
+spring:
+  quartz:
+    # In-Memory Store (Development)
+    job-store-type: memory
+
+    # JDBC Store (Production - Cluster Support)
+    # job-store-type: jdbc
+
+    properties:
+      org.quartz.scheduler.instanceName: LoadUpScheduler
+      org.quartz.scheduler.instanceId: AUTO
+
+      # Job Store Settings
+      org.quartz.jobStore.class: org.quartz.impl.jdbcjobstore.JobStoreTX
+      org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+      org.quartz.jobStore.tablePrefix: QRTZ_
+      org.quartz.jobStore.isClustered: true
+      org.quartz.jobStore.clusterCheckinInterval: 20000
+
+      # Thread Pool Settings
+      org.quartz.threadPool.class: org.quartz.simpl.SimpleThreadPool
+      org.quartz.threadPool.threadCount: 10
+      org.quartz.threadPool.threadPriority: 5
+
+# ==================== XXL-Job Configuration ====================
+loadup:
+  scheduler:
+    type: xxljob
+
+xxl:
+  job:
+    admin:
+      addresses: http://localhost:8080/xxl-job-admin
+    executor:
+      appname: loadup-executor
+      address:  # Optional: leave empty for auto-detect
+      ip:       # Optional: leave empty for auto-detect
+      port: 9999
+      logpath: /data/applogs/xxl-job/jobhandler
+      logretentiondays: 30
+    accessToken: # Optional: access token for security
+
+# ==================== PowerJob Configuration ====================
+loadup:
+  scheduler:
+    type: powerjob
+
+powerjob:
+  worker:
+    enabled: true
+    server-address: 127.0.0.1:7700
+    app-name: loadup-app
+    port: 27777
+    protocol: http
+    store-strategy: disk
+    max-result-length: 8096
+    max-appended-wf-context-length: 8096
+

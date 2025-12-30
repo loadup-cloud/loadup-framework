@@ -1,0 +1,47 @@
+# LoadUp Scheduler Configuration Examples
+
+## SimpleJob Configuration (Default)
+loadup.scheduler.type=simplejob
+
+## Quartz Configuration
+loadup.scheduler.type=quartz
+
+# Quartz In-Memory Store (Development)
+spring.quartz.job-store-type=memory
+
+# Quartz JDBC Store (Production - Cluster Support)
+spring.quartz.job-store-type=jdbc
+spring.quartz.properties.org.quartz.scheduler.instanceName=LoadUpScheduler
+spring.quartz.properties.org.quartz.scheduler.instanceId=AUTO
+spring.quartz.properties.org.quartz.jobStore.class=org.quartz.impl.jdbcjobstore.JobStoreTX
+spring.quartz.properties.org.quartz.jobStore.driverDelegateClass=org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+spring.quartz.properties.org.quartz.jobStore.tablePrefix=QRTZ_
+spring.quartz.properties.org.quartz.jobStore.isClustered=true
+spring.quartz.properties.org.quartz.jobStore.clusterCheckinInterval=20000
+spring.quartz.properties.org.quartz.threadPool.class=org.quartz.simpl.SimpleThreadPool
+spring.quartz.properties.org.quartz.threadPool.threadCount=10
+spring.quartz.properties.org.quartz.threadPool.threadPriority=5
+
+## XXL-Job Configuration
+loadup.scheduler.type=xxljob
+
+xxl.job.admin.addresses=http://localhost:8080/xxl-job-admin
+xxl.job.executor.appname=loadup-executor
+xxl.job.executor.address=
+xxl.job.executor.ip=
+xxl.job.executor.port=9999
+xxl.job.executor.logpath=/data/applogs/xxl-job/jobhandler
+xxl.job.executor.logretentiondays=30
+xxl.job.accessToken=
+
+## PowerJob Configuration
+loadup.scheduler.type=powerjob
+
+powerjob.worker.enabled=true
+powerjob.worker.server-address=127.0.0.1:7700
+powerjob.worker.app-name=loadup-app
+powerjob.worker.port=27777
+powerjob.worker.protocol=http
+powerjob.worker.store-strategy=disk
+powerjob.worker.max-result-length=8096
+

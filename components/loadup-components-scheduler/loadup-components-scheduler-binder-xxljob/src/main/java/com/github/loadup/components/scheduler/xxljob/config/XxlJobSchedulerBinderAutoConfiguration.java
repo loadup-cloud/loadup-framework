@@ -1,8 +1,9 @@
-package com.github.loadup.components.scheduler.config;
+/* Copyright (C) LoadUp Cloud 2022-2025 */
+package com.github.loadup.components.scheduler.xxljob.config;
 
 /*-
  * #%L
- * loadup-components-scheduler-api
+ * loadup-components-scheduler-binder-xxljob
  * %%
  * Copyright (C) 2022 - 2023 loadup_cloud
  * %%
@@ -27,38 +28,30 @@ package com.github.loadup.components.scheduler.config;
  */
 
 import com.github.loadup.components.scheduler.api.SchedulerBinder;
-import com.github.loadup.components.scheduler.api.SchedulerBinding;
-import com.github.loadup.components.scheduler.binding.DefaultSchedulerBinding;
-import com.github.loadup.components.scheduler.core.SchedulerTaskRegistry;
+import com.github.loadup.components.scheduler.xxljob.binder.XxlJobSchedulerBinder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * Auto-configuration for scheduler component.
+ * Auto-configuration for XXL-Job scheduler binder.
  */
 @Slf4j
 @AutoConfiguration
-@EnableAsync
-@EnableScheduling
-public class SchedulerAutoConfiguration {
+@ConditionalOnClass(name = "com.xxl.job.core.executor.XxlJobExecutor")
+@ConditionalOnProperty(
+    prefix = "loadup.scheduler",
+    name = "type",
+    havingValue = "xxljob"
+)
+public class XxlJobSchedulerBinderAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean
-    public SchedulerTaskRegistry schedulerTaskRegistry() {
-        log.info("Creating SchedulerTaskRegistry");
-        return new SchedulerTaskRegistry();
-    }
-
-    @Bean
-    @ConditionalOnBean(SchedulerBinder.class)
-    @ConditionalOnMissingBean
-    public SchedulerBinding schedulerBinding(SchedulerBinder schedulerBinder) {
-        log.info("Creating SchedulerBinding with binder: {}", schedulerBinder.getName());
-        return new DefaultSchedulerBinding(schedulerBinder);
+    @ConditionalOnMissingBean(SchedulerBinder.class)
+    public SchedulerBinder xxlJobSchedulerBinder() {
+        log.info("Creating XXL-Job scheduler binder");
+        return new XxlJobSchedulerBinder();
     }
 }
+
