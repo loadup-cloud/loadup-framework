@@ -53,10 +53,17 @@ jobs:
 
       # 构建和测试（包含 Testcontainers 测试）
       - name: Build and Test with Maven
-        run: mvn clean verify
+        run: |
+          mvn clean verify -B \
+            -Dspring.profiles.active=ci \
+            -Dlogging.level.root=INFO \
+            -Dlogging.level.com.github.loadup=INFO \
+            -Dorg.slf4j.simpleLogger.defaultLogLevel=info
         env:
           GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
           GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          # Maven 选项：设置内存和日志
+          MAVEN_OPTS: "-Xmx1024m -Dorg.slf4j.simpleLogger.defaultLogLevel=info"
 
       # 上传测试报告
       - name: Upload Test Reports
