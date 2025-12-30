@@ -24,6 +24,7 @@ LoadUp Tracer 组件基于 OpenTelemetry 为 Spring Boot 3 应用提供便捷的
 ## 功能特性
 
 ### 核心功能
+
 - 🚀 **开箱即用**：自动配置，零侵入集成
 - 🎯 **注解驱动**：使用 `@Traced` 注解轻松追踪方法执行
 - 🌐 **HTTP 请求追踪**：自动追踪所有 HTTP 请求和响应
@@ -686,7 +687,9 @@ loadup-components-tracer/
 
 ## 许可证
 
-MIT License
+GNU General Public License v3.0 (GPL-3.0)
+
+详见 [LICENSE](../../LICENSE) 文件。
 
 ---
 
@@ -732,7 +735,9 @@ MIT License
     public Order getOrder(Long id) {
         return order;
     }
+
 }
+
 ```
 
 ### 编程式追踪
@@ -1063,7 +1068,9 @@ public class CustomAsyncConfig implements AsyncConfigurer {
 
 ## 许可证
 
-MIT License
+GNU General Public License v3.0 (GPL-3.0)
+
+详见 [LICENSE](../../LICENSE) 文件。
 
 ## 贡献
 

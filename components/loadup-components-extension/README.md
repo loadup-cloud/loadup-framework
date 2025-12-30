@@ -530,7 +530,11 @@ logging.level.com.github.loadup.components.extension=DEBUG
 
 ## 许可证
 
-Copyright (C) LoadUp Cloud 2025
+GNU General Public License v3.0 (GPL-3.0)
+
+Copyright (C) 2025 LoadUp Framework
+
+详见 [LICENSE](../../LICENSE) 文件。
 
 ---
 

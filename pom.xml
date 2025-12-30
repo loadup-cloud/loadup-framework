@@ -13,6 +13,7 @@
     <artifactId>loadup-framework-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <inceptionYear>2026</inceptionYear>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -47,7 +48,7 @@
         <module>components/loadup-components-captcha</module>
         <module>components/loadup-components-tracer</module>
         <module>components/loadup-components-scheduler</module>
-        <module>modules/loadup-modules-user</module>
+        <!--        <module>modules/loadup-modules-user</module>-->
     </modules>
     <dependencyManagement>
         <dependencies>

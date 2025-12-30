@@ -1,5 +1,27 @@
 package com.github.loadup.components.extension.exector;
 
+/*-
+ * #%L
+ * loadup-components-extension
+ * %%
+ * Copyright (C) 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import com.github.loadup.components.extension.annotation.Extension;
 import com.github.loadup.components.extension.api.IExtensionPoint;
 import com.github.loadup.components.extension.core.BizScenario;
@@ -153,24 +175,24 @@ public class ExtensionExecutor {
 
         return allCandidates.stream()
             .filter(c -> extensionPointClass.isAssignableFrom(c.extensionInstance().getClass()))
-                .sorted(Comparator.comparingInt(c -> c.extensionMetadata().priority()))
-                .map(c -> (E) c.extensionInstance())
-                .collect(Collectors.toList());
+            .sorted(Comparator.comparingInt(c -> c.extensionMetadata().priority()))
+            .map(c -> (E) c.extensionInstance())
+            .collect(Collectors.toList());
     }
 
     private Optional<ExtensionCoordinate> findMatch(List<ExtensionCoordinate> candidates, BizScenario scenario,
                                                     boolean matchUseCase, boolean matchScenario) {
         return candidates.stream()
-                .filter(c -> match(c.extensionMetadata(), scenario, matchUseCase, matchScenario))
-                .min(Comparator.comparingInt(c -> c.extensionMetadata().priority()));
+            .filter(c -> match(c.extensionMetadata(), scenario, matchUseCase, matchScenario))
+            .min(Comparator.comparingInt(c -> c.extensionMetadata().priority()));
     }
 
     private Optional<ExtensionCoordinate> findDefaultMatch(List<ExtensionCoordinate> candidates, String bizCode) {
         return candidates.stream()
-                .filter(c -> c.extensionMetadata().bizCode().equals(bizCode) &&
-                        c.extensionMetadata().useCase().equals("default") &&
-                        c.extensionMetadata().scenario().equals("default"))
-                .min(Comparator.comparingInt(c -> c.extensionMetadata().priority()));
+            .filter(c -> c.extensionMetadata().bizCode().equals(bizCode) &&
+                c.extensionMetadata().useCase().equals("default") &&
+                c.extensionMetadata().scenario().equals("default"))
+            .min(Comparator.comparingInt(c -> c.extensionMetadata().priority()));
     }
 
     private boolean match(Extension meta, BizScenario scenario, boolean matchUseCase, boolean matchScenario) {

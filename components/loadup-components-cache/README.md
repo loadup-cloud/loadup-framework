@@ -1312,7 +1312,7 @@ mvn test -Dtest=com.github.loadup.components.cache.caffeine.*Test
 
 ## 许可证
 
-MIT License - 详见 [LICENSE.txt](LICENSE.txt)
+GNU General Public License v3.0 (GPL-3.0) - 详见 [LICENSE](../../LICENSE)
 
 ## 联系方式
 

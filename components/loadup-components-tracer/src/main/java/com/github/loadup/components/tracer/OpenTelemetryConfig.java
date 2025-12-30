@@ -1,4 +1,3 @@
-/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.components.tracer;
 
 /*-
@@ -7,23 +6,19 @@ package com.github.loadup.components.tracer;
  * %%
  * Copyright (C) 2022 - 2024 loadup_cloud
  * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
@@ -87,26 +82,26 @@ public class OpenTelemetryConfig {
 
         SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
             .setResource(resource)
-                .addSpanProcessor(BatchSpanProcessor.builder(spanExporter).build())
-                .build();
+            .addSpanProcessor(BatchSpanProcessor.builder(spanExporter).build())
+            .build();
 
         SdkMeterProvider sdkMeterProvider = SdkMeterProvider.builder()
-                .registerMetricReader(PeriodicMetricReader.builder(LoggingMetricExporter.create())
-                        .build())
-                .build();
+            .registerMetricReader(PeriodicMetricReader.builder(LoggingMetricExporter.create())
+                .build())
+            .build();
 
         SdkLoggerProvider sdkLoggerProvider = SdkLoggerProvider.builder()
-                .addLogRecordProcessor(BatchLogRecordProcessor.builder(SystemOutLogRecordExporter.create())
-                        .build())
-                .build();
+            .addLogRecordProcessor(BatchLogRecordProcessor.builder(SystemOutLogRecordExporter.create())
+                .build())
+            .build();
 
         return OpenTelemetrySdk.builder()
-                .setTracerProvider(sdkTracerProvider)
-                .setMeterProvider(sdkMeterProvider)
-                .setLoggerProvider(sdkLoggerProvider)
-                .setPropagators(ContextPropagators.create(TextMapPropagator.composite(
-                        W3CTraceContextPropagator.getInstance(), W3CBaggagePropagator.getInstance())))
-                .build();
+            .setTracerProvider(sdkTracerProvider)
+            .setMeterProvider(sdkMeterProvider)
+            .setLoggerProvider(sdkLoggerProvider)
+            .setPropagators(ContextPropagators.create(TextMapPropagator.composite(
+                W3CTraceContextPropagator.getInstance(), W3CBaggagePropagator.getInstance())))
+            .build();
     }
 
     @Bean
@@ -127,15 +122,15 @@ public class OpenTelemetryConfig {
 
     static class CustomTextMapPropagator implements TextMapPropagator {
 
-        private static final String CUSTOM_TRACE_HEADER = "traceId";
-        private final W3CTraceContextPropagator w3cPropagator = W3CTraceContextPropagator.getInstance();
+        private static final String                    CUSTOM_TRACE_HEADER = "traceId";
+        private final        W3CTraceContextPropagator w3cPropagator       = W3CTraceContextPropagator.getInstance();
 
         @Override
         @SuppressWarnings("unchecked")
         public void inject(
-                io.opentelemetry.context.Context context,
-                Object carrier,
-                io.opentelemetry.context.propagation.TextMapSetter setter) {
+            io.opentelemetry.context.Context context,
+            Object carrier,
+            io.opentelemetry.context.propagation.TextMapSetter setter) {
             // w3cPropagator.inject(context, carrier, setter);
             SpanContext spanContext = Span.fromContext(context).getSpanContext();
             if (spanContext.isValid()) {
@@ -147,9 +142,9 @@ public class OpenTelemetryConfig {
         @Override
         @SuppressWarnings("unchecked")
         public io.opentelemetry.context.Context extract(
-                io.opentelemetry.context.Context context,
-                Object carrier,
-                io.opentelemetry.context.propagation.TextMapGetter getter) {
+            io.opentelemetry.context.Context context,
+            Object carrier,
+            io.opentelemetry.context.propagation.TextMapGetter getter) {
             // return w3cPropagator.extract(context, carrier, getter);
             io.opentelemetry.context.Context w3cContext = w3cPropagator.extract(context, carrier, getter);
             if (w3cContext != context) {
@@ -159,10 +154,10 @@ public class OpenTelemetryConfig {
             String traceId = getter.get(carrier, CUSTOM_TRACE_HEADER);
             if (traceId != null && traceId.length() == 32) {
                 SpanContext spanContext = SpanContext.create(
-                        traceId,
-                        "0000000000000000", // Dummy spanId, 不使用
-                        TraceFlags.getSampled(),
-                        TraceState.getDefault());
+                    traceId,
+                    "0000000000000000", // Dummy spanId, 不使用
+                    TraceFlags.getSampled(),
+                    TraceState.getDefault());
                 return context.with(Span.wrap(spanContext));
             }
             return context; // 如果没有 traceId 或不合法, 则返回 context

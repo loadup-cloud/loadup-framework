@@ -1,4 +1,3 @@
-/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.util;
 
 /*-
@@ -7,23 +6,19 @@ package com.github.loadup.commons.util;
  * %%
  * Copyright (C) 2022 - 2024 loadup_cloud
  * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 /*
@@ -38,16 +33,14 @@ package com.github.loadup.commons.util;
  * See the Mulan PSL v2 for more details.
  */
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
+import org.apache.commons.lang3.*;
+import org.apache.commons.lang3.StringUtils;
+
+import java.math.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Objects;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * 数字工具类<br>
@@ -609,7 +602,7 @@ public class NumberUtil {
      * 将给定范围内的整数添加到已有集合中
      */
     public static Collection<Integer> appendRange(
-            final int startInclude, final int stopInclude, int step, final Collection<Integer> values) {
+        final int startInclude, final int stopInclude, int step, final Collection<Integer> values) {
         if (startInclude < stopInclude) {
             step = Math.abs(step);
         } else if (startInclude > stopInclude) {
@@ -993,7 +986,7 @@ public class NumberUtil {
      * @since 4.1.0
      */
     public static BigDecimal pow(
-            final BigDecimal number, final int n, final int scale, final RoundingMode roundingMode) {
+        final BigDecimal number, final int n, final int scale, final RoundingMode roundingMode) {
         if (n < 0) {
             // a的n次方，如果n为负数，则返回1/a的-n次方
             return BigDecimal.ONE.divide(pow(number, -n), scale, roundingMode);

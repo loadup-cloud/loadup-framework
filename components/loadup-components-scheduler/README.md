@@ -210,6 +210,7 @@
 #### 使用 SimpleJob（默认，推荐开发环境）
 
 ```xml
+
 <dependency>
     <groupId>com.github.loadup.framework</groupId>
     <artifactId>loadup-components-scheduler-binder-simplejob</artifactId>
@@ -220,6 +221,7 @@
 #### 使用 Quartz（推荐生产环境）
 
 ```xml
+
 <dependency>
     <groupId>com.github.loadup.framework</groupId>
     <artifactId>loadup-components-scheduler-binder-quartz</artifactId>
@@ -230,6 +232,7 @@
 #### 使用 XXL-Job
 
 ```xml
+
 <dependency>
     <groupId>com.github.loadup.framework</groupId>
     <artifactId>loadup-components-scheduler-binder-xxljob</artifactId>
@@ -240,6 +243,7 @@
 #### 使用 PowerJob
 
 ```xml
+
 <dependency>
     <groupId>com.github.loadup.framework</groupId>
     <artifactId>loadup-components-scheduler-binder-powerjob</artifactId>
@@ -289,6 +293,7 @@ public class MyScheduledTasks {
 ### 基础使用 - 注解方式
 
 ```java
+
 @Component
 public class ScheduledTasks {
 
@@ -315,6 +320,7 @@ public class ScheduledTasks {
 ### 高级使用 - 动态管理
 
 ```java
+
 @Service
 public class TaskManagementService {
 
@@ -330,7 +336,7 @@ public class TaskManagementService {
                 .enabled(true)
                 .priority(5)
                 .build();
-        
+
         schedulerBinding.registerTask(task);
     }
 
@@ -366,6 +372,7 @@ public class TaskManagementService {
 ### 查询任务信息
 
 ```java
+
 @Service
 public class TaskQueryService {
 
@@ -730,11 +737,12 @@ public class CustomSchedulerBinder implements SchedulerBinder {
 #### 3. 创建自动配置类
 
 ```java
+
 @AutoConfiguration
 @ConditionalOnProperty(
-    prefix = "loadup.scheduler",
-    name = "type",
-    havingValue = "custom"
+        prefix = "loadup.scheduler",
+        name = "type",
+        havingValue = "custom"
 )
 public class CustomSchedulerAutoConfiguration {
 
@@ -860,16 +868,17 @@ loadup:
 ### 7. 监控和日志
 
 ```java
+
 @DistributedScheduler(name = "dataBackup", cron = "0 0 3 * * ?")
 public void backupData() {
     long startTime = System.currentTimeMillis();
     log.info("Starting data backup...");
-    
+
     try {
         doBackup();
         long duration = System.currentTimeMillis() - startTime;
         log.info("Data backup completed in {} ms", duration);
-        
+
         // 记录指标
         metricService.recordTaskDuration("dataBackup", duration);
     } catch (Exception e) {
@@ -988,7 +997,24 @@ public void backupData() {
 
 ## 许可证
 
-本项目采用 MIT 许可证。详见 LICENSE 文件。
+本项目采用 GNU General Public License v3.0 (GPL-3.0) 许可证。详见 [LICENSE](../../LICENSE) 文件。
+
+```
+Copyright (C) 2025 LoadUp Framework
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+```
 
 ---
 

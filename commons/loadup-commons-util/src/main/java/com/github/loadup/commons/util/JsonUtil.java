@@ -1,4 +1,3 @@
-/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.util;
 
 /*-
@@ -7,23 +6,19 @@ package com.github.loadup.commons.util;
  * %%
  * Copyright (C) 2022 - 2024 loadup_cloud
  * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
@@ -42,12 +37,13 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.github.loadup.commons.constant.CommonConstants;
 import com.github.loadup.commons.result.SingleResponse;
 import com.github.loadup.commons.util.json.MultiDateDeserializer;
+import org.apache.commons.collections4.MapUtils;
+
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import org.apache.commons.collections4.MapUtils;
 
 public class JsonUtil {
 
@@ -71,17 +67,17 @@ public class JsonUtil {
         // 注册 JavaTimeModule 处理 java.time 包的类
         JavaTimeModule javaTimeModule = new JavaTimeModule();
         javaTimeModule.addSerializer(
-                LocalDate.class,
-                new LocalDateSerializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_FORMAT)));
+            LocalDate.class,
+            new LocalDateSerializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_FORMAT)));
         javaTimeModule.addDeserializer(
-                LocalDate.class,
-                new LocalDateDeserializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_FORMAT)));
+            LocalDate.class,
+            new LocalDateDeserializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_FORMAT)));
         javaTimeModule.addSerializer(
-                LocalDateTime.class,
-                new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_TIME_FORMAT)));
+            LocalDateTime.class,
+            new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_TIME_FORMAT)));
         javaTimeModule.addDeserializer(
-                LocalDateTime.class,
-                new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_TIME_FORMAT)));
+            LocalDateTime.class,
+            new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_TIME_FORMAT)));
         mapper.registerModule(javaTimeModule);
 
         SimpleModule module = new SimpleModule();
@@ -112,8 +108,8 @@ public class JsonUtil {
         }
         try {
             return obj instanceof String
-                    ? (String) obj
-                    : objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+                ? (String) obj
+                : objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -143,7 +139,7 @@ public class JsonUtil {
 
         try {
             return (T)
-                    (typeReference.getType().equals(String.class) ? str : objectMapper.readValue(str, typeReference));
+                (typeReference.getType().equals(String.class) ? str : objectMapper.readValue(str, typeReference));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -204,6 +200,7 @@ public class JsonUtil {
             return null;
         }
     }
+
     /**
      * 从JSON字符串中获取指定路径下的子节点
      */
@@ -298,16 +295,16 @@ public class JsonUtil {
         map.put("bbb", "bbb");
         map.put("bcc", "ccc");
         String jsonString = "{\n"
-                + "  \"data\" : {\n"
-                + "    \"account\" : \"123\",\n"
-                + "    \"birthday\" : \"$today\"\n"
-                + "  },\n"
-                + "  \"result\" : {\n"
-                + "    \"code\" : \"SUCCESS\",\n"
-                + "    \"message\" : \"Success.\",\n"
-                + "    \"status\" : \"S\"\n"
-                + "  }\n"
-                + "}";
+            + "  \"data\" : {\n"
+            + "    \"account\" : \"123\",\n"
+            + "    \"birthday\" : \"$today\"\n"
+            + "  },\n"
+            + "  \"result\" : {\n"
+            + "    \"code\" : \"SUCCESS\",\n"
+            + "    \"message\" : \"Success.\",\n"
+            + "    \"status\" : \"S\"\n"
+            + "  }\n"
+            + "}";
         System.out.println(JsonUtil.parseObject(jsonString, SingleResponse.class));
     }
 }

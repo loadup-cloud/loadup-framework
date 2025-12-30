@@ -1,4 +1,3 @@
-/* Copyright (C) LoadUp Cloud 2022-2025 */
 package com.github.loadup.commons.core;
 
 /*-
@@ -7,40 +6,33 @@ package com.github.loadup.commons.core;
  * %%
  * Copyright (C) 2022 - 2024 loadup_cloud
  * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 
 public class Snowflake {
 
     // Snowflake 算法相关配置
     private static final long START_TIMESTAMP = 1627635600000L; // 2021-07-30 00:00:00 UTC
-    private static final long SEQUENCE_BIT = 12;
-    private static final long MACHINE_BIT = 5;
-    private static final long MAX_SEQUENCE = ~(-1L << SEQUENCE_BIT);
+    private static final long SEQUENCE_BIT   = 12;
+    private static final long MACHINE_BIT    = 5;
+    private static final long MAX_SEQUENCE   = ~(-1L << SEQUENCE_BIT);
     private static final long MAX_MACHINE_NUM = ~(-1L << MACHINE_BIT);
-    private static final long MACHINE_LEFT = SEQUENCE_BIT;
+    private static final long MACHINE_LEFT   = SEQUENCE_BIT;
     private static final long TIMESTAMP_LEFT = SEQUENCE_BIT + MACHINE_BIT;
 
     private long machineId;
@@ -50,7 +42,7 @@ public class Snowflake {
     public Snowflake(long machineId) {
         if (machineId > MAX_MACHINE_NUM || machineId < 0) {
             throw new IllegalArgumentException(
-                    "Machine ID can't be greater than " + MAX_MACHINE_NUM + " or less than 0");
+                "Machine ID can't be greater than " + MAX_MACHINE_NUM + " or less than 0");
         }
         this.machineId = machineId;
     }
@@ -85,11 +77,11 @@ public class Snowflake {
 
         // 格式化输出
         return formatDate(currentTimestamp)
-                + formatNumber(tenantNumber, 3)
-                + formatNumber(systemNumber, 3)
-                + businessCode
-                + formatNumber(tableNumber, 3)
-                + formatNumber(id, 3);
+            + formatNumber(tenantNumber, 3)
+            + formatNumber(systemNumber, 3)
+            + businessCode
+            + formatNumber(tableNumber, 3)
+            + formatNumber(id, 3);
     }
 
     private long getNextTimestamp() {
@@ -103,7 +95,7 @@ public class Snowflake {
     private String formatDate(long timestamp) {
         Instant instant = Instant.ofEpochMilli(timestamp);
         LocalDate localDate =
-                LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
+            LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
         return String.format("%04d%02d%02d", localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth());
     }
 

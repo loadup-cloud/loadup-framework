@@ -1,10 +1,29 @@
 package com.github.loadup.components.captcha.utils;
 
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+/*-
+ * #%L
+ * loadup-components-captcha
+ * %%
+ * Copyright (C) 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
 
+import java.awt.*;
+import java.io.*;
 
 /**
  * 解决自定义字体读取时，产生.tmp临时文件耗磁盘的问题。
@@ -13,9 +32,9 @@ import java.io.InputStream;
  * Font类的createFont有个重载方法–>java.awt.Font#createFont(int, java.io.File),
  * 不产生临时文件获取字体代码实现
  * <code>
- *  URL url = FontLoader.class.getResource("font/SourceHanSansCN-Regular.otf");
- *  String pathString = url.getFile();
- *  Font selfFont = Font.createFont(Font.TRUETYPE_FONT, new File(pathString));
+ * URL url = FontLoader.class.getResource("font/SourceHanSansCN-Regular.otf");
+ * String pathString = url.getFile();
+ * Font selfFont = Font.createFont(Font.TRUETYPE_FONT, new File(pathString));
  * </code>
  * 上面的解决方案会导致另一个问题，字体文件在生产环境是在jar包里，部分操作系统环境下，直接读取读取不到，只能通过流的方式获取。
  *
@@ -31,6 +50,7 @@ public class FontsUtil {
 
     /**
      * 手动复制字体文件到临时目录. 调用传文件的构造方法创建字体
+     *
      * @param fontName 字体文件名称
      * @return
      */
@@ -41,13 +61,14 @@ public class FontsUtil {
 
         // https://gitee.com/log4j/pig/issues/IAFW9O
         File tempFontFile = new File(path + File.separator + fontName);
-        if(!tempFontFile.exists()){
+        if (!tempFontFile.exists()) {
             //临时文件不存在
             copyTempFontFile(fontName, tempFontFile);
         }
-        if(tempFontFile.exists()) {
+        if (tempFontFile.exists()) {
             try {
-                font = Font.createFont(Font.TRUETYPE_FONT, tempFontFile).deriveFont(style, size);;
+                font = Font.createFont(Font.TRUETYPE_FONT, tempFontFile).deriveFont(style, size);
+                ;
             } catch (FontFormatException | IOException e) {
                 e.printStackTrace();
                 tempFontFile.delete();
@@ -58,11 +79,12 @@ public class FontsUtil {
 
     /**
      * 复制字体文件到临时文件目录
+     *
      * @param fontName
      * @param tempFontFile
      */
-    private static synchronized void copyTempFontFile(String fontName, File tempFontFile){
-        try(InputStream is = FontsUtil.class.getResourceAsStream("/" + fontName)){
+    private static synchronized void copyTempFontFile(String fontName, File tempFontFile) {
+        try (InputStream is = FontsUtil.class.getResourceAsStream("/" + fontName)) {
             FileUtil.copyToFile(is, tempFontFile);
         } catch (IOException e) {
             e.printStackTrace();

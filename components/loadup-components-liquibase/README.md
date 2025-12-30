@@ -324,5 +324,7 @@ changeLogFile=src/main/resources/db/changelog/db.changelog-master.yaml
 
 ## License
 
-本组件采用 MIT License 授权。
+本组件采用 GNU General Public License v3.0 (GPL-3.0) 授权。
+
+详见 [LICENSE](../../LICENSE) 文件。
 
