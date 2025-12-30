@@ -114,21 +114,29 @@
 
 ## 模块说明
 
-### loadup-components-scheduler-api
+Scheduler 组件采用模块化设计，包含以下子模块：
+
+### 📦 核心模块
+
+#### [loadup-components-scheduler-api](./loadup-components-scheduler-api/README.md)
 
 **核心API模块**，定义了调度任务的统一接口和模型。
 
-**主要类：**
+**主要功能：**
 
-- `SchedulerBinder` - 调度器绑定器接口
-- `SchedulerBinding` - 调度器绑定接口
-- `DefaultSchedulerBinding` - 默认绑定实现
-- `SchedulerTask` - 调度任务模型
-- `@DistributedScheduler` - 分布式调度注解
-- `SchedulerTaskRegistry` - 任务注册表
-- `SchedulerAutoConfiguration` - 自动配置
+- 统一接口定义（`SchedulerBinder`、`SchedulerBinding`）
+- 任务模型（`SchedulerTask`）
+- 注解支持（`@DistributedScheduler`）
+- 任务注册表（`SchedulerTaskRegistry`）
+- 自动配置支持
 
-### loadup-components-scheduler-binder-simplejob
+[→ 查看详细文档](./loadup-components-scheduler-api/README.md)
+
+---
+
+### 🔌 Binder 实现模块
+
+#### [loadup-components-scheduler-binder-simplejob](./loadup-components-scheduler-binder-simplejob/README.md)
 
 **SimpleJob 实现**，基于 Spring TaskScheduler 的轻量级实现。
 
@@ -142,9 +150,13 @@
 
 **适用场景：** 单机应用、开发测试环境
 
-### loadup-components-scheduler-binder-quartz
+[→ 查看详细文档](./loadup-components-scheduler-binder-simplejob/README.md)
 
-**Quartz 实现**，企业级调度框架。
+---
+
+#### [loadup-components-scheduler-binder-quartz](./loadup-components-scheduler-binder-quartz/README.md)
+
+**Quartz 实现**，企业级调度框架。**推荐用于生产环境**。
 
 **特点：**
 
@@ -156,7 +168,11 @@
 
 **适用场景：** 生产环境、需要集群部署的应用
 
-### loadup-components-scheduler-binder-xxljob
+[→ 查看详细文档](./loadup-components-scheduler-binder-quartz/README.md)
+
+---
+
+#### [loadup-components-scheduler-binder-xxljob](./loadup-components-scheduler-binder-xxljob/README.md)
 
 **XXL-Job 实现**，轻量级分布式任务调度平台。
 
@@ -170,7 +186,11 @@
 
 **适用场景：** 需要可视化管理的分布式应用
 
-### loadup-components-scheduler-binder-powerjob
+[→ 查看详细文档](./loadup-components-scheduler-binder-xxljob/README.md)
+
+---
+
+#### [loadup-components-scheduler-binder-powerjob](./loadup-components-scheduler-binder-powerjob/README.md)
 
 **PowerJob 实现**，新一代分布式任务调度平台。
 
@@ -184,7 +204,13 @@
 
 **适用场景：** 复杂的分布式调度场景
 
-### loadup-components-scheduler-test
+[→ 查看详细文档](./loadup-components-scheduler-binder-powerjob/README.md)
+
+---
+
+### 🧪 测试模块
+
+#### [loadup-components-scheduler-test](./loadup-components-scheduler-test/README.md)
 
 **测试模块**，包含完整的测试套件。
 
@@ -198,6 +224,8 @@
 - ✅ Binder测试：57个测试
 - ✅ **总计：104个测试，100%通过率**
 - ✅ 代码覆盖率：90%+
+
+[→ 查看详细文档](./loadup-components-scheduler-test/README.md)
 
 ---
 
