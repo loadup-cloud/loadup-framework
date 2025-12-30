@@ -146,21 +146,16 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
+    <repositories>
+        <repository>
             <id>github</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <repositories>
-                <repository>
-                    <id>github</id>
-                    <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
-                    <snapshots>
-                        <enabled>true</enabled>
-                    </snapshots>
-                </repository>
-            </repositories>
-        </profile>
-    </profiles>
+            <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>
