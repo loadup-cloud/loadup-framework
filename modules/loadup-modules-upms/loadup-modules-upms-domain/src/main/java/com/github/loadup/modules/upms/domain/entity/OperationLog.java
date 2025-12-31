@@ -1,0 +1,58 @@
+package com.github.loadup.modules.upms.domain.entity;
+
+import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
+/**
+ * Operation Log Entity - User operation audit log
+ *
+ * @author LoadUp Framework
+ * @since 1.0.0
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table("upms_operation_log")
+public class OperationLog {
+
+  @Id private Long id;
+
+  private String traceId;
+
+  private Long userId;
+
+  private String username;
+
+  private String operationType;
+
+  private String operationModule;
+
+  private String operationDesc;
+
+  private String requestMethod;
+
+  private String requestUrl;
+
+  private String requestParams;
+
+  private String responseResult;
+
+  private String ipAddress;
+
+  private String userAgent;
+
+  private Long executionTime;
+
+  /** Status: 1-Success, 0-Failure */
+  private Short status;
+
+  private String errorMessage;
+
+  private LocalDateTime createdTime;
+}

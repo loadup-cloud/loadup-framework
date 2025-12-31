@@ -1,0 +1,147 @@
+# ============================================================================
+# LoadUp UPMS Application Configuration Example
+# ============================================================================
+
+spring:
+  application:
+    name: loadup-upms
+  
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/loadup_upms
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # Spring Data JDBC
+  data:
+    jdbc:
+      repositories:
+        enabled: true
+
+  # Redis Configuration (for cache and captcha)
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    password:
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: -1ms
+
+# ============================================================================
+# UPMS Security Configuration
+# ============================================================================
+upms:
+  security:
+    # JWT Configuration
+    jwt:
+      secret: LoadUpFrameworkSecretKeyForJWTTokenGenerationMustBeLongEnough
+      expiration: 86400000        # 24 hours (in milliseconds)
+      refresh-expiration: 604800000  # 7 days (in milliseconds)
+    
+    # Login Configuration
+    login:
+      max-fail-attempts: 5        # Maximum login failure attempts before lock
+      lock-duration: 30           # Account lock duration in minutes
+      enable-failure-tracking: true
+    
+    # Captcha Configuration
+    captcha:
+      enabled: true               # Enable captcha verification
+      type: image                 # Captcha type: image/sms
+      expiration: 300             # Captcha expiration in seconds (5 minutes)
+    
+    # Whitelist paths (no authentication required)
+    whitelist:
+      - /api/v1/auth/**
+      - /api/v1/captcha/**
+      - /v3/api-docs/**
+      - /swagger-ui/**
+      - /swagger-ui.html
+      - /actuator/health
+
+# ============================================================================
+# Cache Configuration
+# ============================================================================
+loadup:
+  cache:
+    type: redis
+    redis:
+      enable: true
+      key-prefix: "upms:"
+      default-expiration: 3600
+
+  # DFS Configuration (for avatar upload)
+  dfs:
+    type: local
+    local:
+      base-path: /var/loadup/uploads
+      url-prefix: http://localhost:8080/files
+
+  # Gotone Configuration (for SMS/Email)
+  gotone:
+    sms:
+      provider: aliyun
+      templates:
+        login-code: "SMS_LOGIN"
+        register-code: "SMS_REGISTER"
+    email:
+      provider: smtp
+      from: noreply@loadup.com
+      templates:
+        welcome: "WELCOME_EMAIL"
+
+# ============================================================================
+# Logging Configuration
+# ============================================================================
+logging:
+  level:
+    root: INFO
+    com.github.loadup.modules.upms: DEBUG
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/upms.log
+
+# ============================================================================
+# Actuator Configuration
+# ============================================================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# ============================================================================
+# OpenAPI/Swagger Configuration
+# ============================================================================
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+  info:
+    title: LoadUp UPMS API
+    description: User Permission Management System REST API Documentation
+    version: 1.0.0
+    contact:
+      name: LoadUp Framework
+      url: https://github.com/loadup-cloud/loadup-framework
