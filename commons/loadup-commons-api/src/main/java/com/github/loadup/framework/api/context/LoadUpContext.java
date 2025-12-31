@@ -75,8 +75,4 @@ public class LoadUpContext {
     loadUpContext.setSpan(null);
     return loadUpContext;
   }
-
-  public void setAttributes(Map<String, Object> attributes) {
-    this.attributes = attributes;
-  }
 }
