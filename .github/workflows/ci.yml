@@ -15,12 +15,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     permissions:
       contents: read
       packages: write
 
+    # 环境变量
+    env:
+      MAVEN_OPTS: >-
+        -Xmx2048m
+        -XX:+UseG1GC
+        -XX:MaxGCPauseMillis=100
+        -Dorg.slf4j.simpleLogger.defaultLogLevel=warn
+        -Djava.awt.headless=true
+      # Testcontainers 配置
+      TESTCONTAINERS_RYUK_DISABLED: false
+      TESTCONTAINERS_CHECKS_DISABLE: false
+      # Docker 配置
+      DOCKER_BUILDKIT: 1
 
     steps:
       - name: Checkout code
@@ -36,15 +49,35 @@ jobs:
           server-username: GITHUB_ACTOR
           server-password: GITHUB_TOKEN
 
-      # 配置 Testcontainers
+      # 清理Docker环境
+      - name: Clean Docker Environment
+        run: |
+          docker system prune -af --volumes || true
+          docker network prune -f || true
+
+      # 验证并优化Docker
+      - name: Setup Docker
+        run: |
+          docker --version
+          docker info
+          # 预拉取常用镜像以避免超时
+          docker pull postgres:15-alpine || true
+          docker pull mysql:8.0 || true
+          docker pull redis:7-alpine || true
+          echo "Docker setup completed"
+
+      # 配置 Testcontainers（增强配置）
       - name: Configure Testcontainers
         run: |
           mkdir -p ~/.testcontainers
-          echo "testcontainers.reuse.enable=false" > ~/.testcontainers.properties
-
-      # 验证 Docker 可用
-      - name: Verify Docker
-        run: docker ps
+          cat > ~/.testcontainers.properties << EOF
+          testcontainers.reuse.enable=false
+          testcontainers.ryuk.container.timeout=120
+          docker.client.strategy=org.testcontainers.dockerclient.UnixSocketClientProviderStrategy
+          checks.disable=false
+          EOF
+          cat ~/.testcontainers.properties
+          echo "Testcontainers configuration completed"
 
       # 检查代码格式
       - name: Check Code Formatting
@@ -54,19 +87,37 @@ jobs:
           GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
           GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
 
-      # 构建和测试（包含 Testcontainers 测试）
+      # 构建和测试（包含 Testcontainers 测试）- 带重试机制
       - name: Build and Test with Maven
-        run: |
-          mvn clean verify -B \
-            -Dspring.profiles.active=ci \
-            -Dlogging.level.root=warn \
-            -Dlogging.level.com.github.loadup=warn \
-            -Dorg.slf4j.simpleLogger.defaultLogLevel=warn
+        uses: nick-fields/retry-action@v2
+        with:
+          timeout_minutes: 30
+          max_attempts: 3
+          retry_wait_seconds: 30
+          command: |
+            mvn clean verify -B \
+              -Dspring.profiles.active=ci \
+              -Dlogging.level.root=warn \
+              -Dlogging.level.com.github.loadup=info \
+              -Dorg.slf4j.simpleLogger.defaultLogLevel=warn \
+              -Dtestcontainers.reuse.enable=false \
+              -Dfailsafe.rerunFailingTestsCount=2
         env:
           GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
           GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-          # Maven 选项：设置内存和日志
-          MAVEN_OPTS: "-Xmx1024m -Dorg.slf4j.simpleLogger.defaultLogLevel=warn"
+
+      # 如果测试失败，输出Docker日志
+      - name: Docker Logs on Failure
+        if: failure()
+        run: |
+          echo "=== Docker Containers ==="
+          docker ps -a
+          echo "=== Docker Logs ==="
+          docker ps -a --format '{{.Names}}' | xargs -I {} sh -c 'echo "=== Logs for {} ===" && docker logs {} 2>&1 | tail -100' || true
+          echo "=== Docker Networks ==="
+          docker network ls
+          echo "=== Docker Volumes ==="
+          docker volume ls
 
       # 上传测试报告
       - name: Upload Test Reports

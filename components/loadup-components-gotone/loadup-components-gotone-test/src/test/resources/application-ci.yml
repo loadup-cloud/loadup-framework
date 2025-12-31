@@ -1,4 +1,4 @@
-# Test Configuration with Testcontainers
+# CI Test Configuration with Testcontainers
 spring:
   # Testcontainers 会自动配置 datasource，不需要手动配置
   sql:
@@ -10,18 +10,30 @@ spring:
       repositories:
         enabled: true
 
-# Testcontainers Configuration
+  # 数据源连接池配置（优化CI环境）
+  datasource:
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+
+# Testcontainers Configuration（CI环境优化）
 testcontainers:
   reuse:
-    enable: true
+    enable: false  # CI环境禁用重用
 
 # Logging
 logging:
   level:
     com.github.loadup.components.gotone: warn
     org.springframework.jdbc: warn
-    org.testcontainers: warn
+    org.testcontainers: warn  # CI环境显示更多日志便于调试
     tc.mysql: warn
+    com.github.dockerjava: warn
+
 
 
 

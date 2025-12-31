@@ -1,13 +1,13 @@
+# CI Test Configuration for DFS with Testcontainers MySQL
 spring:
   application:
-    name: dfs-test
+    name: dfs-test-ci
 
   # Testcontainers MySQL - 自动配置
   # 不需要手动配置datasource，Testcontainers会自动配置
   datasource:
-    # Testcontainers会覆盖这些配置
     hikari:
-      maximum-pool-size: 10
+      maximum-pool-size: 5
       minimum-idle: 2
       connection-timeout: 30000
       idle-timeout: 600000
@@ -21,7 +21,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
+        format_sql: false
 
   # Enable auto-configuration
   autoconfigure:
@@ -41,10 +41,10 @@ loadup:
       s3:
         enabled: false
 
-# Logging
+# Logging (CI environment - more verbose)
 logging:
   level:
-    com.github.loadup.components.dfs: DEBUG
-    org.springframework.test: INFO
-    org.springframework.jdbc: DEBUG
+    com.github.loadup.components.dfs: INFO
+    org.springframework.test: WARN
+    org.springframework.jdbc: WARN
 

@@ -39,18 +39,39 @@ mvn clean test jacoco:report
 
 ## 测试配置
 
-测试使用H2内存数据库，无需外部依赖。
+测试使用**Testcontainers MySQL**，自动启动MySQL容器，无需手动配置数据库。
 
+### 优势
+
+- ✅ 与生产环境一致（使用真实MySQL）
+- ✅ 避免H2兼容性问题
+- ✅ 自动管理容器生命周期
+- ✅ 每次测试使用干净环境
+
+### 配置文件
 ```yaml
 # application-test.yml
 spring:
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
   jpa:
     hibernate:
       ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
 ```
+
+### 容器配置
+
+- **镜像**: mysql:8.0
+- **数据库**: dfs_test
+- **用户**: test/test
+- **字符集**: utf8mb4
+
+### 前置条件
+
+- ✅ Docker环境运行中
+- ✅ 足够的磁盘空间
+- ✅ 网络连接正常（首次需拉取镜像）
 
 ## 测试结果
 
