@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.github.loadup.framework</groupId>
+        <artifactId>loadup-framework-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <groupId>com.github.loadup.components</groupId>
+    <artifactId>loadup-components-dfs</artifactId>
+    <packaging>pom</packaging>
+    <description>LoadUp DFS Component - Distributed File Storage Support with Local, Database, S3 Binders</description>
+
+    <name>loadup-components-dfs</name>
+
+    <properties>
+        <!-- Skip Spotless for aggregator POM - no source code -->
+        <spotless.skip>true</spotless.skip>
+    </properties>
+
+    <modules>
+        <module>loadup-components-dfs-api</module>
+        <module>loadup-components-dfs-binder-local</module>
+        <module>loadup-components-dfs-binder-database</module>
+        <module>loadup-components-dfs-binder-s3</module>
+        <module>loadup-components-dfs-test</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- AWS SDK for S3 -->
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>s3</artifactId>
+                <version>2.20.26</version>
+            </dependency>
+
+            <!-- MinIO Client -->
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>8.5.7</version>
+            </dependency>
+
+            <!-- Apache Commons IO -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.15.1</version>
+            </dependency>
+
+            <!-- Tika for content type detection -->
+            <dependency>
+                <groupId>org.apache.tika</groupId>
+                <artifactId>tika-core</artifactId>
+                <version>2.9.1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
+
