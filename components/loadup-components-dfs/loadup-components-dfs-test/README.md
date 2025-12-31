@@ -49,6 +49,7 @@ mvn clean test jacoco:report
 - ✅ 每次测试使用干净环境
 
 ### 配置文件
+
 ```yaml
 # application-test.yml
 spring:
