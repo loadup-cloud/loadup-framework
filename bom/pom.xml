@@ -7,7 +7,7 @@
         <groupId>com.github.loadup.framework</groupId>
         <artifactId>loadup-dependencies</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath/>
+        <relativePath>../dependencies/pom.xml</relativePath>
     </parent>
     <groupId>com.github.loadup.framework</groupId>
     <artifactId>loadup-framework-bom</artifactId>
