@@ -50,6 +50,9 @@ jobs:
       - name: Check Code Formatting
         run: mvn spotless:check -B
         continue-on-error: false
+        env:
+          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
 
       # 构建和测试（包含 Testcontainers 测试）
       - name: Build and Test with Maven
