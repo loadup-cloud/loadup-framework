@@ -45,13 +45,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-/**
- * Test cases for LocalDfsProvider
- */
+/** Test cases for LocalDfsProvider /** Test cases for LocalDfsProvider */
 @SpringBootTest(classes = DfsTestApplication.class)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class LocalDfsProviderTest {
+class LocalDfsProviderIT {
 
     @Autowired
     private LocalDfsProvider localDfsProvider;

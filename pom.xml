@@ -61,6 +61,8 @@
         <opentelemetry.version>1.57.0</opentelemetry.version>
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
         <commons.io.version>2.20.0</commons.io.version>
+        <skipUTs>false</skipUTs>
+        <skipITs>true</skipITs>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -137,4 +139,45 @@
             <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
         </repository>
     </repositories>
+
+    <build>
+        <plugins>
+            <!-- Surefire Plugin: 运行单元测试 (*Test.java) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/*IT.java</exclude>
+                        <exclude>**/*IntegrationTest.java</exclude>
+                    </excludes>
+                    <skipTests>${skipUTs}</skipTests>
+                </configuration>
+            </plugin>
+
+            <!-- Failsafe Plugin: 运行集成测试 (*IT.java, *IntegrationTest.java) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/*IT.java</include>
+                        <include>**/*IntegrationTest.java</include>
+                    </includes>
+                    <skipITs>${skipITs}</skipITs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

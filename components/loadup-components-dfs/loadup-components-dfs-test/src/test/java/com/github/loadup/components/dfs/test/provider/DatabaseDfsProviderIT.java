@@ -47,7 +47,7 @@ import org.springframework.test.context.ActiveProfiles;
 @Import(TestContainersConfiguration.class)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class DatabaseDfsProviderTest {
+class DatabaseDfsProviderIT {
 
   @Autowired private DatabaseDfsProvider databaseDfsProvider;
 

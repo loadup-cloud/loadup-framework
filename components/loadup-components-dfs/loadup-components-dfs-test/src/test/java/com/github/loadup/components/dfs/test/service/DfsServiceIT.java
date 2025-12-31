@@ -47,7 +47,7 @@ import org.springframework.test.context.ActiveProfiles;
 @Import(TestContainersConfiguration.class)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class DfsServiceTest {
+class DfsServiceIT {
 
     @Autowired
     private DfsService dfsService;

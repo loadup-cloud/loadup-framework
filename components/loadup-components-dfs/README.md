@@ -286,25 +286,41 @@ public class MyStorageProvider implements IDfsProvider {
 
 ## 🧪 测试
 
+### 测试分类
+
+项目采用标准的Maven测试分类：
+
+- **单元测试** (`*Test.java`): 不启动Spring容器，使用Mock对象，执行快速
+- **集成测试** (`*IT.java`): 启动Spring容器，使用Testcontainers MySQL，测试完整流程
+
+### 运行测试
+
 ```bash
-# 运行所有测试
+# 运行所有测试（单元测试 + 集成测试）
+mvn verify
+
+# 仅运行单元测试（快速反馈）
 mvn test
+mvn test -DskipITs=true
+
+# 仅运行集成测试
+mvn verify -DskipUTs=true
 
 # 运行指定测试
-mvn test -Dtest=LocalDfsProviderTest
+mvn test -Dtest=LocalDfsProviderIT
 
 # 生成测试报告
-mvn clean test jacoco:report
+mvn clean verify jacoco:report
 ```
 
 **测试结果**: ✅ 42/42 (100%)
 
-|           测试类           | 用例数 | 通过率  |
-|-------------------------|-----|------|
-| LocalDfsProviderTest    | 10  | 100% |
-| DatabaseDfsProviderTest | 12  | 100% |
-| DfsServiceTest          | 10  | 100% |
-| DfsIntegrationTest      | 10  | 100% |
+| 测试类                   | 类型   | 用例数 | 通过率  |
+|-----------------------|------|-----|------|
+| LocalDfsProviderIT    | 集成测试 | 10  | 100% |
+| DatabaseDfsProviderIT | 集成测试 | 12  | 100% |
+| DfsServiceIT          | 集成测试 | 10  | 100% |
+| DfsIntegrationTest    | 集成测试 | 10  | 100% |
 
 ## 🛠️ 构建
 
