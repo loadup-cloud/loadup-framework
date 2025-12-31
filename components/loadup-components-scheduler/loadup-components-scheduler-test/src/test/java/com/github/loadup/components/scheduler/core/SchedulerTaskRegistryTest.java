@@ -53,6 +53,9 @@ class SchedulerTaskRegistryTest {
 
     @BeforeEach
     void setUp() {
+        // Reset the mock to clear any previous interactions
+        reset(schedulerBinding);
+
         registry = new SchedulerTaskRegistry();
         // Use reflection to set the schedulerBinding field
         try {
@@ -65,6 +68,12 @@ class SchedulerTaskRegistryTest {
             registryField.setAccessible(true);
             Map<String, SchedulerTask> taskRegistry = (Map<String, SchedulerTask>) registryField.get(null);
             taskRegistry.clear();
+
+            // Clear the static pending tasks to ensure test isolation
+            java.lang.reflect.Field pendingField = SchedulerTaskRegistry.class.getDeclaredField("PENDING_TASKS");
+            pendingField.setAccessible(true);
+            Map<String, SchedulerTask> pendingTasks = (Map<String, SchedulerTask>) pendingField.get(null);
+            pendingTasks.clear();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
