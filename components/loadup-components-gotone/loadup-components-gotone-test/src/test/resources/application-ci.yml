@@ -18,10 +18,10 @@ testcontainers:
 # Logging
 logging:
   level:
-    com.github.loadup.components.gotone: DEBUG
-    org.springframework.jdbc: DEBUG
-    org.testcontainers: INFO
-    tc.mysql: INFO
+    com.github.loadup.components.gotone: warn
+    org.springframework.jdbc: warn
+    org.testcontainers: warn
+    tc.mysql: warn
 
 
 
