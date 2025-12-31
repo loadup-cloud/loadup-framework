@@ -21,11 +21,6 @@ jobs:
       contents: read
       packages: write
 
-    # Testcontainers 需要 Docker 服务
-    services:
-      docker:
-        image: docker:24-dind
-        options: --privileged
 
     steps:
       - name: Checkout code
@@ -41,12 +36,11 @@ jobs:
           server-username: GITHUB_ACTOR
           server-password: GITHUB_TOKEN
 
-      # 配置 Testcontainers 使用 GitHub Actions 的 Docker
+      # 配置 Testcontainers
       - name: Configure Testcontainers
         run: |
           mkdir -p ~/.testcontainers
-          echo "docker.host=unix:///var/run/docker.sock" > ~/.testcontainers.properties
-          echo "testcontainers.reuse.enable=false" >> ~/.testcontainers.properties
+          echo "testcontainers.reuse.enable=false" > ~/.testcontainers.properties
 
       # 验证 Docker 可用
       - name: Verify Docker
