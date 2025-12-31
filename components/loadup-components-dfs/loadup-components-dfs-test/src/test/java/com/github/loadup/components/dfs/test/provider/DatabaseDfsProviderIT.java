@@ -31,7 +31,6 @@ import com.github.loadup.components.dfs.model.FileDownloadResponse;
 import com.github.loadup.components.dfs.model.FileMetadata;
 import com.github.loadup.components.dfs.model.FileUploadRequest;
 import com.github.loadup.components.dfs.test.DfsTestApplication;
-import com.github.loadup.components.dfs.test.config.TestContainersConfiguration;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -39,13 +38,17 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 /** Test cases for DatabaseDfsProvider with Testcontainers MySQL */
 @SpringBootTest(classes = DfsTestApplication.class)
-@Import(TestContainersConfiguration.class)
 @ActiveProfiles("test")
+@Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class DatabaseDfsProviderIT {
 
@@ -55,6 +58,21 @@ class DatabaseDfsProviderIT {
 
   private static final String TEST_CONTENT = "Database storage test content.";
   private static final String TEST_FILENAME = "db-test-file.txt";
+
+  @Container
+  static MySQLContainer<?> mysql =
+      new MySQLContainer<>("mysql:8.0")
+          .withDatabaseName("testdb")
+          .withUsername("test")
+          .withPassword("test");
+
+  @DynamicPropertySource
+  static void configureProperties(DynamicPropertyRegistry registry) {
+    registry.add("spring.datasource.url", mysql::getJdbcUrl);
+    registry.add("spring.datasource.username", mysql::getUsername);
+    registry.add("spring.datasource.password", mysql::getPassword);
+    registry.add("spring.datasource.driver-class-name", mysql::getDriverClassName);
+  }
 
   @BeforeEach
   void setUp() {

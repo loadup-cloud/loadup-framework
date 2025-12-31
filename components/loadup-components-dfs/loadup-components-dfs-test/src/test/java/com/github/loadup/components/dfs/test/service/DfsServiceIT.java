@@ -29,7 +29,6 @@ import com.github.loadup.components.dfs.model.FileMetadata;
 import com.github.loadup.components.dfs.model.FileUploadRequest;
 import com.github.loadup.components.dfs.service.DfsService;
 import com.github.loadup.components.dfs.test.DfsTestApplication;
-import com.github.loadup.components.dfs.test.config.TestContainersConfiguration;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -39,12 +38,10 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 /** Test cases for DfsService with Testcontainers MySQL */
 @SpringBootTest(classes = DfsTestApplication.class)
-@Import(TestContainersConfiguration.class)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class DfsServiceIT {
