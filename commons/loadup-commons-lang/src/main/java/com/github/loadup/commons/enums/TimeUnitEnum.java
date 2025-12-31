@@ -23,6 +23,7 @@ package com.github.loadup.commons.enums;
  */
 
 import com.github.loadup.commons.util.EnumUtils;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -33,35 +34,23 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum TimeUnitEnum implements IEnum {
-    /**
-     * SECOND
-     */
-    SECOND("S", "SECOND"),
-    /**
-     * MINUTE
-     */
-    MINUTE("I", "MINUTE"),
-    /**
-     * HOUR
-     */
-    HOUR("H", "HOUR"),
-    /**
-     * DAY
-     */
-    DAY("D", "DAY"),
-    /**
-     * MONTH
-     */
-    MONTH("D", "MONTH"),
-    /**
-     * YEAR
-     */
-    YEAR("Y", "YEAR"),
-    ;
-    private String code;
-    private String description;
+  /** SECOND */
+  SECOND("S", "SECOND"),
+  /** MINUTE */
+  MINUTE("I", "MINUTE"),
+  /** HOUR */
+  HOUR("H", "HOUR"),
+  /** DAY */
+  DAY("D", "DAY"),
+  /** MONTH */
+  MONTH("D", "MONTH"),
+  /** YEAR */
+  YEAR("Y", "YEAR"),
+  ;
+  private String code;
+  private String description;
 
-    public static TimeUnitEnum getByCode(String code) {
-        return EnumUtils.getEnumByCode(TimeUnitEnum.class, code);
-    }
+  public static TimeUnitEnum getByCode(String code) {
+    return EnumUtils.getEnumByCode(TimeUnitEnum.class, code);
+  }
 }

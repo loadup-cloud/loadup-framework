@@ -26,38 +26,37 @@ import java.util.UUID;
 
 /**
  * UUID v4 ID 生成器
- * <p>使用标准的 UUID v4（随机 UUID）生成 ID</p>
- * <p>生成的 ID 格式：xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx</p>
+ *
+ * <p>使用标准的 UUID v4（随机 UUID）生成 ID
+ *
+ * <p>生成的 ID 格式：xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
  */
 public class UuidV4IdGenerator implements IdGenerator {
 
-    private final boolean withHyphens;
+  private final boolean withHyphens;
 
-    /**
-     * 创建 UUID v4 生成器
-     *
-     * @param withHyphens 是否保留连字符
-     */
-    public UuidV4IdGenerator(boolean withHyphens) {
-        this.withHyphens = withHyphens;
-    }
+  /**
+   * 创建 UUID v4 生成器
+   *
+   * @param withHyphens 是否保留连字符
+   */
+  public UuidV4IdGenerator(boolean withHyphens) {
+    this.withHyphens = withHyphens;
+  }
 
-    /**
-     * 创建 UUID v4 生成器（默认不保留连字符）
-     */
-    public UuidV4IdGenerator() {
-        this(false);
-    }
+  /** 创建 UUID v4 生成器（默认不保留连字符） */
+  public UuidV4IdGenerator() {
+    this(false);
+  }
 
-    @Override
-    public String generate() {
-        String uuid = UUID.randomUUID().toString();
-        return withHyphens ? uuid : uuid.replace("-", "");
-    }
+  @Override
+  public String generate() {
+    String uuid = UUID.randomUUID().toString();
+    return withHyphens ? uuid : uuid.replace("-", "");
+  }
 
-    @Override
-    public String getName() {
-        return withHyphens ? "uuid-v4" : "uuid-v4-no-hyphens";
-    }
+  @Override
+  public String getName() {
+    return withHyphens ? "uuid-v4" : "uuid-v4-no-hyphens";
+  }
 }
-

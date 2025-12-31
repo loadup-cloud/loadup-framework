@@ -421,4 +421,3 @@ gotone.email.send.failure.count
 ## 许可证
 
 GPL-3.0 License
-

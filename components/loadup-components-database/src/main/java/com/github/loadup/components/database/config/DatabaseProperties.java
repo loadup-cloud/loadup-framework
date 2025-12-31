@@ -22,81 +22,60 @@ package com.github.loadup.components.database.config;
  * #L%
  */
 
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Configuration properties for database component.
- */
+import lombok.Data;
+
+/** Configuration properties for database component. */
 @Data
 @ConfigurationProperties(prefix = "loadup.database")
 public class DatabaseProperties {
 
-    /**
-     * ID generation configuration
-     */
-    private IdGenerator idGenerator = new IdGenerator();
+  /** ID generation configuration */
+  private IdGenerator idGenerator = new IdGenerator();
+
+  /** Sequence configuration */
+  private Sequence sequence = new Sequence();
+
+  @Data
+  public static class IdGenerator {
+    /** Enable automatic ID generation for entities extending BaseDO */
+    private boolean enabled = true;
+
+    /** Length of generated ID string (only for random strategy) */
+    private int length = 20;
 
     /**
-     * Sequence configuration
+     * ID generation strategy: random, uuid-v4, uuid-v7, snowflake
+     *
+     * <ul>
+     *   <li>random: 随机字符串，长度可配置
+     *   <li>uuid-v4: 标准 UUID v4（随机）
+     *   <li>uuid-v7: UUID v7（基于时间戳，有序）
+     *   <li>snowflake: 雪花算法（分布式唯一ID，数字型）
+     * </ul>
      */
-    private Sequence sequence = new Sequence();
+    private String strategy = "random";
 
-    @Data
-    public static class IdGenerator {
-        /**
-         * Enable automatic ID generation for entities extending BaseDO
-         */
-        private boolean enabled = true;
+    /** Whether to keep hyphens in UUID (for uuid-v4 and uuid-v7) */
+    private boolean uuidWithHyphens = false;
 
-        /**
-         * Length of generated ID string (only for random strategy)
-         */
-        private int length = 20;
+    /** Snowflake worker ID (0-31, for snowflake strategy) */
+    private long snowflakeWorkerId = 0L;
 
-        /**
-         * ID generation strategy: random, uuid-v4, uuid-v7, snowflake
-         * <ul>
-         *   <li>random: 随机字符串，长度可配置</li>
-         *   <li>uuid-v4: 标准 UUID v4（随机）</li>
-         *   <li>uuid-v7: UUID v7（基于时间戳，有序）</li>
-         *   <li>snowflake: 雪花算法（分布式唯一ID，数字型）</li>
-         * </ul>
-         */
-        private String strategy = "random";
+    /** Snowflake datacenter ID (0-31, for snowflake strategy) */
+    private long snowflakeDatacenterId = 0L;
+  }
 
-        /**
-         * Whether to keep hyphens in UUID (for uuid-v4 and uuid-v7)
-         */
-        private boolean uuidWithHyphens = false;
+  @Data
+  public static class Sequence {
+    /** Default step for sequence range allocation */
+    private Long step = 1000L;
 
-        /**
-         * Snowflake worker ID (0-31, for snowflake strategy)
-         */
-        private long snowflakeWorkerId = 0L;
+    /** Minimum value for sequences */
+    private Long minValue = 0L;
 
-        /**
-         * Snowflake datacenter ID (0-31, for snowflake strategy)
-         */
-        private long snowflakeDatacenterId = 0L;
-    }
-
-    @Data
-    public static class Sequence {
-        /**
-         * Default step for sequence range allocation
-         */
-        private Long step = 1000L;
-
-        /**
-         * Minimum value for sequences
-         */
-        private Long minValue = 0L;
-
-        /**
-         * Maximum value for sequences
-         */
-        private Long maxValue = Long.MAX_VALUE;
-    }
+    /** Maximum value for sequences */
+    private Long maxValue = Long.MAX_VALUE;
+  }
 }
-

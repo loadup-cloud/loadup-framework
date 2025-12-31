@@ -23,6 +23,7 @@ package com.github.loadup.commons.enums;
  */
 
 import com.github.loadup.commons.util.EnumUtils;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -33,31 +34,21 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum PlatFormEnum implements IEnum {
-    /**
-     * X86
-     */
-    X86("X86", "X86"),
-    /**
-     * X86_64
-     */
-    X86_64("X86_64", "X86_64"),
-    /**
-     * ARM64
-     */
-    ARM64("ARM64", "ARM64"),
-    /**
-     * SPARC
-     */
-    SPARC("SPARC", "SPARC"),
-    /**
-     * MIPS
-     */
-    MIPS("MIPS", "MIPS"),
-    ;
-    private String code;
-    private String description;
+  /** X86 */
+  X86("X86", "X86"),
+  /** X86_64 */
+  X86_64("X86_64", "X86_64"),
+  /** ARM64 */
+  ARM64("ARM64", "ARM64"),
+  /** SPARC */
+  SPARC("SPARC", "SPARC"),
+  /** MIPS */
+  MIPS("MIPS", "MIPS"),
+  ;
+  private String code;
+  private String description;
 
-    public static PlatFormEnum getByCode(String code) {
-        return EnumUtils.getEnumByCode(PlatFormEnum.class, code);
-    }
+  public static PlatFormEnum getByCode(String code) {
+    return EnumUtils.getEnumByCode(PlatFormEnum.class, code);
+  }
 }

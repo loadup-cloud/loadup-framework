@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.github.loadup.framework</groupId>
@@ -13,7 +11,36 @@
     <artifactId>loadup-framework-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <inceptionYear>2026</inceptionYear>
+
+    <modules>
+        <module>bom</module>
+        <module>commons/loadup-commons-lang</module>
+        <module>commons/loadup-commons-dto</module>
+        <module>commons/loadup-commons-api</module>
+        <module>commons/loadup-commons-util</module>
+        <module>components/loadup-components-database</module>
+        <module>components/loadup-components-liquibase</module>
+        <module>components/loadup-components-extension</module>
+        <module>components/loadup-components-cache</module>
+        <module>components/loadup-components-captcha</module>
+        <module>components/loadup-components-tracer</module>
+        <module>components/loadup-components-scheduler</module>
+        <module>components/loadup-components-gotone</module>
+        <!--        <module>modules/loadup-modules-user</module>-->
+    </modules>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>LoadUp Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+        </repository>
+        <snapshotRepository>
+            <id>github</id>
+            <name>LoadUp Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,23 +61,6 @@
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
         <commons.io.version>2.20.0</commons.io.version>
     </properties>
-
-    <modules>
-        <module>bom</module>
-        <module>commons/loadup-commons-lang</module>
-        <module>commons/loadup-commons-dto</module>
-        <module>commons/loadup-commons-api</module>
-        <module>commons/loadup-commons-util</module>
-        <module>components/loadup-components-database</module>
-        <module>components/loadup-components-liquibase</module>
-        <module>components/loadup-components-extension</module>
-        <module>components/loadup-components-cache</module>
-        <module>components/loadup-components-captcha</module>
-        <module>components/loadup-components-tracer</module>
-        <module>components/loadup-components-scheduler</module>
-        <module>components/loadup-components-gotone</module>
-        <!--        <module>modules/loadup-modules-user</module>-->
-    </modules>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -114,30 +124,16 @@
         </dependencies>
     </dependencyManagement>
 
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>LoadUp Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
-        </repository>
-        <snapshotRepository>
-            <id>github</id>
-            <name>LoadUp Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-
     <repositories>
         <repository>
-            <id>github</id>
-            <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
         </repository>
     </repositories>
 </project>

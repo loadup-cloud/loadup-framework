@@ -22,51 +22,35 @@ package com.github.loadup.components.tracer.config;
  * #L%
  */
 
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-/**
- * Configuration properties for the tracer component.
- */
+import lombok.Data;
+
+/** Configuration properties for the tracer component. */
 @Data
 @Component
 @ConfigurationProperties(prefix = "loadup.tracer")
 public class TracerProperties {
 
-    /**
-     * Enable or disable the tracer.
-     */
-    private boolean enabled = true;
+  /** Enable or disable the tracer. */
+  private boolean enabled = true;
 
-    /**
-     * Enable web request tracing.
-     */
-    private boolean enableWebTracing = true;
+  /** Enable web request tracing. */
+  private boolean enableWebTracing = true;
 
-    /**
-     * Enable async task tracing.
-     */
-    private boolean enableAsyncTracing = true;
+  /** Enable async task tracing. */
+  private boolean enableAsyncTracing = true;
 
-    /**
-     * OTLP exporter endpoint (e.g., http://localhost:4317).
-     */
-    private String otlpEndpoint;
+  /** OTLP exporter endpoint (e.g., http://localhost:4317). */
+  private String otlpEndpoint;
 
-    /**
-     * Include request headers in spans.
-     */
-    private boolean includeHeaders = false;
+  /** Include request headers in spans. */
+  private boolean includeHeaders = false;
 
-    /**
-     * Include request parameters in spans.
-     */
-    private boolean includeParameters = false;
+  /** Include request parameters in spans. */
+  private boolean includeParameters = false;
 
-    /**
-     * URL patterns to exclude from tracing (comma-separated).
-     */
-    private String excludePatterns = "/actuator/**,/health,/metrics";
+  /** URL patterns to exclude from tracing (comma-separated). */
+  private String excludePatterns = "/actuator/**,/health,/metrics";
 }
-

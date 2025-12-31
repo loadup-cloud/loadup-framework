@@ -26,27 +26,27 @@ import com.github.loadup.commons.util.RandomUtil;
 
 /**
  * 随机字符串 ID 生成器
- * <p>生成指定长度的随机字符串作为 ID</p>
+ *
+ * <p>生成指定长度的随机字符串作为 ID
  */
 public class RandomStringIdGenerator implements IdGenerator {
 
-    private final int length;
+  private final int length;
 
-    public RandomStringIdGenerator(int length) {
-        if (length <= 0) {
-            throw new IllegalArgumentException("Length must be positive, got: " + length);
-        }
-        this.length = length;
+  public RandomStringIdGenerator(int length) {
+    if (length <= 0) {
+      throw new IllegalArgumentException("Length must be positive, got: " + length);
     }
+    this.length = length;
+  }
 
-    @Override
-    public String generate() {
-        return RandomUtil.randomString(length);
-    }
+  @Override
+  public String generate() {
+    return RandomUtil.randomString(length);
+  }
 
-    @Override
-    public String getName() {
-        return "random-" + length;
-    }
+  @Override
+  public String getName() {
+    return "random-" + length;
+  }
 }
-

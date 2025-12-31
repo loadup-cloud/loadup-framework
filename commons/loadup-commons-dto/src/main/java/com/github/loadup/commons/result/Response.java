@@ -22,57 +22,56 @@ package com.github.loadup.commons.result;
  * #L%
  */
 
-import com.github.loadup.commons.dto.DTO;
+import java.io.Serial;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+
+import com.github.loadup.commons.dto.DTO;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serial;
 
 @Getter
 @Setter
 public class Response extends DTO {
-    @Serial
-    private static final long serialVersionUID = -7110439816752134266L;
+  @Serial private static final long serialVersionUID = -7110439816752134266L;
 
-    @NotNull
-    @Valid
-    private Result result = null;
+  @NotNull @Valid private Result result = null;
 
-    public static Response buildSuccess() {
-        Response response = new Response();
-        response.setResult(Result.buildSuccess());
-        return response;
-    }
+  public static Response buildSuccess() {
+    Response response = new Response();
+    response.setResult(Result.buildSuccess());
+    return response;
+  }
 
-    public static Response buildFailure() {
-        Response response = new Response();
-        response.setResult(Result.buildFailure());
-        return response;
-    }
+  public static Response buildFailure() {
+    Response response = new Response();
+    response.setResult(Result.buildFailure());
+    return response;
+  }
 
-    public static Response buildFailure(String errCode) {
-        Response response = new Response();
-        response.setResult(Result.buildFailure(errCode));
-        return response;
-    }
+  public static Response buildFailure(String errCode) {
+    Response response = new Response();
+    response.setResult(Result.buildFailure(errCode));
+    return response;
+  }
 
-    public static Response buildFailure(ResultCode errCode) {
-        Response response = new Response();
-        response.setResult(Result.buildFailure(errCode));
-        return response;
-    }
+  public static Response buildFailure(ResultCode errCode) {
+    Response response = new Response();
+    response.setResult(Result.buildFailure(errCode));
+    return response;
+  }
 
-    public static Response buildFailure(ResultCode errCode, String errMessage) {
-        Response response = new Response();
-        response.setResult(Result.buildFailure(errCode, errMessage));
-        return response;
-    }
+  public static Response buildFailure(ResultCode errCode, String errMessage) {
+    Response response = new Response();
+    response.setResult(Result.buildFailure(errCode, errMessage));
+    return response;
+  }
 
-    public static Response buildFailure(String errCode, String errMessage) {
-        Response response = new Response();
-        response.setResult(Result.buildFailure(errCode, errMessage));
-        return response;
-    }
+  public static Response buildFailure(String errCode, String errMessage) {
+    Response response = new Response();
+    response.setResult(Result.buildFailure(errCode, errMessage));
+    return response;
+  }
 }

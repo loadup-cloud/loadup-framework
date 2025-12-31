@@ -15,6 +15,11 @@
     <description>LoadUp Cache Component</description>
     <name>loadup-components-cache</name>
 
+    <properties>
+        <!-- Skip Spotless for aggregator POM - no source code -->
+        <spotless.skip>true</spotless.skip>
+    </properties>
+
     <modules>
         <module>loadup-components-cache-api</module>
         <module>loadup-components-cache-binder-caffeine</module>

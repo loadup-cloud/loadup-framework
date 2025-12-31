@@ -22,7 +22,17 @@ package com.github.loadup.components.tracer;
  * #L%
  */
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
+
 import com.github.loadup.components.tracer.config.TracerProperties;
+
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.baggage.propagation.W3CBaggagePropagator;
 import io.opentelemetry.api.common.AttributeKey;
@@ -42,130 +52,132 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
-@ConditionalOnProperty(prefix = "loadup.tracer", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(
+    prefix = "loadup.tracer",
+    name = "enabled",
+    havingValue = "true",
+    matchIfMissing = true)
 public class OpenTelemetryConfig {
 
-    @Value("${spring.application.name:unknown-service}")
-    private String applicationName;
+  @Value("${spring.application.name:unknown-service}")
+  private String applicationName;
 
-    private final TracerProperties tracerProperties;
+  private final TracerProperties tracerProperties;
 
-    @Bean
-    public OpenTelemetry openTelemetry() {
-        LoggingSpanExporter logExporter = LoggingSpanExporter.create();
-        SpanExporter spanExporter = logExporter;
+  @Bean
+  public OpenTelemetry openTelemetry() {
+    LoggingSpanExporter logExporter = LoggingSpanExporter.create();
+    SpanExporter spanExporter = logExporter;
 
-        // Configure OTLP exporter if endpoint is provided
-        if (StringUtils.hasText(tracerProperties.getOtlpEndpoint())) {
-            OtlpGrpcSpanExporter otlpGrpcSpanExporter = OtlpGrpcSpanExporter.builder()
-                .setEndpoint(tracerProperties.getOtlpEndpoint())
-                .build();
-            spanExporter = SpanExporter.composite(logExporter, otlpGrpcSpanExporter);
-        }
+    // Configure OTLP exporter if endpoint is provided
+    if (StringUtils.hasText(tracerProperties.getOtlpEndpoint())) {
+      OtlpGrpcSpanExporter otlpGrpcSpanExporter =
+          OtlpGrpcSpanExporter.builder().setEndpoint(tracerProperties.getOtlpEndpoint()).build();
+      spanExporter = SpanExporter.composite(logExporter, otlpGrpcSpanExporter);
+    }
 
-        // Create resource with service name and version
-        Resource resource = Resource.getDefault().toBuilder()
+    // Create resource with service name and version
+    Resource resource =
+        Resource.getDefault().toBuilder()
             .put(AttributeKey.stringKey("service.name"), applicationName)
             .put(AttributeKey.stringKey("service.version"), "1.0.0")
             .build();
 
-        SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
+    SdkTracerProvider sdkTracerProvider =
+        SdkTracerProvider.builder()
             .setResource(resource)
             .addSpanProcessor(BatchSpanProcessor.builder(spanExporter).build())
             .build();
 
-        SdkMeterProvider sdkMeterProvider = SdkMeterProvider.builder()
-            .registerMetricReader(PeriodicMetricReader.builder(LoggingMetricExporter.create())
-                .build())
+    SdkMeterProvider sdkMeterProvider =
+        SdkMeterProvider.builder()
+            .registerMetricReader(
+                PeriodicMetricReader.builder(LoggingMetricExporter.create()).build())
             .build();
 
-        SdkLoggerProvider sdkLoggerProvider = SdkLoggerProvider.builder()
-            .addLogRecordProcessor(BatchLogRecordProcessor.builder(SystemOutLogRecordExporter.create())
-                .build())
+    SdkLoggerProvider sdkLoggerProvider =
+        SdkLoggerProvider.builder()
+            .addLogRecordProcessor(
+                BatchLogRecordProcessor.builder(SystemOutLogRecordExporter.create()).build())
             .build();
 
-        return OpenTelemetrySdk.builder()
-            .setTracerProvider(sdkTracerProvider)
-            .setMeterProvider(sdkMeterProvider)
-            .setLoggerProvider(sdkLoggerProvider)
-            .setPropagators(ContextPropagators.create(TextMapPropagator.composite(
-                W3CTraceContextPropagator.getInstance(), W3CBaggagePropagator.getInstance())))
-            .build();
+    return OpenTelemetrySdk.builder()
+        .setTracerProvider(sdkTracerProvider)
+        .setMeterProvider(sdkMeterProvider)
+        .setLoggerProvider(sdkLoggerProvider)
+        .setPropagators(
+            ContextPropagators.create(
+                TextMapPropagator.composite(
+                    W3CTraceContextPropagator.getInstance(), W3CBaggagePropagator.getInstance())))
+        .build();
+  }
+
+  @Bean
+  public Tracer tracer(OpenTelemetry openTelemetry) {
+    return openTelemetry.getTracer(applicationName);
+  }
+
+  @Bean
+  public ContextPropagators contextPropagators() {
+    // return ContextPropagators.create(W3CTraceContextPropagator.getInstance());
+    return ContextPropagators.create(new CustomTextMapPropagator());
+  }
+
+  @Bean
+  public TextMapPropagator textMapPropagator(ContextPropagators propagators) {
+    return propagators.getTextMapPropagator();
+  }
+
+  static class CustomTextMapPropagator implements TextMapPropagator {
+
+    private static final String CUSTOM_TRACE_HEADER = "traceId";
+    private final W3CTraceContextPropagator w3cPropagator = W3CTraceContextPropagator.getInstance();
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void inject(
+        io.opentelemetry.context.Context context,
+        Object carrier,
+        io.opentelemetry.context.propagation.TextMapSetter setter) {
+      // w3cPropagator.inject(context, carrier, setter);
+      SpanContext spanContext = Span.fromContext(context).getSpanContext();
+      if (spanContext.isValid()) {
+        setter.set(carrier, CUSTOM_TRACE_HEADER, spanContext.getTraceId());
+        w3cPropagator.inject(context, carrier, setter);
+      }
     }
 
-    @Bean
-    public Tracer tracer(OpenTelemetry openTelemetry) {
-        return openTelemetry.getTracer(applicationName);
+    @Override
+    @SuppressWarnings("unchecked")
+    public io.opentelemetry.context.Context extract(
+        io.opentelemetry.context.Context context,
+        Object carrier,
+        io.opentelemetry.context.propagation.TextMapGetter getter) {
+      // return w3cPropagator.extract(context, carrier, getter);
+      io.opentelemetry.context.Context w3cContext = w3cPropagator.extract(context, carrier, getter);
+      if (w3cContext != context) {
+        return w3cContext;
+      }
+
+      String traceId = getter.get(carrier, CUSTOM_TRACE_HEADER);
+      if (traceId != null && traceId.length() == 32) {
+        SpanContext spanContext =
+            SpanContext.create(
+                traceId,
+                "0000000000000000", // Dummy spanId, 不使用
+                TraceFlags.getSampled(),
+                TraceState.getDefault());
+        return context.with(Span.wrap(spanContext));
+      }
+      return context; // 如果没有 traceId 或不合法, 则返回 context
     }
 
-    @Bean
-    public ContextPropagators contextPropagators() {
-        // return ContextPropagators.create(W3CTraceContextPropagator.getInstance());
-        return ContextPropagators.create(new CustomTextMapPropagator());
+    @Override
+    public List<String> fields() {
+      return Arrays.asList("traceparent", CUSTOM_TRACE_HEADER);
     }
-
-    @Bean
-    public TextMapPropagator textMapPropagator(ContextPropagators propagators) {
-        return propagators.getTextMapPropagator();
-    }
-
-    static class CustomTextMapPropagator implements TextMapPropagator {
-
-        private static final String                    CUSTOM_TRACE_HEADER = "traceId";
-        private final        W3CTraceContextPropagator w3cPropagator       = W3CTraceContextPropagator.getInstance();
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public void inject(
-            io.opentelemetry.context.Context context,
-            Object carrier,
-            io.opentelemetry.context.propagation.TextMapSetter setter) {
-            // w3cPropagator.inject(context, carrier, setter);
-            SpanContext spanContext = Span.fromContext(context).getSpanContext();
-            if (spanContext.isValid()) {
-                setter.set(carrier, CUSTOM_TRACE_HEADER, spanContext.getTraceId());
-                w3cPropagator.inject(context, carrier, setter);
-            }
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public io.opentelemetry.context.Context extract(
-            io.opentelemetry.context.Context context,
-            Object carrier,
-            io.opentelemetry.context.propagation.TextMapGetter getter) {
-            // return w3cPropagator.extract(context, carrier, getter);
-            io.opentelemetry.context.Context w3cContext = w3cPropagator.extract(context, carrier, getter);
-            if (w3cContext != context) {
-                return w3cContext;
-            }
-
-            String traceId = getter.get(carrier, CUSTOM_TRACE_HEADER);
-            if (traceId != null && traceId.length() == 32) {
-                SpanContext spanContext = SpanContext.create(
-                    traceId,
-                    "0000000000000000", // Dummy spanId, 不使用
-                    TraceFlags.getSampled(),
-                    TraceState.getDefault());
-                return context.with(Span.wrap(spanContext));
-            }
-            return context; // 如果没有 traceId 或不合法, 则返回 context
-        }
-
-        @Override
-        public List<String> fields() {
-            return Arrays.asList("traceparent", CUSTOM_TRACE_HEADER);
-        }
-    }
+  }
 }

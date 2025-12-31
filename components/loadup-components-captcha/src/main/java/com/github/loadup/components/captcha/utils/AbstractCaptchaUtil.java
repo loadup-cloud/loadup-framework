@@ -30,24 +30,15 @@ package com.github.loadup.components.captcha.utils;
  */
 public abstract class AbstractCaptchaUtil {
 
-    /**
-     * session 键名
-     */
-    protected static final String SESSION_KEY = "captcha";
+  /** session 键名 */
+  protected static final String SESSION_KEY = "captcha";
 
-    /**
-     * 默认长度
-     */
-    protected static final int DEFAULT_LEN = 4;
+  /** 默认长度 */
+  protected static final int DEFAULT_LEN = 4;
 
-    /**
-     * 默认宽度
-     */
-    protected static final int DEFAULT_WIDTH = 130;
+  /** 默认宽度 */
+  protected static final int DEFAULT_WIDTH = 130;
 
-    /**
-     * 默认高度
-     */
-    protected static final int DEFAULT_HEIGHT = 48;
-
+  /** 默认高度 */
+  protected static final int DEFAULT_HEIGHT = 48;
 }

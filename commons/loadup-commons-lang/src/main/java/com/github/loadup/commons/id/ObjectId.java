@@ -33,11 +33,11 @@ package com.github.loadup.commons.id;
  * See the Mulan PSL v2 for more details.
  */
 
-import com.github.loadup.commons.util.StringUtils;
-
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.github.loadup.commons.util.StringUtils;
 
 /**
  * MongoDB ID生成策略实现<br>
@@ -54,129 +54,116 @@ import java.util.concurrent.atomic.AtomicInteger;
  *     | 时间戳 | 随机数 | 自增计数器 |
  *     |   4   |   4   |    4     |
  * </pre>
- * <p>
- * 参考：<a href="https://github.com/mongodb/mongo-java-driver/blob/master/bson/src/main/org/bson/types/ObjectId.java">...</a>
+ *
+ * <p>参考：<a
+ * href="https://github.com/mongodb/mongo-java-driver/blob/master/bson/src/main/org/bson/types/ObjectId.java">...</a>
  *
  * @author looly
  * @since 4.0.0
  */
 public class ObjectId {
-    /**
-     * 16进制字符
-     */
-    private static final char[] HEX_UNIT = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
-    };
+  /** 16进制字符 */
+  private static final char[] HEX_UNIT = {
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+  };
 
-    /**
-     * 线程安全的下一个随机数,每次生成自增+1
-     */
-    private static final AtomicInteger NEXT_INC =
-        new AtomicInteger(ThreadLocalRandom.current().nextInt());
+  /** 线程安全的下一个随机数,每次生成自增+1 */
+  private static final AtomicInteger NEXT_INC =
+      new AtomicInteger(ThreadLocalRandom.current().nextInt());
 
-    /**
-     * 机器信息
-     */
-    private static final char[] MACHINE_CODE = initMachineCode();
+  /** 机器信息 */
+  private static final char[] MACHINE_CODE = initMachineCode();
 
-    /**
-     * 给定的字符串是否为有效的ObjectId
-     */
-    public static boolean isValid(String s) {
-        if (s == null) {
-            return false;
-        }
-        s = StringUtils.removeAll(s, "-");
-        final int len = s.length();
-        if (len != 24) {
-            return false;
-        }
-
-        char c;
-        for (int i = 0; i < len; i++) {
-            c = s.charAt(i);
-            if (c >= '0' && c <= '9') {
-                continue;
-            }
-            if (c >= 'a' && c <= 'f') {
-                continue;
-            }
-            if (c >= 'A' && c <= 'F') {
-                continue;
-            }
-            return false;
-        }
-        return true;
+  /** 给定的字符串是否为有效的ObjectId */
+  public static boolean isValid(String s) {
+    if (s == null) {
+      return false;
+    }
+    s = StringUtils.removeAll(s, "-");
+    final int len = s.length();
+    if (len != 24) {
+      return false;
     }
 
-    /**
-     * 获取一个objectId的bytes表现形式
-     *
-     * @since 4.1.15
-     */
-    public static byte[] nextBytes() {
-        return next().getBytes();
+    char c;
+    for (int i = 0; i < len; i++) {
+      c = s.charAt(i);
+      if (c >= '0' && c <= '9') {
+        continue;
+      }
+      if (c >= 'a' && c <= 'f') {
+        continue;
+      }
+      if (c >= 'A' && c <= 'F') {
+        continue;
+      }
+      return false;
     }
+    return true;
+  }
 
-    /**
-     * 获取一个objectId【没有下划线】。
-     */
-    public static String next() {
-        final char[] ids = new char[24];
-        int epoch = (int) ((System.currentTimeMillis() / 1000));
-        // 4位字节 ： 时间戳
-        for (int i = 7; i >= 0; i--) {
-            ids[i] = HEX_UNIT[(epoch & 15)];
-            epoch >>>= 4;
-        }
-        // 4位字节 ： 随机数
-        System.arraycopy(MACHINE_CODE, 0, ids, 8, 8);
-        // 4位字节： 自增序列。溢出后，相当于从0开始算。
-        int seq = NEXT_INC.incrementAndGet();
-        for (int i = 23; i >= 16; i--) {
-            ids[i] = HEX_UNIT[(seq & 15)];
-            seq >>>= 4;
-        }
-        return new String(ids);
-    }
+  /**
+   * 获取一个objectId的bytes表现形式
+   *
+   * @since 4.1.15
+   */
+  public static byte[] nextBytes() {
+    return next().getBytes();
+  }
 
-    /**
-     * 获取一个objectId
-     */
-    public static String next(final boolean withHyphen) {
-        if (!withHyphen) {
-            return next();
-        }
-        final char[] ids = new char[26];
-        ids[8] = '-';
-        ids[17] = '-';
-        int epoch = (int) ((System.currentTimeMillis() / 1000));
-        // 4位字节 ： 时间戳
-        for (int i = 7; i >= 0; i--) {
-            ids[i] = HEX_UNIT[(epoch & 15)];
-            epoch >>>= 4;
-        }
-        // 4位字节 ： 随机数
-        System.arraycopy(MACHINE_CODE, 0, ids, 9, 8);
-        // 4位字节： 自增序列。溢出后，相当于从0开始算。
-        int seq = NEXT_INC.incrementAndGet();
-        for (int i = 25; i >= 18; i--) {
-            ids[i] = HEX_UNIT[(seq & 15)];
-            seq >>>= 4;
-        }
-        return new String(ids);
+  /** 获取一个objectId【没有下划线】。 */
+  public static String next() {
+    final char[] ids = new char[24];
+    int epoch = (int) ((System.currentTimeMillis() / 1000));
+    // 4位字节 ： 时间戳
+    for (int i = 7; i >= 0; i--) {
+      ids[i] = HEX_UNIT[(epoch & 15)];
+      epoch >>>= 4;
     }
+    // 4位字节 ： 随机数
+    System.arraycopy(MACHINE_CODE, 0, ids, 8, 8);
+    // 4位字节： 自增序列。溢出后，相当于从0开始算。
+    int seq = NEXT_INC.incrementAndGet();
+    for (int i = 23; i >= 16; i--) {
+      ids[i] = HEX_UNIT[(seq & 15)];
+      seq >>>= 4;
+    }
+    return new String(ids);
+  }
 
-    /**
-     * 初始化机器码
-     */
-    private static char[] initMachineCode() {
-        // 机器码 : 4位随机数，8个字节。避免docker容器中生成相同机器码的bug
-        final char[] macAndPid = new char[8];
-        final Random random = new Random();
-        for (int i = 7; i >= 0; i--) {
-            macAndPid[i] = HEX_UNIT[random.nextInt() & 15];
-        }
-        return macAndPid;
+  /** 获取一个objectId */
+  public static String next(final boolean withHyphen) {
+    if (!withHyphen) {
+      return next();
     }
+    final char[] ids = new char[26];
+    ids[8] = '-';
+    ids[17] = '-';
+    int epoch = (int) ((System.currentTimeMillis() / 1000));
+    // 4位字节 ： 时间戳
+    for (int i = 7; i >= 0; i--) {
+      ids[i] = HEX_UNIT[(epoch & 15)];
+      epoch >>>= 4;
+    }
+    // 4位字节 ： 随机数
+    System.arraycopy(MACHINE_CODE, 0, ids, 9, 8);
+    // 4位字节： 自增序列。溢出后，相当于从0开始算。
+    int seq = NEXT_INC.incrementAndGet();
+    for (int i = 25; i >= 18; i--) {
+      ids[i] = HEX_UNIT[(seq & 15)];
+      seq >>>= 4;
+    }
+    return new String(ids);
+  }
+
+  /** 初始化机器码 */
+  private static char[] initMachineCode() {
+    // 机器码 : 4位随机数，8个字节。避免docker容器中生成相同机器码的bug
+    final char[] macAndPid = new char[8];
+    final Random random = new Random();
+    for (int i = 7; i >= 0; i--) {
+      macAndPid[i] = HEX_UNIT[random.nextInt() & 15];
+    }
+    return macAndPid;
+  }
 }

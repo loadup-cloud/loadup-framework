@@ -22,12 +22,13 @@ package com.github.loadup.framework.liquibase.starter;
  * #L%
  */
 
-import liquibase.integration.spring.SpringLiquibase;
+import javax.sql.DataSource;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.sql.DataSource;
+import liquibase.integration.spring.SpringLiquibase;
 
 /**
  * Configuration initialization when ApplicationStartedEvent
@@ -38,14 +39,14 @@ import javax.sql.DataSource;
 @ConditionalOnBean(DataSource.class)
 public class LiquibaseConfig {
 
-    @Bean
-    public SpringLiquibase liquibase(DataSource dataSource) {
-        SpringLiquibase liquibase = new SpringLiquibase();
-        liquibase.setDataSource(dataSource);
-        // 指定changelog的位置，这里使用的一个master文件引用其他文件的方式
-        liquibase.setChangeLog("classpath:db/changelog/db.changelog-master.yaml");
-        // liquibase.setContexts("development,test,production");
-        liquibase.setShouldRun(true);
-        return liquibase;
-    }
+  @Bean
+  public SpringLiquibase liquibase(DataSource dataSource) {
+    SpringLiquibase liquibase = new SpringLiquibase();
+    liquibase.setDataSource(dataSource);
+    // 指定changelog的位置，这里使用的一个master文件引用其他文件的方式
+    liquibase.setChangeLog("classpath:db/changelog/db.changelog-master.yaml");
+    // liquibase.setContexts("development,test,production");
+    liquibase.setShouldRun(true);
+    return liquibase;
+  }
 }

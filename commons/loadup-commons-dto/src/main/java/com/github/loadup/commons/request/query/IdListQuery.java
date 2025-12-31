@@ -22,25 +22,26 @@ package com.github.loadup.commons.request.query;
  * #L%
  */
 
-import com.github.loadup.commons.dto.DTO;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Serial;
 import java.util.List;
+
+import jakarta.validation.constraints.NotBlank;
+
+import com.github.loadup.commons.dto.DTO;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
 public class IdListQuery extends DTO {
-    @Serial
-    private static final long serialVersionUID = 7157141921495739675L;
+  @Serial private static final long serialVersionUID = 7157141921495739675L;
 
-    private List<String> idList;
+  private List<String> idList;
 
-    public static IdListQuery of(@NotBlank List<String> idList) {
-        IdListQuery idQuery = new IdListQuery();
-        idQuery.setIdList(idList);
-        return idQuery;
-    }
+  public static IdListQuery of(@NotBlank List<String> idList) {
+    IdListQuery idQuery = new IdListQuery();
+    idQuery.setIdList(idList);
+    return idQuery;
+  }
 }

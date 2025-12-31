@@ -22,69 +22,71 @@ package com.github.loadup.components.cache.caffeine.binder;
  * #L%
  */
 
-import com.github.loadup.components.cache.api.CacheBinder;
+import java.util.Objects;
+
 import jakarta.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.util.Assert;
 
-import java.util.Objects;
+import com.github.loadup.components.cache.api.CacheBinder;
 
 public class CaffeineCacheBinderImpl implements CacheBinder {
 
-    @Resource
-    @Qualifier("caffeineCacheManager")
-    private CacheManager caffeineCacheManager;
+  @Resource
+  @Qualifier("caffeineCacheManager")
+  private CacheManager caffeineCacheManager;
 
-    @Override
-    public String getName() {
-        return "CaffeineCache";
-    }
+  @Override
+  public String getName() {
+    return "CaffeineCache";
+  }
 
-    @Override
-    public boolean set(String cacheName, String key, Object value) {
-        Cache cache = caffeineCacheManager.getCache(cacheName);
-        Assert.notNull(cache, "cache is null");
-        cache.put(key, value);
-        return true;
-    }
+  @Override
+  public boolean set(String cacheName, String key, Object value) {
+    Cache cache = caffeineCacheManager.getCache(cacheName);
+    Assert.notNull(cache, "cache is null");
+    cache.put(key, value);
+    return true;
+  }
 
-    @Override
-    public Object get(String cacheName, String key) {
-        Cache cache = caffeineCacheManager.getCache(cacheName);
-        Assert.notNull(cache, "cache is null");
-        Cache.ValueWrapper valueWrapper = cache.get(key);
-        if (Objects.isNull(valueWrapper)) {
-            return null;
-        }
-        return valueWrapper.get();
+  @Override
+  public Object get(String cacheName, String key) {
+    Cache cache = caffeineCacheManager.getCache(cacheName);
+    Assert.notNull(cache, "cache is null");
+    Cache.ValueWrapper valueWrapper = cache.get(key);
+    if (Objects.isNull(valueWrapper)) {
+      return null;
     }
+    return valueWrapper.get();
+  }
 
-    @Override
-    public <T> T get(String cacheName, String key, Class<T> clazz) {
-        Cache cache = caffeineCacheManager.getCache(cacheName);
-        Assert.notNull(cache, "cache is null");
-        T value = cache.get(key, clazz);
-        if (Objects.isNull(value)) {
-            return null;
-        }
-        return value;
+  @Override
+  public <T> T get(String cacheName, String key, Class<T> clazz) {
+    Cache cache = caffeineCacheManager.getCache(cacheName);
+    Assert.notNull(cache, "cache is null");
+    T value = cache.get(key, clazz);
+    if (Objects.isNull(value)) {
+      return null;
     }
+    return value;
+  }
 
-    @Override
-    public boolean delete(String cacheName, String key) {
-        Cache cache = caffeineCacheManager.getCache(cacheName);
-        Assert.notNull(cache, "cache is null");
-        cache.evict(key);
-        return true;
-    }
+  @Override
+  public boolean delete(String cacheName, String key) {
+    Cache cache = caffeineCacheManager.getCache(cacheName);
+    Assert.notNull(cache, "cache is null");
+    cache.evict(key);
+    return true;
+  }
 
-    @Override
-    public boolean deleteAll(String cacheName) {
-        Cache cache = caffeineCacheManager.getCache(cacheName);
-        Assert.notNull(cache, "cache is null");
-        cache.clear();
-        return true;
-    }
+  @Override
+  public boolean deleteAll(String cacheName) {
+    Cache cache = caffeineCacheManager.getCache(cacheName);
+    Assert.notNull(cache, "cache is null");
+    cache.clear();
+    return true;
+  }
 }

@@ -22,33 +22,32 @@ package com.github.loadup.commons.dataobject;
  * #L%
  */
 
-import com.github.loadup.commons.util.ToStringUtils;
-import lombok.Getter;
-import lombok.Setter;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.InsertOnlyProperty;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import com.github.loadup.commons.util.ToStringUtils;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
 public abstract class BaseDO implements Serializable {
 
-    @CreatedDate
-    @InsertOnlyProperty
-    private LocalDateTime createdAt;
+  @CreatedDate @InsertOnlyProperty private LocalDateTime createdAt;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+  @LastModifiedDate private LocalDateTime updatedAt;
 
-    public abstract String getId();
+  public abstract String getId();
 
-    public abstract void setId(String id);
+  public abstract void setId(String id);
 
-    @Override
-    public String toString() {
-        return ToStringUtils.reflectionToString(this);
-    }
+  @Override
+  public String toString() {
+    return ToStringUtils.reflectionToString(this);
+  }
 }

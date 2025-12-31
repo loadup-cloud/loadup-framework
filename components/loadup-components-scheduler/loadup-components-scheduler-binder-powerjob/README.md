@@ -82,7 +82,7 @@ wget https://github.com/PowerJob/PowerJob/releases/download/v4.3.0/powerjob-serv
 java -jar powerjob-server-4.3.0.jar
 ```
 
-访问: http://localhost:7700  
+访问: http://localhost:7700
 默认账号: admin/powerjob123
 
 ### 2. 应用配置
@@ -126,9 +126,9 @@ powerjob.worker.store-strategy=disk
 ```java
 @Component
 public class PowerJobTasks {
-    
+
     private static final Logger log = LoggerFactory.getLogger(PowerJobTasks.class);
-    
+
     @DistributedScheduler(name = "basicTask", cron = "0 */5 * * * ?")
     public void executeBasicTask() {
         log.info("执行基本任务");
@@ -142,7 +142,7 @@ public class PowerJobTasks {
 ```java
 @Component
 public class MapTaskHandler {
-    
+
     @DistributedScheduler(name = "mapTask", cron = "0 0 2 * * ?")
     public ProcessResult executeMapTask(TaskContext context) {
         // 根节点执行，生成子任务
@@ -150,11 +150,11 @@ public class MapTaskHandler {
             List<SubTask> subTasks = generateSubTasks();
             return new ProcessResult(true, "子任务生成完成", subTasks);
         }
-        
+
         // 子任务执行
         return processSubTask(context.getJobParams());
     }
-    
+
     private List<SubTask> generateSubTasks() {
         // 生成子任务列表
         List<SubTask> subTasks = new ArrayList<>();
@@ -171,7 +171,7 @@ public class MapTaskHandler {
 ```java
 @Component
 public class MapReduceTaskHandler {
-    
+
     @DistributedScheduler(name = "mapReduceTask", cron = "0 0 3 * * ?")
     public ProcessResult executeMapReduce(TaskContext context) {
         if (context.getJobParams() == null) {
@@ -193,15 +193,15 @@ public class MapReduceTaskHandler {
 ```java
 @Component
 public class BroadcastTaskHandler {
-    
+
     @DistributedScheduler(name = "broadcastTask", cron = "0 0 1 * * ?")
     public ProcessResult executeBroadcast(TaskContext context) {
         // 在所有 Worker 上执行
         log.info("Worker {} 执行广播任务", context.getWorkerId());
-        
+
         // 每个 Worker 的业务逻辑
         clearLocalCache();
-        
+
         return new ProcessResult(true, "广播任务完成");
     }
 }
@@ -209,7 +209,7 @@ public class BroadcastTaskHandler {
 
 ## 🔍 功能对比
 
-| 功能     | PowerJob | 说明                  |
+|   功能   | PowerJob |         说明          |
 |--------|----------|---------------------|
 | 动态注册   | ❌        | 需要在控制台配置            |
 | 动态注销   | ❌        | 需要在控制台操作            |
@@ -282,21 +282,21 @@ public class BroadcastTaskHandler {
 ```java
 @Component
 public class WorkflowTasks {
-    
+
     // 节点1: 数据准备
     @DistributedScheduler(name = "prepareData")
     public ProcessResult prepareData(TaskContext context) {
         log.info("准备数据");
         return new ProcessResult(true, "数据准备完成");
     }
-    
+
     // 节点2: 数据处理
     @DistributedScheduler(name = "processData")
     public ProcessResult processData(TaskContext context) {
         log.info("处理数据");
         return new ProcessResult(true, "数据处理完成");
     }
-    
+
     // 节点3: 数据清理
     @DistributedScheduler(name = "cleanupData")
     public ProcessResult cleanupData(TaskContext context) {

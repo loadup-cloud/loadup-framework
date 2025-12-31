@@ -27,5 +27,5 @@ import com.github.loadup.components.extension.api.IExtensionPoint;
 
 @Extension
 public interface GreetingService extends IExtensionPoint {
-    String greet();
+  String greet();
 }

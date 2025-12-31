@@ -23,6 +23,7 @@ package com.github.loadup.commons.enums;
  */
 
 import com.github.loadup.commons.util.EnumUtils;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -33,32 +34,24 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum LoggerLevelEnum implements IEnum {
-    /**
-     * DEBUG
-     */
-    DEBUG("DEBUG", "DEBUG"),
+  /** DEBUG */
+  DEBUG("DEBUG", "DEBUG"),
 
-    /**
-     * INFO
-     */
-    INFO("INFO", "INFO"),
+  /** INFO */
+  INFO("INFO", "INFO"),
 
-    /**
-     * WARN
-     */
-    WARN("WARN", "WARN"),
+  /** WARN */
+  WARN("WARN", "WARN"),
 
-    /**
-     * ERROR
-     */
-    ERROR("ERROR", "ERROR"),
-    ;
+  /** ERROR */
+  ERROR("ERROR", "ERROR"),
+  ;
 
-    private final String code;
+  private final String code;
 
-    private final String description;
+  private final String description;
 
-    public static LoggerLevelEnum getByCode(String code) {
-        return EnumUtils.getEnumByCode(LoggerLevelEnum.class, code);
-    }
+  public static LoggerLevelEnum getByCode(String code) {
+    return EnumUtils.getEnumByCode(LoggerLevelEnum.class, code);
+  }
 }

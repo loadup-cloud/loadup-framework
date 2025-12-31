@@ -22,21 +22,19 @@ package com.github.loadup.commons.util;
  * #L%
  */
 
-import com.github.loadup.commons.enums.IEnum;
-
 import java.util.Arrays;
+
+import com.github.loadup.commons.enums.IEnum;
 
 /**
  * @author Lise
  */
 public class EnumUtils {
-    /**
-     * getEnumByCode
-     */
-    public static <T extends Enum<T> & IEnum> T getEnumByCode(Class<T> enumClass, String code) {
-        return Arrays.stream(enumClass.getEnumConstants())
-            .filter(enumItem -> enumItem.getCode().equals(code))
-            .findFirst()
-            .orElse(null);
-    }
+  /** getEnumByCode */
+  public static <T extends Enum<T> & IEnum> T getEnumByCode(Class<T> enumClass, String code) {
+    return Arrays.stream(enumClass.getEnumConstants())
+        .filter(enumItem -> enumItem.getCode().equals(code))
+        .findFirst()
+        .orElse(null);
+  }
 }

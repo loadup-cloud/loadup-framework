@@ -22,81 +22,83 @@ package com.github.loadup.components.cache.redis.impl;
  * #L%
  */
 
-import com.github.loadup.commons.util.JsonUtil;
-import com.github.loadup.components.cache.api.CacheBinder;
+import java.util.Map;
+import java.util.Objects;
+
 import jakarta.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Map;
-import java.util.Objects;
+import com.github.loadup.commons.util.JsonUtil;
+import com.github.loadup.components.cache.api.CacheBinder;
 
 public class RedisCacheBinderImpl implements CacheBinder {
 
-    @Resource
-    @Qualifier("redisCacheManager")
-    RedisCacheManager redisCacheManager;
+  @Resource
+  @Qualifier("redisCacheManager")
+  RedisCacheManager redisCacheManager;
 
-    @Override
-    public String getName() {
-        return "RedisCache";
-    }
+  @Override
+  public String getName() {
+    return "RedisCache";
+  }
 
-    @Override
-    public boolean set(String cacheName, String key, Object value) {
-        Cache cache = redisCacheManager.getCache(cacheName);
-        Assert.notNull(cache, "cache is null");
-        cache.put(key, value);
-        return true;
-    }
+  @Override
+  public boolean set(String cacheName, String key, Object value) {
+    Cache cache = redisCacheManager.getCache(cacheName);
+    Assert.notNull(cache, "cache is null");
+    cache.put(key, value);
+    return true;
+  }
 
-    @Override
-    public Object get(String cacheName, String key) {
-        Cache cache = redisCacheManager.getCache(cacheName);
-        if (Objects.isNull(cache)) {
-            return null;
-        }
-        Cache.ValueWrapper valueWrapper = cache.get(key);
-        if (Objects.isNull(valueWrapper)) {
-            return null;
-        }
-        return valueWrapper.get();
+  @Override
+  public Object get(String cacheName, String key) {
+    Cache cache = redisCacheManager.getCache(cacheName);
+    if (Objects.isNull(cache)) {
+      return null;
     }
+    Cache.ValueWrapper valueWrapper = cache.get(key);
+    if (Objects.isNull(valueWrapper)) {
+      return null;
+    }
+    return valueWrapper.get();
+  }
 
-    @Override
-    public <T> T get(String cacheName, String key, Class<T> clazz) {
-        Cache cache = redisCacheManager.getCache(cacheName);
-        if (Objects.isNull(cache)) {
-            return null;
-        }
-        @SuppressWarnings("unchecked")
-        Map<String, Object> map = cache.get(key, Map.class);
-        if (CollectionUtils.isEmpty(map)) {
-            return null;
-        }
-        return JsonUtil.parseObject(map, clazz);
+  @Override
+  public <T> T get(String cacheName, String key, Class<T> clazz) {
+    Cache cache = redisCacheManager.getCache(cacheName);
+    if (Objects.isNull(cache)) {
+      return null;
     }
+    @SuppressWarnings("unchecked")
+    Map<String, Object> map = cache.get(key, Map.class);
+    if (CollectionUtils.isEmpty(map)) {
+      return null;
+    }
+    return JsonUtil.parseObject(map, clazz);
+  }
 
-    @Override
-    public boolean delete(String cacheName, String key) {
-        Cache cache = redisCacheManager.getCache(cacheName);
-        if (Objects.isNull(cache)) {
-            return false;
-        }
-        cache.evictIfPresent(key);
-        return true;
+  @Override
+  public boolean delete(String cacheName, String key) {
+    Cache cache = redisCacheManager.getCache(cacheName);
+    if (Objects.isNull(cache)) {
+      return false;
     }
+    cache.evictIfPresent(key);
+    return true;
+  }
 
-    @Override
-    public boolean deleteAll(String cacheName) {
-        Cache cache = redisCacheManager.getCache(cacheName);
-        if (Objects.isNull(cache)) {
-            return false;
-        }
-        cache.clear();
-        return true;
+  @Override
+  public boolean deleteAll(String cacheName) {
+    Cache cache = redisCacheManager.getCache(cacheName);
+    if (Objects.isNull(cache)) {
+      return false;
     }
+    cache.clear();
+    return true;
+  }
 }

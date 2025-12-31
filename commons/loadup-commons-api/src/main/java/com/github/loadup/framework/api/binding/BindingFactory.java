@@ -25,7 +25,7 @@ package com.github.loadup.framework.api.binding;
 import java.util.Map;
 
 public interface BindingFactory {
-    <T> T getInstance(Class<T> clazz, String bindingName);
+  <T> T getInstance(Class<T> clazz, String bindingName);
 
-    <T> Map<String, T> getInstanceList(Class<T> clazz);
+  <T> Map<String, T> getInstanceList(Class<T> clazz);
 }

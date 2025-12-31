@@ -22,14 +22,12 @@ package com.github.loadup.components.cache.caffeine;
  * #L%
  */
 
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.loadup.components.cache.api.CacheBinder;
-import com.github.loadup.components.cache.caffeine.binder.CaffeineCacheBinderImpl;
-import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
-import com.github.loadup.components.cache.config.CacheProperties;
-import com.github.loadup.components.cache.util.CacheExpirationUtil;
+import java.time.Duration;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import jakarta.annotation.Resource;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -41,9 +39,14 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
-import java.time.Duration;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.loadup.components.cache.api.CacheBinder;
+import com.github.loadup.components.cache.caffeine.binder.CaffeineCacheBinderImpl;
+import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
+import com.github.loadup.components.cache.config.CacheProperties;
+import com.github.loadup.components.cache.util.CacheExpirationUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @EnableCaching
@@ -52,104 +55,105 @@ import java.util.concurrent.TimeUnit;
 @AutoConfiguration(before = CacheAutoConfiguration.class)
 public class CaffeineCacheAutoConfiguration {
 
-    @Resource
-    private CacheProperties cacheProperties;
+  @Resource private CacheProperties cacheProperties;
 
-    /**
-     * default cache manager with per-cache configurations
-     */
-    @Primary
-    @Bean(name = "caffeineCacheManager")
-    @ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = "caffeine")
-    public CacheManager defaultCacheManager() {
-        LoadUpCaffeineCacheManager cacheManager = new LoadUpCaffeineCacheManager();
-        cacheManager.setAllowNullValues(cacheProperties.getCaffeine().isAllowNullValue());
+  /** default cache manager with per-cache configurations */
+  @Primary
+  @Bean(name = "caffeineCacheManager")
+  @ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = "caffeine")
+  public CacheManager defaultCacheManager() {
+    LoadUpCaffeineCacheManager cacheManager = new LoadUpCaffeineCacheManager();
+    cacheManager.setAllowNullValues(cacheProperties.getCaffeine().isAllowNullValue());
 
-        // Configure default cache
-        CacheProperties.CaffeineConfig config = cacheProperties.getCaffeine();
-        Caffeine<Object, Object> defaultCaffeine = buildDefaultCaffeine(config);
-        cacheManager.setCaffeine(defaultCaffeine);
+    // Configure default cache
+    CacheProperties.CaffeineConfig config = cacheProperties.getCaffeine();
+    Caffeine<Object, Object> defaultCaffeine = buildDefaultCaffeine(config);
+    cacheManager.setCaffeine(defaultCaffeine);
 
-        // Configure per-cache strategies
-        Map<String, LoadUpCacheConfig> cacheConfigs = cacheProperties.getCaffeine().getCacheConfig();
-        if (cacheConfigs != null && !cacheConfigs.isEmpty()) {
-            cacheConfigs.forEach((cacheName, cacheConfig) -> {
-                Caffeine<Object, Object> customCaffeine = buildCustomCaffeine(cacheConfig);
-                cacheManager.registerCustomCache(cacheName, customCaffeine);
+    // Configure per-cache strategies
+    Map<String, LoadUpCacheConfig> cacheConfigs = cacheProperties.getCaffeine().getCacheConfig();
+    if (cacheConfigs != null && !cacheConfigs.isEmpty()) {
+      cacheConfigs.forEach(
+          (cacheName, cacheConfig) -> {
+            Caffeine<Object, Object> customCaffeine = buildCustomCaffeine(cacheConfig);
+            cacheManager.registerCustomCache(cacheName, customCaffeine);
 
-                log.info("Configured Caffeine cache: name={}, maxSize={}, expireAfterWrite={}",
-                    cacheName, cacheConfig.getMaximumSize(), cacheConfig.getExpireAfterWrite());
-            });
-        }
-
-        return cacheManager;
+            log.info(
+                "Configured Caffeine cache: name={}, maxSize={}, expireAfterWrite={}",
+                cacheName,
+                cacheConfig.getMaximumSize(),
+                cacheConfig.getExpireAfterWrite());
+          });
     }
 
-    /**
-     * Build default Caffeine with global configuration
-     */
-    private Caffeine<Object, Object> buildDefaultCaffeine(CacheProperties.CaffeineConfig config) {
-        Caffeine<Object, Object> builder = Caffeine.newBuilder()
+    return cacheManager;
+  }
+
+  /** Build default Caffeine with global configuration */
+  private Caffeine<Object, Object> buildDefaultCaffeine(CacheProperties.CaffeineConfig config) {
+    Caffeine<Object, Object> builder =
+        Caffeine.newBuilder()
             .initialCapacity(config.getInitialCapacity())
             .maximumSize(config.getMaximumSize());
 
-        if (config.getExpireAfterAccessSeconds() > 0) {
-            builder.expireAfterAccess(config.getExpireAfterAccessSeconds(), TimeUnit.SECONDS);
-        }
-
-        if (config.getExpireAfterWriteSeconds() > 0) {
-            // Apply random offset for default cache
-            long baseSeconds = config.getExpireAfterWriteSeconds();
-            Duration baseDuration = Duration.ofSeconds(baseSeconds);
-            Duration finalDuration = CacheExpirationUtil.calculateExpirationWithPercentageOffset(
-                baseDuration, 0.1); // 10% random offset
-
-            builder.expireAfterWrite(finalDuration.getSeconds(), TimeUnit.SECONDS);
-
-            log.debug("Default cache TTL: base={}s, final={}s", baseSeconds, finalDuration.getSeconds());
-        }
-
-        return builder;
+    if (config.getExpireAfterAccessSeconds() > 0) {
+      builder.expireAfterAccess(config.getExpireAfterAccessSeconds(), TimeUnit.SECONDS);
     }
 
-    /**
-     * Build custom Caffeine for specific cache with anti-avalanche strategies
-     */
-    private Caffeine<Object, Object> buildCustomCaffeine(LoadUpCacheConfig cacheConfig) {
-        Caffeine<Object, Object> builder = Caffeine.newBuilder();
+    if (config.getExpireAfterWriteSeconds() > 0) {
+      // Apply random offset for default cache
+      long baseSeconds = config.getExpireAfterWriteSeconds();
+      Duration baseDuration = Duration.ofSeconds(baseSeconds);
+      Duration finalDuration =
+          CacheExpirationUtil.calculateExpirationWithPercentageOffset(
+              baseDuration, 0.1); // 10% random offset
 
-        // Set maximum size
-        if (cacheConfig.getMaximumSize() > 0) {
-            builder.maximumSize(cacheConfig.getMaximumSize());
-        }
+      builder.expireAfterWrite(finalDuration.getSeconds(), TimeUnit.SECONDS);
 
-        // Configure expireAfterAccess with random offset
-        if (cacheConfig.getExpireAfterAccess() != null) {
-            Duration baseDuration = CacheExpirationUtil.parseDuration(cacheConfig.getExpireAfterAccess());
-            Duration finalDuration = CacheExpirationUtil.calculateExpirationWithRandomOffset(
-                baseDuration, cacheConfig);
-
-            builder.expireAfterAccess(finalDuration.getSeconds(), TimeUnit.SECONDS);
-        }
-
-        // Configure expireAfterWrite with random offset to prevent cache avalanche
-        if (cacheConfig.getExpireAfterWrite() != null) {
-            Duration baseDuration = CacheExpirationUtil.parseDuration(cacheConfig.getExpireAfterWrite());
-            Duration finalDuration = CacheExpirationUtil.calculateExpirationWithRandomOffset(
-                baseDuration, cacheConfig);
-
-            builder.expireAfterWrite(finalDuration.getSeconds(), TimeUnit.SECONDS);
-
-            log.debug("Custom cache TTL: base={}s, final={}s (with random offset)",
-                baseDuration.getSeconds(), finalDuration.getSeconds());
-        }
-
-        return builder;
+      log.debug("Default cache TTL: base={}s, final={}s", baseSeconds, finalDuration.getSeconds());
     }
 
-    @Bean(name = "caffeineCacheBinder")
-    @ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = "caffeine")
-    public CacheBinder cacheBinder() {
-        return new CaffeineCacheBinderImpl();
+    return builder;
+  }
+
+  /** Build custom Caffeine for specific cache with anti-avalanche strategies */
+  private Caffeine<Object, Object> buildCustomCaffeine(LoadUpCacheConfig cacheConfig) {
+    Caffeine<Object, Object> builder = Caffeine.newBuilder();
+
+    // Set maximum size
+    if (cacheConfig.getMaximumSize() > 0) {
+      builder.maximumSize(cacheConfig.getMaximumSize());
     }
+
+    // Configure expireAfterAccess with random offset
+    if (cacheConfig.getExpireAfterAccess() != null) {
+      Duration baseDuration = CacheExpirationUtil.parseDuration(cacheConfig.getExpireAfterAccess());
+      Duration finalDuration =
+          CacheExpirationUtil.calculateExpirationWithRandomOffset(baseDuration, cacheConfig);
+
+      builder.expireAfterAccess(finalDuration.getSeconds(), TimeUnit.SECONDS);
+    }
+
+    // Configure expireAfterWrite with random offset to prevent cache avalanche
+    if (cacheConfig.getExpireAfterWrite() != null) {
+      Duration baseDuration = CacheExpirationUtil.parseDuration(cacheConfig.getExpireAfterWrite());
+      Duration finalDuration =
+          CacheExpirationUtil.calculateExpirationWithRandomOffset(baseDuration, cacheConfig);
+
+      builder.expireAfterWrite(finalDuration.getSeconds(), TimeUnit.SECONDS);
+
+      log.debug(
+          "Custom cache TTL: base={}s, final={}s (with random offset)",
+          baseDuration.getSeconds(),
+          finalDuration.getSeconds());
+    }
+
+    return builder;
+  }
+
+  @Bean(name = "caffeineCacheBinder")
+  @ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = "caffeine")
+  public CacheBinder cacheBinder() {
+    return new CaffeineCacheBinderImpl();
+  }
 }

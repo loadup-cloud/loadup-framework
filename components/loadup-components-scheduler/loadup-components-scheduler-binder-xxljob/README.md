@@ -72,7 +72,7 @@ wget https://github.com/xuxueli/xxl-job/releases/download/2.4.0/xxl-job-admin-2.
 java -jar xxl-job-admin-2.4.0.jar
 ```
 
-访问: http://localhost:8080/xxl-job-admin  
+访问: http://localhost:8080/xxl-job-admin
 默认账号: admin/123456
 
 ### 2. 应用配置
@@ -160,7 +160,7 @@ public class XxlJobTasks {
 
 ## 🔍 功能对比
 
-| 功能     | XXL-Job | 说明             |
+|   功能   | XXL-Job |       说明       |
 |--------|---------|----------------|
 | 动态注册   | ❌       | 需要在控制台配置       |
 | 动态注销   | ❌       | 需要在控制台操作       |
@@ -243,7 +243,7 @@ public class ShardingTasks {
 server:
   port: 8080
 
-# Admin 实例 2  
+# Admin 实例 2
 server:
   port: 8081
 ```

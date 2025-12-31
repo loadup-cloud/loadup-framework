@@ -95,14 +95,14 @@ public class MyTasks {
 ```java
 @Component
 public class ScheduledTasks {
-    
+
     @DistributedScheduler(name = "cleanupTask", cron = "0 0 1 * * ?")
     public void cleanup() {
         // 每天凌晨1点执行
     }
-    
+
     @DistributedScheduler(
-        name = "dataSync", 
+        name = "dataSync",
         cron = "0 */10 * * * ?",
         description = "数据同步任务",
         priority = 5
@@ -118,10 +118,10 @@ public class ScheduledTasks {
 ```java
 @Service
 public class TaskService {
-    
+
     @Autowired
     private SchedulerBinding schedulerBinding;
-    
+
     public void registerNewTask() {
         SchedulerTask task = SchedulerTask.builder()
             .taskName("dynamicTask")
@@ -129,7 +129,7 @@ public class TaskService {
             .description("动态创建的任务")
             .enabled(true)
             .build();
-        
+
         schedulerBinding.registerTask(task);
     }
 }

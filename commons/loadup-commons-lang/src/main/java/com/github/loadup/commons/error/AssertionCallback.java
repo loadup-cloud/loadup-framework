@@ -27,5 +27,5 @@ package com.github.loadup.commons.error;
  * @since 1.0.0
  */
 public interface AssertionCallback {
-    void failAction();
+  void failAction();
 }

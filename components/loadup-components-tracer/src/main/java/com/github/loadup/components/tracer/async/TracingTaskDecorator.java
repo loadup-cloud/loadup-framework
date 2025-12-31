@@ -22,24 +22,22 @@ package com.github.loadup.components.tracer.async;
  * #L%
  */
 
-import io.opentelemetry.context.Context;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.lang.NonNull;
 
-/**
- * Task decorator for propagating trace context to async tasks.
- */
+import io.opentelemetry.context.Context;
+
+/** Task decorator for propagating trace context to async tasks. */
 public class TracingTaskDecorator implements TaskDecorator {
 
-    @Override
-    @NonNull
-    public Runnable decorate(@NonNull Runnable runnable) {
-        Context context = Context.current();
-        return () -> {
-            try (var scope = context.makeCurrent()) {
-                runnable.run();
-            }
-        };
-    }
+  @Override
+  @NonNull
+  public Runnable decorate(@NonNull Runnable runnable) {
+    Context context = Context.current();
+    return () -> {
+      try (var scope = context.makeCurrent()) {
+        runnable.run();
+      }
+    };
+  }
 }
-

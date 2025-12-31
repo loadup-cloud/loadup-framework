@@ -194,11 +194,11 @@ import static org.junit.jupiter.api.Assertions.*;
 void myTest() {
     // Given
     User user = User.createTestUser("1");
-    
+
     // When
     cacheBinding.set(TEST_CACHE_NAME, "key", user);
     User result = cacheBinding.get(TEST_CACHE_NAME, "key", User.class);
-    
+
     // Then
     assertThat(result).isNotNull();
     assertEquals(user.getId(), result.getId());
@@ -281,7 +281,7 @@ void asyncTest() {
 # GitHub Actions 示例
 - name: Run Tests
   run: mvn clean test
-  
+
 - name: Upload Test Results
   uses: actions/upload-artifact@v2
   with:
@@ -303,4 +303,3 @@ void asyncTest() {
 mvn jacoco:report
 open target/site/jacoco/index.html
 ```
-

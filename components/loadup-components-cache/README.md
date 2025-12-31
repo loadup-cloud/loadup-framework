@@ -245,13 +245,13 @@ public class UserService {
 
 ### 通用配置
 
-| 配置项                 | 类型     | 默认值      | 说明                          |
+|         配置项         |   类型   |   默认值    |             说明              |
 |---------------------|--------|----------|-----------------------------|
 | `loadup.cache.type` | String | caffeine | 缓存类型，可选值：`redis`、`caffeine` |
 
 ### Caffeine 配置
 
-| 配置项                                                 | 类型      | 默认值  | 说明         |
+|                         配置项                         |   类型    | 默认值  |     说明     |
 |-----------------------------------------------------|---------|------|------------|
 | `loadup.cache.caffeine.initial-capacity`            | Integer | 1000 | 初始缓存容量     |
 | `loadup.cache.caffeine.maximum-size`                | Long    | 5000 | 最大缓存条目数    |
@@ -260,7 +260,7 @@ public class UserService {
 
 ### Redis 配置
 
-| 配置项                           | 类型      | 默认值       | 说明           |
+|              配置项              |   类型    |    默认值    |      说明      |
 |-------------------------------|---------|-----------|--------------|
 | `loadup.cache.redis.host`     | String  | localhost | Redis 服务器地址  |
 | `loadup.cache.redis.port`     | Integer | 6379      | Redis 端口     |
@@ -271,7 +271,7 @@ public class UserService {
 
 支持为每个 cache name 单独配置策略，有效防止缓存击穿、缓存雪崩和缓存穿透：
 
-| 配置项                             | 类型      | 默认值  | 说明                           |
+|               配置项               |   类型    | 默认值  |              说明              |
 |---------------------------------|---------|------|------------------------------|
 | `expire-after-write`            | String  | -    | 写入后过期时间（如 "30m", "1h", "2d"） |
 | `expire-after-access`           | String  | -    | 访问后过期时间                      |
@@ -313,16 +313,14 @@ loadup:
 **防护机制说明**：
 
 1. **防缓存雪崩 (Cache Avalanche)**：通过 `enable-random-expiration` 和 `random-offset-seconds` 为每个缓存条目添加随机过期时间偏移，避免大量缓存同时过期
-    - 实际过期时间 = 基础过期时间 + random(0, random-offset-seconds)
+   - 实际过期时间 = 基础过期时间 + random(0, random-offset-seconds)
    - 即使初始化时间相同，过期时间也会分散开来
-
 2. **防缓存击穿 (Cache Breakdown)**：通过长过期时间 + 访问延期 + 高优先级保护热点数据
-    - `expire-after-access`: 每次访问后重置过期时间
-    - `priority`: 高优先级数据不易被淘汰
+   - `expire-after-access`: 每次访问后重置过期时间
+   - `priority`: 高优先级数据不易被淘汰
    - 热点数据设置更长的基础过期时间
-
 3. **防缓存穿透 (Cache Penetration)**：通过 `cache-null-values` 缓存空值，避免恶意查询
-    - `null-value-expire-after-write`: 空值使用较短的过期时间
+   - `null-value-expire-after-write`: 空值使用较短的过期时间
    - 防止不存在的数据每次都打到数据库
 
 ## 防缓存击穿和雪崩配置
@@ -932,24 +930,24 @@ loadup:
 
 - **问题**: 大量缓存同时过期，流量瞬间打到数据库
 - **解决方案**:
-    - 随机过期偏移：`enable-random-expiration: true`
-    - 实际过期时间 = 基础过期时间 + random(0, random-offset-seconds)
-    - 不同 cache name 设置不同的基础过期时间
+  - 随机过期偏移：`enable-random-expiration: true`
+  - 实际过期时间 = 基础过期时间 + random(0, random-offset-seconds)
+  - 不同 cache name 设置不同的基础过期时间
 
 ##### 防缓存击穿 (Cache Breakdown)
 
 - **问题**: 热点数据过期，瞬间大量请求访问数据库
 - **解决方案**:
-    - 热点数据设置更长的过期时间
-    - 使用 `expire-after-access` 访问延期
-    - 设置高优先级，不易被淘汰
+  - 热点数据设置更长的过期时间
+  - 使用 `expire-after-access` 访问延期
+  - 设置高优先级，不易被淘汰
 
 ##### 防缓存穿透 (Cache Penetration)
 
 - **问题**: 查询不存在的数据，绕过缓存直接打数据库
 - **解决方案**:
-    - 缓存空值：`cache-null-values: true`
-    - 空值设置较短过期时间
+  - 缓存空值：`cache-null-values: true`
+  - 空值设置较短过期时间
 
 #### 3. 核心类说明
 
@@ -999,24 +997,24 @@ Duration parseDuration(String durationStr)
 ### 实现最佳实践
 
 1. **基础过期时间**: 根据数据更新频率设置
-    - 热点数据: 6-24 小时
-    - 普通数据: 30分钟-2小时
-    - 临时数据: 5-10分钟
-
+   - 热点数据: 6-24 小时
+   - 普通数据: 30分钟-2小时
+   - 临时数据: 5-10分钟
 2. **随机偏移比例**: 建议为基础时间的 10-30%
-    - < 10分钟: 10-20%
-    - 10-60分钟: 15-25%
-    - > 1小时: 20-30%
+   - < 10分钟: 10-20%
+   - 10-60分钟: 15-25%
+   - >
+     >
+     > 1小时: 20-30%
 
 3. **空值缓存**:
-    - 高频查询: 启用空值缓存
-    - 空值过期时间: 基础时间的 10-20%
-    - 业务敏感数据: 禁用空值缓存
-
+   - 高频查询: 启用空值缓存
+   - 空值过期时间: 基础时间的 10-20%
+   - 业务敏感数据: 禁用空值缓存
 4. **分环境配置**:
-    - 开发: Caffeine + 短过期
-    - 测试: Redis + 中等过期
-    - 生产: Redis + 完整策略
+   - 开发: Caffeine + 短过期
+   - 测试: Redis + 中等过期
+   - 生产: Redis + 完整策略
 
 ## 重构总结
 
@@ -1211,49 +1209,44 @@ loadup-components-cache-test/
 #### Caffeine 测试用例
 
 1. **CaffeineBasicOperationsTest** - 基础操作测试 (9个测试方法)
-    - 覆盖 CRUD 基本操作
-    - 测试不同数据类型
-    - 测试批量操作
-
+   - 覆盖 CRUD 基本操作
+   - 测试不同数据类型
+   - 测试批量操作
 2. **CaffeineExpirationTest** - 过期策略测试 (6个测试方法)
-    - 测试 expire-after-write
-    - 测试 expire-after-access
-    - 测试最大容量淘汰
-    - 测试独立配置
-    - 测试随机偏移
-
+   - 测试 expire-after-write
+   - 测试 expire-after-access
+   - 测试最大容量淘汰
+   - 测试独立配置
+   - 测试随机偏移
 3. **CaffeineConcurrencyTest** - 并发测试 (6个测试方法)
-    - 测试并发读写
-    - 测试高并发一致性
-    - 性能压测（支持 >1000 ops/sec）
-
+   - 测试并发读写
+   - 测试高并发一致性
+   - 性能压测（支持 >1000 ops/sec）
 4. **AntiAvalancheTest** - 防雪崩测试 (5个测试方法)
-    - 测试随机过期防雪崩
-    - 测试热点数据防击穿
-    - 测试优先级策略
-    - 测试批量分散过期
+   - 测试随机过期防雪崩
+   - 测试热点数据防击穿
+   - 测试优先级策略
+   - 测试批量分散过期
 
 **总计：26+ 个测试方法**
 
 ### 测试特点
 
 1. **完整性**:
-    - ✅ 覆盖基础 CRUD 操作
-    - ✅ 覆盖过期策略
-    - ✅ 覆盖并发场景
-    - ✅ 覆盖防雪崩策略
-
+   - ✅ 覆盖基础 CRUD 操作
+   - ✅ 覆盖过期策略
+   - ✅ 覆盖并发场景
+   - ✅ 覆盖防雪崩策略
 2. **实用性**:
-    - ✅ 使用真实的测试实体（User, Product）
-    - ✅ 模拟真实业务场景
-    - ✅ 包含性能测试
-    - ✅ 包含压力测试
-
+   - ✅ 使用真实的测试实体（User, Product）
+   - ✅ 模拟真实业务场景
+   - ✅ 包含性能测试
+   - ✅ 包含压力测试
 3. **可维护性**:
-    - ✅ 使用测试基类减少重复代码
-    - ✅ 使用 @DisplayName 提供中文说明
-    - ✅ 使用 Given-When-Then 结构
-    - ✅ 清晰的断言消息
+   - ✅ 使用测试基类减少重复代码
+   - ✅ 使用 @DisplayName 提供中文说明
+   - ✅ 使用 Given-When-Then 结构
+   - ✅ 清晰的断言消息
 
 ### 运行测试
 
@@ -1317,4 +1310,3 @@ GNU General Public License v3.0 (GPL-3.0) - 详见 [LICENSE](../../LICENSE)
 ## 联系方式
 
 如有问题或建议，请提交 Issue 或 Pull Request。
-

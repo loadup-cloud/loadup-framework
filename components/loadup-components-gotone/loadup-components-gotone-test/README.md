@@ -15,7 +15,7 @@
 
 ### 模块分布
 
-| 模块                 | 测试数 | 状态     |
+|         模块         | 测试数 |   状态   |
 |--------------------|-----|--------|
 | **Repository 层**   | 14  | ✅ 100% |
 | **SMS Provider**   | 44  | ✅ 100% |
@@ -138,9 +138,9 @@ void testBusinessCodeRepositorySave() {
     businessCode.setBusinessCode("TEST_CODE");
     businessCode.setBusinessName("测试业务");
     businessCode.setEnabled(true);
-    
+
     BusinessCodeDO saved = repository.save(businessCode);
-    
+
     assertThat(saved.getId()).isNotNull();
     assertThat(saved.getCreatedAt()).isNotNull();
 }
@@ -165,9 +165,9 @@ void testAliyunSmsSend() {
         .templateCode("SMS_123456")
         .templateParams(Map.of("code", "123456"))
         .build();
-        
+
     SendResult result = aliyunSmsProvider.send(request);
-    
+
     assertThat(result.isSuccess()).isTrue();
 }
 ```
@@ -192,9 +192,9 @@ void testSmtpEmailSend() {
         .title("测试邮件")
         .content("<html><body>测试内容</body></html>")
         .build();
-        
+
     SendResult result = smtpEmailProvider.send(request);
-    
+
     assertThat(result.isSuccess()).isTrue();
 }
 ```
@@ -219,9 +219,9 @@ void testFcmPushSend() {
         .title("测试推送")
         .content("推送内容")
         .build();
-        
+
     SendResult result = fcmPushProvider.send(request);
-    
+
     assertThat(result.isSuccess()).isTrue();
 }
 ```
@@ -239,9 +239,9 @@ void testMultiChannelSend() {
         .address("user@example.com,13800138000")
         .params(params)
         .build();
-        
+
     NotificationResult result = notificationService.send(request);
-    
+
     assertThat(result.isSuccess()).isTrue();
 }
 ```
@@ -329,24 +329,24 @@ name: Build and Test
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     services:
       docker:
         image: docker:24-dind
         options: --privileged
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          
+
       - name: Run Tests
         run: mvn clean verify
-        
+
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
         with:
@@ -461,21 +461,21 @@ INSERT INTO gotone_notification_template VALUES ('1', 'ORDER_CONFIRM_SMS', ...);
         <artifactId>loadup-components-gotone-api</artifactId>
         <scope>test</scope>
     </dependency>
-    
+
     <!-- 测试框架 -->
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-test</artifactId>
         <scope>test</scope>
     </dependency>
-    
+
     <!-- Testcontainers -->
     <dependency>
         <groupId>org.testcontainers</groupId>
         <artifactId>mysql</artifactId>
         <scope>test</scope>
     </dependency>
-    
+
     <!-- JaCoCo -->
     <dependency>
         <groupId>org.jacoco</groupId>
@@ -494,4 +494,3 @@ INSERT INTO gotone_notification_template VALUES ('1', 'ORDER_CONFIRM_SMS', ...);
 ## 许可证
 
 GPL-3.0 License
-

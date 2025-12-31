@@ -29,17 +29,13 @@ import java.util.UUID;
  * @since 1.0.0
  */
 public class IdUtils {
-    /**
-     * 获取随机UUID
-     */
-    public static String randomUUID() {
-        return UUID.randomUUID().toString();
-    }
+  /** 获取随机UUID */
+  public static String randomUUID() {
+    return UUID.randomUUID().toString();
+  }
 
-    /**
-     * 简化的UUID，去掉了横线
-     */
-    public static String simpleUUID() {
-        return randomUUID().replaceAll("-", "");
-    }
+  /** 简化的UUID，去掉了横线 */
+  public static String simpleUUID() {
+    return randomUUID().replaceAll("-", "");
+  }
 }

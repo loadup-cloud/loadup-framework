@@ -25,12 +25,7 @@ package com.github.loadup.components.cache.config;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * LoadUp Cache Auto Configuration
- */
+/** LoadUp Cache Auto Configuration */
 @Configuration
 @EnableConfigurationProperties(CacheProperties.class)
-public class CacheAutoConfiguration {
-
-}
-
+public class CacheAutoConfiguration {}

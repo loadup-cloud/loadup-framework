@@ -22,11 +22,12 @@ package com.github.loadup.components.captcha.servlet;
  * #L%
  */
 
-import com.github.loadup.components.captcha.utils.CaptchaUtil;
+import java.io.IOException;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 
-import java.io.IOException;
+import com.github.loadup.components.captcha.utils.CaptchaUtil;
 
 /**
  * 验证码 servlet
@@ -35,16 +36,15 @@ import java.io.IOException;
  * @since 2018-07-27 上午 10:08
  */
 public class CaptchaServlet extends HttpServlet {
-    private static final long serialVersionUID = -6252308835887611909L;
+  private static final long serialVersionUID = -6252308835887611909L;
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
-        CaptchaUtil.out(request, response);
-    }
+  public void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    CaptchaUtil.out(request, response);
+  }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
-        doGet(request, response);
-    }
-
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    doGet(request, response);
+  }
 }

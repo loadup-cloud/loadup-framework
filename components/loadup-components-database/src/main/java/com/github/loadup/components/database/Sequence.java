@@ -22,20 +22,20 @@ package com.github.loadup.components.database;
  * #L%
  */
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
 @Table("sys_sequence")
 public class Sequence {
-    @Id
-    private Long id;
-    private String name;
-    private Long value;
-    private Long minValue;
-    private Long maxValue;
-    private Long step;
+  @Id private Long id;
+  private String name;
+  private Long value;
+  private Long minValue;
+  private Long maxValue;
+  private Long step;
 }

@@ -22,26 +22,23 @@ package com.github.loadup.components.database.id;
  * #L%
  */
 
-/**
- * ID Generator Interface
- */
+/** ID Generator Interface */
 @FunctionalInterface
 public interface IdGenerator {
 
-    /**
-     * Generate unique ID
-     *
-     * @return unique identifier
-     */
-    String generate();
+  /**
+   * Generate unique ID
+   *
+   * @return unique identifier
+   */
+  String generate();
 
-    /**
-     * Get generator name
-     *
-     * @return generator name
-     */
-    default String getName() {
-        return this.getClass().getSimpleName();
-    }
+  /**
+   * Get generator name
+   *
+   * @return generator name
+   */
+  default String getName() {
+    return this.getClass().getSimpleName();
+  }
 }
-

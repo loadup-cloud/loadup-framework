@@ -60,7 +60,7 @@ loadup:
       length: 20
 ```
 
-**性能**: ~1,000,000 TPS  
+**性能**: ~1,000,000 TPS
 **适用**: 通用场景
 
 ### UUID v4
@@ -73,7 +73,7 @@ loadup:
       uuid-with-hyphens: false  # 是否保留连字符
 ```
 
-**性能**: ~500,000 TPS  
+**性能**: ~500,000 TPS
 **适用**: 标准化需求
 
 ### UUID v7 ⭐ 推荐
@@ -92,7 +92,7 @@ loadup:
 - ✅ B-tree 索引友好
 - ✅ 减少页面分裂
 
-**性能**: ~500,000 TPS  
+**性能**: ~500,000 TPS
 **适用**: 需要时间排序的场景
 
 ### Snowflake ⭐ 推荐
@@ -112,12 +112,12 @@ loadup:
 - ✅ 趋势递增
 - ✅ 数字型，19 位
 
-**性能**: ~1,000,000 TPS  
+**性能**: ~1,000,000 TPS
 **适用**: 分布式系统
 
 ### 策略对比
 
-| 策略              | 有序 | 性能    | 长度    | 推荐场景     |
+|       策略        | 有序 |  性能   |  长度   |   推荐场景   |
 |-----------------|----|-------|-------|----------|
 | Random          | ❌  | ⭐⭐⭐⭐⭐ | 可配置   | 通用       |
 | UUID v4         | ❌  | ⭐⭐⭐⭐  | 32/36 | 标准化      |
@@ -175,7 +175,7 @@ CREATE INDEX idx_sequence_name ON sys_sequence(name);
 public class OrderService {
     @Autowired
     private SequenceService sequenceService;
-    
+
     public String generateOrderNo() {
         Long seq = sequenceService.getNextSequence("order_no");
         String date = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
@@ -209,7 +209,7 @@ loadup:
       uuid-with-hyphens: false         # UUID 是否保留连字符
       snowflake-worker-id: 0           # Snowflake 机器 ID (0-31)
       snowflake-datacenter-id: 0       # Snowflake 数据中心 ID (0-31)
-    
+
     # 序列号
     sequence:
       step: 1000                       # 预分配步长
@@ -248,7 +248,7 @@ loadup:
 public class OrderNumberGenerator {
     @Autowired
     private SequenceService sequenceService;
-    
+
     public String generateOrderNumber() {
         Long seq = sequenceService.getNextSequence("order_no");
         String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -264,7 +264,7 @@ public class OrderNumberGenerator {
 public class UserNumberGenerator {
     @Autowired
     private SequenceService sequenceService;
-    
+
     public String generateUserNumber() {
         Long seq = sequenceService.getNextSequence("user_no");
         return String.format("U%08d", seq);
@@ -279,10 +279,10 @@ public class UserNumberGenerator {
 public class DistributedIdGenerator {
     @Autowired
     private SequenceService sequenceService;
-    
+
     @Value("${spring.application.name:default}")
     private String appName;
-    
+
     public String generateId(String businessType) {
         Long seq = sequenceService.getNextSequence(businessType);
         long timestamp = System.currentTimeMillis();
@@ -336,9 +336,9 @@ spring:
 1. **实体设计**: 所有需要审计的实体继承 `BaseDO`
 2. **序列号命名**: 使用有意义的名称，如 `order_no`、`user_id`
 3. **ID 策略选择**:
-    - 小型应用 → Random 或 UUID v4
-    - 需要排序 → **UUID v7** ⭐
-    - 分布式系统 → **Snowflake** ⭐
+   - 小型应用 → Random 或 UUID v4
+   - 需要排序 → **UUID v7** ⭐
+   - 分布式系统 → **Snowflake** ⭐
 4. **索引优化**: 在 `sys_sequence.name` 上创建索引
 5. **监控**: 监控序列号使用情况，使用率 > 90% 时告警
 
@@ -387,17 +387,17 @@ loadup:
 public class SequenceMonitor {
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    
+
     public void checkUsage() {
         List<Map<String, Object>> sequences = jdbcTemplate.queryForList(
             "SELECT name, value, max_value FROM sys_sequence"
         );
-        
+
         sequences.forEach(seq -> {
             Long value = (Long) seq.get("value");
             Long maxValue = (Long) seq.get("max_value");
             double usage = (double) value / maxValue * 100;
-            
+
             if (usage > 90) {
                 log.warn("Sequence '{}' usage: {:.2f}%", seq.get("name"), usage);
             }
@@ -434,4 +434,3 @@ See [LICENSE](../../LICENSE) for details.
 
 - [数据库脚本](schema.sql)
 - [配置示例](application.yml.example)
-

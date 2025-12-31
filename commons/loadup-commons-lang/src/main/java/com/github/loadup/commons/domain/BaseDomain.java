@@ -22,13 +22,14 @@ package com.github.loadup.commons.domain;
  * #L%
  */
 
-import com.github.loadup.commons.util.ToStringUtils;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import com.github.loadup.commons.util.ToStringUtils;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author lise
@@ -38,15 +39,14 @@ import java.time.LocalDateTime;
 @Setter
 public abstract class BaseDomain implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = -2885192493194863635L;
+  @Serial private static final long serialVersionUID = -2885192493194863635L;
 
-    private String        tenantId;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+  private String tenantId;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
 
-    @Override
-    public String toString() {
-        return ToStringUtils.reflectionToString(this);
-    }
+  @Override
+  public String toString() {
+    return ToStringUtils.reflectionToString(this);
+  }
 }

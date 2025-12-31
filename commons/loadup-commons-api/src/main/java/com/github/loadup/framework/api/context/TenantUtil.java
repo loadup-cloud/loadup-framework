@@ -22,59 +22,59 @@ package com.github.loadup.framework.api.context;
  * #L%
  */
 
-import com.github.loadup.framework.api.util.MDCUtils;
-
 import java.util.*;
 
+import com.github.loadup.framework.api.util.MDCUtils;
+
 public class TenantUtil {
-    public static final String TENANT = "tenant";
-    public static final String TENANT_ID = "tenantId";
+  public static final String TENANT = "tenant";
+  public static final String TENANT_ID = "tenantId";
 
-    public static Tenant getTenant() {
-        return null;
-    }
+  public static Tenant getTenant() {
+    return null;
+  }
 
-    public static void setTenant(Tenant tenant) {
-        LoadUpContext antfinContext = LoadUpContext.get();
-        antfinContext.getAttributes().put(TENANT, (tenant));
-        MDCUtils.logTenantId(tenant.getTenantId());
-    }
+  public static void setTenant(Tenant tenant) {
+    LoadUpContext antfinContext = LoadUpContext.get();
+    antfinContext.getAttributes().put(TENANT, (tenant));
+    MDCUtils.logTenantId(tenant.getTenantId());
+  }
 
-    public static String getTenantId() {
-        Tenant tenant = getTenant();
-        if (Objects.isNull(tenant)) {
-            return null;
-        }
-        return tenant.getTenantId();
+  public static String getTenantId() {
+    Tenant tenant = getTenant();
+    if (Objects.isNull(tenant)) {
+      return null;
     }
+    return tenant.getTenantId();
+  }
 
-    public static void setTenantId(String tenantId) {
-        Tenant tenant = getTenant();
-        if (Objects.isNull(tenant)) {
-            tenant = new Tenant();
-        }
-        tenant.setTenantId(tenantId);
+  public static void setTenantId(String tenantId) {
+    Tenant tenant = getTenant();
+    if (Objects.isNull(tenant)) {
+      tenant = new Tenant();
     }
+    tenant.setTenantId(tenantId);
+  }
 
-    public static void putTenantAttribute(String key, String value) {
-        Tenant tenant = getTenant();
-        if (tenant == null) {
-            tenant = new Tenant();
-        }
-        tenant.getAttributes().put(key, value);
-        LoadUpContext antfinContext = LoadUpContext.get();
-        antfinContext.getAttributes().put(TENANT, (tenant));
+  public static void putTenantAttribute(String key, String value) {
+    Tenant tenant = getTenant();
+    if (tenant == null) {
+      tenant = new Tenant();
     }
+    tenant.getAttributes().put(key, value);
+    LoadUpContext antfinContext = LoadUpContext.get();
+    antfinContext.getAttributes().put(TENANT, (tenant));
+  }
 
-    public static List<Tenant> getAllTenants() {
-        return Collections.unmodifiableList(LoadUpContext.getTenantList());
-    }
+  public static List<Tenant> getAllTenants() {
+    return Collections.unmodifiableList(LoadUpContext.getTenantList());
+  }
 
-    public static String getCurrentTenantId() {
-        return null;
-    }
+  public static String getCurrentTenantId() {
+    return null;
+  }
 
-    public static String getClientIdByTenantId(String tenantId) {
-        return null;
-    }
+  public static String getClientIdByTenantId(String tenantId) {
+    return null;
+  }
 }

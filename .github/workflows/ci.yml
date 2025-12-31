@@ -46,6 +46,11 @@ jobs:
       - name: Verify Docker
         run: docker ps
 
+      # 检查代码格式
+      - name: Check Code Formatting
+        run: mvn spotless:check -B
+        continue-on-error: false
+
       # 构建和测试（包含 Testcontainers 测试）
       - name: Build and Test with Maven
         run: |

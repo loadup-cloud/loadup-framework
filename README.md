@@ -10,6 +10,7 @@ LoadUp Framework 是一个基于 Spring Boot 的微服务开发框架，提供�
 - [所有可用组件](#所有可用组件)
 - [使用场景示例](#使用场景示例)
 - [开发规范](#开发规范)
+  - [代码格式化](#代码格式化) 🔥 **新增**
 - [版本升级](#版本升级)
 - [常见问题](#常见问题)
 - [如何贡献](#如何贡献)
@@ -94,13 +95,13 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
         <groupId>com.github.loadup.commons</groupId>
         <artifactId>loadup-commons-api</artifactId>
     </dependency>
-    
+
     <!-- 数据库组件 -->
     <dependency>
         <groupId>com.github.loadup.components</groupId>
         <artifactId>loadup-components-database</artifactId>
     </dependency>
-    
+
     <!-- Redis 缓存 -->
     <dependency>
         <groupId>com.github.loadup.components</groupId>
@@ -111,9 +112,12 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 
 ### BOM 的优势
 
-✅ **统一版本管理** - 所有组件版本由 BOM 统一管理，避免版本冲突  
-✅ **简化依赖声明** - 引入组件时无需指定版本号，降低维护成本  
-✅ **易于升级** - 只需修改 BOM 版本号即可升级所有相关组件  
+✅ **统一版本管理** - 所有组件版本由 BOM 统一管理，避免版本冲突
+
+✅ **简化依赖声明** - 引入组件时无需指定版本号，降低维护成本
+
+✅ **易于升级** - 只需修改 BOM 版本号即可升级所有相关组件
+
 ✅ **确保兼容性** - 所有组件版本经过测试，确保互相兼容
 
 ---
@@ -122,7 +126,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 
 ### Commons 模块
 
-| artifactId            | 说明                |
+|      artifactId       |        说明         |
 |-----------------------|-------------------|
 | `loadup-commons-api`  | API 公共组件，包含通用接口定义 |
 | `loadup-commons-dto`  | DTO 公共组件，包含数据传输对象 |
@@ -131,14 +135,14 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 
 ### Components - 数据库
 
-| artifactId                    | 说明                |
+|          artifactId           |        说明         |
 |-------------------------------|-------------------|
 | `loadup-components-database`  | 数据库访问组件           |
 | `loadup-components-liquibase` | Liquibase 数据库版本管理 |
 
 ### Components - 缓存
 
-| artifactId                                | 说明              |
+|                artifactId                 |       说明        |
 |-------------------------------------------|-----------------|
 | `loadup-components-cache-api`             | 缓存抽象层 API       |
 | `loadup-components-cache-binder-caffeine` | Caffeine 本地缓存实现 |
@@ -146,7 +150,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 
 ### Components - 调度器
 
-| artifactId                           | 说明              |
+|              artifactId              |       说明        |
 |--------------------------------------|-----------------|
 | `loadup-components-scheduler-api`    | 调度器抽象层 API      |
 | `loadup-components-scheduler-quartz` | Quartz 调度器实现    |
@@ -154,7 +158,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 
 ### Components - 其他
 
-| artifactId                    | 说明                         |
+|          artifactId           |             说明             |
 |-------------------------------|----------------------------|
 | `loadup-components-extension` | 扩展点机制                      |
 | `loadup-components-captcha`   | 验证码生成与验证                   |
@@ -173,19 +177,19 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
         <groupId>com.github.loadup.commons</groupId>
         <artifactId>loadup-commons-api</artifactId>
     </dependency>
-    
+
     <!-- 数据库访问 -->
     <dependency>
         <groupId>com.github.loadup.components</groupId>
         <artifactId>loadup-components-database</artifactId>
     </dependency>
-    
+
     <!-- Redis 缓存 -->
     <dependency>
         <groupId>com.github.loadup.components</groupId>
         <artifactId>loadup-components-cache-binder-redis</artifactId>
     </dependency>
-    
+
     <!-- 验证码 -->
     <dependency>
         <groupId>com.github.loadup.components</groupId>
@@ -203,13 +207,13 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
         <groupId>com.github.loadup.commons</groupId>
         <artifactId>loadup-commons-util</artifactId>
     </dependency>
-    
+
     <!-- XXL-Job 分布式调度 -->
     <dependency>
         <groupId>com.github.loadup.components</groupId>
         <artifactId>loadup-components-scheduler-xxljob</artifactId>
     </dependency>
-    
+
     <!-- 数据库 -->
     <dependency>
         <groupId>com.github.loadup.components</groupId>
@@ -231,7 +235,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
         <groupId>com.github.loadup.commons</groupId>
         <artifactId>loadup-commons-dto</artifactId>
     </dependency>
-    
+
     <!-- 数据库与数据库版本管理 -->
     <dependency>
         <groupId>com.github.loadup.components</groupId>
@@ -241,13 +245,13 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
         <groupId>com.github.loadup.components</groupId>
         <artifactId>loadup-components-liquibase</artifactId>
     </dependency>
-    
+
     <!-- 分布式追踪 -->
     <dependency>
         <groupId>com.github.loadup.components</groupId>
         <artifactId>loadup-components-tracer</artifactId>
     </dependency>
-    
+
     <!-- 扩展点机制 -->
     <dependency>
         <groupId>com.github.loadup.components</groupId>
@@ -262,19 +266,19 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <groupId>com.example</groupId>
     <artifactId>my-application</artifactId>
     <version>1.0.0</version>
-    
+
     <properties>
         <java.version>17</java.version>
         <loadup.framework.version>1.0.0-SNAPSHOT</loadup.framework.version>
     </properties>
-    
+
     <!-- 引入 LoadUp Framework BOM -->
     <dependencyManagement>
         <dependencies>
@@ -287,25 +291,25 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
+
     <!-- 使用 LoadUp Framework 组件，无需指定版本 -->
     <dependencies>
         <dependency>
             <groupId>com.github.loadup.commons</groupId>
             <artifactId>loadup-commons-api</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>com.github.loadup.components</groupId>
             <artifactId>loadup-components-database</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>com.github.loadup.components</groupId>
             <artifactId>loadup-components-cache-binder-redis</artifactId>
         </dependency>
     </dependencies>
-    
+
     <!-- 配置仓库 -->
     <repositories>
         <repository>
@@ -338,9 +342,30 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 ### 代码规范
 
 - 使用 **Spotless** 进行代码格式化
-- 遵循 **阿里巴巴 Java 开发手册**
+- 遵循 **Google Java Style Guide** 编码风格
 - 所有公共 API 必须有完整的 **JavaDoc**
 - 编写单元测试，确保代码质量
+
+#### 代码格式化
+
+本项目使用 Spotless 自动格式化代码（配置继承自 `loadup-dependencies`）。
+
+首次使用请安装 Git hooks：
+
+```bash
+./install-git-hooks.sh
+```
+
+安装后，每次 push 前会自动检查代码格式。手动格式化：
+
+```bash
+./spotless.sh apply   # 格式化代码
+./spotless.sh check   # 检查格式
+```
+
+> **📝 注意**: Spotless 插件配置在 `loadup-dependencies` parent POM 中，所有子项目自动继承。
+
+详细说明: [CODE_FORMATTING.md](CODE_FORMATTING.md)
 
 ---
 

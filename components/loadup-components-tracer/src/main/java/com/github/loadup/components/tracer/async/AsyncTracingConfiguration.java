@@ -22,6 +22,8 @@ package com.github.loadup.components.tracer.async;
  * #L%
  */
 
+import java.util.concurrent.Executor;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,31 +32,30 @@ import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.concurrent.Executor;
-
-/**
- * Configuration for async task tracing.
- */
+/** Configuration for async task tracing. */
 @Configuration
 @EnableAsync
-@ConditionalOnProperty(prefix = "loadup.tracer", name = "enable-async-tracing", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(
+    prefix = "loadup.tracer",
+    name = "enable-async-tracing",
+    havingValue = "true",
+    matchIfMissing = true)
 public class AsyncTracingConfiguration implements AsyncConfigurer {
 
-    @Override
-    public Executor getAsyncExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(5);
-        executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(100);
-        executor.setThreadNamePrefix("traced-async-");
-        executor.setTaskDecorator(tracingTaskDecorator());
-        executor.initialize();
-        return executor;
-    }
+  @Override
+  public Executor getAsyncExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(5);
+    executor.setMaxPoolSize(10);
+    executor.setQueueCapacity(100);
+    executor.setThreadNamePrefix("traced-async-");
+    executor.setTaskDecorator(tracingTaskDecorator());
+    executor.initialize();
+    return executor;
+  }
 
-    @Bean
-    public TaskDecorator tracingTaskDecorator() {
-        return new TracingTaskDecorator();
-    }
+  @Bean
+  public TaskDecorator tracingTaskDecorator() {
+    return new TracingTaskDecorator();
+  }
 }
-

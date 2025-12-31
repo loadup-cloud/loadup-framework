@@ -15,6 +15,11 @@
     <description>LoadUp Scheduler Component</description>
     <name>loadup-components-scheduler</name>
 
+    <properties>
+        <!-- Skip Spotless for aggregator POM - no source code -->
+        <spotless.skip>true</spotless.skip>
+    </properties>
+
     <modules>
         <module>loadup-components-scheduler-api</module>
         <module>loadup-components-scheduler-binder-simplejob</module>

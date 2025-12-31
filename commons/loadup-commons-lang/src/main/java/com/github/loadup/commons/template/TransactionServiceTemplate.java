@@ -22,77 +22,83 @@ package com.github.loadup.commons.template;
  * #L%
  */
 
-import com.github.loadup.commons.error.AssertUtil;
-import com.github.loadup.commons.error.CommonException;
-import com.github.loadup.commons.result.*;
+import java.util.Objects;
+import java.util.function.*;
+
 import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.Objects;
-import java.util.function.*;
+import com.github.loadup.commons.error.AssertUtil;
+import com.github.loadup.commons.error.CommonException;
+import com.github.loadup.commons.result.*;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "SERVICE-LOGGER")
 @Component
 public final class TransactionServiceTemplate {
-    private static final TransactionServiceTemplate INSTANCE = new TransactionServiceTemplate();
+  private static final TransactionServiceTemplate INSTANCE = new TransactionServiceTemplate();
 
-    public static TransactionServiceTemplate getInstance() {
-        return INSTANCE;
+  public static TransactionServiceTemplate getInstance() {
+    return INSTANCE;
+  }
+
+  @Autowired private TransactionTemplate transactionTemplate;
+
+  @PostConstruct
+  public void init() {
+    getInstance().transactionTemplate = this.transactionTemplate;
+  }
+
+  private TransactionServiceTemplate() {}
+
+  public static <T extends Response> T execute(
+      Consumer<Void> checkParameter, // checkParameter
+      Supplier<T> process, // process
+      Function<Exception, Result> composeExceptionResponse, // 修改为 Function<Throwable, T>
+      Consumer<Void> composeDigestLog // composeDigestLog
+      ) {
+    T response = null;
+    try {
+      response =
+          getInstance()
+              .getTransactionTemplate()
+              .execute(
+                  status -> {
+                    T innerResponse;
+                    checkParameter.accept(null); // 执行参数检查
+                    innerResponse = process.get(); // 执行业务逻辑
+                    AssertUtil.notNull(innerResponse);
+                    innerResponse.setResult(Result.buildSuccess());
+                    return innerResponse;
+                  });
+    } catch (CommonException exception) {
+      log.error("service process, exception occurred:", exception.getMessage());
+      response.setResult(Result.buildFailure(exception.getResultCode()));
+    } catch (Exception throwable) {
+      log.error("service process,  exception occurred:", throwable.getMessage());
+      Result result = composeExceptionResponse.apply(throwable); // 异常处理
+      if (Objects.isNull(result)) {
+        result = Result.buildFailure(CommonResultCodeEnum.UNKNOWN);
+      }
+      response.setResult(result);
+    } catch (Throwable throwable) {
+      log.error("service process, unknown exception occurred:", throwable.getMessage());
+      response.setResult(Result.buildFailure(CommonResultCodeEnum.UNKNOWN));
+    } finally {
+      composeDigestLog.accept(null); // 执行日志
     }
+    return response;
+  }
 
-    @Autowired
-    private TransactionTemplate transactionTemplate;
+  public TransactionTemplate getTransactionTemplate() {
+    return transactionTemplate;
+  }
 
-    @PostConstruct
-    public void init() {
-        getInstance().transactionTemplate = this.transactionTemplate;
-    }
-
-    private TransactionServiceTemplate() {}
-
-    public static <T extends Response> T execute(
-        Consumer<Void> checkParameter, // checkParameter
-        Supplier<T> process, // process
-        Function<Exception, Result> composeExceptionResponse, // 修改为 Function<Throwable, T>
-        Consumer<Void> composeDigestLog // composeDigestLog
-    ) {
-        T response = null;
-        try {
-            response = getInstance().getTransactionTemplate().execute(status -> {
-                T innerResponse;
-                checkParameter.accept(null); // 执行参数检查
-                innerResponse = process.get(); // 执行业务逻辑
-                AssertUtil.notNull(innerResponse);
-                innerResponse.setResult(Result.buildSuccess());
-                return innerResponse;
-            });
-        } catch (CommonException exception) {
-            log.error("service process, exception occurred:", exception.getMessage());
-            response.setResult(Result.buildFailure(exception.getResultCode()));
-        } catch (Exception throwable) {
-            log.error("service process,  exception occurred:", throwable.getMessage());
-            Result result = composeExceptionResponse.apply(throwable); // 异常处理
-            if (Objects.isNull(result)) {
-                result = Result.buildFailure(CommonResultCodeEnum.UNKNOWN);
-            }
-            response.setResult(result);
-        } catch (Throwable throwable) {
-            log.error("service process, unknown exception occurred:", throwable.getMessage());
-            response.setResult(Result.buildFailure(CommonResultCodeEnum.UNKNOWN));
-        } finally {
-            composeDigestLog.accept(null); // 执行日志
-        }
-        return response;
-    }
-
-    public TransactionTemplate getTransactionTemplate() {
-        return transactionTemplate;
-    }
-
-    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
-        this.transactionTemplate = transactionTemplate;
-    }
+  public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+    this.transactionTemplate = transactionTemplate;
+  }
 }

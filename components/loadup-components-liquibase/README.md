@@ -327,4 +327,3 @@ changeLogFile=src/main/resources/db/changelog/db.changelog-master.yaml
 本组件采用 GNU General Public License v3.0 (GPL-3.0) 授权。
 
 详见 [LICENSE](../../LICENSE) 文件。
-

@@ -13,8 +13,13 @@
     <artifactId>loadup-components-gotone</artifactId>
     <packaging>pom</packaging>
     <description>LoadUp Notification Component - Support Email, SMS, Push, Internal Message</description>
-   
+
     <name>loadup-components-gotone</name>
+
+    <properties>
+        <!-- Skip Spotless for aggregator POM - no source code -->
+        <spotless.skip>true</spotless.skip>
+    </properties>
 
     <modules>
         <module>loadup-components-gotone-api</module>

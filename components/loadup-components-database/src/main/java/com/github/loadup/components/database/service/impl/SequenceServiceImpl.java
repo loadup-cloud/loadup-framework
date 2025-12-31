@@ -22,71 +22,73 @@ package com.github.loadup.components.database.service.impl;
  * #L%
  */
 
-import com.github.loadup.components.database.repository.SequenceRepository;
-import com.github.loadup.components.database.sequence.SequenceRange;
-import com.github.loadup.components.database.service.SequenceService;
-import jakarta.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import jakarta.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.github.loadup.components.database.repository.SequenceRepository;
+import com.github.loadup.components.database.sequence.SequenceRange;
+import com.github.loadup.components.database.service.SequenceService;
+
 @Service
 public class SequenceServiceImpl implements SequenceService {
-    private static final Logger log  = LoggerFactory.getLogger(SequenceServiceImpl.class);
-    private final        Lock   lock = new ReentrantLock();
+  private static final Logger log = LoggerFactory.getLogger(SequenceServiceImpl.class);
+  private final Lock lock = new ReentrantLock();
 
-    @Resource
-    private SequenceRepository sequenceRepository;
+  @Resource private SequenceRepository sequenceRepository;
 
-    private volatile SequenceRange currentRange;
+  private volatile SequenceRange currentRange;
 
-    @Override
-    public Long getNextSequence(String sequenceName) {
+  @Override
+  public Long getNextSequence(String sequenceName) {
+    if (currentRange == null) {
+      lock.lock();
+      try {
         if (currentRange == null) {
-            lock.lock();
-            try {
-                if (currentRange == null) {
-                    currentRange = sequenceRepository.getNextRange(sequenceName);
-                }
-            } finally {
-                lock.unlock();
-            }
+          currentRange = sequenceRepository.getNextRange(sequenceName);
         }
-        long value = currentRange.getAndIncrement();
-        if (value == -1) {
-            lock.lock();
-            try {
-                for (; ; ) {
-                    if (currentRange.isOver()) {
-                        log.debug("Current sequence range exhausted for '{}', allocating new range", sequenceName);
-                        currentRange = sequenceRepository.getNextRange(sequenceName);
-                        log.debug("New sequence range allocated for '{}': {}", sequenceName, currentRange);
-                    }
-                    value = currentRange.getAndIncrement();
-                    if (value == -1) {
-                        continue;
-                    }
-                    break;
-                }
-            } finally {
-                lock.unlock();
-            }
+      } finally {
+        lock.unlock();
+      }
+    }
+    long value = currentRange.getAndIncrement();
+    if (value == -1) {
+      lock.lock();
+      try {
+        for (; ; ) {
+          if (currentRange.isOver()) {
+            log.debug(
+                "Current sequence range exhausted for '{}', allocating new range", sequenceName);
+            currentRange = sequenceRepository.getNextRange(sequenceName);
+            log.debug("New sequence range allocated for '{}': {}", sequenceName, currentRange);
+          }
+          value = currentRange.getAndIncrement();
+          if (value == -1) {
+            continue;
+          }
+          break;
         }
-        if (value < 0) {
-            throw new IllegalStateException(
-                String.format("Sequence '%s' value overflow or exhausted. Current value: %d",
-                    sequenceName, value));
-        }
-
-        return value;
+      } finally {
+        lock.unlock();
+      }
+    }
+    if (value < 0) {
+      throw new IllegalStateException(
+          String.format(
+              "Sequence '%s' value overflow or exhausted. Current value: %d", sequenceName, value));
     }
 
-    @Override
-    public LocalDateTime getSystemDate() {
-        return LocalDateTime.now();
-    }
+    return value;
+  }
+
+  @Override
+  public LocalDateTime getSystemDate() {
+    return LocalDateTime.now();
+  }
 }

@@ -323,4 +323,3 @@ mvn test -pl loadup-components-gotone-api
 ## 许可证
 
 GPL-3.0 License
-

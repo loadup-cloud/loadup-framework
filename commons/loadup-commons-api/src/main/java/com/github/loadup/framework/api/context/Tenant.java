@@ -22,16 +22,17 @@ package com.github.loadup.framework.api.context;
  * #L%
  */
 
-import com.alibaba.cola.dto.DTO;
-import lombok.*;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.alibaba.cola.dto.DTO;
+
+import lombok.*;
 
 @Getter
 @Setter
 @ToString
 public class Tenant extends DTO {
-    private String tenantId;
-    private Map<String, String> attributes = new HashMap<>();
+  private String tenantId;
+  private Map<String, String> attributes = new HashMap<>();
 }

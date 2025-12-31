@@ -23,6 +23,7 @@ package com.github.loadup.commons.enums;
  */
 
 import com.github.loadup.commons.util.EnumUtils;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -34,19 +35,15 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum BooleanEnum implements IEnum {
 
-    /**
-     * true
-     */
-    TRUE("Y", "True"),
-    /**
-     * false
-     */
-    FALSE("N", "False");
+  /** true */
+  TRUE("Y", "True"),
+  /** false */
+  FALSE("N", "False");
 
-    private final String code;
-    private final String description;
+  private final String code;
+  private final String description;
 
-    public static BooleanEnum getByCode(String code) {
-        return EnumUtils.getEnumByCode(BooleanEnum.class, code);
-    }
+  public static BooleanEnum getByCode(String code) {
+    return EnumUtils.getEnumByCode(BooleanEnum.class, code);
+  }
 }

@@ -22,11 +22,11 @@ package com.github.loadup.commons.dto;
  * #L%
  */
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.io.Serial;
 import java.io.Serializable;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * @author Lise
@@ -34,11 +34,10 @@ import java.io.Serializable;
  */
 public abstract class DTO implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = -1L;
+  @Serial private static final long serialVersionUID = -1L;
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-    }
+  @Override
+  public String toString() {
+    return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+  }
 }

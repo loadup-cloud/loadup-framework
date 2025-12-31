@@ -22,64 +22,63 @@ package com.github.loadup.commons.result;
  * #L%
  */
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Serial;
 import java.util.Objects;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
 public class SingleResponse<T> extends Response {
-    @Serial
-    private static final long serialVersionUID = -3426130425512449976L;
+  @Serial private static final long serialVersionUID = -3426130425512449976L;
 
-    private T data;
+  private T data;
 
-    public static <T> SingleResponse<T> of(T data) {
-        SingleResponse<T> response = new SingleResponse<>();
-        if (Objects.isNull(data)) {
-            response.setResult(Result.buildFailure(CommonResultCodeEnum.NOT_FOUND));
-            return response;
-        }
-        response.setResult(Result.buildSuccess());
-        response.setData(data);
-        return response;
+  public static <T> SingleResponse<T> of(T data) {
+    SingleResponse<T> response = new SingleResponse<>();
+    if (Objects.isNull(data)) {
+      response.setResult(Result.buildFailure(CommonResultCodeEnum.NOT_FOUND));
+      return response;
     }
+    response.setResult(Result.buildSuccess());
+    response.setData(data);
+    return response;
+  }
 
-    public static SingleResponse buildSuccess() {
-        SingleResponse response = new SingleResponse();
-        response.setResult(Result.buildSuccess());
-        return response;
-    }
+  public static SingleResponse buildSuccess() {
+    SingleResponse response = new SingleResponse();
+    response.setResult(Result.buildSuccess());
+    return response;
+  }
 
-    public static SingleResponse buildFailure() {
-        SingleResponse response = new SingleResponse();
-        response.setResult(Result.buildFailure());
-        return response;
-    }
+  public static SingleResponse buildFailure() {
+    SingleResponse response = new SingleResponse();
+    response.setResult(Result.buildFailure());
+    return response;
+  }
 
-    public static SingleResponse buildFailure(String errCode) {
-        SingleResponse response = new SingleResponse();
-        response.setResult(Result.buildFailure(errCode));
-        return response;
-    }
+  public static SingleResponse buildFailure(String errCode) {
+    SingleResponse response = new SingleResponse();
+    response.setResult(Result.buildFailure(errCode));
+    return response;
+  }
 
-    public static SingleResponse buildFailure(ResultCode errCode) {
-        SingleResponse response = new SingleResponse();
-        response.setResult(Result.buildFailure(errCode));
-        return response;
-    }
+  public static SingleResponse buildFailure(ResultCode errCode) {
+    SingleResponse response = new SingleResponse();
+    response.setResult(Result.buildFailure(errCode));
+    return response;
+  }
 
-    public static SingleResponse buildFailure(ResultCode errCode, String errMessage) {
-        SingleResponse response = new SingleResponse();
-        response.setResult(Result.buildFailure(errCode, errMessage));
-        return response;
-    }
+  public static SingleResponse buildFailure(ResultCode errCode, String errMessage) {
+    SingleResponse response = new SingleResponse();
+    response.setResult(Result.buildFailure(errCode, errMessage));
+    return response;
+  }
 
-    public static Response buildFailure(String errCode, String errMessage) {
-        Response response = new Response();
-        response.setResult(Result.buildFailure(errCode, errMessage));
-        return response;
-    }
+  public static Response buildFailure(String errCode, String errMessage) {
+    Response response = new Response();
+    response.setResult(Result.buildFailure(errCode, errMessage));
+    return response;
+  }
 }

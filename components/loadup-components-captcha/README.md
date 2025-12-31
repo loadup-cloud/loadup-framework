@@ -120,7 +120,6 @@ println("当前字符集: "+new String(chars));
 &emsp;&emsp;
 ![验证码](https://s2.ax1x.com/2019/08/23/msAkYF.png)
 
-
 ---
 
 ## 3.导入项目
@@ -155,7 +154,7 @@ dependencies {
 ## 4.使用方法
 
 > 注意：<br/>
-> &emsp;1. 使用 Jakarta 时用 `CaptchaJakartaUtil`；使用 Javax 时使用 `CaptchaUtil`；  
+> &emsp;1. 使用 Jakarta 时用 `CaptchaJakartaUtil`；使用 Javax 时使用 `CaptchaUtil`；
 > &emsp;2. 使用 `CaptchaUtil` 时需要根据使用情况引入对应的 `servlet` 依赖。
 
 ### 4.1.在SpringMVC中使用
@@ -342,14 +341,14 @@ public class Test {
 
 > 注意：<br/>
 > &emsp;1. 算术验证码的len表示是几位数运算，而其他验证码的len表示验证码的位数，算术验证码的text()表示的是公式的结果，
-> 对于算术验证码，你应该把公式的结果存储session，而不是公式。  
+> 对于算术验证码，你应该把公式的结果存储session，而不是公式。
 > &emsp;2. 由于部分字体库的问题，除号可能无法显示
 
 ### 5.2.验证码字符类型
 
 #### 算数验证码
 
-| 值 | 描述   |
+| 值 |  描述  |
 |---|------|
 | 2 | 加法   |
 | 3 | 加减   |
@@ -367,7 +366,7 @@ supportAlgorithmSign(5);
 
 #### 验证码
 
-| 类型                 | 描述      |
+|         类型         |   描述    |
 |--------------------|---------|
 | TYPE_DEFAULT       | 数字和字母混合 |
 | TYPE_ONLY_NUMBER   | 纯数字     |
@@ -391,7 +390,7 @@ setCharType(Captcha.TYPE_ONLY_NUMBER);
 
 内置字体：
 
-| 字体              | 效果                                             |
+|       字体        |                       效果                       |
 |-----------------|------------------------------------------------|
 | Captcha.FONT_1  | ![](https://s2.ax1x.com/2019/08/23/msMe6U.png) |
 | Captcha.FONT_2  | ![](https://s2.ax1x.com/2019/08/23/msMAf0.png) |
@@ -410,10 +409,10 @@ setCharType(Captcha.TYPE_ONLY_NUMBER);
 SpecCaptcha captcha = new SpecCaptcha(130, 48, 5);
 
 // 设置内置字体
-captcha.setFont(Captcha.FONT_1); 
+captcha.setFont(Captcha.FONT_1);
 
 // 设置系统字体
-captcha.setFont(new Font("楷体", Font.PLAIN, 28)); 
+captcha.setFont(new Font("楷体", Font.PLAIN, 28));
 ```
 
 ### 5.4.输出base64编码
@@ -573,6 +572,7 @@ captcha.custom-characters=23456789ABCDEFGHJKMNPQRSTUVWXYZ
 ---
 
 ## 9.致谢
+
 ---
 
 ## 13.致谢
@@ -600,4 +600,3 @@ GNU General Public License for more details.
 ```
 
 详见 [LICENSE](../../LICENSE) 文件。
-

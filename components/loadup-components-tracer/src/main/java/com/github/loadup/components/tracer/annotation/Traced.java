@@ -28,11 +28,11 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Traced {
-    String name() default "";
+  String name() default "";
 
-    String[] attributes() default {};
+  String[] attributes() default {};
 
-    boolean includeParameters() default false;
+  boolean includeParameters() default false;
 
-    boolean includeResult() default false;
+  boolean includeResult() default false;
 }
