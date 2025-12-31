@@ -13,15 +13,36 @@ on:
       - dev
 
 jobs:
-  build:
+  # Job 1: 代码检查（最快，优先失败）
+  code-quality:
+    name: Code Quality Check
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 10
 
-    permissions:
-      contents: read
-      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # 环境变量
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Check Code Formatting
+        run: mvn spotless:check -B
+        env:
+          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+
+  # Job 2: 编译和单元测试（快速反馈）
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: code-quality
+
     env:
       MAVEN_OPTS: >-
         -Xmx2048m
@@ -29,11 +50,176 @@ jobs:
         -XX:MaxGCPauseMillis=100
         -Dorg.slf4j.simpleLogger.defaultLogLevel=warn
         -Djava.awt.headless=true
-      # Testcontainers 配置
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Compile and Run Unit Tests
+        run: |
+          mvn clean test -B \
+            -DskipITs=true \
+            -Dlogging.level.root=warn
+        env:
+          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-reports
+          path: '**/target/surefire-reports/'
+          retention-days: 7
+
+  # Job 3: 集成测试（需要Testcontainers，最慢）
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: code-quality
+
+    env:
+      MAVEN_OPTS: >-
+        -Xmx2048m
+        -XX:+UseG1GC
+        -XX:MaxGCPauseMillis=100
+        -Dorg.slf4j.simpleLogger.defaultLogLevel=warn
+        -Djava.awt.headless=true
       TESTCONTAINERS_RYUK_DISABLED: false
       TESTCONTAINERS_CHECKS_DISABLE: false
-      # Docker 配置
       DOCKER_BUILDKIT: 1
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # 清理Docker环境
+      - name: Clean Docker Environment
+        run: |
+          docker system prune -af --volumes || true
+          docker network prune -f || true
+
+      # 预拉取镜像
+      - name: Setup Docker
+        run: |
+          docker --version
+          docker info
+          docker pull postgres:15-alpine || true
+          docker pull mysql:8.0 || true
+          docker pull redis:7-alpine || true
+
+      # 配置Testcontainers
+      - name: Configure Testcontainers
+        run: |
+          mkdir -p ~/.testcontainers
+          cat > ~/.testcontainers.properties << EOF
+          testcontainers.reuse.enable=false
+          testcontainers.ryuk.container.timeout=120
+          docker.client.strategy=org.testcontainers.dockerclient.UnixSocketClientProviderStrategy
+          checks.disable=false
+          EOF
+
+      # 运行集成测试（带重试）
+      - name: Run Integration Tests
+        uses: nick-fields/retry-action@v2
+        with:
+          timeout_minutes: 25
+          max_attempts: 3
+          retry_wait_seconds: 30
+          command: |
+            mvn verify -B \
+              -DskipUTs=true \
+              -Dspring.profiles.active=ci \
+              -Dlogging.level.root=warn \
+              -Dtestcontainers.reuse.enable=false \
+              -Dfailsafe.rerunFailingTestsCount=2
+        env:
+          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+
+      # 失败时输出Docker日志
+      - name: Docker Logs on Failure
+        if: failure()
+        run: |
+          echo "=== Docker Containers ==="
+          docker ps -a
+          echo "=== Docker Logs ==="
+          docker ps -a --format '{{.Names}}' | xargs -I {} sh -c 'echo "=== Logs for {} ===" && docker logs {} 2>&1 | tail -100' || true
+          echo "=== Docker Networks ==="
+          docker network ls
+
+      - name: Upload Integration Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-reports
+          path: '**/target/failsafe-reports/'
+          retention-days: 7
+
+  # Job 4: 代码覆盖率（依赖测试完成）
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [ unit-tests, integration-tests ]
+    if: always()
+
+    env:
+      MAVEN_OPTS: -Xmx2048m -Djava.awt.headless=true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Generate Coverage Report
+        run: mvn verify -B -DskipTests jacoco:report
+        env:
+          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+
+      - name: Upload Coverage Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: '**/target/site/jacoco/'
+          retention-days: 7
+
+  # Job 5: 部署（仅在所有测试通过后）
+  deploy:
+    name: Deploy to GitHub Packages
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [ unit-tests, integration-tests ]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+
+    permissions:
+      contents: read
+      packages: write
+
+    env:
+      MAVEN_OPTS: -Xmx2048m -Djava.awt.headless=true
 
     steps:
       - name: Checkout code
@@ -49,101 +235,8 @@ jobs:
           server-username: GITHUB_ACTOR
           server-password: GITHUB_TOKEN
 
-      # 清理Docker环境
-      - name: Clean Docker Environment
-        run: |
-          docker system prune -af --volumes || true
-          docker network prune -f || true
-
-      # 验证并优化Docker
-      - name: Setup Docker
-        run: |
-          docker --version
-          docker info
-          # 预拉取常用镜像以避免超时
-          docker pull postgres:15-alpine || true
-          docker pull mysql:8.0 || true
-          docker pull redis:7-alpine || true
-          echo "Docker setup completed"
-
-      # 配置 Testcontainers（增强配置）
-      - name: Configure Testcontainers
-        run: |
-          mkdir -p ~/.testcontainers
-          cat > ~/.testcontainers.properties << EOF
-          testcontainers.reuse.enable=false
-          testcontainers.ryuk.container.timeout=120
-          docker.client.strategy=org.testcontainers.dockerclient.UnixSocketClientProviderStrategy
-          checks.disable=false
-          EOF
-          cat ~/.testcontainers.properties
-          echo "Testcontainers configuration completed"
-
-      # 检查代码格式
-      - name: Check Code Formatting
-        run: mvn spotless:check -B
-        continue-on-error: false
-        env:
-          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-
-      # 构建和测试（包含 Testcontainers 测试）- 带重试机制
-      - name: Build and Test with Maven
-        uses: nick-fields/retry-action@v2
-        with:
-          timeout_minutes: 30
-          max_attempts: 3
-          retry_wait_seconds: 30
-          command: |
-            mvn clean verify -B \
-              -Dspring.profiles.active=ci \
-              -Dlogging.level.root=warn \
-              -Dlogging.level.com.github.loadup=info \
-              -Dorg.slf4j.simpleLogger.defaultLogLevel=warn \
-              -Dtestcontainers.reuse.enable=false \
-              -Dfailsafe.rerunFailingTestsCount=2
-        env:
-          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-
-      # 如果测试失败，输出Docker日志
-      - name: Docker Logs on Failure
-        if: failure()
-        run: |
-          echo "=== Docker Containers ==="
-          docker ps -a
-          echo "=== Docker Logs ==="
-          docker ps -a --format '{{.Names}}' | xargs -I {} sh -c 'echo "=== Logs for {} ===" && docker logs {} 2>&1 | tail -100' || true
-          echo "=== Docker Networks ==="
-          docker network ls
-          echo "=== Docker Volumes ==="
-          docker volume ls
-
-      # 上传测试报告
-      - name: Upload Test Reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: |
-            **/target/surefire-reports/
-            **/target/failsafe-reports/
-          retention-days: 7
-
-      # 上传代码覆盖率报告
-      - name: Upload Coverage Reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-reports
-          path: |
-            **/target/site/jacoco/
-          retention-days: 7
-
-      # 部署到 GitHub Packages
       - name: Deploy to GitHub Packages
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
-        run: mvn deploy -DskipTests
+        run: mvn deploy -B -DskipTests
         env:
           GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
           GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
