@@ -22,13 +22,11 @@ package com.github.loadup.commons.util;
  * #L%
  */
 
+import com.github.loadup.commons.error.AssertUtil;
 import java.util.Base64;
-
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.encrypt.Encryptors;
-
-import com.github.loadup.commons.error.AssertUtil;
 
 /**
  * @Description: 密码工具类

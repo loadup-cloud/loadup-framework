@@ -23,7 +23,6 @@ package com.github.loadup.commons.enums;
  */
 
 import com.github.loadup.commons.util.EnumUtils;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

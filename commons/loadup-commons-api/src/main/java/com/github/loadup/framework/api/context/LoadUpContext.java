@@ -22,12 +22,10 @@ package com.github.loadup.framework.api.context;
  * #L%
  */
 
+import com.alibaba.ttl.TransmittableThreadLocal;
+import io.opentelemetry.api.trace.Span;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.alibaba.ttl.TransmittableThreadLocal;
-
-import io.opentelemetry.api.trace.Span;
 import lombok.Getter;
 import lombok.Setter;
 

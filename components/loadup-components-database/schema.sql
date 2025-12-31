@@ -17,7 +17,9 @@ CREATE TABLE sys_sequence
     updated_at TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last update timestamp'
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci COMMENT ='Sequence table for ID generation';
+  COLLATE = utf8mb4_unicode_ci
+COMMENT
+='Sequence table for ID generation';
 
 -- Create index on name for faster lookups
 CREATE INDEX idx_sequence_name ON sys_sequence (name);

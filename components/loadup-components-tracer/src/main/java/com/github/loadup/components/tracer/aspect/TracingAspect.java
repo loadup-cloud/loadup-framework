@@ -22,21 +22,18 @@ package com.github.loadup.components.tracer.aspect;
  * #L%
  */
 
+import com.github.loadup.components.tracer.annotation.Traced;
+import io.opentelemetry.api.trace.*;
+import io.opentelemetry.context.Context;
+import io.opentelemetry.context.Scope;
 import java.lang.reflect.Method;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
-
-import com.github.loadup.components.tracer.annotation.Traced;
-
-import io.opentelemetry.api.trace.*;
-import io.opentelemetry.context.Context;
-import io.opentelemetry.context.Scope;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /** Aspect for automatic method tracing using @Traced annotation. */
 @Aspect

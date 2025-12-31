@@ -24,7 +24,6 @@ package com.github.loadup.components.cache.common.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-
 import lombok.*;
 
 /** Test Product entity */

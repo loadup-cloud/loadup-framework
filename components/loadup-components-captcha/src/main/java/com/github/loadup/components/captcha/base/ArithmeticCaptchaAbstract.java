@@ -22,11 +22,10 @@ package com.github.loadup.components.captcha.base;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.github.loadup.components.captcha.engine.Symbol;
 import com.googlecode.aviator.AviatorEvaluator;
+import java.util.ArrayList;
+import java.util.List;
 
 /** 算术验证码抽象类 Created by 王帆 on 2019-08-23 上午 10:08. */
 public abstract class ArithmeticCaptchaAbstract extends Captcha {

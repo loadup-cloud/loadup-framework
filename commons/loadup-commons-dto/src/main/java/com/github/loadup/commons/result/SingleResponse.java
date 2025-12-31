@@ -24,7 +24,6 @@ package com.github.loadup.commons.result;
 
 import java.io.Serial;
 import java.util.Objects;
-
 import lombok.Getter;
 import lombok.Setter;
 

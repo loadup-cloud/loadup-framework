@@ -22,20 +22,17 @@ package com.github.loadup.components.extension.register;
  * #L%
  */
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-
 import com.github.loadup.components.extension.annotation.Extension;
 import com.github.loadup.components.extension.api.IExtensionPoint;
 import com.github.loadup.components.extension.core.BizScenario;
 import com.github.loadup.components.extension.spi.ExtensionProvider;
-
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 
 /** 扩展点注册中心 支持基于注解的扩展点注册和 SPI 机制的扩展点加载 */
 @Slf4j

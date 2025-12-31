@@ -22,12 +22,18 @@ package com.github.loadup.components.cache.redis;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.loadup.commons.util.JsonUtil;
+import com.github.loadup.components.cache.api.CacheBinder;
+import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
+import com.github.loadup.components.cache.config.CacheProperties;
+import com.github.loadup.components.cache.redis.impl.RedisCacheBinderImpl;
+import com.github.loadup.components.cache.util.CacheExpirationUtil;
+import jakarta.annotation.Resource;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-
-import jakarta.annotation.Resource;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -41,16 +47,6 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.serializer.*;
 import org.springframework.util.StringUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.loadup.commons.util.JsonUtil;
-import com.github.loadup.components.cache.api.CacheBinder;
-import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
-import com.github.loadup.components.cache.config.CacheProperties;
-import com.github.loadup.components.cache.redis.impl.RedisCacheBinderImpl;
-import com.github.loadup.components.cache.util.CacheExpirationUtil;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration

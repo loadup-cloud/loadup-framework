@@ -22,9 +22,8 @@ package com.github.loadup.framework.api.context;
  * #L%
  */
 
-import java.util.*;
-
 import com.github.loadup.framework.api.util.MDCUtils;
+import java.util.*;
 
 public class TenantUtil {
   public static final String TENANT = "tenant";

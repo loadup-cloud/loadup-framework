@@ -22,17 +22,14 @@ package com.github.loadup.commons.dataobject;
  * #L%
  */
 
+import com.github.loadup.commons.util.ToStringUtils;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.InsertOnlyProperty;
-
-import com.github.loadup.commons.util.ToStringUtils;
-
-import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Setter

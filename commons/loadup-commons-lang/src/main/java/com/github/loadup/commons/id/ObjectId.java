@@ -33,11 +33,10 @@ package com.github.loadup.commons.id;
  * See the Mulan PSL v2 for more details.
  */
 
+import com.github.loadup.commons.util.StringUtils;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.github.loadup.commons.util.StringUtils;
 
 /**
  * MongoDB ID生成策略实现<br>

@@ -24,20 +24,17 @@ package com.github.loadup.components.tracer.async;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.github.loadup.components.tracer.TestConfiguration;
+import com.github.loadup.components.tracer.TraceUtil;
+import com.github.loadup.components.tracer.annotation.Traced;
+import io.opentelemetry.api.trace.Span;
 import java.util.concurrent.*;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.TestPropertySource;
-
-import com.github.loadup.components.tracer.TestConfiguration;
-import com.github.loadup.components.tracer.TraceUtil;
-import com.github.loadup.components.tracer.annotation.Traced;
-
-import io.opentelemetry.api.trace.Span;
 
 /** Test for async tracing functionality. */
 @SpringBootTest(classes = {TestConfiguration.class, AsyncTracingTest.AsyncTestService.class})

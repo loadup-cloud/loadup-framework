@@ -22,11 +22,9 @@ package com.github.loadup.framework.api.context;
  * #L%
  */
 
+import com.alibaba.cola.dto.DTO;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.alibaba.cola.dto.DTO;
-
 import lombok.*;
 
 @Getter

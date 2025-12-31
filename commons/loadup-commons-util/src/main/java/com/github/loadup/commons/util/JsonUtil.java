@@ -22,14 +22,6 @@ package com.github.loadup.commons.util;
  * #L%
  */
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-
-import org.apache.commons.collections4.MapUtils;
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -45,6 +37,12 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.github.loadup.commons.constant.CommonConstants;
 import com.github.loadup.commons.result.SingleResponse;
 import com.github.loadup.commons.util.json.MultiDateDeserializer;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import org.apache.commons.collections4.MapUtils;
 
 public class JsonUtil {
 

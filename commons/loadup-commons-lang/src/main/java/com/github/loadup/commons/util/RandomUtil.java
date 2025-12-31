@@ -28,7 +28,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-
 import org.apache.commons.lang3.ArrayUtils;
 
 /** 随机工具类 */

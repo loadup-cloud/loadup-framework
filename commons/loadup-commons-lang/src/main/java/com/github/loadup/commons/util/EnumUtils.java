@@ -22,9 +22,8 @@ package com.github.loadup.commons.util;
  * #L%
  */
 
-import java.util.Arrays;
-
 import com.github.loadup.commons.enums.IEnum;
+import java.util.Arrays;
 
 /**
  * @author Lise

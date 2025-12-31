@@ -22,10 +22,9 @@ package com.github.loadup.components.extension.test.service.impl;
  * #L%
  */
 
-import org.springframework.stereotype.Service;
-
 import com.github.loadup.components.extension.annotation.Extension;
 import com.github.loadup.components.extension.test.service.GreetingService;
+import org.springframework.stereotype.Service;
 
 @Service
 @Extension

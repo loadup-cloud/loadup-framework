@@ -22,16 +22,13 @@ package com.github.loadup.components.cache.caffeine.binder;
  * #L%
  */
 
-import java.util.Objects;
-
+import com.github.loadup.components.cache.api.CacheBinder;
 import jakarta.annotation.Resource;
-
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.util.Assert;
-
-import com.github.loadup.components.cache.api.CacheBinder;
 
 public class CaffeineCacheBinderImpl implements CacheBinder {
 

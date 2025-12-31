@@ -22,16 +22,15 @@ package com.github.loadup.components.database.repository;
  * #L%
  */
 
+import com.github.loadup.components.database.Sequence;
+import com.github.loadup.components.database.config.DatabaseProperties;
+import com.github.loadup.components.database.sequence.SequenceRange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
 import org.springframework.stereotype.Repository;
-
-import com.github.loadup.components.database.Sequence;
-import com.github.loadup.components.database.config.DatabaseProperties;
-import com.github.loadup.components.database.sequence.SequenceRange;
 
 @Repository
 public class SequenceRepository {

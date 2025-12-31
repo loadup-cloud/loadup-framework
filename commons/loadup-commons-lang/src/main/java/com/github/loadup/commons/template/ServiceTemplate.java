@@ -22,12 +22,10 @@ package com.github.loadup.commons.template;
  * #L%
  */
 
-import java.util.function.*;
-
 import com.github.loadup.commons.error.AssertUtil;
 import com.github.loadup.commons.error.CommonException;
 import com.github.loadup.commons.result.*;
-
+import java.util.function.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "SERVICE-LOGGER")

@@ -22,17 +22,14 @@ package com.github.loadup.framework.liquibase.autoconfig;
  * #L%
  */
 
+import com.github.loadup.framework.liquibase.config.LiquibaseProperties;
 import javax.sql.DataSource;
-
+import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.StringUtils;
-
-import com.github.loadup.framework.liquibase.config.LiquibaseProperties;
-
-import liquibase.integration.spring.SpringLiquibase;
 
 /**
  * Liquibase Auto Configuration for Spring Boot 3

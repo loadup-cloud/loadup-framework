@@ -22,12 +22,9 @@ package com.github.loadup.commons.request.query;
  * #L%
  */
 
-import java.io.Serial;
-
-import jakarta.validation.constraints.NotBlank;
-
 import com.github.loadup.commons.dto.DTO;
-
+import jakarta.validation.constraints.NotBlank;
+import java.io.Serial;
 import lombok.Getter;
 import lombok.Setter;
 

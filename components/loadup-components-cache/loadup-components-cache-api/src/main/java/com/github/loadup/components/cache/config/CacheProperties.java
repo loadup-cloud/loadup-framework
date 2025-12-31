@@ -22,15 +22,12 @@ package com.github.loadup.components.cache.config;
  * #L%
  */
 
+import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /** LoadUp Cache Configuration Properties Unified configuration for all cache implementations */
 @Getter

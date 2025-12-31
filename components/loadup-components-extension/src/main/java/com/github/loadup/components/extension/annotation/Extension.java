@@ -23,7 +23,6 @@ package com.github.loadup.components.extension.annotation;
  */
 
 import java.lang.annotation.*;
-
 import org.springframework.stereotype.Component;
 
 /** 标识一个接口为扩展点 */

@@ -25,14 +25,12 @@ package com.github.loadup.components.cache.caffeine;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.loadup.components.cache.common.BaseCacheTest;
+import com.github.loadup.components.cache.common.model.User;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
-
-import com.github.loadup.components.cache.common.BaseCacheTest;
-import com.github.loadup.components.cache.common.model.User;
 
 /** Caffeine Cache Expiration Strategy Test */
 @TestPropertySource(

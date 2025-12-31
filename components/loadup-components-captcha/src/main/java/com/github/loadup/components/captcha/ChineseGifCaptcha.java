@@ -22,15 +22,13 @@ package com.github.loadup.components.captcha;
  * #L%
  */
 
+import com.github.loadup.components.captcha.base.ChineseCaptchaAbstract;
+import com.github.loadup.components.captcha.utils.GifEncoder;
 import java.awt.*;
 import java.awt.geom.CubicCurve2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import com.github.loadup.components.captcha.base.ChineseCaptchaAbstract;
-import com.github.loadup.components.captcha.utils.GifEncoder;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

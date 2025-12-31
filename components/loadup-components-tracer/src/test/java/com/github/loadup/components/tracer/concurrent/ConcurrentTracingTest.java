@@ -24,20 +24,17 @@ package com.github.loadup.components.tracer.concurrent;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.github.loadup.components.tracer.*;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-
-import com.github.loadup.components.tracer.*;
-
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.Tracer;
-import lombok.extern.slf4j.Slf4j;
 
 /** 高并发场景测试 - 测试 TraceContext 在多线程环境下的线程安全性 */
 @Slf4j

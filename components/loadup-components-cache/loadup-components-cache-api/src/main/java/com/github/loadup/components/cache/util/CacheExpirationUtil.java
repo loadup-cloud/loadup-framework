@@ -22,10 +22,9 @@ package com.github.loadup.components.cache.util;
  * #L%
  */
 
+import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
 import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
-
-import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
 
 /** Cache expiration utility to prevent cache avalanche and breakdown */
 public class CacheExpirationUtil {

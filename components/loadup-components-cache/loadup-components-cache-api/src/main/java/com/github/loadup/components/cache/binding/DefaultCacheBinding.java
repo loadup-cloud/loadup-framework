@@ -22,17 +22,13 @@ package com.github.loadup.components.cache.binding;
  * #L%
  */
 
-import java.util.function.Supplier;
-
-import jakarta.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-import org.springframework.util.StopWatch;
-
 import com.github.loadup.components.cache.api.CacheBinder;
 import com.github.loadup.components.cache.api.CacheBinding;
-
+import jakarta.annotation.Resource;
+import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 
 @Slf4j(topic = "DIGEST_CACHE_LOGGER")
 @Component("cacheBinding")

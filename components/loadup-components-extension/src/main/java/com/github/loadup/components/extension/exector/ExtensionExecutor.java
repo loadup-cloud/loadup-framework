@@ -22,20 +22,17 @@ package com.github.loadup.components.extension.exector;
  * #L%
  */
 
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.springframework.util.CollectionUtils;
-
 import com.github.loadup.components.extension.annotation.Extension;
 import com.github.loadup.components.extension.api.IExtensionPoint;
 import com.github.loadup.components.extension.core.BizScenario;
 import com.github.loadup.components.extension.register.ExtensionCoordinate;
 import com.github.loadup.components.extension.register.ExtensionRegistry;
-
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 /** 扩展点执行器 */
 @Slf4j

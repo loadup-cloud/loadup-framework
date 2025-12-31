@@ -23,7 +23,6 @@ package com.github.loadup.commons.util.date;
  */
 
 import java.time.Duration;
-
 import org.apache.commons.lang3.StringUtils;
 
 public class DurationUtils extends org.apache.commons.lang3.time.DurationUtils {

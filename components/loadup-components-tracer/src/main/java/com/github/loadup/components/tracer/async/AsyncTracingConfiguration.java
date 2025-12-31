@@ -23,7 +23,6 @@ package com.github.loadup.components.tracer.async;
  */
 
 import java.util.concurrent.Executor;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

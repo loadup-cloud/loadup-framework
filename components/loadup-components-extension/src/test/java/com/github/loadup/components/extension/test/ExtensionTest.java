@@ -25,15 +25,13 @@ package com.github.loadup.components.extension.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import jakarta.annotation.Resource;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
 import com.github.loadup.components.extension.core.BizScenario;
 import com.github.loadup.components.extension.exector.ExtensionExecutor;
 import com.github.loadup.components.extension.exector.ExtensionExecutor.ExtensionNotFoundException;
 import com.github.loadup.components.extension.test.service.GreetingService;
+import jakarta.annotation.Resource;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = TestApplication.class)
 public class ExtensionTest {

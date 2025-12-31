@@ -22,14 +22,12 @@ package com.github.loadup.components.captcha.utils;
  * #L%
  */
 
-import java.awt.*;
-import java.io.IOException;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import com.github.loadup.components.captcha.SpecCaptcha;
 import com.github.loadup.components.captcha.base.Captcha;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.awt.*;
+import java.io.IOException;
 
 /**
  * 图形验证码工具类

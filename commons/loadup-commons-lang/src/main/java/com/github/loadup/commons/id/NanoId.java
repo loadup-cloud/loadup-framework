@@ -33,10 +33,9 @@ package com.github.loadup.commons.id;
  * See the Mulan PSL v2 for more details.
  */
 
+import com.github.loadup.commons.util.RandomUtil;
 import java.security.SecureRandom;
 import java.util.Random;
-
-import com.github.loadup.commons.util.RandomUtil;
 
 /**
  * NanoId，一个小型、安全、对 URL友好的唯一字符串 ID 生成器，特点：

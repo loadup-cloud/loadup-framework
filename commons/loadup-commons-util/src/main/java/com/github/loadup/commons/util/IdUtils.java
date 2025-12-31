@@ -22,10 +22,9 @@ package com.github.loadup.commons.util;
  * #L%
  */
 
+import com.github.loadup.commons.util.internal.InternalThreadLocalMap;
 import java.security.SecureRandom;
 import java.util.UUID;
-
-import com.github.loadup.commons.util.internal.InternalThreadLocalMap;
 
 /** 封装各种生成唯一性ID算法的工具类. */
 public class IdUtils {

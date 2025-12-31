@@ -24,15 +24,13 @@ package com.github.loadup.components.tracer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.github.loadup.components.tracer.config.TracerProperties;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.Tracer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-
-import com.github.loadup.components.tracer.config.TracerProperties;
-
-import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.api.trace.Tracer;
 
 /** Test for OpenTelemetryConfig. */
 @SpringBootTest(classes = TestConfiguration.class)

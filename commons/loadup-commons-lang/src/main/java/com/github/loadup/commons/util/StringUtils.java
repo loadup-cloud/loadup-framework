@@ -25,7 +25,6 @@ package com.github.loadup.commons.util;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Objects;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.ToStringStyle;
 

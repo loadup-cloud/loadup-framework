@@ -22,15 +22,12 @@ package com.github.loadup.commons.result;
  * #L%
  */
 
+import com.github.loadup.commons.dto.DTO;
 import java.io.Serial;
 import java.io.Serializable;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.github.loadup.commons.dto.DTO;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Lise

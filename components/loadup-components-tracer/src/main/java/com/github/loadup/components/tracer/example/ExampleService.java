@@ -22,13 +22,11 @@ package com.github.loadup.components.tracer.example;
  * #L%
  */
 
-import org.springframework.stereotype.Service;
-
 import com.github.loadup.components.tracer.TraceUtil;
 import com.github.loadup.components.tracer.annotation.Traced;
-
 import io.opentelemetry.api.trace.Span;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service

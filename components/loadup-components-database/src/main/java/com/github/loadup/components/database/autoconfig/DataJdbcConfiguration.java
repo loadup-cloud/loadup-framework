@@ -22,9 +22,11 @@ package com.github.loadup.components.database.autoconfig;
  * #L%
  */
 
+import com.github.loadup.commons.dataobject.BaseDO;
+import com.github.loadup.components.database.config.DatabaseProperties;
+import com.github.loadup.components.database.id.*;
 import java.time.LocalDateTime;
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -36,10 +38,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.jdbc.repository.config.*;
 import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback;
-
-import com.github.loadup.commons.dataobject.BaseDO;
-import com.github.loadup.components.database.config.DatabaseProperties;
-import com.github.loadup.components.database.id.*;
 
 @AutoConfiguration
 @EnableJdbcAuditing

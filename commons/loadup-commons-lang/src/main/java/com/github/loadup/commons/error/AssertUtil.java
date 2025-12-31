@@ -22,15 +22,13 @@ package com.github.loadup.commons.error;
  * #L%
  */
 
+import com.github.loadup.commons.result.ResultCode;
+import com.github.loadup.commons.util.StringUtils;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.apache.commons.collections4.*;
 import org.apache.commons.lang3.ArrayUtils;
-
-import com.github.loadup.commons.result.ResultCode;
-import com.github.loadup.commons.util.StringUtils;
 
 /**
  * @author Lise

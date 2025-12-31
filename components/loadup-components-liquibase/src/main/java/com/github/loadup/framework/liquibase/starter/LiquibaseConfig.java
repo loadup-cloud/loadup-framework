@@ -23,12 +23,10 @@ package com.github.loadup.framework.liquibase.starter;
  */
 
 import javax.sql.DataSource;
-
+import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import liquibase.integration.spring.SpringLiquibase;
 
 /**
  * Configuration initialization when ApplicationStartedEvent

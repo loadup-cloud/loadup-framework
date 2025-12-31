@@ -24,7 +24,6 @@ package com.github.loadup.commons.dto;
 
 import java.io.Serial;
 import java.io.Serializable;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 

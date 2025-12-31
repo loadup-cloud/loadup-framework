@@ -22,9 +22,8 @@ package com.github.loadup.framework.api.util;
  * #L%
  */
 
-import org.slf4j.MDC;
-
 import io.opentelemetry.api.trace.Span;
+import org.slf4j.MDC;
 
 /**
  * @author Lise

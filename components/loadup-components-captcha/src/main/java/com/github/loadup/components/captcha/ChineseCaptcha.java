@@ -22,15 +22,12 @@ package com.github.loadup.components.captcha;
  * #L%
  */
 
+import com.github.loadup.components.captcha.base.ChineseCaptchaAbstract;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
-
 import javax.imageio.ImageIO;
-
-import com.github.loadup.components.captcha.base.ChineseCaptchaAbstract;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

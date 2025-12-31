@@ -23,11 +23,9 @@ package com.github.loadup.components.database.sequence;
  */
 
 import java.util.concurrent.atomic.AtomicLong;
-
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import lombok.Getter;
 
 @Getter
 public class SequenceRange {

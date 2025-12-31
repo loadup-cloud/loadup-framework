@@ -22,12 +22,10 @@ package com.github.loadup.components.captcha.servlet;
  * #L%
  */
 
-import java.io.IOException;
-
+import com.github.loadup.components.captcha.utils.CaptchaUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
-
-import com.github.loadup.components.captcha.utils.CaptchaUtil;
+import java.io.IOException;
 
 /**
  * 验证码 servlet

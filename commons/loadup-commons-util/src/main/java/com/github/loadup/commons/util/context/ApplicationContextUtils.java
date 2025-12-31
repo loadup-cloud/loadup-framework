@@ -23,7 +23,6 @@ package com.github.loadup.commons.util.context;
  */
 
 import java.util.Objects;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;

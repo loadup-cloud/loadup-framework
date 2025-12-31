@@ -26,16 +26,14 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.github.loadup.components.cache.common.BaseCacheTest;
+import com.github.loadup.components.cache.common.model.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
-
-import com.github.loadup.components.cache.common.BaseCacheTest;
-import com.github.loadup.components.cache.common.model.User;
 
 /** Anti-Avalanche and Anti-Breakdown Test 测试防缓存雪崩和缓存击穿策略 */
 @TestPropertySource(

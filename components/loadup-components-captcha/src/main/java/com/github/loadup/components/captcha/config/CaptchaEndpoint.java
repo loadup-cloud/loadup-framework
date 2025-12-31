@@ -22,15 +22,12 @@ package com.github.loadup.components.captcha.config;
  * #L%
  */
 
-import jakarta.servlet.http.HttpServletResponse;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-
 import com.github.loadup.components.captcha.ArithmeticCaptcha;
-
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * @author lengleng

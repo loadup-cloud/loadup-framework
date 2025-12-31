@@ -22,10 +22,9 @@ package com.github.loadup.components.tracer.config;
  * #L%
  */
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-
-import lombok.Data;
 
 /** Configuration properties for the tracer component. */
 @Data

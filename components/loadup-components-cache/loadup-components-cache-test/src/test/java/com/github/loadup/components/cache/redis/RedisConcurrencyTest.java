@@ -24,10 +24,12 @@ package com.github.loadup.components.cache.redis;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.loadup.components.cache.common.BaseCacheTest;
+import com.github.loadup.components.cache.common.model.User;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.*;
@@ -35,11 +37,6 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-
-import com.github.loadup.components.cache.common.BaseCacheTest;
-import com.github.loadup.components.cache.common.model.User;
-
-import lombok.extern.slf4j.Slf4j;
 
 /** Redis Cache Concurrency Test */
 @Slf4j

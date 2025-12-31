@@ -22,12 +22,17 @@ package com.github.loadup.components.cache.caffeine;
  * #L%
  */
 
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.loadup.components.cache.api.CacheBinder;
+import com.github.loadup.components.cache.caffeine.binder.CaffeineCacheBinderImpl;
+import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
+import com.github.loadup.components.cache.config.CacheProperties;
+import com.github.loadup.components.cache.util.CacheExpirationUtil;
+import jakarta.annotation.Resource;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import jakarta.annotation.Resource;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -38,15 +43,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.loadup.components.cache.api.CacheBinder;
-import com.github.loadup.components.cache.caffeine.binder.CaffeineCacheBinderImpl;
-import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
-import com.github.loadup.components.cache.config.CacheProperties;
-import com.github.loadup.components.cache.util.CacheExpirationUtil;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @EnableCaching

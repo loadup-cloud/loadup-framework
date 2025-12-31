@@ -25,14 +25,13 @@ package com.github.loadup.components.tracer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.github.loadup.components.tracer.annotation.Traced;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.TestPropertySource;
-
-import com.github.loadup.components.tracer.annotation.Traced;
 
 /** Test for @Traced annotation functionality. */
 @SpringBootTest(classes = TestConfiguration.class)

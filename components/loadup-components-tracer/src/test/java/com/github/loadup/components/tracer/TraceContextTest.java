@@ -24,9 +24,8 @@ package com.github.loadup.components.tracer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.Test;
-
 import io.opentelemetry.api.trace.Span;
+import org.junit.jupiter.api.Test;
 
 /** Test for TraceContext. */
 class TraceContextTest {

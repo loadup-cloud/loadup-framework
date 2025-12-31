@@ -23,11 +23,9 @@ package com.github.loadup.commons.result;
  */
 
 import java.util.Arrays;
-
-import org.apache.commons.lang3.StringUtils;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @AllArgsConstructor

@@ -22,9 +22,8 @@ package com.github.loadup.commons.util;
  * #L%
  */
 
-import java.util.Set;
-
 import jakarta.validation.*;
+import java.util.Set;
 
 // @Slf4j
 public class ValidateUtils {

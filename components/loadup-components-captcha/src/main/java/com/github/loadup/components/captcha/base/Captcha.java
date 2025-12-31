@@ -22,13 +22,12 @@ package com.github.loadup.components.captcha.base;
  * #L%
  */
 
+import com.github.loadup.components.captcha.utils.FontsUtil;
 import java.awt.*;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.QuadCurve2D;
 import java.io.*;
 import java.util.Base64;
-
-import com.github.loadup.components.captcha.utils.FontsUtil;
 
 /** 验证码抽象类 Created by 王帆 on 2018-07-27 上午 10:08. */
 public abstract class Captcha extends Randoms {

@@ -22,19 +22,16 @@ package com.github.loadup.components.database.service.impl;
  * #L%
  */
 
-import java.time.LocalDateTime;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import jakarta.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import com.github.loadup.components.database.repository.SequenceRepository;
 import com.github.loadup.components.database.sequence.SequenceRange;
 import com.github.loadup.components.database.service.SequenceService;
+import jakarta.annotation.Resource;
+import java.time.LocalDateTime;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 @Service
 public class SequenceServiceImpl implements SequenceService {

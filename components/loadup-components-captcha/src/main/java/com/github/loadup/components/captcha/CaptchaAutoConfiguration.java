@@ -22,16 +22,14 @@ package com.github.loadup.components.captcha;
  * #L%
  */
 
+import com.github.loadup.components.captcha.base.Randoms;
+import com.github.loadup.components.captcha.config.CaptchaEndpoint;
+import com.github.loadup.components.captcha.config.CaptchaProperties;
 import jakarta.annotation.PostConstruct;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.github.loadup.components.captcha.base.Randoms;
-import com.github.loadup.components.captcha.config.CaptchaEndpoint;
-import com.github.loadup.components.captcha.config.CaptchaProperties;
 
 /**
  * @author lengleng

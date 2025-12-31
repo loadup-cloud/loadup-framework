@@ -24,10 +24,12 @@ package com.github.loadup.components.cache.redis;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.loadup.components.cache.common.BaseCacheTest;
+import com.github.loadup.components.cache.common.model.Product;
+import com.github.loadup.components.cache.common.model.User;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.*;
@@ -35,10 +37,6 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-
-import com.github.loadup.components.cache.common.BaseCacheTest;
-import com.github.loadup.components.cache.common.model.Product;
-import com.github.loadup.components.cache.common.model.User;
 
 /** Redis Cache Basic Operations Test */
 @Testcontainers

@@ -22,12 +22,10 @@ package com.github.loadup.commons.domain;
  * #L%
  */
 
+import com.github.loadup.commons.util.ToStringUtils;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-
-import com.github.loadup.commons.util.ToStringUtils;
-
 import lombok.Getter;
 import lombok.Setter;
 

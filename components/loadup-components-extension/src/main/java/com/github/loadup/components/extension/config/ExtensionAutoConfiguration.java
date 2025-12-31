@@ -22,13 +22,12 @@ package com.github.loadup.components.extension.config;
  * #L%
  */
 
+import com.github.loadup.components.extension.exector.ExtensionExecutor;
+import com.github.loadup.components.extension.register.ExtensionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-
-import com.github.loadup.components.extension.exector.ExtensionExecutor;
-import com.github.loadup.components.extension.register.ExtensionRegistry;
 
 /** Extension 框架的 Spring Boot 自动装配类 */
 @AutoConfiguration

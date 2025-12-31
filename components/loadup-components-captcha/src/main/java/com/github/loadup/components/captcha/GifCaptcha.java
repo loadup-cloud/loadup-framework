@@ -22,15 +22,13 @@ package com.github.loadup.components.captcha;
  * #L%
  */
 
+import com.github.loadup.components.captcha.base.Captcha;
+import com.github.loadup.components.captcha.utils.GifEncoder;
 import java.awt.*;
 import java.awt.geom.CubicCurve2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import com.github.loadup.components.captcha.base.Captcha;
-import com.github.loadup.components.captcha.utils.GifEncoder;
-
 import lombok.extern.slf4j.Slf4j;
 
 /** Gif验证码类 Created by 王帆 on 2018-07-27 上午 10:08. */

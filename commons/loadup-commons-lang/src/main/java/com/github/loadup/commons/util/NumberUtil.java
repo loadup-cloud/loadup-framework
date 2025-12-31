@@ -38,7 +38,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Objects;
-
 import org.apache.commons.lang3.*;
 import org.apache.commons.lang3.StringUtils;
 

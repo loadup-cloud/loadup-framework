@@ -22,15 +22,13 @@ package com.github.loadup.components.cache.common;
  * #L%
  */
 
+import com.github.loadup.components.cache.api.CacheBinding;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-
-import com.github.loadup.components.cache.api.CacheBinding;
-
-import lombok.extern.slf4j.Slf4j;
 
 /** Base test class for cache tests */
 @Slf4j

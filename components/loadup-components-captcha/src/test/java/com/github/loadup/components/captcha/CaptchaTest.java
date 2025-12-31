@@ -27,10 +27,8 @@ import java.io.FileOutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
-
-import org.junit.jupiter.api.Test;
-
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
 
 /** 测试类 Created by 王帆 on 2018-07-27 上午 10:08. */
 @Slf4j

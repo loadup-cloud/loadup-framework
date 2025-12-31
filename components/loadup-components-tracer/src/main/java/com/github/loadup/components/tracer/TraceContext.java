@@ -22,10 +22,9 @@ package com.github.loadup.components.tracer;
  * #L%
  */
 
+import io.opentelemetry.api.trace.Span;
 import java.util.EmptyStackException;
 import java.util.Objects;
-
-import io.opentelemetry.api.trace.Span;
 
 public class TraceContext {
   private final ThreadLocal<Span> threadLocal = new ThreadLocal();

@@ -22,12 +22,10 @@ package com.github.loadup.commons.error;
  * #L%
  */
 
+import com.github.loadup.commons.result.ResultCode;
 import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.github.loadup.commons.result.ResultCode;
-
 import lombok.Getter;
 
 /**

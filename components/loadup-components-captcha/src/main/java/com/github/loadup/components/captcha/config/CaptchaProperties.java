@@ -22,9 +22,8 @@ package com.github.loadup.components.captcha.config;
  * #L%
  */
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * @author lengleng

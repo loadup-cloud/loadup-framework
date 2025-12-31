@@ -22,9 +22,8 @@ package com.github.loadup.components.database.config;
  * #L%
  */
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /** Configuration properties for database component. */
 @Data

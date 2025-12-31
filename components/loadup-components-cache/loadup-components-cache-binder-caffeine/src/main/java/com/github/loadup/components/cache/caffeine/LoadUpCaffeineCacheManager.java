@@ -22,14 +22,12 @@ package com.github.loadup.components.cache.caffeine;
  * #L%
  */
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
-
-import com.github.benmanes.caffeine.cache.Caffeine;
 
 /** Extended Caffeine Cache Manager with per-cache custom configurations */
 public class LoadUpCaffeineCacheManager extends CaffeineCacheManager {
