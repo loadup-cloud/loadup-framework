@@ -40,23 +40,23 @@ loadup-components-dfs
         <artifactId>loadup-components-dfs-api</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </dependency>
-    
+
     <!-- 选择一个或多个Provider -->
-    
+
     <!-- Local Provider -->
     <dependency>
         <groupId>com.github.loadup.components</groupId>
         <artifactId>loadup-components-dfs-binder-local</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </dependency>
-    
+
     <!-- Database Provider (可选) -->
     <dependency>
         <groupId>com.github.loadup.components</groupId>
         <artifactId>loadup-components-dfs-binder-database</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </dependency>
-    
+
     <!-- S3 Provider (可选) -->
     <dependency>
         <groupId>com.github.loadup.components</groupId>
@@ -78,11 +78,11 @@ loadup:
       local:
         enabled: true
         base-path: /var/dfs/files
-      
+
       # 数据库存储
       database:
         enabled: true
-      
+
       # S3对象存储
       s3:
         enabled: false
@@ -102,10 +102,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class FileService {
-    
+
     @Autowired
     private DfsService dfsService;
-    
+
     // 上传文件
     public String uploadFile(InputStream inputStream, String filename) {
         FileUploadRequest request = FileUploadRequest.builder()
@@ -116,26 +116,26 @@ public class FileService {
             .bizId("user-123")
             .publicAccess(false)
             .build();
-        
+
         FileMetadata metadata = dfsService.upload(request);
         return metadata.getFileId();
     }
-    
+
     // 下载文件
     public FileDownloadResponse downloadFile(String fileId) {
         return dfsService.download(fileId);
     }
-    
+
     // 删除文件
     public boolean deleteFile(String fileId) {
         return dfsService.delete(fileId);
     }
-    
+
     // 检查文件是否存在
     public boolean fileExists(String fileId) {
         return dfsService.exists(fileId);
     }
-    
+
     // 获取文件元数据
     public FileMetadata getFileMetadata(String fileId) {
         return dfsService.getMetadata(fileId);
@@ -145,7 +145,7 @@ public class FileService {
 
 ## 🔌 Provider对比
 
-| Provider     | 优点             | 缺点            | 适用场景      |
+|   Provider   |       优点       |      缺点       |   适用场景    |
 |--------------|----------------|---------------|-----------|
 | **Local**    | 快速、简单、无额外依赖    | 不支持分布式、磁盘空间限制 | 单机应用、开发测试 |
 | **Database** | 支持分布式、事务一致性    | 存储大文件性能较低     | 中小文件、需要事务 |
@@ -241,42 +241,42 @@ import com.github.loadup.components.extension.annotation.Extension;
 @Component
 @Extension(bizCode = "DFS", useCase = "my-storage")
 public class MyStorageProvider implements IDfsProvider {
-    
+
     @Override
     public FileMetadata upload(FileUploadRequest request) {
         // 实现上传逻辑
         return metadata;
     }
-    
+
     @Override
     public FileDownloadResponse download(String fileId) {
         // 实现下载逻辑
         return response;
     }
-    
+
     @Override
     public boolean delete(String fileId) {
         // 实现删除逻辑
         return true;
     }
-    
+
     @Override
     public boolean exists(String fileId) {
         // 实现存在性检查
         return false;
     }
-    
+
     @Override
     public FileMetadata getMetadata(String fileId) {
         // 实现元数据获取
         return metadata;
     }
-    
+
     @Override
     public String getProviderName() {
         return "my-storage";
     }
-    
+
     @Override
     public boolean isAvailable() {
         return true;
@@ -299,7 +299,7 @@ mvn clean test jacoco:report
 
 **测试结果**: ✅ 42/42 (100%)
 
-| 测试类                     | 用例数 | 通过率  |
+|           测试类           | 用例数 | 通过率  |
 |-------------------------|-----|------|
 | LocalDfsProviderTest    | 10  | 100% |
 | DatabaseDfsProviderTest | 12  | 100% |
@@ -398,8 +398,7 @@ mvn clean install -DskipTests
 
 ---
 
-**LoadUp Framework Team**  
-**Version**: 1.0.0  
-**Status**: ✅ 生产就绪  
+**LoadUp Framework Team**
+**Version**: 1.0.0
+**Status**: ✅ 生产就绪
 **Last Updated**: 2025-12-31
-

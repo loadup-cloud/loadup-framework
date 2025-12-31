@@ -66,4 +66,3 @@ FileMetadata metadata = dfsService.upload(request, "local");
 - 无需分布式存储的场景
 
 详见: [主项目文档](../README.md)
-

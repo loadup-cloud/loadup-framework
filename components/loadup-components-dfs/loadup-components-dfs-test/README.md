@@ -6,7 +6,7 @@ DFS组件的测试模块，包含所有Provider的单元测试和集成测试。
 
 ### 测试类
 
-| 测试类                     | 功能                | 用例数 | 通过率  |
+|           测试类           |        功能         | 用例数 | 通过率  |
 |-------------------------|-------------------|-----|------|
 | LocalDfsProviderTest    | Local Provider    | 10  | 100% |
 | DatabaseDfsProviderTest | Database Provider | 12  | 100% |
@@ -64,4 +64,3 @@ Tests run: 42
 ```
 
 详见: [主项目文档](../README.md)
-

@@ -78,4 +78,3 @@ FileMetadata metadata = dfsService.upload(request, "s3");
 - 建议配置生命周期策略管理过期文件
 
 详见: [主项目文档](../README.md)
-
