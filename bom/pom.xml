@@ -25,7 +25,9 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Commons Modules -->
+            <!-- ================================ -->
+            <!-- Commons Modules                  -->
+            <!-- ================================ -->
             <dependency>
                 <groupId>com.github.loadup.commons</groupId>
                 <artifactId>loadup-commons-api</artifactId>
@@ -47,42 +49,50 @@
                 <version>${loadup.framework.version}</version>
             </dependency>
 
-            <!-- Components - Database -->
+            <!-- ================================ -->
+            <!-- Components - Core                -->
+            <!-- ================================ -->
+            <!-- Database -->
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
                 <artifactId>loadup-components-database</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
 
-            <!-- Components - Liquibase -->
+            <!-- Liquibase -->
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
                 <artifactId>loadup-components-liquibase</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
 
-            <!-- Components - Extension -->
+            <!-- Extension -->
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
                 <artifactId>loadup-components-extension</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
 
-            <!-- Components - Captcha -->
+            <!-- ================================ -->
+            <!-- Components - Utilities           -->
+            <!-- ================================ -->
+            <!-- Captcha -->
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
                 <artifactId>loadup-components-captcha</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
 
-            <!-- Components - Tracer -->
+            <!-- Tracer -->
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
                 <artifactId>loadup-components-tracer</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
 
-            <!-- Components - Cache -->
+            <!-- ================================ -->
+            <!-- Components - Cache               -->
+            <!-- ================================ -->
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
                 <artifactId>loadup-components-cache-api</artifactId>
@@ -98,13 +108,15 @@
                 <artifactId>loadup-components-cache-binder-redis</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-
-            <!-- Components - Scheduler -->
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
-                <artifactId>loadup-components-scheduler</artifactId>
+                <artifactId>loadup-components-cache-test</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
+
+            <!-- ================================ -->
+            <!-- Components - Scheduler           -->
+            <!-- ================================ -->
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
                 <artifactId>loadup-components-scheduler-api</artifactId>
@@ -130,11 +142,38 @@
                 <artifactId>loadup-components-scheduler-binder-simplejob</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-
-            <!-- Components - Gotone -->
             <dependency>
                 <groupId>com.github.loadup.components</groupId>
-                <artifactId>loadup-components-gotone</artifactId>
+                <artifactId>loadup-components-scheduler-test</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+
+            <!-- ================================ -->
+            <!-- Components - Gotone              -->
+            <!-- ================================ -->
+            <dependency>
+                <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-gotone-api</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-gotone-binder-email</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-gotone-binder-push</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-gotone-binder-sms</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.loadup.components</groupId>
+                <artifactId>loadup-components-gotone-test</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
         </dependencies>
