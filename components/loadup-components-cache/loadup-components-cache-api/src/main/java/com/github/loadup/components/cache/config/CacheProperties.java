@@ -23,15 +23,19 @@ package com.github.loadup.components.cache.config;
  */
 
 import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 
 /** LoadUp Cache Configuration Properties Unified configuration for all cache implementations */
 @Getter
 @Setter
+@Validated
 @ConfigurationProperties(prefix = "loadup.cache")
 public class CacheProperties {
 
@@ -39,6 +43,7 @@ public class CacheProperties {
   private String type = "caffeine";
 
   /** Redis specific configuration */
+  @Valid
   private RedisConfig redis = new RedisConfig();
 
   /** Caffeine specific configuration */
@@ -49,6 +54,7 @@ public class CacheProperties {
   @Setter
   public static class RedisConfig {
     /** Redis server host */
+    @NotBlank(message = "Redis host cannot be blank")
     private String host = "localhost";
 
     /** Redis server port */

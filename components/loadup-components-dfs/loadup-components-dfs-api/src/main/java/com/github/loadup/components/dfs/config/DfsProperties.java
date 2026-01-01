@@ -22,16 +22,20 @@ package com.github.loadup.components.dfs.config;
  * #L%
  */
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * DFS配置属性
  */
 @Data
+@Validated
 @Component
 @ConfigurationProperties(prefix = "loadup.dfs")
 public class DfsProperties {
@@ -49,6 +53,8 @@ public class DfsProperties {
     /**
      * 最大文件大小（字节）
      */
+    @NotNull(message = "Maximum file size cannot be null")
+    @Min(value = 1, message = "Maximum file size must be at least 1 byte")
     private Long maxFileSize = 100 * 1024 * 1024L; // 100MB
 
     /**

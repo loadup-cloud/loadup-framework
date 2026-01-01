@@ -22,12 +22,15 @@ package com.github.loadup.components.tracer.config;
  * #L%
  */
 
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 /** Configuration properties for the tracer component. */
 @Data
+@Validated
 @Component
 @ConfigurationProperties(prefix = "loadup.tracer")
 public class TracerProperties {
@@ -42,6 +45,9 @@ public class TracerProperties {
   private boolean enableAsyncTracing = true;
 
   /** OTLP exporter endpoint (e.g., http://localhost:4317). */
+  @Pattern(
+      regexp = "^(https?://)?[a-zA-Z0-9.-]+(:[0-9]+)?(/.*)?$",
+      message = "OTLP endpoint must be a valid URL format")
   private String otlpEndpoint;
 
   /** Include request headers in spans. */
