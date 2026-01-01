@@ -46,7 +46,7 @@ public class TracerProperties {
 
   /** OTLP exporter endpoint (e.g., http://localhost:4317). */
   @Pattern(
-      regexp = "^(https?://)?[a-zA-Z0-9.-]+(:[0-9]+)?(/.*)?$",
+      regexp = "^(https?://)?([a-zA-Z0-9_.-]+|\\[[0-9a-fA-F:]+\\])(:[0-9]+)?(/.*)?$",
       message = "OTLP endpoint must be a valid URL format")
   private String otlpEndpoint;
 

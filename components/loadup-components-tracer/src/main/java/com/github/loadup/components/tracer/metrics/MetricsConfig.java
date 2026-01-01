@@ -68,15 +68,15 @@ public class MetricsConfig {
   /**
    * Customize MeterRegistry with common tags.
    *
+   * @param applicationName Spring application name
    * @return MeterRegistryCustomizer with application-level tags
    */
   @Bean
-  public MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
+  public MeterRegistryCustomizer<MeterRegistry> metricsCommonTags(
+      @org.springframework.beans.factory.annotation.Value("${spring.application.name:loadup-app}")
+          String applicationName) {
     return registry ->
-        registry
-            .config()
-            .commonTags(
-                "application", "${spring.application.name:loadup-app}", "framework", "loadup");
+        registry.config().commonTags("application", applicationName, "framework", "loadup");
   }
 
   /**
@@ -127,9 +127,11 @@ public class MetricsConfig {
   @ConditionalOnBean(Executor.class)
   public ThreadPoolMetricsRegistrar threadPoolMetricsRegistrar(
       MeterRegistry meterRegistry, @Autowired(required = false) Executor executor) {
-    if (executor != null) {
+    if (executor instanceof java.util.concurrent.ExecutorService executorService) {
       log.info("Registering thread pool metrics");
-      ExecutorServiceMetrics.monitor(meterRegistry, executor, "application-executor");
+      ExecutorServiceMetrics.monitor(meterRegistry, executorService, "application-executor");
+    } else if (executor != null) {
+      log.warn("Executor is not an ExecutorService, skipping metrics registration");
     }
     return new ThreadPoolMetricsRegistrar();
   }

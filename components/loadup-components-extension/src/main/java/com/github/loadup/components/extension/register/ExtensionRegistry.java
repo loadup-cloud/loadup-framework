@@ -198,6 +198,9 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
     log.debug("Prewarming extension cache...");
     int cacheEntries = 0;
     
+    // 使用Set避免重复计算相同的场景
+    Set<ScenarioKey> processedScenarios = new HashSet<>();
+    
     // 遍历所有扩展点类型
     for (Map.Entry<Class<?>, List<ExtensionCoordinate>> entry : extensionRegister.entrySet()) {
       Class<?> extensionType = entry.getKey();
@@ -213,8 +216,12 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
         );
         
         ScenarioKey key = new ScenarioKey(extensionType, scenario);
-        scenarioCache.put(key, computeExtensionsByScenario(extensionType, scenario));
-        cacheEntries++;
+        
+        // 只处理未处理过的场景组合
+        if (processedScenarios.add(key)) {
+          scenarioCache.put(key, computeExtensionsByScenario(extensionType, scenario));
+          cacheEntries++;
+        }
       }
     }
     
