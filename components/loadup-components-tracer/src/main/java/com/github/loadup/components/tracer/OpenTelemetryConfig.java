@@ -23,9 +23,11 @@ package com.github.loadup.components.tracer;
  */
 
 import com.github.loadup.components.tracer.config.TracerProperties;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.baggage.propagation.W3CBaggagePropagator;
 import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.*;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
@@ -44,6 +46,7 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -118,6 +121,28 @@ public class OpenTelemetryConfig {
   }
 
   @Bean
+  public Meter meter(OpenTelemetry openTelemetry) {
+    return openTelemetry.getMeter(applicationName);
+  }
+
+  /**
+   * Integrate Micrometer MeterRegistry with OpenTelemetry if available.
+   *
+   * @param meterRegistry Optional MeterRegistry from Micrometer
+   * @param openTelemetry OpenTelemetry instance
+   */
+  @Bean
+  public MeterRegistryIntegration meterRegistryIntegration(
+      @Autowired(required = false) MeterRegistry meterRegistry, OpenTelemetry openTelemetry) {
+    if (meterRegistry != null) {
+      // MeterRegistry is available, metrics will be collected through Micrometer
+      // OpenTelemetry metrics can coexist with Micrometer
+      return new MeterRegistryIntegration(meterRegistry);
+    }
+    return new MeterRegistryIntegration(null);
+  }
+
+  @Bean
   public ContextPropagators contextPropagators() {
     // return ContextPropagators.create(W3CTraceContextPropagator.getInstance());
     return ContextPropagators.create(new CustomTextMapPropagator());
@@ -175,6 +200,19 @@ public class OpenTelemetryConfig {
     @Override
     public List<String> fields() {
       return Arrays.asList("traceparent", CUSTOM_TRACE_HEADER);
+    }
+  }
+
+  /** Integration class for MeterRegistry with OpenTelemetry */
+  static class MeterRegistryIntegration {
+    private final MeterRegistry meterRegistry;
+
+    MeterRegistryIntegration(MeterRegistry meterRegistry) {
+      this.meterRegistry = meterRegistry;
+    }
+
+    public MeterRegistry getMeterRegistry() {
+      return meterRegistry;
     }
   }
 }
