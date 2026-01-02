@@ -178,7 +178,8 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
     // 如果已初始化，使用缓存
     if (initialized) {
       ScenarioKey key = new ScenarioKey(extensionPointClass, scenario);
-      return scenarioCache.computeIfAbsent(key, k -> computeExtensionsByScenario(extensionPointClass, scenario));
+      return scenarioCache.computeIfAbsent(
+          key, k -> computeExtensionsByScenario(extensionPointClass, scenario));
     }
     // 未初始化时直接计算
     return computeExtensionsByScenario(extensionPointClass, scenario);
@@ -197,26 +198,23 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
   private void prewarmCache() {
     log.debug("Prewarming extension cache...");
     int cacheEntries = 0;
-    
+
     // 使用Set避免重复计算相同的场景
     Set<ScenarioKey> processedScenarios = new HashSet<>();
-    
+
     // 遍历所有扩展点类型
     for (Map.Entry<Class<?>, List<ExtensionCoordinate>> entry : extensionRegister.entrySet()) {
       Class<?> extensionType = entry.getKey();
       List<ExtensionCoordinate> coordinates = entry.getValue();
-      
+
       // 为每个扩展坐标创建场景并缓存
       for (ExtensionCoordinate coordinate : coordinates) {
         Extension metadata = coordinate.extensionMetadata();
-        BizScenario scenario = BizScenario.valueOf(
-            metadata.bizCode(), 
-            metadata.useCase(), 
-            metadata.scenario()
-        );
-        
+        BizScenario scenario =
+            BizScenario.valueOf(metadata.bizCode(), metadata.useCase(), metadata.scenario());
+
         ScenarioKey key = new ScenarioKey(extensionType, scenario);
-        
+
         // 只处理未处理过的场景组合
         if (processedScenarios.add(key)) {
           scenarioCache.put(key, computeExtensionsByScenario(extensionType, scenario));
@@ -224,7 +222,7 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
         }
       }
     }
-    
+
     log.debug("Extension cache prewarmed with {} entries", cacheEntries);
   }
 

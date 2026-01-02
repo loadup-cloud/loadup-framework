@@ -102,18 +102,19 @@ class ExtensionRegistryCacheTest {
     List<ExtensionCoordinate> extensions2 =
         registry.getExtensionsByScenario(TestExtension.class, scenario2);
 
-    assertNotEquals(extensions1, extensions2, "Different scenarios should return different results");
+    assertNotEquals(
+        extensions1, extensions2, "Different scenarios should return different results");
   }
 
   @Test
   void testPrewarmCache() {
     // After initialization, cache should already be prewarmed
     BizScenario scenario = BizScenario.valueOf("test", "default", "default");
-    
+
     // This call should use the prewarmed cache
     List<ExtensionCoordinate> extensions =
         registry.getExtensionsByScenario(TestExtension.class, scenario);
-    
+
     assertNotNull(extensions);
     assertFalse(extensions.isEmpty());
   }

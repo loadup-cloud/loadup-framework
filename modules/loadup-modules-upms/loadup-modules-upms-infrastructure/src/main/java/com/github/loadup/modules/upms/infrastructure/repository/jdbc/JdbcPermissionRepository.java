@@ -39,7 +39,8 @@ public interface JdbcPermissionRepository
     """)
   List<Permission> findByRoleId(@Param("roleId") Long roleId);
 
-  @Query("SELECT * FROM upms_permission WHERE parent_id = :parentId AND deleted = false ORDER BY sort_order")
+  @Query(
+      "SELECT * FROM upms_permission WHERE parent_id = :parentId AND deleted = false ORDER BY sort_order")
   List<Permission> findByParentId(@Param("parentId") Long parentId);
 
   @Query("SELECT * FROM upms_permission WHERE deleted = false ORDER BY sort_order, created_time")
@@ -76,8 +77,10 @@ public interface JdbcPermissionRepository
       @Param("operatorId") Long operatorId);
 
   @Modifying
-  @Query("DELETE FROM upms_role_permission WHERE role_id = :roleId AND permission_id = :permissionId")
-  void removePermissionFromRole(@Param("roleId") Long roleId, @Param("permissionId") Long permissionId);
+  @Query(
+      "DELETE FROM upms_role_permission WHERE role_id = :roleId AND permission_id = :permissionId")
+  void removePermissionFromRole(
+      @Param("roleId") Long roleId, @Param("permissionId") Long permissionId);
 
   @Modifying
   @Query("DELETE FROM upms_role_permission WHERE role_id = :roleId")

@@ -104,7 +104,7 @@ class TracerPropertiesTest {
   @Test
   void testDefaultValues() {
     TracerProperties properties = new TracerProperties();
-    
+
     assertTrue(properties.isEnabled());
     assertTrue(properties.isEnableWebTracing());
     assertTrue(properties.isEnableAsyncTracing());

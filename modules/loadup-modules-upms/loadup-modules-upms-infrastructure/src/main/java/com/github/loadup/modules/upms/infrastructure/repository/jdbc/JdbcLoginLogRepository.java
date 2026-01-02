@@ -2,7 +2,6 @@ package com.github.loadup.modules.upms.infrastructure.repository.jdbc;
 
 import com.github.loadup.modules.upms.domain.entity.LoginLog;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

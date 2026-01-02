@@ -21,7 +21,8 @@ public interface JdbcDepartmentRepository
   @Query("SELECT * FROM upms_department WHERE dept_code = :deptCode AND deleted = false")
   Optional<Department> findByDeptCode(@Param("deptCode") String deptCode);
 
-  @Query("SELECT * FROM upms_department WHERE parent_id = :parentId AND deleted = false ORDER BY sort_order")
+  @Query(
+      "SELECT * FROM upms_department WHERE parent_id = :parentId AND deleted = false ORDER BY sort_order")
   List<Department> findByParentId(@Param("parentId") Long parentId);
 
   @Query("SELECT * FROM upms_department WHERE deleted = false ORDER BY sort_order, created_time")

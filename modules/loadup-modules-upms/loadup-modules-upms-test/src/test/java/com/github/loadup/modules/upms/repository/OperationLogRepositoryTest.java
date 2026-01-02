@@ -108,7 +108,8 @@ class OperationLogRepositoryTest extends BaseRepositoryTest {
     LocalDateTime start = LocalDateTime.now().minusDays(1);
     LocalDateTime end = LocalDateTime.now().plusDays(1);
     Page<OperationLog> logs =
-        operationLogRepository.search(null, null, "User Management", start, end, PageRequest.of(0, 10));
+        operationLogRepository.search(
+            null, null, "User Management", start, end, PageRequest.of(0, 10));
 
     // Then
     assertThat(logs.getContent()).isNotEmpty();
@@ -123,7 +124,8 @@ class OperationLogRepositoryTest extends BaseRepositoryTest {
     operationLogRepository.save(testLog);
 
     // When
-    Page<OperationLog> logs = operationLogRepository.findByOperationType("CREATE", PageRequest.of(0, 10));
+    Page<OperationLog> logs =
+        operationLogRepository.findByOperationType("CREATE", PageRequest.of(0, 10));
 
     // Then
     assertThat(logs.getContent()).isNotEmpty();

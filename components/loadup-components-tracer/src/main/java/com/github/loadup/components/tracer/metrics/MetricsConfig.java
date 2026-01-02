@@ -40,8 +40,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
 /**
- * Metrics configuration for integrating various infrastructure components with Micrometer.
- * Provides metrics for HikariCP connection pools, Redis (Lettuce), and thread pools.
+ * Metrics configuration for integrating various infrastructure components with Micrometer. Provides
+ * metrics for HikariCP connection pools, Redis (Lettuce), and thread pools.
  */
 @Slf4j
 @Configuration
@@ -105,7 +105,8 @@ public class MetricsConfig {
    */
   @Bean
   @ConditionalOnBean(LettuceConnectionFactory.class)
-  @ConditionalOnClass(name = "org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory")
+  @ConditionalOnClass(
+      name = "org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory")
   public LettuceMetricsRegistrar lettuceMetricsRegistrar(
       @Autowired(required = false) LettuceConnectionFactory lettuceConnectionFactory,
       MeterRegistry meterRegistry) {

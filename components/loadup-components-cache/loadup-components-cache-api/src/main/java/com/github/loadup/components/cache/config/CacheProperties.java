@@ -43,8 +43,7 @@ public class CacheProperties {
   private String type = "caffeine";
 
   /** Redis specific configuration */
-  @Valid
-  private RedisConfig redis = new RedisConfig();
+  @Valid private RedisConfig redis = new RedisConfig();
 
   /** Caffeine specific configuration */
   private CaffeineConfig caffeine = new CaffeineConfig();

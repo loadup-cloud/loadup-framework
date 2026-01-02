@@ -61,8 +61,7 @@ class CachePropertiesTest {
     Set<ConstraintViolation<CacheProperties>> violations = validator.validate(properties);
     assertFalse(violations.isEmpty(), "Blank host should be invalid");
     assertTrue(
-        violations.stream()
-            .anyMatch(v -> v.getMessage().contains("Redis host cannot be blank")),
+        violations.stream().anyMatch(v -> v.getMessage().contains("Redis host cannot be blank")),
         "Should have Redis host validation message");
   }
 
@@ -78,7 +77,7 @@ class CachePropertiesTest {
   @Test
   void testDefaultValues() {
     CacheProperties properties = new CacheProperties();
-    
+
     assertEquals("caffeine", properties.getType());
     assertEquals("localhost", properties.getRedis().getHost());
     assertEquals(6379, properties.getRedis().getPort());
