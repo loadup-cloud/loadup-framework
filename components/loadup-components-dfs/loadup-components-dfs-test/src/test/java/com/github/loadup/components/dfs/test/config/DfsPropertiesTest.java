@@ -1,4 +1,4 @@
-package com.github.loadup.components.dfs.config;
+package com.github.loadup.components.dfs.test.config;
 
 /*-
  * #%L
@@ -24,13 +24,13 @@ package com.github.loadup.components.dfs.config;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.loadup.components.dfs.config.DfsProperties;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import java.util.Set;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 /** Tests for DfsProperties validation */
 class DfsPropertiesTest {
@@ -90,7 +90,7 @@ class DfsPropertiesTest {
   @Test
   void testDefaultValues() {
     DfsProperties properties = new DfsProperties();
-    
+
     assertEquals("local", properties.getDefaultProvider());
     assertEquals(100 * 1024 * 1024L, properties.getMaxFileSize());
     assertNotNull(properties.getProviders());
