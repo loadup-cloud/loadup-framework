@@ -1,12 +1,13 @@
 package com.github.loadup.modules.upms.infrastructure.dataobject;
 
 import com.github.loadup.commons.dataobject.BaseDO;
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * User Data Object - Database mapping entity
@@ -19,7 +20,8 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("upms_user")
 public class UserDO extends BaseDO {
 
-  @Id private String id;
+  @Id(keyType = KeyType.None)
+  private String id;
 
   private String username;
 

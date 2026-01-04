@@ -1,4 +1,4 @@
-package com.github.loadup.modules.upms.infrastructure.mapper;
+package com.github.loadup.modules.upms.infrastructure.converter;
 
 /*-
  * #%L
@@ -22,15 +22,23 @@ package com.github.loadup.modules.upms.infrastructure.mapper;
  * #L%
  */
 
-import com.github.loadup.modules.upms.infrastructure.dataobject.DepartmentDO;
-import com.mybatisflex.core.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import com.github.loadup.modules.upms.domain.entity.Permission;
+import com.github.loadup.modules.upms.infrastructure.dataobject.PermissionDO;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Department MyBatis-Flex Mapper
+ * Permission Converter
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Mapper
-public interface DepartmentMapper extends BaseMapper<DepartmentDO> {}
+@Mapper(componentModel = "spring")
+public interface PermissionConverter {
+
+  PermissionConverter INSTANCE = Mappers.getMapper(PermissionConverter.class);
+
+  PermissionDO toDataObject(Permission permission);
+
+  Permission toEntity(PermissionDO permissionDO);
+}

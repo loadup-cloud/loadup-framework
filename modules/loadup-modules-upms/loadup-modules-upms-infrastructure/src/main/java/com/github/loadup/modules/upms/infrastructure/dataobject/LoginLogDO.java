@@ -1,11 +1,12 @@
 package com.github.loadup.modules.upms.infrastructure.dataobject;
 
 import com.github.loadup.commons.dataobject.BaseDO;
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * LoginLog Data Object
@@ -18,7 +19,9 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("upms_login_log")
 public class LoginLogDO extends BaseDO {
 
-  @Id private String id;
+  @Id(keyType = KeyType.None)
+  private String id;
+
   private String userId;
 
   private String username;

@@ -1,4 +1,4 @@
-package com.github.loadup.modules.upms.infrastructure.mapper;
+package com.github.loadup.modules.upms.infrastructure.converter;
 
 /*-
  * #%L
@@ -22,15 +22,35 @@ package com.github.loadup.modules.upms.infrastructure.mapper;
  * #L%
  */
 
-import com.github.loadup.modules.upms.infrastructure.dataobject.DepartmentDO;
-import com.mybatisflex.core.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import com.github.loadup.modules.upms.domain.entity.User;
+import com.github.loadup.modules.upms.infrastructure.dataobject.UserDO;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Department MyBatis-Flex Mapper
+ * User Converter - MapStruct converter between Domain Entity and DataObject
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Mapper
-public interface DepartmentMapper extends BaseMapper<DepartmentDO> {}
+@Mapper(componentModel = "spring")
+public interface UserConverter {
+
+  UserConverter INSTANCE = Mappers.getMapper(UserConverter.class);
+
+  /**
+   * Convert Domain Entity to DataObject
+   *
+   * @param user domain entity
+   * @return data object
+   */
+  UserDO toDataObject(User user);
+
+  /**
+   * Convert DataObject to Domain Entity
+   *
+   * @param userDO data object
+   * @return domain entity
+   */
+  User toEntity(UserDO userDO);
+}

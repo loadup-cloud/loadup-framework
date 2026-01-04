@@ -1,51 +1,36 @@
 package com.github.loadup.modules.upms.infrastructure.mapper;
 
-import com.github.loadup.modules.upms.domain.entity.User;
+/*-
+ * #%L
+ * loadup-modules-upms-infrastructure
+ * %%
+ * Copyright (C) 2022 - 2026 loadup_cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import com.github.loadup.modules.upms.infrastructure.dataobject.UserDO;
-import java.util.List;
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import com.mybatisflex.core.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
- * User Entity <-> UserDO Mapper
+ * User MyBatis-Flex Mapper
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Mapper(componentModel = "spring")
-public interface UserMapper {
-
-  UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
-
-  /**
-   * Convert UserDO to User Entity
-   *
-   * @param userDO data object
-   * @return domain entity
-   */
-  User toEntity(UserDO userDO);
-
-  /**
-   * Convert User Entity to UserDO
-   *
-   * @param user domain entity
-   * @return data object
-   */
-  UserDO toDO(User user);
-
-  /**
-   * Convert UserDO list to User Entity list
-   *
-   * @param userDOList data object list
-   * @return domain entity list
-   */
-  List<User> toEntityList(List<UserDO> userDOList);
-
-  /**
-   * Convert User Entity list to UserDO list
-   *
-   * @param userList domain entity list
-   * @return data object list
-   */
-  List<UserDO> toDOList(List<User> userList);
-}
+@Mapper
+public interface UserMapper extends BaseMapper<UserDO> {}

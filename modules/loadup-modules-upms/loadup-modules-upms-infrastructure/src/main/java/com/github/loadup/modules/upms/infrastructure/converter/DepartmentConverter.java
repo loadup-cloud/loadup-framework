@@ -1,4 +1,4 @@
-package com.github.loadup.modules.upms.infrastructure.mapper;
+package com.github.loadup.modules.upms.infrastructure.converter;
 
 /*-
  * #%L
@@ -22,15 +22,23 @@ package com.github.loadup.modules.upms.infrastructure.mapper;
  * #L%
  */
 
+import com.github.loadup.modules.upms.domain.entity.Department;
 import com.github.loadup.modules.upms.infrastructure.dataobject.DepartmentDO;
-import com.mybatisflex.core.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Department MyBatis-Flex Mapper
+ * Department Converter
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Mapper
-public interface DepartmentMapper extends BaseMapper<DepartmentDO> {}
+@Mapper(componentModel = "spring")
+public interface DepartmentConverter {
+
+  DepartmentConverter INSTANCE = Mappers.getMapper(DepartmentConverter.class);
+
+  DepartmentDO toDataObject(Department department);
+
+  Department toEntity(DepartmentDO departmentDO);
+}
