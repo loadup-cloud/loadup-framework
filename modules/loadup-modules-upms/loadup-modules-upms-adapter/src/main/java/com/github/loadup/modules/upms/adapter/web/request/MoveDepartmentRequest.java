@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 public class MoveDepartmentRequest {
   @NotNull(message = "部门ID不能为空")
-  private Long deptId;
+  private String deptId;
 
-  private Long newParentId;
+  private String newParentId;
 }

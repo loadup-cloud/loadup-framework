@@ -156,7 +156,7 @@ loadup-modules-upms/
 执行数据库脚本创建表结构：
 
 ```bash
-psql -U postgres -d your_database -f schema.sql
+mysql -u root -p loadup_upms < schema.sql
 ```
 
 默认创建管理员账号：
@@ -170,7 +170,7 @@ psql -U postgres -d your_database -f schema.sql
 ```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/loadup_upms
+    url: jdbc:mysql://localhost:3306/loadup_upms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: your_username
     password: your_password
 
@@ -195,6 +195,23 @@ mvn spring-boot:run
 
 ## 📖 API 文档
 
+### 统一响应格式
+
+所有API统一使用POST方法，响应格式统一为：
+
+```json
+{
+  "result": {
+    "success": true,
+    "errCode": null,
+    "errMessage": null
+  },
+  "data": {
+    ...
+  }
+}
+```
+
 ### 认证接口
 
 #### 登录
@@ -213,16 +230,29 @@ Content-Type: application/json
 **响应示例：**
 ```json
 {
-  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "tokenType": "Bearer",
-  "expiresIn": 86400000,
-  "userInfo": {
-    "id": 1,
-    "username": "admin",
-    "nickname": "超级管理员",
-    "roles": ["ROLE_SUPER_ADMIN"],
-    "permissions": ["system:user:query", "system:user:create", ...]
+  "result": {
+    "success": true,
+    "errCode": null,
+    "errMessage": null
+  },
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "tokenType": "Bearer",
+    "expiresIn": 86400000,
+    "userInfo": {
+      "id": 1,
+      "username": "admin",
+      "nickname": "超级管理员",
+      "roles": [
+        "ROLE_SUPER_ADMIN"
+      ],
+      "permissions": [
+        "system:user:query",
+        "system:user:create",
+        ...
+      ]
+    }
   }
 }
 ```
@@ -253,9 +283,187 @@ Content-Type: application/json
 
 ### 用户管理接口
 
-详见在线API文档（Swagger UI）。
+#### 创建用户
+
+```http
+POST /api/v1/users/create
+Content-Type: application/json
+
+{
+  "username": "newuser",
+  "password": "Password123",
+  "nickname": "新用户",
+  "deptId": 1,
+  "roleIds": [2, 3]
+}
+```
+
+#### 查询用户列表
+
+```http
+POST /api/v1/users/query
+Content-Type: application/json
+
+{
+  "page": 1,
+  "size": 10,
+  "username": "admin"
+}
+```
+
+**响应示例（分页）：**
+
+```json
+{
+  "result": {
+    "success": true
+  },
+  "data": [
+    ...
+  ],
+  "totalCount": 100,
+  "pageSize": 10,
+  "pageIndex": 1
+}
+```
+
+#### 获取用户详情
+
+```http
+POST /api/v1/users/get
+Content-Type: application/json
+
+{
+  "id": 1
+}
+```
+
+#### 更新用户
+
+```http
+POST /api/v1/users/update
+Content-Type: application/json
+
+{
+  "id": 1,
+  "nickname": "新昵称",
+  "email": "newemail@example.com"
+}
+```
+
+#### 删除用户
+
+```http
+POST /api/v1/users/delete
+Content-Type: application/json
+
+{
+  "id": 1
+}
+```
+
+#### 锁定/解锁用户
+
+```http
+POST /api/v1/users/lock
+Content-Type: application/json
+
+{
+  "id": 1
+}
+```
+
+### 角色管理接口
+
+#### 获取角色树
+
+```http
+POST /api/v1/roles/tree
+Content-Type: application/json
+
+{}
+```
+
+#### 分配权限给角色
+
+```http
+POST /api/v1/roles/assign-permissions
+Content-Type: application/json
+
+{
+  "roleId": 2,
+  "permissionIds": [1, 2, 3, 4]
+}
+```
+
+### 权限管理接口
+
+#### 获取用户菜单树
+
+```http
+POST /api/v1/permissions/user-menu-tree
+Content-Type: application/json
+
+{
+  "id": 1
+}
+```
+
+#### 按类型获取权限
+
+```http
+POST /api/v1/permissions/by-type
+Content-Type: application/json
+
+{
+  "permissionType": 1
+}
+```
+
+权限类型：
+
+- `1` - 菜单权限
+- `2` - 按钮权限
+- `3` - API权限
+
+完整API文档请访问 Swagger UI：`http://localhost:8080/swagger-ui.html`
 
 ## 🔧 高级配置
+
+### 配置检查清单
+
+部署前请确保：
+
+#### 基础环境
+
+- ✅ JDK 17+ 已安装
+- ✅ Maven 3.8+ 已安装
+- ✅ MySQL 8.0+ 已安装并运行
+- ✅ Redis 6.0+ 已安装并运行（可选）
+
+#### 数据库初始化
+
+1. 创建数据库：`CREATE DATABASE loadup_upms;`
+2. 执行脚本：`mysql -u root -p loadup_upms < schema.sql`
+3. 验证表创建成功（应有12张表）
+4. 验证初始数据：默认管理员 `admin/admin123`
+
+### JWT密钥配置 ⚠️ 重要
+
+```yaml
+upms:
+  security:
+    jwt:
+      # 生产环境必须修改！至少32个字符
+      secret: your-secret-key-at-least-32-characters-long-change-in-production
+      expiration: 86400000  # 24小时
+```
+
+**生成安全密钥**：
+
+```bash
+openssl rand -base64 32
+```
 
 ### 自定义白名单
 
@@ -335,7 +543,7 @@ mvn test
 mvn verify -P integration-test
 ```
 
-集成测试会自动启动PostgreSQL和Redis容器。
+集成测试会自动启动MySQL和Redis容器。
 
 ## 📦 组件依赖
 

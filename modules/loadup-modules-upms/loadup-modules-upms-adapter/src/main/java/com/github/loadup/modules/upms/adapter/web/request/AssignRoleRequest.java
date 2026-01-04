@@ -12,8 +12,8 @@ import lombok.Data;
 @Data
 public class AssignRoleRequest {
   @NotNull(message = "角色ID不能为空")
-  private Long roleId;
+  private String roleId;
 
   @NotNull(message = "用户ID不能为空")
-  private Long userId;
+  private String userId;
 }

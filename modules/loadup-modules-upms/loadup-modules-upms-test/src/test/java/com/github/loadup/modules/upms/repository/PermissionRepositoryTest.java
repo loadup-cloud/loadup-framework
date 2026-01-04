@@ -38,7 +38,7 @@ class PermissionRepositoryTest extends BaseRepositoryTest {
   void setUp() {
     testPermission =
         Permission.builder()
-            .parentId(0L)
+            .parentId("0")
             .permissionName("Test Permission")
             .permissionCode("TEST_PERM")
             .permissionType((short) 1) // Menu
@@ -48,7 +48,7 @@ class PermissionRepositoryTest extends BaseRepositoryTest {
             .visible(true)
             .status((short) 1)
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
   }
@@ -101,7 +101,7 @@ class PermissionRepositoryTest extends BaseRepositoryTest {
     permissionRepository.save(testPermission);
     Permission perm2 =
         Permission.builder()
-            .parentId(0L)
+            .parentId("0")
             .permissionName("Permission 2")
             .permissionCode("PERM_2")
             .permissionType((short) 2) // Button
@@ -109,7 +109,7 @@ class PermissionRepositoryTest extends BaseRepositoryTest {
             .visible(true)
             .status((short) 1)
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
     permissionRepository.save(perm2);
@@ -128,7 +128,7 @@ class PermissionRepositoryTest extends BaseRepositoryTest {
     permissionRepository.save(testPermission); // Menu type
     Permission buttonPerm =
         Permission.builder()
-            .parentId(0L)
+            .parentId("0")
             .permissionName("Button Permission")
             .permissionCode("BUTTON_PERM")
             .permissionType((short) 2) // Button
@@ -136,7 +136,7 @@ class PermissionRepositoryTest extends BaseRepositoryTest {
             .visible(true)
             .status((short) 1)
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
     permissionRepository.save(buttonPerm);
@@ -164,7 +164,7 @@ class PermissionRepositoryTest extends BaseRepositoryTest {
             .visible(true)
             .status((short) 1)
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
     permissionRepository.save(child);

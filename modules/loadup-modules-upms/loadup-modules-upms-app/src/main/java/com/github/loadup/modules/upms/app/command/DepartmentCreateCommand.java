@@ -15,7 +15,7 @@ import lombok.Data;
 @Data
 public class DepartmentCreateCommand {
 
-  private Long parentId;
+  private String parentId;
 
   @NotBlank(message = "部门名称不能为空")
   @Size(max = 50, message = "部门名称长度不能超过50")
@@ -28,7 +28,7 @@ public class DepartmentCreateCommand {
 
   private Integer sortOrder;
 
-  private Long leaderUserId;
+  private String leaderUserId;
 
   @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确")
   private String phone;
@@ -41,5 +41,5 @@ public class DepartmentCreateCommand {
 
   private String remark;
 
-  private Long createdBy;
+  private String createdBy;
 }

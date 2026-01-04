@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OperationLogDTO {
 
-  private Long id;
-  private Long userId;
+  private String id;
+  private String userId;
   private String username;
   private String operationType;
   private String operationName;

@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LoginLogDTO {
 
-  private Long id;
-  private Long userId;
+  private String id;
+  private String userId;
   private String username;
   private String loginType;
   private String ipAddress;

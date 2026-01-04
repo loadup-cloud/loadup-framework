@@ -21,10 +21,10 @@ public interface UserRepository {
   User update(User user);
 
   /** Delete user by ID */
-  void deleteById(Long id);
+  void deleteById(String id);
 
   /** Find user by ID */
-  Optional<User> findById(Long id);
+  Optional<User> findById(String id);
 
   /** Find user by username */
   Optional<User> findByUsername(String username);
@@ -36,10 +36,10 @@ public interface UserRepository {
   Optional<User> findByPhone(String phone);
 
   /** Find users by department ID */
-  List<User> findByDeptId(Long deptId);
+  List<User> findByDeptId(String deptId);
 
   /** Find users by role ID */
-  List<User> findByRoleId(Long roleId);
+  List<User> findByRoleId(String roleId);
 
   /** Find all users (with pagination) */
   Page<User> findAll(Pageable pageable);
@@ -57,5 +57,5 @@ public interface UserRepository {
   boolean existsByPhone(String phone);
 
   /** Count users by department ID */
-  long countByDeptId(Long deptId);
+  long countByDeptId(String deptId);
 }

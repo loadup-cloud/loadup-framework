@@ -24,14 +24,14 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("upms_role")
 public class Role {
 
-  @Id private Long id;
+  @Id private String id;
 
   private String roleName;
 
   private String roleCode;
 
   /** Parent role ID for role inheritance (RBAC3 feature) */
-  private Long parentRoleId;
+  private String parentRoleId;
 
   private Integer roleLevel;
 
@@ -47,11 +47,11 @@ public class Role {
 
   private String remark;
 
-  private Long createdBy;
+  private String createdBy;
 
   private LocalDateTime createdTime;
 
-  private Long updatedBy;
+  private String updatedBy;
 
   private LocalDateTime updatedTime;
 

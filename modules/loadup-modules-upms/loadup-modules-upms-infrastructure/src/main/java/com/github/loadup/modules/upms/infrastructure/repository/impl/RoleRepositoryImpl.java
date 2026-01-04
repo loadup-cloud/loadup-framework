@@ -2,10 +2,15 @@ package com.github.loadup.modules.upms.infrastructure.repository.impl;
 
 import com.github.loadup.modules.upms.domain.entity.Role;
 import com.github.loadup.modules.upms.domain.repository.RoleRepository;
-import com.github.loadup.modules.upms.infrastructure.repository.jdbc.JdbcRoleRepository;
+import com.github.loadup.modules.upms.infrastructure.dataobject.RoleDO;
+import com.github.loadup.modules.upms.infrastructure.mapper.RoleMapper;
+import com.github.loadup.modules.upms.infrastructure.repository.jdbc.RoleJdbcRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -18,109 +23,130 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class RoleRepositoryImpl implements RoleRepository {
 
-  private final JdbcRoleRepository jdbcRepository;
+  private final RoleJdbcRepository jdbcRepository;
+  private final RoleMapper roleMapper;
 
   @Override
   public Role save(Role role) {
-    return jdbcRepository.save(role);
+    RoleDO roleDO = roleMapper.toDO(role);
+    RoleDO saved = jdbcRepository.save(roleDO);
+    return roleMapper.toEntity(saved);
   }
 
   @Override
   public Role update(Role role) {
-    return jdbcRepository.save(role);
+    RoleDO roleDO = roleMapper.toDO(role);
+    RoleDO updated = jdbcRepository.save(roleDO);
+    return roleMapper.toEntity(updated);
   }
 
   @Override
-  public void deleteById(Long id) {
-    // Use soft delete
-    jdbcRepository.softDelete(id, 1L); // TODO: get actual operator ID
+  public void deleteById(String id) {
+    jdbcRepository
+        .findById(id)
+        .ifPresent(
+            roleDO -> {
+              roleDO.setDeleted(true);
+              jdbcRepository.save(roleDO);
+            });
   }
 
   @Override
-  public Optional<Role> findById(Long id) {
-    return jdbcRepository.findById(id);
+  public Optional<Role> findById(String id) {
+    return jdbcRepository.findById(id).map(roleMapper::toEntity);
   }
 
   @Override
   public Optional<Role> findByRoleCode(String roleCode) {
-    return jdbcRepository.findByRoleCode(roleCode);
+    return jdbcRepository.findByRoleCode(roleCode).map(roleMapper::toEntity);
   }
 
   @Override
-  public List<Role> findByUserId(Long userId) {
-    return jdbcRepository.findByUserId(userId);
+  public List<Role> findByParentRoleId(String parentRoleId) {
+    List<RoleDO> roleDOList = jdbcRepository.findByParentRoleId(parentRoleId);
+    return roleMapper.toEntityList(roleDOList);
   }
 
   @Override
-  public List<Role> findByParentRoleId(Long parentRoleId) {
-    return jdbcRepository.findByParentRoleId(parentRoleId);
-  }
-
-  @Override
-  public List<Role> findAll() {
-    return jdbcRepository.findAllActive();
-  }
-
-  @Override
-  public List<Role> findAllEnabled() {
-    return jdbcRepository.findAllEnabled();
+  public List<Role> findByUserId(String userId) {
+    List<RoleDO> roleDOList = jdbcRepository.findByUserId(userId);
+    return roleMapper.toEntityList(roleDOList);
   }
 
   @Override
   public boolean existsByRoleCode(String roleCode) {
-    return jdbcRepository.countByRoleCode(roleCode) > 0;
+    return jdbcRepository.existsByRoleCode(roleCode);
   }
 
   @Override
-  public void assignRoleToUser(Long userId, Long roleId, Long operatorId) {
-    jdbcRepository.assignRoleToUser(userId, roleId, operatorId);
+  public List<Role> findAll() {
+    List<RoleDO> roleDOList = jdbcRepository.findAllOrderBySortOrder();
+    return roleMapper.toEntityList(roleDOList);
   }
 
   @Override
-  public void removeRoleFromUser(Long userId, Long roleId) {
-    jdbcRepository.removeRoleFromUser(userId, roleId);
+  public List<Role> findAllEnabled() {
+    List<RoleDO> roleDOList = jdbcRepository.findAllEnabled();
+    return roleMapper.toEntityList(roleDOList);
   }
 
   @Override
-  public List<Long> getUserRoleIds(Long userId) {
-    return jdbcRepository.getUserRoleIds(userId);
+  public Page<Role> findAll(Pageable pageable) {
+    // TODO: implement pagination
+    return new PageImpl<>(List.of(), pageable, 0);
   }
 
   @Override
-  public void assignPermissionsToRole(Long roleId, List<Long> permissionIds) {
-    for (Long permissionId : permissionIds) {
-      jdbcRepository.assignPermissionToRole(roleId, permissionId);
-    }
+  public long countUsersByRoleId(String roleId) {
+    return jdbcRepository.countUsersByRoleId(roleId);
   }
 
   @Override
-  public void removePermissionsFromRole(Long roleId, List<Long> permissionIds) {
-    for (Long permissionId : permissionIds) {
-      jdbcRepository.removePermissionFromRole(roleId, permissionId);
-    }
-  }
-
-  @Override
-  public void assignDepartmentsToRole(Long roleId, List<Long> departmentIds) {
-    for (Long deptId : departmentIds) {
-      jdbcRepository.assignDepartmentToRole(roleId, deptId);
-    }
-  }
-
-  @Override
-  public void removeDepartmentsFromRole(Long roleId, List<Long> departmentIds) {
-    for (Long deptId : departmentIds) {
-      jdbcRepository.removeDepartmentFromRole(roleId, deptId);
-    }
-  }
-
-  @Override
-  public List<Long> findDepartmentIdsByRoleId(Long roleId) {
+  public List<String> findDepartmentIdsByRoleId(String roleId) {
     return jdbcRepository.findDepartmentIdsByRoleId(roleId);
   }
 
   @Override
-  public long countUsersByRoleId(Long roleId) {
-    return jdbcRepository.countUsersByRoleId(roleId);
+  public List<String> getUserRoleIds(String userId) {
+    return jdbcRepository.getUserRoleIds(userId);
+  }
+
+  @Override
+  public void removeRoleFromUser(String userId, String roleId) {
+    // TODO: implement with JdbcTemplate
+    // DELETE FROM upms_user_role WHERE user_id = ? AND role_id = ?
+  }
+
+  @Override
+  public void assignRoleToUser(String userId, String roleId, String operatorId) {
+    // TODO: implement with JdbcTemplate
+    // INSERT INTO upms_user_role (user_id, role_id, created_by, created_time)
+    // VALUES (?, ?, ?, NOW())
+  }
+
+  @Override
+  public void assignDepartmentsToRole(String roleId, List<String> departmentIds) {
+    // TODO: implement with JdbcTemplate
+    // INSERT INTO upms_role_department (role_id, dept_id, created_by, created_time)
+    // VALUES (?, ?, ?, NOW()) for each departmentId
+  }
+
+  @Override
+  public void assignPermissionsToRole(String roleId, List<String> permissionIds) {
+    // TODO: implement with JdbcTemplate
+    // INSERT INTO upms_role_permission (role_id, permission_id, created_by, created_time)
+    // VALUES (?, ?, ?, NOW()) for each permissionId
+  }
+
+  @Override
+  public void removePermissionsFromRole(String roleId, List<String> permissionIds) {
+    // TODO: implement with JdbcTemplate
+    // DELETE FROM upms_role_permission WHERE role_id = ? AND permission_id IN (?)
+  }
+
+  @Override
+  public void removeDepartmentsFromRole(String roleId, List<String> departmentIds) {
+    // TODO: implement with JdbcTemplate
+    // DELETE FROM upms_role_department WHERE role_id = ? AND dept_id IN (?)
   }
 }

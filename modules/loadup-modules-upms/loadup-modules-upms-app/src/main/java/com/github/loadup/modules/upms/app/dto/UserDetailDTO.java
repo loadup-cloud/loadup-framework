@@ -20,11 +20,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserDetailDTO {
 
-  private Long id;
+  private String id;
   private String username;
   private String nickname;
   private String realName;
-  private Long deptId;
+  private String deptId;
   private String deptName;
   private String email;
   private Boolean emailVerified;

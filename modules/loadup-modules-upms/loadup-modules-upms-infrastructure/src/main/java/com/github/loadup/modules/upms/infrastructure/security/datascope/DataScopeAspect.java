@@ -104,7 +104,7 @@ public class DataScopeAspect {
 
     // Find the most permissive data scope from all roles
     DataScopeType maxDataScope = DataScopeType.SELF; // Most restrictive by default
-    List<Long> customDeptIds = new ArrayList<>();
+    List<String> customDeptIds = new ArrayList<>();
 
     for (Role role : roles) {
       if (role.getDataScope() != null) {
@@ -115,14 +115,14 @@ public class DataScopeAspect {
 
         // Collect custom department IDs
         if (roleScope == DataScopeType.CUSTOM) {
-          List<Long> roleDeptIds = roleRepository.findDepartmentIdsByRoleId(role.getId());
+          List<String> roleDeptIds = roleRepository.findDepartmentIdsByRoleId(role.getId());
           customDeptIds.addAll(roleDeptIds);
         }
       }
     }
 
     // Get sub-departments if needed
-    List<Long> subDeptIds = new ArrayList<>();
+    List<String> subDeptIds = new ArrayList<>();
     if (maxDataScope == DataScopeType.DEPT_AND_SUB && user.getDeptId() != null) {
       subDeptIds = getAllSubDepartmentIds(user.getDeptId());
     }
@@ -138,8 +138,8 @@ public class DataScopeAspect {
   }
 
   /** Get all sub-department IDs recursively */
-  private List<Long> getAllSubDepartmentIds(Long parentDeptId) {
-    List<Long> allIds = new ArrayList<>();
+  private List<String> getAllSubDepartmentIds(String parentDeptId) {
+    List<String> allIds = new ArrayList<>();
     List<Department> children = departmentRepository.findByParentId(parentDeptId);
 
     for (Department child : children) {

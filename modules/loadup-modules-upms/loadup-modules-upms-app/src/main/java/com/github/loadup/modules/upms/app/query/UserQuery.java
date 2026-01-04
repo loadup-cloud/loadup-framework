@@ -22,7 +22,7 @@ public class UserQuery {
   private String realName;
   private String email;
   private String phone;
-  private Long deptId;
+  private String deptId;
   private Short status;
   private Boolean deleted;
 

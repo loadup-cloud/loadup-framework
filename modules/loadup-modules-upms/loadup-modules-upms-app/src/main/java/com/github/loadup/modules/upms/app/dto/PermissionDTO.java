@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PermissionDTO {
 
-  private Long id;
-  private Long parentId;
+  private String id;
+  private String parentId;
   private String permissionName;
   private String permissionCode;
   private Short permissionType;

@@ -31,7 +31,7 @@ public class JwtTokenProvider {
   private Long refreshExpiration;
 
   /** Generate access token */
-  public String generateToken(String username, Long userId) {
+  public String generateToken(String username, String userId) {
     Map<String, Object> claims = new HashMap<>();
     claims.put("userId", userId);
     claims.put("type", "access");
@@ -40,7 +40,7 @@ public class JwtTokenProvider {
   }
 
   /** Generate refresh token */
-  public String generateRefreshToken(String username, Long userId) {
+  public String generateRefreshToken(String username, String userId) {
     Map<String, Object> claims = new HashMap<>();
     claims.put("userId", userId);
     claims.put("type", "refresh");
@@ -74,13 +74,11 @@ public class JwtTokenProvider {
   }
 
   /** Extract user ID from token */
-  public Long getUserIdFromToken(String token) {
+  public String getUserIdFromToken(String token) {
     Claims claims = getClaims(token);
     Object userId = claims.get("userId");
-    if (userId instanceof Integer) {
-      return ((Integer) userId).longValue();
-    }
-    return (Long) userId;
+
+    return userId.toString();
   }
 
   /** Get all claims from token */

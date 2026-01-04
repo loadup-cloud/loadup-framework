@@ -23,7 +23,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("upms_user")
 public class User {
 
-  @Id private Long id;
+  @Id private String id;
 
   private String username;
 
@@ -33,7 +33,7 @@ public class User {
 
   private String realName;
 
-  private Long deptId;
+  private String deptId;
 
   private String email;
 
@@ -73,11 +73,11 @@ public class User {
 
   private String remark;
 
-  private Long createdBy;
+  private String createdBy;
 
   private LocalDateTime createdTime;
 
-  private Long updatedBy;
+  private String updatedBy;
 
   private LocalDateTime updatedTime;
 

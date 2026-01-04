@@ -39,7 +39,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
   void setUp() {
     testLog =
         LoginLog.builder()
-            .userId(1L)
+            .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now())
             .ipAddress("192.168.1.1")
@@ -70,7 +70,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
     loginLogRepository.save(testLog);
     LoginLog log2 =
         LoginLog.builder()
-            .userId(1L)
+            .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now().minusHours(1))
             .ipAddress("192.168.1.2")
@@ -79,11 +79,11 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
     loginLogRepository.save(log2);
 
     // When
-    Page<LoginLog> logs = loginLogRepository.findByUserId(1L, PageRequest.of(0, 10));
+    Page<LoginLog> logs = loginLogRepository.findByUserId("1", PageRequest.of(0, 10));
 
     // Then
     assertThat(logs.getContent()).hasSizeGreaterThanOrEqualTo(2);
-    assertThat(logs.getContent()).allMatch(log -> log.getUserId().equals(1L));
+    assertThat(logs.getContent()).allMatch(log -> log.getUserId().equals("1"));
   }
 
   @Test
@@ -121,7 +121,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
     // Given
     LoginLog failedLog =
         LoginLog.builder()
-            .userId(1L)
+            .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now())
             .ipAddress("192.168.1.1")
@@ -149,7 +149,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
     loginLogRepository.save(testLog);
     LoginLog log2 =
         LoginLog.builder()
-            .userId(1L)
+            .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now().minusMinutes(30))
             .ipAddress("192.168.1.2")
@@ -160,7 +160,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
     // When
     LocalDateTime start = LocalDateTime.now().minusHours(1);
     LocalDateTime end = LocalDateTime.now().plusHours(1);
-    long count = loginLogRepository.countLoginAttempts(1L, start, end);
+    long count = loginLogRepository.countLoginAttempts("1", start, end);
 
     // Then
     assertThat(count).isGreaterThanOrEqualTo(2);
@@ -172,7 +172,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
     // Given
     LoginLog failedLog1 =
         LoginLog.builder()
-            .userId(1L)
+            .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now())
             .ipAddress("192.168.1.1")
@@ -180,7 +180,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
             .build();
     LoginLog failedLog2 =
         LoginLog.builder()
-            .userId(1L)
+            .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now().minusMinutes(10))
             .ipAddress("192.168.1.1")
@@ -193,7 +193,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
     // When
     LocalDateTime start = LocalDateTime.now().minusHours(1);
     LocalDateTime end = LocalDateTime.now().plusHours(1);
-    long count = loginLogRepository.countFailedLoginAttempts(1L, start, end);
+    long count = loginLogRepository.countFailedLoginAttempts("1", start, end);
 
     // Then
     assertThat(count).isEqualTo(2);
@@ -205,7 +205,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
     // Given
     LoginLog oldLog =
         LoginLog.builder()
-            .userId(1L)
+            .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now().minusDays(1))
             .ipAddress("192.168.1.1")
@@ -215,7 +215,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
     loginLogRepository.save(testLog); // More recent
 
     // When
-    var lastLogin = loginLogRepository.findLastSuccessfulLogin(1L);
+    var lastLogin = loginLogRepository.findLastSuccessfulLogin("1");
 
     // Then
     assertThat(lastLogin).isPresent();
@@ -228,7 +228,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
     // Given
     LoginLog oldLog =
         LoginLog.builder()
-            .userId(1L)
+            .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now().minusDays(100))
             .ipAddress("192.168.1.1")
@@ -241,7 +241,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
     loginLogRepository.deleteBeforeDate(LocalDateTime.now().minusDays(30));
 
     // Then
-    Page<LoginLog> logs = loginLogRepository.findByUserId(1L, PageRequest.of(0, 100));
+    Page<LoginLog> logs = loginLogRepository.findByUserId("1", PageRequest.of(0, 100));
     // Old log should be deleted, but recent log should remain
     assertThat(logs.getContent()).hasSizeGreaterThanOrEqualTo(1);
   }

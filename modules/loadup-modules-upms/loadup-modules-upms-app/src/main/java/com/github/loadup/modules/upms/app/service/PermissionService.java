@@ -33,7 +33,7 @@ public class PermissionService {
       throw new RuntimeException("权限编码已存在");
     }
 
-    if (command.getParentId() != null && command.getParentId() > 0) {
+    if (command.getParentId() != null && command.getParentId() != "0") {
       permissionRepository
           .findById(command.getParentId())
           .orElseThrow(() -> new RuntimeException("父权限不存在"));
@@ -69,7 +69,7 @@ public class PermissionService {
             .findById(command.getId())
             .orElseThrow(() -> new RuntimeException("权限不存在"));
 
-    if (command.getParentId() != null && command.getParentId() > 0) {
+    if (command.getParentId() != null && command.getParentId() != "0") {
       if (command.getParentId().equals(command.getId())) {
         throw new RuntimeException("父权限不能是自己");
       }
@@ -100,7 +100,7 @@ public class PermissionService {
   }
 
   @Transactional
-  public void deletePermission(Long id) {
+  public void deletePermission(String id) {
     permissionRepository.findById(id).orElseThrow(() -> new RuntimeException("权限不存在"));
 
     List<Permission> children = permissionRepository.findByParentId(id);
@@ -111,7 +111,7 @@ public class PermissionService {
     permissionRepository.deleteById(id);
   }
 
-  public PermissionDTO getPermissionById(Long id) {
+  public PermissionDTO getPermissionById(String id) {
     Permission permission =
         permissionRepository.findById(id).orElseThrow(() -> new RuntimeException("权限不存在"));
     return convertToDTO(permission);
@@ -127,12 +127,12 @@ public class PermissionService {
     return permissions.stream().map(this::convertToDTO).collect(Collectors.toList());
   }
 
-  public List<PermissionDTO> getUserPermissions(Long userId) {
+  public List<PermissionDTO> getUserPermissions(String userId) {
     List<Permission> permissions = permissionRepository.findByUserId(userId);
     return permissions.stream().map(this::convertToDTO).collect(Collectors.toList());
   }
 
-  public List<PermissionDTO> getUserMenuTree(Long userId) {
+  public List<PermissionDTO> getUserMenuTree(String userId) {
     List<Permission> menuPermissions =
         permissionRepository.findByUserId(userId).stream()
             .filter(p -> p.getPermissionType() == 1 && Boolean.TRUE.equals(p.getVisible()))
@@ -160,10 +160,12 @@ public class PermissionService {
         .build();
   }
 
-  private List<PermissionDTO> buildPermissionTree(List<Permission> allPermissions, Long parentId) {
+  private List<PermissionDTO> buildPermissionTree(
+      List<Permission> allPermissions, String parentId) {
     List<PermissionDTO> tree = new ArrayList<>();
     for (Permission permission : allPermissions) {
-      if ((parentId == null && (permission.getParentId() == null || permission.getParentId() == 0))
+      if ((parentId == null
+              && (permission.getParentId() == null || permission.getParentId().equals("0")))
           || (parentId != null && parentId.equals(permission.getParentId()))) {
         PermissionDTO dto = convertToDTO(permission);
         List<PermissionDTO> children = buildPermissionTree(allPermissions, permission.getId());

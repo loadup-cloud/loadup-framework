@@ -79,7 +79,7 @@ public interface JdbcLoginLogRepository
         ORDER BY login_time DESC
         LIMIT 1
     """)
-  Optional<LoginLog> findLastSuccessfulLogin(@Param("userId") Long userId);
+  Optional<LoginLog> findLastSuccessfulLogin(@Param("userId") String userId);
 
   @Modifying
   @Query("DELETE FROM upms_login_log WHERE login_time < :date")

@@ -511,28 +511,221 @@ public class AbacPermissionEvaluator implements PermissionEvaluator {
 
 ```
 ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│   Nginx      │────▶│   UPMS       │────▶│  PostgreSQL  │
+│   Nginx      │────▶│   UPMS       │────▶│    MySQL     │
 │  (Gateway)   │     │  Application │     │   (Primary)  │
 └──────────────┘     └──────────────┘     └──────────────┘
                             │                      │
                             │                      │ replication
                             ▼                      ▼
                      ┌──────────────┐     ┌──────────────┐
-                     │    Redis     │     │  PostgreSQL  │
+                     │    Redis     │     │    MySQL     │
                      │   (Cache)    │     │  (Replica)   │
                      └──────────────┘     └──────────────┘
 ```
 
-## 9. 未来演进方向
+## 9. 实现状态
 
-1. **微服务拆分**: 将UPMS独立为认证中心
-2. **GraphQL支持**: 提供更灵活的API查询
-3. **事件驱动**: 引入Domain Event解耦
-4. **多数据源**: 支持读写分离
-5. **分布式会话**: 支持集群部署
+### 9.1 已完成功能 ✅
+
+#### Domain层
+
+- ✅ 所有核心实体 (User, Role, Permission, Department, LoginLog, OperationLog)
+- ✅ Repository接口定义
+- ✅ 领域服务 (UserPermissionService)
+- ✅ 值对象和枚举
+
+#### Infrastructure层
+
+- ✅ Spring Data JDBC Repository实现
+- ✅ Spring Security配置
+- ✅ JWT认证过滤器
+- ✅ 数据权限AOP (@DataScope注解)
+- ✅ 软删除支持
+
+#### Application层
+
+- ✅ 认证服务 (AuthenticationService)
+- ✅ 用户服务 (UserService - 8个方法)
+- ✅ 角色服务 (RoleService - 10个方法)
+- ✅ 权限服务 (PermissionService - 8个方法)
+- ✅ 部门服务 (DepartmentService - 8个方法)
+- ✅ 密码重置服务 (PasswordResetService)
+- ✅ 验证码服务 (VerificationCodeService)
+- ✅ Command/Query对象 (12个)
+- ✅ DTO对象 (9个)
+
+#### Adapter层
+
+- ✅ REST API Controllers (5个)
+- ✅ 统一响应格式 (Response/SingleResponse/MultiResponse/PageResponse)
+- ✅ 统一POST请求方法
+- ✅ Springdoc OpenAPI集成
+- ✅ Request对象 (10个)
+
+### 9.2 API端点清单 (38个)
+
+#### 认证管理 (6个)
+
+- POST `/api/v1/auth/login` - 用户登录
+- POST `/api/v1/auth/register` - 用户注册
+- POST `/api/v1/auth/refresh-token` - 刷新令牌
+- POST `/api/v1/auth/send-email-code` - 发送邮箱验证码
+- POST `/api/v1/auth/send-sms-code` - 发送短信验证码
+- POST `/api/v1/auth/reset-password` - 重置密码
+
+#### 用户管理 (8个)
+
+- POST `/api/v1/users/create` - 创建用户
+- POST `/api/v1/users/update` - 更新用户
+- POST `/api/v1/users/delete` - 删除用户
+- POST `/api/v1/users/get` - 获取用户详情
+- POST `/api/v1/users/query` - 查询用户列表
+- POST `/api/v1/users/change-password` - 修改密码
+- POST `/api/v1/users/lock` - 锁定用户
+- POST `/api/v1/users/unlock` - 解锁用户
+
+#### 角色管理 (9个)
+
+- POST `/api/v1/roles/create` - 创建角色
+- POST `/api/v1/roles/update` - 更新角色
+- POST `/api/v1/roles/delete` - 删除角色
+- POST `/api/v1/roles/get` - 获取角色详情
+- POST `/api/v1/roles/query` - 查询角色列表
+- POST `/api/v1/roles/tree` - 获取角色树
+- POST `/api/v1/roles/assign-user` - 分配角色给用户
+- POST `/api/v1/roles/remove-user` - 从用户移除角色
+- POST `/api/v1/roles/assign-permissions` - 分配权限给角色
+
+#### 权限管理 (8个)
+
+- POST `/api/v1/permissions/create` - 创建权限
+- POST `/api/v1/permissions/update` - 更新权限
+- POST `/api/v1/permissions/delete` - 删除权限
+- POST `/api/v1/permissions/get` - 获取权限详情
+- POST `/api/v1/permissions/tree` - 获取权限树
+- POST `/api/v1/permissions/by-type` - 按类型获取权限
+- POST `/api/v1/permissions/user-permissions` - 获取用户权限
+- POST `/api/v1/permissions/user-menu-tree` - 获取用户菜单树
+
+#### 部门管理 (7个)
+
+- POST `/api/v1/departments/create` - 创建部门
+- POST `/api/v1/departments/update` - 更新部门
+- POST `/api/v1/departments/delete` - 删除部门
+- POST `/api/v1/departments/get` - 获取部门详情
+- POST `/api/v1/departments/tree` - 获取部门树
+- POST `/api/v1/departments/sub-tree` - 获取部门子树
+- POST `/api/v1/departments/move` - 移动部门
+
+### 9.3 技术栈
+
+- **框架**: Spring Boot 3.1.2
+- **语言**: Java 17
+- **ORM**: Spring Data JDBC
+- **安全**: Spring Security + JWT
+- **文档**: Springdoc OpenAPI 2.2.0
+- **数据库**: MySQL 8.0+
+- **缓存**: Redis (可选)
+- **构建**: Maven
+- **代码规范**: Google Java Format + Spotless
+
+### 9.4 代码统计
+
+- **总文件数**: ~120个Java文件
+- **代码行数**: ~8,000行
+- **Controllers**: 5个
+- **Services**: 7个
+- **Repositories**: 6个接口 + 实现
+- **Entities**: 6个
+- **DTOs**: 9个
+- **Commands**: 10个
+- **Queries**: 2个
+- **Request Objects**: 10个
+
+### 9.5 最近优化 (2026-01-04)
+
+1. **统一API规范**
+   - 所有接口统一使用POST方法
+   - 移除所有路径变量 (@PathVariable)
+   - 统一响应格式 (Response系列)
+
+2. **文档升级**
+   - 替换为Springdoc OpenAPI
+   - 完整的API文档注解
+   - Swagger UI支持
+
+3. **代码质量**
+   - 修复所有编译错误
+   - 应用Google Java Format
+   - 完整的参数验证
+
+## 10. 未来演进方向
+
+### 短期计划 (1-3个月)
+
+- [ ] 集成loadup-components-gotone (邮件/短信)
+- [ ] 集成Redis缓存
+- [ ] 添加单元测试和集成测试
+- [ ] 操作日志AOP实现
+- [ ] 在线用户管理
+
+### 中期计划 (3-6个月)
+
+- [ ] 多因素认证 (MFA)
+- [ ] LDAP/AD集成
+- [ ] 细粒度字段级权限
+- [ ] 权限缓存预热机制
+- [ ] 性能优化和压测
+
+### 长期计划 (6-12个月)
+
+- [ ] 微服务拆分：将UPMS独立为认证中心
+- [ ] GraphQL支持：提供更灵活的API查询
+- [ ] 事件驱动：引入Domain Event解耦
+- [ ] 多数据源：支持读写分离
+- [ ] 分布式会话：支持集群部署
+- [ ] OAuth 2.0授权服务器
+
+## 11. 开发指南
+
+### 11.1 代码规范
+
+执行代码格式化：
+
+```bash
+mvn spotless:apply
+```
+
+### 11.2 编译构建
+
+```bash
+# 编译
+mvn clean compile
+
+# 打包
+mvn clean package
+
+# 跳过测试
+mvn clean install -DskipTests
+```
+
+### 11.3 添加新功能
+
+1. **添加实体**: 在`domain`层创建Entity
+2. **定义Repository**: 在`domain`层定义接口
+3. **实现Repository**: 在`infrastructure`层实现
+4. **创建Service**: 在`app`层创建服务
+5. **添加Controller**: 在`adapter`层暴露API
+6. **编写测试**: 在`test`层添加测试用例
+
+### 11.4 调试技巧
+
+- 查看SQL日志: `logging.level.org.springframework.jdbc=DEBUG`
+- 查看Security日志: `logging.level.org.springframework.security=DEBUG`
+- 使用Swagger UI测试接口: `http://localhost:8080/swagger-ui.html`
 
 ---
 
-**文档版本**: 1.0.0  
-**最后更新**: 2025-12-31  
+**文档版本**: 2.0.0  
+**最后更新**: 2026-01-04  
 **维护者**: LoadUp Framework Team

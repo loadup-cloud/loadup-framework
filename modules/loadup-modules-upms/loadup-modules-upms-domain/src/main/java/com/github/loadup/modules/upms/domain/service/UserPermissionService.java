@@ -30,7 +30,7 @@ public class UserPermissionService {
    * Get all permissions for a user (including inherited from parent roles) Implements RBAC3 role
    * hierarchy
    */
-  public List<Permission> getUserPermissions(Long userId) {
+  public List<Permission> getUserPermissions(String userId) {
     // Get user's direct roles
     List<Role> userRoles = roleRepository.findByUserId(userId);
 
@@ -80,19 +80,19 @@ public class UserPermissionService {
   }
 
   /** Get permission codes for a user */
-  public Set<String> getUserPermissionCodes(Long userId) {
+  public Set<String> getUserPermissionCodes(String userId) {
     return getUserPermissions(userId).stream()
         .map(Permission::getPermissionCode)
         .collect(Collectors.toSet());
   }
 
   /** Check if user has specific permission */
-  public boolean hasPermission(Long userId, String permissionCode) {
+  public boolean hasPermission(String userId, String permissionCode) {
     return getUserPermissionCodes(userId).contains(permissionCode);
   }
 
   /** Check if user has any of the specified permissions */
-  public boolean hasAnyPermission(Long userId, String... permissionCodes) {
+  public boolean hasAnyPermission(String userId, String... permissionCodes) {
     Set<String> userPermissions = getUserPermissionCodes(userId);
     for (String code : permissionCodes) {
       if (userPermissions.contains(code)) {
@@ -103,7 +103,7 @@ public class UserPermissionService {
   }
 
   /** Check if user has all of the specified permissions */
-  public boolean hasAllPermissions(Long userId, String... permissionCodes) {
+  public boolean hasAllPermissions(String userId, String... permissionCodes) {
     Set<String> userPermissions = getUserPermissionCodes(userId);
     for (String code : permissionCodes) {
       if (!userPermissions.contains(code)) {
@@ -114,7 +114,7 @@ public class UserPermissionService {
   }
 
   /** Get menu permissions for a user */
-  public List<Permission> getUserMenuPermissions(Long userId) {
+  public List<Permission> getUserMenuPermissions(String userId) {
     return getUserPermissions(userId).stream()
         .filter(Permission::isMenu)
         .filter(p -> Boolean.TRUE.equals(p.getVisible()))
@@ -128,18 +128,18 @@ public class UserPermissionService {
   }
 
   /** Build permission tree for user */
-  public List<Permission> buildUserPermissionTree(Long userId) {
+  public List<Permission> buildUserPermissionTree(String userId) {
     List<Permission> allPermissions = getUserPermissions(userId);
-    return buildTree(allPermissions, 0L);
+    return buildTree(allPermissions, "0");
   }
 
   /** Recursively build permission tree */
-  private List<Permission> buildTree(List<Permission> permissions, Long parentId) {
+  private List<Permission> buildTree(List<Permission> permissions, String parentId) {
     return permissions.stream()
         .filter(
             p -> {
-              if (parentId == 0L) {
-                return p.getParentId() == null || p.getParentId() == 0L;
+              if ("0".equals(parentId)) {
+                return p.getParentId() == null || "0".equals(p.getParentId());
               }
               return parentId.equals(p.getParentId());
             })

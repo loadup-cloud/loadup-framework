@@ -16,16 +16,16 @@ import lombok.Data;
 public class DepartmentUpdateCommand {
 
   @NotNull(message = "部门ID不能为空")
-  private Long id;
+  private String id;
 
-  private Long parentId;
+  private String parentId;
 
   @Size(max = 50, message = "部门名称长度不能超过50")
   private String deptName;
 
   private Integer sortOrder;
 
-  private Long leaderUserId;
+  private String leaderUserId;
 
   @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确")
   private String phone;
@@ -37,5 +37,5 @@ public class DepartmentUpdateCommand {
 
   private String remark;
 
-  private Long updatedBy;
+  private String updatedBy;
 }

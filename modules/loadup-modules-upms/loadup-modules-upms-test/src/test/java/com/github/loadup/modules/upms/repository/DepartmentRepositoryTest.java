@@ -38,7 +38,7 @@ class DepartmentRepositoryTest extends BaseRepositoryTest {
   void setUp() {
     testDepartment =
         Department.builder()
-            .parentId(0L)
+            .parentId("0")
             .deptName("Test Department")
             .deptCode("TEST_DEPT_NEW")
             .deptLevel(1)
@@ -47,7 +47,7 @@ class DepartmentRepositoryTest extends BaseRepositoryTest {
             .email("dept@example.com")
             .status((short) 1)
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
   }
@@ -104,7 +104,8 @@ class DepartmentRepositoryTest extends BaseRepositoryTest {
 
     // Then
     assertThat(roots).isNotEmpty();
-    assertThat(roots).allMatch(dept -> dept.getParentId() == null || dept.getParentId() == 0);
+    assertThat(roots)
+        .allMatch(dept -> dept.getParentId() == null || dept.getParentId().equals("0"));
   }
 
   @Test
@@ -121,7 +122,7 @@ class DepartmentRepositoryTest extends BaseRepositoryTest {
             .sortOrder(0)
             .status((short) 1)
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
     departmentRepository.save(child);
@@ -148,7 +149,7 @@ class DepartmentRepositoryTest extends BaseRepositoryTest {
             .sortOrder(0)
             .status((short) 1)
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
     departmentRepository.save(child);
@@ -169,14 +170,14 @@ class DepartmentRepositoryTest extends BaseRepositoryTest {
     Department root1 = departmentRepository.save(testDepartment);
     Department root2 =
         Department.builder()
-            .parentId(0L)
+            .parentId("0")
             .deptName("Root 2")
             .deptCode("ROOT_2")
             .deptLevel(1)
             .sortOrder(1)
             .status((short) 1)
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
     departmentRepository.save(root2);

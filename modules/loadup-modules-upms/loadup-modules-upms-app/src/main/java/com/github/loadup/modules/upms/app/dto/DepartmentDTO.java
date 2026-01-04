@@ -19,13 +19,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DepartmentDTO {
 
-  private Long id;
-  private Long parentId;
+  private String id;
+  private String parentId;
   private String deptName;
   private String deptCode;
   private Integer deptLevel;
   private Integer sortOrder;
-  private Long leaderUserId;
+  private String leaderUserId;
   private String leaderUserName;
   private String phone;
   private String email;

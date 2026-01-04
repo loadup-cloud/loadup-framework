@@ -14,9 +14,9 @@ import lombok.Data;
 public class PermissionUpdateCommand {
 
   @NotNull(message = "权限ID不能为空")
-  private Long id;
+  private String id;
 
-  private Long parentId;
+  private String parentId;
 
   @Size(max = 50, message = "权限名称长度不能超过50")
   private String permissionName;
@@ -40,5 +40,5 @@ public class PermissionUpdateCommand {
 
   private String remark;
 
-  private Long updatedBy;
+  private String updatedBy;
 }

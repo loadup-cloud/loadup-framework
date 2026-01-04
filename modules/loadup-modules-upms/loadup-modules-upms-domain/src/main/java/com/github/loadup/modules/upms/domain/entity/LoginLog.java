@@ -21,9 +21,9 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("upms_login_log")
 public class LoginLog {
 
-  @Id private Long id;
+  @Id private String id;
 
-  private Long userId;
+  private String userId;
 
   private String username;
 

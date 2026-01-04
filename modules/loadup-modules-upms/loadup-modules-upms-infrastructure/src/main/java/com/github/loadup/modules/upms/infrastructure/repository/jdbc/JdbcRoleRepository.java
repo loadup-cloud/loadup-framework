@@ -27,7 +27,7 @@ public interface JdbcRoleRepository
         INNER JOIN upms_user_role ur ON r.id = ur.role_id
         WHERE ur.user_id = :userId AND r.deleted = false
     """)
-  List<Role> findByUserId(@Param("userId") Long userId);
+  List<Role> findByUserId(@Param("userId") String userId);
 
   @Query("SELECT * FROM upms_role WHERE parent_role_id = :parentRoleId AND deleted = false")
   List<Role> findByParentRoleId(@Param("parentRoleId") Long parentRoleId);
@@ -43,7 +43,7 @@ public interface JdbcRoleRepository
   long countByRoleCode(@Param("roleCode") String roleCode);
 
   @Query("SELECT role_id FROM upms_user_role WHERE user_id = :userId")
-  List<Long> getUserRoleIds(@Param("userId") Long userId);
+  List<Long> getUserRoleIds(@Param("userId") String userId);
 
   @Modifying
   @Query(
@@ -58,12 +58,12 @@ public interface JdbcRoleRepository
 
   @Modifying
   @Query("DELETE FROM upms_user_role WHERE user_id = :userId AND role_id = :roleId")
-  void removeRoleFromUser(@Param("userId") Long userId, @Param("roleId") Long roleId);
+  void removeRoleFromUser(@Param("userId") Long userId, @Param("roleId") String roleId);
 
   @Modifying
   @Query(
       "UPDATE upms_role SET deleted = true, updated_by = :updatedBy, updated_time = CURRENT_TIMESTAMP WHERE id = :id")
-  void softDelete(@Param("id") Long id, @Param("updatedBy") Long updatedBy);
+  void softDelete(@Param("id") Long id, @Param("updatedBy") String updatedBy);
 
   @Modifying
   @Query(
@@ -72,13 +72,13 @@ public interface JdbcRoleRepository
         VALUES (:roleId, :permissionId, CURRENT_TIMESTAMP)
     """)
   void assignPermissionToRole(
-      @Param("roleId") Long roleId, @Param("permissionId") Long permissionId);
+      @Param("roleId") Long roleId, @Param("permissionId") String permissionId);
 
   @Modifying
   @Query(
       "DELETE FROM upms_role_permission WHERE role_id = :roleId AND permission_id = :permissionId")
   void removePermissionFromRole(
-      @Param("roleId") Long roleId, @Param("permissionId") Long permissionId);
+      @Param("roleId") Long roleId, @Param("permissionId") String permissionId);
 
   @Modifying
   @Query(
@@ -86,15 +86,15 @@ public interface JdbcRoleRepository
         INSERT INTO upms_role_department (role_id, dept_id, created_time)
         VALUES (:roleId, :deptId, CURRENT_TIMESTAMP)
     """)
-  void assignDepartmentToRole(@Param("roleId") Long roleId, @Param("deptId") Long deptId);
+  void assignDepartmentToRole(@Param("roleId") Long roleId, @Param("deptId") String deptId);
 
   @Modifying
   @Query("DELETE FROM upms_role_department WHERE role_id = :roleId AND dept_id = :deptId")
-  void removeDepartmentFromRole(@Param("roleId") Long roleId, @Param("deptId") Long deptId);
+  void removeDepartmentFromRole(@Param("roleId") Long roleId, @Param("deptId") String deptId);
 
   @Query("SELECT dept_id FROM upms_role_department WHERE role_id = :roleId")
-  List<Long> findDepartmentIdsByRoleId(@Param("roleId") Long roleId);
+  List<String> findDepartmentIdsByRoleId(@Param("roleId") String roleId);
 
   @Query("SELECT COUNT(*) FROM upms_user_role WHERE role_id = :roleId")
-  long countUsersByRoleId(@Param("roleId") Long roleId);
+  long countUsersByRoleId(@Param("roleId") String roleId);
 }

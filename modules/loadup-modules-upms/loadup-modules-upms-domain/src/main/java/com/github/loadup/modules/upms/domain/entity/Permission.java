@@ -23,9 +23,9 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("upms_permission")
 public class Permission {
 
-  @Id private Long id;
+  @Id private String id;
 
-  private Long parentId;
+  private String parentId;
 
   private String permissionName;
 
@@ -53,11 +53,11 @@ public class Permission {
 
   private String remark;
 
-  private Long createdBy;
+  private String createdBy;
 
   private LocalDateTime createdTime;
 
-  private Long updatedBy;
+  private String updatedBy;
 
   private LocalDateTime updatedTime;
 
@@ -73,7 +73,7 @@ public class Permission {
 
   /** Check if this is a root permission */
   public boolean isRoot() {
-    return parentId == null || parentId == 0;
+    return parentId == null || "0".equals(parentId);
   }
 
   /** Check if this is a menu permission */

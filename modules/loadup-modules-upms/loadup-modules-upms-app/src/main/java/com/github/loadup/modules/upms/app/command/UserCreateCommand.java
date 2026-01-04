@@ -33,7 +33,7 @@ public class UserCreateCommand {
   @Size(max = 50, message = "真实姓名长度不能超过50")
   private String realName;
 
-  private Long deptId;
+  private String deptId;
 
   @Email(message = "邮箱格式不正确")
   private String email;
@@ -49,9 +49,9 @@ public class UserCreateCommand {
 
   private Short status; // 1-Normal, 0-Disabled
 
-  private List<Long> roleIds;
+  private List<String> roleIds;
 
   private String remark;
 
-  private Long createdBy;
+  private String createdBy;
 }

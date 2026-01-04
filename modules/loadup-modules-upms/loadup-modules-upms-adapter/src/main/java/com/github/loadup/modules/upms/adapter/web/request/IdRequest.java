@@ -12,5 +12,5 @@ import lombok.Data;
 @Data
 public class IdRequest {
   @NotNull(message = "ID不能为空")
-  private Long id;
+  private String id;
 }

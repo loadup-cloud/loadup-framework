@@ -39,7 +39,7 @@ class OperationLogRepositoryTest extends BaseRepositoryTest {
   void setUp() {
     testLog =
         OperationLog.builder()
-            .userId(1L)
+            .userId("1")
             .username("testuser")
             .operationModule("User Management")
             .operationType("CREATE")
@@ -76,7 +76,7 @@ class OperationLogRepositoryTest extends BaseRepositoryTest {
     operationLogRepository.save(testLog);
     OperationLog log2 =
         OperationLog.builder()
-            .userId(1L)
+            .userId("1")
             .username("testuser")
             .operationModule("Role Management")
             .operationType("UPDATE")
@@ -91,11 +91,11 @@ class OperationLogRepositoryTest extends BaseRepositoryTest {
     operationLogRepository.save(log2);
 
     // When
-    Page<OperationLog> logs = operationLogRepository.findByUserId(1L, PageRequest.of(0, 10));
+    Page<OperationLog> logs = operationLogRepository.findByUserId("1", PageRequest.of(0, 10));
 
     // Then
     assertThat(logs.getContent()).hasSizeGreaterThanOrEqualTo(2);
-    assertThat(logs.getContent()).allMatch(log -> log.getUserId().equals(1L));
+    assertThat(logs.getContent()).allMatch(log -> log.getUserId().equals("1"));
   }
 
   @Test
@@ -154,7 +154,7 @@ class OperationLogRepositoryTest extends BaseRepositoryTest {
     // Given
     OperationLog failedLog =
         OperationLog.builder()
-            .userId(1L)
+            .userId("1")
             .username("testuser")
             .operationModule("User Management")
             .operationType("DELETE")
@@ -186,7 +186,7 @@ class OperationLogRepositoryTest extends BaseRepositoryTest {
     operationLogRepository.save(testLog);
     OperationLog log2 =
         OperationLog.builder()
-            .userId(1L)
+            .userId("1")
             .username("testuser")
             .operationModule("Role Management")
             .operationType("UPDATE")
@@ -201,7 +201,7 @@ class OperationLogRepositoryTest extends BaseRepositoryTest {
     operationLogRepository.save(log2);
 
     // When
-    long count = operationLogRepository.countByUserId(1L);
+    long count = operationLogRepository.countByUserId("1");
 
     // Then
     assertThat(count).isGreaterThanOrEqualTo(2);
@@ -213,7 +213,7 @@ class OperationLogRepositoryTest extends BaseRepositoryTest {
     // Given
     OperationLog failedLog1 =
         OperationLog.builder()
-            .userId(1L)
+            .userId("1")
             .username("testuser")
             .operationModule("User Management")
             .operationType("DELETE")
@@ -244,7 +244,7 @@ class OperationLogRepositoryTest extends BaseRepositoryTest {
     // Given
     OperationLog oldLog =
         OperationLog.builder()
-            .userId(1L)
+            .userId("1")
             .username("testuser")
             .operationModule("User Management")
             .operationType("CREATE")
@@ -263,7 +263,7 @@ class OperationLogRepositoryTest extends BaseRepositoryTest {
     operationLogRepository.deleteBeforeDate(LocalDateTime.now().minusDays(30));
 
     // Then
-    Page<OperationLog> logs = operationLogRepository.findByUserId(1L, PageRequest.of(0, 100));
+    Page<OperationLog> logs = operationLogRepository.findByUserId("1", PageRequest.of(0, 100));
     // Old log should be deleted, but recent log should remain
     assertThat(logs.getContent()).hasSizeGreaterThanOrEqualTo(1);
   }

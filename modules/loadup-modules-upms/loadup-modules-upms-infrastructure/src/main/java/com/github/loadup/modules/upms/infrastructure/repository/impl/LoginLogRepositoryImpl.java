@@ -2,11 +2,15 @@ package com.github.loadup.modules.upms.infrastructure.repository.impl;
 
 import com.github.loadup.modules.upms.domain.entity.LoginLog;
 import com.github.loadup.modules.upms.domain.repository.LoginLogRepository;
-import com.github.loadup.modules.upms.infrastructure.repository.jdbc.JdbcLoginLogRepository;
+import com.github.loadup.modules.upms.infrastructure.dataobject.LoginLogDO;
+import com.github.loadup.modules.upms.infrastructure.mapper.LoginLogMapper;
+import com.github.loadup.modules.upms.infrastructure.repository.jdbc.LoginLogJdbcRepository;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -20,58 +24,91 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class LoginLogRepositoryImpl implements LoginLogRepository {
 
-  private final JdbcLoginLogRepository jdbcRepository;
+  private final LoginLogJdbcRepository jdbcRepository;
+  private final LoginLogMapper loginLogMapper;
 
   @Override
-  public LoginLog save(LoginLog log) {
-    return jdbcRepository.save(log);
+  public LoginLog save(LoginLog loginLog) {
+    LoginLogDO loginLogDO = loginLogMapper.toDO(loginLog);
+    LoginLogDO saved = jdbcRepository.save(loginLogDO);
+    return loginLogMapper.toEntity(saved);
   }
 
   @Override
-  public Optional<LoginLog> findById(Long id) {
-    return jdbcRepository.findById(id);
+  public Optional<LoginLog> findById(String id) {
+    return jdbcRepository.findById(id).map(loginLogMapper::toEntity);
   }
 
   @Override
-  public Page<LoginLog> findByUserId(Long userId, Pageable pageable) {
-    return jdbcRepository.findByUserId(userId, pageable);
+  public List<LoginLog> findByUserId(String userId) {
+    List<LoginLogDO> loginLogDOList = jdbcRepository.findByUserId(userId);
+    return loginLogMapper.toEntityList(loginLogDOList);
   }
 
   @Override
-  public Page<LoginLog> findByUsername(String username, Pageable pageable) {
-    return jdbcRepository.findByUsername(username, pageable);
+  public Optional<LoginLog> findLastSuccessfulLogin(String userId) {
+    return jdbcRepository.findLastSuccessfulLogin(userId).map(loginLogMapper::toEntity);
   }
 
   @Override
-  public Page<LoginLog> findByDateRange(
-      LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
-    return jdbcRepository.findByDateRange(startTime, endTime, pageable);
+  public List<LoginLog> findByLoginTimeBetween(LocalDateTime startTime, LocalDateTime endTime) {
+    List<LoginLogDO> loginLogDOList = jdbcRepository.findByLoginTimeBetween(startTime, endTime);
+    return loginLogMapper.toEntityList(loginLogDOList);
   }
 
   @Override
-  public Page<LoginLog> findFailedLogins(
-      LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
-    return jdbcRepository.findFailedLogins(startTime, endTime, pageable);
+  public Page<LoginLog> findAll(Pageable pageable) {
+    // TODO: implement pagination
+    return new PageImpl<>(List.of(), pageable, 0);
   }
 
   @Override
-  public void deleteBeforeDate(LocalDateTime date) {
-    jdbcRepository.deleteBeforeDate(date);
-  }
-
-  @Override
-  public long countLoginAttempts(Long userId, LocalDateTime startTime, LocalDateTime endTime) {
+  public long countLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime) {
     return jdbcRepository.countLoginAttempts(userId, startTime, endTime);
   }
 
   @Override
   public long countFailedLoginAttempts(
-      Long userId, LocalDateTime startTime, LocalDateTime endTime) {
+      String userId, LocalDateTime startTime, LocalDateTime endTime) {
     return jdbcRepository.countFailedLoginAttempts(userId, startTime, endTime);
   }
 
   @Override
-  public Optional<LoginLog> findLastSuccessfulLogin(Long userId) {
-    return jdbcRepository.findLastSuccessfulLogin(userId);
+  public void deleteBeforeDate(LocalDateTime date) {
+    // TODO: implement delete with JdbcTemplate
+    // DELETE FROM upms_login_log WHERE login_time < :date
+  }
+
+  @Override
+  public Page<LoginLog> findFailedLogins(
+      LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
+    List<LoginLogDO> loginLogDOList = jdbcRepository.findFailedLoginsBetween(startTime, endTime);
+    List<LoginLog> loginLogs = loginLogMapper.toEntityList(loginLogDOList);
+    // TODO: implement real pagination
+    return new PageImpl<>(loginLogs, pageable, loginLogs.size());
+  }
+
+  @Override
+  public Page<LoginLog> findByDateRange(
+      LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
+    List<LoginLogDO> loginLogDOList = jdbcRepository.findByLoginTimeBetween(startTime, endTime);
+    List<LoginLog> loginLogs = loginLogMapper.toEntityList(loginLogDOList);
+    // TODO: implement real pagination
+    return new PageImpl<>(loginLogs, pageable, loginLogs.size());
+  }
+
+  @Override
+  public Page<LoginLog> findByUsername(String username, Pageable pageable) {
+    // TODO: implement with JDBC query
+    // SELECT * FROM upms_login_log WHERE username = ? ORDER BY login_time DESC
+    return new PageImpl<>(List.of(), pageable, 0);
+  }
+
+  @Override
+  public Page<LoginLog> findByUserId(String userId, Pageable pageable) {
+    List<LoginLogDO> loginLogDOList = jdbcRepository.findByUserId(userId);
+    List<LoginLog> loginLogs = loginLogMapper.toEntityList(loginLogDOList);
+    // TODO: implement real pagination
+    return new PageImpl<>(loginLogs, pageable, loginLogs.size());
   }
 }

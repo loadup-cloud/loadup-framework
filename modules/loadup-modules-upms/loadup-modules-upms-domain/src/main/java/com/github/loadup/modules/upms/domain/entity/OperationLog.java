@@ -21,11 +21,11 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("upms_operation_log")
 public class OperationLog {
 
-  @Id private Long id;
+  @Id private String id;
 
   private String traceId;
 
-  private Long userId;
+  private String userId;
 
   private String username;
 

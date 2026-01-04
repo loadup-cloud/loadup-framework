@@ -19,17 +19,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RoleDTO {
 
-  private Long id;
+  private String id;
   private String roleName;
   private String roleCode;
-  private Long parentRoleId;
+  private String parentRoleId;
   private String parentRoleName;
   private Integer roleLevel;
   private Short dataScope;
   private Integer sortOrder;
   private Short status;
   private List<PermissionDTO> permissions;
-  private List<Long> departmentIds;
+  private List<String> departmentIds;
   private String remark;
   private LocalDateTime createdTime;
   private LocalDateTime updatedTime;

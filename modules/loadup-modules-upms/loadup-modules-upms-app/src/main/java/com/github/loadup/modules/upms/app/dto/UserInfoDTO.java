@@ -19,14 +19,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserInfoDTO {
 
-  private Long id;
+  private String id;
   private String username;
   private String nickname;
   private String realName;
   private String email;
   private String phone;
   private String avatarUrl;
-  private Long deptId;
+  private String deptId;
   private List<String> roles;
   private List<String> permissions;
   private LocalDateTime lastLoginTime;

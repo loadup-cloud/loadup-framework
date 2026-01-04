@@ -25,7 +25,7 @@ public class RoleCreateCommand {
   private String roleCode;
 
   /** Parent role ID for role inheritance (RBAC3 feature) */
-  private Long parentRoleId;
+  private String parentRoleId;
 
   /** Data scope: 1-All, 2-Custom, 3-Dept, 4-Dept and children, 5-Self only */
   private Short dataScope;
@@ -35,11 +35,11 @@ public class RoleCreateCommand {
   /** Status: 1-Normal, 0-Disabled */
   private Short status;
 
-  private List<Long> permissionIds;
+  private List<String> permissionIds;
 
-  private List<Long> departmentIds; // For custom data scope
+  private List<String> departmentIds; // For custom data scope
 
   private String remark;
 
-  private Long createdBy;
+  private String createdBy;
 }

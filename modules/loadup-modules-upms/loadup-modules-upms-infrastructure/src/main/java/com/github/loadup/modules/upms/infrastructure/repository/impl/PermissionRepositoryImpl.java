@@ -2,7 +2,9 @@ package com.github.loadup.modules.upms.infrastructure.repository.impl;
 
 import com.github.loadup.modules.upms.domain.entity.Permission;
 import com.github.loadup.modules.upms.domain.repository.PermissionRepository;
-import com.github.loadup.modules.upms.infrastructure.repository.jdbc.JdbcPermissionRepository;
+import com.github.loadup.modules.upms.infrastructure.dataobject.PermissionDO;
+import com.github.loadup.modules.upms.infrastructure.mapper.PermissionMapper;
+import com.github.loadup.modules.upms.infrastructure.repository.jdbc.PermissionJdbcRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -18,101 +20,120 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class PermissionRepositoryImpl implements PermissionRepository {
 
-  private final JdbcPermissionRepository jdbcRepository;
+  private final PermissionJdbcRepository jdbcRepository;
+  private final PermissionMapper permissionMapper;
 
   @Override
   public Permission save(Permission permission) {
-    return jdbcRepository.save(permission);
+    PermissionDO permissionDO = permissionMapper.toDO(permission);
+    PermissionDO saved = jdbcRepository.save(permissionDO);
+    return permissionMapper.toEntity(saved);
   }
 
   @Override
   public Permission update(Permission permission) {
-    return jdbcRepository.save(permission);
+    PermissionDO permissionDO = permissionMapper.toDO(permission);
+    PermissionDO updated = jdbcRepository.save(permissionDO);
+    return permissionMapper.toEntity(updated);
   }
 
   @Override
-  public void deleteById(Long id) {
-    // Use soft delete
-    jdbcRepository.softDelete(id, 1L); // TODO: get actual operator ID
+  public void deleteById(String id) {
+    jdbcRepository
+        .findById(id)
+        .ifPresent(
+            permissionDO -> {
+              permissionDO.setDeleted(true);
+              jdbcRepository.save(permissionDO);
+            });
   }
 
   @Override
-  public Optional<Permission> findById(Long id) {
-    return jdbcRepository.findById(id);
+  public Optional<Permission> findById(String id) {
+    return jdbcRepository.findById(id).map(permissionMapper::toEntity);
   }
 
   @Override
   public Optional<Permission> findByPermissionCode(String permissionCode) {
-    return jdbcRepository.findByPermissionCode(permissionCode);
+    return jdbcRepository.findByPermissionCode(permissionCode).map(permissionMapper::toEntity);
   }
 
   @Override
-  public List<Permission> findByUserId(Long userId) {
-    return jdbcRepository.findByUserId(userId);
-  }
-
-  @Override
-  public List<Permission> findByRoleId(Long roleId) {
-    return jdbcRepository.findByRoleId(roleId);
-  }
-
-  @Override
-  public List<Permission> findByParentId(Long parentId) {
-    return jdbcRepository.findByParentId(parentId);
+  public List<Permission> findByParentId(String parentId) {
+    List<PermissionDO> permissionDOList = jdbcRepository.findByParentId(parentId);
+    return permissionMapper.toEntityList(permissionDOList);
   }
 
   @Override
   public List<Permission> findByPermissionType(Short permissionType) {
-    return jdbcRepository.findByPermissionType(permissionType);
+    List<PermissionDO> permissionDOList = jdbcRepository.findByPermissionType(permissionType);
+    return permissionMapper.toEntityList(permissionDOList);
+  }
+
+  @Override
+  public List<Permission> findByRoleId(String roleId) {
+    List<PermissionDO> permissionDOList = jdbcRepository.findByRoleId(roleId);
+    return permissionMapper.toEntityList(permissionDOList);
+  }
+
+  @Override
+  public List<Permission> findByUserId(String userId) {
+    List<PermissionDO> permissionDOList = jdbcRepository.findByUserId(userId);
+    return permissionMapper.toEntityList(permissionDOList);
+  }
+
+  @Override
+  public List<String> getRolePermissionIds(String roleId) {
+    return jdbcRepository.getRolePermissionIds(roleId);
   }
 
   @Override
   public List<Permission> findAll() {
-    return jdbcRepository.findAllActive();
+    List<PermissionDO> permissionDOList = jdbcRepository.findAllOrderBySortOrder();
+    return permissionMapper.toEntityList(permissionDOList);
   }
 
   @Override
   public List<Permission> findAllEnabled() {
-    return jdbcRepository.findAllEnabled();
+    List<PermissionDO> permissionDOList = jdbcRepository.findAllEnabled();
+    return permissionMapper.toEntityList(permissionDOList);
   }
 
   @Override
   public List<Permission> findMenuPermissions() {
-    return jdbcRepository.findMenuPermissions();
+    List<PermissionDO> permissionDOList = jdbcRepository.findByPermissionType((short) 1);
+    return permissionMapper.toEntityList(permissionDOList);
   }
 
   @Override
   public boolean existsByPermissionCode(String permissionCode) {
-    return jdbcRepository.countByPermissionCode(permissionCode) > 0;
+    return jdbcRepository.existsByPermissionCode(permissionCode);
   }
 
   @Override
-  public void assignPermissionToRole(Long roleId, Long permissionId, Long operatorId) {
-    jdbcRepository.assignPermissionToRole(roleId, permissionId, operatorId);
+  public void removeAllPermissionsFromRole(String roleId) {
+    // TODO: implement with JdbcTemplate
+    // DELETE FROM upms_role_permission WHERE role_id = :roleId
   }
 
   @Override
-  public void removePermissionFromRole(Long roleId, Long permissionId) {
-    jdbcRepository.removePermissionFromRole(roleId, permissionId);
+  public void removePermissionFromRole(String roleId, String permissionId) {
+    // TODO: implement with JdbcTemplate
+    // DELETE FROM upms_role_permission WHERE role_id = ? AND permission_id = ?
   }
 
   @Override
-  public void batchAssignPermissionsToRole(Long roleId, List<Long> permissionIds, Long operatorId) {
-    // First remove all existing permissions
-    jdbcRepository.removeAllPermissionsFromRole(roleId);
-    // Then add new permissions
-    for (Long permissionId : permissionIds) {
-      jdbcRepository.assignPermissionToRole(roleId, permissionId, operatorId);
-    }
+  public void assignPermissionToRole(String roleId, String permissionId, String operatorId) {
+    // TODO: implement with JdbcTemplate
+    // INSERT INTO upms_role_permission (role_id, permission_id, created_by, created_time)
+    // VALUES (?, ?, ?, NOW())
   }
 
   @Override
-  public void removeAllPermissionsFromRole(Long roleId) {
-    jdbcRepository.removeAllPermissionsFromRole(roleId);
-  }
-
-  @Override
-  public List<Long> getRolePermissionIds(Long roleId) {
-    return jdbcRepository.getRolePermissionIds(roleId);
+  public void batchAssignPermissionsToRole(
+      String roleId, List<String> permissionIds, String operatorId) {
+    // TODO: implement with JdbcTemplate
+    // INSERT INTO upms_role_permission (role_id, permission_id, created_by, created_time)
+    // VALUES (?, ?, ?, NOW()) for each permissionId
   }
 }

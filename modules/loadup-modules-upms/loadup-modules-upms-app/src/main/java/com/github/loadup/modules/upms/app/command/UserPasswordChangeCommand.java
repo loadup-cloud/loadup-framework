@@ -15,7 +15,7 @@ import lombok.Data;
 public class UserPasswordChangeCommand {
 
   @NotNull(message = "用户ID不能为空")
-  private Long userId;
+  private String userId;
 
   @NotBlank(message = "旧密码不能为空")
   private String oldPassword;

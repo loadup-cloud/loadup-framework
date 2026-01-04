@@ -23,9 +23,9 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("upms_department")
 public class Department {
 
-  @Id private Long id;
+  @Id private String id;
 
-  private Long parentId;
+  private String parentId;
 
   private String deptName;
 
@@ -35,7 +35,7 @@ public class Department {
 
   private Integer sortOrder;
 
-  private Long leaderUserId;
+  private String leaderUserId;
 
   private String phone;
 
@@ -48,11 +48,11 @@ public class Department {
 
   private String remark;
 
-  private Long createdBy;
+  private String createdBy;
 
   private LocalDateTime createdTime;
 
-  private Long updatedBy;
+  private String updatedBy;
 
   private LocalDateTime updatedTime;
 
@@ -70,7 +70,7 @@ public class Department {
 
   /** Check if this is a root department */
   public boolean isRoot() {
-    return parentId == null || parentId == 0;
+    return parentId == null || "0".equals(parentId);
   }
 
   /** Get full path (for display in tree structure) */

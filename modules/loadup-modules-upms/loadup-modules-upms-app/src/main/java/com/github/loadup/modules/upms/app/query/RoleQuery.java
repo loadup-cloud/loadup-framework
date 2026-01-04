@@ -19,7 +19,7 @@ public class RoleQuery {
 
   private String roleName;
   private String roleCode;
-  private Long parentRoleId;
+  private String parentRoleId;
   private Short status;
   private Boolean deleted;
 

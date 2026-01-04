@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 public class PermissionCreateCommand {
 
-  private Long parentId;
+  private String parentId;
 
   @NotBlank(message = "权限名称不能为空")
   @Size(max = 50, message = "权限名称长度不能超过50")
@@ -45,5 +45,5 @@ public class PermissionCreateCommand {
 
   private String remark;
 
-  private Long createdBy;
+  private String createdBy;
 }

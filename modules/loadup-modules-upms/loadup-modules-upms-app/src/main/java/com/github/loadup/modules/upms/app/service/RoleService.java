@@ -127,7 +127,7 @@ public class RoleService {
     // Update permissions
     if (command.getPermissionIds() != null) {
       List<Permission> currentPermissions = permissionRepository.findByRoleId(role.getId());
-      List<Long> currentPermissionIds =
+      List<String> currentPermissionIds =
           currentPermissions.stream().map(Permission::getId).collect(Collectors.toList());
       if (!currentPermissionIds.isEmpty()) {
         roleRepository.removePermissionsFromRole(role.getId(), currentPermissionIds);
@@ -140,7 +140,7 @@ public class RoleService {
     // Update departments (for custom data scope)
     if (command.getDataScope() != null && command.getDataScope() == 2) {
       if (command.getDepartmentIds() != null) {
-        List<Long> currentDeptIds = roleRepository.findDepartmentIdsByRoleId(role.getId());
+        List<String> currentDeptIds = roleRepository.findDepartmentIdsByRoleId(role.getId());
         if (!currentDeptIds.isEmpty()) {
           roleRepository.removeDepartmentsFromRole(role.getId(), currentDeptIds);
         }
@@ -155,7 +155,7 @@ public class RoleService {
 
   /** Delete role */
   @Transactional
-  public void deleteRole(Long id) {
+  public void deleteRole(String id) {
     roleRepository.findById(id).orElseThrow(() -> new RuntimeException("角色不存在"));
 
     // Check if role has child roles
@@ -174,7 +174,7 @@ public class RoleService {
   }
 
   /** Get role by ID */
-  public RoleDTO getRoleById(Long id) {
+  public RoleDTO getRoleById(String id) {
     Role role = roleRepository.findById(id).orElseThrow(() -> new RuntimeException("角色不存在"));
     return convertToDTO(role);
   }
@@ -205,23 +205,23 @@ public class RoleService {
 
   /** Assign role to user */
   @Transactional
-  public void assignRoleToUser(Long roleId, Long userId) {
+  public void assignRoleToUser(String roleId, String userId) {
     roleRepository.findById(roleId).orElseThrow(() -> new RuntimeException("角色不存在"));
-    roleRepository.assignRoleToUser(userId, roleId, 0L);
+    roleRepository.assignRoleToUser(userId, roleId, "0");
   }
 
   /** Remove role from user */
   @Transactional
-  public void removeRoleFromUser(Long roleId, Long userId) {
+  public void removeRoleFromUser(String roleId, String userId) {
     roleRepository.removeRoleFromUser(userId, roleId);
   }
 
   /** Assign permissions to role */
   @Transactional
-  public void assignPermissionsToRole(Long roleId, List<Long> permissionIds) {
+  public void assignPermissionsToRole(String roleId, List<String> permissionIds) {
     roleRepository.findById(roleId).orElseThrow(() -> new RuntimeException("角色不存在"));
 
-    for (Long permissionId : permissionIds) {
+    for (String permissionId : permissionIds) {
       permissionRepository
           .findById(permissionId)
           .orElseThrow(() -> new RuntimeException("权限不存在: " + permissionId));
@@ -233,7 +233,7 @@ public class RoleService {
   /** Convert Role entity to RoleDTO */
   private RoleDTO convertToDTO(Role role) {
     List<Permission> permissions = permissionRepository.findByRoleId(role.getId());
-    List<Long> departmentIds = roleRepository.findDepartmentIdsByRoleId(role.getId());
+    List<String> departmentIds = roleRepository.findDepartmentIdsByRoleId(role.getId());
 
     Role parentRole = null;
     if (role.getParentRoleId() != null) {

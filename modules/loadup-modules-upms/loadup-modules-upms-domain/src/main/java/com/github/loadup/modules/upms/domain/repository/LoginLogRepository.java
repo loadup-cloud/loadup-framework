@@ -2,6 +2,7 @@ package com.github.loadup.modules.upms.domain.repository;
 
 import com.github.loadup.modules.upms.domain.entity.LoginLog;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,10 +19,10 @@ public interface LoginLogRepository {
   LoginLog save(LoginLog log);
 
   /** Find log by ID */
-  Optional<LoginLog> findById(Long id);
+  Optional<LoginLog> findById(String id);
 
   /** Find logs by user ID */
-  Page<LoginLog> findByUserId(Long userId, Pageable pageable);
+  Page<LoginLog> findByUserId(String userId, Pageable pageable);
 
   /** Find logs by username */
   Page<LoginLog> findByUsername(String username, Pageable pageable);
@@ -36,12 +37,18 @@ public interface LoginLogRepository {
   /** Delete logs before specified date */
   void deleteBeforeDate(LocalDateTime date);
 
+  List<LoginLog> findByLoginTimeBetween(LocalDateTime startTime, LocalDateTime endTime);
+
+  Page<LoginLog> findAll(Pageable pageable);
+
   /** Count login attempts by user and time range */
-  long countLoginAttempts(Long userId, LocalDateTime startTime, LocalDateTime endTime);
+  long countLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime);
 
   /** Count failed login attempts by user and time range */
-  long countFailedLoginAttempts(Long userId, LocalDateTime startTime, LocalDateTime endTime);
+  long countFailedLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime);
+
+  List<LoginLog> findByUserId(String userId);
 
   /** Get last successful login */
-  Optional<LoginLog> findLastSuccessfulLogin(Long userId);
+  Optional<LoginLog> findLastSuccessfulLogin(String userId);
 }

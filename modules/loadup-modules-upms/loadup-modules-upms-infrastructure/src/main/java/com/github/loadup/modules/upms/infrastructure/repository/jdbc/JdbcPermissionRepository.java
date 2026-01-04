@@ -29,7 +29,7 @@ public interface JdbcPermissionRepository
         INNER JOIN upms_user_role ur ON rp.role_id = ur.role_id
         WHERE ur.user_id = :userId AND p.deleted = false
     """)
-  List<Permission> findByUserId(@Param("userId") Long userId);
+  List<Permission> findByUserId(@Param("userId") String userId);
 
   @Query(
       """
@@ -37,11 +37,11 @@ public interface JdbcPermissionRepository
         INNER JOIN upms_role_permission rp ON p.id = rp.permission_id
         WHERE rp.role_id = :roleId AND p.deleted = false
     """)
-  List<Permission> findByRoleId(@Param("roleId") Long roleId);
+  List<Permission> findByRoleId(@Param("roleId") String roleId);
 
   @Query(
       "SELECT * FROM upms_permission WHERE parent_id = :parentId AND deleted = false ORDER BY sort_order")
-  List<Permission> findByParentId(@Param("parentId") Long parentId);
+  List<Permission> findByParentId(@Param("parentId") String parentId);
 
   @Query(
       "SELECT * FROM upms_permission WHERE permission_type = :permissionType AND deleted = false ORDER BY sort_order, created_time")
@@ -67,7 +67,7 @@ public interface JdbcPermissionRepository
   long countByPermissionCode(@Param("permissionCode") String permissionCode);
 
   @Query("SELECT permission_id FROM upms_role_permission WHERE role_id = :roleId")
-  List<Long> getRolePermissionIds(@Param("roleId") Long roleId);
+  List<String> getRolePermissionIds(@Param("roleId") String roleId);
 
   @Modifying
   @Query(
@@ -84,14 +84,14 @@ public interface JdbcPermissionRepository
   @Query(
       "DELETE FROM upms_role_permission WHERE role_id = :roleId AND permission_id = :permissionId")
   void removePermissionFromRole(
-      @Param("roleId") Long roleId, @Param("permissionId") Long permissionId);
+      @Param("roleId") Long roleId, @Param("permissionId") String permissionId);
 
   @Modifying
   @Query("DELETE FROM upms_role_permission WHERE role_id = :roleId")
-  void removeAllPermissionsFromRole(@Param("roleId") Long roleId);
+  void removeAllPermissionsFromRole(@Param("roleId") String roleId);
 
   @Modifying
   @Query(
       "UPDATE upms_permission SET deleted = true, updated_by = :updatedBy, updated_time = CURRENT_TIMESTAMP WHERE id = :id")
-  void softDelete(@Param("id") Long id, @Param("updatedBy") Long updatedBy);
+  void softDelete(@Param("id") Long id, @Param("updatedBy") String updatedBy);
 }

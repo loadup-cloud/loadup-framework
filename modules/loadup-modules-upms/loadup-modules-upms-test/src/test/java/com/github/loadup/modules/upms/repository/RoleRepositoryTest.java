@@ -45,7 +45,7 @@ class RoleRepositoryTest extends BaseRepositoryTest {
             .sortOrder(0)
             .status((short) 1)
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
   }
@@ -106,7 +106,7 @@ class RoleRepositoryTest extends BaseRepositoryTest {
             .sortOrder(1)
             .status((short) 1)
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
     roleRepository.save(role2);
@@ -132,7 +132,7 @@ class RoleRepositoryTest extends BaseRepositoryTest {
             .sortOrder(1)
             .status((short) 0) // Disabled
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
     roleRepository.save(disabledRole);
@@ -160,7 +160,7 @@ class RoleRepositoryTest extends BaseRepositoryTest {
             .sortOrder(1)
             .status((short) 1)
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
     roleRepository.save(childRole);

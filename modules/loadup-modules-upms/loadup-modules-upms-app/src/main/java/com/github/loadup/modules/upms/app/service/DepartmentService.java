@@ -39,7 +39,7 @@ public class DepartmentService {
 
     // Validate parent department exists
     Integer deptLevel = 1;
-    if (command.getParentId() != null && command.getParentId() > 0) {
+    if (command.getParentId() != null && command.getParentId() != "0") {
       Department parentDept =
           departmentRepository
               .findById(command.getParentId())
@@ -86,7 +86,7 @@ public class DepartmentService {
             .orElseThrow(() -> new RuntimeException("部门不存在"));
 
     // Validate parent department (prevent circular reference)
-    if (command.getParentId() != null && command.getParentId() > 0) {
+    if (command.getParentId() != null && command.getParentId() != "0") {
       if (command.getParentId().equals(command.getId())) {
         throw new RuntimeException("父部门不能是自己");
       }
@@ -142,7 +142,7 @@ public class DepartmentService {
 
   /** Delete department */
   @Transactional
-  public void deleteDepartment(Long id) {
+  public void deleteDepartment(String id) {
     departmentRepository.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
 
     // Check if department has children
@@ -159,7 +159,7 @@ public class DepartmentService {
   }
 
   /** Get department by ID */
-  public DepartmentDTO getDepartmentById(Long id) {
+  public DepartmentDTO getDepartmentById(String id) {
     Department department =
         departmentRepository.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
     return convertToDTO(department);
@@ -172,7 +172,7 @@ public class DepartmentService {
   }
 
   /** Get department tree (from specific department) */
-  public DepartmentDTO getDepartmentTreeById(Long id) {
+  public DepartmentDTO getDepartmentTreeById(String id) {
     Department department =
         departmentRepository.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
     List<Department> allDepartments = departmentRepository.findAll();
@@ -187,12 +187,12 @@ public class DepartmentService {
 
   /** Move department to another parent */
   @Transactional
-  public void moveDepartment(Long deptId, Long newParentId) {
+  public void moveDepartment(String deptId, String newParentId) {
     Department department =
         departmentRepository.findById(deptId).orElseThrow(() -> new RuntimeException("部门不存在"));
 
     // Validate new parent exists
-    if (newParentId != null && newParentId > 0) {
+    if (newParentId != null && newParentId != "0") {
       if (newParentId.equals(deptId)) {
         throw new RuntimeException("父部门不能是自己");
       }
@@ -219,7 +219,7 @@ public class DepartmentService {
   }
 
   /** Check if targetId is a descendant of ancestorId */
-  private boolean isDescendant(Long ancestorId, Long targetId) {
+  private boolean isDescendant(String ancestorId, String targetId) {
     Department target = departmentRepository.findById(targetId).orElse(null);
     if (target == null) {
       return false;
@@ -259,10 +259,12 @@ public class DepartmentService {
   }
 
   /** Build department tree recursively */
-  private List<DepartmentDTO> buildDepartmentTree(List<Department> allDepartments, Long parentId) {
+  private List<DepartmentDTO> buildDepartmentTree(
+      List<Department> allDepartments, String parentId) {
     List<DepartmentDTO> tree = new ArrayList<>();
     for (Department department : allDepartments) {
-      if ((parentId == null && (department.getParentId() == null || department.getParentId() == 0))
+      if ((parentId == null
+              && (department.getParentId() == null || department.getParentId().equals("0")))
           || (parentId != null && parentId.equals(department.getParentId()))) {
         DepartmentDTO dto = convertToDTO(department);
         List<DepartmentDTO> children = buildDepartmentTree(allDepartments, department.getId());

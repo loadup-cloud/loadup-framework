@@ -22,10 +22,10 @@ public interface OperationLogRepository {
   void batchSave(List<OperationLog> logs);
 
   /** Find log by ID */
-  Optional<OperationLog> findById(Long id);
+  Optional<OperationLog> findById(String id);
 
   /** Find logs by user ID */
-  Page<OperationLog> findByUserId(Long userId, Pageable pageable);
+  Page<OperationLog> findByUserId(String userId, Pageable pageable);
 
   /** Find logs by operation type */
   Page<OperationLog> findByOperationType(String operationType, Pageable pageable);
@@ -36,7 +36,7 @@ public interface OperationLogRepository {
 
   /** Search logs by multiple criteria */
   Page<OperationLog> search(
-      Long userId,
+      String userId,
       String operationType,
       String module,
       LocalDateTime startTime,
@@ -46,8 +46,16 @@ public interface OperationLogRepository {
   /** Delete logs before specified date */
   void deleteBeforeDate(LocalDateTime date);
 
+  List<OperationLog> findByUserId(String userId);
+
+  List<OperationLog> findByOperationType(String operationType);
+
+  List<OperationLog> findByCreatedTimeBetween(LocalDateTime startTime, LocalDateTime endTime);
+
   /** Count logs by user ID */
-  long countByUserId(Long userId);
+  long countByUserId(String userId);
+
+  Page<OperationLog> findAll(Pageable pageable);
 
   /** Count failed operations */
   long countFailedOperations(LocalDateTime startTime, LocalDateTime endTime);

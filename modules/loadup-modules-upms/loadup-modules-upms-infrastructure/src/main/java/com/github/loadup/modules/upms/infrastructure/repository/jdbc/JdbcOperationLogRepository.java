@@ -35,7 +35,7 @@ public interface JdbcOperationLogRepository
   void deleteBeforeDate(LocalDateTime date);
 
   @Query("SELECT COUNT(*) FROM upms_operation_log WHERE user_id = :userId")
-  long countByUserId(Long userId);
+  long countByUserId(String userId);
 
   @Query(
       "SELECT * FROM upms_operation_log WHERE "

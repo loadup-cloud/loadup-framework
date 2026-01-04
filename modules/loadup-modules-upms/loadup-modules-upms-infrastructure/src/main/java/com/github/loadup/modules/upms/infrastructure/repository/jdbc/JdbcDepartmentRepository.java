@@ -23,7 +23,7 @@ public interface JdbcDepartmentRepository
 
   @Query(
       "SELECT * FROM upms_department WHERE parent_id = :parentId AND deleted = false ORDER BY sort_order")
-  List<Department> findByParentId(@Param("parentId") Long parentId);
+  List<Department> findByParentId(@Param("parentId") String parentId);
 
   @Query("SELECT * FROM upms_department WHERE deleted = false ORDER BY sort_order, created_time")
   List<Department> findAllActive();
@@ -40,13 +40,13 @@ public interface JdbcDepartmentRepository
   long countByDeptCode(@Param("deptCode") String deptCode);
 
   @Query("SELECT COUNT(*) FROM upms_department WHERE parent_id = :deptId AND deleted = false")
-  long countChildren(@Param("deptId") Long deptId);
+  long countChildren(@Param("deptId") String deptId);
 
   @Query("SELECT COUNT(*) FROM upms_user WHERE dept_id = :deptId AND deleted = false")
-  long countUsers(@Param("deptId") Long deptId);
+  long countUsers(@Param("deptId") String deptId);
 
   @Modifying
   @Query(
       "UPDATE upms_department SET deleted = true, updated_by = :updatedBy, updated_time = CURRENT_TIMESTAMP WHERE id = :id")
-  void softDelete(@Param("id") Long id, @Param("updatedBy") Long updatedBy);
+  void softDelete(@Param("id") Long id, @Param("updatedBy") String updatedBy);
 }

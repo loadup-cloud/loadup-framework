@@ -126,7 +126,7 @@ public class AuthenticationService {
             .nickname(command.getNickname())
             .email(command.getEmail())
             .phone(command.getPhone())
-            .deptId(1L) // Default department
+            .deptId("1") // Default department
             .status((short) 1)
             .accountNonExpired(true)
             .accountNonLocked(true)
@@ -134,7 +134,7 @@ public class AuthenticationService {
             .emailVerified(false)
             .phoneVerified(false)
             .deleted(false)
-            .createdBy(0L)
+            .createdBy("0")
             .createdTime(LocalDateTime.now())
             .build();
 
@@ -153,7 +153,7 @@ public class AuthenticationService {
     }
 
     String username = tokenProvider.getUsernameFromToken(refreshToken);
-    Long userId = tokenProvider.getUserIdFromToken(refreshToken);
+    String userId = tokenProvider.getUserIdFromToken(refreshToken);
 
     User user =
         userRepository
@@ -264,10 +264,10 @@ public class AuthenticationService {
   }
 
   /** Assign default role to new user */
-  private void assignDefaultRole(Long userId) {
+  private void assignDefaultRole(String userId) {
     // Try to assign "ROLE_USER" if it exists
     roleRepository
         .findByRoleCode("ROLE_USER")
-        .ifPresent(role -> roleRepository.assignRoleToUser(userId, role.getId(), 0L));
+        .ifPresent(role -> roleRepository.assignRoleToUser(userId, role.getId(), "0"));
   }
 }

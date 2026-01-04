@@ -28,7 +28,7 @@ public interface JdbcUserRepository
   Optional<User> findByPhone(@Param("phone") String phone);
 
   @Query("SELECT * FROM upms_user WHERE dept_id = :deptId AND deleted = false")
-  List<User> findByDeptId(@Param("deptId") Long deptId);
+  List<User> findByDeptId(@Param("deptId") String deptId);
 
   @Query(
       """
@@ -36,7 +36,7 @@ public interface JdbcUserRepository
         INNER JOIN upms_user_role ur ON u.id = ur.user_id
         WHERE ur.role_id = :roleId AND u.deleted = false
     """)
-  List<User> findByRoleId(@Param("roleId") Long roleId);
+  List<User> findByRoleId(@Param("roleId") String roleId);
 
   @Query(
       """
@@ -58,12 +58,12 @@ public interface JdbcUserRepository
   long countByPhone(@Param("phone") String phone);
 
   @Query("SELECT COUNT(*) FROM upms_user WHERE dept_id = :deptId AND deleted = false")
-  long countByDeptId(@Param("deptId") Long deptId);
+  long countByDeptId(@Param("deptId") String deptId);
 
   @Modifying
   @Query(
       "UPDATE upms_user SET deleted = true, updated_by = :updatedBy, updated_time = CURRENT_TIMESTAMP WHERE id = :id")
-  void softDelete(@Param("id") Long id, @Param("updatedBy") Long updatedBy);
+  void softDelete(@Param("id") Long id, @Param("updatedBy") String updatedBy);
 
   @Query("SELECT * FROM upms_user WHERE deleted = false ORDER BY created_time DESC")
   List<User> findAllActive();

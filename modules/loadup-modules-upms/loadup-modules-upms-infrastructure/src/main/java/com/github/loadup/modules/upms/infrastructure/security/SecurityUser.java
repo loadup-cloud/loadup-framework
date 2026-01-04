@@ -61,7 +61,7 @@ public class SecurityUser implements UserDetails {
     return user.isEnabled();
   }
 
-  public Long getUserId() {
+  public String getUserId() {
     return user.getId();
   }
 
@@ -69,7 +69,7 @@ public class SecurityUser implements UserDetails {
     return user.getNickname();
   }
 
-  public Long getDeptId() {
+  public String getDeptId() {
     return user.getDeptId();
   }
 }

@@ -44,7 +44,7 @@ class UserRepositoryTest extends BaseRepositoryTest {
             .password("$2a$10$encoded.password")
             .nickname("Test User")
             .realName("Test Real Name")
-            .deptId(1L)
+            .deptId("1")
             .email("test@example.com")
             .emailVerified(false)
             .phone("13800138000")
@@ -57,7 +57,7 @@ class UserRepositoryTest extends BaseRepositoryTest {
             .credentialsNonExpired(true)
             .loginFailCount(0)
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
   }
@@ -205,20 +205,20 @@ class UserRepositoryTest extends BaseRepositoryTest {
             .username("testuser2")
             .password("$2a$10$encoded.password")
             .nickname("Test User 2")
-            .deptId(1L)
+            .deptId("1")
             .status((short) 1)
             .accountNonExpired(true)
             .accountNonLocked(true)
             .credentialsNonExpired(true)
             .loginFailCount(0)
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
     userRepository.save(user2);
 
     // When
-    var users = userRepository.findByDeptId(1L);
+    var users = userRepository.findByDeptId("1");
 
     // Then
     assertThat(users).hasSize(2);
@@ -236,14 +236,14 @@ class UserRepositoryTest extends BaseRepositoryTest {
             .password("$2a$10$encoded.password")
             .nickname("Another User")
             .realName("Another Name")
-            .deptId(1L)
+            .deptId("1")
             .status((short) 1)
             .accountNonExpired(true)
             .accountNonLocked(true)
             .credentialsNonExpired(true)
             .loginFailCount(0)
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
     userRepository.save(user2);
@@ -267,14 +267,14 @@ class UserRepositoryTest extends BaseRepositoryTest {
               .username("user" + i)
               .password("$2a$10$encoded.password")
               .nickname("User " + i)
-              .deptId(1L)
+              .deptId("1")
               .status((short) 1)
               .accountNonExpired(true)
               .accountNonLocked(true)
               .credentialsNonExpired(true)
               .loginFailCount(0)
               .deleted(false)
-              .createdBy(1L)
+              .createdBy("1")
               .createdTime(LocalDateTime.now())
               .build();
       userRepository.save(user);
@@ -298,20 +298,20 @@ class UserRepositoryTest extends BaseRepositoryTest {
             .username("user2")
             .password("$2a$10$encoded.password")
             .nickname("User 2")
-            .deptId(1L)
+            .deptId("1")
             .status((short) 1)
             .accountNonExpired(true)
             .accountNonLocked(true)
             .credentialsNonExpired(true)
             .loginFailCount(0)
             .deleted(false)
-            .createdBy(1L)
+            .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
     userRepository.save(user2);
 
     // When
-    long count = userRepository.countByDeptId(1L);
+    long count = userRepository.countByDeptId("1");
 
     // Then
     assertThat(count).isEqualTo(2);

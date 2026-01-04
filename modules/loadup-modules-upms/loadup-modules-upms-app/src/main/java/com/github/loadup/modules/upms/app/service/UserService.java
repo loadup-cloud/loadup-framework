@@ -89,7 +89,7 @@ public class UserService {
 
     // Assign roles
     if (command.getRoleIds() != null && !command.getRoleIds().isEmpty()) {
-      for (Long roleId : command.getRoleIds()) {
+      for (String roleId : command.getRoleIds()) {
         roleRepository.assignRoleToUser(user.getId(), roleId, command.getCreatedBy());
       }
     }
@@ -164,7 +164,7 @@ public class UserService {
         roleRepository.removeRoleFromUser(user.getId(), role.getId());
       }
       // Assign new roles
-      for (Long roleId : command.getRoleIds()) {
+      for (String roleId : command.getRoleIds()) {
         roleRepository.assignRoleToUser(user.getId(), roleId, command.getUpdatedBy());
       }
     }
@@ -174,13 +174,13 @@ public class UserService {
 
   /** Delete user */
   @Transactional
-  public void deleteUser(Long id) {
+  public void deleteUser(String id) {
     userRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
     userRepository.deleteById(id);
   }
 
   /** Get user by ID */
-  public UserDetailDTO getUserById(Long id) {
+  public UserDetailDTO getUserById(String id) {
     User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
     return convertToDetailDTO(user);
   }
@@ -234,7 +234,7 @@ public class UserService {
 
   /** Lock user account */
   @Transactional
-  public void lockUser(Long id) {
+  public void lockUser(String id) {
     User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
     user.setAccountNonLocked(false);
     user.setLockedTime(LocalDateTime.now());
@@ -243,7 +243,7 @@ public class UserService {
 
   /** Unlock user account */
   @Transactional
-  public void unlockUser(Long id) {
+  public void unlockUser(String id) {
     User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
     user.setAccountNonLocked(true);
     user.setLoginFailCount(0);

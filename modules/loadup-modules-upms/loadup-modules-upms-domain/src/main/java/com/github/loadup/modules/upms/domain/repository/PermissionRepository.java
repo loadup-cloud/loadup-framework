@@ -19,22 +19,22 @@ public interface PermissionRepository {
   Permission update(Permission permission);
 
   /** Delete permission by ID */
-  void deleteById(Long id);
+  void deleteById(String id);
 
   /** Find permission by ID */
-  Optional<Permission> findById(Long id);
+  Optional<Permission> findById(String id);
 
   /** Find permission by code */
   Optional<Permission> findByPermissionCode(String permissionCode);
 
   /** Find permissions by user ID */
-  List<Permission> findByUserId(Long userId);
+  List<Permission> findByUserId(String userId);
 
   /** Find permissions by role ID */
-  List<Permission> findByRoleId(Long roleId);
+  List<Permission> findByRoleId(String roleId);
 
   /** Find permissions by parent ID */
-  List<Permission> findByParentId(Long parentId);
+  List<Permission> findByParentId(String parentId);
 
   /** Find permissions by type */
   List<Permission> findByPermissionType(Short permissionType);
@@ -52,17 +52,17 @@ public interface PermissionRepository {
   boolean existsByPermissionCode(String permissionCode);
 
   /** Assign permission to role */
-  void assignPermissionToRole(Long roleId, Long permissionId, Long operatorId);
+  void assignPermissionToRole(String roleId, String permissionId, String operatorId);
 
   /** Remove permission from role */
-  void removePermissionFromRole(Long roleId, Long permissionId);
+  void removePermissionFromRole(String roleId, String permissionId);
 
   /** Batch assign permissions to role */
-  void batchAssignPermissionsToRole(Long roleId, List<Long> permissionIds, Long operatorId);
+  void batchAssignPermissionsToRole(String roleId, List<String> permissionIds, String operatorId);
 
   /** Remove all permissions from role */
-  void removeAllPermissionsFromRole(Long roleId);
+  void removeAllPermissionsFromRole(String roleId);
 
   /** Get role's permission IDs */
-  List<Long> getRolePermissionIds(Long roleId);
+  List<String> getRolePermissionIds(String roleId);
 }
