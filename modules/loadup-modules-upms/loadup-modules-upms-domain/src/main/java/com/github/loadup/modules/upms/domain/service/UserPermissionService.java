@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 /**
  * User Permission Domain Service Handles complex permission calculation logic including role
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
  * @author LoadUp Framework
  * @since 1.0.0
  */
+@Service
 @RequiredArgsConstructor
 public class UserPermissionService {
 
