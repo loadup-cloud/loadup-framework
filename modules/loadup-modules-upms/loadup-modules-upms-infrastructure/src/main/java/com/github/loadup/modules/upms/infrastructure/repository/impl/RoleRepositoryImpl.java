@@ -92,8 +92,9 @@ public class RoleRepositoryImpl implements RoleRepository {
 
   @Override
   public Page<Role> findAll(Pageable pageable) {
-    // TODO: implement pagination
-    return new PageImpl<>(List.of(), pageable, 0);
+    Page<RoleDO> roleDOPage = jdbcRepository.findAll(pageable);
+    List<Role> roles = roleMapper.toEntityList(roleDOPage.getContent());
+    return new PageImpl<>(roles, pageable, roleDOPage.getTotalElements());
   }
 
   @Override
@@ -113,40 +114,42 @@ public class RoleRepositoryImpl implements RoleRepository {
 
   @Override
   public void removeRoleFromUser(String userId, String roleId) {
-    // TODO: implement with JdbcTemplate
-    // DELETE FROM upms_user_role WHERE user_id = ? AND role_id = ?
+    jdbcRepository.deleteUserRole(userId, roleId);
   }
 
   @Override
   public void assignRoleToUser(String userId, String roleId, String operatorId) {
-    // TODO: implement with JdbcTemplate
-    // INSERT INTO upms_user_role (user_id, role_id, created_by, created_time)
-    // VALUES (?, ?, ?, NOW())
+    jdbcRepository.insertUserRole(userId, roleId, operatorId);
   }
 
   @Override
   public void assignDepartmentsToRole(String roleId, List<String> departmentIds) {
-    // TODO: implement with JdbcTemplate
-    // INSERT INTO upms_role_department (role_id, dept_id, created_by, created_time)
-    // VALUES (?, ?, ?, NOW()) for each departmentId
+    // Use system as default operator if not provided
+    String operatorId = "system";
+    for (String deptId : departmentIds) {
+      jdbcRepository.insertRoleDepartment(roleId, deptId, operatorId);
+    }
   }
 
   @Override
   public void assignPermissionsToRole(String roleId, List<String> permissionIds) {
-    // TODO: implement with JdbcTemplate
-    // INSERT INTO upms_role_permission (role_id, permission_id, created_by, created_time)
-    // VALUES (?, ?, ?, NOW()) for each permissionId
+    String operatorId = "system";
+    for (String permissionId : permissionIds) {
+      jdbcRepository.insertRolePermission(roleId, permissionId, operatorId);
+    }
   }
 
   @Override
   public void removePermissionsFromRole(String roleId, List<String> permissionIds) {
-    // TODO: implement with JdbcTemplate
-    // DELETE FROM upms_role_permission WHERE role_id = ? AND permission_id IN (?)
+    for (String permissionId : permissionIds) {
+      jdbcRepository.deleteRolePermission(roleId, permissionId);
+    }
   }
 
   @Override
   public void removeDepartmentsFromRole(String roleId, List<String> departmentIds) {
-    // TODO: implement with JdbcTemplate
-    // DELETE FROM upms_role_department WHERE role_id = ? AND dept_id IN (?)
+    for (String deptId : departmentIds) {
+      jdbcRepository.deleteRoleDepartment(roleId, deptId);
+    }
   }
 }

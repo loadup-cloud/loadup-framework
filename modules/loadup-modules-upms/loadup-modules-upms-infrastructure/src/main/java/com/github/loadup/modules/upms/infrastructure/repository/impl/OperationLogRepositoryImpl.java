@@ -72,8 +72,10 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
 
   @Override
   public Page<OperationLog> findAll(Pageable pageable) {
-    // TODO: implement pagination
-    return new PageImpl<>(List.of(), pageable, 0);
+    Page<OperationLogDO> operationLogDOPage = jdbcRepository.findAll(pageable);
+    List<OperationLog> operationLogs =
+        operationLogMapper.toEntityList(operationLogDOPage.getContent());
+    return new PageImpl<>(operationLogs, pageable, operationLogDOPage.getTotalElements());
   }
 
   @Override
@@ -83,8 +85,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
 
   @Override
   public void deleteBeforeDate(LocalDateTime date) {
-    // TODO: implement delete with JdbcTemplate
-    // DELETE FROM upms_operation_log WHERE created_time < :date
+    jdbcRepository.deleteBeforeDate(date);
   }
 
   @Override
@@ -95,34 +96,35 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
       LocalDateTime startTime,
       LocalDateTime endTime,
       Pageable pageable) {
-    // TODO: implement search with dynamic query builder
-    // For now return empty page
+    // TODO: implement search with dynamic query builder for complex multi-condition search
+    // For now return empty page - this requires a more complex implementation
     return new PageImpl<>(List.of(), pageable, 0);
   }
 
   @Override
   public Page<OperationLog> findByDateRange(
       LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
-    List<OperationLogDO> operationLogDOList =
-        jdbcRepository.findByCreatedTimeBetween(startTime, endTime);
-    List<OperationLog> operationLogs = operationLogMapper.toEntityList(operationLogDOList);
-    // TODO: implement real pagination
-    return new PageImpl<>(operationLogs, pageable, operationLogs.size());
+    Page<OperationLogDO> operationLogDOPage =
+        jdbcRepository.findByCreatedTimeBetween(startTime, endTime, pageable);
+    List<OperationLog> operationLogs =
+        operationLogMapper.toEntityList(operationLogDOPage.getContent());
+    return new PageImpl<>(operationLogs, pageable, operationLogDOPage.getTotalElements());
   }
 
   @Override
   public Page<OperationLog> findByOperationType(String operationType, Pageable pageable) {
-    List<OperationLogDO> operationLogDOList = jdbcRepository.findByOperationType(operationType);
-    List<OperationLog> operationLogs = operationLogMapper.toEntityList(operationLogDOList);
-    // TODO: implement real pagination
-    return new PageImpl<>(operationLogs, pageable, operationLogs.size());
+    Page<OperationLogDO> operationLogDOPage =
+        jdbcRepository.findByOperationType(operationType, pageable);
+    List<OperationLog> operationLogs =
+        operationLogMapper.toEntityList(operationLogDOPage.getContent());
+    return new PageImpl<>(operationLogs, pageable, operationLogDOPage.getTotalElements());
   }
 
   @Override
   public Page<OperationLog> findByUserId(String userId, Pageable pageable) {
-    List<OperationLogDO> operationLogDOList = jdbcRepository.findByUserId(userId);
-    List<OperationLog> operationLogs = operationLogMapper.toEntityList(operationLogDOList);
-    // TODO: implement real pagination
-    return new PageImpl<>(operationLogs, pageable, operationLogs.size());
+    Page<OperationLogDO> operationLogDOPage = jdbcRepository.findByUserId(userId, pageable);
+    List<OperationLog> operationLogs =
+        operationLogMapper.toEntityList(operationLogDOPage.getContent());
+    return new PageImpl<>(operationLogs, pageable, operationLogDOPage.getTotalElements());
   }
 }

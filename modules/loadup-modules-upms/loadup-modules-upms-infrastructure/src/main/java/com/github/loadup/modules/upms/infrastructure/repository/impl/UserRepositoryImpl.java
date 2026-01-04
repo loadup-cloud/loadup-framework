@@ -102,9 +102,9 @@ public class UserRepositoryImpl implements UserRepository {
 
   @Override
   public Page<User> findAll(Pageable pageable) {
-    // For now, return empty page
-    // TODO: implement pagination with custom query
-    return new PageImpl<>(List.of(), pageable, 0);
+    Page<UserDO> userDOPage = jdbcRepository.findAll(pageable);
+    List<User> users = userMapper.toEntityList(userDOPage.getContent());
+    return new PageImpl<>(users, pageable, userDOPage.getTotalElements());
   }
 
   @Override
@@ -114,7 +114,12 @@ public class UserRepositoryImpl implements UserRepository {
 
   @Override
   public Page<User> search(String keyword, Pageable pageable) {
-    // TODO: implement search with keyword matching username, nickname, email, phone
-    return new PageImpl<>(List.of(), pageable, 0);
+    if (keyword == null || keyword.trim().isEmpty()) {
+      return findAll(pageable);
+    }
+
+    Page<UserDO> userDOPage = jdbcRepository.searchByKeyword(keyword, pageable);
+    List<User> users = userMapper.toEntityList(userDOPage.getContent());
+    return new PageImpl<>(users, pageable, userDOPage.getTotalElements());
   }
 }

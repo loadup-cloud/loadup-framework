@@ -3,6 +3,7 @@ package com.github.loadup.modules.upms.infrastructure.repository.jdbc;
 import com.github.loadup.modules.upms.infrastructure.dataobject.PermissionDO;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -62,4 +63,23 @@ public interface PermissionJdbcRepository extends CrudRepository<PermissionDO, S
 
   @Query("SELECT * FROM upms_permission WHERE status = 1 AND deleted = false ORDER BY sort_order")
   List<PermissionDO> findAllEnabled();
+
+  @Modifying
+  @Query("DELETE FROM upms_role_permission WHERE role_id = :roleId")
+  void deleteAllRolePermissions(@Param("roleId") String roleId);
+
+  @Modifying
+  @Query(
+      "DELETE FROM upms_role_permission WHERE role_id = :roleId AND permission_id = :permissionId")
+  void deleteRolePermission(
+      @Param("roleId") String roleId, @Param("permissionId") String permissionId);
+
+  @Modifying
+  @Query(
+      "INSERT INTO upms_role_permission (role_id, permission_id, created_by, created_time) "
+          + "VALUES (:roleId, :permissionId, :operatorId, NOW())")
+  void insertRolePermission(
+      @Param("roleId") String roleId,
+      @Param("permissionId") String permissionId,
+      @Param("operatorId") String operatorId);
 }

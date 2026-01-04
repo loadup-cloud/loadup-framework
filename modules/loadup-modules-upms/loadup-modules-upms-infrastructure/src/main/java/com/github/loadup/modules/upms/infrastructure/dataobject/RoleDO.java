@@ -1,7 +1,9 @@
 package com.github.loadup.modules.upms.infrastructure.dataobject;
 
+import com.github.loadup.commons.dataobject.BaseDO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 /**
@@ -15,6 +17,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("upms_role")
 public class RoleDO extends BaseDO {
 
+  @Id private String id;
   private String roleName;
 
   private String roleCode;

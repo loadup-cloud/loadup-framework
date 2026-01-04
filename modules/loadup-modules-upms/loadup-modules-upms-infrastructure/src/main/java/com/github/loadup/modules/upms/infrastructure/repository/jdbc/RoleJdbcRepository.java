@@ -3,8 +3,10 @@ package com.github.loadup.modules.upms.infrastructure.repository.jdbc;
 import com.github.loadup.modules.upms.infrastructure.dataobject.RoleDO;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +17,8 @@ import org.springframework.stereotype.Repository;
  * @since 1.0.0
  */
 @Repository
-public interface RoleJdbcRepository extends CrudRepository<RoleDO, String> {
+public interface RoleJdbcRepository
+    extends PagingAndSortingRepository<RoleDO, String>, CrudRepository<RoleDO, String> {
 
   @Query("SELECT * FROM upms_role WHERE role_code = :roleCode AND deleted = false")
   Optional<RoleDO> findByRoleCode(@Param("roleCode") String roleCode);
@@ -53,4 +56,45 @@ public interface RoleJdbcRepository extends CrudRepository<RoleDO, String> {
 
   @Query("SELECT role_id FROM upms_user_role WHERE user_id = :userId")
   List<String> getUserRoleIds(@Param("userId") String userId);
+
+  @Modifying
+  @Query("DELETE FROM upms_user_role WHERE user_id = :userId AND role_id = :roleId")
+  void deleteUserRole(@Param("userId") String userId, @Param("roleId") String roleId);
+
+  @Modifying
+  @Query(
+      "INSERT INTO upms_user_role (user_id, role_id, created_by, created_time) "
+          + "VALUES (:userId, :roleId, :operatorId, NOW())")
+  void insertUserRole(
+      @Param("userId") String userId,
+      @Param("roleId") String roleId,
+      @Param("operatorId") String operatorId);
+
+  @Modifying
+  @Query(
+      "INSERT INTO upms_role_department (role_id, dept_id, created_by, created_time) "
+          + "VALUES (:roleId, :deptId, :operatorId, NOW())")
+  void insertRoleDepartment(
+      @Param("roleId") String roleId,
+      @Param("deptId") String deptId,
+      @Param("operatorId") String operatorId);
+
+  @Modifying
+  @Query("DELETE FROM upms_role_department WHERE role_id = :roleId AND dept_id = :deptId")
+  void deleteRoleDepartment(@Param("roleId") String roleId, @Param("deptId") String deptId);
+
+  @Modifying
+  @Query(
+      "INSERT INTO upms_role_permission (role_id, permission_id, created_by, created_time) "
+          + "VALUES (:roleId, :permissionId, :operatorId, NOW())")
+  void insertRolePermission(
+      @Param("roleId") String roleId,
+      @Param("permissionId") String permissionId,
+      @Param("operatorId") String operatorId);
+
+  @Modifying
+  @Query(
+      "DELETE FROM upms_role_permission WHERE role_id = :roleId AND permission_id = :permissionId")
+  void deleteRolePermission(
+      @Param("roleId") String roleId, @Param("permissionId") String permissionId);
 }

@@ -112,28 +112,24 @@ public class PermissionRepositoryImpl implements PermissionRepository {
 
   @Override
   public void removeAllPermissionsFromRole(String roleId) {
-    // TODO: implement with JdbcTemplate
-    // DELETE FROM upms_role_permission WHERE role_id = :roleId
+    jdbcRepository.deleteAllRolePermissions(roleId);
   }
 
   @Override
   public void removePermissionFromRole(String roleId, String permissionId) {
-    // TODO: implement with JdbcTemplate
-    // DELETE FROM upms_role_permission WHERE role_id = ? AND permission_id = ?
+    jdbcRepository.deleteRolePermission(roleId, permissionId);
   }
 
   @Override
   public void assignPermissionToRole(String roleId, String permissionId, String operatorId) {
-    // TODO: implement with JdbcTemplate
-    // INSERT INTO upms_role_permission (role_id, permission_id, created_by, created_time)
-    // VALUES (?, ?, ?, NOW())
+    jdbcRepository.insertRolePermission(roleId, permissionId, operatorId);
   }
 
   @Override
   public void batchAssignPermissionsToRole(
       String roleId, List<String> permissionIds, String operatorId) {
-    // TODO: implement with JdbcTemplate
-    // INSERT INTO upms_role_permission (role_id, permission_id, created_by, created_time)
-    // VALUES (?, ?, ?, NOW()) for each permissionId
+    for (String permissionId : permissionIds) {
+      jdbcRepository.insertRolePermission(roleId, permissionId, operatorId);
+    }
   }
 }

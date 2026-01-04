@@ -36,8 +36,8 @@ public class DatabaseProperties {
   /** Sequence configuration */
   private Sequence sequence = new Sequence();
 
-  /** Logical delete configuration */
-  private LogicalDelete logicalDelete = new LogicalDelete();
+  /** Multi-tenant configuration */
+  private MultiTenant multiTenant = new MultiTenant();
 
   @Data
   public static class IdGenerator {
@@ -82,17 +82,17 @@ public class DatabaseProperties {
   }
 
   @Data
-  public static class LogicalDelete {
-    /** Enable logical delete feature (default: false) */
+  public static class MultiTenant {
+    /** Enable multi-tenant feature (default: false) */
     private boolean enabled = false;
 
-    /** Column name for logical delete flag (default: deleted) */
-    private String columnName = "deleted";
+    /** Column name for tenant ID (default: tenant_id) */
+    private String columnName = "tenant_id";
 
-    /** Value for deleted records (default: true) */
-    private Boolean deletedValue = true;
+    /** Ignore tenant filter for these tables (comma separated) */
+    private String ignoreTables = "sys_tenant,sys_user,sys_role,sys_permission";
 
-    /** Value for non-deleted records (default: false) */
-    private Boolean notDeletedValue = false;
+    /** Default tenant ID when not in tenant context */
+    private String defaultTenantId = "default";
   }
 }

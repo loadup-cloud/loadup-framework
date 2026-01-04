@@ -22,22 +22,18 @@ package com.github.loadup.components.database.autoconfig;
  * #L%
  */
 
-import com.github.loadup.commons.dataobject.BaseDO;
 import com.github.loadup.components.database.config.DatabaseProperties;
 import com.github.loadup.components.database.id.*;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.jdbc.repository.config.*;
-import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback;
 
 @AutoConfiguration
 @EnableJdbcAuditing
@@ -89,63 +85,6 @@ public class DataJdbcConfiguration extends AbstractJdbcConfiguration {
     return generator;
   }
 
-  /**
-   * 创建实体保存前的回调
-   *
-   * <p>在保存实体前自动生成 ID（如果 ID 为空）
-   *
-   * <p>支持用户注册的自定义 IdGenerator
-   */
-  @Bean
-  @ConditionalOnMissingBean(name = "beforeSaveCallback")
-  @ConditionalOnProperty(
-      prefix = "loadup.database.id-generator",
-      name = "enabled",
-      havingValue = "true",
-      matchIfMissing = true)
-  BeforeConvertCallback<BaseDO> beforeSaveCallback(
-      ObjectProvider<IdGenerator> idGeneratorProvider) {
-    IdGenerator idGenerator = idGeneratorProvider.getIfAvailable();
-
-    if (idGenerator == null) {
-      log.warn("No IdGenerator found, ID generation will be skipped");
-      return entity -> entity;
-    }
-
-    return (entity) -> {
-      if (entity.getId() == null) {
-        String id = idGenerator.generate();
-        entity.setId(id);
-        log.debug("Generated ID for entity {}: {}", entity.getClass().getSimpleName(), id);
-      }
-      return entity;
-    };
-  }
-
-  // @Bean
-  // @Override
-  // public JdbcCustomConversions jdbcCustomConversions() {
-  //    return new JdbcCustomConversions(Arrays.asList(
-  //            new ObjectToBooleanConverter(),
-  //            new BooleanToObjectConverter()
-  //    ));
-  // }
-  //
-  // @ReadingConverter
-  // static class ObjectToBooleanConverter implements Converter<Object, Boolean> {
-  //    @Override
-  //    public Boolean convert(Object source) {
-  //        if (source == null) {return false;}
-  //        String strVal = source.toString().toUpperCase();
-  //        return "T".equals(strVal) || "Y".equals(strVal) || "1".equals(strVal);
-  //    }
-  // }
-  //
-  // @WritingConverter
-  // static class BooleanToObjectConverter implements Converter<Boolean, String> {
-  //    @Override
-  //    public String convert(Boolean source) {
-  //        return source != null && source ? "T" : "F";
-  //    }
-  // }
+  // Note: Entity lifecycle callbacks (ID generation, logical delete, multi-tenant)
+  // are now handled by UnifiedEntityCallback component
 }

@@ -58,8 +58,9 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
 
   @Override
   public Page<LoginLog> findAll(Pageable pageable) {
-    // TODO: implement pagination
-    return new PageImpl<>(List.of(), pageable, 0);
+    Page<LoginLogDO> loginLogDOPage = jdbcRepository.findAll(pageable);
+    List<LoginLog> loginLogs = loginLogMapper.toEntityList(loginLogDOPage.getContent());
+    return new PageImpl<>(loginLogs, pageable, loginLogDOPage.getTotalElements());
   }
 
   @Override
@@ -75,40 +76,38 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
 
   @Override
   public void deleteBeforeDate(LocalDateTime date) {
-    // TODO: implement delete with JdbcTemplate
-    // DELETE FROM upms_login_log WHERE login_time < :date
+    jdbcRepository.deleteBeforeDate(date);
   }
 
   @Override
   public Page<LoginLog> findFailedLogins(
       LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
-    List<LoginLogDO> loginLogDOList = jdbcRepository.findFailedLoginsBetween(startTime, endTime);
-    List<LoginLog> loginLogs = loginLogMapper.toEntityList(loginLogDOList);
-    // TODO: implement real pagination
-    return new PageImpl<>(loginLogs, pageable, loginLogs.size());
+    Page<LoginLogDO> loginLogDOPage =
+        jdbcRepository.findFailedLoginsBetween(startTime, endTime, pageable);
+    List<LoginLog> loginLogs = loginLogMapper.toEntityList(loginLogDOPage.getContent());
+    return new PageImpl<>(loginLogs, pageable, loginLogDOPage.getTotalElements());
   }
 
   @Override
   public Page<LoginLog> findByDateRange(
       LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
-    List<LoginLogDO> loginLogDOList = jdbcRepository.findByLoginTimeBetween(startTime, endTime);
-    List<LoginLog> loginLogs = loginLogMapper.toEntityList(loginLogDOList);
-    // TODO: implement real pagination
-    return new PageImpl<>(loginLogs, pageable, loginLogs.size());
+    Page<LoginLogDO> loginLogDOPage =
+        jdbcRepository.findByLoginTimeBetween(startTime, endTime, pageable);
+    List<LoginLog> loginLogs = loginLogMapper.toEntityList(loginLogDOPage.getContent());
+    return new PageImpl<>(loginLogs, pageable, loginLogDOPage.getTotalElements());
   }
 
   @Override
   public Page<LoginLog> findByUsername(String username, Pageable pageable) {
-    // TODO: implement with JDBC query
-    // SELECT * FROM upms_login_log WHERE username = ? ORDER BY login_time DESC
-    return new PageImpl<>(List.of(), pageable, 0);
+    Page<LoginLogDO> loginLogDOPage = jdbcRepository.findByUsername(username, pageable);
+    List<LoginLog> loginLogs = loginLogMapper.toEntityList(loginLogDOPage.getContent());
+    return new PageImpl<>(loginLogs, pageable, loginLogDOPage.getTotalElements());
   }
 
   @Override
   public Page<LoginLog> findByUserId(String userId, Pageable pageable) {
-    List<LoginLogDO> loginLogDOList = jdbcRepository.findByUserId(userId);
-    List<LoginLog> loginLogs = loginLogMapper.toEntityList(loginLogDOList);
-    // TODO: implement real pagination
-    return new PageImpl<>(loginLogs, pageable, loginLogs.size());
+    Page<LoginLogDO> loginLogDOPage = jdbcRepository.findByUserId(userId, pageable);
+    List<LoginLog> loginLogs = loginLogMapper.toEntityList(loginLogDOPage.getContent());
+    return new PageImpl<>(loginLogs, pageable, loginLogDOPage.getTotalElements());
   }
 }

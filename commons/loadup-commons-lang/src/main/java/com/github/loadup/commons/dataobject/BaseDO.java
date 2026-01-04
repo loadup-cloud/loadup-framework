@@ -39,6 +39,23 @@ public abstract class BaseDO implements Serializable {
 
   @LastModifiedDate private LocalDateTime updatedAt;
 
+  /**
+   * Tenant ID (optional, controlled by loadup.database.multi-tenant.enabled)
+   *
+   * <p>When multi-tenant is enabled in database configuration, this field will be used for tenant
+   * isolation. Queries will automatically filter by tenant_id, and inserts/updates will
+   * automatically set tenant_id from TenantContextHolder.
+   */
+  private String tenantId;
+
+  /**
+   * Logical delete flag (optional, controlled by loadup.database.logical-delete.enabled)
+   *
+   * <p>When logical delete is enabled in database configuration, this field will be used to mark
+   * deleted records. Default value is false (not deleted).
+   */
+  private Boolean deleted = false;
+
   public abstract String getId();
 
   public abstract void setId(String id);

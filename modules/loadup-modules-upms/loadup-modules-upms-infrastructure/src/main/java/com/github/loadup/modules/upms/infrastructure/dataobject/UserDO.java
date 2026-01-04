@@ -1,9 +1,11 @@
 package com.github.loadup.modules.upms.infrastructure.dataobject;
 
+import com.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 /**
@@ -16,6 +18,8 @@ import org.springframework.data.relational.core.mapping.Table;
 @EqualsAndHashCode(callSuper = true)
 @Table("upms_user")
 public class UserDO extends BaseDO {
+
+  @Id private String id;
 
   private String username;
 
