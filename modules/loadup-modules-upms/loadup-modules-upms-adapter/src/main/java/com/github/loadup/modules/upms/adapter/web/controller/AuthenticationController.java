@@ -1,8 +1,8 @@
 package com.github.loadup.modules.upms.adapter.web.controller;
 
-import com.github.loadup.modules.upms.adapter.web.request.LoginRequest;
-import com.github.loadup.modules.upms.adapter.web.request.RefreshTokenRequest;
-import com.github.loadup.modules.upms.adapter.web.request.RegisterRequest;
+import com.github.loadup.commons.result.Response;
+import com.github.loadup.commons.result.SingleResponse;
+import com.github.loadup.modules.upms.adapter.web.request.*;
 import com.github.loadup.modules.upms.app.command.*;
 import com.github.loadup.modules.upms.app.dto.LoginResultDTO;
 import com.github.loadup.modules.upms.app.dto.UserInfoDTO;
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Authentication Controller Handles user authentication endpoints
+ * Authentication Controller - Handles user authentication endpoints
  *
  * @author LoadUp Framework
  * @since 1.0.0
@@ -32,7 +32,7 @@ public class AuthenticationController {
 
   @Operation(summary = "用户登录", description = "通过用户名密码登录系统")
   @PostMapping("/login")
-  public LoginResultDTO login(
+  public SingleResponse<LoginResultDTO> login(
       @Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
     UserLoginCommand command = new UserLoginCommand();
     command.setUsername(request.getUsername());
@@ -42,12 +42,13 @@ public class AuthenticationController {
     command.setIpAddress(getClientIp(httpRequest));
     command.setUserAgent(httpRequest.getHeader("User-Agent"));
 
-    return authenticationService.login(command);
+    LoginResultDTO result = authenticationService.login(command);
+    return SingleResponse.of(result);
   }
 
   @Operation(summary = "用户注册", description = "注册新用户账号")
   @PostMapping("/register")
-  public UserInfoDTO register(@Valid @RequestBody RegisterRequest request) {
+  public SingleResponse<UserInfoDTO> register(@Valid @RequestBody RegisterRequest request) {
     UserRegisterCommand command = new UserRegisterCommand();
     command.setUsername(request.getUsername());
     command.setPassword(request.getPassword());
@@ -58,31 +59,37 @@ public class AuthenticationController {
     command.setCaptchaCode(request.getCaptchaCode());
     command.setSmsCode(request.getSmsCode());
 
-    return authenticationService.register(command);
+    UserInfoDTO result = authenticationService.register(command);
+    return SingleResponse.of(result);
   }
 
   @Operation(summary = "刷新访问令牌", description = "使用刷新令牌获取新的访问令牌")
   @PostMapping("/refresh-token")
-  public LoginResultDTO refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
-    return authenticationService.refreshToken(request.getRefreshToken());
+  public SingleResponse<LoginResultDTO> refreshToken(
+      @Valid @RequestBody RefreshTokenRequest request) {
+    LoginResultDTO result = authenticationService.refreshToken(request.getRefreshToken());
+    return SingleResponse.of(result);
   }
 
   @Operation(summary = "发送邮箱验证码", description = "发送密码重置验证码到邮箱")
   @PostMapping("/send-email-code")
-  public void sendEmailVerificationCode(@RequestParam String email) {
-    passwordResetService.sendEmailVerificationCode(email);
+  public Response sendEmailVerificationCode(@Valid @RequestBody SendEmailCodeRequest request) {
+    passwordResetService.sendEmailVerificationCode(request.getEmail());
+    return Response.buildSuccess();
   }
 
   @Operation(summary = "发送短信验证码", description = "发送密码重置验证码到手机")
   @PostMapping("/send-sms-code")
-  public void sendSmsVerificationCode(@RequestParam String phone) {
-    passwordResetService.sendSmsVerificationCode(phone);
+  public Response sendSmsVerificationCode(@Valid @RequestBody SendSmsCodeRequest request) {
+    passwordResetService.sendSmsVerificationCode(request.getPhone());
+    return Response.buildSuccess();
   }
 
   @Operation(summary = "重置密码", description = "使用验证码重置密码")
   @PostMapping("/reset-password")
-  public void resetPassword(@Valid @RequestBody UserPasswordResetCommand command) {
+  public Response resetPassword(@Valid @RequestBody UserPasswordResetCommand command) {
     passwordResetService.resetPassword(command);
+    return Response.buildSuccess();
   }
 
   /** Get client IP address */

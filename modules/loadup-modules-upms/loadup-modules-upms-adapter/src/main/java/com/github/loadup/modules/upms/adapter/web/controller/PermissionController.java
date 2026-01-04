@@ -1,5 +1,10 @@
 package com.github.loadup.modules.upms.adapter.web.controller;
 
+import com.github.loadup.commons.result.MultiResponse;
+import com.github.loadup.commons.result.Response;
+import com.github.loadup.commons.result.SingleResponse;
+import com.github.loadup.modules.upms.adapter.web.request.IdRequest;
+import com.github.loadup.modules.upms.adapter.web.request.PermissionTypeRequest;
 import com.github.loadup.modules.upms.app.command.PermissionCreateCommand;
 import com.github.loadup.modules.upms.app.command.PermissionUpdateCommand;
 import com.github.loadup.modules.upms.app.dto.PermissionDTO;
@@ -7,7 +12,6 @@ import com.github.loadup.modules.upms.app.service.PermissionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Tag(name = "权限管理", description = "权限CRUD、树形结构查询等接口")
+@Tag(name = "权限管理", description = "权限CRUD、权限树、按类型查询等接口")
 @RestController
 @RequestMapping("/api/v1/permissions")
 @RequiredArgsConstructor
@@ -26,52 +30,57 @@ public class PermissionController {
   private final PermissionService permissionService;
 
   @Operation(summary = "创建权限", description = "创建新权限")
-  @PostMapping
-  public PermissionDTO createPermission(@Valid @RequestBody PermissionCreateCommand command) {
-    return permissionService.createPermission(command);
+  @PostMapping("/create")
+  public SingleResponse<PermissionDTO> createPermission(
+      @Valid @RequestBody PermissionCreateCommand command) {
+    PermissionDTO result = permissionService.createPermission(command);
+    return SingleResponse.of(result);
   }
 
   @Operation(summary = "更新权限", description = "更新权限信息")
-  @PutMapping("/{id}")
-  public PermissionDTO updatePermission(
-      @PathVariable Long id, @Valid @RequestBody PermissionUpdateCommand command) {
-    command.setId(id);
-    return permissionService.updatePermission(command);
+  @PostMapping("/update")
+  public SingleResponse<PermissionDTO> updatePermission(
+      @Valid @RequestBody PermissionUpdateCommand command) {
+    PermissionDTO result = permissionService.updatePermission(command);
+    return SingleResponse.of(result);
   }
 
   @Operation(summary = "删除权限", description = "软删除权限")
-  @DeleteMapping("/{id}")
-  public void deletePermission(@PathVariable Long id) {
-    permissionService.deletePermission(id);
+  @PostMapping("/delete")
+  public Response deletePermission(@Valid @RequestBody IdRequest request) {
+    permissionService.deletePermission(request.getId());
+    return Response.buildSuccess();
   }
 
   @Operation(summary = "获取权限详情", description = "根据ID获取权限详细信息")
-  @GetMapping("/{id}")
-  public PermissionDTO getPermissionById(@PathVariable Long id) {
-    return permissionService.getPermissionById(id);
+  @PostMapping("/get")
+  public SingleResponse<PermissionDTO> getPermissionById(@Valid @RequestBody IdRequest request) {
+    PermissionDTO result = permissionService.getPermissionById(request.getId());
+    return SingleResponse.of(result);
   }
 
   @Operation(summary = "获取权限树", description = "获取所有权限的树形结构")
-  @GetMapping("/tree")
-  public List<PermissionDTO> getPermissionTree() {
-    return permissionService.getPermissionTree();
+  @PostMapping("/tree")
+  public MultiResponse<PermissionDTO> getPermissionTree() {
+    return MultiResponse.of(permissionService.getPermissionTree());
   }
 
-  @Operation(summary = "按类型获取权限", description = "根据权限类型获取权限列表 (1-菜单, 2-按钮, 3-API)")
-  @GetMapping("/type/{permissionType}")
-  public List<PermissionDTO> getPermissionsByType(@PathVariable Short permissionType) {
-    return permissionService.getPermissionsByType(permissionType);
+  @Operation(summary = "按类型获取权限", description = "按权限类型获取权限列表（1-菜单, 2-按钮, 3-API）")
+  @PostMapping("/by-type")
+  public MultiResponse<PermissionDTO> getPermissionsByType(
+      @Valid @RequestBody PermissionTypeRequest request) {
+    return MultiResponse.of(permissionService.getPermissionsByType(request.getPermissionType()));
   }
 
   @Operation(summary = "获取用户权限", description = "获取指定用户的所有权限")
-  @GetMapping("/user/{userId}")
-  public List<PermissionDTO> getUserPermissions(@PathVariable Long userId) {
-    return permissionService.getUserPermissions(userId);
+  @PostMapping("/user-permissions")
+  public MultiResponse<PermissionDTO> getUserPermissions(@Valid @RequestBody IdRequest request) {
+    return MultiResponse.of(permissionService.getUserPermissions(request.getId()));
   }
 
-  @Operation(summary = "获取用户菜单树", description = "获取用户可见的菜单树")
-  @GetMapping("/user/{userId}/menu-tree")
-  public List<PermissionDTO> getUserMenuTree(@PathVariable Long userId) {
-    return permissionService.getUserMenuTree(userId);
+  @Operation(summary = "获取用户菜单树", description = "获取用户的可见菜单树")
+  @PostMapping("/user-menu-tree")
+  public MultiResponse<PermissionDTO> getUserMenuTree(@Valid @RequestBody IdRequest request) {
+    return MultiResponse.of(permissionService.getUserMenuTree(request.getId()));
   }
 }
