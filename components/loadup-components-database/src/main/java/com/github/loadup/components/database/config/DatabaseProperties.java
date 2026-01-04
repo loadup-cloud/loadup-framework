@@ -36,6 +36,9 @@ public class DatabaseProperties {
   /** Sequence configuration */
   private Sequence sequence = new Sequence();
 
+  /** Logical delete configuration */
+  private LogicalDelete logicalDelete = new LogicalDelete();
+
   @Data
   public static class IdGenerator {
     /** Enable automatic ID generation for entities extending BaseDO */
@@ -76,5 +79,20 @@ public class DatabaseProperties {
 
     /** Maximum value for sequences */
     private Long maxValue = Long.MAX_VALUE;
+  }
+
+  @Data
+  public static class LogicalDelete {
+    /** Enable logical delete feature (default: false) */
+    private boolean enabled = false;
+
+    /** Column name for logical delete flag (default: deleted) */
+    private String columnName = "deleted";
+
+    /** Value for deleted records (default: true) */
+    private Boolean deletedValue = true;
+
+    /** Value for non-deleted records (default: false) */
+    private Boolean notDeletedValue = false;
   }
 }
