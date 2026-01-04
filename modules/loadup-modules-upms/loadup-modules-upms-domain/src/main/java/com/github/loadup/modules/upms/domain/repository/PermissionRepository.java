@@ -36,6 +36,9 @@ public interface PermissionRepository {
   /** Find permissions by parent ID */
   List<Permission> findByParentId(Long parentId);
 
+  /** Find permissions by type */
+  List<Permission> findByPermissionType(Short permissionType);
+
   /** Find all permissions */
   List<Permission> findAll();
 

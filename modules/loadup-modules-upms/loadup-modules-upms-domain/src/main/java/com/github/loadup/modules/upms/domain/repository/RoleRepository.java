@@ -50,4 +50,22 @@ public interface RoleRepository {
 
   /** Get user's role IDs */
   List<Long> getUserRoleIds(Long userId);
+
+  /** Assign permissions to role (batch) */
+  void assignPermissionsToRole(Long roleId, List<Long> permissionIds);
+
+  /** Remove permissions from role (batch) */
+  void removePermissionsFromRole(Long roleId, List<Long> permissionIds);
+
+  /** Assign departments to role (for custom data scope) */
+  void assignDepartmentsToRole(Long roleId, List<Long> departmentIds);
+
+  /** Remove departments from role */
+  void removeDepartmentsFromRole(Long roleId, List<Long> departmentIds);
+
+  /** Get department IDs by role ID (for custom data scope) */
+  List<Long> findDepartmentIdsByRoleId(Long roleId);
+
+  /** Count users by role ID */
+  long countUsersByRoleId(Long roleId);
 }

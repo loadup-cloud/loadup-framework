@@ -64,4 +64,37 @@ public interface JdbcRoleRepository
   @Query(
       "UPDATE upms_role SET deleted = true, updated_by = :updatedBy, updated_time = CURRENT_TIMESTAMP WHERE id = :id")
   void softDelete(@Param("id") Long id, @Param("updatedBy") Long updatedBy);
+
+  @Modifying
+  @Query(
+      """
+        INSERT INTO upms_role_permission (role_id, permission_id, created_time)
+        VALUES (:roleId, :permissionId, CURRENT_TIMESTAMP)
+    """)
+  void assignPermissionToRole(
+      @Param("roleId") Long roleId, @Param("permissionId") Long permissionId);
+
+  @Modifying
+  @Query(
+      "DELETE FROM upms_role_permission WHERE role_id = :roleId AND permission_id = :permissionId")
+  void removePermissionFromRole(
+      @Param("roleId") Long roleId, @Param("permissionId") Long permissionId);
+
+  @Modifying
+  @Query(
+      """
+        INSERT INTO upms_role_department (role_id, dept_id, created_time)
+        VALUES (:roleId, :deptId, CURRENT_TIMESTAMP)
+    """)
+  void assignDepartmentToRole(@Param("roleId") Long roleId, @Param("deptId") Long deptId);
+
+  @Modifying
+  @Query("DELETE FROM upms_role_department WHERE role_id = :roleId AND dept_id = :deptId")
+  void removeDepartmentFromRole(@Param("roleId") Long roleId, @Param("deptId") Long deptId);
+
+  @Query("SELECT dept_id FROM upms_role_department WHERE role_id = :roleId")
+  List<Long> findDepartmentIdsByRoleId(@Param("roleId") Long roleId);
+
+  @Query("SELECT COUNT(*) FROM upms_user_role WHERE role_id = :roleId")
+  long countUsersByRoleId(@Param("roleId") Long roleId);
 }

@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Login Result DTO
+ * Login Result DTO - Contains access token and user information
  *
  * @author LoadUp Framework
  * @since 1.0.0
@@ -18,12 +18,8 @@ import lombok.NoArgsConstructor;
 public class LoginResultDTO {
 
   private String accessToken;
-
   private String refreshToken;
-
-  private String tokenType = "Bearer";
-
+  private String tokenType;
   private Long expiresIn;
-
   private UserInfoDTO userInfo;
 }

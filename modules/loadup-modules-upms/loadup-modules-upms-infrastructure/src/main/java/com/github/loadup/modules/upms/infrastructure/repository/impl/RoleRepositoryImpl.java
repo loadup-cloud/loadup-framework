@@ -85,4 +85,42 @@ public class RoleRepositoryImpl implements RoleRepository {
   public List<Long> getUserRoleIds(Long userId) {
     return jdbcRepository.getUserRoleIds(userId);
   }
+
+  @Override
+  public void assignPermissionsToRole(Long roleId, List<Long> permissionIds) {
+    for (Long permissionId : permissionIds) {
+      jdbcRepository.assignPermissionToRole(roleId, permissionId);
+    }
+  }
+
+  @Override
+  public void removePermissionsFromRole(Long roleId, List<Long> permissionIds) {
+    for (Long permissionId : permissionIds) {
+      jdbcRepository.removePermissionFromRole(roleId, permissionId);
+    }
+  }
+
+  @Override
+  public void assignDepartmentsToRole(Long roleId, List<Long> departmentIds) {
+    for (Long deptId : departmentIds) {
+      jdbcRepository.assignDepartmentToRole(roleId, deptId);
+    }
+  }
+
+  @Override
+  public void removeDepartmentsFromRole(Long roleId, List<Long> departmentIds) {
+    for (Long deptId : departmentIds) {
+      jdbcRepository.removeDepartmentFromRole(roleId, deptId);
+    }
+  }
+
+  @Override
+  public List<Long> findDepartmentIdsByRoleId(Long roleId) {
+    return jdbcRepository.findDepartmentIdsByRoleId(roleId);
+  }
+
+  @Override
+  public long countUsersByRoleId(Long roleId) {
+    return jdbcRepository.countUsersByRoleId(roleId);
+  }
 }

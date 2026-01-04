@@ -43,6 +43,10 @@ public interface JdbcPermissionRepository
       "SELECT * FROM upms_permission WHERE parent_id = :parentId AND deleted = false ORDER BY sort_order")
   List<Permission> findByParentId(@Param("parentId") Long parentId);
 
+  @Query(
+      "SELECT * FROM upms_permission WHERE permission_type = :permissionType AND deleted = false ORDER BY sort_order, created_time")
+  List<Permission> findByPermissionType(@Param("permissionType") Short permissionType);
+
   @Query("SELECT * FROM upms_permission WHERE deleted = false ORDER BY sort_order, created_time")
   List<Permission> findAllActive();
 

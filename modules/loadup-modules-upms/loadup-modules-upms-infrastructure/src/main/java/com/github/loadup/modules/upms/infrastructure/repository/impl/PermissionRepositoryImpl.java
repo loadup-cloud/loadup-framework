@@ -62,6 +62,11 @@ public class PermissionRepositoryImpl implements PermissionRepository {
   }
 
   @Override
+  public List<Permission> findByPermissionType(Short permissionType) {
+    return jdbcRepository.findByPermissionType(permissionType);
+  }
+
+  @Override
   public List<Permission> findAll() {
     return jdbcRepository.findAllActive();
   }

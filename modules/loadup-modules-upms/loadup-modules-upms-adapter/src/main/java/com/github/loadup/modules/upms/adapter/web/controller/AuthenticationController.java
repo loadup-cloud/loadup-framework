@@ -3,11 +3,11 @@ package com.github.loadup.modules.upms.adapter.web.controller;
 import com.github.loadup.modules.upms.adapter.web.request.LoginRequest;
 import com.github.loadup.modules.upms.adapter.web.request.RefreshTokenRequest;
 import com.github.loadup.modules.upms.adapter.web.request.RegisterRequest;
-import com.github.loadup.modules.upms.app.command.UserLoginCommand;
-import com.github.loadup.modules.upms.app.command.UserRegisterCommand;
+import com.github.loadup.modules.upms.app.command.*;
 import com.github.loadup.modules.upms.app.dto.LoginResultDTO;
 import com.github.loadup.modules.upms.app.dto.UserInfoDTO;
 import com.github.loadup.modules.upms.app.service.AuthenticationService;
+import com.github.loadup.modules.upms.app.service.PasswordResetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
 
   private final AuthenticationService authenticationService;
+  private final PasswordResetService passwordResetService;
 
   @Operation(summary = "用户登录", description = "通过用户名密码登录系统")
   @PostMapping("/login")
@@ -64,6 +65,24 @@ public class AuthenticationController {
   @PostMapping("/refresh-token")
   public LoginResultDTO refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
     return authenticationService.refreshToken(request.getRefreshToken());
+  }
+
+  @Operation(summary = "发送邮箱验证码", description = "发送密码重置验证码到邮箱")
+  @PostMapping("/send-email-code")
+  public void sendEmailVerificationCode(@RequestParam String email) {
+    passwordResetService.sendEmailVerificationCode(email);
+  }
+
+  @Operation(summary = "发送短信验证码", description = "发送密码重置验证码到手机")
+  @PostMapping("/send-sms-code")
+  public void sendSmsVerificationCode(@RequestParam String phone) {
+    passwordResetService.sendSmsVerificationCode(phone);
+  }
+
+  @Operation(summary = "重置密码", description = "使用验证码重置密码")
+  @PostMapping("/reset-password")
+  public void resetPassword(@Valid @RequestBody UserPasswordResetCommand command) {
+    passwordResetService.resetPassword(command);
   }
 
   /** Get client IP address */

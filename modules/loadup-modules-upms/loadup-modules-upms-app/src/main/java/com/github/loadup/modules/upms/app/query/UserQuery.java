@@ -1,14 +1,12 @@
-package com.github.loadup.modules.upms.app.dto;
+package com.github.loadup.modules.upms.app.query;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * User Info DTO - Basic user information for authentication
+ * User Query Parameters
  *
  * @author LoadUp Framework
  * @since 1.0.0
@@ -17,17 +15,20 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInfoDTO {
+public class UserQuery {
 
-  private Long id;
   private String username;
   private String nickname;
   private String realName;
   private String email;
   private String phone;
-  private String avatarUrl;
   private Long deptId;
-  private List<String> roles;
-  private List<String> permissions;
-  private LocalDateTime lastLoginTime;
+  private Short status;
+  private Boolean deleted;
+
+  // Pagination
+  private Integer page = 1;
+  private Integer size = 20;
+  private String sortBy = "createdTime";
+  private String sortOrder = "DESC";
 }
