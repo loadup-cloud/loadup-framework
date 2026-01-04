@@ -1,0 +1,45 @@
+# MyBatis-Flex Configuration
+mybatis-flex:
+  # Global Configuration
+  configuration:
+    # Enable SQL logging (useful for development and debugging)
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+    # Map underscore to camel case
+    map-underscore-to-camel-case: true
+
+    # Cache configuration
+    cache-enabled: true
+    lazy-loading-enabled: false
+    aggressive-lazy-loading: false
+
+    # Return type configuration
+    return-instance-for-empty-row: false
+
+  # Print SQL with parameters (for development)
+  # Set to false in production for performance
+  global-config:
+    print-sql: true
+
+  # Pagination configuration
+  #pagination:
+  #  optimize-join: true
+  #  max-limit: 1000
+
+# Logging Configuration
+logging:
+  level:
+    # MyBatis-Flex SQL logging
+    com.mybatisflex: DEBUG
+
+    # Repository logging
+    com.github.loadup.modules.upms.infrastructure.repository: DEBUG
+    com.github.loadup.modules.upms.infrastructure.mapper: DEBUG
+
+    # SQL execution time logging
+    org.mybatis: DEBUG
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+

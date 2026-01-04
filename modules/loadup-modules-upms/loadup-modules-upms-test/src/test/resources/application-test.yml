@@ -1,15 +1,49 @@
+# Test Application Configuration
 spring:
+  application:
+    name: loadup-upms-test
+
+  # H2 Database Configuration for Testing
   datasource:
-    url: jdbc:h2:mem:testdb;MODE=MySQL;DATABASE_TO_LOWER=TRUE
     driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password:
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # SQL Initialization
   sql:
     init:
       mode: always
-      schema-locations: classpath:schema-test.sql
-  
+      schema-locations: classpath:schema-h2.sql
+      data-locations: classpath:test-data.sql
+      continue-on-error: false
+
+# MyBatis-Flex Configuration for Testing
+mybatis-flex:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    lazy-loading-enabled: false
+
+  global-config:
+    print-sql: true
+    print-banner: true
+
+# Logging Configuration for Tests
 logging:
   level:
-    com.github.loadup: DEBUG
+    root: INFO
+    com.github.loadup.modules.upms: DEBUG
+    com.mybatisflex: DEBUG
     org.springframework.jdbc: DEBUG
+    org.springframework.transaction: DEBUG
+
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+

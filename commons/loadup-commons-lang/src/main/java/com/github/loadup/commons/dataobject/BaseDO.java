@@ -27,17 +27,26 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.relational.core.mapping.InsertOnlyProperty;
 
+/**
+ * Base Data Object for MyBatis-Flex
+ *
+ * <p>所有实体类的基类，提供通用字段。
+ *
+ * <p>子类需要添加 MyBatis-Flex 注解：@Table, @Id, @Column 等
+ *
+ * @author LoadUp Framework
+ * @since 1.0.0
+ */
 @Getter
 @Setter
 public abstract class BaseDO implements Serializable {
 
-  @CreatedDate @InsertOnlyProperty private LocalDateTime createdAt;
+  /** 创建时间（自动填充） 在子类字段上添加：@Column(onInsertValue = "now()") */
+  private LocalDateTime createdAt;
 
-  @LastModifiedDate private LocalDateTime updatedAt;
+  /** 更新时间（自动填充） 在子类字段上添加：@Column(onUpdateValue = "now()", onInsertValue = "now()") */
+  private LocalDateTime updatedAt;
 
   /**
    * Tenant ID (optional, controlled by loadup.database.multi-tenant.enabled)

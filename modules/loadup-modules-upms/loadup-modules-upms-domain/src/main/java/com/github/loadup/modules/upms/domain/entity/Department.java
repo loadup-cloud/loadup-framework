@@ -6,9 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * Department Entity - Organizational structure with unlimited hierarchy
@@ -20,10 +17,9 @@ import org.springframework.data.relational.core.mapping.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("upms_department")
 public class Department {
 
-  @Id private String id;
+  private String id;
 
   private String parentId;
 
@@ -57,11 +53,11 @@ public class Department {
   private LocalDateTime updatedTime;
 
   // Transient fields
-  @Transient private Department parent;
+  private Department parent;
 
-  @Transient private List<Department> children;
+  private List<Department> children;
 
-  @Transient private User leader;
+  private User leader;
 
   /** Check if department is enabled */
   public boolean isEnabled() {

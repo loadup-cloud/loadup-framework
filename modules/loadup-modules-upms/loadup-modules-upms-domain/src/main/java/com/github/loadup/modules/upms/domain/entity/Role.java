@@ -7,9 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * Role Entity - RBAC3 Role with hierarchy support
@@ -21,10 +18,9 @@ import org.springframework.data.relational.core.mapping.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("upms_role")
 public class Role {
 
-  @Id private String id;
+  private String id;
 
   private String roleName;
 
@@ -56,13 +52,13 @@ public class Role {
   private LocalDateTime updatedTime;
 
   // Transient fields
-  @Transient private Role parentRole;
+  private Role parentRole;
 
-  @Transient private List<Role> childRoles;
+  private List<Role> childRoles;
 
-  @Transient private List<Permission> permissions;
+  private List<Permission> permissions;
 
-  @Transient private List<Department> departments;
+  private List<Department> departments;
 
   /** Check if role is enabled */
   public boolean isEnabled() {

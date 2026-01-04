@@ -3,8 +3,9 @@
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](LICENSE)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1.2-green.svg)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-17-red.svg)](https://www.oracle.com/java/)
+[![MyBatis-Flex](https://img.shields.io/badge/MyBatis--Flex-1.11.5-blue.svg)](https://mybatis-flex.com/)
 
-基于 **COLA 4.0** 架构的企业级用户权限管理系统，实现 **RBAC3** (角色继承与约束) 权限模型。
+基于 **COLA 4.0** 架构的企业级用户权限管理系统，实现 **RBAC3** (角色继承与约束) 权限模型，采用 **MyBatis-Flex** 提供类型安全的数据访问。
 
 ## 🎯 核心特性
 
@@ -193,7 +194,61 @@ mvn spring-boot:run
 
 访问 Swagger 文档：`http://localhost:8080/swagger-ui.html`
 
-## 📖 API 文档
+## 📖 MyBatis-Flex 使用指南
+
+本模块使用 **MyBatis-Flex** 提供类型安全的数据库访问。
+
+### 快速开始
+
+#### 1. 导入 Tables 定义
+
+```java
+import static com.github.loadup.modules.upms.infrastructure.dataobject.Tables.*;
+```
+
+#### 2. 基础查询
+
+```java
+// 单条件查询
+QueryWrapper query = QueryWrapper.create()
+                .where(USER.USERNAME.eq("admin"));
+
+// 多条件查询  
+QueryWrapper query = QueryWrapper.create()
+        .where(USER.STATUS.eq((short) 1))
+        .and(USER.DEPT_ID.in(deptIds))
+        .orderBy(USER.CREATE_TIME.desc());
+```
+
+#### 3. 分页查询
+
+```java
+Page<UserDO> page = userMapper.paginate(
+        Page.of(pageNum, pageSize),
+        query
+);
+```
+
+### 常用查询模式
+
+| 方法                | SQL                 | 示例                                     |
+|-------------------|---------------------|----------------------------------------|
+| `eq(value)`       | `= value`           | `USER.STATUS.eq(1)`                    |
+| `like(value)`     | `LIKE '%value%'`    | `USER.USERNAME.like("admin")`          |
+| `in(values)`      | `IN (...)`          | `USER.DEPT_ID.in(1, 2, 3)`             |
+| `between(v1, v2)` | `BETWEEN v1 AND v2` | `USER.CREATE_TIME.between(start, end)` |
+| `isNull()`        | `IS NULL`           | `USER.DELETED.isNull()`                |
+
+### 优势
+
+- ✅ **类型安全**：编译时检查字段名，避免运行时错误
+- ✅ **自动完成**：IDE 提供字段自动补全
+- ✅ **重构友好**：字段重命名时自动更新
+- ✅ **性能优化**：自动分页，无需手动编写 SQL
+
+更多用法请参考 [ARCHITECTURE.md](./ARCHITECTURE.md) 中的 MyBatis-Flex 章节。
+
+## 📡 API 文档
 
 ### 统一响应格式
 

@@ -6,9 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * Permission Entity - Resource permission definition
@@ -20,10 +17,9 @@ import org.springframework.data.relational.core.mapping.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("upms_permission")
 public class Permission {
 
-  @Id private String id;
+  private String id;
 
   private String parentId;
 
@@ -62,9 +58,9 @@ public class Permission {
   private LocalDateTime updatedTime;
 
   // Transient fields
-  @Transient private Permission parent;
+  private Permission parent;
 
-  @Transient private List<Permission> children;
+  private List<Permission> children;
 
   /** Check if permission is enabled */
   public boolean isEnabled() {

@@ -659,6 +659,356 @@ public class AbacPermissionEvaluator implements PermissionEvaluator {
    - 应用Google Java Format
    - 完整的参数验证
 
+## 9. MyBatis-Flex 集成
+
+### 9.1 概述
+
+本模块已全面迁移到 **MyBatis-Flex 1.11.5**，提供类型安全的数据库访问。
+
+**核心优势：**
+
+- ✅ 编译时类型检查，避免字段名拼写错误
+- ✅ IDE 自动完成，提高开发效率
+- ✅ 重构友好，字段重命名自动更新查询
+- ✅ 零字符串拼接，代码更清晰
+- ✅ 高性能分页，自动优化查询
+
+### 9.2 TableDef 类型安全查询
+
+#### Tables 类
+
+所有表定义集中在 `Tables` 类中：
+
+```java
+package com.github.loadup.modules.upms.infrastructure.dataobject;
+
+public class Tables {
+   public static final UserTableDef         USER          = new UserTableDef();
+   public static final RoleTableDef         ROLE          = new RoleTableDef();
+   public static final DepartmentTableDef   DEPARTMENT    = new DepartmentTableDef();
+   public static final PermissionTableDef   PERMISSION    = new PermissionTableDef();
+   public static final LoginLogTableDef     LOGIN_LOG     = new LoginLogTableDef();
+   public static final OperationLogTableDef OPERATION_LOG = new OperationLogTableDef();
+
+   public static class UserTableDef extends TableDef {
+      public final QueryColumn ID          = new QueryColumn(this, "id");
+      public final QueryColumn USERNAME    = new QueryColumn(this, "username");
+      public final QueryColumn PASSWORD    = new QueryColumn(this, "password");
+      public final QueryColumn EMAIL       = new QueryColumn(this, "email");
+      public final QueryColumn STATUS      = new QueryColumn(this, "status");
+      public final QueryColumn DEPT_ID     = new QueryColumn(this, "dept_id");
+      public final QueryColumn CREATE_TIME = new QueryColumn(this, "create_time");
+      // ... 其他字段
+   }
+}
+```
+
+#### 使用方式
+
+```java
+import static com.github.loadup.modules.upms.infrastructure.dataobject.Tables.*;
+
+// 单条件查询
+QueryWrapper query = QueryWrapper.create()
+        .where(USER.USERNAME.eq("admin"));
+
+        // 多条件查询
+        QueryWrapper query = QueryWrapper.create()
+                .where(USER.STATUS.eq((short) 1))
+                .and(USER.DEPT_ID.in(deptIds))
+                .orderBy(USER.CREATE_TIME.desc());
+
+        // 复杂查询
+        QueryWrapper query = QueryWrapper.create()
+                .where(USER.USERNAME.like(keyword))
+                .and(USER.STATUS.eq((short) 1))
+                .and(USER.CREATE_TIME.between(startTime, endTime))
+                .orderBy(USER.CREATE_TIME.desc())
+                .limit(10);
+```
+
+### 9.3 Repository 实现模式
+
+#### 标准模式
+
+```java
+
+@Repository
+@RequiredArgsConstructor
+public class UserRepositoryImpl implements UserRepository {
+
+   private final UserMapper    userMapper;
+   private final UserConverter userConverter;
+
+   @Override
+   public Optional<User> findByUsername(String username) {
+      QueryWrapper query = QueryWrapper.create()
+              .where(USER.USERNAME.eq(username));
+
+      UserDO userDO = userMapper.selectOneByQuery(query);
+      return Optional.ofNullable(userDO)
+              .map(userConverter::toEntity);
+   }
+
+   @Override
+   public List<User> findByDeptId(String deptId) {
+      QueryWrapper query = QueryWrapper.create()
+              .where(USER.DEPT_ID.eq(deptId))
+              .and(USER.STATUS.eq((short) 1));
+
+      List<UserDO> userDOs = userMapper.selectListByQuery(query);
+      return userDOs.stream()
+              .map(userConverter::toEntity)
+              .collect(Collectors.toList());
+   }
+}
+```
+
+#### 分页查询模式
+
+```java
+
+@Override
+public org.springframework.data.domain.Page<User> findAll(Pageable pageable) {
+   QueryWrapper query = QueryWrapper.create()
+           .where(USER.STATUS.eq((short) 1))
+           .orderBy(USER.CREATE_TIME.desc());
+
+   // MyBatis-Flex 分页（自动计算总数）
+   Page<UserDO> page = userMapper.paginate(
+           Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()),
+           query
+   );
+
+   // 转换为领域对象
+   List<User> users = page.getRecords().stream()
+           .map(userConverter::toEntity)
+           .collect(Collectors.toList());
+
+   // 返回 Spring Data Page
+   return new PageImpl<>(users, pageable, page.getTotalRow());
+}
+```
+
+#### 动态条件查询
+
+```java
+
+@Override
+public List<User> search(UserQuery queryDto) {
+   QueryWrapper query = QueryWrapper.create()
+           .where(USER.STATUS.eq((short) 1));
+
+   // 动态添加条件
+   if (StringUtils.hasText(queryDto.getUsername())) {
+      query.and(USER.USERNAME.like(queryDto.getUsername()));
+   }
+
+   if (queryDto.getDeptId() != null) {
+      query.and(USER.DEPT_ID.eq(queryDto.getDeptId()));
+   }
+
+   if (queryDto.getStartTime() != null && queryDto.getEndTime() != null) {
+      query.and(USER.CREATE_TIME.between(
+              queryDto.getStartTime(),
+              queryDto.getEndTime()
+      ));
+   }
+
+   List<UserDO> userDOs = userMapper.selectListByQuery(query);
+   return userDOs.stream()
+           .map(userConverter::toEntity)
+           .collect(Collectors.toList());
+}
+```
+
+### 9.4 常用查询方法对照表
+
+| 方法          | SQL                 | MyBatis-Flex 用法                        |
+|-------------|---------------------|----------------------------------------|
+| 等于          | `= value`           | `USER.STATUS.eq(1)`                    |
+| 不等于         | `!= value`          | `USER.STATUS.ne(0)`                    |
+| 大于          | `> value`           | `USER.CREATE_TIME.gt(date)`            |
+| 大于等于        | `>= value`          | `USER.CREATE_TIME.ge(date)`            |
+| 小于          | `< value`           | `USER.CREATE_TIME.lt(date)`            |
+| 小于等于        | `<= value`          | `USER.CREATE_TIME.le(date)`            |
+| 模糊查询        | `LIKE '%value%'`    | `USER.USERNAME.like("admin")`          |
+| 左模糊         | `LIKE '%value'`     | `USER.USERNAME.likeLeft("admin")`      |
+| 右模糊         | `LIKE 'value%'`     | `USER.USERNAME.likeRight("admin")`     |
+| IN          | `IN (...)`          | `USER.STATUS.in(1, 2, 3)`              |
+| NOT IN      | `NOT IN (...)`      | `USER.STATUS.notIn(0, -1)`             |
+| BETWEEN     | `BETWEEN v1 AND v2` | `USER.CREATE_TIME.between(start, end)` |
+| IS NULL     | `IS NULL`           | `USER.DELETED.isNull()`                |
+| IS NOT NULL | `IS NOT NULL`       | `USER.DELETED.isNotNull()`             |
+
+### 9.5 Mapper 接口
+
+所有 Mapper 继承 `BaseMapper<DO>`：
+
+```java
+
+@Mapper
+public interface UserMapper extends BaseMapper<UserDO> {
+   // 自动获得 CRUD 方法：
+   // - insert(entity)
+   // - update(entity)
+   // - deleteById(id)
+   // - selectOneById(id)
+   // - selectListByQuery(query)
+   // - selectOneByQuery(query)
+   // - selectCountByQuery(query)
+   // - paginate(page, query)
+}
+```
+
+### 9.6 配置
+
+#### pom.xml
+
+```xml
+
+<dependency>
+   <groupId>com.mybatis-flex</groupId>
+   <artifactId>mybatis-flex-spring-boot-starter</artifactId>
+   <version>1.11.5</version>
+</dependency>
+
+        <!-- APT 处理器（编译时生成 TableDef） -->
+<dependency>
+<groupId>com.mybatis-flex</groupId>
+<artifactId>mybatis-flex-processor</artifactId>
+<version>1.11.5</version>
+<scope>provided</scope>
+</dependency>
+```
+
+#### application.yml
+
+```yaml
+mybatis-flex:
+   configuration:
+      # SQL 日志（开发环境）
+      log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+      map-underscore-to-camel-case: true
+      cache-enabled: true
+
+   global-config:
+      # 打印 SQL（开发环境）
+      print-sql: true
+
+# 日志配置
+logging:
+   level:
+      com.mybatisflex: DEBUG
+      com.github.loadup.modules.upms.infrastructure: DEBUG
+```
+
+### 9.7 最佳实践
+
+#### ✅ 推荐
+
+```java
+// 使用静态导入
+
+import static com.github.loadup.modules.upms.infrastructure.dataobject.Tables.*;
+
+// 类型安全查询
+QueryWrapper query = QueryWrapper.create()
+        .where(USER.USERNAME.eq(username));
+
+        // 链式调用清晰
+        QueryWrapper query = QueryWrapper.create()
+                .where(USER.STATUS.eq((short) 1))
+                .and(USER.DEPT_ID.in(deptIds))
+                .orderBy(USER.CREATE_TIME.desc());
+```
+
+#### ❌ 避免
+
+```java
+// 不要使用字符串
+query.eq("username",username);  // 编译时无法检查
+
+// 不要手动拼接 SQL
+query.
+
+where("username = ?",username);  // 失去类型安全
+```
+
+### 9.8 性能优化
+
+#### 批量操作
+
+```java
+// 批量插入
+List<UserDO> users = ...;
+        userMapper.
+
+insertBatch(users);
+
+// 批量更新
+userMapper.
+
+updateBatch(users);
+```
+
+#### 只查询需要的字段
+
+```java
+QueryWrapper query = QueryWrapper.create()
+        .select(USER.ID, USER.USERNAME, USER.EMAIL)
+        .where(USER.STATUS.eq((short) 1));
+```
+
+#### 索引优化
+
+确保查询条件字段有索引：
+
+- `username` - UNIQUE 索引
+- `email` - UNIQUE 索引
+- `dept_id` - 普通索引
+- `status` - 普通索引
+
+### 9.9 测试
+
+#### 单元测试
+
+```java
+
+@SpringBootTest
+@Transactional
+class UserRepositoryTest {
+
+   @Autowired
+   private UserRepository userRepository;
+
+   @Test
+   void testFindByUsername() {
+      Optional<User> user = userRepository.findByUsername("admin");
+      assertThat(user).isPresent();
+      assertThat(user.get().getUsername()).isEqualTo("admin");
+   }
+}
+```
+
+#### H2 测试配置
+
+```yaml
+# src/test/resources/application-test.yml
+spring:
+   datasource:
+      driver-class-name: org.h2.Driver
+      url: jdbc:h2:mem:testdb;MODE=MySQL
+      username: sa
+      password:
+
+   sql:
+      init:
+         mode: always
+         schema-locations: classpath:schema-h2.sql
+         data-locations: classpath:test-data.sql
+```
+
 ## 10. 未来演进方向
 
 ### 短期计划 (1-3个月)

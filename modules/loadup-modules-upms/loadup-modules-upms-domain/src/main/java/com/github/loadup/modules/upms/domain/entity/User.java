@@ -6,9 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * User Entity - Core user domain model
@@ -20,10 +17,9 @@ import org.springframework.data.relational.core.mapping.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("upms_user")
 public class User {
 
-  @Id private String id;
+  private String id;
 
   private String username;
 
@@ -82,9 +78,9 @@ public class User {
   private LocalDateTime updatedTime;
 
   // Transient fields (not persisted)
-  @Transient private List<Role> roles;
+  private List<Role> roles;
 
-  @Transient private Department department;
+  private Department department;
 
   /** Check if user account is enabled */
   public boolean isEnabled() {
