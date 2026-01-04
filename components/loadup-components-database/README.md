@@ -1,9 +1,10 @@
 # LoadUp Components Database
 
-Spring Boot 3 Data JDBC 集成组件，提供自动审计、ID 生成和高性能序列号服务。
+Spring Boot 3 + MyBatis-Flex 集成组件，提供自动审计、ID 生成和高性能序列号服务。
 
 ## 核心功能
 
+- ✅ **MyBatis-Flex** - 类型安全的数据库访问
 - ✅ **自动审计** - 自动管理 ID、创建时间、修改时间
 - ✅ **多种 ID 策略** - Random, UUID v4, UUID v7⭐, Snowflake⭐
 - ✅ **高性能序列号** - 批量预分配，~100,000 TPS
@@ -25,19 +26,35 @@ Spring Boot 3 Data JDBC 集成组件，提供自动审计、ID 生成和高性�
 ```java
 @Table("t_user")
 public class User extends BaseDO {
-    private String id;        // 自动生成
+    @Id(keyType = KeyType.None)  // ID 由审计功能自动生成
+    private String id;
     private String username;
-    // createdAt, updatedAt 自动管理
+    // createdBy, createdTime, updatedBy, updatedTime 自动管理
 }
 ```
 
-### 3. 使用
+### 3. 创建 Mapper
 
 ```java
-// ID 和时间戳自动管理
-User user = new User();
-user.setUsername("test");
-userRepository.save(user);
+
+@Mapper
+public interface UserMapper extends BaseMapper<User> {
+   // 自动获得 CRUD 方法
+   // insert, update, delete, selectById, selectList, etc.
+}
+```
+
+### 4. 类型安全查询
+
+```java
+import static com.github.loadup.tables.Tables.USER;
+
+QueryWrapper query = QueryWrapper.create()
+    .where(USER.USERNAME.eq("admin"))
+    .and(USER.STATUS.eq(1));
+    
+List<User> users = userMapper.selectListByQuery(query);
+```
 
 // 使用序列号
 @Autowired
@@ -123,6 +140,104 @@ loadup:
 | UUID v4         | ❌  | ⭐⭐⭐⭐  | 32/36 | 标准化      |
 | **UUID v7** ⭐   | ✅  | ⭐⭐⭐⭐  | 32/36 | **需要排序** |
 | **Snowflake** ⭐ | ✅  | ⭐⭐⭐⭐⭐ | 19    | **分布式**  |
+
+## MyBatis-Flex 集成
+
+### 依赖配置
+
+```xml
+<dependency>
+    <groupId>com.mybatis-flex</groupId>
+    <artifactId>mybatis-flex-spring-boot-starter</artifactId>
+    <version>1.11.5</version>
+</dependency>
+```
+
+### 基础用法
+
+#### 1. 定义实体
+
+```java
+@Table("t_user")
+public class User {
+    @Id(keyType = KeyType.None)
+    private String id;
+    private String username;
+    private String email;
+    private Integer status;
+    // ... getters and setters
+}
+```
+
+#### 2. 创建 Mapper
+
+```java
+
+@Mapper
+public interface UserMapper extends BaseMapper<User> {
+   // 无需实现，自动获得 CRUD 方法
+}
+```
+
+#### 3. 类型安全查询
+
+```java
+import static com.github.loadup.tables.Tables.USER;
+
+// 基础查询
+QueryWrapper query = QueryWrapper.create()
+    .where(USER.USERNAME.eq("admin"));
+
+// 复杂查询
+QueryWrapper query = QueryWrapper.create()
+    .where(USER.STATUS.eq(1))
+    .and(USER.USERNAME.like("admin"))
+    .orderBy(USER.CREATE_TIME.desc());
+
+// 分页查询
+Page<User> page = userMapper.paginate(
+    Page.of(pageNum, pageSize), 
+    query
+);
+```
+
+### 常用方法
+
+| Mapper 方法                   | 说明     |
+|-----------------------------|--------|
+| `insert(entity)`            | 插入记录   |
+| `update(entity)`            | 更新记录   |
+| `deleteById(id)`            | 根据ID删除 |
+| `selectOneById(id)`         | 根据ID查询 |
+| `selectListByQuery(query)`  | 查询列表   |
+| `selectCountByQuery(query)` | 查询总数   |
+| `paginate(page, query)`     | 分页查询   |
+
+### 配置
+
+```yaml
+mybatis-flex:
+  configuration:
+    # 驼峰命名转换
+    map-underscore-to-camel-case: true
+    # SQL日志（开发环境）
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  
+  global-config:
+    # 打印SQL（开发环境）
+    print-sql: true
+
+logging:
+  level:
+    com.mybatisflex: DEBUG
+```
+
+### 优势
+
+- ✅ **类型安全**：编译时检查字段名
+- ✅ **性能优化**：自动分页、批量操作
+- ✅ **开发效率**：减少90%的SQL代码
+- ✅ **易于维护**：重构友好，IDE支持
 
 ## 自定义 ID 生成器
 
