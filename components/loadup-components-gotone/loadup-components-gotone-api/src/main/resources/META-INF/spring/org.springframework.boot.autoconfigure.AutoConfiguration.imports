@@ -1,0 +1,3 @@
+com.github.loadup.components.gotone.config.GotoneAutoConfiguration
+com.github.loadup.components.gotone.config.RabbitMQConfig
+

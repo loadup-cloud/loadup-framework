@@ -1,2 +1,2 @@
-com.github.loadup.components.database.autoconfig.DataJdbcConfiguration
-
+com.github.loadup.components.database.autoconfig.MultiTenantAutoConfiguration
+com.github.loadup.components.database.autoconfig.MyBatisFlexAutoConfiguration

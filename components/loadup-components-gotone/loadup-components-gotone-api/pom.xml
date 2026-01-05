@@ -80,11 +80,11 @@
             <version>${loadup.framework.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.loadup.components</groupId>
-            <artifactId>loadup-components-tracer</artifactId>
-            <version>${loadup.framework.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.github.loadup.components</groupId>-->
+<!--            <artifactId>loadup-components-tracer</artifactId>-->
+<!--            <version>${loadup.framework.version}</version>-->
+<!--        </dependency>-->
 
         <!-- Spring Data JDBC -->
         <dependency>

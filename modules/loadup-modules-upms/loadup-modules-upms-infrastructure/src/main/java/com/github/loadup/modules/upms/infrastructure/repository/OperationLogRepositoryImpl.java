@@ -118,7 +118,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
       LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(OPERATION_LOG.CREATE_TIME.between(startTime, endTime))
+            .where(OPERATION_LOG.CREATED_AT.between(startTime, endTime))
             .orderBy(OPERATION_LOG.TIME.desc());
 
     Page<OperationLogDO> page =
@@ -153,7 +153,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
       query.and(OPERATION_LOG.METHOD.like(module));
     }
     if (startTime != null && endTime != null) {
-      query.and(OPERATION_LOG.CREATE_TIME.between(startTime, endTime));
+      query.and(OPERATION_LOG.CREATED_AT.between(startTime, endTime));
     }
 
     query.orderBy(OPERATION_LOG.TIME.desc());
@@ -173,7 +173,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
   @Override
   public void deleteBeforeDate(LocalDateTime date) {
     operationLogMapper.deleteByQuery(
-        QueryWrapper.create().where(OPERATION_LOG.CREATE_TIME.lt(date)));
+        QueryWrapper.create().where(OPERATION_LOG.CREATED_AT.lt(date)));
   }
 
   @Override
@@ -205,7 +205,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
       LocalDateTime startTime, LocalDateTime endTime) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(OPERATION_LOG.CREATE_TIME.between(startTime, endTime))
+            .where(OPERATION_LOG.CREATED_AT.between(startTime, endTime))
             .orderBy(OPERATION_LOG.TIME.desc());
     List<OperationLogDO> operationLogDOs = operationLogMapper.selectListByQuery(query);
     return operationLogDOs.stream()
@@ -238,7 +238,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
   @Override
   public long countFailedOperations(LocalDateTime startTime, LocalDateTime endTime) {
     QueryWrapper query =
-        QueryWrapper.create().where(OPERATION_LOG.CREATE_TIME.between(startTime, endTime));
+        QueryWrapper.create().where(OPERATION_LOG.CREATED_AT.between(startTime, endTime));
     return operationLogMapper.selectCountByQuery(query);
   }
 }

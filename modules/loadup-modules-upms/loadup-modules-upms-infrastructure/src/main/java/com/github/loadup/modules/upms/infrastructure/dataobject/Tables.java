@@ -69,9 +69,9 @@ public class Tables {
     public final QueryColumn REMARK = new QueryColumn(this, "remark");
     public final QueryColumn TENANT_ID = new QueryColumn(this, "tenant_id");
     public final QueryColumn DELETED = new QueryColumn(this, "deleted");
-    public final QueryColumn CREATE_TIME = new QueryColumn(this, "create_time");
+    public final QueryColumn CREATED_AT = new QueryColumn(this, "created_at");
     public final QueryColumn CREATED_BY = new QueryColumn(this, "created_by");
-    public final QueryColumn UPDATE_TIME = new QueryColumn(this, "update_time");
+    public final QueryColumn UPDATED_AT = new QueryColumn(this, "update_at");
     public final QueryColumn UPDATED_BY = new QueryColumn(this, "updated_by");
 
     public DepartmentTableDef() {
@@ -93,9 +93,9 @@ public class Tables {
     public final QueryColumn REMARK = new QueryColumn(this, "remark");
     public final QueryColumn TENANT_ID = new QueryColumn(this, "tenant_id");
     public final QueryColumn DELETED = new QueryColumn(this, "deleted");
-    public final QueryColumn CREATE_TIME = new QueryColumn(this, "create_time");
+    public final QueryColumn CREATED_AT = new QueryColumn(this, "created_at");
     public final QueryColumn CREATED_BY = new QueryColumn(this, "created_by");
-    public final QueryColumn UPDATE_TIME = new QueryColumn(this, "update_time");
+    public final QueryColumn UPDATED_AT = new QueryColumn(this, "update_at");
     public final QueryColumn UPDATED_BY = new QueryColumn(this, "updated_by");
 
     public UserTableDef() {
@@ -114,9 +114,9 @@ public class Tables {
     public final QueryColumn REMARK = new QueryColumn(this, "remark");
     public final QueryColumn TENANT_ID = new QueryColumn(this, "tenant_id");
     public final QueryColumn DELETED = new QueryColumn(this, "deleted");
-    public final QueryColumn CREATE_TIME = new QueryColumn(this, "create_time");
+    public final QueryColumn CREATED_AT = new QueryColumn(this, "created_at");
     public final QueryColumn CREATED_BY = new QueryColumn(this, "created_by");
-    public final QueryColumn UPDATE_TIME = new QueryColumn(this, "update_time");
+    public final QueryColumn UPDATED_AT = new QueryColumn(this, "update_at");
     public final QueryColumn UPDATED_BY = new QueryColumn(this, "updated_by");
 
     public RoleTableDef() {
@@ -139,9 +139,9 @@ public class Tables {
     public final QueryColumn REMARK = new QueryColumn(this, "remark");
     public final QueryColumn TENANT_ID = new QueryColumn(this, "tenant_id");
     public final QueryColumn DELETED = new QueryColumn(this, "deleted");
-    public final QueryColumn CREATE_TIME = new QueryColumn(this, "create_time");
+    public final QueryColumn CREATED_AT = new QueryColumn(this, "created_at");
     public final QueryColumn CREATED_BY = new QueryColumn(this, "created_by");
-    public final QueryColumn UPDATE_TIME = new QueryColumn(this, "update_time");
+    public final QueryColumn UPDATED_AT = new QueryColumn(this, "update_at");
     public final QueryColumn UPDATED_BY = new QueryColumn(this, "updated_by");
 
     public PermissionTableDef() {
@@ -163,9 +163,9 @@ public class Tables {
     public final QueryColumn MESSAGE = new QueryColumn(this, "message");
     public final QueryColumn TENANT_ID = new QueryColumn(this, "tenant_id");
     public final QueryColumn DELETED = new QueryColumn(this, "deleted");
-    public final QueryColumn CREATE_TIME = new QueryColumn(this, "create_time");
+    public final QueryColumn CREATED_AT = new QueryColumn(this, "created_at");
     public final QueryColumn CREATED_BY = new QueryColumn(this, "created_by");
-    public final QueryColumn UPDATE_TIME = new QueryColumn(this, "update_time");
+    public final QueryColumn UPDATED_AT = new QueryColumn(this, "update_at");
     public final QueryColumn UPDATED_BY = new QueryColumn(this, "updated_by");
 
     public LoginLogTableDef() {
@@ -185,9 +185,9 @@ public class Tables {
     public final QueryColumn IP = new QueryColumn(this, "ip");
     public final QueryColumn TENANT_ID = new QueryColumn(this, "tenant_id");
     public final QueryColumn DELETED = new QueryColumn(this, "deleted");
-    public final QueryColumn CREATE_TIME = new QueryColumn(this, "create_time");
+    public final QueryColumn CREATED_AT = new QueryColumn(this, "created_at");
     public final QueryColumn CREATED_BY = new QueryColumn(this, "created_by");
-    public final QueryColumn UPDATE_TIME = new QueryColumn(this, "update_time");
+    public final QueryColumn UPDATED_AT = new QueryColumn(this, "update_at");
     public final QueryColumn UPDATED_BY = new QueryColumn(this, "updated_by");
 
     public OperationLogTableDef() {

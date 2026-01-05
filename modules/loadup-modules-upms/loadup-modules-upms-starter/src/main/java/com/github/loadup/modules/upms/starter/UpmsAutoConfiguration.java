@@ -1,9 +1,9 @@
 package com.github.loadup.modules.upms.starter;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
@@ -15,7 +15,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @AutoConfiguration
 @EnableAsync
 @EnableConfigurationProperties
-@EnableJdbcRepositories(basePackages = "com.github.loadup.modules.upms.infrastructure.repository")
+// @EnableJdbcRepositories(basePackages =
+// "com.github.loadup.modules.upms.infrastructure.repository")
+@MapperScan("com.github.loadup.modules.upms.infrastructure.mapper")
 @ComponentScan(
     basePackages = {
       "com.github.loadup.modules.upms.domain",

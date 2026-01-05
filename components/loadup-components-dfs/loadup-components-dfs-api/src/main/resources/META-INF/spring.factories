@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.github.loadup.components.dfs.config.DfsAutoConfiguration
-

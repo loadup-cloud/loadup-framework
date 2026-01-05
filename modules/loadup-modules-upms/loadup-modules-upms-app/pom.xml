@@ -26,17 +26,17 @@
             <version>${project.parent.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.loadup.components</groupId>
-            <artifactId>loadup-components-captcha</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.github.loadup.components</groupId>-->
+        <!--            <artifactId>loadup-components-captcha</artifactId>-->
+        <!--            <version>${project.parent.version}</version>-->
+        <!--        </dependency>-->
 
-        <dependency>
-            <groupId>com.github.loadup.components</groupId>
-            <artifactId>loadup-components-gotone-api</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.github.loadup.components</groupId>-->
+        <!--            <artifactId>loadup-components-gotone-api</artifactId>-->
+        <!--            <version>${project.parent.version}</version>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

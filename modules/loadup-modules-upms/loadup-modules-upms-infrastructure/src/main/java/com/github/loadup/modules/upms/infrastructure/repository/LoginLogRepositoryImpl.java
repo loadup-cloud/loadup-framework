@@ -32,8 +32,7 @@ import com.github.loadup.modules.upms.infrastructure.mapper.LoginLogMapper;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
@@ -56,6 +55,10 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
   @Override
   public LoginLog save(LoginLog log) {
     LoginLogDO loginLogDO = loginLogConverter.toDataObject(log);
+    loginLogDO.setId(UUID.randomUUID().toString());
+    loginLogDO.setLogoutTime(LocalDateTime.now());
+    loginLogDO.setCreatedAt(LocalDateTime.now());
+    loginLogDO.setUpdatedAt(LocalDateTime.now());
     loginLogMapper.insert(loginLogDO);
     return loginLogConverter.toEntity(loginLogDO);
   }

@@ -32,8 +32,7 @@ import com.github.loadup.modules.upms.infrastructure.dataobject.DepartmentDO;
 import com.github.loadup.modules.upms.infrastructure.mapper.DepartmentMapper;
 import com.github.loadup.modules.upms.infrastructure.mapper.UserMapper;
 import com.mybatisflex.core.query.QueryWrapper;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -55,7 +54,13 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
   @Override
   public Department save(Department department) {
     DepartmentDO departmentDO = departmentConverter.toDataObject(department);
+    // 导入 com.mybatisflex.core.util.EntityHelpers
+    // Object[] values = EntityHelpers.getModifyValues(departmentDO);
+    // System.out.println(">>> 待插入的参数数量: " + (values == null ? 0 : values.length));
     departmentMapper.insert(departmentDO);
+
+    // Row row = Row.of("id", departmentDO);
+    // Db.insert("upms_department", row);
     return departmentConverter.toEntity(departmentDO);
   }
 

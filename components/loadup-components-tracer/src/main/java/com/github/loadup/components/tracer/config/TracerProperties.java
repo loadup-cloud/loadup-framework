@@ -25,13 +25,11 @@ package com.github.loadup.components.tracer.config;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 /** Configuration properties for the tracer component. */
 @Data
 @Validated
-@Component
 @ConfigurationProperties(prefix = "loadup.tracer")
 public class TracerProperties {
 

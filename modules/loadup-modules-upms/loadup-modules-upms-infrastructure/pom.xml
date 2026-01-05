@@ -26,22 +26,17 @@
             <version>${project.parent.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.loadup.components</groupId>
-            <artifactId>loadup-components-cache-api</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.github.loadup.components</groupId>-->
+        <!--            <artifactId>loadup-components-cache-api</artifactId>-->
+        <!--            <version>${project.parent.version}</version>-->
+        <!--        </dependency>-->
 
-        <dependency>
-            <groupId>com.github.loadup.components</groupId>
-            <artifactId>loadup-components-dfs-api</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jdbc</artifactId>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.github.loadup.components</groupId>-->
+        <!--            <artifactId>loadup-components-dfs-api</artifactId>-->
+        <!--            <version>${project.parent.version}</version>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -120,7 +115,10 @@
             <version>1.11.5</version>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
