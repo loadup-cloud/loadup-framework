@@ -1,5 +1,6 @@
 package com.github.loadup.modules.upms.repository;
 
+import com.github.loadup.components.testcontainers.cloud.AbstractMySQLContainerTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mybatis.spring.annotation.MapperScan;
@@ -8,7 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  * Base Repository Test Configuration
@@ -17,12 +17,14 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  *
  * <ul>
  *   <li>Spring Boot Test context
- *   <li>MySQL database with Testcontainers (auto-managed container)
+ *   <li>MySQL database with Testcontainers (shared container for all tests)
  *   <li>HikariCP connection pool
  *   <li>MyBatis-Flex mapper scanning
  *   <li>Transaction rollback after each test
  *   <li>Test profile activation
  * </ul>
+ *
+ * <p>Uses {@link AbstractMySQLContainerTest} to automatically configure shared MySQL container.
  *
  * @author LoadUp Framework
  * @since 1.0.0
@@ -38,8 +40,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
     })
 @ActiveProfiles("test")
 @Transactional
-@Testcontainers
-public abstract class BaseRepositoryTest {
+public abstract class BaseRepositoryTest extends AbstractMySQLContainerTest {
 
   @BeforeAll
   static void beforeAll() {
