@@ -143,6 +143,69 @@ loadup:
 | **UUID v7** ⭐   | ✅  | ⭐⭐⭐⭐  | 32/36 | **需要排序** |
 | **Snowflake** ⭐ | ✅  | ⭐⭐⭐⭐⭐ | 19    | **分布式**  |
 
+## 多租户支持 ⭐
+
+自动数据隔离，支持 SaaS 多租户场景：
+
+```yaml
+loadup:
+  database:
+    multi-tenant:
+      enabled: true
+      column-name: tenant_id
+      ignore-tables: sys_tenant,sys_config
+```
+
+```java
+// Web 应用自动识别租户（Header: X-Tenant-Id）
+// 手动设置租户上下文
+TenantContextHolder.setTenantId("tenant_001");
+try {
+    List<User> users = userMapper.selectAll();
+    // SQL 自动添加: WHERE tenant_id = 'tenant_001'
+} finally {
+    TenantContextHolder.clear();
+}
+```
+
+**特性**:
+
+- ✅ 自动租户过滤 - 所有查询自动添加 tenant_id 条件
+- ✅ 自动租户填充 - 插入/更新自动填充 tenant_id
+- ✅ 灵活租户识别 - 支持 Header/Query/Subdomain
+- ✅ 可配置忽略表 - 系统表可不隔离
+
+## 逻辑删除 ⭐
+
+软删除支持，数据安全可恢复：
+
+```yaml
+loadup:
+  database:
+    logical-delete:
+      enabled: true
+      column-name: deleted
+```
+
+```java
+// 删除操作自动转为逻辑删除
+userMapper.deleteById(userId);
+// SQL: UPDATE t_user SET deleted = true WHERE id = ?
+
+// 查询自动过滤已删除记录
+List<User> users = userMapper.selectAll();
+// SQL: SELECT * FROM t_user WHERE deleted = false
+```
+
+**特性**:
+
+- ✅ DELETE 自动转 UPDATE - 不会真实删除数据
+- ✅ 查询自动过滤 - 自动添加 deleted = false 条件
+- ✅ 数据可恢复 - 历史数据保留
+- ✅ 审计友好 - 完整操作记录
+
+> 详细使用说明请参考 [架构设计文档](ARCHITECTURE.md)
+
 ## MyBatis-Flex 集成
 
 ### 依赖配置
@@ -549,7 +612,7 @@ See [LICENSE](../../LICENSE) for details.
 
 **快速链接**:
 
-- [数据库脚本](schema.sql)
-- [配置示例](application.yml.example)
-- [多租户与逻辑删除使用指南](MULTI_TENANT_AND_LOGICAL_DELETE.md) ⭐
-- [数据迁移SQL](migration-multi-tenant-logical-delete.sql)
+- [架构设计文档](ARCHITECTURE.md) - 完整的架构设计和技术细节
+- [数据库脚本](schema.sql) - 初始化SQL脚本
+- [配置示例](application.yml.example) - 完整配置示例
+- [数据迁移SQL](migration-multi-tenant-logical-delete.sql) - 多租户和逻辑删除迁移脚本

@@ -8,6 +8,8 @@ LoadUp Database Component 是基于 **MyBatis-Flex** 的企业级数据库访问
 - **自动审计** - ID生成、时间戳、操作人自动管理
 - **高性能序列号** - 批量预分配的分布式序列号服务
 - **多种ID策略** - Random、UUID v4/v7、Snowflake
+- **多租户支持** - 自动租户隔离和数据过滤 ⭐
+- **逻辑删除** - 软删除支持，数据安全可恢复 ⭐
 
 ## 2. Architecture
 
@@ -634,9 +636,10 @@ logging:
 - **1.5.0** - Added sequence service
 - **2.0.0** - Migrated to MyBatis-Flex
 - **2.1.0** - Added UUID v7 and improved audit
+- **2.2.0** - Added multi-tenant and logical delete support ⭐
 
 ---
 
-**Last Updated:** 2026-01-04  
+**Last Updated:** 2026-01-05  
 **Maintainer:** LoadUp Framework Team
 
