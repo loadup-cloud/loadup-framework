@@ -30,56 +30,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.database")
 public class DatabaseProperties {
 
-  /** ID generation configuration */
-  private IdGenerator idGenerator = new IdGenerator();
-
-  /** Sequence configuration */
-  private Sequence sequence = new Sequence();
-
   /** Multi-tenant configuration */
   private MultiTenant multiTenant = new MultiTenant();
 
-  @Data
-  public static class IdGenerator {
-    /** Enable automatic ID generation for entities extending BaseDO */
-    private boolean enabled = true;
-
-    /** Length of generated ID string (only for random strategy) */
-    private int length = 20;
-
-    /**
-     * ID generation strategy: random, uuid-v4, uuid-v7, snowflake
-     *
-     * <ul>
-     *   <li>random: 随机字符串，长度可配置
-     *   <li>uuid-v4: 标准 UUID v4（随机）
-     *   <li>uuid-v7: UUID v7（基于时间戳，有序）
-     *   <li>snowflake: 雪花算法（分布式唯一ID，数字型）
-     * </ul>
-     */
-    private String strategy = "random";
-
-    /** Whether to keep hyphens in UUID (for uuid-v4 and uuid-v7) */
-    private boolean uuidWithHyphens = false;
-
-    /** Snowflake worker ID (0-31, for snowflake strategy) */
-    private long snowflakeWorkerId = 0L;
-
-    /** Snowflake datacenter ID (0-31, for snowflake strategy) */
-    private long snowflakeDatacenterId = 0L;
-  }
-
-  @Data
-  public static class Sequence {
-    /** Default step for sequence range allocation */
-    private Long step = 1000L;
-
-    /** Minimum value for sequences */
-    private Long minValue = 0L;
-
-    /** Maximum value for sequences */
-    private Long maxValue = Long.MAX_VALUE;
-  }
+  /** Logical delete configuration */
+  private LogicalDelete logicalDelete = new LogicalDelete();
 
   @Data
   public static class MultiTenant {
@@ -94,5 +49,20 @@ public class DatabaseProperties {
 
     /** Default tenant ID when not in tenant context */
     private String defaultTenantId = "default";
+  }
+
+  @Data
+  public static class LogicalDelete {
+    /** Enable logical delete feature (default: false) */
+    private boolean enabled = false;
+
+    /** Column name for logical delete flag (default: deleted) */
+    private String columnName = "deleted";
+
+    /** Value representing deleted record (default: true) */
+    private String deletedValue = "true";
+
+    /** Value representing normal record (default: false) */
+    private String normalValue = "false";
   }
 }

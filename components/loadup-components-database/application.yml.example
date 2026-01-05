@@ -41,6 +41,38 @@ loadup:
       # Maximum value for sequences
       max-value: 9223372036854775807
 
+    # Multi-Tenant configuration
+    multi-tenant:
+      # Enable multi-tenant support (default: false)
+      # When enabled, all queries will be automatically filtered by tenant_id
+      enabled: true
+
+      # Column name for tenant ID in database tables (default: tenant_id)
+      column-name: tenant_id
+
+      # Tables to ignore tenant filtering (comma separated)
+      # These tables will not have automatic tenant_id filtering applied
+      ignore-tables: sys_tenant,sys_user,sys_role,sys_permission,sys_config,sys_dict
+
+      # Default tenant ID when no tenant context is set
+      default-tenant-id: default
+
+    # Logical Delete configuration
+    logical-delete:
+      # Enable logical delete (soft delete) support (default: false)
+      # When enabled, DELETE operations will update the deleted flag instead of removing records
+      enabled: true
+
+      # Column name for logical delete flag (default: deleted)
+      column-name: deleted
+
+      # Value representing deleted records (default: true)
+      # Can be: true, false, 1, 0, or any string value
+      deleted-value: "true"
+
+      # Value representing normal (not deleted) records (default: false)
+      normal-value: "false"
+
 # Spring Data JDBC configuration
 spring:
   data:

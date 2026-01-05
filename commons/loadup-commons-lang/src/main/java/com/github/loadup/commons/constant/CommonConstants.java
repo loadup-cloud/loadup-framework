@@ -28,5 +28,6 @@ package com.github.loadup.commons.constant;
  */
 public interface CommonConstants {
   String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+  String DEFAULT_TENANT_ID = "default";
   String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 }

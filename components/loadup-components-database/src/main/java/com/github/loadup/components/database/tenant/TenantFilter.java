@@ -56,8 +56,6 @@ public class TenantFilter extends OncePerRequestFilter {
   private static final String HEADER_TENANT_ID = "X-Tenant-Id";
   private static final String PARAM_TENANT_ID = "tenantId";
 
-  private final TenantConfigService tenantConfigService;
-
   @Override
   protected void doFilterInternal(
       @NonNull HttpServletRequest request,
@@ -69,20 +67,6 @@ public class TenantFilter extends OncePerRequestFilter {
       String tenantId = extractTenantId(request);
 
       if (tenantId != null) {
-        // Validate tenant exists in database
-        if (!tenantConfigService.tenantExists(tenantId)) {
-          log.warn("Invalid tenant ID in request: {}", tenantId);
-          response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-          response.setContentType("application/json;charset=UTF-8");
-          response
-              .getWriter()
-              .write(
-                  String.format(
-                      "{\"error\":\"Invalid tenant\",\"message\":\"Tenant '%s' does not exist\"}",
-                      tenantId));
-          return;
-        }
-
         TenantContextHolder.setTenantId(tenantId);
         log.debug("Set tenant context from request: {}", tenantId);
       }

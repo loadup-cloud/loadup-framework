@@ -1,6 +1,6 @@
 # LoadUp Components Database
 
-Spring Boot 3 + MyBatis-Flex 集成组件，提供自动审计、ID 生成和高性能序列号服务。
+Spring Boot 3 + MyBatis-Flex 集成组件，提供自动审计、ID 生成、多租户和逻辑删除等企业级功能。
 
 ## 核心功能
 
@@ -8,6 +8,8 @@ Spring Boot 3 + MyBatis-Flex 集成组件，提供自动审计、ID 生成和高
 - ✅ **自动审计** - 自动管理 ID、创建时间、修改时间
 - ✅ **多种 ID 策略** - Random, UUID v4, UUID v7⭐, Snowflake⭐
 - ✅ **高性能序列号** - 批量预分配，~100,000 TPS
+- ✅ **多租户支持** - 自动租户隔离和数据过滤 ⭐
+- ✅ **逻辑删除** - 软删除支持，数据安全可恢复 ⭐
 - ✅ **Spring Boot 3** - 原生支持自动配置
 
 ## 快速开始
@@ -549,3 +551,5 @@ See [LICENSE](../../LICENSE) for details.
 
 - [数据库脚本](schema.sql)
 - [配置示例](application.yml.example)
+- [多租户与逻辑删除使用指南](MULTI_TENANT_AND_LOGICAL_DELETE.md) ⭐
+- [数据迁移SQL](migration-multi-tenant-logical-delete.sql)

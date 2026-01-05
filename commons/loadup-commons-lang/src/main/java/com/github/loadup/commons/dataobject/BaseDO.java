@@ -41,11 +41,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public abstract class BaseDO implements Serializable {
+  // @Id(keyType = KeyType.Generator, value = KeyGenerators.flexId)
+  private Long id;
 
-  /** 创建时间（自动填充） 在子类字段上添加：@Column(onInsertValue = "now()") */
+  /** 创建时间（自动填充） */
+  // @Column(onInsertValue = "now()")
   private LocalDateTime createdAt;
 
-  /** 更新时间（自动填充） 在子类字段上添加：@Column(onUpdateValue = "now()", onInsertValue = "now()") */
+  /** 更新时间（自动填充） */
+  // @Column(onUpdateValue = "now()", onInsertValue = "now()")
   private LocalDateTime updatedAt;
 
   /**
@@ -55,6 +59,7 @@ public abstract class BaseDO implements Serializable {
    * isolation. Queries will automatically filter by tenant_id, and inserts/updates will
    * automatically set tenant_id from TenantContextHolder.
    */
+  // @Column(tenantId = true)
   private String tenantId;
 
   /**
@@ -63,11 +68,8 @@ public abstract class BaseDO implements Serializable {
    * <p>When logical delete is enabled in database configuration, this field will be used to mark
    * deleted records. Default value is false (not deleted).
    */
+  // @Column(isLogicDelete = true)
   private Boolean deleted = false;
-
-  public abstract String getId();
-
-  public abstract void setId(String id);
 
   @Override
   public String toString() {

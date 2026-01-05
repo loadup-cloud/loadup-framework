@@ -23,7 +23,6 @@ package com.github.loadup.components.database.autoconfig;
  */
 
 import com.github.loadup.components.database.config.DatabaseProperties;
-import com.github.loadup.components.database.tenant.TenantConfigService;
 import com.github.loadup.components.database.tenant.TenantFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -53,10 +52,9 @@ public class MultiTenantAutoConfiguration {
 
   @Bean
   @ConditionalOnWebApplication
-  public FilterRegistrationBean<TenantFilter> tenantFilterRegistration(
-      TenantConfigService tenantConfigService) {
+  public FilterRegistrationBean<TenantFilter> tenantFilterRegistration() {
     FilterRegistrationBean<TenantFilter> registration = new FilterRegistrationBean<>();
-    registration.setFilter(new TenantFilter(tenantConfigService));
+    registration.setFilter(new TenantFilter());
     registration.addUrlPatterns("/*");
     registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
     registration.setName("tenantFilter");
