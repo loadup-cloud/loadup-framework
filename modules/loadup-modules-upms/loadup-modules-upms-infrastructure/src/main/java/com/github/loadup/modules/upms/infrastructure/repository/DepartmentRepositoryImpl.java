@@ -22,8 +22,8 @@ package com.github.loadup.modules.upms.infrastructure.repository;
  * #L%
  */
 
-import static com.github.loadup.modules.upms.infrastructure.dataobject.Tables.DEPARTMENT;
-import static com.github.loadup.modules.upms.infrastructure.dataobject.Tables.USER;
+import static com.github.loadup.modules.upms.infrastructure.dataobject.table.DepartmentDOTableDef.DEPARTMENT_DO;
+import static com.github.loadup.modules.upms.infrastructure.dataobject.table.UserDOTableDef.USER_DO;
 
 import com.github.loadup.modules.upms.domain.entity.Department;
 import com.github.loadup.modules.upms.domain.repository.DepartmentRepository;
@@ -84,14 +84,14 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
 
   @Override
   public Optional<Department> findByDeptCode(String deptCode) {
-    QueryWrapper query = QueryWrapper.create().where(DEPARTMENT.DEPT_CODE.eq(deptCode));
+    QueryWrapper query = QueryWrapper.create().where(DEPARTMENT_DO.DEPT_CODE.eq(deptCode));
     DepartmentDO departmentDO = departmentMapper.selectOneByQuery(query);
     return Optional.ofNullable(departmentDO).map(departmentConverter::toEntity);
   }
 
   @Override
   public List<Department> findByParentId(String parentId) {
-    QueryWrapper query = QueryWrapper.create().where(DEPARTMENT.PARENT_ID.eq(parentId));
+    QueryWrapper query = QueryWrapper.create().where(DEPARTMENT_DO.PARENT_ID.eq(parentId));
     List<DepartmentDO> departmentDOs = departmentMapper.selectListByQuery(query);
     return departmentDOs.stream().map(departmentConverter::toEntity).collect(Collectors.toList());
   }
@@ -104,7 +104,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
 
   @Override
   public List<Department> findAllEnabled() {
-    QueryWrapper query = QueryWrapper.create().where(DEPARTMENT.STATUS.eq((short) 1));
+    QueryWrapper query = QueryWrapper.create().where(DEPARTMENT_DO.STATUS.eq((short) 1));
     List<DepartmentDO> departmentDOs = departmentMapper.selectListByQuery(query);
     return departmentDOs.stream().map(departmentConverter::toEntity).collect(Collectors.toList());
   }
@@ -112,26 +112,27 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
   @Override
   public List<Department> findRootDepartments() {
     QueryWrapper query =
-        QueryWrapper.create().where(DEPARTMENT.PARENT_ID.isNull().or(DEPARTMENT.PARENT_ID.eq("0")));
+        QueryWrapper.create()
+            .where(DEPARTMENT_DO.PARENT_ID.isNull().or(DEPARTMENT_DO.PARENT_ID.eq("0")));
     List<DepartmentDO> departmentDOs = departmentMapper.selectListByQuery(query);
     return departmentDOs.stream().map(departmentConverter::toEntity).collect(Collectors.toList());
   }
 
   @Override
   public boolean existsByDeptCode(String deptCode) {
-    QueryWrapper query = QueryWrapper.create().where(DEPARTMENT.DEPT_CODE.eq(deptCode));
+    QueryWrapper query = QueryWrapper.create().where(DEPARTMENT_DO.DEPT_CODE.eq(deptCode));
     return departmentMapper.selectCountByQuery(query) > 0;
   }
 
   @Override
   public boolean hasChildren(String deptId) {
-    QueryWrapper query = QueryWrapper.create().where(DEPARTMENT.PARENT_ID.eq(deptId));
+    QueryWrapper query = QueryWrapper.create().where(DEPARTMENT_DO.PARENT_ID.eq(deptId));
     return departmentMapper.selectCountByQuery(query) > 0;
   }
 
   @Override
   public boolean hasUsers(String deptId) {
-    QueryWrapper query = QueryWrapper.create().where(USER.DEPT_ID.eq(deptId));
+    QueryWrapper query = QueryWrapper.create().where(USER_DO.DEPT_ID.eq(deptId));
     return userMapper.selectCountByQuery(query) > 0;
   }
 

@@ -22,7 +22,7 @@ package com.github.loadup.modules.upms.infrastructure.repository;
  * #L%
  */
 
-import static com.github.loadup.modules.upms.infrastructure.dataobject.Tables.PERMISSION;
+import static com.github.loadup.modules.upms.infrastructure.dataobject.table.PermissionDOTableDef.PERMISSION_DO;
 
 import com.github.loadup.modules.upms.domain.entity.Permission;
 import com.github.loadup.modules.upms.domain.repository.PermissionRepository;
@@ -76,7 +76,8 @@ public class PermissionRepositoryImpl implements PermissionRepository {
 
   @Override
   public Optional<Permission> findByPermissionCode(String permissionCode) {
-    QueryWrapper query = QueryWrapper.create().where(PERMISSION.PERMISSION_CODE.eq(permissionCode));
+    QueryWrapper query =
+        QueryWrapper.create().where(PERMISSION_DO.PERMISSION_CODE.eq(permissionCode));
     PermissionDO permissionDO = permissionMapper.selectOneByQuery(query);
     return Optional.ofNullable(permissionDO).map(permissionConverter::toEntity);
   }
@@ -95,14 +96,15 @@ public class PermissionRepositoryImpl implements PermissionRepository {
 
   @Override
   public List<Permission> findByParentId(String parentId) {
-    QueryWrapper query = QueryWrapper.create().where(PERMISSION.PARENT_ID.eq(parentId));
+    QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.PARENT_ID.eq(parentId));
     List<PermissionDO> permissionDOs = permissionMapper.selectListByQuery(query);
     return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
   }
 
   @Override
   public List<Permission> findByPermissionType(Short permissionType) {
-    QueryWrapper query = QueryWrapper.create().where(PERMISSION.PERMISSION_TYPE.eq(permissionType));
+    QueryWrapper query =
+        QueryWrapper.create().where(PERMISSION_DO.PERMISSION_TYPE.eq(permissionType));
     List<PermissionDO> permissionDOs = permissionMapper.selectListByQuery(query);
     return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
   }
@@ -115,7 +117,7 @@ public class PermissionRepositoryImpl implements PermissionRepository {
 
   @Override
   public List<Permission> findAllEnabled() {
-    QueryWrapper query = QueryWrapper.create().where(PERMISSION.STATUS.eq((short) 1));
+    QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.STATUS.eq((short) 1));
     List<PermissionDO> permissionDOs = permissionMapper.selectListByQuery(query);
     return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
   }
@@ -124,16 +126,17 @@ public class PermissionRepositoryImpl implements PermissionRepository {
   public List<Permission> findMenuPermissions() {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(PERMISSION.PERMISSION_TYPE.in((short) 1, (short) 2))
-            .and(PERMISSION.STATUS.eq((short) 1))
-            .orderBy(PERMISSION.SORT_ORDER.asc());
+            .where(PERMISSION_DO.PERMISSION_TYPE.in((short) 1, (short) 2))
+            .and(PERMISSION_DO.STATUS.eq((short) 1))
+            .orderBy(PERMISSION_DO.SORT_ORDER.asc());
     List<PermissionDO> permissionDOs = permissionMapper.selectListByQuery(query);
     return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
   }
 
   @Override
   public boolean existsByPermissionCode(String permissionCode) {
-    QueryWrapper query = QueryWrapper.create().where(PERMISSION.PERMISSION_CODE.eq(permissionCode));
+    QueryWrapper query =
+        QueryWrapper.create().where(PERMISSION_DO.PERMISSION_CODE.eq(permissionCode));
     return permissionMapper.selectCountByQuery(query) > 0;
   }
 

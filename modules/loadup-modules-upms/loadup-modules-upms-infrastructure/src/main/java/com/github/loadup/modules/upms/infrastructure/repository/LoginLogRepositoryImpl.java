@@ -22,7 +22,7 @@ package com.github.loadup.modules.upms.infrastructure.repository;
  * #L%
  */
 
-import static com.github.loadup.modules.upms.infrastructure.dataobject.Tables.LOGIN_LOG;
+import static com.github.loadup.modules.upms.infrastructure.dataobject.table.LoginLogDOTableDef.LOGIN_LOG_DO;
 
 import com.github.loadup.modules.upms.domain.entity.LoginLog;
 import com.github.loadup.modules.upms.domain.repository.LoginLogRepository;
@@ -70,8 +70,8 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
       String userId, Pageable pageable) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(LOGIN_LOG.USER_ID.eq(userId))
-            .orderBy(LOGIN_LOG.LOGIN_TIME.desc());
+            .where(LOGIN_LOG_DO.USER_ID.eq(userId))
+            .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
     Page<LoginLogDO> page =
         loginLogMapper.paginate(
@@ -88,8 +88,8 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
       String username, Pageable pageable) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(LOGIN_LOG.USERNAME.eq(username))
-            .orderBy(LOGIN_LOG.LOGIN_TIME.desc());
+            .where(LOGIN_LOG_DO.USERNAME.eq(username))
+            .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
     Page<LoginLogDO> page =
         loginLogMapper.paginate(
@@ -106,8 +106,8 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
       LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(LOGIN_LOG.LOGIN_TIME.between(startTime, endTime))
-            .orderBy(LOGIN_LOG.LOGIN_TIME.desc());
+            .where(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime))
+            .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
     Page<LoginLogDO> page =
         loginLogMapper.paginate(
@@ -124,9 +124,9 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
       LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(LOGIN_LOG.LOGIN_STATUS.eq((short) 0))
-            .and(LOGIN_LOG.LOGIN_TIME.between(startTime, endTime))
-            .orderBy(LOGIN_LOG.LOGIN_TIME.desc());
+            .where(LOGIN_LOG_DO.LOGIN_STATUS.eq((short) 0))
+            .and(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime))
+            .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
     Page<LoginLogDO> page =
         loginLogMapper.paginate(
@@ -140,22 +140,22 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
 
   @Override
   public void deleteBeforeDate(LocalDateTime date) {
-    loginLogMapper.deleteByQuery(QueryWrapper.create().where(LOGIN_LOG.LOGIN_TIME.lt(date)));
+    loginLogMapper.deleteByQuery(QueryWrapper.create().where(LOGIN_LOG_DO.LOGIN_TIME.lt(date)));
   }
 
   @Override
   public List<LoginLog> findByLoginTimeBetween(LocalDateTime startTime, LocalDateTime endTime) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(LOGIN_LOG.LOGIN_TIME.between(startTime, endTime))
-            .orderBy(LOGIN_LOG.LOGIN_TIME.desc());
+            .where(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime))
+            .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
     List<LoginLogDO> loginLogDOs = loginLogMapper.selectListByQuery(query);
     return loginLogDOs.stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
   }
 
   @Override
   public org.springframework.data.domain.Page<LoginLog> findAll(Pageable pageable) {
-    QueryWrapper query = QueryWrapper.create().orderBy(LOGIN_LOG.LOGIN_TIME.desc());
+    QueryWrapper query = QueryWrapper.create().orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
     Page<LoginLogDO> page =
         loginLogMapper.paginate(
@@ -171,8 +171,8 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
   public long countLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(LOGIN_LOG.USER_ID.eq(userId))
-            .and(LOGIN_LOG.LOGIN_TIME.between(startTime, endTime));
+            .where(LOGIN_LOG_DO.USER_ID.eq(userId))
+            .and(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime));
     return loginLogMapper.selectCountByQuery(query);
   }
 
@@ -181,9 +181,9 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
       String userId, LocalDateTime startTime, LocalDateTime endTime) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(LOGIN_LOG.USER_ID.eq(userId))
-            .and(LOGIN_LOG.LOGIN_STATUS.eq((short) 0))
-            .and(LOGIN_LOG.LOGIN_TIME.between(startTime, endTime));
+            .where(LOGIN_LOG_DO.USER_ID.eq(userId))
+            .and(LOGIN_LOG_DO.LOGIN_STATUS.eq((short) 0))
+            .and(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime));
     return loginLogMapper.selectCountByQuery(query);
   }
 
@@ -191,8 +191,8 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
   public List<LoginLog> findByUserId(String userId) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(LOGIN_LOG.USER_ID.eq(userId))
-            .orderBy(LOGIN_LOG.LOGIN_TIME.desc());
+            .where(LOGIN_LOG_DO.USER_ID.eq(userId))
+            .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
     List<LoginLogDO> loginLogDOs = loginLogMapper.selectListByQuery(query);
     return loginLogDOs.stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
   }
@@ -201,9 +201,9 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
   public Optional<LoginLog> findLastSuccessfulLogin(String userId) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(LOGIN_LOG.USER_ID.eq(userId))
-            .and(LOGIN_LOG.LOGIN_STATUS.eq((short) 1))
-            .orderBy(LOGIN_LOG.LOGIN_TIME.desc())
+            .where(LOGIN_LOG_DO.USER_ID.eq(userId))
+            .and(LOGIN_LOG_DO.LOGIN_STATUS.eq((short) 1))
+            .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc())
             .limit(1);
     LoginLogDO loginLogDO = loginLogMapper.selectOneByQuery(query);
     return Optional.ofNullable(loginLogDO).map(loginLogConverter::toEntity);

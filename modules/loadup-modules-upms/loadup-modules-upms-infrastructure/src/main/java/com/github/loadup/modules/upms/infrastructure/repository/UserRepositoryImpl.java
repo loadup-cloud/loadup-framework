@@ -22,7 +22,7 @@ package com.github.loadup.modules.upms.infrastructure.repository;
  * #L%
  */
 
-import static com.github.loadup.modules.upms.infrastructure.dataobject.Tables.USER;
+import static com.github.loadup.modules.upms.infrastructure.dataobject.table.UserDOTableDef.USER_DO;
 
 import com.github.loadup.modules.upms.domain.entity.User;
 import com.github.loadup.modules.upms.domain.repository.UserRepository;
@@ -144,25 +144,25 @@ public class UserRepositoryImpl implements UserRepository {
 
   @Override
   public boolean existsByUsername(String username) {
-    QueryWrapper query = QueryWrapper.create().where(USER.USERNAME.eq(username));
+    QueryWrapper query = QueryWrapper.create().where(USER_DO.USERNAME.eq(username));
     return userMapper.selectCountByQuery(query) > 0;
   }
 
   @Override
   public boolean existsByEmail(String email) {
-    QueryWrapper query = QueryWrapper.create().where(USER.EMAIL.eq(email));
+    QueryWrapper query = QueryWrapper.create().where(USER_DO.EMAIL.eq(email));
     return userMapper.selectCountByQuery(query) > 0;
   }
 
   @Override
   public boolean existsByPhone(String phone) {
-    QueryWrapper query = QueryWrapper.create().where(USER.PHONE.eq(phone));
+    QueryWrapper query = QueryWrapper.create().where(USER_DO.PHONE.eq(phone));
     return userMapper.selectCountByQuery(query) > 0;
   }
 
   @Override
   public long countByDeptId(String deptId) {
-    QueryWrapper query = QueryWrapper.create().where(USER.DEPT_ID.eq(deptId));
+    QueryWrapper query = QueryWrapper.create().where(USER_DO.DEPT_ID.eq(deptId));
     return userMapper.selectCountByQuery(query);
   }
 }

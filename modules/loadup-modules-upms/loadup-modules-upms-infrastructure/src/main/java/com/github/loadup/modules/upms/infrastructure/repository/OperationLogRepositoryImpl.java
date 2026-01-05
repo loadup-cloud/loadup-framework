@@ -22,7 +22,7 @@ package com.github.loadup.modules.upms.infrastructure.repository;
  * #L%
  */
 
-import static com.github.loadup.modules.upms.infrastructure.dataobject.Tables.OPERATION_LOG;
+import static com.github.loadup.modules.upms.infrastructure.dataobject.table.OperationLogDOTableDef.OPERATION_LOG_DO;
 
 import com.github.loadup.modules.upms.domain.entity.OperationLog;
 import com.github.loadup.modules.upms.domain.repository.OperationLogRepository;
@@ -78,8 +78,8 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
       String userId, Pageable pageable) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(OPERATION_LOG.USER_ID.eq(userId))
-            .orderBy(OPERATION_LOG.TIME.desc());
+            .where(OPERATION_LOG_DO.USER_ID.eq(userId))
+            .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
 
     Page<OperationLogDO> page =
         operationLogMapper.paginate(
@@ -98,8 +98,8 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
       String operationType, Pageable pageable) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(OPERATION_LOG.OPERATION.eq(operationType))
-            .orderBy(OPERATION_LOG.TIME.desc());
+            .where(OPERATION_LOG_DO.OPERATION_TYPE.eq(operationType))
+            .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
 
     Page<OperationLogDO> page =
         operationLogMapper.paginate(
@@ -118,8 +118,8 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
       LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(OPERATION_LOG.CREATED_AT.between(startTime, endTime))
-            .orderBy(OPERATION_LOG.TIME.desc());
+            .where(OPERATION_LOG_DO.CREATED_AT.between(startTime, endTime))
+            .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
 
     Page<OperationLogDO> page =
         operationLogMapper.paginate(
@@ -144,19 +144,19 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
     QueryWrapper query = QueryWrapper.create();
 
     if (userId != null) {
-      query.where(OPERATION_LOG.USER_ID.eq(userId));
+      query.where(OPERATION_LOG_DO.USER_ID.eq(userId));
     }
     if (operationType != null) {
-      query.and(OPERATION_LOG.OPERATION.eq(operationType));
+      query.and(OPERATION_LOG_DO.OPERATION_TYPE.eq(operationType));
     }
     if (module != null) {
-      query.and(OPERATION_LOG.METHOD.like(module));
+      query.and(OPERATION_LOG_DO.REQUEST_METHOD.like(module));
     }
     if (startTime != null && endTime != null) {
-      query.and(OPERATION_LOG.CREATED_AT.between(startTime, endTime));
+      query.and(OPERATION_LOG_DO.CREATED_AT.between(startTime, endTime));
     }
 
-    query.orderBy(OPERATION_LOG.TIME.desc());
+    query.orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
 
     Page<OperationLogDO> page =
         operationLogMapper.paginate(
@@ -173,15 +173,15 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
   @Override
   public void deleteBeforeDate(LocalDateTime date) {
     operationLogMapper.deleteByQuery(
-        QueryWrapper.create().where(OPERATION_LOG.CREATED_AT.lt(date)));
+        QueryWrapper.create().where(OPERATION_LOG_DO.CREATED_AT.lt(date)));
   }
 
   @Override
   public List<OperationLog> findByUserId(String userId) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(OPERATION_LOG.USER_ID.eq(userId))
-            .orderBy(OPERATION_LOG.TIME.desc());
+            .where(OPERATION_LOG_DO.USER_ID.eq(userId))
+            .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
     List<OperationLogDO> operationLogDOs = operationLogMapper.selectListByQuery(query);
     return operationLogDOs.stream()
         .map(operationLogConverter::toEntity)
@@ -192,8 +192,8 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
   public List<OperationLog> findByOperationType(String operationType) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(OPERATION_LOG.OPERATION.eq(operationType))
-            .orderBy(OPERATION_LOG.TIME.desc());
+            .where(OPERATION_LOG_DO.OPERATION_TYPE.eq(operationType))
+            .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
     List<OperationLogDO> operationLogDOs = operationLogMapper.selectListByQuery(query);
     return operationLogDOs.stream()
         .map(operationLogConverter::toEntity)
@@ -205,8 +205,8 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
       LocalDateTime startTime, LocalDateTime endTime) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(OPERATION_LOG.CREATED_AT.between(startTime, endTime))
-            .orderBy(OPERATION_LOG.TIME.desc());
+            .where(OPERATION_LOG_DO.CREATED_AT.between(startTime, endTime))
+            .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
     List<OperationLogDO> operationLogDOs = operationLogMapper.selectListByQuery(query);
     return operationLogDOs.stream()
         .map(operationLogConverter::toEntity)
@@ -215,13 +215,13 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
 
   @Override
   public long countByUserId(String userId) {
-    QueryWrapper query = QueryWrapper.create().where(OPERATION_LOG.USER_ID.eq(userId));
+    QueryWrapper query = QueryWrapper.create().where(OPERATION_LOG_DO.USER_ID.eq(userId));
     return operationLogMapper.selectCountByQuery(query);
   }
 
   @Override
   public org.springframework.data.domain.Page<OperationLog> findAll(Pageable pageable) {
-    QueryWrapper query = QueryWrapper.create().orderBy(OPERATION_LOG.TIME.desc());
+    QueryWrapper query = QueryWrapper.create().orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
 
     Page<OperationLogDO> page =
         operationLogMapper.paginate(
@@ -238,7 +238,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
   @Override
   public long countFailedOperations(LocalDateTime startTime, LocalDateTime endTime) {
     QueryWrapper query =
-        QueryWrapper.create().where(OPERATION_LOG.CREATED_AT.between(startTime, endTime));
+        QueryWrapper.create().where(OPERATION_LOG_DO.CREATED_AT.between(startTime, endTime));
     return operationLogMapper.selectCountByQuery(query);
   }
 }

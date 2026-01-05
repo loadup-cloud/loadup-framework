@@ -22,7 +22,7 @@ package com.github.loadup.modules.upms.infrastructure.repository;
  * #L%
  */
 
-import static com.github.loadup.modules.upms.infrastructure.dataobject.Tables.ROLE;
+import static com.github.loadup.modules.upms.infrastructure.dataobject.table.RoleDOTableDef.ROLE_DO;
 
 import com.github.loadup.modules.upms.domain.entity.Role;
 import com.github.loadup.modules.upms.domain.repository.RoleRepository;
@@ -79,7 +79,7 @@ public class RoleRepositoryImpl implements RoleRepository {
 
   @Override
   public Optional<Role> findByRoleCode(String roleCode) {
-    QueryWrapper query = QueryWrapper.create().where(ROLE.ROLE_CODE.eq(roleCode));
+    QueryWrapper query = QueryWrapper.create().where(ROLE_DO.ROLE_CODE.eq(roleCode));
     RoleDO roleDO = roleMapper.selectOneByQuery(query);
     return Optional.ofNullable(roleDO).map(roleConverter::toEntity);
   }
@@ -92,7 +92,7 @@ public class RoleRepositoryImpl implements RoleRepository {
 
   @Override
   public List<Role> findByParentRoleId(String parentRoleId) {
-    QueryWrapper query = QueryWrapper.create().where(ROLE.ID.eq(parentRoleId));
+    QueryWrapper query = QueryWrapper.create().where(ROLE_DO.ID.eq(parentRoleId));
     List<RoleDO> roleDOs = roleMapper.selectListByQuery(query);
     return roleDOs.stream().map(roleConverter::toEntity).collect(Collectors.toList());
   }
@@ -105,14 +105,14 @@ public class RoleRepositoryImpl implements RoleRepository {
 
   @Override
   public List<Role> findAllEnabled() {
-    QueryWrapper query = QueryWrapper.create().where(ROLE.STATUS.eq((short) 1));
+    QueryWrapper query = QueryWrapper.create().where(ROLE_DO.STATUS.eq((short) 1));
     List<RoleDO> roleDOs = roleMapper.selectListByQuery(query);
     return roleDOs.stream().map(roleConverter::toEntity).collect(Collectors.toList());
   }
 
   @Override
   public boolean existsByRoleCode(String roleCode) {
-    QueryWrapper query = QueryWrapper.create().where(ROLE.ROLE_CODE.eq(roleCode));
+    QueryWrapper query = QueryWrapper.create().where(ROLE_DO.ROLE_CODE.eq(roleCode));
     return roleMapper.selectCountByQuery(query) > 0;
   }
 

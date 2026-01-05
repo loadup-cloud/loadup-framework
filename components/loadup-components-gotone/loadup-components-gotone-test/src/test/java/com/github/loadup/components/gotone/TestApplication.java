@@ -22,59 +22,30 @@ package com.github.loadup.components.gotone;
  * #L%
  */
 
-import com.github.loadup.commons.dataobject.BaseDO;
-import com.github.loadup.components.database.id.IdGenerator;
-import com.github.loadup.components.database.id.UuidV4IdGenerator;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
-import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-/**
- * 测试配置类
- */
+/** 测试配置类 */
 @SpringBootApplication
 @EnableJdbcRepositories(basePackages = "com.github.loadup.components.gotone.repository")
 @EnableJdbcAuditing
 public class TestApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(TestApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(TestApplication.class, args);
+  }
 
-    /**
-     * ID 生成器
-     */
-    @Bean
-    public IdGenerator idGenerator() {
-        return new UuidV4IdGenerator(false);
-    }
+  /** ID 生成器 */
 
-    /**
-     * 日期时间提供者
-     */
-    @Bean
-    public DateTimeProvider dateTimeProvider() {
-        return () -> Optional.of(LocalDateTime.now());
-    }
-
-    /**
-     * 保存前回调 - 自动生成 ID
-     */
-    @Bean
-    BeforeConvertCallback<BaseDO> beforeSaveCallback(IdGenerator idGenerator) {
-        return (entity) -> {
-            if (entity.getId() == null) {
-                entity.setId(idGenerator.generate());
-            }
-            return entity;
-        };
-    }
+  /** 日期时间提供者 */
+  @Bean
+  public DateTimeProvider dateTimeProvider() {
+    return () -> Optional.of(LocalDateTime.now());
+  }
 }
-
