@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: dfs-test
+
+  # Testcontainers MySQL - 自动配置
+  # 不需要手动配置datasource，Testcontainers会自动配置
+  # H2 as fallback for tests that don't use Testcontainers
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    # Testcontainers会覆盖这些配置
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # Enable auto-configuration
+  autoconfigure:
+    exclude: [ ]
+
+# MyBatis-Flex Configuration
+mybatis-flex:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  mapper-locations: classpath*:/mapper/**/*.xml
+
+# LoadUp Database Configuration
+loadup:
+  database:
+    multi-tenant:
+      enabled: false
+    logical-delete:
+      enabled: false
+
+  # DFS Configuration
+  dfs:
+    default-provider: local
+    max-file-size: 10485760  # 10MB for tests
+    providers:
+      local:
+        enabled: true
+        base-path: ${java.io.tmpdir}/dfs-test
+      database:
+        enabled: true
+      s3:
+        enabled: false
+
+# Logging
+logging:
+  level:
+    com.github.loadup.components.dfs: DEBUG
+    com.github.loadup.components.database: DEBUG
+    com.mybatisflex: DEBUG
+    org.springframework.test: INFO
+    org.springframework.jdbc: DEBUG
+

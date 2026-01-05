@@ -91,6 +91,7 @@ public class SharedMySQLContainer {
             .withDatabaseName(databaseName)
             .withUsername(username)
             .withPassword(password)
+            .withCommand("--max-allowed-packet=268435456")
             .withReuse(true);
 
     MYSQL_CONTAINER.start();

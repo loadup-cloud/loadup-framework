@@ -44,11 +44,13 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 /** Test cases for LocalDfsProvider /** Test cases for LocalDfsProvider */
 @SpringBootTest(classes = DfsTestApplication.class)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestPropertySource(properties = {"loadup.dfs.default-provider=local"})
 class LocalDfsProviderIT {
 
     @Autowired

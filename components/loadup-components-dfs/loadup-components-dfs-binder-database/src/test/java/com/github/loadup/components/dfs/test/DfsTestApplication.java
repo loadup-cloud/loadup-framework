@@ -1,8 +1,8 @@
-package com.github.loadup.components.dfs.binder.database.repository;
+package com.github.loadup.components.dfs.test;
 
 /*-
  * #%L
- * loadup-components-dfs-binder-database
+ * loadup-components-dfs-test
  * %%
  * Copyright (C) 2026 LoadUp Cloud
  * %%
@@ -22,19 +22,13 @@ package com.github.loadup.components.dfs.binder.database.repository;
  * #L%
  */
 
-import com.github.loadup.components.dfs.binder.database.entity.FileStorageEntity;
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/** 文件存储Repository - Spring Data JPA */
-@Repository
-public interface FileStorageRepository extends JpaRepository<FileStorageEntity, Long> {
-  Optional<FileStorageEntity> findByFileId(String fileId);
-
-  @Transactional
-  void deleteByFileId(String fileId);
-
-  boolean existsByFileId(String fileId);
+/** Test application for DFS component testing with MyBatis-Flex */
+@SpringBootApplication(scanBasePackages = "com.github.loadup.components")
+public class DfsTestApplication {
+  public static void main(String[] args) {
+    SpringApplication.run(DfsTestApplication.class, args);
+  }
 }
