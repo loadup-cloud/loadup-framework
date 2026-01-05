@@ -22,31 +22,57 @@ package com.github.loadup.components.dfs.config;
  * #L%
  */
 
+import com.github.loadup.components.dfs.enums.DfsProviderType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.validation.annotation.Validated;
 
 /**
  * DFS配置属性
+ *
+ * <p>简化配置方式：
+ *
+ * <ul>
+ *   <li>通过 provider 属性直接指定使用的存储类型（local/database/s3）
+ *   <li>配置了哪个 provider 的属性，就使用哪个，不需要 enabled 开关
+ *   <li>不同 provider 有独立的配置类，支持 IDE 自动提示
+ *   <li>可以复用 Spring Boot 已有配置（DataSource、AWS 配置等）
+ * </ul>
+ *
+ * <p>配置示例：
+ *
+ * <pre>
+ * loadup:
+ *   dfs:
+ *     provider: s3  # 使用 S3 存储
+ *     max-file-size: 104857600
+ *     s3:
+ *       bucket: my-bucket
+ *       # access-key 和 secret-key 可以从 spring.cloud.aws 复用
+ *       # region 可以从 spring.cloud.aws.region.static 复用
+ * </pre>
  */
 @Data
 @Validated
 @ConfigurationProperties(prefix = "loadup.dfs")
 public class DfsProperties {
 
-    /**
-     * 默认存储提供者
-     */
-    private String defaultProvider = "local";
-
-    /**
-     * 提供者配置
-     */
-    private Map<String, ProviderConfig> providers = new HashMap<>();
+  /**
+   * 存储提供者类型：local, database, s3
+   *
+   * <p>配置示例：
+   *
+   * <pre>
+   * loadup.dfs.provider=local     # 使用本地文件系统
+   * loadup.dfs.provider=database  # 使用数据库存储
+   * loadup.dfs.provider=s3        # 使用 S3 对象存储
+   * </pre>
+   */
+  @NotNull(message = "Provider type must be specified")
+  private DfsProviderType provider = DfsProviderType.LOCAL;
 
     /**
      * 最大文件大小（字节）
@@ -60,50 +86,74 @@ public class DfsProperties {
      */
     private String[] allowedContentTypes;
 
+  /** 本地存储配置 */
+  @NestedConfigurationProperty private LocalConfig local = new LocalConfig();
+
+  /** 数据库存储配置（复用 Spring DataSource） */
+  @NestedConfigurationProperty private DatabaseConfig database = new DatabaseConfig();
+
+  /** S3 对象存储配置（可复用 AWS 配置） */
+  @NestedConfigurationProperty private S3Config s3 = new S3Config();
+
+  /** 本地文件系统存储配置 */
+  @Data
+  public static class LocalConfig {
     /**
-     * 提供者配置
+     * 文件存储基础路径
+     *
+     * <p>默认：${user.home}/dfs-storage
      */
-    @Data
-    public static class ProviderConfig {
-        /**
-         * 是否启用
-         */
-        private boolean enabled = true;
+    private String basePath = System.getProperty("user.home") + "/dfs-storage";
+  }
 
-        /**
-         * 基础路径（本地存储使用）
-         */
-        private String basePath;
+  /**
+   * 数据库存储配置
+   *
+   * <p>会自动使用 Spring Boot 配置的 DataSource，无需额外配置连接信息
+   */
+  @Data
+  public static class DatabaseConfig {
+    /** 数据库表名前缀 */
+    private String tablePrefix = "dfs_";
+  }
 
-        /**
-         * 端点URL（S3使用）
-         */
-        private String endpoint;
+  /**
+   * S3 对象存储配置
+   *
+   * <p>优先使用本配置，如果未配置则尝试从以下位置获取：
+   *
+   * <ul>
+   *   <li>spring.cloud.aws.credentials.access-key
+   *   <li>spring.cloud.aws.credentials.secret-key
+   *   <li>spring.cloud.aws.region.static
+   *   <li>aws.accessKeyId 和 aws.secretAccessKey（环境变量）
+   * </ul>
+   */
+  @Data
+  public static class S3Config {
+    /** S3 存储桶名称（必填） */
+    private String bucket;
 
-        /**
-         * 访问密钥
-         */
-        private String accessKey;
+    /** S3 访问密钥（可选，未配置时从 AWS 配置或环境变量获取） */
+    private String accessKey;
 
-        /**
-         * 秘密密钥
-         */
-        private String secretKey;
+    /** S3 秘密密钥（可选，未配置时从 AWS 配置或环境变量获取） */
+    private String secretKey;
 
-        /**
-         * 存储桶名称（S3使用）
-         */
-        private String bucket;
+    /** AWS 区域（可选，未配置时从 AWS 配置获取，默认：us-east-1） */
+    private String region;
 
-        /**
-         * 区域（S3使用）
-         */
-        private String region;
-
-        /**
-         * 其他配置
-         */
-        private Map<String, String> properties = new HashMap<>();
+    /**
+     * 自定义 S3 端点（可选，用于兼容 MinIO 等 S3 兼容存储）
+     *
+     * <p>示例：
+     *
+     * <ul>
+     *   <li>MinIO: http://localhost:9000
+     *   <li>阿里云 OSS: https://oss-cn-hangzhou.aliyuncs.com
+     * </ul>
+     */
+    private String endpoint;
     }
 }
 

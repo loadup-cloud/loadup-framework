@@ -91,8 +91,7 @@ class DfsPropertiesTest {
   void testDefaultValues() {
     DfsProperties properties = new DfsProperties();
 
-    assertEquals("local", properties.getDefaultProvider());
+    assertEquals("local", properties.getProvider());
     assertEquals(100 * 1024 * 1024L, properties.getMaxFileSize());
-    assertNotNull(properties.getProviders());
   }
 }

@@ -27,6 +27,8 @@ import com.github.loadup.components.dfs.binder.database.entity.FileStorageEntity
 import com.github.loadup.components.dfs.binder.database.entity.table.Tables;
 import com.github.loadup.components.dfs.binder.database.mapper.FileStorageEntityMapper;
 import com.github.loadup.components.dfs.config.DfsProperties;
+import com.github.loadup.components.dfs.constants.DfsConstant;
+import com.github.loadup.components.dfs.enums.DfsProviderType;
 import com.github.loadup.components.dfs.enums.FileStatus;
 import com.github.loadup.components.dfs.model.FileDownloadResponse;
 import com.github.loadup.components.dfs.model.FileMetadata;
@@ -47,8 +49,8 @@ import org.springframework.stereotype.Component;
 /** 数据库存储提供者 */
 @Slf4j
 @Component
-@Extension(bizCode = "DFS", useCase = "database")
-@ConditionalOnProperty(prefix = "loadup.dfs", name = "default-provider", havingValue = "database")
+@Extension(bizCode = DfsConstant.BIZ_CODE, useCase = DfsConstant.DATABASE)
+@ConditionalOnProperty(prefix = "loadup.dfs", name = "provider", havingValue = DfsConstant.DATABASE)
 public class DatabaseDfsProvider implements IDfsProvider {
 
   @Autowired private DfsProperties dfsProperties;
@@ -60,11 +62,6 @@ public class DatabaseDfsProvider implements IDfsProvider {
     try {
       if (fileStorageEntityMapper == null) {
         throw new IllegalStateException("Database provider is not configured");
-      }
-
-      DfsProperties.ProviderConfig config = dfsProperties.getProviders().get("database");
-      if (config == null || !config.isEnabled()) {
-        throw new IllegalStateException("Database provider is not enabled");
       }
 
       // 读取文件内容
@@ -216,13 +213,13 @@ public class DatabaseDfsProvider implements IDfsProvider {
 
   @Override
   public String getProviderName() {
-    return "database";
+    return DfsProviderType.DATABASE.getValue();
   }
 
   @Override
   public boolean isAvailable() {
-    DfsProperties.ProviderConfig config = dfsProperties.getProviders().get("database");
-    return config != null && config.isEnabled() && fileStorageEntityMapper != null;
+    return DfsProviderType.DATABASE.equals(dfsProperties.getProvider())
+        && fileStorageEntityMapper != null;
   }
 
   private static String bytesToHex(byte[] bytes) {

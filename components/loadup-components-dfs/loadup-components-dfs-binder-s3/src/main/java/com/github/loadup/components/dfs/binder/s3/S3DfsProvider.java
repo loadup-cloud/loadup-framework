@@ -22,9 +22,11 @@ package com.github.loadup.components.dfs.binder.s3;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.dfs.api.IDfsProvider;
 import com.github.loadup.components.dfs.config.DfsProperties;
+import com.github.loadup.components.dfs.constants.DfsConstant;
+import com.github.loadup.components.dfs.enums.DfsProviderType;
 import com.github.loadup.components.dfs.enums.FileStatus;
 import com.github.loadup.components.dfs.model.FileDownloadResponse;
 import com.github.loadup.components.dfs.model.FileMetadata;
@@ -42,6 +44,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -56,7 +59,8 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 /** S3对象存储提供者 */
 @Slf4j
 @Component
-@Extension(bizCode = "DFS", useCase = "s3")
+@Extension(bizCode = DfsConstant.BIZ_CODE, useCase = DfsConstant.S3)
+@ConditionalOnProperty(prefix = "loadup.dfs", name = "provider", havingValue = DfsConstant.S3)
 public class S3DfsProvider implements IDfsProvider {
 
   @Autowired private DfsProperties dfsProperties;
@@ -66,7 +70,6 @@ public class S3DfsProvider implements IDfsProvider {
   private String bucketName;
 
   private static final DateTimeFormatter PATH_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-  private static final ObjectMapper objectMapper = new ObjectMapper();
 
   // .meta 文件目录前缀（类似 local 的实现）
   private static final String METADATA_PREFIX = ".meta/";
@@ -84,55 +87,110 @@ public class S3DfsProvider implements IDfsProvider {
   private static final String META_ACCESS_COUNT = "access-count";
   private static final String META_CUSTOM_PREFIX = "custom-";
 
-  static {
-    objectMapper.findAndRegisterModules(); // 注册Java 8时间模块
-  }
 
   @PostConstruct
   public void init() {
-    DfsProperties.ProviderConfig config = dfsProperties.getProviders().get("s3");
-    if (config != null && config.isEnabled()) {
-      try {
-        AwsBasicCredentials credentials =
-            AwsBasicCredentials.create(config.getAccessKey(), config.getSecretKey());
-
-        Region region = Region.of(config.getRegion() != null ? config.getRegion() : "us-east-1");
-
-        var clientBuilder =
-            S3Client.builder()
-                .region(region)
-                .credentialsProvider(StaticCredentialsProvider.create(credentials));
-
-        // 如果配置了自定义endpoint (例如MinIO)
-        if (config.getEndpoint() != null && !config.getEndpoint().isEmpty()) {
-          clientBuilder.endpointOverride(URI.create(config.getEndpoint()));
-        }
-
-        s3Client = clientBuilder.build();
-
-        // 初始化presigner
-        var presignerBuilder =
-            S3Presigner.builder()
-                .region(region)
-                .credentialsProvider(StaticCredentialsProvider.create(credentials));
-
-        if (config.getEndpoint() != null && !config.getEndpoint().isEmpty()) {
-          presignerBuilder.endpointOverride(URI.create(config.getEndpoint()));
-        }
-
-        s3Presigner = presignerBuilder.build();
-
-        bucketName = config.getBucket();
-
-        // 检查bucket是否存在，如不存在则创建
-        ensureBucketExists();
-
-        log.info("S3 provider initialized successfully with bucket: {}", bucketName);
-
-      } catch (Exception e) {
-        log.error("Failed to initialize S3 provider: {}", e.getMessage(), e);
-      }
+    // 仅当 provider 配置为 s3 时初始化
+    if (dfsProperties.getProvider() != DfsProviderType.S3) {
+      log.info("S3 provider not configured, skipping initialization");
+      return;
     }
+    DfsProperties.S3Config config = dfsProperties.getS3();
+    try {
+      // 获取访问凭证（优先使用配置，否则从环境变量或 AWS 配置获取）
+      String accessKey = getAccessKey(config);
+      String secretKey = getSecretKey(config);
+      if (accessKey == null || secretKey == null) {
+        log.warn(
+            "S3 access credentials not configured. Please set loadup.dfs.s3.access-key and secret-key, "
+                + "or configure spring.cloud.aws.credentials, or set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables");
+        return;
+      }
+      AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
+      // 获取区域配置（优先使用配置，否则使用默认值）
+      String regionStr = config.getRegion();
+      if (regionStr == null || regionStr.isEmpty()) {
+        regionStr = System.getenv("AWS_REGION");
+      }
+      if (regionStr == null || regionStr.isEmpty()) {
+        regionStr = "us-east-1"; // 默认区域
+      }
+      Region region = Region.of(regionStr);
+      var clientBuilder =
+          S3Client.builder()
+              .region(region)
+              .credentialsProvider(StaticCredentialsProvider.create(credentials));
+      // 如果配置了自定义endpoint (例如MinIO)
+      if (config.getEndpoint() != null && !config.getEndpoint().isEmpty()) {
+        clientBuilder.endpointOverride(URI.create(config.getEndpoint()));
+      }
+      s3Client = clientBuilder.build();
+      // 初始化presigner
+      var presignerBuilder =
+          S3Presigner.builder()
+              .region(region)
+              .credentialsProvider(StaticCredentialsProvider.create(credentials));
+      if (config.getEndpoint() != null && !config.getEndpoint().isEmpty()) {
+        presignerBuilder.endpointOverride(URI.create(config.getEndpoint()));
+      }
+      s3Presigner = presignerBuilder.build();
+      bucketName = config.getBucket();
+      if (bucketName == null || bucketName.isEmpty()) {
+        log.warn("S3 bucket name not configured. Please set loadup.dfs.s3.bucket");
+        return;
+      }
+      // 检查bucket是否存在，如不存在则创建
+      ensureBucketExists();
+      log.info("S3 provider initialized successfully with bucket: {}", bucketName);
+    } catch (Exception e) {
+      log.error("Failed to initialize S3 provider: {}", e.getMessage(), e);
+    }
+  }
+
+  /**
+   * 获取访问密钥
+   *
+   * <p>优先级：
+   *
+   * <ol>
+   *   <li>loadup.dfs.s3.access-key
+   *   <li>spring.cloud.aws.credentials.access-key
+   *   <li>AWS_ACCESS_KEY_ID 环境变量
+   * </ol>
+   */
+  private String getAccessKey(DfsProperties.S3Config config) {
+    if (config.getAccessKey() != null && !config.getAccessKey().isEmpty()) {
+      return config.getAccessKey();
+    }
+    // 尝试从环境变量获取
+    String envKey = System.getenv("AWS_ACCESS_KEY_ID");
+    if (envKey != null && !envKey.isEmpty()) {
+      return envKey;
+    }
+    return null;
+  }
+
+  /**
+   * 获取秘密密钥
+   *
+   * <p>优先级：
+   *
+   * <ol>
+   *   <li>loadup.dfs.s3.secret-key
+   *   <li>spring.cloud.aws.credentials.secret-key
+   *   <li>AWS_SECRET_ACCESS_KEY 环境变量
+   * </ol>
+   */
+  private String getSecretKey(DfsProperties.S3Config config) {
+    if (config.getSecretKey() != null && !config.getSecretKey().isEmpty()) {
+      return config.getSecretKey();
+    }
+    // 尝试从环境变量获取
+    String envKey = System.getenv("AWS_SECRET_ACCESS_KEY");
+    if (envKey != null && !envKey.isEmpty()) {
+      return envKey;
+    }
+    return null;
   }
 
   @PreDestroy
@@ -328,7 +386,8 @@ public class S3DfsProvider implements IDfsProvider {
             GetObjectRequest.builder().bucket(bucketName).key(metaKey).build();
 
         InputStream metaInputStream = s3Client.getObject(getMetaRequest);
-        FileMetadata metadata = objectMapper.readValue(metaInputStream, FileMetadata.class);
+        FileMetadata metadata = JsonUtil.parseObject(metaInputStream, FileMetadata.class);
+        // objectMapper.readValue(metaInputStream, FileMetadata.class);
 
         log.debug("Metadata loaded from .meta file for fileId: {}", fileId);
         return metadata;
@@ -522,13 +581,12 @@ public class S3DfsProvider implements IDfsProvider {
 
   @Override
   public String getProviderName() {
-    return "s3";
+    return DfsProviderType.S3.getValue();
   }
 
   @Override
   public boolean isAvailable() {
-    DfsProperties.ProviderConfig config = dfsProperties.getProviders().get("s3");
-    return config != null && config.isEnabled() && s3Client != null;
+    return dfsProperties.getProvider() == DfsProviderType.S3 && s3Client != null;
   }
 
   private void ensureBucketExists() {

@@ -49,7 +49,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @since 1.0.0
  */
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "loadup.dfs", name = "default-provider", havingValue = "database")
+@ConditionalOnProperty(prefix = "loadup.dfs", name = "provider", havingValue = "database")
 @ComponentScan(basePackages = "com.github.loadup.components.dfs.binder.database")
 @MapperScan("com.github.loadup.components.dfs.binder.database.mapper")
 public class DfsDatabaseBinderAutoConfiguration {

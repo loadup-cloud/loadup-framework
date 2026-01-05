@@ -35,20 +35,67 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.github.loadup.commons.constant.CommonConstants;
-import com.github.loadup.commons.result.SingleResponse;
 import com.github.loadup.commons.util.json.MultiDateDeserializer;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import org.apache.commons.collections4.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * JSON工具类，基于Jackson实现JSON与Java对象之间的转换
+ *
+ * <p>提供以下功能：
+ *
+ * <ul>
+ *   <li>对象与JSON字符串的相互转换
+ *   <li>JSON字符串与Map的相互转换
+ *   <li>JSON文件的读写
+ *   <li>JSON节点操作
+ *   <li>支持泛型、集合类型的转换
+ * </ul>
+ *
+ * <p>配置说明：
+ *
+ * <ul>
+ *   <li>忽略未知属性，避免反序列化失败
+ *   <li>忽略空Bean序列化错误
+ *   <li>日期格式统一为 yyyy-MM-dd HH:mm:ss
+ *   <li>支持Java 8时间API（LocalDate、LocalDateTime）
+ *   <li>支持多种日期格式的反序列化
+ * </ul>
+ *
+ * @author loadup_cloud
+ * @since 1.0.0
+ */
 public class JsonUtil {
+
+  private static final Logger log = LoggerFactory.getLogger(JsonUtil.class);
 
   private static final ObjectMapper objectMapper = initObjectMapper();
 
-  public static ObjectMapper initObjectMapper() {
+  /**
+   * 初始化ObjectMapper实例
+   *
+   * <p>配置项：
+   *
+   * <ul>
+   *   <li>忽略未知属性：FAIL_ON_UNKNOWN_PROPERTIES = false
+   *   <li>忽略空Bean：FAIL_ON_EMPTY_BEANS = false
+   *   <li>日期不转换为时间戳：WRITE_DATES_AS_TIMESTAMPS = false
+   *   <li>包含所有字段：ALWAYS
+   *   <li>日期格式：yyyy-MM-dd HH:mm:ss
+   *   <li>注册JavaTimeModule处理Java 8时间类型
+   *   <li>注册MultiDateDeserializer支持多种日期格式
+   * </ul>
+   *
+   * @return 配置好的ObjectMapper实例
+   */
+  private static ObjectMapper initObjectMapper() {
     ObjectMapper mapper = new ObjectMapper();
     // 忽略 在json字符串中存在，但是在java对象中不存在对应属性的情况。防止错误
     mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -88,7 +135,25 @@ public class JsonUtil {
     return mapper;
   }
 
-  /** 将对象转换为JSON字符串 */
+  /**
+   * 获取ObjectMapper实例
+   *
+   * <p>用于需要自定义配置或直接使用ObjectMapper的场景
+   *
+   * @return ObjectMapper实例
+   */
+  public static ObjectMapper getObjectMapper() {
+    return objectMapper;
+  }
+
+  // ==================== 序列化方法 ====================
+
+  /**
+   * 将对象转换为JSON字符串
+   *
+   * @param object 要转换的对象
+   * @return JSON字符串，如果转换失败或对象为null则返回null
+   */
   public static String toJSONString(Object object) {
     if (object == null) {
       return null;
@@ -96,13 +161,19 @@ public class JsonUtil {
     try {
       return object instanceof String ? (String) object : objectMapper.writeValueAsString(object);
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+      log.error("Failed to convert object to JSON string", e);
       return null;
     }
   }
 
+  /**
+   * 将对象转换为格式化的JSON字符串（带缩进）
+   *
+   * @param obj 要转换的对象
+   * @param <T> 对象类型
+   * @return 格式化的JSON字符串，如果转换失败或对象为null则返回null
+   */
   public static <T> String toJSONStringPretty(T obj) {
-
     if (obj == null) {
       return null;
     }
@@ -110,27 +181,43 @@ public class JsonUtil {
       return obj instanceof String
           ? (String) obj
           : objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (JsonProcessingException e) {
+      log.error("Failed to convert object to pretty JSON string", e);
       return null;
     }
   }
 
-  /** 将JSON字符串转换为指定类型的对象 */
+  // ==================== 反序列化方法 ====================
+
+  /**
+   * 将JSON字符串转换为指定类型的对象
+   *
+   * @param jsonString JSON字符串
+   * @param valueType 目标类型
+   * @param <T> 目标类型泛型
+   * @return 转换后的对象，如果转换失败或参数为null则返回null
+   */
   public static <T> T parseObject(String jsonString, Class<T> valueType) {
     if (StringUtils.isEmpty(jsonString) || valueType == null) {
       return null;
     }
     try {
       return objectMapper.readValue(jsonString, valueType);
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (IOException e) {
+      log.error("Failed to parse JSON string to object of type: {}", valueType.getName(), e);
       return null;
     }
   }
 
+  /**
+   * 将JSON字符串转换为指定类型的对象（支持复杂泛型）
+   *
+   * @param str JSON字符串
+   * @param typeReference 类型引用，用于保留泛型信息
+   * @param <T> 目标类型泛型
+   * @return 转换后的对象，如果转换失败或参数为null则返回null
+   */
   public static <T> T parseObject(String str, TypeReference<T> typeReference) {
-
     if (StringUtils.isEmpty(str) || typeReference == null) {
       return null;
     }
@@ -140,43 +227,70 @@ public class JsonUtil {
           (typeReference.getType().equals(String.class)
               ? str
               : objectMapper.readValue(str, typeReference));
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
-
-  public static <T> T parseObject(
-      String str, Class<?> collectionClass, Class<?>... elementClasses) {
-
-    JavaType javaType =
-        objectMapper.getTypeFactory().constructParametricType(collectionClass, elementClasses);
-
-    try {
-      return objectMapper.readValue(str, javaType);
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (IOException e) {
+      log.error("Failed to parse JSON string to object with TypeReference", e);
       return null;
     }
   }
 
   /**
-   * Json string to map
+   * 将JSON字符串转换为参数化类型的对象（如List&lt;User&gt;、Map&lt;String, User&gt;等）
    *
-   * @param jsonString
-   * @return
+   * @param str JSON字符串
+   * @param collectionClass 集合类型（如List.class、Map.class）
+   * @param elementClasses 元素类型
+   * @param <T> 目标类型泛型
+   * @return 转换后的对象，如果转换失败则返回null
+   */
+  public static <T> T parseObject(
+      String str, Class<?> collectionClass, Class<?>... elementClasses) {
+    JavaType javaType =
+        objectMapper.getTypeFactory().constructParametricType(collectionClass, elementClasses);
+
+    try {
+      return objectMapper.readValue(str, javaType);
+    } catch (IOException e) {
+      log.error("Failed to parse JSON string to parametric type: {}", collectionClass.getName(), e);
+      return null;
+    }
+  }
+
+  /**
+   * 将 InputStream 转换为参数化类型的对象（如List&lt;User&gt;、Map&lt;String, User&gt;等）
+   *
+   * @param metaInputStream InputStream
+   * @param elementClasses 元素类型
+   * @param <T> 目标类型泛型
+   * @return 转换后的对象，如果转换失败则返回null
+   */
+  public static <T> T parseObject(InputStream metaInputStream, Class<T> elementClasses) {
+    try {
+      return objectMapper.readValue(metaInputStream, elementClasses);
+    } catch (IOException e) {
+      log.error("Failed to parse InputStream to parametric type: {}", elementClasses.getName(), e);
+      return null;
+    }
+  }
+
+  // ==================== Map转换方法 ====================
+
+  /**
+   * 将JSON字符串转换为Map
+   *
+   * @param jsonString JSON字符串
+   * @return Map对象，如果转换失败则返回null
    */
   public static Map toMap(String jsonString) {
     return parseObject(jsonString, Map.class);
   }
 
   /**
-   * parse map to object
+   * 将Map转换为指定类型的对象
    *
-   * @param map
-   * @param valueType
-   * @param <T>
-   * @return
+   * @param map Map对象
+   * @param valueType 目标类型
+   * @param <T> 目标类型泛型
+   * @return 转换后的对象，如果参数为null则返回null
    */
   public static <T> T parseObject(Map map, Class<T> valueType) {
     if (MapUtils.isEmpty(map) || valueType == null) {
@@ -186,6 +300,15 @@ public class JsonUtil {
     return parseObject(jsonString, valueType);
   }
 
+  /**
+   * 将Map转换为参数化类型的对象
+   *
+   * @param map Map对象
+   * @param collectionClass 集合类型
+   * @param elementClasses 元素类型
+   * @param <T> 目标类型泛型
+   * @return 转换后的对象，如果参数为null则返回null
+   */
   public static <T> T parseObject(Map map, Class<?> collectionClass, Class<?>... elementClasses) {
     if (MapUtils.isEmpty(map) || collectionClass == null) {
       return null;
@@ -194,47 +317,171 @@ public class JsonUtil {
     return parseObject(jsonString, collectionClass, elementClasses);
   }
 
+  /**
+   * 将Map转换为指定JavaType的对象
+   *
+   * @param value Map对象
+   * @param javaType Java类型
+   * @return 转换后的对象，如果转换失败则返回null
+   */
   public static Object parseObject(Map<String, String> value, JavaType javaType) {
     String jsonString = toJSONString(value);
     try {
       return objectMapper.readValue(jsonString, javaType);
     } catch (JsonProcessingException e) {
+      log.error("Failed to parse map to object with JavaType", e);
       return null;
     }
   }
 
-  /** 从JSON字符串中获取指定路径下的子节点 */
+  /**
+   * 将JSON字符串转换为Map&lt;String, Object&gt;
+   *
+   * @param jsonString JSON字符串
+   * @return Map对象，如果字符串为空或转换失败则返回空Map
+   */
+  public static Map<String, Object> toJsonMap(String jsonString) {
+    if (StringUtils.isBlank(jsonString)) {
+      return new HashMap<>();
+    }
+    try {
+      return objectMapper.readValue(jsonString, new TypeReference<>() {});
+    } catch (IOException e) {
+      log.error("Failed to parse JSON string to Map<String, Object>", e);
+      return new HashMap<>();
+    }
+  }
+
+  /**
+   * 将JSON字符串转换为Map&lt;String, String&gt;
+   *
+   * @param jsonString JSON字符串
+   * @return Map对象，如果字符串为空或转换失败则返回空Map
+   */
+  public static Map<String, String> jsonToMap(String jsonString) {
+    if (StringUtils.isBlank(jsonString)) {
+      return new HashMap<>();
+    }
+    try {
+      return objectMapper.readValue(jsonString, new TypeReference<>() {});
+    } catch (IOException e) {
+      log.error("Failed to parse JSON string to Map<String, String>", e);
+      return new HashMap<>();
+    }
+  }
+
+  // ==================== 文件操作方法 ====================
+
+  /**
+   * 从JSON文件读取并转换为指定类型的对象
+   *
+   * @param file JSON文件
+   * @param tClass 目标类型
+   * @param <T> 目标类型泛型
+   * @return 转换后的对象
+   * @throws RuntimeException 如果读取文件失败
+   */
+  public static <T> T parseObject(File file, Class<T> tClass) {
+    try {
+      return objectMapper.readValue(file, tClass);
+    } catch (IOException e) {
+      log.error("Failed to parse JSON file: {}", file.getAbsolutePath(), e);
+      throw new RuntimeException("Failed to parse JSON file: " + file.getAbsolutePath(), e);
+    }
+  }
+
+  /**
+   * 将对象写入JSON文件
+   *
+   * @param file 目标文件
+   * @param object 要写入的对象
+   * @throws RuntimeException 如果写入文件失败
+   */
+  public static void toFile(File file, Object object) {
+    try {
+      objectMapper.writeValue(file, object);
+    } catch (IOException e) {
+      log.error("Failed to write object to JSON file: {}", file.getAbsolutePath(), e);
+      throw new RuntimeException(
+          "Failed to write object to JSON file: " + file.getAbsolutePath(), e);
+    }
+  }
+
+  // ==================== JSON节点操作方法 ====================
+
+  /**
+   * 从JSON字符串中获取指定路径下的子节点
+   *
+   * @param jsonString JSON字符串
+   * @param path JSON路径（如"/data/user/name"）
+   * @return JSON节点，如果获取失败则返回null
+   */
   public static JsonNode getSubNode(String jsonString, String path) {
     try {
       JsonNode rootNode = objectMapper.readTree(jsonString);
       return rootNode.at(path);
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (JsonProcessingException e) {
+      log.error("Failed to get sub node from JSON string at path: {}", path, e);
       return null;
     }
   }
 
-  /** 创建一个空的JSON对象节点 */
+  /**
+   * 将JSON字符串解析为JsonNode树
+   *
+   * @param jsonString JSON字符串
+   * @return JsonNode对象，如果解析失败则返回null
+   */
+  public static JsonNode toJsonNodeTree(String jsonString) {
+    try {
+      return objectMapper.readTree(jsonString);
+    } catch (JsonProcessingException e) {
+      log.error("Failed to parse JSON string to JsonNode tree", e);
+      return null;
+    }
+  }
+
+  /**
+   * 创建一个空的JSON对象节点
+   *
+   * @return ObjectNode对象
+   */
   public static ObjectNode createEmptyJsonObject() {
     return objectMapper.createObjectNode();
   }
 
-  /** 创建一个空的JSON数组节点 */
+  /**
+   * 创建一个空的JSON数组节点
+   *
+   * @return ArrayNode对象
+   */
   public static ArrayNode createEmptyJsonArray() {
     return objectMapper.createArrayNode();
   }
 
-  /** 向JSON数组节点中添加元素 */
+  /**
+   * 向JSON数组节点中添加元素
+   *
+   * @param arrayNode JSON数组节点
+   * @param element 要添加的元素
+   */
   public static void addElementToJsonArray(ArrayNode arrayNode, Object element) {
     try {
       JsonNode jsonNode = objectMapper.valueToTree(element);
       arrayNode.add(jsonNode);
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (IllegalArgumentException e) {
+      log.error("Failed to add element to JSON array", e);
     }
   }
 
-  /** 将JSON数组节点转换为指定类型的对象列表 */
+  /**
+   * 将JSON数组节点转换为指定类型的对象列表
+   *
+   * @param arrayNode JSON数组节点
+   * @param valueType 目标元素类型
+   * @param <T> 目标类型泛型
+   * @return 对象列表，如果节点为null则返回空列表
+   */
   public static <T> List<T> parseObject(ArrayNode arrayNode, Class<T> valueType) {
     List<T> objectList = new ArrayList<>();
     if (arrayNode != null) {
@@ -246,58 +493,5 @@ public class JsonUtil {
       }
     }
     return objectList;
-  }
-
-  public static JsonNode toJsonNodeTree(String jsonString) {
-    try {
-      return objectMapper.readTree(jsonString);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
-
-  public static Map<String, Object> toJsonMap(String jsonString) {
-    if (StringUtils.isBlank(jsonString)) {
-      return new HashMap<>();
-    }
-    try {
-      return objectMapper.readValue(jsonString, new TypeReference<>() {});
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new HashMap<>();
-    }
-  }
-
-  public static Map<String, String> jsonToMap(String jsonString) {
-    if (StringUtils.isBlank(jsonString)) {
-      return new HashMap<>();
-    }
-    try {
-      return objectMapper.readValue(jsonString, new TypeReference<>() {});
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new HashMap<>();
-    }
-  }
-
-  public static void main(String[] args) {
-    Map<String, String> map = new HashMap<>();
-    map.put("aaa", "aaa");
-    map.put("bbb", "bbb");
-    map.put("bcc", "ccc");
-    String jsonString =
-        "{\n"
-            + "  \"data\" : {\n"
-            + "    \"account\" : \"123\",\n"
-            + "    \"birthday\" : \"$today\"\n"
-            + "  },\n"
-            + "  \"result\" : {\n"
-            + "    \"code\" : \"SUCCESS\",\n"
-            + "    \"message\" : \"Success.\",\n"
-            + "    \"status\" : \"S\"\n"
-            + "  }\n"
-            + "}";
-    System.out.println(JsonUtil.parseObject(jsonString, SingleResponse.class));
   }
 }

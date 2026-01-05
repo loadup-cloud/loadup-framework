@@ -5,12 +5,9 @@ spring:
 loadup:
   # DFS Configuration
   dfs:
-    default-provider: local
-    max-file-size: 10485760  # 10MB for tests
-    providers:
-      local:
-        enabled: true
-        base-path: ${java.io.tmpdir}/dfs-test
+    provider: local
+    local:
+      base-path: ${java.io.tmpdir}/dfs-test
 
 # Logging
 logging:

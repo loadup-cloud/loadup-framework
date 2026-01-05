@@ -26,19 +26,17 @@ loadup:
     logical-delete:
       enabled: false
 
-  # DFS Configuration
+  # DFS Configuration - 简化配置
   dfs:
-    default-provider: s3
+    provider: s3  # 直接指定使用的存储类型
     max-file-size: 10485760  # 10MB for tests
-    providers:
-      s3:
-        enabled: true
-        bucket: test
-        # These will be overridden by LocalStackContainerInitializer
-        accessKey: test
-        secretKey: test
-        region: us-east-1
-        endpoint: http://localhost:4566
+    s3:
+      bucket: test
+      # LocalStackContainerInitializer 会覆盖这些值
+      accessKey: test
+      secretKey: test
+      region: us-east-1
+      endpoint: http://localhost:4566
 
 # Logging
 logging:

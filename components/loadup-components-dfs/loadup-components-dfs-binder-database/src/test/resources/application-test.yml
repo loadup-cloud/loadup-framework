@@ -38,16 +38,8 @@ loadup:
 
   # DFS Configuration
   dfs:
-    default-provider: database
+    provider: database  # 直接指定使用的存储类型
     max-file-size: 10485760  # 10MB for tests
-    providers:
-      local:
-        enabled: true
-        base-path: ${java.io.tmpdir}/dfs-test
-      database:
-        enabled: true
-      s3:
-        enabled: false
 
 # Logging
 logging:

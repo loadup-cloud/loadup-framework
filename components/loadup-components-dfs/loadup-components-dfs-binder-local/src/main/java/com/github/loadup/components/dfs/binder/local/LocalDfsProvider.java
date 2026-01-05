@@ -23,8 +23,11 @@ package com.github.loadup.components.dfs.binder.local;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.dfs.api.IDfsProvider;
 import com.github.loadup.components.dfs.config.DfsProperties;
+import com.github.loadup.components.dfs.constants.DfsConstant;
+import com.github.loadup.components.dfs.enums.DfsProviderType;
 import com.github.loadup.components.dfs.enums.FileStatus;
 import com.github.loadup.components.dfs.model.FileDownloadResponse;
 import com.github.loadup.components.dfs.model.FileMetadata;
@@ -46,11 +49,11 @@ import org.springframework.stereotype.Component;
 /** 本地文件系统存储提供者 */
 @Slf4j
 @Component
-@Extension(bizCode = "DFS", useCase = "local")
+@Extension(bizCode = DfsConstant.BIZ_CODE, useCase = DfsConstant.LOCAL)
 @ConditionalOnProperty(
     prefix = "loadup.dfs",
-    name = "default-provider",
-    havingValue = "local",
+    name = "provider",
+    havingValue = DfsConstant.LOCAL,
     matchIfMissing = true)
 public class LocalDfsProvider implements IDfsProvider {
 
@@ -66,15 +69,8 @@ public class LocalDfsProvider implements IDfsProvider {
   @Override
   public FileMetadata upload(FileUploadRequest request) {
     try {
-      DfsProperties.ProviderConfig config = dfsProperties.getProviders().get("local");
-      if (config == null || !config.isEnabled()) {
-        throw new IllegalStateException("Local provider is not enabled");
-      }
-
+      DfsProperties.LocalConfig config = dfsProperties.getLocal();
       String basePath = config.getBasePath();
-      if (basePath == null || basePath.isEmpty()) {
-        basePath = System.getProperty("java.io.tmpdir") + "/dfs";
-      }
 
       // 生成文件ID
       String fileId = UUID.randomUUID().toString();
@@ -143,7 +139,7 @@ public class LocalDfsProvider implements IDfsProvider {
   public FileDownloadResponse download(String fileId) {
     try {
       FileMetadata metadata = getMetadata(fileId);
-      DfsProperties.ProviderConfig config = dfsProperties.getProviders().get("local");
+      DfsProperties.LocalConfig config = dfsProperties.getLocal();
       String basePath = config.getBasePath();
 
       Path filePath = Paths.get(basePath, metadata.getPath());
@@ -170,7 +166,7 @@ public class LocalDfsProvider implements IDfsProvider {
   public boolean delete(String fileId) {
     try {
       FileMetadata metadata = getMetadata(fileId);
-      DfsProperties.ProviderConfig config = dfsProperties.getProviders().get("local");
+      DfsProperties.LocalConfig config = dfsProperties.getLocal();
       String basePath = config.getBasePath();
 
       Path filePath = Paths.get(basePath, metadata.getPath());
@@ -200,7 +196,7 @@ public class LocalDfsProvider implements IDfsProvider {
   public boolean exists(String fileId) {
     try {
       FileMetadata metadata = getMetadata(fileId);
-      DfsProperties.ProviderConfig config = dfsProperties.getProviders().get("local");
+      DfsProperties.LocalConfig config = dfsProperties.getLocal();
       String basePath = config.getBasePath();
 
       Path filePath = Paths.get(basePath, metadata.getPath());
@@ -214,8 +210,9 @@ public class LocalDfsProvider implements IDfsProvider {
   @Override
   public FileMetadata getMetadata(String fileId) {
     try {
-      DfsProperties.ProviderConfig config = dfsProperties.getProviders().get("local");
+      DfsProperties.LocalConfig config = dfsProperties.getLocal();
       String basePath = config.getBasePath();
+
       if (basePath == null || basePath.isEmpty()) {
         basePath = System.getProperty("java.io.tmpdir") + "/dfs";
       }
@@ -226,7 +223,7 @@ public class LocalDfsProvider implements IDfsProvider {
         throw new FileNotFoundException("Metadata not found for fileId: " + fileId);
       }
 
-      return objectMapper.readValue(metaPath.toFile(), FileMetadata.class);
+      return JsonUtil.parseObject(metaPath.toFile(), FileMetadata.class);
 
     } catch (Exception e) {
       log.error("Failed to get metadata for fileId: {}", fileId, e);
@@ -236,13 +233,12 @@ public class LocalDfsProvider implements IDfsProvider {
 
   @Override
   public String getProviderName() {
-    return "local";
+    return DfsProviderType.LOCAL.getValue();
   }
 
   @Override
   public boolean isAvailable() {
-    DfsProperties.ProviderConfig config = dfsProperties.getProviders().get("local");
-    return config != null && config.isEnabled();
+    return DfsProviderType.LOCAL.equals(dfsProperties.getProvider());
   }
 
   private String buildRelativePath(String bizType, String fileId) {
@@ -268,6 +264,7 @@ public class LocalDfsProvider implements IDfsProvider {
     Files.createDirectories(metaDir);
 
     Path metaPath = metaDir.resolve(fileId + ".json");
-    objectMapper.writeValue(metaPath.toFile(), metadata);
+    // objectMapper.writeValue(metaPath.toFile(), metadata);
+    JsonUtil.toFile(metaPath.toFile(), metadata);
   }
 }

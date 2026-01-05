@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DfsService {
 
+  public static final String BIZ_CODE = "DFS";
   private final ExtensionExecutor extensionExecutor;
   private final DfsProperties dfsProperties;
 
@@ -52,9 +53,9 @@ public class DfsService {
    * @return 文件元数据
    */
   public FileMetadata upload(FileUploadRequest request) {
-    String providerName = dfsProperties.getDefaultProvider();
+    String providerName = dfsProperties.getProvider().getValue();
     log.info("Uploading file: {} using provider: {}", request.getFilename(), providerName);
-    BizScenario scenario = BizScenario.valueOf("DFS", providerName, "default");
+    BizScenario scenario = BizScenario.valueOf(BIZ_CODE, providerName);
     return extensionExecutor.execute(
         IDfsProvider.class, scenario, extension -> extension.upload(request));
   }
@@ -66,9 +67,9 @@ public class DfsService {
    * @return 文件下载响应
    */
   public FileDownloadResponse download(String fileId) {
-    String providerName = dfsProperties.getDefaultProvider();
+    String providerName = dfsProperties.getProvider().getValue();
     log.info("Downloading file: {} using provider: {}", fileId, providerName);
-    BizScenario scenario = BizScenario.valueOf("DFS", providerName, "default");
+    BizScenario scenario = BizScenario.valueOf(BIZ_CODE, providerName);
     return extensionExecutor.execute(
         IDfsProvider.class, scenario, extension -> extension.download(fileId));
   }
@@ -80,9 +81,9 @@ public class DfsService {
    * @return 是否删除成功
    */
   public boolean delete(String fileId) {
-    String providerName = dfsProperties.getDefaultProvider();
+    String providerName = dfsProperties.getProvider().getValue();
     log.info("Deleting file: {} using provider: {}", fileId, providerName);
-    BizScenario scenario = BizScenario.valueOf("DFS", providerName, "default");
+    BizScenario scenario = BizScenario.valueOf(BIZ_CODE, providerName);
     return extensionExecutor.execute(
         IDfsProvider.class, scenario, extension -> extension.delete(fileId));
   }
@@ -94,8 +95,8 @@ public class DfsService {
    * @return 是否存在
    */
   public boolean exists(String fileId) {
-    String providerName = dfsProperties.getDefaultProvider();
-    BizScenario scenario = BizScenario.valueOf("DFS", providerName, "default");
+    String providerName = dfsProperties.getProvider().getValue();
+    BizScenario scenario = BizScenario.valueOf(BIZ_CODE, providerName);
     return extensionExecutor.execute(
         IDfsProvider.class, scenario, extension -> extension.exists(fileId));
   }
@@ -107,8 +108,8 @@ public class DfsService {
    * @return 文件元数据
    */
   public FileMetadata getMetadata(String fileId) {
-    String providerName = dfsProperties.getDefaultProvider();
-    BizScenario scenario = BizScenario.valueOf("DFS", providerName, "default");
+    String providerName = dfsProperties.getProvider().getValue();
+    BizScenario scenario = BizScenario.valueOf(BIZ_CODE, providerName);
     return extensionExecutor.execute(
         IDfsProvider.class, scenario, extension -> extension.getMetadata(fileId));
   }
@@ -121,8 +122,8 @@ public class DfsService {
    * @return 预签名URL
    */
   public String generatePresignedUrl(String fileId, long expirationSeconds) {
-    String providerName = dfsProperties.getDefaultProvider();
-    BizScenario scenario = BizScenario.valueOf("DFS", providerName, "default");
+    String providerName = dfsProperties.getProvider().getValue();
+    BizScenario scenario = BizScenario.valueOf(BIZ_CODE, providerName);
     return extensionExecutor.execute(
         IDfsProvider.class,
         scenario,
