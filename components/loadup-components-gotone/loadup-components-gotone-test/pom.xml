@@ -93,7 +93,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- LoadUp TestContainers Component (includes MySQL, TestContainers, and MySQL Driver) -->
+        <!-- LoadUp TestContainers Component (includes MySQL, Redis, LocalStack/S3, and all drivers) -->
         <dependency>
             <groupId>com.github.loadup.components</groupId>
             <artifactId>loadup-components-testcontainers</artifactId>

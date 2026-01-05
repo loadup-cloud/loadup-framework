@@ -21,10 +21,8 @@ package com.github.loadup.components.cache.redis;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.cache.common.BaseCacheTest;
 import com.github.loadup.components.cache.common.model.Product;
 import com.github.loadup.components.cache.common.model.User;
 import java.math.BigDecimal;
@@ -33,28 +31,11 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.*;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 /** Redis Cache Basic Operations Test */
-@Testcontainers
 @TestPropertySource(properties = {"loadup.cache.type=redis", "loadup.cache.redis.database=0"})
 @DisplayName("Redis 缓存基础操作测试")
-public class RedisBasicOperationsTest extends BaseCacheTest {
-
-  @Container
-  public static GenericContainer<?> redis =
-      new GenericContainer<>(DockerImageName.parse("redis:7-alpine"))
-          .withExposedPorts(6379)
-          .withReuse(true);
-
-  @DynamicPropertySource
-  static void redisProperties(DynamicPropertyRegistry registry) {
-    registry.add("loadup.cache.redis.host", redis::getHost);
-    registry.add("loadup.cache.redis.port", redis::getFirstMappedPort);
-  }
+public class RedisBasicOperationsTest extends BaseRedisCacheTest {
 
   @Test
   @DisplayName("测试基本的 set 和 get 操作")

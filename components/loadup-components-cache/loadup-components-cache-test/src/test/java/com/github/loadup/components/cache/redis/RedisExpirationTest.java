@@ -25,7 +25,6 @@ package com.github.loadup.components.cache.redis;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.cache.common.BaseCacheTest;
 import com.github.loadup.components.cache.common.model.User;
 import java.util.*;
 import java.util.concurrent.*;
@@ -33,14 +32,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.*;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 /** Redis Cache Expiration Strategy Test */
 @Slf4j
-@Testcontainers
 @TestPropertySource(
     properties = {
       "loadup.cache.type=redis",
@@ -55,19 +49,7 @@ import org.testcontainers.utility.DockerImageName;
       "loadup.cache.redis.cache-config.medium-lived.cache-null-values=false"
     })
 @DisplayName("Redis 缓存过期策略测试")
-public class RedisExpirationTest extends BaseCacheTest {
-
-  @Container
-  public static GenericContainer<?> redis =
-      new GenericContainer<>(DockerImageName.parse("redis:7-alpine"))
-          .withExposedPorts(6379)
-          .withReuse(true);
-
-  @DynamicPropertySource
-  static void redisProperties(DynamicPropertyRegistry registry) {
-    registry.add("loadup.cache.redis.host", redis::getHost);
-    registry.add("loadup.cache.redis.port", redis::getFirstMappedPort);
-  }
+public class RedisExpirationTest extends BaseRedisCacheTest {
 
   @Test
   @DisplayName("测试 TTL 过期策略")
