@@ -1,4 +1,4 @@
-package com.github.loadup.components.dfs.test.config;
+package com.github.loadup.components.dfs.test;
 
 /*-
  * #%L
@@ -22,8 +22,13 @@ package com.github.loadup.components.dfs.test.config;
  * #L%
  */
 
-import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/** Test configuration for DFS component with JdbcTemplate */
-@TestConfiguration
-public class DfsTestConfig {}
+/** Test application for DFS component testing with MyBatis-Flex */
+@SpringBootApplication(scanBasePackages = "com.github.loadup.components")
+public class DfsTestApplication {
+  public static void main(String[] args) {
+    SpringApplication.run(DfsTestApplication.class, args);
+  }
+}
