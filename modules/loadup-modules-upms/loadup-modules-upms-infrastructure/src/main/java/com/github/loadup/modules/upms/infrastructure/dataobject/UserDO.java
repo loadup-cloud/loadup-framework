@@ -1,8 +1,6 @@
 package com.github.loadup.modules.upms.infrastructure.dataobject;
 
 import com.github.loadup.commons.dataobject.BaseDO;
-import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,9 +17,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Table("upms_user")
 public class UserDO extends BaseDO {
-
-  @Id(keyType = KeyType.None)
-  private String id;
 
   private String username;
 

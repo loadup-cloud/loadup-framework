@@ -1,8 +1,6 @@
 package com.github.loadup.modules.upms.infrastructure.dataobject;
 
 import com.github.loadup.commons.dataobject.BaseDO;
-import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,9 +15,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Table("upms_role")
 public class RoleDO extends BaseDO {
-
-  @Id(keyType = KeyType.None)
-  private String id;
 
   private String roleName;
 
