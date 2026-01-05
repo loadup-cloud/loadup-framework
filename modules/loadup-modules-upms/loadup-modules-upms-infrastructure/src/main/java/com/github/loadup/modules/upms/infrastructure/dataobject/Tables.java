@@ -159,7 +159,7 @@ public class Tables {
     public final QueryColumn LOGIN_LOCATION = new QueryColumn(this, "login_location");
     public final QueryColumn BROWSER = new QueryColumn(this, "browser");
     public final QueryColumn OS = new QueryColumn(this, "os");
-    public final QueryColumn STATUS = new QueryColumn(this, "status");
+    public final QueryColumn LOGIN_STATUS = new QueryColumn(this, "login_status");
     public final QueryColumn MESSAGE = new QueryColumn(this, "message");
     public final QueryColumn TENANT_ID = new QueryColumn(this, "tenant_id");
     public final QueryColumn DELETED = new QueryColumn(this, "deleted");

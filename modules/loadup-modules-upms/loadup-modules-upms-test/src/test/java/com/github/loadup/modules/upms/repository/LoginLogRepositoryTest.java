@@ -29,7 +29,6 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
   void setUp() {
     testLog =
         LoginLog.builder()
-            .id("1")
             .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now())
@@ -65,6 +64,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
             .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now().minusHours(1))
+            .logoutTime(LocalDateTime.now().minusDays(1))
             .ipAddress("192.168.1.2")
             .loginStatus((short) 1)
             .build();
@@ -116,6 +116,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
             .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now())
+            .logoutTime(LocalDateTime.now())
             .ipAddress("192.168.1.1")
             .loginStatus((short) 0) // Failed
             .loginMessage("Invalid password")
@@ -144,6 +145,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
             .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now().minusMinutes(30))
+            .logoutTime(LocalDateTime.now().minusMinutes(30))
             .ipAddress("192.168.1.2")
             .loginStatus((short) 1)
             .build();
@@ -167,6 +169,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
             .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now())
+            .logoutTime(LocalDateTime.now())
             .ipAddress("192.168.1.1")
             .loginStatus((short) 0)
             .build();
@@ -175,6 +178,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
             .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now().minusMinutes(10))
+            .logoutTime(LocalDateTime.now().minusMinutes(10))
             .ipAddress("192.168.1.1")
             .loginStatus((short) 0)
             .build();
@@ -197,10 +201,10 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
     // Given
     LoginLog oldLog =
         LoginLog.builder()
-            .id("1")
             .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now().minusDays(1))
+            .logoutTime(LocalDateTime.now().minusDays(1))
             .ipAddress("192.168.1.1")
             .loginStatus((short) 1)
             .build();
@@ -224,6 +228,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
             .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now().minusDays(100))
+            .logoutTime(LocalDateTime.now())
             .ipAddress("192.168.1.1")
             .loginStatus((short) 1)
             .build();

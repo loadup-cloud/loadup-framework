@@ -55,10 +55,6 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
   @Override
   public LoginLog save(LoginLog log) {
     LoginLogDO loginLogDO = loginLogConverter.toDataObject(log);
-    loginLogDO.setId(UUID.randomUUID().toString());
-    loginLogDO.setLogoutTime(LocalDateTime.now());
-    loginLogDO.setCreatedAt(LocalDateTime.now());
-    loginLogDO.setUpdatedAt(LocalDateTime.now());
     loginLogMapper.insert(loginLogDO);
     return loginLogConverter.toEntity(loginLogDO);
   }
@@ -128,7 +124,7 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
       LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
     QueryWrapper query =
         QueryWrapper.create()
-            .where(LOGIN_LOG.STATUS.eq((short) 0))
+            .where(LOGIN_LOG.LOGIN_STATUS.eq((short) 0))
             .and(LOGIN_LOG.LOGIN_TIME.between(startTime, endTime))
             .orderBy(LOGIN_LOG.LOGIN_TIME.desc());
 
@@ -186,7 +182,7 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
     QueryWrapper query =
         QueryWrapper.create()
             .where(LOGIN_LOG.USER_ID.eq(userId))
-            .and(LOGIN_LOG.STATUS.eq((short) 0))
+            .and(LOGIN_LOG.LOGIN_STATUS.eq((short) 0))
             .and(LOGIN_LOG.LOGIN_TIME.between(startTime, endTime));
     return loginLogMapper.selectCountByQuery(query);
   }
@@ -206,7 +202,7 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
     QueryWrapper query =
         QueryWrapper.create()
             .where(LOGIN_LOG.USER_ID.eq(userId))
-            .and(LOGIN_LOG.STATUS.eq((short) 1))
+            .and(LOGIN_LOG.LOGIN_STATUS.eq((short) 1))
             .orderBy(LOGIN_LOG.LOGIN_TIME.desc())
             .limit(1);
     LoginLogDO loginLogDO = loginLogMapper.selectOneByQuery(query);
