@@ -22,7 +22,7 @@ package com.github.loadup.modules.upms.infrastructure.repository;
  * #L%
  */
 
-import static com.github.loadup.modules.upms.infrastructure.dataobject.table.PermissionDOTableDef.PERMISSION_DO;
+import static com.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.PERMISSION_DO;
 
 import com.github.loadup.modules.upms.domain.entity.Permission;
 import com.github.loadup.modules.upms.domain.repository.PermissionRepository;

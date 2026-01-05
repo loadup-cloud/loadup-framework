@@ -22,7 +22,7 @@ package com.github.loadup.modules.upms.infrastructure.repository;
  * #L%
  */
 
-import static com.github.loadup.modules.upms.infrastructure.dataobject.table.LoginLogDOTableDef.LOGIN_LOG_DO;
+import static com.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.LOGIN_LOG_DO;
 
 import com.github.loadup.modules.upms.domain.entity.LoginLog;
 import com.github.loadup.modules.upms.domain.repository.LoginLogRepository;

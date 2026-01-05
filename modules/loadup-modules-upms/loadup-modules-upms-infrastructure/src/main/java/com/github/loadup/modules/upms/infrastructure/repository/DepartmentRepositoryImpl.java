@@ -22,8 +22,8 @@ package com.github.loadup.modules.upms.infrastructure.repository;
  * #L%
  */
 
-import static com.github.loadup.modules.upms.infrastructure.dataobject.table.DepartmentDOTableDef.DEPARTMENT_DO;
-import static com.github.loadup.modules.upms.infrastructure.dataobject.table.UserDOTableDef.USER_DO;
+import static com.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.DEPARTMENT_DO;
+import static com.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.USER_DO;
 
 import com.github.loadup.modules.upms.domain.entity.Department;
 import com.github.loadup.modules.upms.domain.repository.DepartmentRepository;

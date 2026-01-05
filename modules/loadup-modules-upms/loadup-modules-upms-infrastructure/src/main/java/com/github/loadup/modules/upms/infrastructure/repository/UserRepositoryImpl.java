@@ -22,7 +22,7 @@ package com.github.loadup.modules.upms.infrastructure.repository;
  * #L%
  */
 
-import static com.github.loadup.modules.upms.infrastructure.dataobject.table.UserDOTableDef.USER_DO;
+import static com.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.USER_DO;
 
 import com.github.loadup.modules.upms.domain.entity.User;
 import com.github.loadup.modules.upms.domain.repository.UserRepository;

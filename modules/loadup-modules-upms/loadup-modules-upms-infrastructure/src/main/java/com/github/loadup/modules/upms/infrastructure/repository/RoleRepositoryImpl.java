@@ -22,7 +22,7 @@ package com.github.loadup.modules.upms.infrastructure.repository;
  * #L%
  */
 
-import static com.github.loadup.modules.upms.infrastructure.dataobject.table.RoleDOTableDef.ROLE_DO;
+import static com.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.ROLE_DO;
 
 import com.github.loadup.modules.upms.domain.entity.Role;
 import com.github.loadup.modules.upms.domain.repository.RoleRepository;

@@ -22,7 +22,7 @@ package com.github.loadup.modules.upms.infrastructure.repository;
  * #L%
  */
 
-import static com.github.loadup.modules.upms.infrastructure.dataobject.table.OperationLogDOTableDef.OPERATION_LOG_DO;
+import static com.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.OPERATION_LOG_DO;
 
 import com.github.loadup.modules.upms.domain.entity.OperationLog;
 import com.github.loadup.modules.upms.domain.repository.OperationLogRepository;
