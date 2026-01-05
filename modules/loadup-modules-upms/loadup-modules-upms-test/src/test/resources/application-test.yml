@@ -3,23 +3,31 @@ spring:
   application:
     name: loadup-upms-test
 
-  # H2 Database Configuration for Testing
+  # MySQL Database Configuration for Testing with Testcontainers
+  # The actual connection details will be provided by Testcontainers
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+    # HikariCP Connection Pool Configuration
+    hikari:
+      pool-name: LoadupTestPool
+      minimum-idle: 2
+      maximum-pool-size: 10
+      auto-commit: true
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+    url: jdbc:mysql://localhost:3306/loadup_test
+    username: test
+    password: test
 
   # SQL Initialization
   sql:
     init:
       mode: always
-      schema-locations: classpath:schema-h2.sql
+      schema-locations: classpath:schema-test.sql
       data-locations: classpath:test-data.sql
       continue-on-error: false
 
@@ -43,7 +51,13 @@ logging:
     com.mybatisflex: DEBUG
     org.springframework.jdbc: DEBUG
     org.springframework.transaction: DEBUG
+    com.github.loadup.modules.upms.infrastructure.mapper: TRACE
+    org.mybatis: TRACE
+    java.sql.PreparedStatement: TRACE
 
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
 
+loadup:
+  tracer:
+    enabled: false

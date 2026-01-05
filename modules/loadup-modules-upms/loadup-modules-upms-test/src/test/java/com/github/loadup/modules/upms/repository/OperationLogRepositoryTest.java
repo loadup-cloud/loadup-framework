@@ -9,13 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * OperationLog Repository Tests
@@ -23,11 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@DataJdbcTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ComponentScan(basePackages = "com.github.loadup.modules.upms.infrastructure.repository")
-@ActiveProfiles("test")
-@Transactional
 @DisplayName("OperationLogRepository Tests")
 class OperationLogRepositoryTest extends BaseRepositoryTest {
 

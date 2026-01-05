@@ -9,13 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * LoginLog Repository Tests
@@ -23,11 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@DataJdbcTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ComponentScan(basePackages = "com.github.loadup.modules.upms.infrastructure.repository")
-@ActiveProfiles("test")
-@Transactional
 @DisplayName("LoginLogRepository Tests")
 class LoginLogRepositoryTest extends BaseRepositoryTest {
 
@@ -39,9 +29,11 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
   void setUp() {
     testLog =
         LoginLog.builder()
+            .id("1")
             .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now())
+            .logoutTime(LocalDateTime.now())
             .ipAddress("192.168.1.1")
             .loginLocation("Test Location")
             .browser("Chrome")
@@ -205,6 +197,7 @@ class LoginLogRepositoryTest extends BaseRepositoryTest {
     // Given
     LoginLog oldLog =
         LoginLog.builder()
+            .id("1")
             .userId("1")
             .username("testuser")
             .loginTime(LocalDateTime.now().minusDays(1))
