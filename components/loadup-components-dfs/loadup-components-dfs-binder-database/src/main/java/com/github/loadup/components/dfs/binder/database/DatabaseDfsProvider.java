@@ -41,12 +41,14 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /** 数据库存储提供者 */
 @Slf4j
 @Component
 @Extension(bizCode = "DFS", useCase = "database")
+@ConditionalOnProperty(prefix = "loadup.dfs", name = "default-provider", havingValue = "database")
 public class DatabaseDfsProvider implements IDfsProvider {
 
   @Autowired private DfsProperties dfsProperties;

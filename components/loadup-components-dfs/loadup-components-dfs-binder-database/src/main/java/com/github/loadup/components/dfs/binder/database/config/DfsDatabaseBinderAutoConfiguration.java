@@ -24,6 +24,7 @@ package com.github.loadup.components.dfs.binder.database.config;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
@@ -31,10 +32,24 @@ import org.springframework.context.annotation.ComponentScan;
  *
  * <p>Enables MyBatis Mapper scanning for FileStorageEntityMapper
  *
+ * <p>This binder is only loaded when ALL of the following conditions are met:
+ *
+ * <ul>
+ *   <li>'loadup.dfs.default-provider=database'
+ *   <li>DataSource bean exists (i.e., database is configured)
+ * </ul>
+ *
+ * <p>By using @AutoConfigureAfter, this configuration is evaluated after
+ * DataSourceAutoConfiguration, ensuring that @ConditionalOnBean(DataSource.class) works correctly.
+ *
+ * <p>This ensures that only the configured provider is loaded, avoiding configuration errors for
+ * unused providers.
+ *
  * @author LoadUp Framework
  * @since 1.0.0
  */
 @AutoConfiguration
+@ConditionalOnProperty(prefix = "loadup.dfs", name = "default-provider", havingValue = "database")
 @ComponentScan(basePackages = "com.github.loadup.components.dfs.binder.database")
 @MapperScan("com.github.loadup.components.dfs.binder.database.mapper")
 public class DfsDatabaseBinderAutoConfiguration {

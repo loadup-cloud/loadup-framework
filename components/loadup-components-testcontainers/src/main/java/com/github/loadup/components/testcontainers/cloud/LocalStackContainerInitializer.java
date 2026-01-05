@@ -62,6 +62,11 @@ public class LocalStackContainerInitializer
             "cloud.aws.credentials.access-key=" + SharedLocalStackContainer.getAccessKey(),
             "cloud.aws.credentials.secret-key=" + SharedLocalStackContainer.getSecretKey(),
             "cloud.aws.region.static=" + SharedLocalStackContainer.getRegion(),
+            "loadup.dfs.providers.s3.endpoint=" + SharedLocalStackContainer.getS3Endpoint(),
+            "loadup.dfs.providers.s3.endpoint=" + SharedLocalStackContainer.getS3Endpoint(),
+            "loadup.dfs.providers.s3.accessKey=" + SharedLocalStackContainer.getAccessKey(),
+            "loadup.dfs.providers.s3.secretKey=" + SharedLocalStackContainer.getSecretKey(),
+            "loadup.dfs.providers.s3.region=" + SharedLocalStackContainer.getRegion(),
             "cloud.aws.s3.endpoint=" + SharedLocalStackContainer.getS3Endpoint())
         .applyTo(applicationContext.getEnvironment());
   }

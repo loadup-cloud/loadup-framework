@@ -60,7 +60,7 @@ public class ExtensionExecutor {
       Class<E> extensionPointClass, BizScenario scenario, Consumer<E> action) {
     E extension = findBestMatch(extensionPointClass, scenario);
     log.debug(
-        "Executing extension {} for scenario {}",
+        "Run extension {} for scenario {}",
         extension.getClass().getSimpleName(),
         scenario.getUniqueIdentity());
     action.accept(extension);
@@ -126,7 +126,10 @@ public class ExtensionExecutor {
 
     if (CollectionUtils.isEmpty(candidates)) {
       throw new ExtensionNotFoundException(
-          "No extension found for interface: " + extensionPointClass.getName());
+          "No extension found for interface: "
+              + extensionPointClass.getName()
+              + ",scenario: "
+              + scenario.getUniqueIdentity());
     }
 
     // 1. 精确匹配：bizCode + useCase + scenario
