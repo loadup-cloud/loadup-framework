@@ -23,6 +23,7 @@ package com.github.loadup.commons.dataobject;
  */
 
 import com.github.loadup.commons.util.ToStringUtils;
+import com.mybatisflex.annotation.Id;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -42,7 +43,7 @@ import lombok.Setter;
 @Setter
 public abstract class BaseDO implements Serializable {
   // @Id(keyType = KeyType.Generator, value = KeyGenerators.flexId)
-  private String id;
+  @Id private String id;
 
   /** 创建时间（自动填充） */
   // @Column(onInsertValue = "now()")
