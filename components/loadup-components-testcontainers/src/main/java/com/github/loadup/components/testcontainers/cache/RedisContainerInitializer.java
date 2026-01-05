@@ -58,7 +58,9 @@ public class RedisContainerInitializer
             "spring.redis.host=" + SharedRedisContainer.getHost(),
             "spring.redis.port=" + SharedRedisContainer.getPort(),
             "spring.data.redis.host=" + SharedRedisContainer.getHost(),
-            "spring.data.redis.port=" + SharedRedisContainer.getPort())
+            "spring.data.redis.port=" + SharedRedisContainer.getPort(),
+            "loadup.cache.redis.host=" + SharedRedisContainer.getHost(),
+            "loadup.cache.redis.port=" + SharedRedisContainer.getPort())
         .applyTo(applicationContext.getEnvironment());
   }
 }

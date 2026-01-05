@@ -36,14 +36,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Embedded Redis for testing -->
-        <dependency>
-            <groupId>it.ozimov</groupId>
-            <artifactId>embedded-redis</artifactId>
-            <version>0.7.3</version>
-            <scope>test</scope>
-        </dependency>
-
         <!-- LoadUp TestContainers Component (includes Redis TestContainer and all drivers) -->
         <dependency>
             <groupId>com.github.loadup.components</groupId>
