@@ -22,13 +22,14 @@ package com.github.loadup.components.dfs.test.integration;
  * #L%
  */
 
-import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.github.loadup.components.dfs.model.FileDownloadResponse;
 import com.github.loadup.components.dfs.model.FileMetadata;
 import com.github.loadup.components.dfs.model.FileUploadRequest;
 import com.github.loadup.components.dfs.service.DfsService;
 import com.github.loadup.components.dfs.test.DfsTestApplication;
+import com.github.loadup.components.testcontainers.cloud.AbstractMySQLContainerTest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -44,7 +45,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(classes = DfsTestApplication.class)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class DfsIntegrationTest {
+class DfsIntegrationTest extends AbstractMySQLContainerTest {
 
   @Autowired private DfsService dfsService;
 
@@ -64,68 +65,37 @@ class DfsIntegrationTest {
             .build();
 
     // When - Upload
-    FileMetadata uploadedMetadata = dfsService.upload(uploadRequest, "database");
-    assertThat(uploadedMetadata).isNotNull();
-    assertThat(uploadedMetadata.getFileId()).isNotNull();
+    FileMetadata uploadedMetadata = dfsService.upload(uploadRequest);
+    assertNotNull(uploadedMetadata);
+    assertNotNull(uploadedMetadata.getFileId());
 
     // When - Check existence
-    boolean exists = dfsService.exists(uploadedMetadata.getFileId(), "database");
-    assertThat(exists).isTrue();
+    boolean exists = dfsService.exists(uploadedMetadata.getFileId());
+    assertTrue(exists);
 
     // When - Get metadata
-    FileMetadata retrievedMetadata =
-        dfsService.getMetadata(uploadedMetadata.getFileId(), "database");
-    assertThat(retrievedMetadata.getFileId()).isEqualTo(uploadedMetadata.getFileId());
+    FileMetadata retrievedMetadata = dfsService.getMetadata(uploadedMetadata.getFileId());
+    assertEquals(uploadedMetadata.getFileId(), retrievedMetadata.getFileId());
 
     // When - Download
-    FileDownloadResponse downloadResponse =
-        dfsService.download(uploadedMetadata.getFileId(), "database");
+    FileDownloadResponse downloadResponse = dfsService.download(uploadedMetadata.getFileId());
     String downloadedContent =
         IOUtils.toString(downloadResponse.getInputStream(), StandardCharsets.UTF_8);
-    assertThat(downloadedContent).isEqualTo(TEST_CONTENT);
+    assertEquals(TEST_CONTENT, downloadedContent);
 
     // When - Delete
-    boolean deleted = dfsService.delete(uploadedMetadata.getFileId(), "database");
-    assertThat(deleted).isTrue();
+    boolean deleted = dfsService.delete(uploadedMetadata.getFileId());
+    assertTrue(deleted);
 
     // Then - Verify deletion
-    boolean existsAfterDelete = dfsService.exists(uploadedMetadata.getFileId(), "database");
-    assertThat(existsAfterDelete).isFalse();
+    boolean existsAfterDelete = dfsService.exists(uploadedMetadata.getFileId());
+    assertFalse(existsAfterDelete);
   }
 
   @Test
   @Order(2)
-  @DisplayName("Should handle multiple providers simultaneously")
-  void testMultipleProviders() throws IOException {
-    // Given
-    FileUploadRequest request =
-        FileUploadRequest.builder()
-            .filename("multi-provider.txt")
-            .inputStream(new ByteArrayInputStream(TEST_CONTENT.getBytes(StandardCharsets.UTF_8)))
-            .build();
-
-    // When - Upload to local
-    FileMetadata localMetadata = dfsService.upload(request, "local");
-
-    // When - Upload same file to database
-    FileUploadRequest request2 =
-        FileUploadRequest.builder()
-            .filename("multi-provider.txt")
-            .inputStream(new ByteArrayInputStream(TEST_CONTENT.getBytes(StandardCharsets.UTF_8)))
-            .build();
-    FileMetadata dbMetadata = dfsService.upload(request2, "database");
-
-    // Then
-    assertThat(localMetadata.getFileId()).isNotEqualTo(dbMetadata.getFileId());
-    assertThat(localMetadata.getProvider()).isEqualTo("local");
-    assertThat(dbMetadata.getProvider()).isEqualTo("database");
-    assertThat(localMetadata.getHash()).isEqualTo(dbMetadata.getHash());
-  }
-
-  @Test
-  @Order(3)
   @DisplayName("Should handle concurrent uploads")
-  void testConcurrentUploads() throws IOException {
+  void testConcurrentUploads() {
     // Given
     List<FileMetadata> uploadedFiles = new ArrayList<>();
 
@@ -139,19 +109,19 @@ class DfsIntegrationTest {
               .bizType("concurrent-test")
               .build();
 
-      FileMetadata metadata = dfsService.upload(request, "database");
+      FileMetadata metadata = dfsService.upload(request);
       uploadedFiles.add(metadata);
     }
 
     // Then
-    assertThat(uploadedFiles).hasSize(10);
+    assertEquals(10, uploadedFiles.size());
     for (FileMetadata metadata : uploadedFiles) {
-      assertThat(dfsService.exists(metadata.getFileId(), "database")).isTrue();
+      assertTrue(dfsService.exists(metadata.getFileId()));
     }
   }
 
   @Test
-  @Order(4)
+  @Order(3)
   @DisplayName("Should handle large file upload and download")
   void testLargeFile() throws IOException {
     // Given - 5MB file
@@ -172,13 +142,13 @@ class DfsIntegrationTest {
     FileDownloadResponse response = dfsService.download(metadata.getFileId());
 
     // Then
-    assertThat(metadata.getSize()).isEqualTo(largeContent.length);
+    assertEquals(largeContent.length, metadata.getSize());
     byte[] downloadedContent = IOUtils.toByteArray(response.getInputStream());
-    assertThat(downloadedContent).hasSize(largeContent.length);
+    assertEquals(largeContent.length, downloadedContent.length);
   }
 
   @Test
-  @Order(5)
+  @Order(4)
   @DisplayName("Should handle various file types")
   void testVariousFileTypes() throws IOException {
     // Given - Different file types
@@ -199,20 +169,20 @@ class DfsIntegrationTest {
               .inputStream(new ByteArrayInputStream(fileData[2].getBytes(StandardCharsets.UTF_8)))
               .build();
 
-      FileMetadata metadata = dfsService.upload(request, "database");
-      assertThat(metadata.getFilename()).isEqualTo(fileData[0]);
-      assertThat(metadata.getContentType()).isEqualTo(fileData[1]);
+      FileMetadata metadata = dfsService.upload(request);
+      assertEquals(fileData[0], metadata.getFilename());
+      assertEquals(fileData[1], metadata.getContentType());
 
-      FileDownloadResponse response = dfsService.download(metadata.getFileId(), "database");
+      FileDownloadResponse response = dfsService.download(metadata.getFileId());
       String content = IOUtils.toString(response.getInputStream(), StandardCharsets.UTF_8);
-      assertThat(content).isEqualTo(fileData[2]);
+      assertEquals(fileData[2], content);
     }
   }
 
   @Test
-  @Order(6)
+  @Order(5)
   @DisplayName("Should handle file operations with business context")
-  void testBusinessContext() throws IOException {
+  void testBusinessContext() {
     // Given
     String[] bizTypes = {"invoices", "contracts", "reports"};
 
@@ -230,22 +200,22 @@ class DfsIntegrationTest {
                 .bizId("BIZ-" + i)
                 .build();
 
-        files.add(dfsService.upload(request, "database"));
+        files.add(dfsService.upload(request));
       }
     }
 
     // Then
-    assertThat(files).hasSize(9);
+    assertEquals(9, files.size());
     for (FileMetadata file : files) {
-      assertThat(file.getBizType()).isIn((Object[]) bizTypes);
-      assertThat(file.getBizId()).startsWith("BIZ-");
+      assertTrue(List.of(bizTypes).contains(file.getBizType()));
+      assertTrue(file.getBizId().startsWith("BIZ-"));
     }
   }
 
   @Test
-  @Order(7)
+  @Order(6)
   @DisplayName("Should handle duplicate content detection")
-  void testDuplicateContentDetection() throws IOException {
+  void testDuplicateContentDetection() {
     // Given - Same content, different names
     String content = "Duplicate content test";
 
@@ -262,32 +232,30 @@ class DfsIntegrationTest {
             .build();
 
     // When
-    FileMetadata metadata1 = dfsService.upload(request1, "database");
-    FileMetadata metadata2 = dfsService.upload(request2, "database");
+    FileMetadata metadata1 = dfsService.upload(request1);
+    FileMetadata metadata2 = dfsService.upload(request2);
 
     // Then - Different IDs but same hash
-    assertThat(metadata1.getFileId()).isNotEqualTo(metadata2.getFileId());
-    assertThat(metadata1.getHash()).isEqualTo(metadata2.getHash());
-    assertThat(metadata1.getFilename()).isNotEqualTo(metadata2.getFilename());
+    assertNotEquals(metadata2.getFileId(), metadata1.getFileId());
+    assertEquals(metadata2.getHash(), metadata1.getHash());
+    assertNotEquals(metadata2.getFilename(), metadata1.getFilename());
+  }
+
+  @Test
+  @Order(7)
+  @DisplayName("Should handle error scenarios gracefully")
+  void testErrorScenarios() {
+    // Test download non-existent file
+    assertThrows(RuntimeException.class, () -> dfsService.download("non-existent-id"));
+
+    // Test get metadata non-existent file
+    assertThrows(RuntimeException.class, () -> dfsService.getMetadata("non-existent-id"));
   }
 
   @Test
   @Order(8)
-  @DisplayName("Should handle error scenarios gracefully")
-  void testErrorScenarios() {
-    // Test download non-existent file
-    assertThatThrownBy(() -> dfsService.download("non-existent-id", "database"))
-        .isInstanceOf(RuntimeException.class);
-
-    // Test get metadata non-existent file
-    assertThatThrownBy(() -> dfsService.getMetadata("non-existent-id", "database"))
-        .isInstanceOf(RuntimeException.class);
-  }
-
-  @Test
-  @Order(9)
   @DisplayName("Should preserve file metadata during operations")
-  void testMetadataPreservation() throws IOException {
+  void testMetadataPreservation() {
     // Given
     FileUploadRequest request =
         FileUploadRequest.builder()
@@ -300,20 +268,20 @@ class DfsIntegrationTest {
             .build();
 
     // When
-    FileMetadata uploadMetadata = dfsService.upload(request, "database");
-    FileMetadata retrievedMetadata = dfsService.getMetadata(uploadMetadata.getFileId(), "database");
+    FileMetadata uploadMetadata = dfsService.upload(request);
+    FileMetadata retrievedMetadata = dfsService.getMetadata(uploadMetadata.getFileId());
 
     // Then
-    assertThat(retrievedMetadata.getFilename()).isEqualTo(uploadMetadata.getFilename());
-    assertThat(retrievedMetadata.getContentType()).isEqualTo(uploadMetadata.getContentType());
-    assertThat(retrievedMetadata.getBizType()).isEqualTo(uploadMetadata.getBizType());
-    assertThat(retrievedMetadata.getBizId()).isEqualTo(uploadMetadata.getBizId());
-    assertThat(retrievedMetadata.getPublicAccess()).isEqualTo(uploadMetadata.getPublicAccess());
-    assertThat(retrievedMetadata.getHash()).isEqualTo(uploadMetadata.getHash());
+    assertEquals(uploadMetadata.getFilename(), retrievedMetadata.getFilename());
+    assertEquals(uploadMetadata.getContentType(), retrievedMetadata.getContentType());
+    assertEquals(uploadMetadata.getBizType(), retrievedMetadata.getBizType());
+    assertEquals(uploadMetadata.getBizId(), retrievedMetadata.getBizId());
+    assertEquals(uploadMetadata.getPublicAccess(), retrievedMetadata.getPublicAccess());
+    assertEquals(uploadMetadata.getHash(), retrievedMetadata.getHash());
   }
 
   @Test
-  @Order(10)
+  @Order(9)
   @DisplayName("Should handle empty files")
   void testEmptyFiles() throws IOException {
     // Given
@@ -324,13 +292,13 @@ class DfsIntegrationTest {
             .build();
 
     // When
-    FileMetadata metadata = dfsService.upload(request, "database");
+    FileMetadata metadata = dfsService.upload(request);
 
     // Then
-    assertThat(metadata.getSize()).isEqualTo(0);
+    assertEquals(0, metadata.getSize());
 
-    FileDownloadResponse response = dfsService.download(metadata.getFileId(), "database");
+    FileDownloadResponse response = dfsService.download(metadata.getFileId());
     byte[] content = IOUtils.toByteArray(response.getInputStream());
-    assertThat(content).isEmpty();
+    assertEquals(0, content.length);
   }
 }

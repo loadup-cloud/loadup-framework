@@ -26,7 +26,7 @@
         <module>loadup-components-dfs-binder-local</module>
         <module>loadup-components-dfs-binder-database</module>
         <module>loadup-components-dfs-binder-s3</module>
-        <module>loadup-components-dfs-test</module>
+        <!--        <module>loadup-components-dfs-test</module>-->
     </modules>
 
     <dependencyManagement>

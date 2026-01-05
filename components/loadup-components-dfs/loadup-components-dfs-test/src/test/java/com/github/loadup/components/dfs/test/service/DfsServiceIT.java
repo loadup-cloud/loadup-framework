@@ -29,6 +29,7 @@ import com.github.loadup.components.dfs.model.FileMetadata;
 import com.github.loadup.components.dfs.model.FileUploadRequest;
 import com.github.loadup.components.dfs.service.DfsService;
 import com.github.loadup.components.dfs.test.DfsTestApplication;
+import com.github.loadup.components.testcontainers.cloud.AbstractMySQLContainerTest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -44,7 +45,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(classes = DfsTestApplication.class)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class DfsServiceIT {
+class DfsServiceIT extends AbstractMySQLContainerTest {
 
     @Autowired
     private DfsService dfsService;

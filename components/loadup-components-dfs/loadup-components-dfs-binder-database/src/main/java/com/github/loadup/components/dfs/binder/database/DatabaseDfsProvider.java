@@ -24,13 +24,15 @@ package com.github.loadup.components.dfs.binder.database;
 
 import com.github.loadup.components.dfs.api.IDfsProvider;
 import com.github.loadup.components.dfs.binder.database.entity.FileStorageEntity;
-import com.github.loadup.components.dfs.binder.database.repository.FileStorageRepository;
+import com.github.loadup.components.dfs.binder.database.entity.table.Tables;
+import com.github.loadup.components.dfs.binder.database.mapper.FileStorageEntityMapper;
 import com.github.loadup.components.dfs.config.DfsProperties;
 import com.github.loadup.components.dfs.enums.FileStatus;
 import com.github.loadup.components.dfs.model.FileDownloadResponse;
 import com.github.loadup.components.dfs.model.FileMetadata;
 import com.github.loadup.components.dfs.model.FileUploadRequest;
 import com.github.loadup.components.extension.annotation.Extension;
+import com.mybatisflex.core.query.QueryWrapper;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -49,12 +51,12 @@ public class DatabaseDfsProvider implements IDfsProvider {
 
   @Autowired private DfsProperties dfsProperties;
 
-  @Autowired private FileStorageRepository fileStorageRepository;
+  @Autowired private FileStorageEntityMapper fileStorageEntityMapper;
 
   @Override
   public FileMetadata upload(FileUploadRequest request) {
     try {
-      if (fileStorageRepository == null) {
+      if (fileStorageEntityMapper == null) {
         throw new IllegalStateException("Database provider is not configured");
       }
 
@@ -98,7 +100,7 @@ public class DatabaseDfsProvider implements IDfsProvider {
       entity.setPublicAccess(request.getPublicAccess());
       entity.setUploadTime(LocalDateTime.now());
 
-      fileStorageRepository.save(entity);
+      fileStorageEntityMapper.insert(entity);
 
       log.info("File uploaded successfully to database: {}", request.getFilename());
 
@@ -127,10 +129,13 @@ public class DatabaseDfsProvider implements IDfsProvider {
   @Override
   public FileDownloadResponse download(String fileId) {
     try {
-      FileStorageEntity entity =
-          fileStorageRepository
-              .findByFileId(fileId)
-              .orElseThrow(() -> new RuntimeException("File not found: " + fileId));
+      QueryWrapper query =
+          QueryWrapper.create().where(Tables.FILE_STORAGE_ENTITY.FILE_ID.eq(fileId));
+
+      FileStorageEntity entity = fileStorageEntityMapper.selectOneByQuery(query);
+      if (entity == null) {
+        throw new RuntimeException("File not found: " + fileId);
+      }
 
       ByteArrayInputStream inputStream = new ByteArrayInputStream(entity.getContent());
 
@@ -164,9 +169,12 @@ public class DatabaseDfsProvider implements IDfsProvider {
   @Override
   public boolean delete(String fileId) {
     try {
-      fileStorageRepository.deleteByFileId(fileId);
+      QueryWrapper query =
+          QueryWrapper.create().where(Tables.FILE_STORAGE_ENTITY.FILE_ID.eq(fileId));
+
+      int deleted = fileStorageEntityMapper.deleteByQuery(query);
       log.info("File deleted successfully from database: {}", fileId);
-      return true;
+      return deleted > 0;
 
     } catch (Exception e) {
       log.error("Failed to delete file from database: {}", e.getMessage(), e);
@@ -176,15 +184,18 @@ public class DatabaseDfsProvider implements IDfsProvider {
 
   @Override
   public boolean exists(String fileId) {
-    return fileStorageRepository.existsByFileId(fileId);
+    QueryWrapper query = QueryWrapper.create().where(Tables.FILE_STORAGE_ENTITY.FILE_ID.eq(fileId));
+    return fileStorageEntityMapper.selectCountByQuery(query) > 0;
   }
 
   @Override
   public FileMetadata getMetadata(String fileId) {
-    FileStorageEntity entity =
-        fileStorageRepository
-            .findByFileId(fileId)
-            .orElseThrow(() -> new RuntimeException("File not found: " + fileId));
+    QueryWrapper query = QueryWrapper.create().where(Tables.FILE_STORAGE_ENTITY.FILE_ID.eq(fileId));
+
+    FileStorageEntity entity = fileStorageEntityMapper.selectOneByQuery(query);
+    if (entity == null) {
+      throw new RuntimeException("File not found: " + fileId);
+    }
 
     return FileMetadata.builder()
         .fileId(entity.getFileId())
@@ -209,7 +220,7 @@ public class DatabaseDfsProvider implements IDfsProvider {
   @Override
   public boolean isAvailable() {
     DfsProperties.ProviderConfig config = dfsProperties.getProviders().get("database");
-    return config != null && config.isEnabled() && fileStorageRepository != null;
+    return config != null && config.isEnabled() && fileStorageEntityMapper != null;
   }
 
   private static String bytesToHex(byte[] bytes) {

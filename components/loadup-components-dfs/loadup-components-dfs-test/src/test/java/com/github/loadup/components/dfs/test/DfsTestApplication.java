@@ -24,13 +24,9 @@ package com.github.loadup.components.dfs.test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-/** Test application for DFS component testing */
+/** Test application for DFS component testing with MyBatis-Flex */
 @SpringBootApplication(scanBasePackages = "com.github.loadup.components")
-@EntityScan(basePackages = "com.github.loadup.components.dfs.binder.database.entity")
-@EnableJpaRepositories(basePackages = "com.github.loadup.components.dfs.binder.database.repository")
 public class DfsTestApplication {
   public static void main(String[] args) {
     SpringApplication.run(DfsTestApplication.class, args);

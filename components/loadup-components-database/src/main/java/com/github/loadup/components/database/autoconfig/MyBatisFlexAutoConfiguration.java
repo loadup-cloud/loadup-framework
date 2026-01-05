@@ -63,31 +63,25 @@ public class MyBatisFlexAutoConfiguration {
    */
   @Bean
   public MyBatisFlexCustomizer myBatisFlexCustomizer() {
-    return new MyBatisFlexCustomizer() {
-      @Override
-      public void customize(FlexGlobalConfig globalConfig) {
+    return globalConfig -> {
+      FlexGlobalConfig.KeyConfig keyConfig = new FlexGlobalConfig.KeyConfig();
+      keyConfig.setKeyType(KeyType.Generator);
+      keyConfig.setValue(KeyGenerators.flexId);
+      keyConfig.setBefore(true);
+      globalConfig.setKeyConfig(keyConfig);
 
-        FlexGlobalConfig.KeyConfig keyConfig = new FlexGlobalConfig.KeyConfig();
-        keyConfig.setKeyType(KeyType.Generator);
-        keyConfig.setValue(KeyGenerators.flexId);
-        keyConfig.setBefore(true);
-        globalConfig.setKeyConfig(keyConfig);
+      // Register entity listener
+      globalConfig.registerInsertListener(new BaseEntityListener(databaseProperties), BaseDO.class);
+      globalConfig.registerUpdateListener(new BaseEntityListener(databaseProperties), BaseDO.class);
+      log.info("Registered BaseEntityListener for automatic field population");
 
-        // Register entity listener
-        globalConfig.registerInsertListener(
-            new BaseEntityListener(databaseProperties), BaseDO.class);
-        globalConfig.registerUpdateListener(
-            new BaseEntityListener(databaseProperties), BaseDO.class);
-        log.info("Registered BaseEntityListener for automatic field population");
-
-        if (databaseProperties.getLogicalDelete().isEnabled()) {
-          // Configure logical delete
-          globalConfig.setLogicDeleteColumn("deleted");
-          LogicDeleteManager.setProcessor(new BooleanLogicDeleteProcessor());
-        }
-        // Enable SQL audit in development mode (optional)
-        MyBatisFlexAutoConfiguration.this.enableSqlAuditIfNeeded();
+      if (databaseProperties.getLogicalDelete().isEnabled()) {
+        // Configure logical delete
+        globalConfig.setLogicDeleteColumn("deleted");
+        LogicDeleteManager.setProcessor(new BooleanLogicDeleteProcessor());
       }
+      // Enable SQL audit in development mode (optional)
+      MyBatisFlexAutoConfiguration.this.enableSqlAuditIfNeeded();
     };
   }
 

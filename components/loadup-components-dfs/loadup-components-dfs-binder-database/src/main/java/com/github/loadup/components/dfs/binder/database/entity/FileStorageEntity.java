@@ -22,52 +22,52 @@ package com.github.loadup.components.dfs.binder.database.entity;
  * #L%
  */
 
-import jakarta.persistence.*;
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** 文件存储实体 - JPA Entity */
+/** 文件存储实体 - MyBatis-Flex Entity */
 @Data
-@Entity
-@Table(name = "dfs_file_storage")
+@Table("dfs_file_storage")
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileStorageEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Id(keyType = KeyType.Auto)
   private Long id;
 
-  @Column(name = "file_id", unique = true, nullable = false, length = 64)
+  @Column("file_id")
   private String fileId;
 
-  @Column(name = "filename", nullable = false, length = 255)
+  @Column("filename")
   private String filename;
 
-  @Lob
-  @Column(name = "content", nullable = false)
+  @Column("content")
   private byte[] content;
 
-  @Column(name = "size", nullable = false)
+  @Column("size")
   private Long size;
 
-  @Column(name = "content_type", length = 100)
+  @Column("content_type")
   private String contentType;
 
-  @Column(name = "hash", length = 64)
+  @Column("hash")
   private String hash;
 
-  @Column(name = "biz_type", length = 50)
+  @Column("biz_type")
   private String bizType;
 
-  @Column(name = "biz_id", length = 64)
+  @Column("biz_id")
   private String bizId;
 
-  @Column(name = "public_access")
+  @Column("public_access")
   private Boolean publicAccess;
 
-  @Column(name = "upload_time")
+  @Column("upload_time")
   private LocalDateTime uploadTime;
 }

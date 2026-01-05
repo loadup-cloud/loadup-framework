@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS dfs_file_storage
     id            BIGINT AUTO_INCREMENT PRIMARY KEY,
     file_id       VARCHAR(64)  NOT NULL UNIQUE,
     filename      VARCHAR(255) NOT NULL,
-    content       BLOB         NOT NULL,
+    content       LONGBLOB     NOT NULL,
     size          BIGINT       NOT NULL,
     content_type  VARCHAR(100),
     hash          VARCHAR(64),
