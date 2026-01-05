@@ -28,7 +28,7 @@ import com.github.loadup.modules.upms.domain.entity.User;
 import com.github.loadup.modules.upms.domain.repository.UserRepository;
 import com.github.loadup.modules.upms.infrastructure.converter.UserConverter;
 import com.github.loadup.modules.upms.infrastructure.dataobject.UserDO;
-import com.github.loadup.modules.upms.infrastructure.mapper.UserMapper;
+import com.github.loadup.modules.upms.infrastructure.mapper.UserDOMapper;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import java.util.List;
@@ -49,59 +49,59 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
 
-  private final UserMapper userMapper;
+  private final UserDOMapper userDOMapper;
   private final UserConverter userConverter;
 
   @Override
   public User save(User user) {
     UserDO userDO = userConverter.toDataObject(user);
-    userMapper.insert(userDO);
+    userDOMapper.insert(userDO);
     return userConverter.toEntity(userDO);
   }
 
   @Override
   public User update(User user) {
     UserDO userDO = userConverter.toDataObject(user);
-    userMapper.update(userDO);
+    userDOMapper.update(userDO);
     return userConverter.toEntity(userDO);
   }
 
   @Override
   public void deleteById(String id) {
-    userMapper.deleteById(id);
+    userDOMapper.deleteById(id);
   }
 
   @Override
   public Optional<User> findById(String id) {
-    UserDO userDO = userMapper.selectOneById(id);
+    UserDO userDO = userDOMapper.selectOneById(id);
     return Optional.ofNullable(userDO).map(userConverter::toEntity);
   }
 
   @Override
   public Optional<User> findByUsername(String username) {
     QueryWrapper query = QueryWrapper.create().eq("username", username);
-    UserDO userDO = userMapper.selectOneByQuery(query);
+    UserDO userDO = userDOMapper.selectOneByQuery(query);
     return Optional.ofNullable(userDO).map(userConverter::toEntity);
   }
 
   @Override
   public Optional<User> findByEmail(String email) {
     QueryWrapper query = QueryWrapper.create().eq("email", email);
-    UserDO userDO = userMapper.selectOneByQuery(query);
+    UserDO userDO = userDOMapper.selectOneByQuery(query);
     return Optional.ofNullable(userDO).map(userConverter::toEntity);
   }
 
   @Override
   public Optional<User> findByPhone(String phone) {
     QueryWrapper query = QueryWrapper.create().eq("phone", phone);
-    UserDO userDO = userMapper.selectOneByQuery(query);
+    UserDO userDO = userDOMapper.selectOneByQuery(query);
     return Optional.ofNullable(userDO).map(userConverter::toEntity);
   }
 
   @Override
   public List<User> findByDeptId(String deptId) {
     QueryWrapper query = QueryWrapper.create().eq("dept_id", deptId);
-    List<UserDO> userDOs = userMapper.selectListByQuery(query);
+    List<UserDO> userDOs = userDOMapper.selectListByQuery(query);
     return userDOs.stream().map(userConverter::toEntity).collect(Collectors.toList());
   }
 
@@ -114,7 +114,7 @@ public class UserRepositoryImpl implements UserRepository {
   @Override
   public org.springframework.data.domain.Page<User> findAll(Pageable pageable) {
     Page<UserDO> page =
-        userMapper.paginate(
+        userDOMapper.paginate(
             Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), QueryWrapper.create());
 
     List<User> users =
@@ -134,7 +134,7 @@ public class UserRepositoryImpl implements UserRepository {
                 "%" + keyword + "%");
 
     Page<UserDO> page =
-        userMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+        userDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
     List<User> users =
         page.getRecords().stream().map(userConverter::toEntity).collect(Collectors.toList());
@@ -145,24 +145,24 @@ public class UserRepositoryImpl implements UserRepository {
   @Override
   public boolean existsByUsername(String username) {
     QueryWrapper query = QueryWrapper.create().where(USER_DO.USERNAME.eq(username));
-    return userMapper.selectCountByQuery(query) > 0;
+    return userDOMapper.selectCountByQuery(query) > 0;
   }
 
   @Override
   public boolean existsByEmail(String email) {
     QueryWrapper query = QueryWrapper.create().where(USER_DO.EMAIL.eq(email));
-    return userMapper.selectCountByQuery(query) > 0;
+    return userDOMapper.selectCountByQuery(query) > 0;
   }
 
   @Override
   public boolean existsByPhone(String phone) {
     QueryWrapper query = QueryWrapper.create().where(USER_DO.PHONE.eq(phone));
-    return userMapper.selectCountByQuery(query) > 0;
+    return userDOMapper.selectCountByQuery(query) > 0;
   }
 
   @Override
   public long countByDeptId(String deptId) {
     QueryWrapper query = QueryWrapper.create().where(USER_DO.DEPT_ID.eq(deptId));
-    return userMapper.selectCountByQuery(query);
+    return userDOMapper.selectCountByQuery(query);
   }
 }

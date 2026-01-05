@@ -28,7 +28,7 @@ import com.github.loadup.modules.upms.domain.entity.OperationLog;
 import com.github.loadup.modules.upms.domain.repository.OperationLogRepository;
 import com.github.loadup.modules.upms.infrastructure.converter.OperationLogConverter;
 import com.github.loadup.modules.upms.infrastructure.dataobject.OperationLogDO;
-import com.github.loadup.modules.upms.infrastructure.mapper.OperationLogMapper;
+import com.github.loadup.modules.upms.infrastructure.mapper.OperationLogDOMapper;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import java.time.LocalDateTime;
@@ -50,13 +50,13 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class OperationLogRepositoryImpl implements OperationLogRepository {
 
-  private final OperationLogMapper operationLogMapper;
+  private final OperationLogDOMapper operationLogDOMapper;
   private final OperationLogConverter operationLogConverter;
 
   @Override
   public OperationLog save(OperationLog log) {
     OperationLogDO operationLogDO = operationLogConverter.toDataObject(log);
-    operationLogMapper.insert(operationLogDO);
+    operationLogDOMapper.insert(operationLogDO);
     return operationLogConverter.toEntity(operationLogDO);
   }
 
@@ -64,12 +64,12 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
   public void batchSave(List<OperationLog> logs) {
     List<OperationLogDO> operationLogDOs =
         logs.stream().map(operationLogConverter::toDataObject).collect(Collectors.toList());
-    operationLogMapper.insertBatch(operationLogDOs);
+    operationLogDOMapper.insertBatch(operationLogDOs);
   }
 
   @Override
   public Optional<OperationLog> findById(String id) {
-    OperationLogDO operationLogDO = operationLogMapper.selectOneById(id);
+    OperationLogDO operationLogDO = operationLogDOMapper.selectOneById(id);
     return Optional.ofNullable(operationLogDO).map(operationLogConverter::toEntity);
   }
 
@@ -82,7 +82,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
             .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
 
     Page<OperationLogDO> page =
-        operationLogMapper.paginate(
+        operationLogDOMapper.paginate(
             Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
     List<OperationLog> logs =
@@ -102,7 +102,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
             .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
 
     Page<OperationLogDO> page =
-        operationLogMapper.paginate(
+        operationLogDOMapper.paginate(
             Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
     List<OperationLog> logs =
@@ -122,7 +122,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
             .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
 
     Page<OperationLogDO> page =
-        operationLogMapper.paginate(
+        operationLogDOMapper.paginate(
             Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
     List<OperationLog> logs =
@@ -159,7 +159,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
     query.orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
 
     Page<OperationLogDO> page =
-        operationLogMapper.paginate(
+        operationLogDOMapper.paginate(
             Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
     List<OperationLog> logs =
@@ -172,7 +172,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
 
   @Override
   public void deleteBeforeDate(LocalDateTime date) {
-    operationLogMapper.deleteByQuery(
+    operationLogDOMapper.deleteByQuery(
         QueryWrapper.create().where(OPERATION_LOG_DO.CREATED_AT.lt(date)));
   }
 
@@ -182,7 +182,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
         QueryWrapper.create()
             .where(OPERATION_LOG_DO.USER_ID.eq(userId))
             .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
-    List<OperationLogDO> operationLogDOs = operationLogMapper.selectListByQuery(query);
+    List<OperationLogDO> operationLogDOs = operationLogDOMapper.selectListByQuery(query);
     return operationLogDOs.stream()
         .map(operationLogConverter::toEntity)
         .collect(Collectors.toList());
@@ -194,7 +194,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
         QueryWrapper.create()
             .where(OPERATION_LOG_DO.OPERATION_TYPE.eq(operationType))
             .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
-    List<OperationLogDO> operationLogDOs = operationLogMapper.selectListByQuery(query);
+    List<OperationLogDO> operationLogDOs = operationLogDOMapper.selectListByQuery(query);
     return operationLogDOs.stream()
         .map(operationLogConverter::toEntity)
         .collect(Collectors.toList());
@@ -207,7 +207,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
         QueryWrapper.create()
             .where(OPERATION_LOG_DO.CREATED_AT.between(startTime, endTime))
             .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
-    List<OperationLogDO> operationLogDOs = operationLogMapper.selectListByQuery(query);
+    List<OperationLogDO> operationLogDOs = operationLogDOMapper.selectListByQuery(query);
     return operationLogDOs.stream()
         .map(operationLogConverter::toEntity)
         .collect(Collectors.toList());
@@ -216,7 +216,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
   @Override
   public long countByUserId(String userId) {
     QueryWrapper query = QueryWrapper.create().where(OPERATION_LOG_DO.USER_ID.eq(userId));
-    return operationLogMapper.selectCountByQuery(query);
+    return operationLogDOMapper.selectCountByQuery(query);
   }
 
   @Override
@@ -224,7 +224,7 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
     QueryWrapper query = QueryWrapper.create().orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
 
     Page<OperationLogDO> page =
-        operationLogMapper.paginate(
+        operationLogDOMapper.paginate(
             Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
     List<OperationLog> logs =
@@ -239,6 +239,6 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
   public long countFailedOperations(LocalDateTime startTime, LocalDateTime endTime) {
     QueryWrapper query =
         QueryWrapper.create().where(OPERATION_LOG_DO.CREATED_AT.between(startTime, endTime));
-    return operationLogMapper.selectCountByQuery(query);
+    return operationLogDOMapper.selectCountByQuery(query);
   }
 }

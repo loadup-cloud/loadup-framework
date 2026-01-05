@@ -28,7 +28,7 @@ import com.github.loadup.modules.upms.domain.entity.Role;
 import com.github.loadup.modules.upms.domain.repository.RoleRepository;
 import com.github.loadup.modules.upms.infrastructure.converter.RoleConverter;
 import com.github.loadup.modules.upms.infrastructure.dataobject.RoleDO;
-import com.github.loadup.modules.upms.infrastructure.mapper.RoleMapper;
+import com.github.loadup.modules.upms.infrastructure.mapper.RoleDOMapper;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import java.util.List;
@@ -49,38 +49,38 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class RoleRepositoryImpl implements RoleRepository {
 
-  private final RoleMapper roleMapper;
+  private final RoleDOMapper roleDOMapper;
   private final RoleConverter roleConverter;
 
   @Override
   public Role save(Role role) {
     RoleDO roleDO = roleConverter.toDataObject(role);
-    roleMapper.insert(roleDO);
+    roleDOMapper.insert(roleDO);
     return roleConverter.toEntity(roleDO);
   }
 
   @Override
   public Role update(Role role) {
     RoleDO roleDO = roleConverter.toDataObject(role);
-    roleMapper.update(roleDO);
+    roleDOMapper.update(roleDO);
     return roleConverter.toEntity(roleDO);
   }
 
   @Override
   public void deleteById(String id) {
-    roleMapper.deleteById(id);
+    roleDOMapper.deleteById(id);
   }
 
   @Override
   public Optional<Role> findById(String id) {
-    RoleDO roleDO = roleMapper.selectOneById(id);
+    RoleDO roleDO = roleDOMapper.selectOneById(id);
     return Optional.ofNullable(roleDO).map(roleConverter::toEntity);
   }
 
   @Override
   public Optional<Role> findByRoleCode(String roleCode) {
     QueryWrapper query = QueryWrapper.create().where(ROLE_DO.ROLE_CODE.eq(roleCode));
-    RoleDO roleDO = roleMapper.selectOneByQuery(query);
+    RoleDO roleDO = roleDOMapper.selectOneByQuery(query);
     return Optional.ofNullable(roleDO).map(roleConverter::toEntity);
   }
 
@@ -93,27 +93,27 @@ public class RoleRepositoryImpl implements RoleRepository {
   @Override
   public List<Role> findByParentRoleId(String parentRoleId) {
     QueryWrapper query = QueryWrapper.create().where(ROLE_DO.ID.eq(parentRoleId));
-    List<RoleDO> roleDOs = roleMapper.selectListByQuery(query);
+    List<RoleDO> roleDOs = roleDOMapper.selectListByQuery(query);
     return roleDOs.stream().map(roleConverter::toEntity).collect(Collectors.toList());
   }
 
   @Override
   public List<Role> findAll() {
-    List<RoleDO> roleDOs = roleMapper.selectAll();
+    List<RoleDO> roleDOs = roleDOMapper.selectAll();
     return roleDOs.stream().map(roleConverter::toEntity).collect(Collectors.toList());
   }
 
   @Override
   public List<Role> findAllEnabled() {
     QueryWrapper query = QueryWrapper.create().where(ROLE_DO.STATUS.eq((short) 1));
-    List<RoleDO> roleDOs = roleMapper.selectListByQuery(query);
+    List<RoleDO> roleDOs = roleDOMapper.selectListByQuery(query);
     return roleDOs.stream().map(roleConverter::toEntity).collect(Collectors.toList());
   }
 
   @Override
   public boolean existsByRoleCode(String roleCode) {
     QueryWrapper query = QueryWrapper.create().where(ROLE_DO.ROLE_CODE.eq(roleCode));
-    return roleMapper.selectCountByQuery(query) > 0;
+    return roleDOMapper.selectCountByQuery(query) > 0;
   }
 
   @Override
@@ -167,7 +167,7 @@ public class RoleRepositoryImpl implements RoleRepository {
   @Override
   public org.springframework.data.domain.Page<Role> findAll(Pageable pageable) {
     Page<RoleDO> page =
-        roleMapper.paginate(
+        roleDOMapper.paginate(
             Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), QueryWrapper.create());
 
     List<Role> roles =

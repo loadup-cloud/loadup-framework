@@ -28,7 +28,7 @@ import com.github.loadup.modules.upms.domain.entity.LoginLog;
 import com.github.loadup.modules.upms.domain.repository.LoginLogRepository;
 import com.github.loadup.modules.upms.infrastructure.converter.LoginLogConverter;
 import com.github.loadup.modules.upms.infrastructure.dataobject.LoginLogDO;
-import com.github.loadup.modules.upms.infrastructure.mapper.LoginLogMapper;
+import com.github.loadup.modules.upms.infrastructure.mapper.LoginLogDOMapper;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import java.time.LocalDateTime;
@@ -49,19 +49,19 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class LoginLogRepositoryImpl implements LoginLogRepository {
 
-  private final LoginLogMapper loginLogMapper;
+  private final LoginLogDOMapper loginLogDOMapper;
   private final LoginLogConverter loginLogConverter;
 
   @Override
   public LoginLog save(LoginLog log) {
     LoginLogDO loginLogDO = loginLogConverter.toDataObject(log);
-    loginLogMapper.insert(loginLogDO);
+    loginLogDOMapper.insert(loginLogDO);
     return loginLogConverter.toEntity(loginLogDO);
   }
 
   @Override
   public Optional<LoginLog> findById(String id) {
-    LoginLogDO loginLogDO = loginLogMapper.selectOneById(id);
+    LoginLogDO loginLogDO = loginLogDOMapper.selectOneById(id);
     return Optional.ofNullable(loginLogDO).map(loginLogConverter::toEntity);
   }
 
@@ -74,7 +74,7 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
             .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
     Page<LoginLogDO> page =
-        loginLogMapper.paginate(
+        loginLogDOMapper.paginate(
             Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
     List<LoginLog> logs =
@@ -92,7 +92,7 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
             .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
     Page<LoginLogDO> page =
-        loginLogMapper.paginate(
+        loginLogDOMapper.paginate(
             Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
     List<LoginLog> logs =
@@ -110,7 +110,7 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
             .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
     Page<LoginLogDO> page =
-        loginLogMapper.paginate(
+        loginLogDOMapper.paginate(
             Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
     List<LoginLog> logs =
@@ -129,7 +129,7 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
             .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
     Page<LoginLogDO> page =
-        loginLogMapper.paginate(
+        loginLogDOMapper.paginate(
             Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
     List<LoginLog> logs =
@@ -140,7 +140,7 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
 
   @Override
   public void deleteBeforeDate(LocalDateTime date) {
-    loginLogMapper.deleteByQuery(QueryWrapper.create().where(LOGIN_LOG_DO.LOGIN_TIME.lt(date)));
+    loginLogDOMapper.deleteByQuery(QueryWrapper.create().where(LOGIN_LOG_DO.LOGIN_TIME.lt(date)));
   }
 
   @Override
@@ -149,7 +149,7 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
         QueryWrapper.create()
             .where(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime))
             .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
-    List<LoginLogDO> loginLogDOs = loginLogMapper.selectListByQuery(query);
+    List<LoginLogDO> loginLogDOs = loginLogDOMapper.selectListByQuery(query);
     return loginLogDOs.stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
   }
 
@@ -158,7 +158,7 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
     QueryWrapper query = QueryWrapper.create().orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
     Page<LoginLogDO> page =
-        loginLogMapper.paginate(
+        loginLogDOMapper.paginate(
             Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
     List<LoginLog> logs =
@@ -173,7 +173,7 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
         QueryWrapper.create()
             .where(LOGIN_LOG_DO.USER_ID.eq(userId))
             .and(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime));
-    return loginLogMapper.selectCountByQuery(query);
+    return loginLogDOMapper.selectCountByQuery(query);
   }
 
   @Override
@@ -184,7 +184,7 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
             .where(LOGIN_LOG_DO.USER_ID.eq(userId))
             .and(LOGIN_LOG_DO.LOGIN_STATUS.eq((short) 0))
             .and(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime));
-    return loginLogMapper.selectCountByQuery(query);
+    return loginLogDOMapper.selectCountByQuery(query);
   }
 
   @Override
@@ -193,7 +193,7 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
         QueryWrapper.create()
             .where(LOGIN_LOG_DO.USER_ID.eq(userId))
             .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
-    List<LoginLogDO> loginLogDOs = loginLogMapper.selectListByQuery(query);
+    List<LoginLogDO> loginLogDOs = loginLogDOMapper.selectListByQuery(query);
     return loginLogDOs.stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
   }
 
@@ -205,7 +205,7 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
             .and(LOGIN_LOG_DO.LOGIN_STATUS.eq((short) 1))
             .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc())
             .limit(1);
-    LoginLogDO loginLogDO = loginLogMapper.selectOneByQuery(query);
+    LoginLogDO loginLogDO = loginLogDOMapper.selectOneByQuery(query);
     return Optional.ofNullable(loginLogDO).map(loginLogConverter::toEntity);
   }
 }
