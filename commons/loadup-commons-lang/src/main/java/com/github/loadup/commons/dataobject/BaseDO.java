@@ -42,7 +42,7 @@ import lombok.Setter;
 @Setter
 public abstract class BaseDO implements Serializable {
   // @Id(keyType = KeyType.Generator, value = KeyGenerators.flexId)
-  private Long id;
+  private String id;
 
   /** 创建时间（自动填充） */
   // @Column(onInsertValue = "now()")
