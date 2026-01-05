@@ -6,14 +6,9 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 /**
  * Base Repository Test Configuration
@@ -46,16 +41,6 @@ import org.testcontainers.utility.DockerImageName;
 @Testcontainers
 public abstract class BaseRepositoryTest {
 
-  /** MySQL Testcontainer - shared across all tests */
-  @Container
-  protected static final MySQLContainer<?> mysqlContainer =
-      new MySQLContainer<>(DockerImageName.parse("mysql:8.0"))
-          .withCommand("--default-authentication-plugin=mysql_native_password") // 添加这一行
-          .withDatabaseName("loadup_test")
-          .withUsername("test")
-          .withPassword("test")
-          .withReuse(false);
-
   @BeforeAll
   static void beforeAll() {
     // Check Docker availability
@@ -78,19 +63,6 @@ public abstract class BaseRepositoryTest {
     } catch (Exception e) {
       System.err.println("Error checking Docker: " + e.getMessage());
     }
-  }
-
-  /** Configure datasource properties dynamically from Testcontainer */
-  @DynamicPropertySource
-  static void configureProperties(DynamicPropertyRegistry registry) {
-    registry.add(
-        "spring.datasource.url",
-        () ->
-            mysqlContainer.getJdbcUrl()
-                + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC");
-    registry.add("spring.datasource.username", mysqlContainer::getUsername);
-    registry.add("spring.datasource.password", mysqlContainer::getPassword);
-    registry.add("spring.datasource.driver-class-name", () -> "com.mysql.cj.jdbc.Driver");
   }
 
   /** Generate a unique test ID */

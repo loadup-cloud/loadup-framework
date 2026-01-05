@@ -56,14 +56,16 @@ public class RoleRepositoryImpl implements RoleRepository {
   public Role save(Role role) {
     RoleDO roleDO = roleConverter.toDataObject(role);
     roleDOMapper.insert(roleDO);
-    return roleConverter.toEntity(roleDO);
+    role = roleConverter.toEntity(roleDO);
+    return role;
   }
 
   @Override
   public Role update(Role role) {
     RoleDO roleDO = roleConverter.toDataObject(role);
     roleDOMapper.update(roleDO);
-    return roleConverter.toEntity(roleDO);
+    role = roleConverter.toEntity(roleDO);
+    return role;
   }
 
   @Override

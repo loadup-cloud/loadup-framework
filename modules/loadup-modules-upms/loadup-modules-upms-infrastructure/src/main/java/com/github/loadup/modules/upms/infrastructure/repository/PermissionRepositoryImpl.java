@@ -53,14 +53,16 @@ public class PermissionRepositoryImpl implements PermissionRepository {
   public Permission save(Permission permission) {
     PermissionDO permissionDO = permissionConverter.toDataObject(permission);
     permissionDOMapper.insert(permissionDO);
-    return permissionConverter.toEntity(permissionDO);
+    permission = permissionConverter.toEntity(permissionDO);
+    return permission;
   }
 
   @Override
   public Permission update(Permission permission) {
     PermissionDO permissionDO = permissionConverter.toDataObject(permission);
     permissionDOMapper.update(permissionDO);
-    return permissionConverter.toEntity(permissionDO);
+    permission = permissionConverter.toEntity(permissionDO);
+    return permission;
   }
 
   @Override

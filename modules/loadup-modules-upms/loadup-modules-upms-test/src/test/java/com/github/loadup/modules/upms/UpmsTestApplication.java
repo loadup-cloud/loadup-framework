@@ -4,8 +4,6 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 
@@ -32,16 +30,26 @@ public class UpmsTestApplication {
           .withUsername("root")
           .withPassword("123456")
           .withCommand("--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci")
-          .withReuse(false);
+          .withReuse(true);
 
-  @DynamicPropertySource
-  static void configureProperties(DynamicPropertyRegistry registry) {
-    System.out.println("JDBC URL: " + mySQLContainer.getJdbcUrl());
-    registry.add("spring.datasource.url", mySQLContainer::getJdbcUrl);
-    registry.add("spring.datasource.username", mySQLContainer::getUsername);
-    registry.add("spring.datasource.password", mySQLContainer::getPassword);
-    registry.add("spring.datasource.driver-class-name", () -> "com.mysql.cj.jdbc.Driver");
+  static {
+    mySQLContainer.start();
+
+    // 配置JVM级别的系统属性，确保所有测试类使用同一个容器
+    System.setProperty("spring.datasource.url", mySQLContainer.getJdbcUrl());
+    System.setProperty("spring.datasource.username", mySQLContainer.getUsername());
+    System.setProperty("spring.datasource.password", mySQLContainer.getPassword());
+    System.setProperty("spring.datasource.driver-class-name", "com.mysql.cj.jdbc.Driver");
   }
+
+  // @DynamicPropertySource
+  // static void configureProperties(DynamicPropertyRegistry registry) {
+  //  System.out.println("JDBC URL: " + mySQLContainer.getJdbcUrl());
+  //  registry.add("spring.datasource.url", mySQLContainer::getJdbcUrl);
+  //  registry.add("spring.datasource.username", mySQLContainer::getUsername);
+  //  registry.add("spring.datasource.password", mySQLContainer::getPassword);
+  //  registry.add("spring.datasource.driver-class-name", () -> "com.mysql.cj.jdbc.Driver");
+  // }
 
   public static void main(String[] args) {
     SpringApplication.run(UpmsTestApplication.class, args);

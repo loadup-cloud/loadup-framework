@@ -54,10 +54,11 @@ public class OperationLogRepositoryImpl implements OperationLogRepository {
   private final OperationLogConverter operationLogConverter;
 
   @Override
-  public OperationLog save(OperationLog log) {
-    OperationLogDO operationLogDO = operationLogConverter.toDataObject(log);
+  public OperationLog save(OperationLog entity) {
+    OperationLogDO operationLogDO = operationLogConverter.toDataObject(entity);
     operationLogDOMapper.insert(operationLogDO);
-    return operationLogConverter.toEntity(operationLogDO);
+    entity = operationLogConverter.toEntity(operationLogDO);
+    return entity;
   }
 
   @Override

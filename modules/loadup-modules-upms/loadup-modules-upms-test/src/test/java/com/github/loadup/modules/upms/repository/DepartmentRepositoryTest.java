@@ -28,7 +28,6 @@ class DepartmentRepositoryTest extends BaseRepositoryTest {
   void setUp() {
     testDepartment =
         Department.builder()
-            .id("1")
             .parentId("0")
             .deptName("Test Department")
             .deptCode("TEST_DEPT_NEW")
@@ -143,7 +142,7 @@ class DepartmentRepositoryTest extends BaseRepositoryTest {
             .createdBy("1")
             .createdTime(LocalDateTime.now())
             .build();
-    departmentRepository.save(child);
+    child = departmentRepository.save(child);
 
     // When
     boolean hasChildren = departmentRepository.hasChildren(parent.getId());

@@ -54,21 +54,17 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
   @Override
   public Department save(Department department) {
     DepartmentDO departmentDO = departmentConverter.toDataObject(department);
-    // 导入 com.mybatisflex.core.util.EntityHelpers
-    // Object[] values = EntityHelpers.getModifyValues(departmentDO);
-    // System.out.println(">>> 待插入的参数数量: " + (values == null ? 0 : values.length));
     departmentDOMapper.insert(departmentDO);
-
-    // Row row = Row.of("id", departmentDO);
-    // Db.insert("upms_department", row);
-    return departmentConverter.toEntity(departmentDO);
+    department = departmentConverter.toEntity(departmentDO);
+    return department;
   }
 
   @Override
   public Department update(Department department) {
     DepartmentDO departmentDO = departmentConverter.toDataObject(department);
     departmentDOMapper.update(departmentDO);
-    return departmentConverter.toEntity(departmentDO);
+    department = departmentConverter.toEntity(departmentDO);
+    return department;
   }
 
   @Override

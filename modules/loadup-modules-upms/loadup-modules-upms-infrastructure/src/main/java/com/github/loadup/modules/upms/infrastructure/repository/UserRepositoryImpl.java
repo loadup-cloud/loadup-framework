@@ -56,14 +56,16 @@ public class UserRepositoryImpl implements UserRepository {
   public User save(User user) {
     UserDO userDO = userConverter.toDataObject(user);
     userDOMapper.insert(userDO);
-    return userConverter.toEntity(userDO);
+    user = userConverter.toEntity(userDO);
+    return user;
   }
 
   @Override
   public User update(User user) {
     UserDO userDO = userConverter.toDataObject(user);
     userDOMapper.update(userDO);
-    return userConverter.toEntity(userDO);
+    user = userConverter.toEntity(userDO);
+    return user;
   }
 
   @Override

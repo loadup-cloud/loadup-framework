@@ -53,10 +53,11 @@ public class LoginLogRepositoryImpl implements LoginLogRepository {
   private final LoginLogConverter loginLogConverter;
 
   @Override
-  public LoginLog save(LoginLog log) {
-    LoginLogDO loginLogDO = loginLogConverter.toDataObject(log);
+  public LoginLog save(LoginLog entity) {
+    LoginLogDO loginLogDO = loginLogConverter.toDataObject(entity);
     loginLogDOMapper.insert(loginLogDO);
-    return loginLogConverter.toEntity(loginLogDO);
+    entity = loginLogConverter.toEntity(loginLogDO);
+    return entity;
   }
 
   @Override
