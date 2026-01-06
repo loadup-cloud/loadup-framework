@@ -32,7 +32,7 @@ import org.testcontainers.utility.DockerImageName;
 public class SharedKafkaContainer {
 
   /** Default Kafka version to use */
-  public static final String DEFAULT_KAFKA_VERSION = "confluentinc/cp-kafka:7.5.0";
+  public static final String DEFAULT_KAFKA_VERSION = "apache/kafka:4.1.1";
 
   /** The shared Kafka container instance */
   private static final KafkaContainer KAFKA_CONTAINER;
