@@ -62,32 +62,32 @@ public class PageResponse<T> extends MultiResponse {
     return response;
   }
 
-  public static PageResponse buildSuccess() {
-    PageResponse response = new PageResponse();
+  public static PageResponse<Void> buildSuccess() {
+    PageResponse<Void> response = new PageResponse<>();
     response.setResult(Result.buildSuccess());
     return response;
   }
 
-  public static PageResponse buildFailure() {
-    PageResponse response = new PageResponse();
+  public static PageResponse<Void> buildFailure() {
+    PageResponse<Void> response = new PageResponse<>();
     response.setResult(Result.buildFailure());
     return response;
   }
 
-  public static PageResponse buildFailure(String errCode) {
-    PageResponse response = new PageResponse();
+  public static PageResponse<Void> buildFailure(String errCode) {
+    PageResponse<Void> response = new PageResponse<>();
     response.setResult(Result.buildFailure(errCode));
     return response;
   }
 
-  public static PageResponse buildFailure(ResultCode errCode) {
-    PageResponse response = new PageResponse();
+  public static PageResponse<Void> buildFailure(ResultCode errCode) {
+    PageResponse<Void> response = new PageResponse<>();
     response.setResult(Result.buildFailure(errCode));
     return response;
   }
 
-  public static PageResponse buildFailure(ResultCode errCode, String errMessage) {
-    PageResponse response = new PageResponse();
+  public static PageResponse<Void> buildFailure(ResultCode errCode, String errMessage) {
+    PageResponse<Void> response = new PageResponse<>();
     response.setResult(Result.buildFailure(errCode, errMessage));
     return response;
   }

@@ -45,32 +45,32 @@ public class SingleResponse<T> extends Response {
     return response;
   }
 
-  public static SingleResponse buildSuccess() {
-    SingleResponse response = new SingleResponse();
+  public static SingleResponse<Void> buildSuccess() {
+    SingleResponse<Void> response = new SingleResponse<>();
     response.setResult(Result.buildSuccess());
     return response;
   }
 
-  public static SingleResponse buildFailure() {
-    SingleResponse response = new SingleResponse();
+  public static SingleResponse<Void> buildFailure() {
+    SingleResponse<Void> response = new SingleResponse<>();
     response.setResult(Result.buildFailure());
     return response;
   }
 
-  public static SingleResponse buildFailure(String errCode) {
-    SingleResponse response = new SingleResponse();
+  public static SingleResponse<Void> buildFailure(String errCode) {
+    SingleResponse<Void> response = new SingleResponse<>();
     response.setResult(Result.buildFailure(errCode));
     return response;
   }
 
-  public static SingleResponse buildFailure(ResultCode errCode) {
-    SingleResponse response = new SingleResponse();
+  public static SingleResponse<Void> buildFailure(ResultCode errCode) {
+    SingleResponse<Void> response = new SingleResponse<>();
     response.setResult(Result.buildFailure(errCode));
     return response;
   }
 
-  public static SingleResponse buildFailure(ResultCode errCode, String errMessage) {
-    SingleResponse response = new SingleResponse();
+  public static SingleResponse<Void> buildFailure(ResultCode errCode, String errMessage) {
+    SingleResponse<Void> response = new SingleResponse<>();
     response.setResult(Result.buildFailure(errCode, errMessage));
     return response;
   }

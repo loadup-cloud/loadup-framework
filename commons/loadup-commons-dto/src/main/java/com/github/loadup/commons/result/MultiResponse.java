@@ -41,32 +41,32 @@ public class MultiResponse<T> extends Response {
     return response;
   }
 
-  public static MultiResponse buildSuccess() {
-    MultiResponse response = new MultiResponse();
+  public static MultiResponse<Void> buildSuccess() {
+    MultiResponse<Void> response = new MultiResponse<>();
     response.setResult(Result.buildSuccess());
     return response;
   }
 
-  public static MultiResponse buildFailure() {
-    MultiResponse response = new MultiResponse();
+  public static MultiResponse<Void> buildFailure() {
+    MultiResponse<Void> response = new MultiResponse<>();
     response.setResult(Result.buildFailure());
     return response;
   }
 
-  public static MultiResponse buildFailure(String errCode) {
-    MultiResponse response = new MultiResponse();
+  public static MultiResponse<Void> buildFailure(String errCode) {
+    MultiResponse<Void> response = new MultiResponse<>();
     response.setResult(Result.buildFailure(errCode));
     return response;
   }
 
-  public static MultiResponse buildFailure(ResultCode errCode) {
-    MultiResponse response = new MultiResponse();
+  public static MultiResponse<Void> buildFailure(ResultCode errCode) {
+    MultiResponse<Void> response = new MultiResponse<>();
     response.setResult(Result.buildFailure(errCode));
     return response;
   }
 
-  public static MultiResponse buildFailure(ResultCode errCode, String errMessage) {
-    MultiResponse response = new MultiResponse();
+  public static MultiResponse<Void> buildFailure(ResultCode errCode, String errMessage) {
+    MultiResponse<Void> response = new MultiResponse<>();
     response.setResult(Result.buildFailure(errCode, errMessage));
     return response;
   }
