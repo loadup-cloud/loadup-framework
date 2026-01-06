@@ -29,7 +29,7 @@ import com.github.loadup.components.dfs.model.FileMetadata;
 import com.github.loadup.components.dfs.model.FileUploadRequest;
 import com.github.loadup.components.dfs.service.DfsService;
 import com.github.loadup.components.dfs.test.DfsTestApplication;
-import com.github.loadup.components.testcontainers.cloud.AbstractMySQLContainerTest;
+import com.github.loadup.components.testcontainers.database.AbstractMySQLContainerTest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

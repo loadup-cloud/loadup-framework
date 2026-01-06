@@ -46,14 +46,9 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
+            <version>${aws.sdk.version}</version>
         </dependency>
 
-        <!-- MinIO Client (optional) -->
-        <dependency>
-            <groupId>io.minio</groupId>
-            <artifactId>minio</artifactId>
-            <optional>true</optional>
-        </dependency>
 
         <dependency>
             <groupId>commons-io</groupId>

@@ -60,7 +60,7 @@
         <dependency>
             <groupId>com.mybatis-flex</groupId>
             <artifactId>mybatis-flex-annotation</artifactId>
-            <version>1.11.5</version>
+            <version>${mybatis.flex.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

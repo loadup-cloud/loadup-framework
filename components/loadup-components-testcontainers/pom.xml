@@ -18,8 +18,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <testcontainers.version>1.19.3</testcontainers.version>
-        <aws.sdk.version>2.20.0</aws.sdk.version>
     </properties>
 
     <dependencies>
@@ -27,56 +25,49 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>${testcontainers.version}</version>
         </dependency>
 
         <!-- TestContainers MySQL Module -->
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>mysql</artifactId>
-            <version>${testcontainers.version}</version>
+            <artifactId>testcontainers-mysql</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- TestContainers PostgreSQL Module -->
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${testcontainers.version}</version>
+            <artifactId>testcontainers-postgresql</artifactId>
         </dependency>
 
         <!-- TestContainers MongoDB Module -->
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>mongodb</artifactId>
-            <version>${testcontainers.version}</version>
+            <artifactId>testcontainers-mongodb</artifactId>
         </dependency>
 
         <!-- TestContainers Kafka Module -->
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>kafka</artifactId>
-            <version>${testcontainers.version}</version>
+            <artifactId>testcontainers-kafka</artifactId>
         </dependency>
 
         <!-- TestContainers Elasticsearch Module -->
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>elasticsearch</artifactId>
-            <version>${testcontainers.version}</version>
+            <artifactId>testcontainers-elasticsearch</artifactId>
         </dependency>
 
         <!-- TestContainers LocalStack Module (for S3) -->
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>localstack</artifactId>
-            <version>${testcontainers.version}</version>
+            <artifactId>testcontainers-localstack</artifactId>
         </dependency>
 
         <!-- TestContainers JUnit Jupiter Integration -->
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${testcontainers.version}</version>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
         </dependency>
 
         <!-- MySQL Connector -->
@@ -121,11 +112,10 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Redis Client (Jedis) -->
+        <!-- Redis Client (lettuce) -->
         <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <optional>true</optional>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
         </dependency>
 
         <!-- Spring Data Redis (optional) -->

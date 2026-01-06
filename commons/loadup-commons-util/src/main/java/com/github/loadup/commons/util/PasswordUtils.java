@@ -62,7 +62,7 @@ public class PasswordUtils {
    * @return 8位随机盐值字符串
    */
   public static String getRandomSalt() {
-    Long randomLong = RandomUtils.nextLong(10000000L, 99999999L);
+    Long randomLong = RandomUtils.secure().nextLong(10000000L, 99999999L);
     String salt = String.valueOf(randomLong);
     log.debug("Generated random salt: {}", salt);
     return salt;

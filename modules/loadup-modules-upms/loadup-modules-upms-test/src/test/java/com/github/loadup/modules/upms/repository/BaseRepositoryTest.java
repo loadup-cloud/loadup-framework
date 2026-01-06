@@ -1,6 +1,6 @@
 package com.github.loadup.modules.upms.repository;
 
-import com.github.loadup.components.testcontainers.cloud.AbstractMySQLContainerTest;
+import com.github.loadup.components.testcontainers.database.AbstractMySQLContainerTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mybatis.spring.annotation.MapperScan;

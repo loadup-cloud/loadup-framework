@@ -16,7 +16,7 @@
 package com.github.loadup.components.testcontainers.database;
 
 import lombok.extern.slf4j.Slf4j;
-import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.mongodb.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
 
 /**

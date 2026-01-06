@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.loadup.components.gotone.TestApplication;
 import com.github.loadup.components.gotone.dataobject.*;
-import com.github.loadup.components.testcontainers.cloud.AbstractMySQLContainerTest;
+import com.github.loadup.components.testcontainers.database.AbstractMySQLContainerTest;
 import java.time.LocalDateTime;
 import java.util.*;
 import org.junit.jupiter.api.Test;

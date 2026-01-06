@@ -17,7 +17,7 @@ package com.github.loadup.components.testcontainers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.testcontainers.cloud.SharedMySQLContainer;
+import com.github.loadup.components.testcontainers.database.SharedMySQLContainer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
