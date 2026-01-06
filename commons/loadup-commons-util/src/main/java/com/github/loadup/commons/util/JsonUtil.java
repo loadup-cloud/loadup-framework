@@ -154,14 +154,21 @@ public class JsonUtil {
    * @param object 要转换的对象
    * @return JSON字符串，如果转换失败或对象为null则返回null
    */
-  public static String toJSONString(Object object) {
+  public static String toJsonString(Object object) {
     if (object == null) {
+      log.debug("Object is null, returning null");
       return null;
     }
+    if (object instanceof String) {
+      return (String) object;
+    }
     try {
-      return object instanceof String ? (String) object : objectMapper.writeValueAsString(object);
+      return objectMapper.writeValueAsString(object);
     } catch (JsonProcessingException e) {
-      log.error("Failed to convert object to JSON string", e);
+      log.error(
+          "Failed to convert object to JSON string, object type: {}",
+          object.getClass().getName(),
+          e);
       return null;
     }
   }
@@ -173,16 +180,21 @@ public class JsonUtil {
    * @param <T> 对象类型
    * @return 格式化的JSON字符串，如果转换失败或对象为null则返回null
    */
-  public static <T> String toJSONStringPretty(T obj) {
+  public static <T> String toJsonStringPretty(T obj) {
     if (obj == null) {
+      log.debug("Object is null, returning null");
       return null;
     }
+    if (obj instanceof String) {
+      return (String) obj;
+    }
     try {
-      return obj instanceof String
-          ? (String) obj
-          : objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+      return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
     } catch (JsonProcessingException e) {
-      log.error("Failed to convert object to pretty JSON string", e);
+      log.error(
+          "Failed to convert object to pretty JSON string, object type: {}",
+          obj.getClass().getName(),
+          e);
       return null;
     }
   }
@@ -198,13 +210,22 @@ public class JsonUtil {
    * @return 转换后的对象，如果转换失败或参数为null则返回null
    */
   public static <T> T parseObject(String jsonString, Class<T> valueType) {
-    if (StringUtils.isEmpty(jsonString) || valueType == null) {
+    if (StringUtils.isEmpty(jsonString)) {
+      log.debug("JSON string is null or empty, returning null");
+      return null;
+    }
+    if (valueType == null) {
+      log.warn("Value type is null, returning null");
       return null;
     }
     try {
       return objectMapper.readValue(jsonString, valueType);
     } catch (IOException e) {
-      log.error("Failed to parse JSON string to object of type: {}", valueType.getName(), e);
+      log.error(
+          "Failed to parse JSON string to object of type: {}, json: {}",
+          valueType.getName(),
+          jsonString,
+          e);
       return null;
     }
   }
@@ -218,17 +239,25 @@ public class JsonUtil {
    * @return 转换后的对象，如果转换失败或参数为null则返回null
    */
   public static <T> T parseObject(String str, TypeReference<T> typeReference) {
-    if (StringUtils.isEmpty(str) || typeReference == null) {
+    if (StringUtils.isEmpty(str)) {
+      log.debug("JSON string is null or empty, returning null");
+      return null;
+    }
+    if (typeReference == null) {
+      log.warn("TypeReference is null, returning null");
       return null;
     }
 
     try {
-      return (T)
-          (typeReference.getType().equals(String.class)
-              ? str
-              : objectMapper.readValue(str, typeReference));
+      if (typeReference.getType().equals(String.class)) {
+        return (T) str;
+      }
+      return objectMapper.readValue(str, typeReference);
     } catch (IOException e) {
-      log.error("Failed to parse JSON string to object with TypeReference", e);
+      log.error(
+          "Failed to parse JSON string to object with TypeReference: {}",
+          typeReference.getType(),
+          e);
       return null;
     }
   }
@@ -240,17 +269,34 @@ public class JsonUtil {
    * @param collectionClass 集合类型（如List.class、Map.class）
    * @param elementClasses 元素类型
    * @param <T> 目标类型泛型
-   * @return 转换后的对象，如果转换失败则返回null
+   * @return 转换后的对象，如果转换失败或参数为null则返回null
    */
   public static <T> T parseObject(
       String str, Class<?> collectionClass, Class<?>... elementClasses) {
+    if (StringUtils.isEmpty(str)) {
+      log.debug("JSON string is null or empty, returning null");
+      return null;
+    }
+    if (collectionClass == null) {
+      log.warn("Collection class is null, returning null");
+      return null;
+    }
+    if (elementClasses == null || elementClasses.length == 0) {
+      log.warn("Element classes is null or empty, returning null");
+      return null;
+    }
+
     JavaType javaType =
         objectMapper.getTypeFactory().constructParametricType(collectionClass, elementClasses);
 
     try {
       return objectMapper.readValue(str, javaType);
     } catch (IOException e) {
-      log.error("Failed to parse JSON string to parametric type: {}", collectionClass.getName(), e);
+      log.error(
+          "Failed to parse JSON string to parametric type: {}, json: {}",
+          collectionClass.getName(),
+          str,
+          e);
       return null;
     }
   }
@@ -258,16 +304,24 @@ public class JsonUtil {
   /**
    * 将 InputStream 转换为参数化类型的对象（如List&lt;User&gt;、Map&lt;String, User&gt;等）
    *
-   * @param metaInputStream InputStream
-   * @param elementClasses 元素类型
+   * @param inputStream InputStream
+   * @param valueType 元素类型
    * @param <T> 目标类型泛型
-   * @return 转换后的对象，如果转换失败则返回null
+   * @return 转换后的对象，如果转换失败或参数为null则返回null
    */
-  public static <T> T parseObject(InputStream metaInputStream, Class<T> elementClasses) {
+  public static <T> T parseObject(InputStream inputStream, Class<T> valueType) {
+    if (inputStream == null) {
+      log.warn("InputStream is null, returning null");
+      return null;
+    }
+    if (valueType == null) {
+      log.warn("Value type is null, returning null");
+      return null;
+    }
     try {
-      return objectMapper.readValue(metaInputStream, elementClasses);
+      return objectMapper.readValue(inputStream, valueType);
     } catch (IOException e) {
-      log.error("Failed to parse InputStream to parametric type: {}", elementClasses.getName(), e);
+      log.error("Failed to parse InputStream to type: {}", valueType.getName(), e);
       return null;
     }
   }
@@ -275,13 +329,13 @@ public class JsonUtil {
   // ==================== Map转换方法 ====================
 
   /**
-   * 将JSON字符串转换为Map
+   * 将JSON字符串转换为Map&lt;String, Object&gt;
    *
    * @param jsonString JSON字符串
-   * @return Map对象，如果转换失败则返回null
+   * @return Map对象，如果字符串为空或转换失败则返回空Map
    */
-  public static Map toMap(String jsonString) {
-    return parseObject(jsonString, Map.class);
+  public static Map<String, Object> toMap(String jsonString) {
+    return toJsonMap(jsonString);
   }
 
   /**
@@ -290,13 +344,18 @@ public class JsonUtil {
    * @param map Map对象
    * @param valueType 目标类型
    * @param <T> 目标类型泛型
-   * @return 转换后的对象，如果参数为null则返回null
+   * @return 转换后的对象，如果参数为null或为空则返回null
    */
-  public static <T> T parseObject(Map map, Class<T> valueType) {
+  public static <T> T mapToObject(Map<String, ?> map, Class<T> valueType) {
     if (MapUtils.isEmpty(map) || valueType == null) {
+      log.warn("Map or valueType is null/empty, returning null");
       return null;
     }
-    String jsonString = toJSONString(map);
+    String jsonString = toJsonString(map);
+    if (jsonString == null) {
+      log.warn("Failed to convert map to JSON string");
+      return null;
+    }
     return parseObject(jsonString, valueType);
   }
 
@@ -307,29 +366,48 @@ public class JsonUtil {
    * @param collectionClass 集合类型
    * @param elementClasses 元素类型
    * @param <T> 目标类型泛型
-   * @return 转换后的对象，如果参数为null则返回null
+   * @return 转换后的对象，如果参数为null或为空则返回null
    */
-  public static <T> T parseObject(Map map, Class<?> collectionClass, Class<?>... elementClasses) {
+  public static <T> T mapToObject(
+      Map<String, ?> map, Class<?> collectionClass, Class<?>... elementClasses) {
     if (MapUtils.isEmpty(map) || collectionClass == null) {
+      log.warn("Map or collectionClass is null/empty, returning null");
       return null;
     }
-    String jsonString = toJSONString(map);
+    if (elementClasses == null || elementClasses.length == 0) {
+      log.warn("Element classes is null or empty, returning null");
+      return null;
+    }
+    String jsonString = toJsonString(map);
+    if (jsonString == null) {
+      log.warn("Failed to convert map to JSON string");
+      return null;
+    }
     return parseObject(jsonString, collectionClass, elementClasses);
   }
 
   /**
    * 将Map转换为指定JavaType的对象
    *
-   * @param value Map对象
+   * @param map Map对象
    * @param javaType Java类型
-   * @return 转换后的对象，如果转换失败则返回null
+   * @param <T> 目标类型泛型
+   * @return 转换后的对象，如果转换失败或参数为null则返回null
    */
-  public static Object parseObject(Map<String, String> value, JavaType javaType) {
-    String jsonString = toJSONString(value);
+  public static <T> T mapToObject(Map<String, ?> map, JavaType javaType) {
+    if (MapUtils.isEmpty(map) || javaType == null) {
+      log.warn("Map or javaType is null/empty, returning null");
+      return null;
+    }
+    String jsonString = toJsonString(map);
+    if (jsonString == null) {
+      log.warn("Failed to convert map to JSON string");
+      return null;
+    }
     try {
       return objectMapper.readValue(jsonString, javaType);
     } catch (JsonProcessingException e) {
-      log.error("Failed to parse map to object with JavaType", e);
+      log.error("Failed to parse map to object with JavaType: {}", javaType, e);
       return null;
     }
   }
@@ -376,14 +454,27 @@ public class JsonUtil {
    * 从JSON文件读取并转换为指定类型的对象
    *
    * @param file JSON文件
-   * @param tClass 目标类型
+   * @param valueType 目标类型
    * @param <T> 目标类型泛型
    * @return 转换后的对象
+   * @throws IllegalArgumentException 如果参数为null
    * @throws RuntimeException 如果读取文件失败
    */
-  public static <T> T parseObject(File file, Class<T> tClass) {
+  public static <T> T parseObject(File file, Class<T> valueType) {
+    if (file == null) {
+      throw new IllegalArgumentException("File cannot be null");
+    }
+    if (valueType == null) {
+      throw new IllegalArgumentException("Value type cannot be null");
+    }
+    if (!file.exists()) {
+      throw new IllegalArgumentException("File does not exist: " + file.getAbsolutePath());
+    }
+    if (!file.isFile()) {
+      throw new IllegalArgumentException("Path is not a file: " + file.getAbsolutePath());
+    }
     try {
-      return objectMapper.readValue(file, tClass);
+      return objectMapper.readValue(file, valueType);
     } catch (IOException e) {
       log.error("Failed to parse JSON file: {}", file.getAbsolutePath(), e);
       throw new RuntimeException("Failed to parse JSON file: " + file.getAbsolutePath(), e);
@@ -395,9 +486,24 @@ public class JsonUtil {
    *
    * @param file 目标文件
    * @param object 要写入的对象
+   * @throws IllegalArgumentException 如果参数为null
    * @throws RuntimeException 如果写入文件失败
    */
   public static void toFile(File file, Object object) {
+    if (file == null) {
+      throw new IllegalArgumentException("File cannot be null");
+    }
+    if (object == null) {
+      throw new IllegalArgumentException("Object cannot be null");
+    }
+    // 确保父目录存在
+    File parentDir = file.getParentFile();
+    if (parentDir != null && !parentDir.exists()) {
+      if (!parentDir.mkdirs()) {
+        throw new RuntimeException(
+            "Failed to create parent directory: " + parentDir.getAbsolutePath());
+      }
+    }
     try {
       objectMapper.writeValue(file, object);
     } catch (IOException e) {
@@ -414,9 +520,17 @@ public class JsonUtil {
    *
    * @param jsonString JSON字符串
    * @param path JSON路径（如"/data/user/name"）
-   * @return JSON节点，如果获取失败则返回null
+   * @return JSON节点，如果获取失败或参数为null则返回null
    */
   public static JsonNode getSubNode(String jsonString, String path) {
+    if (StringUtils.isEmpty(jsonString)) {
+      log.debug("JSON string is null or empty, returning null");
+      return null;
+    }
+    if (StringUtils.isEmpty(path)) {
+      log.warn("Path is null or empty, returning null");
+      return null;
+    }
     try {
       JsonNode rootNode = objectMapper.readTree(jsonString);
       return rootNode.at(path);
@@ -430,13 +544,17 @@ public class JsonUtil {
    * 将JSON字符串解析为JsonNode树
    *
    * @param jsonString JSON字符串
-   * @return JsonNode对象，如果解析失败则返回null
+   * @return JsonNode对象，如果解析失败或参数为null则返回null
    */
   public static JsonNode toJsonNodeTree(String jsonString) {
+    if (StringUtils.isEmpty(jsonString)) {
+      log.debug("JSON string is null or empty, returning null");
+      return null;
+    }
     try {
       return objectMapper.readTree(jsonString);
     } catch (JsonProcessingException e) {
-      log.error("Failed to parse JSON string to JsonNode tree", e);
+      log.error("Failed to parse JSON string to JsonNode tree, json: {}", jsonString, e);
       return null;
     }
   }
@@ -464,13 +582,22 @@ public class JsonUtil {
    *
    * @param arrayNode JSON数组节点
    * @param element 要添加的元素
+   * @throws IllegalArgumentException 如果arrayNode为null
    */
   public static void addElementToJsonArray(ArrayNode arrayNode, Object element) {
+    if (arrayNode == null) {
+      throw new IllegalArgumentException("ArrayNode cannot be null");
+    }
+    if (element == null) {
+      log.debug("Element is null, skipping add operation");
+      return;
+    }
     try {
       JsonNode jsonNode = objectMapper.valueToTree(element);
       arrayNode.add(jsonNode);
     } catch (IllegalArgumentException e) {
-      log.error("Failed to add element to JSON array", e);
+      log.error(
+          "Failed to add element to JSON array, element type: {}", element.getClass().getName(), e);
     }
   }
 
@@ -480,16 +607,23 @@ public class JsonUtil {
    * @param arrayNode JSON数组节点
    * @param valueType 目标元素类型
    * @param <T> 目标类型泛型
-   * @return 对象列表，如果节点为null则返回空列表
+   * @return 对象列表，如果节点为null或valueType为null则返回空列表
    */
   public static <T> List<T> parseObject(ArrayNode arrayNode, Class<T> valueType) {
     List<T> objectList = new ArrayList<>();
-    if (arrayNode != null) {
-      for (JsonNode jsonNode : arrayNode) {
-        T object = parseObject(jsonNode.toString(), valueType);
-        if (object != null) {
-          objectList.add(object);
-        }
+    if (arrayNode == null) {
+      log.debug("ArrayNode is null, returning empty list");
+      return objectList;
+    }
+    if (valueType == null) {
+      log.warn("Value type is null, returning empty list");
+      return objectList;
+    }
+
+    for (JsonNode jsonNode : arrayNode) {
+      T object = parseObject(jsonNode.toString(), valueType);
+      if (object != null) {
+        objectList.add(object);
       }
     }
     return objectList;
