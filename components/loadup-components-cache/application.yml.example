@@ -1,54 +1,61 @@
 # ========================================
 # LoadUp Cache Configuration Examples (YAML)
 # ========================================
+# Note: Basic connection/cache settings should be configured via Spring Boot standard properties
+# This configuration focuses on cache-specific strategies and per-cache configurations
 
 # ========================================
 # Example 1: Caffeine Cache (In-Memory)
 # ========================================
-# Uncomment to use Caffeine cache for development or standalone applications
-#
-#loadup:
-#  cache:
-#    type: caffeine
-#    caffeine:
-#      initial-capacity: 1000        # Initial cache capacity
-#      maximum-size: 5000            # Maximum number of cache entries
-#      expire-after-access-seconds: 600   # Expire after last access (10 minutes)
-#      expire-after-write-seconds: 1200   # Expire after write (20 minutes)
-#      allow-null-value: false       # Allow null values in cache
-#      cache-config:
-#        # Per-cache configuration
-#        users:
-#          expire-after-write: 30m
-#          maximum-size: 10000
-#          enable-random-expiration: true
-#          random-offset-seconds: 300
+# Use Caffeine for development or standalone applications
+# Configure basic Caffeine settings via Spring Boot's standard properties:
+# spring.cache.caffeine.spec=initialCapacity=1000,maximumSize=5000,expireAfterWrite=20m
 
-# ========================================
-# Example 2: Redis Cache (Distributed)
-# ========================================
-# Use this configuration for distributed applications or production environment
-#
 loadup:
   cache:
-    type: redis
-    redis:
-      host: localhost     # Redis server host
-      port: 6379         # Redis server port
-      password:          # Redis password (optional)
-      database: 0        # Redis database index
+    type: caffeine
+    caffeine:
       cache-config:
-        # Per-cache configuration
+        # Per-cache configuration with anti-avalanche strategies
         users:
           expire-after-write: 30m
           maximum-size: 10000
           enable-random-expiration: true
           random-offset-seconds: 300
+        products:
+          expire-after-write: 1h
+          maximum-size: 5000
+          enable-random-expiration: true
 
 # ========================================
-# Advanced Redis Cache Configuration
+# Example 2: Redis Cache (Distributed)
 # ========================================
-# Configure per-cache TTL and size limits
+# Use Redis for distributed applications or production
+# Configure Redis connection via Spring Boot's standard properties:
+# spring.redis.host=localhost
+# spring.redis.port=6379
+# spring.redis.password=yourpassword
+# spring.redis.database=0
+
+#loadup:
+#  cache:
+#    type: redis
+#    redis:
+#      cache-config:
+#        # Per-cache configuration with anti-avalanche strategies
+#        users:
+#          expire-after-write: 30m
+#          enable-random-expiration: true
+#          random-offset-seconds: 300
+#        products:
+#          expire-after-write: 1h
+#          enable-random-expiration: true
+#          random-offset-seconds: 600
+
+# ========================================
+# Advanced Configuration
+# ========================================
+# Per-cache TTL and anti-cache-avalanche strategies
 #
 #loadup:
 #  cache:

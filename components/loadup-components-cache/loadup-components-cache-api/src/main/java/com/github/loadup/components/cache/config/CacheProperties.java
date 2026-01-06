@@ -23,16 +23,13 @@ package com.github.loadup.components.cache.config;
  */
 
 import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-/** LoadUp Cache Configuration Properties Unified configuration for all cache implementations */
+/** LoadUp Cache Configuration Properties. Unified configuration for all cache implementations. */
 @Getter
 @Setter
 @Validated
@@ -40,55 +37,54 @@ import org.springframework.validation.annotation.Validated;
 public class CacheProperties {
 
   /** Cache type to use. Supported values: redis, caffeine */
-  private String type = "caffeine";
+  private CacheType type = CacheType.CAFFEINE;
 
   /** Redis specific configuration */
-  @Valid private RedisConfig redis = new RedisConfig();
+  private RedisConfig redis = new RedisConfig();
 
   /** Caffeine specific configuration */
   private CaffeineConfig caffeine = new CaffeineConfig();
 
-  /** Redis configuration */
+  /** Supported cache types */
+  public enum CacheType {
+    REDIS,
+    CAFFEINE;
+
+    @Override
+    public String toString() {
+      return name().toLowerCase();
+    }
+
+    /**
+     * Parse a text value (case-insensitive) to a CacheType. Useful when binding from
+     * properties/yaml.
+     */
+    @SuppressWarnings("unused")
+    public static CacheType fromString(String value) {
+      if (value == null) return null;
+      String normalized = value.trim().toUpperCase();
+      for (CacheType t : values()) {
+        if (t.name().equalsIgnoreCase(normalized) || t.toString().equalsIgnoreCase(value)) {
+          return t;
+        }
+      }
+      throw new IllegalArgumentException("Unknown cache type: " + value);
+    }
+  }
+
+  /** Redis cache configuration */
   @Getter
   @Setter
   public static class RedisConfig {
-    /** Redis server host */
-    @NotBlank(message = "Redis host cannot be blank")
-    private String host = "localhost";
-
-    /** Redis server port */
-    private int port = 6379;
-
-    /** Redis password */
-    private String password;
-
-    /** Redis database index */
-    private int database = 0;
-
-    /** Per-cache configurations for Redis */
-    private Map<String, LoadUpCacheConfig> cacheConfig = new HashMap<>();
+    /** Per-cache configurations for Redis. Use spring.redis.* for connection settings. */
+    private Map<String, LoadUpCacheConfig> cacheConfig;
   }
 
-  /** Caffeine configuration */
+  /** Caffeine cache configuration */
   @Getter
   @Setter
   public static class CaffeineConfig {
-    /** Initial cache capacity */
-    private int initialCapacity = 1000;
-
-    /** Maximum cache size */
-    private long maximumSize = 5000;
-
-    /** Expire after access duration in seconds */
-    private long expireAfterAccessSeconds = 600;
-
-    /** Expire after write duration in seconds */
-    private long expireAfterWriteSeconds = 1200;
-
-    /** Allow null values in cache */
-    private boolean allowNullValue = false;
-
-    /** Per-cache configurations for Caffeine */
-    private Map<String, LoadUpCacheConfig> cacheConfig = new HashMap<>();
+    /** Per-cache configurations for Caffeine. Use spring.cache.caffeine.* for default settings. */
+    private Map<String, LoadUpCacheConfig> cacheConfig;
   }
 }

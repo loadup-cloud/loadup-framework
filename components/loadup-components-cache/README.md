@@ -145,24 +145,25 @@ api (核心接口和配置)
 #### 配置文件（application.yml）
 
 ```yaml
+# 指定使用 Caffeine
 loadup:
   cache:
-    type: caffeine  # 指定使用 Caffeine
+    type: caffeine
+
+# 使用 Spring Boot 标准配置
+spring:
+  cache:
     caffeine:
-      initial-capacity: 1000  # 初始容量
-      maximum-size: 5000      # 最大缓存条目数
-      expire-after-access-seconds: 600   # 访问后过期时间（秒）
-      expire-after-write-seconds: 1200   # 写入后过期时间（秒）
+      spec: initialCapacity=1000,maximumSize=5000,expireAfterWrite=20m
 ```
 
 或使用 properties 格式：
 
 ```properties
+# 指定缓存类型
 loadup.cache.type=caffeine
-loadup.cache.caffeine.initial-capacity=1000
-loadup.cache.caffeine.maximum-size=5000
-loadup.cache.caffeine.expire-after-access-seconds=600
-loadup.cache.caffeine.expire-after-write-seconds=1200
+# 使用 Spring Boot 标准配置
+spring.cache.caffeine.spec=initialCapacity=1000,maximumSize=5000,expireAfterWrite=20m
 ```
 
 ### 2. 使用 Redis（分布式缓存）
@@ -186,24 +187,30 @@ loadup.cache.caffeine.expire-after-write-seconds=1200
 #### 配置文件（application.yml）
 
 ```yaml
+# 指定使用 Redis
 loadup:
   cache:
-    type: redis  # 指定使用 Redis
-    redis:
-      host: localhost    # Redis 服务器地址
-      port: 6379        # Redis 端口
-      password:         # Redis 密码（可选）
-      database: 0       # Redis 数据库索引
+    type: redis
+
+# 使用 Spring Boot 标准配置
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    password: yourpassword  # 可选
+    database: 0
 ```
 
 或使用 properties 格式：
 
 ```properties
+# 指定缓存类型
 loadup.cache.type=redis
-loadup.cache.redis.host=localhost
-loadup.cache.redis.port=6379
-loadup.cache.redis.password=
-loadup.cache.redis.database=0
+# 使用 Spring Boot 标准配置
+spring.redis.host=localhost
+spring.redis.port=6379
+spring.redis.password=
+spring.redis.database=0
 ```
 
 ### 3. 使用代码
@@ -243,29 +250,43 @@ public class UserService {
 
 ## 配置说明
 
-### 通用配置
+### LoadUp Cache 配置
+
+LoadUp Cache 组件专注于缓存策略配置（如防雪崩、防击穿等），基础连接配置使用 Spring Boot 标准属性。
+
+#### 通用配置
 
 |         配置项         |   类型   |   默认值    |             说明              |
 |---------------------|--------|----------|-----------------------------|
 | `loadup.cache.type` | String | caffeine | 缓存类型，可选值：`redis`、`caffeine` |
 
-### Caffeine 配置
+#### Caffeine 基础配置
 
-|                         配置项                         |   类型    | 默认值  |     说明     |
-|-----------------------------------------------------|---------|------|------------|
-| `loadup.cache.caffeine.initial-capacity`            | Integer | 1000 | 初始缓存容量     |
-| `loadup.cache.caffeine.maximum-size`                | Long    | 5000 | 最大缓存条目数    |
-| `loadup.cache.caffeine.expire-after-access-seconds` | Long    | 600  | 访问后过期时间（秒） |
-| `loadup.cache.caffeine.expire-after-write-seconds`  | Long    | 1200 | 写入后过期时间（秒） |
+**使用 Spring Boot 标准配置：**
 
-### Redis 配置
+```yaml
+spring:
+  cache:
+    caffeine:
+      spec: initialCapacity=1000,maximumSize=5000,expireAfterWrite=20m,expireAfterAccess=10m
+```
 
-|              配置项              |   类型    |    默认值    |      说明      |
-|-------------------------------|---------|-----------|--------------|
-| `loadup.cache.redis.host`     | String  | localhost | Redis 服务器地址  |
-| `loadup.cache.redis.port`     | Integer | 6379      | Redis 端口     |
-| `loadup.cache.redis.password` | String  | -         | Redis 密码（可选） |
-| `loadup.cache.redis.database` | Integer | 0         | Redis 数据库索引  |
+详见 [Spring Boot Caffeine 文档](https://docs.spring.io/spring-boot/docs/current/reference/html/io.html#io.caching.provider.caffeine)
+
+#### Redis 基础配置
+
+**使用 Spring Boot 标准配置：**
+
+```yaml
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    password: yourpassword
+    database: 0
+```
+
+详见 [Spring Boot Redis 文档](https://docs.spring.io/spring-boot/docs/current/reference/html/data.html#data.nosql.redis)
 
 ### 按 Cache Name 配置（防击穿和雪崩）
 

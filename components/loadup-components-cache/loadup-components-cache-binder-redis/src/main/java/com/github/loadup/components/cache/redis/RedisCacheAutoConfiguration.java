@@ -43,10 +43,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.serializer.*;
-import org.springframework.util.StringUtils;
 
 @Slf4j
 @Configuration
@@ -58,38 +55,22 @@ public class RedisCacheAutoConfiguration {
   @Resource private CacheProperties cacheProperties;
 
   @Bean
-  public LettuceConnectionFactory redisConnectionFactory() {
-    CacheProperties.RedisConfig redisConfig = cacheProperties.getRedis();
-
-    RedisStandaloneConfiguration redisStandaloneConfiguration =
-        new RedisStandaloneConfiguration(redisConfig.getHost(), redisConfig.getPort());
-
-    if (StringUtils.hasText(redisConfig.getPassword())) {
-      redisStandaloneConfiguration.setPassword(redisConfig.getPassword());
-    }
-
-    redisStandaloneConfiguration.setDatabase(redisConfig.getDatabase());
-
-    return new LettuceConnectionFactory(redisStandaloneConfiguration);
-  }
-
-  @Bean
   @Qualifier("redisCacheManager")
   public LoadUpRedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
     // 默认缓存配置
     Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
 
     // 为每个 cache name 配置不同的策略
-    cacheProperties
-        .getRedis()
-        .getCacheConfig()
-        .forEach(
-            (cacheName, cacheConfig) -> {
-              RedisCacheConfiguration config = buildCacheConfiguration(cacheConfig);
-              cacheConfigurations.put(cacheName, config);
+    Map<String, LoadUpCacheConfig> cacheConfig = cacheProperties.getRedis().getCacheConfig();
+    if (cacheConfig != null) {
+      cacheConfig.forEach(
+          (cacheName, config) -> {
+            RedisCacheConfiguration redisConfig = buildCacheConfiguration(config);
+            cacheConfigurations.put(cacheName, redisConfig);
 
-              log.info("Configured Redis cache: name={}, config={}", cacheName, cacheConfig);
-            });
+            log.info("Configured Redis cache: name={}, config={}", cacheName, config);
+          });
+    }
 
     return new LoadUpRedisCacheManager(
         RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory),

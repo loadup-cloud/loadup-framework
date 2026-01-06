@@ -49,6 +49,7 @@ import org.springframework.context.annotation.Primary;
 @EnableConfigurationProperties(CacheProperties.class)
 @ConditionalOnClass({Caffeine.class, CaffeineCacheManager.class})
 @AutoConfiguration(before = CacheAutoConfiguration.class)
+@ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = "caffeine")
 public class CaffeineCacheAutoConfiguration {
 
   @Resource private CacheProperties cacheProperties;
@@ -59,12 +60,6 @@ public class CaffeineCacheAutoConfiguration {
   @ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = "caffeine")
   public CacheManager defaultCacheManager() {
     LoadUpCaffeineCacheManager cacheManager = new LoadUpCaffeineCacheManager();
-    cacheManager.setAllowNullValues(cacheProperties.getCaffeine().isAllowNullValue());
-
-    // Configure default cache
-    CacheProperties.CaffeineConfig config = cacheProperties.getCaffeine();
-    Caffeine<Object, Object> defaultCaffeine = buildDefaultCaffeine(config);
-    cacheManager.setCaffeine(defaultCaffeine);
 
     // Configure per-cache strategies
     Map<String, LoadUpCacheConfig> cacheConfigs = cacheProperties.getCaffeine().getCacheConfig();
@@ -83,33 +78,6 @@ public class CaffeineCacheAutoConfiguration {
     }
 
     return cacheManager;
-  }
-
-  /** Build default Caffeine with global configuration */
-  private Caffeine<Object, Object> buildDefaultCaffeine(CacheProperties.CaffeineConfig config) {
-    Caffeine<Object, Object> builder =
-        Caffeine.newBuilder()
-            .initialCapacity(config.getInitialCapacity())
-            .maximumSize(config.getMaximumSize());
-
-    if (config.getExpireAfterAccessSeconds() > 0) {
-      builder.expireAfterAccess(config.getExpireAfterAccessSeconds(), TimeUnit.SECONDS);
-    }
-
-    if (config.getExpireAfterWriteSeconds() > 0) {
-      // Apply random offset for default cache
-      long baseSeconds = config.getExpireAfterWriteSeconds();
-      Duration baseDuration = Duration.ofSeconds(baseSeconds);
-      Duration finalDuration =
-          CacheExpirationUtil.calculateExpirationWithPercentageOffset(
-              baseDuration, 0.1); // 10% random offset
-
-      builder.expireAfterWrite(finalDuration.getSeconds(), TimeUnit.SECONDS);
-
-      log.debug("Default cache TTL: base={}s, final={}s", baseSeconds, finalDuration.getSeconds());
-    }
-
-    return builder;
   }
 
   /** Build custom Caffeine for specific cache with anti-avalanche strategies */
