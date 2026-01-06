@@ -275,7 +275,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
     <version>1.0.0</version>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>${java.version}</java.version>
         <loadup.framework.version>1.0.0-SNAPSHOT</loadup.framework.version>
     </properties>
 
