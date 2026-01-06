@@ -13,9 +13,12 @@ CREATE TABLE gotone_business_code
     business_code VARCHAR(100) NOT NULL,
     business_name VARCHAR(200),
     description   VARCHAR(500),
-    enabled       BOOLEAN   DEFAULT TRUE,
-    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    enabled    BOOLEAN          DEFAULT TRUE,
+    created_at DATETIME,
+    updated_at DATETIME,
+    deleted    TINYINT NOT NULL DEFAULT 0 COMMENT '删除标记(0-未删除 1-已删除)',
+    tenant_id  VARCHAR(64) COMMENT '租户ID',
+
     UNIQUE KEY uk_business_code (business_code)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -29,10 +32,12 @@ CREATE TABLE gotone_channel_mapping
     channel       VARCHAR(50)  NOT NULL,
     template_code VARCHAR(100) NOT NULL,
     provider_list TEXT,
-    priority      INT       DEFAULT 0,
-    enabled       BOOLEAN   DEFAULT TRUE,
-    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    priority   INT              DEFAULT 0,
+    enabled    BOOLEAN          DEFAULT TRUE,
+    created_at DATETIME,
+    updated_at DATETIME,
+    deleted    TINYINT NOT NULL DEFAULT 0 COMMENT '删除标记(0-未删除 1-已删除)',
+    tenant_id  VARCHAR(64) COMMENT '租户ID',
     KEY idx_business_code (business_code),
     KEY idx_channel (channel)
 ) ENGINE = InnoDB
@@ -49,9 +54,11 @@ CREATE TABLE gotone_notification_template
     content        TEXT,
     title_template VARCHAR(500),
     template_type  VARCHAR(50),
-    enabled        BOOLEAN   DEFAULT TRUE,
-    created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    enabled    BOOLEAN          DEFAULT TRUE,
+    created_at DATETIME,
+    updated_at DATETIME,
+    deleted    TINYINT NOT NULL DEFAULT 0 COMMENT '删除标记(0-未删除 1-已删除)',
+    tenant_id  VARCHAR(64) COMMENT '租户ID',
     UNIQUE KEY uk_template_code (template_code),
     KEY idx_channel (channel)
 ) ENGINE = InnoDB
@@ -73,12 +80,14 @@ CREATE TABLE gotone_notification_record
     content       TEXT,
     provider      VARCHAR(50),
     status        VARCHAR(50),
-    retry_count   INT       DEFAULT 0,
-    priority      INT       DEFAULT 0,
+    retry_count INT               DEFAULT 0,
+    priority    INT               DEFAULT 0,
     error_message TEXT,
-    send_time     TIMESTAMP NULL,
-    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    send_time   DATETIME NULL,
+    created_at  DATETIME,
+    updated_at  DATETIME,
+    deleted     TINYINT  NOT NULL DEFAULT 0 COMMENT '删除标记(0-未删除 1-已删除)',
+    tenant_id   VARCHAR(64) COMMENT '租户ID',
     KEY idx_biz_id (biz_id),
     KEY idx_trace_id (trace_id),
     KEY idx_status (status)

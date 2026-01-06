@@ -201,6 +201,9 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
     String key = "null:key";
 
     // When & Then - Caffeine 默认不允许空值
-    assertThrows(Exception.class, () -> cacheBinding.set(TEST_CACHE_NAME, key, null));
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class, () -> cacheBinding.set(TEST_CACHE_NAME, key, null));
+    assertTrue(exception.getMessage().contains("null"));
   }
 }
