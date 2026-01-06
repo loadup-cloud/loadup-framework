@@ -29,13 +29,13 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 /**
- * Test class for SharedLocalStackContainer.
+ * Integration test class for SharedLocalStackContainer.
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
 @Slf4j
-class SharedLocalStackContainerTest {
+class SharedLocalStackContainerIT {
 
   @Test
   void testContainerIsRunning() {

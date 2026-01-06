@@ -27,13 +27,13 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 /**
- * Test class for SharedPostgreSQLContainer.
+ * Integration test class for SharedPostgreSQLContainer.
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
 @Slf4j
-class SharedPostgreSQLContainerTest {
+class SharedPostgreSQLContainerIT {
 
   @Test
   void testContainerIsRunning() {

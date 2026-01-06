@@ -36,13 +36,13 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.kafka.KafkaContainer;
 
 /**
- * Test class for SharedKafkaContainer.
+ * Integration test class for SharedKafkaContainer.
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
 @Slf4j
-class SharedKafkaContainerTest {
+class SharedKafkaContainerIT {
 
   @Test
   void testContainerIsRunning() {

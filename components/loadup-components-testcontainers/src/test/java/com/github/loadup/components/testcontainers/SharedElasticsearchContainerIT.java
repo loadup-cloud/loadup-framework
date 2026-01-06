@@ -34,13 +34,13 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 /**
- * Test class for SharedElasticsearchContainer.
+ * Integration test class for SharedElasticsearchContainer.
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
 @Slf4j
-class SharedElasticsearchContainerTest {
+class SharedElasticsearchContainerIT {
 
   @Test
   void testContainerIsRunning() {

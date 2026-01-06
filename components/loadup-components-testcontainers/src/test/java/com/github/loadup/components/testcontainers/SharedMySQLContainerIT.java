@@ -27,13 +27,13 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.mysql.MySQLContainer;
 
 /**
- * Test class for SharedMySQLContainer.
+ * Integration test class for SharedMySQLContainer.
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
 @Slf4j
-class SharedMySQLContainerTest {
+class SharedMySQLContainerIT {
 
   @Test
   void testContainerIsRunning() {

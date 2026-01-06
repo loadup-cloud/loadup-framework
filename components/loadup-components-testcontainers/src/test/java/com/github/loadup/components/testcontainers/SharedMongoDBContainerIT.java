@@ -28,13 +28,13 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.mongodb.MongoDBContainer;
 
 /**
- * Test class for SharedMongoDBContainer.
+ * Integration test class for SharedMongoDBContainer.
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
 @Slf4j
-class SharedMongoDBContainerTest {
+class SharedMongoDBContainerIT {
 
   @Test
   void testContainerIsRunning() {

@@ -26,13 +26,13 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 
 /**
- * Test class for SharedRedisContainer.
+ * Integration test class for SharedRedisContainer.
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
 @Slf4j
-class SharedRedisContainerTest {
+class SharedRedisContainerIT {
 
   @Test
   void testContainerIsRunning() {
