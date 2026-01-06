@@ -127,7 +127,7 @@ public class RedisCacheAutoConfiguration {
 
   @Bean
   public GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer() {
-    ObjectMapper objectMapper = JsonUtil.initObjectMapper();
+    ObjectMapper objectMapper = JsonUtil.getObjectMapper();
     return new GenericJackson2JsonRedisSerializer(objectMapper);
   }
 

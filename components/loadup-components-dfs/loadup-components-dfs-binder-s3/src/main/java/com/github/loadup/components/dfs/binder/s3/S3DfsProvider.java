@@ -641,7 +641,7 @@ public class S3DfsProvider implements IDfsProvider {
   private void saveMetadataFile(String fileId, FileMetadata metadata) {
     try {
       // 将元数据序列化为JSON
-      String metadataJson = objectMapper.writeValueAsString(metadata);
+      String metadataJson = JsonUtil.toJsonString(metadata);
 
       // 保存到S3的.meta目录下
       String metaKey = METADATA_PREFIX + fileId + ".json";

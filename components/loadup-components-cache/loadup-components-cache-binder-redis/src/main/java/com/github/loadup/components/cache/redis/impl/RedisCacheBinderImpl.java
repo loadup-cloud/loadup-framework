@@ -76,7 +76,7 @@ public class RedisCacheBinderImpl implements CacheBinder {
     if (CollectionUtils.isEmpty(map)) {
       return null;
     }
-    return JsonUtil.parseObject(map, clazz);
+    return JsonUtil.mapToObject(map, clazz);
   }
 
   @Override
