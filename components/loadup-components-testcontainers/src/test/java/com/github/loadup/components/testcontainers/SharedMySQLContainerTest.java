@@ -24,7 +24,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.mysql.MySQLContainer;
 
 /**
  * Test class for SharedMySQLContainer.
@@ -37,7 +37,7 @@ class SharedMySQLContainerTest {
 
   @Test
   void testContainerIsRunning() {
-    MySQLContainer<?> container = SharedMySQLContainer.getInstance();
+    MySQLContainer container = SharedMySQLContainer.getInstance();
     assertNotNull(container, "Container should not be null");
     assertTrue(container.isRunning(), "Container should be running");
   }
@@ -108,8 +108,8 @@ class SharedMySQLContainerTest {
 
   @Test
   void testSameContainerAcrossTests() {
-    MySQLContainer<?> container1 = SharedMySQLContainer.getInstance();
-    MySQLContainer<?> container2 = SharedMySQLContainer.getInstance();
+    MySQLContainer container1 = SharedMySQLContainer.getInstance();
+    MySQLContainer container2 = SharedMySQLContainer.getInstance();
 
     assertSame(container1, container2, "Should return the same container instance");
   }

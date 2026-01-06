@@ -16,7 +16,7 @@
 package com.github.loadup.components.testcontainers.cloud;
 
 import lombok.extern.slf4j.Slf4j;
-import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.localstack.LocalStackContainer;
 import org.testcontainers.utility.DockerImageName;
 
 /**
@@ -72,14 +72,11 @@ public class SharedLocalStackContainer {
     log.info("Initializing shared LocalStack TestContainer with version: {}", localstackVersion);
 
     LOCALSTACK_CONTAINER =
-        new LocalStackContainer(DockerImageName.parse(localstackVersion))
-            .withServices(LocalStackContainer.Service.S3)
-            .withReuse(true);
+        new LocalStackContainer(DockerImageName.parse(localstackVersion)).withReuse(true);
 
     LOCALSTACK_CONTAINER.start();
 
-    S3_ENDPOINT =
-        LOCALSTACK_CONTAINER.getEndpointOverride(LocalStackContainer.Service.S3).toString();
+    S3_ENDPOINT = LOCALSTACK_CONTAINER.getEndpoint().toString();
 
     log.info("Shared LocalStack TestContainer started successfully");
     log.info("S3 Endpoint: {}", S3_ENDPOINT);

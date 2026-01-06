@@ -59,7 +59,7 @@ public class SharedMySQLContainer {
   public static final String DEFAULT_PASSWORD = "test";
 
   /** The shared MySQL container instance */
-  private static final MySQLContainer<?> MYSQL_CONTAINER;
+  private static final MySQLContainer MYSQL_CONTAINER;
 
   /** JDBC URL for the shared MySQL container */
   public static final String JDBC_URL;
@@ -87,7 +87,7 @@ public class SharedMySQLContainer {
     log.info("Initializing shared MySQL TestContainer with version: {}", mysqlVersion);
 
     MYSQL_CONTAINER =
-        new MySQLContainer<>(DockerImageName.parse(mysqlVersion))
+        new MySQLContainer(DockerImageName.parse(mysqlVersion))
             .withDatabaseName(databaseName)
             .withUsername(username)
             .withPassword(password)
@@ -122,7 +122,7 @@ public class SharedMySQLContainer {
    *
    * @return the shared MySQL container instance
    */
-  public static MySQLContainer<?> getInstance() {
+  public static MySQLContainer getInstance() {
     return MYSQL_CONTAINER;
   }
 

@@ -16,7 +16,7 @@
 package com.github.loadup.components.testcontainers.database;
 
 import lombok.extern.slf4j.Slf4j;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 /**
  * Shared PostgreSQL TestContainer instance that can be reused across multiple tests.
@@ -55,7 +55,7 @@ public class SharedPostgreSQLContainer {
   public static final String DRIVER_CLASS_NAME = "org.postgresql.Driver";
 
   /** The shared PostgreSQL container instance */
-  private static final PostgreSQLContainer<?> POSTGRES_CONTAINER;
+  private static final PostgreSQLContainer POSTGRES_CONTAINER;
 
   /** PostgreSQL JDBC URL for the shared container */
   public static final String JDBC_URL;
@@ -87,7 +87,7 @@ public class SharedPostgreSQLContainer {
     log.info("Initializing shared PostgreSQL TestContainer with version: {}", postgresVersion);
 
     POSTGRES_CONTAINER =
-        new PostgreSQLContainer<>(postgresVersion)
+        new PostgreSQLContainer(postgresVersion)
             .withDatabaseName(databaseName)
             .withUsername(username)
             .withPassword(password)
@@ -123,7 +123,7 @@ public class SharedPostgreSQLContainer {
    *
    * @return the shared PostgreSQL container instance
    */
-  public static PostgreSQLContainer<?> getInstance() {
+  public static PostgreSQLContainer getInstance() {
     return POSTGRES_CONTAINER;
   }
 
