@@ -22,6 +22,7 @@ package com.github.loadup.commons.result;
  * #L%
  */
 
+import com.github.loadup.commons.enums.CommonResultCodeEnum;
 import java.io.Serial;
 import java.util.*;
 

@@ -40,7 +40,7 @@
 
         <dependency>
             <groupId>com.github.loadup.commons</groupId>
-            <artifactId>loadup-commons-lang</artifactId>
+            <artifactId>loadup-commons-dto</artifactId>
             <version>${loadup.framework.version}</version>
         </dependency>
 

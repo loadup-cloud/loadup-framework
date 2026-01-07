@@ -32,12 +32,13 @@
         <dependency>
             <groupId>com.mybatis-flex</groupId>
             <artifactId>mybatis-flex-spring-boot3-starter</artifactId>
-            <version>1.11.5</version>
+            <version>${mybatis.flex.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.github.loadup.commons</groupId>
-            <artifactId>loadup-commons-lang</artifactId>
+            <artifactId>loadup-commons-util</artifactId>
+            <version>${loadup.framework.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.annotation</groupId>

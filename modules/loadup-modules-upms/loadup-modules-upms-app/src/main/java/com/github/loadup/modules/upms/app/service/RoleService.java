@@ -16,9 +16,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -181,8 +178,8 @@ public class RoleService {
 
   /** Query roles with pagination */
   public PageResult<RoleDTO> queryRoles(RoleQuery query) {
-    Sort sort = Sort.by(Sort.Direction.fromString(query.getSortOrder()), query.getSortBy());
-    Pageable pageable = PageRequest.of(query.getPage() - 1, query.getSize(), sort);
+    // Sort sort = Sort.by(Sort.Direction.fromString(query.getSortOrder()), query.getSortBy());
+    // Pageable pageable = PageRequest.of(query.getPage() - 1, query.getSize(), sort);
 
     List<Role> allRoles = roleRepository.findAll();
 

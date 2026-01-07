@@ -14,9 +14,8 @@
 
     <modules>
         <module>bom</module>
-        <module>commons/loadup-commons-lang</module>
-        <module>commons/loadup-commons-dto</module>
         <module>commons/loadup-commons-api</module>
+        <module>commons/loadup-commons-dto</module>
         <module>commons/loadup-commons-util</module>
         <module>components/loadup-components-database</module>
         <module>components/loadup-components-liquibase</module>
@@ -28,6 +27,7 @@
         <module>components/loadup-components-gotone</module>
         <module>components/loadup-components-dfs</module>
         <module>components/loadup-components-testcontainers</module>
+        <module>components/loadup-components-web</module>
         <module>modules/loadup-modules-upms</module>
         <!--        <module>modules/loadup-modules-user</module>-->
     </modules>
@@ -94,7 +94,7 @@
             </dependency>
             <dependency>
                 <groupId>com.github.loadup.commons</groupId>
-                <artifactId>loadup-commons-lang</artifactId>
+                <artifactId>loadup-commons-dto</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>

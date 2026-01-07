@@ -22,20 +22,34 @@ package com.github.loadup.framework.api.context;
  * #L%
  */
 
-import com.alibaba.ttl.TransmittableThreadLocal;
-import io.opentelemetry.api.trace.Span;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import lombok.Getter;
-import lombok.Setter;
 
 public class LoadUpContext {
-  private static ThreadLocal<LoadUpContext> threadLocal = new TransmittableThreadLocal<>();
+  private static ThreadLocal<LoadUpContext> threadLocal = new ThreadLocal<>();
   private static List<Tenant> tenantList = new ArrayList<>();
 
-  @Getter @Setter private Map<String, Object> attributes = new ConcurrentHashMap<>();
+  public Map<String, Object> getAttributes() {
+    return attributes;
+  }
 
-  @Getter @Setter private Span span;
+  public void setAttributes(Map<String, Object> attributes) {
+    this.attributes = attributes;
+  }
+
+  public static void setTenantList(List<Tenant> tenantList) {
+    LoadUpContext.tenantList = tenantList;
+  }
+
+  public static ThreadLocal<LoadUpContext> getThreadLocal() {
+    return threadLocal;
+  }
+
+  public static void setThreadLocal(ThreadLocal<LoadUpContext> threadLocal) {
+    LoadUpContext.threadLocal = threadLocal;
+  }
+
+  private Map<String, Object> attributes = new ConcurrentHashMap<>();
 
   public static LoadUpContext get() {
     LoadUpContext loadUpContext = threadLocal.get();
@@ -61,7 +75,7 @@ public class LoadUpContext {
     }
   }
 
-  protected static List<Tenant> getTenantList() {
+  public static List<Tenant> getTenantList() {
     return tenantList;
   }
 
@@ -72,7 +86,6 @@ public class LoadUpContext {
   public LoadUpContext create() {
     LoadUpContext loadUpContext = new LoadUpContext();
     attributes.forEach((k, v) -> loadUpContext.getAttributes().put(k, v));
-    loadUpContext.setSpan(null);
     return loadUpContext;
   }
 }

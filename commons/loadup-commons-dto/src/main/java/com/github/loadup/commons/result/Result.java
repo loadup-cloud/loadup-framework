@@ -23,6 +23,7 @@ package com.github.loadup.commons.result;
  */
 
 import com.github.loadup.commons.dto.DTO;
+import com.github.loadup.commons.enums.CommonResultCodeEnum;
 import java.io.Serial;
 import java.io.Serializable;
 import lombok.Getter;

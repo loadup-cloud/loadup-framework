@@ -22,8 +22,8 @@ package com.github.loadup.components.cache.cfg;
  * #L%
  */
 
+import com.github.loadup.commons.enums.BinderEnum;
 import com.github.loadup.framework.api.cfg.BaseBindingCfg;
-import com.github.loadup.framework.api.enums.BinderEnum;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;

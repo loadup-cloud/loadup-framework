@@ -43,7 +43,7 @@ public class DefaultCacheBinding extends AbstractBinding<CacheBinder, CacheBindi
   }
 
   private CacheBinder selectBinder(String cacheName) {
-    String type = cfg.getBinderForCache(cacheName).getValue();
+    String type = cfg.getBinderForCache(cacheName).getCode();
     return manager.getBinder(type);
   }
 

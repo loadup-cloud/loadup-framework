@@ -22,7 +22,6 @@ package com.github.loadup.commons.util;
  * #L%
  */
 
-import com.github.loadup.commons.error.AssertUtil;
 import java.util.Base64;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;

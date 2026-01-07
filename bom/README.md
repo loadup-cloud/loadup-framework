@@ -40,7 +40,7 @@ LoadUp BOM 是 LoadUp Framework 的依赖管理模块，提供统一的依赖版
     <!-- LoadUp 组件 -->
     <dependency>
         <groupId>com.github.loadup.framework</groupId>
-        <artifactId>loadup-commons-lang</artifactId>
+        <artifactId>loadup-commons-dto</artifactId>
         <!-- 版本由 BOM 管理，不需要指定 -->
     </dependency>
 

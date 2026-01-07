@@ -75,7 +75,7 @@ public class RedisDatabaseConfigIT extends BaseRedisCacheTest {
   @DisplayName("验证 RedisBinderCfg 配置正确加载")
   void testRedisBinderCfgLoaded() {
     assertNotNull(redisBinderCfg, "RedisBinderCfg should be loaded");
-    assertEquals("localhost", redisBinderCfg.getHost());
+    assertEquals(HOST, redisBinderCfg.getHost());
     assertEquals(PORT, redisBinderCfg.getPort());
     assertEquals(5, redisBinderCfg.getDatabase(), "Database should be 5 from custom config");
   }
@@ -102,7 +102,7 @@ public class RedisDatabaseConfigIT extends BaseRedisCacheTest {
         5,
         standaloneConfig.getDatabase(),
         "Redis database should be 5 from loadup.cache.binder.redis.database");
-    assertEquals("localhost", standaloneConfig.getHostName());
+    assertEquals(HOST, standaloneConfig.getHostName());
     assertEquals(PORT, standaloneConfig.getPort());
   }
 
@@ -148,7 +148,7 @@ public class RedisDatabaseConfigIT extends BaseRedisCacheTest {
 
     // Create template for database 0 (to verify isolation)
     LettuceConnectionFactory db0Factory =
-        new LettuceConnectionFactory(new RedisStandaloneConfiguration("localhost", PORT));
+        new LettuceConnectionFactory(new RedisStandaloneConfiguration(HOST, PORT));
     db0Factory.afterPropertiesSet();
 
     RedisTemplate<String, String> db0Template = new RedisTemplate<>();

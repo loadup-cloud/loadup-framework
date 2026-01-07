@@ -23,11 +23,11 @@ package com.github.loadup.components.database.listener;
  */
 
 import com.github.loadup.commons.dataobject.BaseDO;
-import com.github.loadup.commons.util.StringUtils;
 import com.github.loadup.components.database.config.DatabaseProperties;
 import com.github.loadup.components.database.tenant.TenantContextHolder;
 import com.mybatisflex.annotation.InsertListener;
 import com.mybatisflex.annotation.UpdateListener;
+import io.micrometer.common.util.StringUtils;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

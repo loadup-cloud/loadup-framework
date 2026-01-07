@@ -1,7 +1,6 @@
 package com.github.loadup.modules.upms.adapter.web.controller;
 
-import com.github.loadup.commons.result.Response;
-import com.github.loadup.commons.result.SingleResponse;
+import com.github.loadup.commons.result.*;
 import com.github.loadup.modules.upms.adapter.web.request.*;
 import com.github.loadup.modules.upms.app.command.*;
 import com.github.loadup.modules.upms.app.dto.LoginResultDTO;
@@ -32,7 +31,7 @@ public class AuthenticationController {
 
   @Operation(summary = "用户登录", description = "通过用户名密码登录系统")
   @PostMapping("/login")
-  public SingleResponse<LoginResultDTO> login(
+  public IResponse<LoginResultDTO> login(
       @Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
     UserLoginCommand command = new UserLoginCommand();
     command.setUsername(request.getUsername());
@@ -43,12 +42,12 @@ public class AuthenticationController {
     command.setUserAgent(httpRequest.getHeader("User-Agent"));
 
     LoginResultDTO result = authenticationService.login(command);
-    return SingleResponse.of(result);
+    return SuccessResponse.of(result);
   }
 
   @Operation(summary = "用户注册", description = "注册新用户账号")
   @PostMapping("/register")
-  public SingleResponse<UserInfoDTO> register(@Valid @RequestBody RegisterRequest request) {
+  public IResponse<UserInfoDTO> register(@Valid @RequestBody RegisterRequest request) {
     UserRegisterCommand command = new UserRegisterCommand();
     command.setUsername(request.getUsername());
     command.setPassword(request.getPassword());
@@ -60,29 +59,28 @@ public class AuthenticationController {
     command.setSmsCode(request.getSmsCode());
 
     UserInfoDTO result = authenticationService.register(command);
-    return SingleResponse.of(result);
+    return SuccessResponse.of(result);
   }
 
   @Operation(summary = "刷新访问令牌", description = "使用刷新令牌获取新的访问令牌")
   @PostMapping("/refresh-token")
-  public SingleResponse<LoginResultDTO> refreshToken(
-      @Valid @RequestBody RefreshTokenRequest request) {
+  public IResponse<LoginResultDTO> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
     LoginResultDTO result = authenticationService.refreshToken(request.getRefreshToken());
-    return SingleResponse.of(result);
+    return SuccessResponse.of(result);
   }
 
   @Operation(summary = "发送邮箱验证码", description = "发送密码重置验证码到邮箱")
   @PostMapping("/send-email-code")
-  public Response sendEmailVerificationCode(@Valid @RequestBody SendEmailCodeRequest request) {
+  public IResponse sendEmailVerificationCode(@Valid @RequestBody SendEmailCodeRequest request) {
     passwordResetService.sendEmailVerificationCode(request.getEmail());
-    return Response.buildSuccess();
+    return SuccessResponse.success();
   }
 
   @Operation(summary = "发送短信验证码", description = "发送密码重置验证码到手机")
   @PostMapping("/send-sms-code")
-  public Response sendSmsVerificationCode(@Valid @RequestBody SendSmsCodeRequest request) {
+  public IResponse sendSmsVerificationCode(@Valid @RequestBody SendSmsCodeRequest request) {
     passwordResetService.sendSmsVerificationCode(request.getPhone());
-    return Response.buildSuccess();
+    return SuccessResponse.success();
   }
 
   @Operation(summary = "重置密码", description = "使用验证码重置密码")

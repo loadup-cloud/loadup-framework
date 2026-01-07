@@ -23,13 +23,13 @@ package com.github.loadup.components.cache.caffeine.config;
  */
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.loadup.commons.enums.BinderEnum;
 import com.github.loadup.components.cache.api.CacheBinder;
 import com.github.loadup.components.cache.caffeine.binder.CaffeineCacheBinder;
 import com.github.loadup.components.cache.caffeine.cfg.CaffeineBinderCfg;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.components.cache.cfg.CacheConfigs;
 import com.github.loadup.components.cache.util.CacheExpirationUtil;
-import com.github.loadup.framework.api.enums.BinderEnum;
 import jakarta.annotation.Resource;
 import java.time.Duration;
 import java.util.HashMap;

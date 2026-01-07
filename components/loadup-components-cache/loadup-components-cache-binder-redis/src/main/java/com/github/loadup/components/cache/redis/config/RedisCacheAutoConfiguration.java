@@ -23,6 +23,7 @@ package com.github.loadup.components.cache.redis.config;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.loadup.commons.enums.BinderEnum;
 import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.cache.api.CacheBinder;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
@@ -30,7 +31,6 @@ import com.github.loadup.components.cache.cfg.CacheConfigs;
 import com.github.loadup.components.cache.redis.binder.RedisCacheBinder;
 import com.github.loadup.components.cache.redis.cfg.RedisBinderCfg;
 import com.github.loadup.components.cache.util.CacheExpirationUtil;
-import com.github.loadup.framework.api.enums.BinderEnum;
 import jakarta.annotation.Resource;
 import java.time.Duration;
 import java.util.HashMap;
