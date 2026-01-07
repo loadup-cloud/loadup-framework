@@ -22,10 +22,29 @@ package com.github.loadup.components.cache.config;
  * #L%
  */
 
+import com.github.loadup.components.cache.api.CacheBinder;
+import com.github.loadup.components.cache.binding.DefaultCacheBinding;
+import com.github.loadup.components.cache.cfg.CacheBindingCfg;
+import com.github.loadup.framework.api.manager.BinderManager;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /** LoadUp Cache Auto Configuration */
 @Configuration
-@EnableConfigurationProperties(CacheProperties.class)
-public class CacheAutoConfiguration {}
+@EnableConfigurationProperties(CacheBindingCfg.class)
+public class CacheAutoConfiguration {
+  @Bean
+  @ConditionalOnMissingBean
+  public BinderManager<CacheBinder> cacheBinderManager(ObjectProvider<CacheBinder> provider) {
+    return new BinderManager<>(provider, CacheBinder.class);
+  }
+
+  @Bean("cacheBinding")
+  public DefaultCacheBinding cacheBinding(
+      BinderManager<CacheBinder> binderManager, CacheBindingCfg cacheBindingCfg) {
+    return new DefaultCacheBinding(binderManager, cacheBindingCfg);
+  }
+}

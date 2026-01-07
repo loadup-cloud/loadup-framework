@@ -23,13 +23,13 @@ package com.github.loadup.components.scheduler.api;
  */
 
 import com.github.loadup.components.scheduler.model.SchedulerTask;
-import com.github.loadup.framework.api.binder.BaseBinder;
+import com.github.loadup.framework.api.binder.Binder;
 
 /**
- * Base scheduler binder interface providing common scheduler operations.
- * Implementations should provide concrete logic for different scheduler frameworks.
+ * Base scheduler binder interface providing common scheduler operations. Implementations should
+ * provide concrete logic for different scheduler frameworks.
  */
-public interface SchedulerBinder extends BaseBinder {
+public interface SchedulerBinder extends Binder {
 
     /**
      * Register a scheduled task.

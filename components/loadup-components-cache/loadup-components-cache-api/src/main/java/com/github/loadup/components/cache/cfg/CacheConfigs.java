@@ -25,17 +25,41 @@ package com.github.loadup.components.cache.cfg;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Common cache configuration shared by all cache implementations (Redis, Caffeine, etc.)
+ *
+ * <p>Usage examples:
+ *
+ * <pre>
+ * # Set default binder
+ * loadup.cache.binder=redis
+ *
+ * # Configure specific cache names to use different binders
+ * loadup.cache.binders.userCache=redis
+ * loadup.cache.binders.productCache=caffeine
+ *
+ * # Configure cache-specific properties
+ * loadup.cache.userCache.maximumSize=10000
+ * loadup.cache.userCache.expireAfterWrite=30m
+ * </pre>
+ */
 @Getter
 @Setter
-public class LoadUpCacheConfig {
+public class CacheConfigs {
 
-  /** Maximum cache size */
-  private long maximumSize;
+  /** Maximum cache size (applicable for local caches like Caffeine) */
+  private long maximumSize = 10000;
 
-  /** Base expiration time after write (e.g., "30m", "1h", "2d") */
+  /**
+   * Expiration time after write (e.g., "30m", "1h", "2d") Supports: s(seconds), m(minutes),
+   * h(hours), d(days)
+   */
   private String expireAfterWrite;
 
-  /** Base expiration time after access (e.g., "30m", "1h", "2d") */
+  /**
+   * Expiration time after access (e.g., "30m", "1h", "2d") Supports: s(seconds), m(minutes),
+   * h(hours), d(days)
+   */
   private String expireAfterAccess;
 
   /** Enable random expiration offset to prevent cache avalanche Default: true */

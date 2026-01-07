@@ -38,6 +38,10 @@
             <artifactId>opentelemetry-api</artifactId>
             <version>${opentelemetry.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.loadup.commons</groupId>
+            <artifactId>loadup-commons-lang</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

@@ -40,7 +40,7 @@ import org.springframework.test.context.*;
 @Slf4j
 @TestPropertySource(
     properties = {
-      "loadup.cache.type=redis",
+      "loadup.cache.binder=redis",
       "loadup.cache.redis.database=0",
       // Configure cache with anti-avalanche strategies
       "loadup.cache.redis.cache-config.avalanche-test.expire-after-write=5s",

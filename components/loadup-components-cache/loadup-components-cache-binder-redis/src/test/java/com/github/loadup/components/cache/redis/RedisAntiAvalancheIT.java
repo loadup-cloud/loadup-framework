@@ -25,6 +25,7 @@ package com.github.loadup.components.cache.redis;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.loadup.components.cache.common.BaseRedisCacheTest;
 import com.github.loadup.components.cache.common.model.User;
 import java.util.*;
 import java.util.concurrent.*;
@@ -40,7 +41,7 @@ import org.springframework.test.context.*;
 @Slf4j
 @TestPropertySource(
     properties = {
-      "loadup.cache.type=redis",
+      "loadup.cache.binder=redis",
       "loadup.cache.redis.database=0",
       // Configure cache with anti-avalanche strategies
       "loadup.cache.redis.cache-config.avalanche-test.expire-after-write=5s",

@@ -25,12 +25,11 @@ package com.github.loadup.components.scheduler.quartz.binder;
 import com.github.loadup.components.scheduler.api.SchedulerBinder;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
 import com.github.loadup.components.scheduler.quartz.job.SchedulerTaskJob;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Quartz scheduler binder implementation.
@@ -49,7 +48,7 @@ public class QuartzSchedulerBinder implements SchedulerBinder {
     private final Map<String, String> taskGroupMap = new ConcurrentHashMap<String, String>();
 
     @Override
-    public String getName() {
+    public String type() {
         return BINDER_NAME;
     }
 

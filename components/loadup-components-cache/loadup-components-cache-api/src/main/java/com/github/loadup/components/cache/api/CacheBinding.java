@@ -22,9 +22,9 @@ package com.github.loadup.components.cache.api;
  * #L%
  */
 
-import com.github.loadup.framework.api.binding.BaseBinding;
+import com.github.loadup.framework.api.binding.Binding;
 
-public interface CacheBinding extends BaseBinding {
+public interface CacheBinding extends Binding {
   boolean set(String cacheName, String key, Object value);
 
   Object get(String cacheName, String key);

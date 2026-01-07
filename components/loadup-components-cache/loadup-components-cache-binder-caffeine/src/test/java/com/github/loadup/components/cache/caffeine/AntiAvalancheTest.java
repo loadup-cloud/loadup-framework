@@ -38,16 +38,16 @@ import org.springframework.test.context.TestPropertySource;
 /** Anti-Avalanche and Anti-Breakdown Test 测试防缓存雪崩和缓存击穿策略 */
 @TestPropertySource(
     properties = {
-      "loadup.cache.type=caffeine",
-      "loadup.cache.caffeine.cache-config.hot-data.expire-after-write=5s",
-      "loadup.cache.caffeine.cache-config.hot-data.maximum-size=100",
-      "loadup.cache.caffeine.cache-config.hot-data.enable-random-expiration=true",
-      "loadup.cache.caffeine.cache-config.hot-data.random-offset-seconds=2",
-      "loadup.cache.caffeine.cache-config.hot-data.priority=9",
-      "loadup.cache.caffeine.cache-config.normal-data.expire-after-write=3s",
-      "loadup.cache.caffeine.cache-config.normal-data.maximum-size=100",
-      "loadup.cache.caffeine.cache-config.normal-data.enable-random-expiration=true",
-      "loadup.cache.caffeine.cache-config.normal-data.random-offset-seconds=1"
+      "loadup.cache.binder=caffeine",
+      "loadup.cache.cache-configs.hot-data.expire-after-write=5s",
+      "loadup.cache.cache-configs.hot-data.maximum-size=100",
+      "loadup.cache.cache-configs.hot-data.enable-random-expiration=true",
+      "loadup.cache.cache-configs.hot-data.random-offset-seconds=2",
+      "loadup.cache.cache-configs.hot-data.priority=9",
+      "loadup.cache.cache-configs.normal-data.expire-after-write=3s",
+      "loadup.cache.cache-configs.normal-data.maximum-size=100",
+      "loadup.cache.cache-configs.normal-data.enable-random-expiration=true",
+      "loadup.cache.cache-configs.normal-data.random-offset-seconds=1"
     })
 @DisplayName("防缓存雪崩和击穿测试")
 public class AntiAvalancheTest extends BaseCacheTest {

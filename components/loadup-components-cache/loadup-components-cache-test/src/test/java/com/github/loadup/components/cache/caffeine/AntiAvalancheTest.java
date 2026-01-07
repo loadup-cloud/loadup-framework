@@ -38,7 +38,7 @@ import org.springframework.test.context.TestPropertySource;
 /** Anti-Avalanche and Anti-Breakdown Test 测试防缓存雪崩和缓存击穿策略 */
 @TestPropertySource(
     properties = {
-      "loadup.cache.type=caffeine",
+      "loadup.cache.binder=caffeine",
       "loadup.cache.caffeine.cache-config.hot-data.expire-after-write=5s",
       "loadup.cache.caffeine.cache-config.hot-data.maximum-size=100",
       "loadup.cache.caffeine.cache-config.hot-data.enable-random-expiration=true",

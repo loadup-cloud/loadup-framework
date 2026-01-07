@@ -24,16 +24,15 @@ package com.github.loadup.components.scheduler.simplejob;
 
 import com.github.loadup.components.scheduler.api.SchedulerBinder;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.scheduling.support.CronTrigger;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.support.CronTrigger;
 
 /**
  * Simple job scheduler binder implementation using Spring's TaskScheduler.
@@ -62,7 +61,7 @@ public class SimpleJobSchedulerBinder implements SchedulerBinder {
     }
 
     @Override
-    public String getName() {
+    public String type() {
         return BINDER_NAME;
     }
 

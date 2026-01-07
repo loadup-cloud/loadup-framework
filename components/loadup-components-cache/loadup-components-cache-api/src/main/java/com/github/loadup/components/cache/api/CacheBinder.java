@@ -22,9 +22,9 @@ package com.github.loadup.components.cache.api;
  * #L%
  */
 
-import com.github.loadup.framework.api.binder.BaseBinder;
+import com.github.loadup.framework.api.binder.Binder;
 
-public interface CacheBinder extends BaseBinder {
+public interface CacheBinder extends Binder {
   default boolean set(String cacheName, String key, Object value) {
     return false;
   }

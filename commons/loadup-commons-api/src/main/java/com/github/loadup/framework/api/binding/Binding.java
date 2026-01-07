@@ -22,7 +22,7 @@ package com.github.loadup.framework.api.binding;
  * #L%
  */
 
-public interface BaseBinding {
+public interface Binding {
   default void init() {}
 
   default void destroy() {}

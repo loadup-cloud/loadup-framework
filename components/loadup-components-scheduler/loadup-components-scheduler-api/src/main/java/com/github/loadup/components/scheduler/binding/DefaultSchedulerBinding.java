@@ -37,7 +37,7 @@ public class DefaultSchedulerBinding implements SchedulerBinding {
 
     public DefaultSchedulerBinding(SchedulerBinder schedulerBinder) {
         this.schedulerBinder = schedulerBinder;
-        log.info("Initialized SchedulerBinding with binder: {}", schedulerBinder.getName());
+    log.info("Initialized SchedulerBinding with binder: {}", schedulerBinder.type());
     }
 
     @Override

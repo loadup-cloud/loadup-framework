@@ -26,6 +26,7 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.github.loadup.components.cache.common.BaseRedisCacheTest;
 import com.github.loadup.components.cache.common.model.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ import org.springframework.test.context.TestPropertySource;
 /** Anti-Avalanche and Anti-Breakdown Test 测试防缓存雪崩和缓存击穿策略 */
 @TestPropertySource(
     properties = {
-      "loadup.cache.type=redis",
+      "loadup.cache.binder=redis",
       "loadup.cache.redis.cache-config.hot-data.expire-after-write=5s",
       "loadup.cache.redis.cache-config.hot-data.maximum-size=100",
       "loadup.cache.redis.cache-config.hot-data.enable-random-expiration=true",

@@ -1,4 +1,4 @@
-package com.github.loadup.components.cache.redis;
+package com.github.loadup.components.cache.redis.config;
 
 /*-
  * #%L
@@ -25,10 +25,11 @@ package com.github.loadup.components.cache.redis;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.cache.api.CacheBinder;
-import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
-import com.github.loadup.components.cache.config.CacheProperties;
-import com.github.loadup.components.cache.redis.impl.RedisCacheBinderImpl;
+import com.github.loadup.components.cache.cfg.CacheBindingCfg;
+import com.github.loadup.components.cache.cfg.CacheConfigs;
+import com.github.loadup.components.cache.redis.binder.RedisCacheBinder;
 import com.github.loadup.components.cache.util.CacheExpirationUtil;
+import com.github.loadup.framework.api.enums.BinderEnum;
 import jakarta.annotation.Resource;
 import java.time.Duration;
 import java.util.HashMap;
@@ -48,27 +49,32 @@ import org.springframework.data.redis.serializer.*;
 @Slf4j
 @Configuration
 @EnableCaching
-@EnableConfigurationProperties(CacheProperties.class)
-@ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = "redis")
+@EnableConfigurationProperties(CacheBindingCfg.class)
+@ConditionalOnProperty(prefix = "loadup.cache", name = "binder", havingValue = "redis")
 public class RedisCacheAutoConfiguration {
 
-  @Resource private CacheProperties cacheProperties;
+  @Resource private CacheBindingCfg cacheBindingCfg;
 
   @Bean
   @Qualifier("redisCacheManager")
+  @ConditionalOnProperty(prefix = "loadup.cache", name = "binder", havingValue = "redis")
   public LoadUpRedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
     // 默认缓存配置
     Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
 
-    // 为每个 cache name 配置不同的策略
-    Map<String, LoadUpCacheConfig> cacheConfig = cacheProperties.getRedis().getCacheConfig();
-    if (cacheConfig != null) {
-      cacheConfig.forEach(
-          (cacheName, config) -> {
-            RedisCacheConfiguration redisConfig = buildCacheConfiguration(config);
-            cacheConfigurations.put(cacheName, redisConfig);
+    // Support new unified configuration structure
+    Map<String, CacheConfigs> cacheConfigs = new HashMap<>();
 
-            log.info("Configured Redis cache: name={}, config={}", cacheName, config);
+    if (cacheConfigs != null && !cacheConfigs.isEmpty()) {
+      cacheConfigs.forEach(
+          (cacheName, config) -> {
+            // Only configure Redis caches (check binder selection)
+            if (cacheBindingCfg.getBinderForCache(cacheName) == BinderEnum.CacheBinder.REDIS) {
+              RedisCacheConfiguration redisConfig = buildCacheConfiguration(config);
+              cacheConfigurations.put(cacheName, redisConfig);
+
+              log.info("Configured Redis cache: name={}, config={}", cacheName, config);
+            }
           });
     }
 
@@ -78,8 +84,13 @@ public class RedisCacheAutoConfiguration {
         cacheConfigurations);
   }
 
+  /**
+   * Get cache configurations supporting both new and legacy structure Priority: new cacheConfigs
+   * map > legacy redis.cacheConfig
+   */
+
   /** Build cache configuration with anti-avalanche strategies */
-  private RedisCacheConfiguration buildCacheConfiguration(LoadUpCacheConfig cacheConfig) {
+  private RedisCacheConfiguration buildCacheConfiguration(CacheConfigs cacheConfig) {
     RedisCacheConfiguration config = redisCacheConfiguration();
 
     // 1. Configure base expiration time
@@ -139,7 +150,8 @@ public class RedisCacheAutoConfiguration {
   }
 
   @Bean(name = "redisCacheBinder")
+  @ConditionalOnProperty(prefix = "loadup.cache", name = "binder", havingValue = "redis")
   public CacheBinder cacheBinder() {
-    return new RedisCacheBinderImpl();
+    return new RedisCacheBinder();
   }
 }

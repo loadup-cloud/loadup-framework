@@ -34,7 +34,7 @@ import org.springframework.test.context.TestPropertySource;
 /** Caffeine Cache Basic Operations Test */
 @TestPropertySource(
     properties = {
-      "loadup.cache.type=caffeine",
+      "loadup.cache.binder=caffeine",
       "spring.cache.caffeine.spec=initialCapacity=100,maximumSize=1000,expireAfterWrite=300s"
     })
 @DisplayName("Caffeine 缓存基础操作测试")

@@ -1,8 +1,10 @@
+package com.github.loadup.framework.api.binder;
+
 /*-
  * #%L
- * loadup-components-cache-api
+ * loadup-commons-api
  * %%
- * Copyright (C) 2026 LoadUp Cloud
+ * Copyright (C) 2025 LoadUp Cloud
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -19,3 +21,12 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+public interface Binder {
+  String type();
+
+  default void init() {}
+
+  default void postProcessAfterInstantiation() {}
+
+  default void destroy() {}
+}

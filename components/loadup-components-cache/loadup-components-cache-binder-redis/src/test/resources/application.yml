@@ -1,6 +1,6 @@
 loadup:
   cache:
-    type: redis
+    binder: redis
 spring:
   cache:
     cache-names:

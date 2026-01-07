@@ -37,7 +37,7 @@ import org.springframework.test.context.*;
 @Slf4j
 @TestPropertySource(
     properties = {
-      "loadup.cache.type=redis",
+      "loadup.cache.binder=redis",
       "loadup.cache.redis.database=0",
       // Configure specific cache with short TTL for testing
       "loadup.cache.redis.cache-config.short-lived.expire-after-write=3s",

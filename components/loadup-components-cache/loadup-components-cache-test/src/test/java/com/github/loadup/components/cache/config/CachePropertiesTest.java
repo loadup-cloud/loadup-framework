@@ -24,7 +24,9 @@ package com.github.loadup.components.cache.config;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
+import com.github.loadup.framework.api.enums.BinderEnum;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -48,51 +50,120 @@ class CachePropertiesTest {
 
   @Test
   void testValidCaffeineConfig() {
-    CacheProperties properties = new CacheProperties();
-    properties.setType(CacheProperties.CacheType.CAFFEINE);
+    CacheBindingCfg properties = new CacheBindingCfg();
+    properties.setBinder(BinderEnum.CacheBinder.CAFFEINE);
 
-    Set<ConstraintViolation<CacheProperties>> violations = validator.validate(properties);
+    Set<ConstraintViolation<CacheBindingCfg>> violations = validator.validate(properties);
     assertTrue(violations.isEmpty(), "Valid configuration should have no violations");
   }
 
   @Test
   void testValidRedisConfig() {
-    CacheProperties properties = new CacheProperties();
-    properties.setType(CacheProperties.CacheType.REDIS);
+    CacheBindingCfg properties = new CacheBindingCfg();
+    properties.setBinder(BinderEnum.CacheBinder.REDIS);
 
-    Set<ConstraintViolation<CacheProperties>> violations = validator.validate(properties);
+    Set<ConstraintViolation<CacheBindingCfg>> violations = validator.validate(properties);
     assertTrue(violations.isEmpty(), "Valid configuration should have no violations");
   }
 
   @Test
   void testDefaultValues() {
-    CacheProperties properties = new CacheProperties();
+    CacheBindingCfg properties = new CacheBindingCfg();
 
-    assertEquals(CacheProperties.CacheType.CAFFEINE, properties.getType());
-    assertNotNull(properties.getRedis());
-    assertNotNull(properties.getCaffeine());
+    // Default binder should be CAFFEINE when not set
+    assertEquals(BinderEnum.CacheBinder.CAFFEINE, properties.getBinderForCache("anyCache"));
+    assertNotNull(properties.getBinders());
+    assertNotNull(properties.getCacheConfigs());
   }
 
-  @Test
-  void testCacheTypeEnum() {
-    assertEquals("redis", CacheProperties.CacheType.REDIS.toString());
-    assertEquals("caffeine", CacheProperties.CacheType.CAFFEINE.toString());
-  }
 
   @Test
   void testPerCacheConfiguration() {
-    CacheProperties properties = new CacheProperties();
+    CacheBindingCfg properties = new CacheBindingCfg();
 
-    // Configure Redis per-cache settings
-    Map<String, LoadUpCacheConfig> redisCacheConfig = new HashMap<>();
+    // Configure per-cache settings
+    Map<String, LoadUpCacheConfig> cacheConfigs = new HashMap<>();
     LoadUpCacheConfig userCacheConfig = new LoadUpCacheConfig();
     userCacheConfig.setExpireAfterWrite("30m");
     userCacheConfig.setMaximumSize(10000L);
-    redisCacheConfig.put("users", userCacheConfig);
-    properties.getRedis().setCacheConfig(redisCacheConfig);
+    cacheConfigs.put("users", userCacheConfig);
+    properties.setCacheConfigs(cacheConfigs);
 
-    assertNotNull(properties.getRedis().getCacheConfig());
-    assertEquals(1, properties.getRedis().getCacheConfig().size());
-    assertEquals("30m", properties.getRedis().getCacheConfig().get("users").getExpireAfterWrite());
+    assertNotNull(properties.getCacheConfigs());
+    assertEquals(1, properties.getCacheConfigs().size());
+    assertEquals("30m", properties.getCacheConfig("users").getExpireAfterWrite());
+  }
+
+  @Test
+  void testNewConfigurationStructure() {
+    CacheBindingCfg properties = new CacheBindingCfg();
+
+    // Set global binder
+    properties.setBinder(BinderEnum.CacheBinder.REDIS);
+
+    // Configure per-cache binders
+    Map<String, BinderEnum.CacheBinder> binders = new HashMap<>();
+    binders.put("userCache", BinderEnum.CacheBinder.REDIS);
+    binders.put("productCache", BinderEnum.CacheBinder.CAFFEINE);
+    properties.setBinders(binders);
+
+    // Configure per-cache common properties
+    Map<String, LoadUpCacheConfig> cacheConfigs = new HashMap<>();
+
+    LoadUpCacheConfig userConfig = new LoadUpCacheConfig();
+    userConfig.setExpireAfterWrite("30m");
+    userConfig.setMaximumSize(10000L);
+    userConfig.setEnableRandomExpiration(true);
+    cacheConfigs.put("userCache", userConfig);
+
+    LoadUpCacheConfig productConfig = new LoadUpCacheConfig();
+    productConfig.setExpireAfterWrite("1h");
+    productConfig.setMaximumSize(5000L);
+    cacheConfigs.put("productCache", productConfig);
+
+    properties.setCacheConfigs(cacheConfigs);
+
+    // Verify configuration
+    assertEquals(BinderEnum.CacheBinder.REDIS, properties.getBinder());
+    assertEquals(BinderEnum.CacheBinder.REDIS, properties.getBinderForCache("userCache"));
+    assertEquals(BinderEnum.CacheBinder.CAFFEINE, properties.getBinderForCache("productCache"));
+    assertEquals(
+        BinderEnum.CacheBinder.REDIS,
+        properties.getBinderForCache("unknownCache")); // Falls back to global
+
+    assertNotNull(properties.getCacheConfig("userCache"));
+    assertEquals("30m", properties.getCacheConfig("userCache").getExpireAfterWrite());
+    assertEquals(10000L, properties.getCacheConfig("userCache").getMaximumSize());
+
+    assertNotNull(properties.getCacheConfig("productCache"));
+    assertEquals("1h", properties.getCacheConfig("productCache").getExpireAfterWrite());
+    assertEquals(5000L, properties.getCacheConfig("productCache").getMaximumSize());
+  }
+
+  @Test
+  void testBinderFallbackToGlobal() {
+    CacheBindingCfg properties = new CacheBindingCfg();
+    properties.setBinder(BinderEnum.CacheBinder.REDIS);
+
+    // No specific binder for "userCache", should fall back to global "redis"
+    assertEquals(BinderEnum.CacheBinder.REDIS, properties.getBinderForCache("userCache"));
+
+    // Set specific binder for "productCache"
+    Map<String, BinderEnum.CacheBinder> binders = new HashMap<>();
+    binders.put("productCache", BinderEnum.CacheBinder.CAFFEINE);
+    properties.setBinders(binders);
+
+    assertEquals(BinderEnum.CacheBinder.CAFFEINE, properties.getBinderForCache("productCache"));
+    assertEquals(
+        BinderEnum.CacheBinder.REDIS,
+        properties.getBinderForCache("userCache")); // Still falls back
+  }
+
+  @Test
+  void testDefaultBinderValue() {
+    CacheProperties properties = new CacheProperties();
+
+    // Default binder should be "caffeine"
+    assertEquals("caffeine", properties.getBinder());
   }
 }

@@ -35,7 +35,7 @@ import org.springframework.test.context.*;
 
 /** Redis Cache Concurrency Test */
 @Slf4j
-@TestPropertySource(properties = {"loadup.cache.type=redis", "loadup.cache.redis.database=0"})
+@TestPropertySource(properties = {"loadup.cache.binder=redis", "loadup.cache.redis.database=0"})
 @DisplayName("Redis 缓存并发测试")
 public class RedisConcurrencyTest extends BaseRedisCacheTest {
 

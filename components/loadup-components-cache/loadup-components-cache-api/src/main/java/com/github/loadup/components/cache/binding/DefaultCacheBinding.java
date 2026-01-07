@@ -24,46 +24,61 @@ package com.github.loadup.components.cache.binding;
 
 import com.github.loadup.components.cache.api.CacheBinder;
 import com.github.loadup.components.cache.api.CacheBinding;
-import jakarta.annotation.Resource;
+import com.github.loadup.components.cache.cfg.CacheBindingCfg;
+import com.github.loadup.framework.api.binding.AbstractBinding;
+import com.github.loadup.framework.api.manager.BinderManager;
 import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
 @Slf4j(topic = "DIGEST_CACHE_LOGGER")
-@Component("cacheBinding")
-public class DefaultCacheBinding implements CacheBinding {
+public class DefaultCacheBinding extends AbstractBinding<CacheBinder, CacheBindingCfg>
+    implements CacheBinding {
 
-  @Resource private CacheBinder cacheBinder;
+  private final BinderManager<CacheBinder> manager;
+
+  public DefaultCacheBinding(BinderManager<CacheBinder> manager, CacheBindingCfg props) {
+    this.manager = manager;
+    this.cfg = props;
+  }
+
+  private CacheBinder selectBinder(String cacheName) {
+    String type = cfg.getBinderForCache(cacheName).getValue();
+    return manager.getBinder(type);
+  }
 
   @Override
   public boolean set(String cacheName, String key, Object value) {
-    return execute(() -> cacheBinder.set(cacheName, key, value), "set", cacheName, key);
+    return execute(() -> selectBinder(cacheName).set(cacheName, key, value), "set", cacheName, key);
   }
 
   @Override
   public Object get(String cacheName, String key) {
-    return execute(() -> cacheBinder.get(cacheName, key), "get", cacheName, key);
+    return execute(() -> selectBinder(cacheName).get(cacheName, key), "get", cacheName, key);
   }
 
   @Override
   public <T> T get(String cacheName, String key, Class<T> cls) {
-    return execute(() -> cacheBinder.get(cacheName, key, cls), "get", cacheName, key);
+    return execute(() -> selectBinder(cacheName).get(cacheName, key, cls), "get", cacheName, key);
   }
 
   @Override
   public boolean delete(String cacheName, String key) {
-    return execute(() -> cacheBinder.delete(cacheName, key), "delete", cacheName, key);
+    return execute(() -> selectBinder(cacheName).delete(cacheName, key), "delete", cacheName, key);
   }
 
   @Override
   public boolean deleteAll(String cacheName) {
-    return execute(() -> cacheBinder.deleteAll(cacheName), "deleteAll", cacheName, "all");
+    return execute(
+        () -> selectBinder(cacheName).deleteAll(cacheName), "deleteAll", cacheName, "all");
   }
 
+  /** Execute cache operation with logging and timing */
   private <T> T execute(Supplier<T> supplier, String method, String cacheName, String key) {
     StopWatch stopWatch = new StopWatch();
     String resultStatus = "success";
+    CacheBinder selectedBinder = selectBinder(cacheName);
+
     try {
       stopWatch.start();
       return supplier.get();
@@ -73,8 +88,9 @@ public class DefaultCacheBinding implements CacheBinding {
     } finally {
       stopWatch.stop();
       log.info(
-          "binder={},method={},key={},result={},cost={}",
-          cacheBinder.getName(),
+          "cacheName={},binder={},method={},key={},result={},cost={}ms",
+          cacheName,
+          selectedBinder.type(),
           method,
           key,
           resultStatus,

@@ -1,4 +1,4 @@
-package com.github.loadup.components.cache.caffeine;
+package com.github.loadup.components.cache.caffeine.config;
 
 /*-
  * #%L
@@ -29,7 +29,16 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 
-/** Extended Caffeine Cache Manager with per-cache custom configurations */
+/**
+ * Extended Caffeine Cache Manager with per-cache custom configurations
+ *
+ * <p>This cache manager extends Spring's CaffeineCacheManager to support:
+ *
+ * <ul>
+ *   <li>Default configuration from spring.cache.caffeine.spec
+ *   <li>Per-cache custom configurations that override the default
+ * </ul>
+ */
 public class LoadUpCaffeineCacheManager extends CaffeineCacheManager {
 
   private final Map<String, Caffeine<Object, Object>> customCaffeineSpecs =
@@ -38,11 +47,22 @@ public class LoadUpCaffeineCacheManager extends CaffeineCacheManager {
   /**
    * Register a custom Caffeine configuration for a specific cache
    *
+   * <p>This will override the default spring.cache.caffeine.spec for the specified cache name.
+   *
    * @param cacheName Cache name
    * @param caffeine Custom Caffeine builder
    */
   public void registerCustomCache(String cacheName, Caffeine<Object, Object> caffeine) {
     customCaffeineSpecs.put(cacheName, caffeine);
+  }
+
+  /**
+   * Get all registered custom cache configurations
+   *
+   * @return Map of cache name to Caffeine builder
+   */
+  public Map<String, Caffeine<Object, Object>> getCustomCaffeineSpecs() {
+    return customCaffeineSpecs;
   }
 
   @Override
@@ -51,11 +71,12 @@ public class LoadUpCaffeineCacheManager extends CaffeineCacheManager {
     Caffeine<Object, Object> customCaffeine = customCaffeineSpecs.get(name);
 
     if (customCaffeine != null) {
-      // Use custom configuration
+      // Use custom configuration (overrides spring.cache.caffeine.spec)
       return new CaffeineCache(name, customCaffeine.build(), isAllowNullValues());
     }
 
-    // Fall back to default configuration
+    // Fall back to default configuration from spring.cache.caffeine.spec
+    // This will use the CaffeineSpec set via setCacheSpecification() or setCaffeine()
     return super.createCaffeineCache(name);
   }
 }

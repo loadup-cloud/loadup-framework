@@ -161,7 +161,7 @@ spring:
 
 ```properties
 # 指定缓存类型
-loadup.cache.type=caffeine
+loadup.cache.binder=caffeine
 # 使用 Spring Boot 标准配置
 spring.cache.caffeine.spec=initialCapacity=1000,maximumSize=5000,expireAfterWrite=20m
 ```
@@ -205,7 +205,7 @@ spring:
 
 ```properties
 # 指定缓存类型
-loadup.cache.type=redis
+loadup.cache.binder=redis
 # 使用 Spring Boot 标准配置
 spring.redis.host=localhost
 spring.redis.port=6379
@@ -1061,7 +1061,7 @@ Duration parseDuration(String durationStr)
 
 **API 模块新增**:
 
-- `com.github.loadup.components.cache.config.CacheProperties` - 统一配置类
+- `com.github.loadup.components.cache.cfg.CacheBindingCfg` - 统一配置类
 - `com.github.loadup.components.cache.config.CacheAutoConfiguration` - 自动配置
 - `com.github.loadup.components.cache.binding.DefaultCacheBinding` - 默认实现
 

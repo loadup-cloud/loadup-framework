@@ -136,7 +136,7 @@ mvn clean test jacoco:report
 ### 默认测试配置 (application-test.properties)
 
 ```properties
-loadup.cache.type=caffeine
+loadup.cache.binder=caffeine
 loadup.cache.caffeine.initial-capacity=100
 loadup.cache.caffeine.maximum-size=1000
 loadup.cache.caffeine.expire-after-write-seconds=300
@@ -149,7 +149,7 @@ loadup.cache.caffeine.expire-after-access-seconds=60
 
 ```java
 @TestPropertySource(properties = {
-        "loadup.cache.type=caffeine",
+        "loadup.cache.binder=caffeine",
         "loadup.cache.caffeine.expire-after-write-seconds=2"
 })
 public class MyCustomTest extends BaseCacheTest {

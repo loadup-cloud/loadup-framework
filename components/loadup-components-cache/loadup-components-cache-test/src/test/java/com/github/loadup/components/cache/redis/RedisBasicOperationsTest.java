@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.context.*;
 
 /** Redis Cache Basic Operations Test */
-@TestPropertySource(properties = {"loadup.cache.type=redis", "loadup.cache.redis.database=0"})
+@TestPropertySource(properties = {"loadup.cache.binder=redis", "loadup.cache.redis.database=0"})
 @DisplayName("Redis 缓存基础操作测试")
 public class RedisBasicOperationsTest extends BaseRedisCacheTest {
 

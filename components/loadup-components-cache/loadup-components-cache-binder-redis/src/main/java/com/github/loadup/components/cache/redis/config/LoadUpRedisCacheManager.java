@@ -1,4 +1,4 @@
-package com.github.loadup.components.cache.redis;
+package com.github.loadup.components.cache.redis.config;
 
 /*-
  * #%L

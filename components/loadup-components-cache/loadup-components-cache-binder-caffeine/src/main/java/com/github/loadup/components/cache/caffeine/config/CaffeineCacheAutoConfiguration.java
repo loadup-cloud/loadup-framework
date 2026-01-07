@@ -1,4 +1,4 @@
-package com.github.loadup.components.cache.caffeine;
+package com.github.loadup.components.cache.caffeine.config;
 
 /*-
  * #%L
@@ -24,15 +24,18 @@ package com.github.loadup.components.cache.caffeine;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.loadup.components.cache.api.CacheBinder;
-import com.github.loadup.components.cache.caffeine.binder.CaffeineCacheBinderImpl;
-import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
-import com.github.loadup.components.cache.config.CacheProperties;
+import com.github.loadup.components.cache.caffeine.binder.CaffeineCacheBinder;
+import com.github.loadup.components.cache.cfg.CacheBindingCfg;
+import com.github.loadup.components.cache.cfg.CacheConfigs;
 import com.github.loadup.components.cache.util.CacheExpirationUtil;
+import com.github.loadup.framework.api.enums.BinderEnum;
 import jakarta.annotation.Resource;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -46,42 +49,67 @@ import org.springframework.context.annotation.Primary;
 
 @Slf4j
 @EnableCaching
-@EnableConfigurationProperties(CacheProperties.class)
+@EnableConfigurationProperties(CacheBindingCfg.class)
 @ConditionalOnClass({Caffeine.class, CaffeineCacheManager.class})
 @AutoConfiguration(before = CacheAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = "caffeine")
+@ConditionalOnProperty(prefix = "loadup.cache", name = "binder", havingValue = "caffeine")
 public class CaffeineCacheAutoConfiguration {
 
-  @Resource private CacheProperties cacheProperties;
+  @Resource private CacheBindingCfg cacheBindingCfg;
+
+  @Value("${spring.cache.caffeine.spec:}")
+  private String cacheSpec;
 
   /** default cache manager with per-cache configurations */
   @Primary
   @Bean(name = "caffeineCacheManager")
-  @ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = "caffeine")
+  @ConditionalOnProperty(prefix = "loadup.cache", name = "binder", havingValue = "caffeine")
   public CacheManager defaultCacheManager() {
     LoadUpCaffeineCacheManager cacheManager = new LoadUpCaffeineCacheManager();
 
-    // Configure per-cache strategies
-    Map<String, LoadUpCacheConfig> cacheConfigs = cacheProperties.getCaffeine().getCacheConfig();
+    // Set default configuration from spring.cache.caffeine.spec
+    if (cacheSpec != null && !cacheSpec.isEmpty()) {
+      cacheManager.setCacheSpecification(cacheSpec);
+      log.info("Applied default Caffeine cache spec: {}", cacheSpec);
+    }
+
+    // Support new unified configuration structure - these will override the default spec
+    Map<String, CacheConfigs> cacheConfigs = getCacheConfigs();
+
     if (cacheConfigs != null && !cacheConfigs.isEmpty()) {
       cacheConfigs.forEach(
           (cacheName, cacheConfig) -> {
-            Caffeine<Object, Object> customCaffeine = buildCustomCaffeine(cacheConfig);
-            cacheManager.registerCustomCache(cacheName, customCaffeine);
+            // Only configure Caffeine caches (check binder selection)
+            if (cacheBindingCfg.getBinderForCache(cacheName) == BinderEnum.CacheBinder.CAFFEINE) {
+              Caffeine<Object, Object> customCaffeine = buildCustomCaffeine(cacheConfig);
+              cacheManager.registerCustomCache(cacheName, customCaffeine);
 
-            log.info(
-                "Configured Caffeine cache: name={}, maxSize={}, expireAfterWrite={}",
-                cacheName,
-                cacheConfig.getMaximumSize(),
-                cacheConfig.getExpireAfterWrite());
+              log.info(
+                  "Configured custom Caffeine cache: name={}, maxSize={}, expireAfterWrite={} (overrides default spec)",
+                  cacheName,
+                  cacheConfig.getMaximumSize(),
+                  cacheConfig.getExpireAfterWrite());
+            }
           });
     }
 
     return cacheManager;
   }
 
+  /**
+   * Get cache configurations supporting both new and legacy structure Priority: new cacheConfigs
+   * map > legacy caffeine.cacheConfig
+   */
+  private Map<String, CacheConfigs> getCacheConfigs() {
+    // Try new structure first
+    if (cacheBindingCfg.getCacheConfigs() != null && !cacheBindingCfg.getCacheConfigs().isEmpty()) {
+      return cacheBindingCfg.getCacheConfigs();
+    }
+    return new HashMap<>();
+  }
+
   /** Build custom Caffeine for specific cache with anti-avalanche strategies */
-  private Caffeine<Object, Object> buildCustomCaffeine(LoadUpCacheConfig cacheConfig) {
+  private Caffeine<Object, Object> buildCustomCaffeine(CacheConfigs cacheConfig) {
     Caffeine<Object, Object> builder = Caffeine.newBuilder();
 
     // Set maximum size
@@ -116,8 +144,8 @@ public class CaffeineCacheAutoConfiguration {
   }
 
   @Bean(name = "caffeineCacheBinder")
-  @ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = "caffeine")
+  @ConditionalOnProperty(prefix = "loadup.cache", name = "binder", havingValue = "caffeine")
   public CacheBinder cacheBinder() {
-    return new CaffeineCacheBinderImpl();
+    return new CaffeineCacheBinder();
   }
 }

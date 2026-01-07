@@ -1,8 +1,8 @@
-package com.github.loadup.components.cache.caffeine.binder;
+package com.github.loadup.components.cache.redis.binder;
 
 /*-
  * #%L
- * loadup-components-cache-binder-caffeine
+ * loadup-components-cache-binder-redis
  * %%
  * Copyright (C) 2022 - 2025 loadup_cloud
  * %%
@@ -22,38 +22,42 @@ package com.github.loadup.components.cache.caffeine.binder;
  * #L%
  */
 
+import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.cache.api.CacheBinder;
 import jakarta.annotation.Resource;
+import java.util.Map;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
-public class CaffeineCacheBinderImpl implements CacheBinder {
+public class RedisCacheBinder implements CacheBinder {
 
   @Resource
-  @Qualifier("caffeineCacheManager")
-  private CacheManager caffeineCacheManager;
+  @Qualifier("redisCacheManager")
+  RedisCacheManager redisCacheManager;
 
   @Override
-  public String getName() {
-    return "CaffeineCache";
+  public String type() {
+    return "redis";
   }
 
   @Override
   public boolean set(String cacheName, String key, Object value) {
-    Cache cache = caffeineCacheManager.getCache(cacheName);
+    Cache cache = redisCacheManager.getCache(cacheName);
     Assert.notNull(cache, "cache is null");
-    Assert.notNull(value, "Caffeine cache does not support null values");
     cache.put(key, value);
     return true;
   }
 
   @Override
   public Object get(String cacheName, String key) {
-    Cache cache = caffeineCacheManager.getCache(cacheName);
-    Assert.notNull(cache, "cache is null");
+    Cache cache = redisCacheManager.getCache(cacheName);
+    if (Objects.isNull(cache)) {
+      return null;
+    }
     Cache.ValueWrapper valueWrapper = cache.get(key);
     if (Objects.isNull(valueWrapper)) {
       return null;
@@ -63,27 +67,34 @@ public class CaffeineCacheBinderImpl implements CacheBinder {
 
   @Override
   public <T> T get(String cacheName, String key, Class<T> clazz) {
-    Cache cache = caffeineCacheManager.getCache(cacheName);
-    Assert.notNull(cache, "cache is null");
-    T value = cache.get(key, clazz);
-    if (Objects.isNull(value)) {
+    Cache cache = redisCacheManager.getCache(cacheName);
+    if (Objects.isNull(cache)) {
       return null;
     }
-    return value;
+    @SuppressWarnings("unchecked")
+    Map<String, Object> map = cache.get(key, Map.class);
+    if (CollectionUtils.isEmpty(map)) {
+      return null;
+    }
+    return JsonUtil.mapToObject(map, clazz);
   }
 
   @Override
   public boolean delete(String cacheName, String key) {
-    Cache cache = caffeineCacheManager.getCache(cacheName);
-    Assert.notNull(cache, "cache is null");
-    cache.evict(key);
+    Cache cache = redisCacheManager.getCache(cacheName);
+    if (Objects.isNull(cache)) {
+      return false;
+    }
+    cache.evictIfPresent(key);
     return true;
   }
 
   @Override
   public boolean deleteAll(String cacheName) {
-    Cache cache = caffeineCacheManager.getCache(cacheName);
-    Assert.notNull(cache, "cache is null");
+    Cache cache = redisCacheManager.getCache(cacheName);
+    if (Objects.isNull(cache)) {
+      return false;
+    }
     cache.clear();
     return true;
   }

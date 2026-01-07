@@ -35,7 +35,7 @@ import org.springframework.test.context.TestPropertySource;
 /** Caffeine Cache Expiration Strategy Test */
 @TestPropertySource(
     properties = {
-      "loadup.cache.type=caffeine",
+      "loadup.cache.binder=caffeine",
       "spring.cache.caffeine.spec=maximumSize=100,expireAfterWrite=2s,expireAfterAccess=1s",
       "loadup.cache.caffeine.cache-config.short-lived.expire-after-write=3s",
       "loadup.cache.caffeine.cache-config.short-lived.maximum-size=50",

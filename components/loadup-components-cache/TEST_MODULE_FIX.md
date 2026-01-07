@@ -58,7 +58,7 @@ loadup.cache.caffeine.allow-null-value=false
 **修改后**:
 
 ```properties
-loadup.cache.type=caffeine
+loadup.cache.binder=caffeine
 spring.cache.caffeine.spec=initialCapacity=100,maximumSize=1000,expireAfterWrite=300s,expireAfterAccess=60s
 ```
 
@@ -81,7 +81,7 @@ spring.cache.caffeine.spec=initialCapacity=100,maximumSize=1000,expireAfterWrite
 ```java
 @TestPropertySource(
     properties = {
-      "loadup.cache.type=caffeine",
+      "loadup.cache.binder=caffeine",
       "loadup.cache.caffeine.initial-capacity=100",
       "loadup.cache.caffeine.maximum-size=1000",
       "loadup.cache.caffeine.expire-after-write-seconds=300"
@@ -93,7 +93,7 @@ spring.cache.caffeine.spec=initialCapacity=100,maximumSize=1000,expireAfterWrite
 ```java
 @TestPropertySource(
     properties = {
-      "loadup.cache.type=caffeine",
+      "loadup.cache.binder=caffeine",
       "spring.cache.caffeine.spec=initialCapacity=100,maximumSize=1000,expireAfterWrite=300s"
     })
 ```
@@ -112,7 +112,7 @@ spring.cache.caffeine.spec=initialCapacity=100,maximumSize=1000,expireAfterWrite
 ```java
 @TestPropertySource(
     properties = {
-      "loadup.cache.type=caffeine",
+      "loadup.cache.binder=caffeine",
       "loadup.cache.caffeine.expire-after-write-seconds=2",
       "loadup.cache.caffeine.expire-after-access-seconds=1",
       "loadup.cache.caffeine.maximum-size=100",
@@ -126,7 +126,7 @@ spring.cache.caffeine.spec=initialCapacity=100,maximumSize=1000,expireAfterWrite
 ```java
 @TestPropertySource(
     properties = {
-      "loadup.cache.type=caffeine",
+      "loadup.cache.binder=caffeine",
       "spring.cache.caffeine.spec=maximumSize=100,expireAfterWrite=2s,expireAfterAccess=1s",
       "loadup.cache.caffeine.cache-config.short-lived.expire-after-write=3s",
       // ...
@@ -145,7 +145,7 @@ spring.cache.caffeine.spec=initialCapacity=100,maximumSize=1000,expireAfterWrite
 
 ```java
 @TestPropertySource(
-    properties = {"loadup.cache.type=caffeine", "loadup.cache.caffeine.maximum-size=10000"})
+    properties = {"loadup.cache.binder=caffeine", "loadup.cache.caffeine.maximum-size=10000"})
 ```
 
 **修改后**:
@@ -153,7 +153,7 @@ spring.cache.caffeine.spec=initialCapacity=100,maximumSize=1000,expireAfterWrite
 ```java
 @TestPropertySource(
     properties = {
-      "loadup.cache.type=caffeine",
+      "loadup.cache.binder=caffeine",
       "spring.cache.caffeine.spec=maximumSize=10000"
     })
 ```

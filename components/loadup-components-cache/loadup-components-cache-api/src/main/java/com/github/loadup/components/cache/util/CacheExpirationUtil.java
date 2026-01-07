@@ -22,7 +22,7 @@ package com.github.loadup.components.cache.util;
  * #L%
  */
 
-import com.github.loadup.components.cache.cfg.LoadUpCacheConfig;
+import com.github.loadup.components.cache.cfg.CacheConfigs;
 import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -37,7 +37,7 @@ public class CacheExpirationUtil {
    * @return Duration with random offset
    */
   public static Duration calculateExpirationWithRandomOffset(
-      Duration baseDuration, LoadUpCacheConfig config) {
+      Duration baseDuration, CacheConfigs config) {
     if (config == null || !config.isEnableRandomExpiration()) {
       return baseDuration;
     }
@@ -78,7 +78,7 @@ public class CacheExpirationUtil {
    * @param config Cache configuration
    * @return Duration for null value expiration
    */
-  public static Duration calculateNullValueExpiration(LoadUpCacheConfig config) {
+  public static Duration calculateNullValueExpiration(CacheConfigs config) {
     if (config == null || config.getNullValueExpireAfterWrite() == null) {
       return Duration.ofMinutes(5); // Default 5 minutes
     }

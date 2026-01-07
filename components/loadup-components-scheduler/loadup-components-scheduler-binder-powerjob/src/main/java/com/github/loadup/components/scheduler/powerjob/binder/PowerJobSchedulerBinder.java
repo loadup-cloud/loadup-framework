@@ -24,10 +24,9 @@ package com.github.loadup.components.scheduler.powerjob.binder;
 
 import com.github.loadup.components.scheduler.api.SchedulerBinder;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * PowerJob scheduler binder implementation.
@@ -41,7 +40,7 @@ public class PowerJobSchedulerBinder implements SchedulerBinder {
     private final        Map<String, SchedulerTask> taskRegistry = new ConcurrentHashMap<>();
 
     @Override
-    public String getName() {
+    public String type() {
         return BINDER_NAME;
     }
 
