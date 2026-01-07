@@ -8,15 +8,15 @@
 # Use this configuration for standalone applications or development environment
 #
 # loadup.cache.binder=caffeine
-# loadup.cache.caffeine.initial-capacity=1000
-# loadup.cache.caffeine.maximum-size=5000
-# loadup.cache.caffeine.expire-after-access-seconds=600
-# loadup.cache.caffeine.expire-after-write-seconds=1200
-# loadup.cache.caffeine.allow-null-value=false
-# loadup.cache.caffeine.cache-config.users.expire-after-write=30m
-# loadup.cache.caffeine.cache-config.users.maximum-size=10000
-# loadup.cache.caffeine.cache-config.users.enable-random-expiration=true
-# loadup.cache.caffeine.cache-config.users.random-offset-seconds=300
+# loadup.cache.initial-capacity=1000
+# loadup.cache.maximum-size=5000
+# loadup.cache.expire-after-access-seconds=600
+# loadup.cache.expire-after-write-seconds=1200
+# loadup.cache.allow-null-value=false
+# loadup.cache.cache-configs.users.expire-after-write=30m
+# loadup.cache.cache-configs.users.maximum-size=10000
+# loadup.cache.cache-configs.users.enable-random-expiration=true
+# loadup.cache.cache-configs.users.random-offset-seconds=300
 
 # ========================================
 # Example 2: Redis Cache (Distributed)
@@ -24,39 +24,39 @@
 # Use this configuration for distributed applications or production environment
 #
 loadup.cache.binder=redis
-loadup.cache.redis.host=localhost
-loadup.cache.redis.port=6379
-loadup.cache.redis.password=
-loadup.cache.redis.database=0
+loadup.cache.host=localhost
+loadup.cache.port=6379
+loadup.cache.password=
+loadup.cache.database=0
 
 # ========================================
 # Advanced Redis Cache Configuration
 # ========================================
 # You can also configure per-cache TTL using cache-config
 #
-# loadup.cache.redis.cache-config.users.expire-after-write=30m
-# loadup.cache.redis.cache-config.users.maximum-size=10000
-# loadup.cache.redis.cache-config.users.enable-random-expiration=true
-# loadup.cache.redis.cache-config.users.random-offset-seconds=300
-# loadup.cache.redis.cache-config.users.cache-null-values=true
-# loadup.cache.redis.cache-config.users.null-value-expire-after-write=5m
-# loadup.cache.redis.cache-config.users.priority=5
+# loadup.cache.cache-configs.users.expire-after-write=30m
+# loadup.cache.cache-configs.users.maximum-size=10000
+# loadup.cache.cache-configs.users.enable-random-expiration=true
+# loadup.cache.cache-configs.users.random-offset-seconds=300
+# loadup.cache.cache-configs.users.cache-null-values=true
+# loadup.cache.cache-configs.users.null-value-expire-after-write=5m
+# loadup.cache.cache-configs.users.priority=5
 #
-# loadup.cache.redis.cache-config.products.expire-after-write=1h
-# loadup.cache.redis.cache-config.products.maximum-size=5000
-# loadup.cache.redis.cache-config.products.enable-random-expiration=true
-# loadup.cache.redis.cache-config.products.random-offset-seconds=600
-# loadup.cache.redis.cache-config.products.priority=5
+# loadup.cache.cache-configs.products.expire-after-write=1h
+# loadup.cache.cache-configs.products.maximum-size=5000
+# loadup.cache.cache-configs.products.enable-random-expiration=true
+# loadup.cache.cache-configs.products.random-offset-seconds=600
+# loadup.cache.cache-configs.products.priority=5
 
 # ========================================
 # Advanced Caffeine Cache Configuration
 # ========================================
 # You can also configure per-cache settings using cache-config
 #
-# loadup.cache.caffeine.cache-config.users.expire-after-write=30m
-# loadup.cache.caffeine.cache-config.users.maximum-size=10000
-# loadup.cache.caffeine.cache-config.users.enable-random-expiration=true
-# loadup.cache.caffeine.cache-config.users.random-offset-seconds=300
-# loadup.cache.caffeine.cache-config.products.expire-after-write=1h
-# loadup.cache.caffeine.cache-config.products.maximum-size=5000
+# loadup.cache.cache-configs.users.expire-after-write=30m
+# loadup.cache.cache-configs.users.maximum-size=10000
+# loadup.cache.cache-configs.users.enable-random-expiration=true
+# loadup.cache.cache-configs.users.random-offset-seconds=300
+# loadup.cache.cache-configs.products.expire-after-write=1h
+# loadup.cache.cache-configs.products.maximum-size=5000
 

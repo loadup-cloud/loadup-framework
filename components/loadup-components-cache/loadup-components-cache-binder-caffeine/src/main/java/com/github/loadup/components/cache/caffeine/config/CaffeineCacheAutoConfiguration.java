@@ -25,6 +25,7 @@ package com.github.loadup.components.cache.caffeine.config;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.loadup.components.cache.api.CacheBinder;
 import com.github.loadup.components.cache.caffeine.binder.CaffeineCacheBinder;
+import com.github.loadup.components.cache.caffeine.cfg.CaffeineBinderCfg;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.components.cache.cfg.CacheConfigs;
 import com.github.loadup.components.cache.util.CacheExpirationUtil;
@@ -49,7 +50,7 @@ import org.springframework.context.annotation.Primary;
 
 @Slf4j
 @EnableCaching
-@EnableConfigurationProperties(CacheBindingCfg.class)
+@EnableConfigurationProperties({CacheBindingCfg.class, CaffeineBinderCfg.class})
 @ConditionalOnClass({Caffeine.class, CaffeineCacheManager.class})
 @AutoConfiguration(before = CacheAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "loadup.cache", name = "binder", havingValue = "caffeine")
@@ -58,19 +59,30 @@ public class CaffeineCacheAutoConfiguration {
   @Resource private CacheBindingCfg cacheBindingCfg;
 
   @Value("${spring.cache.caffeine.spec:}")
-  private String cacheSpec;
+  private String springCacheSpec;
 
   /** default cache manager with per-cache configurations */
   @Primary
   @Bean(name = "caffeineCacheManager")
   @ConditionalOnProperty(prefix = "loadup.cache", name = "binder", havingValue = "caffeine")
-  public CacheManager defaultCacheManager() {
+  public CacheManager defaultCacheManager(CaffeineBinderCfg caffeineBinderCfg) {
     LoadUpCaffeineCacheManager cacheManager = new LoadUpCaffeineCacheManager();
 
-    // Set default configuration from spring.cache.caffeine.spec
-    if (cacheSpec != null && !cacheSpec.isEmpty()) {
-      cacheManager.setCacheSpecification(cacheSpec);
-      log.info("Applied default Caffeine cache spec: {}", cacheSpec);
+    // Set default configuration from loadup.cache.binder.caffeine.spec or
+    // spring.cache.caffeine.spec
+    String effectiveSpec =
+        caffeineBinderCfg.hasCustomConfig() ? caffeineBinderCfg.getSpec() : springCacheSpec;
+
+    if (effectiveSpec != null && !effectiveSpec.isEmpty()) {
+      cacheManager.setCacheSpecification(effectiveSpec);
+      if (caffeineBinderCfg.hasCustomConfig()) {
+        log.info(
+            "Applied custom Caffeine cache spec from loadup.cache.binder.caffeine: {}",
+            effectiveSpec);
+      } else {
+        log.info(
+            "Applied default Caffeine cache spec from spring.cache.caffeine: {}", effectiveSpec);
+      }
     }
 
     // Support new unified configuration structure - these will override the default spec

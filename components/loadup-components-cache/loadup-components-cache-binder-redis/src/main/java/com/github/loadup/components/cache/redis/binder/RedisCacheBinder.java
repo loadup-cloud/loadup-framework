@@ -24,20 +24,53 @@ package com.github.loadup.components.cache.redis.binder;
 
 import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.cache.api.CacheBinder;
+import com.github.loadup.components.cache.redis.cfg.RedisBinderCfg;
+import com.github.loadup.framework.api.binder.AbstractBinder;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import java.util.Map;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
-public class RedisCacheBinder implements CacheBinder {
+/**
+ * Redis Cache Binder Implementation
+ *
+ * <p>This binder provides Redis cache operations and supports flexible configuration:
+ *
+ * <ol>
+ *   <li>Default: Uses Spring Boot's spring.data.redis configuration
+ *   <li>Custom: Uses loadup.cache.redis configuration to override defaults
+ * </ol>
+ *
+ * @see RedisBinderCfg
+ */
+@Slf4j
+public class RedisCacheBinder extends AbstractBinder<RedisBinderCfg> implements CacheBinder {
 
   @Resource
   @Qualifier("redisCacheManager")
-  RedisCacheManager redisCacheManager;
+  private RedisCacheManager redisCacheManager;
+
+  @Resource private RedisBinderCfg redisBinderCfg;
+
+  @PostConstruct
+  public void init() {
+    if (redisBinderCfg.hasCustomConfig()) {
+      log.info("Redis cache binder initialized with custom configuration");
+      log.debug(
+          "Custom Redis config: host={}, port={}, database={}",
+          redisBinderCfg.getHost(),
+          redisBinderCfg.getPort(),
+          redisBinderCfg.getDatabase());
+    } else {
+      log.info("Redis cache binder initialized with Spring Boot default configuration");
+    }
+  }
 
   @Override
   public String type() {

@@ -47,10 +47,19 @@ import org.springframework.validation.annotation.Validated;
  * loadup.cache.binders.productCache=caffeine
  *
  * # Per-cache-name common configurations
- * loadup.cache.userCache.maximumSize=10000
- * loadup.cache.userCache.expireAfterWrite=30m
- * loadup.cache.productCache.maximumSize=5000
- * loadup.cache.productCache.expireAfterWrite=1h
+ * loadup.cache.cache-configs.userCache.maximum-size=10000
+ * loadup.cache.cache-configs.userCache.expire-after-write=30m
+ * loadup.cache.cache-configs.productCache.maximum-size=5000
+ * loadup.cache.cache-configs.productCache.expire-after-write=1h
+ *
+ * # Binder-specific configurations
+ * # Redis binder configuration
+ * loadup.cache.binder.redis.host=localhost
+ * loadup.cache.binder.redis.port=6379
+ * loadup.cache.binder.redis.password=secret
+ *
+ * # Caffeine binder configuration
+ * loadup.cache.binder.caffeine.spec=maximumSize=1000,expireAfterWrite=300s
  * </pre>
  */
 @Getter

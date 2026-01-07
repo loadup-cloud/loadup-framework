@@ -112,8 +112,8 @@ loadup:
 # Migration from Old Structure
 # ========================================
 # Old structure (still supported but deprecated):
-# loadup.cache.redis.cache-config.userCache.expireAfterWrite=30m
-# loadup.cache.caffeine.cache-config.productCache.maximumSize=5000
+# loadup.cache.cache-configs.userCache.expireAfterWrite=30m
+# loadup.cache.cache-configs.productCache.maximumSize=5000
 #
 # New structure (recommended):
 # loadup.cache.binders.userCache=redis

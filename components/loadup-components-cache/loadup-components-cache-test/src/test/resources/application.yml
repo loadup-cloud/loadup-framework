@@ -1,8 +1,0 @@
-loadup:
-  cache:
-    type: caffeine
-spring:
-  cache:
-    cache-names:
-      - products
-      - users

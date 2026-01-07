@@ -211,8 +211,8 @@ spring:
 
 ## 兼容性说明
 
-- ⚠️ **不兼容变更**：移除了 `loadup.cache.redis.*` 和 `loadup.cache.caffeine.*` 的基础连接配置
-- ✅ **缓存策略配置保持兼容**：`loadup.cache.redis.cache-config` 和 `loadup.cache.caffeine.cache-config` 仍然可用
+- ⚠️ **不兼容变更**：移除了 `loadup.cache.*` 和 `loadup.cache.*` 的基础连接配置
+- ✅ **缓存策略配置保持兼容**：`loadup.cache.cache-config` 和 `loadup.cache.cache-config` 仍然可用
 - ✅ **类型枚举向后兼容**：`type: redis` 和 `type: caffeine` 字符串值仍然有效
 
 ## 构建验证

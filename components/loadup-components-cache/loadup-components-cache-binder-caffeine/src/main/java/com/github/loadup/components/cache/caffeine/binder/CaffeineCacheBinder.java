@@ -23,6 +23,8 @@ package com.github.loadup.components.cache.caffeine.binder;
  */
 
 import com.github.loadup.components.cache.api.CacheBinder;
+import com.github.loadup.components.cache.caffeine.cfg.CaffeineBinderCfg;
+import com.github.loadup.framework.api.binder.AbstractBinder;
 import jakarta.annotation.Resource;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,7 +32,7 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.util.Assert;
 
-public class CaffeineCacheBinder implements CacheBinder {
+public class CaffeineCacheBinder extends AbstractBinder<CaffeineBinderCfg> implements CacheBinder {
 
   @Resource
   @Qualifier("caffeineCacheManager")

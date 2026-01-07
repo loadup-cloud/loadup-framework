@@ -48,11 +48,11 @@ assertNotNull(properties.getCaffeine());
 **修改前**:
 
 ```properties
-loadup.cache.caffeine.initial-capacity=100
-loadup.cache.caffeine.maximum-size=1000
-loadup.cache.caffeine.expire-after-write-seconds=300
-loadup.cache.caffeine.expire-after-access-seconds=60
-loadup.cache.caffeine.allow-null-value=false
+loadup.cache.initial-capacity=100
+loadup.cache.maximum-size=1000
+loadup.cache.expire-after-write-seconds=300
+loadup.cache.expire-after-access-seconds=60
+loadup.cache.allow-null-value=false
 ```
 
 **修改后**:
@@ -82,9 +82,9 @@ spring.cache.caffeine.spec=initialCapacity=100,maximumSize=1000,expireAfterWrite
 @TestPropertySource(
     properties = {
       "loadup.cache.binder=caffeine",
-      "loadup.cache.caffeine.initial-capacity=100",
-      "loadup.cache.caffeine.maximum-size=1000",
-      "loadup.cache.caffeine.expire-after-write-seconds=300"
+            "loadup.cache.initial-capacity=100",
+            "loadup.cache.maximum-size=1000",
+            "loadup.cache.expire-after-write-seconds=300"
     })
 ```
 
@@ -105,7 +105,7 @@ spring.cache.caffeine.spec=initialCapacity=100,maximumSize=1000,expireAfterWrite
 **修复内容**:
 
 - ✅ 基础配置使用 Spring Boot 标准属性
-- ✅ 保留 per-cache 配置（`loadup.cache.caffeine.cache-config.*`）
+- ✅ 保留 per-cache 配置（`loadup.cache.cache-configs.*`）
 
 **修改前**:
 
@@ -113,10 +113,10 @@ spring.cache.caffeine.spec=initialCapacity=100,maximumSize=1000,expireAfterWrite
 @TestPropertySource(
     properties = {
       "loadup.cache.binder=caffeine",
-      "loadup.cache.caffeine.expire-after-write-seconds=2",
-      "loadup.cache.caffeine.expire-after-access-seconds=1",
-      "loadup.cache.caffeine.maximum-size=100",
-      "loadup.cache.caffeine.cache-config.short-lived.expire-after-write=3s",
+            "loadup.cache.expire-after-write-seconds=2",
+            "loadup.cache.expire-after-access-seconds=1",
+            "loadup.cache.maximum-size=100",
+            "loadup.cache.cache-configs.short-lived.expire-after-write=3s",
       // ...
     })
 ```
@@ -128,7 +128,7 @@ spring.cache.caffeine.spec=initialCapacity=100,maximumSize=1000,expireAfterWrite
     properties = {
       "loadup.cache.binder=caffeine",
       "spring.cache.caffeine.spec=maximumSize=100,expireAfterWrite=2s,expireAfterAccess=1s",
-      "loadup.cache.caffeine.cache-config.short-lived.expire-after-write=3s",
+            "loadup.cache.cache-configs.short-lived.expire-after-write=3s",
       // ...
     })
 ```
@@ -145,7 +145,7 @@ spring.cache.caffeine.spec=initialCapacity=100,maximumSize=1000,expireAfterWrite
 
 ```java
 @TestPropertySource(
-    properties = {"loadup.cache.binder=caffeine", "loadup.cache.caffeine.maximum-size=10000"})
+        properties = {"loadup.cache.binder=caffeine", "loadup.cache.maximum-size=10000"})
 ```
 
 **修改后**:
@@ -173,8 +173,8 @@ spring.cache.caffeine.spec=initialCapacity=100,maximumSize=1000,expireAfterWrite
     - Caffeine: `spring.cache.caffeine.spec`
 
 2. **策略配置保留自定义属性**
-    - Per-cache 配置: `loadup.cache.redis.cache-config.*`
-    - Per-cache 配置: `loadup.cache.caffeine.cache-config.*`
+   - Per-cache 配置: `loadup.cache.cache-configs.*`
+   - Per-cache 配置: `loadup.cache.cache-configs.*`
 
 3. **降低学习成本**
     - 用户只需学习 Spring Boot 标准配置即可
@@ -204,26 +204,26 @@ mvn spotless:apply -pl components/loadup-components-cache
 
 **Caffeine**:
 
-- ❌ `loadup.cache.caffeine.initial-capacity`
-- ❌ `loadup.cache.caffeine.maximum-size`
-- ❌ `loadup.cache.caffeine.expire-after-write-seconds`
-- ❌ `loadup.cache.caffeine.expire-after-access-seconds`
-- ❌ `loadup.cache.caffeine.allow-null-value`
+- ❌ `loadup.cache.initial-capacity`
+- ❌ `loadup.cache.maximum-size`
+- ❌ `loadup.cache.expire-after-write-seconds`
+- ❌ `loadup.cache.expire-after-access-seconds`
+- ❌ `loadup.cache.allow-null-value`
 
 **Redis**:
 
-- ❌ `loadup.cache.redis.host`
-- ❌ `loadup.cache.redis.port`
-- ❌ `loadup.cache.redis.password`
-- ❌ `loadup.cache.redis.database`
+- ❌ `loadup.cache.host`
+- ❌ `loadup.cache.port`
+- ❌ `loadup.cache.password`
+- ❌ `loadup.cache.database`
 
 ### ✅ 保持兼容
 
 以下配置保持不变：
 
 - ✅ `loadup.cache.type` (现在使用枚举，但字符串值仍然有效)
-- ✅ `loadup.cache.redis.cache-config.*`
-- ✅ `loadup.cache.caffeine.cache-config.*`
+- ✅ `loadup.cache.cache-configs.*`
+- ✅ `loadup.cache.cache-configs.*`
 
 ## 迁移指南
 
@@ -234,8 +234,8 @@ mvn spotless:apply -pl components/loadup-components-cache
 ```java
 @TestPropertySource(
     properties = {
-      "loadup.cache.caffeine.initial-capacity=100",
-      "loadup.cache.caffeine.maximum-size=1000"
+            "loadup.cache.initial-capacity=100",
+            "loadup.cache.maximum-size=1000"
     })
 ```
 
@@ -255,8 +255,8 @@ mvn spotless:apply -pl components/loadup-components-cache
 ```java
 @TestPropertySource(
     properties = {
-      "loadup.cache.redis.host=localhost",
-      "loadup.cache.redis.port=6379"
+      "loadup.cache.host=localhost",
+      "loadup.cache.port=6379"
     })
 ```
 

@@ -142,7 +142,7 @@ Caffeine Module (loadup-components-cache-binder-caffeine)
 
 ### Migration Steps
 
-1. Move common cache properties from `redis.cache-config.cacheName.*` or `caffeine.cache-config.cacheName.*` to `loadup.cache.cacheName.*`
+1. Move common cache properties from `redis.cache-configs.cacheName.*` or `caffeine.cache-configs.cacheName.*` to `loadup.cache.cacheName.*`
 2. Use `loadup.cache.binders.cacheName=redis|caffeine` for per-cache binder selection
 3. Move Redis connection settings to `spring.redis.*` (if not already there)
 4. Move Caffeine defaults to `spring.cache.caffeine.*` (if needed)

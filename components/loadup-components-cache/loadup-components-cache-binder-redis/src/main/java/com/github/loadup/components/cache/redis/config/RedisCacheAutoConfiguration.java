@@ -28,6 +28,7 @@ import com.github.loadup.components.cache.api.CacheBinder;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.components.cache.cfg.CacheConfigs;
 import com.github.loadup.components.cache.redis.binder.RedisCacheBinder;
+import com.github.loadup.components.cache.redis.cfg.RedisBinderCfg;
 import com.github.loadup.components.cache.util.CacheExpirationUtil;
 import com.github.loadup.framework.api.enums.BinderEnum;
 import jakarta.annotation.Resource;
@@ -49,7 +50,7 @@ import org.springframework.data.redis.serializer.*;
 @Slf4j
 @Configuration
 @EnableCaching
-@EnableConfigurationProperties(CacheBindingCfg.class)
+@EnableConfigurationProperties({CacheBindingCfg.class, RedisBinderCfg.class})
 @ConditionalOnProperty(prefix = "loadup.cache", name = "binder", havingValue = "redis")
 public class RedisCacheAutoConfiguration {
 
@@ -63,7 +64,7 @@ public class RedisCacheAutoConfiguration {
     Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
 
     // Support new unified configuration structure
-    Map<String, CacheConfigs> cacheConfigs = new HashMap<>();
+    Map<String, CacheConfigs> cacheConfigs = getCacheConfigs();
 
     if (cacheConfigs != null && !cacheConfigs.isEmpty()) {
       cacheConfigs.forEach(
@@ -88,6 +89,13 @@ public class RedisCacheAutoConfiguration {
    * Get cache configurations supporting both new and legacy structure Priority: new cacheConfigs
    * map > legacy redis.cacheConfig
    */
+  private Map<String, CacheConfigs> getCacheConfigs() {
+    // Try new structure first
+    if (cacheBindingCfg.getCacheConfigs() != null && !cacheBindingCfg.getCacheConfigs().isEmpty()) {
+      return cacheBindingCfg.getCacheConfigs();
+    }
+    return new HashMap<>();
+  }
 
   /** Build cache configuration with anti-avalanche strategies */
   private RedisCacheConfiguration buildCacheConfiguration(CacheConfigs cacheConfig) {
