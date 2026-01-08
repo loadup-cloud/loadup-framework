@@ -20,7 +20,7 @@ public class RoleUpdateCommand {
   @Size(max = 50, message = "角色名称长度不能超过50")
   private String roleName;
 
-  private String parentRoleId;
+  private String parentId;
 
   /** Data scope: 1-All, 2-Custom, 3-Dept, 4-Dept and children, 5-Self only */
   private Short dataScope;

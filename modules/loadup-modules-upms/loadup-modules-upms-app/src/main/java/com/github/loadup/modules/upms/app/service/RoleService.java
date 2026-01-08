@@ -42,10 +42,8 @@ public class RoleService {
     }
 
     // Validate parent role exists
-    if (command.getParentRoleId() != null) {
-      roleGateway
-          .findById(command.getParentRoleId())
-          .orElseThrow(() -> new RuntimeException("父角色不存在"));
+    if (command.getParentId() != null) {
+      roleGateway.findById(command.getParentId()).orElseThrow(() -> new RuntimeException("父角色不存在"));
     }
 
     // Create role entity
@@ -53,7 +51,7 @@ public class RoleService {
         Role.builder()
             .roleName(command.getRoleName())
             .roleCode(command.getRoleCode())
-            .parentRoleId(command.getParentRoleId())
+            .parentId(command.getParentId())
             .dataScope(command.getDataScope() != null ? command.getDataScope() : (short) 1)
             .sortOrder(command.getSortOrder())
             .status(command.getStatus() != null ? command.getStatus() : (short) 1)
@@ -87,21 +85,19 @@ public class RoleService {
         roleGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("角色不存在"));
 
     // Validate parent role (prevent circular reference)
-    if (command.getParentRoleId() != null) {
-      if (command.getParentRoleId().equals(command.getId())) {
+    if (command.getParentId() != null) {
+      if (command.getParentId().equals(command.getId())) {
         throw new RuntimeException("父角色不能是自己");
       }
-      roleGateway
-          .findById(command.getParentRoleId())
-          .orElseThrow(() -> new RuntimeException("父角色不存在"));
+      roleGateway.findById(command.getParentId()).orElseThrow(() -> new RuntimeException("父角色不存在"));
     }
 
     // Update role fields
     if (command.getRoleName() != null) {
       role.setRoleName(command.getRoleName());
     }
-    if (command.getParentRoleId() != null) {
-      role.setParentRoleId(command.getParentRoleId());
+    if (command.getParentId() != null) {
+      role.setParentId(command.getParentId());
     }
     if (command.getDataScope() != null) {
       role.setDataScope(command.getDataScope());
@@ -156,7 +152,7 @@ public class RoleService {
     roleGateway.findById(id).orElseThrow(() -> new RuntimeException("角色不存在"));
 
     // Check if role has child roles
-    List<Role> childRoles = roleGateway.findByParentRoleId(id);
+    List<Role> childRoles = roleGateway.findByParentId(id);
     if (!childRoles.isEmpty()) {
       throw new RuntimeException("该角色下存在子角色，无法删除");
     }
@@ -229,15 +225,15 @@ public class RoleService {
     List<String> departmentIds = roleGateway.findDepartmentIdsByRoleId(role.getId());
 
     Role parentRole = null;
-    if (role.getParentRoleId() != null) {
-      parentRole = roleGateway.findById(role.getParentRoleId()).orElse(null);
+    if (role.getParentId() != null) {
+      parentRole = roleGateway.findById(role.getParentId()).orElse(null);
     }
 
     return RoleDTO.builder()
         .id(role.getId())
         .roleName(role.getRoleName())
         .roleCode(role.getRoleCode())
-        .parentRoleId(role.getParentRoleId())
+        .parentId(role.getParentId())
         .parentRoleName(parentRole != null ? parentRole.getRoleName() : null)
         .roleLevel(role.getRoleLevel())
         .dataScope(role.getDataScope())
@@ -266,8 +262,8 @@ public class RoleService {
   private List<RoleDTO> buildRoleTree(List<Role> allRoles, Long parentId) {
     List<RoleDTO> tree = new ArrayList<>();
     for (Role role : allRoles) {
-      if ((parentId == null && role.getParentRoleId() == null)
-          || (parentId != null && parentId.equals(role.getParentRoleId()))) {
+      if ((parentId == null && role.getParentId() == null)
+          || (parentId != null && parentId.equals(role.getParentId()))) {
         RoleDTO dto = convertToDTO(role);
         tree.add(dto);
       }

@@ -34,6 +34,7 @@ class OperationLogGatewayTest extends BaseRepositoryTest {
             .operationModule("User Management")
             .operationType("CREATE")
             .operationDesc("Create new user")
+            .operationTime(LocalDateTime.now())
             .requestMethod("POST")
             .requestUrl("/api/users")
             .requestParams("{\"username\":\"newuser\"}")
@@ -71,6 +72,7 @@ class OperationLogGatewayTest extends BaseRepositoryTest {
             .operationModule("Role Management")
             .operationType("UPDATE")
             .requestMethod("PUT")
+            .operationTime(LocalDateTime.now())
             .requestUrl("/api/roles")
             .ipAddress("192.168.1.1")
             .userAgent("Mozilla/5.0")
@@ -155,6 +157,7 @@ class OperationLogGatewayTest extends BaseRepositoryTest {
             .status((short) 0) // Failed
             .errorMessage("User not found")
             .executionTime(50L)
+            .operationTime(LocalDateTime.now())
             .createdTime(LocalDateTime.now())
             .build();
     operationLogGateway.save(failedLog);
@@ -180,6 +183,7 @@ class OperationLogGatewayTest extends BaseRepositoryTest {
             .username("testuser")
             .operationModule("Role Management")
             .operationType("UPDATE")
+            .operationTime(LocalDateTime.now())
             .requestMethod("PUT")
             .requestUrl("/api/roles")
             .ipAddress("192.168.1.1")
@@ -213,6 +217,7 @@ class OperationLogGatewayTest extends BaseRepositoryTest {
             .userAgent("Mozilla/5.0")
             .status((short) 0)
             .errorMessage("Error")
+            .operationTime(LocalDateTime.now())
             .executionTime(50L)
             .createdTime(LocalDateTime.now())
             .build();
@@ -238,6 +243,7 @@ class OperationLogGatewayTest extends BaseRepositoryTest {
             .username("testuser")
             .operationModule("User Management")
             .operationType("CREATE")
+            .operationTime(LocalDateTime.now())
             .requestMethod("POST")
             .requestUrl("/api/users")
             .ipAddress("192.168.1.1")

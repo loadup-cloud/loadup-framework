@@ -31,6 +31,7 @@ public class OperationLog {
   private String operationModule;
 
   private String operationDesc;
+  private LocalDateTime operationTime;
 
   private String requestMethod;
 

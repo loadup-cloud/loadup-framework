@@ -2,6 +2,7 @@ package com.github.loadup.modules.upms.repository;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.github.loadup.commons.util.RandomUtil;
 import com.github.loadup.modules.upms.domain.entity.User;
 import com.github.loadup.modules.upms.domain.gateway.UserGateway;
 import java.time.LocalDate;
@@ -37,7 +38,7 @@ class UserGatewayTest extends BaseRepositoryTest {
             .deptId("1")
             .email("test@example.com")
             .emailVerified(false)
-            .mobile("13800138000")
+            .mobile("1" + RandomUtil.randomNumbers(10))
             .mobileVerified(false)
             .gender((short) 1)
             .birthday(LocalDate.of(1990, 1, 1))
@@ -102,12 +103,12 @@ class UserGatewayTest extends BaseRepositoryTest {
     User saved = userGateway.save(testUser);
 
     // When
-    var found = userGateway.findByMobile("13800138000");
+    var found = userGateway.findByMobile(testUser.getMobile());
 
     // Then
     assertThat(found).isPresent();
     assertThat(found.get().getId()).isEqualTo(saved.getId());
-    assertThat(found.get().getMobile()).isEqualTo("13800138000");
+    assertThat(found.get().getMobile()).isEqualTo(testUser.getMobile());
   }
 
   @Test
@@ -147,7 +148,7 @@ class UserGatewayTest extends BaseRepositoryTest {
     userGateway.save(testUser);
 
     // When
-    boolean exists = userGateway.existsByMobile("13800138000");
+    boolean exists = userGateway.existsByMobile(testUser.getMobile());
     boolean notExists = userGateway.existsByMobile("13900139000");
 
     // Then
@@ -189,13 +190,14 @@ class UserGatewayTest extends BaseRepositoryTest {
   @DisplayName("Should find users by department")
   void testFindByDeptId() {
     // Given
-    User user1 = userGateway.save(testUser);
+    testUser.setDeptId("100");
+    userGateway.save(testUser);
     User user2 =
         User.builder()
             .username("testuser2")
             .password("$2a$10$encoded.password")
             .nickname("Test User 2")
-            .deptId("1")
+            .deptId("100")
             .status((short) 1)
             .accountNonExpired(true)
             .accountNonLocked(true)
@@ -208,7 +210,7 @@ class UserGatewayTest extends BaseRepositoryTest {
     userGateway.save(user2);
 
     // When
-    var users = userGateway.findByDeptId("1");
+    var users = userGateway.findByDeptId("100");
 
     // Then
     assertThat(users).hasSize(2);

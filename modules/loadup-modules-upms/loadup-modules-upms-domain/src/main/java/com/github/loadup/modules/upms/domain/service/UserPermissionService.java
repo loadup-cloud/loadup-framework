@@ -56,9 +56,9 @@ public class UserPermissionService {
   private Set<Permission> getInheritedPermissions(Role role) {
     Set<Permission> inherited = new HashSet<>();
 
-    if (role.getParentRoleId() != null) {
+    if (role.getParentId() != null) {
       roleGateway
-          .findById(role.getParentRoleId())
+          .findById(role.getParentId())
           .ifPresent(
               parentRole -> {
                 if (parentRole.isEnabled()) {

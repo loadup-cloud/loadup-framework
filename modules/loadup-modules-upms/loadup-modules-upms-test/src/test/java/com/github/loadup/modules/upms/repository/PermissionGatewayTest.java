@@ -121,7 +121,7 @@ class PermissionGatewayTest extends BaseRepositoryTest {
             .parentId("0")
             .permissionName("Button Permission")
             .permissionCode("BUTTON_PERM")
-            .permissionType((short) 2) // Button
+            .permissionType((short) 3) // Button
             .sortOrder(1)
             .visible(true)
             .status((short) 1)

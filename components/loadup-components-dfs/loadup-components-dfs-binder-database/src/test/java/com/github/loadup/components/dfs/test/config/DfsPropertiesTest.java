@@ -25,6 +25,7 @@ package com.github.loadup.components.dfs.test.config;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.github.loadup.components.dfs.config.DfsProperties;
+import com.github.loadup.components.dfs.enums.DfsProviderType;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -91,7 +92,7 @@ class DfsPropertiesTest {
   void testDefaultValues() {
     DfsProperties properties = new DfsProperties();
 
-    assertEquals("local", properties.getProvider());
+    assertEquals(DfsProviderType.LOCAL, properties.getProvider());
     assertEquals(100 * 1024 * 1024L, properties.getMaxFileSize());
   }
 }

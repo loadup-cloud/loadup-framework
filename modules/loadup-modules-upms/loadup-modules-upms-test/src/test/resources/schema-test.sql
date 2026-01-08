@@ -106,6 +106,7 @@ CREATE TABLE upms_permission
     permission_code VARCHAR(100) NOT NULL UNIQUE COMMENT '权限编码',
     permission_type SMALLINT     NOT NULL DEFAULT 1 COMMENT '权限类型(1-菜单 2-按钮 3-API)',
     resource_path   VARCHAR(200) COMMENT '资源路径',
+    component_path VARCHAR(200) COMMENT '组件路径',
     http_method     VARCHAR(10) COMMENT 'HTTP方法',
     sort_order      INT          NOT NULL DEFAULT 0 COMMENT '排序',
     icon            VARCHAR(100) COMMENT '图标',
@@ -216,12 +217,14 @@ CREATE TABLE upms_operation_log
     ip_address       VARCHAR(50) COMMENT 'IP地址',
     location         VARCHAR(100) COMMENT '操作地点',
     browser          VARCHAR(50) COMMENT '浏览器',
+    user_agent VARCHAR(1024) COMMENT 'UA',
     os               VARCHAR(50) COMMENT '操作系统',
     operation_time   DATETIME    NOT NULL COMMENT '操作时间',
     execution_time   BIGINT COMMENT '执行时长(毫秒)',
-    operation_status SMALLINT    NOT NULL COMMENT '操作状态(1-成功 0-失败)',
+    status     SMALLINT NOT NULL COMMENT '操作状态(1-成功 0-失败)',
     error_message    TEXT COMMENT '错误消息',
     tenant_id        VARCHAR(64) COMMENT '租户ID',
+    trace_id   VARCHAR(64) COMMENT 'trace_id',
     created_at DATETIME NOT NULL COMMENT '创建时间',
     updated_at DATETIME NULL COMMENT '更新时间',
     deleted    TINYINT  NOT NULL DEFAULT 0 COMMENT '删除标记',
@@ -229,7 +232,7 @@ CREATE TABLE upms_operation_log
     INDEX idx_op_log_username (username),
     INDEX idx_op_log_time (operation_time),
     INDEX idx_op_log_module (operation_module),
-    INDEX idx_op_log_status (operation_status)
+    INDEX idx_op_log_status (status)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='操作日志表';

@@ -92,8 +92,8 @@ public class RoleGatewayImpl implements RoleGateway {
   }
 
   @Override
-  public List<Role> findByParentRoleId(String parentRoleId) {
-    QueryWrapper query = QueryWrapper.create().where(ROLE_DO.ID.eq(parentRoleId));
+  public List<Role> findByParentId(String parentId) {
+    QueryWrapper query = QueryWrapper.create().where(ROLE_DO.PARENT_ID.eq(parentId));
     List<RoleDO> roleDOs = roleDOMapper.selectListByQuery(query);
     return roleDOs.stream().map(roleConverter::toEntity).collect(Collectors.toList());
   }

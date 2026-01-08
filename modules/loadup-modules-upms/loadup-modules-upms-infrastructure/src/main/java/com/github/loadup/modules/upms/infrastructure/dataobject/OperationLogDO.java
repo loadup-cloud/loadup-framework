@@ -2,6 +2,7 @@ package com.github.loadup.modules.upms.infrastructure.dataobject;
 
 import com.github.loadup.commons.dataobject.BaseDO;
 import com.mybatisflex.annotation.Table;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -27,6 +28,7 @@ public class OperationLogDO extends BaseDO {
   private String operationModule;
 
   private String operationDesc;
+  private LocalDateTime operationTime;
 
   private String requestMethod;
 

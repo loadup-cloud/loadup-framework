@@ -22,7 +22,7 @@ public class RoleDTO {
   private String id;
   private String roleName;
   private String roleCode;
-  private String parentRoleId;
+  private String parentId;
   private String parentRoleName;
   private Integer roleLevel;
   private Short dataScope;

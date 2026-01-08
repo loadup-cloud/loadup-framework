@@ -82,28 +82,28 @@ public class UserGatewayImpl implements UserGateway, AuthGateway {
 
   @Override
   public Optional<User> findByUsername(String username) {
-    QueryWrapper query = QueryWrapper.create().eq("username", username);
+    QueryWrapper query = QueryWrapper.create().where(USER_DO.USERNAME.eq(username));
     UserDO userDO = userDOMapper.selectOneByQuery(query);
     return Optional.ofNullable(userDO).map(userConverter::toEntity);
   }
 
   @Override
   public Optional<User> findByEmail(String email) {
-    QueryWrapper query = QueryWrapper.create().eq("email", email);
+    QueryWrapper query = QueryWrapper.create().where(USER_DO.EMAIL.eq(email));
     UserDO userDO = userDOMapper.selectOneByQuery(query);
     return Optional.ofNullable(userDO).map(userConverter::toEntity);
   }
 
   @Override
   public Optional<User> findByMobile(String mobile) {
-    QueryWrapper query = QueryWrapper.create().eq("phone", mobile);
+    QueryWrapper query = QueryWrapper.create().where(USER_DO.MOBILE.eq(mobile));
     UserDO userDO = userDOMapper.selectOneByQuery(query);
     return Optional.ofNullable(userDO).map(userConverter::toEntity);
   }
 
   @Override
   public List<User> findByDeptId(String deptId) {
-    QueryWrapper query = QueryWrapper.create().eq("dept_id", deptId);
+    QueryWrapper query = QueryWrapper.create().where(USER_DO.DEPT_ID.eq(deptId));
     List<UserDO> userDOs = userDOMapper.selectListByQuery(query);
     return userDOs.stream().map(userConverter::toEntity).collect(Collectors.toList());
   }

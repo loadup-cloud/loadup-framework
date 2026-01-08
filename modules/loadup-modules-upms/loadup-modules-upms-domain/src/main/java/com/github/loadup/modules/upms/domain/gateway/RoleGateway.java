@@ -33,7 +33,7 @@ public interface RoleGateway {
   List<Role> findByUserId(String userId);
 
   /** Find roles by parent role ID */
-  List<Role> findByParentRoleId(String parentRoleId);
+  List<Role> findByParentId(String parentId);
 
   /** Find all roles */
   List<Role> findAll();

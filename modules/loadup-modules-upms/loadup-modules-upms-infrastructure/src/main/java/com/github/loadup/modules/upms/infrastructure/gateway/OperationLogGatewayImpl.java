@@ -151,7 +151,7 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
       query.and(OPERATION_LOG_DO.OPERATION_TYPE.eq(operationType));
     }
     if (module != null) {
-      query.and(OPERATION_LOG_DO.REQUEST_METHOD.like(module));
+      query.and(OPERATION_LOG_DO.OPERATION_MODULE.like(module));
     }
     if (startTime != null && endTime != null) {
       query.and(OPERATION_LOG_DO.CREATED_AT.between(startTime, endTime));
@@ -239,7 +239,9 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
   @Override
   public long countFailedOperations(LocalDateTime startTime, LocalDateTime endTime) {
     QueryWrapper query =
-        QueryWrapper.create().where(OPERATION_LOG_DO.CREATED_AT.between(startTime, endTime));
+        QueryWrapper.create()
+            .where(OPERATION_LOG_DO.CREATED_AT.between(startTime, endTime))
+            .and(OPERATION_LOG_DO.STATUS.eq(0));
     return operationLogDOMapper.selectCountByQuery(query);
   }
 }

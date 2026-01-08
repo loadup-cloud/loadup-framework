@@ -27,7 +27,7 @@ public class Role {
   private String roleCode;
 
   /** Parent role ID for role inheritance (RBAC3 feature) */
-  private String parentRoleId;
+  private String parentId;
 
   private Integer roleLevel;
 
@@ -67,7 +67,7 @@ public class Role {
 
   /** Check if this is a root role (no parent) */
   public boolean isRoot() {
-    return parentRoleId == null;
+    return parentId == null;
   }
 
   /** Get all inherited permissions (including parent roles) */

@@ -25,7 +25,7 @@ public class RoleCreateCommand {
   private String roleCode;
 
   /** Parent role ID for role inheritance (RBAC3 feature) */
-  private String parentRoleId;
+  private String parentId;
 
   /** Data scope: 1-All, 2-Custom, 3-Dept, 4-Dept and children, 5-Self only */
   private Short dataScope;

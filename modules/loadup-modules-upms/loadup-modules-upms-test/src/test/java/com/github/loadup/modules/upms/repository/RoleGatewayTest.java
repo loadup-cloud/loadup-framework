@@ -144,7 +144,7 @@ class RoleGatewayTest extends BaseRepositoryTest {
         Role.builder()
             .roleName("Child Role")
             .roleCode("CHILD_ROLE")
-            .parentRoleId(parentRole.getId())
+            .parentId(parentRole.getId())
             .roleLevel(2)
             .dataScope((short) 1)
             .sortOrder(1)
@@ -156,7 +156,7 @@ class RoleGatewayTest extends BaseRepositoryTest {
     roleGateway.save(childRole);
 
     // When
-    List<Role> children = roleGateway.findByParentRoleId(parentRole.getId());
+    List<Role> children = roleGateway.findByParentId(parentRole.getId());
 
     // Then
     assertThat(children).hasSize(1);
