@@ -119,7 +119,6 @@ jobs:
         run: |
           docker --version
           docker info
-          docker pull postgres:15-alpine || true
           docker pull mysql:8.0 || true
           docker pull redis:7-alpine || true
 
@@ -128,7 +127,7 @@ jobs:
         run: |
           mkdir -p ~/.testcontainers
           cat > ~/.testcontainers.properties << EOF
-          testcontainers.reuse.enable=false
+          testcontainers.reuse.enable=true
           testcontainers.ryuk.container.timeout=120
           docker.client.strategy=org.testcontainers.dockerclient.UnixSocketClientProviderStrategy
           checks.disable=false
