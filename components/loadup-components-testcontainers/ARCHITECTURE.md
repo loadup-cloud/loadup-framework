@@ -1,401 +1,754 @@
-# `loadup-components-testcontainers` 模块架构概述
+# LoadUp Components TestContainers - 架构设计文档
+
+## 📋 概述
+
+`loadup-components-testcontainers` 模块提供企业级的 TestContainers 共享容器功能，支持在 TestContainers 和实际服务之间灵活切换，适用于不同的测试场景。
+
+### 核心价值
+
+1. **灵活性**：TestContainers ↔️ 实际服务自由切换
+2. **高性能**：共享容器实例，测试速度提升 80-90%
+3. **易用性**：配置驱动，零代码修改
+4. **可靠性**：统一架构，生产级质量
 
 ---
 
-## 模块目的
+## 🏗️ 架构设计
 
-`loadup-components-testcontainers` 模块为跨多个模块的集成测试提供共享的 TestContainers。它集中管理容器，遵循 DRY 原则，并通过容器复用显著提高测试性能。
+### 三层架构模式
 
-## 支持的容器
+所有容器遵循统一的三层架构：
 
-### 📊 完整容器列表（7种类型）
-
-| 分类          | 容器              | 默认版本                 | 包路径                         |
-|-------------|-----------------|----------------------|-----------------------------|
-| **📦 数据库**  | MySQL           | mysql:8.0            | `.testcontainers`           |
-|             | PostgreSQL      | postgres:15-alpine   | `.testcontainers.database`  |
-|             | MongoDB         | mongo:7.0            | `.testcontainers.database`  |
-| **🔴 缓存**   | Redis           | redis:7-alpine       | `.testcontainers`           |
-| **📨 消息队列** | Kafka           | cp-kafka:7.5.0       | `.testcontainers.messaging` |
-| **🔍 搜索引擎** | Elasticsearch   | elasticsearch:8.11.0 | `.testcontainers.search`    |
-| **☁️ 云服务**  | LocalStack (S3) | localstack:3.0       | `.testcontainers`           |
+```
+┌───────────────────────────────────────────────────────────┐
+│                   Layer 3: AbstractTest                    │
+│                      (测试基类层)                          │
+│  ┌─────────────────────────────────────────────────────┐  │
+│  │  @ContextConfiguration(                             │  │
+│  │      initializers = XXXContainerInitializer.class   │  │
+│  │  )                                                   │  │
+│  │  public abstract class AbstractXXXContainerTest {   │  │
+│  │      // 提供便捷方法                                │  │
+│  │  }                                                   │  │
+│  └─────────────────────────────────────────────────────┘  │
+└───────────────────────────────────────────────────────────┘
+                              ↓
+┌───────────────────────────────────────────────────────────┐
+│                Layer 2: Initializer                        │
+│                   (初始化器层)                            │
+│  ┌─────────────────────────────────────────────────────┐  │
+│  │  public class XXXContainerInitializer               │  │
+│  │      implements ApplicationContextInitializer {     │  │
+│  │                                                      │  │
+│  │    @Override                                         │  │
+│  │    public void initialize(context) {                │  │
+│  │      // 检查配置                                    │  │
+│  │      if (enabled) {                                 │  │
+│  │        // 注入 TestContainer 属性                  │  │
+│  │      } else {                                       │  │
+│  │        // 使用实际服务配置                         │  │
+│  │      }                                              │  │
+│  │    }                                                │  │
+│  │  }                                                  │  │
+│  └─────────────────────────────────────────────────────┘  │
+└───────────────────────────────────────────────────────────┘
+                              ↓
+┌───────────────────────────────────────────────────────────┐
+│              Layer 1: SharedContainer                      │
+│                  (共享容器层)                             │
+│  ┌─────────────────────────────────────────────────────┐  │
+│  │  public class SharedXXXContainer {                  │  │
+│  │    private static final boolean ENABLED;            │  │
+│  │    private static final Container CONTAINER;        │  │
+│  │                                                      │  │
+│  │    static {                                         │  │
+│  │      ENABLED = checkConfig();                      │  │
+│  │      if (ENABLED) {                                │  │
+│  │        CONTAINER = startContainer();               │  │
+│  │      } else {                                      │  │
+│  │        CONTAINER = null;                           │  │
+│  │      }                                             │  │
+│  │    }                                               │  │
+│  │                                                     │  │
+│  │    public static boolean isEnabled() { ... }       │  │
+│  │    public static String getXXX() { ... }          │  │
+│  │  }                                                 │  │
+│  └─────────────────────────────────────────────────────┘  │
+└───────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## 设计原则
+## 🎯 核心机制
 
-### 核心原则
+### 1. 条件启动机制
 
-1. **单一职责原则** - 一个模块管理所有测试容器
-2. **依赖倒置原则** - 业务模块依赖抽象的容器接口
-3. **开闭原则** - 易于扩展新的容器类型
-4. **DRY 原则** - 避免重复的容器管理代码
-5. **可复用性** - 共享容器减少冗余
-6. **高性能** - 优化启动和资源使用（性能提升 80-90%）
-7. **可扩展性** - 易于扩展支持新容器
+**决策流程：**
 
----
+```
+应用启动
+    ↓
+SharedContainer 静态初始化
+    ↓
+读取系统属性: loadup.testcontainers.{type}.enabled
+    ↓
+    ├─ true (默认)
+    │    ↓
+    │  创建并启动容器
+    │    ↓
+    │  记录连接信息
+    │    ↓
+    │  注册关闭钩子
+    │
+    └─ false
+         ↓
+       设置 CONTAINER = null
+         ↓
+       等待从配置文件读取实际服务配置
+```
 
-## 三层架构模式
-
-每种容器类型都遵循相同的三层架构：
-
-### 第一层：共享容器类（Shared*Container）
-
-**职责：**
-
-- 管理容器生命周期
-- 提供容器访问接口
-- 实现单例模式
-- 首次访问时自动启动
-- 注册 JVM 关闭钩子
-
-**示例：**
+**代码实现：**
 
 ```java
-public class SharedRedisContainer {
-    private static final GenericContainer<?> REDIS_CONTAINER;
+public class SharedMySQLContainer {
+    private static final boolean        ENABLED;
+    private static final MySQLContainer CONTAINER;
 
     static {
-        REDIS_CONTAINER = new GenericContainer<>("redis:7-alpine")
-                .withExposedPorts(6379)
-                .withReuse(true);
-        REDIS_CONTAINER.start();
+        // 检查是否启用
+        ENABLED = Boolean.parseBoolean(
+                System.getProperty("loadup.testcontainers.mysql.enabled", "true")
+        );
 
-        Runtime.getRuntime().addShutdownHook(new Thread(REDIS_CONTAINER::stop));
+        if (ENABLED) {
+            // 启动容器
+            CONTAINER = new MySQLContainer(...)
+                .withReuse(true);
+            CONTAINER.start();
+        } else {
+            // 禁用模式
+            CONTAINER = null;
+        }
     }
 
-    public static String getHost() {return REDIS_CONTAINER.getHost();}
+    public static boolean isEnabled() {
+        return ENABLED;
+    }
 
-    public static Integer getPort() {return REDIS_CONTAINER.getMappedPort(6379);}
+    public static String getJdbcUrl() {
+        if (!ENABLED) {
+            throw new IllegalStateException(
+                    "MySQL TestContainer is disabled. " +
+                            "Please configure spring.datasource.url in application.yml"
+            );
+        }
+        return JDBC_URL;
+    }
 }
 ```
 
-### 第二层：初始化器类（*ContainerInitializer）
+### 2. 初始化器条件注入
 
-**职责：**
+**工作流程：**
 
-- Spring Boot 集成
-- 自动配置属性
-- 注入测试环境设置
+```
+Spring 测试启动
+    ↓
+执行 ApplicationContextInitializer
+    ↓
+读取 application.yml 配置: loadup.testcontainers.{type}.enabled
+    ↓
+    ├─ enabled = true
+    │    ↓
+    │  调用 SharedContainer.getXXX()
+    │    ↓
+    │  注入容器连接属性到 Environment
+    │    ↓
+    │  TestPropertyValues.of(
+    │      "spring.datasource.url=" + container.getJdbcUrl()
+    │  ).applyTo(context)
+    │
+    └─ enabled = false
+         ↓
+       跳过属性注入
+         ↓
+       使用 application.yml 中的实际服务配置
+```
 
-**示例：**
+**代码实现：**
 
 ```java
-public class RedisContainerInitializer
+
+@Slf4j
+public class MySQLContainerInitializer
         implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
     @Override
     public void initialize(ConfigurableApplicationContext context) {
-        TestPropertyValues.of(
-                "spring.redis.host=" + SharedRedisContainer.getHost(),
-                "spring.redis.port=" + SharedRedisContainer.getPort()
-        ).applyTo(context.getEnvironment());
+        String enabled = context.getEnvironment()
+                .getProperty("loadup.testcontainers.mysql.enabled", "true");
+
+        if (Boolean.parseBoolean(enabled)) {
+            // TestContainers 模式
+            log.info("Using MySQL TestContainer for tests");
+            TestPropertyValues.of(
+                    "spring.datasource.url=" + SharedMySQLContainer.getJdbcUrl(),
+                    "spring.datasource.username=" + SharedMySQLContainer.getUsername(),
+                    "spring.datasource.password=" + SharedMySQLContainer.getPassword()
+            ).applyTo(context.getEnvironment());
+        } else {
+            // 实际服务模式
+            log.info("Using real MySQL database from application configuration");
+            // 不注入任何属性，使用配置文件中的配置
+        }
     }
 }
 ```
 
-### 第三层：抽象基类（Abstract*ContainerTest）
+### 3. 配置优先级
 
-**职责：**
-
-- 简化测试编写
-- 自动应用初始化器
-- 提供便捷方法
+```
+系统属性 (-D)
+    ↓ (优先级最高)
+环境变量 (export)
+    ↓
+application-{profile}.yml
+    ↓
+application.yml
+    ↓
+代码默认值 (true)
+    ↓ (优先级最低)
+```
 
 **示例：**
 
-```java
+```bash
+# 方式 1: 系统属性（最高优先级）
+mvn test -Dloadup.testcontainers.mysql.enabled=false
 
-@ContextConfiguration(initializers = RedisContainerInitializer.class)
-public abstract class AbstractRedisContainerTest {
-    protected static String getRedisHost() {
-        return SharedRedisContainer.getHost();
+# 方式 2: 环境变量
+export LOADUP_TESTCONTAINERS_MYSQL_ENABLED=false
+mvn test
+
+# 方式 3: application.yml
+# loadup:
+#   testcontainers:
+#     mysql:
+#       enabled: false
+```
+
+---
+
+## 📦 容器分类架构
+
+### 数据库类容器 (Database)
+
+**包含：** MySQL, PostgreSQL, MongoDB
+
+**共同特征：**
+
+- 需要连接 URL/字符串
+- 需要认证信息（用户名、密码）
+- 需要数据库名
+- 提供 JDBC/Connection String
+
+**配置属性：**
+
+```yaml
+loadup:
+  testcontainers:
+    mysql:
+      enabled: true
+      version: mysql:8.0
+      database: testdb
+      username: test
+      password: test
+    postgresql:
+      enabled: true
+      version: postgres:15-alpine
+    mongodb:
+      enabled: true
+      version: mongo:7.0
+```
+
+**属性注入：**
+
+```
+MySQL: spring.datasource.url, username, password, driver-class-name
+PostgreSQL: spring.datasource.url, username, password, driver-class-name
+MongoDB: spring.data.mongodb.uri, host, port
+```
+
+---
+
+### 缓存类容器 (Cache)
+
+**包含：** Redis
+
+**特征：**
+
+- 简单的 Host + Port 配置
+- 无需认证（测试环境）
+- 支持多种配置路径
+
+**配置属性：**
+
+```yaml
+loadup:
+  testcontainers:
+    redis:
+      enabled: true
+      version: redis:7-alpine
+```
+
+**属性注入：**
+
+```
+spring.redis.host, spring.redis.port
+spring.data.redis.host, spring.data.redis.port
+loadup.cache.redis.host, loadup.cache.redis.port
+```
+
+---
+
+### 消息队列类容器 (Messaging)
+
+**包含：** Kafka
+
+**特征：**
+
+- Bootstrap Servers 配置
+- 自动处理依赖（Zookeeper）
+- 支持生产者和消费者配置
+
+**配置属性：**
+
+```yaml
+loadup:
+  testcontainers:
+    kafka:
+      enabled: true
+      version: apache/kafka:4.1.1
+```
+
+**属性注入：**
+
+```
+spring.kafka.bootstrap-servers
+spring.kafka.consumer.bootstrap-servers
+spring.kafka.producer.bootstrap-servers
+```
+
+---
+
+### 搜索引擎类容器 (Search)
+
+**包含：** Elasticsearch
+
+**特征：**
+
+- HTTP Host Address
+- 需要禁用安全配置（测试环境）
+- 支持多种客户端配置
+
+**配置属性：**
+
+```yaml
+loadup:
+  testcontainers:
+    elasticsearch:
+      enabled: true
+      version: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+```
+
+**属性注入：**
+
+```
+spring.elasticsearch.uris
+spring.elasticsearch.rest.uris
+spring.data.elasticsearch.client.reactive.endpoints
+```
+
+---
+
+### 云服务类容器 (Cloud)
+
+**包含：** LocalStack (S3)
+
+**特征：**
+
+- 模拟 AWS 服务
+- 提供 Access Key, Secret Key
+- 支持多种 AWS SDK 配置
+
+**配置属性：**
+
+```yaml
+loadup:
+  testcontainers:
+    localstack:
+      enabled: true
+      version: localstack/localstack:3.0
+```
+
+**属性注入：**
+
+```
+aws.s3.endpoint
+aws.access-key-id, aws.secret-access-key, aws.region
+cloud.aws.credentials.access-key, cloud.aws.credentials.secret-key
+loadup.dfs.s3.endpoint, loadup.dfs.s3.accessKey, loadup.dfs.s3.secretKey
+```
+
+---
+
+## 🔄 使用模式
+
+### 模式 1: 纯 TestContainers（默认）
+
+**场景：** 本地开发，快速测试
+
+**配置：**
+
+```yaml
+# 无需配置，默认启用
+```
+
+**流程：**
+
+```
+测试启动
+  ↓
+SharedContainer 启动
+  ↓
+Initializer 注入容器属性
+  ↓
+测试执行
+  ↓
+测试完成，容器保持运行（复用）
+```
+
+---
+
+### 模式 2: 纯实际服务
+
+**场景：** CI 环境，性能测试
+
+**配置：**
+
+```yaml
+loadup:
+  testcontainers:
+    enabled: false
+
+spring:
+  datasource:
+    url: jdbc:mysql://mysql-server:3306/testdb
+    username: ci_user
+    password: ci_password
+```
+
+**流程：**
+
+```
+测试启动
+  ↓
+SharedContainer 不启动（ENABLED = false）
+  ↓
+Initializer 跳过容器属性注入
+  ↓
+使用 application.yml 中的实际服务配置
+  ↓
+测试执行
+```
+
+---
+
+### 模式 3: 混合模式
+
+**场景：** 部分服务容器化，部分使用真实服务
+
+**配置：**
+
+```yaml
+loadup:
+  testcontainers:
+    enabled: true
+    mysql:
+      enabled: false    # 使用实际 MySQL
+    redis:
+      enabled: true     # 使用 TestContainers Redis
+
+spring:
+  datasource:
+    url: jdbc:mysql://dev-mysql:3306/devdb
+    username: dev
+    password: dev
+  # Redis 配置将被 TestContainers 覆盖
+```
+
+**流程：**
+
+```
+测试启动
+  ↓
+SharedMySQLContainer 不启动（enabled = false）
+SharedRedisContainer 启动（enabled = true）
+  ↓
+MySQLInitializer 跳过注入，使用配置文件
+RedisInitializer 注入容器属性
+  ↓
+测试执行（MySQL 实际服务 + Redis 容器）
+```
+
+---
+
+## 🎨 设计模式
+
+### 单例模式
+
+**目的：** 确保容器实例全局唯一，复用容器
+
+**实现：**
+
+```java
+public class SharedMySQLContainer {
+    // 静态实例，JVM 级别单例
+    private static final MySQLContainer MYSQL_CONTAINER;
+
+    static {
+        // 静态代码块初始化，线程安全
+        MYSQL_CONTAINER = new MySQLContainer(...);
+        MYSQL_CONTAINER.start();
     }
 
-    protected static Integer getRedisPort() {
-        return SharedRedisContainer.getPort();
+    // 私有构造器，防止实例化
+    private SharedMySQLContainer() {
+        throw new UnsupportedOperationException();
     }
 }
 ```
 
 ---
 
-## 包结构
+### 策略模式
 
-```
-loadup-components-testcontainers/
-├── pom.xml                                    # 集中依赖管理
-│
-├── src/main/java/.../testcontainers/
-│   │
-│   ├── 【根包 - 向后兼容】
-│   │   ├── SharedMySQLContainer.java
-│   │   ├── MySQLContainerInitializer.java
-│   │   ├── AbstractMySQLContainerTest.java
-│   │   ├── SharedRedisContainer.java
-│   │   ├── RedisContainerInitializer.java
-│   │   ├── AbstractRedisContainerTest.java
-│   │   ├── SharedLocalStackContainer.java
-│   │   ├── LocalStackContainerInitializer.java
-│   │   └── AbstractLocalStackContainerTest.java
-│   │
-│   ├── 【database/】
-│   │   ├── SharedPostgreSQLContainer.java
-│   │   ├── PostgreSQLContainerInitializer.java
-│   │   ├── AbstractPostgreSQLContainerTest.java
-│   │   ├── SharedMongoDBContainer.java
-│   │   ├── MongoDBContainerInitializer.java
-│   │   └── AbstractMongoDBContainerTest.java
-│   │
-│   ├── 【messaging/】
-│   │   ├── SharedKafkaContainer.java
-│   │   ├── KafkaContainerInitializer.java
-│   │   └── AbstractKafkaContainerTest.java
-│   │
-│   └── 【search/】
-│       ├── SharedElasticsearchContainer.java
-│       ├── ElasticsearchContainerInitializer.java
-│       └── AbstractElasticsearchContainerTest.java
-│
-└── src/test/java/
-    └── [每个容器的集成测试]
-```
+**目的：** 根据配置选择不同的属性注入策略
 
----
-
-## 集成点
-
-### 模块集成
-
-- **UPMS 模块**：使用 MySQL TestContainer 的仓储测试
-- **DFS 模块**：使用 MySQL/PostgreSQL 的数据库提供者测试
-- **Gotone 模块**：使用多个容器的集成测试
-- **Cache 模块**：Redis 和 Caffeine 测试
-- **Scheduler 模块**：潜在的 Kafka 集成
-
-### 跨模块优势
-
-1. **一致的测试环境** - 所有模块使用相同的容器基础设施
-2. **更快的测试执行** - 共享容器减少启动开销
-3. **资源效率** - 每种类型的容器在所有测试中只有一个实例
-4. **易于维护** - 集中的容器配置和版本管理
-
----
-
-## 配置架构
-
-### 配置层次
-
-1. **默认值**（代码中）
-2. **系统属性**（-D 标志）
-3. **testcontainers.properties**（在 ~/.testcontainers.properties）
-4. **Maven 配置**（在 pom.xml）
-
-### 配置示例
-
-#### 系统属性
-
-```bash
--Dtestcontainers.mysql.version=mysql:8.0
--Dtestcontainers.mysql.database=testdb
--Dtestcontainers.mysql.username=test
--Dtestcontainers.mysql.password=test
-```
-
-#### 容器复用
-
-```properties
-# ~/.testcontainers.properties
-testcontainers.reuse.enable=true
-```
-
----
-
-## 性能架构
-
-### 容器启动优化
-
-| 容器            | 传统方式（每次测试） | 共享方式（首次+后续） | 性能提升       |
-|---------------|------------|-------------|------------|
-| MySQL         | ~8秒        | 8秒 + 1秒     | **87% ⬆️** |
-| PostgreSQL    | ~6秒        | 6秒 + 1秒     | **83% ⬆️** |
-| MongoDB       | ~5秒        | 5秒 + <1秒    | **90% ⬆️** |
-| Redis         | ~3秒        | 3秒 + <0.5秒  | **90% ⬆️** |
-| Kafka         | ~20秒       | 20秒 + 2秒    | **90% ⬆️** |
-| Elasticsearch | ~25秒       | 25秒 + 2秒    | **92% ⬆️** |
-| LocalStack    | ~15秒       | 15秒 + 1秒    | **93% ⬆️** |
-
-### 实际场景
-
-**10个测试类使用 MySQL：**
-
-- 传统方式：10 × 8秒 = 80 秒
-- 共享方式：8秒 + 9×1秒 = 17 秒
-- **提升：79% ⬆️**
-
-**完整技术栈（所有容器）：**
-
-- 传统方式：10个类 × 82秒 = 820 秒（13.7 分钟）
-- 共享方式：82秒 + 9×7秒 = 145 秒（2.4 分钟）
-- **提升：82% ⬆️**
-
----
-
-## 可扩展性
-
-### 添加新容器类型
-
-要添加新的容器类型，请按照以下步骤操作：
-
-1. **创建共享容器类**
-   ```java
-   public class SharedNewContainer {
-       private static final GenericContainer<?> CONTAINER;
-       static { /* 初始化 */ }
-       public static String getConnectionUrl() { /* ... */ }
-   }
-   ```
-
-2. **创建初始化器类**
-   ```java
-   public class NewContainerInitializer 
-           implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-       @Override
-       public void initialize(ConfigurableApplicationContext context) {
-           // 设置属性
-       }
-   }
-   ```
-
-3. **创建抽象基类**
-   ```java
-   @ContextConfiguration(initializers = NewContainerInitializer.class)
-   public abstract class AbstractNewContainerTest {
-       // 辅助方法
-   }
-   ```
-
-4. **添加依赖**到 pom.xml
-5. **在 README.md 中记录**使用方法
-
----
-
-## 最佳实践
-
-### 模块开发者
-
-1. **优先继承** - 继承 Abstract*ContainerTest 以简化使用
-2. **启用复用** - 设置 `testcontainers.reuse.enable=true`
-3. **清理状态** - 使用 `@BeforeEach` 在测试间重置数据
-4. **使用事务** - 利用 `@Transactional` 自动回滚
-5. **优化测试** - 将相关测试分组以最大化容器共享
-
-### 容器管理
-
-1. **版本固定** - 指定确切的容器版本以确保可重现性
-2. **资源限制** - 配置适当的内存/CPU 限制
-3. **网络隔离** - 为多容器测试使用 Docker 网络
-4. **日志记录** - 配置适当的日志级别以调试问题
-5. **CI/CD 集成** - 预拉取镜像以加速流水线执行
-
----
-
-## 安全考虑
-
-1. **网络暴露** - 容器仅绑定到本地主机
-2. **凭据** - 默认测试凭据是众所周知的（不用于生产环境）
-3. **数据隔离** - 每个容器实例都是隔离的
-4. **清理** - 容器在测试完成后删除（或在 JVM 关闭时）
-
----
-
-## 未来增强
-
-### 计划功能
-
-- [ ] 添加 RabbitMQ 支持用于 AMQP 消息传递
-- [ ] 添加 Cassandra 支持用于宽列数据库
-- [ ] 添加 MinIO 支持作为 LocalStack 的替代方案
-- [ ] 健康检查集成以加快测试启动
-- [ ] 自定义 Docker Compose 文件支持
-- [ ] 自动模式迁移支持
-- [ ] 容器指标和监控
-- [ ] 测试数据种子工具
-
-### CI/CD 集成
-
-- [ ] GitHub Actions 工作流模板
-- [ ] GitLab CI 配置示例
-- [ ] Jenkins 流水线集成指南
-- [ ] 预构建 Docker 镜像缓存策略
-
----
-
-## 故障排除
-
-### 常见问题
-
-**Docker 未运行**
-
-```bash
-# macOS
-open -a Docker
-
-# 验证
-docker info
-```
-
-**端口冲突**
-
-```bash
-# 查找并停止冲突的进程
-lsof -i :3306  # MySQL
-lsof -i :6379  # Redis
-```
-
-**容器启动超时**
+**实现：**
 
 ```java
-// 在测试配置中增加超时时间
-@SpringBootTest(properties = {
-        "spring.test.context.cache.maxSize=1",
-        "testcontainers.startup.timeout=120"
-})
+public class MySQLContainerInitializer {
+    @Override
+    public void initialize(ConfigurableApplicationContext context) {
+        String enabled = context.getEnvironment()
+                .getProperty("loadup.testcontainers.mysql.enabled", "true");
+
+        // 策略选择
+        if (Boolean.parseBoolean(enabled)) {
+            // 策略 A: TestContainers
+            injectContainerProperties(context);
+        } else {
+            // 策略 B: 实际服务（无操作）
+            // 使用配置文件中的配置
+        }
+    }
+}
 ```
 
-**内存问题**
+---
 
-```bash
-# 增加 Docker 内存限制（Docker Desktop）
-# 偏好设置 → 资源 → 内存 → 4GB+
+### 模板方法模式
+
+**目的：** 所有容器遵循统一的初始化流程
+
+**模板流程：**
+
+```
+1. 检查配置 (isEnabled)
+2. 创建容器 (createContainer)
+3. 启动容器 (start)
+4. 记录信息 (log)
+5. 注册钩子 (registerShutdownHook)
+```
+
+**实现：** 每个 SharedContainer 都实现这个流程
+
+---
+
+## 📊 性能优化
+
+### 1. 容器复用
+
+**机制：** `.withReuse(true)`
+
+**效果：**
+
+- 第一次启动：约 10-30 秒（根据容器类型）
+- 后续测试：< 1 秒（复用已启动容器）
+- 性能提升：**80-90%**
+
+### 2. 并行初始化
+
+**机制：** 静态代码块并行执行
+
+**效果：** 多个容器可以同时启动
+
+### 3. 延迟加载
+
+**机制：** 只有访问时才触发静态初始化
+
+**效果：** 未使用的容器不会启动
+
+### 4. CI 优化
+
+**机制：** 禁用 TestContainers，使用已有服务
+
+**效果：**
+
+- 跳过容器启动时间
+- 利用 CI 环境的服务实例
+- 更稳定的测试环境
+
+---
+
+## 🔒 安全设计
+
+### 1. 不可变性
+
+所有连接信息都是 `final` 常量，一旦初始化不可修改。
+
+### 2. 防御式编程
+
+```java
+public static String getJdbcUrl() {
+    if (!ENABLED) {
+        throw new IllegalStateException(
+                "Container is disabled. Please configure real service."
+        );
+    }
+    return JDBC_URL;
+}
+```
+
+### 3. 资源清理
+
+自动注册 JVM 关闭钩子，确保容器正确关闭。
+
+---
+
+## 🧪 测试策略
+
+### 单元测试
+
+测试容器的启用/禁用逻辑：
+
+```java
+
+@Test
+void testContainerEnabled() {
+    assertTrue(SharedMySQLContainer.isEnabled());
+}
+
+@Test
+void testContainerDisabled() {
+    System.setProperty("loadup.testcontainers.mysql.enabled", "false");
+    // 重新加载类
+    // 验证 ENABLED = false
+}
+```
+
+### 集成测试
+
+测试不同配置场景：
+
+```java
+
+@SpringBootTest
+@ActiveProfiles("test")
+class TestContainersModeTest { ...
+}
+
+@SpringBootTest
+@ActiveProfiles("ci")
+class RealServiceModeTest { ...
+}
+
+@SpringBootTest
+@ActiveProfiles("mixed")
+class MixedModeTest { ...
+}
 ```
 
 ---
 
-## 依赖项
+## 🚀 扩展点
 
-### 核心依赖
+### 1. 新增容器类型
 
-| 依赖项                          | 版本     | 用途                |
-|------------------------------|--------|-------------------|
-| testcontainers-core          | 1.19.3 | TestContainers 框架 |
-| testcontainers-mysql         | 1.19.3 | MySQL 支持          |
-| testcontainers-postgresql    | 1.19.3 | PostgreSQL 支持     |
-| testcontainers-mongodb       | 1.19.3 | MongoDB 支持        |
-| testcontainers-kafka         | 1.19.3 | Kafka 支持          |
-| testcontainers-elasticsearch | 1.19.3 | Elasticsearch 支持  |
-| testcontainers-localstack    | 1.19.3 | LocalStack 支持     |
-| spring-boot-test             | 3.x    | Spring Boot 测试支持  |
+遵循三层架构模式：
 
----
+1. 创建 `SharedXXXContainer`
+2. 创建 `XXXContainerInitializer`
+3. 创建 `AbstractXXXContainerTest`
 
-## 许可证
+### 2. 自定义配置属性
 
-本模块遵循 Apache License 2.0 协议。
+在 `TestContainersProperties` 中添加新配置。
+
+### 3. 自定义初始化逻辑
+
+扩展 `ApplicationContextInitializer` 接口。
 
 ---
 
-**架构版本**：2.0  
-**最后更新**：2026年1月5日  
-**维护者**：LoadUp Framework Team
+## 📈 监控和调试
+
+### 日志输出
+
+```
+[INFO] Initializing shared MySQL TestContainer with version: mysql:8.0
+[INFO] Shared MySQL TestContainer started successfully
+[INFO] JDBC URL: jdbc:mysql://localhost:32768/testdb
+[INFO] Using MySQL TestContainer for tests
+```
+
+### 检查容器状态
+
+```java
+// 检查是否启用
+boolean enabled = SharedMySQLContainer.isEnabled();
+
+// 获取容器实例
+MySQLContainer container = SharedMySQLContainer.getInstance();
+
+// 检查容器是否运行
+boolean running = container.isRunning();
+```
+
+---
+
+## 🎯 设计原则总结
+
+1. **单一职责**：每个类只负责一件事
+2. **开闭原则**：对扩展开放，对修改关闭
+3. **里氏替换**：AbstractTest 可以任意替换
+4. **接口隔离**：最小化接口暴露
+5. **依赖倒置**：依赖抽象而非具体实现
+6. **DRY 原则**：避免重复代码
+7. **配置驱动**：行为由配置控制
+8. **向后兼容**：保持 API 稳定性
+
+---
+
+## 📚 参考资料
+
+- TestContainers 官方文档: https://www.testcontainers.org/
+- Spring Boot 测试文档: https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.testing
+
+---
+
+**版本：** 2.0.0  
+**更新日期：** 2026-01-08  
+**作者：** LoadUp Framework Team
+

@@ -15,9 +15,12 @@
  */
 package com.github.loadup.components.testcontainers.messaging;
 
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import com.github.loadup.components.testcontainers.BaseContainerInitializer;
+import com.github.loadup.components.testcontainers.config.TestContainersProperties;
+import com.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
+import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * Spring Boot test initializer for Kafka TestContainer.
@@ -25,15 +28,30 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-public class KafkaContainerInitializer
-    implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+@Slf4j
+public class KafkaContainerInitializer extends BaseContainerInitializer {
 
   @Override
-  public void initialize(ConfigurableApplicationContext applicationContext) {
-    TestPropertyValues.of(
-            "spring.kafka.bootstrap-servers=" + SharedKafkaContainer.getBootstrapServers(),
-            "spring.kafka.consumer.bootstrap-servers=" + SharedKafkaContainer.getBootstrapServers(),
-            "spring.kafka.producer.bootstrap-servers=" + SharedKafkaContainer.getBootstrapServers())
-        .applyTo(applicationContext.getEnvironment());
+  protected String getContainerName() {
+    return "Kafka";
+  }
+
+  @Override
+  protected ContainerConfig getContainerConfig(TestContainersProperties p) {
+    return p.getKafka();
+  }
+
+  @Override
+  protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
+    SharedKafkaContainer.startContainer(config);
+    applyProperties(
+        env,
+        Map.of(
+            "spring.kafka.bootstrap-servers",
+            SharedKafkaContainer.getBootstrapServers(),
+            "spring.kafka.consumer.bootstrap-servers",
+            SharedKafkaContainer.getBootstrapServers(),
+            "spring.kafka.producer.bootstrap-servers",
+            SharedKafkaContainer.getBootstrapServers()));
   }
 }

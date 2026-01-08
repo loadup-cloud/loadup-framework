@@ -17,6 +17,7 @@ package com.github.loadup.components.testcontainers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.loadup.components.testcontainers.database.AbstractPostgreSQLContainerTest;
 import com.github.loadup.components.testcontainers.database.SharedPostgreSQLContainer;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -24,6 +25,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 /**
@@ -33,7 +36,9 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
  * @since 1.0.0
  */
 @Slf4j
-class SharedPostgreSQLContainerIT {
+@ActiveProfiles("test")
+@SpringBootTest(classes = TestApplication.class)
+class SharedPostgreSQLContainerIT extends AbstractPostgreSQLContainerTest {
 
   @Test
   void testContainerIsRunning() {

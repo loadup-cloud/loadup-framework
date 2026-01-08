@@ -15,9 +15,12 @@
  */
 package com.github.loadup.components.testcontainers.database;
 
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import com.github.loadup.components.testcontainers.BaseContainerInitializer;
+import com.github.loadup.components.testcontainers.config.TestContainersProperties;
+import com.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
+import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * Spring Boot test initializer for MySQL TestContainer.
@@ -44,21 +47,32 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-public class MySQLContainerInitializer
-    implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+@Slf4j
+public class MySQLContainerInitializer extends BaseContainerInitializer {
 
-  /**
-   * Initialize the application context with MySQL container properties.
-   *
-   * @param applicationContext the application context to initialize
-   */
   @Override
-  public void initialize(ConfigurableApplicationContext applicationContext) {
-    TestPropertyValues.of(
-            "spring.datasource.url=" + SharedMySQLContainer.getJdbcUrl(),
-            "spring.datasource.username=" + SharedMySQLContainer.getUsername(),
-            "spring.datasource.password=" + SharedMySQLContainer.getPassword(),
-            "spring.datasource.driver-class-name=" + SharedMySQLContainer.getDriverClassName())
-        .applyTo(applicationContext.getEnvironment());
+  protected String getContainerName() {
+    return "MySQL";
+  }
+
+  @Override
+  protected ContainerConfig getContainerConfig(TestContainersProperties p) {
+    return p.getMysql();
+  }
+
+  @Override
+  protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
+    SharedMySQLContainer.startContainer(config);
+    applyProperties(
+        env,
+        Map.of(
+            "spring.datasource.url",
+            SharedMySQLContainer.getJdbcUrl(),
+            "spring.datasource.username",
+            SharedMySQLContainer.getUsername(),
+            "spring.datasource.password",
+            SharedMySQLContainer.getPassword(),
+            "spring.datasource.driver-class-name",
+            SharedMySQLContainer.getDriverClassName()));
   }
 }

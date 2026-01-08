@@ -148,7 +148,7 @@ public class RedisDatabaseConfigIT extends BaseRedisCacheTest {
 
     // Create template for database 0 (to verify isolation)
     LettuceConnectionFactory db0Factory =
-        new LettuceConnectionFactory(new RedisStandaloneConfiguration(HOST, PORT));
+        new LettuceConnectionFactory(new RedisStandaloneConfiguration(HOST.get(), PORT.get()));
     db0Factory.afterPropertiesSet();
 
     RedisTemplate<String, String> db0Template = new RedisTemplate<>();

@@ -63,3 +63,6 @@ logging:
 loadup:
   tracer:
     enabled: false
+  testcontainers:
+    # Disable all TestContainers
+    enabled: false

@@ -15,9 +15,12 @@
  */
 package com.github.loadup.components.testcontainers.database;
 
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import com.github.loadup.components.testcontainers.BaseContainerInitializer;
+import com.github.loadup.components.testcontainers.config.TestContainersProperties;
+import com.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
+import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * Spring Boot test initializer for MongoDB TestContainer.
@@ -25,15 +28,30 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-public class MongoDBContainerInitializer
-    implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+@Slf4j
+public class MongoDBContainerInitializer extends BaseContainerInitializer {
 
   @Override
-  public void initialize(ConfigurableApplicationContext applicationContext) {
-    TestPropertyValues.of(
-            "spring.data.mongodb.uri=" + SharedMongoDBContainer.getConnectionString(),
-            "spring.data.mongodb.host=" + SharedMongoDBContainer.getHost(),
-            "spring.data.mongodb.port=" + SharedMongoDBContainer.getPort())
-        .applyTo(applicationContext.getEnvironment());
+  protected String getContainerName() {
+    return "MongoDB";
+  }
+
+  @Override
+  protected ContainerConfig getContainerConfig(TestContainersProperties p) {
+    return p.getMongodb();
+  }
+
+  @Override
+  protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
+    SharedMongoDBContainer.startContainer(config);
+    applyProperties(
+        env,
+        Map.of(
+            "spring.data.mongodb.uri",
+            SharedMongoDBContainer.getReplicaSetUrl(),
+            "spring.data.mongodb.host",
+            SharedMongoDBContainer.getHost(),
+            "spring.data.mongodb.port",
+            String.valueOf(SharedMongoDBContainer.getPort())));
   }
 }

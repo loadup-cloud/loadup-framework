@@ -17,12 +17,15 @@ package com.github.loadup.components.testcontainers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.loadup.components.testcontainers.cache.AbstractRedisContainerTest;
 import com.github.loadup.components.testcontainers.cache.SharedRedisContainer;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.GenericContainer;
 
 /**
@@ -32,7 +35,9 @@ import org.testcontainers.containers.GenericContainer;
  * @since 1.0.0
  */
 @Slf4j
-class SharedRedisContainerIT {
+@ActiveProfiles("test")
+@SpringBootTest(classes = TestApplication.class)
+class SharedRedisContainerIT extends AbstractRedisContainerTest {
 
   @Test
   void testContainerIsRunning() {
@@ -46,6 +51,7 @@ class SharedRedisContainerIT {
     assertNotNull(SharedRedisContainer.getHost(), "Host should not be null");
     assertNotNull(SharedRedisContainer.getPort(), "Port should not be null");
     assertNotNull(SharedRedisContainer.getUrl(), "Redis URL should not be null");
+    assertNotNull(SharedRedisContainer.getMappedPort(), "Mapped port should not be null");
 
     log.info("Host: {}", SharedRedisContainer.getHost());
     log.info("Port: {}", SharedRedisContainer.getPort());

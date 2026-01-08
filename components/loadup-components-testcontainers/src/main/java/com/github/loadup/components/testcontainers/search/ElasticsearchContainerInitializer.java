@@ -15,9 +15,12 @@
  */
 package com.github.loadup.components.testcontainers.search;
 
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import com.github.loadup.components.testcontainers.BaseContainerInitializer;
+import com.github.loadup.components.testcontainers.config.TestContainersProperties;
+import com.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
+import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * Spring Boot test initializer for Elasticsearch TestContainer.
@@ -25,16 +28,28 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-public class ElasticsearchContainerInitializer
-    implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+@Slf4j
+public class ElasticsearchContainerInitializer extends BaseContainerInitializer {
 
   @Override
-  public void initialize(ConfigurableApplicationContext applicationContext) {
-    TestPropertyValues.of(
-            "spring.elasticsearch.uris=" + SharedElasticsearchContainer.getHttpHostAddress(),
-            "spring.elasticsearch.rest.uris=" + SharedElasticsearchContainer.getHttpHostAddress(),
-            "spring.data.elasticsearch.client.reactive.endpoints="
-                + SharedElasticsearchContainer.getHttpHostAddress())
-        .applyTo(applicationContext.getEnvironment());
+  protected String getContainerName() {
+    return "Elasticsearch";
+  }
+
+  @Override
+  protected ContainerConfig getContainerConfig(TestContainersProperties p) {
+    return p.getElasticsearch();
+  }
+
+  @Override
+  protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
+    SharedElasticsearchContainer.startContainer(config);
+    applyProperties(
+        env,
+        Map.of(
+            "spring.elasticsearch.uris", SharedElasticsearchContainer.getHttpHostAddress(),
+            "spring.elasticsearch.rest.uris", SharedElasticsearchContainer.getHttpHostAddress(),
+            "spring.data.elasticsearch.client.reactive.endpoints",
+                SharedElasticsearchContainer.getHttpHostAddress()));
   }
 }

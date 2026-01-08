@@ -17,10 +17,13 @@ package com.github.loadup.components.testcontainers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.loadup.components.testcontainers.cloud.AbstractLocalStackContainerTest;
 import com.github.loadup.components.testcontainers.cloud.SharedLocalStackContainer;
 import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.localstack.LocalStackContainer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -35,7 +38,9 @@ import software.amazon.awssdk.services.s3.model.*;
  * @since 1.0.0
  */
 @Slf4j
-class SharedLocalStackContainerIT {
+@ActiveProfiles("test")
+@SpringBootTest(classes = TestApplication.class)
+class SharedLocalStackContainerIT extends AbstractLocalStackContainerTest {
 
   @Test
   void testContainerIsRunning() {

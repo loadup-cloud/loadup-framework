@@ -1,39 +1,47 @@
 # LoadUp Components TestContainers
 
-企业级 TestContainers 基础模块，提供共享容器功能，支持 **7 种容器类型**，按 **5 大类**科学组织，用于在测试过程中共享数据库和服务实例，显著提高测试执行效率。
+企业级 TestContainers 基础模块，提供**灵活可切换**的共享容器功能，支持 **7 种容器类型**，可在 TestContainers 和实际服务之间便捷切换，显著提高测试灵活性和执行效率。
 
 ## 📦 支持的容器（7种）
 
-### 📊 按分类
+| 分类               | 容器              | 默认版本                      | 支持切换 |
+|------------------|-----------------|---------------------------|------|
+| **📦 Database**  | MySQL           | mysql:8.0                 | ✅    |
+|                  | PostgreSQL      | postgres:15-alpine        | ✅    |
+|                  | MongoDB         | mongo:7.0                 | ✅    |
+| **🔴 Cache**     | Redis           | redis:7-alpine            | ✅    |
+| **📨 Messaging** | Kafka           | apache/kafka:4.1.1        | ✅    |
+| **🔍 Search**    | Elasticsearch   | elasticsearch:8.11.0      | ✅    |
+| **☁️ Cloud**     | LocalStack (S3) | localstack/localstack:3.0 | ✅    |
 
-| 分类               | 容器              | 默认版本                 | 包路径                         |
-|------------------|-----------------|----------------------|-----------------------------|
-| **📦 Database**  | MySQL           | mysql:8.0            | `.testcontainers`           |
-|                  | PostgreSQL      | postgres:15-alpine   | `.testcontainers.database`  |
-|                  | MongoDB         | mongo:7.0            | `.testcontainers.database`  |
-| **🔴 Cache**     | Redis           | redis:7-alpine       | `.testcontainers`           |
-| **📨 Messaging** | Kafka           | cp-kafka:7.5.0       | `.testcontainers.messaging` |
-| **🔍 Search**    | Elasticsearch   | elasticsearch:8.11.0 | `.testcontainers.search`    |
-| **☁️ Cloud**     | LocalStack (S3) | localstack:3.0       | `.testcontainers`           |
+## ✨ 核心特性
 
-## ✨ 功能特性
+### 🎯 灵活切换（NEW!）
 
-- 🚀 **共享容器实例**：单例模式，所有测试共享，启动速度提升 80-90%
-- 🗂️ **分类组织**：5大分类（Database、Cache、Messaging、Search、Cloud），清晰易用
-- 🎯 **统一架构**：所有容器遵循三层架构（容器-初始化器-基类）
-- 🔧 **易于集成**：继承抽象基类即可，零配置
-- ⚙️ **灵活配置**：支持系统属性自定义容器版本和配置
-- 📝 **完善的文档**：详细的使用示例和最佳实践
-- 🧪 **Spring Boot 集成**：无缝集成 Spring Boot 测试框架
-- 🔄 **向后兼容**：保持原有代码无需修改
+- ✅ **TestContainers 模式**：本地开发，快速隔离，免安装
+- ✅ **实际服务模式**：CI 环境，生产环境，性能测试
+- ✅ **混合模式**：部分容器，部分实际服务
+- ✅ **配置驱动**：通过 Profile 或环境变量控制
+- ✅ **零代码修改**：现有测试完全兼容
+
+### 🚀 高性能
+
+- ⚡ **共享容器实例**：单例模式，测试启动速度提升 80-90%
+- 🔄 **容器复用**：跨测试类共享，减少资源消耗
+- 📊 **CI 优化**：支持使用已有服务，减少启动开销
+
+### 🏗️ 统一架构
+
+- 🎯 **三层架构**：SharedContainer → Initializer → AbstractTest
+- 🗂️ **分类组织**：按类型组织（Database、Cache、Messaging、Search、Cloud）
+- 📝 **一致性**：所有容器遵循相同模式
 
 ## 🚀 快速开始
 
 ### 1. 添加依赖
 
-在测试模块的 `pom.xml` 中添加：
-
 ```xml
+
 <dependency>
     <groupId>com.github.loadup.components</groupId>
     <artifactId>loadup-components-testcontainers</artifactId>
@@ -41,12 +49,85 @@
 </dependency>
 ```
 
-### 2. 使用容器
+### 2. 选择模式
 
-#### MySQL（关系型数据库）
+#### 模式 A：TestContainers（默认）
 
 ```java
+
 @SpringBootTest
+@ActiveProfiles("test")  // 使用 application-test.yml
+class MyTest extends AbstractMySQLContainerTest {
+    @Test
+    void test() {
+        // 自动使用 TestContainers
+    }
+}
+```
+
+**配置文件** `application-test.yml`：
+
+```yaml
+loadup:
+  testcontainers:
+    enabled: true  # 默认值，可省略
+```
+
+#### 模式 B：实际服务
+
+```java
+
+@SpringBootTest
+@ActiveProfiles("ci")  // 使用 application-ci.yml
+class MyTest extends AbstractMySQLContainerTest {
+    @Test
+    void test() {
+        // 自动使用实际 MySQL 服务
+    }
+}
+```
+
+**配置文件** `application-ci.yml`：
+
+```yaml
+loadup:
+  testcontainers:
+    enabled: false  # 禁用 TestContainers
+
+spring:
+  datasource:
+    url: jdbc:mysql://mysql-server:3306/testdb
+    username: ci_user
+    password: ci_password
+```
+
+#### 模式 C：混合模式
+
+```yaml
+# application-mixed.yml
+loadup:
+  testcontainers:
+    enabled: true
+    mysql:
+      enabled: false  # 使用实际 MySQL
+    redis:
+      enabled: true   # 使用 TestContainers Redis
+
+spring:
+  datasource:
+    url: jdbc:mysql://dev-mysql:3306/devdb
+    username: dev
+    password: dev
+```
+
+## 📚 使用示例
+
+### MySQL
+
+```java
+
+@SpringBootTest
+@ActiveProfiles("test")
 class UserRepositoryTest extends AbstractMySQLContainerTest {
     @Autowired
     private UserRepository userRepository;
@@ -60,9 +141,10 @@ class UserRepositoryTest extends AbstractMySQLContainerTest {
 }
 ```
 
-#### PostgreSQL（关系型数据库）
+### PostgreSQL
 
 ```java
+
 @SpringBootTest
 class OrderRepositoryTest extends AbstractPostgreSQLContainerTest {
     @Autowired
@@ -77,9 +159,10 @@ class OrderRepositoryTest extends AbstractPostgreSQLContainerTest {
 }
 ```
 
-#### MongoDB（文档型数据库）
+### MongoDB
 
 ```java
+
 @SpringBootTest
 class ProductRepositoryTest extends AbstractMongoDBContainerTest {
     @Autowired
@@ -94,9 +177,10 @@ class ProductRepositoryTest extends AbstractMongoDBContainerTest {
 }
 ```
 
-#### Redis（缓存）
+### Redis
 
 ```java
+
 @SpringBootTest
 class CacheTest extends AbstractRedisContainerTest {
     @Autowired
@@ -110,9 +194,10 @@ class CacheTest extends AbstractRedisContainerTest {
 }
 ```
 
-#### Kafka（消息队列）
+### Kafka
 
 ```java
+
 @SpringBootTest
 class MessageTest extends AbstractKafkaContainerTest {
     @Autowired
@@ -121,14 +206,14 @@ class MessageTest extends AbstractKafkaContainerTest {
     @Test
     void testSendMessage() {
         kafkaTemplate.send("test-topic", "Hello Kafka");
-        // 验证消息接收
     }
 }
 ```
 
-#### Elasticsearch（搜索引擎）
+### Elasticsearch
 
 ```java
+
 @SpringBootTest
 class SearchTest extends AbstractElasticsearchContainerTest {
     @Autowired
@@ -138,17 +223,15 @@ class SearchTest extends AbstractElasticsearchContainerTest {
     void testSearch() {
         Product product = new Product("Test");
         restTemplate.save(product);
-
-        SearchHits<Product> hits = restTemplate.search(
-                Query.findAll(), Product.class);
-        assertEquals(1, hits.getTotalHits());
+        // 验证搜索结果
     }
 }
 ```
 
-#### LocalStack/S3（对象存储）
+### LocalStack (S3)
 
 ```java
+
 @SpringBootTest
 class S3Test extends AbstractLocalStackContainerTest {
     @Autowired
@@ -159,1001 +242,353 @@ class S3Test extends AbstractLocalStackContainerTest {
         s3Client.createBucket(b -> b.bucket("test"));
         s3Client.putObject(r -> r.bucket("test").key("file.txt"),
                 RequestBody.fromString("content"));
-        // 验证上传
     }
 }
 ```
 
-## 📚 使用方式对比
+## ⚙️ 配置详解
 
-### 方式1：继承抽象基类（推荐⭐）
-
-```java
-@SpringBootTest
-class MyTest extends AbstractMySQLContainerTest {
-    // 自动配置，零代码
-}
-```
-
-### 方式2：使用初始化器
-
-```java
-@SpringBootTest
-@ContextConfiguration(initializers = MySQLContainerInitializer.class)
-class MyTest {
-    // 测试代码
-}
-```
-
-### 方式3：直接使用共享容器
-
-```java
-@SpringBootTest
-@TestPropertySource(properties = {
-        "spring.datasource.url=" + SharedMySQLContainer.JDBC_URL,
-        "spring.datasource.username=" + SharedMySQLContainer.USERNAME,
-        "spring.datasource.password=" + SharedMySQLContainer.PASSWORD
-})
-class MyTest {
-    // 测试代码
-}
-```
-
-## 🎯 多容器组合使用
-
-### 数据库 + 缓存
-
-```java
-@SpringBootTest
-@ContextConfiguration(initializers = {
-        MySQLContainerInitializer.class,
-        RedisContainerInitializer.class
-})
-class FullStackTest {
-    @Autowired
-    private DataSource    dataSource;
-    @Autowired
-    private RedisTemplate redisTemplate;
-
-    @Test
-    void testBoth() {
-        // 同时使用两种容器
-    }
-}
-```
-
-### 完整技术栈
-
-```java
-@SpringBootTest
-@ContextConfiguration(initializers = {
-        PostgreSQLContainerInitializer.class,
-        MongoDBContainerInitializer.class,
-        RedisContainerInitializer.class,
-        KafkaContainerInitializer.class,
-        ElasticsearchContainerInitializer.class,
-        LocalStackContainerInitializer.class
-})
-class CompleteStackTest {
-    // 使用所有容器！
-}
-```
-
-## ⚙️ 配置选项
-
-### 系统属性配置
-
-```bash
-# MySQL
--Dtestcontainers.mysql.version=mysql:8.0
--Dtestcontainers.mysql.database=testdb
--Dtestcontainers.mysql.username=test
--Dtestcontainers.mysql.password=test
-
-# PostgreSQL
--Dtestcontainers.postgres.version=postgres:15-alpine
--Dtestcontainers.postgres.database=testdb
-
-# MongoDB
--Dtestcontainers.mongodb.version=mongo:7.0
-
-# Redis
--Dtestcontainers.redis.version=redis:7-alpine
-
-# Kafka
--Dtestcontainers.kafka.version=confluentinc/cp-kafka:7.5.0
-
-# Elasticsearch
--Dtestcontainers.elasticsearch.version=elasticsearch:8.11.0
-
-# LocalStack
--Dtestcontainers.localstack.version=localstack/localstack:3.0
-```
-
-### 启用容器复用（推荐）
-
-```bash
-# 大幅提升后续测试启动速度
-echo "testcontainers.reuse.enable=true" >> ~/.testcontainers.properties
-```
-
-### Maven 配置
-
-```xml
-
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-surefire-plugin</artifactId>
-    <configuration>
-        <systemPropertyVariables>
-            <testcontainers.mysql.version>mysql:8.0</testcontainers.mysql.version>
-            <testcontainers.redis.version>redis:7-alpine</testcontainers.redis.version>
-        </systemPropertyVariables>
-    </configuration>
-</plugin>
-```
-
-### application-test.yml
+### 全局配置
 
 ```yaml
+loadup:
+  testcontainers:
+    # 全局开关（默认 true）
+    enabled: true
+```
+
+### 单个容器配置
+
+```yaml
+loadup:
+  testcontainers:
+    mysql:
+      enabled: true              # 是否启用（默认 true）
+      version: mysql:8.0         # Docker 镜像版本
+      database: testdb           # 数据库名
+      username: test             # 用户名
+      password: test             # 密码
+
+    redis:
+      enabled: true
+      version: redis:7-alpine
+
+    # ... 其他容器配置
+```
+
+### 通过环境变量配置
+
+```bash
+# 禁用所有 TestContainers
+export LOADUP_TESTCONTAINERS_ENABLED=false
+
+# 禁用特定容器
+export LOADUP_TESTCONTAINERS_MYSQL_ENABLED=false
+
+# 运行测试
+mvn test
+```
+
+### 通过系统属性配置
+
+```bash
+mvn test -Dloadup.testcontainers.mysql.enabled=false
+```
+
+## 🎯 使用场景
+
+### 场景 1：本地开发
+
+**需求**：快速启动，隔离环境，无需安装服务  
+**方案**：使用 TestContainers（默认）  
+**配置**：`@ActiveProfiles("test")` 或无需配置
+
+### 场景 2：CI/CD 环境
+
+**需求**：使用已有服务，提高稳定性和速度  
+**方案**：禁用 TestContainers，配置实际服务  
+**配置**：`@ActiveProfiles("ci")` + 实际服务配置
+
+### 场景 3：性能测试
+
+**需求**：接近生产环境，真实性能数据  
+**方案**：使用实际数据库和服务  
+**配置**：禁用 TestContainers，连接测试环境
+
+### 场景 4：调试需求
+
+**需求**：查看数据库内容，分析问题  
+**方案**：使用实际服务，便于数据查看  
+**配置**：临时禁用特定容器
+
+### 场景 5：混合测试
+
+**需求**：部分服务用容器，部分用真实服务  
+**方案**：选择性启用/禁用容器  
+**配置**：精细化配置每个容器
+
+## 📋 配置示例
+
+### 示例 1：本地开发（默认）
+
+```yaml
+# application-test.yml 或 application.yml
+# 默认配置，无需任何配置即可使用 TestContainers
+```
+
+### 示例 2：CI 环境
+
+```yaml
+# application-ci.yml
+loadup:
+  testcontainers:
+    enabled: false
+
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
-
-logging:
-  level:
-    root: INFO
-    org.testcontainers: INFO
-    com.github.loadup: DEBUG
+    url: jdbc:mysql://ci-mysql:3306/testdb
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  redis:
+    host: ci-redis
+    port: 6379
+  kafka:
+    bootstrap-servers: ci-kafka:9092
 ```
 
-## 📈 性能优势
+### 示例 3：混合模式
 
-### 容器启动时间对比
+```yaml
+# application-mixed.yml
+loadup:
+  testcontainers:
+    enabled: true
+    # 数据库使用实际服务
+    mysql:
+      enabled: false
+    postgresql:
+      enabled: false
+    # 其他服务使用 TestContainers
+    redis:
+      enabled: true
+    mongodb:
+      enabled: true
+    kafka:
+      enabled: true
 
-| 容器            | 传统方式（每个测试类） | 共享容器方式       | 性能提升       |
-|---------------|-------------|--------------|------------|
-| MySQL         | ~8秒/次       | 首次8秒，后续1秒    | **87% ⬆️** |
-| PostgreSQL    | ~6秒/次       | 首次6秒，后续1秒    | **83% ⬆️** |
-| MongoDB       | ~5秒/次       | 首次5秒，后续<1秒   | **90% ⬆️** |
-| Redis         | ~3秒/次       | 首次3秒，后续<0.5秒 | **90% ⬆️** |
-| Kafka         | ~20秒/次      | 首次20秒，后续2秒   | **90% ⬆️** |
-| Elasticsearch | ~25秒/次      | 首次25秒，后续2秒   | **92% ⬆️** |
-| LocalStack    | ~15秒/次      | 首次15秒，后续1秒   | **93% ⬆️** |
-
-### 实际测试场景
-
-#### 10个测试类使用 MySQL
-
-```
-传统方式: 10 × 8秒 = 80秒
-共享方式: 8秒 + 9×1秒 = 17秒
-提升: 79% ⬆️
-```
-
-#### 完整技术栈（所有容器）
-
-```
-传统方式: 10类 × (8+6+5+3+20+25+15)秒 = 820秒 (13.7分钟)
-共享方式: (8+6+5+3+20+25+15)秒 + 9×7秒 = 145秒 (2.4分钟)
-提升: 82% ⬆️
+spring:
+  datasource:
+    url: jdbc:mysql://dev-mysql:3306/devdb
+    username: dev
+    password: dev
 ```
 
-## 🎨 API 参考
+### 示例 4：自定义容器版本
 
-### MySQL
+```yaml
+loadup:
+  testcontainers:
+    mysql:
+      enabled: true
+      version: mysql:8.0.32  # 使用特定版本
+    redis:
+      enabled: true
+      version: redis:7.2-alpine
+```
+
+## 🏗️ 架构设计
+
+### 三层架构
+
+```
+┌─────────────────────────────────────────┐
+│      AbstractTest (测试基类)            │
+│   - 声明式配置                          │
+│   - 继承即用                            │
+└──────────────┬──────────────────────────┘
+               │ @ContextConfiguration
+               ↓
+┌─────────────────────────────────────────┐
+│      Initializer (初始化器)             │
+│   - 条件判断                            │
+│   - 属性注入                            │
+│   - Spring 集成                         │
+└──────────────┬──────────────────────────┘
+               │ 读取配置
+               ↓
+┌─────────────────────────────────────────┐
+│   SharedContainer (共享容器)             │
+│   - 条件启动                            │
+│   - 单例模式                            │
+│   - 生命周期管理                        │
+└─────────────────────────────────────────┘
+```
+
+### 决策流程
+
+```
+测试启动
+   ↓
+读取配置 (loadup.testcontainers.{type}.enabled)
+   ↓
+   ├─ true  → 启动 TestContainer → 注入容器属性
+   └─ false → 跳过容器启动 → 使用配置文件中的实际服务配置
+```
+
+## 🔄 迁移指南
+
+### 从旧版本迁移
+
+**好消息**：无需任何代码修改！✅
+
+现有测试代码**完全兼容**：
 
 ```java
-SharedMySQLContainer.getJdbcUrl()          // JDBC URL
-SharedMySQLContainer.
-
-getUsername()         // 用户名
-SharedMySQLContainer.
-
-getPassword()         // 密码
-SharedMySQLContainer.
-
-getDatabaseName()     // 数据库名
-SharedMySQLContainer.
-
-getDriverClassName()  // 驱动类名
-SharedMySQLContainer.
-
-getHost()             // 主机
-SharedMySQLContainer.
-
-getMappedPort()       // 端口
-```
-
-### PostgreSQL
-
-```java
-SharedPostgreSQLContainer.getJdbcUrl()
-SharedPostgreSQLContainer.
-
-getUsername()
-SharedPostgreSQLContainer.
-
-getPassword()
-SharedPostgreSQLContainer.
-
-getDatabaseName()
-SharedPostgreSQLContainer.
-
-getDriverClassName()
-```
-
-### MongoDB
-
-```java
-SharedMongoDBContainer.getConnectionString()  // 连接字符串
-SharedMongoDBContainer.
-
-getHost()              // 主机
-SharedMongoDBContainer.
-
-getPort()              // 端口
-SharedMongoDBContainer.
-
-getReplicaSetUrl()     // 副本集 URL
-```
-
-### Redis
-
-```java
-SharedRedisContainer.getHost()    // 主机
-SharedRedisContainer.
-
-getPort()    // 端口
-SharedRedisContainer.
-
-getUrl()     // 连接 URL
-```
-
-### Kafka
-
-```java
-SharedKafkaContainer.getBootstrapServers()  // Bootstrap Servers
-SharedKafkaContainer.
-
-getHost()              // 主机
-SharedKafkaContainer.
-
-getPort()              // 端口
-```
-
-### Elasticsearch
-
-```java
-SharedElasticsearchContainer.getHttpHostAddress()  // HTTP 地址
-SharedElasticsearchContainer.
-
-getHost()             // 主机
-SharedElasticsearchContainer.
-
-getPort()             // 端口
-```
-
-### LocalStack/S3
-
-```java
-SharedLocalStackContainer.getS3Endpoint()   // S3 端点
-SharedLocalStackContainer.
-
-getAccessKey()    // Access Key
-SharedLocalStackContainer.
-
-getSecretKey()    // Secret Key
-SharedLocalStackContainer.
-
-getRegion()       // Region
-```
-
-## 🔧 故障排除
-
-### 问题1: Docker 未运行
-
-```bash
-# macOS
-open -a Docker
-
-# 验证
-docker info
-```
-
-### 问题2: 容器启动失败
-
-```bash
-# 检查 Docker 状态
-docker ps
-
-# 查看日志
-docker logs <container-id>
-
-# 清理旧容器
-docker container prune
-```
-
-### 问题3: IDE 显示找不到类
-
-```
-解决方案：
-- IntelliJ IDEA: 右键项目 → Maven → Reload Project
-- VS Code: Cmd/Ctrl + Shift + P → "Reload Window"
-- 或直接用 Maven 验证: mvn clean compile
-```
-
-### 问题4: 测试很慢
-
-```bash
-# 启用容器复用
-echo "testcontainers.reuse.enable=true" >> ~/.testcontainers.properties
-
-# 提前拉取镜像
-docker pull mysql:8.0
-docker pull redis:7-alpine
-docker pull mongo:7.0
-```
-
-### 问题5: 端口冲突
-
-```bash
-# 查找并停止冲突进程
-lsof -i :3306  # MySQL
-lsof -i :6379  # Redis
-lsof -i :27017 # MongoDB
-```
-
-### 问题6: 内存不足
-
-```bash
-# 增加 Docker 内存限制（Docker Desktop）
-# 偏好设置 → Resources → Memory → 4GB+
-```
-
-## 🎯 最佳实践
-
-### 1. 选择合适的容器
-
-- **关系型数据库**: PostgreSQL（功能强） 或 MySQL（兼容好）
-- **文档型数据库**: MongoDB
-- **缓存**: Redis
-- **消息队列**: Kafka
-- **全文搜索**: Elasticsearch
-- **对象存储**: LocalStack/S3
-
-### 2. 使用推荐
-
-```java
-// ✅ 推荐：继承抽象基类
+// 旧代码 - 无需修改
 @SpringBootTest
 class MyTest extends AbstractMySQLContainerTest {
-}
-
-// ✅ 推荐：启用容器复用
-testcontainers.reuse.enable=true
-
-// ✅ 推荐：使用 @Transactional 自动回滚
-@Transactional
-@Test
-void testData() {
-    // 测试后数据自动回滚
-}
-
-// ✅ 推荐：清理测试数据
-@BeforeEach
-void setUp() {
-    repository.deleteAll();
-}
-```
-
-### 3. 避免事项
-
-```java
-// ❌ 避免：手动管理容器生命周期
-@Container
-static MySQLContainer mysql = new MySQLContainer();
-
-// ❌ 避免：在每个测试类中重复配置
-@DynamicPropertySource
-static void configure() { ...}
-
-// ❌ 避免：不启用容器复用
-// 会导致每次都重新启动容器
-```
-
-### 4. 测试数据管理
-
-```java
-// ✅ 推荐：使用 @BeforeEach 清理数据
-@BeforeEach
-void setUp() {
-    userRepository.deleteAll();
-}
-
-// ✅ 推荐：使用 @Transactional 自动回滚
-@Transactional
-@Test
-void testUser() {
-    // 测试完成后自动回滚
-}
-
-// ✅ 推荐：使用 SQL 脚本初始化数据
-@Sql("/test-data.sql")
-@Test
-void testWithData() {
-    // 使用预定义数据
-}
-```
-
-## 📦 依赖说明
-
-本模块已包含以下依赖，使用时无需额外添加：
-
-| 依赖                           | 版本     | 说明                 |
-|------------------------------|--------|--------------------|
-| testcontainers-core          | 1.19.3 | TestContainers 核心库 |
-| testcontainers-mysql         | 1.19.3 | MySQL 支持           |
-| testcontainers-postgresql    | 1.19.3 | PostgreSQL 支持      |
-| testcontainers-mongodb       | 1.19.3 | MongoDB 支持         |
-| testcontainers-kafka         | 1.19.3 | Kafka 支持           |
-| testcontainers-elasticsearch | 1.19.3 | Elasticsearch 支持   |
-| testcontainers-localstack    | 1.19.3 | LocalStack 支持      |
-| spring-boot-test             | 3.x    | Spring Boot 测试支持   |
-
-## 🏗️ 模块架构
-
-详细的架构设计和实现细节请参考 [ARCHITECTURE.md](ARCHITECTURE.md)。
-
-### 三层架构模式
-
-每种容器类型都遵循相同的三层架构：
-
-1. **共享容器类** (`Shared*Container`) - 管理容器生命周期
-2. **初始化器类** (`*ContainerInitializer`) - Spring Boot 集成
-3. **抽象基类** (`Abstract*ContainerTest`) - 简化测试编写
-
-## 📊 版本历史
-
-- **1.0.0** - 初始版本，支持 MySQL
-- **1.1.0** - 添加 Redis 和 LocalStack/S3 支持
-- **1.2.0** - 添加 PostgreSQL、MongoDB、Kafka、Elasticsearch 支持
-- **1.2.1** - 按分类组织包结构
-- **1.3.0** - 当前版本，完整的7种容器支持，文档整合
-
-## 📝 License
-
-本模块遵循 Apache License 2.0 协议。
-
-## 🤝 贡献
-
-欢迎提交 Issue 和 Pull Request！
-
----
-
-**维护者**: LoadUp Framework Team  
-**最后更新**: 2026-01-05
-class UserRepositoryTest extends AbstractMySQLContainerTest {
-@Autowired
-private UserRepository userRepository;
-
     @Test
-    void testSaveUser() {
-        User user = new User("test");
-        userRepository.save(user);
-        assertNotNull(user.getId());
+    void test() {
+        // 仍然正常工作
     }
-
 }
-
 ```
 
-#### PostgreSQL（关系型数据库）
+**新增能力**：通过配置控制行为
+
+```yaml
+# 新增配置（可选）
+loadup:
+  testcontainers:
+    mysql:
+      enabled: false  # 切换到实际服务
+```
+
+## 📊 性能对比
+
+| 场景        | TestContainers | 实际服务  | 说明          |
+|-----------|----------------|-------|-------------|
+| **本地开发**  | ⭐⭐⭐⭐⭐          | ⭐⭐    | 容器快速启动，无需安装 |
+| **CI 环境** | ⭐⭐⭐            | ⭐⭐⭐⭐⭐ | 实际服务更稳定快速   |
+| **性能测试**  | ⭐⭐             | ⭐⭐⭐⭐⭐ | 实际服务反映真实性能  |
+| **隔离性**   | ⭐⭐⭐⭐⭐          | ⭐⭐⭐   | 容器完全隔离      |
+| **调试便利**  | ⭐⭐⭐            | ⭐⭐⭐⭐⭐ | 实际服务便于数据查看  |
+
+## 🛠️ 高级用法
+
+### 编程式控制
 
 ```java
-
-@SpringBootTest
-class OrderRepositoryTest extends AbstractPostgreSQLContainerTest {
-    @Autowired
-    private DataSource dataSource;
-
-    @Test
-    void testConnection() throws SQLException {
-        try (Connection conn = dataSource.getConnection()) {
-            assertNotNull(conn);
+// 检查容器是否启用
+if(SharedMySQLContainer.isEnabled()){
+// 使用容器
+String url = SharedMySQLContainer.getJdbcUrl();
+}else{
+        // 使用实际服务
         }
-    }
-}
 ```
 
-#### MongoDB（文档型数据库）
-
-```java
-
-@SpringBootTest
-class ProductRepositoryTest extends AbstractMongoDBContainerTest {
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    @Test
-    void testInsert() {
-        Product product = new Product("Test Product");
-        mongoTemplate.save(product);
-        assertNotNull(product.getId());
-    }
-}
-```
-
-#### Redis（缓存）
-
-```java
-
-@SpringBootTest
-class CacheTest extends AbstractRedisContainerTest {
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-
-    @Test
-    void testCache() {
-        redisTemplate.opsForValue().set("key", "value");
-        assertEquals("value", redisTemplate.opsForValue().get("key"));
-    }
-}
-```
-
-#### Kafka（消息队列）
-
-```java
-
-@SpringBootTest
-class MessageTest extends AbstractKafkaContainerTest {
-    @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
-
-    @Test
-    void testSendMessage() {
-        kafkaTemplate.send("test-topic", "Hello Kafka");
-        // 验证消息接收
-    }
-}
-```
-
-#### Elasticsearch（搜索引擎）
-
-```java
-
-@SpringBootTest
-class SearchTest extends AbstractElasticsearchContainerTest {
-    @Autowired
-    private ElasticsearchRestTemplate restTemplate;
-
-    @Test
-    void testSearch() {
-        Product product = new Product("Test");
-        restTemplate.save(product);
-
-        SearchHits<Product> hits = restTemplate.search(
-                Query.findAll(), Product.class);
-        assertEquals(1, hits.getTotalHits());
-    }
-}
-```
-
-#### LocalStack/S3（对象存储）
-
-```java
-
-@SpringBootTest
-class S3Test extends AbstractLocalStackContainerTest {
-    @Autowired
-    private S3Client s3Client;
-
-    @Test
-    void testUpload() {
-        s3Client.createBucket(b -> b.bucket("test"));
-        s3Client.putObject(r -> r.bucket("test").key("file.txt"),
-                RequestBody.fromString("content"));
-        // 验证上传
-    }
-}
-```
-
-## 📚 使用方式对比
-
-### 方式1：继承抽象基类（推荐⭐）
-
-```java
-
-@SpringBootTest
-class MyTest extends AbstractMySQLContainerTest {
-    // 自动配置，零代码
-}
-```
-
-### 方式2：使用初始化器
-
-```java
-
-@SpringBootTest
-@ContextConfiguration(initializers = MySQLContainerInitializer.class)
-class MyTest {
-    // 测试代码
-}
-```
-
-### 方式3：直接使用共享容器
+### 动态切换
 
 ```java
 
 @SpringBootTest
 @TestPropertySource(properties = {
-        "spring.datasource.url=" + SharedMySQLContainer.JDBC_URL,
-        "spring.datasource.username=" + SharedMySQLContainer.USERNAME,
-        "spring.datasource.password=" + SharedMySQLContainer.PASSWORD
+        "loadup.testcontainers.mysql.enabled=false"
 })
 class MyTest {
-    // 测试代码
+    // 仅在此测试中禁用 MySQL 容器
 }
 ```
 
-## 🎯 多容器组合使用
-
-### 数据库 + 缓存
+### 自定义初始化器
 
 ```java
+public class CustomInitializer
+        implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
-@SpringBootTest
-@ContextConfiguration(initializers = {
-        MySQLContainerInitializer.class,
-        RedisContainerInitializer.class
-})
-class FullStackTest {
-    @Autowired
-    private DataSource    dataSource;
-    @Autowired
-    private RedisTemplate redisTemplate;
-
-    @Test
-    void testBoth() {
-        // 同时使用两种容器
+    @Override
+    public void initialize(ConfigurableApplicationContext context) {
+        if (SharedMySQLContainer.isEnabled()) {
+            // 容器模式的额外配置
+        } else {
+            // 实际服务模式的额外配置
+        }
     }
 }
 ```
 
-### 完整技术栈
+## ❓ 常见问题
+
+### Q1: 如何在 CI 环境中禁用所有容器？
+
+```yaml
+# application-ci.yml
+loadup:
+  testcontainers:
+    enabled: false  # 全局禁用
+```
+
+### Q2: 如何只禁用某个特定容器？
+
+```yaml
+loadup:
+  testcontainers:
+    enabled: true    # 全局启用
+    mysql:
+      enabled: false # 只禁用 MySQL
+```
+
+### Q3: 容器版本如何自定义？
+
+```yaml
+loadup:
+  testcontainers:
+    mysql:
+      version: mysql:8.0.32  # 指定版本
+```
+
+### Q4: 如何在测试中知道是否使用了容器？
 
 ```java
-
-@SpringBootTest
-@ContextConfiguration(initializers = {
-        PostgreSQLContainerInitializer.class,
-        MongoDBContainerInitializer.class,
-        RedisContainerInitializer.class,
-        KafkaContainerInitializer.class,
-        ElasticsearchContainerInitializer.class,
-        LocalStackContainerInitializer.class
-})
-class CompleteStackTest {
-    // 使用所有容器！
-}
+boolean usingContainer = SharedMySQLContainer.isEnabled();
 ```
 
-## ⚙️ 配置选项
+### Q5: 现有测试需要修改吗？
 
-### 系统属性配置
+不需要！完全向后兼容，默认行为不变。
 
-```bash
-# MySQL
--Dtestcontainers.mysql.version=mysql:8.0
--Dtestcontainers.mysql.database=testdb
--Dtestcontainers.mysql.username=test
--Dtestcontainers.mysql.password=test
+## 📈 最佳实践
 
-# PostgreSQL
--Dtestcontainers.postgres.version=postgres:15-alpine
--Dtestcontainers.postgres.database=testdb
+1. **本地开发**：使用 TestContainers（默认）
+2. **CI 环境**：使用实际服务（配置 `enabled: false`）
+3. **性能测试**：使用实际服务，接近生产环境
+4. **调试问题**：临时切换到实际服务，便于数据查看
+5. **版本管理**：通过配置文件统一管理容器版本
+6. **Profile 隔离**：不同环境使用不同 Profile
 
-# MongoDB
--Dtestcontainers.mongodb.version=mongo:7.0
+## 📝 更新日志
 
-# Redis
--Dtestcontainers.redis.version=redis:7-alpine
+### v2.0.0 (2026-01-08)
 
-# Kafka
--Dtestcontainers.kafka.version=confluentinc/cp-kafka:7.5.0
+- ✨ **新增**：支持 TestContainers 和实际服务灵活切换
+- ✨ **新增**：配置驱动的容器启用/禁用机制
+- ✨ **新增**：混合模式支持（部分容器，部分实际服务）
+- ✨ **新增**：通过 Profile 控制不同环境
+- ✅ **兼容**：现有代码无需修改，完全向后兼容
 
-# Elasticsearch
--Dtestcontainers.elasticsearch.version=elasticsearch:8.11.0
+### v1.0.0
 
-# LocalStack
--Dtestcontainers.localstack.version=localstack/localstack:3.0
-```
+- 初始版本，支持 7 种容器
+- 共享容器机制
+- 三层架构设计
 
-### 启用容器复用（推荐）
+## 📄 许可证
 
-```bash
-# 大幅提升后续测试启动速度
-echo "testcontainers.reuse.enable=true" >> ~/.testcontainers.properties
-```
-
-### Maven 配置
-
-```xml
-
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-surefire-plugin</artifactId>
-    <configuration>
-        <systemPropertyVariables>
-            <testcontainers.mysql.version>mysql:8.0</testcontainers.mysql.version>
-            <testcontainers.redis.version>redis:7-alpine</testcontainers.redis.version>
-        </systemPropertyVariables>
-    </configuration>
-</plugin>
-```
-
-## 📈 性能优势
-
-### 容器启动时间对比
-
-| 容器            | 传统方式（每个测试类） | 共享容器方式       | 性能提升       |
-|---------------|-------------|--------------|------------|
-| MySQL         | ~8秒/次       | 首次8秒，后续1秒    | **87% ⬆️** |
-| PostgreSQL    | ~6秒/次       | 首次6秒，后续1秒    | **83% ⬆️** |
-| MongoDB       | ~5秒/次       | 首次5秒，后续<1秒   | **90% ⬆️** |
-| Redis         | ~3秒/次       | 首次3秒，后续<0.5秒 | **90% ⬆️** |
-| Kafka         | ~20秒/次      | 首次20秒，后续2秒   | **90% ⬆️** |
-| Elasticsearch | ~25秒/次      | 首次25秒，后续2秒   | **92% ⬆️** |
-| LocalStack    | ~15秒/次      | 首次15秒，后续1秒   | **93% ⬆️** |
-
-### 实际测试场景
-
-#### 10个测试类使用 MySQL
-
-```
-传统方式: 10 × 8秒 = 80秒
-共享方式: 8秒 + 9×1秒 = 17秒
-提升: 79% ⬆️
-```
-
-#### 完整技术栈（所有容器）
-
-```
-传统方式: 10类 × (8+6+5+3+20+25+15)秒 = 820秒 (13.7分钟)
-共享方式: (8+6+5+3+20+25+15)秒 + 9×7秒 = 145秒 (2.4分钟)
-提升: 82% ⬆️
-```
-
-## 🎨 API 参考
-
-### MySQL
-
-```java
-SharedMySQLContainer.getJdbcUrl()
-SharedMySQLContainer.
-
-getUsername()
-SharedMySQLContainer.
-
-getPassword()
-SharedMySQLContainer.
-
-getDatabaseName()
-SharedMySQLContainer.
-
-getDriverClassName()
-```
-
-### PostgreSQL
-
-```java
-SharedPostgreSQLContainer.getJdbcUrl()
-SharedPostgreSQLContainer.
-
-getUsername()
-SharedPostgreSQLContainer.
-
-getPassword()
-SharedPostgreSQLContainer.
-
-getDatabaseName()
-```
-
-### MongoDB
-
-```java
-SharedMongoDBContainer.getConnectionString()
-SharedMongoDBContainer.
-
-getHost()
-SharedMongoDBContainer.
-
-getPort()
-SharedMongoDBContainer.
-
-getReplicaSetUrl()
-```
-
-### Redis
-
-```java
-SharedRedisContainer.getHost()
-SharedRedisContainer.
-
-getPort()
-SharedRedisContainer.
-
-getUrl()
-```
-
-### Kafka
-
-```java
-SharedKafkaContainer.getBootstrapServers()
-SharedKafkaContainer.
-
-getHost()
-SharedKafkaContainer.
-
-getPort()
-```
-
-### Elasticsearch
-
-```java
-SharedElasticsearchContainer.getHttpHostAddress()
-SharedElasticsearchContainer.
-
-getHost()
-SharedElasticsearchContainer.
-
-getPort()
-```
-
-### LocalStack/S3
-
-```java
-SharedLocalStackContainer.getS3Endpoint()
-SharedLocalStackContainer.
-
-getAccessKey()
-SharedLocalStackContainer.
-
-getSecretKey()
-SharedLocalStackContainer.
-
-getRegion()
-```
-
-## 🔧 故障排除
-
-### 问题1: Docker 未运行
-
-```bash
-# macOS
-open -a Docker
-
-# 验证
-docker info
-```
-
-### 问题2: 容器启动失败
-
-```bash
-# 检查 Docker 状态
-docker ps
-
-# 查看日志
-docker logs <container-id>
-
-# 清理旧容器
-docker container prune
-```
-
-### 问题3: IDE 显示找不到类
-
-```
-解决方案：
-- IntelliJ IDEA: 右键项目 → Maven → Reload Project
-- VS Code: Cmd/Ctrl + Shift + P → "Reload Window"
-- 或直接用 Maven 验证: mvn clean compile
-```
-
-### 问题4: 测试很慢
-
-```bash
-# 启用容器复用
-echo "testcontainers.reuse.enable=true" >> ~/.testcontainers.properties
-
-# 提前拉取镜像
-docker pull mysql:8.0
-docker pull redis:7-alpine
-docker pull mongo:7.0
-```
-
-## 🎯 最佳实践
-
-### 1. 选择合适的容器
-
-- **关系型数据库**: PostgreSQL（功能强） 或 MySQL（兼容好）
-- **文档型数据库**: MongoDB
-- **缓存**: Redis
-- **消息队列**: Kafka
-- **全文搜索**: Elasticsearch
-- **对象存储**: LocalStack/S3
-
-### 2. 使用推荐
-
-```java
-// ✅ 推荐：继承抽象基类
-@SpringBootTest
-class MyTest extends AbstractMySQLContainerTest {
-}
-
-// ✅ 推荐：启用容器复用
-testcontainers.reuse.enable=true
-
-// ✅ 推荐：使用有序ID（UUID v7 或 Snowflake）
-// 提升数据库插入性能
-```
-
-### 3. 避免事项
-
-```java
-// ❌ 避免：手动管理容器生命周期
-@Container
-static MySQLContainer mysql = new MySQLContainer();
-
-// ❌ 避免：在每个测试类中重复配置
-@DynamicPropertySource
-static void configure() { ...}
-
-// ❌ 避免：不启用容器复用
-// 会导致每次都重新启动容器
-```
-
-## 📦 依赖说明
-
-本模块已包含以下依赖，使用时无需额外添加：
-
-- TestContainers Core (1.19.3)
-- MySQL、PostgreSQL、MongoDB 驱动
-- Redis 客户端（Jedis）
-- Kafka 客户端
-- Elasticsearch 客户端
-- LocalStack 支持
-- Spring Boot Test 集成
-
-## 🏗️ 模块架构
-
-详细的架构设计和实现细节请参考 [ARCHITECTURE.md](ARCHITECTURE.md)。
-
-## 📊 版本历史
-
-- **1.0.0** - 初始版本，支持 MySQL
-- **1.1.0** - 添加 Redis 和 LocalStack/S3 支持
-- **1.2.0** - 添加 PostgreSQL、MongoDB、Kafka、Elasticsearch 支持
-- **1.2.1** - 按分类组织包结构
-- **1.3.0** - 当前版本，完整的7种容器支持
-
-## 📝 License
-
-本模块遵循 Apache License 2.0 协议。
-
-## 🤝 贡献
-
-欢迎提交 Issue 和 Pull Request！
+Copyright (c) 2026 LoadUp Framework  
+Licensed under the Apache License 2.0
 
 ---
 
-**维护者**: LoadUp Framework Team  
-**最后更新**: 2026-01-05
+**💡 提示**：更多详细信息请参考 [ARCHITECTURE.md](ARCHITECTURE.md)
 

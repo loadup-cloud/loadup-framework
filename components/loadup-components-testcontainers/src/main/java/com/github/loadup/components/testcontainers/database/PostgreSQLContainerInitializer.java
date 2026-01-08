@@ -15,9 +15,12 @@
  */
 package com.github.loadup.components.testcontainers.database;
 
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import com.github.loadup.components.testcontainers.BaseContainerInitializer;
+import com.github.loadup.components.testcontainers.config.TestContainersProperties;
+import com.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
+import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * Spring Boot test initializer for PostgreSQL TestContainer.
@@ -28,16 +31,31 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-public class PostgreSQLContainerInitializer
-    implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+@Slf4j
+public class PostgreSQLContainerInitializer extends BaseContainerInitializer {
 
   @Override
-  public void initialize(ConfigurableApplicationContext applicationContext) {
-    TestPropertyValues.of(
-            "spring.datasource.url=" + SharedPostgreSQLContainer.getJdbcUrl(),
-            "spring.datasource.username=" + SharedPostgreSQLContainer.getUsername(),
-            "spring.datasource.password=" + SharedPostgreSQLContainer.getPassword(),
-            "spring.datasource.driver-class-name=" + SharedPostgreSQLContainer.getDriverClassName())
-        .applyTo(applicationContext.getEnvironment());
+  protected String getContainerName() {
+    return "PostgreSQL";
+  }
+
+  @Override
+  protected ContainerConfig getContainerConfig(TestContainersProperties properties) {
+    return properties.getPostgresql();
+  }
+
+  @Override
+  protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
+    // 1. 启动容器
+    SharedPostgreSQLContainer.startContainer(config);
+
+    // 2. 注入属性
+    applyProperties(
+        env,
+        Map.of(
+            "spring.datasource.url", SharedPostgreSQLContainer.getJdbcUrl(),
+            "spring.datasource.username", SharedPostgreSQLContainer.getUsername(),
+            "spring.datasource.password", SharedPostgreSQLContainer.getPassword(),
+            "spring.datasource.driver-class-name", SharedPostgreSQLContainer.getDriverClassName()));
   }
 }

@@ -17,6 +17,7 @@ package com.github.loadup.components.testcontainers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.loadup.components.testcontainers.messaging.AbstractKafkaContainerTest;
 import com.github.loadup.components.testcontainers.messaging.SharedKafkaContainer;
 import java.time.Duration;
 import java.util.Collections;
@@ -33,6 +34,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.kafka.KafkaContainer;
 
 /**
@@ -42,7 +45,9 @@ import org.testcontainers.kafka.KafkaContainer;
  * @since 1.0.0
  */
 @Slf4j
-class SharedKafkaContainerIT {
+@ActiveProfiles("test")
+@SpringBootTest(classes = TestApplication.class)
+class SharedKafkaContainerIT extends AbstractKafkaContainerTest {
 
   @Test
   void testContainerIsRunning() {

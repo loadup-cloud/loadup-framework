@@ -1,0 +1,51 @@
+# Mixed profile configuration - Uses both TestContainers and real services
+# This configuration demonstrates selective use of TestContainers
+
+loadup:
+  testcontainers:
+    enabled: true  # Global switch is on
+
+    # Use TestContainers for these services
+    redis:
+      enabled: true
+    mongodb:
+      enabled: true
+    elasticsearch:
+      enabled: true
+
+    # Use real services for these
+    mysql:
+      enabled: false  # Use real MySQL
+    postgresql:
+      enabled: false  # Use real PostgreSQL
+    kafka:
+      enabled: false  # Use real Kafka
+    localstack:
+      enabled: false  # Use real AWS S3
+
+spring:
+  application:
+    name: testcontainers-mixed
+
+  # Real MySQL configuration
+  datasource:
+    url: jdbc:mysql://dev-mysql:3306/devdb
+    username: dev_user
+    password: dev_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # Real Kafka configuration
+  kafka:
+    bootstrap-servers: dev-kafka:9092
+
+# Real AWS S3 configuration
+aws:
+  s3:
+    endpoint: https://s3.amazonaws.com
+  access-key-id: ${AWS_ACCESS_KEY_ID}
+  secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+  region: us-east-1
+
+# Note: Redis, MongoDB, and Elasticsearch will use TestContainers
+# Their configurations will be automatically injected by the initializers
+

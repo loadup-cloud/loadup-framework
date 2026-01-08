@@ -17,6 +17,7 @@ package com.github.loadup.components.testcontainers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.loadup.components.testcontainers.database.AbstractMySQLContainerTest;
 import com.github.loadup.components.testcontainers.database.SharedMySQLContainer;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -24,6 +25,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.mysql.MySQLContainer;
 
 /**
@@ -33,13 +36,13 @@ import org.testcontainers.mysql.MySQLContainer;
  * @since 1.0.0
  */
 @Slf4j
-class SharedMySQLContainerIT {
+@ActiveProfiles("test")
+@SpringBootTest(classes = TestApplication.class)
+class SharedMySQLContainerIT extends AbstractMySQLContainerTest {
 
   @Test
   void testContainerIsRunning() {
-    MySQLContainer container = SharedMySQLContainer.getInstance();
-    assertNotNull(container, "Container should not be null");
-    assertTrue(container.isRunning(), "Container should be running");
+    assertTrue(SharedMySQLContainer.isStarted(), "Container should be started by Initializer");
   }
 
   @Test

@@ -58,6 +58,9 @@ public class SharedLocalStackContainer {
   /** Default region */
   public static final String REGION = "us-east-1";
 
+  /** Enable flag for TestContainers */
+  private static final boolean ENABLED;
+
   /** The shared LocalStack container instance */
   private static final LocalStackContainer LOCALSTACK_CONTAINER;
 
@@ -65,32 +68,56 @@ public class SharedLocalStackContainer {
   public static final String S3_ENDPOINT;
 
   static {
-    // Read configuration from system properties or use defaults
-    String localstackVersion =
-        System.getProperty("testcontainers.localstack.version", DEFAULT_LOCALSTACK_VERSION);
+    // Check if TestContainers is enabled (global switch AND individual switch)
+    boolean globalEnabled =
+        Boolean.parseBoolean(System.getProperty("loadup.testcontainers.enabled", "true"));
+    boolean localstackEnabled =
+        Boolean.parseBoolean(
+            System.getProperty("loadup.testcontainers.localstack.enabled", "true"));
 
-    log.info("Initializing shared LocalStack TestContainer with version: {}", localstackVersion);
+    ENABLED = globalEnabled && localstackEnabled;
 
-    LOCALSTACK_CONTAINER =
-        new LocalStackContainer(DockerImageName.parse(localstackVersion)).withReuse(true);
+    if (ENABLED) {
+      // Read configuration from system properties or use defaults
+      String localstackVersion =
+          System.getProperty("testcontainers.localstack.version", DEFAULT_LOCALSTACK_VERSION);
 
-    LOCALSTACK_CONTAINER.start();
+      log.info("Initializing shared LocalStack TestContainer with version: {}", localstackVersion);
 
-    S3_ENDPOINT = LOCALSTACK_CONTAINER.getEndpoint().toString();
+      LOCALSTACK_CONTAINER =
+          new LocalStackContainer(DockerImageName.parse(localstackVersion)).withReuse(true);
 
-    log.info("Shared LocalStack TestContainer started successfully");
-    log.info("S3 Endpoint: {}", S3_ENDPOINT);
-    log.info("Access Key: {}", ACCESS_KEY);
-    log.info("Region: {}", REGION);
+      LOCALSTACK_CONTAINER.start();
 
-    // Add shutdown hook to stop the container when JVM exits
-    Runtime.getRuntime()
-        .addShutdownHook(
-            new Thread(
-                () -> {
-                  log.info("Stopping shared LocalStack TestContainer");
-                  LOCALSTACK_CONTAINER.stop();
-                }));
+      S3_ENDPOINT = LOCALSTACK_CONTAINER.getEndpoint().toString();
+
+      log.info("Shared LocalStack TestContainer started successfully");
+      log.info("S3 Endpoint: {}", S3_ENDPOINT);
+      log.info("Access Key: {}", ACCESS_KEY);
+      log.info("Region: {}", REGION);
+
+      // Add shutdown hook to stop the container when JVM exits
+      Runtime.getRuntime()
+          .addShutdownHook(
+              new Thread(
+                  () -> {
+                    log.info("Stopping shared LocalStack TestContainer");
+                    LOCALSTACK_CONTAINER.stop();
+                  }));
+    } else {
+      log.info("LocalStack TestContainer is DISABLED. Using real AWS S3 from configuration.");
+      LOCALSTACK_CONTAINER = null;
+      S3_ENDPOINT = null;
+    }
+  }
+
+  /**
+   * Check if LocalStack TestContainer is enabled.
+   *
+   * @return true if enabled, false otherwise
+   */
+  public static boolean isEnabled() {
+    return ENABLED;
   }
 
   /**
@@ -98,8 +125,13 @@ public class SharedLocalStackContainer {
    * not already done.
    *
    * @return the shared LocalStack container instance
+   * @throws IllegalStateException if TestContainers is disabled
    */
   public static LocalStackContainer getInstance() {
+    if (!ENABLED) {
+      throw new IllegalStateException(
+          "LocalStack TestContainer is disabled. Please configure real AWS S3 in application.yml");
+    }
     return LOCALSTACK_CONTAINER;
   }
 
@@ -107,8 +139,13 @@ public class SharedLocalStackContainer {
    * Get the S3 endpoint URL.
    *
    * @return the S3 endpoint URL
+   * @throws IllegalStateException if TestContainers is disabled
    */
   public static String getS3Endpoint() {
+    if (!ENABLED) {
+      throw new IllegalStateException(
+          "LocalStack TestContainer is disabled. Please configure aws.s3.endpoint in application.yml");
+    }
     return S3_ENDPOINT;
   }
 

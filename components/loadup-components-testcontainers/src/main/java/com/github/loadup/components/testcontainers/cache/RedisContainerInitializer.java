@@ -15,9 +15,12 @@
  */
 package com.github.loadup.components.testcontainers.cache;
 
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import com.github.loadup.components.testcontainers.BaseContainerInitializer;
+import com.github.loadup.components.testcontainers.config.TestContainersProperties;
+import com.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
+import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * Spring Boot test initializer for Redis TestContainer.
@@ -44,23 +47,31 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-public class RedisContainerInitializer
-    implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-  /**
-   * Initialize the application context with Redis container properties.
-   *
-   * @param applicationContext the application context to initialize
-   */
+@Slf4j
+public class RedisContainerInitializer extends BaseContainerInitializer {
   @Override
-  public void initialize(ConfigurableApplicationContext applicationContext) {
-    TestPropertyValues.of(
-            "spring.redis.host=" + SharedRedisContainer.getHost(),
-            "spring.redis.port=" + SharedRedisContainer.getPort(),
-            "spring.data.redis.host=" + SharedRedisContainer.getHost(),
-            "spring.data.redis.port=" + SharedRedisContainer.getPort(),
-            "loadup.cache.redis.host=" + SharedRedisContainer.getHost(),
-            "loadup.cache.redis.port=" + SharedRedisContainer.getPort())
-        .applyTo(applicationContext.getEnvironment());
+  protected String getContainerName() {
+    return "Redis";
+  }
+
+  @Override
+  protected ContainerConfig getContainerConfig(TestContainersProperties p) {
+    return p.getRedis();
+  }
+
+  @Override
+  protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
+    SharedRedisContainer.startContainer(config);
+    applyProperties(
+        env,
+        Map.of(
+            "spring.data.redis.host",
+            SharedRedisContainer.getHost(),
+            "spring.data.redis.port",
+            String.valueOf(SharedRedisContainer.getPort()),
+            "loadup.cache.redis.host",
+            SharedRedisContainer.getHost(),
+            "loadup.cache.redis.port",
+            String.valueOf(SharedRedisContainer.getPort())));
   }
 }

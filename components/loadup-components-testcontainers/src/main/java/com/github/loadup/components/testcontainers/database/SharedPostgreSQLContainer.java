@@ -15,8 +15,11 @@
  */
 package com.github.loadup.components.testcontainers.database;
 
+import com.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 /**
  * Shared PostgreSQL TestContainer instance that can be reused across multiple tests.
@@ -54,67 +57,85 @@ public class SharedPostgreSQLContainer {
   /** JDBC driver class name */
   public static final String DRIVER_CLASS_NAME = "org.postgresql.Driver";
 
+  /** Enable flag for TestContainers */
+  private static AtomicBoolean STARTED = new AtomicBoolean(false);
+
   /** The shared PostgreSQL container instance */
-  private static final PostgreSQLContainer POSTGRES_CONTAINER;
+  private static PostgreSQLContainer POSTGRES_CONTAINER;
 
   /** PostgreSQL JDBC URL for the shared container */
-  public static final String JDBC_URL;
+  public static String JDBC_URL;
 
   /** PostgreSQL username for the shared container */
-  public static final String USERNAME;
+  public static String USERNAME;
 
   /** PostgreSQL password for the shared container */
-  public static final String PASSWORD;
+  public static String PASSWORD;
 
   /** PostgreSQL database name */
-  public static final String DATABASE_NAME;
+  public static String DATABASE_NAME;
 
   /** PostgreSQL host */
-  public static final String HOST;
+  public static String HOST;
 
   /** PostgreSQL port */
-  public static final Integer PORT;
+  public static Integer PORT;
 
-  static {
-    // Read configuration from system properties or use defaults
-    String postgresVersion =
-        System.getProperty("testcontainers.postgres.version", DEFAULT_POSTGRES_VERSION);
-    String databaseName =
-        System.getProperty("testcontainers.postgres.database", DEFAULT_DATABASE_NAME);
-    String username = System.getProperty("testcontainers.postgres.username", DEFAULT_USERNAME);
-    String password = System.getProperty("testcontainers.postgres.password", DEFAULT_PASSWORD);
+  public static void startContainer(ContainerConfig config) {
+    if (STARTED.get()) {
+      return;
+    }
 
-    log.info("Initializing shared PostgreSQL TestContainer with version: {}", postgresVersion);
+    synchronized (SharedPostgreSQLContainer.class) {
+      if (STARTED.get()) {
+        return;
+      }
 
-    POSTGRES_CONTAINER =
-        new PostgreSQLContainer(postgresVersion)
-            .withDatabaseName(databaseName)
-            .withUsername(username)
-            .withPassword(password)
-            .withReuse(true);
+      String imageName =
+          (config.getVersion() != null) ? config.getVersion() : DEFAULT_POSTGRES_VERSION;
 
-    POSTGRES_CONTAINER.start();
+      log.info("🚀 Starting Shared PostgreSQL TestContainer: {}", imageName);
 
-    JDBC_URL = POSTGRES_CONTAINER.getJdbcUrl();
-    USERNAME = POSTGRES_CONTAINER.getUsername();
-    PASSWORD = POSTGRES_CONTAINER.getPassword();
-    DATABASE_NAME = POSTGRES_CONTAINER.getDatabaseName();
-    HOST = POSTGRES_CONTAINER.getHost();
-    PORT = POSTGRES_CONTAINER.getFirstMappedPort();
+      POSTGRES_CONTAINER =
+          new PostgreSQLContainer(DockerImageName.parse(imageName))
+              .withDatabaseName(getValue(config.getDatabase(), DEFAULT_DATABASE_NAME))
+              .withUsername(getValue(config.getUsername(), DEFAULT_USERNAME))
+              .withPassword(getValue(config.getPassword(), DEFAULT_PASSWORD))
+              // 允许重用
+              .withReuse(config.isReuse());
 
-    log.info("Shared PostgreSQL TestContainer started successfully");
-    log.info("JDBC URL: {}", JDBC_URL);
-    log.info("Username: {}", USERNAME);
-    log.info("Database: {}", DATABASE_NAME);
+      POSTGRES_CONTAINER.start();
+      STARTED.set(true);
 
-    // Add shutdown hook to stop the container when JVM exits
-    Runtime.getRuntime()
-        .addShutdownHook(
-            new Thread(
-                () -> {
-                  log.info("Stopping shared PostgreSQL TestContainer");
-                  POSTGRES_CONTAINER.stop();
-                }));
+      JDBC_URL = POSTGRES_CONTAINER.getJdbcUrl();
+      USERNAME = POSTGRES_CONTAINER.getUsername();
+      PASSWORD = POSTGRES_CONTAINER.getPassword();
+      DATABASE_NAME = POSTGRES_CONTAINER.getDatabaseName();
+      HOST = POSTGRES_CONTAINER.getHost();
+      PORT = POSTGRES_CONTAINER.getFirstMappedPort();
+      log.info("✅ PostgreSQL Container started at: {}", POSTGRES_CONTAINER.getJdbcUrl());
+
+      // JVM 退出时自动关闭
+      // 2. 智能关闭钩子
+      if (!config.isReuse()) {
+        log.info("Reuse is disabled. Registering shutdown hook to stop container.");
+        Runtime.getRuntime()
+            .addShutdownHook(
+                new Thread(
+                    () -> {
+                      if (POSTGRES_CONTAINER != null) {
+                        log.info("🛑 Stopping PostgreSQL TestContainer...");
+                        POSTGRES_CONTAINER.stop();
+                      }
+                    }));
+      } else {
+        log.info("♻️ Reuse is enabled. Container will persist after JVM exits.");
+      }
+    }
+  }
+
+  private static String getValue(String value, String defaultValue) {
+    return (value == null || value.isEmpty()) ? defaultValue : value;
   }
 
   /**
@@ -122,8 +143,10 @@ public class SharedPostgreSQLContainer {
    * not already done.
    *
    * @return the shared PostgreSQL container instance
+   * @throws IllegalStateException if TestContainers is disabled
    */
   public static PostgreSQLContainer getInstance() {
+    checkStarted();
     return POSTGRES_CONTAINER;
   }
 
@@ -131,8 +154,10 @@ public class SharedPostgreSQLContainer {
    * Get the PostgreSQL JDBC URL.
    *
    * @return the JDBC URL
+   * @throws IllegalStateException if TestContainers is disabled
    */
   public static String getJdbcUrl() {
+    checkStarted();
     return JDBC_URL;
   }
 
@@ -140,8 +165,10 @@ public class SharedPostgreSQLContainer {
    * Get the PostgreSQL username.
    *
    * @return the username
+   * @throws IllegalStateException if TestContainers is disabled
    */
   public static String getUsername() {
+    checkStarted();
     return USERNAME;
   }
 
@@ -149,8 +176,10 @@ public class SharedPostgreSQLContainer {
    * Get the PostgreSQL password.
    *
    * @return the password
+   * @throws IllegalStateException if TestContainers is disabled
    */
   public static String getPassword() {
+    checkStarted();
     return PASSWORD;
   }
 
@@ -193,5 +222,15 @@ public class SharedPostgreSQLContainer {
   /** Private constructor to prevent instantiation */
   private SharedPostgreSQLContainer() {
     throw new UnsupportedOperationException("Utility class cannot be instantiated");
+  }
+
+  public static boolean isStarted() {
+    return STARTED.get();
+  }
+
+  private static void checkStarted() {
+    if (!STARTED.get()) {
+      throw new IllegalStateException("MySQL Container has not been started yet!");
+    }
   }
 }

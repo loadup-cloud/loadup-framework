@@ -15,6 +15,7 @@
  */
 package com.github.loadup.components.testcontainers.cloud;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -44,6 +45,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author LoadUp Framework
  * @since 1.0.0
  */
+@Slf4j
 public class LocalStackContainerInitializer
     implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
@@ -54,20 +56,38 @@ public class LocalStackContainerInitializer
    */
   @Override
   public void initialize(ConfigurableApplicationContext applicationContext) {
-    TestPropertyValues.of(
-            "aws.s3.endpoint=" + SharedLocalStackContainer.getS3Endpoint(),
-            "aws.access-key-id=" + SharedLocalStackContainer.getAccessKey(),
-            "aws.secret-access-key=" + SharedLocalStackContainer.getSecretKey(),
-            "aws.region=" + SharedLocalStackContainer.getRegion(),
-            "cloud.aws.credentials.access-key=" + SharedLocalStackContainer.getAccessKey(),
-            "cloud.aws.credentials.secret-key=" + SharedLocalStackContainer.getSecretKey(),
-            "cloud.aws.region.static=" + SharedLocalStackContainer.getRegion(),
-            // 新的配置键（简化后的）
-            "loadup.dfs.s3.endpoint=" + SharedLocalStackContainer.getS3Endpoint(),
-            "loadup.dfs.s3.accessKey=" + SharedLocalStackContainer.getAccessKey(),
-            "loadup.dfs.s3.secretKey=" + SharedLocalStackContainer.getSecretKey(),
-            "loadup.dfs.s3.region=" + SharedLocalStackContainer.getRegion(),
-            "cloud.aws.s3.endpoint=" + SharedLocalStackContainer.getS3Endpoint())
-        .applyTo(applicationContext.getEnvironment());
+    // Check if TestContainers is enabled (global switch AND individual switch)
+    String globalEnabled =
+        applicationContext.getEnvironment().getProperty("loadup.testcontainers.enabled", "true");
+    String localstackEnabled =
+        applicationContext
+            .getEnvironment()
+            .getProperty("loadup.testcontainers.localstack.enabled", "true");
+
+    boolean enabled =
+        Boolean.parseBoolean(globalEnabled) && Boolean.parseBoolean(localstackEnabled);
+
+    if (enabled) {
+      // Use TestContainers
+      log.info("Using LocalStack TestContainer for tests");
+      TestPropertyValues.of(
+              "aws.s3.endpoint=" + SharedLocalStackContainer.getS3Endpoint(),
+              "aws.access-key-id=" + SharedLocalStackContainer.getAccessKey(),
+              "aws.secret-access-key=" + SharedLocalStackContainer.getSecretKey(),
+              "aws.region=" + SharedLocalStackContainer.getRegion(),
+              "cloud.aws.credentials.access-key=" + SharedLocalStackContainer.getAccessKey(),
+              "cloud.aws.credentials.secret-key=" + SharedLocalStackContainer.getSecretKey(),
+              "cloud.aws.region.static=" + SharedLocalStackContainer.getRegion(),
+              // LoadUp DFS configuration
+              "loadup.dfs.s3.endpoint=" + SharedLocalStackContainer.getS3Endpoint(),
+              "loadup.dfs.s3.accessKey=" + SharedLocalStackContainer.getAccessKey(),
+              "loadup.dfs.s3.secretKey=" + SharedLocalStackContainer.getSecretKey(),
+              "loadup.dfs.s3.region=" + SharedLocalStackContainer.getRegion(),
+              "cloud.aws.s3.endpoint=" + SharedLocalStackContainer.getS3Endpoint())
+          .applyTo(applicationContext.getEnvironment());
+    } else {
+      // Use real AWS S3 from configuration
+      log.info("Using real AWS S3 from application configuration");
+    }
   }
 }

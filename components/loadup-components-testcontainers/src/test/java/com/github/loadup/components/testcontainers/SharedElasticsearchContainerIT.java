@@ -26,11 +26,14 @@ import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
 import co.elastic.clients.elasticsearch.indices.DeleteIndexResponse;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
+import com.github.loadup.components.testcontainers.search.AbstractElasticsearchContainerTest;
 import com.github.loadup.components.testcontainers.search.SharedElasticsearchContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 /**
@@ -40,7 +43,9 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
  * @since 1.0.0
  */
 @Slf4j
-class SharedElasticsearchContainerIT {
+@ActiveProfiles("test")
+@SpringBootTest(classes = TestApplication.class)
+class SharedElasticsearchContainerIT extends AbstractElasticsearchContainerTest {
 
   @Test
   void testContainerIsRunning() {

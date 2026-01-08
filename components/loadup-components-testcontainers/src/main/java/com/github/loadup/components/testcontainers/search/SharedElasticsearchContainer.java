@@ -15,7 +15,11 @@
  */
 package com.github.loadup.components.testcontainers.search;
 
+import com.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
+import java.time.Duration;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -35,70 +39,131 @@ public class SharedElasticsearchContainer {
   public static final String DEFAULT_ELASTICSEARCH_VERSION =
       "docker.elastic.co/elasticsearch/elasticsearch:8.11.0";
 
+  /** Enable flag for TestContainers */
+  private static final AtomicBoolean STARTED = new AtomicBoolean(false);
+
   /** The shared Elasticsearch container instance */
-  private static final ElasticsearchContainer ELASTICSEARCH_CONTAINER;
+  private static ElasticsearchContainer ELASTICSEARCH_CONTAINER;
 
   /** Elasticsearch HTTP host URL */
-  public static final String HTTP_HOST_ADDRESS;
+  public static String HTTP_HOST_ADDRESS;
 
   /** Elasticsearch host */
-  public static final String HOST;
+  public static String HOST;
 
   /** Elasticsearch port */
-  public static final Integer PORT;
+  public static Integer PORT;
 
-  static {
-    // Read configuration from system properties or use defaults
-    String elasticsearchVersion =
-        System.getProperty("testcontainers.elasticsearch.version", DEFAULT_ELASTICSEARCH_VERSION);
+  public static void startContainer(ContainerConfig config) {
+    if (STARTED.get()) {
+      return;
+    }
 
-    log.info(
-        "Initializing shared Elasticsearch TestContainer with version: {}", elasticsearchVersion);
+    synchronized (SharedElasticsearchContainer.class) {
+      if (STARTED.get()) {
+        return;
+      }
 
-    ELASTICSEARCH_CONTAINER =
-        new ElasticsearchContainer(DockerImageName.parse(elasticsearchVersion))
-            .withEnv("xpack.security.enabled", "false")
-            .withEnv("xpack.security.http.ssl.enabled", "false")
-            .withReuse(true);
+      String imageName =
+          (config.getVersion() != null) ? config.getVersion() : DEFAULT_ELASTICSEARCH_VERSION;
 
-    ELASTICSEARCH_CONTAINER.start();
+      log.info("🚀 Starting Shared Elasticsearch TestContainer: {}", imageName);
 
-    HTTP_HOST_ADDRESS = ELASTICSEARCH_CONTAINER.getHttpHostAddress();
-    HOST = ELASTICSEARCH_CONTAINER.getHost();
-    PORT = ELASTICSEARCH_CONTAINER.getFirstMappedPort();
+      ELASTICSEARCH_CONTAINER =
+          new ElasticsearchContainer(DockerImageName.parse(imageName))
+              // 关键配置：关闭 xpack 安全特性
+              .withEnv("xpack.security.enabled", "false")
+              .withEnv("xpack.security.http.ssl.enabled", "false")
+              // 限制内存占用
+              .withEnv("ES_JAVA_OPTS", "-Xms512m -Xmx512m")
+              // 增加启动超时时间（ES 启动确实慢）
+              .withStartupTimeout(Duration.ofMinutes(3))
+              .waitingFor(Wait.forHttp("/").forStatusCode(200))
+              .withReuse(config.isReuse());
 
-    log.info("Shared Elasticsearch TestContainer started successfully");
-    log.info("HTTP Host Address: {}", HTTP_HOST_ADDRESS);
-    log.info("Host: {}", HOST);
-    log.info("Port: {}", PORT);
+      ELASTICSEARCH_CONTAINER.start();
+      STARTED.set(true);
 
-    // Add shutdown hook
-    Runtime.getRuntime()
-        .addShutdownHook(
-            new Thread(
-                () -> {
-                  log.info("Stopping shared Elasticsearch TestContainer");
-                  ELASTICSEARCH_CONTAINER.stop();
-                }));
+      HTTP_HOST_ADDRESS = ELASTICSEARCH_CONTAINER.getHttpHostAddress();
+      HOST = ELASTICSEARCH_CONTAINER.getHost();
+      PORT = ELASTICSEARCH_CONTAINER.getFirstMappedPort();
+      log.info(
+          "✅ Elasticsearch Container started at: {}", ELASTICSEARCH_CONTAINER.getHttpHostAddress());
+
+      // JVM 退出时自动关闭
+      // 2. 智能关闭钩子
+      if (!config.isReuse()) {
+        log.info("Reuse is disabled. Registering shutdown hook to stop container.");
+        Runtime.getRuntime()
+            .addShutdownHook(
+                new Thread(
+                    () -> {
+                      if (ELASTICSEARCH_CONTAINER != null) {
+                        log.info("🛑 Stopping Elasticsearch TestContainer...");
+                        ELASTICSEARCH_CONTAINER.stop();
+                      }
+                    }));
+      } else {
+        log.info("♻️ Reuse is enabled. Container will persist after JVM exits.");
+      }
+    }
   }
 
+  /**
+   * Get the shared Elasticsearch container instance.
+   *
+   * @return the shared Elasticsearch container instance
+   * @throws IllegalStateException if TestContainers is disabled
+   */
   public static ElasticsearchContainer getInstance() {
+    checkStarted();
     return ELASTICSEARCH_CONTAINER;
   }
 
+  /**
+   * Get the Elasticsearch HTTP host address.
+   *
+   * @return the HTTP host address
+   * @throws IllegalStateException if TestContainers is disabled
+   */
   public static String getHttpHostAddress() {
+    checkStarted();
     return HTTP_HOST_ADDRESS;
   }
 
+  /**
+   * Get the Elasticsearch host.
+   *
+   * @return the host
+   * @throws IllegalStateException if TestContainers is disabled
+   */
   public static String getHost() {
+    checkStarted();
     return HOST;
   }
 
+  /**
+   * Get the Elasticsearch port.
+   *
+   * @return the port
+   * @throws IllegalStateException if TestContainers is disabled
+   */
   public static Integer getPort() {
+    checkStarted();
     return PORT;
   }
 
   private SharedElasticsearchContainer() {
     throw new UnsupportedOperationException("Utility class cannot be instantiated");
+  }
+
+  public static boolean isStarted() {
+    return STARTED.get();
+  }
+
+  private static void checkStarted() {
+    if (!STARTED.get()) {
+      throw new IllegalStateException("Elasticsearch Container has not been started yet!");
+    }
   }
 }

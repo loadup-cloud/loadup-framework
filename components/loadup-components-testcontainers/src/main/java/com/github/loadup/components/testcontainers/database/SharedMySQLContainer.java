@@ -15,6 +15,9 @@
  */
 package com.github.loadup.components.testcontainers.database;
 
+import com.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.mysql.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -59,61 +62,86 @@ public class SharedMySQLContainer {
   public static final String DEFAULT_PASSWORD = "test";
 
   /** The shared MySQL container instance */
-  private static final MySQLContainer MYSQL_CONTAINER;
+  private static final AtomicReference<MySQLContainer> MYSQL_CONTAINER = new AtomicReference<>();
+
+  private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
   /** JDBC URL for the shared MySQL container */
-  public static final String JDBC_URL;
+  public static final AtomicReference<String> JDBC_URL = new AtomicReference<>();
 
   /** Username for the shared MySQL container */
-  public static final String USERNAME;
+  public static final AtomicReference<String> USERNAME = new AtomicReference<>();
 
   /** Password for the shared MySQL container */
-  public static final String PASSWORD;
+  public static final AtomicReference<String> PASSWORD = new AtomicReference<>();
 
   /** Database name for the shared MySQL container */
-  public static final String DATABASE_NAME;
+  public static final AtomicReference<String> DATABASE_NAME = new AtomicReference<>();
 
   /** JDBC driver class name */
   public static final String DRIVER_CLASS_NAME = "com.mysql.cj.jdbc.Driver";
 
-  static {
-    // Read configuration from system properties or use defaults
-    String mysqlVersion = System.getProperty("testcontainers.mysql.version", DEFAULT_MYSQL_VERSION);
-    String databaseName =
-        System.getProperty("testcontainers.mysql.database", DEFAULT_DATABASE_NAME);
-    String username = System.getProperty("testcontainers.mysql.username", DEFAULT_USERNAME);
-    String password = System.getProperty("testcontainers.mysql.password", DEFAULT_PASSWORD);
+  /**
+   * 初始化并启动容器
+   *
+   * @param config 来自 Spring 环境变量的配置对象
+   */
+  public static void startContainer(ContainerConfig config) {
+    if (STARTED.get()) {
+      return;
+    }
 
-    log.info("Initializing shared MySQL TestContainer with version: {}", mysqlVersion);
+    synchronized (SharedMySQLContainer.class) {
+      if (STARTED.get()) {
+        return;
+      }
 
-    MYSQL_CONTAINER =
-        new MySQLContainer(DockerImageName.parse(mysqlVersion))
-            .withDatabaseName(databaseName)
-            .withUsername(username)
-            .withPassword(password)
-            .withCommand("--max-allowed-packet=268435456")
-            .withReuse(true);
+      String imageName =
+          (config != null && config.getVersion() != null)
+              ? config.getVersion()
+              : DEFAULT_MYSQL_VERSION;
 
-    MYSQL_CONTAINER.start();
+      log.info("🚀 Starting Shared MySQL TestContainer: {}", imageName);
 
-    JDBC_URL = MYSQL_CONTAINER.getJdbcUrl();
-    USERNAME = MYSQL_CONTAINER.getUsername();
-    PASSWORD = MYSQL_CONTAINER.getPassword();
-    DATABASE_NAME = MYSQL_CONTAINER.getDatabaseName();
+      MYSQL_CONTAINER.set(
+          new MySQLContainer(DockerImageName.parse(imageName))
+              .withDatabaseName(getValue(config.getDatabase(), DEFAULT_DATABASE_NAME))
+              .withUsername(getValue(config.getUsername(), DEFAULT_USERNAME))
+              .withPassword(getValue(config.getPassword(), DEFAULT_PASSWORD))
+              // 优化：增加重用和性能参数
+              .withCommand("--max-allowed-packet=268435456")
+              .withReuse(config.isReuse())); // 1. 应用复用配置
 
-    log.info("Shared MySQL TestContainer started successfully");
-    log.info("JDBC URL: {}", JDBC_URL);
-    log.info("Username: {}", USERNAME);
-    log.info("Database: {}", DATABASE_NAME);
+      MYSQL_CONTAINER.get().start();
+      STARTED.set(true);
+      JDBC_URL.set(MYSQL_CONTAINER.get().getJdbcUrl());
+      USERNAME.set(MYSQL_CONTAINER.get().getUsername());
+      PASSWORD.set(MYSQL_CONTAINER.get().getPassword());
+      DATABASE_NAME.set(MYSQL_CONTAINER.get().getDatabaseName());
 
-    // Add shutdown hook to stop the container when JVM exits
-    Runtime.getRuntime()
-        .addShutdownHook(
-            new Thread(
-                () -> {
-                  log.info("Stopping shared MySQL TestContainer");
-                  MYSQL_CONTAINER.stop();
-                }));
+      log.info("✅ MySQL Container started at: {}", MYSQL_CONTAINER.get().getJdbcUrl());
+
+      // JVM 退出时自动关闭
+      // 2. 智能关闭钩子
+      if (!config.isReuse()) {
+        log.info("Reuse is disabled. Registering shutdown hook to stop container.");
+        Runtime.getRuntime()
+            .addShutdownHook(
+                new Thread(
+                    () -> {
+                      if (MYSQL_CONTAINER.get() != null) {
+                        log.info("🛑 Stopping MySQL TestContainer...");
+                        MYSQL_CONTAINER.get().stop();
+                      }
+                    }));
+      } else {
+        log.info("♻️ Reuse is enabled. Container will persist after JVM exits.");
+      }
+    }
+  }
+
+  private static String getValue(String value, String defaultValue) {
+    return (value == null || value.isEmpty()) ? defaultValue : value;
   }
 
   /**
@@ -121,36 +149,43 @@ public class SharedMySQLContainer {
    * already done.
    *
    * @return the shared MySQL container instance
+   * @throws IllegalStateException if TestContainers is disabled
    */
   public static MySQLContainer getInstance() {
-    return MYSQL_CONTAINER;
+    return MYSQL_CONTAINER.get();
   }
 
   /**
    * Get the JDBC URL for the shared MySQL container.
    *
    * @return the JDBC URL
+   * @throws IllegalStateException if TestContainers is disabled
    */
   public static String getJdbcUrl() {
-    return JDBC_URL;
+    checkStarted();
+    return JDBC_URL.get();
   }
 
   /**
    * Get the username for the shared MySQL container.
    *
    * @return the username
+   * @throws IllegalStateException if TestContainers is disabled
    */
   public static String getUsername() {
-    return USERNAME;
+    checkStarted();
+    return USERNAME.get();
   }
 
   /**
    * Get the password for the shared MySQL container.
    *
    * @return the password
+   * @throws IllegalStateException if TestContainers is disabled
    */
   public static String getPassword() {
-    return PASSWORD;
+    checkStarted();
+    return PASSWORD.get();
   }
 
   /**
@@ -159,7 +194,7 @@ public class SharedMySQLContainer {
    * @return the database name
    */
   public static String getDatabaseName() {
-    return DATABASE_NAME;
+    return DATABASE_NAME.get();
   }
 
   /**
@@ -177,7 +212,7 @@ public class SharedMySQLContainer {
    * @return the mapped port
    */
   public static Integer getMappedPort() {
-    return MYSQL_CONTAINER.getMappedPort(MySQLContainer.MYSQL_PORT);
+    return MYSQL_CONTAINER.get().getMappedPort(MySQLContainer.MYSQL_PORT);
   }
 
   /**
@@ -186,11 +221,21 @@ public class SharedMySQLContainer {
    * @return the host
    */
   public static String getHost() {
-    return MYSQL_CONTAINER.getHost();
+    return MYSQL_CONTAINER.get().getHost();
   }
 
   /** Private constructor to prevent instantiation */
   private SharedMySQLContainer() {
     throw new UnsupportedOperationException("Utility class cannot be instantiated");
+  }
+
+  public static boolean isStarted() {
+    return STARTED.get();
+  }
+
+  private static void checkStarted() {
+    if (!STARTED.get()) {
+      throw new IllegalStateException("MySQL Container has not been started yet!");
+    }
   }
 }

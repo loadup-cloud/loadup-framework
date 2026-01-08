@@ -138,6 +138,13 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
+        <!-- Spring Boot Configuration Processor for YAML auto-completion -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!-- SLF4J API -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -147,7 +154,7 @@
         <!-- Spring Boot Test (optional, for Spring integration) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-test</artifactId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <optional>true</optional>
         </dependency>
 

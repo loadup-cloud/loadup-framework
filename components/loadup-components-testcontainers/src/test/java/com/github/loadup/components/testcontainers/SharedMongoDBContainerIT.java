@@ -17,6 +17,7 @@ package com.github.loadup.components.testcontainers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.loadup.components.testcontainers.database.AbstractMongoDBContainerTest;
 import com.github.loadup.components.testcontainers.database.SharedMongoDBContainer;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -25,6 +26,8 @@ import com.mongodb.client.MongoDatabase;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.mongodb.MongoDBContainer;
 
 /**
@@ -34,7 +37,9 @@ import org.testcontainers.mongodb.MongoDBContainer;
  * @since 1.0.0
  */
 @Slf4j
-class SharedMongoDBContainerIT {
+@ActiveProfiles("test")
+@SpringBootTest(classes = TestApplication.class)
+class SharedMongoDBContainerIT extends AbstractMongoDBContainerTest {
 
   @Test
   void testContainerIsRunning() {
