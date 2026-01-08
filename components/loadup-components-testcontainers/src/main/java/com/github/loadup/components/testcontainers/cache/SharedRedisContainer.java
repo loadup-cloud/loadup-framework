@@ -17,7 +17,6 @@ package com.github.loadup.components.testcontainers.cache;
 
 import com.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -55,34 +54,33 @@ public class SharedRedisContainer {
   public static final int REDIS_PORT = 6379;
 
   /** The shared Redis container instance */
-  private static final AtomicReference<GenericContainer<?>> REDIS_CONTAINER =
-      new AtomicReference<>();
+  private static GenericContainer<?> REDIS_CONTAINER;
 
   private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
   /** Redis host for the shared container */
-  public static final AtomicReference<String> HOST = new AtomicReference<>();
+  public static String HOST;
 
   /** Redis port for the shared container */
-  public static final AtomicReference<Integer> PORT = new AtomicReference<>();
+  public static Integer PORT;
 
   /** Redis connection URL */
-  public static final AtomicReference<String> URL = new AtomicReference<>();
+  public static String URL;
 
   public static void startContainer(ContainerConfig config) {
     if (STARTED.get()) return;
     synchronized (SharedRedisContainer.class) {
       if (STARTED.get()) return;
       String image = (config.getVersion() != null) ? config.getVersion() : DEFAULT_REDIS_VERSION;
-      REDIS_CONTAINER.set(
+      REDIS_CONTAINER =
           new GenericContainer<>(DockerImageName.parse(image))
               .withExposedPorts(REDIS_PORT)
-              .withReuse(config.isReuse()));
-      REDIS_CONTAINER.get().start();
+              .withReuse(config.isReuse());
+      REDIS_CONTAINER.start();
       STARTED.set(true);
-      HOST.set(REDIS_CONTAINER.get().getHost());
-      PORT.set(REDIS_CONTAINER.get().getMappedPort(REDIS_PORT));
-      URL.set("redis://" + HOST + ":" + PORT);
+      HOST = (REDIS_CONTAINER.getHost());
+      PORT = (REDIS_CONTAINER.getMappedPort(REDIS_PORT));
+      URL = ("redis://" + HOST + ":" + PORT);
 
       if (!config.isReuse()) {
         log.info("Reuse is disabled. Registering shutdown hook to stop container.");
@@ -90,9 +88,9 @@ public class SharedRedisContainer {
             .addShutdownHook(
                 new Thread(
                     () -> {
-                      if (REDIS_CONTAINER.get() != null) {
+                      if (REDIS_CONTAINER != null) {
                         log.info("🛑 Stopping Redis TestContainer...");
-                        REDIS_CONTAINER.get().stop();
+                        REDIS_CONTAINER.stop();
                       }
                     }));
       } else {
@@ -111,7 +109,7 @@ public class SharedRedisContainer {
   public static GenericContainer<?> getInstance() {
     checkStarted();
 
-    return REDIS_CONTAINER.get();
+    return REDIS_CONTAINER;
   }
 
   /**
@@ -123,7 +121,7 @@ public class SharedRedisContainer {
   public static String getHost() {
     checkStarted();
 
-    return HOST.get();
+    return HOST;
   }
 
   /**
@@ -134,7 +132,7 @@ public class SharedRedisContainer {
    */
   public static Integer getPort() {
     checkStarted();
-    return PORT.get();
+    return PORT;
   }
 
   /**
@@ -143,7 +141,7 @@ public class SharedRedisContainer {
    * @return the mapped port
    */
   public static Integer getMappedPort() {
-    return REDIS_CONTAINER.get().getMappedPort(REDIS_PORT);
+    return REDIS_CONTAINER.getMappedPort(REDIS_PORT);
   }
 
   /**
@@ -152,7 +150,7 @@ public class SharedRedisContainer {
    * @return the connection URL
    */
   public static String getUrl() {
-    return URL.get();
+    return URL;
   }
 
   /** Private constructor to prevent instantiation */

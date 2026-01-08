@@ -64,5 +64,5 @@ loadup:
   tracer:
     enabled: false
   testcontainers:
-    # Disable all TestContainers
-    enabled: false
+    mysql:
+      enabled: false
