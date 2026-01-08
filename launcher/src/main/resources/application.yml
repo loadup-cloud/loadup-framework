@@ -1,0 +1,61 @@
+# Test Application Configuration
+spring:
+  application:
+    name: loadup-upms-test
+
+  # MySQL Database Configuration for Testing with Testcontainers
+  # The actual connection details are automatically provided by SharedMySQLContainer
+  # via AbstractMySQLContainerTest and MySQLContainerInitializer
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    # HikariCP Connection Pool Configuration
+    hikari:
+      pool-name: LoadupTestPool
+      minimum-idle: 2
+      maximum-pool-size: 10
+      auto-commit: true
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+    # These values will be overridden by TestContainers
+    # url: <provided by SharedMySQLContainer>
+    # username: <provided by SharedMySQLContainer>
+    # password: <provided by SharedMySQLContainer>
+    url: jdbc:mysql://127.0.0.1:3306/loadup-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+
+
+  # SQL Initialization
+# MyBatis-Flex Configuration for Testing
+mybatis-flex:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    lazy-loading-enabled: false
+
+  global-config:
+    print-sql: true
+    print-banner: true
+
+# Logging Configuration for Tests
+logging:
+  level:
+    root: INFO
+    com.github.loadup.modules.upms: DEBUG
+    com.mybatisflex: DEBUG
+    org.springframework.jdbc: DEBUG
+    org.springframework.transaction: DEBUG
+    com.github.loadup.modules.upms.infrastructure.mapper: TRACE
+    org.mybatis: TRACE
+    java.sql.PreparedStatement: TRACE
+
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+loadup:
+  tracer:
+    enabled: false

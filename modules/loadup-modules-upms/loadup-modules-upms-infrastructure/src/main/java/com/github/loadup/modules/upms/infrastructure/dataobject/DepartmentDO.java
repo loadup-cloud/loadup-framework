@@ -28,7 +28,7 @@ public class DepartmentDO extends BaseDO {
 
   private String leaderUserId;
 
-  private String phone;
+  private String mobile;
 
   private String email;
 

@@ -29,6 +29,7 @@
         <module>components/loadup-components-testcontainers</module>
         <module>components/loadup-components-web</module>
         <module>modules/loadup-modules-upms</module>
+        <module>launcher</module>
         <!--        <module>modules/loadup-modules-user</module>-->
     </modules>
 

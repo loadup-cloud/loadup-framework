@@ -23,6 +23,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
       "com.github.loadup.modules.upms.domain",
       "com.github.loadup.modules.upms.infrastructure",
       "com.github.loadup.modules.upms.app",
+      "com.github.loadup.modules.upms.security",
       "com.github.loadup.modules.upms.adapter"
     })
 public class UpmsAutoConfiguration {

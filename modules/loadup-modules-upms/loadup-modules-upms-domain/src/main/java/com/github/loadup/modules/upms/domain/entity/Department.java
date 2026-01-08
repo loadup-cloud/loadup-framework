@@ -33,7 +33,7 @@ public class Department {
 
   private String leaderUserId;
 
-  private String phone;
+  private String mobile;
 
   private String email;
 

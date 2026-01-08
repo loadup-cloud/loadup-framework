@@ -3,9 +3,9 @@ package com.github.loadup.modules.upms.infrastructure.security.datascope;
 import com.github.loadup.modules.upms.domain.entity.Department;
 import com.github.loadup.modules.upms.domain.entity.Role;
 import com.github.loadup.modules.upms.domain.entity.User;
-import com.github.loadup.modules.upms.domain.repository.DepartmentRepository;
-import com.github.loadup.modules.upms.domain.repository.RoleRepository;
-import com.github.loadup.modules.upms.domain.repository.UserRepository;
+import com.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
+import com.github.loadup.modules.upms.domain.gateway.RoleGateway;
+import com.github.loadup.modules.upms.domain.gateway.UserGateway;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +34,9 @@ public class DataScopeAspect {
 
   private static final ThreadLocal<DataScopeContext> CONTEXT_HOLDER = new ThreadLocal<>();
 
-  private final UserRepository userRepository;
-  private final RoleRepository roleRepository;
-  private final DepartmentRepository departmentRepository;
+  private final UserGateway userGateway;
+  private final RoleGateway roleGateway;
+  private final DepartmentGateway departmentGateway;
 
   /** Get current data scope context */
   public static DataScopeContext getCurrentContext() {
@@ -69,7 +69,7 @@ public class DataScopeAspect {
       }
 
       String username = authentication.getName();
-      User user = userRepository.findByUsername(username).orElse(null);
+      User user = userGateway.findByUsername(username).orElse(null);
       if (user == null) {
         log.warn("User not found: {}", username);
         return;
@@ -92,7 +92,7 @@ public class DataScopeAspect {
   /** Build data scope context for user */
   private DataScopeContext buildDataScopeContext(User user) {
     // Get user's roles
-    List<Role> roles = roleRepository.findByUserId(user.getId());
+    List<Role> roles = roleGateway.findByUserId(user.getId());
 
     // Check if user is super admin (has ADMIN role)
     boolean isSuperAdmin =
@@ -115,7 +115,7 @@ public class DataScopeAspect {
 
         // Collect custom department IDs
         if (roleScope == DataScopeType.CUSTOM) {
-          List<String> roleDeptIds = roleRepository.findDepartmentIdsByRoleId(role.getId());
+          List<String> roleDeptIds = roleGateway.findDepartmentIdsByRoleId(role.getId());
           customDeptIds.addAll(roleDeptIds);
         }
       }
@@ -140,7 +140,7 @@ public class DataScopeAspect {
   /** Get all sub-department IDs recursively */
   private List<String> getAllSubDepartmentIds(String parentDeptId) {
     List<String> allIds = new ArrayList<>();
-    List<Department> children = departmentRepository.findByParentId(parentDeptId);
+    List<Department> children = departmentGateway.findByParentId(parentDeptId);
 
     for (Department child : children) {
       allIds.add(child.getId());

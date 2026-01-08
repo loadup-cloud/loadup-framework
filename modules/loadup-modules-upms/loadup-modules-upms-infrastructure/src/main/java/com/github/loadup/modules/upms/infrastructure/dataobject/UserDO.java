@@ -32,11 +32,11 @@ public class UserDO extends BaseDO {
 
   private Boolean emailVerified;
 
-  private String phone;
+  private String mobile;
 
-  private Boolean phoneVerified;
+  private Boolean mobileVerified;
 
-  private String avatarUrl;
+  private String avatar;
 
   private Short gender;
 

@@ -1,18 +1,18 @@
 package com.github.loadup.modules.upms.app.service;
 
-import com.github.loadup.modules.upms.app.command.UserCreateCommand;
-import com.github.loadup.modules.upms.app.command.UserPasswordChangeCommand;
-import com.github.loadup.modules.upms.app.command.UserUpdateCommand;
-import com.github.loadup.modules.upms.app.dto.PageResult;
-import com.github.loadup.modules.upms.app.dto.RoleDTO;
+import com.github.loadup.commons.result.PageDTO;
 import com.github.loadup.modules.upms.app.dto.UserDetailDTO;
 import com.github.loadup.modules.upms.app.query.UserQuery;
 import com.github.loadup.modules.upms.domain.entity.Department;
 import com.github.loadup.modules.upms.domain.entity.Role;
 import com.github.loadup.modules.upms.domain.entity.User;
-import com.github.loadup.modules.upms.domain.repository.DepartmentRepository;
-import com.github.loadup.modules.upms.domain.repository.RoleRepository;
-import com.github.loadup.modules.upms.domain.repository.UserRepository;
+import com.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
+import com.github.loadup.modules.upms.domain.gateway.RoleGateway;
+import com.github.loadup.modules.upms.domain.gateway.UserGateway;
+import com.github.loadup.upms.api.command.UserCreateCommand;
+import com.github.loadup.upms.api.command.UserPasswordChangeCommand;
+import com.github.loadup.upms.api.command.UserUpdateCommand;
+import com.github.loadup.upms.api.dto.RoleDTO;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,26 +37,26 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
 
-  private final UserRepository userRepository;
-  private final RoleRepository roleRepository;
-  private final DepartmentRepository departmentRepository;
+  private final UserGateway userGateway;
+  private final RoleGateway roleGateway;
+  private final DepartmentGateway departmentGateway;
   private final PasswordEncoder passwordEncoder;
 
   /** Create user */
   @Transactional
   public UserDetailDTO createUser(UserCreateCommand command) {
     // Validate username uniqueness
-    if (userRepository.existsByUsername(command.getUsername())) {
+    if (userGateway.existsByUsername(command.getUsername())) {
       throw new RuntimeException("用户名已存在");
     }
 
     // Validate email uniqueness
-    if (command.getEmail() != null && userRepository.existsByEmail(command.getEmail())) {
+    if (command.getEmail() != null && userGateway.existsByEmail(command.getEmail())) {
       throw new RuntimeException("邮箱已被注册");
     }
 
     // Validate phone uniqueness
-    if (command.getPhone() != null && userRepository.existsByPhone(command.getPhone())) {
+    if (command.getMobile() != null && userGateway.existsByMobile(command.getMobile())) {
       throw new RuntimeException("手机号已被注册");
     }
 
@@ -69,8 +69,8 @@ public class UserService {
             .realName(command.getRealName())
             .deptId(command.getDeptId())
             .email(command.getEmail())
-            .phone(command.getPhone())
-            .avatarUrl(command.getAvatarUrl())
+            .mobile(command.getMobile())
+            .avatar(command.getAvatar())
             .gender(command.getGender())
             .birthday(command.getBirthday())
             .status(command.getStatus() != null ? command.getStatus() : (short) 1)
@@ -78,19 +78,19 @@ public class UserService {
             .accountNonLocked(true)
             .credentialsNonExpired(true)
             .emailVerified(false)
-            .phoneVerified(false)
+            .mobileVerified(false)
             .deleted(false)
             .remark(command.getRemark())
             .createdBy(command.getCreatedBy())
             .createdTime(LocalDateTime.now())
             .build();
 
-    user = userRepository.save(user);
+    user = userGateway.save(user);
 
     // Assign roles
     if (command.getRoleIds() != null && !command.getRoleIds().isEmpty()) {
       for (String roleId : command.getRoleIds()) {
-        roleRepository.assignRoleToUser(user.getId(), roleId, command.getCreatedBy());
+        roleGateway.assignRoleToUser(user.getId(), roleId, command.getCreatedBy());
       }
     }
 
@@ -101,19 +101,19 @@ public class UserService {
   @Transactional
   public UserDetailDTO updateUser(UserUpdateCommand command) {
     User user =
-        userRepository.findById(command.getId()).orElseThrow(() -> new RuntimeException("用户不存在"));
+        userGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("用户不存在"));
 
     // Validate email uniqueness (if changed)
     if (command.getEmail() != null
         && !command.getEmail().equals(user.getEmail())
-        && userRepository.existsByEmail(command.getEmail())) {
+        && userGateway.existsByEmail(command.getEmail())) {
       throw new RuntimeException("邮箱已被注册");
     }
 
     // Validate phone uniqueness (if changed)
-    if (command.getPhone() != null
-        && !command.getPhone().equals(user.getPhone())
-        && userRepository.existsByPhone(command.getPhone())) {
+    if (command.getMobile() != null
+        && !command.getMobile().equals(user.getMobile())
+        && userGateway.existsByMobile(command.getMobile())) {
       throw new RuntimeException("手机号已被注册");
     }
 
@@ -131,12 +131,12 @@ public class UserService {
       user.setEmail(command.getEmail());
       user.setEmailVerified(false);
     }
-    if (command.getPhone() != null) {
-      user.setPhone(command.getPhone());
-      user.setPhoneVerified(false);
+    if (command.getMobile() != null) {
+      user.setMobile(command.getMobile());
+      user.setMobileVerified(false);
     }
-    if (command.getAvatarUrl() != null) {
-      user.setAvatarUrl(command.getAvatarUrl());
+    if (command.getAvatar() != null) {
+      user.setAvatar(command.getAvatar());
     }
     if (command.getGender() != null) {
       user.setGender(command.getGender());
@@ -154,18 +154,18 @@ public class UserService {
     user.setUpdatedBy(command.getUpdatedBy());
     user.setUpdatedTime(LocalDateTime.now());
 
-    user = userRepository.update(user);
+    user = userGateway.update(user);
 
     // Update roles
     if (command.getRoleIds() != null) {
       // Remove old roles
-      List<Role> currentRoles = roleRepository.findByUserId(user.getId());
+      List<Role> currentRoles = roleGateway.findByUserId(user.getId());
       for (Role role : currentRoles) {
-        roleRepository.removeRoleFromUser(user.getId(), role.getId());
+        roleGateway.removeRoleFromUser(user.getId(), role.getId());
       }
       // Assign new roles
       for (String roleId : command.getRoleIds()) {
-        roleRepository.assignRoleToUser(user.getId(), roleId, command.getUpdatedBy());
+        roleGateway.assignRoleToUser(user.getId(), roleId, command.getUpdatedBy());
       }
     }
 
@@ -175,44 +175,42 @@ public class UserService {
   /** Delete user */
   @Transactional
   public void deleteUser(String id) {
-    userRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
-    userRepository.deleteById(id);
+    userGateway.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+    userGateway.deleteById(id);
   }
 
   /** Get user by ID */
   public UserDetailDTO getUserById(String id) {
-    User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+    User user = userGateway.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
     return convertToDetailDTO(user);
   }
 
   /** Query users with pagination */
-  public PageResult<UserDetailDTO> queryUsers(UserQuery query) {
+  public PageDTO<UserDetailDTO> queryUsers(UserQuery query) {
     Sort sort = Sort.by(Sort.Direction.fromString(query.getSortOrder()), query.getSortBy());
     Pageable pageable = PageRequest.of(query.getPage() - 1, query.getSize(), sort);
 
     Page<User> userPage;
-    if (query.getUsername() != null || query.getEmail() != null || query.getPhone() != null) {
+    if (query.getUsername() != null || query.getEmail() != null || query.getMobile() != null) {
       String keyword = query.getUsername();
       if (keyword == null) keyword = query.getEmail();
-      if (keyword == null) keyword = query.getPhone();
-      userPage = userRepository.search(keyword, pageable);
+      if (keyword == null) keyword = query.getMobile();
+      userPage = userGateway.search(keyword, pageable);
     } else {
-      userPage = userRepository.findAll(pageable);
+      userPage = userGateway.findAll(pageable);
     }
 
     List<UserDetailDTO> dtoList =
         userPage.getContent().stream().map(this::convertToDetailDTO).collect(Collectors.toList());
 
-    return PageResult.of(dtoList, userPage.getTotalElements(), query.getPage(), query.getSize());
+    return PageDTO.of(dtoList, userPage.getTotalElements(), query.getPage(), query.getSize());
   }
 
   /** Change user password */
   @Transactional
   public void changePassword(UserPasswordChangeCommand command) {
     User user =
-        userRepository
-            .findById(command.getUserId())
-            .orElseThrow(() -> new RuntimeException("用户不存在"));
+        userGateway.findById(command.getUserId()).orElseThrow(() -> new RuntimeException("用户不存在"));
 
     // Verify old password
     if (!passwordEncoder.matches(command.getOldPassword(), user.getPassword())) {
@@ -229,34 +227,34 @@ public class UserService {
     user.setPasswordUpdateTime(LocalDateTime.now());
     user.setUpdatedTime(LocalDateTime.now());
 
-    userRepository.update(user);
+    userGateway.update(user);
   }
 
   /** Lock user account */
   @Transactional
   public void lockUser(String id) {
-    User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+    User user = userGateway.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
     user.setAccountNonLocked(false);
     user.setLockedTime(LocalDateTime.now());
-    userRepository.update(user);
+    userGateway.update(user);
   }
 
   /** Unlock user account */
   @Transactional
   public void unlockUser(String id) {
-    User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+    User user = userGateway.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
     user.setAccountNonLocked(true);
     user.setLoginFailCount(0);
     user.setLockedTime(null);
-    userRepository.update(user);
+    userGateway.update(user);
   }
 
   /** Convert User entity to UserDetailDTO */
   private UserDetailDTO convertToDetailDTO(User user) {
-    List<Role> roles = roleRepository.findByUserId(user.getId());
+    List<Role> roles = roleGateway.findByUserId(user.getId());
     Department dept = null;
     if (user.getDeptId() != null) {
-      dept = departmentRepository.findById(user.getDeptId()).orElse(null);
+      dept = departmentGateway.findById(user.getDeptId()).orElse(null);
     }
 
     return UserDetailDTO.builder()
@@ -268,9 +266,9 @@ public class UserService {
         .deptName(dept != null ? dept.getDeptName() : null)
         .email(user.getEmail())
         .emailVerified(user.getEmailVerified())
-        .phone(user.getPhone())
-        .phoneVerified(user.getPhoneVerified())
-        .avatarUrl(user.getAvatarUrl())
+        .mobile(user.getMobile())
+        .mobileVerified(user.getMobileVerified())
+        .avatar(user.getAvatar())
         .gender(user.getGender())
         .birthday(user.getBirthday())
         .status(user.getStatus())

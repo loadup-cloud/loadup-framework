@@ -1,20 +1,18 @@
 package com.github.loadup.modules.upms.adapter.web.controller;
 
-import com.github.loadup.commons.result.MultiResponse;
-import com.github.loadup.commons.result.PageResponse;
-import com.github.loadup.commons.result.Response;
-import com.github.loadup.commons.result.SingleResponse;
+import com.github.loadup.commons.result.PageDTO;
 import com.github.loadup.modules.upms.adapter.web.request.AssignPermissionsRequest;
 import com.github.loadup.modules.upms.adapter.web.request.AssignRoleRequest;
 import com.github.loadup.modules.upms.adapter.web.request.IdRequest;
-import com.github.loadup.modules.upms.app.command.RoleCreateCommand;
-import com.github.loadup.modules.upms.app.command.RoleUpdateCommand;
-import com.github.loadup.modules.upms.app.dto.RoleDTO;
 import com.github.loadup.modules.upms.app.query.RoleQuery;
 import com.github.loadup.modules.upms.app.service.RoleService;
+import com.github.loadup.upms.api.command.RoleCreateCommand;
+import com.github.loadup.upms.api.command.RoleUpdateCommand;
+import com.github.loadup.upms.api.dto.RoleDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,68 +32,59 @@ public class RoleController {
 
   @Operation(summary = "创建角色", description = "创建新角色并分配权限")
   @PostMapping("/create")
-  public SingleResponse<RoleDTO> createRole(@Valid @RequestBody RoleCreateCommand command) {
+  public RoleDTO createRole(@Valid @RequestBody RoleCreateCommand command) {
     RoleDTO result = roleService.createRole(command);
-    return SingleResponse.of(result);
+    return result;
   }
 
   @Operation(summary = "更新角色", description = "更新角色信息")
   @PostMapping("/update")
-  public SingleResponse<RoleDTO> updateRole(@Valid @RequestBody RoleUpdateCommand command) {
+  public RoleDTO updateRole(@Valid @RequestBody RoleUpdateCommand command) {
     RoleDTO result = roleService.updateRole(command);
-    return SingleResponse.of(result);
+    return result;
   }
 
   @Operation(summary = "删除角色", description = "软删除角色")
   @PostMapping("/delete")
-  public Response deleteRole(@Valid @RequestBody IdRequest request) {
+  public void deleteRole(@Valid @RequestBody IdRequest request) {
     roleService.deleteRole(request.getId());
-    return Response.buildSuccess();
   }
 
   @Operation(summary = "获取角色详情", description = "根据ID获取角色详细信息")
   @PostMapping("/get")
-  public SingleResponse<RoleDTO> getRoleById(@Valid @RequestBody IdRequest request) {
+  public RoleDTO getRoleById(@Valid @RequestBody IdRequest request) {
     RoleDTO result = roleService.getRoleById(request.getId());
-    return SingleResponse.of(result);
+    return result;
   }
 
   @Operation(summary = "查询角色列表", description = "分页查询角色列表")
   @PostMapping("/query")
-  public PageResponse<RoleDTO> queryRoles(@Valid @RequestBody RoleQuery query) {
-    com.github.loadup.modules.upms.app.dto.PageResult<RoleDTO> pageResult =
-        roleService.queryRoles(query);
-    return PageResponse.of(
-        pageResult.getRecords(),
-        pageResult.getTotal(),
-        (long) pageResult.getSize(),
-        (long) pageResult.getPage());
+  public PageDTO<RoleDTO> queryRoles(@Valid @RequestBody RoleQuery query) {
+    PageDTO<RoleDTO> pageDTO = roleService.queryRoles(query);
+    return pageDTO;
   }
 
   @Operation(summary = "获取角色树", description = "获取角色层级树结构")
   @PostMapping("/tree")
-  public MultiResponse<RoleDTO> getRoleTree() {
-    return MultiResponse.of(roleService.getRoleTree());
+  public List<RoleDTO> getRoleTree() {
+    return roleService.getRoleTree();
   }
 
   @Operation(summary = "分配角色给用户", description = "将角色分配给指定用户")
   @PostMapping("/assign-user")
-  public Response assignRoleToUser(@Valid @RequestBody AssignRoleRequest request) {
+  public void assignRoleToUser(@Valid @RequestBody AssignRoleRequest request) {
     roleService.assignRoleToUser(request.getRoleId(), request.getUserId());
-    return Response.buildSuccess();
   }
 
   @Operation(summary = "从用户移除角色", description = "从用户移除指定角色")
   @PostMapping("/remove-user")
-  public Response removeRoleFromUser(@Valid @RequestBody AssignRoleRequest request) {
+  public void removeRoleFromUser(@Valid @RequestBody AssignRoleRequest request) {
     roleService.removeRoleFromUser(request.getRoleId(), request.getUserId());
-    return Response.buildSuccess();
   }
 
   @Operation(summary = "分配权限给角色", description = "批量分配权限给角色")
   @PostMapping("/assign-permissions")
-  public Response assignPermissionsToRole(@Valid @RequestBody AssignPermissionsRequest request) {
+  public void assignPermissionsToRole(@Valid @RequestBody AssignPermissionsRequest request) {
     roleService.assignPermissionsToRole(request.getRoleId(), request.getPermissionIds());
-    return Response.buildSuccess();
   }
 }

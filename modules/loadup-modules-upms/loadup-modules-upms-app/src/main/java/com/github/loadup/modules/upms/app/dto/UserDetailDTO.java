@@ -1,5 +1,6 @@
 package com.github.loadup.modules.upms.app.dto;
 
+import com.github.loadup.upms.api.dto.RoleDTO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,9 +29,9 @@ public class UserDetailDTO {
   private String deptName;
   private String email;
   private Boolean emailVerified;
-  private String phone;
-  private Boolean phoneVerified;
-  private String avatarUrl;
+  private String mobile;
+  private Boolean mobileVerified;
+  private String avatar;
   private Short gender;
   private LocalDate birthday;
   private Short status;

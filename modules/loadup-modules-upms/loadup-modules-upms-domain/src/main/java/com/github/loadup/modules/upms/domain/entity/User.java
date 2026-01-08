@@ -35,11 +35,11 @@ public class User {
 
   private Boolean emailVerified;
 
-  private String phone;
+  private String mobile;
 
-  private Boolean phoneVerified;
+  private Boolean mobileVerified;
 
-  private String avatarUrl;
+  private String avatar;
 
   /** Gender: 0-Unknown, 1-Male, 2-Female */
   private Short gender;

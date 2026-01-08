@@ -1,12 +1,12 @@
 package com.github.loadup.modules.upms.app.service;
 
-import com.github.loadup.modules.upms.app.command.DepartmentCreateCommand;
-import com.github.loadup.modules.upms.app.command.DepartmentUpdateCommand;
-import com.github.loadup.modules.upms.app.dto.DepartmentDTO;
 import com.github.loadup.modules.upms.domain.entity.Department;
 import com.github.loadup.modules.upms.domain.entity.User;
-import com.github.loadup.modules.upms.domain.repository.DepartmentRepository;
-import com.github.loadup.modules.upms.domain.repository.UserRepository;
+import com.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
+import com.github.loadup.modules.upms.domain.gateway.UserGateway;
+import com.github.loadup.upms.api.command.DepartmentCreateCommand;
+import com.github.loadup.upms.api.command.DepartmentUpdateCommand;
+import com.github.loadup.upms.api.dto.DepartmentDTO;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,14 +26,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DepartmentService {
 
-  private final DepartmentRepository departmentRepository;
-  private final UserRepository userRepository;
+  private final DepartmentGateway departmentGateway;
+  private final UserGateway userGateway;
 
   /** Create department */
   @Transactional
   public DepartmentDTO createDepartment(DepartmentCreateCommand command) {
     // Validate department code uniqueness
-    if (departmentRepository.existsByDeptCode(command.getDeptCode())) {
+    if (departmentGateway.existsByDeptCode(command.getDeptCode())) {
       throw new RuntimeException("部门编码已存在");
     }
 
@@ -41,7 +41,7 @@ public class DepartmentService {
     Integer deptLevel = 1;
     if (command.getParentId() != null && command.getParentId() != "0") {
       Department parentDept =
-          departmentRepository
+          departmentGateway
               .findById(command.getParentId())
               .orElseThrow(() -> new RuntimeException("父部门不存在"));
       deptLevel = (parentDept.getDeptLevel() != null ? parentDept.getDeptLevel() : 0) + 1;
@@ -49,7 +49,7 @@ public class DepartmentService {
 
     // Validate leader user exists
     if (command.getLeaderUserId() != null) {
-      userRepository
+      userGateway
           .findById(command.getLeaderUserId())
           .orElseThrow(() -> new RuntimeException("部门负责人不存在"));
     }
@@ -63,7 +63,7 @@ public class DepartmentService {
             .deptLevel(deptLevel)
             .sortOrder(command.getSortOrder())
             .leaderUserId(command.getLeaderUserId())
-            .phone(command.getPhone())
+            .mobile(command.getMobile())
             .email(command.getEmail())
             .status(command.getStatus() != null ? command.getStatus() : (short) 1)
             .deleted(false)
@@ -72,7 +72,7 @@ public class DepartmentService {
             .createdTime(LocalDateTime.now())
             .build();
 
-    department = departmentRepository.save(department);
+    department = departmentGateway.save(department);
 
     return convertToDTO(department);
   }
@@ -81,7 +81,7 @@ public class DepartmentService {
   @Transactional
   public DepartmentDTO updateDepartment(DepartmentUpdateCommand command) {
     Department department =
-        departmentRepository
+        departmentGateway
             .findById(command.getId())
             .orElseThrow(() -> new RuntimeException("部门不存在"));
 
@@ -91,7 +91,7 @@ public class DepartmentService {
         throw new RuntimeException("父部门不能是自己");
       }
       Department parentDept =
-          departmentRepository
+          departmentGateway
               .findById(command.getParentId())
               .orElseThrow(() -> new RuntimeException("父部门不存在"));
 
@@ -101,7 +101,7 @@ public class DepartmentService {
 
     // Validate leader user exists
     if (command.getLeaderUserId() != null) {
-      userRepository
+      userGateway
           .findById(command.getLeaderUserId())
           .orElseThrow(() -> new RuntimeException("部门负责人不存在"));
     }
@@ -119,8 +119,8 @@ public class DepartmentService {
     if (command.getLeaderUserId() != null) {
       department.setLeaderUserId(command.getLeaderUserId());
     }
-    if (command.getPhone() != null) {
-      department.setPhone(command.getPhone());
+    if (command.getMobile() != null) {
+      department.setMobile(command.getMobile());
     }
     if (command.getEmail() != null) {
       department.setEmail(command.getEmail());
@@ -135,7 +135,7 @@ public class DepartmentService {
     department.setUpdatedBy(command.getUpdatedBy());
     department.setUpdatedTime(LocalDateTime.now());
 
-    department = departmentRepository.update(department);
+    department = departmentGateway.update(department);
 
     return convertToDTO(department);
   }
@@ -143,39 +143,39 @@ public class DepartmentService {
   /** Delete department */
   @Transactional
   public void deleteDepartment(String id) {
-    departmentRepository.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
+    departmentGateway.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
 
     // Check if department has children
-    if (departmentRepository.hasChildren(id)) {
+    if (departmentGateway.hasChildren(id)) {
       throw new RuntimeException("该部门下存在子部门，无法删除");
     }
 
     // Check if department has users
-    if (departmentRepository.hasUsers(id)) {
+    if (departmentGateway.hasUsers(id)) {
       throw new RuntimeException("该部门下存在用户，无法删除");
     }
 
-    departmentRepository.deleteById(id);
+    departmentGateway.deleteById(id);
   }
 
   /** Get department by ID */
   public DepartmentDTO getDepartmentById(String id) {
     Department department =
-        departmentRepository.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
+        departmentGateway.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
     return convertToDTO(department);
   }
 
   /** Get all departments as tree */
   public List<DepartmentDTO> getDepartmentTree() {
-    List<Department> allDepartments = departmentRepository.findAll();
+    List<Department> allDepartments = departmentGateway.findAll();
     return buildDepartmentTree(allDepartments, null);
   }
 
   /** Get department tree (from specific department) */
   public DepartmentDTO getDepartmentTreeById(String id) {
     Department department =
-        departmentRepository.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
-    List<Department> allDepartments = departmentRepository.findAll();
+        departmentGateway.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
+    List<Department> allDepartments = departmentGateway.findAll();
 
     DepartmentDTO dto = convertToDTO(department);
     List<DepartmentDTO> children = buildDepartmentTree(allDepartments, id);
@@ -189,7 +189,7 @@ public class DepartmentService {
   @Transactional
   public void moveDepartment(String deptId, String newParentId) {
     Department department =
-        departmentRepository.findById(deptId).orElseThrow(() -> new RuntimeException("部门不存在"));
+        departmentGateway.findById(deptId).orElseThrow(() -> new RuntimeException("部门不存在"));
 
     // Validate new parent exists
     if (newParentId != null && newParentId != "0") {
@@ -197,7 +197,7 @@ public class DepartmentService {
         throw new RuntimeException("父部门不能是自己");
       }
       Department newParent =
-          departmentRepository
+          departmentGateway
               .findById(newParentId)
               .orElseThrow(() -> new RuntimeException("新父部门不存在"));
 
@@ -215,12 +215,12 @@ public class DepartmentService {
     }
 
     department.setUpdatedTime(LocalDateTime.now());
-    departmentRepository.update(department);
+    departmentGateway.update(department);
   }
 
   /** Check if targetId is a descendant of ancestorId */
   private boolean isDescendant(String ancestorId, String targetId) {
-    Department target = departmentRepository.findById(targetId).orElse(null);
+    Department target = departmentGateway.findById(targetId).orElse(null);
     if (target == null) {
       return false;
     }
@@ -237,7 +237,7 @@ public class DepartmentService {
   private DepartmentDTO convertToDTO(Department department) {
     User leader = null;
     if (department.getLeaderUserId() != null) {
-      leader = userRepository.findById(department.getLeaderUserId()).orElse(null);
+      leader = userGateway.findById(department.getLeaderUserId()).orElse(null);
     }
 
     return DepartmentDTO.builder()
@@ -249,7 +249,7 @@ public class DepartmentService {
         .sortOrder(department.getSortOrder())
         .leaderUserId(department.getLeaderUserId())
         .leaderUserName(leader != null ? leader.getUsername() : null)
-        .phone(department.getPhone())
+        .mobile(department.getMobile())
         .email(department.getEmail())
         .status(department.getStatus())
         .remark(department.getRemark())

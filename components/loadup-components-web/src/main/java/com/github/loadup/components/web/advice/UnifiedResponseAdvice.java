@@ -2,8 +2,7 @@ package com.github.loadup.components.web.advice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.loadup.commons.result.IResponse;
-import com.github.loadup.commons.result.SuccessResponse;
+import com.github.loadup.commons.result.*;
 import com.github.loadup.components.web.annotation.IgnoreResponseAdvice;
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +54,8 @@ public class UnifiedResponseAdvice implements ResponseBodyAdvice<Object> {
       output = SuccessResponse.success();
     } else if (body instanceof Collection<?> collection) {
       output = SuccessResponse.of(collection);
+    } else if (body instanceof PageDTO<?> page) {
+      return SuccessResponse.ofPage(page);
     } else {
       output = SuccessResponse.of(body);
     }

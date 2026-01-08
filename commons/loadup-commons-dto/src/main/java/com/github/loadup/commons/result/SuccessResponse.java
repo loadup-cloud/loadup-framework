@@ -8,18 +8,12 @@ import java.util.Collection;
 
 @Schema(description = "成功响应体")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"success", "data", "pageInfo", "result"})
+@JsonPropertyOrder({"result", "data", "pageInfo"})
 public record SuccessResponse<T>(
-    @Schema(description = "业务数据") @JsonProperty("data") T data,
     @Schema(description = "结果元数据") @JsonProperty("result") Result result,
+    @Schema(description = "业务数据") @JsonProperty("data") T data,
     @Schema(description = "分页信息") @JsonProperty("pageInfo") PageInfo pageInfo)
     implements IResponse<T> {
-
-  @Override
-  @JsonProperty("success")
-  public boolean isSuccess() {
-    return true;
-  }
 
   @Override
   public Result getResult() {
@@ -30,17 +24,27 @@ public record SuccessResponse<T>(
 
   /** 单体数据成功 */
   public static <T> SuccessResponse<T> of(T data) {
-    return new SuccessResponse<>(data, Result.buildSuccess(), null);
+    return new SuccessResponse<>(Result.buildSuccess(), data, null);
   }
 
   /** 无数据成功 (Void) */
   public static SuccessResponse<Void> success() {
-    return new SuccessResponse<>(null, Result.buildSuccess(), null);
+    return new SuccessResponse<>(Result.buildSuccess(), null, null);
   }
 
   /** 分页数据成功 */
   public static <T> SuccessResponse<Collection<T>> ofPage(
       Collection<T> data, Long total, Long size, Long index) {
-    return new SuccessResponse<>(data, Result.buildSuccess(), new PageInfo(total, size, index));
+    return new SuccessResponse<>(Result.buildSuccess(), data, new PageInfo(total, size, index));
+  }
+
+  public static <T> SuccessResponse<Collection<T>> ofPage(PageDTO<T> dto) {
+    return new SuccessResponse<>(
+        Result.buildSuccess(),
+        dto.getData(),
+        new PageInfo(
+            dto.getPageInfo().totalCount(),
+            dto.getPageInfo().pageSize(),
+            dto.getPageInfo().pageIndex()));
   }
 }

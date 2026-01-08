@@ -25,7 +25,7 @@ public class RegisterRequest {
   private String email;
 
   @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确")
-  private String phone;
+  private String mobile;
 
   private String captchaKey;
   private String captchaCode;

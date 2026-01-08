@@ -2,8 +2,8 @@ package com.github.loadup.modules.upms.domain.service;
 
 import com.github.loadup.modules.upms.domain.entity.Permission;
 import com.github.loadup.modules.upms.domain.entity.Role;
-import com.github.loadup.modules.upms.domain.repository.PermissionRepository;
-import com.github.loadup.modules.upms.domain.repository.RoleRepository;
+import com.github.loadup.modules.upms.domain.gateway.PermissionGateway;
+import com.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,8 +23,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserPermissionService {
 
-  private final RoleRepository roleRepository;
-  private final PermissionRepository permissionRepository;
+  private final RoleGateway roleGateway;
+  private final PermissionGateway permissionGateway;
 
   /**
    * Get all permissions for a user (including inherited from parent roles) Implements RBAC3 role
@@ -32,7 +32,7 @@ public class UserPermissionService {
    */
   public List<Permission> getUserPermissions(String userId) {
     // Get user's direct roles
-    List<Role> userRoles = roleRepository.findByUserId(userId);
+    List<Role> userRoles = roleGateway.findByUserId(userId);
 
     // Collect all permissions including inherited
     Set<Permission> allPermissions = new HashSet<>();
@@ -40,7 +40,7 @@ public class UserPermissionService {
     for (Role role : userRoles) {
       if (role.isEnabled()) {
         // Add role's direct permissions
-        List<Permission> rolePermissions = permissionRepository.findByRoleId(role.getId());
+        List<Permission> rolePermissions = permissionGateway.findByRoleId(role.getId());
         allPermissions.addAll(
             rolePermissions.stream().filter(Permission::isEnabled).collect(Collectors.toList()));
 
@@ -57,14 +57,14 @@ public class UserPermissionService {
     Set<Permission> inherited = new HashSet<>();
 
     if (role.getParentRoleId() != null) {
-      roleRepository
+      roleGateway
           .findById(role.getParentRoleId())
           .ifPresent(
               parentRole -> {
                 if (parentRole.isEnabled()) {
                   // Add parent's permissions
                   List<Permission> parentPermissions =
-                      permissionRepository.findByRoleId(parentRole.getId());
+                      permissionGateway.findByRoleId(parentRole.getId());
                   inherited.addAll(
                       parentPermissions.stream()
                           .filter(Permission::isEnabled)

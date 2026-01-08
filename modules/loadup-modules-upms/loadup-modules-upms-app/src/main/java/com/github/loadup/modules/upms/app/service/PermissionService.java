@@ -1,10 +1,10 @@
 package com.github.loadup.modules.upms.app.service;
 
-import com.github.loadup.modules.upms.app.command.PermissionCreateCommand;
-import com.github.loadup.modules.upms.app.command.PermissionUpdateCommand;
-import com.github.loadup.modules.upms.app.dto.PermissionDTO;
 import com.github.loadup.modules.upms.domain.entity.Permission;
-import com.github.loadup.modules.upms.domain.repository.PermissionRepository;
+import com.github.loadup.modules.upms.domain.gateway.PermissionGateway;
+import com.github.loadup.upms.api.command.PermissionCreateCommand;
+import com.github.loadup.upms.api.command.PermissionUpdateCommand;
+import com.github.loadup.upms.api.dto.PermissionDTO;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,16 +25,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PermissionService {
 
-  private final PermissionRepository permissionRepository;
+  private final PermissionGateway permissionGateway;
 
   @Transactional
   public PermissionDTO createPermission(PermissionCreateCommand command) {
-    if (permissionRepository.existsByPermissionCode(command.getPermissionCode())) {
+    if (permissionGateway.existsByPermissionCode(command.getPermissionCode())) {
       throw new RuntimeException("权限编码已存在");
     }
 
     if (command.getParentId() != null && command.getParentId() != "0") {
-      permissionRepository
+      permissionGateway
           .findById(command.getParentId())
           .orElseThrow(() -> new RuntimeException("父权限不存在"));
     }
@@ -58,14 +58,14 @@ public class PermissionService {
             .createdTime(LocalDateTime.now())
             .build();
 
-    permission = permissionRepository.save(permission);
+    permission = permissionGateway.save(permission);
     return convertToDTO(permission);
   }
 
   @Transactional
   public PermissionDTO updatePermission(PermissionUpdateCommand command) {
     Permission permission =
-        permissionRepository
+        permissionGateway
             .findById(command.getId())
             .orElseThrow(() -> new RuntimeException("权限不存在"));
 
@@ -73,7 +73,7 @@ public class PermissionService {
       if (command.getParentId().equals(command.getId())) {
         throw new RuntimeException("父权限不能是自己");
       }
-      permissionRepository
+      permissionGateway
           .findById(command.getParentId())
           .orElseThrow(() -> new RuntimeException("父权限不存在"));
     }
@@ -95,46 +95,46 @@ public class PermissionService {
     permission.setUpdatedBy(command.getUpdatedBy());
     permission.setUpdatedTime(LocalDateTime.now());
 
-    permission = permissionRepository.update(permission);
+    permission = permissionGateway.update(permission);
     return convertToDTO(permission);
   }
 
   @Transactional
   public void deletePermission(String id) {
-    permissionRepository.findById(id).orElseThrow(() -> new RuntimeException("权限不存在"));
+    permissionGateway.findById(id).orElseThrow(() -> new RuntimeException("权限不存在"));
 
-    List<Permission> children = permissionRepository.findByParentId(id);
+    List<Permission> children = permissionGateway.findByParentId(id);
     if (!children.isEmpty()) {
       throw new RuntimeException("该权限下存在子权限，无法删除");
     }
 
-    permissionRepository.deleteById(id);
+    permissionGateway.deleteById(id);
   }
 
   public PermissionDTO getPermissionById(String id) {
     Permission permission =
-        permissionRepository.findById(id).orElseThrow(() -> new RuntimeException("权限不存在"));
+        permissionGateway.findById(id).orElseThrow(() -> new RuntimeException("权限不存在"));
     return convertToDTO(permission);
   }
 
   public List<PermissionDTO> getPermissionTree() {
-    List<Permission> allPermissions = permissionRepository.findAll();
+    List<Permission> allPermissions = permissionGateway.findAll();
     return buildPermissionTree(allPermissions, null);
   }
 
   public List<PermissionDTO> getPermissionsByType(Short permissionType) {
-    List<Permission> permissions = permissionRepository.findByPermissionType(permissionType);
+    List<Permission> permissions = permissionGateway.findByPermissionType(permissionType);
     return permissions.stream().map(this::convertToDTO).collect(Collectors.toList());
   }
 
   public List<PermissionDTO> getUserPermissions(String userId) {
-    List<Permission> permissions = permissionRepository.findByUserId(userId);
+    List<Permission> permissions = permissionGateway.findByUserId(userId);
     return permissions.stream().map(this::convertToDTO).collect(Collectors.toList());
   }
 
   public List<PermissionDTO> getUserMenuTree(String userId) {
     List<Permission> menuPermissions =
-        permissionRepository.findByUserId(userId).stream()
+        permissionGateway.findByUserId(userId).stream()
             .filter(p -> p.getPermissionType() == 1 && Boolean.TRUE.equals(p.getVisible()))
             .collect(Collectors.toList());
     return buildPermissionTree(menuPermissions, null);

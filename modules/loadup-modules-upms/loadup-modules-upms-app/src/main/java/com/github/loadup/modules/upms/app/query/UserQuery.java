@@ -21,7 +21,7 @@ public class UserQuery {
   private String nickname;
   private String realName;
   private String email;
-  private String phone;
+  private String mobile;
   private String deptId;
   private Short status;
   private Boolean deleted;

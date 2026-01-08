@@ -15,7 +15,9 @@
     <description>User Permission Management System - RBAC3 Model with COLA 4.0 Architecture</description>
 
     <modules>
+        <module>loadup-modules-upms-client</module>
         <module>loadup-modules-upms-domain</module>
+        <module>loadup-modules-upms-security</module>
         <module>loadup-modules-upms-infrastructure</module>
         <module>loadup-modules-upms-app</module>
         <module>loadup-modules-upms-adapter</module>

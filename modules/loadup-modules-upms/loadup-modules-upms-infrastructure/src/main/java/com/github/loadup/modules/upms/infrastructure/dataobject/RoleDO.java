@@ -20,7 +20,7 @@ public class RoleDO extends BaseDO {
 
   private String roleCode;
 
-  private String parentRoleId;
+  private String parentId;
 
   private Integer roleLevel;
 

@@ -26,7 +26,7 @@ import com.github.loadup.commons.result.ResultCode;
 import com.github.loadup.commons.result.ResultStatusEnum;
 import java.util.Arrays;
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 @Getter
 public enum CommonResultCodeEnum implements ResultCode {
@@ -39,9 +39,9 @@ public enum CommonResultCodeEnum implements ResultCode {
   NOT_FOUND(ResultStatusEnum.FAIL, "Key is not found."),
   SYS_ERROR(ResultStatusEnum.FAIL, "System error."),
   ;
-  private String status;
+  private final String status;
 
-  private String message;
+  private final String message;
 
   CommonResultCodeEnum(ResultStatusEnum status, String message) {
     this.status = status.getCode();
@@ -50,9 +50,9 @@ public enum CommonResultCodeEnum implements ResultCode {
 
   public static CommonResultCodeEnum getByResultCode(String resultCode) {
     return Arrays.stream(CommonResultCodeEnum.values())
-        .filter(value -> StringUtils.equals(value.getCode(), resultCode))
+        .filter(value -> Strings.CI.equals(value.getCode(), resultCode))
         .findFirst()
-        .orElse(null);
+        .orElse(CommonResultCodeEnum.SYS_ERROR);
   }
 
   @Override
