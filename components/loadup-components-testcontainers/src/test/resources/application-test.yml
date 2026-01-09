@@ -6,7 +6,7 @@ spring:
 loadup:
   testcontainers:
     # Global switch to enable/disable all TestContainers (default: true)
-    enabled: false
+    enabled: true
     localstack:
       # version: localstack/localstack:3.0
       enabled: true

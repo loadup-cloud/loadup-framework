@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -88,6 +89,7 @@
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
             <optional>true</optional>
+            <scope>test</scope>
         </dependency>
 
         <!-- Spring Data MongoDB (optional) -->
@@ -95,6 +97,7 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-mongodb</artifactId>
             <optional>true</optional>
+            <scope>test</scope>
         </dependency>
 
         <!-- Spring Kafka (optional) -->
@@ -102,12 +105,14 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
             <optional>true</optional>
+            <scope>test</scope>
         </dependency>
 
         <!-- Elasticsearch Client (optional) -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-elasticsearch</artifactId>
+            <scope>test</scope>
             <optional>true</optional>
         </dependency>
 
@@ -115,12 +120,14 @@
         <dependency>
             <groupId>io.lettuce</groupId>
             <artifactId>lettuce-core</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- Spring Data Redis (optional) -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-redis</artifactId>
+            <scope>test</scope>
             <optional>true</optional>
         </dependency>
 
@@ -129,6 +136,7 @@
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
             <version>${aws.sdk.version}</version>
+            <scope>test</scope>
             <optional>true</optional>
         </dependency>
 
