@@ -32,9 +32,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 /**
@@ -46,7 +46,11 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 @Slf4j
 @ActiveProfiles("test")
 @SpringBootTest(classes = TestApplication.class)
-@ConditionalOnProperty(name = "loadup.testcontainers.enabled", havingValue = "true")
+@TestPropertySource(
+    properties = {
+      "loadup.testcontainers.enabled=true",
+      "loadup.testcontainers.elasticsearch.enabled=true"
+    })
 class SharedElasticsearchContainerIT extends AbstractElasticsearchContainerTest {
 
   @Test

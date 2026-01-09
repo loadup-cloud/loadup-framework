@@ -34,9 +34,9 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.kafka.KafkaContainer;
 
 /**
@@ -48,7 +48,8 @@ import org.testcontainers.kafka.KafkaContainer;
 @Slf4j
 @ActiveProfiles("test")
 @SpringBootTest(classes = TestApplication.class)
-@ConditionalOnProperty(name = "loadup.testcontainers.enabled", havingValue = "true")
+@TestPropertySource(
+    properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.kafka.enabled=true"})
 class SharedKafkaContainerIT extends AbstractKafkaContainerTest {
 
   @Test

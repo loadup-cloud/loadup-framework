@@ -25,9 +25,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 /**
@@ -39,7 +39,11 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 @Slf4j
 @ActiveProfiles("test")
 @SpringBootTest(classes = TestApplication.class)
-@ConditionalOnProperty(name = "loadup.testcontainers.enabled", havingValue = "true")
+@TestPropertySource(
+    properties = {
+      "loadup.testcontainers.enabled=true",
+      "loadup.testcontainers.postgresql.enabled=true"
+    })
 class SharedPostgreSQLContainerIT extends AbstractPostgreSQLContainerTest {
 
   @Test
