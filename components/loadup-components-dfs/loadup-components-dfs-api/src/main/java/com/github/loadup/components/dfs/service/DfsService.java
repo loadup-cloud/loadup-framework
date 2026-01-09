@@ -30,20 +30,18 @@ import com.github.loadup.components.dfs.model.FileUploadRequest;
 import com.github.loadup.components.extension.core.BizScenario;
 import com.github.loadup.components.extension.exector.ExtensionExecutor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 /** DFS服务 */
 @Slf4j
-@Service
+//@Service
 public class DfsService {
 
   public static final String BIZ_CODE = "DFS";
   private final ExtensionExecutor extensionExecutor;
-  private final DfsProperties dfsProperties;
+  private DfsProperties dfsProperties = new DfsProperties();
 
   public DfsService(ExtensionExecutor extensionExecutor, DfsProperties dfsProperties) {
     this.extensionExecutor = extensionExecutor;
-    this.dfsProperties = dfsProperties;
   }
 
   /**

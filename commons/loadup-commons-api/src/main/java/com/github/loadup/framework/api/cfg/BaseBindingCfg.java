@@ -1,13 +1,23 @@
 package com.github.loadup.framework.api.cfg;
 
 public class BaseBindingCfg {
-  protected String name;
 
-  public String getName() {
-    return name;
+  private String binderType;
+  private boolean enabled = true;
+
+  public boolean isEnabled() {
+    return enabled;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
+
+  public String getBinderType() {
+    return binderType;
+  }
+
+  public void setBinderType(String binderType) {
+    this.binderType = binderType;
   }
 }

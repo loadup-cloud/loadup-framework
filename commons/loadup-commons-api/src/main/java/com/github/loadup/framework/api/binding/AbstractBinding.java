@@ -1,11 +1,23 @@
 package com.github.loadup.framework.api.binding;
 
-import com.github.loadup.framework.api.binder.Binder;
-import com.github.loadup.framework.api.cfg.BaseBindingCfg;
+import com.github.loadup.framework.api.context.BindingContext;
 import java.util.List;
 
-public abstract class AbstractBinding<B extends Binder, C extends BaseBindingCfg>
-    implements Binding {
+public abstract class AbstractBinding<B, C> implements Binding {
+  protected C cfg;
+  protected List<B> binders;
+  protected String name;
+  protected String type;
+
+  /** 获取首选驱动（通常 binders 列表中至少有一个） */
+  protected B getBinder() {
+    if (binders == null || binders.isEmpty()) {
+      throw new IllegalStateException("No binders available for " + name);
+    }
+    // 默认返回第一个驱动
+    return binders.getFirst();
+  }
+
   public C getCfg() {
     return cfg;
   }
@@ -14,20 +26,12 @@ public abstract class AbstractBinding<B extends Binder, C extends BaseBindingCfg
     this.cfg = cfg;
   }
 
-  public B getBinder() {
-    return binder;
+  public List<B> getBinders() {
+    return binders;
   }
 
-  public void setBinder(B binder) {
-    this.binder = binder;
-  }
-
-  public List<B> getBinderList() {
-    return binderList;
-  }
-
-  public void setBinderList(List<B> binderList) {
-    this.binderList = binderList;
+  public void setBinders(List<B> binders) {
+    this.binders = binders;
   }
 
   public String getName() {
@@ -46,12 +50,29 @@ public abstract class AbstractBinding<B extends Binder, C extends BaseBindingCfg
     this.type = type;
   }
 
-  protected C cfg;
-  protected B binder;
+  @Override
+  @SuppressWarnings("unchecked")
+  public void init(BindingContext<?, ?> context) {
+    this.name = context.getName();
+    this.type = context.getType();
+    // 这里的强制转型是安全的，因为 Manager 保证了传入的类型匹配
+    this.cfg = (C) context.getConfig();
+    this.binders = (List<B>) context.getBinders();
 
-  protected List<B> binderList;
+    // 留给子类的钩子
+    afterInit();
+  }
 
-  protected String name;
+  /** 子类扩展点：如果 S3Binding 需要在拿到配置后初始化 AmazonS3 客户端，写在这里 */
+  protected void afterInit() {
+    // 默认空实现
+  }
 
-  protected String type;
+  public final void destroy() {
+    afterDestroy();
+  }
+
+  protected void afterDestroy() {
+    // 默认空实现
+  }
 }

@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -56,7 +55,7 @@ import org.springframework.test.context.ActiveProfiles;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
 
-  @Autowired private DfsService dfsService;
+   private DfsService dfsService;
 
   private static final String TEST_CONTENT = "DFS Service test content.";
   private static final String TEST_FILENAME = "service-test.txt";

@@ -22,8 +22,15 @@ package com.github.loadup.framework.api.binding;
  * #L%
  */
 
-public interface Binding {
-  default void init() {}
+import com.github.loadup.framework.api.context.BindingContext;
 
-  default void destroy() {}
+public interface Binding {
+  String name();
+
+  /**
+   * 通用的初始化方法
+   *
+   * @param context 包含所有装配原材料的上下文
+   */
+  void init(BindingContext<?, ?> context);
 }

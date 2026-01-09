@@ -27,13 +27,11 @@ import com.github.loadup.components.dfs.binder.database.entity.FileStorageEntity
 import com.github.loadup.components.dfs.binder.database.entity.table.Tables;
 import com.github.loadup.components.dfs.binder.database.mapper.FileStorageEntityMapper;
 import com.github.loadup.components.dfs.config.DfsProperties;
-import com.github.loadup.components.dfs.constants.DfsConstant;
 import com.github.loadup.components.dfs.enums.DfsProviderType;
 import com.github.loadup.components.dfs.enums.FileStatus;
 import com.github.loadup.components.dfs.model.FileDownloadResponse;
 import com.github.loadup.components.dfs.model.FileMetadata;
 import com.github.loadup.components.dfs.model.FileUploadRequest;
-import com.github.loadup.components.extension.annotation.Extension;
 import com.mybatisflex.core.query.QueryWrapper;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -42,20 +40,17 @@ import java.security.MessageDigest;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
 
 /** 数据库存储提供者 */
 @Slf4j
-@Component
-@Extension(bizCode = DfsConstant.BIZ_CODE, useCase = DfsConstant.DATABASE)
-@ConditionalOnProperty(prefix = "loadup.dfs", name = "provider", havingValue = DfsConstant.DATABASE)
+//@Component
+//@Extension(bizCode = DfsConstant.BIZ_CODE, useCase = DfsConstant.DATABASE)
+//@ConditionalOnProperty(prefix = "loadup.dfs", name = "provider", havingValue = DfsConstant.DATABASE)
 public class DatabaseDfsProvider implements IDfsProvider {
 
-  @Autowired private DfsProperties dfsProperties;
+   private DfsProperties dfsProperties;
 
-  @Autowired private FileStorageEntityMapper fileStorageEntityMapper;
+   private FileStorageEntityMapper fileStorageEntityMapper;
 
   @Override
   public FileMetadata upload(FileUploadRequest request) {

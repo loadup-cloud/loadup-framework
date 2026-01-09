@@ -21,21 +21,31 @@
             <groupId>com.github.loadup.components</groupId>
             <artifactId>loadup-components-dfs-api</artifactId>
             <version>${loadup.framework.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.github.loadup.components</groupId>
             <artifactId>loadup-components-dfs-binder-local</artifactId>
             <version>${loadup.framework.version}</version>
+            <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.github.loadup.components</groupId>
-            <artifactId>loadup-components-dfs-binder-database</artifactId>
-            <version>${loadup.framework.version}</version>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.github.loadup.components</groupId>-->
+        <!--            <artifactId>loadup-components-dfs-binder-database</artifactId>-->
+        <!--            <version>${loadup.framework.version}</version>-->
+        <!--            <scope>test</scope>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>com.github.loadup.components</groupId>
             <artifactId>loadup-components-dfs-binder-s3</artifactId>
             <version>${loadup.framework.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.loadup.components</groupId>
+            <artifactId>loadup-components-dfs-starter</artifactId>
+            <version>${loadup.framework.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- Spring Boot Test -->
@@ -45,7 +55,7 @@
             <scope>test</scope>
         </dependency>
 
-       
+
         <!-- LoadUp TestContainers Component (includes MySQL, Redis, LocalStack/S3, and all drivers) -->
         <dependency>
             <groupId>com.github.loadup.components</groupId>

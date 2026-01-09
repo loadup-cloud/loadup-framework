@@ -81,8 +81,7 @@ public class DefaultSchedulerBinding implements SchedulerBinding {
         return schedulerBinder.taskExists(taskName);
     }
 
-    @Override
-    public void init() {
+  public void afterInit() {
         log.info("Initializing scheduler binding");
         schedulerBinder.init();
     }

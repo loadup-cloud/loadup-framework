@@ -20,10 +20,10 @@
         <module>components/loadup-components-database</module>
         <module>components/loadup-components-liquibase</module>
         <module>components/loadup-components-extension</module>
-        <module>components/loadup-components-cache</module>
+        <!--        <module>components/loadup-components-cache</module>-->
         <module>components/loadup-components-captcha</module>
         <module>components/loadup-components-tracer</module>
-        <module>components/loadup-components-scheduler</module>
+        <!--        <module>components/loadup-components-scheduler</module>-->
         <module>components/loadup-components-gotone</module>
         <module>components/loadup-components-dfs</module>
         <module>components/loadup-components-testcontainers</module>

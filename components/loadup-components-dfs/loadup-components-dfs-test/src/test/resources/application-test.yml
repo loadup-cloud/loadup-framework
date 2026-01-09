@@ -28,16 +28,22 @@ loadup:
 
   # DFS Configuration
   dfs:
-    default-provider: database
-    max-file-size: 10485760  # 10MB for tests
-    providers:
-      local:
-        enabled: true
-        base-path: ${java.io.tmpdir}/dfs-test
-      database:
-        enabled: true
-      s3:
-        enabled: false
+    binder: local  # 枚举类型
+    enabled-binders: [ local, s3 ] # 可选
+    bindings: # 可选
+      user-avatar:
+        binder-type: local
+      order-pdf:
+        binder-type: s3
+    binders:
+      local: # 强类型配置，支持代码提示
+        base-path: /tmp/storage
+      s3: # 强类型配置，支持代码提示
+        access-key: ak
+        secret-key: sk
+        region: us-east-1
+        bucket-name: my-bucket
+        endpoint: http://localhost:4566
 
 # Logging
 logging:

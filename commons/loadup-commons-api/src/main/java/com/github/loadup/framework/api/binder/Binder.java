@@ -22,7 +22,10 @@ package com.github.loadup.framework.api.binder;
  * #L%
  */
 public interface Binder {
-  String type();
+  String getBinderType();
+
+  // 接受 Object 类型的配置，内部处理类型转换
+  void injectBinderConfig(Object config);
 
   default void init() {}
 

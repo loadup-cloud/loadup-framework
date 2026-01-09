@@ -3,11 +3,20 @@ spring:
     name: dfs-test-local
 # LoadUp Database Configuration
 loadup:
-  # DFS Configuration
   dfs:
-    provider: local
-    local:
-      base-path: ${java.io.tmpdir}/dfs-test
+    binder: LOCAL  # 枚举类型
+    enabled-binders: [ LOCAL, S3 ] # 可选
+    mappings: # 可选
+      xxx: LOCAL
+      yyy: S3
+    local: # 强类型配置，支持代码提示
+      base-path: /tmp/storage
+    s3: # 强类型配置，支持代码提示
+      access-key: ak
+      secret-key: sk
+      region: us-east-1
+      bucket-name: my-bucket
+      endpoint: http://localhost:4566
 
 # Logging
 logging:

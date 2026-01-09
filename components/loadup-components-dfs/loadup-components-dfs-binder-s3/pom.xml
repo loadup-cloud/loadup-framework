@@ -16,11 +16,7 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.github.loadup.components</groupId>
-            <artifactId>loadup-components-dfs-api</artifactId>
-            <version>${loadup.framework.version}</version>
-        </dependency>
+
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -71,7 +67,13 @@
         <dependency>
             <groupId>com.github.loadup.commons</groupId>
             <artifactId>loadup-commons-util</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${loadup.framework.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.loadup.components</groupId>
+            <artifactId>loadup-components-dfs-api</artifactId>
+            <version>${loadup.framework.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
