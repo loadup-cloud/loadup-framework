@@ -1,5 +1,6 @@
 package com.github.loadup.framework.api.manager;
 
+import com.github.loadup.exception.BinderNotFoundException;
 import com.github.loadup.framework.api.binder.Binder;
 import com.github.loadup.framework.api.binding.Binding;
 import com.github.loadup.framework.api.cfg.BaseBindingCfg;
@@ -10,7 +11,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.springframework.context.ApplicationContext;
-import org.springframework.util.Assert;
 
 public abstract class BindingManagerSupport<B extends Binder, T extends Binding> {
   protected final ApplicationContext context;
@@ -45,7 +45,9 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
 
               // 2. 获取元数据
               BindingMetadata<?, ?, ?, ?> meta = registry.get(type);
-              Assert.notNull(meta, "Type not registered: " + type);
+              if (meta == null) {
+                throw new BinderNotFoundException("Binder not registered: " + type);
+              }
 
               // 3. 关键：调用泛型捕获方法，将通配符转换为具体的泛型 B, C_BIND, C_BINDR
               return (T) captureAndCreate(tag, type, (BindingMetadata) meta);
@@ -65,18 +67,27 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
                 type, t -> resolveConfig(configPrefix + ".binders." + t, meta.binderCfgClass));
 
     // 动态实例化 Binder (注意：B_SUB 是 B 的子类)
-    B_SUB binderInstance =
-        (B_SUB) context.getAutowireCapableBeanFactory().createBean(meta.binderClass);
-    binderInstance.injectBinderConfig(binderCfg);
 
     // 准备上下文
-    List<B_SUB> binders = Collections.singletonList(binderInstance);
+    // List<B_SUB> binders = Collections.singletonList(binderInstance);
+    List<B_SUB> binders = new ArrayList<>();
+    // 如果配置中支持多选，则循环创建
+    binders.add(createOne(meta, binderCfg));
+
     BindingContext<B_SUB, CBIND> ctx = new BindingContext<>(tag, type, bindingCfg, binders);
 
     // 调用工厂创建 Binding 并初始化
     T_SUB bindingInstance = meta.factory.create(ctx);
     bindingInstance.init(ctx);
     return bindingInstance;
+  }
+
+  private <B_SUB extends B, CBIND, CBINDR, T_SUB extends T> B_SUB createOne(
+      BindingMetadata<B_SUB, CBIND, CBINDR, T_SUB> meta, CBINDR binderCfg) {
+    B_SUB binderInstance =
+        (B_SUB) context.getAutowireCapableBeanFactory().createBean(meta.binderClass);
+    binderInstance.injectBinderConfig(binderCfg);
+    return binderInstance;
   }
 
   @SuppressWarnings("unchecked")
@@ -120,13 +131,15 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
   protected <C> C resolveConfig(String path, Class<C> configClass) {
     return org.springframework.boot.context.properties.bind.Binder.get(context.getEnvironment())
         .bind(path, configClass)
-        .orElseGet(
-            () -> {
-              try {
-                return configClass.getDeclaredConstructor().newInstance();
-              } catch (Exception e) {
-                throw new RuntimeException(e);
-              }
-            });
+        .orElseGet(() -> createDefaultConfig(configClass));
+  }
+
+  private <C> C createDefaultConfig(Class<C> configClass) {
+    // 这里可以根据业务决定是直接报错还是返回空对象
+    try {
+      return configClass.getDeclaredConstructor().newInstance();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    } // 如果是 getBinding 探测，建议报错：bizTag 未在配置文件中定义
   }
 }

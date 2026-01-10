@@ -6,15 +6,22 @@ import java.util.Map;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.Ordered;
+import org.springframework.core.PriorityOrdered;
 import org.springframework.util.ReflectionUtils;
 
 // @Component
-public class BindingPostProcessor implements BeanPostProcessor {
+public class BindingPostProcessor implements BeanPostProcessor, PriorityOrdered {
 
   private final ApplicationContext context;
 
   public BindingPostProcessor(ApplicationContext context) {
     this.context = context;
+  }
+
+  @Override
+  public int getOrder() {
+    return Ordered.HIGHEST_PRECEDENCE; // 尽早执行注入
   }
 
   @Override
