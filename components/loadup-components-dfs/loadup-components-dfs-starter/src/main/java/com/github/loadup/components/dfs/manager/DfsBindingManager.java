@@ -21,7 +21,7 @@ public class DfsBindingManager extends BindingManagerSupport<DfsBinder, DfsBindi
   /** 实现内核要求的钩子：获取默认 Binder 类型 */
   @Override
   protected String getDefaultBinderType() {
-    return groupProps.getDefaultBinder();
+    return groupProps.getDefaultBinder().getValue();
   }
 
   /** 实现内核要求的钩子：指定驱动接口类型，用于容器查找原型 Bean */

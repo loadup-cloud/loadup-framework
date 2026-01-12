@@ -1,0 +1,107 @@
+{
+  "groups": [
+    {
+      "name": "loadup.dfs.binders.local",
+      "type": "com.github.loadup.components.dfs.properties.LocalBinderConfig",
+      "sourceType": "com.github.loadup.components.dfs.properties.LocalBinderConfig",
+      "sourceMethod": "getBinders()[local]"
+    },
+    {
+      "name": "loadup.dfs.binders.s3",
+      "type": "com.github.loadup.components.dfs.properties.S3BinderConfig",
+      "sourceType": "com.github.loadup.components.dfs.properties.S3BinderConfig",
+      "sourceMethod": "getBinders()[s3]"
+    },
+    {
+      "name": "loadup.dfs.binders.database",
+      "type": "com.github.loadup.components.dfs.properties.DatabaseBinderConfig",
+      "sourceType": "com.github.loadup.components.dfs.properties.DatabaseBinderConfig",
+      "sourceMethod": "getBinders()[database]"
+    }
+  ],
+  "properties": [
+    {
+      "name": "loadup.dfs.binder",
+      "type": "com.github.loadup.components.dfs.properties.BinderType",
+      "description": "绑定的存储类型.",
+      "sourceType": "com.github.loadup.components.dfs.properties.DfsGroupProperties",
+      "defaultValue": "local"
+    },
+    {
+      "name": "loadup.dfs.enabled-binders",
+      "type": "java.util.List<com.github.loadup.components.dfs.properties.BinderType>",
+      "description": "启用的绑定器列表.",
+      "sourceType": "com.github.loadup.components.dfs.properties.DfsGroupProperties"
+    },
+    {
+      "name": "loadup.dfs.binders",
+      "type": "java.util.Map<com.github.loadup.components.dfs.properties.BinderType, com.github.loadup.components.dfs.properties.BinderConfig>",
+      "description": "各种存储类型的配置.",
+      "sourceType": "com.github.loadup.components.dfs.properties.DfsGroupProperties"
+    },
+    {
+      "name": "loadup.dfs.binders.local.base-path",
+      "type": "java.lang.String",
+      "description": "本地存储基础路径.",
+      "sourceType": "com.github.loadup.components.dfs.properties.LocalBinderConfig",
+      "defaultValue": "/tmp/storage"
+    },
+    {
+      "name": "loadup.dfs.binders.s3.access-key",
+      "type": "java.lang.String",
+      "description": "S3访问密钥.",
+      "sourceType": "com.github.loadup.components.dfs.properties.S3BinderConfig"
+    },
+    {
+      "name": "loadup.dfs.binders.s3.secret-key",
+      "type": "java.lang.String",
+      "description": "S3密钥.",
+      "sourceType": "com.github.loadup.components.dfs.properties.S3BinderConfig"
+    },
+    {
+      "name": "loadup.dfs.binders.s3.region",
+      "type": "java.lang.String",
+      "description": "S3区域.",
+      "sourceType": "com.github.loadup.components.dfs.properties.S3BinderConfig",
+      "defaultValue": "us-east-1"
+    },
+    {
+      "name": "loadup.dfs.binders.s3.bucket",
+      "type": "java.lang.String",
+      "description": "S3存储桶名称.",
+      "sourceType": "com.github.loadup.components.dfs.properties.S3BinderConfig"
+    },
+    {
+      "name": "loadup.dfs.binders.s3.endpoint",
+      "type": "java.lang.String",
+      "description": "S3端点URL.",
+      "sourceType": "com.github.loadup.components.dfs.properties.S3BinderConfig"
+    },
+    {
+      "name": "loadup.dfs.binders.database.table-name",
+      "type": "java.lang.String",
+      "description": "数据库表名.",
+      "sourceType": "com.github.loadup.components.dfs.properties.DatabaseBinderConfig",
+      "defaultValue": "dfs_files"
+    }
+  ],
+  "hints": [
+    {
+      "name": "loadup.dfs.binder",
+      "values": [
+        {
+          "value": "local",
+          "description": "本地存储."
+        },
+        {
+          "value": "s3",
+          "description": "S3对象存储."
+        },
+        {
+          "value": "database",
+          "description": "数据库存储."
+        }
+      ]
+    }
+  ]
+}
