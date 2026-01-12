@@ -17,6 +17,11 @@ spring:
   # Enable auto-configuration
   autoconfigure:
     exclude: [ ]
+  datasource:
+    url: jdbc:mysql://localhost:3306/testdb
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: sroot
+    password: 123456
 
 # LoadUp Database Configuration
 loadup:

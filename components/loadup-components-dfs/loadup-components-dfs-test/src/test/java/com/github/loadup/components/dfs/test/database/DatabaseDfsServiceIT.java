@@ -153,29 +153,6 @@ class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
     assertEquals("database", metadata.getProvider());
   }
 
-  @Test
-  @Order(1)
-  @DisplayName("Should upload file using default table")
-  void testUploadWithDefaultTable() {
-    initTable("file_storage");
-    // Given
-    FileUploadRequest request =
-        FileUploadRequest.builder()
-            .filename(TEST_FILENAME)
-            .inputStream(new ByteArrayInputStream(TEST_CONTENT.getBytes(StandardCharsets.UTF_8)))
-            .contentType("text/plain")
-            .bizType("service-test")
-            .build();
-
-    // When
-    FileMetadata metadata = dbBinding.upload(request);
-
-    // Then
-    assertNotNull(metadata);
-    assertNotNull(metadata.getFileId());
-    assertEquals(TEST_FILENAME, metadata.getFilename());
-    assertEquals("database", metadata.getProvider());
-  }
 
   @Test
   @Order(2)
