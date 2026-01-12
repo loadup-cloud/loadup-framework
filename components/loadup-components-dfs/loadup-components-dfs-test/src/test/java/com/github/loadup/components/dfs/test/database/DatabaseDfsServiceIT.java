@@ -1,4 +1,4 @@
-package com.github.loadup.components.dfs.test.binder.database;
+package com.github.loadup.components.dfs.test.database;
 
 /*-
  * #%L
@@ -24,12 +24,16 @@ package com.github.loadup.components.dfs.test.binder.database;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.loadup.components.dfs.binding.AbstractDfsBinding;
+import com.github.loadup.components.dfs.database.binding.DatabaseDfsBinding;
+import com.github.loadup.components.dfs.manager.DfsBindingManager;
 import com.github.loadup.components.dfs.model.FileDownloadResponse;
 import com.github.loadup.components.dfs.model.FileMetadata;
 import com.github.loadup.components.dfs.model.FileUploadRequest;
-import com.github.loadup.components.dfs.service.DfsService;
 import com.github.loadup.components.dfs.test.DfsTestApplication;
 import com.github.loadup.components.testcontainers.database.AbstractMySQLContainerTest;
+import com.github.loadup.components.testcontainers.database.SharedMySQLContainer;
+import com.github.loadup.framework.api.annotation.BindingClient;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -37,8 +41,11 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.*;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Integration test for DFS Service using DATABASE provider.
@@ -53,12 +60,75 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(classes = DfsTestApplication.class)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Transactional
 class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
 
-   private DfsService dfsService;
+  @BindingClient("db-files")
+  private AbstractDfsBinding dbBinding;
 
+  @Autowired private DfsBindingManager manager;
+
+  @Autowired private JdbcTemplate jdbcTemplate;
   private static final String TEST_CONTENT = "DFS Service test content.";
   private static final String TEST_FILENAME = "service-test.txt";
+  private static final String TABLE_NAME = "dfs_files";
+
+  @DynamicPropertySource
+  static void configureProperties(DynamicPropertyRegistry registry) {
+    registry.add("spring.datasource.url", SharedMySQLContainer::getJdbcUrl);
+    registry.add("spring.datasource.username", SharedMySQLContainer::getUsername);
+    registry.add("spring.datasource.password", SharedMySQLContainer::getPassword);
+  }
+
+  @BeforeEach
+  void setUpAll() {
+    initTable(TABLE_NAME);
+  }
+
+  private void initTable(String tableName) {
+    // 创建表结构
+    String createTableSql =
+        """
+                      CREATE TABLE IF NOT EXISTS %s (
+                          file_id VARCHAR(255) PRIMARY KEY,
+                          filename VARCHAR(500) NOT NULL,
+                          content LONGBLOB NOT NULL,
+                          size BIGINT NOT NULL,
+                          content_type VARCHAR(100),
+                          hash VARCHAR(32),
+                          biz_type VARCHAR(100),
+                          biz_id VARCHAR(100),
+                          public_access BOOLEAN DEFAULT FALSE,
+                          upload_time TIMESTAMP,
+                          metadata TEXT
+                      )
+                      """;
+
+    try {
+      // 清理旧表（如果存在）
+      jdbcTemplate.execute("DROP TABLE IF EXISTS %s".formatted(tableName));
+      jdbcTemplate.execute(createTableSql.formatted(tableName));
+    } catch (Exception e) {
+      // 忽略错误
+    }
+  }
+
+  @Test
+  @Order(0)
+  @DisplayName("Should choose right provider")
+  void testDynamicBindingSelection() {
+    // 1. 验证通过 Manager 获取到的实例
+    AbstractDfsBinding binding = manager.getBinding("db-files");
+    assertNotNull(binding);
+
+    // 2. 验证注入注解是否生效
+    assertNotNull(dbBinding);
+    assertEquals(dbBinding, binding);
+
+    // 3. 验证 Binder 是否被正确装配 (S3 类型)
+    // 假设 S3DfsBinding 暴露了获取类型的方法
+    assertInstanceOf(DatabaseDfsBinding.class, binding);
+  }
 
   @Test
   @Order(1)
@@ -74,7 +144,31 @@ class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
             .build();
 
     // When
-    FileMetadata metadata = dfsService.upload(request);
+    FileMetadata metadata = dbBinding.upload(request);
+
+    // Then
+    assertNotNull(metadata);
+    assertNotNull(metadata.getFileId());
+    assertEquals(TEST_FILENAME, metadata.getFilename());
+    assertEquals("database", metadata.getProvider());
+  }
+
+  @Test
+  @Order(1)
+  @DisplayName("Should upload file using default table")
+  void testUploadWithDefaultTable() {
+    initTable("file_storage");
+    // Given
+    FileUploadRequest request =
+        FileUploadRequest.builder()
+            .filename(TEST_FILENAME)
+            .inputStream(new ByteArrayInputStream(TEST_CONTENT.getBytes(StandardCharsets.UTF_8)))
+            .contentType("text/plain")
+            .bizType("service-test")
+            .build();
+
+    // When
+    FileMetadata metadata = dbBinding.upload(request);
 
     // Then
     assertNotNull(metadata);
@@ -93,10 +187,10 @@ class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
             .filename(TEST_FILENAME)
             .inputStream(new ByteArrayInputStream(TEST_CONTENT.getBytes(StandardCharsets.UTF_8)))
             .build();
-    FileMetadata uploadedMetadata = dfsService.upload(uploadRequest);
+    FileMetadata uploadedMetadata = dbBinding.upload(uploadRequest);
 
     // When
-    FileDownloadResponse response = dfsService.download(uploadedMetadata.getFileId());
+    FileDownloadResponse response = dbBinding.download(uploadedMetadata.getFileId());
 
     // Then
     assertNotNull(response);
@@ -115,10 +209,10 @@ class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
             .filename(TEST_FILENAME)
             .inputStream(new ByteArrayInputStream(TEST_CONTENT.getBytes(StandardCharsets.UTF_8)))
             .build();
-    FileMetadata metadata = dfsService.upload(request);
+    FileMetadata metadata = dbBinding.upload(request);
 
     // When
-    boolean deleted = dfsService.delete(metadata.getFileId());
+    boolean deleted = dbBinding.delete(metadata.getFileId());
 
     // Then
     assertTrue(deleted);
@@ -134,11 +228,11 @@ class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
             .filename(TEST_FILENAME)
             .inputStream(new ByteArrayInputStream(TEST_CONTENT.getBytes(StandardCharsets.UTF_8)))
             .build();
-    FileMetadata metadata = dfsService.upload(request);
+    FileMetadata metadata = dbBinding.upload(request);
 
     // When & Then
-    assertTrue(dfsService.exists(metadata.getFileId()));
-    assertFalse(dfsService.exists("non-existent"));
+    assertTrue(dbBinding.exists(metadata.getFileId()));
+    assertFalse(dbBinding.exists("non-existent"));
   }
 
   @Test
@@ -153,10 +247,10 @@ class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
             .contentType("text/plain")
             .bizType("metadata-test")
             .build();
-    FileMetadata uploadedMetadata = dfsService.upload(request);
+    FileMetadata uploadedMetadata = dbBinding.upload(request);
 
     // When
-    FileMetadata retrievedMetadata = dfsService.getMetadata(uploadedMetadata.getFileId());
+    FileMetadata retrievedMetadata = dbBinding.getMetadata(uploadedMetadata.getFileId());
 
     // Then
     assertNotNull(retrievedMetadata);
@@ -186,16 +280,16 @@ class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
             .build();
 
     // When
-    FileMetadata metadata1 = dfsService.upload(request1);
-    FileMetadata metadata2 = dfsService.upload(request2);
-    FileMetadata metadata3 = dfsService.upload(request3);
+    FileMetadata metadata1 = dbBinding.upload(request1);
+    FileMetadata metadata2 = dbBinding.upload(request2);
+    FileMetadata metadata3 = dbBinding.upload(request3);
 
     // Then
     assertNotEquals(metadata1.getFileId(), metadata2.getFileId());
     assertNotEquals(metadata2.getFileId(), metadata3.getFileId());
-    assertTrue(dfsService.exists(metadata1.getFileId()));
-    assertTrue(dfsService.exists(metadata2.getFileId()));
-    assertTrue(dfsService.exists(metadata3.getFileId()));
+    assertTrue(dbBinding.exists(metadata1.getFileId()));
+    assertTrue(dbBinding.exists(metadata2.getFileId()));
+    assertTrue(dbBinding.exists(metadata3.getFileId()));
   }
 
   @Test
@@ -215,8 +309,8 @@ class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
             .build();
 
     // When
-    FileMetadata metadata1 = dfsService.upload(request1);
-    FileMetadata metadata2 = dfsService.upload(request2);
+    FileMetadata metadata1 = dbBinding.upload(request1);
+    FileMetadata metadata2 = dbBinding.upload(request2);
 
     // Then - Different file IDs but same hash
     assertNotEquals(metadata1.getFileId(), metadata2.getFileId());
@@ -241,7 +335,7 @@ class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
             .build();
 
     // When
-    FileMetadata metadata = dfsService.upload(request);
+    FileMetadata metadata = dbBinding.upload(request);
 
     // Then
     assertEquals(customMetadata, metadata.getMetadata());
@@ -273,9 +367,9 @@ class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
             .build();
 
     // When
-    FileMetadata textMetadata = dfsService.upload(textRequest);
-    FileMetadata jsonMetadata = dfsService.upload(jsonRequest);
-    FileMetadata pdfMetadata = dfsService.upload(pdfRequest);
+    FileMetadata textMetadata = dbBinding.upload(textRequest);
+    FileMetadata jsonMetadata = dbBinding.upload(jsonRequest);
+    FileMetadata pdfMetadata = dbBinding.upload(pdfRequest);
 
     // Then
     assertEquals("text/plain", textMetadata.getContentType());

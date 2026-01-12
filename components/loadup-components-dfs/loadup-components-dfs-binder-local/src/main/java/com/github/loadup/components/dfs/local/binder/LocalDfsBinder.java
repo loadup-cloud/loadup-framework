@@ -28,7 +28,6 @@ import com.github.loadup.components.dfs.enums.FileStatus;
 import com.github.loadup.components.dfs.local.cfg.LocalDfsBinderCfg;
 import com.github.loadup.components.dfs.model.*;
 import com.github.loadup.framework.api.binder.AbstractBinder;
-import jakarta.annotation.PostConstruct;
 import java.io.*;
 import java.nio.file.*;
 import java.security.MessageDigest;
@@ -54,10 +53,7 @@ public class LocalDfsBinder extends AbstractBinder<LocalDfsBinderCfg> implements
 
   private static final DateTimeFormatter PATH_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
-  @PostConstruct
-  public void init() {
-    log.info("Dfs binder initialized with Spring Boot default configuration");
-  }
+
 
   @Override
   public String getBinderType() {
@@ -134,33 +130,96 @@ public class LocalDfsBinder extends AbstractBinder<LocalDfsBinderCfg> implements
 
   @Override
   public FileDownloadResponse download(String fileId) {
-    return null;
+    try {
+      FileMetadata metadata = getMetadata(fileId);
+      String basePath = binderCfg.getBasePath();
+
+      Path filePath = Paths.get(basePath, metadata.getPath());
+
+      if (!Files.exists(filePath)) {
+        throw new FileNotFoundException("File not found: " + fileId);
+      }
+
+      InputStream inputStream = new FileInputStream(filePath.toFile());
+
+      return FileDownloadResponse.builder()
+          .metadata(metadata)
+          .inputStream(inputStream)
+          .contentLength(metadata.getSize())
+          .build();
+
+    } catch (Exception e) {
+      log.error("Failed to download file from local storage: {}", e.getMessage(), e);
+      throw new RuntimeException("Failed to download file", e);
+    }
   }
 
-  @Override
   public boolean delete(String fileId) {
-    return false;
+    try {
+      FileMetadata metadata = getMetadata(fileId);
+      String basePath = binderCfg.getBasePath();
+
+      Path filePath = Paths.get(basePath, metadata.getPath());
+
+      if (Files.exists(filePath)) {
+        Files.delete(filePath);
+
+        // 删除元数据文件
+        Path metaPath = Paths.get(basePath, ".meta", fileId + ".json");
+        if (Files.exists(metaPath)) {
+          Files.delete(metaPath);
+        }
+
+        log.info("File deleted successfully: {}", fileId);
+        return true;
+      }
+
+      return false;
+
+    } catch (Exception e) {
+      log.error("Failed to delete file from local storage: {}", e.getMessage(), e);
+      return false;
+    }
   }
 
   @Override
   public boolean exists(String fileId) {
-    return false;
+    try {
+      FileMetadata metadata = getMetadata(fileId);
+      String basePath = binderCfg.getBasePath();
+
+      Path filePath = Paths.get(basePath, metadata.getPath());
+      return Files.exists(filePath);
+
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   @Override
   public FileMetadata getMetadata(String fileId) {
-    return null;
+    try {
+      String basePath = binderCfg.getBasePath();
+
+      if (basePath == null || basePath.isEmpty()) {
+        basePath = System.getProperty("java.io.tmpdir") + "/dfs";
+      }
+
+      // 读取.meta文件
+      Path metaPath = Paths.get(basePath, ".meta", fileId + ".json");
+      if (!Files.exists(metaPath)) {
+        throw new FileNotFoundException("Metadata not found for fileId: " + fileId);
+      }
+
+      return JsonUtil.parseObject(metaPath.toFile(), FileMetadata.class);
+
+    } catch (Exception e) {
+      log.error("Failed to get metadata for fileId: {}", fileId, e);
+      throw new RuntimeException("Failed to get metadata", e);
+    }
   }
 
-  @Override
-  public String getProviderName() {
-    return "";
-  }
 
-  @Override
-  public boolean isAvailable() {
-    return false;
-  }
 
   private String buildRelativePath(String bizType, String fileId) {
     String datePath = LocalDateTime.now().format(PATH_FORMATTER);

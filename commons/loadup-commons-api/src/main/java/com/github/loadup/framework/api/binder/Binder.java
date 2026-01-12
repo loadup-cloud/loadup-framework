@@ -1,5 +1,7 @@
 package com.github.loadup.framework.api.binder;
 
+import org.springframework.beans.factory.DisposableBean;
+
 /*-
  * #%L
  * loadup-commons-api
@@ -21,15 +23,13 @@ package com.github.loadup.framework.api.binder;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-public interface Binder {
+public interface Binder extends DisposableBean {
   String getBinderType();
 
   // 接受 Object 类型的配置，内部处理类型转换
   void injectBinderConfig(Object config);
 
-  default void init() {}
+  default void binderInit() {}
 
-  default void postProcessAfterInstantiation() {}
-
-  default void destroy() {}
+  default void binderDestroy() {}
 }

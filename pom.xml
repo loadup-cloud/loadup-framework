@@ -94,11 +94,6 @@
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.loadup.commons</groupId>
-                <artifactId>loadup-commons-dto</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.github.loadup.framework</groupId>
                 <artifactId>loadup-commons-util</artifactId>
                 <version>${loadup.framework.version}</version>

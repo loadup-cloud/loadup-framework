@@ -60,18 +60,21 @@ public class SimpleJobSchedulerBinder implements SchedulerBinder {
         this.taskScheduler = taskScheduler;
     }
 
-    @Override
-    public String type() {
+  @Override
+  public String getBinderType() {
         return BINDER_NAME;
     }
 
-    @Override
-    public void init() {
+  @Override
+  public void injectBinderConfig(Object config) {}
+
+  @Override
+  public void binderInit() {
         log.info("Initializing SimpleJob scheduler binder");
     }
 
-    @Override
-    public void destroy() {
+  @Override
+  public void binderDestroy() {
         log.info("Destroying SimpleJob scheduler binder");
         scheduledTasks.values().forEach(future -> future.cancel(false));
         scheduledTasks.clear();
@@ -155,5 +158,8 @@ public class SimpleJobSchedulerBinder implements SchedulerBinder {
             log.error("Error executing task: {}", taskName, e);
         }
     }
+
+  @Override
+  public void destroy() throws Exception {}
 }
 

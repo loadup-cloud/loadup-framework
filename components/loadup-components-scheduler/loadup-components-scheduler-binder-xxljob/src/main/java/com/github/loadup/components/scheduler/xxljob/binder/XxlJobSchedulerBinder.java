@@ -39,19 +39,22 @@ public class XxlJobSchedulerBinder implements SchedulerBinder {
     private static final String                     BINDER_NAME  = "xxljob";
     private final        Map<String, SchedulerTask> taskRegistry = new ConcurrentHashMap<>();
 
-    @Override
-    public String type() {
-        return BINDER_NAME;
-    }
+  @Override
+  public String getBinderType() {
+    return BINDER_NAME;
+  }
 
-    @Override
-    public void init() {
+  @Override
+  public void injectBinderConfig(Object config) {}
+
+  @Override
+  public void binderInit() {
         log.info("Initializing XXL-Job scheduler binder");
         log.warn("XXL-Job uses annotation-based registration. Runtime task management is limited.");
     }
 
-    @Override
-    public void destroy() {
+  @Override
+  public void binderDestroy() {
         log.info("Destroying XXL-Job scheduler binder");
         taskRegistry.clear();
     }
@@ -106,5 +109,8 @@ public class XxlJobSchedulerBinder implements SchedulerBinder {
     public boolean taskExists(String taskName) {
         return taskRegistry.containsKey(taskName);
     }
+
+  @Override
+  public void destroy() throws Exception {}
 }
 

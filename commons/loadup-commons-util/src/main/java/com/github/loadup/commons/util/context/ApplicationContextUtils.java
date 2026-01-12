@@ -28,6 +28,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 /** Spring上下文工具类 */
@@ -40,6 +41,10 @@ public class ApplicationContextUtils implements ApplicationContextAware {
   /** */
   public static ApplicationContext getApplicationContext() {
     return applicationContext;
+  }
+
+  public static Environment getEnvironment() {
+    return applicationContext.getEnvironment();
   }
 
   /**

@@ -25,6 +25,7 @@ package com.github.loadup.components.scheduler.binding;
 import com.github.loadup.components.scheduler.api.SchedulerBinder;
 import com.github.loadup.components.scheduler.api.SchedulerBinding;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
+import com.github.loadup.framework.api.context.BindingContext;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -37,7 +38,7 @@ public class DefaultSchedulerBinding implements SchedulerBinding {
 
     public DefaultSchedulerBinding(SchedulerBinder schedulerBinder) {
         this.schedulerBinder = schedulerBinder;
-    log.info("Initialized SchedulerBinding with binder: {}", schedulerBinder.type());
+    log.info("Initialized SchedulerBinding with binder: {}", schedulerBinder.getBinderType());
     }
 
     @Override
@@ -83,13 +84,22 @@ public class DefaultSchedulerBinding implements SchedulerBinding {
 
   public void afterInit() {
         log.info("Initializing scheduler binding");
-        schedulerBinder.init();
+    schedulerBinder.binderInit();
+    }
+
+    public void destroy() {
+        log.info("Destroying scheduler binding");
+    schedulerBinder.binderDestroy();
     }
 
     @Override
-    public void destroy() {
-        log.info("Destroying scheduler binding");
-        schedulerBinder.destroy();
+    public String name() {
+        return "";
+    }
+
+    @Override
+    public void init(BindingContext<?, ?> context) {
+
     }
 }
 

@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS dfs_file_storage
     hash          VARCHAR(64),
     biz_type      VARCHAR(50),
     biz_id        VARCHAR(64),
+    metadata VARCHAR(4096),
     public_access BOOLEAN   DEFAULT FALSE,
     upload_time   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -47,13 +47,16 @@ public class QuartzSchedulerBinder implements SchedulerBinder {
     // Store task name to group mapping
     private final Map<String, String> taskGroupMap = new ConcurrentHashMap<String, String>();
 
-    @Override
-    public String type() {
+  @Override
+  public String getBinderType() {
         return BINDER_NAME;
     }
 
-    @Override
-    public void init() {
+  @Override
+  public void injectBinderConfig(Object config) {}
+
+  @Override
+  public void binderInit() {
         log.info("Initializing Quartz scheduler binder");
         try {
             if (!scheduler.isStarted()) {
@@ -65,8 +68,8 @@ public class QuartzSchedulerBinder implements SchedulerBinder {
         }
     }
 
-    @Override
-    public void destroy() {
+  @Override
+  public void binderDestroy() {
         log.info("Destroying Quartz scheduler binder");
         try {
             if (!scheduler.isShutdown()) {
@@ -220,5 +223,8 @@ public class QuartzSchedulerBinder implements SchedulerBinder {
             return false;
         }
     }
+
+  @Override
+  public void destroy() throws Exception {}
 }
 

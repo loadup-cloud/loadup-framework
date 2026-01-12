@@ -39,19 +39,22 @@ public class PowerJobSchedulerBinder implements SchedulerBinder {
     private static final String                     BINDER_NAME  = "powerjob";
     private final        Map<String, SchedulerTask> taskRegistry = new ConcurrentHashMap<>();
 
-    @Override
-    public String type() {
+  @Override
+  public String getBinderType() {
         return BINDER_NAME;
     }
 
-    @Override
-    public void init() {
+  @Override
+  public void injectBinderConfig(Object config) {}
+
+  @Override
+  public void binderInit() {
         log.info("Initializing PowerJob scheduler binder");
         log.info("PowerJob tasks are typically managed via PowerJob server console");
     }
 
-    @Override
-    public void destroy() {
+  @Override
+  public void binderDestroy() {
         log.info("Destroying PowerJob scheduler binder");
         taskRegistry.clear();
     }
@@ -105,5 +108,8 @@ public class PowerJobSchedulerBinder implements SchedulerBinder {
     public boolean taskExists(String taskName) {
         return taskRegistry.containsKey(taskName);
     }
+
+  @Override
+  public void destroy() throws Exception {}
 }
 

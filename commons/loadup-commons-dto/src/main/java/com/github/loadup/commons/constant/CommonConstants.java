@@ -2,7 +2,7 @@ package com.github.loadup.commons.constant;
 
 /*-
  * #%L
- * loadup-commons-lang
+ * loadup-commons-util
  * %%
  * Copyright (C) 2022 - 2024 loadup_cloud
  * %%

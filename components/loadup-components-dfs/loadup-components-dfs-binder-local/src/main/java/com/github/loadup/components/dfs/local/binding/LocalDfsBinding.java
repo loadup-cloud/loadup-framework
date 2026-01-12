@@ -8,6 +8,6 @@ public class LocalDfsBinding extends AbstractDfsBinding<LocalDfsBinder, BaseBind
 
   @Override
   public String name() {
-    return "";
+    return "local";
   }
 }

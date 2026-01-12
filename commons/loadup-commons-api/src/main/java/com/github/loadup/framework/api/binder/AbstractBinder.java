@@ -32,4 +32,15 @@ public abstract class AbstractBinder<T extends BaseBinderCfg> implements Binder 
 
   /** 钩子方法：配置注入完成后，子类可以在这里初始化 SDK 客户端 */
   protected void afterConfigInjected() {}
+
+  protected void afterDestroy() {}
+
+  @Override
+  public void destroy() throws Exception {
+    try {
+      this.afterDestroy();
+    } catch (Exception e) {
+      throw e;
+    }
+  }
 }

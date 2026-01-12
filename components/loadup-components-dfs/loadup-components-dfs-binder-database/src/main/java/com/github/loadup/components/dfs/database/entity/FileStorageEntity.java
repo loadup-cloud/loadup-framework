@@ -1,4 +1,4 @@
-package com.github.loadup.components.dfs.binder.database.entity;
+package com.github.loadup.components.dfs.database.entity;
 
 /*-
  * #%L
@@ -22,10 +22,6 @@ package com.github.loadup.components.dfs.binder.database.entity;
  * #L%
  */
 
-import com.mybatisflex.annotation.Column;
-import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
-import com.mybatisflex.annotation.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,41 +29,31 @@ import lombok.NoArgsConstructor;
 
 /** 文件存储实体 - MyBatis-Flex Entity */
 @Data
-@Table("dfs_file_storage")
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileStorageEntity {
 
-  @Id(keyType = KeyType.Auto)
   private Long id;
 
-  @Column("file_id")
   private String fileId;
 
-  @Column("filename")
   private String filename;
 
-  @Column("content")
   private byte[] content;
 
-  @Column("size")
   private Long size;
 
-  @Column("content_type")
   private String contentType;
 
-  @Column("hash")
   private String hash;
 
-  @Column("biz_type")
   private String bizType;
 
-  @Column("biz_id")
   private String bizId;
 
-  @Column("public_access")
   private Boolean publicAccess;
 
-  @Column("upload_time")
   private LocalDateTime uploadTime;
+
+  private String metadata;
 }

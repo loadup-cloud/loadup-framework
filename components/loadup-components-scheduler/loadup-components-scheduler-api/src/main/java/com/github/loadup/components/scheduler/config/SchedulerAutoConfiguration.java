@@ -54,7 +54,7 @@ public class SchedulerAutoConfiguration {
     @ConditionalOnSingleCandidate(SchedulerBinder.class)
     @ConditionalOnMissingBean
     public SchedulerBinding schedulerBinding(SchedulerBinder schedulerBinder) {
-    log.info("Creating SchedulerBinding with binder: {}", schedulerBinder.type());
+    log.info("Creating SchedulerBinding with binder: {}", schedulerBinder.getBinderType());
         return new DefaultSchedulerBinding(schedulerBinder);
     }
 }

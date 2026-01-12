@@ -436,7 +436,7 @@ public class JsonUtil {
    * @param jsonString JSON字符串
    * @return Map对象，如果字符串为空或转换失败则返回空Map
    */
-  public static Map<String, String> jsonToMap(String jsonString) {
+  public static Map<String, String> toStringMap(String jsonString) {
     if (StringUtils.isBlank(jsonString)) {
       return new HashMap<>();
     }

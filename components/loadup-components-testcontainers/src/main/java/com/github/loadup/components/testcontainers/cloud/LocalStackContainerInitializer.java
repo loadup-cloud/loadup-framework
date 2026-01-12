@@ -75,15 +75,15 @@ public class LocalStackContainerInitializer
               "aws.access-key-id=" + SharedLocalStackContainer.getAccessKey(),
               "aws.secret-access-key=" + SharedLocalStackContainer.getSecretKey(),
               "aws.region=" + SharedLocalStackContainer.getRegion(),
-              "cloud.aws.credentials.access-key=" + SharedLocalStackContainer.getAccessKey(),
-              "cloud.aws.credentials.secret-key=" + SharedLocalStackContainer.getSecretKey(),
-              "cloud.aws.region.static=" + SharedLocalStackContainer.getRegion(),
+              "spring.cloud.aws.credentials.access-key=" + SharedLocalStackContainer.getAccessKey(),
+              "spring.cloud.aws.credentials.secret-key=" + SharedLocalStackContainer.getSecretKey(),
+              "spring.cloud.aws.s3.endpoint=" + SharedLocalStackContainer.getS3Endpoint(),
+              "spring.cloud.aws.region.static=" + SharedLocalStackContainer.getRegion(),
               // LoadUp DFS configuration
-              "loadup.dfs.s3.endpoint=" + SharedLocalStackContainer.getS3Endpoint(),
-              "loadup.dfs.s3.accessKey=" + SharedLocalStackContainer.getAccessKey(),
-              "loadup.dfs.s3.secretKey=" + SharedLocalStackContainer.getSecretKey(),
-              "loadup.dfs.s3.region=" + SharedLocalStackContainer.getRegion(),
-              "cloud.aws.s3.endpoint=" + SharedLocalStackContainer.getS3Endpoint())
+              "loadup.dfs.binders.s3.endpoint=" + SharedLocalStackContainer.getS3Endpoint(),
+              "loadup.dfs.binders.s3.accessKey=" + SharedLocalStackContainer.getAccessKey(),
+              "loadup.dfs.binders.s3.secretKey=" + SharedLocalStackContainer.getSecretKey(),
+              "loadup.dfs.binders.s3.region=" + SharedLocalStackContainer.getRegion())
           .applyTo(applicationContext.getEnvironment());
     } else {
       // Use real AWS S3 from configuration

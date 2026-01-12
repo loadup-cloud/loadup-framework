@@ -1,4 +1,4 @@
-package com.github.loadup.components.dfs.test.binder.s3;
+package com.github.loadup.components.dfs.test.s3;
 
 /*-
  * #%L
@@ -24,12 +24,16 @@ package com.github.loadup.components.dfs.test.binder.s3;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.loadup.components.dfs.binding.AbstractDfsBinding;
+import com.github.loadup.components.dfs.manager.DfsBindingManager;
 import com.github.loadup.components.dfs.model.FileDownloadResponse;
 import com.github.loadup.components.dfs.model.FileMetadata;
 import com.github.loadup.components.dfs.model.FileUploadRequest;
-import com.github.loadup.components.dfs.service.DfsService;
+import com.github.loadup.components.dfs.s3.binding.S3DfsBinding;
 import com.github.loadup.components.dfs.test.DfsTestApplication;
 import com.github.loadup.components.testcontainers.cloud.AbstractLocalStackContainerTest;
+import com.github.loadup.components.testcontainers.cloud.SharedLocalStackContainer;
+import com.github.loadup.framework.api.annotation.BindingClient;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -37,8 +41,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.*;
 
 /**
  * Integration test for DFS Service using S3 provider.
@@ -55,10 +60,41 @@ import org.springframework.test.context.ActiveProfiles;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
 
-   private DfsService dfsService;
+  @BindingClient("order-pdf")
+  AbstractDfsBinding s3Binding;
+
+  @Autowired private DfsBindingManager manager;
 
   private static final String TEST_CONTENT = "DFS Service test content.";
   private static final String TEST_FILENAME = "service-test.txt";
+
+  @DynamicPropertySource
+  static void redisProperties(DynamicPropertyRegistry registry) {
+    // 这里的 HOST 可以是任何运行时的动态变量
+    registry.add(
+        "loadup.dfs.binders.s3.access-key", () -> SharedLocalStackContainer.getAccessKey());
+    registry.add(
+        "loadup.dfs.binders.s3.secret-key", () -> SharedLocalStackContainer.getSecretKey());
+    registry.add("loadup.dfs.binders.s3.endpoint", () -> SharedLocalStackContainer.getS3Endpoint());
+    registry.add("loadup.dfs.binders.s3.region", () -> SharedLocalStackContainer.getRegion());
+  }
+
+  @Test
+  @Order(0)
+  @DisplayName("Should choose right provider")
+  void testDynamicBindingSelection() {
+    // 1. 验证通过 Manager 获取到的实例
+    AbstractDfsBinding binding = manager.getBinding("order-pdf");
+    assertNotNull(binding);
+
+    // 2. 验证注入注解是否生效
+    assertNotNull(s3Binding);
+    assertEquals(binding, s3Binding);
+
+    // 3. 验证 Binder 是否被正确装配 (S3 类型)
+    // 假设 S3DfsBinding 暴露了获取类型的方法
+    assertInstanceOf(S3DfsBinding.class, binding);
+  }
 
   @Test
   @Order(1)
@@ -74,7 +110,7 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .build();
 
     // When
-    FileMetadata metadata = dfsService.upload(request);
+    FileMetadata metadata = s3Binding.upload(request);
 
     // Then
     assertNotNull(metadata);
@@ -93,10 +129,10 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .filename(TEST_FILENAME)
             .inputStream(new ByteArrayInputStream(TEST_CONTENT.getBytes(StandardCharsets.UTF_8)))
             .build();
-    FileMetadata uploadedMetadata = dfsService.upload(uploadRequest);
+    FileMetadata uploadedMetadata = s3Binding.upload(uploadRequest);
 
     // When
-    FileDownloadResponse response = dfsService.download(uploadedMetadata.getFileId());
+    FileDownloadResponse response = s3Binding.download(uploadedMetadata.getFileId());
 
     // Then
     assertNotNull(response);
@@ -115,10 +151,10 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .filename(TEST_FILENAME)
             .inputStream(new ByteArrayInputStream(TEST_CONTENT.getBytes(StandardCharsets.UTF_8)))
             .build();
-    FileMetadata metadata = dfsService.upload(request);
+    FileMetadata metadata = s3Binding.upload(request);
 
     // When
-    boolean deleted = dfsService.delete(metadata.getFileId());
+    boolean deleted = s3Binding.delete(metadata.getFileId());
 
     // Then
     assertTrue(deleted);
@@ -134,11 +170,11 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .filename(TEST_FILENAME)
             .inputStream(new ByteArrayInputStream(TEST_CONTENT.getBytes(StandardCharsets.UTF_8)))
             .build();
-    FileMetadata metadata = dfsService.upload(request);
+    FileMetadata metadata = s3Binding.upload(request);
 
     // When & Then
-    assertTrue(dfsService.exists(metadata.getFileId()));
-    assertFalse(dfsService.exists("non-existent"));
+    assertTrue(s3Binding.exists(metadata.getFileId()));
+    assertFalse(s3Binding.exists("non-existent"));
   }
 
   @Test
@@ -155,10 +191,10 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .bizId("test-biz-123")
             .publicAccess(true)
             .build();
-    FileMetadata uploadedMetadata = dfsService.upload(request);
+    FileMetadata uploadedMetadata = s3Binding.upload(request);
 
     // When
-    FileMetadata retrievedMetadata = dfsService.getMetadata(uploadedMetadata.getFileId());
+    FileMetadata retrievedMetadata = s3Binding.getMetadata(uploadedMetadata.getFileId());
 
     // Then - Verify all metadata fields
     assertNotNull(retrievedMetadata, "Retrieved metadata should not be null");
@@ -200,16 +236,16 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .build();
 
     // When
-    FileMetadata metadata1 = dfsService.upload(request1);
-    FileMetadata metadata2 = dfsService.upload(request2);
-    FileMetadata metadata3 = dfsService.upload(request3);
+    FileMetadata metadata1 = s3Binding.upload(request1);
+    FileMetadata metadata2 = s3Binding.upload(request2);
+    FileMetadata metadata3 = s3Binding.upload(request3);
 
     // Then
     assertNotEquals(metadata1.getFileId(), metadata2.getFileId());
     assertNotEquals(metadata2.getFileId(), metadata3.getFileId());
-    assertTrue(dfsService.exists(metadata1.getFileId()));
-    assertTrue(dfsService.exists(metadata2.getFileId()));
-    assertTrue(dfsService.exists(metadata3.getFileId()));
+    assertTrue(s3Binding.exists(metadata1.getFileId()));
+    assertTrue(s3Binding.exists(metadata2.getFileId()));
+    assertTrue(s3Binding.exists(metadata3.getFileId()));
   }
 
   @Test
@@ -229,8 +265,8 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .build();
 
     // When
-    FileMetadata metadata1 = dfsService.upload(request1);
-    FileMetadata metadata2 = dfsService.upload(request2);
+    FileMetadata metadata1 = s3Binding.upload(request1);
+    FileMetadata metadata2 = s3Binding.upload(request2);
 
     // Then - Different file IDs but same hash
     assertNotEquals(metadata1.getFileId(), metadata2.getFileId());
@@ -255,14 +291,14 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .build();
 
     // When
-    FileMetadata uploadedMetadata = dfsService.upload(request);
+    FileMetadata uploadedMetadata = s3Binding.upload(request);
 
     // Then - Verify custom metadata in upload response
     assertNotNull(uploadedMetadata.getMetadata(), "Custom metadata should not be null");
     assertEquals(customMetadata, uploadedMetadata.getMetadata(), "Custom metadata should match");
 
     // Also verify by retrieving metadata
-    FileMetadata retrievedMetadata = dfsService.getMetadata(uploadedMetadata.getFileId());
+    FileMetadata retrievedMetadata = s3Binding.getMetadata(uploadedMetadata.getFileId());
     assertNotNull(retrievedMetadata.getMetadata(), "Retrieved custom metadata should not be null");
     assertEquals(
         "test-author", retrievedMetadata.getMetadata().get("author"), "Author should match");
@@ -297,9 +333,9 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .build();
 
     // When
-    FileMetadata textMetadata = dfsService.upload(textRequest);
-    FileMetadata jsonMetadata = dfsService.upload(jsonRequest);
-    FileMetadata pdfMetadata = dfsService.upload(pdfRequest);
+    FileMetadata textMetadata = s3Binding.upload(textRequest);
+    FileMetadata jsonMetadata = s3Binding.upload(jsonRequest);
+    FileMetadata pdfMetadata = s3Binding.upload(pdfRequest);
 
     // Then
     assertEquals("text/plain", textMetadata.getContentType());
@@ -328,9 +364,9 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .build();
 
     // When - Upload and retrieve multiple times
-    FileMetadata uploadedMetadata = dfsService.upload(request);
-    FileMetadata retrieved1 = dfsService.getMetadata(uploadedMetadata.getFileId());
-    FileMetadata retrieved2 = dfsService.getMetadata(uploadedMetadata.getFileId());
+    FileMetadata uploadedMetadata = s3Binding.upload(request);
+    FileMetadata retrieved1 = s3Binding.getMetadata(uploadedMetadata.getFileId());
+    FileMetadata retrieved2 = s3Binding.getMetadata(uploadedMetadata.getFileId());
 
     // Then - All retrievals should return consistent metadata
     assertEquals(uploadedMetadata.getFileId(), retrieved1.getFileId());
@@ -370,8 +406,8 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .build();
 
     // When
-    FileMetadata uploadedMetadata = dfsService.upload(request);
-    FileMetadata retrievedMetadata = dfsService.getMetadata(uploadedMetadata.getFileId());
+    FileMetadata uploadedMetadata = s3Binding.upload(request);
+    FileMetadata retrievedMetadata = s3Binding.getMetadata(uploadedMetadata.getFileId());
 
     // Then - Special characters should be preserved
     assertNotNull(retrievedMetadata.getMetadata());
@@ -393,7 +429,7 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .bizType("test")
             .build();
 
-    FileMetadata metadata1 = dfsService.upload(request1);
+    FileMetadata metadata1 = s3Binding.upload(request1);
 
     // Then - Verify initial state
     assertNull(metadata1.getBizId(), "BizId should be null initially");
@@ -409,14 +445,14 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .publicAccess(true)
             .build();
 
-    FileMetadata metadata2 = dfsService.upload(request2);
+    FileMetadata metadata2 = s3Binding.upload(request2);
 
     // Then - Verify all fields are set
     assertEquals("test-123", metadata2.getBizId(), "BizId should be set");
     assertTrue(metadata2.getPublicAccess(), "PublicAccess should be true");
 
     // Verify metadata retrieval
-    FileMetadata retrieved2 = dfsService.getMetadata(metadata2.getFileId());
+    FileMetadata retrieved2 = s3Binding.getMetadata(metadata2.getFileId());
     assertEquals("test-123", retrieved2.getBizId(), "Retrieved BizId should match");
     assertTrue(retrieved2.getPublicAccess(), "Retrieved PublicAccess should be true");
   }
@@ -434,8 +470,8 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .build();
 
     // When
-    FileMetadata metadata1 = dfsService.upload(request1);
-    FileMetadata retrieved1 = dfsService.getMetadata(metadata1.getFileId());
+    FileMetadata metadata1 = s3Binding.upload(request1);
+    FileMetadata retrieved1 = s3Binding.getMetadata(metadata1.getFileId());
 
     // Then
     assertNotNull(metadata1, "Uploaded metadata should not be null");
@@ -452,8 +488,8 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .build();
 
     // When
-    FileMetadata metadata2 = dfsService.upload(request2);
-    FileMetadata retrieved2 = dfsService.getMetadata(metadata2.getFileId());
+    FileMetadata metadata2 = s3Binding.upload(request2);
+    FileMetadata retrieved2 = s3Binding.getMetadata(metadata2.getFileId());
 
     // Then - Should handle empty metadata gracefully
     assertNotNull(metadata2);
@@ -476,10 +512,10 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
             .metadata(customMetadata)
             .build();
 
-    FileMetadata uploadedMetadata = dfsService.upload(request);
+    FileMetadata uploadedMetadata = s3Binding.upload(request);
 
     // When - Download the file
-    FileDownloadResponse downloadResponse = dfsService.download(uploadedMetadata.getFileId());
+    FileDownloadResponse downloadResponse = s3Binding.download(uploadedMetadata.getFileId());
 
     // Then - Verify metadata in download response
     assertNotNull(

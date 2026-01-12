@@ -88,18 +88,4 @@ public interface DfsBinder extends Binder {
   default FileMetadata copy(String sourceFileId, String targetPath) {
     throw new UnsupportedOperationException("This provider does not support file copy");
   }
-
-  /**
-   * 获取提供者名称
-   *
-   * @return 提供者名称
-   */
-  String getProviderName();
-
-  /**
-   * 检查提供者是否可用
-   *
-   * @return 是否可用
-   */
-  boolean isAvailable();
 }
