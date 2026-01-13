@@ -295,7 +295,7 @@ public class S3DfsBinder extends AbstractBinder<S3DfsBinderCfg> implements DfsBi
             GetObjectRequest.builder().bucket(bucketName).key(metaKey).build();
 
         InputStream metaInputStream = s3Client.getObject(getMetaRequest);
-        FileMetadata metadata = JsonUtil.parseObject(metaInputStream, FileMetadata.class);
+        FileMetadata metadata = JsonUtil.fromJson(metaInputStream, FileMetadata.class);
         // objectMapper.readValue(metaInputStream, FileMetadata.class);
 
         log.debug("Metadata loaded from .meta file for fileId: {}", fileId);
@@ -607,7 +607,7 @@ public class S3DfsBinder extends AbstractBinder<S3DfsBinderCfg> implements DfsBi
   private void saveMetadataFile(String fileId, FileMetadata metadata) {
     try {
       // 将元数据序列化为JSON
-      String metadataJson = JsonUtil.toJsonString(metadata);
+      String metadataJson = JsonUtil.toJson(metadata);
 
       // 保存到S3的.meta目录下
       String metaKey = METADATA_PREFIX + fileId + ".json";

@@ -50,10 +50,6 @@
         </dependency>
         <dependency>
             <groupId>com.github.loadup.commons</groupId>
-            <artifactId>loadup-commons-dto</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.loadup.commons</groupId>
             <artifactId>loadup-commons-api</artifactId>
         </dependency>
     </dependencies>

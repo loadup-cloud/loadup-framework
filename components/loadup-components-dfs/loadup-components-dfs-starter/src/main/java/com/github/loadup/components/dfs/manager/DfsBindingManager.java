@@ -29,4 +29,9 @@ public class DfsBindingManager extends BindingManagerSupport<DfsBinder, DfsBindi
   protected Class<DfsBinder> getBinderInterface() {
     return DfsBinder.class;
   }
+
+  @Override
+  public Class<DfsBinding> getBindingInterface() {
+    return DfsBinding.class;
+  }
 }

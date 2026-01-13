@@ -52,7 +52,7 @@ public class JwtTokenProvider {
   public String createToken(SecurityUser securityUser) {
     Map<String, Object> claims = new HashMap<>();
     // 使用 JsonUtil 序列化 DTO，确保日期等格式符合 loadup-commons 规范
-    claims.put(CLAIM_USER_JSON, JsonUtil.toJsonString(securityUser.getUser()));
+    claims.put(CLAIM_USER_JSON, JsonUtil.toJson(securityUser.getUser()));
     claims.put(CLAIM_AUTHORITIES, securityUser.getPermissions());
     claims.put(CLAIM_TYPE, TYPE_ACCESS);
 
@@ -94,7 +94,7 @@ public class JwtTokenProvider {
 
       // 2. 还原 AuthUserDTO
       String userJson = claims.get(CLAIM_USER_JSON, String.class);
-      AuthUserDTO authUserDTO = JsonUtil.parseObject(userJson, AuthUserDTO.class);
+      AuthUserDTO authUserDTO = JsonUtil.fromJson(userJson, AuthUserDTO.class);
 
       // 3. 还原权限列表
       List<String> rawAuths = claims.get(CLAIM_AUTHORITIES, List.class);

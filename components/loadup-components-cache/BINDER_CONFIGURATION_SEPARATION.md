@@ -136,13 +136,13 @@ public class CaffeineBinderCfg extends BaseBinderCfg {
 
 @Bean
 @ConfigurationProperties(prefix = "loadup.cache.binder.caffeine")
-public CaffeineBinderCfg caffeineBinderCfg() {
+public CaffeineBinderCfg caffeineCacheBinderCfg() {
     return new CaffeineBinderCfg();
 }
 
-public CacheManager defaultCacheManager(CaffeineBinderCfg caffeineBinderCfg) {
-    String effectiveSpec = caffeineBinderCfg.hasCustomConfig()
-            ? caffeineBinderCfg.getSpec()
+public CacheManager defaultCacheManager(CaffeineBinderCfg caffeineCacheBinderCfg) {
+    String effectiveSpec = caffeineCacheBinderCfg.hasCustomConfig()
+            ? caffeineCacheBinderCfg.getSpec()
             : springCacheSpec;
     // ...
 }
@@ -293,8 +293,8 @@ loadup:
     - `@ConfigurationProperties(prefix = "loadup.cache.binder.caffeine")` 绑定配置
 
 2. **CacheManager 创建时**:
-    - 检查 `caffeineBinderCfg.hasCustomConfig()`
-    - 如果有自定义配置，使用 `caffeineBinderCfg.getSpec()`
+    - 检查 `caffeineCacheBinderCfg.hasCustomConfig()`
+    - 如果有自定义配置，使用 `caffeineCacheBinderCfg.getSpec()`
     - 否则使用 `spring.cache.caffeine.spec`
 
 3. **日志输出**:

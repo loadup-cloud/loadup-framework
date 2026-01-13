@@ -16,15 +16,23 @@
     <name>loadup-components-cache</name>
 
     <properties>
-        <!-- Skip Spotless for aggregator POM - no source code -->
         <spotless.skip>true</spotless.skip>
+        <java.version>21</java.version>
+        <project.encoding>UTF-8</project.encoding>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <project.build.encoding>${project.encoding}</project.build.encoding>
+        <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
     </properties>
 
     <modules>
         <module>loadup-components-cache-api</module>
         <module>loadup-components-cache-binder-caffeine</module>
-        <module>loadup-components-cache-binder-redis</module>
-        <!--        <module>loadup-components-cache-test</module>-->
+<!--        <module>loadup-components-cache-binder-redis</module>-->
+        <module>loadup-components-cache-starter</module>
+                <module>loadup-components-cache-test</module>
     </modules>
 
     <dependencyManagement>

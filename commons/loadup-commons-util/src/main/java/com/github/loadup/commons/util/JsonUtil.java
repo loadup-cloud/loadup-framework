@@ -154,7 +154,7 @@ public class JsonUtil {
    * @param object 要转换的对象
    * @return JSON字符串，如果转换失败或对象为null则返回null
    */
-  public static String toJsonString(Object object) {
+  public static String toJson(Object object) {
     if (object == null) {
       log.debug("Object is null, returning null");
       return null;
@@ -209,7 +209,7 @@ public class JsonUtil {
    * @param <T> 目标类型泛型
    * @return 转换后的对象，如果转换失败或参数为null则返回null
    */
-  public static <T> T parseObject(String jsonString, Class<T> valueType) {
+  public static <T> T fromJson(String jsonString, Class<T> valueType) {
     if (StringUtils.isEmpty(jsonString)) {
       log.debug("JSON string is null or empty, returning null");
       return null;
@@ -238,7 +238,7 @@ public class JsonUtil {
    * @param <T> 目标类型泛型
    * @return 转换后的对象，如果转换失败或参数为null则返回null
    */
-  public static <T> T parseObject(String str, TypeReference<T> typeReference) {
+  public static <T> T fromJson(String str, TypeReference<T> typeReference) {
     if (StringUtils.isEmpty(str)) {
       log.debug("JSON string is null or empty, returning null");
       return null;
@@ -271,8 +271,7 @@ public class JsonUtil {
    * @param <T> 目标类型泛型
    * @return 转换后的对象，如果转换失败或参数为null则返回null
    */
-  public static <T> T parseObject(
-      String str, Class<?> collectionClass, Class<?>... elementClasses) {
+  public static <T> T fromJson(String str, Class<?> collectionClass, Class<?>... elementClasses) {
     if (StringUtils.isEmpty(str)) {
       log.debug("JSON string is null or empty, returning null");
       return null;
@@ -309,7 +308,7 @@ public class JsonUtil {
    * @param <T> 目标类型泛型
    * @return 转换后的对象，如果转换失败或参数为null则返回null
    */
-  public static <T> T parseObject(InputStream inputStream, Class<T> valueType) {
+  public static <T> T fromJson(InputStream inputStream, Class<T> valueType) {
     if (inputStream == null) {
       log.warn("InputStream is null, returning null");
       return null;
@@ -351,12 +350,12 @@ public class JsonUtil {
       log.warn("Map or valueType is null/empty, returning null");
       return null;
     }
-    String jsonString = toJsonString(map);
+    String jsonString = toJson(map);
     if (jsonString == null) {
       log.warn("Failed to convert map to JSON string");
       return null;
     }
-    return parseObject(jsonString, valueType);
+    return fromJson(jsonString, valueType);
   }
 
   /**
@@ -378,12 +377,12 @@ public class JsonUtil {
       log.warn("Element classes is null or empty, returning null");
       return null;
     }
-    String jsonString = toJsonString(map);
+    String jsonString = toJson(map);
     if (jsonString == null) {
       log.warn("Failed to convert map to JSON string");
       return null;
     }
-    return parseObject(jsonString, collectionClass, elementClasses);
+    return fromJson(jsonString, collectionClass, elementClasses);
   }
 
   /**
@@ -399,7 +398,7 @@ public class JsonUtil {
       log.warn("Map or javaType is null/empty, returning null");
       return null;
     }
-    String jsonString = toJsonString(map);
+    String jsonString = toJson(map);
     if (jsonString == null) {
       log.warn("Failed to convert map to JSON string");
       return null;
@@ -460,7 +459,7 @@ public class JsonUtil {
    * @throws IllegalArgumentException 如果参数为null
    * @throws RuntimeException 如果读取文件失败
    */
-  public static <T> T parseObject(File file, Class<T> valueType) {
+  public static <T> T fromJson(File file, Class<T> valueType) {
     if (file == null) {
       throw new IllegalArgumentException("File cannot be null");
     }
@@ -609,7 +608,7 @@ public class JsonUtil {
    * @param <T> 目标类型泛型
    * @return 对象列表，如果节点为null或valueType为null则返回空列表
    */
-  public static <T> List<T> parseObject(ArrayNode arrayNode, Class<T> valueType) {
+  public static <T> List<T> fromJson(ArrayNode arrayNode, Class<T> valueType) {
     List<T> objectList = new ArrayList<>();
     if (arrayNode == null) {
       log.debug("ArrayNode is null, returning empty list");
@@ -621,11 +620,15 @@ public class JsonUtil {
     }
 
     for (JsonNode jsonNode : arrayNode) {
-      T object = parseObject(jsonNode.toString(), valueType);
+      T object = fromJson(jsonNode.toString(), valueType);
       if (object != null) {
         objectList.add(object);
       }
     }
     return objectList;
+  }
+
+  public static <T> T convert(Object value, Class<T> clazz) {
+    return objectMapper.convertValue(value, clazz);
   }
 }

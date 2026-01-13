@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: cache-test
+# LoadUp Database Configuration
+loadup:
+  # DFS Configuration
+  cache:
+    default-binder: caffeine
+    enabled-binders: [ caffeine ] # 可选
+    bindings: # 可选
+      user:
+        binder-type: caffeine
+    binders:
+      caffeine:
+        # 强类型配置，支持代码提示
+        spec: initialCapacity=100,maximumSize=1000,expireAfterWrite=300s,expireAfterAccess=60s
+
+# Logging
+logging:
+  level:
+    com.github.loadup.components.cache: DEBUG
+    com.github.loadup.components.database: DEBUG
+    org.springframework.test: INFO
+    org.springframework.jdbc: DEBUG
+

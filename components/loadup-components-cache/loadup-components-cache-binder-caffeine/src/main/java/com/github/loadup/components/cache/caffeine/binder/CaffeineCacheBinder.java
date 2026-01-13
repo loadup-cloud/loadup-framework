@@ -22,71 +22,96 @@ package com.github.loadup.components.cache.caffeine.binder;
  * #L%
  */
 
-import com.github.loadup.components.cache.api.CacheBinder;
-import com.github.loadup.components.cache.caffeine.cfg.CaffeineBinderCfg;
-import com.github.loadup.framework.api.binder.AbstractBinder;
-import jakarta.annotation.Resource;
-import java.util.Objects;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.loadup.commons.util.JsonUtil;
+import com.github.loadup.components.cache.binder.AbstractCacheBinder;
+import com.github.loadup.components.cache.binder.CacheBinder;
+import com.github.loadup.components.cache.caffeine.cfg.CaffeineCacheBinderCfg;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
-public class CaffeineCacheBinder extends AbstractBinder<CaffeineBinderCfg> implements CacheBinder {
+@Slf4j
+public class CaffeineCacheBinder extends AbstractCacheBinder<CaffeineCacheBinderCfg>
+    implements CacheBinder {
 
-  @Resource
-  @Qualifier("caffeineCacheManager")
-  private CacheManager caffeineCacheManager;
+  // 每一个 Binder 实例持有一个物理上的 Caffeine Cache 对象
+  private Cache<String, Object> nativeCache;
 
   @Override
-  public String type() {
+  public String getBinderType() {
     return "caffeine";
   }
 
   @Override
+  protected void onInit() {
+    // 这里的 binderCfg 是根据具体的 bizTag 路由过来的
+    // 比如 loadup.cache.bindings.user-cache -> 对应的驱动配置
+
+    Caffeine<Object, Object> builder = Caffeine.newBuilder();
+
+    // 1. 设置最大容量
+    if (binderCfg.getMaximumSize() > 0) {
+      builder.maximumSize(binderCfg.getMaximumSize());
+    }
+
+    // 2. 设置过期策略 (真正实现不同 bizType 不同策略的关键)
+    if (binderCfg.getExpireAfterWrite() != null) {
+      builder.expireAfterWrite(binderCfg.getExpireAfterWrite());
+    }
+
+    this.nativeCache = builder.build();
+    log.info(
+        "Caffeine Binder [{}] 初始化成功: max={}, expire={}",
+        name,
+        binderCfg.getMaximumSize(),
+        binderCfg.getExpireAfterWrite());
+  }
+
+  @Override
   public boolean set(String cacheName, String key, Object value) {
-    Cache cache = caffeineCacheManager.getCache(cacheName);
-    Assert.notNull(cache, "cache is null");
     Assert.notNull(value, "Caffeine cache does not support null values");
-    cache.put(key, value);
+    nativeCache.put(key, wrapValue(value));
     return true;
   }
 
   @Override
   public Object get(String cacheName, String key) {
-    Cache cache = caffeineCacheManager.getCache(cacheName);
-    Assert.notNull(cache, "cache is null");
-    Cache.ValueWrapper valueWrapper = cache.get(key);
-    if (Objects.isNull(valueWrapper)) {
-      return null;
+    Object valueWrapper = nativeCache.getIfPresent(key);
+    // 如果配置了序列化器，且存入的是字节数组，则反序列化（实现深拷贝保护）
+    if (valueWrapper instanceof byte[] && serializer != null) {
+      return serializer.deserialize((byte[]) valueWrapper, Object.class);
     }
-    return valueWrapper.get();
+    return valueWrapper;
   }
 
   @Override
   public <T> T get(String cacheName, String key, Class<T> clazz) {
-    Cache cache = caffeineCacheManager.getCache(cacheName);
-    Assert.notNull(cache, "cache is null");
-    T value = cache.get(key, clazz);
-    if (Objects.isNull(value)) {
-      return null;
+    Object valueWrapper = nativeCache.getIfPresent(key);
+    // 如果配置了序列化器，且存入的是字节数组，则反序列化（实现深拷贝保护）
+    if (valueWrapper instanceof byte[] && serializer != null) {
+      return serializer.deserialize((byte[]) valueWrapper, clazz);
     }
-    return value;
+    return (T) valueWrapper;
   }
 
   @Override
   public boolean delete(String cacheName, String key) {
-    Cache cache = caffeineCacheManager.getCache(cacheName);
-    Assert.notNull(cache, "cache is null");
-    cache.evict(key);
+    nativeCache.invalidate(key);
     return true;
   }
 
   @Override
   public boolean deleteAll(String cacheName) {
-    Cache cache = caffeineCacheManager.getCache(cacheName);
-    Assert.notNull(cache, "cache is null");
-    cache.clear();
+    nativeCache.invalidateAll();
     return true;
+  }
+
+  @Override
+  protected void afterDestroy() {
+    if (nativeCache != null) {
+      nativeCache.invalidateAll();
+      log.info("Caffeine Binder [{}] 已销毁", name);
+    }
   }
 }

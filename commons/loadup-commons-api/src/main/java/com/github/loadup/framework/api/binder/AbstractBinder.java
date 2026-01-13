@@ -1,10 +1,14 @@
 package com.github.loadup.framework.api.binder;
 
 import com.github.loadup.framework.api.cfg.BaseBinderCfg;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 public abstract class AbstractBinder<T extends BaseBinderCfg> implements Binder {
   protected T binderCfg;
   protected String name;
+  // 关键：动态创建时，Spring 会自动扫描并注入此字段
+  @Autowired protected ApplicationContext context;
 
   public T getBinderCfg() {
     return binderCfg;

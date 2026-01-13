@@ -555,7 +555,7 @@ import com.github.loadup.commons.util.*;
 import com.github.loadup.commons.util.date.DateUtils;
 
 public class UserService {
-    
+
     public Result registerUser(UserRegisterDTO dto) {
         // 1. Bean 验证
         try {
@@ -563,18 +563,18 @@ public class UserService {
         } catch (ValidationException e) {
             return Result.fail("输入验证失败: " + e.getMessage());
         }
-        
+
         // 2. 生成用户ID
         String userId = IdUtils.uuid2();
-        
+
         // 3. 加密密码（使用 PasswordUtils）
         String salt = PasswordUtils.getRandomSalt();
         String encryptedPassword = PasswordUtils.encrypt(
-            dto.getPassword(), 
-            "APP_SECRET_KEY", 
-            salt
+                dto.getPassword(),
+                "APP_SECRET_KEY",
+                salt
         );
-        
+
         // 4. 创建用户对象
         User user = new User();
         user.setId(userId);
@@ -582,14 +582,14 @@ public class UserService {
         user.setPassword(encryptedPassword);
         user.setSalt(salt);
         user.setCreateTime(DateUtils.now());
-        
+
         // 5. 保存用户
         userRepository.save(user);
-        
+
         // 6. 记录日志（转 JSON）
-        String userJson = JsonUtil.toJsonString(user);
+        String userJson = JsonUtil.toJson(user);
         log.info("User registered: {}", userJson);
-        
+
         return Result.success(user);
     }
 }

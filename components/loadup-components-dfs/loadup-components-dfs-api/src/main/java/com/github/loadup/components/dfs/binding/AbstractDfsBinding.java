@@ -10,7 +10,8 @@ public abstract class AbstractDfsBinding<B extends DfsBinder, C> extends Abstrac
     implements DfsBinding {
 
   // 封装领域公共逻辑：如路径规范化、文件校验
-  public final FileMetadata upload(FileUploadRequest request) {
+  @Override
+  public  FileMetadata upload(FileUploadRequest request) {
     return getBinder().upload(request);
   }
 

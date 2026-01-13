@@ -22,7 +22,7 @@ package com.github.loadup.components.cache.test.common;
  * #L%
  */
 
-import com.github.loadup.components.cache.api.CacheBinding;
+import com.github.loadup.components.cache.binder.CacheBinding;
 import com.github.loadup.components.testcontainers.cache.AbstractRedisContainerTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;

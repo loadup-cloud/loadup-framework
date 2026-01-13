@@ -8,6 +8,7 @@ public abstract class AbstractBinding<B, C> implements Binding {
   protected List<B> binders;
   protected String name;
   protected String type;
+  private BindingContext<B, C> context; // 核心上下文
 
   /** 获取首选驱动（通常 binders 列表中至少有一个） */
   protected B getBinder() {
@@ -53,6 +54,7 @@ public abstract class AbstractBinding<B, C> implements Binding {
   @Override
   @SuppressWarnings("unchecked")
   public void init(BindingContext<?, ?> context) {
+    this.context = (BindingContext<B, C>) context;
     this.name = context.getName();
     this.type = context.getType();
     // 这里的强制转型是安全的，因为 Manager 保证了传入的类型匹配
@@ -74,5 +76,9 @@ public abstract class AbstractBinding<B, C> implements Binding {
 
   protected void afterDestroy() {
     // 默认空实现
+  }
+
+  protected BindingContext<B, C> getContext() {
+    return this.context;
   }
 }

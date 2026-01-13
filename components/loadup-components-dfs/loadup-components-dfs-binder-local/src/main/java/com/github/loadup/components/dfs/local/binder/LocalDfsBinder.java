@@ -211,7 +211,7 @@ public class LocalDfsBinder extends AbstractBinder<LocalDfsBinderCfg> implements
         throw new FileNotFoundException("Metadata not found for fileId: " + fileId);
       }
 
-      return JsonUtil.parseObject(metaPath.toFile(), FileMetadata.class);
+      return JsonUtil.fromJson(metaPath.toFile(), FileMetadata.class);
 
     } catch (Exception e) {
       log.error("Failed to get metadata for fileId: {}", fileId, e);

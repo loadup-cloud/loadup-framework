@@ -74,7 +74,8 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
     // 如果配置中支持多选，则循环创建
     binders.add(createOne(meta, binderCfg));
 
-    BindingContext<B_SUB, CBIND> ctx = new BindingContext<>(tag, type, bindingCfg, binders);
+    BindingContext<B_SUB, CBIND> ctx =
+        new BindingContext<>(tag, type, bindingCfg, binders, context);
 
     // 调用工厂创建 Binding 并初始化
     T_SUB bindingInstance = meta.factory.create(ctx);
@@ -102,7 +103,7 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
     List<B> binders = createAndAssembleBinders(type, binderCfg);
 
     // 创建上下文并生成 Binding 实例
-    BindingContext<B, Object> ctx = new BindingContext<>(tag, type, bindingCfg, binders);
+    BindingContext<B, Object> ctx = new BindingContext<>(tag, type, bindingCfg, binders, context);
     T instance = (T) meta.factory.create(ctx);
 
     // 统一初始化
@@ -127,6 +128,8 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
   protected abstract String getDefaultBinderType();
 
   protected abstract Class<B> getBinderInterface();
+
+  public abstract Class<T> getBindingInterface();
 
   protected <C> C resolveConfig(String path, Class<C> configClass) {
     return org.springframework.boot.context.properties.bind.Binder.get(context.getEnvironment())

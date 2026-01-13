@@ -23,7 +23,7 @@ package com.github.loadup.components.cache.redis.binder;
  */
 
 import com.github.loadup.commons.util.JsonUtil;
-import com.github.loadup.components.cache.api.CacheBinder;
+import com.github.loadup.components.cache.binder.CacheBinder;
 import com.github.loadup.components.cache.redis.cfg.RedisBinderCfg;
 import com.github.loadup.framework.api.binder.AbstractBinder;
 import jakarta.annotation.PostConstruct;

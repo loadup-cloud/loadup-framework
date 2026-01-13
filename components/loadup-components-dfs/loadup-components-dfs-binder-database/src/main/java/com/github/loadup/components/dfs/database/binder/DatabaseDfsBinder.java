@@ -118,7 +118,7 @@ public class DatabaseDfsBinder extends AbstractBinder<DatabaseDfsBinderCfg> impl
               request.getBizId(),
               request.getPublicAccess(),
               LocalDateTime.now(),
-              JsonUtil.toJsonString(request.getMetadata()));
+              JsonUtil.toJson(request.getMetadata()));
       if (rowsAffected <= 0) {
         throw new RuntimeException("Failed to insert file record");
       }
