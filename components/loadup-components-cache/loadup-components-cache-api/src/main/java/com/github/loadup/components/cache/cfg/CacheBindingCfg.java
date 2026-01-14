@@ -18,7 +18,7 @@ public class CacheBindingCfg extends BaseBindingCfg {
   /** : 业务级过期时间（覆盖组件默认值）。 */
   private Duration expireAfterWrite = Duration.ZERO;
 
-  private String serializerBeanName = CacheConstants.SERIALIZER_JSON;
+  private String serializerBeanName;
 
   public String getKeyPrefix() {
     return keyPrefix;

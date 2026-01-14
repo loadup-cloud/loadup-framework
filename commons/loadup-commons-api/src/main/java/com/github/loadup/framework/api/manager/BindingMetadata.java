@@ -7,19 +7,19 @@ import com.github.loadup.framework.api.factory.BindingFactory;
 // 扩展后的元数据，持有双配置类型
 public class BindingMetadata<B, C_BIND, C_BINDR, T extends Binding> {
   public final String type; // 新增：caffeine / redis
+  public final Class<T> bindingClass;
+  public final Class<? extends B> binderClass;
   public final Class<C_BIND> bindingCfgClass;
   public final Class<C_BINDR> binderCfgClass;
-  public final Class<? extends B> binderClass;
-  public final Class<T> bindingClass;
   public final BindingFactory<T> factory;
 
   // 构造函数强制要求类型对齐
   public BindingMetadata(
       String type,
+      Class<T> bindingClass,
+      Class<? extends B> binderClass,
       Class<C_BIND> bindingCfgClass,
       Class<C_BINDR> binderCfgClass,
-      Class<? extends B> binderClass,
-      Class<T> bindingClass,
       BindingFactory<T> factory) {
     this.type = type;
     this.bindingCfgClass = bindingCfgClass;

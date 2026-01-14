@@ -70,10 +70,10 @@ public class CacheBindingAutoConfiguration {
     public BindingMetadata<?, ?, ?, ?> caffeineMetadata() {
         return new BindingMetadata<>(
             "caffeine",
+            DefaultCacheBinding.class,
             CaffeineCacheBinder.class,
             CacheBindingCfg.class,
             CaffeineCacheBinderCfg.class,
-            DefaultCacheBinding.class,
             ctx -> new DefaultCacheBinding()
         );
     }
@@ -86,10 +86,10 @@ public class CacheBindingAutoConfiguration {
     public BindingMetadata<?, ?, ?, ?> redisMetadata() {
         return new BindingMetadata<>(
             "redis",
+            DefaultCacheBinding.class,
             RedisCacheBinder.class,
             CacheBindingCfg.class,
             RedisCacheBinderCfg.class,
-            DefaultCacheBinding.class,
             ctx -> new DefaultCacheBinding()
         );
     }

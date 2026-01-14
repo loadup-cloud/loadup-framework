@@ -37,23 +37,25 @@ public abstract class AbstractCacheBinder<C extends CacheBinderCfg, S extends Ca
   @Override
   protected void afterConfigInjected(String name, C binderCfg, S bindingCfg) {
     // 自动从容器中根据配置的名称获取序列化器
-      this.resolveInternalComponents();
+    this.resolveInternalComponents();
     // 执行子类特有的初始化逻辑
     onInit();
   }
-    private void resolveInternalComponents() {
-        // 1. 确定序列化器：优先级 Binding > Binder
-        String serializerName = ConfigurationResolver.resolve(
-            bindingCfg.getSerializerBeanName(),
-            binderCfg.getSerializerBeanName()
-        );
-        this.serializer = context.getBean(serializerName, CacheSerializer.class);
 
-        // 2. 确定时间源
-        String tickerName = binderCfg.getTickerBeanName();
-        this.ticker = context.containsBean(tickerName) ?
-            context.getBean(tickerName, CacheTicker.class) : CacheTicker.SYSTEM;
-    }
+  private void resolveInternalComponents() {
+    // 1. 确定序列化器：优先级 Binding > Binder
+    String serializerName =
+        ConfigurationResolver.resolve(
+            bindingCfg.getSerializerBeanName(), binderCfg.getSerializerBeanName());
+    this.serializer = context.getBean(serializerName, CacheSerializer.class);
+
+    // 2. 确定时间源
+    String tickerName = binderCfg.getTickerBeanName();
+    this.ticker =
+        context.containsBean(tickerName)
+            ? context.getBean(tickerName, CacheTicker.class)
+            : CacheTicker.SYSTEM;
+  }
 
   protected abstract void onInit();
 

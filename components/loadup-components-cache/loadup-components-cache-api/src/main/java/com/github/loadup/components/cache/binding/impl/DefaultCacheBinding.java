@@ -22,6 +22,7 @@ package com.github.loadup.components.cache.binding.impl;
  * #L%
  */
 
+import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.cache.binder.CacheBinder;
 import com.github.loadup.components.cache.binding.CacheBinding;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
@@ -148,7 +149,7 @@ public class DefaultCacheBinding
     try {
       return clazz.cast(value);
     } catch (ClassCastException e) {
-      return (T) value;
+      return JsonUtil.convert(value,clazz);
     }
   }
 
