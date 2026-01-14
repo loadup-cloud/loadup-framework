@@ -26,21 +26,23 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.github.loadup.components.cache.test.common.BaseCacheTest;
-import com.github.loadup.components.cache.test.common.FakeTicker;
 import com.github.loadup.components.cache.test.common.model.User;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
 /** Caffeine Cache Expiration Strategy Test */
 @Slf4j
-@TestPropertySource(properties = {"loadup.cache.binders.caffeine.expireAfterWrite=2s"})
+@TestPropertySource(
+    properties = {
+      "loadup.cache.binders.caffeine.expireAfterWrite=20s",
+      "loadup.cache.binders.caffeine.expireAfterAccess=2s",
+      "loadup.cache.binders.caffeine.maximumSize=50"
+    })
 @DisplayName("Caffeine 缓存过期策略测试")
 public class CaffeineExpirationTest extends BaseCacheTest {
   // 假设测试配置中覆盖了 defaultCacheTicker
@@ -53,23 +55,13 @@ public class CaffeineExpirationTest extends BaseCacheTest {
 
     // When
     caffeineBinding.set(key, user);
-    User cachedUser1 = caffeineBinding.get(key, User.class);
+    User cachedUser1 = caffeineBinding.getObject(key, User.class);
 
-    // When: 模拟时间前进 3 秒（超过 2 秒过期线）
-    fakeTicker.advance(3, TimeUnit.SECONDS);
-    // Wait for expiration (2 seconds + buffer for CI environments)
-    await()
-        .atMost(1, TimeUnit.SECONDS)
-        .pollInterval(200, TimeUnit.MILLISECONDS)
-        .until(
-            () -> {
-              caffeineBinding.cleanUp();
-              User u = caffeineBinding.get(key, User.class);
-              return Objects.isNull(u);
-            });
+    // When: 模拟时间前进 3 秒（超过 20 秒过期线）
+    fakeTicker.advance(23, TimeUnit.SECONDS);
 
-    User cachedUser2 = caffeineBinding.get(key, User.class);
-      assertNotNull(cachedUser1, "Should be cached initially");
+    User cachedUser2 = caffeineBinding.getObject(key, User.class);
+    assertNotNull(cachedUser1, "Should be cached initially");
 
     // Then
     assertNull(cachedUser2, "Should be expired after write timeout");
@@ -85,22 +77,16 @@ public class CaffeineExpirationTest extends BaseCacheTest {
 
     // When - Keep accessing within expiration window
     for (int i = 0; i < 3; i++) {
-      sleep(500); // Sleep 0.5 seconds
-      User cachedUser = caffeineBinding.get(key, User.class);
-      assertNotNull(cachedUser, "Should still be cached due to access");
+      fakeTicker.advance(1500, TimeUnit.MILLISECONDS); // 前进 1.5
+      User cachedUser = caffeineBinding.getObject(key, User.class);
+      assertNotNull(cachedUser, "Access in " + i + " times, Should still be cached due to access");
     }
 
-    // Then - Wait for expiration after last access (2s configured expiration)
-    await()
-        .atMost(4, TimeUnit.SECONDS)
-        .pollInterval(200, TimeUnit.MILLISECONDS)
-        .until(
-            () -> {
-              User u = caffeineBinding.get(key, User.class);
-              return u == null;
-            });
+    // Then - 模拟最后一次访问后再过 2.1s
+    fakeTicker.advance(2100, TimeUnit.MILLISECONDS);
+    caffeineBinding.cleanUp();
 
-    User finalCachedUser = caffeineBinding.get(key, User.class);
+    User finalCachedUser = caffeineBinding.getObject(key, User.class);
     assertNull(finalCachedUser, "Should be expired after access timeout");
   }
 
@@ -121,7 +107,7 @@ public class CaffeineExpirationTest extends BaseCacheTest {
     // Then - Count how many items are still cached
     int cachedCount = 0;
     for (int i = 0; i < itemsToCache; i++) {
-      User user = caffeineBinding.get("user:" + i, User.class);
+      User user = caffeineBinding.getObject("user:" + i, User.class);
       if (user != null) {
         cachedCount++;
       }
@@ -145,13 +131,13 @@ public class CaffeineExpirationTest extends BaseCacheTest {
 
     // When
     caffeineBinding.set(key, user1);
-    User cachedUser1 = caffeineBinding.get(key, User.class);
+    User cachedUser1 = caffeineBinding.getObject(key, User.class);
 
     // Update cache
     User user2 = User.createTestUser("1");
     user2.setName("Updated");
     caffeineBinding.set(key, user2);
-    User cachedUser2 = caffeineBinding.get(key, User.class);
+    User cachedUser2 = caffeineBinding.getObject(key, User.class);
 
     // Then
     assertEquals("Original", cachedUser1.getName());

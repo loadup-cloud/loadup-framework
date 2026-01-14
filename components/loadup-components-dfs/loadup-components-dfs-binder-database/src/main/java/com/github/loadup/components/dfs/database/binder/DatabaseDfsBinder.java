@@ -37,6 +37,8 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
 import java.util.*;
+
+import com.github.loadup.framework.api.cfg.BaseBindingCfg;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +66,8 @@ public class DatabaseDfsBinder extends AbstractBinder<DatabaseDfsBinderCfg> impl
   }
 
   @Override
-  protected void afterConfigInjected() {
-    String tableName = binderCfg.getTableName();
+  protected void afterConfigInjected(String name, DatabaseDfsBinderCfg binderCfg, BaseBindingCfg bindingCfg) {
+    String tableName = this.binderCfg.getTableName();
     if (StringUtils.isNotBlank(tableName)) {
       TABLE_NAME = tableName;
     }

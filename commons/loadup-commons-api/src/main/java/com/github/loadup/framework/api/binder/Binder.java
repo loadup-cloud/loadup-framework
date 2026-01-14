@@ -1,5 +1,7 @@
 package com.github.loadup.framework.api.binder;
 
+import com.github.loadup.framework.api.cfg.BaseBinderCfg;
+import com.github.loadup.framework.api.cfg.BaseBindingCfg;
 import org.springframework.beans.factory.DisposableBean;
 
 /*-
@@ -23,13 +25,24 @@ import org.springframework.beans.factory.DisposableBean;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-public interface Binder extends DisposableBean {
-  String getBinderType();
 
-  // 接受 Object 类型的配置，内部处理类型转换
-  void injectBinderConfig(Object config);
+/**
+ * @param <C> Binder 自身的配置基类 (如 RedisBinderCfg)
+ * @param <C> 关联的业务 Binding 配置基类 (如 RedisBindingCfg)
+ */
+public interface Binder<C extends BaseBinderCfg, S extends BaseBindingCfg> extends DisposableBean {
+  String getBinderType();
 
   default void binderInit() {}
 
   default void binderDestroy() {}
+
+  /**
+   * 初始化入口：注入双重配置
+   *
+   * @param name 实例名称 (bizType)
+   * @param binderCfg 中间件层级的通用配置
+   * @param bindingCfg 业务层级的定制配置
+   */
+  void injectConfigs(String name, C binderCfg, S bindingCfg);
 }

@@ -16,6 +16,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import com.github.loadup.framework.api.cfg.BaseBindingCfg;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -53,13 +55,13 @@ public class S3DfsBinder extends AbstractBinder<S3DfsBinderCfg> implements DfsBi
   private static final String META_CUSTOM_PREFIX = "custom-";
 
   @Override
-  protected void afterConfigInjected() {
+  protected void afterConfigInjected(String name, S3DfsBinderCfg binderCfg, BaseBindingCfg bindingCfg) {
     // 仅当 provider 配置为 s3 时初始化
 
     try {
       // 获取访问凭证（优先使用配置，否则从环境变量或 AWS 配置获取）
-      String accessKey = getAccessKey(binderCfg);
-      String secretKey = getSecretKey(binderCfg);
+      String accessKey = getAccessKey(this.binderCfg);
+      String secretKey = getSecretKey(this.binderCfg);
       if (accessKey == null || secretKey == null) {
         log.warn(
             "S3 access credentials not configured. Please set loadup.dfs.s3.access-key and secret-key, "
@@ -68,7 +70,7 @@ public class S3DfsBinder extends AbstractBinder<S3DfsBinderCfg> implements DfsBi
       }
       AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
       // 获取区域配置（优先使用配置，否则使用默认值）
-      String regionStr = binderCfg.getRegion();
+      String regionStr = this.binderCfg.getRegion();
       if (regionStr == null || regionStr.isEmpty()) {
         regionStr = System.getenv("AWS_REGION");
       }
@@ -81,8 +83,8 @@ public class S3DfsBinder extends AbstractBinder<S3DfsBinderCfg> implements DfsBi
               .region(region)
               .credentialsProvider(StaticCredentialsProvider.create(credentials));
       // 如果配置了自定义endpoint (例如MinIO)
-      if (binderCfg.getEndpoint() != null && !binderCfg.getEndpoint().isEmpty()) {
-        clientBuilder.endpointOverride(URI.create(binderCfg.getEndpoint()));
+      if (this.binderCfg.getEndpoint() != null && !this.binderCfg.getEndpoint().isEmpty()) {
+        clientBuilder.endpointOverride(URI.create(this.binderCfg.getEndpoint()));
       }
       s3Client = clientBuilder.build();
       // 初始化presigner
@@ -90,11 +92,11 @@ public class S3DfsBinder extends AbstractBinder<S3DfsBinderCfg> implements DfsBi
           S3Presigner.builder()
               .region(region)
               .credentialsProvider(StaticCredentialsProvider.create(credentials));
-      if (binderCfg.getEndpoint() != null && !binderCfg.getEndpoint().isEmpty()) {
-        presignerBuilder.endpointOverride(URI.create(binderCfg.getEndpoint()));
+      if (this.binderCfg.getEndpoint() != null && !this.binderCfg.getEndpoint().isEmpty()) {
+        presignerBuilder.endpointOverride(URI.create(this.binderCfg.getEndpoint()));
       }
       s3Presigner = presignerBuilder.build();
-      bucketName = binderCfg.getBucket();
+      bucketName = this.binderCfg.getBucket();
       if (bucketName == null || bucketName.isEmpty()) {
         log.warn("S3 bucket name not configured. Please set loadup.dfs.s3.bucket");
         return;

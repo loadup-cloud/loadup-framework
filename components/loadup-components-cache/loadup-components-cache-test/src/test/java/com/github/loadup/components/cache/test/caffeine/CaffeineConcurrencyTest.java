@@ -83,7 +83,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
     for (int i = 0; i < threadCount; i++) {
       for (int j = 0; j < operationsPerThread; j++) {
         String key = "user:" + i + ":" + j;
-        User user = caffeineBinding.get(key, User.class);
+        User user = caffeineBinding.getObject(key, User.class);
         assertNotNull(user, "User should be cached: " + key);
       }
     }
@@ -111,7 +111,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
             try {
               for (int j = 0; j < readsPerThread; j++) {
                 String key = "user:" + (j % dataCount);
-                User user = caffeineBinding.get(key, User.class);
+                User user = caffeineBinding.getObject(key, User.class);
                 if (user != null) {
                   successCount.incrementAndGet();
                 }
@@ -162,7 +162,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
                   caffeineBinding.set(key, user);
                 } else {
                   // Read
-                  caffeineBinding.get(key, User.class);
+                  caffeineBinding.getObject(key, User.class);
                 }
               }
             } catch (Exception e) {
@@ -185,7 +185,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
     // Then - Verify no corruption
     for (int i = 0; i < 50; i++) {
       String key = "user:" + i;
-      User user = caffeineBinding.get(key, User.class);
+      User user = caffeineBinding.getObject(key, User.class);
       assertNotNull(user, "User should exist: " + key);
       // Name should either be from Initial or Thread prefix
       assertTrue(
@@ -227,7 +227,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
 
     // Then - All items should be deleted
     for (int i = 0; i < dataCount; i++) {
-      User user = caffeineBinding.get("user:" + i, User.class);
+      User user = caffeineBinding.getObject("user:" + i, User.class);
       assertNull(user, "User should be deleted: " + i);
     }
   }
@@ -268,7 +268,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
     executor.awaitTermination(30, TimeUnit.SECONDS);
 
     // Then - Verify final state is consistent
-    User finalUser = caffeineBinding.get(key, User.class);
+    User finalUser = caffeineBinding.getObject(key, User.class);
     assertNotNull(finalUser, "Final user should exist");
     assertNotNull(finalUser.getName(), "Final user name should not be null");
   }
@@ -297,7 +297,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
                 caffeineBinding.set(key, user);
 
                 // Read
-                caffeineBinding.get(key, User.class);
+                caffeineBinding.getObject(key, User.class);
               }
             } finally {
               latch.countDown();

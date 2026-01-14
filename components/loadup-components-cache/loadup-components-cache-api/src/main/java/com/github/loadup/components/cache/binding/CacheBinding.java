@@ -22,16 +22,24 @@ package com.github.loadup.components.cache.binding;
  * #L%
  */
 
+import com.github.loadup.components.cache.binder.CacheBinder;
+import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.framework.api.binding.Binding;
 
 import java.util.Collection;
 
-public interface CacheBinding extends Binding {
+/**
+ * 缓存领域 Binding 接口 职责：Key 修饰、多级缓存协调、类型转换、反序列化调度
+ *
+ * @param <B> 驱动类型：必须是 CacheBinder，且其业务配置类型必须与 S 一致
+ * @param <S> 业务配置类型：必须是 CacheBindingCfg 或其子类
+ */
+public interface CacheBinding extends Binding<CacheBinder<?, CacheBindingCfg>, CacheBindingCfg> {
   boolean set(String key, Object value);
 
   Object get(String key);
 
-  <T> T get(String key, Class<T> cls);
+  <T> T getObject(String key, Class<T> cls);
 
   boolean delete(String key);
 

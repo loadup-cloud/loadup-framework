@@ -1,20 +1,23 @@
 package com.github.loadup.framework.api.binder;
 
 import com.github.loadup.framework.api.cfg.BaseBinderCfg;
+import com.github.loadup.framework.api.cfg.BaseBindingCfg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-public abstract class AbstractBinder<T extends BaseBinderCfg> implements Binder {
-  protected T binderCfg;
+public abstract class AbstractBinder<C extends BaseBinderCfg, S extends BaseBindingCfg>
+    implements Binder<C, S> {
+  protected C binderCfg;
+  protected S bindingCfg;
   protected String name;
   // 关键：动态创建时，Spring 会自动扫描并注入此字段
   @Autowired protected ApplicationContext context;
 
-  public T getBinderCfg() {
+  public C getBinderCfg() {
     return binderCfg;
   }
 
-  public void setBinderCfg(T binderCfg) {
+  public void setBinderCfg(C binderCfg) {
     this.binderCfg = binderCfg;
   }
 
@@ -27,19 +30,20 @@ public abstract class AbstractBinder<T extends BaseBinderCfg> implements Binder 
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public void injectBinderConfig(Object config) {
-    // 在这里完成从 Object 到具体 T 的转型
-    this.binderCfg = (T) config;
-    this.afterConfigInjected();
+  public final void injectConfigs(String name, C binderCfg, S bindingCfg) {
+    this.name = name;
+    this.binderCfg = binderCfg;
+    this.bindingCfg = bindingCfg;
+
+    // 执行初始化前的准备工作
+    this.afterConfigInjected(name, binderCfg, bindingCfg);
   }
 
   /** 钩子方法：配置注入完成后，子类可以在这里初始化 SDK 客户端 */
-  protected void afterConfigInjected() {}
+  protected void afterConfigInjected(String name, C binderCfg, S bindingCfg) {}
 
   protected void afterDestroy() {}
 
-  @Override
   public void destroy() throws Exception {
     try {
       this.afterDestroy();

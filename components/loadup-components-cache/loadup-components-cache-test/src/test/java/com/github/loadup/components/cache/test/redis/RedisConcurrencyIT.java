@@ -105,7 +105,7 @@ public class RedisConcurrencyIT extends BaseCacheTest {
             () -> {
               try {
                 for (int j = 0; j < readsPerThread; j++) {
-                  User cachedUser = caffeineBinding.get(key, User.class);
+                  User cachedUser = caffeineBinding.getObject(key, User.class);
                   if (cachedUser != null && user.getId().equals(cachedUser.getId())) {
                     successCount.incrementAndGet();
                   }
@@ -157,7 +157,7 @@ public class RedisConcurrencyIT extends BaseCacheTest {
                       statistics.get("writes").incrementAndGet();
                       break;
                     case 1: // Read
-                      caffeineBinding.get(key, User.class);
+                      caffeineBinding.getObject(key, User.class);
                       statistics.get("reads").incrementAndGet();
                       break;
                     case 2: // Delete
@@ -229,7 +229,7 @@ public class RedisConcurrencyIT extends BaseCacheTest {
       assertTrue(completed, "All threads should complete");
 
       // Final value should be one of the updated values
-      User finalUser = caffeineBinding.get(key, User.class);
+      User finalUser = caffeineBinding.getObject(key, User.class);
       assertNotNull(finalUser, "Final user should exist");
       assertTrue(
           updatedNames.contains(finalUser.getName()),
@@ -286,7 +286,7 @@ public class RedisConcurrencyIT extends BaseCacheTest {
       int remainingKeys = 0;
       for (int i = 0; i < keyCount; i++) {
         String key = "concurrent:delete:" + i;
-        User user = caffeineBinding.get(key, User.class);
+        User user = caffeineBinding.getObject(key, User.class);
         if (user != null) {
           remainingKeys++;
         }
@@ -337,7 +337,7 @@ public class RedisConcurrencyIT extends BaseCacheTest {
       // Then - Verify data consistency
       int validCount = 0;
       for (String key : allKeys) {
-        User user = caffeineBinding.get(key, User.class);
+        User user = caffeineBinding.getObject(key, User.class);
         if (user != null) {
           validCount++;
         }

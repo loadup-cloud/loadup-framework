@@ -1063,7 +1063,7 @@ Duration parseDuration(String durationStr)
 
 - `com.github.loadup.components.cache.cfg.CacheBindingCfg` - 统一配置类
 - `com.github.loadup.components.cache.config.CacheAutoConfiguration` - 自动配置
-- `com.github.loadup.components.cache.binding.AbstractCacheBinding` - 默认实现
+- `com.github.loadup.components.cache.binding.DefaultCacheBinding` - 默认实现
 
 ##### 统一的配置结构
 

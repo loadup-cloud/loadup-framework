@@ -22,11 +22,15 @@ package com.github.loadup.components.cache.binder;
  * #L%
  */
 
+import com.github.loadup.components.cache.cfg.CacheBinderCfg;
+import com.github.loadup.components.cache.cfg.CacheBindingCfg;
+import com.github.loadup.components.cache.serializer.CacheSerializer;
 import com.github.loadup.framework.api.binder.Binder;
 
 import java.util.Collection;
 
-public interface CacheBinder extends Binder {
+public interface CacheBinder<C extends CacheBinderCfg, S extends CacheBindingCfg>
+    extends Binder<C, S> {
   boolean set(String key, Object value);
 
   Object get(String key);
@@ -36,4 +40,6 @@ public interface CacheBinder extends Binder {
   boolean deleteAll(Collection<String> keys);
 
   void cleanUp();
+
+  CacheSerializer getSerializer();
 }

@@ -1,13 +1,12 @@
 package com.github.loadup.components.cache.starter.config;
 
 import com.github.loadup.components.cache.binder.CacheTicker;
+import com.github.loadup.components.cache.binding.impl.DefaultCacheBinding;
 import com.github.loadup.components.cache.caffeine.binder.CaffeineCacheBinder;
-import com.github.loadup.components.cache.caffeine.binding.CaffeineCacheBinding;
 import com.github.loadup.components.cache.caffeine.cfg.CaffeineCacheBinderCfg;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.components.cache.constants.CacheConstants;
 import com.github.loadup.components.cache.redis.binder.RedisCacheBinder;
-import com.github.loadup.components.cache.redis.binding.RedisCacheBinding;
 import com.github.loadup.components.cache.redis.cfg.RedisCacheBinderCfg;
 import com.github.loadup.components.cache.serializer.CacheSerializer;
 import com.github.loadup.components.cache.serializer.JsonCacheSerializer;
@@ -63,38 +62,35 @@ public class CacheBindingAutoConfiguration {
     return new KryoCacheSerializer();
   }
 
-  /** S3 模块的自动注册逻辑 只有当 classpath 下存在 CaffeineCacheBinding 类时（即引入了 binder-s3 依赖），这段逻辑才生效 */
-  @Configuration
-  @ConditionalOnClass(
-      name = {
-        "com.github.benmanes.caffeine.cache.Caffeine",
-        "com.github.loadup.components.cache.caffeine.binding.CaffeineCacheBinding"
-      })
-  static class CaffeineBindingRegistry {
-    // Spring 会自动注入上面定义的 bindingManager
-    public CaffeineBindingRegistry(CacheBindingManager bindingManager) {
-      bindingManager.register(
-          "caffeine",
-          new BindingMetadata<>(
-              CacheBindingCfg.class,
-              CaffeineCacheBinderCfg.class,
-              CaffeineCacheBinder.class,
-              ctx -> new CaffeineCacheBinding()));
+    /**
+     * 当 classpath 中存在 Caffeine 时，注册其元数据
+     */
+    @Bean
+    @ConditionalOnClass(name = "com.github.benmanes.caffeine.cache.Cache")
+    public BindingMetadata<?, ?, ?, ?> caffeineMetadata() {
+        return new BindingMetadata<>(
+            "caffeine",
+            CaffeineCacheBinder.class,
+            CacheBindingCfg.class,
+            CaffeineCacheBinderCfg.class,
+            DefaultCacheBinding.class,
+            ctx -> new DefaultCacheBinding()
+        );
     }
-  }
 
-  /** Redis 模块的自动注册逻辑 */
-  @Configuration
-  @ConditionalOnClass(name = "com.github.loadup.components.cache.redis.binding.RedisCacheBinding")
-  static class RedisBindingRegistry {
-    public RedisBindingRegistry(CacheBindingManager bindingManager) {
-      bindingManager.register(
-          "redis",
-          new BindingMetadata<>(
-              CacheBindingCfg.class,
-              RedisCacheBinderCfg.class,
-              RedisCacheBinder.class,
-              ctx -> new RedisCacheBinding()));
+    /**
+     * 当 classpath 中存在 Redis 时，注册其元数据
+     */
+    @Bean
+    @ConditionalOnClass(name = "org.springframework.data.redis.core.RedisTemplate")
+    public BindingMetadata<?, ?, ?, ?> redisMetadata() {
+        return new BindingMetadata<>(
+            "redis",
+            RedisCacheBinder.class,
+            CacheBindingCfg.class,
+            RedisCacheBinderCfg.class,
+            DefaultCacheBinding.class,
+            ctx -> new DefaultCacheBinding()
+        );
     }
-  }
 }

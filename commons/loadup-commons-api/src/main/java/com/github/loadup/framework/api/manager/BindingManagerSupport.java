@@ -3,13 +3,13 @@ package com.github.loadup.framework.api.manager;
 import com.github.loadup.exception.BinderNotFoundException;
 import com.github.loadup.framework.api.binder.Binder;
 import com.github.loadup.framework.api.binding.Binding;
+import com.github.loadup.framework.api.cfg.BaseBinderCfg;
 import com.github.loadup.framework.api.cfg.BaseBindingCfg;
 import com.github.loadup.framework.api.context.BindingContext;
 import java.util.*;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import org.springframework.context.ApplicationContext;
 
 public abstract class BindingManagerSupport<B extends Binder, T extends Binding> {
@@ -25,7 +25,7 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
     this.configPrefix = configPrefix;
   }
 
-  public void register(String type, BindingMetadata meta) {
+  public void register(String type, BindingMetadata<?, ?, ?, ?> meta) {
     registry.put(type.toLowerCase(), meta);
   }
 
@@ -38,44 +38,53 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
               // 1. 探测类型 (逻辑不变)
               BaseBindingCfg basic =
                   resolveConfig(configPrefix + ".bindings." + tag, BaseBindingCfg.class);
-              String type =
+              String binderTypeStr =
                   (basic.getBinderType() != null)
                       ? basic.getBinderType().toLowerCase()
                       : getDefaultBinderType();
-
+              // 这里取第一个类型作为 Meta 获取的 Key (通常同领域的 Meta 是共享的)
+              String primaryType = binderTypeStr.split(",")[0].trim().toLowerCase();
               // 2. 获取元数据
-              BindingMetadata<?, ?, ?, ?> meta = registry.get(type);
+              BindingMetadata<?, ?, ?, ?> meta = registry.get(primaryType);
               if (meta == null) {
-                throw new BinderNotFoundException("Binder not registered: " + type);
+                throw new BinderNotFoundException("Binder not registered: " + primaryType);
               }
 
               // 3. 关键：调用泛型捕获方法，将通配符转换为具体的泛型 B, C_BIND, C_BINDR
-              return (T) captureAndCreate(tag, type, (BindingMetadata) meta);
+              return (T) captureAndCreate(tag, binderTypeStr, (BindingMetadata) meta);
             });
   }
 
   /** 捕获方法：在这个方法内，泛型被重新绑定，编译器不再抱怨 Object 转换问题 */
   @SuppressWarnings("unchecked")
-  private <B_SUB extends B, CBIND, CBINDR, T_SUB extends T> T_SUB captureAndCreate(
-      String tag, String type, BindingMetadata<B_SUB, CBIND, CBINDR, T_SUB> meta) {
-
+  private <
+          B_SUB extends B,
+          CBIND extends BaseBindingCfg,
+          CBINDR extends BaseBinderCfg,
+          T_SUB extends T>
+      T_SUB captureAndCreate(
+          String tag, String binderTypes, BindingMetadata<B_SUB, CBIND, CBINDR, T_SUB> meta) {
     // 解析配置
     CBIND bindingCfg = resolveConfig(configPrefix + ".bindings." + tag, meta.bindingCfgClass);
-    CBINDR binderCfg =
-        (CBINDR)
-            binderCfgCache.computeIfAbsent(
-                type, t -> resolveConfig(configPrefix + ".binders." + t, meta.binderCfgClass));
 
-    // 动态实例化 Binder (注意：B_SUB 是 B 的子类)
-
-    // 准备上下文
-    // List<B_SUB> binders = Collections.singletonList(binderInstance);
+    // 创建驱动列表 (支持多级缓存核心逻辑)
     List<B_SUB> binders = new ArrayList<>();
-    // 如果配置中支持多选，则循环创建
-    binders.add(createOne(meta, binderCfg));
+    for (String type : binderTypes.split(",")) {
+      String trimmedType = type.trim().toLowerCase();
 
+      // 获取或缓存组件层配置 (如 Redis 的 Host/DB)
+      CBINDR binderCfg =
+          (CBINDR)
+              binderCfgCache.computeIfAbsent(
+                  trimmedType,
+                  t -> resolveConfig(configPrefix + ".binders." + t, meta.binderCfgClass));
+
+      // 创建并注入配置
+      binders.add(createOne(meta, tag, binderCfg, bindingCfg));
+    }
+    // 构造上下文
     BindingContext<B_SUB, CBIND> ctx =
-        new BindingContext<>(tag, type, bindingCfg, binders, context);
+        new BindingContext<>(tag, binderTypes, bindingCfg, binders, context);
 
     // 调用工厂创建 Binding 并初始化
     T_SUB bindingInstance = meta.factory.create(ctx);
@@ -83,53 +92,32 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
     return bindingInstance;
   }
 
-  private <B_SUB extends B, CBIND, CBINDR, T_SUB extends T> B_SUB createOne(
-      BindingMetadata<B_SUB, CBIND, CBINDR, T_SUB> meta, CBINDR binderCfg) {
+  private <
+          B_SUB extends B,
+          CBIND extends BaseBindingCfg,
+          CBINDR extends BaseBinderCfg,
+          T_SUB extends T>
+      B_SUB createOne(
+          BindingMetadata<B_SUB, CBIND, CBINDR, T_SUB> meta,
+          String name,
+          CBINDR binderCfg,
+          CBIND bindingCfg) {
+
+    // 利用 Spring 容器创建实例，保证 @Autowired 生效
     B_SUB binderInstance =
         (B_SUB) context.getAutowireCapableBeanFactory().createBean(meta.binderClass);
-    binderInstance.injectBinderConfig(binderCfg);
+
+    // 执行双重配置注入：业务名、组件配置、业务覆盖配置
+    binderInstance.injectConfigs(name, binderCfg, bindingCfg);
+
     return binderInstance;
-  }
-
-  @SuppressWarnings("unchecked")
-  private T doCreateBinding(String tag, String type, BindingMetadata meta) {
-    // 解析双层配置
-    Object bindingCfg = resolveConfig(configPrefix + ".bindings." + tag, meta.bindingCfgClass);
-    Object binderCfg =
-        binderCfgCache.computeIfAbsent(
-            type, t -> resolveConfig(configPrefix + ".binders." + t, meta.binderCfgClass));
-
-    // 实例化并装配 Binder 列表
-    List<B> binders = createAndAssembleBinders(type, binderCfg);
-
-    // 创建上下文并生成 Binding 实例
-    BindingContext<B, Object> ctx = new BindingContext<>(tag, type, bindingCfg, binders, context);
-    T instance = (T) meta.factory.create(ctx);
-
-    // 统一初始化
-    instance.init(ctx);
-    return instance;
-  }
-
-  private List<B> createAndAssembleBinders(String type, Object binderCfg) {
-    return context.getBeansOfType(getBinderInterface()).values().stream()
-        .filter(b -> b.getBinderType().equalsIgnoreCase(type))
-        .map(
-            prototype -> {
-              // 创建新实例并注入配置
-              B newBinder =
-                  (B) context.getAutowireCapableBeanFactory().createBean(prototype.getClass());
-              newBinder.injectBinderConfig(binderCfg);
-              return newBinder;
-            })
-        .collect(Collectors.toList());
   }
 
   protected abstract String getDefaultBinderType();
 
-  protected abstract Class<B> getBinderInterface();
-
   public abstract Class<T> getBindingInterface();
+
+  public abstract Class<B> getBinderInterface();
 
   protected <C> C resolveConfig(String path, Class<C> configClass) {
     return org.springframework.boot.context.properties.bind.Binder.get(context.getEnvironment())

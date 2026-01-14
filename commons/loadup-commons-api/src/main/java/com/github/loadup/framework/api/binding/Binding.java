@@ -22,15 +22,17 @@ package com.github.loadup.framework.api.binding;
  * #L%
  */
 
+import com.github.loadup.framework.api.binder.Binder;
+import com.github.loadup.framework.api.cfg.BaseBindingCfg;
 import com.github.loadup.framework.api.context.BindingContext;
 
-public interface Binding {
-  String name();
+public interface Binding<B extends Binder, C extends BaseBindingCfg> {
+  String getBizTag();
 
   /**
    * 通用的初始化方法
    *
    * @param context 包含所有装配原材料的上下文
    */
-  void init(BindingContext<?, ?> context);
+  void init(BindingContext<B, C> context);
 }

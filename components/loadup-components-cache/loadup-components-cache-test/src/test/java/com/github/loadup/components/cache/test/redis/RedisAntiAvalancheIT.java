@@ -100,7 +100,7 @@ public class RedisAntiAvalancheIT extends BaseCacheTest {
                     .atMost(10, TimeUnit.SECONDS)
                     .until(
                         () -> {
-                          User u = caffeineBinding.get(key, User.class);
+                          User u = caffeineBinding.getObject(key, User.class);
                           return u == null;
                         });
 
@@ -161,7 +161,7 @@ public class RedisAntiAvalancheIT extends BaseCacheTest {
 
     try {
       // When - Try to get a non-existent key multiple times
-      User user1 = caffeineBinding.get(nonExistentKey, User.class);
+      User user1 = caffeineBinding.getObject(nonExistentKey, User.class);
 
       // Then - Non-existent key should return null
       assertNull(user1, "Non-existent key should return null");
@@ -199,7 +199,7 @@ public class RedisAntiAvalancheIT extends BaseCacheTest {
       int expired = 0;
       for (int i = 0; i < batchSize; i++) {
         String key = "batch:user:" + i;
-        User user = caffeineBinding.get(key, User.class);
+        User user = caffeineBinding.getObject(key, User.class);
         if (user != null) {
           stillCached++;
         } else {
@@ -217,7 +217,7 @@ public class RedisAntiAvalancheIT extends BaseCacheTest {
               () -> {
                 int expiredCount = 0;
                 for (int i = 0; i < batchSize; i++) {
-                  User u = caffeineBinding.get("batch:user:" + i, User.class);
+                  User u = caffeineBinding.getObject("batch:user:" + i, User.class);
                   if (u == null) {
                     expiredCount++;
                   }
@@ -229,7 +229,7 @@ public class RedisAntiAvalancheIT extends BaseCacheTest {
       int finalExpired = 0;
       for (int i = 0; i < batchSize; i++) {
         String key = "batch:user:" + i;
-        User user = caffeineBinding.get(key, User.class);
+        User user = caffeineBinding.getObject(key, User.class);
         if (user == null) {
           finalExpired++;
         }
@@ -279,7 +279,7 @@ public class RedisAntiAvalancheIT extends BaseCacheTest {
                     .atMost(10, TimeUnit.SECONDS)
                     .until(
                         () -> {
-                          User u = caffeineBinding.get(key, User.class);
+                          User u = caffeineBinding.getObject(key, User.class);
                           return u == null;
                         });
                 withRandomExpTimes.add(System.currentTimeMillis() - startTime);
@@ -297,7 +297,7 @@ public class RedisAntiAvalancheIT extends BaseCacheTest {
                     .atMost(10, TimeUnit.SECONDS)
                     .until(
                         () -> {
-                          User u = caffeineBinding.get(key, User.class);
+                          User u = caffeineBinding.getObject(key, User.class);
                           return u == null;
                         });
                 noRandomExpTimes.add(System.currentTimeMillis() - startTime);
@@ -363,7 +363,7 @@ public class RedisAntiAvalancheIT extends BaseCacheTest {
         executor.submit(
             () -> {
               try {
-                User user = caffeineBinding.get(hotKey, User.class);
+                User user = caffeineBinding.getObject(hotKey, User.class);
                 assertNotNull(user, "Hot key should be accessible");
               } finally {
                 latch.countDown();
@@ -377,7 +377,7 @@ public class RedisAntiAvalancheIT extends BaseCacheTest {
       assertTrue(completed, "All concurrent requests should complete successfully");
 
       // Verify data is still intact after high concurrent access
-      User finalUser = caffeineBinding.get(hotKey, User.class);
+      User finalUser = caffeineBinding.getObject(hotKey, User.class);
       assertNotNull(finalUser, "Hot key should still be cached");
       assertEquals("Hot Product", finalUser.getName(), "Data should be intact");
 
@@ -410,7 +410,7 @@ public class RedisAntiAvalancheIT extends BaseCacheTest {
       // Verify keys were actually set before testing expiration
       int initialCached = 0;
       for (int i = 0; i < massiveKeyCount; i++) {
-        User user = caffeineBinding.get("massive:user:" + i, User.class);
+        User user = caffeineBinding.getObject("massive:user:" + i, User.class);
         if (user != null) {
           initialCached++;
         }
@@ -442,7 +442,7 @@ public class RedisAntiAvalancheIT extends BaseCacheTest {
         int currentCached = 0;
         for (int i = 0; i < massiveKeyCount; i++) {
           try {
-            User user = caffeineBinding.get("massive:user:" + i, User.class);
+            User user = caffeineBinding.getObject("massive:user:" + i, User.class);
             if (user == null) {
               expired++;
             } else {

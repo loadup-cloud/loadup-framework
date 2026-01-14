@@ -24,17 +24,14 @@ package com.github.loadup.components.cache.test.caffeine;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.cache.binding.CacheBinding;
 import com.github.loadup.components.cache.test.common.BaseCacheTest;
 import com.github.loadup.components.cache.test.common.model.Product;
 import com.github.loadup.components.cache.test.common.model.User;
-import com.github.loadup.framework.api.annotation.BindingClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 /** Caffeine Cache Basic Operations Test */
 @TestPropertySource(
@@ -53,7 +50,7 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
 
     // When
     boolean setResult = caffeineBinding.set(key, user);
-    User cachedUser = caffeineBinding.get(key, User.class);
+    User cachedUser = caffeineBinding.getObject(key, User.class);
 
     // Then
     assertTrue(setResult, "Set operation should return true");
@@ -67,7 +64,7 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
   @DisplayName("测试缓存不存在的key")
   void testGetNonExistentKey() {
     // When
-    User cachedUser = (User) caffeineBinding.get("non-existent-key", User.class);
+    User cachedUser = caffeineBinding.getObject("non-existent-key", User.class);
 
     // Then
     assertNull(cachedUser, "Non-existent key should return null");
@@ -83,7 +80,7 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
 
     // When
     boolean deleteResult = caffeineBinding.delete(key);
-    User cachedUser = (User) caffeineBinding.get(key, User.class);
+    User cachedUser = caffeineBinding.getObject(key, User.class);
 
     // Then
     assertTrue(deleteResult, "Delete operation should return true");
@@ -101,9 +98,9 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
     // When
     boolean deleteAllResult =
         caffeineBinding.deleteAll(Arrays.asList("user:1", "user:2", "user:3"));
-    User user1 = (User) caffeineBinding.get("user:1", User.class);
-    User user2 = (User) caffeineBinding.get("user:2", User.class);
-    User user3 = (User) caffeineBinding.get("user:3", User.class);
+    User user1 = caffeineBinding.getObject("user:1", User.class);
+    User user2 = caffeineBinding.getObject("user:2", User.class);
+    User user3 = caffeineBinding.getObject("user:3", User.class);
 
     // Then
     assertTrue(deleteAllResult, "DeleteAll operation should return true");
@@ -126,11 +123,11 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
     // When
     boolean setResult1 = caffeineBinding.set(key, user1);
     assertTrue(setResult1, "First set should succeed");
-    User cachedUser1 = (User) caffeineBinding.get(key, User.class);
+    User cachedUser1 = caffeineBinding.getObject(key, User.class);
 
     boolean setResult2 = caffeineBinding.set(key, user2);
     assertTrue(setResult2, "Second set (overwrite) should succeed");
-    User cachedUser2 = (User) caffeineBinding.get(key, User.class);
+    User cachedUser2 = caffeineBinding.getObject(key, User.class);
 
     // Then
     assertNotNull(cachedUser1, "First cached user should not be null");
@@ -154,8 +151,8 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
     caffeineBinding.set(userKey, user);
     caffeineBinding.set(productKey, product);
 
-    User cachedUser = (User) caffeineBinding.get(userKey, User.class);
-    Product cachedProduct = (Product) caffeineBinding.get(productKey, Product.class);
+    User cachedUser = caffeineBinding.getObject(userKey, User.class);
+    Product cachedProduct = caffeineBinding.getObject(productKey, Product.class);
 
     // Then
     assertNotNull(cachedUser);
@@ -193,7 +190,7 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
 
     // Then - 验证所有数据都被缓存
     for (int i = 0; i < batchSize; i++) {
-      User user = (User) caffeineBinding.get("user:" + i, User.class);
+      User user = caffeineBinding.getObject("user:" + i, User.class);
       assertNotNull(user, "User " + i + " should be cached");
       assertEquals(String.valueOf(i), user.getId());
     }

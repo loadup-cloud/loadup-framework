@@ -22,29 +22,20 @@ package com.github.loadup.components.cache.redis.binder;
  * #L%
  */
 
-import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.cache.binder.AbstractCacheBinder;
 import com.github.loadup.components.cache.binder.CacheBinder;
+import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.components.cache.redis.cfg.RedisCacheBinderCfg;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
-
+import com.github.loadup.framework.api.manager.ConfigurationResolver;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
-import org.springframework.cache.Cache;
-import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -60,8 +51,7 @@ import org.springframework.util.StringUtils;
  * @see RedisCacheBinderCfg
  */
 @Slf4j
-public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg>
-    implements CacheBinder {
+public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg, CacheBindingCfg> {
   @Autowired private RedisProperties springRedisProperties; // 注入 YAML 中的 spring.redis 配置
 
   @Autowired(required = false)
@@ -97,15 +87,10 @@ public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg>
   /** 判断配置是否与 spring.redis 一致 */
   private boolean isMatchDefaultConfig() {
     // 如果 Binder 没有配置 Host，或者配置的 Host 和 DB 与 Spring 默认的一样
-    boolean hostMatch =
-        !StringUtils.hasText(binderCfg.getHost())
-            || Objects.equals(binderCfg.getHost(), springRedisProperties.getHost());
-
     boolean dbMatch =
         binderCfg.getDatabase() == 0
             || binderCfg.getDatabase() == springRedisProperties.getDatabase();
-
-    return hostMatch && dbMatch;
+    return dbMatch;
   }
 
   /** 创建独立的工厂 */
@@ -114,22 +99,19 @@ public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg>
 
     // 合并配置：优先用 BinderCfg，为空则用 RedisProperties
     String host =
-        StringUtils.hasText(binderCfg.getHost())
-            ? binderCfg.getHost()
-            : springRedisProperties.getHost();
+        ConfigurationResolver.resolve(binderCfg.getHost(), springRedisProperties.getHost());
     int port = binderCfg.getPort() != 0 ? binderCfg.getPort() : springRedisProperties.getPort();
-    int db =
-        binderCfg.getDatabase() != 0
-            ? binderCfg.getDatabase()
-            : springRedisProperties.getDatabase();
+    int finalDb =
+        ConfigurationResolver.resolve(
+            bindingCfg.getDatabase(),
+            binderCfg.getDatabase(),
+            springRedisProperties.getDatabase());
     String pwd =
-        StringUtils.hasText(binderCfg.getPassword())
-            ? binderCfg.getPassword()
-            : springRedisProperties.getPassword();
+        ConfigurationResolver.resolve(binderCfg.getPassword(), springRedisProperties.getPassword());
 
     config.setHostName(host);
     config.setPort(port);
-    config.setDatabase(db);
+    config.setDatabase(finalDb);
     if (StringUtils.hasText(pwd)) {
       config.setPassword(pwd);
     }

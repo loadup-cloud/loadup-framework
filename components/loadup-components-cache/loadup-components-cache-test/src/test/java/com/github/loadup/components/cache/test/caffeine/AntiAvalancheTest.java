@@ -74,7 +74,7 @@ public class AntiAvalancheTest extends BaseCacheTest {
 
     int stillCachedCount = 0;
     for (String key : keys) {
-      User user = caffeineBinding.get(key, User.class);
+      User user = caffeineBinding.getObject(key, User.class);
       if (user != null) {
         stillCachedCount++;
       }
@@ -90,7 +90,7 @@ public class AntiAvalancheTest extends BaseCacheTest {
             () -> {
               int count = 0;
               for (String key : keys) {
-                if (caffeineBinding.get(key, User.class) == null) {
+                if (caffeineBinding.getObject(key, User.class) == null) {
                   count++;
                 }
               }
@@ -102,8 +102,6 @@ public class AntiAvalancheTest extends BaseCacheTest {
   @DisplayName("测试热点数据长过期时间防止击穿")
   void testHotDataLongerExpiration() {
     // Given - 热点数据配置了更长的过期时间
-    String hotCacheName = "hot-data";
-    String normalCacheName = "normal-data";
     String key = "product:1";
 
     // When - 同时缓存到热点缓存和普通缓存
@@ -113,8 +111,8 @@ public class AntiAvalancheTest extends BaseCacheTest {
     // Wait 4 seconds
     sleep(4000);
 
-    User hotData = caffeineBinding.get(key, User.class);
-    User normalData = caffeineBinding.get(key, User.class);
+    User hotData = caffeineBinding.getObject(key, User.class);
+    User normalData = caffeineBinding.getObject(key, User.class);
 
     // Then - 热点数据应该还在，普通数据可能已过期
     assertNotNull(hotData, "Hot data should still be cached (5s+ expiration)");
@@ -150,7 +148,7 @@ public class AntiAvalancheTest extends BaseCacheTest {
     // Then - 验证高优先级数据大部分仍在缓存中
     int hotDataRetained = 0;
     for (String key : hotKeys) {
-      User user = caffeineBinding.get(key, User.class);
+      User user = caffeineBinding.getObject(key, User.class);
       if (user != null) {
         hotDataRetained++;
       }
@@ -186,7 +184,7 @@ public class AntiAvalancheTest extends BaseCacheTest {
     while (System.currentTimeMillis() - startCheck < maxCheckTime) {
       for (int i = 0; i < batchSize; i++) {
         String key = "batch:user:" + i;
-        User user = caffeineBinding.get(key, User.class);
+        User user = caffeineBinding.getObject(key, User.class);
         if (user == null && expirationTimes.size() == i) {
           expirationTimes.add(System.currentTimeMillis() - startCheck);
         }
@@ -231,7 +229,7 @@ public class AntiAvalancheTest extends BaseCacheTest {
     sleep(2800); // Check before base expiration (3s) - increased buffer
     int expiredAt2800ms = 0;
     for (int i = 0; i < dataCount; i++) {
-      if (caffeineBinding.get("avalanche:user:" + i, User.class) == null) {
+      if (caffeineBinding.getObject("avalanche:user:" + i, User.class) == null) {
         expiredAt2800ms++;
       }
     }
@@ -239,7 +237,7 @@ public class AntiAvalancheTest extends BaseCacheTest {
     sleep(1000); // Now at 3.8s - some should be expired
     int expiredAt3800ms = 0;
     for (int i = 0; i < dataCount; i++) {
-      if (caffeineBinding.get("avalanche:user:" + i, User.class) == null) {
+      if (caffeineBinding.getObject("avalanche:user:" + i, User.class) == null) {
         expiredAt3800ms++;
       }
     }
@@ -247,7 +245,7 @@ public class AntiAvalancheTest extends BaseCacheTest {
     sleep(1000); // Now at 4.8s - more/all should be expired
     int expiredAt4800ms = 0;
     for (int i = 0; i < dataCount; i++) {
-      if (caffeineBinding.get("avalanche:user:" + i, User.class) == null) {
+      if (caffeineBinding.getObject("avalanche:user:" + i, User.class) == null) {
         expiredAt4800ms++;
       }
     }

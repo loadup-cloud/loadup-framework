@@ -62,7 +62,7 @@ public class RedisExpirationIT extends BaseCacheTest {
     try {
       // When
       caffeineBinding.set(key, user);
-      User cachedUser1 = caffeineBinding.get(key, User.class);
+      User cachedUser1 = caffeineBinding.getObject(key, User.class);
 
       // Wait for expiration (3 seconds base + 1 second random offset max = 4 seconds + buffer)
       await()
@@ -70,11 +70,11 @@ public class RedisExpirationIT extends BaseCacheTest {
           .pollDelay(4, TimeUnit.SECONDS)
           .until(
               () -> {
-                User u = caffeineBinding.get(key, User.class);
+                User u = caffeineBinding.getObject(key, User.class);
                 return u == null;
               });
 
-      User cachedUser2 = caffeineBinding.get(key, User.class);
+      User cachedUser2 = caffeineBinding.getObject(key, User.class);
 
       // Then
       assertNotNull(cachedUser1, "Should be cached initially");
@@ -102,12 +102,12 @@ public class RedisExpirationIT extends BaseCacheTest {
           .pollDelay(4, TimeUnit.SECONDS)
           .until(
               () -> {
-                User u = caffeineBinding.get(key, User.class);
+                User u = caffeineBinding.getObject(key, User.class);
                 return u == null;
               });
 
-      User shortLivedUser = caffeineBinding.get(key, User.class);
-      User mediumLivedUser = caffeineBinding.get(key, User.class);
+      User shortLivedUser = caffeineBinding.getObject(key, User.class);
+      User mediumLivedUser = caffeineBinding.getObject(key, User.class);
 
       // Then
       assertNull(shortLivedUser, "Short-lived cache should be expired");
@@ -151,7 +151,7 @@ public class RedisExpirationIT extends BaseCacheTest {
                     .pollInterval(50, TimeUnit.MILLISECONDS)
                     .until(
                         () -> {
-                          User u = caffeineBinding.get(key, User.class);
+                          User u = caffeineBinding.getObject(key, User.class);
                           return u == null;
                         });
 
@@ -227,7 +227,7 @@ public class RedisExpirationIT extends BaseCacheTest {
       sleep(2000);
 
       // Should still be cached since we updated it 2 seconds ago
-      User cachedUser = caffeineBinding.get(key, User.class);
+      User cachedUser = caffeineBinding.getObject(key, User.class);
 
       // Then
       assertNotNull(cachedUser, "Should still be cached after update");
@@ -254,7 +254,7 @@ public class RedisExpirationIT extends BaseCacheTest {
       // Verify all are cached
       for (int i = 0; i < batchSize; i++) {
         String key = "batch:user:" + i;
-        User user = caffeineBinding.get(key, User.class);
+        User user = caffeineBinding.getObject(key, User.class);
         assertNotNull(user, "Key " + key + " should be cached");
       }
 
@@ -265,7 +265,7 @@ public class RedisExpirationIT extends BaseCacheTest {
           .until(
               () -> {
                 for (int i = 0; i < batchSize; i++) {
-                  User u = caffeineBinding.get("batch:user:" + i, User.class);
+                  User u = caffeineBinding.getObject("batch:user:" + i, User.class);
                   if (u != null) {
                     return false; // Still have cached items
                   }
@@ -276,7 +276,7 @@ public class RedisExpirationIT extends BaseCacheTest {
       // Then - Verify all are expired
       for (int i = 0; i < batchSize; i++) {
         String key = "batch:user:" + i;
-        User user = caffeineBinding.get(key, User.class);
+        User user = caffeineBinding.getObject(key, User.class);
         assertNull(user, "Key " + key + " should be expired");
       }
     } finally {
@@ -302,7 +302,7 @@ public class RedisExpirationIT extends BaseCacheTest {
           .pollDelay(4, TimeUnit.SECONDS)
           .until(
               () -> {
-                User u = caffeineBinding.get(key, User.class);
+                User u = caffeineBinding.getObject(key, User.class);
                 return u == null;
               });
 
@@ -311,7 +311,7 @@ public class RedisExpirationIT extends BaseCacheTest {
       user2.setName("Second");
       caffeineBinding.set(key, user2);
 
-      User cachedUser = caffeineBinding.get(key, User.class);
+      User cachedUser = caffeineBinding.getObject(key, User.class);
 
       // Then
       assertNotNull(cachedUser, "Should be cached again after re-setting");

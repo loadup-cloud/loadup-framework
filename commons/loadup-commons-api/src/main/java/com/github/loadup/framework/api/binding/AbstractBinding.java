@@ -1,30 +1,33 @@
 package com.github.loadup.framework.api.binding;
 
+import com.github.loadup.framework.api.binder.Binder;
+import com.github.loadup.framework.api.cfg.BaseBindingCfg;
 import com.github.loadup.framework.api.context.BindingContext;
 import java.util.List;
 
-public abstract class AbstractBinding<B, C> implements Binding {
-  protected C cfg;
+public abstract class AbstractBinding<B extends Binder, S extends BaseBindingCfg>
+    implements Binding<B, S> {
+  protected S bindingCfg;
   protected List<B> binders;
-  protected String name;
-  protected String type;
-  private BindingContext<B, C> context; // 核心上下文
+  protected String bizTag;
+  protected String binderType;
+  private BindingContext<B, S> context; // 核心上下文
 
   /** 获取首选驱动（通常 binders 列表中至少有一个） */
   protected B getBinder() {
     if (binders == null || binders.isEmpty()) {
-      throw new IllegalStateException("No binders available for " + name);
+      throw new IllegalStateException("No binders available for " + bizTag);
     }
     // 默认返回第一个驱动
     return binders.getFirst();
   }
 
-  public C getCfg() {
-    return cfg;
+  public S getBindingCfg() {
+    return bindingCfg;
   }
 
-  public void setCfg(C cfg) {
-    this.cfg = cfg;
+  public void setBindingCfg(S bindingCfg) {
+    this.bindingCfg = bindingCfg;
   }
 
   public List<B> getBinders() {
@@ -36,30 +39,30 @@ public abstract class AbstractBinding<B, C> implements Binding {
   }
 
   public String getName() {
-    return name;
+    return bizTag;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setBizTag(String bizTag) {
+    this.bizTag = bizTag;
   }
 
-  public String getType() {
-    return type;
+  public String getBinderType() {
+    return binderType;
   }
 
-  public void setType(String type) {
-    this.type = type;
+  public void setBinderType(String binderType) {
+    this.binderType = binderType;
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public void init(BindingContext<?, ?> context) {
-    this.context = (BindingContext<B, C>) context;
-    this.name = context.getName();
-    this.type = context.getType();
+  public void init(BindingContext<B, S> context) {
+    this.context = context;
+    this.bizTag = context.getBizTag();
+    this.binderType = context.getBinderType();
     // 这里的强制转型是安全的，因为 Manager 保证了传入的类型匹配
-    this.cfg = (C) context.getConfig();
-    this.binders = (List<B>) context.getBinders();
+    this.bindingCfg = context.getBindingCfg();
+    this.binders = context.getBinders();
 
     // 留给子类的钩子
     afterInit();
@@ -78,7 +81,7 @@ public abstract class AbstractBinding<B, C> implements Binding {
     // 默认空实现
   }
 
-  protected BindingContext<B, C> getContext() {
+  protected BindingContext<B, S> getContext() {
     return this.context;
   }
 }

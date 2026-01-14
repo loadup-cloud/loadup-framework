@@ -28,14 +28,16 @@ import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.cache.binder.AbstractCacheBinder;
 import com.github.loadup.components.cache.binder.CacheBinder;
 import com.github.loadup.components.cache.caffeine.cfg.CaffeineCacheBinderCfg;
+import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
 import java.util.Collection;
 
 @Slf4j
-public class CaffeineCacheBinder extends AbstractCacheBinder<CaffeineCacheBinderCfg>
-    implements CacheBinder {
+public class CaffeineCacheBinder
+    extends AbstractCacheBinder<CaffeineCacheBinderCfg, CacheBindingCfg>
+    implements CacheBinder<CaffeineCacheBinderCfg, CacheBindingCfg> {
 
   // 每一个 Binder 实例持有一个物理上的 Caffeine Cache 对象
   private Cache<String, Object> nativeCache;
@@ -60,6 +62,9 @@ public class CaffeineCacheBinder extends AbstractCacheBinder<CaffeineCacheBinder
     // 2. 设置过期策略 (真正实现不同 bizType 不同策略的关键)
     if (binderCfg.getExpireAfterWrite() != null) {
       builder.expireAfterWrite(binderCfg.getExpireAfterWrite());
+    }
+    if (binderCfg.getExpireAfterAccess() != null) {
+      builder.expireAfterAccess(binderCfg.getExpireAfterAccess());
     }
 
     this.nativeCache = builder.build();
@@ -94,7 +99,7 @@ public class CaffeineCacheBinder extends AbstractCacheBinder<CaffeineCacheBinder
   }
 
   @Override
-  public boolean deleteAll(Collection<String> keys) {
+  public boolean deleteAll(Collection keys) {
     nativeCache.invalidateAll(keys);
     return true;
   }

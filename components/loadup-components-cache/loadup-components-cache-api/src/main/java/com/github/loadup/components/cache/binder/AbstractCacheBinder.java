@@ -23,34 +23,37 @@ package com.github.loadup.components.cache.binder;
  */
 
 import com.github.loadup.components.cache.cfg.CacheBinderCfg;
+import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.components.cache.serializer.CacheSerializer;
 import com.github.loadup.framework.api.binder.AbstractBinder;
+import com.github.loadup.framework.api.binder.Binder;
+import com.github.loadup.framework.api.manager.ConfigurationResolver;
 
-public abstract class AbstractCacheBinder<C extends CacheBinderCfg> extends AbstractBinder<C>
-    implements CacheBinder {
+public abstract class AbstractCacheBinder<C extends CacheBinderCfg, S extends CacheBindingCfg>
+    extends AbstractBinder<C, S> implements CacheBinder<C, S> {
   protected CacheSerializer serializer;
   protected CacheTicker ticker; // 时间源
 
   @Override
-  protected void afterConfigInjected() {
+  protected void afterConfigInjected(String name, C binderCfg, S bindingCfg) {
     // 自动从容器中根据配置的名称获取序列化器
-    String beanName = binderCfg.getSerializerBeanName();
-    // 如果容器里没有 customKryoSerializer，则降级使用 defaultCacheSerializer
-    if (!context.containsBean(beanName)) {
-      beanName = "jsonCacheSerializer";
-    }
-    // 这里的 context 是在 AbstractBinder 实例化时由 Manager 注入的 ApplicationContext
-    this.serializer = context.getBean(beanName, CacheSerializer.class);
-    // 2. 注入 Ticker
-    String tickerName = binderCfg.getTickerBeanName();
-    if (context.containsBean(tickerName)) {
-      this.ticker = context.getBean(tickerName, CacheTicker.class);
-    } else {
-      this.ticker = CacheTicker.SYSTEM;
-    }
+      this.resolveInternalComponents();
     // 执行子类特有的初始化逻辑
     onInit();
   }
+    private void resolveInternalComponents() {
+        // 1. 确定序列化器：优先级 Binding > Binder
+        String serializerName = ConfigurationResolver.resolve(
+            bindingCfg.getSerializerBeanName(),
+            binderCfg.getSerializerBeanName()
+        );
+        this.serializer = context.getBean(serializerName, CacheSerializer.class);
+
+        // 2. 确定时间源
+        String tickerName = binderCfg.getTickerBeanName();
+        this.ticker = context.containsBean(tickerName) ?
+            context.getBean(tickerName, CacheTicker.class) : CacheTicker.SYSTEM;
+    }
 
   protected abstract void onInit();
 

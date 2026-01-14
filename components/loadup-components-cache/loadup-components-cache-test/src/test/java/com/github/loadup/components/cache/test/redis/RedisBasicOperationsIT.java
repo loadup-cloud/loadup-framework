@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;import org.springframework.test.context.*;
+import org.springframework.test.context.*;
 
 import com.github.loadup.components.cache.test.common.BaseCacheTest;
 import com.github.loadup.components.cache.test.common.model.*;
@@ -47,7 +47,7 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
 
     // When
     boolean setResult = caffeineBinding.set(key, user);
-    User cachedUser = caffeineBinding.get(key, User.class);
+    User cachedUser = caffeineBinding.getObject(key, User.class);
 
     // Then
     assertTrue(setResult, "Set operation should return true");
@@ -62,7 +62,7 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
   @DisplayName("测试缓存不存在的key")
   void testGetNonExistentKey() {
     // When
-    User cachedUser = caffeineBinding.get("non-existent-key", User.class);
+    User cachedUser = caffeineBinding.getObject("non-existent-key", User.class);
 
     // Then
     assertNull(cachedUser, "Non-existent key should return null");
@@ -78,7 +78,7 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
 
     // When
     boolean deleteResult = caffeineBinding.delete(key);
-    User cachedUser = caffeineBinding.get(key, User.class);
+    User cachedUser = caffeineBinding.getObject(key, User.class);
 
     // Then
     assertTrue(deleteResult, "Delete operation should return true");
@@ -95,9 +95,9 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
 
     // When
     boolean deleteAllResult = caffeineBinding.deleteAll(Arrays.asList("user:1", "user:2", "user:3"));
-    User user1 = caffeineBinding.get("user:1", User.class);
-    User user2 = caffeineBinding.get("user:2", User.class);
-    User user3 = caffeineBinding.get("user:3", User.class);
+    User user1 = caffeineBinding.getObject("user:1", User.class);
+    User user2 = caffeineBinding.getObject("user:2", User.class);
+    User user3 = caffeineBinding.getObject("user:3", User.class);
 
     // Then
     assertTrue(deleteAllResult, "DeleteAll operation should return true");
@@ -119,10 +119,10 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
 
     // When
     caffeineBinding.set(key, user1);
-    User cachedUser1 = caffeineBinding.get(key, User.class);
+    User cachedUser1 = caffeineBinding.getObject(key, User.class);
 
     caffeineBinding.set(key, user2);
-    User cachedUser2 = caffeineBinding.get(key, User.class);
+    User cachedUser2 = caffeineBinding.getObject(key, User.class);
 
     // Then
     assertEquals("Original Name", cachedUser1.getName());
@@ -146,7 +146,7 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
 
     // When
     caffeineBinding.set(key, product);
-    Product cachedProduct = caffeineBinding.get(key, Product.class);
+    Product cachedProduct = caffeineBinding.getObject(key, Product.class);
 
     // Then
     assertNotNull(cachedProduct);
@@ -253,8 +253,8 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
       caffeineBinding.set(key, user1);
       caffeineBinding.set(key, user2);
 
-      User cachedUser1 = caffeineBinding.get(key, User.class);
-      User cachedUser2 = caffeineBinding.get(key, User.class);
+      User cachedUser1 = caffeineBinding.getObject(key, User.class);
+      User cachedUser2 = caffeineBinding.getObject(key, User.class);
 
       // Then
       assertNotNull(cachedUser1);

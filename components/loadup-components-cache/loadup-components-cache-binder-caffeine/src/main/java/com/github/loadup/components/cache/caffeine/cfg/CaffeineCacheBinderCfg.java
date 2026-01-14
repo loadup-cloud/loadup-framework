@@ -81,6 +81,7 @@ public class CaffeineCacheBinderCfg extends CacheBinderCfg {
     // 在构造函数中修改默认值
     setSerializerBeanName("customKryoSerializer");
   }
+
   /**
    * Caffeine cache spec string
    *
@@ -104,11 +105,11 @@ public class CaffeineCacheBinderCfg extends CacheBinderCfg {
    *   <li>recordStats - 记录统计信息
    * </ul>
    */
-
   private String spec;
 
   private long maximumSize;
   private Duration expireAfterWrite;
+  private Duration expireAfterAccess;
 
   /**
    * Check if any custom configuration is provided
