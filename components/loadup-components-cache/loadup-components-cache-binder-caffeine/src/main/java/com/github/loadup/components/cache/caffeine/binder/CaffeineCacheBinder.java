@@ -24,6 +24,7 @@ package com.github.loadup.components.cache.caffeine.binder;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.Expiry;
 import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.cache.binder.AbstractCacheBinder;
 import com.github.loadup.components.cache.binder.CacheBinder;
@@ -32,7 +33,9 @@ import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
+import java.time.Duration;
 import java.util.Collection;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 public class CaffeineCacheBinder
@@ -58,13 +61,40 @@ public class CaffeineCacheBinder
     if (binderCfg.getMaximumSize() > 0) {
       builder.maximumSize(binderCfg.getMaximumSize());
     }
+    if (binderCfg.isEnableRandomExpiry()) {
+      // 使用自定义 Expiry 实现随机化
+      builder.expireAfter(
+          new Expiry<>() {
+            @Override
+            public long expireAfterCreate(Object key, Object value, long currentTime) {
+              return calculateRandomNanos(bindingCfg.getExpireAfterWrite());
+            }
 
-    // 2. 设置过期策略 (真正实现不同 bizType 不同策略的关键)
-    if (binderCfg.getExpireAfterWrite() != null) {
-      builder.expireAfterWrite(binderCfg.getExpireAfterWrite());
-    }
-    if (binderCfg.getExpireAfterAccess() != null) {
-      builder.expireAfterAccess(binderCfg.getExpireAfterAccess());
+            @Override
+            public long expireAfterUpdate(
+                Object key, Object value, long currentTime, long currentDuration) {
+              if (binderCfg.getExpireAfterAccess() != null) {
+                return binderCfg.getExpireAfterAccess().toNanos();
+              }
+              return currentDuration;
+            }
+
+            @Override
+            public long expireAfterRead(
+                Object key, Object value, long currentTime, long currentDuration) {
+              if (binderCfg.getExpireAfterAccess() != null) {
+                return binderCfg.getExpireAfterAccess().toNanos();
+              }
+              return currentDuration;
+            }
+          });
+    } else {
+      if (binderCfg.getExpireAfterWrite() != null) {
+        builder.expireAfterWrite(binderCfg.getExpireAfterWrite());
+      }
+      if (binderCfg.getExpireAfterAccess() != null) {
+        builder.expireAfterAccess(binderCfg.getExpireAfterAccess());
+      }
     }
 
     this.nativeCache = builder.build();
@@ -73,6 +103,21 @@ public class CaffeineCacheBinder
         name,
         binderCfg.getMaximumSize(),
         binderCfg.getExpireAfterWrite());
+  }
+
+  private long calculateRandomNanos(Duration baseDuration) {
+    if (baseDuration == null || baseDuration.isZero()) {
+      return Long.MAX_VALUE;
+    }
+
+    long baseNanos = baseDuration.toNanos();
+    double factor = getBinderCfg().getRandomFactor();
+
+    // 计算范围: [base * (1-factor), base * (1+factor)]
+    long min = (long) (baseNanos * (1 - factor));
+    long max = (long) (baseNanos * (1 + factor));
+
+    return ThreadLocalRandom.current().nextLong(min, max);
   }
 
   @Override

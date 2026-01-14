@@ -78,6 +78,8 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class RedisCacheBinderCfg extends CacheBinderCfg {
+  private boolean enableRandomExpiry = false; // 是否开启随机过期
+  private double randomFactor = 0.2; // 默认 20% 浮动
 
   /**
    * Redis database index (default: 0) Override: loadup.cache.binder.redis.database Default:
@@ -107,117 +109,16 @@ public class RedisCacheBinderCfg extends CacheBinderCfg {
   private String username;
 
   /**
-   * Connection timeout in milliseconds (default: 2000) Override:
-   * loadup.cache.binder.redis.connect-timeout Default: spring.data.redis.connect-timeout
-   */
-  private Long connectTimeout;
-
-  /**
-   * Read timeout in milliseconds (default: 2000) Override: loadup.cache.binder.redis.read-timeout
-   * Default: spring.data.redis.timeout
-   */
-  private Long readTimeout;
-
-  /**
-   * Redis deployment pattern: standalone, sentinel, cluster Override:
-   * loadup.cache.binder.redis.pattern Default: auto-detect based on spring.data.redis configuration
-   */
-  private String pattern;
-
-  // ========== Sentinel Configuration ==========
-
-  /**
-   * Sentinel master name Override: loadup.cache.binder.redis.sentinel-master Default:
-   * spring.data.redis.sentinel.master
-   */
-  private String sentinelMaster;
-
-  /**
-   * Sentinel nodes (format: host:port,host:port) Override: loadup.cache.binder.redis.sentinel-nodes
-   * Default: spring.data.redis.sentinel.nodes
-   */
-  private String[] sentinelNodes;
-
-  /**
-   * Sentinel password Override: loadup.cache.binder.redis.sentinel-password Default:
-   * spring.data.redis.sentinel.password
-   */
-  private String sentinelPassword;
-
-  // ========== Cluster Configuration ==========
-
-  /**
-   * Cluster nodes (format: host:port,host:port) Override: loadup.cache.binder.redis.cluster-nodes
-   * Default: spring.data.redis.cluster.nodes
-   */
-  private String[] clusterNodes;
-
-  /**
-   * Max redirects for cluster (default: 3) Override: loadup.cache.binder.redis.max-redirects
-   * Default: spring.data.redis.cluster.max-redirects
-   */
-  private Integer maxRedirects;
-
-  // ========== Connection Pool Configuration ==========
-
-  /**
-   * Maximum number of connections in the pool (default: 8) Override:
-   * loadup.cache.binder.redis.max-active Default: spring.data.redis.lettuce.pool.max-active
-   */
-  private Integer maxActive;
-
-  /**
-   * Maximum wait time for connection from pool in milliseconds (default: -1, no limit) Override:
-   * loadup.cache.binder.redis.max-wait Default: spring.data.redis.lettuce.pool.max-wait
-   */
-  private Long maxWait;
-
-  /**
-   * Maximum idle connections in pool (default: 8) Override: loadup.cache.binder.redis.max-idle
-   * Default: spring.data.redis.lettuce.pool.max-idle
-   */
-  private Integer maxIdle;
-
-  /**
-   * Minimum idle connections in pool (default: 0) Override: loadup.cache.binder.redis.min-idle
-   * Default: spring.data.redis.lettuce.pool.min-idle
-   */
-  private Integer minIdle;
-
-  /**
-   * Whether SSL is enabled Override: loadup.cache.binder.redis.ssl-enabled Default:
-   * spring.data.redis.ssl.enabled
-   */
-  private Boolean sslEnabled;
-
-  /**
    * Check if any custom configuration is provided
    *
    * @return true if any custom configuration field is set
    */
   public boolean hasCustomConfig() {
-    return host != null
-        || port != null
-        || password != null
-        || username != null
-        || database != null
-        || connectTimeout != null
-        || readTimeout != null
-        || pattern != null
-        || sentinelMaster != null
-        || sentinelNodes != null
-        || sentinelPassword != null
-        || clusterNodes != null
-        || maxRedirects != null
-        || maxActive != null
-        || maxWait != null
-        || maxIdle != null
-        || minIdle != null
-        || sslEnabled != null;
+    return host != null || port != null || password != null || username != null || database != null;
   }
 
-    public RedisCacheBinderCfg() {
-        // Redis 驱动默认建议使用 JSON 序列化，方便跨语言查看
-        setSerializerBeanName(CacheConstants.SERIALIZER_JSON);
-    }
+  public RedisCacheBinderCfg() {
+    // Redis 驱动默认建议使用 JSON 序列化，方便跨语言查看
+    setSerializerBeanName(CacheConstants.SERIALIZER_JSON);
+  }
 }

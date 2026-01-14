@@ -27,7 +27,11 @@ import com.github.loadup.components.cache.binder.CacheBinder;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.components.cache.redis.cfg.RedisCacheBinderCfg;
 import com.github.loadup.framework.api.manager.ConfigurationResolver;
+
+import java.time.Duration;
 import java.util.Collection;
+import java.util.concurrent.ThreadLocalRandom;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
@@ -98,22 +102,25 @@ public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg, C
     RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
 
     // 合并配置：优先用 BinderCfg，为空则用 RedisProperties
-    String host =
-        ConfigurationResolver.resolve(binderCfg.getHost(), springRedisProperties.getHost());
-    int port = binderCfg.getPort() != 0 ? binderCfg.getPort() : springRedisProperties.getPort();
     int finalDb =
         ConfigurationResolver.resolve(
-            bindingCfg.getDatabase(),
-            binderCfg.getDatabase(),
-            springRedisProperties.getDatabase());
+            bindingCfg.getDatabase(), binderCfg.getDatabase(), springRedisProperties.getDatabase());
+    String host =
+        ConfigurationResolver.resolve(binderCfg.getHost(), springRedisProperties.getHost());
+    int port = ConfigurationResolver.resolve(binderCfg.getPort(), springRedisProperties.getPort());
     String pwd =
         ConfigurationResolver.resolve(binderCfg.getPassword(), springRedisProperties.getPassword());
+    String username =
+        ConfigurationResolver.resolve(binderCfg.getUsername(), springRedisProperties.getUsername());
 
     config.setHostName(host);
     config.setPort(port);
     config.setDatabase(finalDb);
     if (StringUtils.hasText(pwd)) {
       config.setPassword(pwd);
+    }
+    if (StringUtils.hasText(username)) {
+      config.setUsername(username);
     }
 
     LettuceConnectionFactory factory = new LettuceConnectionFactory(config);
@@ -134,9 +141,18 @@ public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg, C
     // 核心：调用父类的 wrapValue。
     // 因为 AbstractCacheBinder 注入了 serializer，wrapValue 会返回 byte[]
     Object wrapped = wrapValue(value);
+    Duration ttl = bindingCfg.getExpireAfterWrite();
 
+    // 如果开启了随机过期，则对 TTL 进行抖动处理
+    if (getBinderCfg().isEnableRandomExpiry() && ttl != null && !ttl.isZero()) {
+      ttl = calculateRandomDuration(ttl);
+    }
     if (wrapped instanceof byte[]) {
-      redisTemplate.opsForValue().set(key, (byte[]) wrapped);
+      if (ttl != null && !ttl.isZero()) {
+        redisTemplate.opsForValue().set(key, (byte[]) wrapped, ttl);
+      } else {
+        redisTemplate.opsForValue().set(key, (byte[]) wrapped);
+      }
     } else {
       log.warn("RedisBinder [{}] 未配置序列化器，无法存储非字节数据", name);
     }
@@ -175,5 +191,17 @@ public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg, C
         log.info("私有 RedisConnectionFactory [{}] 已销毁", name);
       }
     }
+  }
+
+  private Duration calculateRandomDuration(Duration base) {
+    long baseMillis = base.toMillis();
+    double factor = getBinderCfg().getRandomFactor();
+
+    // 计算波动范围
+    long min = (long) (baseMillis * (1 - factor));
+    long max = (long) (baseMillis * (1 + factor));
+
+    long randomMillis = ThreadLocalRandom.current().nextLong(min, max + 1);
+    return Duration.ofMillis(randomMillis);
   }
 }

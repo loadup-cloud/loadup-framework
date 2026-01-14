@@ -119,7 +119,9 @@ public class DefaultCacheBinding
   }
 
   @Override
-  public void cleanUp() {}
+  public void cleanUp() {
+      getBinder().cleanUp();
+  }
 
   /** 根据配置自动修饰 Key（加上 KeyPrefix） */
   private String decorateKey(String key) {

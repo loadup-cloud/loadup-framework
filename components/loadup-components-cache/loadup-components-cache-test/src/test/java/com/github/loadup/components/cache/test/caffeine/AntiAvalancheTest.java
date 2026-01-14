@@ -22,6 +22,7 @@ package com.github.loadup.components.cache.test.caffeine;
  * #L%
  */
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,6 +32,8 @@ import com.github.loadup.components.cache.test.common.model.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
@@ -128,7 +131,6 @@ public class AntiAvalancheTest extends BaseCacheTest {
     int maxSize = 100;
     int extraItems = 50;
 
-
     // When - 先缓存高优先级数据
     List<String> hotKeys = new ArrayList<>();
     for (int i = 0; i < 20; i++) {
@@ -165,50 +167,46 @@ public class AntiAvalancheTest extends BaseCacheTest {
   @Test
   @DisplayName("测试批量数据的分散过期")
   void testBatchDataStaggeredExpiration() {
-    // Given
-    String cacheName = "normal-data";
-    int batchSize = 20;
+    int batchSize = 10;
+    long baseExpiryNanos = TimeUnit.SECONDS.toNanos(5); // 基础过期时间 5s
+    long staggerNanos = TimeUnit.MILLISECONDS.toNanos(100); // 每次步进 100ms
 
-    // When - 批量添加数据
+    // 2. 构建缓存，模拟分散过期的逻辑
+    // 3. 批量添加数据 (时间点 0)
     for (int i = 0; i < batchSize; i++) {
-      caffeineBinding.set("batch:user:" + i, User.createTestUser(String.valueOf(i)));
-      sleep(50); // Small delay between additions
+      caffeineBinding.set("batch:user:" + i, "data-" + i);
     }
 
-    // Then - 记录过期时间的分布
-    List<Long> expirationTimes = new ArrayList<>();
-    long startCheck = System.currentTimeMillis();
+    // 4. 验证过期分布
+    List<Integer> expiredCountAtPoints = new ArrayList<>();
 
-    // 持续检查直到所有数据都过期
-    int maxCheckTime = 6000; // 6 seconds max
-    while (System.currentTimeMillis() - startCheck < maxCheckTime) {
-      for (int i = 0; i < batchSize; i++) {
-        String key = "batch:user:" + i;
-        User user = caffeineBinding.getObject(key, User.class);
-        if (user == null && expirationTimes.size() == i) {
-          expirationTimes.add(System.currentTimeMillis() - startCheck);
+    // 我们按 100ms 的步长拨动时钟
+    for (int i = 0; i < 60; i++) { // 模拟 6 秒的时间跨度
+      fakeTicker.advance(100, TimeUnit.MILLISECONDS);
+      caffeineBinding.cleanUp(); // 强制执行维护任务（关键：Caffeine 是惰性过期的）
+
+      int currentCount = 0;
+      for (int j = 0; j < batchSize; j++) {
+        if (caffeineBinding.get("batch:user:" + j) != null) {
+          currentCount++;
         }
       }
-
-      if (expirationTimes.size() == batchSize) {
-        break; // All expired
-      }
-      sleep(100);
+      expiredCountAtPoints.add(batchSize - currentCount);
     }
 
-    // 验证过期时间分布
-    System.out.println("Expiration times distribution: " + expirationTimes);
-    assertTrue(expirationTimes.size() > 0, "Should have recorded some expiration times");
+    // 5. 断言验证
+    long firstExpirationPoint =
+        expiredCountAtPoints.stream().filter(c -> c > 0).findFirst().orElse(0);
+    long lastExpirationPoint = expiredCountAtPoints.get(expiredCountAtPoints.size() - 1);
 
-    // 验证不是所有数据同时过期（存在时间差异）
-    if (expirationTimes.size() > 1) {
-      long minTime = expirationTimes.stream().min(Long::compareTo).orElse(0L);
-      long maxTime = expirationTimes.stream().max(Long::compareTo).orElse(0L);
-      long timeDiff = maxTime - minTime;
+    System.out.println("过期数量随时间的变化: " + expiredCountAtPoints);
 
-      System.out.println("Time difference between first and last expiration: " + timeDiff + "ms");
-      assertTrue(timeDiff > 500, "Should have significant time difference between expirations");
-    }
+    // 验证：数据不是在同一时刻全部消失的
+    // 如果 expiredCountAtPoints 中包含多个不同的数值，说明是阶梯式过期的
+    long distinctStates = expiredCountAtPoints.stream().distinct().count();
+
+    assertTrue(distinctStates > 2, "缓存应该是分批过期的，而不应只有“全有”和“全无”两个状态");
+    assertTrue(lastExpirationPoint == batchSize, "最终所有数据都应该过期");
   }
 
   @Test
