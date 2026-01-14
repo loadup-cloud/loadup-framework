@@ -29,13 +29,14 @@ import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.components.cache.serializer.CacheSerializer;
 import com.github.loadup.framework.api.binding.AbstractBinding;
 
+import java.util.Collection;
 import java.util.List;
 
 public abstract class AbstractCacheBinding<B extends CacheBinder, C extends CacheBindingCfg>
     extends AbstractBinding<B, C> implements CacheBinding {
 
   @Override
-  public boolean set(String cacheName, String key, Object value) {
+  public boolean set(String key, Object value) {
     if (value == null) {
       return false;
     }
@@ -50,31 +51,31 @@ public abstract class AbstractCacheBinding<B extends CacheBinder, C extends Cach
       // 在这一层我们统一调用 binder.put
       // 具体的“对象 -> 字节数组”转换逻辑下沉到各个 Binder 内部处理
       // 这样可以实现：Caffeine 存对象，Redis 存字节
-      binder.set(cacheName, key, value);
+      binder.set(key, value);
     }
     return true;
   }
 
   @Override
-  public Object get(String cacheName, String key) {
-    return getBinder().get(cacheName, key);
+  public Object get(String key) {
+    return getBinder().get(key);
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public <T> T get(String cacheName, String key, Class<T> clazz) {
+  public <T> T get(String key, Class<T> clazz) {
     // 1. 获取第一个可用的 Binder（简单策略）
     B binder = getBinder();
     if (binder == null) return null;
 
     // 2. 调用 Binder 获取原始对象
-    Object value = binder.get(cacheName, key);
+    Object value = binder.get(key);
     if (value == null) return null;
 
     // 3. 处理类型转换逻辑
     // 情况 A: 如果拿到的已经是目标类型（比如本地缓存存的是原始对象）
     if (clazz.isInstance(value)) {
-      return (T) value;
+      return clazz.cast(value);
     }
 
     // 情况 B: 如果拿到的字节数组（如来自 Redis 或序列化后的 Caffeine）
@@ -94,12 +95,17 @@ public abstract class AbstractCacheBinding<B extends CacheBinder, C extends Cach
   }
 
   @Override
-  public boolean delete(String cacheName, String key) {
-    return getBinder().delete(cacheName, key);
+  public boolean delete(String key) {
+    return getBinder().delete(key);
   }
 
   @Override
-  public boolean deleteAll(String cacheName) {
-    return getBinder().deleteAll(cacheName);
+  public boolean deleteAll(Collection<String> keys) {
+    return getBinder().deleteAll(keys);
+  }
+
+  @Override
+  public void cleanUp() {
+    getBinder().cleanUp();
   }
 }

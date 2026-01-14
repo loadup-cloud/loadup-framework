@@ -24,7 +24,7 @@ package com.github.loadup.components.cache.test.redis;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.cache.test.common.BaseRedisCacheTest;
+import com.github.loadup.components.cache.test.common.BaseCacheTest;
 import com.github.loadup.components.cache.test.common.model.User;
 import java.util.*;
 import java.util.concurrent.*;
@@ -38,7 +38,7 @@ import org.springframework.test.context.*;
 @Slf4j
 @TestPropertySource(properties = {"loadup.cache.binder=redis", "loadup.cache.database=0"})
 @DisplayName("Redis 缓存并发测试")
-public class RedisConcurrencyIT extends BaseRedisCacheTest {
+public class RedisConcurrencyIT extends BaseCacheTest {
 
   @Test
   @DisplayName("测试并发写入")
@@ -62,7 +62,7 @@ public class RedisConcurrencyIT extends BaseRedisCacheTest {
                       "concurrent:write:" + threadIndex + ":" + j; // Make 'key' effectively final
                   final User user =
                       User.createTestUser(threadIndex + "-" + j); // Make 'user' effectively final
-                  boolean result = cacheBinding.set(TEST_CACHE_NAME, key, user);
+                  boolean result = caffeineBinding.set(key, user);
                   if (result) {
                     successCount.incrementAndGet();
                   }
@@ -90,7 +90,7 @@ public class RedisConcurrencyIT extends BaseRedisCacheTest {
     // Given
     String key = "concurrent:read:1";
     User user = User.createTestUser("1");
-    cacheBinding.set(TEST_CACHE_NAME, key, user);
+    caffeineBinding.set(key, user);
 
     int threadCount = 20;
     int readsPerThread = 50;
@@ -105,7 +105,7 @@ public class RedisConcurrencyIT extends BaseRedisCacheTest {
             () -> {
               try {
                 for (int j = 0; j < readsPerThread; j++) {
-                  User cachedUser = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+                  User cachedUser = caffeineBinding.get(key, User.class);
                   if (cachedUser != null && user.getId().equals(cachedUser.getId())) {
                     successCount.incrementAndGet();
                   }
@@ -153,15 +153,15 @@ public class RedisConcurrencyIT extends BaseRedisCacheTest {
                   switch (operation) {
                     case 0: // Write
                       User user = User.createTestUser(threadIndex + "-" + j);
-                      cacheBinding.set(TEST_CACHE_NAME, key, user);
+                      caffeineBinding.set(key, user);
                       statistics.get("writes").incrementAndGet();
                       break;
                     case 1: // Read
-                      cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+                      caffeineBinding.get(key, User.class);
                       statistics.get("reads").incrementAndGet();
                       break;
                     case 2: // Delete
-                      cacheBinding.delete(TEST_CACHE_NAME, key);
+                      caffeineBinding.delete( key);
                       statistics.get("deletes").incrementAndGet();
                       break;
                   }
@@ -214,7 +214,7 @@ public class RedisConcurrencyIT extends BaseRedisCacheTest {
                   final String name =
                       "Thread-" + threadIndex + "-Update-" + j; // Make 'name' effectively final
                   user.setName(name);
-                  cacheBinding.set(TEST_CACHE_NAME, key, user);
+                  caffeineBinding.set(key, user);
                   updatedNames.add(name);
                 }
               } finally {
@@ -229,7 +229,7 @@ public class RedisConcurrencyIT extends BaseRedisCacheTest {
       assertTrue(completed, "All threads should complete");
 
       // Final value should be one of the updated values
-      User finalUser = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+      User finalUser = caffeineBinding.get(key, User.class);
       assertNotNull(finalUser, "Final user should exist");
       assertTrue(
           updatedNames.contains(finalUser.getName()),
@@ -250,7 +250,7 @@ public class RedisConcurrencyIT extends BaseRedisCacheTest {
     for (int i = 0; i < keyCount; i++) {
       String key = "concurrent:delete:" + i;
       User user = User.createTestUser(String.valueOf(i));
-      cacheBinding.set(TEST_CACHE_NAME, key, user);
+      caffeineBinding.set(key, user);
     }
 
     int threadCount = 10;
@@ -266,7 +266,7 @@ public class RedisConcurrencyIT extends BaseRedisCacheTest {
               try {
                 for (int j = 0; j < keyCount; j++) {
                   String key = "concurrent:delete:" + j;
-                  boolean deleted = cacheBinding.delete(TEST_CACHE_NAME, key);
+                  boolean deleted = caffeineBinding.delete( key);
                   if (deleted) {
                     deleteCount.incrementAndGet();
                   }
@@ -286,7 +286,7 @@ public class RedisConcurrencyIT extends BaseRedisCacheTest {
       int remainingKeys = 0;
       for (int i = 0; i < keyCount; i++) {
         String key = "concurrent:delete:" + i;
-        User user = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+        User user = caffeineBinding.get(key, User.class);
         if (user != null) {
           remainingKeys++;
         }
@@ -323,7 +323,7 @@ public class RedisConcurrencyIT extends BaseRedisCacheTest {
                   final String name =
                       "Thread-" + threadIndex + "-Op-" + j; // Make 'name' effectively final
                   user.setName(name);
-                  cacheBinding.set(TEST_CACHE_NAME, key, user); // Ensure all variables are final
+                  caffeineBinding.set(key, user); // Ensure all variables are final
                 }
               } finally {
                 latch.countDown();
@@ -337,7 +337,7 @@ public class RedisConcurrencyIT extends BaseRedisCacheTest {
       // Then - Verify data consistency
       int validCount = 0;
       for (String key : allKeys) {
-        User user = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+        User user = caffeineBinding.get(key, User.class);
         if (user != null) {
           validCount++;
         }

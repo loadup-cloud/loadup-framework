@@ -1,8 +1,0 @@
-loadup:
-  cache:
-    binder: redis
-spring:
-  cache:
-    cache-names:
-      - products
-      - users

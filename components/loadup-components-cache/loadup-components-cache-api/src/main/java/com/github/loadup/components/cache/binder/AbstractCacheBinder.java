@@ -29,6 +29,7 @@ import com.github.loadup.framework.api.binder.AbstractBinder;
 public abstract class AbstractCacheBinder<C extends CacheBinderCfg> extends AbstractBinder<C>
     implements CacheBinder {
   protected CacheSerializer serializer;
+  protected CacheTicker ticker; // 时间源
 
   @Override
   protected void afterConfigInjected() {
@@ -40,7 +41,13 @@ public abstract class AbstractCacheBinder<C extends CacheBinderCfg> extends Abst
     }
     // 这里的 context 是在 AbstractBinder 实例化时由 Manager 注入的 ApplicationContext
     this.serializer = context.getBean(beanName, CacheSerializer.class);
-
+    // 2. 注入 Ticker
+    String tickerName = binderCfg.getTickerBeanName();
+    if (context.containsBean(tickerName)) {
+      this.ticker = context.getBean(tickerName, CacheTicker.class);
+    } else {
+      this.ticker = CacheTicker.SYSTEM;
+    }
     // 执行子类特有的初始化逻辑
     onInit();
   }
@@ -50,19 +57,17 @@ public abstract class AbstractCacheBinder<C extends CacheBinderCfg> extends Abst
   public CacheSerializer getSerializer() {
     return serializer;
   }
-    /**
-     * 提供一个工具方法给子类（CaffeineBinder/RedisBinder）使用
-     * 将对象包装成驱动能识别的格式
-     */
-    protected Object wrapValue(Object value) {
-        if (value == null) return null;
 
-        // 如果当前驱动配置了序列化器，则转为字节数组
-        if (this.serializer != null) {
-            return this.serializer.serialize(value);
-        }
+  /** 提供一个工具方法给子类（CaffeineBinder/RedisBinder）使用 将对象包装成驱动能识别的格式 */
+  protected Object wrapValue(Object value) {
+    if (value == null) return null;
 
-        // 如果没配置（如纯内存模式），直接返回原始对象
-        return value;
+    // 如果当前驱动配置了序列化器，则转为字节数组
+    if (this.serializer != null) {
+      return this.serializer.serialize(value);
     }
+
+    // 如果没配置（如纯内存模式），直接返回原始对象
+    return value;
+  }
 }

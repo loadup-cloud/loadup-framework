@@ -24,7 +24,6 @@ package com.github.loadup.components.cache.test.caffeine;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.cache.binding.AbstractCacheBinding;
 import com.github.loadup.components.cache.binding.CacheBinding;
 import com.github.loadup.components.cache.test.common.BaseCacheTest;
 import com.github.loadup.components.cache.test.common.model.Product;
@@ -34,6 +33,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 /** Caffeine Cache Basic Operations Test */
 @TestPropertySource(
     properties = {
@@ -41,9 +43,6 @@ import org.springframework.test.context.TestPropertySource;
     })
 @DisplayName("Caffeine 缓存基础操作测试")
 public class CaffeineBasicOperationsTest extends BaseCacheTest {
-
-  @BindingClient("user")
-  CacheBinding binding;
 
   @Test
   @DisplayName("测试基本的 set 和 get 操作")
@@ -53,8 +52,8 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
     User user = User.createTestUser("1");
 
     // When
-    boolean setResult = binding.set(TEST_CACHE_NAME, key, user);
-    User cachedUser =  binding.get(TEST_CACHE_NAME, key, User.class);
+    boolean setResult = caffeineBinding.set(key, user);
+    User cachedUser = caffeineBinding.get(key, User.class);
 
     // Then
     assertTrue(setResult, "Set operation should return true");
@@ -68,7 +67,7 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
   @DisplayName("测试缓存不存在的key")
   void testGetNonExistentKey() {
     // When
-    User cachedUser =(User) binding.get(TEST_CACHE_NAME, "non-existent-key", User.class);
+    User cachedUser = (User) caffeineBinding.get("non-existent-key", User.class);
 
     // Then
     assertNull(cachedUser, "Non-existent key should return null");
@@ -80,11 +79,11 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
     // Given
     String key = "user:2";
     User user = User.createTestUser("2");
-    binding.set(TEST_CACHE_NAME, key, user);
+    caffeineBinding.set(key, user);
 
     // When
-    boolean deleteResult = binding.delete(TEST_CACHE_NAME, key);
-    User cachedUser = (User)binding.get(TEST_CACHE_NAME, key, User.class);
+    boolean deleteResult = caffeineBinding.delete(key);
+    User cachedUser = (User) caffeineBinding.get(key, User.class);
 
     // Then
     assertTrue(deleteResult, "Delete operation should return true");
@@ -95,15 +94,16 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
   @DisplayName("测试 deleteAll 操作")
   void testDeleteAll() {
     // Given
-    binding.set(TEST_CACHE_NAME, "user:1", User.createTestUser("1"));
-    binding.set(TEST_CACHE_NAME, "user:2", User.createTestUser("2"));
-    binding.set(TEST_CACHE_NAME, "user:3", User.createTestUser("3"));
+    caffeineBinding.set("user:1", User.createTestUser("1"));
+    caffeineBinding.set("user:2", User.createTestUser("2"));
+    caffeineBinding.set("user:3", User.createTestUser("3"));
 
     // When
-    boolean deleteAllResult = binding.deleteAll(TEST_CACHE_NAME);
-      User user1 = (User)binding.get(TEST_CACHE_NAME, "user:1", User.class);
-      User user2 = (User)binding.get(TEST_CACHE_NAME, "user:2", User.class);
-      User user3 = (User)binding.get(TEST_CACHE_NAME, "user:3", User.class);
+    boolean deleteAllResult =
+        caffeineBinding.deleteAll(Arrays.asList("user:1", "user:2", "user:3"));
+    User user1 = (User) caffeineBinding.get("user:1", User.class);
+    User user2 = (User) caffeineBinding.get("user:2", User.class);
+    User user3 = (User) caffeineBinding.get("user:3", User.class);
 
     // Then
     assertTrue(deleteAllResult, "DeleteAll operation should return true");
@@ -124,13 +124,13 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
     user2.setName("Updated Name");
 
     // When
-    boolean setResult1 = binding.set(TEST_CACHE_NAME, key, user1);
+    boolean setResult1 = caffeineBinding.set(key, user1);
     assertTrue(setResult1, "First set should succeed");
-      User cachedUser1 = (User) binding.get(TEST_CACHE_NAME, key, User.class);
+    User cachedUser1 = (User) caffeineBinding.get(key, User.class);
 
-    boolean setResult2 = binding.set(TEST_CACHE_NAME, key, user2);
+    boolean setResult2 = caffeineBinding.set(key, user2);
     assertTrue(setResult2, "Second set (overwrite) should succeed");
-      User cachedUser2 =(User) binding.get(TEST_CACHE_NAME, key, User.class);
+    User cachedUser2 = (User) caffeineBinding.get(key, User.class);
 
     // Then
     assertNotNull(cachedUser1, "First cached user should not be null");
@@ -151,11 +151,11 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
     Product product = Product.createTestProduct("1");
 
     // When
-    binding.set(TEST_CACHE_NAME, userKey, user);
-    binding.set(TEST_CACHE_NAME, productKey, product);
+    caffeineBinding.set(userKey, user);
+    caffeineBinding.set(productKey, product);
 
-    User cachedUser = (User)binding.get(TEST_CACHE_NAME, userKey, User.class);
-    Product cachedProduct = (Product) binding.get(TEST_CACHE_NAME, productKey, Product.class);
+    User cachedUser = (User) caffeineBinding.get(userKey, User.class);
+    Product cachedProduct = (Product) caffeineBinding.get(productKey, Product.class);
 
     // Then
     assertNotNull(cachedUser);
@@ -172,8 +172,8 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
     String value = "Hello, Cache!";
 
     // When
-    binding.set(TEST_CACHE_NAME, key, value);
-    Object cachedValue = binding.get(TEST_CACHE_NAME, key);
+    caffeineBinding.set(key, value);
+    Object cachedValue = caffeineBinding.get(key);
 
     // Then
     assertNotNull(cachedValue);
@@ -188,12 +188,12 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
 
     // When - 批量写入
     for (int i = 0; i < batchSize; i++) {
-      binding.set(TEST_CACHE_NAME, "user:" + i, User.createTestUser(String.valueOf(i)));
+      caffeineBinding.set("user:" + i, User.createTestUser(String.valueOf(i)));
     }
 
     // Then - 验证所有数据都被缓存
     for (int i = 0; i < batchSize; i++) {
-      User user = (User)binding.get(TEST_CACHE_NAME, "user:" + i, User.class);
+      User user = (User) caffeineBinding.get("user:" + i, User.class);
       assertNotNull(user, "User " + i + " should be cached");
       assertEquals(String.valueOf(i), user.getId());
     }
@@ -206,7 +206,7 @@ public class CaffeineBasicOperationsTest extends BaseCacheTest {
     String key = "null:key";
 
     // When & Then - Caffeine 默认不允许空值
-      boolean vvv = binding.set(TEST_CACHE_NAME, key, null);
-      assertEquals(vvv,false);
+    boolean vvv = caffeineBinding.set(key, null);
+    assertEquals(vvv, false);
   }
 }

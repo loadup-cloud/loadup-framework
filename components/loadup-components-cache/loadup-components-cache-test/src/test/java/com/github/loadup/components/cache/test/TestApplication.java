@@ -1,6 +1,5 @@
 package com.github.loadup.components.cache.test;
 
-
 /*-
  * #%L
  * loadup-components-cache-test
@@ -23,8 +22,17 @@ package com.github.loadup.components.cache.test;
  * #L%
  */
 
+import com.github.loadup.components.cache.binder.CacheTicker;
+import com.github.loadup.components.cache.constants.CacheConstants;
+import com.github.loadup.components.cache.test.common.FakeTicker;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 /** Test Application for Cache Component Testing */
 @SpringBootApplication
@@ -32,5 +40,15 @@ public class TestApplication {
 
   public static void main(String[] args) {
     SpringApplication.run(TestApplication.class, args);
+  }
+
+  @Configuration
+  @EnableAutoConfiguration
+  static class TestConfiguration {
+    @Bean(name = CacheConstants.DEFAULT_TICKER)
+    @Primary
+    public CacheTicker fakeTicker() {
+      return new FakeTicker();
+    }
   }
 }

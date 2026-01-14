@@ -1,12 +1,8 @@
-/*
- * Ant Group
- * Copyright (c) 2004-2026 All Rights Reserved.
- */
+
 package com.github.loadup.components.cache.cfg;
 
 import com.github.loadup.components.cache.constants.CacheConstants;
 import com.github.loadup.framework.api.cfg.BaseBinderCfg;
-import com.github.loadup.framework.api.cfg.BaseBindingCfg;
 
 /**
  * @author lise
@@ -14,7 +10,9 @@ import com.github.loadup.framework.api.cfg.BaseBindingCfg;
  */
 public class CacheBinderCfg extends BaseBinderCfg {
   // 指定序列化器的 Bean 名称，例如 "defaultJsonCacheSerializer" 或 "kryoSerializer"
-  private String serializerBeanName = CacheConstants.JSON;
+  private String serializerBeanName = CacheConstants.SERIALIZER_JSON;
+  // 默认使用系统时间源
+  private String tickerBeanName = CacheConstants.DEFAULT_TICKER;
 
   public String getSerializerBeanName() {
     return serializerBeanName;
@@ -22,5 +20,13 @@ public class CacheBinderCfg extends BaseBinderCfg {
 
   public void setSerializerBeanName(String name) {
     this.serializerBeanName = name;
+  }
+
+  public String getTickerBeanName() {
+    return tickerBeanName;
+  }
+
+  public void setTickerBeanName(String tickerBeanName) {
+    this.tickerBeanName = tickerBeanName;
   }
 }

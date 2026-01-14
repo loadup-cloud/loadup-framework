@@ -25,7 +25,7 @@ package com.github.loadup.components.cache.test.redis;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.cache.test.common.BaseRedisCacheTest;
+import com.github.loadup.components.cache.test.common.BaseCacheTest;
 import com.github.loadup.components.cache.test.common.model.User;
 import java.util.*;
 import java.util.concurrent.*;
@@ -49,20 +49,20 @@ import org.springframework.test.context.*;
       "loadup.cache.cache-configs.medium-lived.cache-null-values=false"
     })
 @DisplayName("Redis 缓存过期策略测试")
-public class RedisExpirationIT extends BaseRedisCacheTest {
+public class RedisExpirationIT extends BaseCacheTest {
 
   @Test
   @DisplayName("测试 TTL 过期策略")
   void testTimeToLiveExpiration() {
     // Given
-    String cacheName = "short-lived";
+
     String key = "expire:ttl:1";
     User user = User.createTestUser("1");
 
     try {
       // When
-      cacheBinding.set(cacheName, key, user);
-      User cachedUser1 = cacheBinding.get(cacheName, key, User.class);
+      caffeineBinding.set(key, user);
+      User cachedUser1 = caffeineBinding.get(key, User.class);
 
       // Wait for expiration (3 seconds base + 1 second random offset max = 4 seconds + buffer)
       await()
@@ -70,17 +70,17 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
           .pollDelay(4, TimeUnit.SECONDS)
           .until(
               () -> {
-                User u = cacheBinding.get(cacheName, key, User.class);
+                User u = caffeineBinding.get(key, User.class);
                 return u == null;
               });
 
-      User cachedUser2 = cacheBinding.get(cacheName, key, User.class);
+      User cachedUser2 = caffeineBinding.get(key, User.class);
 
       // Then
       assertNotNull(cachedUser1, "Should be cached initially");
       assertNull(cachedUser2, "Should be expired after TTL");
     } finally {
-      cacheBinding.deleteAll(cacheName);
+      //      cacheBinding.deleteAll();
     }
   }
 
@@ -88,15 +88,13 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
   @DisplayName("测试不同 cacheName 的不同过期时间")
   void testDifferentExpirationForDifferentCaches() {
     // Given
-    String shortLivedCache = "short-lived";
-    String mediumLivedCache = "medium-lived";
     String key = "user:1";
     User user = User.createTestUser("1");
 
     try {
       // When
-      cacheBinding.set(shortLivedCache, key, user);
-      cacheBinding.set(mediumLivedCache, key, user);
+      caffeineBinding.set(key, user);
+      caffeineBinding.set(key, user);
 
       // Wait for short-lived cache to expire (max 4 seconds)
       await()
@@ -104,19 +102,19 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
           .pollDelay(4, TimeUnit.SECONDS)
           .until(
               () -> {
-                User u = cacheBinding.get(shortLivedCache, key, User.class);
+                User u = caffeineBinding.get(key, User.class);
                 return u == null;
               });
 
-      User shortLivedUser = cacheBinding.get(shortLivedCache, key, User.class);
-      User mediumLivedUser = cacheBinding.get(mediumLivedCache, key, User.class);
+      User shortLivedUser = caffeineBinding.get(key, User.class);
+      User mediumLivedUser = caffeineBinding.get(key, User.class);
 
       // Then
       assertNull(shortLivedUser, "Short-lived cache should be expired");
       assertNotNull(mediumLivedUser, "Medium-lived cache should still be valid");
     } finally {
-      cacheBinding.deleteAll(shortLivedCache);
-      cacheBinding.deleteAll(mediumLivedCache);
+      //      cacheBinding.deleteAll();
+      //      cacheBinding.deleteAll();
     }
   }
 
@@ -124,7 +122,7 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
   @DisplayName("测试随机过期偏移防止缓存雪崩")
   void testRandomExpirationOffset() {
     // Given
-    String cacheName = "short-lived";
+
     int testCount = 10;
     Map<String, Long> expirationTimes = new ConcurrentHashMap<>();
 
@@ -134,7 +132,7 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
       for (int i = 0; i < testCount; i++) {
         String key = "user:" + i;
         User user = User.createTestUser(String.valueOf(i));
-        cacheBinding.set(cacheName, key, user);
+        caffeineBinding.set(key, user);
       }
 
       // Monitor expiration times concurrently
@@ -153,7 +151,7 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
                     .pollInterval(50, TimeUnit.MILLISECONDS)
                     .until(
                         () -> {
-                          User u = cacheBinding.get(cacheName, key, User.class);
+                          User u = caffeineBinding.get(key, User.class);
                           return u == null;
                         });
 
@@ -201,7 +199,6 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
       Thread.currentThread().interrupt();
       fail("Test was interrupted");
     } finally {
-      cacheBinding.deleteAll(cacheName);
     }
   }
 
@@ -209,14 +206,14 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
   @DisplayName("测试更新后重置过期时间")
   void testExpirationResetAfterUpdate() {
     // Given
-    String cacheName = "short-lived";
+
     String key = "expire:reset:1";
     User user1 = User.createTestUser("1");
     user1.setName("Original");
 
     try {
       // When
-      cacheBinding.set(cacheName, key, user1);
+      caffeineBinding.set(key, user1);
 
       // Wait 2 seconds (less than expiration time)
       sleep(2000);
@@ -224,19 +221,18 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
       // Update the value
       User user2 = User.createTestUser("1");
       user2.setName("Updated");
-      cacheBinding.set(cacheName, key, user2);
+      caffeineBinding.set(key, user2);
 
       // Wait another 2 seconds
       sleep(2000);
 
       // Should still be cached since we updated it 2 seconds ago
-      User cachedUser = cacheBinding.get(cacheName, key, User.class);
+      User cachedUser = caffeineBinding.get(key, User.class);
 
       // Then
       assertNotNull(cachedUser, "Should still be cached after update");
       assertEquals("Updated", cachedUser.getName(), "Should have updated value");
     } finally {
-      cacheBinding.deleteAll(cacheName);
     }
   }
 
@@ -244,7 +240,7 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
   @DisplayName("测试批量数据过期一致性")
   void testBatchExpirationConsistency() {
     // Given
-    String cacheName = "short-lived";
+
     int batchSize = 5;
 
     try {
@@ -252,13 +248,13 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
       for (int i = 0; i < batchSize; i++) {
         String key = "batch:user:" + i;
         User user = User.createTestUser(String.valueOf(i));
-        cacheBinding.set(cacheName, key, user);
+        caffeineBinding.set(key, user);
       }
 
       // Verify all are cached
       for (int i = 0; i < batchSize; i++) {
         String key = "batch:user:" + i;
-        User user = cacheBinding.get(cacheName, key, User.class);
+        User user = caffeineBinding.get(key, User.class);
         assertNotNull(user, "Key " + key + " should be cached");
       }
 
@@ -269,7 +265,7 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
           .until(
               () -> {
                 for (int i = 0; i < batchSize; i++) {
-                  User u = cacheBinding.get(cacheName, "batch:user:" + i, User.class);
+                  User u = caffeineBinding.get("batch:user:" + i, User.class);
                   if (u != null) {
                     return false; // Still have cached items
                   }
@@ -280,11 +276,10 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
       // Then - Verify all are expired
       for (int i = 0; i < batchSize; i++) {
         String key = "batch:user:" + i;
-        User user = cacheBinding.get(cacheName, key, User.class);
+        User user = caffeineBinding.get(key, User.class);
         assertNull(user, "Key " + key + " should be expired");
       }
     } finally {
-      cacheBinding.deleteAll(cacheName);
     }
   }
 
@@ -292,14 +287,14 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
   @DisplayName("测试过期后重新设置")
   void testSetAfterExpiration() {
     // Given
-    String cacheName = "short-lived";
+
     String key = "expire:reset:2";
     User user1 = User.createTestUser("1");
     user1.setName("First");
 
     try {
       // When
-      cacheBinding.set(cacheName, key, user1);
+      caffeineBinding.set(key, user1);
 
       // Wait for expiration
       await()
@@ -307,22 +302,21 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
           .pollDelay(4, TimeUnit.SECONDS)
           .until(
               () -> {
-                User u = cacheBinding.get(cacheName, key, User.class);
+                User u = caffeineBinding.get(key, User.class);
                 return u == null;
               });
 
       // Set a new value after expiration
       User user2 = User.createTestUser("2");
       user2.setName("Second");
-      cacheBinding.set(cacheName, key, user2);
+      caffeineBinding.set(key, user2);
 
-      User cachedUser = cacheBinding.get(cacheName, key, User.class);
+      User cachedUser = caffeineBinding.get(key, User.class);
 
       // Then
       assertNotNull(cachedUser, "Should be cached again after re-setting");
       assertEquals("Second", cachedUser.getName(), "Should have new value");
     } finally {
-      cacheBinding.deleteAll(cacheName);
     }
   }
 }

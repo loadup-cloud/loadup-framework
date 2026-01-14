@@ -23,20 +23,20 @@ package com.github.loadup.components.cache.test.redis;
  */
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.cache.test.common.BaseRedisCacheTest;
-import com.github.loadup.components.cache.test.common.model.Product;
-import com.github.loadup.components.cache.test.common.model.User;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.*;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;import org.springframework.test.context.*;
 
+import com.github.loadup.components.cache.test.common.BaseCacheTest;
+import com.github.loadup.components.cache.test.common.model.*;
 /** Redis Cache Basic Operations Test */
 @TestPropertySource(properties = {"loadup.cache.binder=redis", "loadup.cache.database=0"})
 @DisplayName("Redis 缓存基础操作测试")
-public class RedisBasicOperationsIT extends BaseRedisCacheTest {
+public class RedisBasicOperationsIT extends BaseCacheTest {
 
   @Test
   @DisplayName("测试基本的 set 和 get 操作")
@@ -46,8 +46,8 @@ public class RedisBasicOperationsIT extends BaseRedisCacheTest {
     User user = User.createTestUser("1");
 
     // When
-    boolean setResult = cacheBinding.set(TEST_CACHE_NAME, key, user);
-    User cachedUser = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+    boolean setResult = caffeineBinding.set(key, user);
+    User cachedUser = caffeineBinding.get(key, User.class);
 
     // Then
     assertTrue(setResult, "Set operation should return true");
@@ -62,7 +62,7 @@ public class RedisBasicOperationsIT extends BaseRedisCacheTest {
   @DisplayName("测试缓存不存在的key")
   void testGetNonExistentKey() {
     // When
-    User cachedUser = cacheBinding.get(TEST_CACHE_NAME, "non-existent-key", User.class);
+    User cachedUser = caffeineBinding.get("non-existent-key", User.class);
 
     // Then
     assertNull(cachedUser, "Non-existent key should return null");
@@ -74,11 +74,11 @@ public class RedisBasicOperationsIT extends BaseRedisCacheTest {
     // Given
     String key = "user:2";
     User user = User.createTestUser("2");
-    cacheBinding.set(TEST_CACHE_NAME, key, user);
+    caffeineBinding.set(key, user);
 
     // When
-    boolean deleteResult = cacheBinding.delete(TEST_CACHE_NAME, key);
-    User cachedUser = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+    boolean deleteResult = caffeineBinding.delete(key);
+    User cachedUser = caffeineBinding.get(key, User.class);
 
     // Then
     assertTrue(deleteResult, "Delete operation should return true");
@@ -89,15 +89,15 @@ public class RedisBasicOperationsIT extends BaseRedisCacheTest {
   @DisplayName("测试 deleteAll 操作")
   void testDeleteAll() {
     // Given
-    cacheBinding.set(TEST_CACHE_NAME, "user:1", User.createTestUser("1"));
-    cacheBinding.set(TEST_CACHE_NAME, "user:2", User.createTestUser("2"));
-    cacheBinding.set(TEST_CACHE_NAME, "user:3", User.createTestUser("3"));
+    caffeineBinding.set("user:1", User.createTestUser("1"));
+    caffeineBinding.set("user:2", User.createTestUser("2"));
+    caffeineBinding.set("user:3", User.createTestUser("3"));
 
     // When
-    boolean deleteAllResult = cacheBinding.deleteAll(TEST_CACHE_NAME);
-    User user1 = cacheBinding.get(TEST_CACHE_NAME, "user:1", User.class);
-    User user2 = cacheBinding.get(TEST_CACHE_NAME, "user:2", User.class);
-    User user3 = cacheBinding.get(TEST_CACHE_NAME, "user:3", User.class);
+    boolean deleteAllResult = caffeineBinding.deleteAll(Arrays.asList("user:1", "user:2", "user:3"));
+    User user1 = caffeineBinding.get("user:1", User.class);
+    User user2 = caffeineBinding.get("user:2", User.class);
+    User user3 = caffeineBinding.get("user:3", User.class);
 
     // Then
     assertTrue(deleteAllResult, "DeleteAll operation should return true");
@@ -118,11 +118,11 @@ public class RedisBasicOperationsIT extends BaseRedisCacheTest {
     user2.setName("Updated Name");
 
     // When
-    cacheBinding.set(TEST_CACHE_NAME, key, user1);
-    User cachedUser1 = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+    caffeineBinding.set(key, user1);
+    User cachedUser1 = caffeineBinding.get(key, User.class);
 
-    cacheBinding.set(TEST_CACHE_NAME, key, user2);
-    User cachedUser2 = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+    caffeineBinding.set(key, user2);
+    User cachedUser2 = caffeineBinding.get(key, User.class);
 
     // Then
     assertEquals("Original Name", cachedUser1.getName());
@@ -145,8 +145,8 @@ public class RedisBasicOperationsIT extends BaseRedisCacheTest {
             .build();
 
     // When
-    cacheBinding.set(TEST_CACHE_NAME, key, product);
-    Product cachedProduct = cacheBinding.get(TEST_CACHE_NAME, key, Product.class);
+    caffeineBinding.set(key, product);
+    Product cachedProduct = caffeineBinding.get(key, Product.class);
 
     // Then
     assertNotNull(cachedProduct);
@@ -169,8 +169,8 @@ public class RedisBasicOperationsIT extends BaseRedisCacheTest {
     }
 
     // When
-    cacheBinding.set(TEST_CACHE_NAME, key, users);
-    Object cachedObject = cacheBinding.get(TEST_CACHE_NAME, key);
+    caffeineBinding.set(key, users);
+    Object cachedObject = caffeineBinding.get(key);
 
     // Then
     assertNotNull(cachedObject);
@@ -185,8 +185,8 @@ public class RedisBasicOperationsIT extends BaseRedisCacheTest {
     String value = "Hello Redis Cache!";
 
     // When
-    cacheBinding.set(TEST_CACHE_NAME, key, value);
-    Object cachedValue = cacheBinding.get(TEST_CACHE_NAME, key);
+    caffeineBinding.set(key, value);
+    Object cachedValue = caffeineBinding.get(key);
 
     // Then
     assertNotNull(cachedValue);
@@ -201,8 +201,8 @@ public class RedisBasicOperationsIT extends BaseRedisCacheTest {
     Integer value = 12345;
 
     // When
-    cacheBinding.set(TEST_CACHE_NAME, key, value);
-    Object cachedValue = cacheBinding.get(TEST_CACHE_NAME, key);
+    caffeineBinding.set(key, value);
+    Object cachedValue = caffeineBinding.get(key);
 
     // Then
     assertNotNull(cachedValue);
@@ -213,7 +213,7 @@ public class RedisBasicOperationsIT extends BaseRedisCacheTest {
   @DisplayName("测试删除不存在的key")
   void testDeleteNonExistentKey() {
     // When
-    boolean deleteResult = cacheBinding.delete(TEST_CACHE_NAME, "non-existent-key");
+    boolean deleteResult = caffeineBinding.delete("non-existent-key");
 
     // Then
     assertTrue(deleteResult, "Delete non-existent key should return true");
@@ -225,11 +225,11 @@ public class RedisBasicOperationsIT extends BaseRedisCacheTest {
     // Given
     String key = "user:10";
     User user = User.createTestUser("10");
-    cacheBinding.set(TEST_CACHE_NAME, key, user);
+    caffeineBinding.set(key, user);
 
     // When
-    boolean delete1 = cacheBinding.delete(TEST_CACHE_NAME, key);
-    boolean delete2 = cacheBinding.delete(TEST_CACHE_NAME, key);
+    boolean delete1 = caffeineBinding.delete(key);
+    boolean delete2 = caffeineBinding.delete(key);
 
     // Then
     assertTrue(delete1, "First delete should return true");
@@ -250,11 +250,11 @@ public class RedisBasicOperationsIT extends BaseRedisCacheTest {
 
     try {
       // When
-      cacheBinding.set(cacheName1, key, user1);
-      cacheBinding.set(cacheName2, key, user2);
+      caffeineBinding.set(key, user1);
+      caffeineBinding.set(key, user2);
 
-      User cachedUser1 = cacheBinding.get(cacheName1, key, User.class);
-      User cachedUser2 = cacheBinding.get(cacheName2, key, User.class);
+      User cachedUser1 = caffeineBinding.get(key, User.class);
+      User cachedUser2 = caffeineBinding.get(key, User.class);
 
       // Then
       assertNotNull(cachedUser1);
@@ -263,8 +263,8 @@ public class RedisBasicOperationsIT extends BaseRedisCacheTest {
       assertEquals("Cache 2 User", cachedUser2.getName());
     } finally {
       // Cleanup
-      cacheBinding.deleteAll(cacheName1);
-      cacheBinding.deleteAll(cacheName2);
+//      caffeineBinding.deleteAll(cacheName1);
+//      caffeineBinding.deleteAll(cacheName2);
     }
   }
 }

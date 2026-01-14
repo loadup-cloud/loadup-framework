@@ -26,7 +26,7 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.github.loadup.components.cache.test.common.BaseRedisCacheTest;
+import com.github.loadup.components.cache.test.common.BaseCacheTest;
 import com.github.loadup.components.cache.test.common.model.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,7 @@ import org.springframework.test.context.TestPropertySource;
       "loadup.cache.cache-configs.normal-data.random-offset-seconds=1"
     })
 @DisplayName("防缓存雪崩和击穿测试")
-public class AntiAvalancheIT extends BaseRedisCacheTest {
+public class AntiAvalancheIT extends BaseCacheTest {
 
   @Test
   @DisplayName("测试随机过期时间防止缓存雪崩")
@@ -65,7 +65,7 @@ public class AntiAvalancheIT extends BaseRedisCacheTest {
     for (int i = 0; i < itemCount; i++) {
       String key = "user:" + i;
       keys.add(key);
-      cacheBinding.set(cacheName, key, User.createTestUser(String.valueOf(i)));
+      caffeineBinding.set(key, User.createTestUser(String.valueOf(i)));
     }
 
     // Then - 验证过期时间是分散的
@@ -74,7 +74,7 @@ public class AntiAvalancheIT extends BaseRedisCacheTest {
 
     int stillCachedCount = 0;
     for (String key : keys) {
-      User user = cacheBinding.get(cacheName, key, User.class);
+      User user = caffeineBinding.get( key, User.class);
       if (user != null) {
         stillCachedCount++;
       }
@@ -90,7 +90,7 @@ public class AntiAvalancheIT extends BaseRedisCacheTest {
             () -> {
               int count = 0;
               for (String key : keys) {
-                if (cacheBinding.get(cacheName, key, User.class) == null) {
+                if (caffeineBinding.get( key, User.class) == null) {
                   count++;
                 }
               }
@@ -107,14 +107,14 @@ public class AntiAvalancheIT extends BaseRedisCacheTest {
     String key = "product:1";
 
     // When - 同时缓存到热点缓存和普通缓存
-    cacheBinding.set(hotCacheName, key, User.createTestUser("1"));
-    cacheBinding.set(normalCacheName, key, User.createTestUser("1"));
+    caffeineBinding.set(key, User.createTestUser("1"));
+    caffeineBinding.set(key, User.createTestUser("1"));
 
     // Wait 4 seconds
     sleep(4000);
 
-    User hotData = cacheBinding.get(hotCacheName, key, User.class);
-    User normalData = cacheBinding.get(normalCacheName, key, User.class);
+    User hotData = caffeineBinding.get( key, User.class);
+    User normalData = caffeineBinding.get( key, User.class);
 
     // Then - 热点数据应该还在，普通数据可能已过期
     assertNotNull(hotData, "Hot data should still be cached (5s+ expiration)");
@@ -131,7 +131,7 @@ public class AntiAvalancheIT extends BaseRedisCacheTest {
     int extraItems = 50;
 
     // Clean up first to ensure fresh state
-    cacheBinding.deleteAll(hotCacheName);
+//    cacheBinding.deleteAll();
     sleep(50); // Give cache time to clear
 
     // When - 先缓存高优先级数据
@@ -139,12 +139,12 @@ public class AntiAvalancheIT extends BaseRedisCacheTest {
     for (int i = 0; i < 20; i++) {
       String key = "hot:user:" + i;
       hotKeys.add(key);
-      cacheBinding.set(hotCacheName, key, User.createTestUser(String.valueOf(i)));
+      caffeineBinding.set(key, User.createTestUser(String.valueOf(i)));
     }
 
     // 然后缓存大量普通数据
     for (int i = 0; i < maxSize + extraItems; i++) {
-      cacheBinding.set(hotCacheName, "normal:user:" + i, User.createTestUser(String.valueOf(i)));
+      caffeineBinding.set("normal:user:" + i, User.createTestUser(String.valueOf(i)));
     }
 
     // Give Caffeine time to perform asynchronous eviction
@@ -153,7 +153,7 @@ public class AntiAvalancheIT extends BaseRedisCacheTest {
     // Then - 验证高优先级数据大部分仍在缓存中
     int hotDataRetained = 0;
     for (String key : hotKeys) {
-      User user = cacheBinding.get(hotCacheName, key, User.class);
+      User user = caffeineBinding.get( key, User.class);
       if (user != null) {
         hotDataRetained++;
       }
@@ -176,7 +176,7 @@ public class AntiAvalancheIT extends BaseRedisCacheTest {
 
     // When - 批量添加数据
     for (int i = 0; i < batchSize; i++) {
-      cacheBinding.set(cacheName, "batch:user:" + i, User.createTestUser(String.valueOf(i)));
+      caffeineBinding.set("batch:user:" + i, User.createTestUser(String.valueOf(i)));
       sleep(50); // Small delay between additions
     }
 
@@ -189,7 +189,7 @@ public class AntiAvalancheIT extends BaseRedisCacheTest {
     while (System.currentTimeMillis() - startCheck < maxCheckTime) {
       for (int i = 0; i < batchSize; i++) {
         String key = "batch:user:" + i;
-        User user = cacheBinding.get(cacheName, key, User.class);
+        User user = caffeineBinding.get( key, User.class);
         if (user == null && expirationTimes.size() == i) {
           expirationTimes.add(System.currentTimeMillis() - startCheck);
         }
@@ -226,7 +226,7 @@ public class AntiAvalancheIT extends BaseRedisCacheTest {
     // When - 模拟所有数据同时过期的场景
     long startTime = System.currentTimeMillis();
     for (int i = 0; i < dataCount; i++) {
-      cacheBinding.set(cacheName, "avalanche:user:" + i, User.createTestUser(String.valueOf(i)));
+      caffeineBinding.set("avalanche:user:" + i, User.createTestUser(String.valueOf(i)));
     }
 
     // Check at different time points to observe expiration pattern
@@ -234,7 +234,7 @@ public class AntiAvalancheIT extends BaseRedisCacheTest {
     sleep(2800); // Check before base expiration (3s) - increased buffer
     int expiredAt2800ms = 0;
     for (int i = 0; i < dataCount; i++) {
-      if (cacheBinding.get(cacheName, "avalanche:user:" + i, User.class) == null) {
+      if (caffeineBinding.get( "avalanche:user:" + i, User.class) == null) {
         expiredAt2800ms++;
       }
     }
@@ -242,7 +242,7 @@ public class AntiAvalancheIT extends BaseRedisCacheTest {
     sleep(1000); // Now at 3.8s - some should be expired
     int expiredAt3800ms = 0;
     for (int i = 0; i < dataCount; i++) {
-      if (cacheBinding.get(cacheName, "avalanche:user:" + i, User.class) == null) {
+      if (caffeineBinding.get( "avalanche:user:" + i, User.class) == null) {
         expiredAt3800ms++;
       }
     }
@@ -250,7 +250,7 @@ public class AntiAvalancheIT extends BaseRedisCacheTest {
     sleep(1000); // Now at 4.8s - more/all should be expired
     int expiredAt4800ms = 0;
     for (int i = 0; i < dataCount; i++) {
-      if (cacheBinding.get(cacheName, "avalanche:user:" + i, User.class) == null) {
+      if (caffeineBinding.get( "avalanche:user:" + i, User.class) == null) {
         expiredAt4800ms++;
       }
     }

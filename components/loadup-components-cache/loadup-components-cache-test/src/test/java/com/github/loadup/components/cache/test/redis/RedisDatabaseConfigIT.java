@@ -1,4 +1,4 @@
-package com.github.loadup.components.cache.test.config;
+package com.github.loadup.components.cache.test.redis;
 
 /*-
  * #%L
@@ -25,8 +25,9 @@ package com.github.loadup.components.cache.test.config;
 import static com.github.loadup.components.testcontainers.cache.SharedRedisContainer.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.cache.redis.cfg.RedisBinderCfg;
-import com.github.loadup.components.cache.test.common.BaseRedisCacheTest;
+import com.github.loadup.components.cache.redis.cfg.RedisCacheBinderCfg;
+import com.github.loadup.components.testcontainers.cache.SharedRedisContainer;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.*;
 
+import com.github.loadup.components.cache.test.common.BaseCacheTest;
+import com.github.loadup.components.cache.test.common.model.User;
 /**
  * Test Redis database configuration
  *
@@ -54,30 +57,30 @@ import org.springframework.test.context.*;
       "spring.data.redis.database=0"
     })
 @DisplayName("Redis Database Configuration Test")
-public class RedisDatabaseConfigIT extends BaseRedisCacheTest {
+public class RedisDatabaseConfigIT extends BaseCacheTest {
 
   @Autowired(required = false)
   private RedisConnectionFactory redisConnectionFactory;
 
   @Autowired(required = false)
-  private RedisBinderCfg redisBinderCfg;
+  private RedisCacheBinderCfg redisCacheBinderCfg;
 
   @DynamicPropertySource
   static void redisProperties(DynamicPropertyRegistry registry) {
     // 这里的 HOST 可以是任何运行时的动态变量
-    registry.add("loadup.cache.binder.redis.host", () -> HOST);
-    registry.add("loadup.cache.binder.redis.port", () -> PORT);
-    registry.add("spring.data.redis.host", () -> HOST);
-    registry.add("spring.data.redis.port", () -> PORT);
+    registry.add("loadup.cache.binder.redis.host", () -> SharedRedisContainer.HOST);
+    registry.add("loadup.cache.binder.redis.port", () -> SharedRedisContainer.PORT);
+    registry.add("spring.data.redis.host", () -> SharedRedisContainer.HOST);
+    registry.add("spring.data.redis.port", () -> SharedRedisContainer.PORT);
   }
 
   @Test
   @DisplayName("验证 RedisBinderCfg 配置正确加载")
   void testRedisBinderCfgLoaded() {
-    assertNotNull(redisBinderCfg, "RedisBinderCfg should be loaded");
-    assertEquals(HOST, redisBinderCfg.getHost());
-    assertEquals(PORT, redisBinderCfg.getPort());
-    assertEquals(5, redisBinderCfg.getDatabase(), "Database should be 5 from custom config");
+    assertNotNull(redisCacheBinderCfg, "RedisBinderCfg should be loaded");
+    Assertions.assertEquals(SharedRedisContainer.HOST, redisCacheBinderCfg.getHost());
+    Assertions.assertEquals(SharedRedisContainer.PORT, redisCacheBinderCfg.getPort());
+    assertEquals(5, redisCacheBinderCfg.getDatabase(), "Database should be 5 from custom config");
   }
 
   @Test
@@ -102,8 +105,8 @@ public class RedisDatabaseConfigIT extends BaseRedisCacheTest {
         5,
         standaloneConfig.getDatabase(),
         "Redis database should be 5 from loadup.cache.binder.redis.database");
-    assertEquals(HOST, standaloneConfig.getHostName());
-    assertEquals(PORT, standaloneConfig.getPort());
+    Assertions.assertEquals(SharedRedisContainer.HOST, standaloneConfig.getHostName());
+    Assertions.assertEquals(SharedRedisContainer.PORT, standaloneConfig.getPort());
   }
 
   @Test
@@ -148,7 +151,7 @@ public class RedisDatabaseConfigIT extends BaseRedisCacheTest {
 
     // Create template for database 0 (to verify isolation)
     LettuceConnectionFactory db0Factory =
-        new LettuceConnectionFactory(new RedisStandaloneConfiguration(HOST, PORT));
+        new LettuceConnectionFactory(new RedisStandaloneConfiguration(SharedRedisContainer.HOST, SharedRedisContainer.PORT));
     db0Factory.afterPropertiesSet();
 
     RedisTemplate<String, String> db0Template = new RedisTemplate<>();
@@ -180,9 +183,9 @@ public class RedisDatabaseConfigIT extends BaseRedisCacheTest {
   @Test
   @DisplayName("验证 hasCustomConfig 方法正确识别自定义配置")
   void testHasCustomConfig() {
-    assertNotNull(redisBinderCfg, "RedisBinderCfg should be loaded");
+    assertNotNull(redisCacheBinderCfg, "RedisBinderCfg should be loaded");
     assertTrue(
-        redisBinderCfg.hasCustomConfig(),
+        redisCacheBinderCfg.hasCustomConfig(),
         "Should detect custom configuration when database is set");
   }
 }

@@ -1,7 +1,4 @@
-/*
- * Ant Group
- * Copyright (c) 2004-2026 All Rights Reserved.
- */
+
 package com.github.loadup.components.cache.serializer;
 
 import com.github.loadup.commons.util.JsonUtil;

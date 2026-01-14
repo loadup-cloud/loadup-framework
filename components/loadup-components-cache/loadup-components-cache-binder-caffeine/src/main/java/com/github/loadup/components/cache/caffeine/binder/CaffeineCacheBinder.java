@@ -31,6 +31,8 @@ import com.github.loadup.components.cache.caffeine.cfg.CaffeineCacheBinderCfg;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
+import java.util.Collection;
+
 @Slf4j
 public class CaffeineCacheBinder extends AbstractCacheBinder<CaffeineCacheBinderCfg>
     implements CacheBinder {
@@ -49,7 +51,7 @@ public class CaffeineCacheBinder extends AbstractCacheBinder<CaffeineCacheBinder
     // 比如 loadup.cache.bindings.user-cache -> 对应的驱动配置
 
     Caffeine<Object, Object> builder = Caffeine.newBuilder();
-
+    builder.ticker(ticker::read);
     // 1. 设置最大容量
     if (binderCfg.getMaximumSize() > 0) {
       builder.maximumSize(binderCfg.getMaximumSize());
@@ -69,14 +71,14 @@ public class CaffeineCacheBinder extends AbstractCacheBinder<CaffeineCacheBinder
   }
 
   @Override
-  public boolean set(String cacheName, String key, Object value) {
+  public boolean set(String key, Object value) {
     Assert.notNull(value, "Caffeine cache does not support null values");
     nativeCache.put(key, wrapValue(value));
     return true;
   }
 
   @Override
-  public Object get(String cacheName, String key) {
+  public Object get(String key) {
     Object valueWrapper = nativeCache.getIfPresent(key);
     // 如果配置了序列化器，且存入的是字节数组，则反序列化（实现深拷贝保护）
     if (valueWrapper instanceof byte[] && serializer != null) {
@@ -86,31 +88,26 @@ public class CaffeineCacheBinder extends AbstractCacheBinder<CaffeineCacheBinder
   }
 
   @Override
-  public <T> T get(String cacheName, String key, Class<T> clazz) {
-    Object valueWrapper = nativeCache.getIfPresent(key);
-    // 如果配置了序列化器，且存入的是字节数组，则反序列化（实现深拷贝保护）
-    if (valueWrapper instanceof byte[] && serializer != null) {
-      return serializer.deserialize((byte[]) valueWrapper, clazz);
-    }
-    return (T) valueWrapper;
-  }
-
-  @Override
-  public boolean delete(String cacheName, String key) {
+  public boolean delete(String key) {
     nativeCache.invalidate(key);
     return true;
   }
 
   @Override
-  public boolean deleteAll(String cacheName) {
-    nativeCache.invalidateAll();
+  public boolean deleteAll(Collection<String> keys) {
+    nativeCache.invalidateAll(keys);
     return true;
+  }
+
+  @Override
+  public void cleanUp() {
+    nativeCache.cleanUp();
   }
 
   @Override
   protected void afterDestroy() {
     if (nativeCache != null) {
-      nativeCache.invalidateAll();
+      nativeCache.cleanUp();
       log.info("Caffeine Binder [{}] 已销毁", name);
     }
   }

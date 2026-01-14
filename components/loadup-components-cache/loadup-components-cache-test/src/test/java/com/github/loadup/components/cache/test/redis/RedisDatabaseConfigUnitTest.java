@@ -1,4 +1,4 @@
-package com.github.loadup.components.cache.test.config;
+package com.github.loadup.components.cache.test.redis;
 
 /*-
  * #%L
@@ -24,8 +24,8 @@ package com.github.loadup.components.cache.test.config;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.cache.redis.cfg.RedisBinderCfg;
-import com.github.loadup.components.cache.test.CacheTestApplication;
+import com.github.loadup.components.cache.redis.cfg.RedisCacheBinderCfg;
+import com.github.loadup.components.cache.test.common.BaseCacheTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,6 @@ import org.springframework.test.context.TestPropertySource;
  *
  * <p>This test verifies the configuration binding without requiring a real Redis connection
  */
-@SpringBootTest(classes = CacheTestApplication.class)
 @TestPropertySource(
     properties = {
       "loadup.cache.binder=redis",
@@ -54,10 +53,10 @@ import org.springframework.test.context.TestPropertySource;
       "spring.data.redis.password=main-secret"
     })
 @DisplayName("Redis Database Configuration Unit Test")
-public class RedisDatabaseConfigUnitTest {
+public class RedisDatabaseConfigUnitTest extends BaseCacheTest {
 
   @Autowired(required = false)
-  private RedisBinderCfg redisBinderCfg;
+  private RedisCacheBinderCfg redisCacheBinderCfg;
 
   @Autowired(required = false)
   private RedisProperties springRedisProperties;
@@ -65,19 +64,19 @@ public class RedisDatabaseConfigUnitTest {
   @Test
   @DisplayName("验证 RedisBinderCfg 正确加载自定义配置")
   void testRedisBinderCfgLoadsCustomConfig() {
-    assertNotNull(redisBinderCfg, "RedisBinderCfg should be loaded");
+    assertNotNull(redisCacheBinderCfg, "RedisBinderCfg should be loaded");
 
     // Verify custom configuration is loaded
     assertEquals(
         "redis-cache.example.com",
-        redisBinderCfg.getHost(),
+        redisCacheBinderCfg.getHost(),
         "Host should be from loadup.cache.binder.redis");
-    assertEquals(6380, redisBinderCfg.getPort(), "Port should be from loadup.cache.binder.redis");
+    assertEquals(6380, redisCacheBinderCfg.getPort(), "Port should be from loadup.cache.binder.redis");
     assertEquals(
-        5, redisBinderCfg.getDatabase(), "Database should be 5 from loadup.cache.binder.redis");
+        5, redisCacheBinderCfg.getDatabase(), "Database should be 5 from loadup.cache.binder.redis");
     assertEquals(
         "cache-secret",
-        redisBinderCfg.getPassword(),
+        redisCacheBinderCfg.getPassword(),
         "Password should be from loadup.cache.binder.redis");
   }
 
@@ -103,34 +102,34 @@ public class RedisDatabaseConfigUnitTest {
   @Test
   @DisplayName("验证自定义配置覆盖默认配置的优先级")
   void testConfigurationPriority() {
-    assertNotNull(redisBinderCfg, "RedisBinderCfg should be loaded");
+    assertNotNull(redisCacheBinderCfg, "RedisBinderCfg should be loaded");
     assertNotNull(springRedisProperties, "Spring RedisProperties should be loaded");
 
     // Custom config should be different from Spring Boot default
     assertNotEquals(
         springRedisProperties.getHost(),
-        redisBinderCfg.getHost(),
+        redisCacheBinderCfg.getHost(),
         "Custom host should override default");
     assertNotEquals(
         springRedisProperties.getPort(),
-        redisBinderCfg.getPort(),
+        redisCacheBinderCfg.getPort(),
         "Custom port should override default");
     assertNotEquals(
         springRedisProperties.getDatabase(),
-        redisBinderCfg.getDatabase(),
+        redisCacheBinderCfg.getDatabase(),
         "Custom database should override default");
     assertNotEquals(
         springRedisProperties.getPassword(),
-        redisBinderCfg.getPassword(),
+        redisCacheBinderCfg.getPassword(),
         "Custom password should override default");
   }
 
   @Test
   @DisplayName("验证 database 参数为 Integer 类型，支持 null")
   void testDatabaseIsIntegerType() {
-    assertNotNull(redisBinderCfg, "RedisBinderCfg should be loaded");
+    assertNotNull(redisCacheBinderCfg, "RedisBinderCfg should be loaded");
 
-    Integer database = redisBinderCfg.getDatabase();
+    Integer database = redisCacheBinderCfg.getDatabase();
     assertNotNull(database, "Database should be set");
     assertInstanceOf(Integer.class, database, "Database should be Integer type");
     assertEquals(5, database.intValue());
@@ -139,37 +138,37 @@ public class RedisDatabaseConfigUnitTest {
   @Test
   @DisplayName("验证 hasCustomConfig 方法")
   void testHasCustomConfig() {
-    assertNotNull(redisBinderCfg, "RedisBinderCfg should be loaded");
+    assertNotNull(redisCacheBinderCfg, "RedisBinderCfg should be loaded");
 
     assertTrue(
-        redisBinderCfg.hasCustomConfig(),
+        redisCacheBinderCfg.hasCustomConfig(),
         "Should detect custom configuration when any field is set");
   }
 
   @Test
   @DisplayName("验证所有基础配置字段")
   void testAllBasicConfigFields() {
-    assertNotNull(redisBinderCfg, "RedisBinderCfg should be loaded");
+    assertNotNull(redisCacheBinderCfg, "RedisBinderCfg should be loaded");
 
     // Verify all basic fields are loaded
-    assertNotNull(redisBinderCfg.getHost(), "Host should be set");
-    assertNotNull(redisBinderCfg.getPort(), "Port should be set");
-    assertNotNull(redisBinderCfg.getDatabase(), "Database should be set");
-    assertNotNull(redisBinderCfg.getPassword(), "Password should be set");
+    assertNotNull(redisCacheBinderCfg.getHost(), "Host should be set");
+    assertNotNull(redisCacheBinderCfg.getPort(), "Port should be set");
+    assertNotNull(redisCacheBinderCfg.getDatabase(), "Database should be set");
+    assertNotNull(redisCacheBinderCfg.getPassword(), "Password should be set");
 
     // Verify correct values
-    assertEquals("redis-cache.example.com", redisBinderCfg.getHost());
-    assertEquals(6380, redisBinderCfg.getPort().intValue());
-    assertEquals(5, redisBinderCfg.getDatabase().intValue());
-    assertEquals("cache-secret", redisBinderCfg.getPassword());
+    assertEquals("redis-cache.example.com", redisCacheBinderCfg.getHost());
+    assertEquals(6380, redisCacheBinderCfg.getPort().intValue());
+    assertEquals(5, redisCacheBinderCfg.getDatabase().intValue());
+    assertEquals("cache-secret", redisCacheBinderCfg.getPassword());
   }
 
   @Test
   @DisplayName("验证不同 database 索引的有效性")
   void testDatabaseIndexRange() {
-    assertNotNull(redisBinderCfg, "RedisBinderCfg should be loaded");
+    assertNotNull(redisCacheBinderCfg, "RedisBinderCfg should be loaded");
 
-    Integer database = redisBinderCfg.getDatabase();
+    Integer database = redisCacheBinderCfg.getDatabase();
     assertNotNull(database, "Database should be set");
 
     // Redis supports database index 0-15 by default

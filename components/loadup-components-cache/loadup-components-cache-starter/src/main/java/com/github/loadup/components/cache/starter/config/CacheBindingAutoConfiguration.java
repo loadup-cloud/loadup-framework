@@ -1,16 +1,19 @@
 package com.github.loadup.components.cache.starter.config;
 
+import com.github.loadup.components.cache.binder.CacheTicker;
 import com.github.loadup.components.cache.caffeine.binder.CaffeineCacheBinder;
 import com.github.loadup.components.cache.caffeine.binding.CaffeineCacheBinding;
 import com.github.loadup.components.cache.caffeine.cfg.CaffeineCacheBinderCfg;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.components.cache.constants.CacheConstants;
+import com.github.loadup.components.cache.redis.binder.RedisCacheBinder;
+import com.github.loadup.components.cache.redis.binding.RedisCacheBinding;
+import com.github.loadup.components.cache.redis.cfg.RedisCacheBinderCfg;
 import com.github.loadup.components.cache.serializer.CacheSerializer;
 import com.github.loadup.components.cache.serializer.JsonCacheSerializer;
 import com.github.loadup.components.cache.serializer.KryoCacheSerializer;
 import com.github.loadup.components.cache.starter.manager.CacheBindingManager;
 import com.github.loadup.components.cache.starter.properties.CacheGroupProperties;
-import com.github.loadup.framework.api.cfg.BaseBindingCfg;
 import com.github.loadup.framework.api.core.BindingPostProcessor;
 import com.github.loadup.framework.api.manager.BindingMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -40,15 +43,22 @@ public class CacheBindingAutoConfiguration {
     return new BindingPostProcessor(context);
   }
 
+  /** 注册默认的时间源 使用 @ConditionalOnMissingBean 允许用户提供自己的实现来覆盖它 */
+  @Bean(name = CacheConstants.DEFAULT_TICKER)
+  @ConditionalOnMissingBean(name = CacheConstants.DEFAULT_TICKER)
+  public CacheTicker defaultCacheTicker() {
+    return CacheTicker.SYSTEM;
+  }
+
   /** 注册默认的 JSON 序列化器 使用 @ConditionalOnMissingBean 允许用户提供自己的实现来覆盖它 */
-  @Bean(name = CacheConstants.JSON)
+  @Bean(name = CacheConstants.SERIALIZER_JSON)
   @ConditionalOnMissingBean(CacheSerializer.class)
   public CacheSerializer defaultJsonCacheSerializer() {
     return new JsonCacheSerializer();
   }
 
-  @Bean(name = CacheConstants.KRYO)
-  @ConditionalOnMissingBean(name = CacheConstants.KRYO)
+  @Bean(name = CacheConstants.SERIALIZER_KRYO)
+  @ConditionalOnMissingBean(name = CacheConstants.SERIALIZER_KRYO)
   public CacheSerializer customKryoSerializer() {
     return new KryoCacheSerializer();
   }
@@ -61,9 +71,9 @@ public class CacheBindingAutoConfiguration {
         "com.github.loadup.components.cache.caffeine.binding.CaffeineCacheBinding"
       })
   static class CaffeineBindingRegistry {
-    // Spring 会自动注入上面定义的 cacheBindingManager
-    public CaffeineBindingRegistry(CacheBindingManager cacheBindingManager) {
-      cacheBindingManager.register(
+    // Spring 会自动注入上面定义的 bindingManager
+    public CaffeineBindingRegistry(CacheBindingManager bindingManager) {
+      bindingManager.register(
           "caffeine",
           new BindingMetadata<>(
               CacheBindingCfg.class,
@@ -74,17 +84,17 @@ public class CacheBindingAutoConfiguration {
   }
 
   /** Redis 模块的自动注册逻辑 */
-  //    @Configuration
-  //    @ConditionalOnClass(name = "com.github.loadup.components.dfs.local.binding.RedisDfsBinding")
-  //    static class RedisBindingRegistry {
-  //        public RedisBindingRegistry(CacheBindingManager dfsBindingManager) {
-  //            dfsBindingManager.register(
-  //                "local",
-  //                new BindingMetadata<>(
-  //                    BaseBindingCfg.class,
-  //                    RedisCacheBinderCfg.class,
-  //                    RedisCacheBinder.class,
-  //                    ctx -> new  RedisCacheBinding()));
-  //        }
-  //    }
+  @Configuration
+  @ConditionalOnClass(name = "com.github.loadup.components.cache.redis.binding.RedisCacheBinding")
+  static class RedisBindingRegistry {
+    public RedisBindingRegistry(CacheBindingManager bindingManager) {
+      bindingManager.register(
+          "redis",
+          new BindingMetadata<>(
+              CacheBindingCfg.class,
+              RedisCacheBinderCfg.class,
+              RedisCacheBinder.class,
+              ctx -> new RedisCacheBinding()));
+    }
+  }
 }

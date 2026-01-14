@@ -24,14 +24,16 @@ package com.github.loadup.components.cache.binder;
 
 import com.github.loadup.framework.api.binder.Binder;
 
+import java.util.Collection;
+
 public interface CacheBinder extends Binder {
-  boolean set(String cacheName, String key, Object value);
+  boolean set(String key, Object value);
 
-  Object get(String cacheName, String key);
+  Object get(String key);
 
-  <T> T get(String cacheName, String key, Class<T> cls);
+  boolean delete(String key);
 
-  boolean delete(String cacheName, String key);
+  boolean deleteAll(Collection<String> keys);
 
-  boolean deleteAll(String cacheName);
+  void cleanUp();
 }

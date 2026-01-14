@@ -59,7 +59,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
               for (int j = 0; j < operationsPerThread; j++) {
                 String key = "user:" + threadIndex + ":" + j;
                 User user = User.createTestUser(key);
-                boolean result = cacheBinding.set(TEST_CACHE_NAME, key, user);
+                boolean result = caffeineBinding.set(key, user);
                 if (result) {
                   successCount.incrementAndGet();
                 }
@@ -83,7 +83,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
     for (int i = 0; i < threadCount; i++) {
       for (int j = 0; j < operationsPerThread; j++) {
         String key = "user:" + i + ":" + j;
-        User user = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+        User user = caffeineBinding.get(key, User.class);
         assertNotNull(user, "User should be cached: " + key);
       }
     }
@@ -95,7 +95,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
     // Given
     int dataCount = 100;
     for (int i = 0; i < dataCount; i++) {
-      cacheBinding.set(TEST_CACHE_NAME, "user:" + i, User.createTestUser(String.valueOf(i)));
+      caffeineBinding.set("user:" + i, User.createTestUser(String.valueOf(i)));
     }
 
     int threadCount = 20;
@@ -111,7 +111,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
             try {
               for (int j = 0; j < readsPerThread; j++) {
                 String key = "user:" + (j % dataCount);
-                User user = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+                User user = caffeineBinding.get(key, User.class);
                 if (user != null) {
                   successCount.incrementAndGet();
                 }
@@ -138,7 +138,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
       String key = "user:" + i;
       User user = User.createTestUser(key);
       user.setName("Initial-" + i);
-      cacheBinding.set(TEST_CACHE_NAME, key, user);
+      caffeineBinding.set(key, user);
     }
 
     int threadCount = 10;
@@ -159,10 +159,10 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
                   // Write
                   User user = User.createTestUser(key);
                   user.setName("Thread" + threadIndex + "-" + j);
-                  cacheBinding.set(TEST_CACHE_NAME, key, user);
+                  caffeineBinding.set(key, user);
                 } else {
                   // Read
-                  cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+                  caffeineBinding.get(key, User.class);
                 }
               }
             } catch (Exception e) {
@@ -185,7 +185,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
     // Then - Verify no corruption
     for (int i = 0; i < 50; i++) {
       String key = "user:" + i;
-      User user = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+      User user = caffeineBinding.get(key, User.class);
       assertNotNull(user, "User should exist: " + key);
       // Name should either be from Initial or Thread prefix
       assertTrue(
@@ -200,7 +200,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
     // Given
     int dataCount = 1000;
     for (int i = 0; i < dataCount; i++) {
-      cacheBinding.set(TEST_CACHE_NAME, "user:" + i, User.createTestUser(String.valueOf(i)));
+      caffeineBinding.set("user:" + i, User.createTestUser(String.valueOf(i)));
     }
 
     int threadCount = 10;
@@ -214,7 +214,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
           () -> {
             try {
               for (int j = threadIndex; j < dataCount; j += threadCount) {
-                cacheBinding.delete(TEST_CACHE_NAME, "user:" + j);
+                caffeineBinding.delete( "user:" + j);
               }
             } finally {
               latch.countDown();
@@ -227,7 +227,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
 
     // Then - All items should be deleted
     for (int i = 0; i < dataCount; i++) {
-      User user = cacheBinding.get(TEST_CACHE_NAME, "user:" + i, User.class);
+      User user = caffeineBinding.get("user:" + i, User.class);
       assertNull(user, "User should be deleted: " + i);
     }
   }
@@ -251,7 +251,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
                 for (int j = 0; j < operationsPerThread; j++) {
                   User user = User.createTestUser(String.valueOf(threadIndex));
                   user.setName("Thread" + threadIndex + "-Iteration" + j);
-                  cacheBinding.set(TEST_CACHE_NAME, key, user);
+                  caffeineBinding.set(key, user);
                   sleep(10); // Small delay
                 }
                 return true;
@@ -268,7 +268,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
     executor.awaitTermination(30, TimeUnit.SECONDS);
 
     // Then - Verify final state is consistent
-    User finalUser = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+    User finalUser = caffeineBinding.get(key, User.class);
     assertNotNull(finalUser, "Final user should exist");
     assertNotNull(finalUser.getName(), "Final user name should not be null");
   }
@@ -294,10 +294,10 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
 
                 // Write
                 User user = User.createTestUser(key);
-                cacheBinding.set(TEST_CACHE_NAME, key, user);
+                caffeineBinding.set(key, user);
 
                 // Read
-                cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+                caffeineBinding.get(key, User.class);
               }
             } finally {
               latch.countDown();

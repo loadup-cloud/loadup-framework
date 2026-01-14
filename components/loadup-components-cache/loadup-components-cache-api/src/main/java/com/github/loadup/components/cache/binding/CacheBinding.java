@@ -24,14 +24,18 @@ package com.github.loadup.components.cache.binding;
 
 import com.github.loadup.framework.api.binding.Binding;
 
+import java.util.Collection;
+
 public interface CacheBinding extends Binding {
-  boolean set(String cacheName, String key, Object value);
+  boolean set(String key, Object value);
 
-  Object get(String cacheName, String key);
+  Object get(String key);
 
-  <T> T get(String cacheName, String key, Class<T> cls);
+  <T> T get(String key, Class<T> cls);
 
-  boolean delete(String cacheName, String key);
+  boolean delete(String key);
 
-  boolean deleteAll(String cacheName);
+  boolean deleteAll(Collection<String> keys);
+
+  void cleanUp();
 }

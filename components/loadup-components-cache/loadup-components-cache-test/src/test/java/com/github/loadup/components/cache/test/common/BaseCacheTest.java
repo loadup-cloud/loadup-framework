@@ -24,11 +24,13 @@ package com.github.loadup.components.cache.test.common;
 
 import com.github.loadup.components.cache.binding.CacheBinding;
 import com.github.loadup.components.cache.test.TestApplication;
+import com.github.loadup.framework.api.annotation.BindingClient;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -38,8 +40,13 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public abstract class BaseCacheTest {
-  protected CacheBinding cacheBinding;
+  @BindingClient("caffeine-biz-type")
+  protected CacheBinding caffeineBinding;
 
+  @BindingClient("redis-biz-type")
+  protected CacheBinding redisBinding;
+
+  @Autowired protected FakeTicker fakeTicker; // 注入这个可以手动拨动时钟的 Ticker
   protected static final String TEST_CACHE_NAME = "test-cache";
   protected static final String TEST_KEY = "test-key";
   protected static final String TEST_VALUE = "test-value";
@@ -58,6 +65,7 @@ public abstract class BaseCacheTest {
 
   protected void clearCache() {
     try {
+      caffeineBinding.cleanUp();
     } catch (Exception e) {
       log.warn("Failed to clear cache: {}", e.getMessage());
     }

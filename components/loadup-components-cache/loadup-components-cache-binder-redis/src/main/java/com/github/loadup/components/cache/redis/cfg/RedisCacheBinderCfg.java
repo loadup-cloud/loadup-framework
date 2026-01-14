@@ -22,10 +22,10 @@ package com.github.loadup.components.cache.redis.cfg;
  * #L%
  */
 
-import com.github.loadup.framework.api.cfg.BaseBinderCfg;
+import com.github.loadup.components.cache.cfg.CacheBinderCfg;
+import com.github.loadup.components.cache.constants.CacheConstants;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Redis Binder Configuration
@@ -77,8 +77,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ConfigurationProperties(prefix = "loadup.cache.binder.redis")
-public class RedisBinderCfg extends BaseBinderCfg {
+public class RedisCacheBinderCfg extends CacheBinderCfg {
 
   /**
    * Redis database index (default: 0) Override: loadup.cache.binder.redis.database Default:
@@ -216,4 +215,9 @@ public class RedisBinderCfg extends BaseBinderCfg {
         || minIdle != null
         || sslEnabled != null;
   }
+
+    public RedisCacheBinderCfg() {
+        // Redis 驱动默认建议使用 JSON 序列化，方便跨语言查看
+        setSerializerBeanName(CacheConstants.SERIALIZER_JSON);
+    }
 }

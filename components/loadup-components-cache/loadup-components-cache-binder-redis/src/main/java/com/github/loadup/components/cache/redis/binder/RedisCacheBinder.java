@@ -23,19 +23,29 @@ package com.github.loadup.components.cache.redis.binder;
  */
 
 import com.github.loadup.commons.util.JsonUtil;
+import com.github.loadup.components.cache.binder.AbstractCacheBinder;
 import com.github.loadup.components.cache.binder.CacheBinder;
-import com.github.loadup.components.cache.redis.cfg.RedisBinderCfg;
-import com.github.loadup.framework.api.binder.AbstractBinder;
+import com.github.loadup.components.cache.redis.cfg.RedisCacheBinderCfg;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.cache.Cache;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Redis Cache Binder Implementation
@@ -47,88 +57,141 @@ import org.springframework.util.CollectionUtils;
  *   <li>Custom: Uses loadup.cache.redis configuration to override defaults
  * </ol>
  *
- * @see RedisBinderCfg
+ * @see RedisCacheBinderCfg
  */
 @Slf4j
-public class RedisCacheBinder extends AbstractBinder<RedisBinderCfg> implements CacheBinder {
+public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg>
+    implements CacheBinder {
+  @Autowired private RedisProperties springRedisProperties; // 注入 YAML 中的 spring.redis 配置
 
-  @Resource
-  @Qualifier("redisCacheManager")
-  private RedisCacheManager redisCacheManager;
+  @Autowired(required = false)
+  private RedisConnectionFactory defaultFactory; // 注入 Spring 自动创建的默认工厂
 
-  @Resource private RedisBinderCfg redisBinderCfg;
+  private RedisTemplate<String, byte[]> redisTemplate;
 
-  @PostConstruct
-  public void init() {
-    if (redisBinderCfg.hasCustomConfig()) {
-      log.info("Redis cache binder initialized with custom configuration");
-      log.debug(
-          "Custom Redis config: host={}, port={}, database={}",
-          redisBinderCfg.getHost(),
-          redisBinderCfg.getPort(),
-          redisBinderCfg.getDatabase());
-    } else {
-      log.info("Redis cache binder initialized with Spring Boot default configuration");
+  @Override
+  protected void onInit() {
+    // 1. 决定使用哪个连接工厂
+    RedisConnectionFactory factory = resolveConnectionFactory();
+
+    // 2. 初始化 RedisTemplate
+    this.redisTemplate = new RedisTemplate<>();
+    this.redisTemplate.setConnectionFactory(factory);
+    this.redisTemplate.setKeySerializer(RedisSerializer.string());
+    this.redisTemplate.setValueSerializer(RedisSerializer.byteArray());
+    this.redisTemplate.afterPropertiesSet();
+  }
+
+  private RedisConnectionFactory resolveConnectionFactory() {
+    // 判断当前 Binder 的配置是否与 Spring Boot 默认配置完全一致
+    if (isMatchDefaultConfig() && defaultFactory != null) {
+      log.info("RedisBinder [{}] 配置与全局一致，复用默认 RedisConnectionFactory", name);
+      return defaultFactory;
     }
+
+    // 如果不一致（比如换了 DB 或者 Host），则创建一个新的私有工厂
+    log.info("RedisBinder [{}] 配置了独立参数，正在创建新的 LettuceConnectionFactory", name);
+    return createPrivateFactory();
+  }
+
+  /** 判断配置是否与 spring.redis 一致 */
+  private boolean isMatchDefaultConfig() {
+    // 如果 Binder 没有配置 Host，或者配置的 Host 和 DB 与 Spring 默认的一样
+    boolean hostMatch =
+        !StringUtils.hasText(binderCfg.getHost())
+            || Objects.equals(binderCfg.getHost(), springRedisProperties.getHost());
+
+    boolean dbMatch =
+        binderCfg.getDatabase() == 0
+            || binderCfg.getDatabase() == springRedisProperties.getDatabase();
+
+    return hostMatch && dbMatch;
+  }
+
+  /** 创建独立的工厂 */
+  private RedisConnectionFactory createPrivateFactory() {
+    RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+
+    // 合并配置：优先用 BinderCfg，为空则用 RedisProperties
+    String host =
+        StringUtils.hasText(binderCfg.getHost())
+            ? binderCfg.getHost()
+            : springRedisProperties.getHost();
+    int port = binderCfg.getPort() != 0 ? binderCfg.getPort() : springRedisProperties.getPort();
+    int db =
+        binderCfg.getDatabase() != 0
+            ? binderCfg.getDatabase()
+            : springRedisProperties.getDatabase();
+    String pwd =
+        StringUtils.hasText(binderCfg.getPassword())
+            ? binderCfg.getPassword()
+            : springRedisProperties.getPassword();
+
+    config.setHostName(host);
+    config.setPort(port);
+    config.setDatabase(db);
+    if (StringUtils.hasText(pwd)) {
+      config.setPassword(pwd);
+    }
+
+    LettuceConnectionFactory factory = new LettuceConnectionFactory(config);
+    // 注意：必须调用 afterPropertiesSet 触发初始化
+    factory.afterPropertiesSet();
+    return factory;
   }
 
   @Override
-  public String type() {
+  public String getBinderType() {
     return "redis";
   }
 
   @Override
-  public boolean set(String cacheName, String key, Object value) {
-    Cache cache = redisCacheManager.getCache(cacheName);
-    Assert.notNull(cache, "cache is null");
-    cache.put(key, value);
+  public boolean set(String key, Object value) {
+    if (value == null) return false;
+
+    // 核心：调用父类的 wrapValue。
+    // 因为 AbstractCacheBinder 注入了 serializer，wrapValue 会返回 byte[]
+    Object wrapped = wrapValue(value);
+
+    if (wrapped instanceof byte[]) {
+      redisTemplate.opsForValue().set(key, (byte[]) wrapped);
+    } else {
+      log.warn("RedisBinder [{}] 未配置序列化器，无法存储非字节数据", name);
+    }
     return true;
   }
 
   @Override
-  public Object get(String cacheName, String key) {
-    Cache cache = redisCacheManager.getCache(cacheName);
-    if (Objects.isNull(cache)) {
-      return null;
-    }
-    Cache.ValueWrapper valueWrapper = cache.get(key);
-    if (Objects.isNull(valueWrapper)) {
-      return null;
-    }
-    return valueWrapper.get();
+  public Object get(String key) {
+    return redisTemplate.opsForValue().get(key);
   }
 
   @Override
-  public <T> T get(String cacheName, String key, Class<T> clazz) {
-    Cache cache = redisCacheManager.getCache(cacheName);
-    if (Objects.isNull(cache)) {
-      return null;
-    }
-    @SuppressWarnings("unchecked")
-    Map<String, Object> map = cache.get(key, Map.class);
-    if (CollectionUtils.isEmpty(map)) {
-      return null;
-    }
-    return JsonUtil.mapToObject(map, clazz);
-  }
-
-  @Override
-  public boolean delete(String cacheName, String key) {
-    Cache cache = redisCacheManager.getCache(cacheName);
-    if (Objects.isNull(cache)) {
-      return false;
-    }
-    cache.evictIfPresent(key);
+  public boolean delete(String key) {
+    redisTemplate.delete(key);
     return true;
   }
 
   @Override
-  public boolean deleteAll(String cacheName) {
-    Cache cache = redisCacheManager.getCache(cacheName);
-    if (Objects.isNull(cache)) {
-      return false;
-    }
-    cache.clear();
+  public boolean deleteAll(Collection<String> keys) {
+    redisTemplate.delete(keys);
     return true;
+  }
+
+  @Override
+  public void cleanUp() {}
+
+  @Override
+  public void afterDestroy() {
+    // 只有当我们自己 new 了工厂时，才需要手动销毁
+    // 如果是复用的 defaultFactory，Spring 容器会自动管理它的生命周期
+    if (this.redisTemplate.getConnectionFactory() instanceof LettuceConnectionFactory) {
+      LettuceConnectionFactory factory =
+          (LettuceConnectionFactory) this.redisTemplate.getConnectionFactory();
+      if (factory != defaultFactory) { // 关键判断：不是默认的才销毁
+        factory.destroy();
+        log.info("私有 RedisConnectionFactory [{}] 已销毁", name);
+      }
+    }
   }
 }

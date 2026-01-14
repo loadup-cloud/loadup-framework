@@ -25,7 +25,7 @@ package com.github.loadup.components.cache.test.redis;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.cache.test.common.BaseRedisCacheTest;
+import com.github.loadup.components.cache.test.common.BaseCacheTest;
 import com.github.loadup.components.cache.test.common.model.User;
 import java.util.*;
 import java.util.concurrent.*;
@@ -54,7 +54,7 @@ import org.springframework.test.context.*;
       "loadup.cache.cache-configs.no-random.cache-null-values=false"
     })
 @DisplayName("Redis 缓存防雪崩测试")
-public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
+public class RedisAntiAvalancheIT extends BaseCacheTest {
 
   @Test
   @DisplayName("测试随机过期时间防止缓存雪崩")
@@ -77,7 +77,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
               try {
                 String key = "avalanche:user:" + index;
                 User user = User.createTestUser(String.valueOf(index));
-                cacheBinding.set(cacheName, key, user);
+                caffeineBinding.set(key, user);
                 setupLatch.countDown();
               } catch (Exception e) {
                 log.error("Error setting key", e);
@@ -100,7 +100,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
                     .atMost(10, TimeUnit.SECONDS)
                     .until(
                         () -> {
-                          User u = cacheBinding.get(cacheName, key, User.class);
+                          User u = caffeineBinding.get(key, User.class);
                           return u == null;
                         });
 
@@ -148,7 +148,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
 
     } finally {
       executor.shutdown();
-      cacheBinding.deleteAll(cacheName);
+//      cacheBinding.deleteAll();
     }
   }
 
@@ -161,7 +161,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
 
     try {
       // When - Try to get a non-existent key multiple times
-      User user1 = cacheBinding.get(cacheName, nonExistentKey, User.class);
+      User user1 = caffeineBinding.get(nonExistentKey, User.class);
 
       // Then - Non-existent key should return null
       assertNull(user1, "Non-existent key should return null");
@@ -172,7 +172,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
       // placeholder object instead of null to prevent cache penetration
       log.info("Null value test - Non-existent key correctly returns null");
     } finally {
-      cacheBinding.deleteAll(cacheName);
+//      cacheBinding.deleteAll(cacheName);
     }
   }
 
@@ -189,7 +189,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
       for (int i = 0; i < batchSize; i++) {
         String key = "batch:user:" + i;
         User user = User.createTestUser(String.valueOf(i));
-        cacheBinding.set(cacheName, key, user);
+        caffeineBinding.set(key, user);
       }
 
       // Wait for minimum TTL to pass (5s + buffer)
@@ -199,7 +199,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
       int expired = 0;
       for (int i = 0; i < batchSize; i++) {
         String key = "batch:user:" + i;
-        User user = cacheBinding.get(cacheName, key, User.class);
+        User user = caffeineBinding.get(key, User.class);
         if (user != null) {
           stillCached++;
         } else {
@@ -217,7 +217,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
               () -> {
                 int expiredCount = 0;
                 for (int i = 0; i < batchSize; i++) {
-                  User u = cacheBinding.get(cacheName, "batch:user:" + i, User.class);
+                  User u = caffeineBinding.get("batch:user:" + i, User.class);
                   if (u == null) {
                     expiredCount++;
                   }
@@ -229,7 +229,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
       int finalExpired = 0;
       for (int i = 0; i < batchSize; i++) {
         String key = "batch:user:" + i;
-        User user = cacheBinding.get(cacheName, key, User.class);
+        User user = caffeineBinding.get(key, User.class);
         if (user == null) {
           finalExpired++;
         }
@@ -238,7 +238,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
       log.info("Final status - Expired: {}/{}", finalExpired, batchSize);
       assertTrue(finalExpired > 0, "At least some entries should be expired");
     } finally {
-      cacheBinding.deleteAll(cacheName);
+//      cacheBinding.deleteAll(cacheName);
     }
   }
 
@@ -256,8 +256,8 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
       for (int i = 0; i < keyCount; i++) {
         String key = "user:" + i;
         User user = User.createTestUser(String.valueOf(i));
-        cacheBinding.set(cacheWithRandom, key, user);
-        cacheBinding.set(cacheNoRandom, key, user);
+        caffeineBinding.set(key, user);
+        caffeineBinding.set(key, user);
       }
 
       // Monitor expiration
@@ -279,7 +279,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
                     .atMost(10, TimeUnit.SECONDS)
                     .until(
                         () -> {
-                          User u = cacheBinding.get(cacheWithRandom, key, User.class);
+                          User u = caffeineBinding.get(key, User.class);
                           return u == null;
                         });
                 withRandomExpTimes.add(System.currentTimeMillis() - startTime);
@@ -297,7 +297,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
                     .atMost(10, TimeUnit.SECONDS)
                     .until(
                         () -> {
-                          User u = cacheBinding.get(cacheNoRandom, key, User.class);
+                          User u = caffeineBinding.get(key, User.class);
                           return u == null;
                         });
                 noRandomExpTimes.add(System.currentTimeMillis() - startTime);
@@ -336,8 +336,8 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
 
       executor.shutdown();
     } finally {
-      cacheBinding.deleteAll(cacheWithRandom);
-      cacheBinding.deleteAll(cacheNoRandom);
+//      cacheBinding.deleteAll(cacheWithRandom);
+//      cacheBinding.deleteAll(cacheNoRandom);
     }
   }
 
@@ -356,14 +356,14 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
 
     try {
       // When - Set hot key
-      cacheBinding.set(cacheName, hotKey, hotUser);
+      caffeineBinding.set(hotKey, hotUser);
 
       // Simulate high concurrent access to hot key
       for (int i = 0; i < concurrentRequests; i++) {
         executor.submit(
             () -> {
               try {
-                User user = cacheBinding.get(cacheName, hotKey, User.class);
+                User user = caffeineBinding.get(hotKey, User.class);
                 assertNotNull(user, "Hot key should be accessible");
               } finally {
                 latch.countDown();
@@ -377,14 +377,14 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
       assertTrue(completed, "All concurrent requests should complete successfully");
 
       // Verify data is still intact after high concurrent access
-      User finalUser = cacheBinding.get(cacheName, hotKey, User.class);
+      User finalUser = caffeineBinding.get(hotKey, User.class);
       assertNotNull(finalUser, "Hot key should still be cached");
       assertEquals("Hot Product", finalUser.getName(), "Data should be intact");
 
       log.info("Hot key handled {} concurrent requests successfully", concurrentRequests);
     } finally {
       executor.shutdown();
-      cacheBinding.deleteAll(cacheName);
+//      cacheBinding.deleteAll(cacheName);
     }
   }
 
@@ -401,7 +401,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
       for (int i = 0; i < massiveKeyCount; i++) {
         String key = "massive:user:" + i;
         User user = User.createTestUser(String.valueOf(i));
-        cacheBinding.set(cacheName, key, user);
+        caffeineBinding.set(key, user);
       }
 
       long setupTime = System.currentTimeMillis() - setupStartTime;
@@ -410,7 +410,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
       // Verify keys were actually set before testing expiration
       int initialCached = 0;
       for (int i = 0; i < massiveKeyCount; i++) {
-        User user = cacheBinding.get(cacheName, "massive:user:" + i, User.class);
+        User user = caffeineBinding.get("massive:user:" + i, User.class);
         if (user != null) {
           initialCached++;
         }
@@ -442,7 +442,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
         int currentCached = 0;
         for (int i = 0; i < massiveKeyCount; i++) {
           try {
-            User user = cacheBinding.get(cacheName, "massive:user:" + i, User.class);
+            User user = caffeineBinding.get("massive:user:" + i, User.class);
             if (user == null) {
               expired++;
             } else {
@@ -485,7 +485,7 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
           initialCached);
 
     } finally {
-      cacheBinding.deleteAll(cacheName);
+//      cacheBinding.deleteAll(cacheName);
     }
   }
 }

@@ -26,21 +26,24 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.github.loadup.components.cache.test.common.BaseCacheTest;
+import com.github.loadup.components.cache.test.common.FakeTicker;
 import com.github.loadup.components.cache.test.common.model.User;
+
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
 /** Caffeine Cache Expiration Strategy Test */
-@TestPropertySource(
-    properties = {
-      "loadup.cache.binder=caffeine",
-      "spring.cache.caffeine.spec=maximumSize=50,expireAfterWrite=2s"
-    })
+@Slf4j
+@TestPropertySource(properties = {"loadup.cache.binders.caffeine.expireAfterWrite=2s"})
 @DisplayName("Caffeine 缓存过期策略测试")
 public class CaffeineExpirationTest extends BaseCacheTest {
-
+  // 假设测试配置中覆盖了 defaultCacheTicker
   @Test
   @DisplayName("测试写入后过期 (expire-after-write)")
   void testExpireAfterWrite() {
@@ -49,23 +52,26 @@ public class CaffeineExpirationTest extends BaseCacheTest {
     User user = User.createTestUser("1");
 
     // When
-    cacheBinding.set(TEST_CACHE_NAME, key, user);
-    User cachedUser1 = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+    caffeineBinding.set(key, user);
+    User cachedUser1 = caffeineBinding.get(key, User.class);
 
+    // When: 模拟时间前进 3 秒（超过 2 秒过期线）
+    fakeTicker.advance(3, TimeUnit.SECONDS);
     // Wait for expiration (2 seconds + buffer for CI environments)
     await()
-        .atMost(4, TimeUnit.SECONDS)
+        .atMost(1, TimeUnit.SECONDS)
         .pollInterval(200, TimeUnit.MILLISECONDS)
         .until(
             () -> {
-              User u = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
-              return u == null;
+              caffeineBinding.cleanUp();
+              User u = caffeineBinding.get(key, User.class);
+              return Objects.isNull(u);
             });
 
-    User cachedUser2 = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+    User cachedUser2 = caffeineBinding.get(key, User.class);
+      assertNotNull(cachedUser1, "Should be cached initially");
 
     // Then
-    assertNotNull(cachedUser1, "Should be cached initially");
     assertNull(cachedUser2, "Should be expired after write timeout");
   }
 
@@ -75,12 +81,12 @@ public class CaffeineExpirationTest extends BaseCacheTest {
     // Given
     String key = "expire:access:1";
     User user = User.createTestUser("1");
-    cacheBinding.set(TEST_CACHE_NAME, key, user);
+    caffeineBinding.set(key, user);
 
     // When - Keep accessing within expiration window
     for (int i = 0; i < 3; i++) {
       sleep(500); // Sleep 0.5 seconds
-      User cachedUser = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+      User cachedUser = caffeineBinding.get(key, User.class);
       assertNotNull(cachedUser, "Should still be cached due to access");
     }
 
@@ -90,11 +96,11 @@ public class CaffeineExpirationTest extends BaseCacheTest {
         .pollInterval(200, TimeUnit.MILLISECONDS)
         .until(
             () -> {
-              User u = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+              User u = caffeineBinding.get(key, User.class);
               return u == null;
             });
 
-    User finalCachedUser = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+    User finalCachedUser = caffeineBinding.get(key, User.class);
     assertNull(finalCachedUser, "Should be expired after access timeout");
   }
 
@@ -106,7 +112,7 @@ public class CaffeineExpirationTest extends BaseCacheTest {
 
     // When - Cache more items than maximum size
     for (int i = 0; i < itemsToCache; i++) {
-      cacheBinding.set(TEST_CACHE_NAME, "user:" + i, User.createTestUser(String.valueOf(i)));
+      caffeineBinding.set("user:" + i, User.createTestUser(String.valueOf(i)));
     }
 
     // Give Caffeine time to perform asynchronous eviction
@@ -115,7 +121,7 @@ public class CaffeineExpirationTest extends BaseCacheTest {
     // Then - Count how many items are still cached
     int cachedCount = 0;
     for (int i = 0; i < itemsToCache; i++) {
-      User user = cacheBinding.get(TEST_CACHE_NAME, "user:" + i, User.class);
+      User user = caffeineBinding.get("user:" + i, User.class);
       if (user != null) {
         cachedCount++;
       }
@@ -138,14 +144,14 @@ public class CaffeineExpirationTest extends BaseCacheTest {
     user1.setName("Original");
 
     // When
-    cacheBinding.set(TEST_CACHE_NAME, key, user1);
-    User cachedUser1 = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+    caffeineBinding.set(key, user1);
+    User cachedUser1 = caffeineBinding.get(key, User.class);
 
     // Update cache
     User user2 = User.createTestUser("1");
     user2.setName("Updated");
-    cacheBinding.set(TEST_CACHE_NAME, key, user2);
-    User cachedUser2 = cacheBinding.get(TEST_CACHE_NAME, key, User.class);
+    caffeineBinding.set(key, user2);
+    User cachedUser2 = caffeineBinding.get(key, User.class);
 
     // Then
     assertEquals("Original", cachedUser1.getName());
