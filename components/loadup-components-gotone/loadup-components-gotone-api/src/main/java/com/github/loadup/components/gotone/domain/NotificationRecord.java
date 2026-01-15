@@ -23,11 +23,10 @@ package com.github.loadup.components.gotone.domain;
  */
 
 import com.github.loadup.commons.domain.BaseDomain;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 通知记录领域对象

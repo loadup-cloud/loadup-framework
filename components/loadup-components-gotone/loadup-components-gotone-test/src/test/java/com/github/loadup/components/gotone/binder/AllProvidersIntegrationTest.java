@@ -22,6 +22,9 @@ package com.github.loadup.components.gotone.binder;
  * #L%
  */
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
 import com.github.loadup.components.gotone.api.INotificationProvider;
 import com.github.loadup.components.gotone.binder.email.SmtpEmailProvider;
 import com.github.loadup.components.gotone.binder.push.FcmPushProvider;
@@ -31,6 +34,9 @@ import com.github.loadup.components.gotone.model.NotificationRequest;
 import com.github.loadup.components.gotone.model.NotificationResponse;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -38,13 +44,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 /**
  * 所有 Provider 的集成测试

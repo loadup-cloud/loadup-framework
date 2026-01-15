@@ -25,7 +25,6 @@ package com.github.loadup.components.cache.binding;
 import com.github.loadup.components.cache.binder.CacheBinder;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.framework.api.binding.Binding;
-
 import java.util.Collection;
 
 /**

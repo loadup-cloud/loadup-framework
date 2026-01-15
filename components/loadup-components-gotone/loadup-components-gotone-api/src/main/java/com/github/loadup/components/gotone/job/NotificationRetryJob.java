@@ -26,13 +26,12 @@ import com.github.loadup.components.gotone.converter.GotoneConverter;
 import com.github.loadup.components.gotone.dataobject.NotificationRecordDO;
 import com.github.loadup.components.gotone.domain.NotificationRecord;
 import com.github.loadup.components.gotone.repository.NotificationRecordRepository;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * 通知重试任务（使用 Spring Scheduling）

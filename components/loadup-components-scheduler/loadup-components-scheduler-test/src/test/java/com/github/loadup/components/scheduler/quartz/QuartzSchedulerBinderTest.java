@@ -22,20 +22,19 @@ package com.github.loadup.components.scheduler.quartz;
  * #L%
  */
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+
 import com.github.loadup.components.scheduler.model.SchedulerTask;
 import com.github.loadup.components.scheduler.quartz.binder.QuartzSchedulerBinder;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.*;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 
 /**
  * Integration tests for QuartzSchedulerBinder.

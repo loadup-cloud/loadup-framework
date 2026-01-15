@@ -22,20 +22,19 @@ package com.github.loadup.components.gotone.binder.sms;
  * #L%
  */
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.github.loadup.components.gotone.api.INotificationProvider;
 import com.github.loadup.components.gotone.enums.NotificationChannel;
 import com.github.loadup.components.gotone.model.NotificationRequest;
 import com.github.loadup.components.gotone.model.NotificationResponse;
+import java.util.Arrays;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.Arrays;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * SMS Provider 集成测试

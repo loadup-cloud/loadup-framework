@@ -23,6 +23,7 @@ package com.github.loadup.components.cache.test.redis;
  */
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.loadup.components.cache.test.common.model.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,8 +33,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.*;
 
-import com.github.loadup.components.cache.test.redis.BaseRedisCacheTest;
-import com.github.loadup.components.cache.test.common.model.*;
 /** Redis Cache Basic Operations Test */
 @TestPropertySource(properties = {"loadup.cache.binder=redis", })
 @DisplayName("Redis 缓存基础操作测试")

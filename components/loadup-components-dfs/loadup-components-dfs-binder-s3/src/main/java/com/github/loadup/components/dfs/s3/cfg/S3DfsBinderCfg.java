@@ -1,7 +1,6 @@
 package com.github.loadup.components.dfs.s3.cfg;
 
 import com.github.loadup.components.dfs.cfg.DfsBinderCfg;
-import com.github.loadup.framework.api.cfg.BaseBinderCfg;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

@@ -22,18 +22,17 @@ package com.github.loadup.components.gotone.binder.push;
  * #L%
  */
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.github.loadup.components.gotone.enums.NotificationChannel;
 import com.github.loadup.components.gotone.enums.NotificationStatus;
 import com.github.loadup.components.gotone.model.NotificationRequest;
 import com.github.loadup.components.gotone.model.NotificationResponse;
+import java.util.Arrays;
+import java.util.HashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.Arrays;
-import java.util.HashMap;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * FcmPushProvider 测试类

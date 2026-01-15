@@ -22,10 +22,9 @@ package com.github.loadup.components.scheduler.model;
  * #L%
  */
 
-import lombok.*;
-
 import java.lang.reflect.Method;
 import java.util.Map;
+import lombok.*;
 
 /**
  * Scheduler task model representing a scheduled task configuration.

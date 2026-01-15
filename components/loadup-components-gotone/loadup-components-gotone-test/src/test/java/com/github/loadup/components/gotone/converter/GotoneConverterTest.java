@@ -22,18 +22,17 @@ package com.github.loadup.components.gotone.converter;
  * #L%
  */
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.github.loadup.components.gotone.dataobject.ChannelMappingDO;
 import com.github.loadup.components.gotone.dataobject.NotificationRecordDO;
 import com.github.loadup.components.gotone.domain.ChannelMapping;
 import com.github.loadup.components.gotone.domain.NotificationRecord;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * GotoneConverter 测试类

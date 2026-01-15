@@ -1,7 +1,6 @@
 package com.github.loadup.components.cache.test.common;
 
 import com.github.loadup.components.cache.binder.CacheTicker;
-
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 

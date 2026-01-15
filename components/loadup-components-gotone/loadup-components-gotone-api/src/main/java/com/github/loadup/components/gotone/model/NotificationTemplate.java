@@ -22,9 +22,8 @@ package com.github.loadup.components.gotone.model;
  * #L%
  */
 
-import lombok.Data;
-
 import java.util.Map;
+import lombok.Data;
 
 /**
  * 通知模板

@@ -25,14 +25,13 @@ package com.github.loadup.components.gotone.service;
 import com.github.loadup.components.gotone.api.GotoneNotificationService;
 import com.github.loadup.components.gotone.model.NotificationRequest;
 import jakarta.annotation.PostConstruct;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * 通知队列消费者

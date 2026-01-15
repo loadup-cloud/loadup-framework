@@ -22,13 +22,12 @@ package com.github.loadup.components.scheduler.model;
  * #L%
  */
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for SchedulerTask model.

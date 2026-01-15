@@ -25,6 +25,10 @@ package com.github.loadup.components.scheduler.core;
 import com.github.loadup.components.scheduler.annotation.DistributedScheduler;
 import com.github.loadup.components.scheduler.api.SchedulerBinding;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +36,6 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.annotation.AnnotationUtils;
-
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Registry for managing scheduled tasks.

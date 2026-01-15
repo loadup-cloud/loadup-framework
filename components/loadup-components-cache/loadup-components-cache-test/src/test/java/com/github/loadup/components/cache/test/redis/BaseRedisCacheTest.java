@@ -24,7 +24,6 @@ package com.github.loadup.components.cache.test.redis;
 
 import com.github.loadup.components.cache.binding.CacheBinding;
 import com.github.loadup.components.cache.test.TestApplication;
-import com.github.loadup.components.cache.test.common.FakeTicker;
 import com.github.loadup.components.testcontainers.cache.AbstractRedisContainerTest;
 import com.github.loadup.framework.api.annotation.BindingClient;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +31,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 /** Base test class for cache tests */
 @Slf4j

@@ -22,10 +22,15 @@ package com.github.loadup.components.scheduler.integration;
  * #L%
  */
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+
 import com.github.loadup.components.scheduler.annotation.DistributedScheduler;
 import com.github.loadup.components.scheduler.api.SchedulerBinding;
 import com.github.loadup.components.scheduler.core.SchedulerTaskRegistry;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -35,12 +40,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.context.TestPropertySource;
-
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 
 /**
  * Integration test for SimpleJob scheduler.

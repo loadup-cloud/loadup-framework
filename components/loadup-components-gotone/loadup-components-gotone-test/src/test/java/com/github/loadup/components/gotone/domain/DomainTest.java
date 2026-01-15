@@ -22,12 +22,11 @@ package com.github.loadup.components.gotone.domain;
  * #L%
  */
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 /**
  * Domain 对象测试

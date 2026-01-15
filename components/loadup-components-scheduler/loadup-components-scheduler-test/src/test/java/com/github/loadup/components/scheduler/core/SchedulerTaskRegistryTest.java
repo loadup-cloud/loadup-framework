@@ -22,9 +22,15 @@ package com.github.loadup.components.scheduler.core;
  * #L%
  */
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import com.github.loadup.components.scheduler.annotation.DistributedScheduler;
 import com.github.loadup.components.scheduler.api.SchedulerBinding;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
+import java.util.Collection;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,13 +38,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.BeansException;
-
-import java.util.Collection;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for SchedulerTaskRegistry.

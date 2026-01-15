@@ -23,6 +23,7 @@ package com.github.loadup.components.gotone.dataobject;
  */
 
 import com.github.loadup.commons.dataobject.BaseDO;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -30,8 +31,6 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
-
-import java.time.LocalDateTime;
 
 /**
  * 通知记录数据对象

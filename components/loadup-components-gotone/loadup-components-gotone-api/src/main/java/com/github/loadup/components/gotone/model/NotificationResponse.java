@@ -23,11 +23,10 @@ package com.github.loadup.components.gotone.model;
  */
 
 import com.github.loadup.components.gotone.enums.NotificationStatus;
-import lombok.Builder;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import lombok.Builder;
+import lombok.Data;
 
 /**
  * 通知响应

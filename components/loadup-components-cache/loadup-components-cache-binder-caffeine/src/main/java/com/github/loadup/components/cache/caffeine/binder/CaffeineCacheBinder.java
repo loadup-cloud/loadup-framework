@@ -31,14 +31,11 @@ import com.github.loadup.components.cache.caffeine.cfg.CaffeineCacheBinderCfg;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.components.cache.model.CacheValueWrapper;
 import com.github.loadup.framework.api.manager.ConfigurationResolver;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.Assert;
-
 import java.time.Duration;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.Assert;
 
 @Slf4j
 public class CaffeineCacheBinder

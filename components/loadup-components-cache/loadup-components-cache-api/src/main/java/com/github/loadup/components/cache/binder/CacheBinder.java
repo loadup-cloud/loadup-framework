@@ -27,7 +27,6 @@ import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.components.cache.model.CacheValueWrapper;
 import com.github.loadup.components.cache.serializer.CacheSerializer;
 import com.github.loadup.framework.api.binder.Binder;
-
 import java.util.Collection;
 
 public interface CacheBinder<C extends CacheBinderCfg, S extends CacheBindingCfg>

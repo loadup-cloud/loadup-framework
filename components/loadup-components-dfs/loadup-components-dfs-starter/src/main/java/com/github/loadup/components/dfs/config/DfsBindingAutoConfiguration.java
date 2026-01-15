@@ -10,7 +10,6 @@ import com.github.loadup.components.dfs.manager.DfsBindingManager;
 import com.github.loadup.components.dfs.properties.DfsGroupProperties;
 import com.github.loadup.components.dfs.s3.binder.S3DfsBinder;
 import com.github.loadup.components.dfs.s3.cfg.S3DfsBinderCfg;
-import com.github.loadup.framework.api.cfg.BaseBindingCfg;
 import com.github.loadup.framework.api.core.BindingPostProcessor;
 import com.github.loadup.framework.api.manager.BindingMetadata;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -20,7 +19,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 @AutoConfiguration
 @EnableConfigurationProperties(DfsGroupProperties.class)

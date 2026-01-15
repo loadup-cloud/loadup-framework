@@ -23,12 +23,11 @@ package com.github.loadup.components.gotone.model;
  */
 
 import com.github.loadup.components.gotone.enums.NotificationChannel;
-import lombok.Builder;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import lombok.Builder;
+import lombok.Data;
 
 /**
  * 通知请求

@@ -5,9 +5,6 @@ import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.cache.model.CacheValueWrapper;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-
 /**
  * @author lise
  * @version JsonCacheSerializer.java, v 0.1 2026年01月13日 18:01 lise

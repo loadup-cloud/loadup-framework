@@ -24,7 +24,6 @@ package com.github.loadup.components.dfs.test.local;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.dfs.binder.AbstractDfsBinder;
 import com.github.loadup.components.dfs.binding.DfsBinding;
 import com.github.loadup.components.dfs.manager.DfsBindingManager;
 import com.github.loadup.components.dfs.model.*;

@@ -23,10 +23,9 @@ package com.github.loadup.components.gotone.domain;
  */
 
 import com.github.loadup.commons.domain.BaseDomain;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 /**
  * 渠道映射领域对象

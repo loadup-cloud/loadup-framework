@@ -24,7 +24,6 @@ package com.github.loadup.components.cache.test.redis;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.cache.test.redis.BaseRedisCacheTest;
 import com.github.loadup.components.cache.test.common.model.User;
 import java.util.*;
 import java.util.concurrent.*;

@@ -22,14 +22,13 @@ package com.github.loadup.components.gotone.model;
  * #L%
  */
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.github.loadup.components.gotone.enums.NotificationChannel;
 import com.github.loadup.components.gotone.enums.NotificationStatus;
-import org.junit.jupiter.api.Test;
-
 import java.time.LocalDateTime;
 import java.util.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 /**
  * Model 类测试

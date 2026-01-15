@@ -23,12 +23,9 @@ package com.github.loadup.components.cache.caffeine.cfg;
  */
 
 import com.github.loadup.components.cache.cfg.CacheBinderCfg;
-import com.github.loadup.framework.api.cfg.BaseBinderCfg;
+import java.time.Duration;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.checkerframework.checker.index.qual.NonNegative;
-
-import java.time.Duration;
 
 /**
  * Caffeine Binder Configuration

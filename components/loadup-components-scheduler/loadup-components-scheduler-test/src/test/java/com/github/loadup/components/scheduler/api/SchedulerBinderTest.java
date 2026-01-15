@@ -22,10 +22,10 @@ package com.github.loadup.components.scheduler.api;
  * #L%
  */
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.github.loadup.components.scheduler.model.SchedulerTask;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for SchedulerBinder interface default methods.

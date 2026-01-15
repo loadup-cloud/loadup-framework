@@ -1,8 +1,6 @@
 package com.github.loadup.components.cache.cfg;
 
-import com.github.loadup.components.cache.constants.CacheConstants;
 import com.github.loadup.framework.api.cfg.BaseBindingCfg;
-
 import java.time.Duration;
 
 /**

@@ -25,7 +25,6 @@ package com.github.loadup.components.cache.test.redis;
 import static com.github.loadup.components.testcontainers.cache.SharedRedisContainer.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.cache.redis.cfg.RedisCacheBinderCfg;
 import com.github.loadup.components.testcontainers.cache.SharedRedisContainer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -36,9 +35,6 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.*;
-
-import com.github.loadup.components.cache.test.redis.BaseRedisCacheTest;
-import com.github.loadup.components.cache.test.common.model.User;
 
 /**
  * Test Redis database configuration

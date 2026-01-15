@@ -3,14 +3,8 @@ package com.github.loadup.components.cache.starter.manager;
 import com.github.loadup.components.cache.binder.CacheBinder;
 import com.github.loadup.components.cache.binding.CacheBinding;
 import com.github.loadup.components.cache.starter.properties.CacheGroupProperties;
-import com.github.loadup.framework.api.binder.Binder;
-import com.github.loadup.framework.api.binding.Binding;
-import com.github.loadup.framework.api.cfg.BaseBinderCfg;
-import com.github.loadup.framework.api.cfg.BaseBindingCfg;
 import com.github.loadup.framework.api.manager.BindingManagerSupport;
 import org.springframework.context.ApplicationContext;
-
-import java.util.List;
 
 /** Cache 绑定管理器 继承通用内核，指定驱动类型为 CacheBinder，业务接口为 Binding */
 public class CacheBindingManager extends BindingManagerSupport<CacheBinder, CacheBinding> {

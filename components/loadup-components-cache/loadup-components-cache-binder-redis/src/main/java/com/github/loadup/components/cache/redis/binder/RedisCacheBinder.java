@@ -22,18 +22,14 @@ package com.github.loadup.components.cache.redis.binder;
  * #L%
  */
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.loadup.components.cache.binder.AbstractCacheBinder;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.components.cache.model.CacheValueWrapper;
 import com.github.loadup.components.cache.redis.cfg.RedisCacheBinderCfg;
 import com.github.loadup.framework.api.manager.ConfigurationResolver;
-
 import java.time.Duration;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;

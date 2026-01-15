@@ -22,14 +22,11 @@ package com.github.loadup.components.cache.test.caffeine;
  * #L%
  */
 
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.github.loadup.components.cache.test.common.BaseCacheTest;
 import com.github.loadup.components.cache.test.common.model.User;
-
 import java.util.concurrent.TimeUnit;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

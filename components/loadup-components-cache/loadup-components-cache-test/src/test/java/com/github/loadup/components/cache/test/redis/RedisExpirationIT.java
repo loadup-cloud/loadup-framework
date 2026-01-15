@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.github.loadup.components.cache.binding.CacheBinding;
 import com.github.loadup.components.cache.starter.manager.CacheBindingManager;
-import com.github.loadup.components.cache.test.redis.BaseRedisCacheTest;
 import com.github.loadup.components.cache.test.common.model.User;
 import java.util.*;
 import java.util.concurrent.*;

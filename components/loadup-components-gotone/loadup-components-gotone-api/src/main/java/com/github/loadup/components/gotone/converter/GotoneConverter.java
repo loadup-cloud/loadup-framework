@@ -29,11 +29,10 @@ import com.github.loadup.components.gotone.dataobject.ChannelMappingDO;
 import com.github.loadup.components.gotone.dataobject.NotificationRecordDO;
 import com.github.loadup.components.gotone.domain.ChannelMapping;
 import com.github.loadup.components.gotone.domain.NotificationRecord;
-import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.mapstruct.*;
+import org.mapstruct.factory.Mappers;
 
 /**
  * Gotone 对象转换器

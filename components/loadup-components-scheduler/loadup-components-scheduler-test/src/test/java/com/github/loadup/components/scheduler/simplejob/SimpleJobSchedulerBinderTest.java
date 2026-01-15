@@ -22,16 +22,15 @@ package com.github.loadup.components.scheduler.simplejob;
  * #L%
  */
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+
 import com.github.loadup.components.scheduler.model.SchedulerTask;
+import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.*;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-
-import java.lang.reflect.Method;
-import java.util.concurrent.TimeUnit;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 
 /**
  * Unit tests for SimpleJobSchedulerBinder.

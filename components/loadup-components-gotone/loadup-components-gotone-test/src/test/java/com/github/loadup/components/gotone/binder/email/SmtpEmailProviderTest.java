@@ -22,24 +22,23 @@ package com.github.loadup.components.gotone.binder.email;
  * #L%
  */
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import com.github.loadup.components.gotone.enums.NotificationChannel;
 import com.github.loadup.components.gotone.enums.NotificationStatus;
 import com.github.loadup.components.gotone.model.NotificationRequest;
 import com.github.loadup.components.gotone.model.NotificationResponse;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 /**
  * SmtpEmailProvider 测试类

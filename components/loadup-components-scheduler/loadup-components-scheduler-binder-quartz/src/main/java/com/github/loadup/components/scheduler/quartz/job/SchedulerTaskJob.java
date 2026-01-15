@@ -23,10 +23,9 @@ package com.github.loadup.components.scheduler.quartz.job;
  */
 
 import com.github.loadup.components.scheduler.model.SchedulerTask;
+import java.lang.reflect.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
-
-import java.lang.reflect.Method;
 
 /**
  * Quartz job that executes a SchedulerTask.

@@ -22,18 +22,13 @@ package com.github.loadup.components.cache.binder;
  * #L%
  */
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.commons.util.StringUtils;
 import com.github.loadup.components.cache.cfg.CacheBinderCfg;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
 import com.github.loadup.components.cache.model.CacheValueWrapper;
 import com.github.loadup.components.cache.serializer.CacheSerializer;
 import com.github.loadup.framework.api.binder.AbstractBinder;
-import com.github.loadup.framework.api.binder.Binder;
 import com.github.loadup.framework.api.manager.ConfigurationResolver;
-
-import java.util.Optional;
 
 public abstract class AbstractCacheBinder<C extends CacheBinderCfg, S extends CacheBindingCfg>
     extends AbstractBinder<C, S> implements CacheBinder<C, S> {

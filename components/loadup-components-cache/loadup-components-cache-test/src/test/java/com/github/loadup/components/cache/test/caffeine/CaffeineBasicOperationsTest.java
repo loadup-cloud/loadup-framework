@@ -27,11 +27,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.github.loadup.components.cache.test.common.BaseCacheTest;
 import com.github.loadup.components.cache.test.common.model.Product;
 import com.github.loadup.components.cache.test.common.model.User;
+import java.util.Arrays;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
-
-import java.util.Arrays;
 
 /** Caffeine Cache Basic Operations Test */
 @TestPropertySource(

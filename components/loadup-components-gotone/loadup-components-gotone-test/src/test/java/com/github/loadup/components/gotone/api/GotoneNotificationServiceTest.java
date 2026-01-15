@@ -22,11 +22,10 @@ package com.github.loadup.components.gotone.api;
  * #L%
  */
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 /**
  * GotoneNotificationService 接口测试

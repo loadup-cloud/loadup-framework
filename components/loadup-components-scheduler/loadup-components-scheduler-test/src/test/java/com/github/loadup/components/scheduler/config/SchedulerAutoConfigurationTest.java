@@ -22,6 +22,10 @@ package com.github.loadup.components.scheduler.config;
  * #L%
  */
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.github.loadup.components.scheduler.api.SchedulerBinder;
 import com.github.loadup.components.scheduler.api.SchedulerBinding;
 import com.github.loadup.components.scheduler.core.SchedulerTaskRegistry;
@@ -30,10 +34,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for SchedulerAutoConfiguration.
