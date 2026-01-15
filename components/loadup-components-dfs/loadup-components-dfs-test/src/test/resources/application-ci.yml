@@ -1,50 +1,62 @@
-# CI Test Configuration for DFS with Testcontainers MySQL
 spring:
   application:
-    name: dfs-test-ci
+    name: dfs-test
 
   # Testcontainers MySQL - 自动配置
   # 不需要手动配置datasource，Testcontainers会自动配置
-  datasource:
-    hikari:
-      maximum-pool-size: 5
-      minimum-idle: 2
-      connection-timeout: 30000
-      idle-timeout: 600000
-      max-lifetime: 1800000
-
-  # Spring Data JPA configuration
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: false
+  # H2 as fallback for tests that don't use Testcontainers
+  #  datasource:
+  #    # Testcontainers会覆盖这些配置
+  #    hikari:
+  #      maximum-pool-size: 10
+  #      minimum-idle: 2
+  #      connection-timeout: 30000
+  #      idle-timeout: 600000
+  #      max-lifetime: 1800000
 
   # Enable auto-configuration
   autoconfigure:
     exclude: [ ]
+  datasource:
+    url: jdbc:mysql://localhost:3306/testdb
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: sroot
+    password: 123456
 
-# DFS Configuration
+# LoadUp Database Configuration
 loadup:
+  # DFS Configuration
+  testcontainers:
+    enabled: true
   dfs:
-    default-provider: local
-    max-file-size: 10485760  # 10MB for tests
-    providers:
+    default-binder: local
+    enabled-binders: [ local, s3,database ] # 可选
+    bindings: # 可选
+      user-avatar:
+        binder-type: local
+      order-pdf:
+        binder-type: s3
+      db-files:
+        binder-type: database
+    binders:
       local:
-        enabled: true
-        base-path: ${java.io.tmpdir}/dfs-test
+        # 强类型配置，支持代码提示
+        base-path: /tmp/storage
+      s3: # 强类型配置，支持代码提示
+        access-key: ak
+        secret-key: sk
+        region: us-east-1
+        bucket: my-bucket
+        endpoint: http://localhost:4566
       database:
-        enabled: true
-      s3:
-        enabled: false
+        table-name: dfs_files
 
-# Logging (CI environment - more verbose)
+# Logging
 logging:
   level:
-    com.github.loadup.components.dfs: INFO
-    org.springframework.test: WARN
-    org.springframework.jdbc: WARN
+    com.github.loadup.components.dfs: DEBUG
+    com.github.loadup.components.database: DEBUG
+    com.mybatisflex: DEBUG
+    org.springframework.test: INFO
+    org.springframework.jdbc: DEBUG
 
