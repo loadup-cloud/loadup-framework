@@ -66,6 +66,7 @@ jobs:
         run: |
           mvn clean test -B -P github,aliyun \
             -DskipITs=true \
+            -Dspring.profiles.active=ci \
             -Dlogging.level.root=warn
         env:
           GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}

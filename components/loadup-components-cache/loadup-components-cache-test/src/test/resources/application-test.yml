@@ -35,7 +35,7 @@ loadup:
 
 
   testcontainers:
-    enabled: false
+    enabled: true
 logging:
   level:
     com.github.loadup.components.cache: DEBUG

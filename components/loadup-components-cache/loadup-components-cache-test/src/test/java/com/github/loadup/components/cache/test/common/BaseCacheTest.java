@@ -37,7 +37,6 @@ import org.springframework.test.context.ActiveProfiles;
 /** Base test class for cache tests */
 @Slf4j
 @SpringBootTest(classes = TestApplication.class)
-@ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public abstract class BaseCacheTest {
   @BindingClient("caffeine-biz-type")
