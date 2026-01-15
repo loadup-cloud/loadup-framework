@@ -1,15 +1,14 @@
 package com.github.loadup.components.dfs.config;
 
+import com.github.loadup.components.dfs.binding.DefaultDfsBinding;
+import com.github.loadup.components.dfs.cfg.DfsBindingCfg;
 import com.github.loadup.components.dfs.database.binder.DatabaseDfsBinder;
-import com.github.loadup.components.dfs.database.binding.DatabaseDfsBinding;
 import com.github.loadup.components.dfs.database.cfg.DatabaseDfsBinderCfg;
 import com.github.loadup.components.dfs.local.binder.LocalDfsBinder;
-import com.github.loadup.components.dfs.local.binding.LocalDfsBinding;
 import com.github.loadup.components.dfs.local.cfg.LocalDfsBinderCfg;
 import com.github.loadup.components.dfs.manager.DfsBindingManager;
 import com.github.loadup.components.dfs.properties.DfsGroupProperties;
 import com.github.loadup.components.dfs.s3.binder.S3DfsBinder;
-import com.github.loadup.components.dfs.s3.binding.S3DfsBinding;
 import com.github.loadup.components.dfs.s3.cfg.S3DfsBinderCfg;
 import com.github.loadup.framework.api.cfg.BaseBindingCfg;
 import com.github.loadup.framework.api.core.BindingPostProcessor;
@@ -40,49 +39,42 @@ public class DfsBindingAutoConfiguration {
     return new BindingPostProcessor(context);
   }
 
-  /** S3 模块的自动注册逻辑 只有当 classpath 下存在 S3DfsBinding 类时（即引入了 binder-s3 依赖），这段逻辑才生效 */
-  @Configuration
-  @ConditionalOnClass(name = "com.github.loadup.components.dfs.s3.binding.S3DfsBinding")
-  static class S3BindingRegistry {
-    // Spring 会自动注入上面定义的 dfsBindingManager
-    public S3BindingRegistry(DfsBindingManager dfsBindingManager) {
-      dfsBindingManager.register(
-          "s3",
-          new BindingMetadata<>(
-              BaseBindingCfg.class,
-              S3DfsBinderCfg.class,
-              S3DfsBinder.class,
-              ctx -> new S3DfsBinding()));
-    }
+  /** Local 模块的自动注册逻辑 */
+  @Bean
+  @ConditionalOnClass(name = "com.github.loadup.components.dfs.local.binder.LocalDfsBinder")
+  public BindingMetadata<?, ?, ?, ?> localMetadata() {
+    return new BindingMetadata<>(
+        "local",
+        DefaultDfsBinding.class,
+        LocalDfsBinder.class,
+        DfsBindingCfg.class,
+        LocalDfsBinderCfg.class,
+        ctx -> new DefaultDfsBinding());
   }
 
-  /** Local 模块的自动注册逻辑 */
-  @Configuration
-  @ConditionalOnClass(name = "com.github.loadup.components.dfs.local.binding.LocalDfsBinding")
-  static class LocalBindingRegistry {
-    public LocalBindingRegistry(DfsBindingManager dfsBindingManager) {
-      dfsBindingManager.register(
-          "local",
-          new BindingMetadata<>(
-              BaseBindingCfg.class,
-              LocalDfsBinderCfg.class,
-              LocalDfsBinder.class,
-              ctx -> new LocalDfsBinding()));
-    }
+  /** S3 模块的自动注册逻辑 只有当 classpath 下存在 S3DfsBinding 类时（即引入了 binder-s3 依赖），这段逻辑才生效 */
+  @Bean
+  @ConditionalOnClass(name = "com.github.loadup.components.dfs.s3.binder.S3DfsBinder")
+  public BindingMetadata<?, ?, ?, ?> s3Metadata() {
+    return new BindingMetadata<>(
+        "s3",
+        DefaultDfsBinding.class,
+        S3DfsBinder.class,
+        DfsBindingCfg.class,
+        S3DfsBinderCfg.class,
+        ctx -> new DefaultDfsBinding());
   }
 
   /** Database 模块的自动注册逻辑 */
-  @Configuration
-  @ConditionalOnClass(name = "com.github.loadup.components.dfs.database.binding.DatabaseDfsBinding")
-  static class DatabaseBindingRegistry {
-    public DatabaseBindingRegistry(DfsBindingManager dfsBindingManager) {
-      dfsBindingManager.register(
-          "database",
-          new BindingMetadata<>(
-              BaseBindingCfg.class,
-              DatabaseDfsBinderCfg.class,
-              DatabaseDfsBinder.class,
-              ctx -> new DatabaseDfsBinding()));
-    }
+  @Bean
+  @ConditionalOnClass(name = "com.github.loadup.components.dfs.database.binder.DatabaseDfsBinder")
+  public BindingMetadata<?, ?, ?, ?> dbMetadata() {
+    return new BindingMetadata<>(
+        "database",
+        DefaultDfsBinding.class,
+        DatabaseDfsBinder.class,
+        DfsBindingCfg.class,
+        DatabaseDfsBinderCfg.class,
+        ctx -> new DefaultDfsBinding());
   }
 }

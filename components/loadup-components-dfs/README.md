@@ -234,7 +234,7 @@ loadup:
 ### 创建自定义Provider
 
 ```java
-import com.github.loadup.components.dfs.api.IDfsProvider;
+import com.github.loadup.components.dfs.binder.IDfsProvider;
 import com.github.loadup.components.extension.annotation.Extension;
 
 @Slf4j

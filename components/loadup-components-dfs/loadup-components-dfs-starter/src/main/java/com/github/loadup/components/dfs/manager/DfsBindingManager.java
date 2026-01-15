@@ -1,10 +1,9 @@
 package com.github.loadup.components.dfs.manager;
 
-import com.github.loadup.components.dfs.api.DfsBinder;
-import com.github.loadup.components.dfs.api.DfsBinding;
+import com.github.loadup.components.dfs.binder.DfsBinder;
+import com.github.loadup.components.dfs.binding.DfsBinding;
 import com.github.loadup.components.dfs.properties.DfsGroupProperties;
 import com.github.loadup.framework.api.manager.BindingManagerSupport;
-import java.util.*;
 import org.springframework.context.ApplicationContext;
 
 /** DFS 绑定管理器 继承通用内核，指定驱动类型为 DfsBinder，业务接口为 Binding */
@@ -26,7 +25,7 @@ public class DfsBindingManager extends BindingManagerSupport<DfsBinder, DfsBindi
 
   /** 实现内核要求的钩子：指定驱动接口类型，用于容器查找原型 Bean */
   @Override
-  protected Class<DfsBinder> getBinderInterface() {
+  public Class<DfsBinder> getBinderInterface() {
     return DfsBinder.class;
   }
 

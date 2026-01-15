@@ -89,4 +89,9 @@ public abstract class AbstractBinding<B extends Binder, S extends BaseBindingCfg
   protected BindingContext<B, S> getContext() {
     return this.context;
   }
+
+  @Override
+  public String getBizTag() {
+    return bizTag;
+  }
 }

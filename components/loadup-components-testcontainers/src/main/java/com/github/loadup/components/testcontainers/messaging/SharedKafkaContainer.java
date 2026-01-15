@@ -42,7 +42,7 @@ public class SharedKafkaContainer {
   private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
   /** Kafka bootstrap servers */
-  public static String BOOTSTRAP_SERVERS;
+  private static String BOOTSTRAP_SERVERS;
 
   public static void startContainer(ContainerConfig config) {
     if (STARTED.get()) {

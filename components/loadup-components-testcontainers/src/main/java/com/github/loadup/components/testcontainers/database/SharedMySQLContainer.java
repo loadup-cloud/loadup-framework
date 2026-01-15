@@ -52,13 +52,13 @@ public class SharedMySQLContainer {
   public static final String DEFAULT_MYSQL_VERSION = "mysql:8.0";
 
   /** Default database name */
-  public static final String DEFAULT_DATABASE_NAME = "testdb";
+  private static final String DEFAULT_DATABASE_NAME = "testdb";
 
   /** Default username */
-  public static final String DEFAULT_USERNAME = "test";
+  private static final String DEFAULT_USERNAME = "test";
 
   /** Default password */
-  public static final String DEFAULT_PASSWORD = "test";
+  private static final String DEFAULT_PASSWORD = "test";
 
   /** The shared MySQL container instance */
   private static MySQLContainer MYSQL_CONTAINER;
@@ -66,16 +66,16 @@ public class SharedMySQLContainer {
   private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
   /** JDBC URL for the shared MySQL container */
-  public static String JDBC_URL;
+  private static String JDBC_URL;
 
   /** Username for the shared MySQL container */
-  public static String USERNAME;
+  private static String USERNAME;
 
   /** Password for the shared MySQL container */
-  public static String PASSWORD;
+  private static String PASSWORD;
 
   /** Database name for the shared MySQL container */
-  public static String DATABASE_NAME;
+  private static String DATABASE_NAME;
 
   /** JDBC driver class name */
   public static final String DRIVER_CLASS_NAME = "com.mysql.cj.jdbc.Driver";

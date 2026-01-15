@@ -23,7 +23,11 @@ package com.github.loadup.components.dfs.database.binder;
  */
 
 import com.github.loadup.commons.util.JsonUtil;
-import com.github.loadup.components.dfs.api.DfsBinder;
+import com.github.loadup.components.cache.binder.AbstractCacheBinder;
+import com.github.loadup.components.cache.binder.CacheBinder;
+import com.github.loadup.components.dfs.binder.AbstractDfsBinder;
+import com.github.loadup.components.dfs.binder.DfsBinder;
+import com.github.loadup.components.dfs.cfg.DfsBindingCfg;
 import com.github.loadup.components.dfs.database.cfg.DatabaseDfsBinderCfg;
 import com.github.loadup.components.dfs.database.entity.FileStorageEntity;
 import com.github.loadup.components.dfs.enums.FileStatus;
@@ -48,7 +52,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 /** 数据库存储提供者 */
 @Slf4j
-public class DatabaseDfsBinder extends AbstractBinder<DatabaseDfsBinderCfg> implements DfsBinder {
+public class DatabaseDfsBinder extends AbstractDfsBinder<DatabaseDfsBinderCfg, DfsBindingCfg>
+    implements DfsBinder<DatabaseDfsBinderCfg, DfsBindingCfg> {
 
   @Autowired private JdbcTemplate jdbcTemplate;
   private String TABLE_NAME = "file_storage";
@@ -66,7 +71,8 @@ public class DatabaseDfsBinder extends AbstractBinder<DatabaseDfsBinderCfg> impl
   }
 
   @Override
-  protected void afterConfigInjected(String name, DatabaseDfsBinderCfg binderCfg, BaseBindingCfg bindingCfg) {
+  protected void afterConfigInjected(
+      String name, DatabaseDfsBinderCfg binderCfg, DfsBindingCfg bindingCfg) {
     String tableName = this.binderCfg.getTableName();
     if (StringUtils.isNotBlank(tableName)) {
       TABLE_NAME = tableName;
@@ -240,7 +246,7 @@ public class DatabaseDfsBinder extends AbstractBinder<DatabaseDfsBinderCfg> impl
 
   @Override
   public String generatePresignedUrl(String fileId, long expirationSeconds) {
-    return DfsBinder.super.generatePresignedUrl(fileId, expirationSeconds);
+    return super.generatePresignedUrl(fileId, expirationSeconds);
   }
 
   @Override

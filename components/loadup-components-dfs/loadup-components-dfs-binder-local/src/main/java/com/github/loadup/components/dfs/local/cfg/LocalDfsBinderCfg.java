@@ -22,6 +22,7 @@ package com.github.loadup.components.dfs.local.cfg;
  * #L%
  */
 
+import com.github.loadup.components.dfs.cfg.DfsBinderCfg;
 import com.github.loadup.framework.api.cfg.BaseBinderCfg;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -76,6 +77,6 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class LocalDfsBinderCfg extends BaseBinderCfg {
+public class LocalDfsBinderCfg extends DfsBinderCfg {
   private String basePath = System.getProperty("user.home") + "/dfs-storage";
 }

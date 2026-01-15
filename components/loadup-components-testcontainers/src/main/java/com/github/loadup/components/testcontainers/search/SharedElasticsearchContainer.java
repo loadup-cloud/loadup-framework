@@ -46,13 +46,13 @@ public class SharedElasticsearchContainer {
   private static ElasticsearchContainer ELASTICSEARCH_CONTAINER;
 
   /** Elasticsearch HTTP host URL */
-  public static String HTTP_HOST_ADDRESS;
+  private static String HTTP_HOST_ADDRESS;
 
   /** Elasticsearch host */
-  public static String HOST;
+  private static String HOST;
 
   /** Elasticsearch port */
-  public static Integer PORT;
+  private static Integer PORT;
 
   public static void startContainer(ContainerConfig config) {
     if (STARTED.get()) {

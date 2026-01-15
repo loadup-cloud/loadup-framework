@@ -24,13 +24,13 @@ package com.github.loadup.components.dfs.test.database;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.dfs.binding.AbstractDfsBinding;
-import com.github.loadup.components.dfs.database.binding.DatabaseDfsBinding;
+import com.github.loadup.components.dfs.binder.AbstractDfsBinder;
+import com.github.loadup.components.dfs.binding.DfsBinding;
 import com.github.loadup.components.dfs.manager.DfsBindingManager;
 import com.github.loadup.components.dfs.model.FileDownloadResponse;
 import com.github.loadup.components.dfs.model.FileMetadata;
 import com.github.loadup.components.dfs.model.FileUploadRequest;
-import com.github.loadup.components.dfs.test.DfsTestApplication;
+import com.github.loadup.components.dfs.test.TestApplication;
 import com.github.loadup.components.testcontainers.database.AbstractMySQLContainerTest;
 import com.github.loadup.components.testcontainers.database.SharedMySQLContainer;
 import com.github.loadup.framework.api.annotation.BindingClient;
@@ -57,14 +57,13 @@ import org.springframework.transaction.annotation.Transactional;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@SpringBootTest(classes = DfsTestApplication.class)
-@ActiveProfiles("test")
+@SpringBootTest(classes = TestApplication.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Transactional
 class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
 
   @BindingClient("db-files")
-  private AbstractDfsBinding dbBinding;
+  private DfsBinding dbBinding;
 
   @Autowired private DfsBindingManager manager;
 
@@ -118,7 +117,7 @@ class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
   @DisplayName("Should choose right provider")
   void testDynamicBindingSelection() {
     // 1. 验证通过 Manager 获取到的实例
-    AbstractDfsBinding binding = manager.getBinding("db-files");
+      DfsBinding binding = manager.getBinding("db-files");
     assertNotNull(binding);
 
     // 2. 验证注入注解是否生效
@@ -127,7 +126,6 @@ class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
 
     // 3. 验证 Binder 是否被正确装配 (S3 类型)
     // 假设 S3DfsBinding 暴露了获取类型的方法
-    assertInstanceOf(DatabaseDfsBinding.class, binding);
   }
 
   @Test

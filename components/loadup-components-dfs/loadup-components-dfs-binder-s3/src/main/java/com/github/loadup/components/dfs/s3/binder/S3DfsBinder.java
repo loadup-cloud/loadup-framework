@@ -3,7 +3,9 @@ package com.github.loadup.components.dfs.s3.binder;
 import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.commons.util.StringUtils;
 import com.github.loadup.commons.util.context.ApplicationContextUtils;
-import com.github.loadup.components.dfs.api.DfsBinder;
+import com.github.loadup.components.dfs.binder.AbstractDfsBinder;
+import com.github.loadup.components.dfs.binder.DfsBinder;
+import com.github.loadup.components.dfs.cfg.DfsBindingCfg;
 import com.github.loadup.components.dfs.enums.FileStatus;
 import com.github.loadup.components.dfs.model.*;
 import com.github.loadup.components.dfs.s3.cfg.S3DfsBinderCfg;
@@ -31,7 +33,9 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 @Slf4j
-public class S3DfsBinder extends AbstractBinder<S3DfsBinderCfg> implements DfsBinder {
+public class S3DfsBinder
+    extends AbstractDfsBinder<S3DfsBinderCfg, DfsBindingCfg>
+    implements DfsBinder<S3DfsBinderCfg, DfsBindingCfg>{
   private S3Client s3Client;
   private S3Presigner s3Presigner;
   private String bucketName;
@@ -54,9 +58,8 @@ public class S3DfsBinder extends AbstractBinder<S3DfsBinderCfg> implements DfsBi
   private static final String META_ACCESS_COUNT = "access-count";
   private static final String META_CUSTOM_PREFIX = "custom-";
 
-  @Override
-  protected void afterConfigInjected(String name, S3DfsBinderCfg binderCfg, BaseBindingCfg bindingCfg) {
-    // 仅当 provider 配置为 s3 时初始化
+    @Override
+    protected void afterConfigInjected(String name, S3DfsBinderCfg binderCfg, DfsBindingCfg bindingCfg) {
 
     try {
       // 获取访问凭证（优先使用配置，否则从环境变量或 AWS 配置获取）
@@ -490,7 +493,9 @@ public class S3DfsBinder extends AbstractBinder<S3DfsBinderCfg> implements DfsBi
     }
   }
 
-  @Override
+
+
+    @Override
   protected void afterDestroy() {
     if (this.s3Client != null) {
       this.s3Client.close();

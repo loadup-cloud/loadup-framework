@@ -41,11 +41,6 @@ public class DefaultCacheBinding
     implements CacheBinding {
 
   @Override
-  public String getBizTag() {
-    return bizTag;
-  }
-
-  @Override
   public Object get(String key) {
     String finalKey = decorateKey(key);
     CacheValueWrapper o = getBinder().get(finalKey);

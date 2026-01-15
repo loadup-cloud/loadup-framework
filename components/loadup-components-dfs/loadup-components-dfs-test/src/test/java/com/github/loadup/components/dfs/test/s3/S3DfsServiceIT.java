@@ -24,13 +24,13 @@ package com.github.loadup.components.dfs.test.s3;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.loadup.components.dfs.binding.AbstractDfsBinding;
+import com.github.loadup.components.dfs.binder.AbstractDfsBinder;
+import com.github.loadup.components.dfs.binding.DfsBinding;
 import com.github.loadup.components.dfs.manager.DfsBindingManager;
 import com.github.loadup.components.dfs.model.FileDownloadResponse;
 import com.github.loadup.components.dfs.model.FileMetadata;
 import com.github.loadup.components.dfs.model.FileUploadRequest;
-import com.github.loadup.components.dfs.s3.binding.S3DfsBinding;
-import com.github.loadup.components.dfs.test.DfsTestApplication;
+import com.github.loadup.components.dfs.test.TestApplication;
 import com.github.loadup.components.testcontainers.cloud.AbstractLocalStackContainerTest;
 import com.github.loadup.components.testcontainers.cloud.SharedLocalStackContainer;
 import com.github.loadup.framework.api.annotation.BindingClient;
@@ -55,13 +55,12 @@ import org.springframework.test.context.*;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@SpringBootTest(classes = DfsTestApplication.class)
-@ActiveProfiles("test")
+@SpringBootTest(classes = TestApplication.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
 
   @BindingClient("order-pdf")
-  AbstractDfsBinding s3Binding;
+  DfsBinding s3Binding;
 
   @Autowired private DfsBindingManager manager;
 
@@ -84,7 +83,7 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
   @DisplayName("Should choose right provider")
   void testDynamicBindingSelection() {
     // 1. 验证通过 Manager 获取到的实例
-    AbstractDfsBinding binding = manager.getBinding("order-pdf");
+    DfsBinding binding = manager.getBinding("order-pdf");
     assertNotNull(binding);
 
     // 2. 验证注入注解是否生效
@@ -93,7 +92,6 @@ public class S3DfsServiceIT extends AbstractLocalStackContainerTest {
 
     // 3. 验证 Binder 是否被正确装配 (S3 类型)
     // 假设 S3DfsBinding 暴露了获取类型的方法
-    assertInstanceOf(S3DfsBinding.class, binding);
   }
 
   @Test

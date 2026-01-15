@@ -23,7 +23,9 @@ package com.github.loadup.components.dfs.local.binder;
  */
 
 import com.github.loadup.commons.util.JsonUtil;
-import com.github.loadup.components.dfs.api.DfsBinder;
+import com.github.loadup.components.dfs.binder.AbstractDfsBinder;
+import com.github.loadup.components.dfs.binder.DfsBinder;
+import com.github.loadup.components.dfs.cfg.DfsBindingCfg;
 import com.github.loadup.components.dfs.enums.FileStatus;
 import com.github.loadup.components.dfs.local.cfg.LocalDfsBinderCfg;
 import com.github.loadup.components.dfs.model.*;
@@ -49,7 +51,9 @@ import lombok.extern.slf4j.Slf4j;
  * @see LocalDfsBinderCfg
  */
 @Slf4j
-public class LocalDfsBinder extends AbstractBinder<LocalDfsBinderCfg> implements DfsBinder {
+public class LocalDfsBinder
+    extends AbstractDfsBinder<LocalDfsBinderCfg, DfsBindingCfg>
+    implements DfsBinder<LocalDfsBinderCfg, DfsBindingCfg> {
 
   private static final DateTimeFormatter PATH_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 

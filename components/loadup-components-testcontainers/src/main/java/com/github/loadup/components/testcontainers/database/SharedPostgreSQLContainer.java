@@ -46,16 +46,16 @@ public class SharedPostgreSQLContainer {
   public static final String DEFAULT_POSTGRES_VERSION = "postgres:15-alpine";
 
   /** Default database name */
-  public static final String DEFAULT_DATABASE_NAME = "testdb";
+  private static final String DEFAULT_DATABASE_NAME = "testdb";
 
   /** Default username */
-  public static final String DEFAULT_USERNAME = "test";
+  private static final String DEFAULT_USERNAME = "test";
 
   /** Default password */
-  public static final String DEFAULT_PASSWORD = "test";
+  private static final String DEFAULT_PASSWORD = "test";
 
   /** JDBC driver class name */
-  public static final String DRIVER_CLASS_NAME = "org.postgresql.Driver";
+  private static final String DRIVER_CLASS_NAME = "org.postgresql.Driver";
 
   /** Enable flag for TestContainers */
   private static AtomicBoolean STARTED = new AtomicBoolean(false);
@@ -64,22 +64,22 @@ public class SharedPostgreSQLContainer {
   private static PostgreSQLContainer POSTGRES_CONTAINER;
 
   /** PostgreSQL JDBC URL for the shared container */
-  public static String JDBC_URL;
+  private static String JDBC_URL;
 
   /** PostgreSQL username for the shared container */
-  public static String USERNAME;
+  private static String USERNAME;
 
   /** PostgreSQL password for the shared container */
-  public static String PASSWORD;
+  private static String PASSWORD;
 
   /** PostgreSQL database name */
-  public static String DATABASE_NAME;
+  private static String DATABASE_NAME;
 
   /** PostgreSQL host */
-  public static String HOST;
+  private static String HOST;
 
   /** PostgreSQL port */
-  public static Integer PORT;
+  private static Integer PORT;
 
   public static void startContainer(ContainerConfig config) {
     if (STARTED.get()) {

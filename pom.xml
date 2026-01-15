@@ -25,7 +25,7 @@
         <module>components/loadup-components-tracer</module>
         <!--        <module>components/loadup-components-scheduler</module>-->
         <module>components/loadup-components-gotone</module>
-        <!--        <module>components/loadup-components-dfs</module>-->
+        <module>components/loadup-components-dfs</module>
         <module>components/loadup-components-testcontainers</module>
         <module>components/loadup-components-web</module>
         <module>modules/loadup-modules-upms</module>

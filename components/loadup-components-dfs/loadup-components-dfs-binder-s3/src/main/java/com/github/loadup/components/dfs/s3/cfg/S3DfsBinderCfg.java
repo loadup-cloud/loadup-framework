@@ -1,12 +1,15 @@
 package com.github.loadup.components.dfs.s3.cfg;
 
+import com.github.loadup.components.dfs.cfg.DfsBinderCfg;
 import com.github.loadup.framework.api.cfg.BaseBinderCfg;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class S3DfsBinderCfg extends BaseBinderCfg {
+@EqualsAndHashCode(callSuper = true)
+public class S3DfsBinderCfg extends DfsBinderCfg {
   /** S3 存储桶名称（必填） */
   private String bucket;
 

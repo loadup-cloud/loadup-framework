@@ -50,13 +50,13 @@ public class SharedLocalStackContainer {
   public static final String DEFAULT_LOCALSTACK_VERSION = "localstack/localstack:3.0";
 
   /** Default access key for LocalStack */
-  public static final String ACCESS_KEY = "test";
+  private static final String ACCESS_KEY = "test";
 
   /** Default secret key for LocalStack */
-  public static final String SECRET_KEY = "test";
+  private static final String SECRET_KEY = "test";
 
   /** Default region */
-  public static final String REGION = "us-east-1";
+  private static final String REGION = "us-east-1";
 
   /** Enable flag for TestContainers */
   private static final boolean ENABLED;
@@ -65,7 +65,7 @@ public class SharedLocalStackContainer {
   private static final LocalStackContainer LOCALSTACK_CONTAINER;
 
   /** S3 endpoint URL */
-  public static final String S3_ENDPOINT;
+  private static final String S3_ENDPOINT;
 
   static {
     // Check if TestContainers is enabled (global switch AND individual switch)
@@ -142,10 +142,7 @@ public class SharedLocalStackContainer {
    * @throws IllegalStateException if TestContainers is disabled
    */
   public static String getS3Endpoint() {
-    if (!ENABLED) {
-      throw new IllegalStateException(
-          "LocalStack TestContainer is disabled. Please configure aws.s3.endpoint in application.yml");
-    }
+
     return S3_ENDPOINT;
   }
 

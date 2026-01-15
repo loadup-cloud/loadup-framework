@@ -1,4 +1,4 @@
-package com.github.loadup.components.dfs.api;
+package com.github.loadup.components.dfs.binder;
 
 /*-
  * #%L
@@ -22,10 +22,12 @@ package com.github.loadup.components.dfs.api;
  * #L%
  */
 
+import com.github.loadup.components.dfs.cfg.DfsBinderCfg;
+import com.github.loadup.components.dfs.cfg.DfsBindingCfg;
 import com.github.loadup.components.dfs.model.*;
-import com.github.loadup.framework.api.binding.Binding;
+import com.github.loadup.framework.api.binder.Binder;
 
-public interface DfsBinding extends Binding {
+public interface DfsBinder<C extends DfsBinderCfg, S extends DfsBindingCfg> extends Binder<C, S> {
 
   /**
    * 上传文件

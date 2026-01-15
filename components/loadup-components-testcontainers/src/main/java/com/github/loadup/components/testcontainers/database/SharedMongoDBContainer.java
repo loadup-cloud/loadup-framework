@@ -45,16 +45,16 @@ public class SharedMongoDBContainer {
   private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
   /** MongoDB connection string */
-  public static String CONNECTION_STRING;
+  private static String CONNECTION_STRING;
 
   /** MongoDB host */
-  public static String HOST;
+  private static String HOST;
 
   /** MongoDB port */
-  public static Integer PORT;
+  private static Integer PORT;
 
   /** MongoDB replica set URL */
-  public static String REPLICA_SET_URL;
+  private static String REPLICA_SET_URL;
 
   public static void startContainer(ContainerConfig config) {
     if (STARTED.get()) {
