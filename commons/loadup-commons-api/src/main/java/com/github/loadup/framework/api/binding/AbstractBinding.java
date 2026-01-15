@@ -81,6 +81,11 @@ public abstract class AbstractBinding<B extends Binder, S extends BaseBindingCfg
     // 默认空实现
   }
 
+  public AbstractBinding<B, S> setContext(BindingContext<B, S> context) {
+    this.context = context;
+    return this;
+  }
+
   protected BindingContext<B, S> getContext() {
     return this.context;
   }

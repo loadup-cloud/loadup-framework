@@ -1,4 +1,4 @@
-package com.github.loadup.components.cache.test.common;
+package com.github.loadup.components.cache.test.redis;
 
 /*-
  * #%L
@@ -24,6 +24,8 @@ package com.github.loadup.components.cache.test.common;
 
 import com.github.loadup.components.cache.binding.CacheBinding;
 import com.github.loadup.components.cache.test.TestApplication;
+import com.github.loadup.components.cache.test.common.FakeTicker;
+import com.github.loadup.components.testcontainers.cache.AbstractRedisContainerTest;
 import com.github.loadup.framework.api.annotation.BindingClient;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -39,12 +41,10 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(classes = TestApplication.class)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public abstract class BaseCacheTest {
-  @BindingClient("caffeine-biz-type")
-  protected CacheBinding caffeineBinding;
+public abstract class BaseRedisCacheTest extends AbstractRedisContainerTest {
+  @BindingClient("redis-biz-type")
+  protected CacheBinding redisBinding;
 
-
-  @Autowired protected FakeTicker fakeTicker; // 注入这个可以手动拨动时钟的 Ticker
   protected static final String TEST_CACHE_NAME = "test-cache";
   protected static final String TEST_KEY = "test-key";
   protected static final String TEST_VALUE = "test-value";
@@ -63,7 +63,6 @@ public abstract class BaseCacheTest {
 
   protected void clearCache() {
     try {
-      caffeineBinding.cleanUp();
     } catch (Exception e) {
       log.warn("Failed to clear cache: {}", e.getMessage());
     }

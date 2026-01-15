@@ -10,7 +10,6 @@ import com.github.loadup.components.cache.redis.binder.RedisCacheBinder;
 import com.github.loadup.components.cache.redis.cfg.RedisCacheBinderCfg;
 import com.github.loadup.components.cache.serializer.CacheSerializer;
 import com.github.loadup.components.cache.serializer.JsonCacheSerializer;
-import com.github.loadup.components.cache.serializer.KryoCacheSerializer;
 import com.github.loadup.components.cache.starter.manager.CacheBindingManager;
 import com.github.loadup.components.cache.starter.properties.CacheGroupProperties;
 import com.github.loadup.framework.api.core.BindingPostProcessor;
@@ -56,41 +55,29 @@ public class CacheBindingAutoConfiguration {
     return new JsonCacheSerializer();
   }
 
-  @Bean(name = CacheConstants.SERIALIZER_KRYO)
-  @ConditionalOnMissingBean(name = CacheConstants.SERIALIZER_KRYO)
-  public CacheSerializer customKryoSerializer() {
-    return new KryoCacheSerializer();
+  /** 当 classpath 中存在 Caffeine 时，注册其元数据 */
+  @Bean
+  @ConditionalOnClass(name = "com.github.benmanes.caffeine.cache.Cache")
+  public BindingMetadata<?, ?, ?, ?> caffeineMetadata() {
+    return new BindingMetadata<>(
+        "caffeine",
+        DefaultCacheBinding.class,
+        CaffeineCacheBinder.class,
+        CacheBindingCfg.class,
+        CaffeineCacheBinderCfg.class,
+        ctx -> new DefaultCacheBinding());
   }
 
-    /**
-     * 当 classpath 中存在 Caffeine 时，注册其元数据
-     */
-    @Bean
-    @ConditionalOnClass(name = "com.github.benmanes.caffeine.cache.Cache")
-    public BindingMetadata<?, ?, ?, ?> caffeineMetadata() {
-        return new BindingMetadata<>(
-            "caffeine",
-            DefaultCacheBinding.class,
-            CaffeineCacheBinder.class,
-            CacheBindingCfg.class,
-            CaffeineCacheBinderCfg.class,
-            ctx -> new DefaultCacheBinding()
-        );
-    }
-
-    /**
-     * 当 classpath 中存在 Redis 时，注册其元数据
-     */
-    @Bean
-    @ConditionalOnClass(name = "org.springframework.data.redis.core.RedisTemplate")
-    public BindingMetadata<?, ?, ?, ?> redisMetadata() {
-        return new BindingMetadata<>(
-            "redis",
-            DefaultCacheBinding.class,
-            RedisCacheBinder.class,
-            CacheBindingCfg.class,
-            RedisCacheBinderCfg.class,
-            ctx -> new DefaultCacheBinding()
-        );
-    }
+  /** 当 classpath 中存在 Redis 时，注册其元数据 */
+  @Bean
+  @ConditionalOnClass(name = "org.springframework.data.redis.core.RedisTemplate")
+  public BindingMetadata<?, ?, ?, ?> redisMetadata() {
+    return new BindingMetadata<>(
+        "redis",
+        DefaultCacheBinding.class,
+        RedisCacheBinder.class,
+        CacheBindingCfg.class,
+        RedisCacheBinderCfg.class,
+        ctx -> new DefaultCacheBinding());
+  }
 }

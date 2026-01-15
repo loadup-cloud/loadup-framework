@@ -22,14 +22,16 @@ package com.github.loadup.components.cache.redis.binder;
  * #L%
  */
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.loadup.components.cache.binder.AbstractCacheBinder;
-import com.github.loadup.components.cache.binder.CacheBinder;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
+import com.github.loadup.components.cache.model.CacheValueWrapper;
 import com.github.loadup.components.cache.redis.cfg.RedisCacheBinderCfg;
 import com.github.loadup.framework.api.manager.ConfigurationResolver;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 import lombok.extern.slf4j.Slf4j;
@@ -135,7 +137,7 @@ public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg, C
   }
 
   @Override
-  public boolean set(String key, Object value) {
+  public boolean set(String key, CacheValueWrapper value) {
     if (value == null) return false;
 
     // 核心：调用父类的 wrapValue。
@@ -160,8 +162,10 @@ public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg, C
   }
 
   @Override
-  public Object get(String key) {
-    return redisTemplate.opsForValue().get(key);
+  public CacheValueWrapper get(String key) {
+    byte[] value = redisTemplate.opsForValue().get(key);
+    CacheValueWrapper valueWrapper = this.serializer.deserialize(value, Object.class);
+    return valueWrapper;
   }
 
   @Override
@@ -197,11 +201,10 @@ public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg, C
     long baseMillis = base.toMillis();
     double factor = getBinderCfg().getRandomFactor();
 
-    // 计算波动范围
-    long min = (long) (baseMillis * (1 - factor));
+    // 计算范围: [base, base * (1+factor)]
     long max = (long) (baseMillis * (1 + factor));
 
-    long randomMillis = ThreadLocalRandom.current().nextLong(min, max + 1);
+    long randomMillis = ThreadLocalRandom.current().nextLong(baseMillis, max + 1);
     return Duration.ofMillis(randomMillis);
   }
 }

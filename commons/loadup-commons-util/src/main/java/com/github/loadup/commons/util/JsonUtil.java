@@ -631,4 +631,43 @@ public class JsonUtil {
   public static <T> T convert(Object value, Class<T> clazz) {
     return objectMapper.convertValue(value, clazz);
   }
+
+  public static <T> T convert(Object value, TypeReference<T> typeRef) {
+    return objectMapper.convertValue(value, typeRef);
+  }
+
+  public static byte[] toBytes(Object value) {
+    try {
+      return objectMapper.writeValueAsBytes(value);
+    } catch (JsonProcessingException e) {
+      return new byte[0];
+    }
+  }
+
+  public static <T> T fromBytes(byte[] bytes, TypeReference<T> typeRef) {
+    try {
+      return objectMapper.readValue(bytes, typeRef);
+    } catch (IOException e) {
+      return null;
+    }
+  }
+
+  public static boolean isValidJson(byte[] bytes) {
+    try {
+      // readTree 会自动处理字节流并检测编码（UTF-8, UTF-16 等）
+      objectMapper.readTree(bytes);
+      return true;
+    } catch (IOException e) {
+      return false;
+    }
+  }
+
+  public static boolean isValidJson(String jsonString) {
+    try {
+      objectMapper.readTree(jsonString);
+      return true;
+    } catch (JsonProcessingException e) {
+      return false;
+    }
+  }
 }

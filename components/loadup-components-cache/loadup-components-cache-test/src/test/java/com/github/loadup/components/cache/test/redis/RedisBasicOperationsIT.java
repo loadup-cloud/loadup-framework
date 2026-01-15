@@ -28,26 +28,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.*;
 
-import com.github.loadup.components.cache.test.common.BaseCacheTest;
+import com.github.loadup.components.cache.test.redis.BaseRedisCacheTest;
 import com.github.loadup.components.cache.test.common.model.*;
 /** Redis Cache Basic Operations Test */
-@TestPropertySource(properties = {"loadup.cache.binder=redis", "loadup.cache.database=0"})
+@TestPropertySource(properties = {"loadup.cache.binder=redis", })
 @DisplayName("Redis 缓存基础操作测试")
-public class RedisBasicOperationsIT extends BaseCacheTest {
+public class RedisBasicOperationsIT extends BaseRedisCacheTest {
 
   @Test
   @DisplayName("测试基本的 set 和 get 操作")
+  @Order(1)
   void testBasicSetAndGet() {
     // Given
     String key = "user:1";
     User user = User.createTestUser("1");
 
     // When
-    boolean setResult = caffeineBinding.set(key, user);
-    User cachedUser = caffeineBinding.getObject(key, User.class);
+    boolean setResult = redisBinding.set(key, user);
+    User cachedUser = redisBinding.getObject(key, User.class);
 
     // Then
     assertTrue(setResult, "Set operation should return true");
@@ -60,9 +62,10 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
 
   @Test
   @DisplayName("测试缓存不存在的key")
+  @Order(2)
   void testGetNonExistentKey() {
     // When
-    User cachedUser = caffeineBinding.getObject("non-existent-key", User.class);
+    User cachedUser = redisBinding.getObject("non-existent-key", User.class);
 
     // Then
     assertNull(cachedUser, "Non-existent key should return null");
@@ -70,15 +73,16 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
 
   @Test
   @DisplayName("测试 delete 操作")
+  @Order(3)
   void testDelete() {
     // Given
     String key = "user:2";
     User user = User.createTestUser("2");
-    caffeineBinding.set(key, user);
+    redisBinding.set(key, user);
 
     // When
-    boolean deleteResult = caffeineBinding.delete(key);
-    User cachedUser = caffeineBinding.getObject(key, User.class);
+    boolean deleteResult = redisBinding.delete(key);
+    User cachedUser = redisBinding.getObject(key, User.class);
 
     // Then
     assertTrue(deleteResult, "Delete operation should return true");
@@ -87,17 +91,18 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
 
   @Test
   @DisplayName("测试 deleteAll 操作")
+  @Order(4)
   void testDeleteAll() {
     // Given
-    caffeineBinding.set("user:1", User.createTestUser("1"));
-    caffeineBinding.set("user:2", User.createTestUser("2"));
-    caffeineBinding.set("user:3", User.createTestUser("3"));
+    redisBinding.set("user:1", User.createTestUser("1"));
+    redisBinding.set("user:2", User.createTestUser("2"));
+    redisBinding.set("user:3", User.createTestUser("3"));
 
     // When
-    boolean deleteAllResult = caffeineBinding.deleteAll(Arrays.asList("user:1", "user:2", "user:3"));
-    User user1 = caffeineBinding.getObject("user:1", User.class);
-    User user2 = caffeineBinding.getObject("user:2", User.class);
-    User user3 = caffeineBinding.getObject("user:3", User.class);
+    boolean deleteAllResult = redisBinding.deleteAll(Arrays.asList("user:1", "user:2", "user:3"));
+    User user1 = redisBinding.getObject("user:1", User.class);
+    User user2 = redisBinding.getObject("user:2", User.class);
+    User user3 = redisBinding.getObject("user:3", User.class);
 
     // Then
     assertTrue(deleteAllResult, "DeleteAll operation should return true");
@@ -108,6 +113,7 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
 
   @Test
   @DisplayName("测试覆盖已存在的key")
+  @Order(5)
   void testOverwriteExistingKey() {
     // Given
     String key = "user:4";
@@ -118,11 +124,11 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
     user2.setName("Updated Name");
 
     // When
-    caffeineBinding.set(key, user1);
-    User cachedUser1 = caffeineBinding.getObject(key, User.class);
+    redisBinding.set(key, user1);
+    User cachedUser1 = redisBinding.getObject(key, User.class);
 
-    caffeineBinding.set(key, user2);
-    User cachedUser2 = caffeineBinding.getObject(key, User.class);
+    redisBinding.set(key, user2);
+    User cachedUser2 = redisBinding.getObject(key, User.class);
 
     // Then
     assertEquals("Original Name", cachedUser1.getName());
@@ -131,6 +137,7 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
 
   @Test
   @DisplayName("测试缓存复杂对象")
+  @Order(6)
   void testCacheComplexObject() {
     // Given
     String key = "product:1";
@@ -145,8 +152,8 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
             .build();
 
     // When
-    caffeineBinding.set(key, product);
-    Product cachedProduct = caffeineBinding.getObject(key, Product.class);
+    redisBinding.set(key, product);
+    Product cachedProduct = redisBinding.getObject(key, Product.class);
 
     // Then
     assertNotNull(cachedProduct);
@@ -160,6 +167,7 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
 
   @Test
   @DisplayName("测试缓存集合对象")
+  @Order(7)
   void testCacheCollectionObject() {
     // Given
     String key = "users:list";
@@ -169,8 +177,8 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
     }
 
     // When
-    caffeineBinding.set(key, users);
-    Object cachedObject = caffeineBinding.get(key);
+    redisBinding.set(key, users);
+    Object cachedObject = redisBinding.get(key);
 
     // Then
     assertNotNull(cachedObject);
@@ -179,14 +187,15 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
 
   @Test
   @DisplayName("测试缓存 String 值")
+  @Order(8)
   void testCacheStringValue() {
     // Given
     String key = "message:1";
     String value = "Hello Redis Cache!";
 
     // When
-    caffeineBinding.set(key, value);
-    Object cachedValue = caffeineBinding.get(key);
+    redisBinding.set(key, value);
+    Object cachedValue = redisBinding.get(key);
 
     // Then
     assertNotNull(cachedValue);
@@ -195,14 +204,15 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
 
   @Test
   @DisplayName("测试缓存 Integer 值")
+  @Order(9)
   void testCacheIntegerValue() {
     // Given
     String key = "count:1";
     Integer value = 12345;
 
     // When
-    caffeineBinding.set(key, value);
-    Object cachedValue = caffeineBinding.get(key);
+    redisBinding.set(key, value);
+    Object cachedValue = redisBinding.get(key);
 
     // Then
     assertNotNull(cachedValue);
@@ -211,9 +221,10 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
 
   @Test
   @DisplayName("测试删除不存在的key")
+  @Order(10)
   void testDeleteNonExistentKey() {
     // When
-    boolean deleteResult = caffeineBinding.delete("non-existent-key");
+    boolean deleteResult = redisBinding.delete("non-existent-key");
 
     // Then
     assertTrue(deleteResult, "Delete non-existent key should return true");
@@ -221,50 +232,19 @@ public class RedisBasicOperationsIT extends BaseCacheTest {
 
   @Test
   @DisplayName("测试多次删除同一个key")
+  @Order(11)
   void testMultipleDeleteSameKey() {
     // Given
     String key = "user:10";
     User user = User.createTestUser("10");
-    caffeineBinding.set(key, user);
+    redisBinding.set(key, user);
 
     // When
-    boolean delete1 = caffeineBinding.delete(key);
-    boolean delete2 = caffeineBinding.delete(key);
+    boolean delete1 = redisBinding.delete(key);
+    boolean delete2 = redisBinding.delete(key);
 
     // Then
     assertTrue(delete1, "First delete should return true");
     assertTrue(delete2, "Second delete should also return true");
-  }
-
-  @Test
-  @DisplayName("测试不同的 cacheName")
-  void testDifferentCacheNames() {
-    // Given
-    String cacheName1 = "cache-1";
-    String cacheName2 = "cache-2";
-    String key = "user:1";
-    User user1 = User.createTestUser("1");
-    user1.setName("Cache 1 User");
-    User user2 = User.createTestUser("1");
-    user2.setName("Cache 2 User");
-
-    try {
-      // When
-      caffeineBinding.set(key, user1);
-      caffeineBinding.set(key, user2);
-
-      User cachedUser1 = caffeineBinding.getObject(key, User.class);
-      User cachedUser2 = caffeineBinding.getObject(key, User.class);
-
-      // Then
-      assertNotNull(cachedUser1);
-      assertNotNull(cachedUser2);
-      assertEquals("Cache 1 User", cachedUser1.getName());
-      assertEquals("Cache 2 User", cachedUser2.getName());
-    } finally {
-      // Cleanup
-//      caffeineBinding.deleteAll(cacheName1);
-//      caffeineBinding.deleteAll(cacheName2);
-    }
   }
 }

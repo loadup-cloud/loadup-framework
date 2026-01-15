@@ -36,8 +36,11 @@ import org.springframework.test.context.TestPropertySource;
 
 /** Caffeine Cache Concurrent Operations Test */
 @TestPropertySource(
-    properties = {"loadup.cache.binder=caffeine", "spring.cache.caffeine.spec=maximumSize=10000"})
+    properties = {
+        "loadup.cache.binder=caffeine",
+    })
 @DisplayName("Caffeine 缓存并发操作测试")
+
 public class CaffeineConcurrencyTest extends BaseCacheTest {
 
   @Test

@@ -25,17 +25,20 @@ package com.github.loadup.components.cache.caffeine.binder;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Expiry;
-import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.cache.binder.AbstractCacheBinder;
 import com.github.loadup.components.cache.binder.CacheBinder;
 import com.github.loadup.components.cache.caffeine.cfg.CaffeineCacheBinderCfg;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
+import com.github.loadup.components.cache.model.CacheValueWrapper;
+import com.github.loadup.framework.api.manager.ConfigurationResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 
 @Slf4j
 public class CaffeineCacheBinder
@@ -67,7 +70,9 @@ public class CaffeineCacheBinder
           new Expiry<>() {
             @Override
             public long expireAfterCreate(Object key, Object value, long currentTime) {
-              return calculateRandomNanos(bindingCfg.getExpireAfterWrite());
+              return calculateRandomNanos(
+                  ConfigurationResolver.resolve(
+                      bindingCfg.getExpireAfterWrite(), binderCfg.getExpireAfterWrite()));
             }
 
             @Override
@@ -113,28 +118,27 @@ public class CaffeineCacheBinder
     long baseNanos = baseDuration.toNanos();
     double factor = getBinderCfg().getRandomFactor();
 
-    // 计算范围: [base * (1-factor), base * (1+factor)]
-    long min = (long) (baseNanos * (1 - factor));
+    // 计算范围: [base, base * (1+factor)]
     long max = (long) (baseNanos * (1 + factor));
 
-    return ThreadLocalRandom.current().nextLong(min, max);
+    return ThreadLocalRandom.current().nextLong(baseNanos, max);
   }
 
   @Override
-  public boolean set(String key, Object value) {
+  public boolean set(String key, CacheValueWrapper value) {
     Assert.notNull(value, "Caffeine cache does not support null values");
     nativeCache.put(key, wrapValue(value));
     return true;
   }
 
   @Override
-  public Object get(String key) {
-    Object valueWrapper = nativeCache.getIfPresent(key);
+  public CacheValueWrapper get(String key) {
+    Object value = nativeCache.get(key, k -> new CacheValueWrapper("NULL", null, null));
     // 如果配置了序列化器，且存入的是字节数组，则反序列化（实现深拷贝保护）
-    if (valueWrapper instanceof byte[] && serializer != null) {
-      return serializer.deserialize((byte[]) valueWrapper, Object.class);
+    if (value instanceof byte[] && serializer != null) {
+      return serializer.deserialize((byte[]) value, Object.class);
     }
-    return valueWrapper;
+    return (CacheValueWrapper) value;
   }
 
   @Override

@@ -24,6 +24,7 @@ package com.github.loadup.components.cache.binder;
 
 import com.github.loadup.components.cache.cfg.CacheBinderCfg;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
+import com.github.loadup.components.cache.model.CacheValueWrapper;
 import com.github.loadup.components.cache.serializer.CacheSerializer;
 import com.github.loadup.framework.api.binder.Binder;
 
@@ -31,9 +32,9 @@ import java.util.Collection;
 
 public interface CacheBinder<C extends CacheBinderCfg, S extends CacheBindingCfg>
     extends Binder<C, S> {
-  boolean set(String key, Object value);
+  boolean set(String key, CacheValueWrapper value);
 
-  Object get(String key);
+  CacheValueWrapper get(String key);
 
   boolean delete(String key);
 

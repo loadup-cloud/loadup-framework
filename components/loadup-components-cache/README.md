@@ -93,7 +93,7 @@ loadup-components-cache/
 - **com.github.loadup.components.cache.binder**: 缓存绑定器接口，定义基本的 CRUD 操作
 - **com.github.loadup.components.cache.binding**: CacheBinding 的默认实现，提供日志和性能监控
 - **com.github.loadup.components.cache.cfg**: 单个缓存的配置类，包含防雪崩、防穿透等策略
-- **com.github.loadup.components.cache.config**: 统一的缓存配置属性类和自动配置
+- **com.github.loadup.components.cache.model**: 统一的缓存配置属性类和自动配置
 - **com.github.loadup.components.cache.util**: 过期时间计算工具，支持随机偏移
 
 #### binder-caffeine 模块
@@ -1062,7 +1062,7 @@ Duration parseDuration(String durationStr)
 **API 模块新增**:
 
 - `com.github.loadup.components.cache.cfg.CacheBindingCfg` - 统一配置类
-- `com.github.loadup.components.cache.config.CacheAutoConfiguration` - 自动配置
+- `com.github.loadup.components.cache.model.CacheAutoConfiguration` - 自动配置
 - `com.github.loadup.components.cache.binding.DefaultCacheBinding` - 默认实现
 
 ##### 统一的配置结构

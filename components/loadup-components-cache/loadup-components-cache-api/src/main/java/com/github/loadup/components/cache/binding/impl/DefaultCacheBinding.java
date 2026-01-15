@@ -26,9 +26,8 @@ import com.github.loadup.commons.util.JsonUtil;
 import com.github.loadup.components.cache.binder.CacheBinder;
 import com.github.loadup.components.cache.binding.CacheBinding;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
-import com.github.loadup.components.cache.serializer.CacheSerializer;
+import com.github.loadup.components.cache.model.CacheValueWrapper;
 import com.github.loadup.framework.api.binding.AbstractBinding;
-import com.github.loadup.framework.api.context.BindingContext;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,85 +41,52 @@ public class DefaultCacheBinding
     implements CacheBinding {
 
   @Override
-  public void init(BindingContext<CacheBinder<?, CacheBindingCfg>, CacheBindingCfg> ctx) {
-    // ctx 包含了刚才基类 captureAndCreate 捕获的所有对象
-    this.setBinders(ctx.getBinders());
-    this.setBindingCfg(ctx.getBindingCfg());
-
-    // 你可以在这里做额外的初始化，比如打印日志或检查多级缓存顺序
-    log.info("Binding [{}] initialized with {} binders", ctx.getBizTag(), ctx.getBinders().size());
+  public String getBizTag() {
+    return bizTag;
   }
 
   @Override
   public Object get(String key) {
     String finalKey = decorateKey(key);
-    // 遍历所有 Binder 写入（如同时写入内存和 Redis）
-    return getBinder().get(finalKey);
+    CacheValueWrapper o = getBinder().get(finalKey);
+    return unwrapValue(o, Object.class);
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public <T> T getObject(String key, Class<T> clazz) {
     String finalKey = decorateKey(key);
-
-    // 1. 获取所有绑定的驱动（可能包含 Caffeine + Redis）
-    List<CacheBinder<?, CacheBindingCfg>> binders = getBinders();
-    if (binders == null || binders.isEmpty()) return null;
-
-    Object value = null;
-    CacheBinder<?, CacheBindingCfg> hitBinder = null;
-
-    // 2. 依次查询（多级缓存逻辑：本地 -> 远程）
-    for (CacheBinder<?, CacheBindingCfg> binder : binders) {
-      value = binder.get(finalKey);
-      if (value != null) {
-        hitBinder = binder;
-        break;
-      }
-    }
-
-    if (value == null) return null;
-
-    // 3. 结果处理与反序列化
-    T result = transform(value, clazz, hitBinder.getSerializer());
-
-    // 4. 回填逻辑（如果从二级缓存查到，回填到一级缓存）
-    if (result != null && binders.size() > 1) {
-      backfill(finalKey, result, hitBinder);
-    }
-    return result;
+    CacheValueWrapper o = getBinder().get(finalKey);
+    return unwrapValue(o, clazz);
   }
 
   @Override
   public boolean set(String key, Object value) {
     if (value == null) return false;
-
     String finalKey = decorateKey(key);
     // 遍历所有 Binder 写入（如同时写入内存和 Redis）
-    getBinders().forEach(binder -> binder.set(finalKey, value));
+    getBinder().set(finalKey, wrapValue(value));
     return true;
   }
 
   @Override
   public boolean delete(String key) {
+    if (key == null) return true;
     String finalKey = decorateKey(key);
-    getBinders().forEach(binder -> binder.delete(finalKey));
+    getBinder().delete(finalKey);
     return true;
   }
 
   @Override
   public boolean deleteAll(Collection<String> keys) {
     if (keys == null || keys.isEmpty()) return false;
-
     List<String> finalKeys = keys.stream().map(this::decorateKey).collect(Collectors.toList());
-
-    getBinders().forEach(binder -> binder.deleteAll(finalKeys));
+    getBinder().deleteAll(finalKeys);
     return true;
   }
 
   @Override
   public void cleanUp() {
-      getBinder().cleanUp();
+    getBinder().cleanUp();
   }
 
   /** 根据配置自动修饰 Key（加上 KeyPrefix） */
@@ -132,43 +98,19 @@ public class DefaultCacheBinding
     return key;
   }
 
-  /** 统一的类型转换逻辑 */
-  @SuppressWarnings("unchecked")
-  private <T> T transform(Object value, Class<T> clazz, CacheSerializer serializer) {
-    // 情况 A: 类型直接匹配（如本地缓存存的 POJO）
-    if (clazz.isInstance(value)) {
-      return clazz.cast(value);
+  protected CacheValueWrapper<?> wrapValue(Object value) {
+    CacheValueWrapper<?> wrapper;
+    if (value == null) {
+      wrapper = new CacheValueWrapper<>("NULL", null, null);
+    } else if (value instanceof String s) {
+      wrapper = new CacheValueWrapper<>("STR", s, String.class.getName());
+    } else {
+      wrapper = new CacheValueWrapper<>("OBJ", value, value.getClass().getName());
     }
-
-    // 情况 B: 字节数组（来自 Redis 等），调用驱动配的序列化器
-    if (value instanceof byte[] && serializer != null) {
-      return serializer.deserialize((byte[]) value, clazz);
-    }
-
-    // 情况 C: 兜底逻辑（如从 Map 转 POJO）
-    // 情况 C：兜底强转，并使用 @SuppressWarnings 压制警告
-    // 这是必要的，因为编译器无法感知运行时的动态泛型
-    try {
-      return clazz.cast(value);
-    } catch (ClassCastException e) {
-      return JsonUtil.convert(value,clazz);
-    }
+    return wrapper;
   }
 
-  /** 简单的多级缓存回填逻辑 */
-  private <T> void backfill(String key, T value, CacheBinder<?, CacheBindingCfg> hitBinder) {
-    List<CacheBinder<?, CacheBindingCfg>> binders = getBinders();
-    if (binders.size() <= 1) return;
-
-    // 找到命中 Binder 在列表中的位置，将其之前的（更高层级的）缓存全部填满
-    for (CacheBinder<?, CacheBindingCfg> binder : binders) {
-      if (binder == hitBinder) break;
-      binder.set(key, value);
-    }
-  }
-
-  @Override
-  public String getBizTag() {
-    return bizTag;
+  public <T> T unwrapValue(CacheValueWrapper<?> value, Class<T> clazz) {
+    return JsonUtil.convert(value.data(), clazz);
   }
 }

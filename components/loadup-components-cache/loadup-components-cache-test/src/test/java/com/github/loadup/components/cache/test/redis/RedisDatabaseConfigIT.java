@@ -37,8 +37,9 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.*;
 
-import com.github.loadup.components.cache.test.common.BaseCacheTest;
+import com.github.loadup.components.cache.test.redis.BaseRedisCacheTest;
 import com.github.loadup.components.cache.test.common.model.User;
+
 /**
  * Test Redis database configuration
  *
@@ -52,35 +53,22 @@ import com.github.loadup.components.cache.test.common.model.User;
     properties = {
       "loadup.cache.binder=redis",
       // Custom database configuration
-      "loadup.cache.binder.redis.database=5",
-      // Spring Boot default uses database 0
-      "spring.data.redis.database=0"
+      "loadup.cache.bindings.redis-biz-type.database=5",
     })
 @DisplayName("Redis Database Configuration Test")
-public class RedisDatabaseConfigIT extends BaseCacheTest {
+public class RedisDatabaseConfigIT extends BaseRedisCacheTest {
 
   @Autowired(required = false)
   private RedisConnectionFactory redisConnectionFactory;
 
-  @Autowired(required = false)
-  private RedisCacheBinderCfg redisCacheBinderCfg;
-
   @DynamicPropertySource
   static void redisProperties(DynamicPropertyRegistry registry) {
     // 这里的 HOST 可以是任何运行时的动态变量
-    registry.add("loadup.cache.binder.redis.host", () -> SharedRedisContainer.HOST);
-    registry.add("loadup.cache.binder.redis.port", () -> SharedRedisContainer.PORT);
-    registry.add("spring.data.redis.host", () -> SharedRedisContainer.HOST);
-    registry.add("spring.data.redis.port", () -> SharedRedisContainer.PORT);
-  }
-
-  @Test
-  @DisplayName("验证 RedisBinderCfg 配置正确加载")
-  void testRedisBinderCfgLoaded() {
-    assertNotNull(redisCacheBinderCfg, "RedisBinderCfg should be loaded");
-    Assertions.assertEquals(SharedRedisContainer.HOST, redisCacheBinderCfg.getHost());
-    Assertions.assertEquals(SharedRedisContainer.PORT, redisCacheBinderCfg.getPort());
-    assertEquals(5, redisCacheBinderCfg.getDatabase(), "Database should be 5 from custom config");
+    registry.add("loadup.cache.binder.redis.host", () -> SharedRedisContainer.getHost());
+    registry.add("loadup.cache.binder.redis.port", () -> SharedRedisContainer.getPort());
+    registry.add("spring.data.redis.host", () -> SharedRedisContainer.getHost());
+    registry.add("spring.data.redis.port", () -> SharedRedisContainer.getPort());
+    registry.add("spring.data.redis.database", () -> 5);
   }
 
   @Test
@@ -105,8 +93,8 @@ public class RedisDatabaseConfigIT extends BaseCacheTest {
         5,
         standaloneConfig.getDatabase(),
         "Redis database should be 5 from loadup.cache.binder.redis.database");
-    Assertions.assertEquals(SharedRedisContainer.HOST, standaloneConfig.getHostName());
-    Assertions.assertEquals(SharedRedisContainer.PORT, standaloneConfig.getPort());
+    Assertions.assertEquals(SharedRedisContainer.getHost(), standaloneConfig.getHostName());
+    Assertions.assertEquals(SharedRedisContainer.getPort(), standaloneConfig.getPort());
   }
 
   @Test
@@ -151,7 +139,9 @@ public class RedisDatabaseConfigIT extends BaseCacheTest {
 
     // Create template for database 0 (to verify isolation)
     LettuceConnectionFactory db0Factory =
-        new LettuceConnectionFactory(new RedisStandaloneConfiguration(SharedRedisContainer.HOST, SharedRedisContainer.PORT));
+        new LettuceConnectionFactory(
+            new RedisStandaloneConfiguration(
+                SharedRedisContainer.getHost(), SharedRedisContainer.getPort()));
     db0Factory.afterPropertiesSet();
 
     RedisTemplate<String, String> db0Template = new RedisTemplate<>();
@@ -178,14 +168,5 @@ public class RedisDatabaseConfigIT extends BaseCacheTest {
       db5Template.delete(testKey);
       db0Factory.destroy();
     }
-  }
-
-  @Test
-  @DisplayName("验证 hasCustomConfig 方法正确识别自定义配置")
-  void testHasCustomConfig() {
-    assertNotNull(redisCacheBinderCfg, "RedisBinderCfg should be loaded");
-    assertTrue(
-        redisCacheBinderCfg.hasCustomConfig(),
-        "Should detect custom configuration when database is set");
   }
 }

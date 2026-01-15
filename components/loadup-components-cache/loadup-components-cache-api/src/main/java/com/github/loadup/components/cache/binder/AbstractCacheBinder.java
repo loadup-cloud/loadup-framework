@@ -22,12 +22,18 @@ package com.github.loadup.components.cache.binder;
  * #L%
  */
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.github.loadup.commons.util.JsonUtil;
+import com.github.loadup.commons.util.StringUtils;
 import com.github.loadup.components.cache.cfg.CacheBinderCfg;
 import com.github.loadup.components.cache.cfg.CacheBindingCfg;
+import com.github.loadup.components.cache.model.CacheValueWrapper;
 import com.github.loadup.components.cache.serializer.CacheSerializer;
 import com.github.loadup.framework.api.binder.AbstractBinder;
 import com.github.loadup.framework.api.binder.Binder;
 import com.github.loadup.framework.api.manager.ConfigurationResolver;
+
+import java.util.Optional;
 
 public abstract class AbstractCacheBinder<C extends CacheBinderCfg, S extends CacheBindingCfg>
     extends AbstractBinder<C, S> implements CacheBinder<C, S> {
@@ -47,8 +53,9 @@ public abstract class AbstractCacheBinder<C extends CacheBinderCfg, S extends Ca
     String serializerName =
         ConfigurationResolver.resolve(
             bindingCfg.getSerializerBeanName(), binderCfg.getSerializerBeanName());
-    this.serializer = context.getBean(serializerName, CacheSerializer.class);
-
+    if (StringUtils.isNotBlank(serializerName)) {
+      this.serializer = context.getBean(serializerName, CacheSerializer.class);
+    }
     // 2. 确定时间源
     String tickerName = binderCfg.getTickerBeanName();
     this.ticker =
@@ -63,8 +70,7 @@ public abstract class AbstractCacheBinder<C extends CacheBinderCfg, S extends Ca
     return serializer;
   }
 
-  /** 提供一个工具方法给子类（CaffeineBinder/RedisBinder）使用 将对象包装成驱动能识别的格式 */
-  protected Object wrapValue(Object value) {
+  protected Object wrapValue(CacheValueWrapper value) {
     if (value == null) return null;
 
     // 如果当前驱动配置了序列化器，则转为字节数组

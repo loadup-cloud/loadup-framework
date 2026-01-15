@@ -78,8 +78,11 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class RedisCacheBinderCfg extends CacheBinderCfg {
-  private boolean enableRandomExpiry = false; // 是否开启随机过期
-  private double randomFactor = 0.2; // 默认 20% 浮动
+  /** 是否开启随机过期 */
+  private boolean enableRandomExpiry = false;
+
+  /** 随机因子 (例如 0.2 表示在 100%~120% 之间波动) */
+  private double randomFactor = 0.2;
 
   /**
    * Redis database index (default: 0) Override: loadup.cache.binder.redis.database Default:

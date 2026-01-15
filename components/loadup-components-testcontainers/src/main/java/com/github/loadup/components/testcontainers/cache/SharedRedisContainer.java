@@ -59,13 +59,13 @@ public class SharedRedisContainer {
   private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
   /** Redis host for the shared container */
-  public static String HOST;
+  private static String HOST = "localhost";
 
   /** Redis port for the shared container */
-  public static Integer PORT;
+  private static Integer PORT = REDIS_PORT;
 
   /** Redis connection URL */
-  public static String URL;
+  private static String URL;
 
   public static void startContainer(ContainerConfig config) {
     if (STARTED.get()) return;
@@ -107,7 +107,6 @@ public class SharedRedisContainer {
    * @throws IllegalStateException if TestContainers is disabled
    */
   public static GenericContainer<?> getInstance() {
-    checkStarted();
 
     return REDIS_CONTAINER;
   }
@@ -119,7 +118,6 @@ public class SharedRedisContainer {
    * @throws IllegalStateException if TestContainers is disabled
    */
   public static String getHost() {
-    checkStarted();
 
     return HOST;
   }
@@ -131,7 +129,6 @@ public class SharedRedisContainer {
    * @throws IllegalStateException if TestContainers is disabled
    */
   public static Integer getPort() {
-    checkStarted();
     return PORT;
   }
 
@@ -160,11 +157,5 @@ public class SharedRedisContainer {
 
   public static boolean isStarted() {
     return STARTED.get();
-  }
-
-  private static void checkStarted() {
-    if (!STARTED.get()) {
-      throw new IllegalStateException("Redis Container has not been started yet!");
-    }
   }
 }

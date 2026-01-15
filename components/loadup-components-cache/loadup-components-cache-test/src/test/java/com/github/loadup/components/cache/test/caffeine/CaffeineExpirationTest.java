@@ -39,6 +39,7 @@ import org.springframework.test.context.TestPropertySource;
 @Slf4j
 @TestPropertySource(
     properties = {
+      "loadup.cache.binder=caffeine",
       "loadup.cache.binders.caffeine.expireAfterWrite=20s",
       "loadup.cache.binders.caffeine.expireAfterAccess=2s",
       "loadup.cache.binders.caffeine.maximumSize=50"
@@ -57,7 +58,7 @@ public class CaffeineExpirationTest extends BaseCacheTest {
     caffeineBinding.set(key, user);
     User cachedUser1 = caffeineBinding.getObject(key, User.class);
 
-    // When: 模拟时间前进 3 秒（超过 20 秒过期线）
+    // When: 模拟时间前进 23 秒（超过 20 秒过期线）
     fakeTicker.advance(23, TimeUnit.SECONDS);
 
     User cachedUser2 = caffeineBinding.getObject(key, User.class);

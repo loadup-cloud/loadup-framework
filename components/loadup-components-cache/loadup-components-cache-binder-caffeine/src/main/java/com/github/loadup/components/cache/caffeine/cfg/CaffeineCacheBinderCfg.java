@@ -79,7 +79,7 @@ import java.time.Duration;
 public class CaffeineCacheBinderCfg extends CacheBinderCfg {
   public CaffeineCacheBinderCfg() {
     // 在构造函数中修改默认值
-    setSerializerBeanName("customKryoSerializer");
+    this.setSerializerBeanName(null);
   }
 
   /**
@@ -111,8 +111,14 @@ public class CaffeineCacheBinderCfg extends CacheBinderCfg {
   private Duration expireAfterWrite;
   private Duration expireAfterAccess;
 
-  private boolean enableRandomExpiry = false; // 是否开启随机过期
-  private double randomFactor = 0.2; // 随机因子 (例如 0.2 表示在 80%~120% 之间波动)
+    /**
+     * 是否开启随机过期
+     */
+  private boolean enableRandomExpiry = false;
+    /**
+     * 随机因子 (例如 0.2 表示在 100%~120% 之间波动)
+     */
+  private double randomFactor = 0.2;
 
   /**
    * Check if any custom configuration is provided

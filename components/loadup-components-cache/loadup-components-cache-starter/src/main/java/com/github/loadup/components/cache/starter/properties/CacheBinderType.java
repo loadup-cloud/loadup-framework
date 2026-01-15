@@ -1,4 +1,3 @@
-
 package com.github.loadup.components.cache.starter.properties;
 
 /**
@@ -15,7 +14,7 @@ public enum CacheBinderType {
   REDIS("redis"),
   ;
 
-  @Getter private final String value;
+  private final String value;
 
   CacheBinderType(String value) {
     this.value = value;
