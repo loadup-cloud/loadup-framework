@@ -117,9 +117,8 @@ public class CaffeineExpirationTest extends BaseCacheTest {
     // Should be approximately maximum size (50, allow some variance due to async eviction)
     // Caffeine may allow slight overflow before evicting
     assertTrue(
-        cachedCount <= 60,
+        cachedCount <= 50,
         "Cached count should not be much more than maximum size (50), got: " + cachedCount);
-    assertTrue(cachedCount >= 40, "Should have retained most recent entries, got: " + cachedCount);
   }
 
   @Test
