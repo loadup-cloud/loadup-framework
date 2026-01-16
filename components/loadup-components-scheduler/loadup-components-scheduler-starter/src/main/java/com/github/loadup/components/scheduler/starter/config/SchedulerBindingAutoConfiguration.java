@@ -2,7 +2,8 @@ package com.github.loadup.components.scheduler.starter.config;
 
 import com.github.loadup.components.scheduler.binding.DefaultSchedulerBinding;
 import com.github.loadup.components.scheduler.cfg.SchedulerBindingCfg;
-import com.github.loadup.components.scheduler.core.SchedulerTaskRegistry;
+import com.github.loadup.components.scheduler.quartz.binder.QuartzJobSchedulerBinder;
+import com.github.loadup.components.scheduler.quartz.cfg.QuartzJobSchedulerBinderCfg;
 import com.github.loadup.components.scheduler.simplejob.binder.SimpleJobSchedulerBinder;
 import com.github.loadup.components.scheduler.simplejob.cfg.SimpleJobSchedulerBinderCfg;
 import com.github.loadup.components.scheduler.starter.initializer.SchedulerJobInitializer;
@@ -54,6 +55,20 @@ public class SchedulerBindingAutoConfiguration {
         SimpleJobSchedulerBinder.class,
         SchedulerBindingCfg.class,
         SimpleJobSchedulerBinderCfg.class,
+        ctx -> new DefaultSchedulerBinding());
+  }
+
+  /** 当 classpath 中存在 Caffeine 时，注册其元数据 */
+  @Bean
+  @ConditionalOnClass(
+      name = "com.github.loadup.components.scheduler.quartz.binder.QuartzJobSchedulerBinder")
+  public BindingMetadata<?, ?, ?, ?> quartzJobMetadata() {
+    return new BindingMetadata<>(
+        "simplejob",
+        DefaultSchedulerBinding.class,
+        QuartzJobSchedulerBinder.class,
+        SchedulerBindingCfg.class,
+        QuartzJobSchedulerBinderCfg.class,
         ctx -> new DefaultSchedulerBinding());
   }
 }

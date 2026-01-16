@@ -28,7 +28,6 @@ import static org.awaitility.Awaitility.await;
 
 import com.github.loadup.components.scheduler.annotation.DistributedScheduler;
 import com.github.loadup.components.scheduler.binding.SchedulerBinding;
-import com.github.loadup.components.scheduler.core.SchedulerTaskRegistry;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
@@ -50,8 +49,6 @@ import org.springframework.test.context.TestPropertySource;
 })
 class SimpleJobSchedulerIntegrationTest {
 
-    @Autowired
-    private SchedulerTaskRegistry taskRegistry;
 
     @Autowired
     private SchedulerBinding schedulerBinding;
@@ -62,7 +59,6 @@ class SimpleJobSchedulerIntegrationTest {
     @Test
     void testSchedulerAutoConfiguration() {
         // Then
-        assertThat(taskRegistry).isNotNull();
         assertThat(schedulerBinding).isNotNull();
     }
 
@@ -76,7 +72,6 @@ class SimpleJobSchedulerIntegrationTest {
 
         // Then
         assertThat(testTasks.getExecutionCount()).isGreaterThan(0);
-        assertThat(taskRegistry.findByTaskName("integrationTestTask")).isNotNull();
     }
 
     @Test
@@ -99,25 +94,7 @@ class SimpleJobSchedulerIntegrationTest {
         schedulerBinding.unregisterTask(taskName);
     }
 
-    @Test
-    void testTaskRegistryOperations() {
-        // Given
-        SchedulerTask task = SchedulerTask.builder()
-            .taskName("registryTask")
-            .cron("0 0 12 * * ?")
-            .build();
 
-        // When
-        taskRegistry.registerTask(task);
-
-        // Then
-        assertThat(taskRegistry.containsTask("registryTask")).isTrue();
-        assertThat(taskRegistry.findByTaskName("registryTask")).isEqualTo(task);
-        assertThat(taskRegistry.getTaskCount()).isGreaterThan(0);
-
-        // Cleanup
-        taskRegistry.removeTask("registryTask");
-    }
 
     @Configuration
     @EnableAutoConfiguration

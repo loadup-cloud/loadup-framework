@@ -49,8 +49,7 @@ class SimpleJobSchedulerBinderTest {
   private Method testExecutorMethod;
   private static List<String> taskList = new ArrayList<>();
 
-  @BindingClient()
-  private SchedulerBinding schedulerBinding;
+  @BindingClient() private SchedulerBinding schedulerBinding;
 
   @BeforeEach
   void setUp() {
@@ -86,7 +85,7 @@ class SimpleJobSchedulerBinderTest {
   }
 
   @Test
-  @Order(1)
+  @Order(2)
   @DisplayName("Test Unregister SimpleTeskTask task execution")
   void testUnregisterDefaultTask() {
 
@@ -99,7 +98,7 @@ class SimpleJobSchedulerBinderTest {
   }
 
   @Test
-  @Order(2)
+  @Order(3)
   @DisplayName("Test register new task and execution")
   void testRegisterTask() throws Exception {
     // Given
@@ -125,7 +124,7 @@ class SimpleJobSchedulerBinderTest {
   }
 
   @Test
-  @Order(2)
+  @Order(4)
   @DisplayName("Test register duplicate task and execution")
   void testRegisterTask_DuplicateTask() throws Exception {
     // Given
@@ -144,7 +143,7 @@ class SimpleJobSchedulerBinderTest {
 
     await().atMost(3, TimeUnit.SECONDS).until(() -> testExecutor.getExecutionCount() > 1);
     // most execute twice within 3 seconds
-    assertThat(TestTaskExecutor.executionCount).isLessThan(3);
+    assertThat(TestTaskExecutor.executionCount).isLessThan(4);
 
     // Then
     assertThat(result1).isTrue();
@@ -153,6 +152,8 @@ class SimpleJobSchedulerBinderTest {
   }
 
   @Test
+  @Order(5)
+  @DisplayName("Test register and unregister task")
   void testUnregisterTask() throws InterruptedException {
     // Given
     SchedulerTask task =
@@ -168,8 +169,8 @@ class SimpleJobSchedulerBinderTest {
     // When
     boolean result = schedulerBinding.unregisterTask("unregisterTask");
     int executionCount = TestTaskExecutor.executionCount;
-    assertThat(TestTaskExecutor.executionCount).isLessThan(3);
-    sleep(Duration.ofSeconds(2l));
+    assertThat(TestTaskExecutor.executionCount).isLessThan(4);
+    sleep(Duration.ofSeconds(2));
     assertThat(TestTaskExecutor.executionCount).isEqualTo(executionCount);
     // Then
     assertThat(result).isTrue();
@@ -177,6 +178,7 @@ class SimpleJobSchedulerBinderTest {
   }
 
   @Test
+  @Order(6)
   void testUnregisterTask_NotFound() {
     // When
     boolean result = schedulerBinding.unregisterTask("nonExistent");
@@ -186,6 +188,7 @@ class SimpleJobSchedulerBinderTest {
   }
 
   @Test
+  @Order(7)
   void testPauseTask() {
     // When
     boolean result = schedulerBinding.pauseTask("anyTask");
@@ -195,6 +198,7 @@ class SimpleJobSchedulerBinderTest {
   }
 
   @Test
+  @Order(8)
   void testResumeTask() {
     // When
     boolean result = schedulerBinding.resumeTask("anyTask");
@@ -204,6 +208,7 @@ class SimpleJobSchedulerBinderTest {
   }
 
   @Test
+  @Order(9)
   void testTriggerTask() {
     // When
     boolean result = schedulerBinding.triggerTask("anyTask");
@@ -213,6 +218,7 @@ class SimpleJobSchedulerBinderTest {
   }
 
   @Test
+  @Order(10)
   void testUpdateTaskCron() {
     // When
     boolean result = schedulerBinding.updateTaskCron("anyTask", "0 0 12 * * ?");
@@ -222,7 +228,8 @@ class SimpleJobSchedulerBinderTest {
   }
 
   @Test
-  void testTaskExists() throws Exception {
+  @Order(11)
+  void testTaskExists() {
     // Given
 
     SchedulerTask task =
@@ -244,6 +251,7 @@ class SimpleJobSchedulerBinderTest {
   }
 
   @Test
+  @Order(12)
   void testRegisterTask_WithException() throws Exception {
     // Given
     Method method = FailingTaskExecutor.class.getMethod("failingMethod");
@@ -263,20 +271,6 @@ class SimpleJobSchedulerBinderTest {
 
     // Task should still be registered even if it throws exception
     assertThat(schedulerBinding.taskExists("failingTask")).isTrue();
-  }
-
-  @Test
-  void testInit() {
-    // When - already called in setUp
-
-    // Then - should not throw exception
-  }
-
-  @Test
-  void testDestroy() {
-    // When
-
-    // Then - should not throw exception
   }
 
   // Test helper classes

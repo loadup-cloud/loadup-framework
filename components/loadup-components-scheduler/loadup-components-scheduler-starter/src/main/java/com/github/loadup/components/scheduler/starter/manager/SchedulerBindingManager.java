@@ -2,7 +2,6 @@ package com.github.loadup.components.scheduler.starter.manager;
 
 import com.github.loadup.components.scheduler.binder.SchedulerBinder;
 import com.github.loadup.components.scheduler.binding.SchedulerBinding;
-import com.github.loadup.components.scheduler.core.SchedulerTaskRegistry;
 import com.github.loadup.components.scheduler.starter.properties.SchedulerGroupProperties;
 import com.github.loadup.framework.api.manager.BindingManagerSupport;
 import org.springframework.context.ApplicationContext;
