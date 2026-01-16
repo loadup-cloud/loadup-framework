@@ -75,7 +75,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
     <dependencies>
         <dependency>
             <groupId>com.github.loadup.framework</groupId>
-            <artifactId>loadup-framework-bom</artifactId>
+            <artifactId>bom</artifactId>
             <version>1.0.0-SNAPSHOT</version>
             <type>pom</type>
             <scope>import</scope>
@@ -283,7 +283,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
         <dependencies>
             <dependency>
                 <groupId>com.github.loadup.framework</groupId>
-                <artifactId>loadup-framework-bom</artifactId>
+                <artifactId>bom</artifactId>
                 <version>${loadup.framework.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -375,7 +375,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 ```xml
 <dependency>
     <groupId>com.github.loadup.framework</groupId>
-    <artifactId>loadup-framework-bom</artifactId>
+    <artifactId>bom</artifactId>
     <version>1.1.0-SNAPSHOT</version> <!-- 修改这里 -->
     <type>pom</type>
     <scope>import</scope>

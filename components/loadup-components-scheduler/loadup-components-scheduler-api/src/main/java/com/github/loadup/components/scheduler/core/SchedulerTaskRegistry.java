@@ -23,7 +23,7 @@ package com.github.loadup.components.scheduler.core;
  */
 
 import com.github.loadup.components.scheduler.annotation.DistributedScheduler;
-import com.github.loadup.components.scheduler.api.SchedulerBinding;
+import com.github.loadup.components.scheduler.binding.SchedulerBinding;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -33,157 +33,165 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.annotation.AnnotationUtils;
 
 /**
- * Registry for managing scheduled tasks.
- * Scans for @DistributedScheduler annotations and registers tasks.
+ * Registry for managing scheduled tasks. Scans for @DistributedScheduler annotations and registers
+ * tasks.
  */
 @Slf4j
-public class SchedulerTaskRegistry implements BeanPostProcessor, ApplicationListener<ContextRefreshedEvent> {
+public class SchedulerTaskRegistry
+    implements BeanPostProcessor, ApplicationListener<ContextRefreshedEvent> {
+  private  ApplicationContext context;
 
-    private static final Map<String, SchedulerTask> TASK_REGISTRY = new ConcurrentHashMap<String, SchedulerTask>();
-    private static final Map<String, SchedulerTask> PENDING_TASKS = new ConcurrentHashMap<String, SchedulerTask>();
+  private static final Map<String, SchedulerTask> TASK_REGISTRY =
+      new ConcurrentHashMap<String, SchedulerTask>();
+  private static final Map<String, SchedulerTask> PENDING_TASKS =
+      new ConcurrentHashMap<String, SchedulerTask>();
 
-    @Autowired(required = false)
-    private SchedulerBinding schedulerBinding;
+  public SchedulerTaskRegistry( ) {
+  }
 
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        // Handle null bean
-        if (bean == null) {
-            return null;
+  @Override
+  public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    // Handle null bean
+    if (bean == null) {
+      return null;
+    }
+
+    Method[] methods = bean.getClass().getDeclaredMethods();
+    for (Method method : methods) {
+      DistributedScheduler annotation =
+          AnnotationUtils.getAnnotation(method, DistributedScheduler.class);
+      if (annotation != null) {
+        String taskName = annotation.name();
+        if (taskName == null || taskName.trim().length() == 0) {
+          // Use beanName if available, otherwise use class name
+          String prefix =
+              (beanName != null && !beanName.trim().isEmpty())
+                  ? beanName
+                  : bean.getClass().getSimpleName();
+          taskName = prefix + "." + method.getName();
         }
+        String cron = annotation.cron();
 
-        Method[] methods = bean.getClass().getDeclaredMethods();
-        for (Method method : methods) {
-            DistributedScheduler annotation =
-                AnnotationUtils.getAnnotation(method, DistributedScheduler.class);
-            if (annotation != null) {
-                String taskName = annotation.name();
-                if (taskName == null || taskName.trim().length() == 0) {
-                    // Use beanName if available, otherwise use class name
-                    String prefix = (beanName != null && !beanName.trim().isEmpty())
-                        ? beanName
-                        : bean.getClass().getSimpleName();
-                    taskName = prefix + "." + method.getName();
-                }
-                String cron = annotation.cron();
+        SchedulerTask task =
+            SchedulerTask.builder()
+                .taskName(taskName)
+                .cron(cron)
+                .method(method)
+                .targetBean(bean)
+                .annotation(DistributedScheduler.class)
+                .build();
 
-                SchedulerTask task = SchedulerTask.builder()
-                    .taskName(taskName)
-                    .cron(cron)
-                    .method(method)
-                    .targetBean(bean)
-                    .annotation(DistributedScheduler.class)
-                    .build();
+        registerTask(task);
 
-                registerTask(task);
+        // Store for later registration with scheduler binding
+        PENDING_TASKS.put(taskName, task);
+      }
+    }
+    return bean;
+  }
 
-                // Store for later registration with scheduler binding
-                PENDING_TASKS.put(taskName, task);
-            }
+  @Override
+  public void onApplicationEvent(ContextRefreshedEvent event) {
+    // Register all pending tasks with scheduler binding after context is fully initialized
+      SchedulerBinding schedulerBinding = context.getBean(SchedulerBinding.class);
+      if (schedulerBinding != null && !PENDING_TASKS.isEmpty()) {
+      log.info(
+          "Context refreshed, registering {} pending tasks with scheduler", PENDING_TASKS.size());
+      for (SchedulerTask task : PENDING_TASKS.values()) {
+        try {
+          schedulerBinding.registerTask(task);
+          log.info("Registered task '{}' with scheduler", task.getTaskName());
+        } catch (Exception e) {
+          log.error("Failed to register task '{}' with scheduler", task.getTaskName(), e);
         }
-        return bean;
+      }
+      PENDING_TASKS.clear();
     }
+  }
 
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        // Register all pending tasks with scheduler binding after context is fully initialized
-        if (schedulerBinding != null && !PENDING_TASKS.isEmpty()) {
-            log.info("Context refreshed, registering {} pending tasks with scheduler", PENDING_TASKS.size());
-            for (SchedulerTask task : PENDING_TASKS.values()) {
-                try {
-                    schedulerBinding.registerTask(task);
-                    log.info("Registered task '{}' with scheduler", task.getTaskName());
-                } catch (Exception e) {
-                    log.error("Failed to register task '{}' with scheduler", task.getTaskName(), e);
-                }
-            }
-            PENDING_TASKS.clear();
-        }
+  /**
+   * Register a task in the local registry.
+   *
+   * @param task the task to register
+   */
+  public void registerTask(SchedulerTask task) {
+    String taskName = task.getTaskName();
+    if (TASK_REGISTRY.containsKey(taskName)) {
+      log.warn("Task name '{}' already exists, overwriting", taskName);
     }
+    TASK_REGISTRY.put(taskName, task);
+    log.debug("Task '{}' registered in local registry", taskName);
+  }
 
-    /**
-     * Register a task in the local registry.
-     *
-     * @param task the task to register
-     */
-    public void registerTask(SchedulerTask task) {
-        String taskName = task.getTaskName();
-        if (TASK_REGISTRY.containsKey(taskName)) {
-            log.warn("Task name '{}' already exists, overwriting", taskName);
-        }
-        TASK_REGISTRY.put(taskName, task);
-        log.debug("Task '{}' registered in local registry", taskName);
-    }
+  /**
+   * Find a task by name.
+   *
+   * @param taskName the task name
+   * @return the task or null if not found
+   */
+  public SchedulerTask findByTaskName(String taskName) {
+    return TASK_REGISTRY.get(taskName);
+  }
 
-    /**
-     * Find a task by name.
-     *
-     * @param taskName the task name
-     * @return the task or null if not found
-     */
-    public SchedulerTask findByTaskName(String taskName) {
-        return TASK_REGISTRY.get(taskName);
-    }
+  /**
+   * Get all registered tasks.
+   *
+   * @return collection of all tasks
+   */
+  public Collection<SchedulerTask> findAllTasks() {
+    return TASK_REGISTRY.values();
+  }
 
-    /**
-     * Get all registered tasks.
-     *
-     * @return collection of all tasks
-     */
-    public Collection<SchedulerTask> findAllTasks() {
-        return TASK_REGISTRY.values();
-    }
+  /**
+   * Get all registered tasks as a map.
+   *
+   * @return map of task name to task
+   */
+  public Map<String, SchedulerTask> getTaskRegistry() {
+    return new ConcurrentHashMap<String, SchedulerTask>(TASK_REGISTRY);
+  }
 
-    /**
-     * Get all registered tasks as a map.
-     *
-     * @return map of task name to task
-     */
-    public Map<String, SchedulerTask> getTaskRegistry() {
-        return new ConcurrentHashMap<String, SchedulerTask>(TASK_REGISTRY);
-    }
+  /**
+   * Remove a task from the registry.
+   *
+   * @param taskName the task name
+   * @return the removed task or null if not found
+   */
+  public SchedulerTask removeTask(String taskName) {
+    return TASK_REGISTRY.remove(taskName);
+  }
 
-    /**
-     * Remove a task from the registry.
-     *
-     * @param taskName the task name
-     * @return the removed task or null if not found
-     */
-    public SchedulerTask removeTask(String taskName) {
-        return TASK_REGISTRY.remove(taskName);
-    }
+  /**
+   * Get all registered tasks.
+   *
+   * @return collection of all tasks
+   */
+  public java.util.Collection<SchedulerTask> getAllTasks() {
+    return new java.util.ArrayList<>(TASK_REGISTRY.values());
+  }
 
-    /**
-     * Get all registered tasks.
-     *
-     * @return collection of all tasks
-     */
-    public java.util.Collection<SchedulerTask> getAllTasks() {
-        return new java.util.ArrayList<>(TASK_REGISTRY.values());
-    }
+  /**
+   * Check if a task exists in the registry.
+   *
+   * @param taskName the task name
+   * @return true if task exists
+   */
+  public boolean containsTask(String taskName) {
+    return TASK_REGISTRY.containsKey(taskName);
+  }
 
-    /**
-     * Check if a task exists in the registry.
-     *
-     * @param taskName the task name
-     * @return true if task exists
-     */
-    public boolean containsTask(String taskName) {
-        return TASK_REGISTRY.containsKey(taskName);
-    }
-
-    /**
-     * Get the count of registered tasks.
-     *
-     * @return the number of tasks
-     */
-    public int getTaskCount() {
-        return TASK_REGISTRY.size();
-    }
+  /**
+   * Get the count of registered tasks.
+   *
+   * @return the number of tasks
+   */
+  public int getTaskCount() {
+    return TASK_REGISTRY.size();
+  }
 }
-

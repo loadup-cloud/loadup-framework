@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.StringUtils;
 
 public abstract class BindingManagerSupport<B extends Binder, T extends Binding> {
   protected final ApplicationContext context;
@@ -29,8 +30,15 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
     registry.put(type.toLowerCase(), meta);
   }
 
+  public <R extends T> R getBinding() {
+    return getBinding("default");
+  }
+
   @SuppressWarnings("unchecked")
   public <R extends T> R getBinding(String bizTag) {
+    if (!StringUtils.hasText(bizTag)) {
+      bizTag = "default";
+    }
     return (R)
         bindingCache.computeIfAbsent(
             bizTag,

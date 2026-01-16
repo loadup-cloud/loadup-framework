@@ -22,7 +22,7 @@ package com.github.loadup.components.scheduler.powerjob.binder;
  * #L%
  */
 
-import com.github.loadup.components.scheduler.api.SchedulerBinder;
+import com.github.loadup.components.scheduler.binder.SchedulerBinder;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

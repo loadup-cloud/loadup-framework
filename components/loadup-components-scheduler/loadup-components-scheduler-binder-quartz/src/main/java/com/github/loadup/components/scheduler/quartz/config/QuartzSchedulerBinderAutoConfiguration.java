@@ -22,7 +22,7 @@ package com.github.loadup.components.scheduler.quartz.config;
  * #L%
  */
 
-import com.github.loadup.components.scheduler.api.SchedulerBinder;
+import com.github.loadup.components.scheduler.binder.SchedulerBinder;
 import com.github.loadup.components.scheduler.config.SchedulerAutoConfiguration;
 import com.github.loadup.components.scheduler.quartz.binder.QuartzSchedulerBinder;
 import lombok.extern.slf4j.Slf4j;

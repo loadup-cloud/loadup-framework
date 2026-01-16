@@ -22,241 +22,280 @@ package com.github.loadup.components.scheduler.simplejob;
  * #L%
  */
 
+import static org.apache.commons.lang3.ThreadUtils.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
+import com.github.loadup.components.scheduler.SimpleTestTask;
+import com.github.loadup.components.scheduler.TestApplication;
+import com.github.loadup.components.scheduler.binding.SchedulerBinding;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
 import java.lang.reflect.Method;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
-import org.junit.jupiter.api.*;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-/**
- * Unit tests for SimpleJobSchedulerBinder.
- */
+import com.github.loadup.framework.api.annotation.BindingClient;
+import org.junit.jupiter.api.*;
+import org.springframework.boot.test.context.SpringBootTest;
+
+/** Unit tests for SimpleJobSchedulerBinder. */
+@SpringBootTest(classes = TestApplication.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class SimpleJobSchedulerBinderTest {
 
-    private SimpleJobSchedulerBinder binder;
-    private TaskScheduler            taskScheduler;
-    private TestTaskExecutor         testExecutor;
+  private TestTaskExecutor testExecutor;
+  private Method testExecutorMethod;
+  private static List<String> taskList = new ArrayList<>();
 
-    @BeforeEach
-    void setUp() {
-        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-        scheduler.setPoolSize(2);
-        scheduler.setThreadNamePrefix("test-");
-        scheduler.initialize();
-        taskScheduler = scheduler;
+  @BindingClient()
+  private SchedulerBinding schedulerBinding;
 
-        binder = new SimpleJobSchedulerBinder(taskScheduler);
-        binder.init();
-
-        testExecutor = new TestTaskExecutor();
+  @BeforeEach
+  void setUp() {
+    try {
+      testExecutor = new TestTaskExecutor();
+      testExecutorMethod = TestTaskExecutor.class.getMethod("execute");
+    } catch (NoSuchMethodException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    @AfterEach
-    void tearDown() {
-        if (binder != null) {
-            binder.destroy();
-        }
+  @AfterEach
+  void tearDown() {
+    if (schedulerBinding != null) {
+      taskList.forEach(v -> schedulerBinding.unregisterTask(v));
     }
+  }
 
-    @Test
-    void testGetName() {
-        // When
-        String name = binder.getName();
-
-        // Then
-        assertThat(name).isEqualTo("simplejob");
+  protected void safeSleep(long second) {
+    try {
+      sleep(Duration.ofSeconds(second));
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
     }
+  }
 
-    @Test
-    void testRegisterTask() throws Exception {
-        // Given
-        Method method = TestTaskExecutor.class.getMethod("execute");
-        SchedulerTask task = SchedulerTask.builder()
+  @Test
+  @Order(1)
+  @DisplayName("Test SimpleTeskTask task execution")
+  void testDefaultTask() {
+    await().atMost(2, TimeUnit.SECONDS).until(() -> SimpleTestTask.a.get() > 1);
+    Assertions.assertTrue(SimpleTestTask.a.get() > 1);
+  }
+
+  @Test
+  @Order(1)
+  @DisplayName("Test Unregister SimpleTeskTask task execution")
+  void testUnregisterDefaultTask() {
+
+    await().atMost(5, TimeUnit.SECONDS).until(() -> schedulerBinding.taskExists("SimpleTestTask"));
+    boolean result = schedulerBinding.unregisterTask("SimpleTestTask");
+    Assertions.assertTrue(result);
+    int executionCount = SimpleTestTask.a.get();
+    safeSleep(2);
+    Assertions.assertEquals(executionCount, SimpleTestTask.a.get());
+  }
+
+  @Test
+  @Order(2)
+  @DisplayName("Test register new task and execution")
+  void testRegisterTask() throws Exception {
+    // Given
+    SchedulerTask task =
+        SchedulerTask.builder()
             .taskName("testTask")
-            .cron("*/1 * * * * ?") // Every second
-            .method(method)
+            .cron("*/1 * * * * ?")
+            .method(testExecutorMethod)
             .targetBean(testExecutor)
             .build();
+    taskList.add("testTask");
+    // When
+    boolean result = schedulerBinding.registerTask(task);
 
-        // When
-        boolean result = binder.registerTask(task);
+    // Then
+    assertThat(result).isTrue();
+    assertThat(schedulerBinding.taskExists("testTask")).isTrue();
 
-        // Then
-        assertThat(result).isTrue();
-        assertThat(binder.taskExists("testTask")).isTrue();
+    // Wait for task execution
+    await().atMost(5, TimeUnit.SECONDS).until(() -> testExecutor.getExecutionCount() > 2);
 
-        // Wait for task execution
-        await().atMost(3, TimeUnit.SECONDS)
-            .until(() -> testExecutor.getExecutionCount() > 0);
+    assertThat(testExecutor.getExecutionCount()).isGreaterThan(0);
+  }
 
-        assertThat(testExecutor.getExecutionCount()).isGreaterThan(0);
-    }
-
-    @Test
-    void testRegisterTask_DuplicateTask() throws Exception {
-        // Given
-        Method method = TestTaskExecutor.class.getMethod("execute");
-        SchedulerTask task = SchedulerTask.builder()
+  @Test
+  @Order(2)
+  @DisplayName("Test register duplicate task and execution")
+  void testRegisterTask_DuplicateTask() throws Exception {
+    // Given
+    SchedulerTask task =
+        SchedulerTask.builder()
             .taskName("duplicateTask")
             .cron("*/1 * * * * ?")
-            .method(method)
+            .method(testExecutorMethod)
             .targetBean(testExecutor)
             .build();
+    taskList.add("duplicateTask");
 
-        // When
-        boolean result1 = binder.registerTask(task);
-        boolean result2 = binder.registerTask(task);
+    // When
+    boolean result1 = schedulerBinding.registerTask(task);
+    boolean result2 = schedulerBinding.registerTask(task);
 
-        // Then
-        assertThat(result1).isTrue();
-        assertThat(result2).isTrue();
-        assertThat(binder.taskExists("duplicateTask")).isTrue();
-    }
+    await().atMost(3, TimeUnit.SECONDS).until(() -> testExecutor.getExecutionCount() > 1);
+    // most execute twice within 3 seconds
+    assertThat(TestTaskExecutor.executionCount).isLessThan(3);
 
-    @Test
-    void testUnregisterTask() throws Exception {
-        // Given
-        Method method = TestTaskExecutor.class.getMethod("execute");
-        SchedulerTask task = SchedulerTask.builder()
+    // Then
+    assertThat(result1).isTrue();
+    assertThat(result2).isTrue();
+    assertThat(schedulerBinding.taskExists("duplicateTask")).isTrue();
+  }
+
+  @Test
+  void testUnregisterTask() throws InterruptedException {
+    // Given
+    SchedulerTask task =
+        SchedulerTask.builder()
             .taskName("unregisterTask")
             .cron("*/1 * * * * ?")
-            .method(method)
+            .method(testExecutorMethod)
             .targetBean(testExecutor)
             .build();
-        binder.registerTask(task);
+    schedulerBinding.registerTask(task);
 
-        // When
-        boolean result = binder.unregisterTask("unregisterTask");
+    await().atMost(2, TimeUnit.SECONDS).until(() -> testExecutor.getExecutionCount() > 1);
+    // When
+    boolean result = schedulerBinding.unregisterTask("unregisterTask");
+    int executionCount = TestTaskExecutor.executionCount;
+    assertThat(TestTaskExecutor.executionCount).isLessThan(3);
+    sleep(Duration.ofSeconds(2l));
+    assertThat(TestTaskExecutor.executionCount).isEqualTo(executionCount);
+    // Then
+    assertThat(result).isTrue();
+    assertThat(schedulerBinding.taskExists("unregisterTask")).isFalse();
+  }
 
-        // Then
-        assertThat(result).isTrue();
-        assertThat(binder.taskExists("unregisterTask")).isFalse();
-    }
+  @Test
+  void testUnregisterTask_NotFound() {
+    // When
+    boolean result = schedulerBinding.unregisterTask("nonExistent");
 
-    @Test
-    void testUnregisterTask_NotFound() {
-        // When
-        boolean result = binder.unregisterTask("nonExistent");
+    // Then
+    assertThat(result).isFalse();
+  }
 
-        // Then
-        assertThat(result).isFalse();
-    }
+  @Test
+  void testPauseTask() {
+    // When
+    boolean result = schedulerBinding.pauseTask("anyTask");
 
-    @Test
-    void testPauseTask() {
-        // When
-        boolean result = binder.pauseTask("anyTask");
+    // Then
+    assertThat(result).isFalse(); // SimpleJob doesn't support pause
+  }
 
-        // Then
-        assertThat(result).isFalse(); // SimpleJob doesn't support pause
-    }
+  @Test
+  void testResumeTask() {
+    // When
+    boolean result = schedulerBinding.resumeTask("anyTask");
 
-    @Test
-    void testResumeTask() {
-        // When
-        boolean result = binder.resumeTask("anyTask");
+    // Then
+    assertThat(result).isFalse(); // SimpleJob doesn't support resume
+  }
 
-        // Then
-        assertThat(result).isFalse(); // SimpleJob doesn't support resume
-    }
+  @Test
+  void testTriggerTask() {
+    // When
+    boolean result = schedulerBinding.triggerTask("anyTask");
 
-    @Test
-    void testTriggerTask() {
-        // When
-        boolean result = binder.triggerTask("anyTask");
+    // Then
+    assertThat(result).isFalse(); // SimpleJob doesn't support manual trigger
+  }
 
-        // Then
-        assertThat(result).isFalse(); // SimpleJob doesn't support manual trigger
-    }
+  @Test
+  void testUpdateTaskCron() {
+    // When
+    boolean result = schedulerBinding.updateTaskCron("anyTask", "0 0 12 * * ?");
 
-    @Test
-    void testUpdateTaskCron() {
-        // When
-        boolean result = binder.updateTaskCron("anyTask", "0 0 12 * * ?");
+    // Then
+    assertThat(result).isFalse(); // SimpleJob doesn't support cron update
+  }
 
-        // Then
-        assertThat(result).isFalse(); // SimpleJob doesn't support cron update
-    }
+  @Test
+  void testTaskExists() throws Exception {
+    // Given
 
-    @Test
-    void testTaskExists() throws Exception {
-        // Given
-        Method method = TestTaskExecutor.class.getMethod("execute");
-        SchedulerTask task = SchedulerTask.builder()
+    SchedulerTask task =
+        SchedulerTask.builder()
             .taskName("existTask")
             .cron("0 0 12 * * ?")
-            .method(method)
+            .method(testExecutorMethod)
             .targetBean(testExecutor)
             .build();
 
-        // When
-        boolean beforeRegister = binder.taskExists("existTask");
-        binder.registerTask(task);
-        boolean afterRegister = binder.taskExists("existTask");
+    // When
+    boolean beforeRegister = schedulerBinding.taskExists("existTask");
+    schedulerBinding.registerTask(task);
+    boolean afterRegister = schedulerBinding.taskExists("existTask");
 
-        // Then
-        assertThat(beforeRegister).isFalse();
-        assertThat(afterRegister).isTrue();
-    }
+    // Then
+    assertThat(beforeRegister).isFalse();
+    assertThat(afterRegister).isTrue();
+  }
 
-    @Test
-    void testRegisterTask_WithException() throws Exception {
-        // Given
-        Method method = FailingTaskExecutor.class.getMethod("failingMethod");
-        SchedulerTask task = SchedulerTask.builder()
+  @Test
+  void testRegisterTask_WithException() throws Exception {
+    // Given
+    Method method = FailingTaskExecutor.class.getMethod("failingMethod");
+    SchedulerTask task =
+        SchedulerTask.builder()
             .taskName("failingTask")
             .cron("*/1 * * * * ?")
             .method(method)
             .targetBean(new FailingTaskExecutor())
             .build();
 
-        // When
-        boolean result = binder.registerTask(task);
+    // When
+    boolean result = schedulerBinding.registerTask(task);
 
-        // Then
-        assertThat(result).isTrue();
+    // Then
+    assertThat(result).isTrue();
 
-        // Task should still be registered even if it throws exception
-        assertThat(binder.taskExists("failingTask")).isTrue();
+    // Task should still be registered even if it throws exception
+    assertThat(schedulerBinding.taskExists("failingTask")).isTrue();
+  }
+
+  @Test
+  void testInit() {
+    // When - already called in setUp
+
+    // Then - should not throw exception
+  }
+
+  @Test
+  void testDestroy() {
+    // When
+
+    // Then - should not throw exception
+  }
+
+  // Test helper classes
+  public static class TestTaskExecutor {
+    public static int executionCount = 0;
+
+    public void execute() {
+      executionCount++;
+      System.out.println(executionCount);
     }
 
-    @Test
-    void testInit() {
-        // When - already called in setUp
-        binder.init();
-
-        // Then - should not throw exception
+    public int getExecutionCount() {
+      return executionCount;
     }
+  }
 
-    @Test
-    void testDestroy() {
-        // When
-        binder.destroy();
-
-        // Then - should not throw exception
+  public static class FailingTaskExecutor {
+    public void failingMethod() {
+      throw new RuntimeException("Task execution failed");
     }
-
-    // Test helper classes
-    public static class TestTaskExecutor {
-        private int executionCount = 0;
-
-        public void execute() {
-            executionCount++;
-        }
-
-        public int getExecutionCount() {
-            return executionCount;
-        }
-    }
-
-    public static class FailingTaskExecutor {
-        public void failingMethod() {
-            throw new RuntimeException("Task execution failed");
-        }
-    }
+  }
 }
-

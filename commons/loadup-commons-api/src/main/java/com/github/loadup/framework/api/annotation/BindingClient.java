@@ -7,5 +7,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface BindingClient {
   /** 对应 YAML 中的 bindings.key */
-  String value();
+  String value() default "default";
 }

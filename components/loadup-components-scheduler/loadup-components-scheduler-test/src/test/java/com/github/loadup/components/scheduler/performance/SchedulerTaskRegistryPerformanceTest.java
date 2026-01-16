@@ -28,7 +28,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.github.loadup.components.scheduler.annotation.DistributedScheduler;
-import com.github.loadup.components.scheduler.api.SchedulerBinding;
+import com.github.loadup.components.scheduler.binding.SchedulerBinding;
 import com.github.loadup.components.scheduler.core.SchedulerTaskRegistry;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
 import java.lang.reflect.Field;

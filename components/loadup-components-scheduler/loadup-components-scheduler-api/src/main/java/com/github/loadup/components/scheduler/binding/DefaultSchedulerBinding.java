@@ -22,84 +22,62 @@ package com.github.loadup.components.scheduler.binding;
  * #L%
  */
 
-import com.github.loadup.components.scheduler.api.SchedulerBinder;
-import com.github.loadup.components.scheduler.api.SchedulerBinding;
+import com.github.loadup.components.scheduler.binder.SchedulerBinder;
+import com.github.loadup.components.scheduler.cfg.SchedulerBindingCfg;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
+import com.github.loadup.framework.api.binding.AbstractBinding;
 import com.github.loadup.framework.api.context.BindingContext;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Default implementation of SchedulerBinding that delegates to a SchedulerBinder.
- */
+/** Default implementation of SchedulerBinding that delegates to a SchedulerBinder. */
 @Slf4j
-public class DefaultSchedulerBinding implements SchedulerBinding {
+public class DefaultSchedulerBinding
+    extends AbstractBinding<SchedulerBinder<?, SchedulerBindingCfg>, SchedulerBindingCfg>
+    implements SchedulerBinding {
 
-    private final SchedulerBinder schedulerBinder;
+  @Override
+  public boolean registerTask(SchedulerTask task) {
+    log.debug("Registering task: {}", task.getTaskName());
+    return getBinder().registerTask(task);
+  }
 
-    public DefaultSchedulerBinding(SchedulerBinder schedulerBinder) {
-        this.schedulerBinder = schedulerBinder;
-    log.info("Initialized SchedulerBinding with binder: {}", schedulerBinder.getBinderType());
-    }
+  @Override
+  public boolean unregisterTask(String taskName) {
+    log.debug("Unregistering task: {}", taskName);
+    return getBinder().unregisterTask(taskName);
+  }
 
-    @Override
-    public boolean registerTask(SchedulerTask task) {
-        log.debug("Registering task: {}", task.getTaskName());
-        return schedulerBinder.registerTask(task);
-    }
+  @Override
+  public boolean pauseTask(String taskName) {
+    log.debug("Pausing task: {}", taskName);
+    return getBinder().pauseTask(taskName);
+  }
 
-    @Override
-    public boolean unregisterTask(String taskName) {
-        log.debug("Unregistering task: {}", taskName);
-        return schedulerBinder.unregisterTask(taskName);
-    }
+  @Override
+  public boolean resumeTask(String taskName) {
+    log.debug("Resuming task: {}", taskName);
+    return getBinder().resumeTask(taskName);
+  }
 
-    @Override
-    public boolean pauseTask(String taskName) {
-        log.debug("Pausing task: {}", taskName);
-        return schedulerBinder.pauseTask(taskName);
-    }
+  @Override
+  public boolean triggerTask(String taskName) {
+    log.debug("Triggering task: {}", taskName);
+    return getBinder().triggerTask(taskName);
+  }
 
-    @Override
-    public boolean resumeTask(String taskName) {
-        log.debug("Resuming task: {}", taskName);
-        return schedulerBinder.resumeTask(taskName);
-    }
+  @Override
+  public boolean updateTaskCron(String taskName, String cron) {
+    log.debug("Updating task {} cron to: {}", taskName, cron);
+    return getBinder().updateTaskCron(taskName, cron);
+  }
 
-    @Override
-    public boolean triggerTask(String taskName) {
-        log.debug("Triggering task: {}", taskName);
-        return schedulerBinder.triggerTask(taskName);
-    }
-
-    @Override
-    public boolean updateTaskCron(String taskName, String cron) {
-        log.debug("Updating task {} cron to: {}", taskName, cron);
-        return schedulerBinder.updateTaskCron(taskName, cron);
-    }
-
-    @Override
-    public boolean taskExists(String taskName) {
-        return schedulerBinder.taskExists(taskName);
-    }
+  @Override
+  public boolean taskExists(String taskName) {
+    return getBinder().taskExists(taskName);
+  }
 
   public void afterInit() {
-        log.info("Initializing scheduler binding");
-    schedulerBinder.binderInit();
-    }
-
-    public void destroy() {
-        log.info("Destroying scheduler binding");
-    schedulerBinder.binderDestroy();
-    }
-
-    @Override
-    public String name() {
-        return "";
-    }
-
-    @Override
-    public void init(BindingContext<?, ?> context) {
-
-    }
+    log.info("Initializing scheduler binding");
+    getBinder().binderInit();
+  }
 }
-

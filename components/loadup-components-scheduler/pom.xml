@@ -23,10 +23,11 @@
     <modules>
         <module>loadup-components-scheduler-api</module>
         <module>loadup-components-scheduler-binder-simplejob</module>
-        <module>loadup-components-scheduler-binder-quartz</module>
-        <module>loadup-components-scheduler-binder-xxljob</module>
-        <module>loadup-components-scheduler-binder-powerjob</module>
-        <!--        <module>loadup-components-scheduler-test</module>-->
+<!--        <module>loadup-components-scheduler-binder-quartz</module>-->
+<!--        <module>loadup-components-scheduler-binder-xxljob</module>-->
+<!--        <module>loadup-components-scheduler-binder-powerjob</module>-->
+                <module>loadup-components-scheduler-starter</module>
+                <module>loadup-components-scheduler-test</module>
     </modules>
 
     <dependencyManagement>

@@ -29,10 +29,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Test application for scheduler component testing.
  */
 @SpringBootApplication
-public class SchedulerTestApplication {
+public class TestApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SchedulerTestApplication.class, args);
+        SpringApplication.run(TestApplication.class, args);
     }
 }
 

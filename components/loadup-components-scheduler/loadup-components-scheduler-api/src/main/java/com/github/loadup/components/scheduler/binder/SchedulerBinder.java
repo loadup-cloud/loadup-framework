@@ -1,4 +1,4 @@
-package com.github.loadup.components.scheduler.api;
+package com.github.loadup.components.scheduler.binder;
 
 /*-
  * #%L
@@ -22,6 +22,8 @@ package com.github.loadup.components.scheduler.api;
  * #L%
  */
 
+import com.github.loadup.components.scheduler.cfg.SchedulerBinderCfg;
+import com.github.loadup.components.scheduler.cfg.SchedulerBindingCfg;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
 import com.github.loadup.framework.api.binder.Binder;
 
@@ -29,8 +31,8 @@ import com.github.loadup.framework.api.binder.Binder;
  * Base scheduler binder interface providing common scheduler operations. Implementations should
  * provide concrete logic for different scheduler frameworks.
  */
-public interface SchedulerBinder extends Binder {
-
+public interface SchedulerBinder<C extends SchedulerBinderCfg, S extends SchedulerBindingCfg>
+    extends Binder<C, S> {
     /**
      * Register a scheduled task.
      *

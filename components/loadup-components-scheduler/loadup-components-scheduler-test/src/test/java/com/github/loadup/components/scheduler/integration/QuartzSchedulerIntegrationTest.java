@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 import com.github.loadup.components.scheduler.annotation.DistributedScheduler;
-import com.github.loadup.components.scheduler.api.SchedulerBinding;
+import com.github.loadup.components.scheduler.binding.SchedulerBinding;
 import com.github.loadup.components.scheduler.core.SchedulerTaskRegistry;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
 import java.util.concurrent.atomic.AtomicInteger;

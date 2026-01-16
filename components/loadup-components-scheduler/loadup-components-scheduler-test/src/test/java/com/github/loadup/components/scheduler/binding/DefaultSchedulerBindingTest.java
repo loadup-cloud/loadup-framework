@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.github.loadup.components.scheduler.api.SchedulerBinder;
+import com.github.loadup.components.scheduler.binder.SchedulerBinder;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,8 +47,7 @@ class DefaultSchedulerBindingTest {
 
     @BeforeEach
     void setUp() {
-        when(schedulerBinder.getName()).thenReturn("test-binder");
-        schedulerBinding = new DefaultSchedulerBinding(schedulerBinder);
+        schedulerBinding = new DefaultSchedulerBinding();
     }
 
     @Test
@@ -153,22 +152,6 @@ class DefaultSchedulerBindingTest {
         verify(schedulerBinder).taskExists(taskName);
     }
 
-    @Test
-    void testInit() {
-        // When
-        schedulerBinding.init();
 
-        // Then
-        verify(schedulerBinder).init();
-    }
-
-    @Test
-    void testDestroy() {
-        // When
-        schedulerBinding.destroy();
-
-        // Then
-        verify(schedulerBinder).destroy();
-    }
 }
 

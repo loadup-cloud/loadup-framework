@@ -22,7 +22,7 @@ package com.github.loadup.components.scheduler.quartz.binder;
  * #L%
  */
 
-import com.github.loadup.components.scheduler.api.SchedulerBinder;
+import com.github.loadup.components.scheduler.binder.SchedulerBinder;
 import com.github.loadup.components.scheduler.model.SchedulerTask;
 import com.github.loadup.components.scheduler.quartz.job.SchedulerTaskJob;
 import java.util.Map;

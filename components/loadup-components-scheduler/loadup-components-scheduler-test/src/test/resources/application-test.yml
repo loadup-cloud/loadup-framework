@@ -1,0 +1,10 @@
+loadup:
+  scheduler:
+    default-binder: simplejob
+    enabled-binders: [ simplejob ]
+    binders:
+      simplejob:
+        pool-size: 10
+#    bindings:
+#      simple-task:
+#        binder-type: simplejob
