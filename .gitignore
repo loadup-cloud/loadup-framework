@@ -1,7 +1,7 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/maincom.github.loadup.components.gatewaytarget/
-!**/src/testcom.github.loadup.components.gatewaytarget/
+!**/src/mainio.github.loadup.components.gatewaytarget/
+!**/src/testio.github.loadup.components.gatewaytarget/
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
@@ -29,8 +29,8 @@ target/
 /nbdist/
 /.nb-gradle/
 build/
-!**/src/maincom.github.loadup.components.gatewaybuild/
-!**/src/testcom.github.loadup.components.gatewaybuild/
+!**/src/mainio.github.loadup.components.gatewaybuild/
+!**/src/testio.github.loadup.components.gatewaybuild/
 
 ### VS Code ###
 .vscode/

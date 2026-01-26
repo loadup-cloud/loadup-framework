@@ -166,7 +166,7 @@ management:
 logging:
   level:
     root: INFO
-    com.github.loadup.components.gotone: DEBUG
+    io.github.loadup.components.gotone: DEBUG
     org.springframework.jdbc: INFO
     org.springframework.data.jdbc: DEBUG
   pattern:
@@ -259,7 +259,7 @@ logging:
 #       mode: always  # 开发环境自动初始化数据库
 # logging:
 #   level:
-#     com.github.loadup.components.gotone: DEBUG
+#     io.github.loadup.components.gotone: DEBUG
 
 # ============================================================================
 # 生产环境配置（可选）
@@ -278,7 +278,7 @@ logging:
 #       mode: never  # 生产环境不自动初始化
 # logging:
 #   level:
-#     com.github.loadup.components.gotone: INFO
+#     io.github.loadup.components.gotone: INFO
 #     root: WARN
 #   file:
 #     name: /var/log/gotone/gotone.log

@@ -1,2 +1,2 @@
-com.github.loadup.framework.liquibase.autoconfig.LiquibaseAutoConfiguration
+io.github.loadup.framework.liquibase.autoconfig.LiquibaseAutoConfiguration
 

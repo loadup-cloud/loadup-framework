@@ -53,7 +53,7 @@ loadup:
 # 使用 SimpleJob（默认）
 loadup.scheduler.type=simplejob
 # 日志级别
-logging.level.com.github.loadup.components.scheduler=INFO
+logging.level.io.github.loadup.components.scheduler=INFO
 ```
 
 ## 💻 使用示例

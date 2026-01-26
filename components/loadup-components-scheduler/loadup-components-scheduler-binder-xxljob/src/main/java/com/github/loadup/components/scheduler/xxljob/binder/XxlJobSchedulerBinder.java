@@ -1,4 +1,4 @@
-package com.github.loadup.components.scheduler.xxljob.binder;
+package io.github.loadup.components.scheduler.xxljob.binder;
 
 /*-
  * #%L
@@ -22,8 +22,8 @@ package com.github.loadup.components.scheduler.xxljob.binder;
  * #L%
  */
 
-import com.github.loadup.components.scheduler.binder.SchedulerBinder;
-import com.github.loadup.components.scheduler.model.SchedulerTask;
+import io.github.loadup.components.scheduler.binder.SchedulerBinder;
+import io.github.loadup.components.scheduler.model.SchedulerTask;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;

@@ -2,50 +2,50 @@
   "groups": [
     {
       "name": "loadup.testcontainers",
-      "type": "com.github.loadup.components.testcontainers.config.TestContainersProperties",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties",
+      "type": "io.github.loadup.components.testcontainers.config.TestContainersProperties",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties",
       "description": "Configuration properties for TestContainers."
     },
     {
       "name": "loadup.testcontainers.mysql",
-      "type": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties",
+      "type": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties",
       "sourceMethod": "getMysql()"
     },
     {
       "name": "loadup.testcontainers.postgresql",
-      "type": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties",
+      "type": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties",
       "sourceMethod": "getPostgresql()"
     },
     {
       "name": "loadup.testcontainers.mongodb",
-      "type": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties",
+      "type": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties",
       "sourceMethod": "getMongodb()"
     },
     {
       "name": "loadup.testcontainers.redis",
-      "type": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties",
+      "type": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties",
       "sourceMethod": "getRedis()"
     },
     {
       "name": "loadup.testcontainers.kafka",
-      "type": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties",
+      "type": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties",
       "sourceMethod": "getKafka()"
     },
     {
       "name": "loadup.testcontainers.elasticsearch",
-      "type": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties",
+      "type": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties",
       "sourceMethod": "getElasticsearch()"
     },
     {
       "name": "loadup.testcontainers.localstack",
-      "type": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties",
+      "type": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties",
       "sourceMethod": "getLocalstack()"
     }
   ],
@@ -54,117 +54,117 @@
       "name": "loadup.testcontainers.enabled",
       "type": "java.lang.Boolean",
       "description": "Global switch to enable/disable all TestContainers. When set to false, all containers will be disabled and real services from application.yml will be used.",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties",
       "defaultValue": true
     },
     {
       "name": "loadup.testcontainers.mysql.enabled",
       "type": "java.lang.Boolean",
       "description": "Enable MySQL TestContainer. When false, uses real MySQL from spring.datasource configuration.",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
       "defaultValue": true
     },
     {
       "name": "loadup.testcontainers.mysql.version",
       "type": "java.lang.String",
       "description": "Docker image version for MySQL container (e.g., 'mysql:8.0', 'mysql:8.0.32').",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
     },
     {
       "name": "loadup.testcontainers.mysql.database",
       "type": "java.lang.String",
       "description": "Database name for MySQL container.",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
     },
     {
       "name": "loadup.testcontainers.mysql.username",
       "type": "java.lang.String",
       "description": "Username for MySQL container.",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
     },
     {
       "name": "loadup.testcontainers.mysql.password",
       "type": "java.lang.String",
       "description": "Password for MySQL container.",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
     },
     {
       "name": "loadup.testcontainers.postgresql.enabled",
       "type": "java.lang.Boolean",
       "description": "Enable PostgreSQL TestContainer. When false, uses real PostgreSQL from spring.datasource configuration.",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
       "defaultValue": true
     },
     {
       "name": "loadup.testcontainers.postgresql.version",
       "type": "java.lang.String",
       "description": "Docker image version for PostgreSQL container (e.g., 'postgres:15-alpine').",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
     },
     {
       "name": "loadup.testcontainers.mongodb.enabled",
       "type": "java.lang.Boolean",
       "description": "Enable MongoDB TestContainer. When false, uses real MongoDB from spring.data.mongodb configuration.",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
       "defaultValue": true
     },
     {
       "name": "loadup.testcontainers.mongodb.version",
       "type": "java.lang.String",
       "description": "Docker image version for MongoDB container (e.g., 'mongo:7.0').",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
     },
     {
       "name": "loadup.testcontainers.redis.enabled",
       "type": "java.lang.Boolean",
       "description": "Enable Redis TestContainer. When false, uses real Redis from spring.redis configuration.",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
       "defaultValue": true
     },
     {
       "name": "loadup.testcontainers.redis.version",
       "type": "java.lang.String",
       "description": "Docker image version for Redis container (e.g., 'redis:7-alpine').",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
     },
     {
       "name": "loadup.testcontainers.kafka.enabled",
       "type": "java.lang.Boolean",
       "description": "Enable Kafka TestContainer. When false, uses real Kafka from spring.kafka configuration.",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
       "defaultValue": true
     },
     {
       "name": "loadup.testcontainers.kafka.version",
       "type": "java.lang.String",
       "description": "Docker image version for Kafka container (e.g., 'apache/kafka:4.1.1').",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
     },
     {
       "name": "loadup.testcontainers.elasticsearch.enabled",
       "type": "java.lang.Boolean",
       "description": "Enable Elasticsearch TestContainer. When false, uses real Elasticsearch from spring.elasticsearch configuration.",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
       "defaultValue": true
     },
     {
       "name": "loadup.testcontainers.elasticsearch.version",
       "type": "java.lang.String",
       "description": "Docker image version for Elasticsearch container (e.g., 'docker.elastic.co/elasticsearch/elasticsearch:8.11.0').",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
     },
     {
       "name": "loadup.testcontainers.localstack.enabled",
       "type": "java.lang.Boolean",
       "description": "Enable LocalStack TestContainer for S3. When false, uses real AWS S3 from aws.s3 configuration.",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig",
       "defaultValue": true
     },
     {
       "name": "loadup.testcontainers.localstack.version",
       "type": "java.lang.String",
       "description": "Docker image version for LocalStack container (e.g., 'localstack/localstack:3.0').",
-      "sourceType": "com.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
+      "sourceType": "io.github.loadup.components.testcontainers.config.TestContainersProperties$ContainerConfig"
     }
   ],
   "hints": []

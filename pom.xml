@@ -84,12 +84,12 @@
             </dependency>
 
             <dependency>
-                <groupId>com.github.loadup.commons</groupId>
+                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-commons-api</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.loadup.commons</groupId>
+                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-commons-dto</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>

@@ -24,12 +24,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.loadup.commons</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.loadup.commons</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-util</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -1,8 +1,8 @@
-com.github.loadup.components.tracer.SpringContextUtils
-com.github.loadup.components.tracer.TraceUtil
-com.github.loadup.components.tracer.config.TracerProperties
-com.github.loadup.components.tracer.OpenTelemetryConfig
-com.github.loadup.components.tracer.aspect.TracingAspect
-com.github.loadup.components.tracer.filter.TracingWebFilter
-com.github.loadup.components.tracer.async.AsyncTracingConfiguration
+io.github.loadup.components.tracer.SpringContextUtils
+io.github.loadup.components.tracer.TraceUtil
+io.github.loadup.components.tracer.config.TracerProperties
+io.github.loadup.components.tracer.OpenTelemetryConfig
+io.github.loadup.components.tracer.aspect.TracingAspect
+io.github.loadup.components.tracer.filter.TracingWebFilter
+io.github.loadup.components.tracer.async.AsyncTracingConfiguration
 

@@ -292,7 +292,7 @@ loadup:
 ### 3. 创建定时任务
 
 ```java
-import com.github.loadup.components.scheduler.annotation.DistributedScheduler;
+import io.github.loadup.components.scheduler.annotation.DistributedScheduler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -629,7 +629,7 @@ open target/site/jacoco/index.html
 ```properties
 # 测试配置
 loadup.scheduler.type=simplejob
-logging.level.com.github.loadup.components.scheduler=DEBUG
+logging.level.io.github.loadup.components.scheduler=DEBUG
 ```
 
 ---
@@ -787,7 +787,7 @@ public class CustomSchedulerAutoConfiguration {
 创建文件：`src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`
 
 ```
-com.github.loadup.components.scheduler.custom.config.CustomSchedulerAutoConfiguration
+io.github.loadup.components.scheduler.custom.config.CustomSchedulerAutoConfiguration
 ```
 
 #### 5. 配置使用

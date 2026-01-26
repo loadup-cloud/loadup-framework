@@ -52,8 +52,8 @@ loadup:
 # Logging
 logging:
   level:
-    com.github.loadup.components.dfs: DEBUG
-    com.github.loadup.components.database: DEBUG
+    io.github.loadup.components.dfs: DEBUG
+    io.github.loadup.components.database: DEBUG
     com.mybatisflex: DEBUG
     org.springframework.test: INFO
     org.springframework.jdbc: DEBUG

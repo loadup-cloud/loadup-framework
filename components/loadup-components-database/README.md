@@ -407,7 +407,7 @@ spring:
 # 日志（可选）
 logging:
   level:
-    com.github.loadup.components.database: DEBUG
+    io.github.loadup.components.database: DEBUG
 ```
 
 ### 禁用自动 ID 生成

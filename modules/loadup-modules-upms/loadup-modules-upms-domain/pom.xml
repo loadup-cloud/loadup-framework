@@ -21,13 +21,13 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.loadup.commons</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-dto</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.github.loadup.commons</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-util</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>

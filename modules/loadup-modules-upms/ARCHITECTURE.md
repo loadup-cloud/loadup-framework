@@ -680,7 +680,7 @@ public class AbacPermissionEvaluator implements PermissionEvaluator {
 所有表定义集中在 `Tables` 类中：
 
 ```java
-package com.github.loadup.modules.upms.infrastructure.dataobject;
+package io.github.loadup.modules.upms.infrastructure.dataobject;
 
 public class Tables {
    public static final UserTableDef         USER          = new UserTableDef();
@@ -706,7 +706,7 @@ public class Tables {
 #### 使用方式
 
 ```java
-import static com.github.loadup.modules.upms.infrastructure.dataobject.Tables.*;
+
 
 // 单条件查询
 QueryWrapper query = QueryWrapper.create()
@@ -900,7 +900,7 @@ mybatis-flex:
 logging:
    level:
       com.mybatisflex: DEBUG
-      com.github.loadup.modules.upms.infrastructure: DEBUG
+      io.github.loadup.modules.upms.infrastructure: DEBUG
 ```
 
 ### 9.7 最佳实践
@@ -909,8 +909,6 @@ logging:
 
 ```java
 // 使用静态导入
-
-import static com.github.loadup.modules.upms.infrastructure.dataobject.Tables.*;
 
 // 类型安全查询
 QueryWrapper query = QueryWrapper.create()

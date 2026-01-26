@@ -416,7 +416,7 @@ spring:
 logging:
   level:
     com.mybatisflex: DEBUG
-    com.github.loadup.components.database: DEBUG
+    io.github.loadup.components.database: DEBUG
 ```
 
 ## 7. Best Practices
@@ -598,7 +598,7 @@ A: Use ordered IDs (UUID v7 or Snowflake) and check database indexes.
 logging:
   level:
     com.mybatisflex: TRACE
-    com.github.loadup.components.database: TRACE
+    io.github.loadup.components.database: TRACE
     org.springframework.jdbc: DEBUG
 ```
 

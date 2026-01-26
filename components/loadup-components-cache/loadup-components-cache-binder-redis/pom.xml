@@ -23,7 +23,7 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.github.loadup.commons</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-util</artifactId>
             <version>${loadup.framework.version}</version>
         </dependency>

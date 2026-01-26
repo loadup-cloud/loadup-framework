@@ -358,7 +358,7 @@ loadup:
 ```yaml
 logging:
   level:
-    com.github.loadup.components.cache.redis: DEBUG
+    io.github.loadup.components.cache.redis: DEBUG
 ```
 
 日志输出示例：
@@ -474,7 +474,7 @@ management:
 ```yaml
 logging:
   level:
-    com.github.loadup.components.cache.redis: DEBUG
+    io.github.loadup.components.cache.redis: DEBUG
     org.springframework.data.redis: DEBUG
 ```
 

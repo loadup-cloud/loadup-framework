@@ -96,7 +96,7 @@ spring:
 
 logging:
   level:
-    com.github.loadup.components.gotone: DEBUG
+    io.github.loadup.components.gotone: DEBUG
     org.springframework.jdbc: DEBUG
     org.testcontainers: INFO
 ```

@@ -1,4 +1,4 @@
-package com.github.loadup.components.scheduler.powerjob.config;
+package io.github.loadup.components.scheduler.powerjob.config;
 
 /*-
  * #%L
@@ -22,8 +22,8 @@ package com.github.loadup.components.scheduler.powerjob.config;
  * #L%
  */
 
-import com.github.loadup.components.scheduler.binder.SchedulerBinder;
-import com.github.loadup.components.scheduler.powerjob.binder.PowerJobSchedulerBinder;
+import io.github.loadup.components.scheduler.binder.SchedulerBinder;
+import io.github.loadup.components.scheduler.powerjob.binder.PowerJobSchedulerBinder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;

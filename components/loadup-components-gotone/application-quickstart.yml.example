@@ -47,5 +47,5 @@ loadup:
 # 日志配置
 logging:
   level:
-    com.github.loadup.components.gotone: DEBUG
+    io.github.loadup.components.gotone: DEBUG
 

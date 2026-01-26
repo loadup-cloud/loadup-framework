@@ -293,8 +293,8 @@
 ```yaml
 logging:
   level:
-    com.github.loadup.commons.util: INFO  # 生产环境
-    # com.github.loadup.commons.util: DEBUG  # 开发环境
+    io.github.loadup.commons.util: INFO  # 生产环境
+    # io.github.loadup.commons.util: DEBUG  # 开发环境
 ```
 
 ### 2. 迁移步骤

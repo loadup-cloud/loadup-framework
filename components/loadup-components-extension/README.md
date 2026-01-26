@@ -444,7 +444,7 @@ public class DefaultPaymentService implements PaymentService {
 ```yaml
 logging:
   level:
-    com.github.loadup.components.extension: DEBUG
+    io.github.loadup.components.extension: DEBUG
 ```
 
 ---
@@ -457,7 +457,7 @@ logging:
 
 ```
 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
-└── com.github.loadup.components.extension.config.ExtensionAutoConfiguration
+└── io.github.loadup.components.extension.config.ExtensionAutoConfiguration
 ```
 
 ### 覆盖默认配置
@@ -486,7 +486,7 @@ public class CustomExtensionConfig {
 **A:** 开启 DEBUG 日志级别：
 
 ```properties
-logging.level.com.github.loadup.components.extension=DEBUG
+logging.level.io.github.loadup.components.extension=DEBUG
 ```
 
 ### Q2: 多个扩展点匹配时如何选择？

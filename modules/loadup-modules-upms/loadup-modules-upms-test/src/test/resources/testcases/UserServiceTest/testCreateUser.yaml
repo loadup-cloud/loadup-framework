@@ -1,5 +1,5 @@
 variables:
-  userId: "${time.now()}"
+  userId: "12345"
   userName: "${faker.name().firstName()}"
   email: test@example.com
   nowTime: ${time.now()}
@@ -12,7 +12,7 @@ input:
     mobile: '13900000000'
 
 setup:
-  clean_sql: DELETE FROM users WHERE user_id = '${userId}';
+  clean_sql: DELETE FROM upms_user WHERE id = '${userId}';
 #  db_setup:
 #    - table: users
 #      data: # 模式 A：直接定义数据行
@@ -34,19 +34,17 @@ expect:
   #    message: 'User ID cannot be empty'
   # 预期响应结果
   response:
-    userId: "test-1234"
-    userName: ${userName}
-    createdAt:
-      op: approx
-      val: ${nowTime}
+    username: '${userName}'
+    mobile: '13900000000'
+
   database:
-    table: users
+    table: upms_user
     mode: strict
     rows:
-      - _match: { user_id: "test-1234" }
-        user_name: ${userName}
-        email: test@example.com
-        status: ACTIVE
+      - _match: { username: '${userName}' }
+        username: ${userName}
+        nickname: ${userName}
+        status: 1
         created_at:
           op: approx
           val: ${nowTime}

@@ -90,21 +90,21 @@ loadup-components-cache/
 
 #### api 模块
 
-- **com.github.loadup.components.cache.binder**: 缓存绑定器接口，定义基本的 CRUD 操作
-- **com.github.loadup.components.cache.binding**: CacheBinding 的默认实现，提供日志和性能监控
-- **com.github.loadup.components.cache.cfg**: 单个缓存的配置类，包含防雪崩、防穿透等策略
-- **com.github.loadup.components.cache.model**: 统一的缓存配置属性类和自动配置
-- **com.github.loadup.components.cache.util**: 过期时间计算工具，支持随机偏移
+- **io.github.loadup.components.cache.binder**: 缓存绑定器接口，定义基本的 CRUD 操作
+- **io.github.loadup.components.cache.binding**: CacheBinding 的默认实现，提供日志和性能监控
+- **io.github.loadup.components.cache.cfg**: 单个缓存的配置类，包含防雪崩、防穿透等策略
+- **io.github.loadup.components.cache.model**: 统一的缓存配置属性类和自动配置
+- **io.github.loadup.components.cache.util**: 过期时间计算工具，支持随机偏移
 
 #### binder-caffeine 模块
 
-- **com.github.loadup.components.cache.caffeine**: Caffeine 自动配置和扩展的 Caffeine 缓存管理器
-- **com.github.loadup.components.cache.caffeine.binder**: Caffeine 的 CacheBinder 实现
+- **io.github.loadup.components.cache.caffeine**: Caffeine 自动配置和扩展的 Caffeine 缓存管理器
+- **io.github.loadup.components.cache.caffeine.binder**: Caffeine 的 CacheBinder 实现
 
 #### binder-redis 模块
 
-- **com.github.loadup.components.cache.redis**: Redis 自动配置和扩展的 Redis 缓存管理器
-- **com.github.loadup.components.cache.redis.impl**: Redis 的 CacheBinder 实现
+- **io.github.loadup.components.cache.redis**: Redis 自动配置和扩展的 Redis 缓存管理器
+- **io.github.loadup.components.cache.redis.impl**: Redis 的 CacheBinder 实现
 
 ### 依赖关系
 
@@ -216,7 +216,7 @@ spring.redis.database=0
 ### 3. 使用代码
 
 ```java
-import com.github.loadup.components.cache.binding.CacheBinding;
+import io.github.loadup.components.cache.binding.CacheBinding;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 
@@ -836,7 +836,7 @@ public class CustomCacheAutoConfiguration {
 在 `src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` 文件中添加：
 
 ```
-com.github.loadup.components.cache.custom.CustomCacheAutoConfiguration
+io.github.loadup.components.cache.custom.CustomCacheAutoConfiguration
 ```
 
 ## API 参考
@@ -1061,9 +1061,9 @@ Duration parseDuration(String durationStr)
 
 **API 模块新增**:
 
-- `com.github.loadup.components.cache.cfg.CacheBindingCfg` - 统一配置类
-- `com.github.loadup.components.cache.model.CacheAutoConfiguration` - 自动配置
-- `com.github.loadup.components.cache.binding.DefaultCacheBinding` - 默认实现
+- `io.github.loadup.components.cache.cfg.CacheBindingCfg` - 统一配置类
+- `io.github.loadup.components.cache.model.CacheAutoConfiguration` - 自动配置
+- `io.github.loadup.components.cache.binding.DefaultCacheBinding` - 默认实现
 
 ##### 统一的配置结构
 
@@ -1283,7 +1283,7 @@ mvn test -Dtest=CaffeineConcurrencyTest
 mvn test -Dtest=AntiAvalancheTest
 
 # 运行所有 Caffeine 测试
-mvn test -Dtest=com.github.loadup.components.cache.caffeine.*Test
+mvn test -Dtest=io.github.loadup.components.cache.caffeine.*Test
 ```
 
 ### 测试覆盖范围

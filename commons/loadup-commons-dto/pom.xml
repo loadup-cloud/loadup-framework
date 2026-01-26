@@ -8,7 +8,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.github.loadup.commons</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-commons-dto</artifactId>
 
     <properties>
@@ -41,7 +41,7 @@
             <artifactId>jackson-annotations</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.loadup.commons</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-api</artifactId>
         </dependency>
         <dependency>

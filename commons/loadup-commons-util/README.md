@@ -19,7 +19,7 @@ LoadUp Commons Util 提供了企业级的通用工具类和辅助功能，包含
 
 ```xml
 <dependency>
-    <groupId>com.github.loadup.commons</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-commons-util</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
@@ -44,7 +44,7 @@ LoadUp Commons Util 提供了企业级的通用工具类和辅助功能，包含
 #### 基本序列化
 
 ```java
-import com.github.loadup.commons.util.JsonUtil;
+import io.github.loadup.commons.util.JsonUtil;
 
 // 对象转 JSON
 User user = new User("张三", 25);
@@ -139,8 +139,8 @@ JsonNode tree = JsonUtil.toJsonNodeTree(json);
 # application.yml
 logging:
   level:
-    com.github.loadup.commons.util.JsonUtil: WARN  # 生产环境
-    # com.github.loadup.commons.util.JsonUtil: DEBUG  # 开发环境
+    io.github.loadup.commons.util.JsonUtil: WARN  # 生产环境
+    # util.commons.loadup.github.io.JsonUtil: DEBUG  # 开发环境
 ```
 
 ---
@@ -150,7 +150,7 @@ logging:
 提供多种 ID 生成方式，适用于不同场景。
 
 ```java
-import com.github.loadup.commons.util.IdUtils;
+import io.github.loadup.commons.util.IdUtils;
 
 // 生成 UUID（带分隔符）
 String uuid = IdUtils.uuid();
@@ -180,7 +180,8 @@ String uuid = IdUtils.uuid();
 日期时间处理和格式化工具。
 
 ```java
-import com.github.loadup.commons.util.date.DateUtils;
+import io.github.loadup.commons.util.date.DateUtils;
+
 import java.util.Date;
 import java.time.LocalDateTime;
 
@@ -216,12 +217,13 @@ String dateStr = DateUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss");
 时长解析和格式化工具，支持多种时长格式。
 
 ```java
-import com.github.loadup.commons.util.date.DurationUtils;
+import io.github.loadup.commons.util.date.DurationUtils;
+
 import java.time.Duration;
 
 // 解析时长字符串
 Duration duration = DurationUtils.parse("2h30m");  // 2小时30分钟
-Duration duration2 = DurationUtils.parse("PT2H30M");  // ISO-8601 格式
+        Duration duration2 = DurationUtils.parse("PT2H30M");  // ISO-8601 格式
 
 // 支持的格式:
 // - "1d" / "1day" / "1days" - 天
@@ -231,8 +233,8 @@ Duration duration2 = DurationUtils.parse("PT2H30M");  // ISO-8601 格式
 // - "1d2h30m" - 组合格式
 // - "PT2H30M" - ISO-8601 标准格式
 
-// 格式化输出
-String formatted = DurationUtils.format(duration);
+        // 格式化输出
+        String formatted = DurationUtils.format(duration);
 ```
 
 **使用场景:**
@@ -248,7 +250,7 @@ String formatted = DurationUtils.format(duration);
 基于 Jakarta Bean Validation (JSR-380) 的对象验证工具。
 
 ```java
-import com.github.loadup.commons.util.ValidateUtils;
+import io.github.loadup.commons.util.ValidateUtils;
 import jakarta.validation.constraints.*;
 
 // 定义验证对象
@@ -316,21 +318,21 @@ Validator validator = ValidateUtils.getValidator();
 基于 Spring Security 的字符串加密解密工具，使用 AES-256 加密算法。
 
 ```java
-import com.github.loadup.commons.util.PasswordUtils;
+import io.github.loadup.commons.util.PasswordUtils;
 
 // 生成随机盐值（8位）
 String salt = PasswordUtils.getRandomSalt();  // 例如: "12345678"
 
-// 加密字符串
-String plainText = "敏感数据123";
-String password = "mySecretKey";
-String encrypted = PasswordUtils.encrypt(plainText, password, salt);
+        // 加密字符串
+        String plainText = "敏感数据123";
+        String password = "mySecretKey";
+        String encrypted = PasswordUtils.encrypt(plainText, password, salt);
 
-// 解密字符串（需要相同的密码和盐值）
-String decrypted = PasswordUtils.decrypt(encrypted, password, salt);
+        // 解密字符串（需要相同的密码和盐值）
+        String decrypted = PasswordUtils.decrypt(encrypted, password, salt);
 
-// 验证盐值是否有效
-boolean isValid = PasswordUtils.isValidSalt(salt);
+        // 验证盐值是否有效
+        boolean isValid = PasswordUtils.isValidSalt(salt);
 ```
 
 **重要说明:**
@@ -353,7 +355,7 @@ boolean isValid = PasswordUtils.isValidSalt(salt);
 Spring 应用上下文访问工具。
 
 ```java
-import com.github.loadup.commons.util.context.ApplicationContextUtils;
+import io.github.loadup.commons.util.context.ApplicationContextUtils;
 
 // 获取 Bean
 UserService userService = ApplicationContextUtils.getBean(UserService.class);
@@ -385,7 +387,7 @@ ApplicationContextUtils.
 运行时环境和系统信息工具。
 
 ```java
-import com.github.loadup.commons.util.context.RuntimeUtils;
+import io.github.loadup.commons.util.context.RuntimeUtils;
 
 // 获取 CPU 核心数
 int cpuCount = RuntimeUtils.getCpuCount();
@@ -416,7 +418,7 @@ RuntimeUtils.
 对象操作和转换工具，提供 null 安全的方法。
 
 ```java
-import com.github.loadup.commons.util.ObjectUtil;
+import io.github.loadup.commons.util.ObjectUtil;
 
 // 空值检查
 boolean isNull = ObjectUtil.isNull(obj);
@@ -463,7 +465,8 @@ boolean isNull = ObjectUtil.isNull(obj);
 注解处理和扫描工具，提供便捷的注解查找和处理方法。
 
 ```java
-import com.github.loadup.commons.util.AnnotationUtils;
+import io.github.loadup.commons.util.AnnotationUtils;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -510,8 +513,8 @@ List<Method> methods = AnnotationUtils.findMethods(MyClass.class, MyAnnotation.c
 提供快速访问 InternalThreadLocal 变量的特殊用途线程。
 
 ```java
-import com.github.loadup.commons.util.internal.InternalThread;
-import com.github.loadup.commons.util.internal.InternalThreadLocalMap;
+import io.github.loadup.commons.util.internal.InternalThread;
+import io.github.loadup.commons.util.internal.InternalThreadLocalMap;
 
 // 创建内部线程
 InternalThread thread = new InternalThread(() -> {
@@ -551,8 +554,12 @@ thread.
 ### 示例 1: 用户注册流程
 
 ```java
-import com.github.loadup.commons.util.*;
-import com.github.loadup.commons.util.date.DateUtils;
+
+import io.github.loadup.commons.util.date.DateUtils;
+import io.github.loadup.commons.util.IdUtils;
+import io.github.loadup.commons.util.JsonUtil;
+import io.github.loadup.commons.util.PasswordUtils;
+import io.github.loadup.commons.util.ValidateUtils;
 
 public class UserService {
 
@@ -598,30 +605,31 @@ public class UserService {
 ### 示例 2: 配置加密存储
 
 ```java
-import com.github.loadup.commons.util.*;
+import io.github.loadup.commons.util.ObjectUtil;
+import io.github.loadup.commons.util.PasswordUtils;
 
 public class ConfigService {
-    
+
     private static final String SALT = "12345678";  // 生产环境应从配置读取
-    
+
     public void saveEncryptedConfig(String key, String value) {
         // 加密配置值
         String encrypted = PasswordUtils.encrypt(value, "CONFIG_KEY", SALT);
-        
+
         // 保存到数据库
         configRepository.save(key, encrypted);
-        
+
         log.info("Saved encrypted config: {}", key);
     }
-    
+
     public String getDecryptedConfig(String key) {
         // 从数据库读取
         String encrypted = configRepository.get(key);
-        
+
         if (ObjectUtil.isEmpty(encrypted)) {
             return null;
         }
-        
+
         // 解密
         String decrypted = PasswordUtils.decrypt(encrypted, "CONFIG_KEY", SALT);
         return decrypted;
@@ -655,7 +663,7 @@ public class ConfigService {
 ### 示例 2: 配置管理
 
 ```java
-import com.github.loadup.commons.util.context.ApplicationContextUtils;
+import io.github.loadup.commons.util.context.ApplicationContextUtils;
 
 public class ConfigService {
 
@@ -679,7 +687,8 @@ public class ConfigService {
 ### 示例 3: 数据导入导出
 
 ```java
-import com.github.loadup.commons.util.*;
+import io.github.loadup.commons.util.JsonUtil;
+import io.github.loadup.commons.util.ValidateUtils;
 
 public class DataExportService {
 
@@ -712,7 +721,7 @@ public class DataExportService {
 ### 示例 4: 性能监控
 
 ```java
-import com.github.loadup.commons.util.context.RuntimeUtils;
+import io.github.loadup.commons.util.context.RuntimeUtils;
 
 public class MonitorService {
 
@@ -750,7 +759,7 @@ public class MonitorService {
 JsonUtil 使用预配置的 ObjectMapper，如需自定义:
 
 ```java
-import com.github.loadup.commons.util.JsonUtil;
+import io.github.loadup.commons.util.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 // 获取 ObjectMapper 实例
@@ -769,16 +778,16 @@ mapper.
 logging:
   level:
     # JSON 工具日志
-    com.github.loadup.commons.util.JsonUtil: WARN
+    io.github.loadup.commons.util.JsonUtil: WARN
 
     # 其他工具类日志
-    com.github.loadup.commons.util: INFO
+    io.github.loadup.commons.util: INFO
 ```
 
 ### 线程池配置（使用 InternalThread）
 
 ```java
-import com.github.loadup.commons.util.internal.InternalThread;
+import io.github.loadup.commons.util.internal.InternalThread;
 
 ThreadPoolExecutor executor = new ThreadPoolExecutor(
         10, 20, 60L, TimeUnit.SECONDS,

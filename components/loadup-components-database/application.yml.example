@@ -98,6 +98,6 @@ spring:
 # Logging configuration (optional)
 logging:
   level:
-    com.github.loadup.components.database: DEBUG
+    io.github.loadup.components.database: DEBUG
     org.springframework.data.jdbc: DEBUG
 

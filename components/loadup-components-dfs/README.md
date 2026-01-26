@@ -96,8 +96,7 @@ loadup:
 ### 使用示例
 
 ```java
-import com.github.loadup.components.dfs.service.DfsService;
-import com.github.loadup.components.dfs.model.*;
+import io.github.loadup.components.dfs.service.DfsService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
@@ -109,13 +108,13 @@ public class FileService {
     // 上传文件
     public String uploadFile(InputStream inputStream, String filename) {
         FileUploadRequest request = FileUploadRequest.builder()
-            .filename(filename)
-            .inputStream(inputStream)
-            .contentType("application/pdf")
-            .bizType("documents")
-            .bizId("user-123")
-            .publicAccess(false)
-            .build();
+                .filename(filename)
+                .inputStream(inputStream)
+                .contentType("application/pdf")
+                .bizType("documents")
+                .bizId("user-123")
+                .publicAccess(false)
+                .build();
 
         FileMetadata metadata = dfsService.upload(request);
         return metadata.getFileId();
@@ -234,8 +233,8 @@ loadup:
 ### 创建自定义Provider
 
 ```java
-import com.github.loadup.components.dfs.binder.IDfsProvider;
-import com.github.loadup.components.extension.annotation.Extension;
+import io.github.loadup.components.dfs.binder.IDfsProvider;
+import io.github.loadup.components.extension.annotation.Extension;
 
 @Slf4j
 @Component

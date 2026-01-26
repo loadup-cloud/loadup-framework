@@ -11,6 +11,6 @@ loadup:
 
 logging:
   level:
-    com.github.loadup.components.tracer: DEBUG
+    io.github.loadup.components.tracer: DEBUG
     io.opentelemetry: INFO
 

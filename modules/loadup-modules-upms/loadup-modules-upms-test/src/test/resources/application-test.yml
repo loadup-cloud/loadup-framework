@@ -24,6 +24,9 @@ spring:
     # url: <provided by SharedMySQLContainer>
     # username: <provided by SharedMySQLContainer>
     # password: <provided by SharedMySQLContainer>
+    url: jdbc:mysql://127.0.0.1:3306/loadup-boot
+    username: root
+    password: 123456
 
   # SQL Initialization
   sql:
@@ -49,13 +52,14 @@ mybatis-flex:
 logging:
   level:
     root: INFO
-    com.github.loadup.modules.upms: DEBUG
+    io.github.loadup.modules.upms: DEBUG
     com.mybatisflex: DEBUG
     org.springframework.jdbc: DEBUG
     org.springframework.transaction: DEBUG
-    com.github.loadup.modules.upms.infrastructure.mapper: TRACE
+    io.github.loadup.modules.upms.infrastructure.mapper: TRACE
     org.mybatis: TRACE
     java.sql.PreparedStatement: TRACE
+    com.zaxxer.hikari: DEBUG
 
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
@@ -63,6 +67,9 @@ logging:
 loadup:
   tracer:
     enabled: false
-  testcontainers:
-    mysql:
-      enabled: false
+  testify:
+    testcontainers:
+      enabled: true
+      services:
+        - type: mysql
+#      init_script: schema-test.sql

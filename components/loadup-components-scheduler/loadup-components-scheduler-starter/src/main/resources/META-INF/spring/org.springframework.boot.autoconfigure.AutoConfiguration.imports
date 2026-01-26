@@ -1,1 +1,1 @@
-com.github.loadup.components.scheduler.starter.config.SchedulerBindingAutoConfiguration
+io.github.loadup.components.scheduler.starter.config.SchedulerBindingAutoConfiguration

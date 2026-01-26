@@ -1,4 +1,4 @@
-package com.github.loadup.components.scheduler.xxljob.config;
+package io.github.loadup.components.scheduler.xxljob.config;
 
 /*-
  * #%L
@@ -22,8 +22,8 @@ package com.github.loadup.components.scheduler.xxljob.config;
  * #L%
  */
 
-import com.github.loadup.components.scheduler.binder.SchedulerBinder;
-import com.github.loadup.components.scheduler.xxljob.binder.XxlJobSchedulerBinder;
+import io.github.loadup.components.scheduler.binder.SchedulerBinder;
+import io.github.loadup.components.scheduler.xxljob.binder.XxlJobSchedulerBinder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;

@@ -45,11 +45,11 @@ mybatis-flex:
 logging:
   level:
     root: INFO
-    com.github.loadup.modules.upms: DEBUG
+    io.github.loadup.modules.upms: DEBUG
     com.mybatisflex: DEBUG
     org.springframework.jdbc: DEBUG
     org.springframework.transaction: DEBUG
-    com.github.loadup.modules.upms.infrastructure.mapper: TRACE
+    io.github.loadup.modules.upms.infrastructure.mapper: TRACE
     org.mybatis: TRACE
     java.sql.PreparedStatement: TRACE
 

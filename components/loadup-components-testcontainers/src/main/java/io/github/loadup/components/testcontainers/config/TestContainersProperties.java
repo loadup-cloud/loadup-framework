@@ -1,0 +1,97 @@
+/*
+ * Copyright (c) 2026 LoadUp Framework
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.github.loadup.components.testcontainers.config;
+
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+/**
+ * Configuration properties for TestContainers.
+ *
+ * <p>This class provides centralized configuration for all TestContainers, allowing flexible
+ * switching between TestContainers and real services.
+ *
+ * <p>Usage example in application.yml:
+ *
+ * <pre>
+ * loadup:
+ *   testcontainers:
+ *     enabled: true
+ *     mysql:
+ *       enabled: true
+ *       version: mysql:8.0
+ *     redis:
+ *       enabled: false  # Use real Redis
+ * </pre>
+ *
+ * @author LoadUp Framework
+ * @since 1.0.0
+ */
+@Data
+@ConfigurationProperties(prefix = "loadup.testcontainers")
+public class TestContainersProperties {
+
+  /** Global switch to enable/disable all TestContainers (default: true) */
+  private boolean enabled = true;
+
+  /** MySQL container configuration */
+  private ContainerConfig mysql = new ContainerConfig();
+
+  /** PostgreSQL container configuration */
+  private ContainerConfig postgresql = new ContainerConfig();
+
+  /** MongoDB container configuration */
+  private ContainerConfig mongodb = new ContainerConfig();
+
+  /** Redis container configuration */
+  private ContainerConfig redis = new ContainerConfig();
+
+  /** Kafka container configuration */
+  private ContainerConfig kafka = new ContainerConfig();
+
+  /** Elasticsearch container configuration */
+  private ContainerConfig elasticsearch = new ContainerConfig();
+
+  /** LocalStack container configuration */
+  private ContainerConfig localstack = new ContainerConfig();
+
+  /**
+   * Configuration for a specific container type.
+   *
+   * @author LoadUp Framework
+   * @since 1.0.0
+   */
+  @Data
+  public static class ContainerConfig {
+    /** Enable this specific container (default: true) */
+    private boolean enabled = true;
+
+    /** Docker image version (e.g., "mysql:8.0") */
+    private String version;
+
+    /** Database name (for database containers) */
+    private String database;
+
+    /** Username (for services requiring authentication) */
+    private String username;
+
+    /** Password (for services requiring authentication) */
+    private String password;
+
+    /** * 开启复用，默认为 true。 极大提升本地多次运行测试的速度。 */
+    private boolean reuse = true;
+  }
+}

@@ -87,7 +87,7 @@ loadup:
 使用 `@Traced` 注解追踪方法执行：
 
 ```java
-import com.github.loadup.components.tracer.annotation.Traced;
+import io.github.loadup.components.tracer.annotation.Traced;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -145,7 +145,7 @@ public class OrderService {
 使用 `TraceUtil` 工具类手动创建 Span：
 
 ```java
-import com.github.loadup.components.tracer.TraceUtil;
+import io.github.loadup.components.tracer.TraceUtil;
 import io.opentelemetry.api.trace.Span;
 
 @Service
@@ -180,7 +180,7 @@ public class PaymentService {
 在日志中使用 TraceId：
 
 ```java
-import com.github.loadup.components.tracer.TraceUtil;
+import io.github.loadup.components.tracer.TraceUtil;
 
 @RestController
 public class UserController {
@@ -462,7 +462,7 @@ loadup:
 logging:
   level:
     io.opentelemetry: DEBUG
-    com.github.loadup.components.tracer: DEBUG
+    io.github.loadup.components.tracer: DEBUG
 ```
 
 ### 验证追踪上下文
@@ -745,7 +745,7 @@ GNU General Public License v3.0 (GPL-3.0)
 使用 `TraceUtil` 工具类手动创建 Span：
 
 ```java
-import com.github.loadup.components.tracer.TraceUtil;
+import io.github.loadup.components.tracer.TraceUtil;
 import io.opentelemetry.api.trace.Span;
 
 @Service
@@ -778,7 +778,7 @@ public class PaymentService {
 在日志中使用 TraceId：
 
 ```java
-import com.github.loadup.components.tracer.TraceUtil;
+import io.github.loadup.components.tracer.TraceUtil;
 
 @RestController
 public class UserController {

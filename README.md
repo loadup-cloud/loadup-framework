@@ -92,7 +92,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 <dependencies>
     <!-- Commons 组件 -->
     <dependency>
-        <groupId>com.github.loadup.commons</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-commons-api</artifactId>
     </dependency>
 
@@ -173,7 +173,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 <dependencies>
     <!-- 基础 API -->
     <dependency>
-        <groupId>com.github.loadup.commons</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-commons-api</artifactId>
     </dependency>
 
@@ -203,7 +203,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 <dependencies>
     <!-- 基础工具 -->
     <dependency>
-        <groupId>com.github.loadup.commons</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-commons-util</artifactId>
     </dependency>
 
@@ -227,11 +227,11 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 <dependencies>
     <!-- 完整的 Commons 支持 -->
     <dependency>
-        <groupId>com.github.loadup.commons</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-commons-api</artifactId>
     </dependency>
     <dependency>
-        <groupId>com.github.loadup.commons</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-commons-dto</artifactId>
     </dependency>
 
@@ -294,7 +294,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
     <!-- 使用 LoadUp Framework 组件，无需指定版本 -->
     <dependencies>
         <dependency>
-            <groupId>com.github.loadup.commons</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-api</artifactId>
         </dependency>
 

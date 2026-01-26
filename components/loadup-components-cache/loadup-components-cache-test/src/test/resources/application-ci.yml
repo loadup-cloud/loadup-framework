@@ -38,8 +38,8 @@ loadup:
     enabled: true
 logging:
   level:
-    com.github.loadup.components.cache: DEBUG
-    com.github.loadup.components.database: DEBUG
+    io.github.loadup.components.cache: DEBUG
+    io.github.loadup.components.database: DEBUG
     org.springframework.test: INFO
     org.springframework.jdbc: DEBUG
 

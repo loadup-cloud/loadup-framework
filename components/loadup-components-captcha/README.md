@@ -29,7 +29,7 @@
 什么都不用改，直接使用即可享受优化后的字符集：
 
 ```java
-import com.github.loadup.components.captcha.SpecCaptcha;
+import io.github.loadup.components.captcha.SpecCaptcha;
 
 SpecCaptcha captcha = new SpecCaptcha(130, 48, 4);
 String code = captcha.text();  // 自动使用优化后的字符集
@@ -47,7 +47,7 @@ captcha:
 **方式2: 编程方式**
 
 ```java
-import com.github.loadup.components.captcha.base.Randoms;
+
 
 Randoms.setCustomAlpha("23456789ABCDEFGH");
 ```
@@ -190,7 +190,7 @@ web.xml 中配置 Javax servlet：
     <!-- 图形验证码servlet -->
     <servlet>
         <servlet-name>CaptchaServlet</servlet-name>
-        <servlet-class>com.github.loadup.components.captcha.servlet.CaptchaServlet</servlet-class>
+        <servlet-class>io.github.loadup.components.captcha.servlet.CaptchaServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>CaptchaServlet</servlet-name>
@@ -207,7 +207,7 @@ web.xml 中配置 Jakarta servlet：
     <!-- 图形验证码servlet -->
     <servlet>
         <servlet-name>CaptchaServlet</servlet-name>
-        <servlet-class>com.github.loadup.components.captcha.servlet.CaptchaJakartaServlet</servlet-class>
+        <servlet-class>io.github.loadup.components.captcha.servlet.CaptchaJakartaServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>CaptchaServlet</servlet-name>

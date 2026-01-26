@@ -5,7 +5,7 @@
 spring:
   application:
     name: loadup-upms
-  
+
   # Database Configuration
   datasource:
     url: jdbc:mysql://localhost:3306/loadup_upms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&characterEncoding=utf8
@@ -48,19 +48,19 @@ upms:
       secret: LoadUpFrameworkSecretKeyForJWTTokenGenerationMustBeLongEnough
       expiration: 86400000        # 24 hours (in milliseconds)
       refresh-expiration: 604800000  # 7 days (in milliseconds)
-    
+
     # Login Configuration
     login:
       max-fail-attempts: 5        # Maximum login failure attempts before lock
       lock-duration: 30           # Account lock duration in minutes
       enable-failure-tracking: true
-    
+
     # Captcha Configuration
     captcha:
       enabled: true               # Enable captcha verification
       type: image                 # Captcha type: image/sms
       expiration: 300             # Captcha expiration in seconds (5 minutes)
-    
+
     # Whitelist paths (no authentication required)
     whitelist:
       - /api/v1/auth/**
@@ -107,7 +107,7 @@ loadup:
 logging:
   level:
     root: INFO
-    com.github.loadup.modules.upms: DEBUG
+    io.github.loadup.modules.upms: DEBUG
     org.springframework.security: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

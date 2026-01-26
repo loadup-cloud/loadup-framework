@@ -203,7 +203,7 @@ mvn spring-boot:run
 #### 1. 导入 Tables 定义
 
 ```java
-import static com.github.loadup.modules.upms.infrastructure.dataobject.Tables.*;
+
 ```
 
 #### 2. 基础查询

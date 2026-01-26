@@ -28,7 +28,7 @@ testcontainers:
 # Logging
 logging:
   level:
-    com.github.loadup.components.gotone: warn
+    io.github.loadup.components.gotone: warn
     org.springframework.jdbc: warn
     org.testcontainers: warn  # CI环境显示更多日志便于调试
     tc.mysql: warn

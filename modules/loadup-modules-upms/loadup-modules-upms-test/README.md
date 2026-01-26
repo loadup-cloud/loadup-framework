@@ -104,7 +104,7 @@ open target/site/jacoco/index.html
 
 ```
 src/test/java/
-├── com.github.loadup.modules.upms/
+├── io.github.loadup.modules.upms/
 │   ├── UpmsTestApplication.java          # 测试应用入口
 │   └── repository/                       # Repository 测试
 │       ├── BaseRepositoryTest.java       # 基础测试类

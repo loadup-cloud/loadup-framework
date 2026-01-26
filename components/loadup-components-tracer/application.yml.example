@@ -44,7 +44,7 @@ logging:
     # 查看 OpenTelemetry 详细日志
     io.opentelemetry: INFO
     # 查看追踪组件日志
-    com.github.loadup.components.tracer: DEBUG
+    io.github.loadup.components.tracer: DEBUG
 
 ---
 # 开发环境配置
@@ -81,5 +81,5 @@ loadup:
 logging:
   level:
     io.opentelemetry: WARN
-    com.github.loadup.components.tracer: INFO
+    io.github.loadup.components.tracer: INFO
 

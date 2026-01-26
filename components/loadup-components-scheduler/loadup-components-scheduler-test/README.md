@@ -326,7 +326,7 @@ isGreaterThanOrEqualTo(expectedCount);
 # 测试配置
 loadup.scheduler.type=simplejob
 # 日志级别
-logging.level.com.github.loadup.components.scheduler=DEBUG
+logging.level.io.github.loadup.components.scheduler=DEBUG
 # Quartz 测试配置
 spring.quartz.job-store-type=memory
 ```
