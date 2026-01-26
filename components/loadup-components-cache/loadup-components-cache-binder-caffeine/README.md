@@ -17,7 +17,7 @@
 
 ```xml
 <dependency>
-    <groupId>com.github.loadup.framework</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-cache-binder-caffeine</artifactId>
 </dependency>
 ```

@@ -16,7 +16,7 @@ LoadUp Commons DTO 提供了框架的数据传输对象（DTO）定义。
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.framework</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-commons-dto</artifactId>
 </dependency>
 ```

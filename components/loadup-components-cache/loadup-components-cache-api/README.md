@@ -16,7 +16,7 @@ LoadUp Components Cache API 是缓存组件的核心API模块，定义了统一�
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.framework</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-cache-api</artifactId>
 </dependency>
 ```

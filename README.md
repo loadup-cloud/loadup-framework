@@ -74,7 +74,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 <dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>com.github.loadup.framework</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>bom</artifactId>
             <version>1.0.0-SNAPSHOT</version>
             <type>pom</type>
@@ -98,13 +98,13 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 
     <!-- 数据库组件 -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-database</artifactId>
     </dependency>
 
     <!-- Redis 缓存 -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-cache-binder-redis</artifactId>
     </dependency>
 </dependencies>
@@ -179,19 +179,19 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 
     <!-- 数据库访问 -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-database</artifactId>
     </dependency>
 
     <!-- Redis 缓存 -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-cache-binder-redis</artifactId>
     </dependency>
 
     <!-- 验证码 -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-captcha</artifactId>
     </dependency>
 </dependencies>
@@ -209,13 +209,13 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 
     <!-- XXL-Job 分布式调度 -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-scheduler-xxljob</artifactId>
     </dependency>
 
     <!-- 数据库 -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-database</artifactId>
     </dependency>
 </dependencies>
@@ -237,23 +237,23 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 
     <!-- 数据库与数据库版本管理 -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-database</artifactId>
     </dependency>
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-liquibase</artifactId>
     </dependency>
 
     <!-- 分布式追踪 -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-tracer</artifactId>
     </dependency>
 
     <!-- 扩展点机制 -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-extension</artifactId>
     </dependency>
 </dependencies>
@@ -282,7 +282,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.github.loadup.framework</groupId>
+                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>bom</artifactId>
                 <version>${loadup.framework.version}</version>
                 <type>pom</type>
@@ -299,12 +299,12 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
         </dependency>
 
         <dependency>
-            <groupId>com.github.loadup.components</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-database</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.github.loadup.components</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-cache-binder-redis</artifactId>
         </dependency>
     </dependencies>
@@ -374,7 +374,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 
 ```xml
 <dependency>
-    <groupId>com.github.loadup.framework</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>bom</artifactId>
     <version>1.1.0-SNAPSHOT</version> <!-- 修改这里 -->
     <type>pom</type>
@@ -403,7 +403,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 
 ```xml
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-cache-api</artifactId>
     <version>1.0.1-SNAPSHOT</version> <!-- 覆盖 BOM 中的版本 -->
 </dependency>

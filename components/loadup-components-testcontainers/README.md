@@ -43,7 +43,7 @@
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-testcontainers</artifactId>
     <scope>test</scope>
 </dependency>

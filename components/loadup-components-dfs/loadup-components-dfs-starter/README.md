@@ -26,7 +26,7 @@ DFS组件的核心API模块，定义了文件存储的统一接口和数据模�
 
 ```xml
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-dfs-api</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>

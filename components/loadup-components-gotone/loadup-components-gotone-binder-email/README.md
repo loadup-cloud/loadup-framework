@@ -20,7 +20,7 @@
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-gotone-binder-email</artifactId>
     <version>${loadup.version}</version>
 </dependency>
@@ -402,7 +402,7 @@ gotone.email.send.failure.count
 
 <dependencies>
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-gotone-api</artifactId>
     </dependency>
     <dependency>

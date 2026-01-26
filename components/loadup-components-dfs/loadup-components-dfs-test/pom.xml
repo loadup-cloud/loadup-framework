@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-dfs</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -18,31 +18,31 @@
     <dependencies>
         <!-- DFS Components -->
         <dependency>
-            <groupId>com.github.loadup.components</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-dfs-api</artifactId>
             <version>${loadup.framework.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.loadup.components</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-dfs-binder-local</artifactId>
             <version>${loadup.framework.version}</version>
             <scope>test</scope>
         </dependency>
         <!--        <dependency>-->
-        <!--            <groupId>com.github.loadup.components</groupId>-->
+        <!--            <groupId>io.github.loadup-cloud</groupId>-->
         <!--            <artifactId>loadup-components-dfs-binder-database</artifactId>-->
         <!--            <version>${loadup.framework.version}</version>-->
         <!--            <scope>test</scope>-->
         <!--        </dependency>-->
         <dependency>
-            <groupId>com.github.loadup.components</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-dfs-binder-s3</artifactId>
             <version>${loadup.framework.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.loadup.components</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-dfs-starter</artifactId>
             <version>${loadup.framework.version}</version>
             <scope>test</scope>
@@ -58,7 +58,7 @@
 
         <!-- LoadUp TestContainers Component (includes MySQL, Redis, LocalStack/S3, and all drivers) -->
         <dependency>
-            <groupId>com.github.loadup.components</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-testcontainers</artifactId>
             <scope>test</scope>
         </dependency>

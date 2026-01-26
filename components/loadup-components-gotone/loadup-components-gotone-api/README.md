@@ -258,15 +258,15 @@ SQL 脚本位置: `../schema.sql`
 <dependencies>
     <!-- LoadUp 核心组件 -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-extension</artifactId>
     </dependency>
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-database</artifactId>
     </dependency>
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-cache</artifactId>
     </dependency>
 

@@ -15,7 +15,7 @@ Local文件系统存储Provider实现。
 
 ```xml
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-dfs-binder-local</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>

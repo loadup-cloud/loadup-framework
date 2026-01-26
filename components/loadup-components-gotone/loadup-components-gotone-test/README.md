@@ -457,7 +457,7 @@ INSERT INTO gotone_notification_template VALUES ('1', 'ORDER_CONFIRM_SMS', ...);
 <dependencies>
     <!-- 被测模块 -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-gotone-api</artifactId>
         <scope>test</scope>
     </dependency>

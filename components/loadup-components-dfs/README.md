@@ -36,7 +36,7 @@ loadup-components-dfs
 <dependencies>
     <!-- API模块（必需） -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-dfs-api</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </dependency>
@@ -45,21 +45,21 @@ loadup-components-dfs
 
     <!-- Local Provider -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-dfs-binder-local</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </dependency>
 
     <!-- Database Provider (可选) -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-dfs-binder-database</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </dependency>
 
     <!-- S3 Provider (可选) -->
     <dependency>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-dfs-binder-s3</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </dependency>

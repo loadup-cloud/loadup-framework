@@ -14,7 +14,7 @@ S3对象存储Provider实现，兼容AWS S3和MinIO。
 
 ```xml
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-dfs-binder-s3</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>

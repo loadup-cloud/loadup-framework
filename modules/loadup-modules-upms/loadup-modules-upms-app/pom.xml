@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.github.loadup.modules</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-modules-upms</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -15,25 +15,25 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.loadup.modules</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-upms-domain</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.github.loadup.modules</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-upms-infrastructure</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 
         <!--        <dependency>-->
-        <!--            <groupId>com.github.loadup.components</groupId>-->
+        <!--            <groupId>io.github.loadup-cloud</groupId>-->
         <!--            <artifactId>loadup-components-captcha</artifactId>-->
         <!--            <version>${project.parent.version}</version>-->
         <!--        </dependency>-->
 
         <!--        <dependency>-->
-        <!--            <groupId>com.github.loadup.components</groupId>-->
+        <!--            <groupId>io.github.loadup-cloud</groupId>-->
         <!--            <artifactId>loadup-components-gotone-api</artifactId>-->
         <!--            <version>${project.parent.version}</version>-->
         <!--        </dependency>-->
@@ -54,7 +54,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.loadup.modules</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-upms-security</artifactId>
             <version>1.0.0-SNAPSHOT</version>
             <scope>compile</scope>

@@ -53,20 +53,20 @@ loadup-components-gotone/
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-gotone-api</artifactId>
     <version>${loadup.version}</version>
 </dependency>
 
         <!-- 选择需要的提供商 -->
 <dependency>
-<groupId>com.github.loadup.components</groupId>
+<groupId>io.github.loadup-cloud</groupId>
 <artifactId>loadup-components-gotone-binder-email</artifactId>
 <version>${loadup.version}</version>
 </dependency>
 
 <dependency>
-<groupId>com.github.loadup.components</groupId>
+<groupId>io.github.loadup-cloud</groupId>
 <artifactId>loadup-components-gotone-binder-sms</artifactId>
 <version>${loadup.version}</version>
 </dependency>

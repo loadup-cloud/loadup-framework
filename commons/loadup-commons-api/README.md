@@ -16,7 +16,7 @@ LoadUp Commons API 提供了框架的核心API接口和基础定义。
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.framework</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-commons-api</artifactId>
 </dependency>
 ```

@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.github.loadup.framework</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-framework-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.github.loadup.modules</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-modules-upms-test</artifactId>
     <packaging>jar</packaging>
     <description>UPMS Module Comprehensive Test Suite</description>
@@ -23,31 +23,31 @@
     <dependencies>
         <!-- UPMS Modules -->
         <dependency>
-            <groupId>com.github.loadup.modules</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-upms-domain</artifactId>
             <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.loadup.modules</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-upms-infrastructure</artifactId>
             <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.loadup.modules</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-upms-app</artifactId>
             <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.loadup.modules</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-upms-adapter</artifactId>
             <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.loadup.modules</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-upms-starter</artifactId>
             <version>1.0.0-SNAPSHOT</version>
             <scope>test</scope>
@@ -55,7 +55,7 @@
 
         <!-- Database Component -->
         <dependency>
-            <groupId>com.github.loadup.components</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-database</artifactId>
             <version>${project.parent.version}</version>
             <scope>test</scope>
@@ -67,6 +67,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>7.11.0</version>
+        </dependency>
 
         <!-- Spring Security Test -->
         <dependency>
@@ -77,9 +82,14 @@
 
         <!-- LoadUp TestContainers Component (includes MySQL, TestContainers, and MySQL Driver) -->
         <dependency>
-            <groupId>com.github.loadup.components</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-testcontainers</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>testify-spring-boot-starter</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <!-- HikariCP Connection Pool -->

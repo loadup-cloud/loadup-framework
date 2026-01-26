@@ -33,7 +33,7 @@
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-scheduler-binder-quartz</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>

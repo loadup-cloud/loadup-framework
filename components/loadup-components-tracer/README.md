@@ -51,7 +51,7 @@ LoadUp Tracer 组件基于 OpenTelemetry 为 Spring Boot 3 应用提供便捷的
 
 ```xml
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-tracer</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>

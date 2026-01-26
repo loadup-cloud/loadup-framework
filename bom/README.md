@@ -20,7 +20,7 @@ LoadUp BOM 是 LoadUp Framework 的依赖管理模块，提供统一的依赖版
 <dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>com.github.loadup.framework</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>bom</artifactId>
             <version>${loadup.version}</version>
             <type>pom</type>
@@ -39,7 +39,7 @@ LoadUp BOM 是 LoadUp Framework 的依赖管理模块，提供统一的依赖版
 <dependencies>
     <!-- LoadUp 组件 -->
     <dependency>
-        <groupId>com.github.loadup.framework</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-commons-dto</artifactId>
         <!-- 版本由 BOM 管理，不需要指定 -->
     </dependency>

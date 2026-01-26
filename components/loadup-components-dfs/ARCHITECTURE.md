@@ -310,7 +310,7 @@ public class DfsProperties {
 ```xml
 <!-- 只使用Local Provider，无需引入S3 SDK -->
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-dfs-binder-local</artifactId>
 </dependency>
 ```

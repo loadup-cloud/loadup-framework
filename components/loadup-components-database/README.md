@@ -18,7 +18,7 @@ Spring Boot 3 + MyBatis-Flex 集成组件，提供自动审计、ID 生成、多
 
 ```xml
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-database</artifactId>
 </dependency>
 ```

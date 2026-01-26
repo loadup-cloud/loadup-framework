@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.github.loadup.framework</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-framework-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-captcha</artifactId>
     <packaging>jar</packaging>
     <description>Java web graphics verification code, support gif verification code.</description>

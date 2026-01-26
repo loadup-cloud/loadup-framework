@@ -1,0 +1,52 @@
+variables:
+  userId: "${time.now()}"
+  userName: "${faker.name().firstName()}"
+  email: test@example.com
+  nowTime: ${time.now()}
+
+input:
+  - username: ${userName}
+    password: 123456
+    nickname: ${userName}
+    email: test@example.com
+    mobile: '13900000000'
+
+setup:
+  clean_sql: DELETE FROM users WHERE user_id = '${userId}';
+#  db_setup:
+#    - table: users
+#      data: # 模式 A：直接定义数据行
+#        - user_id: ${userId}
+#          user_name: "Admin"
+#mocks:
+#  # 场景1：基础 Mock，匹配任意入参，返回动态生成的随机数据
+#  - bean: "orderService"
+#    args:
+#      - "${userName}"
+#    method: "createOrder"
+#    thenReturn:
+#      orderId: "123456"
+#      orderName: ${userName}
+
+expect:
+  #  exception:
+  #    type: 'java.lang.IllegalArgumentException'
+  #    message: 'User ID cannot be empty'
+  # 预期响应结果
+  response:
+    userId: "test-1234"
+    userName: ${userName}
+    createdAt:
+      op: approx
+      val: ${nowTime}
+  database:
+    table: users
+    mode: strict
+    rows:
+      - _match: { user_id: "test-1234" }
+        user_name: ${userName}
+        email: test@example.com
+        status: ACTIVE
+        created_at:
+          op: approx
+          val: ${nowTime}

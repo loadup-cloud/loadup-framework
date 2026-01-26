@@ -24,7 +24,7 @@
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.framework</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-extension</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>

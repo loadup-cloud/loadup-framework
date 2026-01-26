@@ -240,7 +240,7 @@ Scheduler 组件采用模块化设计，包含以下子模块：
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.framework</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-scheduler-binder-simplejob</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
@@ -251,7 +251,7 @@ Scheduler 组件采用模块化设计，包含以下子模块：
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.framework</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-scheduler-binder-quartz</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
@@ -262,7 +262,7 @@ Scheduler 组件采用模块化设计，包含以下子模块：
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.framework</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-scheduler-binder-xxljob</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
@@ -273,7 +273,7 @@ Scheduler 组件采用模块化设计，包含以下子模块：
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.framework</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-scheduler-binder-powerjob</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>

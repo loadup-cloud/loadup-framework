@@ -22,7 +22,7 @@ import org.testcontainers.junit.jupiter.Container;
       "com.github.loadup.components.database"
     })
 @MapperScan("com.github.loadup.modules.upms.infrastructure.mapper")
-public class UpmsTestApplication {
+public class TestApplication {
   @Container
   static MySQLContainer<?> mySQLContainer =
       new MySQLContainer<>("mysql:8.0")
@@ -52,6 +52,6 @@ public class UpmsTestApplication {
   // }
 
   public static void main(String[] args) {
-    SpringApplication.run(UpmsTestApplication.class, args);
+    SpringApplication.run(TestApplication.class, args);
   }
 }

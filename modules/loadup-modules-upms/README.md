@@ -146,7 +146,7 @@ loadup-modules-upms/
 
 ```xml
 <dependency>
-    <groupId>com.github.loadup.modules</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-modules-upms-starter</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>

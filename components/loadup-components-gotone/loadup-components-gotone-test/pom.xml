@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.github.loadup.components</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-gotone</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -20,7 +20,7 @@
     <dependencies>
         <!-- Gotone API -->
         <dependency>
-            <groupId>com.github.loadup.components</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-gotone-api</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -28,7 +28,7 @@
 
         <!-- SMS Binder -->
         <dependency>
-            <groupId>com.github.loadup.components</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-gotone-binder-sms</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -36,7 +36,7 @@
 
         <!-- Email Binder -->
         <dependency>
-            <groupId>com.github.loadup.components</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-gotone-binder-email</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -44,7 +44,7 @@
 
         <!-- Push Binder -->
         <dependency>
-            <groupId>com.github.loadup.components</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-gotone-binder-push</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -52,7 +52,7 @@
 
         <!-- Database Component for ID Generation and Auditing -->
         <dependency>
-            <groupId>com.github.loadup.components</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-database</artifactId>
             <scope>test</scope>
         </dependency>
@@ -95,7 +95,7 @@
 
         <!-- LoadUp TestContainers Component (includes MySQL, Redis, LocalStack/S3, and all drivers) -->
         <dependency>
-            <groupId>com.github.loadup.components</groupId>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-testcontainers</artifactId>
             <scope>test</scope>
         </dependency>

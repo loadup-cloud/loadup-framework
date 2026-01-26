@@ -131,12 +131,12 @@ api (核心接口和配置)
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-cache-core</artifactId>
     <version>${loadup.framework.version}</version>
 </dependency>
 <dependency>
-<groupId>com.github.loadup.components</groupId>
+<groupId>io.github.loadup-cloud</groupId>
 <artifactId>loadup-components-cache-binder-caffeine</artifactId>
 <version>${loadup.framework.version}</version>
 </dependency>
@@ -173,12 +173,12 @@ spring.cache.caffeine.spec=initialCapacity=1000,maximumSize=5000,expireAfterWrit
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-cache-core</artifactId>
     <version>${loadup.framework.version}</version>
 </dependency>
 <dependency>
-<groupId>com.github.loadup.components</groupId>
+<groupId>io.github.loadup-cloud</groupId>
 <artifactId>loadup-components-cache-binder-redis</artifactId>
 <version>${loadup.framework.version}</version>
 </dependency>
@@ -730,7 +730,7 @@ public class ProductService {
 <!-- 移除或注释 Caffeine 依赖 -->
 <!--
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-cache-binder-caffeine</artifactId>
     <version>${loadup.framework.version}</version>
 </dependency>
@@ -738,7 +738,7 @@ public class ProductService {
 
 <!-- 添加 Redis 依赖 -->
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-cache-binder-redis</artifactId>
     <version>${loadup.framework.version}</version>
 </dependency>

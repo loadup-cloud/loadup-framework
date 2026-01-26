@@ -138,7 +138,7 @@ dependencies {
 
 <dependencies>
     <dependency>
-        <groupId>com.github.loadup.framework</groupId>
+        <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-captcha</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </dependency>

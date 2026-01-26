@@ -31,7 +31,7 @@
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-scheduler-binder-simplejob</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
@@ -135,7 +135,7 @@ public class TaskService {
 ```xml
 <!-- 移除 simplejob 依赖，添加 quartz 依赖 -->
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-scheduler-binder-quartz</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
@@ -152,7 +152,7 @@ loadup:
 ```xml
 
 <dependency>
-    <groupId>com.github.loadup.components</groupId>
+    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-scheduler-binder-xxljob</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
