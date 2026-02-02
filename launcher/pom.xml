@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-framework-parent</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>launcher</artifactId>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-upms-starter</artifactId>
-            <version>0.0.1</version>
+            <version>0.0.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
