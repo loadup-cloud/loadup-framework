@@ -1,6 +1,6 @@
-//package io.github.loadup.components.scheduler.quartz;
+// package io.github.loadup.components.scheduler.quartz;
 //
-///*-
+/// *-
 // * #%L
 // * loadup-components-scheduler-test
 // * %%
@@ -22,24 +22,24 @@
 // * #L%
 // */
 //
-//import static java.util.concurrent.TimeUnit.SECONDS;
-//import static org.assertj.core.api.Assertions.assertThat;
-//import static org.awaitility.Awaitility.await;
+// import static java.util.concurrent.TimeUnit.SECONDS;
+// import static org.assertj.core.api.Assertions.assertThat;
+// import static org.awaitility.Awaitility.await;
 //
-//import model.scheduler.components.loadup.github.io.SchedulerTask;
-//import io.github.loadup.components.scheduler.quartz.binder.QuartzSchedulerBinder;
-//import java.lang.reflect.Field;
-//import java.lang.reflect.Method;
-//import java.util.concurrent.atomic.AtomicInteger;
-//import org.junit.jupiter.api.*;
-//import org.quartz.Scheduler;
-//import org.quartz.SchedulerException;
-//import org.quartz.impl.StdSchedulerFactory;
+// import model.scheduler.components.loadup.github.io.SchedulerTask;
+// import io.github.loadup.components.scheduler.quartz.binder.QuartzSchedulerBinder;
+// import java.lang.reflect.Field;
+// import java.lang.reflect.Method;
+// import java.util.concurrent.atomic.AtomicInteger;
+// import org.junit.jupiter.api.*;
+// import org.quartz.Scheduler;
+// import org.quartz.SchedulerException;
+// import org.quartz.impl.StdSchedulerFactory;
 //
-///**
+/// **
 // * Integration tests for QuartzSchedulerBinder.
 // */
-//class QuartzSchedulerBinderTest {
+// class QuartzSchedulerBinderTest {
 //
 //    private QuartzSchedulerBinder binder;
 //    private Scheduler             scheduler;
@@ -315,5 +315,5 @@
 //            return executionCount.get();
 //        }
 //    }
-//}
+// }
 //

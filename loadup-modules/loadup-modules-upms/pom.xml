@@ -11,8 +11,8 @@
 
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-modules-upms</artifactId>
-    <name>Loadup Modules UPMS</name>
     <packaging>pom</packaging>
+    <name>Loadup Modules UPMS</name>
     <description>User Permission Management System - RBAC3 Model with COLA 4.0 Architecture</description>
 
     <modules>

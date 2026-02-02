@@ -30,17 +30,16 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-/**
- * 渠道映射仓储
- */
+/** 渠道映射仓储 */
 @Repository
 public interface ChannelMappingRepository extends CrudRepository<ChannelMappingDO, String> {
 
-    @Query("SELECT * FROM gotone_channel_mapping WHERE business_code = :businessCode AND enabled = true ORDER BY priority DESC")
-    List<ChannelMappingDO> findByBusinessCodeAndEnabled(@Param("businessCode") String businessCode);
+  @Query(
+      "SELECT * FROM gotone_channel_mapping WHERE business_code = :businessCode AND enabled = true ORDER BY priority DESC")
+  List<ChannelMappingDO> findByBusinessCodeAndEnabled(@Param("businessCode") String businessCode);
 
-    @Query("SELECT * FROM gotone_channel_mapping WHERE business_code = :businessCode AND channel = :channel AND enabled = true")
-    Optional<ChannelMappingDO> findByBusinessCodeAndChannelAndEnabled(@Param("businessCode") String businessCode,
-                                                                      @Param("channel") String channel);
+  @Query(
+      "SELECT * FROM gotone_channel_mapping WHERE business_code = :businessCode AND channel = :channel AND enabled = true")
+  Optional<ChannelMappingDO> findByBusinessCodeAndChannelAndEnabled(
+      @Param("businessCode") String businessCode, @Param("channel") String channel);
 }
-

@@ -12,8 +12,8 @@
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-captcha</artifactId>
     <packaging>jar</packaging>
-    <description>Java web graphics verification code, support gif verification code</description>
     <name>Loadup Components Captcha</name>
+    <description>Java web graphics verification code, support gif verification code</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

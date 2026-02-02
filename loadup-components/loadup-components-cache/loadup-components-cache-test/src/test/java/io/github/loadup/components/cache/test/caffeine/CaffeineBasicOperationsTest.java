@@ -35,7 +35,7 @@ import org.springframework.test.context.TestPropertySource;
 /** Caffeine Cache Basic Operations Test */
 @TestPropertySource(
     properties = {
-        "loadup.cache.binder=caffeine",
+      "loadup.cache.binder=caffeine",
     })
 @DisplayName("Caffeine 缓存基础操作测试")
 public class CaffeineBasicOperationsTest extends BaseCacheTest {

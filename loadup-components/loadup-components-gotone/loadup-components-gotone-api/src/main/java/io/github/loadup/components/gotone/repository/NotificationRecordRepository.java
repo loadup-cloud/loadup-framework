@@ -31,23 +31,22 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-/**
- * 通知记录仓储
- */
+/** 通知记录仓储 */
 @Repository
 public interface NotificationRecordRepository extends CrudRepository<NotificationRecordDO, String> {
 
-    @Query("SELECT * FROM gotone_notification_record WHERE biz_id = :bizId")
-    Optional<NotificationRecordDO> findByBizId(@Param("bizId") String bizId);
+  @Query("SELECT * FROM gotone_notification_record WHERE biz_id = :bizId")
+  Optional<NotificationRecordDO> findByBizId(@Param("bizId") String bizId);
 
-    @Query("SELECT * FROM gotone_notification_record WHERE trace_id = :traceId")
-    List<NotificationRecordDO> findByTraceId(@Param("traceId") String traceId);
+  @Query("SELECT * FROM gotone_notification_record WHERE trace_id = :traceId")
+  List<NotificationRecordDO> findByTraceId(@Param("traceId") String traceId);
 
-    @Query("SELECT * FROM gotone_notification_record WHERE business_code = :businessCode AND status = :status")
-    List<NotificationRecordDO> findByBusinessCodeAndStatus(@Param("businessCode") String businessCode,
-                                                           @Param("status") String status);
+  @Query(
+      "SELECT * FROM gotone_notification_record WHERE business_code = :businessCode AND status = :status")
+  List<NotificationRecordDO> findByBusinessCodeAndStatus(
+      @Param("businessCode") String businessCode, @Param("status") String status);
 
-    @Query("SELECT * FROM gotone_notification_record WHERE status = 'FAILED' AND retry_count < 3 AND created_at >= :afterTime")
-    List<NotificationRecordDO> findRetryableRecords(@Param("afterTime") LocalDateTime afterTime);
+  @Query(
+      "SELECT * FROM gotone_notification_record WHERE status = 'FAILED' AND retry_count < 3 AND created_at >= :afterTime")
+  List<NotificationRecordDO> findRetryableRecords(@Param("afterTime") LocalDateTime afterTime);
 }
-

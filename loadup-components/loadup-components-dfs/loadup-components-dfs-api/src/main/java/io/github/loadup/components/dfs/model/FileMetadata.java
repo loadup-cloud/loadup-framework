@@ -30,98 +30,61 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * 文件元数据
- */
+/** 文件元数据 */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileMetadata {
 
-    /**
-     * 文件ID
-     */
-    private String fileId;
+  /** 文件ID */
+  private String fileId;
 
-    /**
-     * 文件名
-     */
-    private String filename;
+  /** 文件名 */
+  private String filename;
 
-    /**
-     * 文件大小（字节）
-     */
-    private Long size;
+  /** 文件大小（字节） */
+  private Long size;
 
-    /**
-     * 内容类型
-     */
-    private String contentType;
+  /** 内容类型 */
+  private String contentType;
 
-    /**
-     * 存储提供者
-     */
-    private String provider;
+  /** 存储提供者 */
+  private String provider;
 
-    /**
-     * 存储路径
-     */
-    private String path;
+  /** 存储路径 */
+  private String path;
 
-    /**
-     * 访问URL
-     */
-    private String url;
+  /** 访问URL */
+  private String url;
 
-    /**
-     * 文件哈希值（MD5/SHA256）
-     */
-    private String hash;
+  /** 文件哈希值（MD5/SHA256） */
+  private String hash;
 
-    /**
-     * 业务类型
-     */
-    private String bizType;
+  /** 业务类型 */
+  private String bizType;
 
-    /**
-     * 业务ID
-     */
-    private String bizId;
+  /** 业务ID */
+  private String bizId;
 
-    /**
-     * 文件状态
-     */
-    private FileStatus status;
+  /** 文件状态 */
+  private FileStatus status;
 
-    /**
-     * 是否公开访问
-     */
-    private Boolean publicAccess;
+  /** 是否公开访问 */
+  private Boolean publicAccess;
 
-    /**
-     * 扩展元数据
-     */
-    private Map<String, String> metadata;
+  /** 扩展元数据 */
+  private Map<String, String> metadata;
 
-    /**
-     * 上传时间
-     */
-    private LocalDateTime uploadTime;
+  /** 上传时间 */
+  private LocalDateTime uploadTime;
 
-    /**
-     * 上传者
-     */
-    private String uploader;
+  /** 上传者 */
+  private String uploader;
 
-    /**
-     * 最后访问时间
-     */
-    private LocalDateTime lastAccessTime;
+  /** 最后访问时间 */
+  private LocalDateTime lastAccessTime;
 
-    /**
-     * 访问次数
-     */
-    private Long accessCount;
+  /** 访问次数 */
+  private Long accessCount;
 }
-

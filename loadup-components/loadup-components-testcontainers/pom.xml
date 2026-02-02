@@ -11,8 +11,8 @@
 
     <artifactId>loadup-components-testcontainers</artifactId>
     <packaging>jar</packaging>
-    <description>LoadUp TestContainers Component</description>
     <name>Loadup Components TestContainers</name>
+    <description>LoadUp TestContainers Component</description>
 
     <properties>
         <java.version>21</java.version>

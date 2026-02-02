@@ -24,33 +24,30 @@ package io.github.loadup.components.gotone.api;
 
 import io.github.loadup.components.gotone.model.NotificationTemplate;
 
-/**
- * 模板服务接口
- */
+/** 模板服务接口 */
 public interface ITemplateService {
 
-    /**
-     * 渲染模板
-     *
-     * @param templateCode 模板代码
-     * @param params       参数
-     * @return 渲染结果
-     */
-    String render(String templateCode, Object params);
+  /**
+   * 渲染模板
+   *
+   * @param templateCode 模板代码
+   * @param params 参数
+   * @return 渲染结果
+   */
+  String render(String templateCode, Object params);
 
-    /**
-     * 获取模板
-     *
-     * @param templateCode 模板代码
-     * @return 模板
-     */
-    NotificationTemplate getTemplate(String templateCode);
+  /**
+   * 获取模板
+   *
+   * @param templateCode 模板代码
+   * @return 模板
+   */
+  NotificationTemplate getTemplate(String templateCode);
 
-    /**
-     * 注册模板
-     *
-     * @param template 模板
-     */
-    void registerTemplate(NotificationTemplate template);
+  /**
+   * 注册模板
+   *
+   * @param template 模板
+   */
+  void registerTemplate(NotificationTemplate template);
 }
-

@@ -160,7 +160,7 @@ public class RedisConcurrencyIT extends BaseRedisCacheTest {
                       statistics.get("reads").incrementAndGet();
                       break;
                     case 2: // Delete
-                      redisBinding.delete( key);
+                      redisBinding.delete(key);
                       statistics.get("deletes").incrementAndGet();
                       break;
                   }
@@ -265,7 +265,7 @@ public class RedisConcurrencyIT extends BaseRedisCacheTest {
               try {
                 for (int j = 0; j < keyCount; j++) {
                   String key = "concurrent:delete:" + j;
-                  boolean deleted = redisBinding.delete( key);
+                  boolean deleted = redisBinding.delete(key);
                   if (deleted) {
                     deleteCount.incrementAndGet();
                   }

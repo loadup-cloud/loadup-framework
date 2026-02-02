@@ -41,7 +41,6 @@ public abstract class BaseCacheTest {
   @BindingClient("caffeine-biz-type")
   protected CacheBinding caffeineBinding;
 
-
   @Autowired protected FakeTicker fakeTicker; // 注入这个可以手动拨动时钟的 Ticker
   protected static final String TEST_CACHE_NAME = "test-cache";
   protected static final String TEST_KEY = "test-key";

@@ -26,19 +26,16 @@ import io.github.loadup.commons.domain.BaseDomain;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * 通知模板领域对象
- */
+/** 通知模板领域对象 */
 @Getter
 @Setter
 public class NotificationTemplate extends BaseDomain {
-    private String  id;
-    private String  templateCode;
-    private String  templateName;
-    private String  channel;
-    private String  content;
-    private String  titleTemplate;
-    private String  templateType;
-    private Boolean enabled;
+  private String id;
+  private String templateCode;
+  private String templateName;
+  private String channel;
+  private String content;
+  private String titleTemplate;
+  private String templateType;
+  private Boolean enabled;
 }
-

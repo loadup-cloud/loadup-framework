@@ -10,12 +10,12 @@ package io.github.loadup.components.dfs.s3.binder;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -55,9 +55,8 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 @Slf4j
-public class S3DfsBinder
-    extends AbstractDfsBinder<S3DfsBinderCfg, DfsBindingCfg>
-    implements DfsBinder<S3DfsBinderCfg, DfsBindingCfg>{
+public class S3DfsBinder extends AbstractDfsBinder<S3DfsBinderCfg, DfsBindingCfg>
+    implements DfsBinder<S3DfsBinderCfg, DfsBindingCfg> {
   private S3Client s3Client;
   private S3Presigner s3Presigner;
   private String bucketName;
@@ -80,8 +79,9 @@ public class S3DfsBinder
   private static final String META_ACCESS_COUNT = "access-count";
   private static final String META_CUSTOM_PREFIX = "custom-";
 
-    @Override
-    protected void afterConfigInjected(String name, S3DfsBinderCfg binderCfg, DfsBindingCfg bindingCfg) {
+  @Override
+  protected void afterConfigInjected(
+      String name, S3DfsBinderCfg binderCfg, DfsBindingCfg bindingCfg) {
 
     try {
       // 获取访问凭证（优先使用配置，否则从环境变量或 AWS 配置获取）
@@ -515,9 +515,7 @@ public class S3DfsBinder
     }
   }
 
-
-
-    @Override
+  @Override
   protected void afterDestroy() {
     if (this.s3Client != null) {
       this.s3Client.close();

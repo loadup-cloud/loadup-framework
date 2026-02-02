@@ -26,16 +26,13 @@ import io.github.loadup.commons.domain.BaseDomain;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * 业务代码领域对象
- */
+/** 业务代码领域对象 */
 @Getter
 @Setter
 public class BusinessCode extends BaseDomain {
-    private String  id;
-    private String  businessCode;
-    private String  businessName;
-    private String  description;
-    private Boolean enabled;
+  private String id;
+  private String businessCode;
+  private String businessName;
+  private String description;
+  private Boolean enabled;
 }
-

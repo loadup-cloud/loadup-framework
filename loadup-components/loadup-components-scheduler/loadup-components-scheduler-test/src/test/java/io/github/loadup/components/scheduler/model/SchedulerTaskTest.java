@@ -29,21 +29,20 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-/**
- * Unit tests for SchedulerTask model.
- */
+/** Unit tests for SchedulerTask model. */
 class SchedulerTaskTest {
 
-    @Test
-    void testSchedulerTaskBuilder() {
-        // Given
-        String taskName = "testTask";
-        String cron = "0 0 12 * * ?";
-        String description = "Test task description";
-        String taskGroup = "testGroup";
+  @Test
+  void testSchedulerTaskBuilder() {
+    // Given
+    String taskName = "testTask";
+    String cron = "0 0 12 * * ?";
+    String description = "Test task description";
+    String taskGroup = "testGroup";
 
-        // When
-        SchedulerTask task = SchedulerTask.builder()
+    // When
+    SchedulerTask task =
+        SchedulerTask.builder()
             .taskName(taskName)
             .cron(cron)
             .description(description)
@@ -54,136 +53,129 @@ class SchedulerTaskTest {
             .maxRetries(3)
             .build();
 
-        // Then
-        assertThat(task.getTaskName()).isEqualTo(taskName);
-        assertThat(task.getCron()).isEqualTo(cron);
-        assertThat(task.getDescription()).isEqualTo(description);
-        assertThat(task.getTaskGroup()).isEqualTo(taskGroup);
-        assertThat(task.isEnabled()).isTrue();
-        assertThat(task.getPriority()).isEqualTo(5);
-        assertThat(task.getTimeoutMillis()).isEqualTo(5000L);
-        assertThat(task.getMaxRetries()).isEqualTo(3);
-    }
+    // Then
+    assertThat(task.getTaskName()).isEqualTo(taskName);
+    assertThat(task.getCron()).isEqualTo(cron);
+    assertThat(task.getDescription()).isEqualTo(description);
+    assertThat(task.getTaskGroup()).isEqualTo(taskGroup);
+    assertThat(task.isEnabled()).isTrue();
+    assertThat(task.getPriority()).isEqualTo(5);
+    assertThat(task.getTimeoutMillis()).isEqualTo(5000L);
+    assertThat(task.getMaxRetries()).isEqualTo(3);
+  }
 
-    @Test
-    void testSchedulerTaskDefaultValues() {
-        // When
-        SchedulerTask task = SchedulerTask.builder()
-            .taskName("testTask")
-            .cron("0 0 12 * * ?")
-            .build();
+  @Test
+  void testSchedulerTaskDefaultValues() {
+    // When
+    SchedulerTask task = SchedulerTask.builder().taskName("testTask").cron("0 0 12 * * ?").build();
 
-        // Then
-        assertThat(task.isEnabled()).isTrue();
-        assertThat(task.getPriority()).isEqualTo(0);
-        assertThat(task.getTimeoutMillis()).isEqualTo(0L);
-        assertThat(task.getMaxRetries()).isEqualTo(0);
-    }
+    // Then
+    assertThat(task.isEnabled()).isTrue();
+    assertThat(task.getPriority()).isEqualTo(0);
+    assertThat(task.getTimeoutMillis()).isEqualTo(0L);
+    assertThat(task.getMaxRetries()).isEqualTo(0);
+  }
 
-    @Test
-    void testSchedulerTaskWithMethodAndBean() throws NoSuchMethodException {
-        // Given
-        Method method = SchedulerTaskTest.class.getMethod("helperMethod");
-        Object bean = this;
+  @Test
+  void testSchedulerTaskWithMethodAndBean() throws NoSuchMethodException {
+    // Given
+    Method method = SchedulerTaskTest.class.getMethod("helperMethod");
+    Object bean = this;
 
-        // When
-        SchedulerTask task = SchedulerTask.builder()
+    // When
+    SchedulerTask task =
+        SchedulerTask.builder()
             .taskName("methodTask")
             .cron("0 0 12 * * ?")
             .method(method)
             .targetBean(bean)
             .build();
 
-        // Then
-        assertThat(task.getMethod()).isEqualTo(method);
-        assertThat(task.getTargetBean()).isEqualTo(bean);
-    }
+    // Then
+    assertThat(task.getMethod()).isEqualTo(method);
+    assertThat(task.getTargetBean()).isEqualTo(bean);
+  }
 
-    // Helper method for testing
-    public void helperMethod() {
-        // Test helper
-    }
+  // Helper method for testing
+  public void helperMethod() {
+    // Test helper
+  }
 
-    @Test
-    void testSchedulerTaskWithParameters() {
-        // Given
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("key1", "value1");
-        params.put("key2", 123);
+  @Test
+  void testSchedulerTaskWithParameters() {
+    // Given
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("key1", "value1");
+    params.put("key2", 123);
 
-        // When
-        SchedulerTask task = SchedulerTask.builder()
+    // When
+    SchedulerTask task =
+        SchedulerTask.builder()
             .taskName("paramTask")
             .cron("0 0 12 * * ?")
             .parameters(params)
             .build();
 
-        // Then
-        assertThat(task.getParameters()).isNotNull();
-        assertThat(task.getParameters()).hasSize(2);
-        assertThat(task.getParameters().get("key1")).isEqualTo("value1");
-        assertThat(task.getParameters().get("key2")).isEqualTo(123);
-    }
+    // Then
+    assertThat(task.getParameters()).isNotNull();
+    assertThat(task.getParameters()).hasSize(2);
+    assertThat(task.getParameters().get("key1")).isEqualTo("value1");
+    assertThat(task.getParameters().get("key2")).isEqualTo(123);
+  }
 
-    @Test
-    void testSchedulerTaskSettersAndGetters() {
-        // Given
-        SchedulerTask task = new SchedulerTask();
+  @Test
+  void testSchedulerTaskSettersAndGetters() {
+    // Given
+    SchedulerTask task = new SchedulerTask();
 
-        // When
-        task.setTaskName("newTask");
-        task.setCron("0 0 13 * * ?");
-        task.setDescription("New description");
-        task.setTaskGroup("newGroup");
-        task.setEnabled(false);
-        task.setPriority(10);
-        task.setTimeoutMillis(10000L);
-        task.setMaxRetries(5);
+    // When
+    task.setTaskName("newTask");
+    task.setCron("0 0 13 * * ?");
+    task.setDescription("New description");
+    task.setTaskGroup("newGroup");
+    task.setEnabled(false);
+    task.setPriority(10);
+    task.setTimeoutMillis(10000L);
+    task.setMaxRetries(5);
 
-        // Then
-        assertThat(task.getTaskName()).isEqualTo("newTask");
-        assertThat(task.getCron()).isEqualTo("0 0 13 * * ?");
-        assertThat(task.getDescription()).isEqualTo("New description");
-        assertThat(task.getTaskGroup()).isEqualTo("newGroup");
-        assertThat(task.isEnabled()).isFalse();
-        assertThat(task.getPriority()).isEqualTo(10);
-        assertThat(task.getTimeoutMillis()).isEqualTo(10000L);
-        assertThat(task.getMaxRetries()).isEqualTo(5);
-    }
+    // Then
+    assertThat(task.getTaskName()).isEqualTo("newTask");
+    assertThat(task.getCron()).isEqualTo("0 0 13 * * ?");
+    assertThat(task.getDescription()).isEqualTo("New description");
+    assertThat(task.getTaskGroup()).isEqualTo("newGroup");
+    assertThat(task.isEnabled()).isFalse();
+    assertThat(task.getPriority()).isEqualTo(10);
+    assertThat(task.getTimeoutMillis()).isEqualTo(10000L);
+    assertThat(task.getMaxRetries()).isEqualTo(5);
+  }
 
-    @Test
-    void testSchedulerTaskEqualsAndHashCode() {
-        // Given
-        SchedulerTask task1 = SchedulerTask.builder()
-            .taskName("task")
-            .cron("0 0 12 * * ?")
-            .build();
+  @Test
+  void testSchedulerTaskEqualsAndHashCode() {
+    // Given
+    SchedulerTask task1 = SchedulerTask.builder().taskName("task").cron("0 0 12 * * ?").build();
 
-        SchedulerTask task2 = SchedulerTask.builder()
-            .taskName("task")
-            .cron("0 0 12 * * ?")
-            .build();
+    SchedulerTask task2 = SchedulerTask.builder().taskName("task").cron("0 0 12 * * ?").build();
 
-        // Then
-        assertThat(task1).isEqualTo(task2);
-        assertThat(task1.hashCode()).isEqualTo(task2.hashCode());
-    }
+    // Then
+    assertThat(task1).isEqualTo(task2);
+    assertThat(task1.hashCode()).isEqualTo(task2.hashCode());
+  }
 
-    @Test
-    void testSchedulerTaskToString() {
-        // Given
-        SchedulerTask task = SchedulerTask.builder()
+  @Test
+  void testSchedulerTaskToString() {
+    // Given
+    SchedulerTask task =
+        SchedulerTask.builder()
             .taskName("testTask")
             .cron("0 0 12 * * ?")
             .description("Test")
             .build();
 
-        // When
-        String toString = task.toString();
+    // When
+    String toString = task.toString();
 
-        // Then
-        assertThat(toString).contains("testTask");
-        assertThat(toString).contains("0 0 12 * * ?");
-    }
+    // Then
+    assertThat(toString).contains("testTask");
+    assertThat(toString).contains("0 0 12 * * ?");
+  }
 }
-

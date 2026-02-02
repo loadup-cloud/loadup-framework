@@ -34,25 +34,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-/**
- * AliyunSmsProvider 测试类
- */
+/** AliyunSmsProvider 测试类 */
 class AliyunSmsProviderTest {
 
-    private AliyunSmsProvider provider;
+  private AliyunSmsProvider provider;
 
-    @BeforeEach
-    void setUp() {
-        provider = new AliyunSmsProvider();
-        ReflectionTestUtils.setField(provider, "accessKeyId", "test-key-id");
-        ReflectionTestUtils.setField(provider, "accessKeySecret", "test-key-secret");
-        ReflectionTestUtils.setField(provider, "signName", "测试签名");
-    }
+  @BeforeEach
+  void setUp() {
+    provider = new AliyunSmsProvider();
+    ReflectionTestUtils.setField(provider, "accessKeyId", "test-key-id");
+    ReflectionTestUtils.setField(provider, "accessKeySecret", "test-key-secret");
+    ReflectionTestUtils.setField(provider, "signName", "测试签名");
+  }
 
-    @Test
-    void testSendSuccess() {
-        // Given
-        NotificationRequest request = NotificationRequest.builder()
+  @Test
+  void testSendSuccess() {
+    // Given
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("test-001")
             .channel(NotificationChannel.SMS)
             .receivers(Arrays.asList("13800138000", "13900139000"))
@@ -60,113 +59,117 @@ class AliyunSmsProviderTest {
             .templateParams(new HashMap())
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then
-        assertThat(response).isNotNull();
-        assertThat(response.getSuccess()).isTrue();
-        assertThat(response.getStatus()).isEqualTo(NotificationStatus.SUCCESS);
-        assertThat(response.getBizId()).isEqualTo("test-001");
-        assertThat(response.getProvider()).isEqualTo("aliyun");
-        assertThat(response.getMessageId()).isNotNull();
-        assertThat(response.getSendTime()).isNotNull();
-        assertThat(response.getErrorMessage()).isNull();
-    }
+    // Then
+    assertThat(response).isNotNull();
+    assertThat(response.getSuccess()).isTrue();
+    assertThat(response.getStatus()).isEqualTo(NotificationStatus.SUCCESS);
+    assertThat(response.getBizId()).isEqualTo("test-001");
+    assertThat(response.getProvider()).isEqualTo("aliyun");
+    assertThat(response.getMessageId()).isNotNull();
+    assertThat(response.getSendTime()).isNotNull();
+    assertThat(response.getErrorMessage()).isNull();
+  }
 
-    @Test
-    void testSendWithNullReceivers() {
-        // Given
-        NotificationRequest request = NotificationRequest.builder()
+  @Test
+  void testSendWithNullReceivers() {
+    // Given
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("test-002")
             .channel(NotificationChannel.SMS)
             .receivers(null)
             .content("测试内容")
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then - 应该正常处理，不抛异常
-        assertThat(response).isNotNull();
-        assertThat(response.getSuccess()).isTrue();
-    }
+    // Then - 应该正常处理，不抛异常
+    assertThat(response).isNotNull();
+    assertThat(response.getSuccess()).isTrue();
+  }
 
-    @Test
-    void testSendWithEmptyContent() {
-        // Given
-        NotificationRequest request = NotificationRequest.builder()
+  @Test
+  void testSendWithEmptyContent() {
+    // Given
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("test-003")
             .channel(NotificationChannel.SMS)
             .receivers(Arrays.asList("13800138000"))
             .content("")
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then
-        assertThat(response).isNotNull();
-        assertThat(response.getSuccess()).isTrue();
-    }
+    // Then
+    assertThat(response).isNotNull();
+    assertThat(response.getSuccess()).isTrue();
+  }
 
-    @Test
-    void testGetProviderName() {
-        // When & Then
-        assertThat(provider.getProviderName()).isEqualTo("aliyun");
-    }
+  @Test
+  void testGetProviderName() {
+    // When & Then
+    assertThat(provider.getProviderName()).isEqualTo("aliyun");
+  }
 
-    @Test
-    void testIsAvailableWithValidConfig() {
-        // When & Then
-        assertThat(provider.isAvailable()).isTrue();
-    }
+  @Test
+  void testIsAvailableWithValidConfig() {
+    // When & Then
+    assertThat(provider.isAvailable()).isTrue();
+  }
 
-    @Test
-    void testIsAvailableWithNullAccessKeyId() {
-        // Given
-        ReflectionTestUtils.setField(provider, "accessKeyId", null);
+  @Test
+  void testIsAvailableWithNullAccessKeyId() {
+    // Given
+    ReflectionTestUtils.setField(provider, "accessKeyId", null);
 
-        // When & Then
-        assertThat(provider.isAvailable()).isFalse();
-    }
+    // When & Then
+    assertThat(provider.isAvailable()).isFalse();
+  }
 
-    @Test
-    void testIsAvailableWithEmptyAccessKeyId() {
-        // Given
-        ReflectionTestUtils.setField(provider, "accessKeyId", "");
+  @Test
+  void testIsAvailableWithEmptyAccessKeyId() {
+    // Given
+    ReflectionTestUtils.setField(provider, "accessKeyId", "");
 
-        // When & Then
-        assertThat(provider.isAvailable()).isFalse();
-    }
+    // When & Then
+    assertThat(provider.isAvailable()).isFalse();
+  }
 
-    @Test
-    void testSendWithMultipleReceivers() {
-        // Given
-        NotificationRequest request = NotificationRequest.builder()
+  @Test
+  void testSendWithMultipleReceivers() {
+    // Given
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("test-004")
             .channel(NotificationChannel.SMS)
             .receivers(Arrays.asList("13800138000", "13900139000", "13700137000"))
             .content("批量发送测试")
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then
-        assertThat(response).isNotNull();
-        assertThat(response.getSuccess()).isTrue();
-        assertThat(response.getProvider()).isEqualTo("aliyun");
-    }
+    // Then
+    assertThat(response).isNotNull();
+    assertThat(response.getSuccess()).isTrue();
+    assertThat(response.getProvider()).isEqualTo("aliyun");
+  }
 
-    @Test
-    void testSendWithTemplateParams() {
-        // Given
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("code", "123456");
-        params.put("minutes", "5");
+  @Test
+  void testSendWithTemplateParams() {
+    // Given
+    HashMap<String, Object> params = new HashMap<>();
+    params.put("code", "123456");
+    params.put("minutes", "5");
 
-        NotificationRequest request = NotificationRequest.builder()
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("test-005")
             .channel(NotificationChannel.SMS)
             .receivers(Arrays.asList("13800138000"))
@@ -174,34 +177,34 @@ class AliyunSmsProviderTest {
             .templateParams(params)
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then
-        assertThat(response).isNotNull();
-        assertThat(response.getSuccess()).isTrue();
-    }
+    // Then
+    assertThat(response).isNotNull();
+    assertThat(response.getSuccess()).isTrue();
+  }
 
-    @Test
-    void testSendResponseFields() {
-        // Given
-        NotificationRequest request = NotificationRequest.builder()
+  @Test
+  void testSendResponseFields() {
+    // Given
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("test-006")
             .channel(NotificationChannel.SMS)
             .receivers(Arrays.asList("13800138000"))
             .content("测试响应字段")
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then - 验证所有必要字段
-        assertThat(response.getSuccess()).isNotNull();
-        assertThat(response.getStatus()).isNotNull();
-        assertThat(response.getBizId()).isNotNull();
-        assertThat(response.getProvider()).isNotNull();
-        assertThat(response.getMessageId()).isNotNull();
-        assertThat(response.getSendTime()).isNotNull();
-    }
+    // Then - 验证所有必要字段
+    assertThat(response.getSuccess()).isNotNull();
+    assertThat(response.getStatus()).isNotNull();
+    assertThat(response.getBizId()).isNotNull();
+    assertThat(response.getProvider()).isNotNull();
+    assertThat(response.getMessageId()).isNotNull();
+    assertThat(response.getSendTime()).isNotNull();
+  }
 }
-

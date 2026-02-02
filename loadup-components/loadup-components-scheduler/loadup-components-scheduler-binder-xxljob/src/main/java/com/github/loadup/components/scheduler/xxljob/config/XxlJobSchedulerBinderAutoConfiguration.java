@@ -29,24 +29,17 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Auto-configuration for XXL-Job scheduler binder.
- */
+/** Auto-configuration for XXL-Job scheduler binder. */
 @Slf4j
 @AutoConfiguration
 @ConditionalOnClass(name = "com.xxl.job.core.executor.XxlJobExecutor")
-@ConditionalOnProperty(
-    prefix = "loadup.scheduler",
-    name = "type",
-    havingValue = "xxljob"
-)
+@ConditionalOnProperty(prefix = "loadup.scheduler", name = "type", havingValue = "xxljob")
 public class XxlJobSchedulerBinderAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean(SchedulerBinder.class)
-    public SchedulerBinder xxlJobSchedulerBinder() {
-        log.info("Creating XXL-Job scheduler binder");
-        return new XxlJobSchedulerBinder();
-    }
+  @Bean
+  @ConditionalOnMissingBean(SchedulerBinder.class)
+  public SchedulerBinder xxlJobSchedulerBinder() {
+    log.info("Creating XXL-Job scheduler binder");
+    return new XxlJobSchedulerBinder();
+  }
 }
-

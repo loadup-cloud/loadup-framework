@@ -22,33 +22,20 @@ package io.github.loadup.components.gotone.enums;
  * #L%
  */
 
-/**
- * 通知状态
- */
+/** 通知状态 */
 public enum NotificationStatus {
-    /**
-     * 待发送
-     */
-    PENDING,
+  /** 待发送 */
+  PENDING,
 
-    /**
-     * 发送中
-     */
-    SENDING,
+  /** 发送中 */
+  SENDING,
 
-    /**
-     * 发送成功
-     */
-    SUCCESS,
+  /** 发送成功 */
+  SUCCESS,
 
-    /**
-     * 发送失败
-     */
-    FAILED,
+  /** 发送失败 */
+  FAILED,
 
-    /**
-     * 已取消
-     */
-    CANCELLED
+  /** 已取消 */
+  CANCELLED
 }
-

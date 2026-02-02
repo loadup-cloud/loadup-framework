@@ -25,14 +25,11 @@ package io.github.loadup.components.scheduler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * Test application for scheduler component testing.
- */
+/** Test application for scheduler component testing. */
 @SpringBootApplication
 public class TestApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(TestApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(TestApplication.class, args);
+  }
 }
-

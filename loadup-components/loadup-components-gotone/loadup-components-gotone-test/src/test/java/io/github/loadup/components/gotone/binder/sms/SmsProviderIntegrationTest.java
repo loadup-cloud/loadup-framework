@@ -36,102 +36,100 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-/**
- * SMS Provider 集成测试
- * 测试所有 SMS Provider 的通用行为
- */
+/** SMS Provider 集成测试 测试所有 SMS Provider 的通用行为 */
 class SmsProviderIntegrationTest {
 
-    static Stream<Arguments> provideAllSmsProviders() {
-        AliyunSmsProvider aliyun = new AliyunSmsProvider();
-        ReflectionTestUtils.setField(aliyun, "accessKeyId", "test-key");
-        ReflectionTestUtils.setField(aliyun, "accessKeySecret", "test-secret");
+  static Stream<Arguments> provideAllSmsProviders() {
+    AliyunSmsProvider aliyun = new AliyunSmsProvider();
+    ReflectionTestUtils.setField(aliyun, "accessKeyId", "test-key");
+    ReflectionTestUtils.setField(aliyun, "accessKeySecret", "test-secret");
 
-        TencentSmsProvider tencent = new TencentSmsProvider();
-        ReflectionTestUtils.setField(tencent, "secretId", "test-id");
-        ReflectionTestUtils.setField(tencent, "secretKey", "test-key");
+    TencentSmsProvider tencent = new TencentSmsProvider();
+    ReflectionTestUtils.setField(tencent, "secretId", "test-id");
+    ReflectionTestUtils.setField(tencent, "secretKey", "test-key");
 
-        HuaweiSmsProvider huawei = new HuaweiSmsProvider();
-        ReflectionTestUtils.setField(huawei, "appKey", "test-key");
-        ReflectionTestUtils.setField(huawei, "appSecret", "test-secret");
+    HuaweiSmsProvider huawei = new HuaweiSmsProvider();
+    ReflectionTestUtils.setField(huawei, "appKey", "test-key");
+    ReflectionTestUtils.setField(huawei, "appSecret", "test-secret");
 
-        YunpianSmsProvider yunpian = new YunpianSmsProvider();
-        ReflectionTestUtils.setField(yunpian, "apiKey", "test-key");
+    YunpianSmsProvider yunpian = new YunpianSmsProvider();
+    ReflectionTestUtils.setField(yunpian, "apiKey", "test-key");
 
-        return Stream.of(
-            Arguments.of(aliyun, "aliyun"),
-            Arguments.of(tencent, "tencent"),
-            Arguments.of(huawei, "huawei"),
-            Arguments.of(yunpian, "yunpian")
-        );
-    }
+    return Stream.of(
+        Arguments.of(aliyun, "aliyun"),
+        Arguments.of(tencent, "tencent"),
+        Arguments.of(huawei, "huawei"),
+        Arguments.of(yunpian, "yunpian"));
+  }
 
-    @ParameterizedTest
-    @MethodSource("provideAllSmsProviders")
-    void testAllProvidersCanSendSuccessfully(INotificationProvider provider, String providerName) {
-        // Given
-        NotificationRequest request = NotificationRequest.builder()
+  @ParameterizedTest
+  @MethodSource("provideAllSmsProviders")
+  void testAllProvidersCanSendSuccessfully(INotificationProvider provider, String providerName) {
+    // Given
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("integration-test-001")
             .channel(NotificationChannel.SMS)
             .receivers(Arrays.asList("13800138000"))
             .content("集成测试")
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then
-        assertThat(response.getSuccess()).isTrue();
-        assertThat(response.getProvider()).isEqualTo(providerName);
+    // Then
+    assertThat(response.getSuccess()).isTrue();
+    assertThat(response.getProvider()).isEqualTo(providerName);
+  }
+
+  @ParameterizedTest
+  @MethodSource("provideAllSmsProviders")
+  void testAllProvidersReturnCorrectProviderName(
+      INotificationProvider provider, String expectedName) {
+    // When & Then
+    assertThat(provider.getProviderName()).isEqualTo(expectedName);
+  }
+
+  @ParameterizedTest
+  @MethodSource("provideAllSmsProviders")
+  void testAllProvidersAreAvailableWithValidConfig(
+      INotificationProvider provider, String providerName) {
+    // When & Then
+    assertThat(provider.isAvailable())
+        .as("Provider %s should be available with valid config", providerName)
+        .isTrue();
+  }
+
+  @Test
+  void testProviderCompatibility() {
+    // 测试所有 Provider 都实现了 INotificationProvider 接口
+    INotificationProvider[] providers = {
+      new AliyunSmsProvider(),
+      new TencentSmsProvider(),
+      new HuaweiSmsProvider(),
+      new YunpianSmsProvider()
+    };
+
+    for (INotificationProvider provider : providers) {
+      assertThat(provider).isInstanceOf(INotificationProvider.class);
+      assertThat(provider.getProviderName()).isNotNull();
     }
+  }
 
-    @ParameterizedTest
-    @MethodSource("provideAllSmsProviders")
-    void testAllProvidersReturnCorrectProviderName(INotificationProvider provider, String expectedName) {
-        // When & Then
-        assertThat(provider.getProviderName()).isEqualTo(expectedName);
-    }
+  @Test
+  void testAllProvidersHaveUniqueNames() {
+    // Given
+    String[] providerNames = {
+      new AliyunSmsProvider().getProviderName(),
+      new TencentSmsProvider().getProviderName(),
+      new HuaweiSmsProvider().getProviderName(),
+      new YunpianSmsProvider().getProviderName()
+    };
 
-    @ParameterizedTest
-    @MethodSource("provideAllSmsProviders")
-    void testAllProvidersAreAvailableWithValidConfig(INotificationProvider provider, String providerName) {
-        // When & Then
-        assertThat(provider.isAvailable())
-            .as("Provider %s should be available with valid config", providerName)
-            .isTrue();
-    }
-
-    @Test
-    void testProviderCompatibility() {
-        // 测试所有 Provider 都实现了 INotificationProvider 接口
-        INotificationProvider[] providers = {
-            new AliyunSmsProvider(),
-            new TencentSmsProvider(),
-            new HuaweiSmsProvider(),
-            new YunpianSmsProvider()
-        };
-
-        for (INotificationProvider provider : providers) {
-            assertThat(provider).isInstanceOf(INotificationProvider.class);
-            assertThat(provider.getProviderName()).isNotNull();
-        }
-    }
-
-    @Test
-    void testAllProvidersHaveUniqueNames() {
-        // Given
-        String[] providerNames = {
-            new AliyunSmsProvider().getProviderName(),
-            new TencentSmsProvider().getProviderName(),
-            new HuaweiSmsProvider().getProviderName(),
-            new YunpianSmsProvider().getProviderName()
-        };
-
-        // When & Then
-        assertThat(providerNames)
-            .hasSize(4)
-            .doesNotHaveDuplicates()
-            .containsExactlyInAnyOrder("aliyun", "tencent", "huawei", "yunpian");
-    }
+    // When & Then
+    assertThat(providerNames)
+        .hasSize(4)
+        .doesNotHaveDuplicates()
+        .containsExactlyInAnyOrder("aliyun", "tencent", "huawei", "yunpian");
+  }
 }
-

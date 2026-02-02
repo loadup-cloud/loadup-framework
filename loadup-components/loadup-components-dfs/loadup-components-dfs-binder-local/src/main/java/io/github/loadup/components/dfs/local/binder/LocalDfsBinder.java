@@ -53,13 +53,10 @@ import lombok.extern.slf4j.Slf4j;
  * @see LocalDfsBinderCfg
  */
 @Slf4j
-public class LocalDfsBinder
-    extends AbstractDfsBinder<LocalDfsBinderCfg, DfsBindingCfg>
+public class LocalDfsBinder extends AbstractDfsBinder<LocalDfsBinderCfg, DfsBindingCfg>
     implements DfsBinder<LocalDfsBinderCfg, DfsBindingCfg> {
 
   private static final DateTimeFormatter PATH_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-
-
 
   @Override
   public String getBinderType() {
@@ -224,8 +221,6 @@ public class LocalDfsBinder
       throw new RuntimeException("Failed to get metadata", e);
     }
   }
-
-
 
   private String buildRelativePath(String bizType, String fileId) {
     String datePath = LocalDateTime.now().format(PATH_FORMATTER);

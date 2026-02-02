@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-components-tracer</artifactId>
-    <description>LoadUp Tracer Component</description>
     <name>Loadup Components Tracer</name>
+    <description>LoadUp Tracer Component</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

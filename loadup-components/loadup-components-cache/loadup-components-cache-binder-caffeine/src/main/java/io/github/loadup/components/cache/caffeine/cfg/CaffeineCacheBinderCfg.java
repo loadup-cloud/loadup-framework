@@ -108,13 +108,10 @@ public class CaffeineCacheBinderCfg extends CacheBinderCfg {
   private Duration expireAfterWrite;
   private Duration expireAfterAccess;
 
-    /**
-     * 是否开启随机过期
-     */
+  /** 是否开启随机过期 */
   private boolean enableRandomExpiry = false;
-    /**
-     * 随机因子 (例如 0.2 表示在 100%~120% 之间波动)
-     */
+
+  /** 随机因子 (例如 0.2 表示在 100%~120% 之间波动) */
   private double randomFactor = 0.2;
 
   /**

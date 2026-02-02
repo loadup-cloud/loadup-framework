@@ -37,10 +37,9 @@ import org.springframework.test.context.TestPropertySource;
 /** Caffeine Cache Concurrent Operations Test */
 @TestPropertySource(
     properties = {
-        "loadup.cache.binder=caffeine",
+      "loadup.cache.binder=caffeine",
     })
 @DisplayName("Caffeine 缓存并发操作测试")
-
 public class CaffeineConcurrencyTest extends BaseCacheTest {
 
   @Test
@@ -217,7 +216,7 @@ public class CaffeineConcurrencyTest extends BaseCacheTest {
           () -> {
             try {
               for (int j = threadIndex; j < dataCount; j += threadCount) {
-                caffeineBinding.delete( "user:" + j);
+                caffeineBinding.delete("user:" + j);
               }
             } finally {
               latch.countDown();

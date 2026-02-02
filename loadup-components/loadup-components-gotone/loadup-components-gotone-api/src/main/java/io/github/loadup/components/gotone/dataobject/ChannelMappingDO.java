@@ -29,37 +29,32 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-/**
- * 渠道映射数据对象
- */
+/** 渠道映射数据对象 */
 @Getter
 @Setter
 @Table("gotone_channel_mapping")
 public class ChannelMappingDO extends BaseDO {
 
-    @Id
-    @Column("id")
-    private String id;
+  @Id
+  @Column("id")
+  private String id;
 
-    @Column("business_code")
-    private String businessCode;
+  @Column("business_code")
+  private String businessCode;
 
-    @Column("channel")
-    private String channel;
+  @Column("channel")
+  private String channel;
 
-    @Column("template_code")
-    private String templateCode;
+  @Column("template_code")
+  private String templateCode;
 
-    /**
-     * 提供商列表 JSON 字符串
-     */
-    @Column("provider_list")
-    private String providerListJson;
+  /** 提供商列表 JSON 字符串 */
+  @Column("provider_list")
+  private String providerListJson;
 
-    @Column("priority")
-    private Integer priority;
+  @Column("priority")
+  private Integer priority;
 
-    @Column("enabled")
-    private Boolean enabled;
+  @Column("enabled")
+  private Boolean enabled;
 }
-

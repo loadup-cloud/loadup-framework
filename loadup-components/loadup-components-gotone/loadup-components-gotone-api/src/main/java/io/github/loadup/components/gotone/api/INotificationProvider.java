@@ -26,44 +26,40 @@ import io.github.loadup.components.extension.api.IExtensionPoint;
 import io.github.loadup.components.gotone.model.NotificationRequest;
 import io.github.loadup.components.gotone.model.NotificationResponse;
 
-/**
- * 通知提供者扩展点
- * 所有通知提供者实现此接口并使用 @Extension 注解
- */
+/** 通知提供者扩展点 所有通知提供者实现此接口并使用 @Extension 注解 */
 public interface INotificationProvider extends IExtensionPoint {
 
-    /**
-     * 发送通知
-     *
-     * @param request 通知请求
-     * @return 通知响应
-     */
-    NotificationResponse send(NotificationRequest request);
+  /**
+   * 发送通知
+   *
+   * @param request 通知请求
+   * @return 通知响应
+   */
+  NotificationResponse send(NotificationRequest request);
 
-    /**
-     * 批量发送通知
-     *
-     * @param request 通知请求（包含多个接收人）
-     * @return 通知响应
-     */
-    default NotificationResponse batchSend(NotificationRequest request) {
-        return send(request);
-    }
+  /**
+   * 批量发送通知
+   *
+   * @param request 通知请求（包含多个接收人）
+   * @return 通知响应
+   */
+  default NotificationResponse batchSend(NotificationRequest request) {
+    return send(request);
+  }
 
-    /**
-     * 获取提供商名称
-     *
-     * @return 提供商名称
-     */
-    String getProviderName();
+  /**
+   * 获取提供商名称
+   *
+   * @return 提供商名称
+   */
+  String getProviderName();
 
-    /**
-     * 检查提供商是否可用
-     *
-     * @return 是否可用
-     */
-    default boolean isAvailable() {
-        return true;
-    }
+  /**
+   * 检查提供商是否可用
+   *
+   * @return 是否可用
+   */
+  default boolean isAvailable() {
+    return true;
+  }
 }
-

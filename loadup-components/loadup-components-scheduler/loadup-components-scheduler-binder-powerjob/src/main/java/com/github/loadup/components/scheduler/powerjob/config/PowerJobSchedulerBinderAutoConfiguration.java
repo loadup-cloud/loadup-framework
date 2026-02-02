@@ -29,24 +29,17 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Auto-configuration for PowerJob scheduler binder.
- */
+/** Auto-configuration for PowerJob scheduler binder. */
 @Slf4j
 @AutoConfiguration
 @ConditionalOnClass(name = "tech.powerjob.worker.core.processor.sdk.BasicProcessor")
-@ConditionalOnProperty(
-    prefix = "loadup.scheduler",
-    name = "type",
-    havingValue = "powerjob"
-)
+@ConditionalOnProperty(prefix = "loadup.scheduler", name = "type", havingValue = "powerjob")
 public class PowerJobSchedulerBinderAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean(SchedulerBinder.class)
-    public SchedulerBinder powerJobSchedulerBinder() {
-        log.info("Creating PowerJob scheduler binder");
-        return new PowerJobSchedulerBinder();
-    }
+  @Bean
+  @ConditionalOnMissingBean(SchedulerBinder.class)
+  public SchedulerBinder powerJobSchedulerBinder() {
+    log.info("Creating PowerJob scheduler binder");
+    return new PowerJobSchedulerBinder();
+  }
 }
-

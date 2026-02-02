@@ -29,13 +29,11 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-/**
- * 业务代码仓储
- */
+/** 业务代码仓储 */
 @Repository
 public interface BusinessCodeRepository extends CrudRepository<BusinessCodeDO, String> {
 
-    @Query("SELECT * FROM gotone_business_code WHERE business_code = :businessCode AND enabled = true")
-    Optional<BusinessCodeDO> findByBusinessCodeAndEnabled(@Param("businessCode") String businessCode);
+  @Query(
+      "SELECT * FROM gotone_business_code WHERE business_code = :businessCode AND enabled = true")
+  Optional<BusinessCodeDO> findByBusinessCodeAndEnabled(@Param("businessCode") String businessCode);
 }
-

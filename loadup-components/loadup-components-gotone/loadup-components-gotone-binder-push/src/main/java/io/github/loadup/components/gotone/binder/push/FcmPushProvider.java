@@ -33,72 +33,69 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-/**
- * Firebase Cloud Messaging (FCM) 推送提供商
- * 这是一个示例实现，实际使用需要集成 Firebase SDK
- */
+/** Firebase Cloud Messaging (FCM) 推送提供商 这是一个示例实现，实际使用需要集成 Firebase SDK */
 @Slf4j
 @Component
 @Extension(bizCode = "PUSH", useCase = "fcm")
 public class FcmPushProvider implements INotificationProvider {
 
-    @Value("${loadup.gotone.push.fcm.server-key:}")
-    private String serverKey;
+  @Value("${loadup.gotone.push.fcm.server-key:}")
+  private String serverKey;
 
-    @Override
-    public NotificationResponse send(NotificationRequest request) {
-        try {
-            // TODO: 集成 Firebase Cloud Messaging SDK
-            // FirebaseOptions options = FirebaseOptions.builder()
-            //     .setCredentials(GoogleCredentials.fromStream(...))
-            //     .build();
-            // FirebaseApp.initializeApp(options);
+  @Override
+  public NotificationResponse send(NotificationRequest request) {
+    try {
+      // TODO: 集成 Firebase Cloud Messaging SDK
+      // FirebaseOptions options = FirebaseOptions.builder()
+      //     .setCredentials(GoogleCredentials.fromStream(...))
+      //     .build();
+      // FirebaseApp.initializeApp(options);
 
-            log.info("Sending push notification via FCM to: {}", request.getReceivers());
+      log.info("Sending push notification via FCM to: {}", request.getReceivers());
 
-            // 模拟发送
-            simulateSend(request);
+      // 模拟发送
+      simulateSend(request);
 
-            return NotificationResponse.builder()
-                .success(true)
-                .status(NotificationStatus.SUCCESS)
-                .bizId(request.getBizId())
-                .messageId(UUID.randomUUID().toString())
-                .provider(getProviderName())
-                .sendTime(LocalDateTime.now())
-                .build();
+      return NotificationResponse.builder()
+          .success(true)
+          .status(NotificationStatus.SUCCESS)
+          .bizId(request.getBizId())
+          .messageId(UUID.randomUUID().toString())
+          .provider(getProviderName())
+          .sendTime(LocalDateTime.now())
+          .build();
 
-        } catch (Exception e) {
-            log.error("Failed to send push notification via FCM: {}", e.getMessage(), e);
-            return buildErrorResponse(request, e.getMessage());
-        }
+    } catch (Exception e) {
+      log.error("Failed to send push notification via FCM: {}", e.getMessage(), e);
+      return buildErrorResponse(request, e.getMessage());
     }
+  }
 
-    @Override
-    public String getProviderName() {
-        return "fcm";
-    }
+  @Override
+  public String getProviderName() {
+    return "fcm";
+  }
 
-    @Override
-    public boolean isAvailable() {
-        return serverKey != null && !serverKey.isEmpty();
-    }
+  @Override
+  public boolean isAvailable() {
+    return serverKey != null && !serverKey.isEmpty();
+  }
 
-    private void simulateSend(NotificationRequest request) {
-        log.info("Push Title: {}", request.getTitle());
-        log.info("Push Content: {}", request.getContent());
-        log.info("Push Receivers: {}", request.getReceivers());
-    }
+  private void simulateSend(NotificationRequest request) {
+    log.info("Push Title: {}", request.getTitle());
+    log.info("Push Content: {}", request.getContent());
+    log.info("Push Receivers: {}", request.getReceivers());
+  }
 
-    private NotificationResponse buildErrorResponse(NotificationRequest request, String errorMessage) {
-        return NotificationResponse.builder()
-            .success(false)
-            .status(NotificationStatus.FAILED)
-            .bizId(request.getBizId())
-            .provider(getProviderName())
-            .errorMessage(errorMessage)
-            .sendTime(LocalDateTime.now())
-            .build();
-    }
+  private NotificationResponse buildErrorResponse(
+      NotificationRequest request, String errorMessage) {
+    return NotificationResponse.builder()
+        .success(false)
+        .status(NotificationStatus.FAILED)
+        .bizId(request.getBizId())
+        .provider(getProviderName())
+        .errorMessage(errorMessage)
+        .sendTime(LocalDateTime.now())
+        .build();
+  }
 }
-

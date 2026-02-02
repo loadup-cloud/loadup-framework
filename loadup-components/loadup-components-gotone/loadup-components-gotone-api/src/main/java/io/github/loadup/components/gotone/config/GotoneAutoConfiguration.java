@@ -35,51 +35,43 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-/**
- * 通知组件自动配置
- */
+/** 通知组件自动配置 */
 @Configuration
 @EnableAsync
 @EnableScheduling
 @EnableCaching
 public class GotoneAutoConfiguration {
 
-    /**
-     * 熔断器注册表
-     */
-    @Bean
-    @ConditionalOnMissingBean
-    public CircuitBreakerRegistry circuitBreakerRegistry() {
-        CircuitBreakerConfig config = CircuitBreakerConfig.custom()
-            .failureRateThreshold(50)  // 失败率阈值 50%
-            .waitDurationInOpenState(Duration.ofSeconds(30))  // 熔断后等待 30 秒
-            .slidingWindowSize(10)  // 滑动窗口大小
-            .minimumNumberOfCalls(5)  // 最小调用次数
-            .permittedNumberOfCallsInHalfOpenState(3)  // 半开状态允许的调用次数
+  /** 熔断器注册表 */
+  @Bean
+  @ConditionalOnMissingBean
+  public CircuitBreakerRegistry circuitBreakerRegistry() {
+    CircuitBreakerConfig config =
+        CircuitBreakerConfig.custom()
+            .failureRateThreshold(50) // 失败率阈值 50%
+            .waitDurationInOpenState(Duration.ofSeconds(30)) // 熔断后等待 30 秒
+            .slidingWindowSize(10) // 滑动窗口大小
+            .minimumNumberOfCalls(5) // 最小调用次数
+            .permittedNumberOfCallsInHalfOpenState(3) // 半开状态允许的调用次数
             .automaticTransitionFromOpenToHalfOpenEnabled(true)
             .build();
 
-        return CircuitBreakerRegistry.of(config);
-    }
+    return CircuitBreakerRegistry.of(config);
+  }
 
-    /**
-     * 超时限制器配置
-     */
-    @Bean
-    @ConditionalOnMissingBean
-    public TimeLimiterConfig timeLimiterConfig() {
-        return TimeLimiterConfig.custom()
-            .timeoutDuration(Duration.ofSeconds(10))  // 10 秒超时
-            .build();
-    }
+  /** 超时限制器配置 */
+  @Bean
+  @ConditionalOnMissingBean
+  public TimeLimiterConfig timeLimiterConfig() {
+    return TimeLimiterConfig.custom()
+        .timeoutDuration(Duration.ofSeconds(10)) // 10 秒超时
+        .build();
+  }
 
-    /**
-     * 缓存管理器
-     */
-    @Bean
-    @ConditionalOnMissingBean
-    public CacheManager cacheManager() {
-        return new ConcurrentMapCacheManager("gotone:templates");
-    }
+  /** 缓存管理器 */
+  @Bean
+  @ConditionalOnMissingBean
+  public CacheManager cacheManager() {
+    return new ConcurrentMapCacheManager("gotone:templates");
+  }
 }
-

@@ -33,77 +33,75 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-/**
- * 阿里云短信提供商实现
- * 这是一个示例实现，实际使用需要集成阿里云 SDK
- */
+/** 阿里云短信提供商实现 这是一个示例实现，实际使用需要集成阿里云 SDK */
 @Slf4j
 @Component
 @Extension(bizCode = "SMS", useCase = "aliyun")
 public class AliyunSmsProvider implements INotificationProvider {
 
-    @Value("${loadup.gotone.sms.aliyun.access-key-id:}")
-    private String accessKeyId;
+  @Value("${loadup.gotone.sms.aliyun.access-key-id:}")
+  private String accessKeyId;
 
-    @Value("${loadup.gotone.sms.aliyun.access-key-secret:}")
-    private String accessKeySecret;
+  @Value("${loadup.gotone.sms.aliyun.access-key-secret:}")
+  private String accessKeySecret;
 
-    @Value("${loadup.gotone.sms.aliyun.sign-name:}")
-    private String signName;
+  @Value("${loadup.gotone.sms.aliyun.sign-name:}")
+  private String signName;
 
-    @Override
-    public NotificationResponse send(NotificationRequest request) {
-        try {
-            // TODO: 集成阿里云短信 SDK
-            // DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessKeySecret);
-            // IAcsClient client = new DefaultAcsClient(profile);
-            // SendSmsRequest smsRequest = new SendSmsRequest();
-            // ...
+  @Override
+  public NotificationResponse send(NotificationRequest request) {
+    try {
+      // TODO: 集成阿里云短信 SDK
+      // DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId,
+      // accessKeySecret);
+      // IAcsClient client = new DefaultAcsClient(profile);
+      // SendSmsRequest smsRequest = new SendSmsRequest();
+      // ...
 
-            log.info("Sending SMS via Aliyun to: {}", request.getReceivers());
+      log.info("Sending SMS via Aliyun to: {}", request.getReceivers());
 
-            // 模拟发送
-            simulateSend(request);
+      // 模拟发送
+      simulateSend(request);
 
-            return NotificationResponse.builder()
-                .success(true)
-                .status(NotificationStatus.SUCCESS)
-                .bizId(request.getBizId())
-                .messageId(UUID.randomUUID().toString())
-                .provider(getProviderName())
-                .sendTime(LocalDateTime.now())
-                .build();
+      return NotificationResponse.builder()
+          .success(true)
+          .status(NotificationStatus.SUCCESS)
+          .bizId(request.getBizId())
+          .messageId(UUID.randomUUID().toString())
+          .provider(getProviderName())
+          .sendTime(LocalDateTime.now())
+          .build();
 
-        } catch (Exception e) {
-            log.error("Failed to send SMS via Aliyun: {}", e.getMessage(), e);
-            return buildErrorResponse(request, e.getMessage());
-        }
+    } catch (Exception e) {
+      log.error("Failed to send SMS via Aliyun: {}", e.getMessage(), e);
+      return buildErrorResponse(request, e.getMessage());
     }
+  }
 
-    @Override
-    public String getProviderName() {
-        return "aliyun";
-    }
+  @Override
+  public String getProviderName() {
+    return "aliyun";
+  }
 
-    @Override
-    public boolean isAvailable() {
-        return accessKeyId != null && !accessKeyId.isEmpty();
-    }
+  @Override
+  public boolean isAvailable() {
+    return accessKeyId != null && !accessKeyId.isEmpty();
+  }
 
-    private void simulateSend(NotificationRequest request) {
-        log.info("SMS Content: {}", request.getContent());
-        log.info("SMS Receivers: {}", request.getReceivers());
-    }
+  private void simulateSend(NotificationRequest request) {
+    log.info("SMS Content: {}", request.getContent());
+    log.info("SMS Receivers: {}", request.getReceivers());
+  }
 
-    private NotificationResponse buildErrorResponse(NotificationRequest request, String errorMessage) {
-        return NotificationResponse.builder()
-            .success(false)
-            .status(NotificationStatus.FAILED)
-            .bizId(request.getBizId())
-            .provider(getProviderName())
-            .errorMessage(errorMessage)
-            .sendTime(LocalDateTime.now())
-            .build();
-    }
+  private NotificationResponse buildErrorResponse(
+      NotificationRequest request, String errorMessage) {
+    return NotificationResponse.builder()
+        .success(false)
+        .status(NotificationStatus.FAILED)
+        .bizId(request.getBizId())
+        .provider(getProviderName())
+        .errorMessage(errorMessage)
+        .sendTime(LocalDateTime.now())
+        .build();
+  }
 }
-

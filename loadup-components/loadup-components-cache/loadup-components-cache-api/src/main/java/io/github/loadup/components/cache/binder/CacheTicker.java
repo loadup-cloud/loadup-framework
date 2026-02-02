@@ -1,4 +1,3 @@
-
 package io.github.loadup.components.cache.binder;
 
 /*-
@@ -11,12 +10,12 @@ package io.github.loadup.components.cache.binder;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -28,9 +27,9 @@ package io.github.loadup.components.cache.binder;
  * @version CacheTicker.java, v 0.1 2026年01月14日 11:22 lise
  */
 public interface CacheTicker {
-    // 返回当前纳秒值
-    long read();
+  // 返回当前纳秒值
+  long read();
 
-    // 默认实现：使用系统时间
-    CacheTicker SYSTEM = System::nanoTime;
+  // 默认实现：使用系统时间
+  CacheTicker SYSTEM = System::nanoTime;
 }

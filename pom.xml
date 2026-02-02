@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.loadup-cloud</groupId>
@@ -28,12 +27,6 @@
         </developer>
     </developers>
 
-    <scm>
-        <connection>scm:git:git://github.com/loadup-cloud/loadup-framework.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/loadup-cloud/loadup-framework.git</developerConnection>
-        <url>https://github.com/loadup-cloud/loadup-framework</url>
-    </scm>
-
     <modules>
         <module>loadup-dependencies</module>
         <module>loadup-commons</module>
@@ -44,6 +37,11 @@
         <module>loadup-application</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:git://github.com/loadup-cloud/loadup-framework.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/loadup-cloud/loadup-framework.git</developerConnection>
+        <url>https://github.com/loadup-cloud/loadup-framework</url>
+    </scm>
 
     <properties>
         <java.version>21</java.version>
@@ -72,7 +70,7 @@
         <!-- effective skip flags computed via profiles -->
         <skip.unit.tests>false</skip.unit.tests>
         <skip.integration.tests>false</skip.integration.tests>
-        <spotless.skip>true</spotless.skip>
+        <spotless.skip>false</spotless.skip>
         <mysql.version>9.5.0</mysql.version>
 
     </properties>
@@ -87,132 +85,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-
-    <profiles>
-        <profile>
-            <id>github</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <repositories>
-                <repository>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                    <snapshots>
-                        <enabled>true</enabled>
-                    </snapshots>
-                    <id>github</id>
-                    <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
-                </repository>
-                <repository>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <id>aliyun</id>
-                    <url>https://maven.aliyun.com/repository/public</url>
-                </repository>
-            </repositories>
-            <distributionManagement>
-                <repository>
-                    <id>github</id>
-                    <name>LoadUp Apache Maven Packages</name>
-                    <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
-                </repository>
-                <snapshotRepository>
-                    <id>github</id>
-                    <name>LoadUp Apache Maven Packages</name>
-                    <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
-                </snapshotRepository>
-            </distributionManagement>
-        </profile>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.sonatype.central</groupId>
-                        <artifactId>central-publishing-maven-plugin</artifactId>
-                        <version>0.9.0</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <publishingServerId>central</publishingServerId>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.8</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                                <phase>verify</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <distributionManagement>
-                <repository>
-                    <id>central</id>
-                    <url>https://central.sonatype.com/repository/maven-releases/</url>
-                </repository>
-            </distributionManagement>
-        </profile>
-
-        <!-- Profiles that compute effective skip flags so the three input properties
-             (skipTests, skipUTs, skipITs) work in combination:
-             - setting -DskipTests=true will skip both unit and integration tests
-             - setting -DskipUTs=true will skip only unit tests
-             - setting -DskipITs=true will skip only integration tests
-        -->
-        <profile>
-            <id>skip-unit-tests</id>
-            <activation>
-                <property>
-                    <name>skipUTs</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <properties>
-                <skip.unit.tests>true</skip.unit.tests>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>skip-integration-tests</id>
-            <activation>
-                <property>
-                    <name>skipITs</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <properties>
-                <skip.integration.tests>true</skip.integration.tests>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>skip-all-tests</id>
-            <activation>
-                <property>
-                    <name>skipTests</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <properties>
-                <skip.unit.tests>true</skip.unit.tests>
-                <skip.integration.tests>true</skip.integration.tests>
-            </properties>
-        </profile>
-    </profiles>
     <build>
         <pluginManagement>
             <plugins>
@@ -278,8 +150,7 @@
                         <jvmArguments>-XX:+UseZGC
                             -XX:+ZGenerational
                             -Xmx512m
-                            -Xms256m
-                        </jvmArguments>
+                            -Xms256m</jvmArguments>
                         <!-- 分层 JAR 支持 -->
                         <layers>
                             <enabled>true</enabled>
@@ -379,6 +250,10 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>3.10.1</version>
+                    <configuration>
+                        <!-- 完全禁用所有 Javadoc 检查 -->
+                        <doclint>none</doclint>
+                    </configuration>
                     <executions>
                         <execution>
                             <id>attach-javadocs</id>
@@ -387,10 +262,6 @@
                             </goals>
                         </execution>
                     </executions>
-                    <configuration>
-                        <!-- 完全禁用所有 Javadoc 检查 -->
-                        <doclint>none</doclint>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -419,8 +290,7 @@
                             <!-- 启用容器复用 -->
                             <testcontainers.reuse.enable>true</testcontainers.reuse.enable>
                             <!-- 禁用 Ryuk（可选，用于快速测试） -->
-                            <testcontainers.ryuk.container.prune.enabled>false
-                            </testcontainers.ryuk.container.prune.enabled>
+                            <testcontainers.ryuk.container.prune.enabled>false</testcontainers.ryuk.container.prune.enabled>
                         </systemPropertyVariables>
                         <!-- 串行执行测试，避免容器冲突 -->
                         <forkCount>1</forkCount>
@@ -599,4 +469,129 @@
 
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>github</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>LoadUp Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+                </repository>
+                <snapshotRepository>
+                    <id>github</id>
+                    <name>LoadUp Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+                </snapshotRepository>
+            </distributionManagement>
+            <repositories>
+                <repository>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                    <id>github</id>
+                    <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+                </repository>
+                <repository>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <id>aliyun</id>
+                    <url>https://maven.aliyun.com/repository/public</url>
+                </repository>
+            </repositories>
+        </profile>
+        <profile>
+            <id>release</id>
+            <distributionManagement>
+                <repository>
+                    <id>central</id>
+                    <url>https://central.sonatype.com/repository/maven-releases/</url>
+                </repository>
+            </distributionManagement>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.9.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.2.8</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <phase>verify</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Profiles that compute effective skip flags so the three input properties
+             (skipTests, skipUTs, skipITs) work in combination:
+             - setting -DskipTests=true will skip both unit and integration tests
+             - setting -DskipUTs=true will skip only unit tests
+             - setting -DskipITs=true will skip only integration tests
+        -->
+        <profile>
+            <id>skip-unit-tests</id>
+            <activation>
+                <property>
+                    <name>skipUTs</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <skip.unit.tests>true</skip.unit.tests>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>skip-integration-tests</id>
+            <activation>
+                <property>
+                    <name>skipITs</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <skip.integration.tests>true</skip.integration.tests>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>skip-all-tests</id>
+            <activation>
+                <property>
+                    <name>skipTests</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <skip.unit.tests>true</skip.unit.tests>
+                <skip.integration.tests>true</skip.integration.tests>
+            </properties>
+        </profile>
+    </profiles>
 </project>

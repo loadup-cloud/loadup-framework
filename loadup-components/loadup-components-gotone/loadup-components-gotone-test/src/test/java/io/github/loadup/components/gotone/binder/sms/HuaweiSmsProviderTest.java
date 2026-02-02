@@ -33,81 +33,80 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-/**
- * HuaweiSmsProvider 测试类
- */
+/** HuaweiSmsProvider 测试类 */
 class HuaweiSmsProviderTest {
 
-    private HuaweiSmsProvider provider;
+  private HuaweiSmsProvider provider;
 
-    @BeforeEach
-    void setUp() {
-        provider = new HuaweiSmsProvider();
-        ReflectionTestUtils.setField(provider, "appKey", "test-app-key");
-        ReflectionTestUtils.setField(provider, "appSecret", "test-app-secret");
-        ReflectionTestUtils.setField(provider, "sender", "test-sender");
-        ReflectionTestUtils.setField(provider, "signature", "华为云");
-    }
+  @BeforeEach
+  void setUp() {
+    provider = new HuaweiSmsProvider();
+    ReflectionTestUtils.setField(provider, "appKey", "test-app-key");
+    ReflectionTestUtils.setField(provider, "appSecret", "test-app-secret");
+    ReflectionTestUtils.setField(provider, "sender", "test-sender");
+    ReflectionTestUtils.setField(provider, "signature", "华为云");
+  }
 
-    @Test
-    void testSendSuccess() {
-        // Given
-        NotificationRequest request = NotificationRequest.builder()
+  @Test
+  void testSendSuccess() {
+    // Given
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("huawei-001")
             .channel(NotificationChannel.SMS)
             .receivers(Arrays.asList("13800138000"))
             .content("华为云短信测试")
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then
-        assertThat(response).isNotNull();
-        assertThat(response.getSuccess()).isTrue();
-        assertThat(response.getStatus()).isEqualTo(NotificationStatus.SUCCESS);
-        assertThat(response.getProvider()).isEqualTo("huawei");
-    }
+    // Then
+    assertThat(response).isNotNull();
+    assertThat(response.getSuccess()).isTrue();
+    assertThat(response.getStatus()).isEqualTo(NotificationStatus.SUCCESS);
+    assertThat(response.getProvider()).isEqualTo("huawei");
+  }
 
-    @Test
-    void testGetProviderName() {
-        assertThat(provider.getProviderName()).isEqualTo("huawei");
-    }
+  @Test
+  void testGetProviderName() {
+    assertThat(provider.getProviderName()).isEqualTo("huawei");
+  }
 
-    @Test
-    void testIsAvailableWithValidConfig() {
-        assertThat(provider.isAvailable()).isTrue();
-    }
+  @Test
+  void testIsAvailableWithValidConfig() {
+    assertThat(provider.isAvailable()).isTrue();
+  }
 
-    @Test
-    void testIsAvailableWithNullAppKey() {
-        ReflectionTestUtils.setField(provider, "appKey", null);
-        assertThat(provider.isAvailable()).isFalse();
-    }
+  @Test
+  void testIsAvailableWithNullAppKey() {
+    ReflectionTestUtils.setField(provider, "appKey", null);
+    assertThat(provider.isAvailable()).isFalse();
+  }
 
-    @Test
-    void testIsAvailableWithEmptyAppSecret() {
-        ReflectionTestUtils.setField(provider, "appSecret", "");
-        assertThat(provider.isAvailable()).isFalse();
-    }
+  @Test
+  void testIsAvailableWithEmptyAppSecret() {
+    ReflectionTestUtils.setField(provider, "appSecret", "");
+    assertThat(provider.isAvailable()).isFalse();
+  }
 
-    @Test
-    void testSendResponseContainsAllFields() {
-        // Given
-        NotificationRequest request = NotificationRequest.builder()
+  @Test
+  void testSendResponseContainsAllFields() {
+    // Given
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("huawei-002")
             .channel(NotificationChannel.SMS)
             .receivers(Arrays.asList("13800138000"))
             .content("测试")
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then
-        assertThat(response.getBizId()).isEqualTo("huawei-002");
-        assertThat(response.getMessageId()).isNotNull();
-        assertThat(response.getSendTime()).isNotNull();
-    }
+    // Then
+    assertThat(response.getBizId()).isEqualTo("huawei-002");
+    assertThat(response.getMessageId()).isNotNull();
+    assertThat(response.getSendTime()).isNotNull();
+  }
 }
-

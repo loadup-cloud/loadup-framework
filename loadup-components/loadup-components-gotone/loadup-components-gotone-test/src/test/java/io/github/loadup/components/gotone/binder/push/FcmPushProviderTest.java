@@ -34,23 +34,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-/**
- * FcmPushProvider 测试类
- */
+/** FcmPushProvider 测试类 */
 class FcmPushProviderTest {
 
-    private FcmPushProvider provider;
+  private FcmPushProvider provider;
 
-    @BeforeEach
-    void setUp() {
-        provider = new FcmPushProvider();
-        ReflectionTestUtils.setField(provider, "serverKey", "test-server-key");
-    }
+  @BeforeEach
+  void setUp() {
+    provider = new FcmPushProvider();
+    ReflectionTestUtils.setField(provider, "serverKey", "test-server-key");
+  }
 
-    @Test
-    void testSendSuccess() {
-        // Given
-        NotificationRequest request = NotificationRequest.builder()
+  @Test
+  void testSendSuccess() {
+    // Given
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("push-001")
             .channel(NotificationChannel.PUSH)
             .receivers(Arrays.asList("device-token-123"))
@@ -58,68 +57,66 @@ class FcmPushProviderTest {
             .content("推送内容")
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then
-        assertThat(response).isNotNull();
-        assertThat(response.getSuccess()).isTrue();
-        assertThat(response.getStatus()).isEqualTo(NotificationStatus.SUCCESS);
-        assertThat(response.getBizId()).isEqualTo("push-001");
-        assertThat(response.getProvider()).isEqualTo("fcm");
-        assertThat(response.getMessageId()).isNotNull();
-        assertThat(response.getSendTime()).isNotNull();
-    }
+    // Then
+    assertThat(response).isNotNull();
+    assertThat(response.getSuccess()).isTrue();
+    assertThat(response.getStatus()).isEqualTo(NotificationStatus.SUCCESS);
+    assertThat(response.getBizId()).isEqualTo("push-001");
+    assertThat(response.getProvider()).isEqualTo("fcm");
+    assertThat(response.getMessageId()).isNotNull();
+    assertThat(response.getSendTime()).isNotNull();
+  }
 
-    @Test
-    void testSendWithMultipleDevices() {
-        // Given
-        NotificationRequest request = NotificationRequest.builder()
+  @Test
+  void testSendWithMultipleDevices() {
+    // Given
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("push-002")
             .channel(NotificationChannel.PUSH)
-            .receivers(Arrays.asList(
-                "device-token-1",
-                "device-token-2",
-                "device-token-3"
-            ))
+            .receivers(Arrays.asList("device-token-1", "device-token-2", "device-token-3"))
             .title("批量推送")
             .content("批量推送测试")
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then
-        assertThat(response.getSuccess()).isTrue();
-        assertThat(response.getProvider()).isEqualTo("fcm");
-    }
+    // Then
+    assertThat(response.getSuccess()).isTrue();
+    assertThat(response.getProvider()).isEqualTo("fcm");
+  }
 
-    @Test
-    void testGetProviderName() {
-        assertThat(provider.getProviderName()).isEqualTo("fcm");
-    }
+  @Test
+  void testGetProviderName() {
+    assertThat(provider.getProviderName()).isEqualTo("fcm");
+  }
 
-    @Test
-    void testIsAvailableWithValidConfig() {
-        assertThat(provider.isAvailable()).isTrue();
-    }
+  @Test
+  void testIsAvailableWithValidConfig() {
+    assertThat(provider.isAvailable()).isTrue();
+  }
 
-    @Test
-    void testIsAvailableWithNullServerKey() {
-        ReflectionTestUtils.setField(provider, "serverKey", null);
-        assertThat(provider.isAvailable()).isFalse();
-    }
+  @Test
+  void testIsAvailableWithNullServerKey() {
+    ReflectionTestUtils.setField(provider, "serverKey", null);
+    assertThat(provider.isAvailable()).isFalse();
+  }
 
-    @Test
-    void testIsAvailableWithEmptyServerKey() {
-        ReflectionTestUtils.setField(provider, "serverKey", "");
-        assertThat(provider.isAvailable()).isFalse();
-    }
+  @Test
+  void testIsAvailableWithEmptyServerKey() {
+    ReflectionTestUtils.setField(provider, "serverKey", "");
+    assertThat(provider.isAvailable()).isFalse();
+  }
 
-    @Test
-    void testSendWithNullReceivers() {
-        // Given
-        NotificationRequest request = NotificationRequest.builder()
+  @Test
+  void testSendWithNullReceivers() {
+    // Given
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("push-003")
             .channel(NotificationChannel.PUSH)
             .receivers(null)
@@ -127,18 +124,19 @@ class FcmPushProviderTest {
             .content("测试内容")
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then
-        assertThat(response).isNotNull();
-        assertThat(response.getSuccess()).isTrue();
-    }
+    // Then
+    assertThat(response).isNotNull();
+    assertThat(response.getSuccess()).isTrue();
+  }
 
-    @Test
-    void testSendWithEmptyTitle() {
-        // Given
-        NotificationRequest request = NotificationRequest.builder()
+  @Test
+  void testSendWithEmptyTitle() {
+    // Given
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("push-004")
             .channel(NotificationChannel.PUSH)
             .receivers(Arrays.asList("device-token-123"))
@@ -146,17 +144,18 @@ class FcmPushProviderTest {
             .content("只有内容")
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then
-        assertThat(response.getSuccess()).isTrue();
-    }
+    // Then
+    assertThat(response.getSuccess()).isTrue();
+  }
 
-    @Test
-    void testSendWithNullContent() {
-        // Given
-        NotificationRequest request = NotificationRequest.builder()
+  @Test
+  void testSendWithNullContent() {
+    // Given
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("push-005")
             .channel(NotificationChannel.PUSH)
             .receivers(Arrays.asList("device-token-123"))
@@ -164,17 +163,18 @@ class FcmPushProviderTest {
             .content(null)
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then
-        assertThat(response.getSuccess()).isTrue();
-    }
+    // Then
+    assertThat(response.getSuccess()).isTrue();
+  }
 
-    @Test
-    void testSendResponseFields() {
-        // Given
-        NotificationRequest request = NotificationRequest.builder()
+  @Test
+  void testSendResponseFields() {
+    // Given
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("push-006")
             .channel(NotificationChannel.PUSH)
             .receivers(Arrays.asList("device-token-123"))
@@ -182,26 +182,27 @@ class FcmPushProviderTest {
             .content("测试内容")
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then - 验证所有必要字段
-        assertThat(response.getSuccess()).isNotNull();
-        assertThat(response.getStatus()).isNotNull();
-        assertThat(response.getBizId()).isNotNull();
-        assertThat(response.getProvider()).isNotNull();
-        assertThat(response.getMessageId()).isNotNull();
-        assertThat(response.getSendTime()).isNotNull();
-    }
+    // Then - 验证所有必要字段
+    assertThat(response.getSuccess()).isNotNull();
+    assertThat(response.getStatus()).isNotNull();
+    assertThat(response.getBizId()).isNotNull();
+    assertThat(response.getProvider()).isNotNull();
+    assertThat(response.getMessageId()).isNotNull();
+    assertThat(response.getSendTime()).isNotNull();
+  }
 
-    @Test
-    void testSendWithTemplateParams() {
-        // Given
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("userName", "张三");
-        params.put("message", "您有一条新消息");
+  @Test
+  void testSendWithTemplateParams() {
+    // Given
+    HashMap<String, Object> params = new HashMap<>();
+    params.put("userName", "张三");
+    params.put("message", "您有一条新消息");
 
-        NotificationRequest request = NotificationRequest.builder()
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("push-007")
             .channel(NotificationChannel.PUSH)
             .receivers(Arrays.asList("device-token-123"))
@@ -210,17 +211,18 @@ class FcmPushProviderTest {
             .templateParams(params)
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then
-        assertThat(response.getSuccess()).isTrue();
-    }
+    // Then
+    assertThat(response.getSuccess()).isTrue();
+  }
 
-    @Test
-    void testSendWithPriority() {
-        // Given
-        NotificationRequest request = NotificationRequest.builder()
+  @Test
+  void testSendWithPriority() {
+    // Given
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("push-008")
             .channel(NotificationChannel.PUSH)
             .receivers(Arrays.asList("device-token-123"))
@@ -229,19 +231,20 @@ class FcmPushProviderTest {
             .priority(10)
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then
-        assertThat(response.getSuccess()).isTrue();
-        assertThat(response.getProvider()).isEqualTo("fcm");
-    }
+    // Then
+    assertThat(response.getSuccess()).isTrue();
+    assertThat(response.getProvider()).isEqualTo("fcm");
+  }
 
-    @Test
-    void testSendWithLongContent() {
-        // Given
-        String longContent = "这是一条很长的内容".repeat(50);
-        NotificationRequest request = NotificationRequest.builder()
+  @Test
+  void testSendWithLongContent() {
+    // Given
+    String longContent = "这是一条很长的内容".repeat(50);
+    NotificationRequest request =
+        NotificationRequest.builder()
             .bizId("push-009")
             .channel(NotificationChannel.PUSH)
             .receivers(Arrays.asList("device-token-123"))
@@ -249,11 +252,10 @@ class FcmPushProviderTest {
             .content(longContent)
             .build();
 
-        // When
-        NotificationResponse response = provider.send(request);
+    // When
+    NotificationResponse response = provider.send(request);
 
-        // Then
-        assertThat(response.getSuccess()).isTrue();
-    }
+    // Then
+    assertThat(response.getSuccess()).isTrue();
+  }
 }
-

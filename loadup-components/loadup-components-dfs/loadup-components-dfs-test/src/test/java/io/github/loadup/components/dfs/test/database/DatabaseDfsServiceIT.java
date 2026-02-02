@@ -116,7 +116,7 @@ class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
   @DisplayName("Should choose right provider")
   void testDynamicBindingSelection() {
     // 1. 验证通过 Manager 获取到的实例
-      DfsBinding binding = manager.getBinding("db-files");
+    DfsBinding binding = manager.getBinding("db-files");
     assertNotNull(binding);
 
     // 2. 验证注入注解是否生效
@@ -149,7 +149,6 @@ class DatabaseDfsServiceIT extends AbstractMySQLContainerTest {
     assertEquals(TEST_FILENAME, metadata.getFilename());
     assertEquals("database", metadata.getProvider());
   }
-
 
   @Test
   @Order(2)
