@@ -4,12 +4,14 @@
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-framework-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.0.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-commons-util</artifactId>
+    <name>Loadup Common Utils</name>
+    <description>Loadup Common Utils - utility helpers used across the project</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

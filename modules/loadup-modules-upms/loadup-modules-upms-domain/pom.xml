@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-modules-upms</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>loadup-modules-upms-domain</artifactId>
-    <packaging>jar</packaging>
+    <name>Loadup Modules UPMS Domain Layer</name>
     <description>UPMS Domain Layer - Core Business Entities and Repository Interfaces</description>
 
     <dependencies>
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-util</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
 
         <dependency>

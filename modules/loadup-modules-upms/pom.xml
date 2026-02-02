@@ -5,12 +5,13 @@
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-framework-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.0.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-modules-upms</artifactId>
+    <name>Loadup Modules UPMS</name>
     <packaging>pom</packaging>
     <description>User Permission Management System - RBAC3 Model with COLA 4.0 Architecture</description>
 

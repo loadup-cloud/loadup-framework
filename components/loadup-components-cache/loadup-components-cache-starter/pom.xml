@@ -6,10 +6,12 @@
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-cache</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-cache-starter</artifactId>
+    <name>Loadup Cache Starter</name>
+    <description>Spring Boot starter for Loadup Cache auto-configuration and starters</description>
 
     <properties>
         <java.version>21</java.version>
@@ -29,7 +31,7 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-cache-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.0.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -39,13 +41,13 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-cache-binder-caffeine</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.0.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-cache-binder-redis</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.0.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

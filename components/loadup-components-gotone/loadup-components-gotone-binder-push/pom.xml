@@ -6,10 +6,12 @@
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-components-gotone</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-gotone-binder-push</artifactId>
+    <name>Loadup Gotone Binder Push</name>
+    <description>Push notification binder for Loadup Gotone component</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -38,4 +40,3 @@
         </dependency>
     </dependencies>
 </project>
-

@@ -5,16 +5,16 @@
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-framework-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.0.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-dfs</artifactId>
     <packaging>pom</packaging>
-    <description>LoadUp DFS Component - Distributed File Storage Support with Local, Database, S3 Binders</description>
+    <description>LoadUp Component DFS  - Distributed File Storage Support with Local, Database, S3 Binders</description>
+    <name>LoadUp Components DFS</name>
 
-    <name>loadup-components-dfs</name>
 
     <properties>
         <!-- Skip Spotless for aggregator POM - no source code -->

@@ -4,11 +4,13 @@
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-modules-upms</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>loadup-modules-upms-security</artifactId>
+    <name>Loadup Modules UPMS Security Layer</name>
+    <description>UPMS Security Layer</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -19,7 +21,7 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-upms-client</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

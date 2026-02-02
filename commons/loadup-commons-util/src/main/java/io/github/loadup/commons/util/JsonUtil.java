@@ -670,4 +670,37 @@ public class JsonUtil {
       return false;
     }
   }
+
+  /** 将 JsonNode 转换为特定的 List<Map>，用于 DbAssertEngine */
+  public static List<Map<String, Object>> toListMap(JsonNode node) {
+    return objectMapper.convertValue(node, new TypeReference<>() {});
+  }
+
+  public static JsonNode valueToTree(Object obj) {
+    return objectMapper.valueToTree(obj);
+  }
+
+  public static <T> T convertValue(JsonNode exp, TypeReference<T> typeReference) {
+    return objectMapper.convertValue(exp, typeReference);
+  }
+
+  public static <T> T convertValue(String exp, Class<T> parameterType) {
+    return objectMapper.convertValue(exp, parameterType);
+  }
+
+  public static <T> T convertValue(Map<String, Object> variables, TypeReference<T> typeReference) {
+    return objectMapper.convertValue(variables, typeReference);
+  }
+
+  public static <T> T convertValue(JsonNode jsonNode, Class<T> parameterType) {
+    return objectMapper.convertValue(jsonNode, parameterType);
+  }
+
+  public static Object convertValue(Object resolvedValue, Class<?> returnType) {
+    return objectMapper.convertValue(resolvedValue, returnType);
+  }
+
+  public static boolean equals(Object expected, Object actual) {
+    return JsonUtil.toJson(expected).equals(JsonUtil.toJson(actual));
+  }
 }

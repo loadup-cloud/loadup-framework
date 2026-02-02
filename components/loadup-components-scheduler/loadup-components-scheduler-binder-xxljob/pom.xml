@@ -10,6 +10,8 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-scheduler-binder-xxljob</artifactId>
+    <name>Loadup Scheduler XXLJob Binder</name>
+    <description>XXL-Job binder implementation for the scheduler component</description>
 
     <properties>
         <java.version>21</java.version>

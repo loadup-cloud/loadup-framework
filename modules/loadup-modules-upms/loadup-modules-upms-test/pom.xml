@@ -5,13 +5,13 @@
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-framework-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.0.1</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-modules-upms-test</artifactId>
-    <packaging>jar</packaging>
+    <name>Loadup UPMS Test</name>
     <description>UPMS Module Comprehensive Test Suite</description>
 
     <properties>
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-upms-starter</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
 
         <!-- Database Component -->
@@ -89,13 +89,13 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>testify-spring-boot-starter</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.0.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>testify-infra-container-mysql</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.0.1</version>
             <scope>test</scope>
         </dependency>
 

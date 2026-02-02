@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-modules-upms</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>loadup-modules-upms-adapter</artifactId>
-    <packaging>jar</packaging>
+    <name>Loadup Modules UPMS Adapter Layer</name>
     <description>UPMS Adapter Layer - REST API Controllers and DTOs</description>
 
     <dependencies>

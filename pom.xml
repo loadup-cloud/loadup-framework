@@ -4,13 +4,39 @@
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-dependencies</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.3</version>
         <relativePath/>
     </parent>
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-framework-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.0.1</version>
     <packaging>pom</packaging>
+
+    <name>Loadup Framework</name>
+    <description>Loadup Framework</description>
+    <url>https://github.com/loadup-cloud</url>
+    <inceptionYear>2025</inceptionYear>
+    <organization>
+        <name>loadup_cloud</name>
+    </organization>
+    <licenses>
+        <license>
+            <name>GPL-3.0</name>
+            <url>https://opensource.org/license/gpl-3-0</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>Laysan</id>
+            <email>lslvxy@gmail.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/loadup-cloud/loadup-framework.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/loadup-cloud/loadup-framework.git</developerConnection>
+        <url>https://github.com/loadup-cloud/loadup-framework</url>
+    </scm>
 
     <modules>
         <module>commons/loadup-commons-api</module>
@@ -32,18 +58,7 @@
         <!--        <module>modules/loadup-modules-user</module>-->
     </modules>
 
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>LoadUp Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
-        </repository>
-        <snapshotRepository>
-            <id>github</id>
-            <name>LoadUp Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
-        </snapshotRepository>
-    </distributionManagement>
+
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -51,10 +66,10 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <!-- Framework Version -->
-        <loadup.framework.version>1.0.0-SNAPSHOT</loadup.framework.version>
+        <loadup.framework.version>0.0.1</loadup.framework.version>
 
         <!-- Dependencies Versions -->
-        <spring-boot.version>3.1.2</spring-boot.version>
+        <spring-boot.version>3.4.3</spring-boot.version>
         <spring-cloud.version>2022.0.4</spring-cloud.version>
         <cola.version>4.3.2</cola.version>
         <fastjson.version>2.0.39</fastjson.version>
@@ -129,28 +144,54 @@
         </dependencies>
     </dependencyManagement>
 
-    <repositories>
-        <repository>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>github</id>
-            <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
-        </repository>
-
-        <repository>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>aliyun</id>
-            <url>https://maven.aliyun.com/repository/public</url>
-        </repository>
-    </repositories>
-
+    <profiles>
+    <profile>
+        <id>github</id>
+        <activation>
+        </activation>
+        <distributionManagement>
+            <repository>
+                <id>github</id>
+                <name>LoadUp Apache Maven Packages</name>
+                <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+            </repository>
+            <snapshotRepository>
+                <id>github</id>
+                <name>LoadUp Apache Maven Packages</name>
+                <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+            </snapshotRepository>
+        </distributionManagement>
+        <repositories>
+            <repository>
+                <releases>
+                    <enabled>true</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>true</enabled>
+                </snapshots>
+                <id>github</id>
+                <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+            </repository>
+            <repository>
+                <releases>
+                    <enabled>true</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>false</enabled>
+                </snapshots>
+                <id>aliyun</id>
+                <url>https://maven.aliyun.com/repository/public</url>
+            </repository>
+        </repositories>
+    </profile>
+    <profile>
+        <id>release</id>
+        <distributionManagement>
+            <repository>
+                <id>central</id>
+                <url>https://central.sonatype.com/repository/maven-releases/</url>
+            </repository>
+        </distributionManagement>
+    </profile>
+    </profiles>
 </project>
