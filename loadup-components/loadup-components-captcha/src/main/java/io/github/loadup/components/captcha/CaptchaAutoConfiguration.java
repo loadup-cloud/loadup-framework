@@ -40,23 +40,24 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(CaptchaProperties.class)
 public class CaptchaAutoConfiguration {
 
-  private final CaptchaProperties properties;
+    private final CaptchaProperties properties;
 
-  public CaptchaAutoConfiguration(CaptchaProperties properties) {
-    this.properties = properties;
-  }
-
-  @PostConstruct
-  public void init() {
-    // 如果配置了自定义字符集，则应用
-    if (properties.getCustomCharacters() != null && !properties.getCustomCharacters().isEmpty()) {
-      Randoms.setCustomAlpha(properties.getCustomCharacters());
+    public CaptchaAutoConfiguration(CaptchaProperties properties) {
+        this.properties = properties;
     }
-  }
 
-  @Bean
-  @ConditionalOnWebApplication
-  public CaptchaEndpoint captchaEndpoint(CaptchaProperties properties) {
-    return new CaptchaEndpoint(properties);
-  }
+    @PostConstruct
+    public void init() {
+        // 如果配置了自定义字符集，则应用
+        if (properties.getCustomCharacters() != null
+                && !properties.getCustomCharacters().isEmpty()) {
+            Randoms.setCustomAlpha(properties.getCustomCharacters());
+        }
+    }
+
+    @Bean
+    @ConditionalOnWebApplication
+    public CaptchaEndpoint captchaEndpoint(CaptchaProperties properties) {
+        return new CaptchaEndpoint(properties);
+    }
 }

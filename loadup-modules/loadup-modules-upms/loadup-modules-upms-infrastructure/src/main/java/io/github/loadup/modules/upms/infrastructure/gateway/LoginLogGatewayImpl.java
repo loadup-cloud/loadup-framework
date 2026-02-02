@@ -49,164 +49,144 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class LoginLogGatewayImpl implements LoginLogGateway {
 
-  private final LoginLogDOMapper loginLogDOMapper;
-  private final LoginLogConverter loginLogConverter;
+    private final LoginLogDOMapper loginLogDOMapper;
+    private final LoginLogConverter loginLogConverter;
 
-  @Override
-  public LoginLog save(LoginLog entity) {
-    LoginLogDO loginLogDO = loginLogConverter.toDataObject(entity);
-    loginLogDOMapper.insert(loginLogDO);
-    entity = loginLogConverter.toEntity(loginLogDO);
-    return entity;
-  }
+    @Override
+    public LoginLog save(LoginLog entity) {
+        LoginLogDO loginLogDO = loginLogConverter.toDataObject(entity);
+        loginLogDOMapper.insert(loginLogDO);
+        entity = loginLogConverter.toEntity(loginLogDO);
+        return entity;
+    }
 
-  @Override
-  public Optional<LoginLog> findById(String id) {
-    LoginLogDO loginLogDO = loginLogDOMapper.selectOneById(id);
-    return Optional.ofNullable(loginLogDO).map(loginLogConverter::toEntity);
-  }
+    @Override
+    public Optional<LoginLog> findById(String id) {
+        LoginLogDO loginLogDO = loginLogDOMapper.selectOneById(id);
+        return Optional.ofNullable(loginLogDO).map(loginLogConverter::toEntity);
+    }
 
-  @Override
-  public org.springframework.data.domain.Page<LoginLog> findByUserId(
-      String userId, Pageable pageable) {
-    QueryWrapper query =
-        QueryWrapper.create()
-            .where(LOGIN_LOG_DO.USER_ID.eq(userId))
-            .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
+    @Override
+    public org.springframework.data.domain.Page<LoginLog> findByUserId(String userId, Pageable pageable) {
+        QueryWrapper query =
+                QueryWrapper.create().where(LOGIN_LOG_DO.USER_ID.eq(userId)).orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
-    Page<LoginLogDO> page =
-        loginLogDOMapper.paginate(
-            Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+        Page<LoginLogDO> page =
+                loginLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
-    List<LoginLog> logs =
-        page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
+        List<LoginLog> logs =
+                page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
 
-    return new PageImpl<>(logs, pageable, page.getTotalRow());
-  }
+        return new PageImpl<>(logs, pageable, page.getTotalRow());
+    }
 
-  @Override
-  public org.springframework.data.domain.Page<LoginLog> findByUsername(
-      String username, Pageable pageable) {
-    QueryWrapper query =
-        QueryWrapper.create()
-            .where(LOGIN_LOG_DO.USERNAME.eq(username))
-            .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
+    @Override
+    public org.springframework.data.domain.Page<LoginLog> findByUsername(String username, Pageable pageable) {
+        QueryWrapper query =
+                QueryWrapper.create().where(LOGIN_LOG_DO.USERNAME.eq(username)).orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
-    Page<LoginLogDO> page =
-        loginLogDOMapper.paginate(
-            Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+        Page<LoginLogDO> page =
+                loginLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
-    List<LoginLog> logs =
-        page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
+        List<LoginLog> logs =
+                page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
 
-    return new PageImpl<>(logs, pageable, page.getTotalRow());
-  }
+        return new PageImpl<>(logs, pageable, page.getTotalRow());
+    }
 
-  @Override
-  public org.springframework.data.domain.Page<LoginLog> findByDateRange(
-      LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
-    QueryWrapper query =
-        QueryWrapper.create()
-            .where(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime))
-            .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
+    @Override
+    public org.springframework.data.domain.Page<LoginLog> findByDateRange(
+            LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
+        QueryWrapper query = QueryWrapper.create()
+                .where(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime))
+                .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
-    Page<LoginLogDO> page =
-        loginLogDOMapper.paginate(
-            Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+        Page<LoginLogDO> page =
+                loginLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
-    List<LoginLog> logs =
-        page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
+        List<LoginLog> logs =
+                page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
 
-    return new PageImpl<>(logs, pageable, page.getTotalRow());
-  }
+        return new PageImpl<>(logs, pageable, page.getTotalRow());
+    }
 
-  @Override
-  public org.springframework.data.domain.Page<LoginLog> findFailedLogins(
-      LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
-    QueryWrapper query =
-        QueryWrapper.create()
-            .where(LOGIN_LOG_DO.LOGIN_STATUS.eq((short) 0))
-            .and(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime))
-            .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
+    @Override
+    public org.springframework.data.domain.Page<LoginLog> findFailedLogins(
+            LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
+        QueryWrapper query = QueryWrapper.create()
+                .where(LOGIN_LOG_DO.LOGIN_STATUS.eq((short) 0))
+                .and(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime))
+                .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
-    Page<LoginLogDO> page =
-        loginLogDOMapper.paginate(
-            Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+        Page<LoginLogDO> page =
+                loginLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
-    List<LoginLog> logs =
-        page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
+        List<LoginLog> logs =
+                page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
 
-    return new PageImpl<>(logs, pageable, page.getTotalRow());
-  }
+        return new PageImpl<>(logs, pageable, page.getTotalRow());
+    }
 
-  @Override
-  public void deleteBeforeDate(LocalDateTime date) {
-    loginLogDOMapper.deleteByQuery(QueryWrapper.create().where(LOGIN_LOG_DO.LOGIN_TIME.lt(date)));
-  }
+    @Override
+    public void deleteBeforeDate(LocalDateTime date) {
+        loginLogDOMapper.deleteByQuery(QueryWrapper.create().where(LOGIN_LOG_DO.LOGIN_TIME.lt(date)));
+    }
 
-  @Override
-  public List<LoginLog> findByLoginTimeBetween(LocalDateTime startTime, LocalDateTime endTime) {
-    QueryWrapper query =
-        QueryWrapper.create()
-            .where(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime))
-            .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
-    List<LoginLogDO> loginLogDOs = loginLogDOMapper.selectListByQuery(query);
-    return loginLogDOs.stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
-  }
+    @Override
+    public List<LoginLog> findByLoginTimeBetween(LocalDateTime startTime, LocalDateTime endTime) {
+        QueryWrapper query = QueryWrapper.create()
+                .where(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime))
+                .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
+        List<LoginLogDO> loginLogDOs = loginLogDOMapper.selectListByQuery(query);
+        return loginLogDOs.stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
+    }
 
-  @Override
-  public org.springframework.data.domain.Page<LoginLog> findAll(Pageable pageable) {
-    QueryWrapper query = QueryWrapper.create().orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
+    @Override
+    public org.springframework.data.domain.Page<LoginLog> findAll(Pageable pageable) {
+        QueryWrapper query = QueryWrapper.create().orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
-    Page<LoginLogDO> page =
-        loginLogDOMapper.paginate(
-            Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+        Page<LoginLogDO> page =
+                loginLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
-    List<LoginLog> logs =
-        page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
+        List<LoginLog> logs =
+                page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
 
-    return new PageImpl<>(logs, pageable, page.getTotalRow());
-  }
+        return new PageImpl<>(logs, pageable, page.getTotalRow());
+    }
 
-  @Override
-  public long countLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime) {
-    QueryWrapper query =
-        QueryWrapper.create()
-            .where(LOGIN_LOG_DO.USER_ID.eq(userId))
-            .and(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime));
-    return loginLogDOMapper.selectCountByQuery(query);
-  }
+    @Override
+    public long countLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime) {
+        QueryWrapper query = QueryWrapper.create()
+                .where(LOGIN_LOG_DO.USER_ID.eq(userId))
+                .and(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime));
+        return loginLogDOMapper.selectCountByQuery(query);
+    }
 
-  @Override
-  public long countFailedLoginAttempts(
-      String userId, LocalDateTime startTime, LocalDateTime endTime) {
-    QueryWrapper query =
-        QueryWrapper.create()
-            .where(LOGIN_LOG_DO.USER_ID.eq(userId))
-            .and(LOGIN_LOG_DO.LOGIN_STATUS.eq((short) 0))
-            .and(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime));
-    return loginLogDOMapper.selectCountByQuery(query);
-  }
+    @Override
+    public long countFailedLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime) {
+        QueryWrapper query = QueryWrapper.create()
+                .where(LOGIN_LOG_DO.USER_ID.eq(userId))
+                .and(LOGIN_LOG_DO.LOGIN_STATUS.eq((short) 0))
+                .and(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime));
+        return loginLogDOMapper.selectCountByQuery(query);
+    }
 
-  @Override
-  public List<LoginLog> findByUserId(String userId) {
-    QueryWrapper query =
-        QueryWrapper.create()
-            .where(LOGIN_LOG_DO.USER_ID.eq(userId))
-            .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
-    List<LoginLogDO> loginLogDOs = loginLogDOMapper.selectListByQuery(query);
-    return loginLogDOs.stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
-  }
+    @Override
+    public List<LoginLog> findByUserId(String userId) {
+        QueryWrapper query =
+                QueryWrapper.create().where(LOGIN_LOG_DO.USER_ID.eq(userId)).orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
+        List<LoginLogDO> loginLogDOs = loginLogDOMapper.selectListByQuery(query);
+        return loginLogDOs.stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
+    }
 
-  @Override
-  public Optional<LoginLog> findLastSuccessfulLogin(String userId) {
-    QueryWrapper query =
-        QueryWrapper.create()
-            .where(LOGIN_LOG_DO.USER_ID.eq(userId))
-            .and(LOGIN_LOG_DO.LOGIN_STATUS.eq((short) 1))
-            .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc())
-            .limit(1);
-    LoginLogDO loginLogDO = loginLogDOMapper.selectOneByQuery(query);
-    return Optional.ofNullable(loginLogDO).map(loginLogConverter::toEntity);
-  }
+    @Override
+    public Optional<LoginLog> findLastSuccessfulLogin(String userId) {
+        QueryWrapper query = QueryWrapper.create()
+                .where(LOGIN_LOG_DO.USER_ID.eq(userId))
+                .and(LOGIN_LOG_DO.LOGIN_STATUS.eq((short) 1))
+                .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc())
+                .limit(1);
+        LoginLogDO loginLogDO = loginLogDOMapper.selectOneByQuery(query);
+        return Optional.ofNullable(loginLogDO).map(loginLogConverter::toEntity);
+    }
 }

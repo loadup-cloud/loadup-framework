@@ -44,22 +44,19 @@ import org.springframework.core.Ordered;
 @Slf4j
 @AutoConfiguration
 @EnableConfigurationProperties(DatabaseProperties.class)
-@ConditionalOnProperty(
-    prefix = "loadup.database.multi-tenant",
-    name = "enabled",
-    havingValue = "true")
+@ConditionalOnProperty(prefix = "loadup.database.multi-tenant", name = "enabled", havingValue = "true")
 public class MultiTenantAutoConfiguration {
 
-  @Bean
-  @ConditionalOnWebApplication
-  public FilterRegistrationBean<TenantFilter> tenantFilterRegistration() {
-    FilterRegistrationBean<TenantFilter> registration = new FilterRegistrationBean<>();
-    registration.setFilter(new TenantFilter());
-    registration.addUrlPatterns("/*");
-    registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
-    registration.setName("tenantFilter");
+    @Bean
+    @ConditionalOnWebApplication
+    public FilterRegistrationBean<TenantFilter> tenantFilterRegistration() {
+        FilterRegistrationBean<TenantFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new TenantFilter());
+        registration.addUrlPatterns("/*");
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
+        registration.setName("tenantFilter");
 
-    log.info("Registered TenantFilter for multi-tenant support");
-    return registration;
-  }
+        log.info("Registered TenantFilter for multi-tenant support");
+        return registration;
+    }
 }

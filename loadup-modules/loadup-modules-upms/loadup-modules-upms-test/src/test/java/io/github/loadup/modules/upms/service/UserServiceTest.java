@@ -35,10 +35,11 @@ import org.testng.annotations.Test;
 @ActiveProfiles("test")
 public class UserServiceTest extends TestifyBase {
 
-  @Autowired private UserService userService;
+    @Autowired
+    private UserService userService;
 
-  @Test(dataProvider = "testifyData")
-  public void testCreateUser(UserCreateCommand cmd) {
-    runTest(() -> userService.createUser(val(cmd)));
-  }
+    @Test(dataProvider = "testifyData")
+    public void testCreateUser(UserCreateCommand cmd) {
+        runTest(() -> userService.createUser(val(cmd)));
+    }
 }

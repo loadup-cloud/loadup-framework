@@ -29,9 +29,9 @@ import io.github.loadup.gateway.facade.model.RouteConfig;
 /** Proxy plugin SPI interface */
 public interface ProxyProcessor extends GatewayPlugin {
 
-  /** Proxy request to target service */
-  GatewayResponse proxy(GatewayRequest request, RouteConfig route) throws Exception;
+    /** Proxy request to target service */
+    GatewayResponse proxy(GatewayRequest request, RouteConfig route) throws Exception;
 
-  /** Get supported protocol type */
-  String getSupportedProtocol();
+    /** Get supported protocol type */
+    String getSupportedProtocol();
 }

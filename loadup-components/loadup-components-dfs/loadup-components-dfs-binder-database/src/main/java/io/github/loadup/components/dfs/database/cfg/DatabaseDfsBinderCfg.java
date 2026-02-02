@@ -31,5 +31,5 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 public class DatabaseDfsBinderCfg extends DfsBinderCfg {
-  private String tableName = "file_storage";
+    private String tableName = "file_storage";
 }

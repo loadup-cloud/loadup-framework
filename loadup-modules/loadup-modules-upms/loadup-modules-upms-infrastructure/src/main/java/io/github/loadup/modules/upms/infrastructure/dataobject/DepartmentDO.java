@@ -38,23 +38,23 @@ import lombok.EqualsAndHashCode;
 @Table("upms_department")
 public class DepartmentDO extends BaseDO {
 
-  private String parentId;
+    private String parentId;
 
-  private String deptName;
+    private String deptName;
 
-  private String deptCode;
+    private String deptCode;
 
-  private Integer deptLevel;
+    private Integer deptLevel;
 
-  private Integer sortOrder;
+    private Integer sortOrder;
 
-  private String leaderUserId;
+    private String leaderUserId;
 
-  private String mobile;
+    private String mobile;
 
-  private String email;
+    private String email;
 
-  private Short status;
+    private Short status;
 
-  private String remark;
+    private String remark;
 }

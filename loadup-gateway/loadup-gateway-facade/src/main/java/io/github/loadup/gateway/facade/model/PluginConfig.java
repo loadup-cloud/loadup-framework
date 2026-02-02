@@ -31,24 +31,24 @@ import lombok.*;
 @AllArgsConstructor
 public class PluginConfig {
 
-  /** Plugin name */
-  private String pluginName;
+    /** Plugin name */
+    private String pluginName;
 
-  /** Plugin type */
-  private String pluginType;
+    /** Plugin type */
+    private String pluginType;
 
-  /** Plugin version */
-  private String version;
+    /** Plugin version */
+    private String version;
 
-  /** Enabled flag */
-  private boolean enabled;
+    /** Enabled flag */
+    private boolean enabled;
 
-  /** Priority (lower value means higher priority) */
-  private int priority;
+    /** Priority (lower value means higher priority) */
+    private int priority;
 
-  /** Plugin configuration parameters */
-  private Map<String, Object> properties;
+    /** Plugin configuration parameters */
+    private Map<String, Object> properties;
 
-  /** Plugin description */
-  private String description;
+    /** Plugin description */
+    private String description;
 }

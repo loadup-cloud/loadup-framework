@@ -50,46 +50,49 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class BaseEntityListener implements InsertListener, UpdateListener {
-  private final DatabaseProperties databaseProperties;
+    private final DatabaseProperties databaseProperties;
 
-  @Override
-  public void onInsert(Object entity) {
-    if (!(entity instanceof BaseDO baseDO)) {
-      return;
+    @Override
+    public void onInsert(Object entity) {
+        if (!(entity instanceof BaseDO baseDO)) {
+            return;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        // Set tenant ID if multi-tenant is enabled
+        String tenantId = TenantContextHolder.getTenantId();
+        if (StringUtils.isBlank(tenantId)) {
+            if (databaseProperties.getMultiTenant().isEnabled()) {
+                throw new RuntimeException("multi-tenant is enabled but tenantId not found!");
+            }
+            tenantId = databaseProperties.getMultiTenant().getDefaultTenantId();
+        }
+        baseDO.setTenantId(tenantId);
+        log.debug(
+                "Auto-filled tenantId={} for entity {}",
+                tenantId,
+                entity.getClass().getSimpleName());
+
+        // Set timestamps
+        if (baseDO.getCreatedAt() == null) {
+            baseDO.setCreatedAt(now);
+        }
+        if (baseDO.getUpdatedAt() == null) {
+            baseDO.setUpdatedAt(now);
+        }
+
+        // Initialize deleted flag if logical delete is enabled
+        baseDO.setDeleted(false);
     }
 
-    LocalDateTime now = LocalDateTime.now();
+    @Override
+    public void onUpdate(Object entity) {
+        if (!(entity instanceof BaseDO baseDO)) {
+            return;
+        }
 
-    // Set tenant ID if multi-tenant is enabled
-    String tenantId = TenantContextHolder.getTenantId();
-    if (StringUtils.isBlank(tenantId)) {
-      if (databaseProperties.getMultiTenant().isEnabled()) {
-        throw new RuntimeException("multi-tenant is enabled but tenantId not found!");
-      }
-      tenantId = databaseProperties.getMultiTenant().getDefaultTenantId();
+        // Update timestamp
+        baseDO.setUpdatedAt(LocalDateTime.now());
     }
-    baseDO.setTenantId(tenantId);
-    log.debug("Auto-filled tenantId={} for entity {}", tenantId, entity.getClass().getSimpleName());
-
-    // Set timestamps
-    if (baseDO.getCreatedAt() == null) {
-      baseDO.setCreatedAt(now);
-    }
-    if (baseDO.getUpdatedAt() == null) {
-      baseDO.setUpdatedAt(now);
-    }
-
-    // Initialize deleted flag if logical delete is enabled
-    baseDO.setDeleted(false);
-  }
-
-  @Override
-  public void onUpdate(Object entity) {
-    if (!(entity instanceof BaseDO baseDO)) {
-      return;
-    }
-
-    // Update timestamp
-    baseDO.setUpdatedAt(LocalDateTime.now());
-  }
 }

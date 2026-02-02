@@ -33,33 +33,32 @@ import org.springframework.core.Ordered;
 @Slf4j
 public class ResponseTemplateAction implements GatewayAction {
 
-  private final TemplateEngine templateEngine;
+    private final TemplateEngine templateEngine;
 
-  public ResponseTemplateAction(TemplateEngine templateEngine) {
-    this.templateEngine = templateEngine;
-  }
-
-  @Override
-  public void execute(GatewayContext context, GatewayActionChain chain) {
-    // Proceed chain first to get response
-    chain.proceed(context);
-
-    // Post-process response
-    if (context.getResponse() != null && context.getRoute().getResponseTemplate() != null) {
-      try {
-        GatewayResponse processedResponse =
-            templateEngine.processResponseTemplate(
-                context.getResponse(), context.getRoute().getResponseTemplate());
-        context.setResponse(processedResponse);
-      } catch (Exception e) {
-        log.warn("Response template processing failed", e);
-        throw GatewayExceptionFactory.templateExecutionError(
-            context.getRoute().getResponseTemplate(), e);
-      }
+    public ResponseTemplateAction(TemplateEngine templateEngine) {
+        this.templateEngine = templateEngine;
     }
-  }
 
-  public int getOrder() {
-    return Ordered.LOWEST_PRECEDENCE - 2000;
-  }
+    @Override
+    public void execute(GatewayContext context, GatewayActionChain chain) {
+        // Proceed chain first to get response
+        chain.proceed(context);
+
+        // Post-process response
+        if (context.getResponse() != null && context.getRoute().getResponseTemplate() != null) {
+            try {
+                GatewayResponse processedResponse = templateEngine.processResponseTemplate(
+                        context.getResponse(), context.getRoute().getResponseTemplate());
+                context.setResponse(processedResponse);
+            } catch (Exception e) {
+                log.warn("Response template processing failed", e);
+                throw GatewayExceptionFactory.templateExecutionError(
+                        context.getRoute().getResponseTemplate(), e);
+            }
+        }
+    }
+
+    public int getOrder() {
+        return Ordered.LOWEST_PRECEDENCE - 2000;
+    }
 }

@@ -28,45 +28,43 @@ import java.util.Map;
 /** Gotone 通知服务接口（简化版） 通过业务代码自动处理多渠道发送 */
 public interface GotoneNotificationService {
 
-  /**
-   * 根据业务代码发送通知（自动多渠道）
-   *
-   * @param businessCode 业务代码
-   * @param addresses 接收人地址列表
-   * @param params 模板参数
-   * @return 是否全部发送成功
-   */
-  boolean send(String businessCode, List<String> addresses, Map<String, Object> params);
+    /**
+     * 根据业务代码发送通知（自动多渠道）
+     *
+     * @param businessCode 业务代码
+     * @param addresses 接收人地址列表
+     * @param params 模板参数
+     * @return 是否全部发送成功
+     */
+    boolean send(String businessCode, List<String> addresses, Map<String, Object> params);
 
-  /**
-   * 根据业务代码发送通知（带业务ID）
-   *
-   * @param businessCode 业务代码
-   * @param bizId 业务ID（用于幂等和追踪）
-   * @param addresses 接收人地址列表
-   * @param params 模板参数
-   * @return 是否全部发送成功
-   */
-  boolean send(
-      String businessCode, String bizId, List<String> addresses, Map<String, Object> params);
+    /**
+     * 根据业务代码发送通知（带业务ID）
+     *
+     * @param businessCode 业务代码
+     * @param bizId 业务ID（用于幂等和追踪）
+     * @param addresses 接收人地址列表
+     * @param params 模板参数
+     * @return 是否全部发送成功
+     */
+    boolean send(String businessCode, String bizId, List<String> addresses, Map<String, Object> params);
 
-  /**
-   * 异步发送
-   *
-   * @param businessCode 业务代码
-   * @param addresses 接收人地址列表
-   * @param params 模板参数
-   */
-  void sendAsync(String businessCode, List<String> addresses, Map<String, Object> params);
+    /**
+     * 异步发送
+     *
+     * @param businessCode 业务代码
+     * @param addresses 接收人地址列表
+     * @param params 模板参数
+     */
+    void sendAsync(String businessCode, List<String> addresses, Map<String, Object> params);
 
-  /**
-   * 异步发送（带业务ID）
-   *
-   * @param businessCode 业务代码
-   * @param bizId 业务ID
-   * @param addresses 接收人地址列表
-   * @param params 模板参数
-   */
-  void sendAsync(
-      String businessCode, String bizId, List<String> addresses, Map<String, Object> params);
+    /**
+     * 异步发送（带业务ID）
+     *
+     * @param businessCode 业务代码
+     * @param bizId 业务ID
+     * @param addresses 接收人地址列表
+     * @param params 模板参数
+     */
+    void sendAsync(String businessCode, String bizId, List<String> addresses, Map<String, Object> params);
 }

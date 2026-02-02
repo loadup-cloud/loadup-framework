@@ -34,33 +34,33 @@ import org.springframework.core.Ordered;
 @Slf4j
 public class RouteAction implements GatewayAction {
 
-  private final RouteResolver routeResolver;
+    private final RouteResolver routeResolver;
 
-  public RouteAction(RouteResolver routeResolver) {
-    this.routeResolver = routeResolver;
-  }
-
-  @Override
-  public void execute(GatewayContext context, GatewayActionChain chain) {
-    // Resolve route
-    Optional<RouteConfig> routeOpt = routeResolver.resolve(context.getRequest());
-
-    if (!routeOpt.isPresent()) {
-      // Throw exception to be handled by the adapter
-      throw GatewayExceptionFactory.routeNotFound(context.getRequest().getPath());
+    public RouteAction(RouteResolver routeResolver) {
+        this.routeResolver = routeResolver;
     }
 
-    RouteConfig route = routeOpt.get();
-    log.debug("Route resolved: {} -> {}", context.getRequest().getPath(), route.getRouteId());
+    @Override
+    public void execute(GatewayContext context, GatewayActionChain chain) {
+        // Resolve route
+        Optional<RouteConfig> routeOpt = routeResolver.resolve(context.getRequest());
 
-    // Store route in context
-    context.setRoute(route);
+        if (!routeOpt.isPresent()) {
+            // Throw exception to be handled by the adapter
+            throw GatewayExceptionFactory.routeNotFound(context.getRequest().getPath());
+        }
 
-    // Proceed
-    chain.proceed(context);
-  }
+        RouteConfig route = routeOpt.get();
+        log.debug("Route resolved: {} -> {}", context.getRequest().getPath(), route.getRouteId());
 
-  public int getOrder() {
-    return Ordered.HIGHEST_PRECEDENCE + 1000;
-  }
+        // Store route in context
+        context.setRoute(route);
+
+        // Proceed
+        chain.proceed(context);
+    }
+
+    public int getOrder() {
+        return Ordered.HIGHEST_PRECEDENCE + 1000;
+    }
 }

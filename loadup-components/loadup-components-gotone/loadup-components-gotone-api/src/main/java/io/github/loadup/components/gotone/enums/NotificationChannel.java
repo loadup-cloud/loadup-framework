@@ -24,24 +24,24 @@ package io.github.loadup.components.gotone.enums;
 
 /** 通知渠道枚举 */
 public enum NotificationChannel {
-  /** 邮件 */
-  EMAIL,
+    /** 邮件 */
+    EMAIL,
 
-  /** 短信 */
-  SMS,
+    /** 短信 */
+    SMS,
 
-  /** 推送消息 */
-  PUSH,
+    /** 推送消息 */
+    PUSH,
 
-  /** 站内信 */
-  INTERNAL_MESSAGE,
+    /** 站内信 */
+    INTERNAL_MESSAGE,
 
-  /** 微信 */
-  WECHAT,
+    /** 微信 */
+    WECHAT,
 
-  /** 钉钉 */
-  DINGTALK,
+    /** 钉钉 */
+    DINGTALK,
 
-  /** 飞书 */
-  FEISHU
+    /** 飞书 */
+    FEISHU
 }

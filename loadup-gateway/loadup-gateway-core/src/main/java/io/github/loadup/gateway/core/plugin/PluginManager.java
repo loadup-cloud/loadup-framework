@@ -37,46 +37,42 @@ import org.apache.commons.lang3.StringUtils;
 @Slf4j
 public class PluginManager {
 
-  private final List<ProxyProcessor> proxyProcessors;
+    private final List<ProxyProcessor> proxyProcessors;
 
-  public PluginManager(List<ProxyProcessor> proxyProcessors) {
-    this.proxyProcessors = proxyProcessors;
-  }
+    public PluginManager(List<ProxyProcessor> proxyProcessors) {
+        this.proxyProcessors = proxyProcessors;
+    }
 
-  private final Map<String, ProxyProcessor> processorMap = new ConcurrentHashMap<>();
+    private final Map<String, ProxyProcessor> processorMap = new ConcurrentHashMap<>();
 
-  @PostConstruct
-  public void init() {
-    if (proxyProcessors != null) {
-      for (ProxyProcessor processor : proxyProcessors) {
-        String protocol = processor.getSupportedProtocol();
-        if (processorMap.containsKey(protocol)) {
-          log.warn(
-              "Duplicate protocol processor found for: {}, overwriting with {}",
-              protocol,
-              processor.getClass().getName());
+    @PostConstruct
+    public void init() {
+        if (proxyProcessors != null) {
+            for (ProxyProcessor processor : proxyProcessors) {
+                String protocol = processor.getSupportedProtocol();
+                if (processorMap.containsKey(protocol)) {
+                    log.warn(
+                            "Duplicate protocol processor found for: {}, overwriting with {}",
+                            protocol,
+                            processor.getClass().getName());
+                }
+                processorMap.put(protocol, processor);
+            }
         }
-        processorMap.put(protocol, processor);
-      }
-    }
-    log.info(
-        "Initialized PluginManager with {} processors: {}",
-        processorMap.size(),
-        processorMap.keySet());
-  }
-
-  /** Execute proxy forwarding */
-  public GatewayResponse executeProxy(GatewayRequest request, RouteConfig route) throws Exception {
-    if (StringUtils.isBlank(route.getProtocol())) {
-      throw new RuntimeException("No protocol found!");
-    }
-    ProxyProcessor plugin = processorMap.get(route.getProtocol());
-    if (plugin == null) {
-      throw new RuntimeException("No proxy plugin found for protocol: " + route.getProtocol());
+        log.info("Initialized PluginManager with {} processors: {}", processorMap.size(), processorMap.keySet());
     }
 
-    log.debug(
-        "Executing proxy with plugin: {} for route: {}", plugin.getName(), route.getRouteId());
-    return plugin.proxy(request, route);
-  }
+    /** Execute proxy forwarding */
+    public GatewayResponse executeProxy(GatewayRequest request, RouteConfig route) throws Exception {
+        if (StringUtils.isBlank(route.getProtocol())) {
+            throw new RuntimeException("No protocol found!");
+        }
+        ProxyProcessor plugin = processorMap.get(route.getProtocol());
+        if (plugin == null) {
+            throw new RuntimeException("No proxy plugin found for protocol: " + route.getProtocol());
+        }
+
+        log.debug("Executing proxy with plugin: {} for route: {}", plugin.getName(), route.getRouteId());
+        return plugin.proxy(request, route);
+    }
 }

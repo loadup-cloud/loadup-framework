@@ -31,6 +31,6 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 public class SimpleJobSchedulerBinderCfg extends SchedulerBinderCfg {
-  private int poolSize = 1;
-  private String threadNamePrefix = "simple-scheduler-";
+    private int poolSize = 1;
+    private String threadNamePrefix = "simple-scheduler-";
 }

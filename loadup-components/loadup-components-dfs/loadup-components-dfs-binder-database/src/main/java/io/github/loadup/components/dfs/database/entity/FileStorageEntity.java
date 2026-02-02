@@ -33,27 +33,27 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FileStorageEntity {
 
-  private Long id;
+    private Long id;
 
-  private String fileId;
+    private String fileId;
 
-  private String filename;
+    private String filename;
 
-  private byte[] content;
+    private byte[] content;
 
-  private Long size;
+    private Long size;
 
-  private String contentType;
+    private String contentType;
 
-  private String hash;
+    private String hash;
 
-  private String bizType;
+    private String bizType;
 
-  private String bizId;
+    private String bizId;
 
-  private Boolean publicAccess;
+    private Boolean publicAccess;
 
-  private LocalDateTime uploadTime;
+    private LocalDateTime uploadTime;
 
-  private String metadata;
+    private String metadata;
 }

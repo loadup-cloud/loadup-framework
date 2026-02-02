@@ -33,23 +33,23 @@ import lombok.*;
 @AllArgsConstructor
 public class Product implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  private String id;
-  private String name;
-  private String description;
-  private BigDecimal price;
-  private Integer stock;
-  private String category;
+    private String id;
+    private String name;
+    private String description;
+    private BigDecimal price;
+    private Integer stock;
+    private String category;
 
-  public static Product createTestProduct(String id) {
-    return Product.builder()
-        .id(id)
-        .name("Product" + id)
-        .description("Test product " + id)
-        .price(new BigDecimal("99.99"))
-        .stock(100)
-        .category("Electronics")
-        .build();
-  }
+    public static Product createTestProduct(String id) {
+        return Product.builder()
+                .id(id)
+                .name("Product" + id)
+                .description("Test product " + id)
+                .price(new BigDecimal("99.99"))
+                .stock(100)
+                .category("Electronics")
+                .build();
+    }
 }

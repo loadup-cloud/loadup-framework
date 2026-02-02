@@ -37,40 +37,39 @@ import org.springframework.data.domain.Pageable;
  */
 public interface LoginLogGateway {
 
-  /** Save login log */
-  LoginLog save(LoginLog log);
+    /** Save login log */
+    LoginLog save(LoginLog log);
 
-  /** Find log by ID */
-  Optional<LoginLog> findById(String id);
+    /** Find log by ID */
+    Optional<LoginLog> findById(String id);
 
-  /** Find logs by user ID */
-  Page<LoginLog> findByUserId(String userId, Pageable pageable);
+    /** Find logs by user ID */
+    Page<LoginLog> findByUserId(String userId, Pageable pageable);
 
-  /** Find logs by username */
-  Page<LoginLog> findByUsername(String username, Pageable pageable);
+    /** Find logs by username */
+    Page<LoginLog> findByUsername(String username, Pageable pageable);
 
-  /** Find logs by date range */
-  Page<LoginLog> findByDateRange(LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
+    /** Find logs by date range */
+    Page<LoginLog> findByDateRange(LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
 
-  /** Find failed login attempts */
-  Page<LoginLog> findFailedLogins(
-      LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
+    /** Find failed login attempts */
+    Page<LoginLog> findFailedLogins(LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
 
-  /** Delete logs before specified date */
-  void deleteBeforeDate(LocalDateTime date);
+    /** Delete logs before specified date */
+    void deleteBeforeDate(LocalDateTime date);
 
-  List<LoginLog> findByLoginTimeBetween(LocalDateTime startTime, LocalDateTime endTime);
+    List<LoginLog> findByLoginTimeBetween(LocalDateTime startTime, LocalDateTime endTime);
 
-  Page<LoginLog> findAll(Pageable pageable);
+    Page<LoginLog> findAll(Pageable pageable);
 
-  /** Count login attempts by user and time range */
-  long countLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime);
+    /** Count login attempts by user and time range */
+    long countLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime);
 
-  /** Count failed login attempts by user and time range */
-  long countFailedLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime);
+    /** Count failed login attempts by user and time range */
+    long countFailedLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime);
 
-  List<LoginLog> findByUserId(String userId);
+    List<LoginLog> findByUserId(String userId);
 
-  /** Get last successful login */
-  Optional<LoginLog> findLastSuccessfulLogin(String userId);
+    /** Get last successful login */
+    Optional<LoginLog> findLastSuccessfulLogin(String userId);
 }

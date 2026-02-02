@@ -30,5 +30,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 @ConfigurationProperties(prefix = "loadup.scheduler")
 public class SchedulerGroupProperties {
-  private SchedulerBinderType defaultBinder = SchedulerBinderType.SIMPLE_JOB;
+    private SchedulerBinderType defaultBinder = SchedulerBinderType.SIMPLE_JOB;
 }

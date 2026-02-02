@@ -51,54 +51,50 @@ import org.springframework.util.StringUtils;
 @AutoConfiguration
 @ConditionalOnClass(SpringLiquibase.class)
 @ConditionalOnBean(DataSource.class)
-@ConditionalOnProperty(
-    prefix = "loadup.liquibase",
-    name = "enabled",
-    havingValue = "true",
-    matchIfMissing = true)
+@ConditionalOnProperty(prefix = "loadup.liquibase", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(LiquibaseProperties.class)
 public class LiquibaseAutoConfiguration {
 
-  /**
-   * Create SpringLiquibase bean with customized configuration
-   *
-   * @param dataSource the data source to use for migration
-   * @param properties the Liquibase configuration properties
-   * @return configured SpringLiquibase instance
-   */
-  @Bean
-  public SpringLiquibase liquibase(DataSource dataSource, LiquibaseProperties properties) {
-    SpringLiquibase liquibase = new SpringLiquibase();
-    liquibase.setDataSource(dataSource);
-    liquibase.setChangeLog(properties.getChangeLog());
-    liquibase.setShouldRun(properties.isEnabled());
+    /**
+     * Create SpringLiquibase bean with customized configuration
+     *
+     * @param dataSource the data source to use for migration
+     * @param properties the Liquibase configuration properties
+     * @return configured SpringLiquibase instance
+     */
+    @Bean
+    public SpringLiquibase liquibase(DataSource dataSource, LiquibaseProperties properties) {
+        SpringLiquibase liquibase = new SpringLiquibase();
+        liquibase.setDataSource(dataSource);
+        liquibase.setChangeLog(properties.getChangeLog());
+        liquibase.setShouldRun(properties.isEnabled());
 
-    // Optional configurations
-    if (StringUtils.hasText(properties.getContexts())) {
-      liquibase.setContexts(properties.getContexts());
+        // Optional configurations
+        if (StringUtils.hasText(properties.getContexts())) {
+            liquibase.setContexts(properties.getContexts());
+        }
+
+        if (StringUtils.hasText(properties.getLabels())) {
+            liquibase.setLabels(properties.getLabels());
+        }
+
+        if (StringUtils.hasText(properties.getDefaultSchema())) {
+            liquibase.setDefaultSchema(properties.getDefaultSchema());
+        }
+
+        if (StringUtils.hasText(properties.getLiquibaseSchema())) {
+            liquibase.setLiquibaseSchema(properties.getLiquibaseSchema());
+        }
+
+        if (StringUtils.hasText(properties.getLiquibaseTablespace())) {
+            liquibase.setLiquibaseTablespace(properties.getLiquibaseTablespace());
+        }
+
+        liquibase.setDatabaseChangeLogTable(properties.getDatabaseChangeLogTable());
+        liquibase.setDatabaseChangeLogLockTable(properties.getDatabaseChangeLogLockTable());
+        liquibase.setDropFirst(properties.isDropFirst());
+        liquibase.setClearCheckSums(properties.isClearChecksums());
+
+        return liquibase;
     }
-
-    if (StringUtils.hasText(properties.getLabels())) {
-      liquibase.setLabels(properties.getLabels());
-    }
-
-    if (StringUtils.hasText(properties.getDefaultSchema())) {
-      liquibase.setDefaultSchema(properties.getDefaultSchema());
-    }
-
-    if (StringUtils.hasText(properties.getLiquibaseSchema())) {
-      liquibase.setLiquibaseSchema(properties.getLiquibaseSchema());
-    }
-
-    if (StringUtils.hasText(properties.getLiquibaseTablespace())) {
-      liquibase.setLiquibaseTablespace(properties.getLiquibaseTablespace());
-    }
-
-    liquibase.setDatabaseChangeLogTable(properties.getDatabaseChangeLogTable());
-    liquibase.setDatabaseChangeLogLockTable(properties.getDatabaseChangeLogLockTable());
-    liquibase.setDropFirst(properties.isDropFirst());
-    liquibase.setClearCheckSums(properties.isClearChecksums());
-
-    return liquibase;
-  }
 }

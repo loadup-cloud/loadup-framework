@@ -32,32 +32,31 @@ import org.springframework.core.Ordered;
 @Slf4j
 public class ProxyAction implements GatewayAction {
 
-  private final PluginManager pluginManager;
+    private final PluginManager pluginManager;
 
-  public ProxyAction(PluginManager pluginManager) {
-    this.pluginManager = pluginManager;
-  }
-
-  @Override
-  public void execute(GatewayContext context, GatewayActionChain chain) {
-    try {
-      // Execute proxy through plugin manager
-      GatewayResponse response =
-          pluginManager.executeProxy(context.getRequest(), context.getRoute());
-
-      // Set response in context
-      context.setResponse(response);
-
-      // Proceed (though typically this is the end)
-      chain.proceed(context);
-    } catch (Exception e) {
-      // Re-throw to be handled by adapter (or wrap if needed, but adapter handles generic
-      // Exception)
-      throw new RuntimeException("Proxy execution failed", e);
+    public ProxyAction(PluginManager pluginManager) {
+        this.pluginManager = pluginManager;
     }
-  }
 
-  public int getOrder() {
-    return Ordered.LOWEST_PRECEDENCE - 1000;
-  }
+    @Override
+    public void execute(GatewayContext context, GatewayActionChain chain) {
+        try {
+            // Execute proxy through plugin manager
+            GatewayResponse response = pluginManager.executeProxy(context.getRequest(), context.getRoute());
+
+            // Set response in context
+            context.setResponse(response);
+
+            // Proceed (though typically this is the end)
+            chain.proceed(context);
+        } catch (Exception e) {
+            // Re-throw to be handled by adapter (or wrap if needed, but adapter handles generic
+            // Exception)
+            throw new RuntimeException("Proxy execution failed", e);
+        }
+    }
+
+    public int getOrder() {
+        return Ordered.LOWEST_PRECEDENCE - 1000;
+    }
 }

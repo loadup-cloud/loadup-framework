@@ -30,23 +30,23 @@ import java.util.Optional;
 /** Storage plugin SPI interface */
 public interface RepositoryPlugin extends GatewayPlugin {
 
-  /** Get route configuration by route ID */
-  Optional<RouteConfig> getRoute(String routeId) throws Exception;
+    /** Get route configuration by route ID */
+    Optional<RouteConfig> getRoute(String routeId) throws Exception;
 
-  /** Get route configuration by path and method */
-  Optional<RouteConfig> getRouteByPath(String path, String method) throws Exception;
+    /** Get route configuration by path and method */
+    Optional<RouteConfig> getRouteByPath(String path, String method) throws Exception;
 
-  /** Get all route configurations */
-  List<RouteConfig> getAllRoutes() throws Exception;
+    /** Get all route configurations */
+    List<RouteConfig> getAllRoutes() throws Exception;
 
-  /** Get template */
-  Optional<String> getTemplate(String templateId, String templateType) throws Exception;
+    /** Get template */
+    Optional<String> getTemplate(String templateId, String templateType) throws Exception;
 
-  /** Get supported storage type */
-  String getSupportedStorageType();
+    /** Get supported storage type */
+    String getSupportedStorageType();
 
-  /**
-   * @return
-   */
-  RouteConfig convertToRouteConfig(RouteStructure structure) throws Exception;
+    /**
+     * @return
+     */
+    RouteConfig convertToRouteConfig(RouteStructure structure) throws Exception;
 }

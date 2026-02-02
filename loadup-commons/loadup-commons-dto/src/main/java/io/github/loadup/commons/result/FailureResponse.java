@@ -31,31 +31,34 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"result", "traceId"})
 public record FailureResponse<T>(
-    @Schema(description = "结果元数据") @JsonProperty("result") Result result,
-    @Schema(description = "请求追踪ID") @JsonProperty("traceId") String traceId)
-    implements IResponse<T> {
+        @Schema(description = "结果元数据") @JsonProperty("result")
+        Result result,
 
-  @Override
-  public Result getResult() {
-    return result;
-  }
+        @Schema(description = "请求追踪ID") @JsonProperty("traceId")
+        String traceId)
+        implements IResponse<T> {
 
-  // --- 静态工厂方法 ---
+    @Override
+    public Result getResult() {
+        return result;
+    }
 
-  public static <T> FailureResponse<T> of(ResultCode code) {
-    return new FailureResponse<>(Result.buildFailure(code), null);
-  }
+    // --- 静态工厂方法 ---
 
-  public static <T> FailureResponse<T> of(String errCode, String errMessage) {
-    return new FailureResponse<>(Result.buildFailure(errCode, errMessage), null);
-  }
+    public static <T> FailureResponse<T> of(ResultCode code) {
+        return new FailureResponse<>(Result.buildFailure(code), null);
+    }
 
-  /** 带 TraceId 的工厂方法（推荐在 GlobalExceptionHandler 中使用） */
-  public static <T> FailureResponse<T> of(String errCode, String errMessage, String traceId) {
-    return new FailureResponse<>(Result.buildFailure(errCode, errMessage), traceId);
-  }
+    public static <T> FailureResponse<T> of(String errCode, String errMessage) {
+        return new FailureResponse<>(Result.buildFailure(errCode, errMessage), null);
+    }
 
-  public static <T> FailureResponse<T> of(ResultCode code, String errMessage, String traceId) {
-    return new FailureResponse<>(Result.buildFailure(code, errMessage), traceId);
-  }
+    /** 带 TraceId 的工厂方法（推荐在 GlobalExceptionHandler 中使用） */
+    public static <T> FailureResponse<T> of(String errCode, String errMessage, String traceId) {
+        return new FailureResponse<>(Result.buildFailure(errCode, errMessage), traceId);
+    }
+
+    public static <T> FailureResponse<T> of(ResultCode code, String errMessage, String traceId) {
+        return new FailureResponse<>(Result.buildFailure(code, errMessage), traceId);
+    }
 }

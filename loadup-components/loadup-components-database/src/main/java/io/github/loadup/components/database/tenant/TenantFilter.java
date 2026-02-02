@@ -53,61 +53,61 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class TenantFilter extends OncePerRequestFilter {
 
-  private static final String HEADER_TENANT_ID = "X-Tenant-Id";
-  private static final String PARAM_TENANT_ID = "tenantId";
+    private static final String HEADER_TENANT_ID = "X-Tenant-Id";
+    private static final String PARAM_TENANT_ID = "tenantId";
 
-  @Override
-  protected void doFilterInternal(
-      @NonNull HttpServletRequest request,
-      @NonNull HttpServletResponse response,
-      @NonNull FilterChain filterChain)
-      throws ServletException, IOException {
+    @Override
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain)
+            throws ServletException, IOException {
 
-    try {
-      String tenantId = extractTenantId(request);
+        try {
+            String tenantId = extractTenantId(request);
 
-      if (tenantId != null) {
-        TenantContextHolder.setTenantId(tenantId);
-        log.debug("Set tenant context from request: {}", tenantId);
-      }
+            if (tenantId != null) {
+                TenantContextHolder.setTenantId(tenantId);
+                log.debug("Set tenant context from request: {}", tenantId);
+            }
 
-      filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
 
-    } finally {
-      TenantContextHolder.clear();
-    }
-  }
-
-  /**
-   * Extract tenant ID from request
-   *
-   * <p>Priority: Header > Query Parameter > Subdomain
-   *
-   * @param request HTTP request
-   * @return tenant ID or null
-   */
-  private String extractTenantId(HttpServletRequest request) {
-    // 1. Try header
-    String tenantId = request.getHeader(HEADER_TENANT_ID);
-    if (tenantId != null && !tenantId.isBlank()) {
-      return tenantId.trim();
+        } finally {
+            TenantContextHolder.clear();
+        }
     }
 
-    // 2. Try query parameter
-    tenantId = request.getParameter(PARAM_TENANT_ID);
-    if (tenantId != null && !tenantId.isBlank()) {
-      return tenantId.trim();
-    }
+    /**
+     * Extract tenant ID from request
+     *
+     * <p>Priority: Header > Query Parameter > Subdomain
+     *
+     * @param request HTTP request
+     * @return tenant ID or null
+     */
+    private String extractTenantId(HttpServletRequest request) {
+        // 1. Try header
+        String tenantId = request.getHeader(HEADER_TENANT_ID);
+        if (tenantId != null && !tenantId.isBlank()) {
+            return tenantId.trim();
+        }
 
-    // 3. Try subdomain (e.g., tenant1.example.com -> tenant1)
-    String serverName = request.getServerName();
-    if (serverName != null && serverName.contains(".")) {
-      String subdomain = serverName.substring(0, serverName.indexOf('.'));
-      if (!subdomain.equals("www") && !subdomain.equals("api")) {
-        return subdomain;
-      }
-    }
+        // 2. Try query parameter
+        tenantId = request.getParameter(PARAM_TENANT_ID);
+        if (tenantId != null && !tenantId.isBlank()) {
+            return tenantId.trim();
+        }
 
-    return null;
-  }
+        // 3. Try subdomain (e.g., tenant1.example.com -> tenant1)
+        String serverName = request.getServerName();
+        if (serverName != null && serverName.contains(".")) {
+            String subdomain = serverName.substring(0, serverName.indexOf('.'));
+            if (!subdomain.equals("www") && !subdomain.equals("api")) {
+                return subdomain;
+            }
+        }
+
+        return null;
+    }
 }

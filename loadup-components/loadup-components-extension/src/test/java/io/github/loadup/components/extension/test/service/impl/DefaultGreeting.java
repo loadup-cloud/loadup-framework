@@ -29,8 +29,8 @@ import org.springframework.stereotype.Service;
 @Service
 @Extension
 public class DefaultGreeting implements GreetingService {
-  @Override
-  public String greet() {
-    return "Default";
-  }
+    @Override
+    public String greet() {
+        return "Default";
+    }
 }

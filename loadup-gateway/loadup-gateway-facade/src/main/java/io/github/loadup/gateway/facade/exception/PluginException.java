@@ -25,35 +25,30 @@ package io.github.loadup.gateway.facade.exception;
 /** Plugin related exception */
 public class PluginException extends GatewayException {
 
-  private static final String MODULE = "PLUGIN";
+    private static final String MODULE = "PLUGIN";
 
-  public PluginException(ErrorCode errorCode, String message) {
-    super(errorCode.getCode(), ErrorType.PLUGIN, MODULE, errorCode.getMessage() + ":" + message);
-  }
+    public PluginException(ErrorCode errorCode, String message) {
+        super(errorCode.getCode(), ErrorType.PLUGIN, MODULE, errorCode.getMessage() + ":" + message);
+    }
 
-  public PluginException(ErrorCode errorCode, String message, Throwable cause) {
-    super(
-        errorCode.getCode(),
-        ErrorType.PLUGIN,
-        MODULE,
-        errorCode.getMessage() + ":" + message,
-        cause);
-  }
+    public PluginException(ErrorCode errorCode, String message, Throwable cause) {
+        super(errorCode.getCode(), ErrorType.PLUGIN, MODULE, errorCode.getMessage() + ":" + message, cause);
+    }
 
-  // Convenience methods
-  public static PluginException notFound(String pluginName) {
-    return new PluginException(ErrorCode.PLUGIN_NOT_FOUND, pluginName);
-  }
+    // Convenience methods
+    public static PluginException notFound(String pluginName) {
+        return new PluginException(ErrorCode.PLUGIN_NOT_FOUND, pluginName);
+    }
 
-  public static PluginException initFailed(String pluginName, Throwable cause) {
-    return new PluginException(ErrorCode.PLUGIN_INIT_FAILED, pluginName, cause);
-  }
+    public static PluginException initFailed(String pluginName, Throwable cause) {
+        return new PluginException(ErrorCode.PLUGIN_INIT_FAILED, pluginName, cause);
+    }
 
-  public static PluginException executionFailed(String pluginName, Throwable cause) {
-    return new PluginException(ErrorCode.PLUGIN_EXECUTION_FAILED, pluginName, cause);
-  }
+    public static PluginException executionFailed(String pluginName, Throwable cause) {
+        return new PluginException(ErrorCode.PLUGIN_EXECUTION_FAILED, pluginName, cause);
+    }
 
-  public static PluginException configInvalid(String pluginName, String reason) {
-    return new PluginException(ErrorCode.PLUGIN_CONFIG_INVALID, pluginName + " - " + reason);
-  }
+    public static PluginException configInvalid(String pluginName, String reason) {
+        return new PluginException(ErrorCode.PLUGIN_CONFIG_INVALID, pluginName + " - " + reason);
+    }
 }

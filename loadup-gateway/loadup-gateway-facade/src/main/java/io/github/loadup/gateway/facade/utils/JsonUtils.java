@@ -31,70 +31,70 @@ import org.apache.commons.lang3.StringUtils;
 @Deprecated
 public final class JsonUtils {
 
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-  private JsonUtils() {}
+    private JsonUtils() {}
 
-  /** Convert an object to a JSON string */
-  public static String toJson(Object obj) {
-    try {
-      if (obj instanceof String str) {
-        return str;
-      }
-      return OBJECT_MAPPER.writeValueAsString(obj);
-    } catch (Exception e) {
-      return null;
+    /** Convert an object to a JSON string */
+    public static String toJson(Object obj) {
+        try {
+            if (obj instanceof String str) {
+                return str;
+            }
+            return OBJECT_MAPPER.writeValueAsString(obj);
+        } catch (Exception e) {
+            return null;
+        }
     }
-  }
 
-  /** Convert JSON string to an object */
-  public static <T> T fromJson(String json, Class<T> clazz) {
-    try {
-      return OBJECT_MAPPER.readValue(json, clazz);
-    } catch (Exception e) {
-      return null;
+    /** Convert JSON string to an object */
+    public static <T> T fromJson(String json, Class<T> clazz) {
+        try {
+            return OBJECT_MAPPER.readValue(json, clazz);
+        } catch (Exception e) {
+            return null;
+        }
     }
-  }
 
-  /** Convert JSON string to a Map */
-  @SuppressWarnings("unchecked")
-  public static Map<String, Object> toMap(String json) {
-    try {
-      return OBJECT_MAPPER.readValue(json, Map.class);
-    } catch (Exception e) {
-      return null;
+    /** Convert JSON string to a Map */
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> toMap(String json) {
+        try {
+            return OBJECT_MAPPER.readValue(json, Map.class);
+        } catch (Exception e) {
+            return null;
+        }
     }
-  }
 
-  /** Convert an object to a Map via JSON */
-  @SuppressWarnings("unchecked")
-  public static Map<String, Object> toMap(Object obj) {
-    try {
-      return toMap(toJson(obj));
-    } catch (Exception e) {
-      return null;
+    /** Convert an object to a Map via JSON */
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> toMap(Object obj) {
+        try {
+            return toMap(toJson(obj));
+        } catch (Exception e) {
+            return null;
+        }
     }
-  }
 
-  /** Parse JSON node */
-  public static JsonNode parseJson(String json) {
-    try {
-      return OBJECT_MAPPER.readTree(json);
-    } catch (Exception e) {
-      return null;
+    /** Parse JSON node */
+    public static JsonNode parseJson(String json) {
+        try {
+            return OBJECT_MAPPER.readTree(json);
+        } catch (Exception e) {
+            return null;
+        }
     }
-  }
 
-  /** Check whether string is valid JSON */
-  public static boolean isValidJson(String json) {
-    if (StringUtils.isBlank(json)) {
-      return false;
+    /** Check whether string is valid JSON */
+    public static boolean isValidJson(String json) {
+        if (StringUtils.isBlank(json)) {
+            return false;
+        }
+        try {
+            OBJECT_MAPPER.readTree(json);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
-    try {
-      OBJECT_MAPPER.readTree(json);
-      return true;
-    } catch (Exception e) {
-      return false;
-    }
-  }
 }

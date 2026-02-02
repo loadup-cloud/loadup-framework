@@ -43,38 +43,39 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @Getter
 @Setter
 public abstract class BaseDO implements Serializable {
-  // @Id(keyType = KeyType.Generator, value = KeyGenerators.flexId)
-  @Id private String id;
+    // @Id(keyType = KeyType.Generator, value = KeyGenerators.flexId)
+    @Id
+    private String id;
 
-  /** 创建时间（自动填充） */
-  // @Column(onInsertValue = "now()")
-  private LocalDateTime createdAt;
+    /** 创建时间（自动填充） */
+    // @Column(onInsertValue = "now()")
+    private LocalDateTime createdAt;
 
-  /** 更新时间（自动填充） */
-  // @Column(onUpdateValue = "now()", onInsertValue = "now()")
-  private LocalDateTime updatedAt;
+    /** 更新时间（自动填充） */
+    // @Column(onUpdateValue = "now()", onInsertValue = "now()")
+    private LocalDateTime updatedAt;
 
-  /**
-   * Tenant ID (optional, controlled by loadup.database.multi-tenant.enabled)
-   *
-   * <p>When multi-tenant is enabled in database configuration, this field will be used for tenant
-   * isolation. Queries will automatically filter by tenant_id, and inserts/updates will
-   * automatically set tenant_id from TenantContextHolder.
-   */
-  // @Column(tenantId = true)
-  private String tenantId;
+    /**
+     * Tenant ID (optional, controlled by loadup.database.multi-tenant.enabled)
+     *
+     * <p>When multi-tenant is enabled in database configuration, this field will be used for tenant
+     * isolation. Queries will automatically filter by tenant_id, and inserts/updates will
+     * automatically set tenant_id from TenantContextHolder.
+     */
+    // @Column(tenantId = true)
+    private String tenantId;
 
-  /**
-   * Logical delete flag (optional, controlled by loadup.database.logical-delete.enabled)
-   *
-   * <p>When logical delete is enabled in database configuration, this field will be used to mark
-   * deleted records. Default value is false (not deleted).
-   */
-  // @Column(isLogicDelete = true)
-  private Boolean deleted = false;
+    /**
+     * Logical delete flag (optional, controlled by loadup.database.logical-delete.enabled)
+     *
+     * <p>When logical delete is enabled in database configuration, this field will be used to mark
+     * deleted records. Default value is false (not deleted).
+     */
+    // @Column(isLogicDelete = true)
+    private Boolean deleted = false;
 
-  @Override
-  public String toString() {
-    return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-  }
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+    }
 }

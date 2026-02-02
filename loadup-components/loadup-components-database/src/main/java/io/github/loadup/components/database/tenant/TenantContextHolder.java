@@ -36,64 +36,64 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TenantContextHolder {
 
-  private static final ThreadLocal<String> TENANT_ID = new InheritableThreadLocal<>();
+    private static final ThreadLocal<String> TENANT_ID = new InheritableThreadLocal<>();
 
-  /**
-   * Set current tenant ID
-   *
-   * @param tenantId tenant ID
-   */
-  public static void setTenantId(String tenantId) {
-    if (tenantId == null) {
-      log.warn("Attempting to set null tenant ID, clearing context instead");
-      clear();
-      return;
+    /**
+     * Set current tenant ID
+     *
+     * @param tenantId tenant ID
+     */
+    public static void setTenantId(String tenantId) {
+        if (tenantId == null) {
+            log.warn("Attempting to set null tenant ID, clearing context instead");
+            clear();
+            return;
+        }
+        TENANT_ID.set(tenantId);
+        log.debug("Set tenant context: {}", tenantId);
     }
-    TENANT_ID.set(tenantId);
-    log.debug("Set tenant context: {}", tenantId);
-  }
 
-  /**
-   * Get current tenant ID
-   *
-   * @return tenant ID, or null if not set
-   */
-  public static String getTenantId() {
-    return TENANT_ID.get();
-  }
-
-  /**
-   * Check if tenant context is set
-   *
-   * @return true if tenant context exists
-   */
-  public static boolean hasTenantId() {
-    return TENANT_ID.get() != null;
-  }
-
-  /** Clear tenant context */
-  public static void clear() {
-    TENANT_ID.remove();
-    log.debug("Cleared tenant context");
-  }
-
-  /**
-   * Execute code with specific tenant context
-   *
-   * @param tenantId tenant ID
-   * @param runnable code to execute
-   */
-  public static void runWithTenant(String tenantId, Runnable runnable) {
-    String previousTenantId = getTenantId();
-    try {
-      setTenantId(tenantId);
-      runnable.run();
-    } finally {
-      if (previousTenantId != null) {
-        setTenantId(previousTenantId);
-      } else {
-        clear();
-      }
+    /**
+     * Get current tenant ID
+     *
+     * @return tenant ID, or null if not set
+     */
+    public static String getTenantId() {
+        return TENANT_ID.get();
     }
-  }
+
+    /**
+     * Check if tenant context is set
+     *
+     * @return true if tenant context exists
+     */
+    public static boolean hasTenantId() {
+        return TENANT_ID.get() != null;
+    }
+
+    /** Clear tenant context */
+    public static void clear() {
+        TENANT_ID.remove();
+        log.debug("Cleared tenant context");
+    }
+
+    /**
+     * Execute code with specific tenant context
+     *
+     * @param tenantId tenant ID
+     * @param runnable code to execute
+     */
+    public static void runWithTenant(String tenantId, Runnable runnable) {
+        String previousTenantId = getTenantId();
+        try {
+            setTenantId(tenantId);
+            runnable.run();
+        } finally {
+            if (previousTenantId != null) {
+                setTenantId(previousTenantId);
+            } else {
+                clear();
+            }
+        }
+    }
 }

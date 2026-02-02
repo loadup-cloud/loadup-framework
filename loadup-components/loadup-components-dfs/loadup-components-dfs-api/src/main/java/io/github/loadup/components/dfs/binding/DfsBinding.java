@@ -32,65 +32,65 @@ import io.github.loadup.framework.api.binding.Binding;
 
 public interface DfsBinding extends Binding<DfsBinder<?, DfsBindingCfg>, DfsBindingCfg> {
 
-  /**
-   * 上传文件
-   *
-   * @param request 上传请求
-   * @return 文件元数据
-   */
-  FileMetadata upload(FileUploadRequest request);
+    /**
+     * 上传文件
+     *
+     * @param request 上传请求
+     * @return 文件元数据
+     */
+    FileMetadata upload(FileUploadRequest request);
 
-  /**
-   * 下载文件
-   *
-   * @param fileId 文件ID
-   * @return 文件下载响应
-   */
-  FileDownloadResponse download(String fileId);
+    /**
+     * 下载文件
+     *
+     * @param fileId 文件ID
+     * @return 文件下载响应
+     */
+    FileDownloadResponse download(String fileId);
 
-  /**
-   * 删除文件
-   *
-   * @param fileId 文件ID
-   * @return 是否删除成功
-   */
-  boolean delete(String fileId);
+    /**
+     * 删除文件
+     *
+     * @param fileId 文件ID
+     * @return 是否删除成功
+     */
+    boolean delete(String fileId);
 
-  /**
-   * 检查文件是否存在
-   *
-   * @param fileId 文件ID
-   * @return 是否存在
-   */
-  boolean exists(String fileId);
+    /**
+     * 检查文件是否存在
+     *
+     * @param fileId 文件ID
+     * @return 是否存在
+     */
+    boolean exists(String fileId);
 
-  /**
-   * 获取文件元数据
-   *
-   * @param fileId 文件ID
-   * @return 文件元数据
-   */
-  FileMetadata getMetadata(String fileId);
+    /**
+     * 获取文件元数据
+     *
+     * @param fileId 文件ID
+     * @return 文件元数据
+     */
+    FileMetadata getMetadata(String fileId);
 
-  /**
-   * 生成预签名URL（用于临时访问）
-   *
-   * @param fileId 文件ID
-   * @param expirationSeconds 过期时间（秒）
-   * @return 预签名URL
-   */
-  default String generatePresignedUrl(String fileId, long expirationSeconds) {
-    throw new UnsupportedOperationException("This provider does not support presigned URLs");
-  }
+    /**
+     * 生成预签名URL（用于临时访问）
+     *
+     * @param fileId 文件ID
+     * @param expirationSeconds 过期时间（秒）
+     * @return 预签名URL
+     */
+    default String generatePresignedUrl(String fileId, long expirationSeconds) {
+        throw new UnsupportedOperationException("This provider does not support presigned URLs");
+    }
 
-  /**
-   * 复制文件
-   *
-   * @param sourceFileId 源文件ID
-   * @param targetPath 目标路径
-   * @return 新文件元数据
-   */
-  default FileMetadata copy(String sourceFileId, String targetPath) {
-    throw new UnsupportedOperationException("This provider does not support file copy");
-  }
+    /**
+     * 复制文件
+     *
+     * @param sourceFileId 源文件ID
+     * @param targetPath 目标路径
+     * @return 新文件元数据
+     */
+    default FileMetadata copy(String sourceFileId, String targetPath) {
+        throw new UnsupportedOperationException("This provider does not support file copy");
+    }
 }

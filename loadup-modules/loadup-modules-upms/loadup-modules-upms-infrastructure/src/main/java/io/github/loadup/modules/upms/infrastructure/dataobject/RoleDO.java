@@ -38,19 +38,19 @@ import lombok.EqualsAndHashCode;
 @Table("upms_role")
 public class RoleDO extends BaseDO {
 
-  private String roleName;
+    private String roleName;
 
-  private String roleCode;
+    private String roleCode;
 
-  private String parentId;
+    private String parentId;
 
-  private Integer roleLevel;
+    private Integer roleLevel;
 
-  private Short dataScope;
+    private Short dataScope;
 
-  private Integer sortOrder;
+    private Integer sortOrder;
 
-  private Short status;
+    private Short status;
 
-  private String remark;
+    private String remark;
 }

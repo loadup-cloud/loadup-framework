@@ -27,33 +27,33 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Tenant implements Serializable {
-  private String tenantId;
-  private Map<String, String> attributes = new HashMap<>();
+    private String tenantId;
+    private Map<String, String> attributes = new HashMap<>();
 
-  public String getTenantId() {
-    return tenantId;
-  }
+    public String getTenantId() {
+        return tenantId;
+    }
 
-  public void setTenantId(String tenantId) {
-    this.tenantId = tenantId;
-  }
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
 
-  public Map<String, String> getAttributes() {
-    return attributes;
-  }
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
 
-  public void setAttributes(Map<String, String> attributes) {
-    this.attributes = attributes;
-  }
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
 
-  @Override
-  public String toString() {
-    return "{" + "\"tenantId\":\"" + tenantId + "\"}";
-  }
+    @Override
+    public String toString() {
+        return "{" + "\"tenantId\":\"" + tenantId + "\"}";
+    }
 
-  public static void main(String[] args) {
-    Tenant tenant = new Tenant();
-    tenant.setTenantId("tenant_123");
-    System.out.println(tenant);
-  }
+    public static void main(String[] args) {
+        Tenant tenant = new Tenant();
+        tenant.setTenantId("tenant_123");
+        System.out.println(tenant);
+    }
 }

@@ -30,9 +30,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BusinessCode extends BaseDomain {
-  private String id;
-  private String businessCode;
-  private String businessName;
-  private String description;
-  private Boolean enabled;
+    private String id;
+    private String businessCode;
+    private String businessName;
+    private String description;
+    private Boolean enabled;
 }

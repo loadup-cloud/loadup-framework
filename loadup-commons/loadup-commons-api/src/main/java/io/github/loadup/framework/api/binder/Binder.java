@@ -31,18 +31,18 @@ import org.springframework.beans.factory.DisposableBean;
  * @param <C> 关联的业务 Binding 配置基类 (如 RedisBindingCfg)
  */
 public interface Binder<C extends BaseBinderCfg, S extends BaseBindingCfg> extends DisposableBean {
-  String getBinderType();
+    String getBinderType();
 
-  default void binderInit() {}
+    default void binderInit() {}
 
-  default void binderDestroy() {}
+    default void binderDestroy() {}
 
-  /**
-   * 初始化入口：注入双重配置
-   *
-   * @param name 实例名称 (bizType)
-   * @param binderCfg 中间件层级的通用配置
-   * @param bindingCfg 业务层级的定制配置
-   */
-  void injectConfigs(String name, C binderCfg, S bindingCfg);
+    /**
+     * 初始化入口：注入双重配置
+     *
+     * @param name 实例名称 (bizType)
+     * @param binderCfg 中间件层级的通用配置
+     * @param bindingCfg 业务层级的定制配置
+     */
+    void injectConfigs(String name, C binderCfg, S bindingCfg);
 }

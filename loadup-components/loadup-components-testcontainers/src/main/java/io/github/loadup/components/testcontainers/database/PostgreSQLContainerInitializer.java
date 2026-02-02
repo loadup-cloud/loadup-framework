@@ -56,28 +56,28 @@ import org.springframework.core.env.ConfigurableEnvironment;
 @Slf4j
 public class PostgreSQLContainerInitializer extends BaseContainerInitializer {
 
-  @Override
-  protected String getContainerName() {
-    return "PostgreSQL";
-  }
+    @Override
+    protected String getContainerName() {
+        return "PostgreSQL";
+    }
 
-  @Override
-  protected ContainerConfig getContainerConfig(TestContainersProperties properties) {
-    return properties.getPostgresql();
-  }
+    @Override
+    protected ContainerConfig getContainerConfig(TestContainersProperties properties) {
+        return properties.getPostgresql();
+    }
 
-  @Override
-  protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
-    // 1. 启动容器
-    SharedPostgreSQLContainer.startContainer(config);
+    @Override
+    protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
+        // 1. 启动容器
+        SharedPostgreSQLContainer.startContainer(config);
 
-    // 2. 注入属性
-    applyProperties(
-        env,
-        Map.of(
-            "spring.datasource.url", SharedPostgreSQLContainer.getJdbcUrl(),
-            "spring.datasource.username", SharedPostgreSQLContainer.getUsername(),
-            "spring.datasource.password", SharedPostgreSQLContainer.getPassword(),
-            "spring.datasource.driver-class-name", SharedPostgreSQLContainer.getDriverClassName()));
-  }
+        // 2. 注入属性
+        applyProperties(
+                env,
+                Map.of(
+                        "spring.datasource.url", SharedPostgreSQLContainer.getJdbcUrl(),
+                        "spring.datasource.username", SharedPostgreSQLContainer.getUsername(),
+                        "spring.datasource.password", SharedPostgreSQLContainer.getPassword(),
+                        "spring.datasource.driver-class-name", SharedPostgreSQLContainer.getDriverClassName()));
+    }
 }

@@ -33,6 +33,6 @@ import lombok.Data;
  */
 @Data
 public class PermissionTypeRequest {
-  @NotNull(message = "权限类型不能为空")
-  private Short permissionType;
+    @NotNull(message = "权限类型不能为空")
+    private Short permissionType;
 }

@@ -34,6 +34,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 @ConfigurationProperties(prefix = "loadup.cache")
 public class CacheGroupProperties {
-  /** 绑定的存储类型 */
-  private CacheBinderType defaultBinder = CacheBinderType.CAFFEINE;
+    /** 绑定的存储类型 */
+    private CacheBinderType defaultBinder = CacheBinderType.CAFFEINE;
 }

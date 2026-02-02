@@ -40,20 +40,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OperationLogDTO {
 
-  private String id;
-  private String userId;
-  private String username;
-  private String operationType;
-  private String operationName;
-  private String method;
-  private String requestUri;
-  private String requestParams;
-  private String ipAddress;
-  private String location;
-  private String browser;
-  private String os;
-  private Integer status;
-  private String errorMessage;
-  private Long executionTime;
-  private LocalDateTime operationTime;
+    private String id;
+    private String userId;
+    private String username;
+    private String operationType;
+    private String operationName;
+    private String method;
+    private String requestUri;
+    private String requestParams;
+    private String ipAddress;
+    private String location;
+    private String browser;
+    private String os;
+    private Integer status;
+    private String errorMessage;
+    private Long executionTime;
+    private LocalDateTime operationTime;
 }

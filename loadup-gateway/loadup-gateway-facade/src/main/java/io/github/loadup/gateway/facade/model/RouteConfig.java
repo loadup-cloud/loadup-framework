@@ -34,278 +34,281 @@ import org.apache.commons.lang3.StringUtils;
 @Getter
 public class RouteConfig {
 
-  /** Route ID (auto-generated, based on path + method) */
-  private final String routeId;
+    /** Route ID (auto-generated, based on path + method) */
+    private final String routeId;
 
-  /** Route name (auto-generated, based on path) */
-  private final String routeName;
+    /** Route name (auto-generated, based on path) */
+    private final String routeName;
 
-  /** Match path */
-  private final String path;
+    /** Match path */
+    private final String path;
 
-  /** HTTP method */
-  private final String method;
+    /** HTTP method */
+    private final String method;
 
-  /** Protocol type (HTTP/RPC/BEAN) */
-  private final String protocol;
+    /** Protocol type (HTTP/RPC/BEAN) */
+    private final String protocol;
 
-  /** Unified target configuration (original string) */
-  private final String target;
+    /** Unified target configuration (original string) */
+    private final String target;
 
-  /** Target URL (used for HTTP/RPC) */
-  private final String targetUrl;
+    /** Target URL (used for HTTP/RPC) */
+    private final String targetUrl;
 
-  /** Target Bean name (used for BEAN protocol) */
-  private final String targetBean;
+    /** Target Bean name (used for BEAN protocol) */
+    private final String targetBean;
 
-  /** Target method name (used for BEAN protocol) */
-  private final String targetMethod;
+    /** Target method name (used for BEAN protocol) */
+    private final String targetMethod;
 
-  /** Request template script */
-  private final String requestTemplate;
+    /** Request template script */
+    private final String requestTemplate;
 
-  /** Response template script */
-  private final String responseTemplate;
+    /** Response template script */
+    private final String responseTemplate;
 
-  /** Whether enabled */
-  private final boolean enabled;
+    /** Whether enabled */
+    private final boolean enabled;
 
-  /** Extended configuration (immutable copy) */
-  private final Map<String, Object> properties;
+    /** Extended configuration (immutable copy) */
+    private final Map<String, Object> properties;
 
-  /** Parsed timeout (milliseconds) */
-  private final long parsedTimeout;
+    /** Parsed timeout (milliseconds) */
+    private final long parsedTimeout;
 
-  /** Parsed retry count */
-  private final int parsedRetryCount;
+    /** Parsed retry count */
+    private final int parsedRetryCount;
 
-  /** Parsed wrapResponse (null means use global configuration) */
-  private final Boolean parsedWrapResponse;
+    /** Parsed wrapResponse (null means use global configuration) */
+    private final Boolean parsedWrapResponse;
 
-  // Private constructor, called by Builder
-  private RouteConfig(RouteConfigBuilder b) {
-    this.path = Objects.requireNonNull(b.path, "path is required");
-    this.method = b.method != null ? b.method : "POST";
-    this.target = Objects.requireNonNull(b.target, "target is required");
-    this.requestTemplate = b.requestTemplate;
-    this.responseTemplate = b.responseTemplate;
-    this.enabled = b.enabled;
+    // Private constructor, called by Builder
+    private RouteConfig(RouteConfigBuilder b) {
+        this.path = Objects.requireNonNull(b.path, "path is required");
+        this.method = b.method != null ? b.method : "POST";
+        this.target = Objects.requireNonNull(b.target, "target is required");
+        this.requestTemplate = b.requestTemplate;
+        this.responseTemplate = b.responseTemplate;
+        this.enabled = b.enabled;
 
-    // properties copy and make immutable
-    if (b.properties == null) {
-      this.properties = Collections.emptyMap();
-    } else {
-      this.properties = Collections.unmodifiableMap(new HashMap<>(b.properties));
+        // properties copy and make immutable
+        if (b.properties == null) {
+            this.properties = Collections.emptyMap();
+        } else {
+            this.properties = Collections.unmodifiableMap(new HashMap<>(b.properties));
+        }
+
+        // Parse target
+        TargetParseResult tpr = parseTarget(this.target);
+        this.protocol = tpr.protocol;
+        this.targetUrl = tpr.targetUrl;
+        this.targetBean = tpr.targetBean;
+        this.targetMethod = tpr.targetMethod;
+
+        // Parse properties
+        PropertiesParseResult ppr = parseProperties(this.properties);
+        this.parsedTimeout = ppr.timeout;
+        this.parsedRetryCount = ppr.retryCount;
+        this.parsedWrapResponse = ppr.wrapResponse;
+
+        // Generate id/name
+        this.routeId = generateRouteId(this.path, this.method);
+        this.routeName = generateRouteName(this.path, this.method);
     }
 
-    // Parse target
-    TargetParseResult tpr = parseTarget(this.target);
-    this.protocol = tpr.protocol;
-    this.targetUrl = tpr.targetUrl;
-    this.targetBean = tpr.targetBean;
-    this.targetMethod = tpr.targetMethod;
-
-    // Parse properties
-    PropertiesParseResult ppr = parseProperties(this.properties);
-    this.parsedTimeout = ppr.timeout;
-    this.parsedRetryCount = ppr.retryCount;
-    this.parsedWrapResponse = ppr.wrapResponse;
-
-    // Generate id/name
-    this.routeId = generateRouteId(this.path, this.method);
-    this.routeName = generateRouteName(this.path, this.method);
-  }
-
-  // Public read methods return parsed cached values (regular field getters already generated by
-  // @Getter)
-  public long getTimeout() {
-    return this.parsedTimeout;
-  }
-
-  public int getRetryCount() {
-    return this.parsedRetryCount;
-  }
-
-  public Boolean getWrapResponse() {
-    return this.parsedWrapResponse;
-  }
-
-  // Internal static helper class and methods
-  private static class TargetParseResult {
-    String protocol;
-    String targetUrl;
-    String targetBean;
-    String targetMethod;
-  }
-
-  private static TargetParseResult parseTarget(String target) {
-    TargetParseResult r = new TargetParseResult();
-    if (target == null || target.trim().isEmpty()) {
-      return r;
+    // Public read methods return parsed cached values (regular field getters already generated by
+    // @Getter)
+    public long getTimeout() {
+        return this.parsedTimeout;
     }
 
-    if (StringUtils.startsWithIgnoreCase(target, GatewayConstants.Protocol.HTTP + "://")
-        || StringUtils.startsWithIgnoreCase(target, GatewayConstants.Protocol.HTTP + "s://")) {
-      r.protocol = GatewayConstants.Protocol.HTTP;
-      r.targetUrl = target;
-      return r;
+    public int getRetryCount() {
+        return this.parsedRetryCount;
     }
 
-    if (StringUtils.startsWithIgnoreCase(target, GatewayConstants.Protocol.BEAN + "://")) {
-      r.protocol = GatewayConstants.Protocol.BEAN;
-      String beanTarget = target.substring(7); // remove "bean://"
-      String[] parts = beanTarget.split(":");
-      if (parts.length >= 1) r.targetBean = parts[0];
-      if (parts.length >= 2) r.targetMethod = parts[1];
-      return r;
+    public Boolean getWrapResponse() {
+        return this.parsedWrapResponse;
     }
 
-    if (StringUtils.startsWithIgnoreCase(target, GatewayConstants.Protocol.RPC + "://")) {
-      r.protocol = GatewayConstants.Protocol.RPC;
-      r.targetUrl = target.substring(6);
-      return r;
+    // Internal static helper class and methods
+    private static class TargetParseResult {
+        String protocol;
+        String targetUrl;
+        String targetBean;
+        String targetMethod;
     }
 
-    return r;
-  }
+    private static TargetParseResult parseTarget(String target) {
+        TargetParseResult r = new TargetParseResult();
+        if (target == null || target.trim().isEmpty()) {
+            return r;
+        }
 
-  private static class PropertiesParseResult {
-    long timeout = 30000L;
-    int retryCount = 3;
-    Boolean wrapResponse = null;
-  }
+        if (StringUtils.startsWithIgnoreCase(target, GatewayConstants.Protocol.HTTP + "://")
+                || StringUtils.startsWithIgnoreCase(target, GatewayConstants.Protocol.HTTP + "s://")) {
+            r.protocol = GatewayConstants.Protocol.HTTP;
+            r.targetUrl = target;
+            return r;
+        }
 
-  private static PropertiesParseResult parseProperties(Map<String, Object> properties) {
-    PropertiesParseResult r = new PropertiesParseResult();
-    if (properties == null || properties.isEmpty()) return r;
+        if (StringUtils.startsWithIgnoreCase(target, GatewayConstants.Protocol.BEAN + "://")) {
+            r.protocol = GatewayConstants.Protocol.BEAN;
+            String beanTarget = target.substring(7); // remove "bean://"
+            String[] parts = beanTarget.split(":");
+            if (parts.length >= 1) r.targetBean = parts[0];
+            if (parts.length >= 2) r.targetMethod = parts[1];
+            return r;
+        }
 
-    Object timeout = properties.get(GatewayConstants.PropertyKeys.TIMEOUT);
-    if (timeout instanceof Number) {
-      r.timeout = ((Number) timeout).longValue();
-    } else if (timeout instanceof String) {
-      try {
-        r.timeout = Long.parseLong((String) timeout);
-      } catch (NumberFormatException ignored) {
-      }
+        if (StringUtils.startsWithIgnoreCase(target, GatewayConstants.Protocol.RPC + "://")) {
+            r.protocol = GatewayConstants.Protocol.RPC;
+            r.targetUrl = target.substring(6);
+            return r;
+        }
+
+        return r;
     }
 
-    Object retry = properties.get(GatewayConstants.PropertyKeys.RETRY_COUNT);
-    if (retry instanceof Number) {
-      r.retryCount = ((Number) retry).intValue();
-    } else if (retry instanceof String) {
-      try {
-        r.retryCount = Integer.parseInt((String) retry);
-      } catch (NumberFormatException ignored) {
-      }
+    private static class PropertiesParseResult {
+        long timeout = 30000L;
+        int retryCount = 3;
+        Boolean wrapResponse = null;
     }
 
-    Object wrap = properties.get(GatewayConstants.PropertyKeys.WRAP_RESPONSE);
-    if (wrap instanceof Boolean) {
-      r.wrapResponse = (Boolean) wrap;
-    } else if (wrap instanceof String) {
-      r.wrapResponse = Boolean.parseBoolean((String) wrap);
+    private static PropertiesParseResult parseProperties(Map<String, Object> properties) {
+        PropertiesParseResult r = new PropertiesParseResult();
+        if (properties == null || properties.isEmpty()) return r;
+
+        Object timeout = properties.get(GatewayConstants.PropertyKeys.TIMEOUT);
+        if (timeout instanceof Number) {
+            r.timeout = ((Number) timeout).longValue();
+        } else if (timeout instanceof String) {
+            try {
+                r.timeout = Long.parseLong((String) timeout);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        Object retry = properties.get(GatewayConstants.PropertyKeys.RETRY_COUNT);
+        if (retry instanceof Number) {
+            r.retryCount = ((Number) retry).intValue();
+        } else if (retry instanceof String) {
+            try {
+                r.retryCount = Integer.parseInt((String) retry);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        Object wrap = properties.get(GatewayConstants.PropertyKeys.WRAP_RESPONSE);
+        if (wrap instanceof Boolean) {
+            r.wrapResponse = (Boolean) wrap;
+        } else if (wrap instanceof String) {
+            r.wrapResponse = Boolean.parseBoolean((String) wrap);
+        }
+
+        return r;
     }
 
-    return r;
-  }
-
-  private static String generateRouteId(String path, String method) {
-    String combined = path + ":" + method;
-    return "route-" + Math.abs(combined.hashCode());
-  }
-
-  private static String generateRouteName(String path, String method) {
-    String name = path.replaceAll("^/", "").replaceAll("/", " ").replaceAll("-", " ").trim();
-    if (name.isEmpty()) name = "root";
-    name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
-    return name + " (" + method + ")";
-  }
-
-  /**
-   * Manual Builder (replaces Lombok's auto Builder), completes all parsing and copying at build
-   * time, returns immutable object
-   */
-  public static class RouteConfigBuilder {
-    private String path;
-    private String method;
-    private String protocol;
-    private String target;
-    private String requestTemplate;
-    private String responseTemplate;
-    private boolean enabled;
-    private Map<String, Object> properties;
-
-    public RouteConfigBuilder path(String path) {
-      this.path = path;
-      return this;
+    private static String generateRouteId(String path, String method) {
+        String combined = path + ":" + method;
+        return "route-" + Math.abs(combined.hashCode());
     }
 
-    public RouteConfigBuilder method(String method) {
-      this.method = method;
-      return this;
+    private static String generateRouteName(String path, String method) {
+        String name = path.replaceAll("^/", "")
+                .replaceAll("/", " ")
+                .replaceAll("-", " ")
+                .trim();
+        if (name.isEmpty()) name = "root";
+        name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+        return name + " (" + method + ")";
     }
 
-    public RouteConfigBuilder protocol(String protocol) {
-      this.protocol = protocol;
-      return this;
+    /**
+     * Manual Builder (replaces Lombok's auto Builder), completes all parsing and copying at build
+     * time, returns immutable object
+     */
+    public static class RouteConfigBuilder {
+        private String path;
+        private String method;
+        private String protocol;
+        private String target;
+        private String requestTemplate;
+        private String responseTemplate;
+        private boolean enabled;
+        private Map<String, Object> properties;
+
+        public RouteConfigBuilder path(String path) {
+            this.path = path;
+            return this;
+        }
+
+        public RouteConfigBuilder method(String method) {
+            this.method = method;
+            return this;
+        }
+
+        public RouteConfigBuilder protocol(String protocol) {
+            this.protocol = protocol;
+            return this;
+        }
+
+        public RouteConfigBuilder target(String target) {
+            this.target = target;
+            return this;
+        }
+
+        public RouteConfigBuilder requestTemplate(String requestTemplate) {
+            this.requestTemplate = requestTemplate;
+            return this;
+        }
+
+        public RouteConfigBuilder responseTemplate(String responseTemplate) {
+            this.responseTemplate = responseTemplate;
+            return this;
+        }
+
+        public RouteConfigBuilder enabled(boolean enabled) {
+            this.enabled = enabled;
+            return this;
+        }
+
+        public RouteConfigBuilder properties(Map<String, Object> properties) {
+            this.properties = properties;
+            return this;
+        }
+
+        public RouteConfig build() {
+            if (StringUtils.isBlank(this.path)) {
+                throw new IllegalArgumentException("path is required and cannot be empty");
+            }
+            if (StringUtils.isBlank(this.target)) {
+                throw new IllegalArgumentException("target is required and cannot be empty");
+            }
+
+            return new RouteConfig(this);
+        }
     }
 
-    public RouteConfigBuilder target(String target) {
-      this.target = target;
-      return this;
+    /** Compatibility helper to obtain a new builder (replaces Lombok's builder()) */
+    public static RouteConfigBuilder builder() {
+        return new RouteConfigBuilder();
     }
 
-    public RouteConfigBuilder requestTemplate(String requestTemplate) {
-      this.requestTemplate = requestTemplate;
-      return this;
+    /** Compatibility helper to create a builder pre-populated from an existing instance. */
+    public static RouteConfigBuilder builderFrom(RouteConfig rc) {
+        RouteConfigBuilder b = new RouteConfigBuilder();
+        if (rc == null) return b;
+        b.path(rc.getPath());
+        b.method(rc.getMethod());
+        b.protocol(rc.getProtocol());
+        b.target(rc.getTarget());
+        b.requestTemplate(rc.getRequestTemplate());
+        b.responseTemplate(rc.getResponseTemplate());
+        b.enabled(rc.isEnabled());
+        if (rc.getProperties() != null) {
+            b.properties(new HashMap<>(rc.getProperties()));
+        }
+        return b;
     }
-
-    public RouteConfigBuilder responseTemplate(String responseTemplate) {
-      this.responseTemplate = responseTemplate;
-      return this;
-    }
-
-    public RouteConfigBuilder enabled(boolean enabled) {
-      this.enabled = enabled;
-      return this;
-    }
-
-    public RouteConfigBuilder properties(Map<String, Object> properties) {
-      this.properties = properties;
-      return this;
-    }
-
-    public RouteConfig build() {
-      if (StringUtils.isBlank(this.path)) {
-        throw new IllegalArgumentException("path is required and cannot be empty");
-      }
-      if (StringUtils.isBlank(this.target)) {
-        throw new IllegalArgumentException("target is required and cannot be empty");
-      }
-
-      return new RouteConfig(this);
-    }
-  }
-
-  /** Compatibility helper to obtain a new builder (replaces Lombok's builder()) */
-  public static RouteConfigBuilder builder() {
-    return new RouteConfigBuilder();
-  }
-
-  /** Compatibility helper to create a builder pre-populated from an existing instance. */
-  public static RouteConfigBuilder builderFrom(RouteConfig rc) {
-    RouteConfigBuilder b = new RouteConfigBuilder();
-    if (rc == null) return b;
-    b.path(rc.getPath());
-    b.method(rc.getMethod());
-    b.protocol(rc.getProtocol());
-    b.target(rc.getTarget());
-    b.requestTemplate(rc.getRequestTemplate());
-    b.responseTemplate(rc.getResponseTemplate());
-    b.enabled(rc.isEnabled());
-    if (rc.getProperties() != null) {
-      b.properties(new HashMap<>(rc.getProperties()));
-    }
-    return b;
-  }
 }

@@ -38,54 +38,53 @@ import org.springframework.stereotype.Component;
 @Component
 public class NotificationRetryJob {
 
-  @Autowired private NotificationRecordRepository recordRepository;
+    @Autowired
+    private NotificationRecordRepository recordRepository;
 
-  @Autowired private GotoneConverter gotoneConverter;
+    @Autowired
+    private GotoneConverter gotoneConverter;
 
-  /** 每30分钟扫描并重试失败的通知 */
-  @Scheduled(cron = "${loadup.gotone.retry.cron:0 */30 * * * ?}")
-  public void retryFailedNotifications() {
-    log.info("Starting retry failed notifications job");
+    /** 每30分钟扫描并重试失败的通知 */
+    @Scheduled(cron = "${loadup.gotone.retry.cron:0 */30 * * * ?}")
+    public void retryFailedNotifications() {
+        log.info("Starting retry failed notifications job");
 
-    try {
-      // 查询24小时内失败且未达到最大重试次数的记录
-      LocalDateTime afterTime = LocalDateTime.now().minusHours(24);
-      List<NotificationRecordDO> recordDOs = recordRepository.findRetryableRecords(afterTime);
-
-      log.info("Found {} records to retry", recordDOs.size());
-
-      for (NotificationRecordDO recordDO : recordDOs) {
         try {
-          // 转换为 Domain 对象
-          NotificationRecord record = gotoneConverter.toNotificationRecord(recordDO);
-          retryRecord(record);
+            // 查询24小时内失败且未达到最大重试次数的记录
+            LocalDateTime afterTime = LocalDateTime.now().minusHours(24);
+            List<NotificationRecordDO> recordDOs = recordRepository.findRetryableRecords(afterTime);
+
+            log.info("Found {} records to retry", recordDOs.size());
+
+            for (NotificationRecordDO recordDO : recordDOs) {
+                try {
+                    // 转换为 Domain 对象
+                    NotificationRecord record = gotoneConverter.toNotificationRecord(recordDO);
+                    retryRecord(record);
+                } catch (Exception e) {
+                    log.error("Failed to retry record {}: {}", recordDO.getId(), e.getMessage());
+                }
+            }
+
+            log.info("Completed retry job, processed {} records", recordDOs.size());
         } catch (Exception e) {
-          log.error("Failed to retry record {}: {}", recordDO.getId(), e.getMessage());
+            log.error("Retry job failed: {}", e.getMessage(), e);
         }
-      }
-
-      log.info("Completed retry job, processed {} records", recordDOs.size());
-    } catch (Exception e) {
-      log.error("Retry job failed: {}", e.getMessage(), e);
     }
-  }
 
-  /** 重试单条记录 */
-  private void retryRecord(NotificationRecord record) {
-    log.info(
-        "Retrying notification: bizId={}, retryCount={}",
-        record.getBizId(),
-        record.getRetryCount());
+    /** 重试单条记录 */
+    private void retryRecord(NotificationRecord record) {
+        log.info("Retrying notification: bizId={}, retryCount={}", record.getBizId(), record.getRetryCount());
 
-    // TODO: 重新构建请求并发送
-    // 1. 根据记录信息重建 NotificationRequest
-    // 2. 调用 GotoneNotificationService 重新发送
-    // 3. 更新记录状态和重试次数
+        // TODO: 重新构建请求并发送
+        // 1. 根据记录信息重建 NotificationRequest
+        // 2. 调用 GotoneNotificationService 重新发送
+        // 3. 更新记录状态和重试次数
 
-    record.setRetryCount(record.getRetryCount() + 1);
-    record.setUpdatedAt(LocalDateTime.now());
+        record.setRetryCount(record.getRetryCount() + 1);
+        record.setUpdatedAt(LocalDateTime.now());
 
-    // 转换为 DO 并保存
-    recordRepository.save(gotoneConverter.toNotificationRecordDO(record));
-  }
+        // 转换为 DO 并保存
+        recordRepository.save(gotoneConverter.toNotificationRecordDO(record));
+    }
 }

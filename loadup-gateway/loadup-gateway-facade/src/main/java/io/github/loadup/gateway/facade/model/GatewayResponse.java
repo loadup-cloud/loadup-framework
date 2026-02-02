@@ -36,30 +36,30 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GatewayResponse {
 
-  /** Request ID */
-  private String requestId;
+    /** Request ID */
+    private String requestId;
 
-  /** Status code */
-  private int statusCode;
+    /** Status code */
+    private int statusCode;
 
-  /** Response headers */
-  private Map<String, String> headers;
+    /** Response headers */
+    private Map<String, String> headers;
 
-  /** Response body */
-  private String body;
+    /** Response body */
+    private String body;
 
-  /** Content type */
-  private String contentType;
+    /** Content type */
+    private String contentType;
 
-  /** Response time */
-  private LocalDateTime responseTime;
+    /** Response time */
+    private LocalDateTime responseTime;
 
-  /** Processing time in milliseconds */
-  private long processingTime;
+    /** Processing time in milliseconds */
+    private long processingTime;
 
-  /** Error message */
-  private String errorMessage;
+    /** Error message */
+    private String errorMessage;
 
-  /** Extension attributes */
-  private Map<String, Object> attributes;
+    /** Extension attributes */
+    private Map<String, Object> attributes;
 }

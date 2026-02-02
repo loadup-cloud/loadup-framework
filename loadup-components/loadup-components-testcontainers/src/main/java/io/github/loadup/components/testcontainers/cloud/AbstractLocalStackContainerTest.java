@@ -66,39 +66,39 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(initializers = LocalStackContainerInitializer.class)
 public abstract class AbstractLocalStackContainerTest {
 
-  /**
-   * Get the S3 endpoint URL.
-   *
-   * @return the S3 endpoint URL
-   */
-  protected String getS3Endpoint() {
-    return SharedLocalStackContainer.getS3Endpoint();
-  }
+    /**
+     * Get the S3 endpoint URL.
+     *
+     * @return the S3 endpoint URL
+     */
+    protected String getS3Endpoint() {
+        return SharedLocalStackContainer.getS3Endpoint();
+    }
 
-  /**
-   * Get the AWS access key.
-   *
-   * @return the access key
-   */
-  protected String getAccessKey() {
-    return SharedLocalStackContainer.getAccessKey();
-  }
+    /**
+     * Get the AWS access key.
+     *
+     * @return the access key
+     */
+    protected String getAccessKey() {
+        return SharedLocalStackContainer.getAccessKey();
+    }
 
-  /**
-   * Get the AWS secret key.
-   *
-   * @return the secret key
-   */
-  protected String getSecretKey() {
-    return SharedLocalStackContainer.getSecretKey();
-  }
+    /**
+     * Get the AWS secret key.
+     *
+     * @return the secret key
+     */
+    protected String getSecretKey() {
+        return SharedLocalStackContainer.getSecretKey();
+    }
 
-  /**
-   * Get the AWS region.
-   *
-   * @return the region
-   */
-  protected String getRegion() {
-    return SharedLocalStackContainer.getRegion();
-  }
+    /**
+     * Get the AWS region.
+     *
+     * @return the region
+     */
+    protected String getRegion() {
+        return SharedLocalStackContainer.getRegion();
+    }
 }

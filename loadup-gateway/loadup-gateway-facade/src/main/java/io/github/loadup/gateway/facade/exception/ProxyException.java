@@ -25,68 +25,59 @@ package io.github.loadup.gateway.facade.exception;
 /** Proxy-related exceptions */
 public class ProxyException extends GatewayException {
 
-  private static final String MODULE = "PROXY";
+    private static final String MODULE = "PROXY";
 
-  public ProxyException(ErrorCode errorCode, String message) {
-    super(errorCode.getCode(), ErrorType.PROXY, MODULE, errorCode.getMessage() + ":" + message);
-  }
+    public ProxyException(ErrorCode errorCode, String message) {
+        super(errorCode.getCode(), ErrorType.PROXY, MODULE, errorCode.getMessage() + ":" + message);
+    }
 
-  public ProxyException(ErrorCode errorCode, String message, Throwable cause) {
-    super(
-        errorCode.getCode(),
-        ErrorType.PROXY,
-        MODULE,
-        errorCode.getMessage() + ":" + message,
-        cause);
-  }
+    public ProxyException(ErrorCode errorCode, String message, Throwable cause) {
+        super(errorCode.getCode(), ErrorType.PROXY, MODULE, errorCode.getMessage() + ":" + message, cause);
+    }
 
-  // Convenience methods - SpringBean proxy exceptions
-  public static ProxyException beanNotFound(String beanName) {
-    return new ProxyException(ErrorCode.BEAN_NOT_FOUND, beanName);
-  }
+    // Convenience methods - SpringBean proxy exceptions
+    public static ProxyException beanNotFound(String beanName) {
+        return new ProxyException(ErrorCode.BEAN_NOT_FOUND, beanName);
+    }
 
-  public static ProxyException methodNotFound(String beanName, String methodName) {
-    return new ProxyException(ErrorCode.BEAN_METHOD_NOT_FOUND, beanName + "." + methodName);
-  }
+    public static ProxyException methodNotFound(String beanName, String methodName) {
+        return new ProxyException(ErrorCode.BEAN_METHOD_NOT_FOUND, beanName + "." + methodName);
+    }
 
-  public static ProxyException methodInvokeFailed(
-      String beanName, String methodName, Throwable cause) {
-    return new ProxyException(
-        ErrorCode.BEAN_METHOD_INVOKE_FAILED, beanName + "." + methodName, cause);
-  }
+    public static ProxyException methodInvokeFailed(String beanName, String methodName, Throwable cause) {
+        return new ProxyException(ErrorCode.BEAN_METHOD_INVOKE_FAILED, beanName + "." + methodName, cause);
+    }
 
-  public static ProxyException invalidTarget(String target) {
-    return new ProxyException(
-        ErrorCode.BEAN_TARGET_FORMAT_INVALID, target + ", Expected format is beanName:methodName");
-  }
+    public static ProxyException invalidTarget(String target) {
+        return new ProxyException(
+                ErrorCode.BEAN_TARGET_FORMAT_INVALID, target + ", Expected format is beanName:methodName");
+    }
 
-  // Convenience methods - HTTP proxy exceptions
-  public static ProxyException httpRequestFailed(String url, Throwable cause) {
-    return new ProxyException(ErrorCode.HTTP_REQUEST_FAILED, url, cause);
-  }
+    // Convenience methods - HTTP proxy exceptions
+    public static ProxyException httpRequestFailed(String url, Throwable cause) {
+        return new ProxyException(ErrorCode.HTTP_REQUEST_FAILED, url, cause);
+    }
 
-  public static ProxyException httpTimeout(String url) {
-    return new ProxyException(ErrorCode.HTTP_CONNECTION_TIMEOUT, url);
-  }
+    public static ProxyException httpTimeout(String url) {
+        return new ProxyException(ErrorCode.HTTP_CONNECTION_TIMEOUT, url);
+    }
 
-  // Convenience methods - RPC proxy exceptions
-  public static ProxyException rpcServiceNotFound(String serviceName) {
-    return new ProxyException(ErrorCode.RPC_SERVICE_NOT_FOUND, serviceName);
-  }
+    // Convenience methods - RPC proxy exceptions
+    public static ProxyException rpcServiceNotFound(String serviceName) {
+        return new ProxyException(ErrorCode.RPC_SERVICE_NOT_FOUND, serviceName);
+    }
 
-  public static ProxyException rpcCallFailed(
-      String serviceName, String methodName, Throwable cause) {
-    return new ProxyException(
-        ErrorCode.RPC_CALL_FAILED, "RPC call failed: " + serviceName + "." + methodName, cause);
-  }
+    public static ProxyException rpcCallFailed(String serviceName, String methodName, Throwable cause) {
+        return new ProxyException(
+                ErrorCode.RPC_CALL_FAILED, "RPC call failed: " + serviceName + "." + methodName, cause);
+    }
 
-  // General proxy exceptions
-  public static ProxyException executionFailed(String target, Throwable cause) {
-    return new ProxyException(
-        ErrorCode.PROXY_EXECUTION_FAILED, "Proxy execution failed: " + target, cause);
-  }
+    // General proxy exceptions
+    public static ProxyException executionFailed(String target, Throwable cause) {
+        return new ProxyException(ErrorCode.PROXY_EXECUTION_FAILED, "Proxy execution failed: " + target, cause);
+    }
 
-  public static ProxyException timeout(String target) {
-    return new ProxyException(ErrorCode.PROXY_TIMEOUT, "Proxy timeout: " + target);
-  }
+    public static ProxyException timeout(String target) {
+        return new ProxyException(ErrorCode.PROXY_TIMEOUT, "Proxy timeout: " + target);
+    }
 }

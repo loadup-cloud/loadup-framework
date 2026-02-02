@@ -36,10 +36,10 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnProperty(prefix = "loadup.scheduler", name = "type", havingValue = "powerjob")
 public class PowerJobSchedulerBinderAutoConfiguration {
 
-  @Bean
-  @ConditionalOnMissingBean(SchedulerBinder.class)
-  public SchedulerBinder powerJobSchedulerBinder() {
-    log.info("Creating PowerJob scheduler binder");
-    return new PowerJobSchedulerBinder();
-  }
+    @Bean
+    @ConditionalOnMissingBean(SchedulerBinder.class)
+    public SchedulerBinder powerJobSchedulerBinder() {
+        log.info("Creating PowerJob scheduler binder");
+        return new PowerJobSchedulerBinder();
+    }
 }

@@ -32,29 +32,29 @@ import lombok.Data;
 @Data
 @Builder
 public class NotificationResponse implements Serializable {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  /** 是否成功 */
-  private Boolean success;
+    /** 是否成功 */
+    private Boolean success;
 
-  /** 状态 */
-  private NotificationStatus status;
+    /** 状态 */
+    private NotificationStatus status;
 
-  /** 消息ID */
-  private String messageId;
+    /** 消息ID */
+    private String messageId;
 
-  /** 业务ID */
-  private String bizId;
+    /** 业务ID */
+    private String bizId;
 
-  /** 提供商 */
-  private String provider;
+    /** 提供商 */
+    private String provider;
 
-  /** 错误信息 */
-  private String errorMessage;
+    /** 错误信息 */
+    private String errorMessage;
 
-  /** 发送时间 */
-  private LocalDateTime sendTime;
+    /** 发送时间 */
+    private LocalDateTime sendTime;
 
-  /** 响应数据 */
-  private Object responseData;
+    /** 响应数据 */
+    private Object responseData;
 }

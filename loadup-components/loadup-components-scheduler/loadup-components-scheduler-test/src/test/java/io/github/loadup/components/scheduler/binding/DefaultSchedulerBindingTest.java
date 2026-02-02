@@ -38,111 +38,115 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class DefaultSchedulerBindingTest {
 
-  @Mock private SchedulerBinder schedulerBinder;
+    @Mock
+    private SchedulerBinder schedulerBinder;
 
-  private DefaultSchedulerBinding schedulerBinding;
+    private DefaultSchedulerBinding schedulerBinding;
 
-  @BeforeEach
-  void setUp() {
-    schedulerBinding = new DefaultSchedulerBinding();
-  }
+    @BeforeEach
+    void setUp() {
+        schedulerBinding = new DefaultSchedulerBinding();
+    }
 
-  @Test
-  void testRegisterTask() {
-    // Given
-    SchedulerTask task = SchedulerTask.builder().taskName("testTask").cron("0 0 12 * * ?").build();
-    when(schedulerBinder.registerTask(task)).thenReturn(true);
+    @Test
+    void testRegisterTask() {
+        // Given
+        SchedulerTask task = SchedulerTask.builder()
+                .taskName("testTask")
+                .cron("0 0 12 * * ?")
+                .build();
+        when(schedulerBinder.registerTask(task)).thenReturn(true);
 
-    // When
-    boolean result = schedulerBinding.registerTask(task);
+        // When
+        boolean result = schedulerBinding.registerTask(task);
 
-    // Then
-    assertThat(result).isTrue();
-    verify(schedulerBinder).registerTask(task);
-  }
+        // Then
+        assertThat(result).isTrue();
+        verify(schedulerBinder).registerTask(task);
+    }
 
-  @Test
-  void testUnregisterTask() {
-    // Given
-    String taskName = "testTask";
-    when(schedulerBinder.unregisterTask(taskName)).thenReturn(true);
+    @Test
+    void testUnregisterTask() {
+        // Given
+        String taskName = "testTask";
+        when(schedulerBinder.unregisterTask(taskName)).thenReturn(true);
 
-    // When
-    boolean result = schedulerBinding.unregisterTask(taskName);
+        // When
+        boolean result = schedulerBinding.unregisterTask(taskName);
 
-    // Then
-    assertThat(result).isTrue();
-    verify(schedulerBinder).unregisterTask(taskName);
-  }
+        // Then
+        assertThat(result).isTrue();
+        verify(schedulerBinder).unregisterTask(taskName);
+    }
 
-  @Test
-  void testPauseTask() {
-    // Given
-    String taskName = "testTask";
-    when(schedulerBinder.pauseTask(taskName)).thenReturn(true);
+    @Test
+    void testPauseTask() {
+        // Given
+        String taskName = "testTask";
+        when(schedulerBinder.pauseTask(taskName)).thenReturn(true);
 
-    // When
-    boolean result = schedulerBinding.pauseTask(taskName);
+        // When
+        boolean result = schedulerBinding.pauseTask(taskName);
 
-    // Then
-    assertThat(result).isTrue();
-    verify(schedulerBinder).pauseTask(taskName);
-  }
+        // Then
+        assertThat(result).isTrue();
+        verify(schedulerBinder).pauseTask(taskName);
+    }
 
-  @Test
-  void testResumeTask() {
-    // Given
-    String taskName = "testTask";
-    when(schedulerBinder.resumeTask(taskName)).thenReturn(true);
+    @Test
+    void testResumeTask() {
+        // Given
+        String taskName = "testTask";
+        when(schedulerBinder.resumeTask(taskName)).thenReturn(true);
 
-    // When
-    boolean result = schedulerBinding.resumeTask(taskName);
+        // When
+        boolean result = schedulerBinding.resumeTask(taskName);
 
-    // Then
-    assertThat(result).isTrue();
-    verify(schedulerBinder).resumeTask(taskName);
-  }
+        // Then
+        assertThat(result).isTrue();
+        verify(schedulerBinder).resumeTask(taskName);
+    }
 
-  @Test
-  void testTriggerTask() {
-    // Given
-    String taskName = "testTask";
-    when(schedulerBinder.triggerTask(taskName)).thenReturn(true);
+    @Test
+    void testTriggerTask() {
+        // Given
+        String taskName = "testTask";
+        when(schedulerBinder.triggerTask(taskName)).thenReturn(true);
 
-    // When
-    boolean result = schedulerBinding.triggerTask(taskName);
+        // When
+        boolean result = schedulerBinding.triggerTask(taskName);
 
-    // Then
-    assertThat(result).isTrue();
-    verify(schedulerBinder).triggerTask(taskName);
-  }
+        // Then
+        assertThat(result).isTrue();
+        verify(schedulerBinder).triggerTask(taskName);
+    }
 
-  @Test
-  void testUpdateTaskCron() {
-    // Given
-    String taskName = "testTask";
-    String newCron = "0 0 13 * * ?";
-    when(schedulerBinder.updateTaskCron(taskName, newCron)).thenReturn(true);
+    @Test
+    void testUpdateTaskCron() {
+        // Given
+        String taskName = "testTask";
+        String newCron = "0 0 13 * * ?";
+        when(schedulerBinder.updateTaskCron(taskName, newCron)).thenReturn(true);
 
-    // When
-    boolean result = schedulerBinding.updateTaskCron(taskName, newCron);
+        // When
+        boolean result = schedulerBinding.updateTaskCron(taskName, newCron);
 
-    // Then
-    assertThat(result).isTrue();
-    verify(schedulerBinder).updateTaskCron(taskName, newCron);
-  }
+        // Then
+        assertThat(result).isTrue();
+        verify(schedulerBinder).updateTaskCron(taskName, newCron);
+    }
 
-  @Test
-  void testTaskExists() {
-    // Given
-    String taskName = "testTask";
-    when(schedulerBinder.taskExists(taskName)).thenReturn(true);
+    @Test
+    void testTaskExists() {
+        // Given
+        String taskName = "testTask";
+        when(schedulerBinder.taskExists(taskName)).thenReturn(true);
 
-    // When
-    boolean result = schedulerBinding.taskExists(taskName);
+        // When
+        boolean result = schedulerBinding.taskExists(taskName);
 
-    // Then
-    assertThat(result).isTrue();
-    verify(schedulerBinder).taskExists(taskName);
-  }
+        // Then
+        assertThat(result).isTrue();
+        verify(schedulerBinder).taskExists(taskName);
+    }
 }

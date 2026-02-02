@@ -38,14 +38,15 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @Setter
 public abstract class BaseDomain implements Serializable {
 
-  @Serial private static final long serialVersionUID = -2885192493194863635L;
+    @Serial
+    private static final long serialVersionUID = -2885192493194863635L;
 
-  private String tenantId;
-  private LocalDateTime createdAt;
-  private LocalDateTime updatedAt;
+    private String tenantId;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-  @Override
-  public String toString() {
-    return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-  }
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+    }
 }

@@ -41,61 +41,61 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Department {
 
-  private String id;
+    private String id;
 
-  private String parentId;
+    private String parentId;
 
-  private String deptName;
+    private String deptName;
 
-  private String deptCode;
+    private String deptCode;
 
-  private Integer deptLevel;
+    private Integer deptLevel;
 
-  private Integer sortOrder;
+    private Integer sortOrder;
 
-  private String leaderUserId;
+    private String leaderUserId;
 
-  private String mobile;
+    private String mobile;
 
-  private String email;
+    private String email;
 
-  /** Status: 1-Normal, 0-Disabled */
-  private Short status;
+    /** Status: 1-Normal, 0-Disabled */
+    private Short status;
 
-  private Boolean deleted;
+    private Boolean deleted;
 
-  private String remark;
+    private String remark;
 
-  private String createdBy;
+    private String createdBy;
 
-  private LocalDateTime createdTime;
+    private LocalDateTime createdTime;
 
-  private String updatedBy;
+    private String updatedBy;
 
-  private LocalDateTime updatedTime;
+    private LocalDateTime updatedTime;
 
-  // Transient fields
-  private Department parent;
+    // Transient fields
+    private Department parent;
 
-  private List<Department> children;
+    private List<Department> children;
 
-  private User leader;
+    private User leader;
 
-  /** Check if department is enabled */
-  public boolean isEnabled() {
-    return status != null && status == 1 && !Boolean.TRUE.equals(deleted);
-  }
-
-  /** Check if this is a root department */
-  public boolean isRoot() {
-    return parentId == null || "0".equals(parentId);
-  }
-
-  /** Get full path (for display in tree structure) */
-  public String getFullPath() {
-    if (parent == null || isRoot()) {
-      return deptName;
+    /** Check if department is enabled */
+    public boolean isEnabled() {
+        return status != null && status == 1 && !Boolean.TRUE.equals(deleted);
     }
-    return parent.getFullPath() + " / " + deptName;
-  }
+
+    /** Check if this is a root department */
+    public boolean isRoot() {
+        return parentId == null || "0".equals(parentId);
+    }
+
+    /** Get full path (for display in tree structure) */
+    public String getFullPath() {
+        if (parent == null || isRoot()) {
+            return deptName;
+        }
+        return parent.getFullPath() + " / " + deptName;
+    }
 }

@@ -35,19 +35,19 @@ import lombok.Data;
 @Data
 public class UserPasswordResetCommand {
 
-  @NotBlank(message = "用户名不能为空")
-  private String username;
+    @NotBlank(message = "用户名不能为空")
+    private String username;
 
-  @NotBlank(message = "验证码不能为空")
-  private String verificationCode;
+    @NotBlank(message = "验证码不能为空")
+    private String verificationCode;
 
-  @NotBlank(message = "新密码不能为空")
-  @Size(min = 6, max = 20, message = "新密码长度必须在6-20之间")
-  private String newPassword;
+    @NotBlank(message = "新密码不能为空")
+    @Size(min = 6, max = 20, message = "新密码长度必须在6-20之间")
+    private String newPassword;
 
-  @NotBlank(message = "确认密码不能为空")
-  private String confirmPassword;
+    @NotBlank(message = "确认密码不能为空")
+    private String confirmPassword;
 
-  /** Verification type: EMAIL or SMS */
-  private String verificationType;
+    /** Verification type: EMAIL or SMS */
+    private String verificationType;
 }

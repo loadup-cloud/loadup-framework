@@ -36,9 +36,9 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "spring")
 public interface RoleConverter {
 
-  RoleConverter INSTANCE = Mappers.getMapper(RoleConverter.class);
+    RoleConverter INSTANCE = Mappers.getMapper(RoleConverter.class);
 
-  RoleDO toDataObject(Role role);
+    RoleDO toDataObject(Role role);
 
-  Role toEntity(RoleDO roleDO);
+    Role toEntity(RoleDO roleDO);
 }

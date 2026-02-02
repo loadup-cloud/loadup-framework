@@ -54,78 +54,75 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 public class TestifyAutoConfiguration {
 
-  @Bean
-  @ConditionalOnMissingBean
-  public SpringContextHolder springContextHolder() {
-    return new SpringContextHolder();
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public SpringContextHolder springContextHolder() {
+        return new SpringContextHolder();
+    }
 
-  @Bean
-  public TimeFunction timeFunction() {
-    return new TimeFunction();
-  }
+    @Bean
+    public TimeFunction timeFunction() {
+        return new TimeFunction();
+    }
 
-  @Bean
-  public CommonFunction commonFunction() {
-    return new CommonFunction();
-  }
+    @Bean
+    public CommonFunction commonFunction() {
+        return new CommonFunction();
+    }
 
-  /** 1. 自动收集容器中所有的 TestifyFunction 实现 */
-  @Bean
-  @ConditionalOnMissingBean
-  public VariableEngine variableEngine(List<TestifyFunction> functions) {
-    return new VariableEngine(functions);
-  }
+    /** 1. 自动收集容器中所有的 TestifyFunction 实现 */
+    @Bean
+    @ConditionalOnMissingBean
+    public VariableEngine variableEngine(List<TestifyFunction> functions) {
+        return new VariableEngine(functions);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public ResponseAssertEngine responseAssertEngine(VariableEngine variableEngine) {
-    return new ResponseAssertEngine(variableEngine);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public ResponseAssertEngine responseAssertEngine(VariableEngine variableEngine) {
+        return new ResponseAssertEngine(variableEngine);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public DbAssertEngine dbAssertEngine(JdbcTemplate jdbcTemplate, VariableEngine variableEngine) {
-    return new DbAssertEngine(jdbcTemplate, variableEngine);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public DbAssertEngine dbAssertEngine(JdbcTemplate jdbcTemplate, VariableEngine variableEngine) {
+        return new DbAssertEngine(jdbcTemplate, variableEngine);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public ExceptionAssertEngine exceptionAssertEngine(VariableEngine variableEngine) {
-    return new ExceptionAssertEngine(variableEngine);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public ExceptionAssertEngine exceptionAssertEngine(VariableEngine variableEngine) {
+        return new ExceptionAssertEngine(variableEngine);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public AssertionFacade assertionFacade(List<TestifyAssertEngine> engines) {
-    return new AssertionFacade(engines);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public AssertionFacade assertionFacade(List<TestifyAssertEngine> engines) {
+        return new AssertionFacade(engines);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public SqlExecutionEngine sqlExecutionEngine(
-      JdbcTemplate jdbcTemplate, VariableEngine variableEngine) {
-    return new SqlExecutionEngine(jdbcTemplate, variableEngine);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public SqlExecutionEngine sqlExecutionEngine(JdbcTemplate jdbcTemplate, VariableEngine variableEngine) {
+        return new SqlExecutionEngine(jdbcTemplate, variableEngine);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public MockInterceptor mockInterceptor(VariableEngine variableEngine) {
-    return new MockInterceptor(variableEngine);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public MockInterceptor mockInterceptor(VariableEngine variableEngine) {
+        return new MockInterceptor(variableEngine);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public MockEngine mockEngine(
-      ApplicationContext applicationContext,
-      VariableEngine variableEngine,
-      MockInterceptor mockInterceptor) {
-    return new MockEngine(applicationContext, variableEngine, mockInterceptor);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public MockEngine mockEngine(
+            ApplicationContext applicationContext, VariableEngine variableEngine, MockInterceptor mockInterceptor) {
+        return new MockEngine(applicationContext, variableEngine, mockInterceptor);
+    }
 
-  /** 定义一个切面，只拦截符合条件的业务类 */
-  @Bean
-  public MockProxyPostProcessor testifyMockAdvisor(MockInterceptor interceptor) {
-    return new MockProxyPostProcessor(interceptor);
-  }
+    /** 定义一个切面，只拦截符合条件的业务类 */
+    @Bean
+    public MockProxyPostProcessor testifyMockAdvisor(MockInterceptor interceptor) {
+        return new MockProxyPostProcessor(interceptor);
+    }
 }

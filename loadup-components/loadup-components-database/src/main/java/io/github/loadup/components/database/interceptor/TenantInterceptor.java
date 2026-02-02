@@ -47,38 +47,34 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @RequiredArgsConstructor
 public class TenantInterceptor implements HandlerInterceptor {
 
-  private final DatabaseProperties databaseProperties;
-  private final Set<String> ignoreTables = new HashSet<>();
+    private final DatabaseProperties databaseProperties;
+    private final Set<String> ignoreTables = new HashSet<>();
 
-  /** Initialize tenant interceptor */
-  public void init() {
-    DatabaseProperties.MultiTenant config = databaseProperties.getMultiTenant();
+    /** Initialize tenant interceptor */
+    public void init() {
+        DatabaseProperties.MultiTenant config = databaseProperties.getMultiTenant();
 
-    // Parse ignore tables
-    if (config.getIgnoreTables() != null && !config.getIgnoreTables().isBlank()) {
-      String[] tables = config.getIgnoreTables().split(",");
-      Arrays.stream(tables).map(String::trim).forEach(ignoreTables::add);
-    }
+        // Parse ignore tables
+        if (config.getIgnoreTables() != null && !config.getIgnoreTables().isBlank()) {
+            String[] tables = config.getIgnoreTables().split(",");
+            Arrays.stream(tables).map(String::trim).forEach(ignoreTables::add);
+        }
 
-    // Configure MyBatis-Flex TenantManager
-    TenantManager.setTenantFactory(
-        () -> {
-          String tenantId = TenantContextHolder.getTenantId();
-          if (tenantId == null) {
-            tenantId = config.getDefaultTenantId();
-          }
-          return new Object[] {tenantId};
+        // Configure MyBatis-Flex TenantManager
+        TenantManager.setTenantFactory(() -> {
+            String tenantId = TenantContextHolder.getTenantId();
+            if (tenantId == null) {
+                tenantId = config.getDefaultTenantId();
+            }
+            return new Object[] {tenantId};
         });
 
-    log.info(
-        "Initialized TenantInterceptor with column={}, ignoreTables={}",
-        config.getColumnName(),
-        ignoreTables);
-  }
+        log.info("Initialized TenantInterceptor with column={}, ignoreTables={}", config.getColumnName(), ignoreTables);
+    }
 
-  @Override
-  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-      throws Exception {
-    return HandlerInterceptor.super.preHandle(request, response, handler);
-  }
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
+        return HandlerInterceptor.super.preHandle(request, response, handler);
+    }
 }

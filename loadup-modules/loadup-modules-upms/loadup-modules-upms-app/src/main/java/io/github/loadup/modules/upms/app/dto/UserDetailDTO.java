@@ -43,24 +43,24 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserDetailDTO {
 
-  private String id;
-  private String username;
-  private String nickname;
-  private String realName;
-  private String deptId;
-  private String deptName;
-  private String email;
-  private Boolean emailVerified;
-  private String mobile;
-  private Boolean mobileVerified;
-  private String avatar;
-  private Short gender;
-  private LocalDate birthday;
-  private Short status;
-  private LocalDateTime lastLoginTime;
-  private String lastLoginIp;
-  private List<RoleDTO> roles;
-  private String remark;
-  private LocalDateTime createdTime;
-  private LocalDateTime updatedTime;
+    private String id;
+    private String username;
+    private String nickname;
+    private String realName;
+    private String deptId;
+    private String deptName;
+    private String email;
+    private Boolean emailVerified;
+    private String mobile;
+    private Boolean mobileVerified;
+    private String avatar;
+    private Short gender;
+    private LocalDate birthday;
+    private Short status;
+    private LocalDateTime lastLoginTime;
+    private String lastLoginIp;
+    private List<RoleDTO> roles;
+    private String remark;
+    private LocalDateTime createdTime;
+    private LocalDateTime updatedTime;
 }

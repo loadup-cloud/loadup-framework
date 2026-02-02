@@ -41,71 +41,71 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Permission {
 
-  private String id;
+    private String id;
 
-  private String parentId;
+    private String parentId;
 
-  private String permissionName;
+    private String permissionName;
 
-  private String permissionCode;
+    private String permissionCode;
 
-  /** Permission type: 1-Menu, 2-Button, 3-API */
-  private Short permissionType;
+    /** Permission type: 1-Menu, 2-Button, 3-API */
+    private Short permissionType;
 
-  private String resourcePath;
+    private String resourcePath;
 
-  private String httpMethod;
+    private String httpMethod;
 
-  private String icon;
+    private String icon;
 
-  private String componentPath;
+    private String componentPath;
 
-  private Integer sortOrder;
+    private Integer sortOrder;
 
-  private Boolean visible;
+    private Boolean visible;
 
-  /** Status: 1-Normal, 0-Disabled */
-  private Short status;
+    /** Status: 1-Normal, 0-Disabled */
+    private Short status;
 
-  private Boolean deleted;
+    private Boolean deleted;
 
-  private String remark;
+    private String remark;
 
-  private String createdBy;
+    private String createdBy;
 
-  private LocalDateTime createdTime;
+    private LocalDateTime createdTime;
 
-  private String updatedBy;
+    private String updatedBy;
 
-  private LocalDateTime updatedTime;
+    private LocalDateTime updatedTime;
 
-  // Transient fields
-  private Permission parent;
+    // Transient fields
+    private Permission parent;
 
-  private List<Permission> children;
+    private List<Permission> children;
 
-  /** Check if permission is enabled */
-  public boolean isEnabled() {
-    return status != null && status == 1 && !Boolean.TRUE.equals(deleted);
-  }
+    /** Check if permission is enabled */
+    public boolean isEnabled() {
+        return status != null && status == 1 && !Boolean.TRUE.equals(deleted);
+    }
 
-  /** Check if this is a root permission */
-  public boolean isRoot() {
-    return parentId == null || "0".equals(parentId);
-  }
+    /** Check if this is a root permission */
+    public boolean isRoot() {
+        return parentId == null || "0".equals(parentId);
+    }
 
-  /** Check if this is a menu permission */
-  public boolean isMenu() {
-    return permissionType != null && permissionType == 1;
-  }
+    /** Check if this is a menu permission */
+    public boolean isMenu() {
+        return permissionType != null && permissionType == 1;
+    }
 
-  /** Check if this is a button permission */
-  public boolean isButton() {
-    return permissionType != null && permissionType == 2;
-  }
+    /** Check if this is a button permission */
+    public boolean isButton() {
+        return permissionType != null && permissionType == 2;
+    }
 
-  /** Check if this is an API permission */
-  public boolean isApi() {
-    return permissionType != null && permissionType == 3;
-  }
+    /** Check if this is an API permission */
+    public boolean isApi() {
+        return permissionType != null && permissionType == 3;
+    }
 }

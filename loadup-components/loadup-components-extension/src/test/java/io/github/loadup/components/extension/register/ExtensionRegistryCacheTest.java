@@ -39,97 +39,91 @@ import org.springframework.context.event.ContextRefreshedEvent;
 /** Tests for ExtensionRegistry caching functionality */
 class ExtensionRegistryCacheTest {
 
-  private ExtensionRegistry registry;
-  private ApplicationContext applicationContext;
+    private ExtensionRegistry registry;
+    private ApplicationContext applicationContext;
 
-  interface TestExtension extends IExtensionPoint {}
+    interface TestExtension extends IExtensionPoint {}
 
-  @Extension(bizCode = "test", useCase = "default", scenario = "default")
-  static class TestExtensionImpl implements TestExtension {}
+    @Extension(bizCode = "test", useCase = "default", scenario = "default")
+    static class TestExtensionImpl implements TestExtension {}
 
-  @Extension(bizCode = "test", useCase = "special", scenario = "default")
-  static class SpecialTestExtensionImpl implements TestExtension {}
+    @Extension(bizCode = "test", useCase = "special", scenario = "default")
+    static class SpecialTestExtensionImpl implements TestExtension {}
 
-  @Configuration
-  static class TestConfig {
-    @Bean
-    public TestExtensionImpl testExtension() {
-      return new TestExtensionImpl();
+    @Configuration
+    static class TestConfig {
+        @Bean
+        public TestExtensionImpl testExtension() {
+            return new TestExtensionImpl();
+        }
+
+        @Bean
+        public SpecialTestExtensionImpl specialTestExtension() {
+            return new SpecialTestExtensionImpl();
+        }
     }
 
-    @Bean
-    public SpecialTestExtensionImpl specialTestExtension() {
-      return new SpecialTestExtensionImpl();
+    @BeforeEach
+    void setUp() {
+        registry = new ExtensionRegistry();
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context.register(TestConfig.class);
+        context.refresh();
+        applicationContext = context;
+
+        // Trigger extension registration
+        registry.onApplicationEvent(new ContextRefreshedEvent(applicationContext));
     }
-  }
 
-  @BeforeEach
-  void setUp() {
-    registry = new ExtensionRegistry();
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-    context.register(TestConfig.class);
-    context.refresh();
-    applicationContext = context;
+    @Test
+    void testExtensionCaching() {
+        BizScenario scenario = BizScenario.valueOf("test", "default", "default");
 
-    // Trigger extension registration
-    registry.onApplicationEvent(new ContextRefreshedEvent(applicationContext));
-  }
+        // First call - should populate cache
+        List<ExtensionCoordinate> extensions1 = registry.getExtensionsByScenario(TestExtension.class, scenario);
+        assertNotNull(extensions1);
+        assertFalse(extensions1.isEmpty());
 
-  @Test
-  void testExtensionCaching() {
-    BizScenario scenario = BizScenario.valueOf("test", "default", "default");
+        // Second call - should use cached result
+        List<ExtensionCoordinate> extensions2 = registry.getExtensionsByScenario(TestExtension.class, scenario);
+        assertNotNull(extensions2);
+        assertEquals(extensions1.size(), extensions2.size());
+    }
 
-    // First call - should populate cache
-    List<ExtensionCoordinate> extensions1 =
-        registry.getExtensionsByScenario(TestExtension.class, scenario);
-    assertNotNull(extensions1);
-    assertFalse(extensions1.isEmpty());
+    @Test
+    void testCacheWithDifferentScenarios() {
+        BizScenario scenario1 = BizScenario.valueOf("test", "default", "default");
+        BizScenario scenario2 = BizScenario.valueOf("test", "special", "default");
 
-    // Second call - should use cached result
-    List<ExtensionCoordinate> extensions2 =
-        registry.getExtensionsByScenario(TestExtension.class, scenario);
-    assertNotNull(extensions2);
-    assertEquals(extensions1.size(), extensions2.size());
-  }
+        List<ExtensionCoordinate> extensions1 = registry.getExtensionsByScenario(TestExtension.class, scenario1);
+        List<ExtensionCoordinate> extensions2 = registry.getExtensionsByScenario(TestExtension.class, scenario2);
 
-  @Test
-  void testCacheWithDifferentScenarios() {
-    BizScenario scenario1 = BizScenario.valueOf("test", "default", "default");
-    BizScenario scenario2 = BizScenario.valueOf("test", "special", "default");
+        assertNotEquals(extensions1, extensions2, "Different scenarios should return different results");
+    }
 
-    List<ExtensionCoordinate> extensions1 =
-        registry.getExtensionsByScenario(TestExtension.class, scenario1);
-    List<ExtensionCoordinate> extensions2 =
-        registry.getExtensionsByScenario(TestExtension.class, scenario2);
+    @Test
+    void testPrewarmCache() {
+        // After initialization, cache should already be prewarmed
+        BizScenario scenario = BizScenario.valueOf("test", "default", "default");
 
-    assertNotEquals(
-        extensions1, extensions2, "Different scenarios should return different results");
-  }
+        // This call should use the prewarmed cache
+        List<ExtensionCoordinate> extensions = registry.getExtensionsByScenario(TestExtension.class, scenario);
 
-  @Test
-  void testPrewarmCache() {
-    // After initialization, cache should already be prewarmed
-    BizScenario scenario = BizScenario.valueOf("test", "default", "default");
+        assertNotNull(extensions);
+        assertFalse(extensions.isEmpty());
+    }
 
-    // This call should use the prewarmed cache
-    List<ExtensionCoordinate> extensions =
-        registry.getExtensionsByScenario(TestExtension.class, scenario);
+    @Test
+    void testGetAllExtensionTypes() {
+        var types = registry.getAllExtensionTypes();
+        assertNotNull(types);
+        assertTrue(types.contains(TestExtension.class));
+    }
 
-    assertNotNull(extensions);
-    assertFalse(extensions.isEmpty());
-  }
-
-  @Test
-  void testGetAllExtensionTypes() {
-    var types = registry.getAllExtensionTypes();
-    assertNotNull(types);
-    assertTrue(types.contains(TestExtension.class));
-  }
-
-  @Test
-  void testGetAllBizCodes() {
-    var bizCodes = registry.getAllBizCodes();
-    assertNotNull(bizCodes);
-    assertTrue(bizCodes.contains("test"));
-  }
+    @Test
+    void testGetAllBizCodes() {
+        var bizCodes = registry.getAllBizCodes();
+        assertNotNull(bizCodes);
+        assertTrue(bizCodes.contains("test"));
+    }
 }

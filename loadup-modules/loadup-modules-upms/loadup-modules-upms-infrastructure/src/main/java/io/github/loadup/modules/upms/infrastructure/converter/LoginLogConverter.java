@@ -36,21 +36,21 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "spring")
 public interface LoginLogConverter {
 
-  LoginLogConverter INSTANCE = Mappers.getMapper(LoginLogConverter.class);
+    LoginLogConverter INSTANCE = Mappers.getMapper(LoginLogConverter.class);
 
-  /**
-   * Convert Domain Entity to DataObject
-   *
-   * @param loginLog domain entity
-   * @return data object
-   */
-  LoginLogDO toDataObject(LoginLog loginLog);
+    /**
+     * Convert Domain Entity to DataObject
+     *
+     * @param loginLog domain entity
+     * @return data object
+     */
+    LoginLogDO toDataObject(LoginLog loginLog);
 
-  /**
-   * Convert DataObject to Domain Entity
-   *
-   * @param loginLogDO data object
-   * @return domain entity
-   */
-  LoginLog toEntity(LoginLogDO loginLogDO);
+    /**
+     * Convert DataObject to Domain Entity
+     *
+     * @param loginLogDO data object
+     * @return domain entity
+     */
+    LoginLog toEntity(LoginLogDO loginLogDO);
 }

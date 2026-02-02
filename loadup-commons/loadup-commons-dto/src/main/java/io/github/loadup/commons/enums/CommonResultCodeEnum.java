@@ -30,43 +30,43 @@ import org.apache.commons.lang3.Strings;
 
 @Getter
 public enum CommonResultCodeEnum implements ResultCode {
-  SUCCESS(ResultStatusEnum.SUCCESS, "Success."),
-  UNKNOWN(ResultStatusEnum.UNKNOWN, "Unknown failed."),
-  PARAM_ILLEGAL(ResultStatusEnum.FAIL, "Parameter illegal."),
-  PROCESS_FAIL(ResultStatusEnum.FAIL, "Process fail."),
-  ACCESS_DENIED(ResultStatusEnum.FAIL, "Access denied."),
-  INVALID_CLIENT(ResultStatusEnum.FAIL, "Invalid client."),
-  NOT_FOUND(ResultStatusEnum.FAIL, "Key is not found."),
-  SYS_ERROR(ResultStatusEnum.FAIL, "System error."),
-  ;
-  private final String status;
+    SUCCESS(ResultStatusEnum.SUCCESS, "Success."),
+    UNKNOWN(ResultStatusEnum.UNKNOWN, "Unknown failed."),
+    PARAM_ILLEGAL(ResultStatusEnum.FAIL, "Parameter illegal."),
+    PROCESS_FAIL(ResultStatusEnum.FAIL, "Process fail."),
+    ACCESS_DENIED(ResultStatusEnum.FAIL, "Access denied."),
+    INVALID_CLIENT(ResultStatusEnum.FAIL, "Invalid client."),
+    NOT_FOUND(ResultStatusEnum.FAIL, "Key is not found."),
+    SYS_ERROR(ResultStatusEnum.FAIL, "System error."),
+    ;
+    private final String status;
 
-  private final String message;
+    private final String message;
 
-  CommonResultCodeEnum(ResultStatusEnum status, String message) {
-    this.status = status.getCode();
-    this.message = message;
-  }
+    CommonResultCodeEnum(ResultStatusEnum status, String message) {
+        this.status = status.getCode();
+        this.message = message;
+    }
 
-  public static CommonResultCodeEnum getByResultCode(String resultCode) {
-    return Arrays.stream(CommonResultCodeEnum.values())
-        .filter(value -> Strings.CI.equals(value.getCode(), resultCode))
-        .findFirst()
-        .orElse(CommonResultCodeEnum.SYS_ERROR);
-  }
+    public static CommonResultCodeEnum getByResultCode(String resultCode) {
+        return Arrays.stream(CommonResultCodeEnum.values())
+                .filter(value -> Strings.CI.equals(value.getCode(), resultCode))
+                .findFirst()
+                .orElse(CommonResultCodeEnum.SYS_ERROR);
+    }
 
-  @Override
-  public String getCode() {
-    return name();
-  }
+    @Override
+    public String getCode() {
+        return name();
+    }
 
-  @Override
-  public String getStatus() {
-    return status;
-  }
+    @Override
+    public String getStatus() {
+        return status;
+    }
 
-  @Override
-  public String getMessage() {
-    return message;
-  }
+    @Override
+    public String getMessage() {
+        return message;
+    }
 }

@@ -48,15 +48,15 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(initializers = KafkaContainerInitializer.class)
 public abstract class AbstractKafkaContainerTest {
 
-  protected String getBootstrapServers() {
-    return SharedKafkaContainer.getBootstrapServers();
-  }
+    protected String getBootstrapServers() {
+        return SharedKafkaContainer.getBootstrapServers();
+    }
 
-  protected String getHost() {
-    return SharedKafkaContainer.getHost();
-  }
+    protected String getHost() {
+        return SharedKafkaContainer.getHost();
+    }
 
-  protected Integer getPort() {
-    return SharedKafkaContainer.getPort();
-  }
+    protected Integer getPort() {
+        return SharedKafkaContainer.getPort();
+    }
 }

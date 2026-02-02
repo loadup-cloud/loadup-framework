@@ -28,11 +28,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SimpleTestTask {
-  public static AtomicInteger a = new AtomicInteger(0);
+    public static AtomicInteger a = new AtomicInteger(0);
 
-  @DistributedScheduler(name = "SimpleTestTask", cron = "* * * * * ?")
-  public void executeClean() {
-    System.out.println("run simple test every 1s...");
-    a.set(a.intValue() + 1);
-  }
+    @DistributedScheduler(name = "SimpleTestTask", cron = "* * * * * ?")
+    public void executeClean() {
+        System.out.println("run simple test every 1s...");
+        a.set(a.intValue() + 1);
+    }
 }

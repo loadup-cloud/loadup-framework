@@ -25,34 +25,27 @@ package io.github.loadup.gateway.facade.exception;
 /** Parameter validation exception */
 public class ValidationException extends GatewayException {
 
-  private static final String MODULE = "VALIDATION";
+    private static final String MODULE = "VALIDATION";
 
-  public ValidationException(ErrorCode errorCode, String message) {
-    super(
-        errorCode.getCode(), ErrorType.VALIDATION, MODULE, errorCode.getMessage() + ":" + message);
-  }
+    public ValidationException(ErrorCode errorCode, String message) {
+        super(errorCode.getCode(), ErrorType.VALIDATION, MODULE, errorCode.getMessage() + ":" + message);
+    }
 
-  public ValidationException(ErrorCode errorCode, String message, Throwable cause) {
-    super(
-        errorCode.getCode(),
-        ErrorType.VALIDATION,
-        MODULE,
-        errorCode.getMessage() + ":" + message,
-        cause);
-  }
+    public ValidationException(ErrorCode errorCode, String message, Throwable cause) {
+        super(errorCode.getCode(), ErrorType.VALIDATION, MODULE, errorCode.getMessage() + ":" + message, cause);
+    }
 
-  // Convenience methods
-  public static ValidationException required(String paramName) {
-    return new ValidationException(ErrorCode.PARAM_REQUIRED, paramName);
-  }
+    // Convenience methods
+    public static ValidationException required(String paramName) {
+        return new ValidationException(ErrorCode.PARAM_REQUIRED, paramName);
+    }
 
-  public static ValidationException invalidFormat(String paramName, String expectedFormat) {
-    return new ValidationException(
-        ErrorCode.PARAM_INVALID_FORMAT, paramName + ", Expected format: " + expectedFormat);
-  }
+    public static ValidationException invalidFormat(String paramName, String expectedFormat) {
+        return new ValidationException(
+                ErrorCode.PARAM_INVALID_FORMAT, paramName + ", Expected format: " + expectedFormat);
+    }
 
-  public static ValidationException outOfRange(String paramName, String range) {
-    return new ValidationException(
-        ErrorCode.PARAM_OUT_OF_RANGE, paramName + ", Valid range: " + range);
-  }
+    public static ValidationException outOfRange(String paramName, String range) {
+        return new ValidationException(ErrorCode.PARAM_OUT_OF_RANGE, paramName + ", Valid range: " + range);
+    }
 }

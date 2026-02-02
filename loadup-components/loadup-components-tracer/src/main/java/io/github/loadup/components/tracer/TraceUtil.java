@@ -38,69 +38,69 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 public class TraceUtil {
-  private static final TraceContext TRACE_CONTEXT = new TraceContext();
+    private static final TraceContext TRACE_CONTEXT = new TraceContext();
 
-  private static TraceUtil instance;
-  private final Tracer tracer;
+    private static TraceUtil instance;
+    private final Tracer tracer;
 
-  @Value("${spring.application.name:''}")
-  private String applicationName;
+    @Value("${spring.application.name:''}")
+    private String applicationName;
 
-  public static TraceContext getTraceContext() {
-    return TRACE_CONTEXT;
-  }
-
-  public static TraceUtil getInstance() {
-    return instance;
-  }
-
-  public static Tracer getTracer() {
-    return instance.tracer;
-  }
-
-  public static String getApplicationName() {
-    return instance.applicationName;
-  }
-
-  public static Span getSpan() {
-    TraceContext traceContext = TraceUtil.getTraceContext();
-    return traceContext.getCurrentSpan();
-  }
-
-  public static Span createSpan(String moduleType) {
-    Span span = getTracer().spanBuilder(moduleType).startSpan();
-    TraceUtil.getTraceContext().push(span);
-    return span;
-  }
-
-  public static Span createSpan(String moduleType, Context parentContext) {
-    Span span = getTracer().spanBuilder(moduleType).setParent(parentContext).startSpan();
-    TraceUtil.getTraceContext().push(span);
-    return span;
-  }
-
-  public static String getTracerId() {
-    Span span = getSpan();
-    if (span == null) {
-      return Span.current().getSpanContext().getTraceId();
+    public static TraceContext getTraceContext() {
+        return TRACE_CONTEXT;
     }
-    return span.getSpanContext().getTraceId();
-  }
 
-  public static void logTraceId(Span span) {
-    MDC.put("traceId", span.getSpanContext().getTraceId());
-  }
+    public static TraceUtil getInstance() {
+        return instance;
+    }
 
-  public static void logTraceId(String traceId) {
-    MDC.put("traceId", traceId);
-  }
+    public static Tracer getTracer() {
+        return instance.tracer;
+    }
 
-  public static void clearTraceId() {
-    MDC.remove("traceId");
-  }
+    public static String getApplicationName() {
+        return instance.applicationName;
+    }
 
-  @PostConstruct
-  public void initialize() {
-    instance = this;
-  }
+    public static Span getSpan() {
+        TraceContext traceContext = TraceUtil.getTraceContext();
+        return traceContext.getCurrentSpan();
+    }
+
+    public static Span createSpan(String moduleType) {
+        Span span = getTracer().spanBuilder(moduleType).startSpan();
+        TraceUtil.getTraceContext().push(span);
+        return span;
+    }
+
+    public static Span createSpan(String moduleType, Context parentContext) {
+        Span span = getTracer().spanBuilder(moduleType).setParent(parentContext).startSpan();
+        TraceUtil.getTraceContext().push(span);
+        return span;
+    }
+
+    public static String getTracerId() {
+        Span span = getSpan();
+        if (span == null) {
+            return Span.current().getSpanContext().getTraceId();
+        }
+        return span.getSpanContext().getTraceId();
+    }
+
+    public static void logTraceId(Span span) {
+        MDC.put("traceId", span.getSpanContext().getTraceId());
+    }
+
+    public static void logTraceId(String traceId) {
+        MDC.put("traceId", traceId);
+    }
+
+    public static void clearTraceId() {
+        MDC.remove("traceId");
+    }
+
+    @PostConstruct
+    public void initialize() {
+        instance = this;
+    }
 }

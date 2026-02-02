@@ -28,21 +28,21 @@ import lombok.Data;
 /** 通知模板 */
 @Data
 public class NotificationTemplate {
-  /** 模板代码 */
-  private String templateCode;
+    /** 模板代码 */
+    private String templateCode;
 
-  /** 模板名称 */
-  private String templateName;
+    /** 模板名称 */
+    private String templateName;
 
-  /** 模板内容 */
-  private String content;
+    /** 模板内容 */
+    private String content;
 
-  /** 模板类型（text, html, markdown等） */
-  private String templateType;
+    /** 模板类型（text, html, markdown等） */
+    private String templateType;
 
-  /** 标题模板（用于邮件等） */
-  private String titleTemplate;
+    /** 标题模板（用于邮件等） */
+    private String titleTemplate;
 
-  /** 默认参数 */
-  private Map<String, Object> defaultParams;
+    /** 默认参数 */
+    private Map<String, Object> defaultParams;
 }

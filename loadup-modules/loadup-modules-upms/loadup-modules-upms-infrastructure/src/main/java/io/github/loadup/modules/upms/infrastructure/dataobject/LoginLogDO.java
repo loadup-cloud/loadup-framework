@@ -39,23 +39,23 @@ import lombok.EqualsAndHashCode;
 @Table("upms_login_log")
 public class LoginLogDO extends BaseDO {
 
-  private String userId;
+    private String userId;
 
-  private String username;
+    private String username;
 
-  private LocalDateTime loginTime;
+    private LocalDateTime loginTime;
 
-  private LocalDateTime logoutTime;
+    private LocalDateTime logoutTime;
 
-  private String ipAddress;
+    private String ipAddress;
 
-  private String loginLocation;
+    private String loginLocation;
 
-  private String browser;
+    private String browser;
 
-  private String os;
+    private String os;
 
-  private Short loginStatus;
+    private Short loginStatus;
 
-  private String loginMessage;
+    private String loginMessage;
 }

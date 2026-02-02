@@ -30,7 +30,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = "com.github.loadup")
 public class TestApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(TestApplication.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(TestApplication.class, args);
+    }
 }

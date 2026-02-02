@@ -31,62 +31,61 @@ import io.github.loadup.framework.api.binding.Binding;
  * Scheduler binding interface providing unified API for scheduler operations. This interface
  * delegates to the appropriate binder implementation.
  */
-public interface SchedulerBinding
-    extends Binding<SchedulerBinder<?, SchedulerBindingCfg>, SchedulerBindingCfg> {
-  /**
-   * Register a scheduled task.
-   *
-   * @param task the scheduler task to register
-   * @return true if registration successful, false otherwise
-   */
-  boolean registerTask(SchedulerTask task);
+public interface SchedulerBinding extends Binding<SchedulerBinder<?, SchedulerBindingCfg>, SchedulerBindingCfg> {
+    /**
+     * Register a scheduled task.
+     *
+     * @param task the scheduler task to register
+     * @return true if registration successful, false otherwise
+     */
+    boolean registerTask(SchedulerTask task);
 
-  /**
-   * Unregister a scheduled task by task name.
-   *
-   * @param taskName the name of the task to unregister
-   * @return true if unregistration successful, false otherwise
-   */
-  boolean unregisterTask(String taskName);
+    /**
+     * Unregister a scheduled task by task name.
+     *
+     * @param taskName the name of the task to unregister
+     * @return true if unregistration successful, false otherwise
+     */
+    boolean unregisterTask(String taskName);
 
-  /**
-   * Pause a scheduled task by task name.
-   *
-   * @param taskName the name of the task to pause
-   * @return true if pause successful, false otherwise
-   */
-  boolean pauseTask(String taskName);
+    /**
+     * Pause a scheduled task by task name.
+     *
+     * @param taskName the name of the task to pause
+     * @return true if pause successful, false otherwise
+     */
+    boolean pauseTask(String taskName);
 
-  /**
-   * Resume a paused scheduled task by task name.
-   *
-   * @param taskName the name of the task to resume
-   * @return true if resume successful, false otherwise
-   */
-  boolean resumeTask(String taskName);
+    /**
+     * Resume a paused scheduled task by task name.
+     *
+     * @param taskName the name of the task to resume
+     * @return true if resume successful, false otherwise
+     */
+    boolean resumeTask(String taskName);
 
-  /**
-   * Trigger a scheduled task to run immediately.
-   *
-   * @param taskName the name of the task to trigger
-   * @return true if trigger successful, false otherwise
-   */
-  boolean triggerTask(String taskName);
+    /**
+     * Trigger a scheduled task to run immediately.
+     *
+     * @param taskName the name of the task to trigger
+     * @return true if trigger successful, false otherwise
+     */
+    boolean triggerTask(String taskName);
 
-  /**
-   * Update the cron expression of an existing scheduled task.
-   *
-   * @param taskName the name of the task
-   * @param cron the new cron expression
-   * @return true if update successful, false otherwise
-   */
-  boolean updateTaskCron(String taskName, String cron);
+    /**
+     * Update the cron expression of an existing scheduled task.
+     *
+     * @param taskName the name of the task
+     * @param cron the new cron expression
+     * @return true if update successful, false otherwise
+     */
+    boolean updateTaskCron(String taskName, String cron);
 
-  /**
-   * Check if a task exists in the scheduler.
-   *
-   * @param taskName the name of the task
-   * @return true if task exists, false otherwise
-   */
-  boolean taskExists(String taskName);
+    /**
+     * Check if a task exists in the scheduler.
+     *
+     * @param taskName the name of the task
+     * @return true if task exists, false otherwise
+     */
+    boolean taskExists(String taskName);
 }

@@ -38,35 +38,37 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FileUploadRequest {
 
-  /** 文件名 */
-  @NotBlank(message = "文件名不能为空")
-  private String filename;
+    /** 文件名 */
+    @NotBlank(message = "文件名不能为空")
+    private String filename;
 
-  /** 文件输入流 */
-  @NotNull(message = "文件内容不能为空")
-  private InputStream inputStream;
+    /** 文件输入流 */
+    @NotNull(message = "文件内容不能为空")
+    private InputStream inputStream;
 
-  /** 文件大小（字节） */
-  private Long size;
+    /** 文件大小（字节） */
+    private Long size;
 
-  /** 内容类型 */
-  private String contentType;
+    /** 内容类型 */
+    private String contentType;
 
-  /** 业务类型（用于分类存储） */
-  private String bizType;
+    /** 业务类型（用于分类存储） */
+    private String bizType;
 
-  /** 业务ID */
-  private String bizId;
+    /** 业务ID */
+    private String bizId;
 
-  /** 存储路径（可选，如不指定则自动生成） */
-  private String path;
+    /** 存储路径（可选，如不指定则自动生成） */
+    private String path;
 
-  /** 是否公开访问 */
-  @Builder.Default private Boolean publicAccess = false;
+    /** 是否公开访问 */
+    @Builder.Default
+    private Boolean publicAccess = false;
 
-  /** 扩展元数据 */
-  private Map<String, String> metadata;
+    /** 扩展元数据 */
+    private Map<String, String> metadata;
 
-  /** 覆盖已存在的文件 */
-  @Builder.Default private Boolean overwrite = false;
+    /** 覆盖已存在的文件 */
+    @Builder.Default
+    private Boolean overwrite = false;
 }

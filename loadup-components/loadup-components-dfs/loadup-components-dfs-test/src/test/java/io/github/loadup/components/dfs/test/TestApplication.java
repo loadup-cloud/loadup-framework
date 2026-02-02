@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /** Test application for DFS component testing with MyBatis-Flex */
 @SpringBootApplication
 public class TestApplication {
-  public static void main(String[] args) {
-    SpringApplication.run(TestApplication.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(TestApplication.class, args);
+    }
 }

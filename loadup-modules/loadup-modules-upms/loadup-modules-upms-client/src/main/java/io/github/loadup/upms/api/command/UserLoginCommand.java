@@ -33,15 +33,15 @@ import lombok.Data;
 @Data
 public class UserLoginCommand {
 
-  private String username;
+    private String username;
 
-  private String password;
+    private String password;
 
-  private String captchaKey;
+    private String captchaKey;
 
-  private String captchaCode;
+    private String captchaCode;
 
-  private String ipAddress;
+    private String ipAddress;
 
-  private String userAgent;
+    private String userAgent;
 }

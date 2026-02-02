@@ -32,34 +32,34 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class InternalThreadLocalMap {
 
-  private static final ThreadLocal<InternalThreadLocalMap> slowThreadLocal = new ThreadLocal<>();
-  private static final AtomicInteger nextIndex = new AtomicInteger();
+    private static final ThreadLocal<InternalThreadLocalMap> slowThreadLocal = new ThreadLocal<>();
+    private static final AtomicInteger nextIndex = new AtomicInteger();
 
-  private String requestId;
+    private String requestId;
 
-  public static InternalThreadLocalMap get() {
-    Thread t = Thread.currentThread();
-    if (t instanceof InternalThread) {
-      return ((InternalThread) t).threadLocalMap();
-    } else {
-      return slowGet();
+    public static InternalThreadLocalMap get() {
+        Thread t = Thread.currentThread();
+        if (t instanceof InternalThread) {
+            return ((InternalThread) t).threadLocalMap();
+        } else {
+            return slowGet();
+        }
     }
-  }
 
-  private static InternalThreadLocalMap slowGet() {
-    InternalThreadLocalMap ret = slowThreadLocal.get();
-    if (ret == null) {
-      ret = new InternalThreadLocalMap();
-      slowThreadLocal.set(ret);
+    private static InternalThreadLocalMap slowGet() {
+        InternalThreadLocalMap ret = slowThreadLocal.get();
+        if (ret == null) {
+            ret = new InternalThreadLocalMap();
+            slowThreadLocal.set(ret);
+        }
+        return ret;
     }
-    return ret;
-  }
 
-  public String getRequestId() {
-    return requestId;
-  }
+    public String getRequestId() {
+        return requestId;
+    }
 
-  public void setRequestId(String requestId) {
-    this.requestId = requestId;
-  }
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
 }

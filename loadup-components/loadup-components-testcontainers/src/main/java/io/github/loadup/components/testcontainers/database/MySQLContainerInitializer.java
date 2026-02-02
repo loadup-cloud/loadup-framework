@@ -72,29 +72,29 @@ import org.springframework.core.env.ConfigurableEnvironment;
 @Slf4j
 public class MySQLContainerInitializer extends BaseContainerInitializer {
 
-  @Override
-  protected String getContainerName() {
-    return "MySQL";
-  }
+    @Override
+    protected String getContainerName() {
+        return "MySQL";
+    }
 
-  @Override
-  protected ContainerConfig getContainerConfig(TestContainersProperties p) {
-    return p.getMysql();
-  }
+    @Override
+    protected ContainerConfig getContainerConfig(TestContainersProperties p) {
+        return p.getMysql();
+    }
 
-  @Override
-  protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
-    SharedMySQLContainer.startContainer(config);
-    applyProperties(
-        env,
-        Map.of(
-            "spring.datasource.url",
-            SharedMySQLContainer.getJdbcUrl(),
-            "spring.datasource.username",
-            SharedMySQLContainer.getUsername(),
-            "spring.datasource.password",
-            SharedMySQLContainer.getPassword(),
-            "spring.datasource.driver-class-name",
-            SharedMySQLContainer.getDriverClassName()));
-  }
+    @Override
+    protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
+        SharedMySQLContainer.startContainer(config);
+        applyProperties(
+                env,
+                Map.of(
+                        "spring.datasource.url",
+                        SharedMySQLContainer.getJdbcUrl(),
+                        "spring.datasource.username",
+                        SharedMySQLContainer.getUsername(),
+                        "spring.datasource.password",
+                        SharedMySQLContainer.getPassword(),
+                        "spring.datasource.driver-class-name",
+                        SharedMySQLContainer.getDriverClassName()));
+    }
 }

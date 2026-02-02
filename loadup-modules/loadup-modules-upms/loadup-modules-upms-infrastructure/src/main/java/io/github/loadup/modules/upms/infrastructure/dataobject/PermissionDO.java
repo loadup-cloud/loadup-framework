@@ -38,27 +38,27 @@ import lombok.EqualsAndHashCode;
 @Table("upms_permission")
 public class PermissionDO extends BaseDO {
 
-  private String parentId;
+    private String parentId;
 
-  private String permissionName;
+    private String permissionName;
 
-  private String permissionCode;
+    private String permissionCode;
 
-  private Short permissionType;
+    private Short permissionType;
 
-  private String resourcePath;
+    private String resourcePath;
 
-  private String httpMethod;
+    private String httpMethod;
 
-  private String icon;
+    private String icon;
 
-  private String componentPath;
+    private String componentPath;
 
-  private Integer sortOrder;
+    private Integer sortOrder;
 
-  private Boolean visible;
+    private Boolean visible;
 
-  private Short status;
+    private Short status;
 
-  private String remark;
+    private String remark;
 }

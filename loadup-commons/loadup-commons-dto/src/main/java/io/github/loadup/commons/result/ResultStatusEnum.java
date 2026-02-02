@@ -30,16 +30,16 @@ import org.apache.commons.lang3.StringUtils;
 @Getter
 @AllArgsConstructor
 public enum ResultStatusEnum {
-  SUCCESS("S"),
-  FAIL("F"),
-  UNKNOWN("U");
+    SUCCESS("S"),
+    FAIL("F"),
+    UNKNOWN("U");
 
-  private String code;
+    private String code;
 
-  public static ResultStatusEnum getByCode(String code) {
-    return Arrays.stream(ResultStatusEnum.values())
-        .filter(resultStatusEnum -> StringUtils.equals(resultStatusEnum.getCode(), code))
-        .findFirst()
-        .orElse(null);
-  }
+    public static ResultStatusEnum getByCode(String code) {
+        return Arrays.stream(ResultStatusEnum.values())
+                .filter(resultStatusEnum -> StringUtils.equals(resultStatusEnum.getCode(), code))
+                .findFirst()
+                .orElse(null);
+    }
 }

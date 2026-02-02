@@ -54,153 +54,148 @@ import org.springframework.util.StringUtils;
  */
 @Slf4j
 public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg, CacheBindingCfg> {
-  @Autowired private RedisProperties springRedisProperties; // 注入 YAML 中的 spring.redis 配置
+    @Autowired
+    private RedisProperties springRedisProperties; // 注入 YAML 中的 spring.redis 配置
 
-  @Autowired(required = false)
-  private RedisConnectionFactory defaultFactory; // 注入 Spring 自动创建的默认工厂
+    @Autowired(required = false)
+    private RedisConnectionFactory defaultFactory; // 注入 Spring 自动创建的默认工厂
 
-  private RedisTemplate<String, byte[]> redisTemplate;
+    private RedisTemplate<String, byte[]> redisTemplate;
 
-  @Override
-  protected void onInit() {
-    // 1. 决定使用哪个连接工厂
-    RedisConnectionFactory factory = resolveConnectionFactory();
+    @Override
+    protected void onInit() {
+        // 1. 决定使用哪个连接工厂
+        RedisConnectionFactory factory = resolveConnectionFactory();
 
-    // 2. 初始化 RedisTemplate
-    this.redisTemplate = new RedisTemplate<>();
-    this.redisTemplate.setConnectionFactory(factory);
-    this.redisTemplate.setKeySerializer(RedisSerializer.string());
-    this.redisTemplate.setValueSerializer(RedisSerializer.byteArray());
-    this.redisTemplate.afterPropertiesSet();
-  }
-
-  private RedisConnectionFactory resolveConnectionFactory() {
-    // 判断当前 Binder 的配置是否与 Spring Boot 默认配置完全一致
-    if (isMatchDefaultConfig() && defaultFactory != null) {
-      log.info("RedisBinder [{}] 配置与全局一致，复用默认 RedisConnectionFactory", name);
-      return defaultFactory;
+        // 2. 初始化 RedisTemplate
+        this.redisTemplate = new RedisTemplate<>();
+        this.redisTemplate.setConnectionFactory(factory);
+        this.redisTemplate.setKeySerializer(RedisSerializer.string());
+        this.redisTemplate.setValueSerializer(RedisSerializer.byteArray());
+        this.redisTemplate.afterPropertiesSet();
     }
 
-    // 如果不一致（比如换了 DB 或者 Host），则创建一个新的私有工厂
-    log.info("RedisBinder [{}] 配置了独立参数，正在创建新的 LettuceConnectionFactory", name);
-    return createPrivateFactory();
-  }
+    private RedisConnectionFactory resolveConnectionFactory() {
+        // 判断当前 Binder 的配置是否与 Spring Boot 默认配置完全一致
+        if (isMatchDefaultConfig() && defaultFactory != null) {
+            log.info("RedisBinder [{}] 配置与全局一致，复用默认 RedisConnectionFactory", name);
+            return defaultFactory;
+        }
 
-  /** 判断配置是否与 spring.redis 一致 */
-  private boolean isMatchDefaultConfig() {
-    // 如果 Binder 没有配置 Host，或者配置的 Host 和 DB 与 Spring 默认的一样
-    boolean dbMatch =
-        binderCfg.getDatabase() == 0
-            || binderCfg.getDatabase() == springRedisProperties.getDatabase();
-    return dbMatch;
-  }
-
-  /** 创建独立的工厂 */
-  private RedisConnectionFactory createPrivateFactory() {
-    RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-
-    // 合并配置：优先用 BinderCfg，为空则用 RedisProperties
-    int finalDb =
-        ConfigurationResolver.resolve(
-            bindingCfg.getDatabase(), binderCfg.getDatabase(), springRedisProperties.getDatabase());
-    String host =
-        ConfigurationResolver.resolve(binderCfg.getHost(), springRedisProperties.getHost());
-    int port = ConfigurationResolver.resolve(binderCfg.getPort(), springRedisProperties.getPort());
-    String pwd =
-        ConfigurationResolver.resolve(binderCfg.getPassword(), springRedisProperties.getPassword());
-    String username =
-        ConfigurationResolver.resolve(binderCfg.getUsername(), springRedisProperties.getUsername());
-
-    config.setHostName(host);
-    config.setPort(port);
-    config.setDatabase(finalDb);
-    if (StringUtils.hasText(pwd)) {
-      config.setPassword(pwd);
-    }
-    if (StringUtils.hasText(username)) {
-      config.setUsername(username);
+        // 如果不一致（比如换了 DB 或者 Host），则创建一个新的私有工厂
+        log.info("RedisBinder [{}] 配置了独立参数，正在创建新的 LettuceConnectionFactory", name);
+        return createPrivateFactory();
     }
 
-    LettuceConnectionFactory factory = new LettuceConnectionFactory(config);
-    // 注意：必须调用 afterPropertiesSet 触发初始化
-    factory.afterPropertiesSet();
-    return factory;
-  }
-
-  @Override
-  public String getBinderType() {
-    return "redis";
-  }
-
-  @Override
-  public boolean set(String key, CacheValueWrapper value) {
-    if (value == null) return false;
-
-    // 核心：调用父类的 wrapValue。
-    // 因为 AbstractCacheBinder 注入了 serializer，wrapValue 会返回 byte[]
-    Object wrapped = wrapValue(value);
-    Duration ttl = bindingCfg.getExpireAfterWrite();
-
-    // 如果开启了随机过期，则对 TTL 进行抖动处理
-    if (getBinderCfg().isEnableRandomExpiry() && ttl != null && !ttl.isZero()) {
-      ttl = calculateRandomDuration(ttl);
+    /** 判断配置是否与 spring.redis 一致 */
+    private boolean isMatchDefaultConfig() {
+        // 如果 Binder 没有配置 Host，或者配置的 Host 和 DB 与 Spring 默认的一样
+        boolean dbMatch =
+                binderCfg.getDatabase() == 0 || binderCfg.getDatabase() == springRedisProperties.getDatabase();
+        return dbMatch;
     }
-    if (wrapped instanceof byte[]) {
-      if (ttl != null && !ttl.isZero()) {
-        redisTemplate.opsForValue().set(key, (byte[]) wrapped, ttl);
-      } else {
-        redisTemplate.opsForValue().set(key, (byte[]) wrapped);
-      }
-    } else {
-      log.warn("RedisBinder [{}] 未配置序列化器，无法存储非字节数据", name);
+
+    /** 创建独立的工厂 */
+    private RedisConnectionFactory createPrivateFactory() {
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+
+        // 合并配置：优先用 BinderCfg，为空则用 RedisProperties
+        int finalDb = ConfigurationResolver.resolve(
+                bindingCfg.getDatabase(), binderCfg.getDatabase(), springRedisProperties.getDatabase());
+        String host = ConfigurationResolver.resolve(binderCfg.getHost(), springRedisProperties.getHost());
+        int port = ConfigurationResolver.resolve(binderCfg.getPort(), springRedisProperties.getPort());
+        String pwd = ConfigurationResolver.resolve(binderCfg.getPassword(), springRedisProperties.getPassword());
+        String username = ConfigurationResolver.resolve(binderCfg.getUsername(), springRedisProperties.getUsername());
+
+        config.setHostName(host);
+        config.setPort(port);
+        config.setDatabase(finalDb);
+        if (StringUtils.hasText(pwd)) {
+            config.setPassword(pwd);
+        }
+        if (StringUtils.hasText(username)) {
+            config.setUsername(username);
+        }
+
+        LettuceConnectionFactory factory = new LettuceConnectionFactory(config);
+        // 注意：必须调用 afterPropertiesSet 触发初始化
+        factory.afterPropertiesSet();
+        return factory;
     }
-    return true;
-  }
 
-  @Override
-  public CacheValueWrapper get(String key) {
-    byte[] value = redisTemplate.opsForValue().get(key);
-    CacheValueWrapper valueWrapper = this.serializer.deserialize(value, Object.class);
-    return valueWrapper;
-  }
-
-  @Override
-  public boolean delete(String key) {
-    redisTemplate.delete(key);
-    return true;
-  }
-
-  @Override
-  public boolean deleteAll(Collection<String> keys) {
-    redisTemplate.delete(keys);
-    return true;
-  }
-
-  @Override
-  public void cleanUp() {}
-
-  @Override
-  public void afterDestroy() {
-    // 只有当我们自己 new 了工厂时，才需要手动销毁
-    // 如果是复用的 defaultFactory，Spring 容器会自动管理它的生命周期
-    if (this.redisTemplate.getConnectionFactory() instanceof LettuceConnectionFactory) {
-      LettuceConnectionFactory factory =
-          (LettuceConnectionFactory) this.redisTemplate.getConnectionFactory();
-      if (factory != defaultFactory) { // 关键判断：不是默认的才销毁
-        factory.destroy();
-        log.info("私有 RedisConnectionFactory [{}] 已销毁", name);
-      }
+    @Override
+    public String getBinderType() {
+        return "redis";
     }
-  }
 
-  private Duration calculateRandomDuration(Duration base) {
-    long baseMillis = base.toMillis();
-    double factor = getBinderCfg().getRandomFactor();
+    @Override
+    public boolean set(String key, CacheValueWrapper value) {
+        if (value == null) return false;
 
-    // 计算范围: [base, base * (1+factor)]
-    long max = (long) (baseMillis * (1 + factor));
+        // 核心：调用父类的 wrapValue。
+        // 因为 AbstractCacheBinder 注入了 serializer，wrapValue 会返回 byte[]
+        Object wrapped = wrapValue(value);
+        Duration ttl = bindingCfg.getExpireAfterWrite();
 
-    long randomMillis = ThreadLocalRandom.current().nextLong(baseMillis, max + 1);
-    return Duration.ofMillis(randomMillis);
-  }
+        // 如果开启了随机过期，则对 TTL 进行抖动处理
+        if (getBinderCfg().isEnableRandomExpiry() && ttl != null && !ttl.isZero()) {
+            ttl = calculateRandomDuration(ttl);
+        }
+        if (wrapped instanceof byte[]) {
+            if (ttl != null && !ttl.isZero()) {
+                redisTemplate.opsForValue().set(key, (byte[]) wrapped, ttl);
+            } else {
+                redisTemplate.opsForValue().set(key, (byte[]) wrapped);
+            }
+        } else {
+            log.warn("RedisBinder [{}] 未配置序列化器，无法存储非字节数据", name);
+        }
+        return true;
+    }
+
+    @Override
+    public CacheValueWrapper get(String key) {
+        byte[] value = redisTemplate.opsForValue().get(key);
+        CacheValueWrapper valueWrapper = this.serializer.deserialize(value, Object.class);
+        return valueWrapper;
+    }
+
+    @Override
+    public boolean delete(String key) {
+        redisTemplate.delete(key);
+        return true;
+    }
+
+    @Override
+    public boolean deleteAll(Collection<String> keys) {
+        redisTemplate.delete(keys);
+        return true;
+    }
+
+    @Override
+    public void cleanUp() {}
+
+    @Override
+    public void afterDestroy() {
+        // 只有当我们自己 new 了工厂时，才需要手动销毁
+        // 如果是复用的 defaultFactory，Spring 容器会自动管理它的生命周期
+        if (this.redisTemplate.getConnectionFactory() instanceof LettuceConnectionFactory) {
+            LettuceConnectionFactory factory = (LettuceConnectionFactory) this.redisTemplate.getConnectionFactory();
+            if (factory != defaultFactory) { // 关键判断：不是默认的才销毁
+                factory.destroy();
+                log.info("私有 RedisConnectionFactory [{}] 已销毁", name);
+            }
+        }
+    }
+
+    private Duration calculateRandomDuration(Duration base) {
+        long baseMillis = base.toMillis();
+        double factor = getBinderCfg().getRandomFactor();
+
+        // 计算范围: [base, base * (1+factor)]
+        long max = (long) (baseMillis * (1 + factor));
+
+        long randomMillis = ThreadLocalRandom.current().nextLong(baseMillis, max + 1);
+        return Duration.ofMillis(randomMillis);
+    }
 }

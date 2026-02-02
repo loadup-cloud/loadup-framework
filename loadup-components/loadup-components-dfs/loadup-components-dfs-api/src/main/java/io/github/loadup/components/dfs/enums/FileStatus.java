@@ -27,35 +27,35 @@ import lombok.Getter;
 /** 文件状态 */
 @Getter
 public enum FileStatus {
-  /** 上传中 */
-  UPLOADING("uploading", "上传中"),
+    /** 上传中 */
+    UPLOADING("uploading", "上传中"),
 
-  /** 可用 */
-  AVAILABLE("available", "可用"),
+    /** 可用 */
+    AVAILABLE("available", "可用"),
 
-  /** 已删除 */
-  DELETED("deleted", "已删除"),
+    /** 已删除 */
+    DELETED("deleted", "已删除"),
 
-  /** 归档 */
-  ARCHIVED("archived", "已归档"),
+    /** 归档 */
+    ARCHIVED("archived", "已归档"),
 
-  /** 错误 */
-  ERROR("error", "错误");
+    /** 错误 */
+    ERROR("error", "错误");
 
-  private final String code;
-  private final String description;
+    private final String code;
+    private final String description;
 
-  FileStatus(String code, String description) {
-    this.code = code;
-    this.description = description;
-  }
-
-  public static FileStatus fromCode(String code) {
-    for (FileStatus status : values()) {
-      if (status.code.equals(code)) {
-        return status;
-      }
+    FileStatus(String code, String description) {
+        this.code = code;
+        this.description = description;
     }
-    throw new IllegalArgumentException("Unknown file status: " + code);
-  }
+
+    public static FileStatus fromCode(String code) {
+        for (FileStatus status : values()) {
+            if (status.code.equals(code)) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Unknown file status: " + code);
+    }
 }

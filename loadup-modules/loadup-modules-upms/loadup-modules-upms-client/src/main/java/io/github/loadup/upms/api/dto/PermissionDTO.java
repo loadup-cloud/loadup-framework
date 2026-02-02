@@ -41,20 +41,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PermissionDTO {
 
-  private String id;
-  private String parentId;
-  private String permissionName;
-  private String permissionCode;
-  private Short permissionType;
-  private String resourcePath;
-  private String httpMethod;
-  private String icon;
-  private String componentPath;
-  private Integer sortOrder;
-  private Boolean visible;
-  private Short status;
-  private List<PermissionDTO> children;
-  private String remark;
-  private LocalDateTime createdTime;
-  private LocalDateTime updatedTime;
+    private String id;
+    private String parentId;
+    private String permissionName;
+    private String permissionCode;
+    private Short permissionType;
+    private String resourcePath;
+    private String httpMethod;
+    private String icon;
+    private String componentPath;
+    private Integer sortOrder;
+    private Boolean visible;
+    private Short status;
+    private List<PermissionDTO> children;
+    private String remark;
+    private LocalDateTime createdTime;
+    private LocalDateTime updatedTime;
 }

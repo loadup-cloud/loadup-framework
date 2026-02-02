@@ -40,111 +40,113 @@ import org.springframework.test.context.TestPropertySource;
 
 /** Integration test for Quartz scheduler. */
 @SpringBootTest(classes = QuartzSchedulerIntegrationTest.TestConfiguration.class)
-@TestPropertySource(
-    properties = {"loadup.scheduler.type=quartz", "spring.quartz.job-store-type=memory"})
+@TestPropertySource(properties = {"loadup.scheduler.type=quartz", "spring.quartz.job-store-type=memory"})
 class QuartzSchedulerIntegrationTest {
 
-  @Autowired private SchedulerBinding schedulerBinding;
+    @Autowired
+    private SchedulerBinding schedulerBinding;
 
-  @Autowired private TestScheduledTasks testTasks;
+    @Autowired
+    private TestScheduledTasks testTasks;
 
-  @Test
-  void testSchedulerAutoConfiguration() {
-    // Then
-    assertThat(schedulerBinding).isNotNull();
-  }
-
-  @Test
-  void testAnnotationBasedScheduling() {
-    // Wait for task execution
-    await().atMost(5, SECONDS).until(() -> testTasks.getExecutionCount() > 0);
-
-    // Then
-    assertThat(testTasks.getExecutionCount()).isGreaterThan(0);
-  }
-
-  @Test
-  void testDynamicTaskManagement() {
-    // Given
-    String taskName = "dynamicQuartzTask";
-    SchedulerTask task = SchedulerTask.builder().taskName(taskName).cron("0 0 12 * * ?").build();
-
-    // When
-    boolean registered = schedulerBinding.registerTask(task);
-
-    // Then
-    assertThat(registered).isTrue();
-    assertThat(schedulerBinding.taskExists(taskName)).isTrue();
-
-    // Test pause/resume
-    boolean paused = schedulerBinding.pauseTask(taskName);
-    assertThat(paused).isTrue();
-
-    boolean resumed = schedulerBinding.resumeTask(taskName);
-    assertThat(resumed).isTrue();
-
-    // Cleanup
-    schedulerBinding.unregisterTask(taskName);
-    assertThat(schedulerBinding.taskExists(taskName)).isFalse();
-  }
-
-  @Test
-  void testUpdateTaskCron() {
-    // Given
-    String taskName = "updateCronTask";
-    SchedulerTask task = SchedulerTask.builder().taskName(taskName).cron("0 0 12 * * ?").build();
-    schedulerBinding.registerTask(task);
-
-    // When
-    boolean updated = schedulerBinding.updateTaskCron(taskName, "0 0 13 * * ?");
-
-    // Then
-    assertThat(updated).isTrue();
-
-    // Cleanup
-    schedulerBinding.unregisterTask(taskName);
-  }
-
-  @Test
-  void testManualTrigger() {
-    // Given
-    String taskName = "triggerTask";
-    SchedulerTask task =
-        SchedulerTask.builder()
-            .taskName(taskName)
-            .cron("0 0 12 * * ?") // Won't run naturally
-            .build();
-    schedulerBinding.registerTask(task);
-
-    // When
-    boolean triggered = schedulerBinding.triggerTask(taskName);
-
-    // Then
-    assertThat(triggered).isTrue();
-
-    // Cleanup
-    schedulerBinding.unregisterTask(taskName);
-  }
-
-  @Configuration
-  @EnableAutoConfiguration
-  static class TestConfiguration {
-    @Bean
-    public TestScheduledTasks testScheduledTasks() {
-      return new TestScheduledTasks();
-    }
-  }
-
-  public static class TestScheduledTasks {
-    private final AtomicInteger executionCount = new AtomicInteger(0);
-
-    @DistributedScheduler(name = "quartzTestTask", cron = "*/2 * * * * ?")
-    public void scheduledTask() {
-      executionCount.incrementAndGet();
+    @Test
+    void testSchedulerAutoConfiguration() {
+        // Then
+        assertThat(schedulerBinding).isNotNull();
     }
 
-    public int getExecutionCount() {
-      return executionCount.get();
+    @Test
+    void testAnnotationBasedScheduling() {
+        // Wait for task execution
+        await().atMost(5, SECONDS).until(() -> testTasks.getExecutionCount() > 0);
+
+        // Then
+        assertThat(testTasks.getExecutionCount()).isGreaterThan(0);
     }
-  }
+
+    @Test
+    void testDynamicTaskManagement() {
+        // Given
+        String taskName = "dynamicQuartzTask";
+        SchedulerTask task =
+                SchedulerTask.builder().taskName(taskName).cron("0 0 12 * * ?").build();
+
+        // When
+        boolean registered = schedulerBinding.registerTask(task);
+
+        // Then
+        assertThat(registered).isTrue();
+        assertThat(schedulerBinding.taskExists(taskName)).isTrue();
+
+        // Test pause/resume
+        boolean paused = schedulerBinding.pauseTask(taskName);
+        assertThat(paused).isTrue();
+
+        boolean resumed = schedulerBinding.resumeTask(taskName);
+        assertThat(resumed).isTrue();
+
+        // Cleanup
+        schedulerBinding.unregisterTask(taskName);
+        assertThat(schedulerBinding.taskExists(taskName)).isFalse();
+    }
+
+    @Test
+    void testUpdateTaskCron() {
+        // Given
+        String taskName = "updateCronTask";
+        SchedulerTask task =
+                SchedulerTask.builder().taskName(taskName).cron("0 0 12 * * ?").build();
+        schedulerBinding.registerTask(task);
+
+        // When
+        boolean updated = schedulerBinding.updateTaskCron(taskName, "0 0 13 * * ?");
+
+        // Then
+        assertThat(updated).isTrue();
+
+        // Cleanup
+        schedulerBinding.unregisterTask(taskName);
+    }
+
+    @Test
+    void testManualTrigger() {
+        // Given
+        String taskName = "triggerTask";
+        SchedulerTask task = SchedulerTask.builder()
+                .taskName(taskName)
+                .cron("0 0 12 * * ?") // Won't run naturally
+                .build();
+        schedulerBinding.registerTask(task);
+
+        // When
+        boolean triggered = schedulerBinding.triggerTask(taskName);
+
+        // Then
+        assertThat(triggered).isTrue();
+
+        // Cleanup
+        schedulerBinding.unregisterTask(taskName);
+    }
+
+    @Configuration
+    @EnableAutoConfiguration
+    static class TestConfiguration {
+        @Bean
+        public TestScheduledTasks testScheduledTasks() {
+            return new TestScheduledTasks();
+        }
+    }
+
+    public static class TestScheduledTasks {
+        private final AtomicInteger executionCount = new AtomicInteger(0);
+
+        @DistributedScheduler(name = "quartzTestTask", cron = "*/2 * * * * ?")
+        public void scheduledTask() {
+            executionCount.incrementAndGet();
+        }
+
+        public int getExecutionCount() {
+            return executionCount.get();
+        }
+    }
 }

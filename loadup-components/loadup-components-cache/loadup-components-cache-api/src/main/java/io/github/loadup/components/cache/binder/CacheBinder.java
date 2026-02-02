@@ -29,17 +29,16 @@ import io.github.loadup.components.cache.serializer.CacheSerializer;
 import io.github.loadup.framework.api.binder.Binder;
 import java.util.Collection;
 
-public interface CacheBinder<C extends CacheBinderCfg, S extends CacheBindingCfg>
-    extends Binder<C, S> {
-  boolean set(String key, CacheValueWrapper value);
+public interface CacheBinder<C extends CacheBinderCfg, S extends CacheBindingCfg> extends Binder<C, S> {
+    boolean set(String key, CacheValueWrapper value);
 
-  CacheValueWrapper get(String key);
+    CacheValueWrapper get(String key);
 
-  boolean delete(String key);
+    boolean delete(String key);
 
-  boolean deleteAll(Collection<String> keys);
+    boolean deleteAll(Collection<String> keys);
 
-  void cleanUp();
+    void cleanUp();
 
-  CacheSerializer getSerializer();
+    CacheSerializer getSerializer();
 }

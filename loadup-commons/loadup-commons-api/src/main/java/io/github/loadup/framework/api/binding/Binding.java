@@ -27,12 +27,12 @@ import io.github.loadup.framework.api.cfg.BaseBindingCfg;
 import io.github.loadup.framework.api.context.BindingContext;
 
 public interface Binding<B extends Binder, C extends BaseBindingCfg> {
-  String getBizTag();
+    String getBizTag();
 
-  /**
-   * 通用的初始化方法
-   *
-   * @param context 包含所有装配原材料的上下文
-   */
-  void init(BindingContext<B, C> context);
+    /**
+     * 通用的初始化方法
+     *
+     * @param context 包含所有装配原材料的上下文
+     */
+    void init(BindingContext<B, C> context);
 }

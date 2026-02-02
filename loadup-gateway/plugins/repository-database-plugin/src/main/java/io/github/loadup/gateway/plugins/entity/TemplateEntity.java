@@ -31,16 +31,17 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @Table("gateway_templates")
 public class TemplateEntity {
-  @Id private Long id;
+    @Id
+    private Long id;
 
-  // nullable constraint enforced by DB schema
-  private String templateId;
+    // nullable constraint enforced by DB schema
+    private String templateId;
 
-  // nullable constraint enforced by DB schema
-  private String templateType;
+    // nullable constraint enforced by DB schema
+    private String templateType;
 
-  private String content;
+    private String content;
 
-  // temporal information stored as timestamp in DB
-  private Date updatedAt;
+    // temporal information stored as timestamp in DB
+    private Date updatedAt;
 }

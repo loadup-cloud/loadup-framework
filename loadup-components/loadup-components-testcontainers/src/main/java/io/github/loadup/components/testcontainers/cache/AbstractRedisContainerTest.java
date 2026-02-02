@@ -66,30 +66,30 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(initializers = RedisContainerInitializer.class)
 public abstract class AbstractRedisContainerTest {
 
-  /**
-   * Get the Redis host.
-   *
-   * @return the Redis host
-   */
-  protected String getRedisHost() {
-    return SharedRedisContainer.getHost();
-  }
+    /**
+     * Get the Redis host.
+     *
+     * @return the Redis host
+     */
+    protected String getRedisHost() {
+        return SharedRedisContainer.getHost();
+    }
 
-  /**
-   * Get the Redis port.
-   *
-   * @return the Redis port
-   */
-  protected Integer getRedisPort() {
-    return SharedRedisContainer.getPort();
-  }
+    /**
+     * Get the Redis port.
+     *
+     * @return the Redis port
+     */
+    protected Integer getRedisPort() {
+        return SharedRedisContainer.getPort();
+    }
 
-  /**
-   * Get the Redis connection URL.
-   *
-   * @return the Redis URL
-   */
-  protected String getRedisUrl() {
-    return SharedRedisContainer.getUrl();
-  }
+    /**
+     * Get the Redis connection URL.
+     *
+     * @return the Redis URL
+     */
+    protected String getRedisUrl() {
+        return SharedRedisContainer.getUrl();
+    }
 }

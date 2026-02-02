@@ -35,12 +35,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FileDownloadResponse {
 
-  /** 文件元数据 */
-  private FileMetadata metadata;
+    /** 文件元数据 */
+    private FileMetadata metadata;
 
-  /** 文件输入流 */
-  private InputStream inputStream;
+    /** 文件输入流 */
+    private InputStream inputStream;
 
-  /** 内容长度 */
-  private Long contentLength;
+    /** 内容长度 */
+    private Long contentLength;
 }

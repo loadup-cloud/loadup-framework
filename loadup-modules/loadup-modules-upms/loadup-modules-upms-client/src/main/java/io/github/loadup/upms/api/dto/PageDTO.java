@@ -40,20 +40,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PageDTO<T> {
 
-  private List<T> data;
-  private Long totalCount;
-  private Integer pageIndex;
-  private Integer pageSize;
-  private Integer totalPages;
+    private List<T> data;
+    private Long totalCount;
+    private Integer pageIndex;
+    private Integer pageSize;
+    private Integer totalPages;
 
-  public static <T> PageDTO<T> of(List<T> records, Long total, Integer page, Integer size) {
-    int pages = (int) Math.ceil((double) total / size);
-    return PageDTO.<T>builder()
-        .data(records)
-        .totalCount(total)
-        .pageIndex(page)
-        .pageSize(size)
-        .totalPages(pages)
-        .build();
-  }
+    public static <T> PageDTO<T> of(List<T> records, Long total, Integer page, Integer size) {
+        int pages = (int) Math.ceil((double) total / size);
+        return PageDTO.<T>builder()
+                .data(records)
+                .totalCount(total)
+                .pageIndex(page)
+                .pageSize(size)
+                .totalPages(pages)
+                .build();
+    }
 }

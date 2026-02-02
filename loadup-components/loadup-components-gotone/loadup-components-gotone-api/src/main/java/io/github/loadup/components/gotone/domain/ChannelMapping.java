@@ -31,11 +31,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ChannelMapping extends BaseDomain {
-  private String id;
-  private String businessCode;
-  private String channel;
-  private String templateCode;
-  private List<String> providerList;
-  private Integer priority;
-  private Boolean enabled;
+    private String id;
+    private String businessCode;
+    private String channel;
+    private String templateCode;
+    private List<String> providerList;
+    private Integer priority;
+    private Boolean enabled;
 }

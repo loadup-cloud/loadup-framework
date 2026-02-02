@@ -37,15 +37,15 @@ import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
 @EnableJdbcAuditing
 public class TestApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(TestApplication.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(TestApplication.class, args);
+    }
 
-  /** ID 生成器 */
+    /** ID 生成器 */
 
-  /** 日期时间提供者 */
-  @Bean
-  public DateTimeProvider dateTimeProvider() {
-    return () -> Optional.of(LocalDateTime.now());
-  }
+    /** 日期时间提供者 */
+    @Bean
+    public DateTimeProvider dateTimeProvider() {
+        return () -> Optional.of(LocalDateTime.now());
+    }
 }

@@ -38,39 +38,41 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(classes = TestApplication.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public abstract class BaseCacheTest {
-  @BindingClient("caffeine-biz-type")
-  protected CacheBinding caffeineBinding;
+    @BindingClient("caffeine-biz-type")
+    protected CacheBinding caffeineBinding;
 
-  @Autowired protected FakeTicker fakeTicker; // 注入这个可以手动拨动时钟的 Ticker
-  protected static final String TEST_CACHE_NAME = "test-cache";
-  protected static final String TEST_KEY = "test-key";
-  protected static final String TEST_VALUE = "test-value";
+    @Autowired
+    protected FakeTicker fakeTicker; // 注入这个可以手动拨动时钟的 Ticker
 
-  @BeforeEach
-  public void setUp() {
-    log.info("Setting up test: {}", this.getClass().getSimpleName());
-    clearCache();
-  }
+    protected static final String TEST_CACHE_NAME = "test-cache";
+    protected static final String TEST_KEY = "test-key";
+    protected static final String TEST_VALUE = "test-value";
 
-  @AfterEach
-  public void tearDown() {
-    log.info("Tearing down test: {}", this.getClass().getSimpleName());
-    clearCache();
-  }
-
-  protected void clearCache() {
-    try {
-      caffeineBinding.cleanUp();
-    } catch (Exception e) {
-      log.warn("Failed to clear cache: {}", e.getMessage());
+    @BeforeEach
+    public void setUp() {
+        log.info("Setting up test: {}", this.getClass().getSimpleName());
+        clearCache();
     }
-  }
 
-  protected void sleep(long millis) {
-    try {
-      Thread.sleep(millis);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
+    @AfterEach
+    public void tearDown() {
+        log.info("Tearing down test: {}", this.getClass().getSimpleName());
+        clearCache();
     }
-  }
+
+    protected void clearCache() {
+        try {
+            caffeineBinding.cleanUp();
+        } catch (Exception e) {
+            log.warn("Failed to clear cache: {}", e.getMessage());
+        }
+    }
+
+    protected void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 }

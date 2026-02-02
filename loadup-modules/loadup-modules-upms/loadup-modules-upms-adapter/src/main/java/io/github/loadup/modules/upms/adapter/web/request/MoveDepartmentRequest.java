@@ -33,8 +33,8 @@ import lombok.Data;
  */
 @Data
 public class MoveDepartmentRequest {
-  @NotNull(message = "部门ID不能为空")
-  private String deptId;
+    @NotNull(message = "部门ID不能为空")
+    private String deptId;
 
-  private String newParentId;
+    private String newParentId;
 }

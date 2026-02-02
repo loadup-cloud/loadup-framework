@@ -38,77 +38,72 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "spring")
 public interface GotoneConverter {
 
-  GotoneConverter INSTANCE = Mappers.getMapper(GotoneConverter.class);
-  ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    GotoneConverter INSTANCE = Mappers.getMapper(GotoneConverter.class);
+    ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-  // ChannelMapping 转换
-  @Mapping(target = "providerList", ignore = true)
-  ChannelMapping toChannelMapping(ChannelMappingDO channelMappingDO);
+    // ChannelMapping 转换
+    @Mapping(target = "providerList", ignore = true)
+    ChannelMapping toChannelMapping(ChannelMappingDO channelMappingDO);
 
-  @Mapping(target = "providerListJson", ignore = true)
-  ChannelMappingDO toChannelMappingDO(ChannelMapping channelMapping);
+    @Mapping(target = "providerListJson", ignore = true)
+    ChannelMappingDO toChannelMappingDO(ChannelMapping channelMapping);
 
-  List<ChannelMapping> toChannelMappingList(List<ChannelMappingDO> channelMappingDOList);
+    List<ChannelMapping> toChannelMappingList(List<ChannelMappingDO> channelMappingDOList);
 
-  // NotificationRecord 转换
-  @Mapping(target = "receivers", ignore = true)
-  NotificationRecord toNotificationRecord(NotificationRecordDO recordDO);
+    // NotificationRecord 转换
+    @Mapping(target = "receivers", ignore = true)
+    NotificationRecord toNotificationRecord(NotificationRecordDO recordDO);
 
-  @Mapping(target = "receiversJson", ignore = true)
-  NotificationRecordDO toNotificationRecordDO(NotificationRecord record);
+    @Mapping(target = "receiversJson", ignore = true)
+    NotificationRecordDO toNotificationRecordDO(NotificationRecord record);
 
-  List<NotificationRecord> toNotificationRecordList(List<NotificationRecordDO> recordDOList);
+    List<NotificationRecord> toNotificationRecordList(List<NotificationRecordDO> recordDOList);
 
-  // JSON 转换后处理
-  @AfterMapping
-  default void afterMappingChannelMapping(
-      @MappingTarget ChannelMapping target, ChannelMappingDO source) {
-    if (source.getProviderListJson() != null) {
-      try {
-        target.setProviderList(
-            OBJECT_MAPPER.readValue(
-                source.getProviderListJson(), new TypeReference<List<String>>() {}));
-      } catch (JsonProcessingException e) {
-        target.setProviderList(new ArrayList<>());
-      }
+    // JSON 转换后处理
+    @AfterMapping
+    default void afterMappingChannelMapping(@MappingTarget ChannelMapping target, ChannelMappingDO source) {
+        if (source.getProviderListJson() != null) {
+            try {
+                target.setProviderList(
+                        OBJECT_MAPPER.readValue(source.getProviderListJson(), new TypeReference<List<String>>() {}));
+            } catch (JsonProcessingException e) {
+                target.setProviderList(new ArrayList<>());
+            }
+        }
     }
-  }
 
-  @AfterMapping
-  default void afterMappingChannelMappingDO(
-      @MappingTarget ChannelMappingDO target, ChannelMapping source) {
-    if (source.getProviderList() != null) {
-      try {
-        target.setProviderListJson(OBJECT_MAPPER.writeValueAsString(source.getProviderList()));
-      } catch (JsonProcessingException e) {
-        target.setProviderListJson("[]");
-      }
+    @AfterMapping
+    default void afterMappingChannelMappingDO(@MappingTarget ChannelMappingDO target, ChannelMapping source) {
+        if (source.getProviderList() != null) {
+            try {
+                target.setProviderListJson(OBJECT_MAPPER.writeValueAsString(source.getProviderList()));
+            } catch (JsonProcessingException e) {
+                target.setProviderListJson("[]");
+            }
+        }
     }
-  }
 
-  @AfterMapping
-  default void afterMappingNotificationRecord(
-      @MappingTarget NotificationRecord target, NotificationRecordDO source) {
-    if (source.getReceiversJson() != null) {
-      try {
-        target.setReceivers(
-            OBJECT_MAPPER.readValue(
-                source.getReceiversJson(), new TypeReference<List<String>>() {}));
-      } catch (JsonProcessingException e) {
-        target.setReceivers(new ArrayList<>());
-      }
+    @AfterMapping
+    default void afterMappingNotificationRecord(@MappingTarget NotificationRecord target, NotificationRecordDO source) {
+        if (source.getReceiversJson() != null) {
+            try {
+                target.setReceivers(
+                        OBJECT_MAPPER.readValue(source.getReceiversJson(), new TypeReference<List<String>>() {}));
+            } catch (JsonProcessingException e) {
+                target.setReceivers(new ArrayList<>());
+            }
+        }
     }
-  }
 
-  @AfterMapping
-  default void afterMappingNotificationRecordDO(
-      @MappingTarget NotificationRecordDO target, NotificationRecord source) {
-    if (source.getReceivers() != null) {
-      try {
-        target.setReceiversJson(OBJECT_MAPPER.writeValueAsString(source.getReceivers()));
-      } catch (JsonProcessingException e) {
-        target.setReceiversJson("[]");
-      }
+    @AfterMapping
+    default void afterMappingNotificationRecordDO(
+            @MappingTarget NotificationRecordDO target, NotificationRecord source) {
+        if (source.getReceivers() != null) {
+            try {
+                target.setReceiversJson(OBJECT_MAPPER.writeValueAsString(source.getReceivers()));
+            } catch (JsonProcessingException e) {
+                target.setReceiversJson("[]");
+            }
+        }
     }
-  }
 }

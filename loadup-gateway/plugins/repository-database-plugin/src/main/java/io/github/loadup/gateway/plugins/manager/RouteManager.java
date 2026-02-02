@@ -31,9 +31,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RouteManager extends CrudRepository<RouteEntity, Long> {
 
-  Optional<RouteEntity> findByRouteId(String routeId);
+    Optional<RouteEntity> findByRouteId(String routeId);
 
-  Optional<RouteEntity> findByPathAndMethod(String path, String method);
+    Optional<RouteEntity> findByPathAndMethod(String path, String method);
 
-  void deleteByRouteId(String routeId);
+    void deleteByRouteId(String routeId);
 }

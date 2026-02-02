@@ -30,170 +30,155 @@ import org.junit.jupiter.api.Test;
 /** GotoneNotificationService 接口测试 */
 class GotoneNotificationServiceTest {
 
-  @Test
-  void testServiceInterfaceExists() {
-    // 验证接口存在
-    assertThat(GotoneNotificationService.class).isInterface();
-  }
-
-  @Test
-  void testServiceHasRequiredMethods() throws NoSuchMethodException {
-    // 验证接口有必要的方法
-    assertThat(
-            GotoneNotificationService.class.getMethod("send", String.class, List.class, Map.class))
-        .isNotNull();
-
-    assertThat(
-            GotoneNotificationService.class.getMethod(
-                "send", String.class, String.class, List.class, Map.class))
-        .isNotNull();
-
-    assertThat(
-            GotoneNotificationService.class.getMethod(
-                "sendAsync", String.class, List.class, Map.class))
-        .isNotNull();
-
-    assertThat(
-            GotoneNotificationService.class.getMethod(
-                "sendAsync", String.class, String.class, List.class, Map.class))
-        .isNotNull();
-  }
-
-  @Test
-  void testSendMethodSignature() throws NoSuchMethodException {
-    // 验证 send 方法签名
-    var method =
-        GotoneNotificationService.class.getMethod("send", String.class, List.class, Map.class);
-
-    assertThat(method.getReturnType()).isEqualTo(boolean.class);
-    assertThat(method.getParameterCount()).isEqualTo(3);
-  }
-
-  @Test
-  void testSendWithBizIdMethodSignature() throws NoSuchMethodException {
-    // 验证带 bizId 的 send 方法签名
-    var method =
-        GotoneNotificationService.class.getMethod(
-            "send", String.class, String.class, List.class, Map.class);
-
-    assertThat(method.getReturnType()).isEqualTo(boolean.class);
-    assertThat(method.getParameterCount()).isEqualTo(4);
-  }
-
-  @Test
-  void testSendAsyncMethodSignature() throws NoSuchMethodException {
-    // 验证 sendAsync 方法签名
-    var method =
-        GotoneNotificationService.class.getMethod("sendAsync", String.class, List.class, Map.class);
-
-    assertThat(method.getReturnType()).isEqualTo(void.class);
-    assertThat(method.getParameterCount()).isEqualTo(3);
-  }
-
-  @Test
-  void testMethodParameterTypes() throws NoSuchMethodException {
-    // 验证方法参数类型
-    var method =
-        GotoneNotificationService.class.getMethod("send", String.class, List.class, Map.class);
-    var parameterTypes = method.getParameterTypes();
-
-    assertThat(parameterTypes[0]).isEqualTo(String.class); // businessCode
-    assertThat(parameterTypes[1]).isEqualTo(List.class); // addresses
-    assertThat(parameterTypes[2]).isEqualTo(Map.class); // params
-  }
-
-  /** Mock implementation for testing */
-  static class MockGotoneNotificationService implements GotoneNotificationService {
-    private int sendCallCount = 0;
-    private int asyncSendCallCount = 0;
-
-    @Override
-    public boolean send(String businessCode, List<String> addresses, Map<String, Object> params) {
-      sendCallCount++;
-      return true;
+    @Test
+    void testServiceInterfaceExists() {
+        // 验证接口存在
+        assertThat(GotoneNotificationService.class).isInterface();
     }
 
-    @Override
-    public boolean send(
-        String businessCode, String bizId, List<String> addresses, Map<String, Object> params) {
-      sendCallCount++;
-      return true;
+    @Test
+    void testServiceHasRequiredMethods() throws NoSuchMethodException {
+        // 验证接口有必要的方法
+        assertThat(GotoneNotificationService.class.getMethod("send", String.class, List.class, Map.class))
+                .isNotNull();
+
+        assertThat(GotoneNotificationService.class.getMethod("send", String.class, String.class, List.class, Map.class))
+                .isNotNull();
+
+        assertThat(GotoneNotificationService.class.getMethod("sendAsync", String.class, List.class, Map.class))
+                .isNotNull();
+
+        assertThat(GotoneNotificationService.class.getMethod(
+                        "sendAsync", String.class, String.class, List.class, Map.class))
+                .isNotNull();
     }
 
-    @Override
-    public void sendAsync(String businessCode, List<String> addresses, Map<String, Object> params) {
-      asyncSendCallCount++;
+    @Test
+    void testSendMethodSignature() throws NoSuchMethodException {
+        // 验证 send 方法签名
+        var method = GotoneNotificationService.class.getMethod("send", String.class, List.class, Map.class);
+
+        assertThat(method.getReturnType()).isEqualTo(boolean.class);
+        assertThat(method.getParameterCount()).isEqualTo(3);
     }
 
-    @Override
-    public void sendAsync(
-        String businessCode, String bizId, List<String> addresses, Map<String, Object> params) {
-      asyncSendCallCount++;
+    @Test
+    void testSendWithBizIdMethodSignature() throws NoSuchMethodException {
+        // 验证带 bizId 的 send 方法签名
+        var method =
+                GotoneNotificationService.class.getMethod("send", String.class, String.class, List.class, Map.class);
+
+        assertThat(method.getReturnType()).isEqualTo(boolean.class);
+        assertThat(method.getParameterCount()).isEqualTo(4);
     }
 
-    public int getSendCallCount() {
-      return sendCallCount;
+    @Test
+    void testSendAsyncMethodSignature() throws NoSuchMethodException {
+        // 验证 sendAsync 方法签名
+        var method = GotoneNotificationService.class.getMethod("sendAsync", String.class, List.class, Map.class);
+
+        assertThat(method.getReturnType()).isEqualTo(void.class);
+        assertThat(method.getParameterCount()).isEqualTo(3);
     }
 
-    public int getAsyncSendCallCount() {
-      return asyncSendCallCount;
+    @Test
+    void testMethodParameterTypes() throws NoSuchMethodException {
+        // 验证方法参数类型
+        var method = GotoneNotificationService.class.getMethod("send", String.class, List.class, Map.class);
+        var parameterTypes = method.getParameterTypes();
+
+        assertThat(parameterTypes[0]).isEqualTo(String.class); // businessCode
+        assertThat(parameterTypes[1]).isEqualTo(List.class); // addresses
+        assertThat(parameterTypes[2]).isEqualTo(Map.class); // params
     }
-  }
 
-  @Test
-  void testMockImplementationSend() {
-    // Given
-    MockGotoneNotificationService service = new MockGotoneNotificationService();
+    /** Mock implementation for testing */
+    static class MockGotoneNotificationService implements GotoneNotificationService {
+        private int sendCallCount = 0;
+        private int asyncSendCallCount = 0;
 
-    // When
-    boolean result =
-        service.send("ORDER_CONFIRM", Arrays.asList("user@example.com"), new HashMap<>());
+        @Override
+        public boolean send(String businessCode, List<String> addresses, Map<String, Object> params) {
+            sendCallCount++;
+            return true;
+        }
 
-    // Then
-    assertThat(result).isTrue();
-    assertThat(service.getSendCallCount()).isEqualTo(1);
-  }
+        @Override
+        public boolean send(String businessCode, String bizId, List<String> addresses, Map<String, Object> params) {
+            sendCallCount++;
+            return true;
+        }
 
-  @Test
-  void testMockImplementationSendWithBizId() {
-    // Given
-    MockGotoneNotificationService service = new MockGotoneNotificationService();
+        @Override
+        public void sendAsync(String businessCode, List<String> addresses, Map<String, Object> params) {
+            asyncSendCallCount++;
+        }
 
-    // When
-    boolean result =
-        service.send(
-            "ORDER_CONFIRM", "biz-001", Arrays.asList("user@example.com"), new HashMap<>());
+        @Override
+        public void sendAsync(String businessCode, String bizId, List<String> addresses, Map<String, Object> params) {
+            asyncSendCallCount++;
+        }
 
-    // Then
-    assertThat(result).isTrue();
-    assertThat(service.getSendCallCount()).isEqualTo(1);
-  }
+        public int getSendCallCount() {
+            return sendCallCount;
+        }
 
-  @Test
-  void testMockImplementationSendAsync() {
-    // Given
-    MockGotoneNotificationService service = new MockGotoneNotificationService();
+        public int getAsyncSendCallCount() {
+            return asyncSendCallCount;
+        }
+    }
 
-    // When
-    service.sendAsync("ORDER_CONFIRM", Arrays.asList("user@example.com"), new HashMap<>());
+    @Test
+    void testMockImplementationSend() {
+        // Given
+        MockGotoneNotificationService service = new MockGotoneNotificationService();
 
-    // Then
-    assertThat(service.getAsyncSendCallCount()).isEqualTo(1);
-  }
+        // When
+        boolean result = service.send("ORDER_CONFIRM", Arrays.asList("user@example.com"), new HashMap<>());
 
-  @Test
-  void testMockImplementationMultipleCalls() {
-    // Given
-    MockGotoneNotificationService service = new MockGotoneNotificationService();
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.getSendCallCount()).isEqualTo(1);
+    }
 
-    // When
-    service.send("CODE1", Arrays.asList("addr1"), new HashMap<>());
-    service.send("CODE2", "biz-002", Arrays.asList("addr2"), new HashMap<>());
-    service.sendAsync("CODE3", Arrays.asList("addr3"), new HashMap<>());
-    service.sendAsync("CODE4", "biz-004", Arrays.asList("addr4"), new HashMap<>());
+    @Test
+    void testMockImplementationSendWithBizId() {
+        // Given
+        MockGotoneNotificationService service = new MockGotoneNotificationService();
 
-    // Then
-    assertThat(service.getSendCallCount()).isEqualTo(2);
-    assertThat(service.getAsyncSendCallCount()).isEqualTo(2);
-  }
+        // When
+        boolean result = service.send("ORDER_CONFIRM", "biz-001", Arrays.asList("user@example.com"), new HashMap<>());
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.getSendCallCount()).isEqualTo(1);
+    }
+
+    @Test
+    void testMockImplementationSendAsync() {
+        // Given
+        MockGotoneNotificationService service = new MockGotoneNotificationService();
+
+        // When
+        service.sendAsync("ORDER_CONFIRM", Arrays.asList("user@example.com"), new HashMap<>());
+
+        // Then
+        assertThat(service.getAsyncSendCallCount()).isEqualTo(1);
+    }
+
+    @Test
+    void testMockImplementationMultipleCalls() {
+        // Given
+        MockGotoneNotificationService service = new MockGotoneNotificationService();
+
+        // When
+        service.send("CODE1", Arrays.asList("addr1"), new HashMap<>());
+        service.send("CODE2", "biz-002", Arrays.asList("addr2"), new HashMap<>());
+        service.sendAsync("CODE3", Arrays.asList("addr3"), new HashMap<>());
+        service.sendAsync("CODE4", "biz-004", Arrays.asList("addr4"), new HashMap<>());
+
+        // Then
+        assertThat(service.getSendCallCount()).isEqualTo(2);
+        assertThat(service.getAsyncSendCallCount()).isEqualTo(2);
+    }
 }

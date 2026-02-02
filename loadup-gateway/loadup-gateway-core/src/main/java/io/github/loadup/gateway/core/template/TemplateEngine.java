@@ -34,76 +34,75 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TemplateEngine {
 
-  private final ConcurrentHashMap<String, groovy.lang.Script> scriptCache =
-      new ConcurrentHashMap<>();
-  private final GroovyShell groovyShell = new GroovyShell();
+    private final ConcurrentHashMap<String, groovy.lang.Script> scriptCache = new ConcurrentHashMap<>();
+    private final GroovyShell groovyShell = new GroovyShell();
 
-  /** Process request template */
-  public GatewayRequest processRequestTemplate(GatewayRequest request, String templateScript) {
-    try {
-      if (request.getHeaders() == null) {
-        request.setHeaders(new HashMap<>());
-      }
-      if (request.getAttributes() == null) {
-        request.setAttributes(new HashMap<>());
-      }
-      Binding binding = new Binding();
-      binding.setVariable("request", request);
-      binding.setVariable("log", log);
+    /** Process request template */
+    public GatewayRequest processRequestTemplate(GatewayRequest request, String templateScript) {
+        try {
+            if (request.getHeaders() == null) {
+                request.setHeaders(new HashMap<>());
+            }
+            if (request.getAttributes() == null) {
+                request.setAttributes(new HashMap<>());
+            }
+            Binding binding = new Binding();
+            binding.setVariable("request", request);
+            binding.setVariable("log", log);
 
-      groovy.lang.Script script = getCompiledScript(templateScript);
-      script.setBinding(binding);
+            groovy.lang.Script script = getCompiledScript(templateScript);
+            script.setBinding(binding);
 
-      Object result = script.run();
-      if (result instanceof GatewayRequest) {
-        return (GatewayRequest) result;
-      }
+            Object result = script.run();
+            if (result instanceof GatewayRequest) {
+                return (GatewayRequest) result;
+            }
 
-      log.warn("Request template script did not return GatewayRequest, using original request");
-      return request;
+            log.warn("Request template script did not return GatewayRequest, using original request");
+            return request;
 
-    } catch (Exception e) {
-      log.error("Failed to process request template", e);
-      return request;
+        } catch (Exception e) {
+            log.error("Failed to process request template", e);
+            return request;
+        }
     }
-  }
 
-  /** Process response template */
-  public GatewayResponse processResponseTemplate(GatewayResponse response, String templateScript) {
-    try {
-      if (response.getHeaders() == null) {
-        response.setHeaders(new HashMap<>());
-      }
-      Binding binding = new Binding();
-      binding.setVariable("response", response);
-      binding.setVariable("log", log);
+    /** Process response template */
+    public GatewayResponse processResponseTemplate(GatewayResponse response, String templateScript) {
+        try {
+            if (response.getHeaders() == null) {
+                response.setHeaders(new HashMap<>());
+            }
+            Binding binding = new Binding();
+            binding.setVariable("response", response);
+            binding.setVariable("log", log);
 
-      groovy.lang.Script script = getCompiledScript(templateScript);
-      script.setBinding(binding);
+            groovy.lang.Script script = getCompiledScript(templateScript);
+            script.setBinding(binding);
 
-      Object result = script.run();
-      if (result instanceof GatewayResponse) {
-        return (GatewayResponse) result;
-      }
+            Object result = script.run();
+            if (result instanceof GatewayResponse) {
+                return (GatewayResponse) result;
+            }
 
-      log.warn("Response template script did not return GatewayResponse, using original response");
-      return response;
+            log.warn("Response template script did not return GatewayResponse, using original response");
+            return response;
 
-    } catch (Exception e) {
-      log.error("Failed to process response template", e);
-      return response;
+        } catch (Exception e) {
+            log.error("Failed to process response template", e);
+            return response;
+        }
     }
-  }
 
-  /** Get compiled script with caching */
-  private groovy.lang.Script getCompiledScript(String scriptText) {
-    String scriptHash = String.valueOf(scriptText.hashCode());
-    return scriptCache.computeIfAbsent(scriptHash, k -> groovyShell.parse(scriptText));
-  }
+    /** Get compiled script with caching */
+    private groovy.lang.Script getCompiledScript(String scriptText) {
+        String scriptHash = String.valueOf(scriptText.hashCode());
+        return scriptCache.computeIfAbsent(scriptHash, k -> groovyShell.parse(scriptText));
+    }
 
-  /** Clear script cache */
-  public void clearScriptCache() {
-    scriptCache.clear();
-    log.info("Template script cache cleared");
-  }
+    /** Clear script cache */
+    public void clearScriptCache() {
+        scriptCache.clear();
+        log.info("Template script cache cleared");
+    }
 }

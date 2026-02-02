@@ -29,6 +29,6 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 public class LocalBinderConfig extends BinderConfig {
 
-  /** 本地存储基础路径 */
-  private String basePath;
+    /** 本地存储基础路径 */
+    private String basePath;
 }

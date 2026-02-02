@@ -33,6 +33,6 @@ import lombok.Data;
  */
 @Data
 public class IdRequest {
-  @NotNull(message = "ID不能为空")
-  private String id;
+    @NotNull(message = "ID不能为空")
+    private String id;
 }

@@ -52,104 +52,100 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(
-    prefix = "loadup.tracer",
-    name = "enable-web-tracing",
-    havingValue = "true",
-    matchIfMissing = true)
+        prefix = "loadup.tracer",
+        name = "enable-web-tracing",
+        havingValue = "true",
+        matchIfMissing = true)
 public class TracingWebFilter extends OncePerRequestFilter {
 
-  private final Tracer tracer;
-  private final TextMapPropagator textMapPropagator;
-  private final TracerProperties tracerProperties;
-  private final PathMatcher pathMatcher = new AntPathMatcher();
-
-  @Override
-  protected void doFilterInternal(
-      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-      throws ServletException, IOException {
-
-    if (!tracerProperties.isEnabled() || shouldSkip(request)) {
-      filterChain.doFilter(request, response);
-      return;
-    }
-
-    // Extract context from incoming request headers
-    Context extractedContext =
-        textMapPropagator.extract(Context.current(), request, new HttpServletRequestGetter());
-
-    String spanName = request.getMethod() + " " + request.getRequestURI();
-    Span span = tracer.spanBuilder(spanName).setParent(extractedContext).startSpan();
-
-    try (Scope scope = span.makeCurrent()) {
-      // Add HTTP attributes
-      span.setAttribute("http.method", request.getMethod());
-      span.setAttribute("http.url", request.getRequestURL().toString());
-      span.setAttribute("http.scheme", request.getScheme());
-      span.setAttribute("http.target", request.getRequestURI());
-
-      if (request.getQueryString() != null) {
-        span.setAttribute("http.query", request.getQueryString());
-      }
-
-      if (tracerProperties.isIncludeHeaders()) {
-        Collections.list(request.getHeaderNames())
-            .forEach(
-                headerName ->
-                    span.setAttribute("http.header." + headerName, request.getHeader(headerName)));
-      }
-
-      if (tracerProperties.isIncludeParameters()) {
-        request
-            .getParameterMap()
-            .forEach(
-                (key, values) -> span.setAttribute("http.param." + key, String.join(",", values)));
-      }
-
-      // Inject trace context into response headers
-      textMapPropagator.inject(
-          Context.current(), response, (carrier, key, value) -> carrier.setHeader(key, value));
-
-      filterChain.doFilter(request, response);
-
-      // Add response status
-      span.setAttribute("http.status_code", response.getStatus());
-
-      if (response.getStatus() >= 400) {
-        span.setStatus(StatusCode.ERROR);
-      } else {
-        span.setStatus(StatusCode.OK);
-      }
-
-    } catch (Exception e) {
-      span.recordException(e);
-      span.setStatus(StatusCode.ERROR, e.getMessage());
-      throw e;
-    } finally {
-      span.end();
-    }
-  }
-
-  private boolean shouldSkip(HttpServletRequest request) {
-    String uri = request.getRequestURI();
-    String[] patterns = tracerProperties.getExcludePatterns().split(",");
-
-    for (String pattern : patterns) {
-      if (pathMatcher.match(pattern.trim(), uri)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private static class HttpServletRequestGetter implements TextMapGetter<HttpServletRequest> {
-    @Override
-    public Iterable<String> keys(HttpServletRequest carrier) {
-      return Collections.list(carrier.getHeaderNames());
-    }
+    private final Tracer tracer;
+    private final TextMapPropagator textMapPropagator;
+    private final TracerProperties tracerProperties;
+    private final PathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
-    public String get(HttpServletRequest carrier, String key) {
-      return carrier.getHeader(key);
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
+        if (!tracerProperties.isEnabled() || shouldSkip(request)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // Extract context from incoming request headers
+        Context extractedContext =
+                textMapPropagator.extract(Context.current(), request, new HttpServletRequestGetter());
+
+        String spanName = request.getMethod() + " " + request.getRequestURI();
+        Span span = tracer.spanBuilder(spanName).setParent(extractedContext).startSpan();
+
+        try (Scope scope = span.makeCurrent()) {
+            // Add HTTP attributes
+            span.setAttribute("http.method", request.getMethod());
+            span.setAttribute("http.url", request.getRequestURL().toString());
+            span.setAttribute("http.scheme", request.getScheme());
+            span.setAttribute("http.target", request.getRequestURI());
+
+            if (request.getQueryString() != null) {
+                span.setAttribute("http.query", request.getQueryString());
+            }
+
+            if (tracerProperties.isIncludeHeaders()) {
+                Collections.list(request.getHeaderNames())
+                        .forEach(headerName ->
+                                span.setAttribute("http.header." + headerName, request.getHeader(headerName)));
+            }
+
+            if (tracerProperties.isIncludeParameters()) {
+                request.getParameterMap()
+                        .forEach((key, values) -> span.setAttribute("http.param." + key, String.join(",", values)));
+            }
+
+            // Inject trace context into response headers
+            textMapPropagator.inject(
+                    Context.current(), response, (carrier, key, value) -> carrier.setHeader(key, value));
+
+            filterChain.doFilter(request, response);
+
+            // Add response status
+            span.setAttribute("http.status_code", response.getStatus());
+
+            if (response.getStatus() >= 400) {
+                span.setStatus(StatusCode.ERROR);
+            } else {
+                span.setStatus(StatusCode.OK);
+            }
+
+        } catch (Exception e) {
+            span.recordException(e);
+            span.setStatus(StatusCode.ERROR, e.getMessage());
+            throw e;
+        } finally {
+            span.end();
+        }
     }
-  }
+
+    private boolean shouldSkip(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        String[] patterns = tracerProperties.getExcludePatterns().split(",");
+
+        for (String pattern : patterns) {
+            if (pathMatcher.match(pattern.trim(), uri)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static class HttpServletRequestGetter implements TextMapGetter<HttpServletRequest> {
+        @Override
+        public Iterable<String> keys(HttpServletRequest carrier) {
+            return Collections.list(carrier.getHeaderNames());
+        }
+
+        @Override
+        public String get(HttpServletRequest carrier, String key) {
+            return carrier.getHeader(key);
+        }
+    }
 }

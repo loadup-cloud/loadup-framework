@@ -41,19 +41,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DepartmentDTO {
 
-  private String id;
-  private String parentId;
-  private String deptName;
-  private String deptCode;
-  private Integer deptLevel;
-  private Integer sortOrder;
-  private String leaderUserId;
-  private String leaderUserName;
-  private String mobile;
-  private String email;
-  private Short status;
-  private List<DepartmentDTO> children;
-  private String remark;
-  private LocalDateTime createdTime;
-  private LocalDateTime updatedTime;
+    private String id;
+    private String parentId;
+    private String deptName;
+    private String deptCode;
+    private Integer deptLevel;
+    private Integer sortOrder;
+    private String leaderUserId;
+    private String leaderUserName;
+    private String mobile;
+    private String email;
+    private Short status;
+    private List<DepartmentDTO> children;
+    private String remark;
+    private LocalDateTime createdTime;
+    private LocalDateTime updatedTime;
 }

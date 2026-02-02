@@ -54,53 +54,53 @@ import org.springframework.context.annotation.Bean;
 @RequiredArgsConstructor
 public class MyBatisFlexAutoConfiguration {
 
-  private final DatabaseProperties databaseProperties;
+    private final DatabaseProperties databaseProperties;
 
-  /**
-   * Configure MyBatis-Flex global settings
-   *
-   * @return MyBatisFlexCustomizer
-   */
-  @Bean
-  public MyBatisFlexCustomizer myBatisFlexCustomizer() {
-    return globalConfig -> {
-      FlexGlobalConfig.KeyConfig keyConfig = new FlexGlobalConfig.KeyConfig();
-      keyConfig.setKeyType(KeyType.Generator);
-      keyConfig.setValue(KeyGenerators.flexId);
-      keyConfig.setBefore(true);
-      globalConfig.setKeyConfig(keyConfig);
+    /**
+     * Configure MyBatis-Flex global settings
+     *
+     * @return MyBatisFlexCustomizer
+     */
+    @Bean
+    public MyBatisFlexCustomizer myBatisFlexCustomizer() {
+        return globalConfig -> {
+            FlexGlobalConfig.KeyConfig keyConfig = new FlexGlobalConfig.KeyConfig();
+            keyConfig.setKeyType(KeyType.Generator);
+            keyConfig.setValue(KeyGenerators.flexId);
+            keyConfig.setBefore(true);
+            globalConfig.setKeyConfig(keyConfig);
 
-      // Register entity listener
-      globalConfig.registerInsertListener(new BaseEntityListener(databaseProperties), BaseDO.class);
-      globalConfig.registerUpdateListener(new BaseEntityListener(databaseProperties), BaseDO.class);
-      log.info("Registered BaseEntityListener for automatic field population");
+            // Register entity listener
+            globalConfig.registerInsertListener(new BaseEntityListener(databaseProperties), BaseDO.class);
+            globalConfig.registerUpdateListener(new BaseEntityListener(databaseProperties), BaseDO.class);
+            log.info("Registered BaseEntityListener for automatic field population");
 
-      if (databaseProperties.getLogicalDelete().isEnabled()) {
-        // Configure logical delete
-        globalConfig.setLogicDeleteColumn("deleted");
-        LogicDeleteManager.setProcessor(new BooleanLogicDeleteProcessor());
-      }
-      // Enable SQL audit in development mode (optional)
-      MyBatisFlexAutoConfiguration.this.enableSqlAuditIfNeeded();
-    };
-  }
-
-  /**
-   * Enable SQL audit for debugging (logs all SQL statements)
-   *
-   * <p>This is useful for development and debugging. In production, consider using more
-   * sophisticated monitoring tools.
-   */
-  private void enableSqlAuditIfNeeded() {
-    // Enable audit in non-production environments
-    String env = System.getProperty("spring.profiles.active", "");
-    if (env.contains("dev") || env.contains("local")) {
-      MessageCollector collector = new ConsoleMessageCollector();
-      AuditManager.setMessageCollector(collector);
-      AuditManager.setAuditEnable(true);
-      log.info("Enabled SQL audit with ConsoleMessageCollector (dev mode)");
+            if (databaseProperties.getLogicalDelete().isEnabled()) {
+                // Configure logical delete
+                globalConfig.setLogicDeleteColumn("deleted");
+                LogicDeleteManager.setProcessor(new BooleanLogicDeleteProcessor());
+            }
+            // Enable SQL audit in development mode (optional)
+            MyBatisFlexAutoConfiguration.this.enableSqlAuditIfNeeded();
+        };
     }
-  }
 
-  // MyBatis-Flex 会自动扫描 Mapper 接口并配置
+    /**
+     * Enable SQL audit for debugging (logs all SQL statements)
+     *
+     * <p>This is useful for development and debugging. In production, consider using more
+     * sophisticated monitoring tools.
+     */
+    private void enableSqlAuditIfNeeded() {
+        // Enable audit in non-production environments
+        String env = System.getProperty("spring.profiles.active", "");
+        if (env.contains("dev") || env.contains("local")) {
+            MessageCollector collector = new ConsoleMessageCollector();
+            AuditManager.setMessageCollector(collector);
+            AuditManager.setAuditEnable(true);
+            log.info("Enabled SQL audit with ConsoleMessageCollector (dev mode)");
+        }
+    }
+
+    // MyBatis-Flex 会自动扫描 Mapper 接口并配置
 }

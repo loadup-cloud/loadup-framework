@@ -29,26 +29,26 @@ import org.slf4j.MDC;
  */
 public class MDCUtils {
 
-  public static final String MDC_TRACE_ID = "TraceId";
+    public static final String MDC_TRACE_ID = "TraceId";
 
-  public static final String MDC_SPAN_ID = "SpanId";
+    public static final String MDC_SPAN_ID = "SpanId";
 
-  public static final String MDC_TENANT_ID = "TenantId";
+    public static final String MDC_TENANT_ID = "TenantId";
 
-  public static void logStoppedSpan() {
-    MDC.remove(MDC_TRACE_ID);
-    MDC.remove(MDC_SPAN_ID);
-    //        Span span = TracerUtils.getSpan();
-    //        if (span != null) {
-    //            MDC.put(MDC_TRACE_ID, TracerUtils.getTracerId());
-    //        }
-  }
+    public static void logStoppedSpan() {
+        MDC.remove(MDC_TRACE_ID);
+        MDC.remove(MDC_SPAN_ID);
+        //        Span span = TracerUtils.getSpan();
+        //        if (span != null) {
+        //            MDC.put(MDC_TRACE_ID, TracerUtils.getTracerId());
+        //        }
+    }
 
-  public static void logTenantId(String tenantId) {
-    MDC.put(MDC_TENANT_ID, tenantId);
-  }
+    public static void logTenantId(String tenantId) {
+        MDC.put(MDC_TENANT_ID, tenantId);
+    }
 
-  public static void clearTenantId() {
-    MDC.remove(MDC_TENANT_ID);
-  }
+    public static void clearTenantId() {
+        MDC.remove(MDC_TENANT_ID);
+    }
 }

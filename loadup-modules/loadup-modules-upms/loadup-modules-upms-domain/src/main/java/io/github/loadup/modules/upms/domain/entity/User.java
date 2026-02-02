@@ -41,115 +41,115 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class User {
 
-  private String id;
+    private String id;
 
-  private String username;
+    private String username;
 
-  private String password;
+    private String password;
 
-  private String nickname;
+    private String nickname;
 
-  private String realName;
+    private String realName;
 
-  private String deptId;
+    private String deptId;
 
-  private String email;
+    private String email;
 
-  private Boolean emailVerified;
+    private Boolean emailVerified;
 
-  private String mobile;
+    private String mobile;
 
-  private Boolean mobileVerified;
+    private Boolean mobileVerified;
 
-  private String avatar;
+    private String avatar;
 
-  /** Gender: 0-Unknown, 1-Male, 2-Female */
-  private Short gender;
+    /** Gender: 0-Unknown, 1-Male, 2-Female */
+    private Short gender;
 
-  private java.time.LocalDate birthday;
+    private java.time.LocalDate birthday;
 
-  /** Status: 1-Normal, 0-Disabled, 2-Locked */
-  private Short status;
+    /** Status: 1-Normal, 0-Disabled, 2-Locked */
+    private Short status;
 
-  private Boolean accountNonExpired;
+    private Boolean accountNonExpired;
 
-  private Boolean accountNonLocked;
+    private Boolean accountNonLocked;
 
-  private Boolean credentialsNonExpired;
+    private Boolean credentialsNonExpired;
 
-  private LocalDateTime lastLoginTime;
+    private LocalDateTime lastLoginTime;
 
-  private String lastLoginIp;
+    private String lastLoginIp;
 
-  private Integer loginFailCount;
+    private Integer loginFailCount;
 
-  private LocalDateTime lockedTime;
+    private LocalDateTime lockedTime;
 
-  private LocalDateTime passwordUpdateTime;
+    private LocalDateTime passwordUpdateTime;
 
-  private Boolean deleted;
+    private Boolean deleted;
 
-  private String remark;
+    private String remark;
 
-  private String createdBy;
+    private String createdBy;
 
-  private LocalDateTime createdTime;
+    private LocalDateTime createdTime;
 
-  private String updatedBy;
+    private String updatedBy;
 
-  private LocalDateTime updatedTime;
+    private LocalDateTime updatedTime;
 
-  // Transient fields (not persisted)
-  private List<Role> roles;
+    // Transient fields (not persisted)
+    private List<Role> roles;
 
-  private Department department;
+    private Department department;
 
-  /** Check if user account is enabled */
-  public boolean isEnabled() {
-    return status != null && status == 1 && !Boolean.TRUE.equals(deleted);
-  }
-
-  /** Check if user account is active (enabled and not locked) */
-  public boolean isActive() {
-    return isEnabled()
-        && Boolean.TRUE.equals(accountNonExpired)
-        && Boolean.TRUE.equals(accountNonLocked)
-        && Boolean.TRUE.equals(credentialsNonExpired);
-  }
-
-  /** Increment login fail count */
-  public void incrementLoginFailCount() {
-    if (this.loginFailCount == null) {
-      this.loginFailCount = 0;
+    /** Check if user account is enabled */
+    public boolean isEnabled() {
+        return status != null && status == 1 && !Boolean.TRUE.equals(deleted);
     }
-    this.loginFailCount++;
-  }
 
-  /** Reset login fail count */
-  public void resetLoginFailCount() {
-    this.loginFailCount = 0;
-    this.lockedTime = null;
-  }
+    /** Check if user account is active (enabled and not locked) */
+    public boolean isActive() {
+        return isEnabled()
+                && Boolean.TRUE.equals(accountNonExpired)
+                && Boolean.TRUE.equals(accountNonLocked)
+                && Boolean.TRUE.equals(credentialsNonExpired);
+    }
 
-  /** Lock user account */
-  public void lockAccount() {
-    this.accountNonLocked = false;
-    this.lockedTime = LocalDateTime.now();
-    this.status = 2; // Locked status
-  }
+    /** Increment login fail count */
+    public void incrementLoginFailCount() {
+        if (this.loginFailCount == null) {
+            this.loginFailCount = 0;
+        }
+        this.loginFailCount++;
+    }
 
-  /** Unlock user account */
-  public void unlockAccount() {
-    this.accountNonLocked = true;
-    this.lockedTime = null;
-    this.loginFailCount = 0;
-    this.status = 1; // Normal status
-  }
+    /** Reset login fail count */
+    public void resetLoginFailCount() {
+        this.loginFailCount = 0;
+        this.lockedTime = null;
+    }
 
-  /** Update last login info */
-  public void updateLastLogin(String ip) {
-    this.lastLoginTime = LocalDateTime.now();
-    this.lastLoginIp = ip;
-    this.resetLoginFailCount();
-  }
+    /** Lock user account */
+    public void lockAccount() {
+        this.accountNonLocked = false;
+        this.lockedTime = LocalDateTime.now();
+        this.status = 2; // Locked status
+    }
+
+    /** Unlock user account */
+    public void unlockAccount() {
+        this.accountNonLocked = true;
+        this.lockedTime = null;
+        this.loginFailCount = 0;
+        this.status = 1; // Normal status
+    }
+
+    /** Update last login info */
+    public void updateLastLogin(String ip) {
+        this.lastLoginTime = LocalDateTime.now();
+        this.lastLoginIp = ip;
+        this.resetLoginFailCount();
+    }
 }

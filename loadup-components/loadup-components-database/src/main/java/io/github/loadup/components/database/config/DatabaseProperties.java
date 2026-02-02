@@ -30,39 +30,39 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.database")
 public class DatabaseProperties {
 
-  /** Multi-tenant configuration */
-  private MultiTenant multiTenant = new MultiTenant();
+    /** Multi-tenant configuration */
+    private MultiTenant multiTenant = new MultiTenant();
 
-  /** Logical delete configuration */
-  private LogicalDelete logicalDelete = new LogicalDelete();
+    /** Logical delete configuration */
+    private LogicalDelete logicalDelete = new LogicalDelete();
 
-  @Data
-  public static class MultiTenant {
-    /** Enable multi-tenant feature (default: false) */
-    private boolean enabled = false;
+    @Data
+    public static class MultiTenant {
+        /** Enable multi-tenant feature (default: false) */
+        private boolean enabled = false;
 
-    /** Column name for tenant ID (default: tenant_id) */
-    private String columnName = "tenant_id";
+        /** Column name for tenant ID (default: tenant_id) */
+        private String columnName = "tenant_id";
 
-    /** Ignore tenant filter for these tables (comma separated) */
-    private String ignoreTables = "sys_tenant,sys_user,sys_role,sys_permission";
+        /** Ignore tenant filter for these tables (comma separated) */
+        private String ignoreTables = "sys_tenant,sys_user,sys_role,sys_permission";
 
-    /** Default tenant ID when not in tenant context */
-    private String defaultTenantId = "default";
-  }
+        /** Default tenant ID when not in tenant context */
+        private String defaultTenantId = "default";
+    }
 
-  @Data
-  public static class LogicalDelete {
-    /** Enable logical delete feature (default: false) */
-    private boolean enabled = false;
+    @Data
+    public static class LogicalDelete {
+        /** Enable logical delete feature (default: false) */
+        private boolean enabled = false;
 
-    /** Column name for logical delete flag (default: deleted) */
-    private String columnName = "deleted";
+        /** Column name for logical delete flag (default: deleted) */
+        private String columnName = "deleted";
 
-    /** Value representing deleted record (default: true) */
-    private String deletedValue = "true";
+        /** Value representing deleted record (default: true) */
+        private String deletedValue = "true";
 
-    /** Value representing normal record (default: false) */
-    private String normalValue = "false";
-  }
+        /** Value representing normal record (default: false) */
+        private String normalValue = "false";
+    }
 }

@@ -35,81 +35,80 @@ import org.junit.jupiter.api.Test;
 /** Tests for TracerProperties validation */
 class TracerPropertiesTest {
 
-  private Validator validator;
+    private Validator validator;
 
-  @BeforeEach
-  void setUp() {
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    validator = factory.getValidator();
-  }
+    @BeforeEach
+    void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
 
-  @Test
-  void testValidOtlpEndpoint() {
-    TracerProperties properties = new TracerProperties();
-    properties.setOtlpEndpoint("http://localhost:4317");
+    @Test
+    void testValidOtlpEndpoint() {
+        TracerProperties properties = new TracerProperties();
+        properties.setOtlpEndpoint("http://localhost:4317");
 
-    Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
-    assertTrue(violations.isEmpty(), "Valid OTLP endpoint should have no violations");
-  }
+        Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
+        assertTrue(violations.isEmpty(), "Valid OTLP endpoint should have no violations");
+    }
 
-  @Test
-  void testValidHttpsOtlpEndpoint() {
-    TracerProperties properties = new TracerProperties();
-    properties.setOtlpEndpoint("https://otel-collector.example.com:4317");
+    @Test
+    void testValidHttpsOtlpEndpoint() {
+        TracerProperties properties = new TracerProperties();
+        properties.setOtlpEndpoint("https://otel-collector.example.com:4317");
 
-    Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
-    assertTrue(violations.isEmpty(), "Valid HTTPS OTLP endpoint should have no violations");
-  }
+        Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
+        assertTrue(violations.isEmpty(), "Valid HTTPS OTLP endpoint should have no violations");
+    }
 
-  @Test
-  void testValidOtlpEndpointWithPath() {
-    TracerProperties properties = new TracerProperties();
-    properties.setOtlpEndpoint("http://localhost:4317/v1/traces");
+    @Test
+    void testValidOtlpEndpointWithPath() {
+        TracerProperties properties = new TracerProperties();
+        properties.setOtlpEndpoint("http://localhost:4317/v1/traces");
 
-    Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
-    assertTrue(violations.isEmpty(), "Valid OTLP endpoint with path should have no violations");
-  }
+        Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
+        assertTrue(violations.isEmpty(), "Valid OTLP endpoint with path should have no violations");
+    }
 
-  @Test
-  void testValidOtlpEndpointWithoutScheme() {
-    TracerProperties properties = new TracerProperties();
-    properties.setOtlpEndpoint("localhost:4317");
+    @Test
+    void testValidOtlpEndpointWithoutScheme() {
+        TracerProperties properties = new TracerProperties();
+        properties.setOtlpEndpoint("localhost:4317");
 
-    Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
-    assertTrue(violations.isEmpty(), "OTLP endpoint without scheme should be valid");
-  }
+        Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
+        assertTrue(violations.isEmpty(), "OTLP endpoint without scheme should be valid");
+    }
 
-  @Test
-  void testInvalidOtlpEndpoint() {
-    TracerProperties properties = new TracerProperties();
-    properties.setOtlpEndpoint("not a valid url!");
+    @Test
+    void testInvalidOtlpEndpoint() {
+        TracerProperties properties = new TracerProperties();
+        properties.setOtlpEndpoint("not a valid url!");
 
-    Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
-    assertFalse(violations.isEmpty(), "Invalid OTLP endpoint should have violations");
-    assertTrue(
-        violations.stream()
-            .anyMatch(v -> v.getMessage().contains("OTLP endpoint must be a valid URL format")),
-        "Should have URL validation message");
-  }
+        Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
+        assertFalse(violations.isEmpty(), "Invalid OTLP endpoint should have violations");
+        assertTrue(
+                violations.stream().anyMatch(v -> v.getMessage().contains("OTLP endpoint must be a valid URL format")),
+                "Should have URL validation message");
+    }
 
-  @Test
-  void testNullOtlpEndpoint() {
-    TracerProperties properties = new TracerProperties();
-    properties.setOtlpEndpoint(null);
+    @Test
+    void testNullOtlpEndpoint() {
+        TracerProperties properties = new TracerProperties();
+        properties.setOtlpEndpoint(null);
 
-    Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
-    assertTrue(violations.isEmpty(), "Null OTLP endpoint should be valid (optional)");
-  }
+        Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
+        assertTrue(violations.isEmpty(), "Null OTLP endpoint should be valid (optional)");
+    }
 
-  @Test
-  void testDefaultValues() {
-    TracerProperties properties = new TracerProperties();
+    @Test
+    void testDefaultValues() {
+        TracerProperties properties = new TracerProperties();
 
-    assertTrue(properties.isEnabled());
-    assertTrue(properties.isEnableWebTracing());
-    assertTrue(properties.isEnableAsyncTracing());
-    assertFalse(properties.isIncludeHeaders());
-    assertFalse(properties.isIncludeParameters());
-    assertEquals("/actuator/**,/health,/metrics", properties.getExcludePatterns());
-  }
+        assertTrue(properties.isEnabled());
+        assertTrue(properties.isEnableWebTracing());
+        assertTrue(properties.isEnableAsyncTracing());
+        assertFalse(properties.isIncludeHeaders());
+        assertFalse(properties.isIncludeParameters());
+        assertEquals("/actuator/**,/health,/metrics", properties.getExcludePatterns());
+    }
 }

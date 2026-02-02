@@ -29,15 +29,15 @@ import org.springframework.context.annotation.ComponentScan;
 /** Test application entry point for tests */
 @SpringBootApplication
 @ComponentScan(
-    basePackages = {
-      "io.github.loadup.gateway.core",
-      "io.github.loadup.gateway.facade",
-      "io.github.loadup.gateway.plugins",
-      "io.github.loadup.gateway.test"
-    })
+        basePackages = {
+            "io.github.loadup.gateway.core",
+            "io.github.loadup.gateway.facade",
+            "io.github.loadup.gateway.plugins",
+            "io.github.loadup.gateway.test"
+        })
 public class GatewayTestApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(GatewayTestApplication.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(GatewayTestApplication.class, args);
+    }
 }

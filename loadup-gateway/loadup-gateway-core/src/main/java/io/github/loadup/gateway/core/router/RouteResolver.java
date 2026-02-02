@@ -36,81 +36,80 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RouteResolver {
 
-  private final RepositoryPlugin repositoryPlugin;
-  private final GatewayProperties gatewayProperties;
+    private final RepositoryPlugin repositoryPlugin;
+    private final GatewayProperties gatewayProperties;
 
-  public RouteResolver(RepositoryPlugin repositoryPlugin, GatewayProperties gatewayProperties) {
-    this.repositoryPlugin = repositoryPlugin;
-    this.gatewayProperties = gatewayProperties;
-  }
-
-  private final ConcurrentHashMap<String, RouteConfig> routeCache = new ConcurrentHashMap<>();
-  private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-
-  @PostConstruct
-  public void refresh() {
-    repositoryPlugin.initialize();
-    //    this.refreshRoutes();
-    // Periodically refresh route cache (hot reload support)
-    //        scheduler.scheduleAtFixedRate(this::refreshRoutes, 30, 30, TimeUnit.SECONDS);
-  }
-
-  /** Resolve the route configuration for the given request */
-  public Optional<RouteConfig> resolve(GatewayRequest request) {
-    String routeKey = buildRouteKey(request.getPath(), request.getMethod());
-
-    // First check cache
-    RouteConfig cachedRoute = routeCache.get(routeKey);
-    if (cachedRoute != null && cachedRoute.isEnabled()) {
-      return Optional.of(cachedRoute);
+    public RouteResolver(RepositoryPlugin repositoryPlugin, GatewayProperties gatewayProperties) {
+        this.repositoryPlugin = repositoryPlugin;
+        this.gatewayProperties = gatewayProperties;
     }
 
-    // Look up from storage
-    try {
-      Optional<RouteConfig> routeOpt =
-          repositoryPlugin.getRouteByPath(request.getPath(), request.getMethod());
-      if (routeOpt.isPresent() && routeOpt.get().isEnabled()) {
-        // Update cache
-        routeCache.put(routeKey, routeOpt.get());
-        return routeOpt;
-      }
-    } catch (Exception e) {
-      log.error("Failed to resolve route from repository", e);
+    private final ConcurrentHashMap<String, RouteConfig> routeCache = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+    @PostConstruct
+    public void refresh() {
+        repositoryPlugin.initialize();
+        //    this.refreshRoutes();
+        // Periodically refresh route cache (hot reload support)
+        //        scheduler.scheduleAtFixedRate(this::refreshRoutes, 30, 30, TimeUnit.SECONDS);
     }
 
-    return Optional.empty();
-  }
+    /** Resolve the route configuration for the given request */
+    public Optional<RouteConfig> resolve(GatewayRequest request) {
+        String routeKey = buildRouteKey(request.getPath(), request.getMethod());
 
-  /** Refresh route cache */
-  public void refreshRoutes() {
-    try {
-      List<RouteConfig> allRoutes = repositoryPlugin.getAllRoutes();
-
-      // Clear old cache
-      routeCache.clear();
-
-      // Reload routes
-      for (RouteConfig route : allRoutes) {
-        if (route.isEnabled()) {
-          String routeKey = buildRouteKey(route.getPath(), route.getMethod());
-          routeCache.put(routeKey, route);
+        // First check cache
+        RouteConfig cachedRoute = routeCache.get(routeKey);
+        if (cachedRoute != null && cachedRoute.isEnabled()) {
+            return Optional.of(cachedRoute);
         }
-      }
 
-      log.info("Route cache refreshed, loaded {} routes", routeCache.size());
+        // Look up from storage
+        try {
+            Optional<RouteConfig> routeOpt = repositoryPlugin.getRouteByPath(request.getPath(), request.getMethod());
+            if (routeOpt.isPresent() && routeOpt.get().isEnabled()) {
+                // Update cache
+                routeCache.put(routeKey, routeOpt.get());
+                return routeOpt;
+            }
+        } catch (Exception e) {
+            log.error("Failed to resolve route from repository", e);
+        }
 
-    } catch (Exception e) {
-      log.error("Failed to refresh route cache", e);
+        return Optional.empty();
     }
-  }
 
-  /** Build route cache key */
-  private String buildRouteKey(String path, String method) {
-    return method + ":" + path;
-  }
+    /** Refresh route cache */
+    public void refreshRoutes() {
+        try {
+            List<RouteConfig> allRoutes = repositoryPlugin.getAllRoutes();
 
-  /** Get the number of cached routes */
-  public int getCachedRouteCount() {
-    return routeCache.size();
-  }
+            // Clear old cache
+            routeCache.clear();
+
+            // Reload routes
+            for (RouteConfig route : allRoutes) {
+                if (route.isEnabled()) {
+                    String routeKey = buildRouteKey(route.getPath(), route.getMethod());
+                    routeCache.put(routeKey, route);
+                }
+            }
+
+            log.info("Route cache refreshed, loaded {} routes", routeCache.size());
+
+        } catch (Exception e) {
+            log.error("Failed to refresh route cache", e);
+        }
+    }
+
+    /** Build route cache key */
+    private String buildRouteKey(String path, String method) {
+        return method + ":" + path;
+    }
+
+    /** Get the number of cached routes */
+    public int getCachedRouteCount() {
+        return routeCache.size();
+    }
 }

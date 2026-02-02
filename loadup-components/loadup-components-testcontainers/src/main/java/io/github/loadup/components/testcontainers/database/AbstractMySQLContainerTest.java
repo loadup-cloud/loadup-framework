@@ -66,39 +66,39 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(initializers = MySQLContainerInitializer.class)
 public abstract class AbstractMySQLContainerTest {
 
-  /**
-   * Get the JDBC URL for the shared MySQL container.
-   *
-   * @return the JDBC URL
-   */
-  protected String getJdbcUrl() {
-    return SharedMySQLContainer.getJdbcUrl();
-  }
+    /**
+     * Get the JDBC URL for the shared MySQL container.
+     *
+     * @return the JDBC URL
+     */
+    protected String getJdbcUrl() {
+        return SharedMySQLContainer.getJdbcUrl();
+    }
 
-  /**
-   * Get the username for the shared MySQL container.
-   *
-   * @return the username
-   */
-  protected String getUsername() {
-    return SharedMySQLContainer.getUsername();
-  }
+    /**
+     * Get the username for the shared MySQL container.
+     *
+     * @return the username
+     */
+    protected String getUsername() {
+        return SharedMySQLContainer.getUsername();
+    }
 
-  /**
-   * Get the password for the shared MySQL container.
-   *
-   * @return the password
-   */
-  protected String getPassword() {
-    return SharedMySQLContainer.getPassword();
-  }
+    /**
+     * Get the password for the shared MySQL container.
+     *
+     * @return the password
+     */
+    protected String getPassword() {
+        return SharedMySQLContainer.getPassword();
+    }
 
-  /**
-   * Get the database name for the shared MySQL container.
-   *
-   * @return the database name
-   */
-  protected String getDatabaseName() {
-    return SharedMySQLContainer.getDatabaseName();
-  }
+    /**
+     * Get the database name for the shared MySQL container.
+     *
+     * @return the database name
+     */
+    protected String getDatabaseName() {
+        return SharedMySQLContainer.getDatabaseName();
+    }
 }

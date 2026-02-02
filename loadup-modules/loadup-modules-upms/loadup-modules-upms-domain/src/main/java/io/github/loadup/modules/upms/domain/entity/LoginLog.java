@@ -40,30 +40,30 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LoginLog {
 
-  private String id;
+    private String id;
 
-  private String userId;
+    private String userId;
 
-  private String username;
+    private String username;
 
-  private LocalDateTime loginTime;
+    private LocalDateTime loginTime;
 
-  private LocalDateTime logoutTime;
+    private LocalDateTime logoutTime;
 
-  private String ipAddress;
+    private String ipAddress;
 
-  private String loginLocation;
+    private String loginLocation;
 
-  private String browser;
+    private String browser;
 
-  private String os;
+    private String os;
 
-  /** Login status: 1-Success, 0-Failure */
-  private Short loginStatus;
+    /** Login status: 1-Success, 0-Failure */
+    private Short loginStatus;
 
-  private String loginMessage;
+    private String loginMessage;
 
-  public boolean isSuccess() {
-    return loginStatus != null && loginStatus == 1;
-  }
+    public boolean isSuccess() {
+        return loginStatus != null && loginStatus == 1;
+    }
 }

@@ -25,31 +25,26 @@ package io.github.loadup.gateway.facade.exception;
 /** Template processing exception */
 public class TemplateException extends GatewayException {
 
-  private static final String MODULE = "TEMPLATE";
+    private static final String MODULE = "TEMPLATE";
 
-  public TemplateException(ErrorCode errorCode, String message) {
-    super(errorCode.getCode(), ErrorType.TEMPLATE, MODULE, errorCode.getMessage() + ":" + message);
-  }
+    public TemplateException(ErrorCode errorCode, String message) {
+        super(errorCode.getCode(), ErrorType.TEMPLATE, MODULE, errorCode.getMessage() + ":" + message);
+    }
 
-  public TemplateException(ErrorCode errorCode, String message, Throwable cause) {
-    super(
-        errorCode.getCode(),
-        ErrorType.TEMPLATE,
-        MODULE,
-        errorCode.getMessage() + ":" + message,
-        cause);
-  }
+    public TemplateException(ErrorCode errorCode, String message, Throwable cause) {
+        super(errorCode.getCode(), ErrorType.TEMPLATE, MODULE, errorCode.getMessage() + ":" + message, cause);
+    }
 
-  // Convenience methods
-  public static TemplateException notFound(String templateName) {
-    return new TemplateException(ErrorCode.TEMPLATE_NOT_FOUND, templateName);
-  }
+    // Convenience methods
+    public static TemplateException notFound(String templateName) {
+        return new TemplateException(ErrorCode.TEMPLATE_NOT_FOUND, templateName);
+    }
 
-  public static TemplateException parseError(String templateName, Throwable cause) {
-    return new TemplateException(ErrorCode.TEMPLATE_PARSE_ERROR, templateName, cause);
-  }
+    public static TemplateException parseError(String templateName, Throwable cause) {
+        return new TemplateException(ErrorCode.TEMPLATE_PARSE_ERROR, templateName, cause);
+    }
 
-  public static TemplateException executionError(String templateName, Throwable cause) {
-    return new TemplateException(ErrorCode.TEMPLATE_EXECUTION_ERROR, templateName, cause);
-  }
+    public static TemplateException executionError(String templateName, Throwable cause) {
+        return new TemplateException(ErrorCode.TEMPLATE_EXECUTION_ERROR, templateName, cause);
+    }
 }

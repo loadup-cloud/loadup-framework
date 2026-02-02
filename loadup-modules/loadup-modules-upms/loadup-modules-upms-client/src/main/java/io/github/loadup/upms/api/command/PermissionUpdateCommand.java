@@ -35,32 +35,32 @@ import lombok.Data;
 @Data
 public class PermissionUpdateCommand {
 
-  @NotNull(message = "权限ID不能为空")
-  private String id;
+    @NotNull(message = "权限ID不能为空")
+    private String id;
 
-  private String parentId;
+    private String parentId;
 
-  @Size(max = 50, message = "权限名称长度不能超过50")
-  private String permissionName;
+    @Size(max = 50, message = "权限名称长度不能超过50")
+    private String permissionName;
 
-  /** Permission type: 1-Menu, 2-Button, 3-API */
-  private Short permissionType;
+    /** Permission type: 1-Menu, 2-Button, 3-API */
+    private Short permissionType;
 
-  private String resourcePath;
+    private String resourcePath;
 
-  private String httpMethod;
+    private String httpMethod;
 
-  private String icon;
+    private String icon;
 
-  private String componentPath;
+    private String componentPath;
 
-  private Integer sortOrder;
+    private Integer sortOrder;
 
-  private Boolean visible;
+    private Boolean visible;
 
-  private Short status;
+    private Short status;
 
-  private String remark;
+    private String remark;
 
-  private String updatedBy;
+    private String updatedBy;
 }

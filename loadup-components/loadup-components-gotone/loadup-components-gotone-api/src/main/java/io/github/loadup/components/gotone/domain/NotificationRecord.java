@@ -32,20 +32,20 @@ import lombok.Setter;
 @Getter
 @Setter
 public class NotificationRecord extends BaseDomain {
-  private String id;
-  private String traceId;
-  private String businessCode;
-  private String bizId;
-  private String messageId;
-  private String channel;
-  private List<String> receivers;
-  private String templateCode;
-  private String title;
-  private String content;
-  private String provider;
-  private String status;
-  private Integer retryCount;
-  private Integer priority;
-  private String errorMessage;
-  private LocalDateTime sendTime;
+    private String id;
+    private String traceId;
+    private String businessCode;
+    private String bizId;
+    private String messageId;
+    private String channel;
+    private List<String> receivers;
+    private String templateCode;
+    private String title;
+    private String content;
+    private String provider;
+    private String status;
+    private Integer retryCount;
+    private Integer priority;
+    private String errorMessage;
+    private LocalDateTime sendTime;
 }

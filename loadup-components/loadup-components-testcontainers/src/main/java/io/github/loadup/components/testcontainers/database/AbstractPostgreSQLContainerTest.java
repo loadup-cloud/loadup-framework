@@ -51,27 +51,27 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(initializers = PostgreSQLContainerInitializer.class)
 public abstract class AbstractPostgreSQLContainerTest {
 
-  protected String getJdbcUrl() {
-    return SharedPostgreSQLContainer.getJdbcUrl();
-  }
+    protected String getJdbcUrl() {
+        return SharedPostgreSQLContainer.getJdbcUrl();
+    }
 
-  protected String getUsername() {
-    return SharedPostgreSQLContainer.getUsername();
-  }
+    protected String getUsername() {
+        return SharedPostgreSQLContainer.getUsername();
+    }
 
-  protected String getPassword() {
-    return SharedPostgreSQLContainer.getPassword();
-  }
+    protected String getPassword() {
+        return SharedPostgreSQLContainer.getPassword();
+    }
 
-  protected String getDatabaseName() {
-    return SharedPostgreSQLContainer.getDatabaseName();
-  }
+    protected String getDatabaseName() {
+        return SharedPostgreSQLContainer.getDatabaseName();
+    }
 
-  protected String getHost() {
-    return SharedPostgreSQLContainer.getHost();
-  }
+    protected String getHost() {
+        return SharedPostgreSQLContainer.getHost();
+    }
 
-  protected Integer getMappedPort() {
-    return SharedPostgreSQLContainer.getMappedPort();
-  }
+    protected Integer getMappedPort() {
+        return SharedPostgreSQLContainer.getMappedPort();
+    }
 }

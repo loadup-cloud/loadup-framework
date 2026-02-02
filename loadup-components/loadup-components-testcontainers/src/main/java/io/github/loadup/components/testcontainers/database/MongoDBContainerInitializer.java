@@ -53,27 +53,27 @@ import org.springframework.core.env.ConfigurableEnvironment;
 @Slf4j
 public class MongoDBContainerInitializer extends BaseContainerInitializer {
 
-  @Override
-  protected String getContainerName() {
-    return "MongoDB";
-  }
+    @Override
+    protected String getContainerName() {
+        return "MongoDB";
+    }
 
-  @Override
-  protected ContainerConfig getContainerConfig(TestContainersProperties p) {
-    return p.getMongodb();
-  }
+    @Override
+    protected ContainerConfig getContainerConfig(TestContainersProperties p) {
+        return p.getMongodb();
+    }
 
-  @Override
-  protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
-    SharedMongoDBContainer.startContainer(config);
-    applyProperties(
-        env,
-        Map.of(
-            "spring.data.mongodb.uri",
-            SharedMongoDBContainer.getReplicaSetUrl(),
-            "spring.data.mongodb.host",
-            SharedMongoDBContainer.getHost(),
-            "spring.data.mongodb.port",
-            String.valueOf(SharedMongoDBContainer.getPort())));
-  }
+    @Override
+    protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
+        SharedMongoDBContainer.startContainer(config);
+        applyProperties(
+                env,
+                Map.of(
+                        "spring.data.mongodb.uri",
+                        SharedMongoDBContainer.getReplicaSetUrl(),
+                        "spring.data.mongodb.host",
+                        SharedMongoDBContainer.getHost(),
+                        "spring.data.mongodb.port",
+                        String.valueOf(SharedMongoDBContainer.getPort())));
+    }
 }

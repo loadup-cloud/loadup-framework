@@ -55,116 +55,111 @@ import org.testcontainers.utility.DockerImageName;
 @Slf4j
 public class SharedKafkaContainer {
 
-  /** Default Kafka version to use */
-  public static final String DEFAULT_KAFKA_VERSION = "apache/kafka:4.1.1";
+    /** Default Kafka version to use */
+    public static final String DEFAULT_KAFKA_VERSION = "apache/kafka:4.1.1";
 
-  /** The shared Kafka container instance */
-  private static KafkaContainer KAFKA_CONTAINER;
+    /** The shared Kafka container instance */
+    private static KafkaContainer KAFKA_CONTAINER;
 
-  private static final AtomicBoolean STARTED = new AtomicBoolean(false);
+    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
-  /** Kafka bootstrap servers */
-  private static String BOOTSTRAP_SERVERS;
+    /** Kafka bootstrap servers */
+    private static String BOOTSTRAP_SERVERS;
 
-  public static void startContainer(ContainerConfig config) {
-    if (STARTED.get()) {
-      return;
-    }
+    public static void startContainer(ContainerConfig config) {
+        if (STARTED.get()) {
+            return;
+        }
 
-    synchronized (SharedKafkaContainer.class) {
-      if (STARTED.get()) {
-        return;
-      }
+        synchronized (SharedKafkaContainer.class) {
+            if (STARTED.get()) {
+                return;
+            }
 
-      String imageName =
-          (config.getVersion() != null) ? config.getVersion() : DEFAULT_KAFKA_VERSION;
+            String imageName = (config.getVersion() != null) ? config.getVersion() : DEFAULT_KAFKA_VERSION;
 
-      log.info("🚀 Starting Shared Kafka TestContainer: {}", imageName);
+            log.info("🚀 Starting Shared Kafka TestContainer: {}", imageName);
 
-      KAFKA_CONTAINER =
-          new KafkaContainer(DockerImageName.parse(imageName)).withReuse(config.isReuse());
+            KAFKA_CONTAINER = new KafkaContainer(DockerImageName.parse(imageName)).withReuse(config.isReuse());
 
-      KAFKA_CONTAINER.start();
-      STARTED.set(true);
+            KAFKA_CONTAINER.start();
+            STARTED.set(true);
 
-      BOOTSTRAP_SERVERS = KAFKA_CONTAINER.getBootstrapServers();
+            BOOTSTRAP_SERVERS = KAFKA_CONTAINER.getBootstrapServers();
 
-      log.info("✅ Kafka Container started at: {}", KAFKA_CONTAINER.getBootstrapServers());
+            log.info("✅ Kafka Container started at: {}", KAFKA_CONTAINER.getBootstrapServers());
 
-      // JVM 退出时自动关闭
-      // 2. 智能关闭钩子
-      if (!config.isReuse()) {
-        log.info("Reuse is disabled. Registering shutdown hook to stop container.");
-        Runtime.getRuntime()
-            .addShutdownHook(
-                new Thread(
-                    () -> {
-                      if (KAFKA_CONTAINER != null) {
+            // JVM 退出时自动关闭
+            // 2. 智能关闭钩子
+            if (!config.isReuse()) {
+                log.info("Reuse is disabled. Registering shutdown hook to stop container.");
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    if (KAFKA_CONTAINER != null) {
                         log.info("🛑 Stopping Kafka TestContainer...");
                         KAFKA_CONTAINER.stop();
-                      }
-                    }));
-      } else {
-        log.info("♻️ Reuse is enabled. Container will persist after JVM exits.");
-      }
+                    }
+                }));
+            } else {
+                log.info("♻️ Reuse is enabled. Container will persist after JVM exits.");
+            }
+        }
     }
-  }
 
-  /**
-   * Get the shared Kafka container instance.
-   *
-   * @return the shared Kafka container instance
-   * @throws IllegalStateException if TestContainers is not started
-   */
-  public static KafkaContainer getInstance() {
-    checkStarted();
-    return KAFKA_CONTAINER;
-  }
-
-  /**
-   * Get the Kafka bootstrap servers.
-   *
-   * @return the bootstrap servers
-   * @throws IllegalStateException if TestContainers is not started
-   */
-  public static String getBootstrapServers() {
-    checkStarted();
-    return BOOTSTRAP_SERVERS;
-  }
-
-  /**
-   * Get the Kafka host.
-   *
-   * @return the host
-   * @throws IllegalStateException if TestContainers is not started
-   */
-  public static String getHost() {
-    checkStarted();
-    return KAFKA_CONTAINER.getHost();
-  }
-
-  /**
-   * Get the Kafka port.
-   *
-   * @return the port
-   * @throws IllegalStateException if TestContainers is not started
-   */
-  public static Integer getPort() {
-    checkStarted();
-    return KAFKA_CONTAINER.getFirstMappedPort();
-  }
-
-  private SharedKafkaContainer() {
-    throw new UnsupportedOperationException("Utility class cannot be instantiated");
-  }
-
-  public static boolean isStarted() {
-    return STARTED.get();
-  }
-
-  private static void checkStarted() {
-    if (!STARTED.get()) {
-      throw new IllegalStateException("MongoDB Container has not been started yet!");
+    /**
+     * Get the shared Kafka container instance.
+     *
+     * @return the shared Kafka container instance
+     * @throws IllegalStateException if TestContainers is not started
+     */
+    public static KafkaContainer getInstance() {
+        checkStarted();
+        return KAFKA_CONTAINER;
     }
-  }
+
+    /**
+     * Get the Kafka bootstrap servers.
+     *
+     * @return the bootstrap servers
+     * @throws IllegalStateException if TestContainers is not started
+     */
+    public static String getBootstrapServers() {
+        checkStarted();
+        return BOOTSTRAP_SERVERS;
+    }
+
+    /**
+     * Get the Kafka host.
+     *
+     * @return the host
+     * @throws IllegalStateException if TestContainers is not started
+     */
+    public static String getHost() {
+        checkStarted();
+        return KAFKA_CONTAINER.getHost();
+    }
+
+    /**
+     * Get the Kafka port.
+     *
+     * @return the port
+     * @throws IllegalStateException if TestContainers is not started
+     */
+    public static Integer getPort() {
+        checkStarted();
+        return KAFKA_CONTAINER.getFirstMappedPort();
+    }
+
+    private SharedKafkaContainer() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
+
+    public static boolean isStarted() {
+        return STARTED.get();
+    }
+
+    private static void checkStarted() {
+        if (!STARTED.get()) {
+            throw new IllegalStateException("MongoDB Container has not been started yet!");
+        }
+    }
 }

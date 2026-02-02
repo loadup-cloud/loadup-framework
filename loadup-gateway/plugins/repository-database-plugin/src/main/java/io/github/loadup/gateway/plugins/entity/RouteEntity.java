@@ -34,37 +34,38 @@ import org.springframework.data.relational.core.mapping.Table;
 @Setter
 @Table("gateway_routes")
 public class RouteEntity extends RouteStructure {
-  // path,method,target,requestTemplate,responseTemplate,enabled,properties
-  /** id */
-  @Id private String routeId;
+    // path,method,target,requestTemplate,responseTemplate,enabled,properties
+    /** id */
+    @Id
+    private String routeId;
 
-  /** name */
-  private String routeName;
+    /** name */
+    private String routeName;
 
-  /** request path */
-  private String path;
+    /** request path */
+    private String path;
 
-  /** request method GET, POST, PUT, DELETE, etc. */
-  private String method;
+    /** request method GET, POST, PUT, DELETE, etc. */
+    private String method;
 
-  /** http://..., bean://service:method, rpc://class:method:version */
-  private String target;
+    /** http://..., bean://service:method, rpc://class:method:version */
+    private String target;
 
-  /** request template */
-  private String requestTemplate;
+    /** request template */
+    private String requestTemplate;
 
-  /** response template */
-  private String responseTemplate;
+    /** response template */
+    private String responseTemplate;
 
-  /** enabled status */
-  private Boolean enabled;
+    /** enabled status */
+    private Boolean enabled;
 
-  /** additional properties */
-  private String properties;
+    /** additional properties */
+    private String properties;
 
-  /** updated at */
-  private LocalDateTime updatedAt;
+    /** updated at */
+    private LocalDateTime updatedAt;
 
-  /** created at */
-  private LocalDateTime createdAt;
+    /** created at */
+    private LocalDateTime createdAt;
 }

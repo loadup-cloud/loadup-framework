@@ -39,34 +39,34 @@ import lombok.Data;
  */
 public class UserUpdateCommand {
 
-  private String updatedBy;
+    private String updatedBy;
 
-  private String remark;
+    private String remark;
 
-  private List<String> roleIds;
+    private List<String> roleIds;
 
-  private Short status; // 1-Normal, 0-Disabled
+    private Short status; // 1-Normal, 0-Disabled
 
-  private LocalDate birthday;
+    private LocalDate birthday;
 
-  private Short gender; // 0-Unknown, 1-Male, 2-Female
+    private Short gender; // 0-Unknown, 1-Male, 2-Female
 
-  private String avatar;
+    private String avatar;
 
-  @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确")
-  private String mobile;
+    @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确")
+    private String mobile;
 
-  @Email(message = "邮箱格式不正确")
-  private String email;
+    @Email(message = "邮箱格式不正确")
+    private String email;
 
-  private String deptId;
+    private String deptId;
 
-  @Size(max = 50, message = "真实姓名长度不能超过50")
-  private String realName;
+    @Size(max = 50, message = "真实姓名长度不能超过50")
+    private String realName;
 
-  @Size(max = 50, message = "昵称长度不能超过50")
-  private String nickname;
+    @Size(max = 50, message = "昵称长度不能超过50")
+    private String nickname;
 
-  @NotNull(message = "用户ID不能为空")
-  private String id;
+    @NotNull(message = "用户ID不能为空")
+    private String id;
 }

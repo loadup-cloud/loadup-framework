@@ -45,72 +45,75 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(properties = {"loadup.scheduler.type=simplejob"})
 class SimpleJobSchedulerIntegrationTest {
 
-  @Autowired private SchedulerBinding schedulerBinding;
+    @Autowired
+    private SchedulerBinding schedulerBinding;
 
-  @Autowired private TestScheduledTasks testTasks;
+    @Autowired
+    private TestScheduledTasks testTasks;
 
-  @Test
-  void testSchedulerAutoConfiguration() {
-    // Then
-    assertThat(schedulerBinding).isNotNull();
-  }
-
-  @Test
-  void testAnnotationBasedScheduling() {
-    // Given - task should be auto-registered by @DistributedScheduler
-
-    // Wait for task execution
-    await().atMost(5, SECONDS).until(() -> testTasks.getExecutionCount() > 0);
-
-    // Then
-    assertThat(testTasks.getExecutionCount()).isGreaterThan(0);
-  }
-
-  @Test
-  void testDynamicTaskManagement() {
-    // Given
-    String taskName = "dynamicTask";
-    SchedulerTask task = SchedulerTask.builder().taskName(taskName).cron("*/2 * * * * ?").build();
-
-    // When
-    boolean registered = schedulerBinding.registerTask(task);
-
-    // Then
-    assertThat(registered).isTrue();
-    assertThat(schedulerBinding.taskExists(taskName)).isTrue();
-
-    // Cleanup
-    schedulerBinding.unregisterTask(taskName);
-  }
-
-  @Configuration
-  @EnableAutoConfiguration
-  static class TestConfiguration {
-    @Bean
-    public TestScheduledTasks testScheduledTasks() {
-      return new TestScheduledTasks();
+    @Test
+    void testSchedulerAutoConfiguration() {
+        // Then
+        assertThat(schedulerBinding).isNotNull();
     }
 
-    @Bean
-    public TaskScheduler taskScheduler() {
-      ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-      scheduler.setPoolSize(10);
-      scheduler.setThreadNamePrefix("scheduler-");
-      scheduler.initialize();
-      return scheduler;
-    }
-  }
+    @Test
+    void testAnnotationBasedScheduling() {
+        // Given - task should be auto-registered by @DistributedScheduler
 
-  public static class TestScheduledTasks {
-    private final AtomicInteger executionCount = new AtomicInteger(0);
+        // Wait for task execution
+        await().atMost(5, SECONDS).until(() -> testTasks.getExecutionCount() > 0);
 
-    @DistributedScheduler(name = "integrationTestTask", cron = "*/2 * * * * ?")
-    public void scheduledTask() {
-      executionCount.incrementAndGet();
+        // Then
+        assertThat(testTasks.getExecutionCount()).isGreaterThan(0);
     }
 
-    public int getExecutionCount() {
-      return executionCount.get();
+    @Test
+    void testDynamicTaskManagement() {
+        // Given
+        String taskName = "dynamicTask";
+        SchedulerTask task =
+                SchedulerTask.builder().taskName(taskName).cron("*/2 * * * * ?").build();
+
+        // When
+        boolean registered = schedulerBinding.registerTask(task);
+
+        // Then
+        assertThat(registered).isTrue();
+        assertThat(schedulerBinding.taskExists(taskName)).isTrue();
+
+        // Cleanup
+        schedulerBinding.unregisterTask(taskName);
     }
-  }
+
+    @Configuration
+    @EnableAutoConfiguration
+    static class TestConfiguration {
+        @Bean
+        public TestScheduledTasks testScheduledTasks() {
+            return new TestScheduledTasks();
+        }
+
+        @Bean
+        public TaskScheduler taskScheduler() {
+            ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+            scheduler.setPoolSize(10);
+            scheduler.setThreadNamePrefix("scheduler-");
+            scheduler.initialize();
+            return scheduler;
+        }
+    }
+
+    public static class TestScheduledTasks {
+        private final AtomicInteger executionCount = new AtomicInteger(0);
+
+        @DistributedScheduler(name = "integrationTestTask", cron = "*/2 * * * * ?")
+        public void scheduledTask() {
+            executionCount.incrementAndGet();
+        }
+
+        public int getExecutionCount() {
+            return executionCount.get();
+        }
+    }
 }

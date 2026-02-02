@@ -42,68 +42,68 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Role {
 
-  private String id;
+    private String id;
 
-  private String roleName;
+    private String roleName;
 
-  private String roleCode;
+    private String roleCode;
 
-  /** Parent role ID for role inheritance (RBAC3 feature) */
-  private String parentId;
+    /** Parent role ID for role inheritance (RBAC3 feature) */
+    private String parentId;
 
-  private Integer roleLevel;
+    private Integer roleLevel;
 
-  /** Data scope: 1-All, 2-Custom, 3-Dept, 4-Dept and children, 5-Self only */
-  private Short dataScope;
+    /** Data scope: 1-All, 2-Custom, 3-Dept, 4-Dept and children, 5-Self only */
+    private Short dataScope;
 
-  private Integer sortOrder;
+    private Integer sortOrder;
 
-  /** Status: 1-Normal, 0-Disabled */
-  private Short status;
+    /** Status: 1-Normal, 0-Disabled */
+    private Short status;
 
-  private Boolean deleted;
+    private Boolean deleted;
 
-  private String remark;
+    private String remark;
 
-  private String createdBy;
+    private String createdBy;
 
-  private LocalDateTime createdTime;
+    private LocalDateTime createdTime;
 
-  private String updatedBy;
+    private String updatedBy;
 
-  private LocalDateTime updatedTime;
+    private LocalDateTime updatedTime;
 
-  // Transient fields
-  private Role parentRole;
+    // Transient fields
+    private Role parentRole;
 
-  private List<Role> childRoles;
+    private List<Role> childRoles;
 
-  private List<Permission> permissions;
+    private List<Permission> permissions;
 
-  private List<Department> departments;
+    private List<Department> departments;
 
-  /** Check if role is enabled */
-  public boolean isEnabled() {
-    return status != null && status == 1 && !Boolean.TRUE.equals(deleted);
-  }
-
-  /** Check if this is a root role (no parent) */
-  public boolean isRoot() {
-    return parentId == null;
-  }
-
-  /** Get all inherited permissions (including parent roles) */
-  public List<Permission> getAllInheritedPermissions() {
-    List<Permission> allPermissions = new ArrayList<>();
-    if (permissions != null) {
-      allPermissions.addAll(permissions);
+    /** Check if role is enabled */
+    public boolean isEnabled() {
+        return status != null && status == 1 && !Boolean.TRUE.equals(deleted);
     }
 
-    // Recursively add parent role permissions
-    if (parentRole != null && parentRole.isEnabled()) {
-      allPermissions.addAll(parentRole.getAllInheritedPermissions());
+    /** Check if this is a root role (no parent) */
+    public boolean isRoot() {
+        return parentId == null;
     }
 
-    return allPermissions;
-  }
+    /** Get all inherited permissions (including parent roles) */
+    public List<Permission> getAllInheritedPermissions() {
+        List<Permission> allPermissions = new ArrayList<>();
+        if (permissions != null) {
+            allPermissions.addAll(permissions);
+        }
+
+        // Recursively add parent role permissions
+        if (parentRole != null && parentRole.isEnabled()) {
+            allPermissions.addAll(parentRole.getAllInheritedPermissions());
+        }
+
+        return allPermissions;
+    }
 }

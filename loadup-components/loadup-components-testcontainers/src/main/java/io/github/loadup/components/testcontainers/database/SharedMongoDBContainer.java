@@ -55,134 +55,129 @@ import org.testcontainers.utility.DockerImageName;
 @Slf4j
 public class SharedMongoDBContainer {
 
-  /** Default MongoDB version to use */
-  public static final String DEFAULT_MONGODB_VERSION = "mongo:7.0";
+    /** Default MongoDB version to use */
+    public static final String DEFAULT_MONGODB_VERSION = "mongo:7.0";
 
-  /** Default replica set name */
-  public static final String DEFAULT_REPLICA_SET_NAME = "rs0";
+    /** Default replica set name */
+    public static final String DEFAULT_REPLICA_SET_NAME = "rs0";
 
-  /** The shared MongoDB container instance */
-  private static MongoDBContainer MONGODB_CONTAINER;
+    /** The shared MongoDB container instance */
+    private static MongoDBContainer MONGODB_CONTAINER;
 
-  private static final AtomicBoolean STARTED = new AtomicBoolean(false);
+    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
-  /** MongoDB connection string */
-  private static String CONNECTION_STRING;
+    /** MongoDB connection string */
+    private static String CONNECTION_STRING;
 
-  /** MongoDB host */
-  private static String HOST;
+    /** MongoDB host */
+    private static String HOST;
 
-  /** MongoDB port */
-  private static Integer PORT;
+    /** MongoDB port */
+    private static Integer PORT;
 
-  /** MongoDB replica set URL */
-  private static String REPLICA_SET_URL;
+    /** MongoDB replica set URL */
+    private static String REPLICA_SET_URL;
 
-  public static void startContainer(ContainerConfig config) {
-    if (STARTED.get()) {
-      return;
-    }
+    public static void startContainer(ContainerConfig config) {
+        if (STARTED.get()) {
+            return;
+        }
 
-    synchronized (SharedMongoDBContainer.class) {
-      if (STARTED.get()) {
-        return;
-      }
+        synchronized (SharedMongoDBContainer.class) {
+            if (STARTED.get()) {
+                return;
+            }
 
-      String imageName =
-          (config.getVersion() != null) ? config.getVersion() : DEFAULT_MONGODB_VERSION;
+            String imageName = (config.getVersion() != null) ? config.getVersion() : DEFAULT_MONGODB_VERSION;
 
-      log.info("🚀 Starting Shared MongoDB TestContainer: {}", imageName);
+            log.info("🚀 Starting Shared MongoDB TestContainer: {}", imageName);
 
-      MONGODB_CONTAINER =
-          new MongoDBContainer(DockerImageName.parse(imageName)).withReuse(config.isReuse());
+            MONGODB_CONTAINER = new MongoDBContainer(DockerImageName.parse(imageName)).withReuse(config.isReuse());
 
-      MONGODB_CONTAINER.start();
-      STARTED.set(true);
+            MONGODB_CONTAINER.start();
+            STARTED.set(true);
 
-      CONNECTION_STRING = MONGODB_CONTAINER.getConnectionString();
-      HOST = MONGODB_CONTAINER.getHost();
-      PORT = MONGODB_CONTAINER.getFirstMappedPort();
-      REPLICA_SET_URL = MONGODB_CONTAINER.getReplicaSetUrl();
+            CONNECTION_STRING = MONGODB_CONTAINER.getConnectionString();
+            HOST = MONGODB_CONTAINER.getHost();
+            PORT = MONGODB_CONTAINER.getFirstMappedPort();
+            REPLICA_SET_URL = MONGODB_CONTAINER.getReplicaSetUrl();
 
-      log.info("✅ MongoDB Container started at: {}", MONGODB_CONTAINER.getReplicaSetUrl());
+            log.info("✅ MongoDB Container started at: {}", MONGODB_CONTAINER.getReplicaSetUrl());
 
-      // JVM 退出时自动关闭
-      // 2. 智能关闭钩子
-      if (!config.isReuse()) {
-        log.info("Reuse is disabled. Registering shutdown hook to stop container.");
-        Runtime.getRuntime()
-            .addShutdownHook(
-                new Thread(
-                    () -> {
-                      if (MONGODB_CONTAINER != null) {
+            // JVM 退出时自动关闭
+            // 2. 智能关闭钩子
+            if (!config.isReuse()) {
+                log.info("Reuse is disabled. Registering shutdown hook to stop container.");
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    if (MONGODB_CONTAINER != null) {
                         log.info("🛑 Stopping MongoDB TestContainer...");
                         MONGODB_CONTAINER.stop();
-                      }
-                    }));
-      } else {
-        log.info("♻️ Reuse is enabled. Container will persist after JVM exits.");
-      }
+                    }
+                }));
+            } else {
+                log.info("♻️ Reuse is enabled. Container will persist after JVM exits.");
+            }
+        }
     }
-  }
 
-  /**
-   * Get the shared MongoDB container instance.
-   *
-   * @return the shared MongoDB container instance
-   * @throws IllegalStateException if TestContainers is disabled
-   */
-  public static MongoDBContainer getInstance() {
-    return MONGODB_CONTAINER;
-  }
-
-  /**
-   * Get the MongoDB connection string.
-   *
-   * @return the connection string
-   * @throws IllegalStateException if TestContainers is disabled
-   */
-  public static String getConnectionString() {
-    checkStarted();
-    return CONNECTION_STRING;
-  }
-
-  /**
-   * Get the MongoDB host.
-   *
-   * @return the host
-   * @throws IllegalStateException if TestContainers is disabled
-   */
-  public static String getHost() {
-    checkStarted();
-    return HOST;
-  }
-
-  /**
-   * Get the MongoDB port.
-   *
-   * @return the port
-   * @throws IllegalStateException if TestContainers is disabled
-   */
-  public static Integer getPort() {
-    checkStarted();
-    return PORT;
-  }
-
-  public static String getReplicaSetUrl() {
-    return REPLICA_SET_URL;
-  }
-
-  private SharedMongoDBContainer() {
-    throw new UnsupportedOperationException("Utility class cannot be instantiated");
-  }
-
-  public static boolean isStarted() {
-    return STARTED.get();
-  }
-
-  private static void checkStarted() {
-    if (!STARTED.get()) {
-      throw new IllegalStateException("MongoDB Container has not been started yet!");
+    /**
+     * Get the shared MongoDB container instance.
+     *
+     * @return the shared MongoDB container instance
+     * @throws IllegalStateException if TestContainers is disabled
+     */
+    public static MongoDBContainer getInstance() {
+        return MONGODB_CONTAINER;
     }
-  }
+
+    /**
+     * Get the MongoDB connection string.
+     *
+     * @return the connection string
+     * @throws IllegalStateException if TestContainers is disabled
+     */
+    public static String getConnectionString() {
+        checkStarted();
+        return CONNECTION_STRING;
+    }
+
+    /**
+     * Get the MongoDB host.
+     *
+     * @return the host
+     * @throws IllegalStateException if TestContainers is disabled
+     */
+    public static String getHost() {
+        checkStarted();
+        return HOST;
+    }
+
+    /**
+     * Get the MongoDB port.
+     *
+     * @return the port
+     * @throws IllegalStateException if TestContainers is disabled
+     */
+    public static Integer getPort() {
+        checkStarted();
+        return PORT;
+    }
+
+    public static String getReplicaSetUrl() {
+        return REPLICA_SET_URL;
+    }
+
+    private SharedMongoDBContainer() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
+
+    public static boolean isStarted() {
+        return STARTED.get();
+    }
+
+    private static void checkStarted() {
+        if (!STARTED.get()) {
+            throw new IllegalStateException("MongoDB Container has not been started yet!");
+        }
+    }
 }

@@ -36,9 +36,9 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "spring")
 public interface PermissionConverter {
 
-  PermissionConverter INSTANCE = Mappers.getMapper(PermissionConverter.class);
+    PermissionConverter INSTANCE = Mappers.getMapper(PermissionConverter.class);
 
-  PermissionDO toDataObject(Permission permission);
+    PermissionDO toDataObject(Permission permission);
 
-  Permission toEntity(PermissionDO permissionDO);
+    Permission toEntity(PermissionDO permissionDO);
 }

@@ -25,63 +25,63 @@ package io.github.loadup.gateway.facade.exception;
 /** Error type enumeration */
 public enum ErrorType {
 
-  /** Configuration error */
-  CONFIGURATION("Configuration error"),
+    /** Configuration error */
+    CONFIGURATION("Configuration error"),
 
-  /** Routing error */
-  ROUTING("Routing error"),
+    /** Routing error */
+    ROUTING("Routing error"),
 
-  /** Plugin error */
-  PLUGIN("Plugin error"),
+    /** Plugin error */
+    PLUGIN("Plugin error"),
 
-  /** Proxy error */
-  PROXY("Proxy error"),
+    /** Proxy error */
+    PROXY("Proxy error"),
 
-  /** Parameter validation error */
-  VALIDATION("Validation error"),
+    /** Parameter validation error */
+    VALIDATION("Validation error"),
 
-  /** Business logic error */
-  BUSINESS("Business logic error"),
+    /** Business logic error */
+    BUSINESS("Business logic error"),
 
-  /** System error */
-  SYSTEM("System error"),
+    /** System error */
+    SYSTEM("System error"),
 
-  /** Network error */
-  NETWORK("Network error"),
+    /** Network error */
+    NETWORK("Network error"),
 
-  /** Serialization/Deserialization error */
-  SERIALIZATION("Serialization error"),
+    /** Serialization/Deserialization error */
+    SERIALIZATION("Serialization error"),
 
-  /** Template processing error */
-  TEMPLATE("Template processing error"),
+    /** Template processing error */
+    TEMPLATE("Template processing error"),
 
-  /** Storage error */
-  STORAGE("Storage error"),
+    /** Storage error */
+    STORAGE("Storage error"),
 
-  /** Authorization error */
-  AUTHORIZATION("Authorization error"),
+    /** Authorization error */
+    AUTHORIZATION("Authorization error"),
 
-  /** Rate limiting error */
-  RATE_LIMIT("Rate limit error"),
+    /** Rate limiting error */
+    RATE_LIMIT("Rate limit error"),
 
-  /** Timeout error */
-  TIMEOUT("Timeout error"),
+    /** Timeout error */
+    TIMEOUT("Timeout error"),
 
-  /** Unknown error */
-  UNKNOWN("Unknown error");
+    /** Unknown error */
+    UNKNOWN("Unknown error");
 
-  private final String description;
+    private final String description;
 
-  ErrorType(String description) {
-    this.description = description;
-  }
+    ErrorType(String description) {
+        this.description = description;
+    }
 
-  public String getDescription() {
-    return description;
-  }
+    public String getDescription() {
+        return description;
+    }
 
-  @Override
-  public String toString() {
-    return name() + "(" + description + ")";
-  }
+    @Override
+    public String toString() {
+        return name() + "(" + description + ")";
+    }
 }

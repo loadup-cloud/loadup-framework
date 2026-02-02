@@ -29,21 +29,21 @@ package io.github.loadup.gateway.facade.spi;
  */
 public interface GatewayPlugin {
 
-  /** Plugin name */
-  String getName();
+    /** Plugin name */
+    String getName();
 
-  /** Plugin type */
-  String getType();
+    /** Plugin type */
+    String getType();
 
-  /** Plugin version */
-  String getVersion();
+    /** Plugin version */
+    String getVersion();
 
-  /** Plugin priority */
-  int getPriority();
+    /** Plugin priority */
+    int getPriority();
 
-  /** Initialize the plugin */
-  void initialize();
+    /** Initialize the plugin */
+    void initialize();
 
-  /** Destroy the plugin */
-  void destroy();
+    /** Destroy the plugin */
+    void destroy();
 }

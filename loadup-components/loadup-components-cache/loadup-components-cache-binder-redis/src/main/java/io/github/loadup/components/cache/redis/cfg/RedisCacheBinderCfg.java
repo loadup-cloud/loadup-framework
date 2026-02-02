@@ -78,50 +78,50 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class RedisCacheBinderCfg extends CacheBinderCfg {
-  /** 是否开启随机过期 */
-  private boolean enableRandomExpiry = false;
+    /** 是否开启随机过期 */
+    private boolean enableRandomExpiry = false;
 
-  /** 随机因子 (例如 0.2 表示在 100%~120% 之间波动) */
-  private double randomFactor = 0.2;
+    /** 随机因子 (例如 0.2 表示在 100%~120% 之间波动) */
+    private double randomFactor = 0.2;
 
-  /**
-   * Redis database index (default: 0) Override: loadup.cache.binder.redis.database Default:
-   * spring.data.redis.database
-   */
-  private Integer database;
+    /**
+     * Redis database index (default: 0) Override: loadup.cache.binder.redis.database Default:
+     * spring.data.redis.database
+     */
+    private Integer database;
 
-  /** Redis server host Override: loadup.cache.binder.redis.host Default: spring.data.redis.host */
-  private String host;
+    /** Redis server host Override: loadup.cache.binder.redis.host Default: spring.data.redis.host */
+    private String host;
 
-  /**
-   * Redis server password Override: loadup.cache.binder.redis.password Default:
-   * spring.data.redis.password
-   */
-  private String password;
+    /**
+     * Redis server password Override: loadup.cache.binder.redis.password Default:
+     * spring.data.redis.password
+     */
+    private String password;
 
-  /**
-   * Redis server port (default: 6379) Override: loadup.cache.binder.redis.port Default:
-   * spring.data.redis.port
-   */
-  private Integer port;
+    /**
+     * Redis server port (default: 6379) Override: loadup.cache.binder.redis.port Default:
+     * spring.data.redis.port
+     */
+    private Integer port;
 
-  /**
-   * Redis server username (for Redis 6+ ACL) Override: loadup.cache.binder.redis.username Default:
-   * spring.data.redis.username
-   */
-  private String username;
+    /**
+     * Redis server username (for Redis 6+ ACL) Override: loadup.cache.binder.redis.username Default:
+     * spring.data.redis.username
+     */
+    private String username;
 
-  /**
-   * Check if any custom configuration is provided
-   *
-   * @return true if any custom configuration field is set
-   */
-  public boolean hasCustomConfig() {
-    return host != null || port != null || password != null || username != null || database != null;
-  }
+    /**
+     * Check if any custom configuration is provided
+     *
+     * @return true if any custom configuration field is set
+     */
+    public boolean hasCustomConfig() {
+        return host != null || port != null || password != null || username != null || database != null;
+    }
 
-  public RedisCacheBinderCfg() {
-    // Redis 驱动默认建议使用 JSON 序列化，方便跨语言查看
-    setSerializerBeanName(CacheConstants.SERIALIZER_JSON);
-  }
+    public RedisCacheBinderCfg() {
+        // Redis 驱动默认建议使用 JSON 序列化，方便跨语言查看
+        setSerializerBeanName(CacheConstants.SERIALIZER_JSON);
+    }
 }

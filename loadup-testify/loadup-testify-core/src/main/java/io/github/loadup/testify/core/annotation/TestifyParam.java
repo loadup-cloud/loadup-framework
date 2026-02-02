@@ -30,6 +30,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 public @interface TestifyParam {
-  /** 对应 YAML 中 input 节点下的 Key 名字 */
-  String value();
+    /** 对应 YAML 中 input 节点下的 Key 名字 */
+    String value();
 }

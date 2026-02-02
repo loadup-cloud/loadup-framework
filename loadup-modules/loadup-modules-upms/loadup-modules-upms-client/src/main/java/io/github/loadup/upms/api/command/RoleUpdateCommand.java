@@ -36,26 +36,26 @@ import lombok.Data;
 @Data
 public class RoleUpdateCommand {
 
-  @NotNull(message = "角色ID不能为空")
-  private String id;
+    @NotNull(message = "角色ID不能为空")
+    private String id;
 
-  @Size(max = 50, message = "角色名称长度不能超过50")
-  private String roleName;
+    @Size(max = 50, message = "角色名称长度不能超过50")
+    private String roleName;
 
-  private String parentId;
+    private String parentId;
 
-  /** Data scope: 1-All, 2-Custom, 3-Dept, 4-Dept and children, 5-Self only */
-  private Short dataScope;
+    /** Data scope: 1-All, 2-Custom, 3-Dept, 4-Dept and children, 5-Self only */
+    private Short dataScope;
 
-  private Integer sortOrder;
+    private Integer sortOrder;
 
-  private Short status;
+    private Short status;
 
-  private List<String> permissionIds;
+    private List<String> permissionIds;
 
-  private List<String> departmentIds;
+    private List<String> departmentIds;
 
-  private String remark;
+    private String remark;
 
-  private String updatedBy;
+    private String updatedBy;
 }

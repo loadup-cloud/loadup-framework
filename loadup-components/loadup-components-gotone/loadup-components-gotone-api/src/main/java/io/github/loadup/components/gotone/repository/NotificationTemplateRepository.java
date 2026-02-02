@@ -32,17 +32,14 @@ import org.springframework.stereotype.Repository;
 
 /** 通知模板仓储 */
 @Repository
-public interface NotificationTemplateRepository
-    extends CrudRepository<NotificationTemplateDO, String> {
+public interface NotificationTemplateRepository extends CrudRepository<NotificationTemplateDO, String> {
 
-  @Query(
-      "SELECT * FROM gotone_notification_template WHERE template_code = :templateCode AND enabled = true")
-  Optional<NotificationTemplateDO> findByTemplateCodeAndEnabled(
-      @Param("templateCode") String templateCode);
+    @Query("SELECT * FROM gotone_notification_template WHERE template_code = :templateCode AND enabled = true")
+    Optional<NotificationTemplateDO> findByTemplateCodeAndEnabled(@Param("templateCode") String templateCode);
 
-  @Query("SELECT * FROM gotone_notification_template WHERE channel = :channel AND enabled = true")
-  List<NotificationTemplateDO> findByChannelAndEnabled(@Param("channel") String channel);
+    @Query("SELECT * FROM gotone_notification_template WHERE channel = :channel AND enabled = true")
+    List<NotificationTemplateDO> findByChannelAndEnabled(@Param("channel") String channel);
 
-  @Query("SELECT * FROM gotone_notification_template WHERE enabled = true")
-  List<NotificationTemplateDO> findAllEnabled();
+    @Query("SELECT * FROM gotone_notification_template WHERE enabled = true")
+    List<NotificationTemplateDO> findAllEnabled();
 }

@@ -36,9 +36,9 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "spring")
 public interface DepartmentConverter {
 
-  DepartmentConverter INSTANCE = Mappers.getMapper(DepartmentConverter.class);
+    DepartmentConverter INSTANCE = Mappers.getMapper(DepartmentConverter.class);
 
-  DepartmentDO toDataObject(Department department);
+    DepartmentDO toDataObject(Department department);
 
-  Department toEntity(DepartmentDO departmentDO);
+    Department toEntity(DepartmentDO departmentDO);
 }

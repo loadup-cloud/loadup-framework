@@ -68,135 +68,129 @@ import org.testcontainers.utility.DockerImageName;
 @Slf4j
 public class SharedLocalStackContainer {
 
-  /** Default LocalStack version to use */
-  public static final String DEFAULT_LOCALSTACK_VERSION = "localstack/localstack:3.0";
+    /** Default LocalStack version to use */
+    public static final String DEFAULT_LOCALSTACK_VERSION = "localstack/localstack:3.0";
 
-  /** Default access key for LocalStack */
-  private static final String ACCESS_KEY = "test";
+    /** Default access key for LocalStack */
+    private static final String ACCESS_KEY = "test";
 
-  /** Default secret key for LocalStack */
-  private static final String SECRET_KEY = "test";
+    /** Default secret key for LocalStack */
+    private static final String SECRET_KEY = "test";
 
-  /** Default region */
-  private static final String REGION = "us-east-1";
+    /** Default region */
+    private static final String REGION = "us-east-1";
 
-  /** Enable flag for TestContainers */
-  private static final boolean ENABLED;
+    /** Enable flag for TestContainers */
+    private static final boolean ENABLED;
 
-  /** The shared LocalStack container instance */
-  private static final LocalStackContainer LOCALSTACK_CONTAINER;
+    /** The shared LocalStack container instance */
+    private static final LocalStackContainer LOCALSTACK_CONTAINER;
 
-  /** S3 endpoint URL */
-  private static final String S3_ENDPOINT;
+    /** S3 endpoint URL */
+    private static final String S3_ENDPOINT;
 
-  static {
-    // Check if TestContainers is enabled (global switch AND individual switch)
-    boolean globalEnabled =
-        Boolean.parseBoolean(System.getProperty("loadup.testcontainers.enabled", "true"));
-    boolean localstackEnabled =
-        Boolean.parseBoolean(
-            System.getProperty("loadup.testcontainers.localstack.enabled", "true"));
+    static {
+        // Check if TestContainers is enabled (global switch AND individual switch)
+        boolean globalEnabled = Boolean.parseBoolean(System.getProperty("loadup.testcontainers.enabled", "true"));
+        boolean localstackEnabled =
+                Boolean.parseBoolean(System.getProperty("loadup.testcontainers.localstack.enabled", "true"));
 
-    ENABLED = globalEnabled && localstackEnabled;
+        ENABLED = globalEnabled && localstackEnabled;
 
-    if (ENABLED) {
-      // Read configuration from system properties or use defaults
-      String localstackVersion =
-          System.getProperty("testcontainers.localstack.version", DEFAULT_LOCALSTACK_VERSION);
+        if (ENABLED) {
+            // Read configuration from system properties or use defaults
+            String localstackVersion =
+                    System.getProperty("testcontainers.localstack.version", DEFAULT_LOCALSTACK_VERSION);
 
-      log.info("Initializing shared LocalStack TestContainer with version: {}", localstackVersion);
+            log.info("Initializing shared LocalStack TestContainer with version: {}", localstackVersion);
 
-      LOCALSTACK_CONTAINER =
-          new LocalStackContainer(DockerImageName.parse(localstackVersion)).withReuse(true);
+            LOCALSTACK_CONTAINER = new LocalStackContainer(DockerImageName.parse(localstackVersion)).withReuse(true);
 
-      LOCALSTACK_CONTAINER.start();
+            LOCALSTACK_CONTAINER.start();
 
-      S3_ENDPOINT = LOCALSTACK_CONTAINER.getEndpoint().toString();
+            S3_ENDPOINT = LOCALSTACK_CONTAINER.getEndpoint().toString();
 
-      log.info("Shared LocalStack TestContainer started successfully");
-      log.info("S3 Endpoint: {}", S3_ENDPOINT);
-      log.info("Access Key: {}", ACCESS_KEY);
-      log.info("Region: {}", REGION);
+            log.info("Shared LocalStack TestContainer started successfully");
+            log.info("S3 Endpoint: {}", S3_ENDPOINT);
+            log.info("Access Key: {}", ACCESS_KEY);
+            log.info("Region: {}", REGION);
 
-      // Add shutdown hook to stop the container when JVM exits
-      Runtime.getRuntime()
-          .addShutdownHook(
-              new Thread(
-                  () -> {
-                    log.info("Stopping shared LocalStack TestContainer");
-                    LOCALSTACK_CONTAINER.stop();
-                  }));
-    } else {
-      log.info("LocalStack TestContainer is DISABLED. Using real AWS S3 from configuration.");
-      LOCALSTACK_CONTAINER = null;
-      S3_ENDPOINT = null;
+            // Add shutdown hook to stop the container when JVM exits
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                log.info("Stopping shared LocalStack TestContainer");
+                LOCALSTACK_CONTAINER.stop();
+            }));
+        } else {
+            log.info("LocalStack TestContainer is DISABLED. Using real AWS S3 from configuration.");
+            LOCALSTACK_CONTAINER = null;
+            S3_ENDPOINT = null;
+        }
     }
-  }
 
-  /**
-   * Check if LocalStack TestContainer is enabled.
-   *
-   * @return true if enabled, false otherwise
-   */
-  public static boolean isEnabled() {
-    return ENABLED;
-  }
-
-  /**
-   * Get the shared LocalStack container instance. This method triggers the static initialization if
-   * not already done.
-   *
-   * @return the shared LocalStack container instance
-   * @throws IllegalStateException if TestContainers is disabled
-   */
-  public static LocalStackContainer getInstance() {
-    if (!ENABLED) {
-      throw new IllegalStateException(
-          "LocalStack TestContainer is disabled. Please configure real AWS S3 in application.yml");
+    /**
+     * Check if LocalStack TestContainer is enabled.
+     *
+     * @return true if enabled, false otherwise
+     */
+    public static boolean isEnabled() {
+        return ENABLED;
     }
-    return LOCALSTACK_CONTAINER;
-  }
 
-  /**
-   * Get the S3 endpoint URL.
-   *
-   * @return the S3 endpoint URL
-   * @throws IllegalStateException if TestContainers is disabled
-   */
-  public static String getS3Endpoint() {
+    /**
+     * Get the shared LocalStack container instance. This method triggers the static initialization if
+     * not already done.
+     *
+     * @return the shared LocalStack container instance
+     * @throws IllegalStateException if TestContainers is disabled
+     */
+    public static LocalStackContainer getInstance() {
+        if (!ENABLED) {
+            throw new IllegalStateException(
+                    "LocalStack TestContainer is disabled. Please configure real AWS S3 in application.yml");
+        }
+        return LOCALSTACK_CONTAINER;
+    }
 
-    return S3_ENDPOINT;
-  }
+    /**
+     * Get the S3 endpoint URL.
+     *
+     * @return the S3 endpoint URL
+     * @throws IllegalStateException if TestContainers is disabled
+     */
+    public static String getS3Endpoint() {
 
-  /**
-   * Get the access key.
-   *
-   * @return the access key
-   */
-  public static String getAccessKey() {
-    return ACCESS_KEY;
-  }
+        return S3_ENDPOINT;
+    }
 
-  /**
-   * Get the secret key.
-   *
-   * @return the secret key
-   */
-  public static String getSecretKey() {
-    return SECRET_KEY;
-  }
+    /**
+     * Get the access key.
+     *
+     * @return the access key
+     */
+    public static String getAccessKey() {
+        return ACCESS_KEY;
+    }
 
-  /**
-   * Get the region.
-   *
-   * @return the region
-   */
-  public static String getRegion() {
-    return REGION;
-  }
+    /**
+     * Get the secret key.
+     *
+     * @return the secret key
+     */
+    public static String getSecretKey() {
+        return SECRET_KEY;
+    }
 
-  /** Private constructor to prevent instantiation */
-  private SharedLocalStackContainer() {
-    throw new UnsupportedOperationException("Utility class cannot be instantiated");
-  }
+    /**
+     * Get the region.
+     *
+     * @return the region
+     */
+    public static String getRegion() {
+        return REGION;
+    }
+
+    /** Private constructor to prevent instantiation */
+    private SharedLocalStackContainer() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
 }

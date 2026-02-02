@@ -33,17 +33,17 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class JsonCacheSerializer implements CacheSerializer {
-  @Override
-  public byte[] serialize(CacheValueWrapper<?> value) {
-    return JsonUtil.toBytes(value);
-  }
-
-  @Override
-  public <T> CacheValueWrapper<T> deserialize(byte[] bytes, Class<T> typeRef) {
-    if (bytes == null || bytes.length == 0) {
-      return new CacheValueWrapper<>("NULL", null, null);
+    @Override
+    public byte[] serialize(CacheValueWrapper<?> value) {
+        return JsonUtil.toBytes(value);
     }
-    CacheValueWrapper<T> wrapper = JsonUtil.fromBytes(bytes, new TypeReference<>() {});
-    return wrapper;
-  }
+
+    @Override
+    public <T> CacheValueWrapper<T> deserialize(byte[] bytes, Class<T> typeRef) {
+        if (bytes == null || bytes.length == 0) {
+            return new CacheValueWrapper<>("NULL", null, null);
+        }
+        CacheValueWrapper<T> wrapper = JsonUtil.fromBytes(bytes, new TypeReference<>() {});
+        return wrapper;
+    }
 }

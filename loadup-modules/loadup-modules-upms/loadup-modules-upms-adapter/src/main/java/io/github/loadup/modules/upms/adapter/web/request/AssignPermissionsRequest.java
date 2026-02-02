@@ -35,9 +35,9 @@ import lombok.Data;
  */
 @Data
 public class AssignPermissionsRequest {
-  @NotNull(message = "角色ID不能为空")
-  private String roleId;
+    @NotNull(message = "角色ID不能为空")
+    private String roleId;
 
-  @NotEmpty(message = "权限ID列表不能为空")
-  private List<String> permissionIds;
+    @NotEmpty(message = "权限ID列表不能为空")
+    private List<String> permissionIds;
 }

@@ -31,9 +31,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Extension(bizCode = "EnglishGreeting")
 public class EnglishGreeting implements GreetingService {
-  @Override
-  public String greet() {
-    log.info("EnglishGreeting:{}", "Hello");
-    return "Hello";
-  }
+    @Override
+    public String greet() {
+        log.info("EnglishGreeting:{}", "Hello");
+        return "Hello";
+    }
 }

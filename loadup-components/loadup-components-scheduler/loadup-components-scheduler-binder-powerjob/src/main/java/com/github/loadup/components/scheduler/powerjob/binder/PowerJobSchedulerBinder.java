@@ -38,81 +38,79 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PowerJobSchedulerBinder implements SchedulerBinder {
 
-  private static final String BINDER_NAME = "powerjob";
-  private final Map<String, SchedulerTask> taskRegistry = new ConcurrentHashMap<>();
+    private static final String BINDER_NAME = "powerjob";
+    private final Map<String, SchedulerTask> taskRegistry = new ConcurrentHashMap<>();
 
-  @Override
-  public String getBinderType() {
-    return BINDER_NAME;
-  }
-
-  @Override
-  public void injectConfigs(String name, BaseBinderCfg binderCfg, BaseBindingCfg bindingCfg) {}
-
-  @Override
-  public void binderInit() {
-    log.info("Initializing PowerJob scheduler binder");
-    log.info("PowerJob tasks are typically managed via PowerJob server console");
-  }
-
-  @Override
-  public void binderDestroy() {
-    log.info("Destroying PowerJob scheduler binder");
-    taskRegistry.clear();
-  }
-
-  @Override
-  public boolean registerTask(SchedulerTask task) {
-    // PowerJob uses server-side configuration and @PowerJobHandler annotation
-    // We store the task for reference but cannot dynamically register
-    String taskName = task.getTaskName();
-    taskRegistry.put(taskName, task);
-    log.info(
-        "Task '{}' registered in local registry. Configure on PowerJob server for execution",
-        taskName);
-    return true;
-  }
-
-  @Override
-  public boolean unregisterTask(String taskName) {
-    SchedulerTask removed = taskRegistry.remove(taskName);
-    if (removed != null) {
-      log.info("Task '{}' removed from local registry", taskName);
-      log.warn("Task management should be done via PowerJob server console");
-      return true;
+    @Override
+    public String getBinderType() {
+        return BINDER_NAME;
     }
-    return false;
-  }
 
-  @Override
-  public boolean pauseTask(String taskName) {
-    log.warn("PowerJob task pause must be done via server console");
-    return false;
-  }
+    @Override
+    public void injectConfigs(String name, BaseBinderCfg binderCfg, BaseBindingCfg bindingCfg) {}
 
-  @Override
-  public boolean resumeTask(String taskName) {
-    log.warn("PowerJob task resume must be done via server console");
-    return false;
-  }
+    @Override
+    public void binderInit() {
+        log.info("Initializing PowerJob scheduler binder");
+        log.info("PowerJob tasks are typically managed via PowerJob server console");
+    }
 
-  @Override
-  public boolean triggerTask(String taskName) {
-    log.warn("PowerJob task trigger must be done via server console or API");
-    return false;
-  }
+    @Override
+    public void binderDestroy() {
+        log.info("Destroying PowerJob scheduler binder");
+        taskRegistry.clear();
+    }
 
-  @Override
-  public boolean updateTaskCron(String taskName, String cron) {
-    log.warn("PowerJob task cron update must be done via server console or API");
-    return false;
-  }
+    @Override
+    public boolean registerTask(SchedulerTask task) {
+        // PowerJob uses server-side configuration and @PowerJobHandler annotation
+        // We store the task for reference but cannot dynamically register
+        String taskName = task.getTaskName();
+        taskRegistry.put(taskName, task);
+        log.info("Task '{}' registered in local registry. Configure on PowerJob server for execution", taskName);
+        return true;
+    }
 
-  @Override
-  public boolean taskExists(String taskName) {
-    return taskRegistry.containsKey(taskName);
-  }
+    @Override
+    public boolean unregisterTask(String taskName) {
+        SchedulerTask removed = taskRegistry.remove(taskName);
+        if (removed != null) {
+            log.info("Task '{}' removed from local registry", taskName);
+            log.warn("Task management should be done via PowerJob server console");
+            return true;
+        }
+        return false;
+    }
 
-  @Override
-  public void destroy() throws Exception {}
+    @Override
+    public boolean pauseTask(String taskName) {
+        log.warn("PowerJob task pause must be done via server console");
+        return false;
+    }
+
+    @Override
+    public boolean resumeTask(String taskName) {
+        log.warn("PowerJob task resume must be done via server console");
+        return false;
+    }
+
+    @Override
+    public boolean triggerTask(String taskName) {
+        log.warn("PowerJob task trigger must be done via server console or API");
+        return false;
+    }
+
+    @Override
+    public boolean updateTaskCron(String taskName, String cron) {
+        log.warn("PowerJob task cron update must be done via server console or API");
+        return false;
+    }
+
+    @Override
+    public boolean taskExists(String taskName) {
+        return taskRegistry.containsKey(taskName);
+    }
+
+    @Override
+    public void destroy() throws Exception {}
 }

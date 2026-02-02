@@ -36,15 +36,15 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 // @Import(MyBatisTestConfig.class)
 @ComponentScan(
-    basePackages = {
-      "io.github.loadup.modules.upms.infrastructure.repository",
-      "io.github.loadup.modules.upms.infrastructure.converter",
-      "io.github.loadup.components.database"
-    })
+        basePackages = {
+            "io.github.loadup.modules.upms.infrastructure.repository",
+            "io.github.loadup.modules.upms.infrastructure.converter",
+            "io.github.loadup.components.database"
+        })
 @MapperScan("io.github.loadup.modules.upms.infrastructure.mapper")
 public class TestApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(TestApplication.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(TestApplication.class, args);
+    }
 }

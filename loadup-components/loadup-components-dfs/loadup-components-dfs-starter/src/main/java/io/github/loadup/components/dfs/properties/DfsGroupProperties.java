@@ -34,17 +34,17 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 @ConfigurationProperties(prefix = "loadup.dfs")
 public class DfsGroupProperties {
 
-  /** 绑定的存储类型 */
-  private BinderType defaultBinder = BinderType.LOCAL;
+    /** 绑定的存储类型 */
+    private BinderType defaultBinder = BinderType.LOCAL;
 
-  /** 启用的绑定器列表 */
-  private List<BinderType> enabledBinders;
+    /** 启用的绑定器列表 */
+    private List<BinderType> enabledBinders;
 
-  /** 文件类型与存储绑定的映射 */
-  private Map<String, BindingConfig> bindings;
+    /** 文件类型与存储绑定的映射 */
+    private Map<String, BindingConfig> bindings;
 
-  /** 各种存储类型的配置 */
-  @NestedConfigurationProperty
-  @JsonDeserialize(using = MapBinderConverter.class)
-  private Map<BinderType, BinderConfig> binders;
+    /** 各种存储类型的配置 */
+    @NestedConfigurationProperty
+    @JsonDeserialize(using = MapBinderConverter.class)
+    private Map<BinderType, BinderConfig> binders;
 }

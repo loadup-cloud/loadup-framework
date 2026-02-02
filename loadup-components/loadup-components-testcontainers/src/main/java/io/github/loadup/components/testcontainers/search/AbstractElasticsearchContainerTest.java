@@ -48,15 +48,15 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(initializers = ElasticsearchContainerInitializer.class)
 public abstract class AbstractElasticsearchContainerTest {
 
-  protected String getHttpHostAddress() {
-    return SharedElasticsearchContainer.getHttpHostAddress();
-  }
+    protected String getHttpHostAddress() {
+        return SharedElasticsearchContainer.getHttpHostAddress();
+    }
 
-  protected String getHost() {
-    return SharedElasticsearchContainer.getHost();
-  }
+    protected String getHost() {
+        return SharedElasticsearchContainer.getHost();
+    }
 
-  protected Integer getPort() {
-    return SharedElasticsearchContainer.getPort();
-  }
+    protected Integer getPort() {
+        return SharedElasticsearchContainer.getPort();
+    }
 }

@@ -54,121 +54,114 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DataScopeAspect {
 
-  private static final ThreadLocal<DataScopeContext> CONTEXT_HOLDER = new ThreadLocal<>();
+    private static final ThreadLocal<DataScopeContext> CONTEXT_HOLDER = new ThreadLocal<>();
 
-  private final UserGateway userGateway;
-  private final RoleGateway roleGateway;
-  private final DepartmentGateway departmentGateway;
+    private final UserGateway userGateway;
+    private final RoleGateway roleGateway;
+    private final DepartmentGateway departmentGateway;
 
-  /** Get current data scope context */
-  public static DataScopeContext getCurrentContext() {
-    return CONTEXT_HOLDER.get();
-  }
-
-  /** Clear data scope context */
-  public static void clearContext() {
-    CONTEXT_HOLDER.remove();
-  }
-
-  /** Before method execution, build data scope context */
-  @Before("@annotation(datascope.security.infrastructure.upms.modules.loadup.github.io.DataScope)")
-  public void before(JoinPoint joinPoint) {
-    try {
-      // Get @DataScope annotation
-      MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-      Method method = signature.getMethod();
-      DataScope dataScope = method.getAnnotation(DataScope.class);
-
-      if (dataScope == null) {
-        return;
-      }
-
-      // Get current authenticated user
-      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-      if (authentication == null || !authentication.isAuthenticated()) {
-        log.debug("No authenticated user, skipping data scope");
-        return;
-      }
-
-      String username = authentication.getName();
-      User user = userGateway.findByUsername(username).orElse(null);
-      if (user == null) {
-        log.warn("User not found: {}", username);
-        return;
-      }
-
-      // Build data scope context
-      DataScopeContext context = buildDataScopeContext(user);
-      CONTEXT_HOLDER.set(context);
-
-      log.debug(
-          "Data scope context initialized for user: {}, scope: {}",
-          username,
-          context.getDataScopeType());
-
-    } catch (Exception e) {
-      log.error("Failed to initialize data scope context", e);
+    /** Get current data scope context */
+    public static DataScopeContext getCurrentContext() {
+        return CONTEXT_HOLDER.get();
     }
-  }
 
-  /** Build data scope context for user */
-  private DataScopeContext buildDataScopeContext(User user) {
-    // Get user's roles
-    List<Role> roles = roleGateway.findByUserId(user.getId());
+    /** Clear data scope context */
+    public static void clearContext() {
+        CONTEXT_HOLDER.remove();
+    }
 
-    // Check if user is super admin (has ADMIN role)
-    boolean isSuperAdmin =
-        roles.stream()
-            .anyMatch(
-                r ->
-                    "ROLE_ADMIN".equals(r.getRoleCode())
-                        || "ROLE_SUPER_ADMIN".equals(r.getRoleCode()));
+    /** Before method execution, build data scope context */
+    @Before("@annotation(datascope.security.infrastructure.upms.modules.loadup.github.io.DataScope)")
+    public void before(JoinPoint joinPoint) {
+        try {
+            // Get @DataScope annotation
+            MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+            Method method = signature.getMethod();
+            DataScope dataScope = method.getAnnotation(DataScope.class);
 
-    // Find the most permissive data scope from all roles
-    DataScopeType maxDataScope = DataScopeType.SELF; // Most restrictive by default
-    List<String> customDeptIds = new ArrayList<>();
+            if (dataScope == null) {
+                return;
+            }
 
-    for (Role role : roles) {
-      if (role.getDataScope() != null) {
-        DataScopeType roleScope = DataScopeType.fromCode(role.getDataScope());
-        if (roleScope.getCode() < maxDataScope.getCode()) {
-          maxDataScope = roleScope;
+            // Get current authenticated user
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                log.debug("No authenticated user, skipping data scope");
+                return;
+            }
+
+            String username = authentication.getName();
+            User user = userGateway.findByUsername(username).orElse(null);
+            if (user == null) {
+                log.warn("User not found: {}", username);
+                return;
+            }
+
+            // Build data scope context
+            DataScopeContext context = buildDataScopeContext(user);
+            CONTEXT_HOLDER.set(context);
+
+            log.debug("Data scope context initialized for user: {}, scope: {}", username, context.getDataScopeType());
+
+        } catch (Exception e) {
+            log.error("Failed to initialize data scope context", e);
+        }
+    }
+
+    /** Build data scope context for user */
+    private DataScopeContext buildDataScopeContext(User user) {
+        // Get user's roles
+        List<Role> roles = roleGateway.findByUserId(user.getId());
+
+        // Check if user is super admin (has ADMIN role)
+        boolean isSuperAdmin = roles.stream()
+                .anyMatch(r -> "ROLE_ADMIN".equals(r.getRoleCode()) || "ROLE_SUPER_ADMIN".equals(r.getRoleCode()));
+
+        // Find the most permissive data scope from all roles
+        DataScopeType maxDataScope = DataScopeType.SELF; // Most restrictive by default
+        List<String> customDeptIds = new ArrayList<>();
+
+        for (Role role : roles) {
+            if (role.getDataScope() != null) {
+                DataScopeType roleScope = DataScopeType.fromCode(role.getDataScope());
+                if (roleScope.getCode() < maxDataScope.getCode()) {
+                    maxDataScope = roleScope;
+                }
+
+                // Collect custom department IDs
+                if (roleScope == DataScopeType.CUSTOM) {
+                    List<String> roleDeptIds = roleGateway.findDepartmentIdsByRoleId(role.getId());
+                    customDeptIds.addAll(roleDeptIds);
+                }
+            }
         }
 
-        // Collect custom department IDs
-        if (roleScope == DataScopeType.CUSTOM) {
-          List<String> roleDeptIds = roleGateway.findDepartmentIdsByRoleId(role.getId());
-          customDeptIds.addAll(roleDeptIds);
+        // Get sub-departments if needed
+        List<String> subDeptIds = new ArrayList<>();
+        if (maxDataScope == DataScopeType.DEPT_AND_SUB && user.getDeptId() != null) {
+            subDeptIds = getAllSubDepartmentIds(user.getDeptId());
         }
-      }
+
+        return DataScopeContext.builder()
+                .userId(user.getId())
+                .deptId(user.getDeptId())
+                .dataScopeType(maxDataScope)
+                .customDeptIds(customDeptIds.stream().distinct().collect(Collectors.toList()))
+                .subDeptIds(subDeptIds)
+                .isSuperAdmin(isSuperAdmin)
+                .build();
     }
 
-    // Get sub-departments if needed
-    List<String> subDeptIds = new ArrayList<>();
-    if (maxDataScope == DataScopeType.DEPT_AND_SUB && user.getDeptId() != null) {
-      subDeptIds = getAllSubDepartmentIds(user.getDeptId());
+    /** Get all sub-department IDs recursively */
+    private List<String> getAllSubDepartmentIds(String parentDeptId) {
+        List<String> allIds = new ArrayList<>();
+        List<Department> children = departmentGateway.findByParentId(parentDeptId);
+
+        for (Department child : children) {
+            allIds.add(child.getId());
+            allIds.addAll(getAllSubDepartmentIds(child.getId()));
+        }
+
+        return allIds;
     }
-
-    return DataScopeContext.builder()
-        .userId(user.getId())
-        .deptId(user.getDeptId())
-        .dataScopeType(maxDataScope)
-        .customDeptIds(customDeptIds.stream().distinct().collect(Collectors.toList()))
-        .subDeptIds(subDeptIds)
-        .isSuperAdmin(isSuperAdmin)
-        .build();
-  }
-
-  /** Get all sub-department IDs recursively */
-  private List<String> getAllSubDepartmentIds(String parentDeptId) {
-    List<String> allIds = new ArrayList<>();
-    List<Department> children = departmentGateway.findByParentId(parentDeptId);
-
-    for (Department child : children) {
-      allIds.add(child.getId());
-      allIds.addAll(getAllSubDepartmentIds(child.getId()));
-    }
-
-    return allIds;
-  }
 }

@@ -39,9 +39,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AccessTokenDTO {
 
-  private String accessToken;
-  private String refreshToken;
-  private String tokenType;
-  private Long expiresIn;
-  private UserDetailDTO userInfo;
+    private String accessToken;
+    private String refreshToken;
+    private String tokenType;
+    private Long expiresIn;
+    private UserDetailDTO userInfo;
 }

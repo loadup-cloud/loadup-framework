@@ -38,37 +38,37 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(classes = TestApplication.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public abstract class BaseRedisCacheTest extends AbstractRedisContainerTest {
-  @BindingClient("redis-biz-type")
-  protected CacheBinding redisBinding;
+    @BindingClient("redis-biz-type")
+    protected CacheBinding redisBinding;
 
-  protected static final String TEST_CACHE_NAME = "test-cache";
-  protected static final String TEST_KEY = "test-key";
-  protected static final String TEST_VALUE = "test-value";
+    protected static final String TEST_CACHE_NAME = "test-cache";
+    protected static final String TEST_KEY = "test-key";
+    protected static final String TEST_VALUE = "test-value";
 
-  @BeforeEach
-  public void setUp() {
-    log.info("Setting up test: {}", this.getClass().getSimpleName());
-    clearCache();
-  }
-
-  @AfterEach
-  public void tearDown() {
-    log.info("Tearing down test: {}", this.getClass().getSimpleName());
-    clearCache();
-  }
-
-  protected void clearCache() {
-    try {
-    } catch (Exception e) {
-      log.warn("Failed to clear cache: {}", e.getMessage());
+    @BeforeEach
+    public void setUp() {
+        log.info("Setting up test: {}", this.getClass().getSimpleName());
+        clearCache();
     }
-  }
 
-  protected void sleep(long millis) {
-    try {
-      Thread.sleep(millis);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
+    @AfterEach
+    public void tearDown() {
+        log.info("Tearing down test: {}", this.getClass().getSimpleName());
+        clearCache();
     }
-  }
+
+    protected void clearCache() {
+        try {
+        } catch (Exception e) {
+            log.warn("Failed to clear cache: {}", e.getMessage());
+        }
+    }
+
+    protected void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 }

@@ -36,48 +36,48 @@ import org.springframework.data.domain.Pageable;
  */
 public interface UserGateway {
 
-  /** Save user */
-  User save(User user);
+    /** Save user */
+    User save(User user);
 
-  /** Update user */
-  User update(User user);
+    /** Update user */
+    User update(User user);
 
-  /** Delete user by ID */
-  void deleteById(String id);
+    /** Delete user by ID */
+    void deleteById(String id);
 
-  /** Find user by ID */
-  Optional<User> findById(String id);
+    /** Find user by ID */
+    Optional<User> findById(String id);
 
-  /** Find user by username */
-  Optional<User> findByUsername(String username);
+    /** Find user by username */
+    Optional<User> findByUsername(String username);
 
-  /** Find user by email */
-  Optional<User> findByEmail(String email);
+    /** Find user by email */
+    Optional<User> findByEmail(String email);
 
-  /** Find user by phone */
-  Optional<User> findByMobile(String mobile);
+    /** Find user by phone */
+    Optional<User> findByMobile(String mobile);
 
-  /** Find users by department ID */
-  List<User> findByDeptId(String deptId);
+    /** Find users by department ID */
+    List<User> findByDeptId(String deptId);
 
-  /** Find users by role ID */
-  List<User> findByRoleId(String roleId);
+    /** Find users by role ID */
+    List<User> findByRoleId(String roleId);
 
-  /** Find all users (with pagination) */
-  Page<User> findAll(Pageable pageable);
+    /** Find all users (with pagination) */
+    Page<User> findAll(Pageable pageable);
 
-  /** Search users by keyword */
-  Page<User> search(String keyword, Pageable pageable);
+    /** Search users by keyword */
+    Page<User> search(String keyword, Pageable pageable);
 
-  /** Check if username exists */
-  boolean existsByUsername(String username);
+    /** Check if username exists */
+    boolean existsByUsername(String username);
 
-  /** Check if email exists */
-  boolean existsByEmail(String email);
+    /** Check if email exists */
+    boolean existsByEmail(String email);
 
-  /** Check if mobile exists */
-  boolean existsByMobile(String mobile);
+    /** Check if mobile exists */
+    boolean existsByMobile(String mobile);
 
-  /** Count users by department ID */
-  long countByDeptId(String deptId);
+    /** Count users by department ID */
+    long countByDeptId(String deptId);
 }

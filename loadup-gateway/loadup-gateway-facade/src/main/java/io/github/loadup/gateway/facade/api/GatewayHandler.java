@@ -28,9 +28,9 @@ import io.github.loadup.gateway.facade.model.GatewayResponse;
 /** Gateway handler interface */
 public interface GatewayHandler {
 
-  /** Handle a gateway request */
-  GatewayResponse handle(GatewayRequest request);
+    /** Handle a gateway request */
+    GatewayResponse handle(GatewayRequest request);
 
-  /** Check whether the handler supports the given request */
-  boolean supports(GatewayRequest request);
+    /** Check whether the handler supports the given request */
+    boolean supports(GatewayRequest request);
 }

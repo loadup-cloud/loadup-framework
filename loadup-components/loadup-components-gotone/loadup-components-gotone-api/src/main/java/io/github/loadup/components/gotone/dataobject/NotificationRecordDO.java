@@ -38,66 +38,67 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("gotone_notification_record")
 public class NotificationRecordDO extends BaseDO implements Persistable<String> {
 
-  @Id
-  @Column("id")
-  private String id;
+    @Id
+    @Column("id")
+    private String id;
 
-  @Column("trace_id")
-  private String traceId;
+    @Column("trace_id")
+    private String traceId;
 
-  @Column("business_code")
-  private String businessCode;
+    @Column("business_code")
+    private String businessCode;
 
-  @Column("biz_id")
-  private String bizId;
+    @Column("biz_id")
+    private String bizId;
 
-  @Column("message_id")
-  private String messageId;
+    @Column("message_id")
+    private String messageId;
 
-  @Column("channel")
-  private String channel;
+    @Column("channel")
+    private String channel;
 
-  /** 接收人列表 JSON 字符串 */
-  @Column("receivers")
-  private String receiversJson;
+    /** 接收人列表 JSON 字符串 */
+    @Column("receivers")
+    private String receiversJson;
 
-  @Column("template_code")
-  private String templateCode;
+    @Column("template_code")
+    private String templateCode;
 
-  @Column("title")
-  private String title;
+    @Column("title")
+    private String title;
 
-  @Column("content")
-  private String content;
+    @Column("content")
+    private String content;
 
-  @Column("provider")
-  private String provider;
+    @Column("provider")
+    private String provider;
 
-  @Column("status")
-  private String status;
+    @Column("status")
+    private String status;
 
-  @Column("retry_count")
-  private Integer retryCount;
+    @Column("retry_count")
+    private Integer retryCount;
 
-  @Column("priority")
-  private Integer priority;
+    @Column("priority")
+    private Integer priority;
 
-  @Column("error_message")
-  private String errorMessage;
+    @Column("error_message")
+    private String errorMessage;
 
-  @Column("send_time")
-  private LocalDateTime sendTime;
+    @Column("send_time")
+    private LocalDateTime sendTime;
 
-  @Transient private boolean isNew = true;
+    @Transient
+    private boolean isNew = true;
 
-  @Override
-  public boolean isNew() {
-    // 如果 createdAt 为 null，说明是新实体（还未持久化）
-    return getCreatedAt() == null;
-  }
+    @Override
+    public boolean isNew() {
+        // 如果 createdAt 为 null，说明是新实体（还未持久化）
+        return getCreatedAt() == null;
+    }
 
-  // 用于测试时标记为非新实体（可选）
-  public void markNotNew() {
-    this.isNew = false;
-  }
+    // 用于测试时标记为非新实体（可选）
+    public void markNotNew() {
+        this.isNew = false;
+    }
 }

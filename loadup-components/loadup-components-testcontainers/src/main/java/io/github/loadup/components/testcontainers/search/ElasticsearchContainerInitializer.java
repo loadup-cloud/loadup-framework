@@ -53,25 +53,25 @@ import org.springframework.core.env.ConfigurableEnvironment;
 @Slf4j
 public class ElasticsearchContainerInitializer extends BaseContainerInitializer {
 
-  @Override
-  protected String getContainerName() {
-    return "Elasticsearch";
-  }
+    @Override
+    protected String getContainerName() {
+        return "Elasticsearch";
+    }
 
-  @Override
-  protected ContainerConfig getContainerConfig(TestContainersProperties p) {
-    return p.getElasticsearch();
-  }
+    @Override
+    protected ContainerConfig getContainerConfig(TestContainersProperties p) {
+        return p.getElasticsearch();
+    }
 
-  @Override
-  protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
-    SharedElasticsearchContainer.startContainer(config);
-    applyProperties(
-        env,
-        Map.of(
-            "spring.elasticsearch.uris", SharedElasticsearchContainer.getHttpHostAddress(),
-            "spring.elasticsearch.rest.uris", SharedElasticsearchContainer.getHttpHostAddress(),
-            "spring.data.elasticsearch.client.reactive.endpoints",
-                SharedElasticsearchContainer.getHttpHostAddress()));
-  }
+    @Override
+    protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
+        SharedElasticsearchContainer.startContainer(config);
+        applyProperties(
+                env,
+                Map.of(
+                        "spring.elasticsearch.uris", SharedElasticsearchContainer.getHttpHostAddress(),
+                        "spring.elasticsearch.rest.uris", SharedElasticsearchContainer.getHttpHostAddress(),
+                        "spring.data.elasticsearch.client.reactive.endpoints",
+                                SharedElasticsearchContainer.getHttpHostAddress()));
+    }
 }

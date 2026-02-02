@@ -46,83 +46,81 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan(basePackages = "io.github.loadup.gateway")
 public class GatewayAutoConfiguration {
 
-  @Bean
-  @ConditionalOnMissingBean
-  public RouteResolver routeResolver(
-      RepositoryPlugin repositoryPlugin, GatewayProperties gatewayProperties) {
-    return new RouteResolver(repositoryPlugin, gatewayProperties);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public RouteResolver routeResolver(RepositoryPlugin repositoryPlugin, GatewayProperties gatewayProperties) {
+        return new RouteResolver(repositoryPlugin, gatewayProperties);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public PluginManager pluginManager(List<ProxyProcessor> proxyProcessors) {
-    return new PluginManager(proxyProcessors);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public PluginManager pluginManager(List<ProxyProcessor> proxyProcessors) {
+        return new PluginManager(proxyProcessors);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public TemplateEngine templateEngine() {
-    return new TemplateEngine();
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public TemplateEngine templateEngine() {
+        return new TemplateEngine();
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public RouteAction routeAction(RouteResolver routeResolver) {
-    return new RouteAction(routeResolver);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public RouteAction routeAction(RouteResolver routeResolver) {
+        return new RouteAction(routeResolver);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public ProxyAction proxyAction(PluginManager pluginManager) {
-    return new ProxyAction(pluginManager);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public ProxyAction proxyAction(PluginManager pluginManager) {
+        return new ProxyAction(pluginManager);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public RequestTemplateAction requestTemplateAction(TemplateEngine templateEngine) {
-    return new RequestTemplateAction(templateEngine);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public RequestTemplateAction requestTemplateAction(TemplateEngine templateEngine) {
+        return new RequestTemplateAction(templateEngine);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public ResponseTemplateAction responseTemplateAction(TemplateEngine templateEngine) {
-    return new ResponseTemplateAction(templateEngine);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public ResponseTemplateAction responseTemplateAction(TemplateEngine templateEngine) {
+        return new ResponseTemplateAction(templateEngine);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public ResponseWrapperAction responseWrapperAction(GatewayProperties gatewayProperties) {
-    return new ResponseWrapperAction(gatewayProperties);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public ResponseWrapperAction responseWrapperAction(GatewayProperties gatewayProperties) {
+        return new ResponseWrapperAction(gatewayProperties);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public ActionDispatcher actionDispatcher(
-      RouteAction routeAction,
-      RequestTemplateAction requestTemplateAction,
-      ResponseWrapperAction responseWrapperAction,
-      ResponseTemplateAction responseTemplateAction,
-      ProxyAction proxyAction) {
-    List<GatewayAction> actionChain =
-        Arrays.asList(
-            routeAction, // 1. 寻址
-            requestTemplateAction, // 2. 处理请求参数
-            proxyAction, // 3. 处于最内层，发送请求
-            responseTemplateAction, // 4.  转换结果
-            responseWrapperAction // 5.  包装结果
-            );
-    return new ActionDispatcher(actionChain);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public ActionDispatcher actionDispatcher(
+            RouteAction routeAction,
+            RequestTemplateAction requestTemplateAction,
+            ResponseWrapperAction responseWrapperAction,
+            ResponseTemplateAction responseTemplateAction,
+            ProxyAction proxyAction) {
+        List<GatewayAction> actionChain = Arrays.asList(
+                routeAction, // 1. 寻址
+                requestTemplateAction, // 2. 处理请求参数
+                proxyAction, // 3. 处于最内层，发送请求
+                responseTemplateAction, // 4.  转换结果
+                responseWrapperAction // 5.  包装结果
+                );
+        return new ActionDispatcher(actionChain);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public GatewayHandlerAdapter gatewayHandlerAdapter(ActionDispatcher actionDispatcher) {
-    return new GatewayHandlerAdapter(actionDispatcher);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public GatewayHandlerAdapter gatewayHandlerAdapter(ActionDispatcher actionDispatcher) {
+        return new GatewayHandlerAdapter(actionDispatcher);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public GatewayHandlerMapping gatewayHandlerMapping(RepositoryPlugin repositoryPlugin) {
-    return new GatewayHandlerMapping(repositoryPlugin);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public GatewayHandlerMapping gatewayHandlerMapping(RepositoryPlugin repositoryPlugin) {
+        return new GatewayHandlerMapping(repositoryPlugin);
+    }
 }

@@ -37,82 +37,80 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class XxlJobSchedulerBinder implements SchedulerBinder {
 
-  private static final String BINDER_NAME = "xxljob";
-  private final Map<String, SchedulerTask> taskRegistry = new ConcurrentHashMap<>();
+    private static final String BINDER_NAME = "xxljob";
+    private final Map<String, SchedulerTask> taskRegistry = new ConcurrentHashMap<>();
 
-  @Override
-  public String getBinderType() {
-    return BINDER_NAME;
-  }
-
-  @Override
-  public void injectConfigs(String name, BaseBinderCfg binderCfg, BaseBindingCfg bindingCfg) {}
-
-  @Override
-  public void binderInit() {
-    log.info("Initializing XXL-Job scheduler binder");
-    log.warn("XXL-Job uses annotation-based registration. Runtime task management is limited.");
-  }
-
-  @Override
-  public void binderDestroy() {
-    log.info("Destroying XXL-Job scheduler binder");
-    taskRegistry.clear();
-  }
-
-  @Override
-  public boolean registerTask(SchedulerTask task) {
-    // XXL-Job uses @XxlJob annotation for registration
-    // We store the task for reference but cannot dynamically register
-    String taskName = task.getTaskName();
-    taskRegistry.put(taskName, task);
-    log.info(
-        "Task '{}' registered in local registry. Note: XXL-Job requires @XxlJob annotation",
-        taskName);
-    log.warn("XXL-Job tasks must be registered via admin console and use @XxlJob annotation");
-    return true;
-  }
-
-  @Override
-  public boolean unregisterTask(String taskName) {
-    SchedulerTask removed = taskRegistry.remove(taskName);
-    if (removed != null) {
-      log.info("Task '{}' removed from local registry", taskName);
-      log.warn("XXL-Job tasks must be managed via admin console");
-      return true;
+    @Override
+    public String getBinderType() {
+        return BINDER_NAME;
     }
-    return false;
-  }
 
-  @Override
-  public boolean pauseTask(String taskName) {
-    log.warn("XXL-Job task pause must be done via admin console");
-    return false;
-  }
+    @Override
+    public void injectConfigs(String name, BaseBinderCfg binderCfg, BaseBindingCfg bindingCfg) {}
 
-  @Override
-  public boolean resumeTask(String taskName) {
-    log.warn("XXL-Job task resume must be done via admin console");
-    return false;
-  }
+    @Override
+    public void binderInit() {
+        log.info("Initializing XXL-Job scheduler binder");
+        log.warn("XXL-Job uses annotation-based registration. Runtime task management is limited.");
+    }
 
-  @Override
-  public boolean triggerTask(String taskName) {
-    log.warn("XXL-Job task trigger must be done via admin console");
-    return false;
-  }
+    @Override
+    public void binderDestroy() {
+        log.info("Destroying XXL-Job scheduler binder");
+        taskRegistry.clear();
+    }
 
-  @Override
-  public boolean updateTaskCron(String taskName, String cron) {
-    log.warn("XXL-Job task cron update must be done via admin console");
-    return false;
-  }
+    @Override
+    public boolean registerTask(SchedulerTask task) {
+        // XXL-Job uses @XxlJob annotation for registration
+        // We store the task for reference but cannot dynamically register
+        String taskName = task.getTaskName();
+        taskRegistry.put(taskName, task);
+        log.info("Task '{}' registered in local registry. Note: XXL-Job requires @XxlJob annotation", taskName);
+        log.warn("XXL-Job tasks must be registered via admin console and use @XxlJob annotation");
+        return true;
+    }
 
-  @Override
-  public boolean taskExists(String taskName) {
-    return taskRegistry.containsKey(taskName);
-  }
+    @Override
+    public boolean unregisterTask(String taskName) {
+        SchedulerTask removed = taskRegistry.remove(taskName);
+        if (removed != null) {
+            log.info("Task '{}' removed from local registry", taskName);
+            log.warn("XXL-Job tasks must be managed via admin console");
+            return true;
+        }
+        return false;
+    }
 
-  @Override
-  public void destroy() throws Exception {}
+    @Override
+    public boolean pauseTask(String taskName) {
+        log.warn("XXL-Job task pause must be done via admin console");
+        return false;
+    }
+
+    @Override
+    public boolean resumeTask(String taskName) {
+        log.warn("XXL-Job task resume must be done via admin console");
+        return false;
+    }
+
+    @Override
+    public boolean triggerTask(String taskName) {
+        log.warn("XXL-Job task trigger must be done via admin console");
+        return false;
+    }
+
+    @Override
+    public boolean updateTaskCron(String taskName, String cron) {
+        log.warn("XXL-Job task cron update must be done via admin console");
+        return false;
+    }
+
+    @Override
+    public boolean taskExists(String taskName) {
+        return taskRegistry.containsKey(taskName);
+    }
+
+    @Override
+    public void destroy() throws Exception {}
 }

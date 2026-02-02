@@ -41,14 +41,14 @@ import org.springframework.scheduling.annotation.EnableAsync;
 // "io.github.loadup.modules.upms.infrastructure.repository")
 @MapperScan("io.github.loadup.modules.upms.infrastructure.mapper")
 @ComponentScan(
-    basePackages = {
-      "io.github.loadup.modules.upms.domain",
-      "io.github.loadup.modules.upms.infrastructure",
-      "io.github.loadup.modules.upms.app",
-      "io.github.loadup.modules.upms.security",
-      "io.github.loadup.modules.upms.adapter",
-      "io.github.loadup.modules.upms.app.service"
-    })
+        basePackages = {
+            "io.github.loadup.modules.upms.domain",
+            "io.github.loadup.modules.upms.infrastructure",
+            "io.github.loadup.modules.upms.app",
+            "io.github.loadup.modules.upms.security",
+            "io.github.loadup.modules.upms.adapter",
+            "io.github.loadup.modules.upms.app.service"
+        })
 public class UpmsAutoConfiguration {
-  // Auto-configuration for UPMS module
+    // Auto-configuration for UPMS module
 }

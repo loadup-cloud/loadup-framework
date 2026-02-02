@@ -46,130 +46,125 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class PermissionGatewayImpl implements PermissionGateway {
 
-  private final PermissionDOMapper permissionDOMapper;
-  private final PermissionConverter permissionConverter;
+    private final PermissionDOMapper permissionDOMapper;
+    private final PermissionConverter permissionConverter;
 
-  @Override
-  public Permission save(Permission permission) {
-    PermissionDO permissionDO = permissionConverter.toDataObject(permission);
-    permissionDOMapper.insert(permissionDO);
-    permission = permissionConverter.toEntity(permissionDO);
-    return permission;
-  }
+    @Override
+    public Permission save(Permission permission) {
+        PermissionDO permissionDO = permissionConverter.toDataObject(permission);
+        permissionDOMapper.insert(permissionDO);
+        permission = permissionConverter.toEntity(permissionDO);
+        return permission;
+    }
 
-  @Override
-  public Permission update(Permission permission) {
-    PermissionDO permissionDO = permissionConverter.toDataObject(permission);
-    permissionDOMapper.update(permissionDO);
-    permission = permissionConverter.toEntity(permissionDO);
-    return permission;
-  }
+    @Override
+    public Permission update(Permission permission) {
+        PermissionDO permissionDO = permissionConverter.toDataObject(permission);
+        permissionDOMapper.update(permissionDO);
+        permission = permissionConverter.toEntity(permissionDO);
+        return permission;
+    }
 
-  @Override
-  public void deleteById(String id) {
-    permissionDOMapper.deleteById(id);
-  }
+    @Override
+    public void deleteById(String id) {
+        permissionDOMapper.deleteById(id);
+    }
 
-  @Override
-  public Optional<Permission> findById(String id) {
-    PermissionDO permissionDO = permissionDOMapper.selectOneById(id);
-    return Optional.ofNullable(permissionDO).map(permissionConverter::toEntity);
-  }
+    @Override
+    public Optional<Permission> findById(String id) {
+        PermissionDO permissionDO = permissionDOMapper.selectOneById(id);
+        return Optional.ofNullable(permissionDO).map(permissionConverter::toEntity);
+    }
 
-  @Override
-  public Optional<Permission> findByPermissionCode(String permissionCode) {
-    QueryWrapper query =
-        QueryWrapper.create().where(PERMISSION_DO.PERMISSION_CODE.eq(permissionCode));
-    PermissionDO permissionDO = permissionDOMapper.selectOneByQuery(query);
-    return Optional.ofNullable(permissionDO).map(permissionConverter::toEntity);
-  }
+    @Override
+    public Optional<Permission> findByPermissionCode(String permissionCode) {
+        QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.PERMISSION_CODE.eq(permissionCode));
+        PermissionDO permissionDO = permissionDOMapper.selectOneByQuery(query);
+        return Optional.ofNullable(permissionDO).map(permissionConverter::toEntity);
+    }
 
-  @Override
-  public List<Permission> findByUserId(String userId) {
-    // TODO: 实现根据用户ID查询权限（需要关联 user_role 和 role_permission 表）
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
+    @Override
+    public List<Permission> findByUserId(String userId) {
+        // TODO: 实现根据用户ID查询权限（需要关联 user_role 和 role_permission 表）
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-  @Override
-  public List<Permission> findByRoleId(String roleId) {
-    // TODO: 实现根据角色ID查询权限（需要关联 role_permission 表）
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
+    @Override
+    public List<Permission> findByRoleId(String roleId) {
+        // TODO: 实现根据角色ID查询权限（需要关联 role_permission 表）
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-  @Override
-  public List<Permission> findByParentId(String parentId) {
-    QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.PARENT_ID.eq(parentId));
-    List<PermissionDO> permissionDOs = permissionDOMapper.selectListByQuery(query);
-    return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
-  }
+    @Override
+    public List<Permission> findByParentId(String parentId) {
+        QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.PARENT_ID.eq(parentId));
+        List<PermissionDO> permissionDOs = permissionDOMapper.selectListByQuery(query);
+        return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
+    }
 
-  @Override
-  public List<Permission> findByPermissionType(Short permissionType) {
-    QueryWrapper query =
-        QueryWrapper.create().where(PERMISSION_DO.PERMISSION_TYPE.eq(permissionType));
-    List<PermissionDO> permissionDOs = permissionDOMapper.selectListByQuery(query);
-    return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
-  }
+    @Override
+    public List<Permission> findByPermissionType(Short permissionType) {
+        QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.PERMISSION_TYPE.eq(permissionType));
+        List<PermissionDO> permissionDOs = permissionDOMapper.selectListByQuery(query);
+        return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
+    }
 
-  @Override
-  public List<Permission> findAll() {
-    List<PermissionDO> permissionDOs = permissionDOMapper.selectAll();
-    return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
-  }
+    @Override
+    public List<Permission> findAll() {
+        List<PermissionDO> permissionDOs = permissionDOMapper.selectAll();
+        return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
+    }
 
-  @Override
-  public List<Permission> findAllEnabled() {
-    QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.STATUS.eq((short) 1));
-    List<PermissionDO> permissionDOs = permissionDOMapper.selectListByQuery(query);
-    return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
-  }
+    @Override
+    public List<Permission> findAllEnabled() {
+        QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.STATUS.eq((short) 1));
+        List<PermissionDO> permissionDOs = permissionDOMapper.selectListByQuery(query);
+        return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
+    }
 
-  @Override
-  public List<Permission> findMenuPermissions() {
-    QueryWrapper query =
-        QueryWrapper.create()
-            .where(PERMISSION_DO.PERMISSION_TYPE.in((short) 1, (short) 2))
-            .and(PERMISSION_DO.STATUS.eq((short) 1))
-            .orderBy(PERMISSION_DO.SORT_ORDER.asc());
-    List<PermissionDO> permissionDOs = permissionDOMapper.selectListByQuery(query);
-    return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
-  }
+    @Override
+    public List<Permission> findMenuPermissions() {
+        QueryWrapper query = QueryWrapper.create()
+                .where(PERMISSION_DO.PERMISSION_TYPE.in((short) 1, (short) 2))
+                .and(PERMISSION_DO.STATUS.eq((short) 1))
+                .orderBy(PERMISSION_DO.SORT_ORDER.asc());
+        List<PermissionDO> permissionDOs = permissionDOMapper.selectListByQuery(query);
+        return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
+    }
 
-  @Override
-  public boolean existsByPermissionCode(String permissionCode) {
-    QueryWrapper query =
-        QueryWrapper.create().where(PERMISSION_DO.PERMISSION_CODE.eq(permissionCode));
-    return permissionDOMapper.selectCountByQuery(query) > 0;
-  }
+    @Override
+    public boolean existsByPermissionCode(String permissionCode) {
+        QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.PERMISSION_CODE.eq(permissionCode));
+        return permissionDOMapper.selectCountByQuery(query) > 0;
+    }
 
-  @Override
-  public void assignPermissionToRole(String roleId, String permissionId, String operatorId) {
-    // TODO: 实现分配权限给角色（需要操作 role_permission 表）
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
+    @Override
+    public void assignPermissionToRole(String roleId, String permissionId, String operatorId) {
+        // TODO: 实现分配权限给角色（需要操作 role_permission 表）
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-  @Override
-  public void removePermissionFromRole(String roleId, String permissionId) {
-    // TODO: 实现移除角色权限（需要操作 role_permission 表）
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
+    @Override
+    public void removePermissionFromRole(String roleId, String permissionId) {
+        // TODO: 实现移除角色权限（需要操作 role_permission 表）
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-  @Override
-  public void batchAssignPermissionsToRole(
-      String roleId, List<String> permissionIds, String operatorId) {
-    // TODO: 实现批量分配权限给角色（需要操作 role_permission 表）
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
+    @Override
+    public void batchAssignPermissionsToRole(String roleId, List<String> permissionIds, String operatorId) {
+        // TODO: 实现批量分配权限给角色（需要操作 role_permission 表）
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-  @Override
-  public void removeAllPermissionsFromRole(String roleId) {
-    // TODO: 实现移除角色所有权限（需要操作 role_permission 表）
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
+    @Override
+    public void removeAllPermissionsFromRole(String roleId) {
+        // TODO: 实现移除角色所有权限（需要操作 role_permission 表）
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-  @Override
-  public List<String> getRolePermissionIds(String roleId) {
-    // TODO: 实现获取角色的权限ID列表（需要查询 role_permission 表）
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
+    @Override
+    public List<String> getRolePermissionIds(String roleId) {
+        // TODO: 实现获取角色的权限ID列表（需要查询 role_permission 表）
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 }

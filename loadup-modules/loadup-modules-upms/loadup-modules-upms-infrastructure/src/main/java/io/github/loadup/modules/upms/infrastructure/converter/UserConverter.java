@@ -36,21 +36,21 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "spring")
 public interface UserConverter {
 
-  UserConverter INSTANCE = Mappers.getMapper(UserConverter.class);
+    UserConverter INSTANCE = Mappers.getMapper(UserConverter.class);
 
-  /**
-   * Convert Domain Entity to DataObject
-   *
-   * @param user domain entity
-   * @return data object
-   */
-  UserDO toDataObject(User user);
+    /**
+     * Convert Domain Entity to DataObject
+     *
+     * @param user domain entity
+     * @return data object
+     */
+    UserDO toDataObject(User user);
 
-  /**
-   * Convert DataObject to Domain Entity
-   *
-   * @param userDO data object
-   * @return domain entity
-   */
-  User toEntity(UserDO userDO);
+    /**
+     * Convert DataObject to Domain Entity
+     *
+     * @param userDO data object
+     * @return domain entity
+     */
+    User toEntity(UserDO userDO);
 }

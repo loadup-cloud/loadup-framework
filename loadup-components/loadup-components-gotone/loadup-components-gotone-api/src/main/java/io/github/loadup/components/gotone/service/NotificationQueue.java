@@ -35,45 +35,44 @@ import org.springframework.stereotype.Component;
 @Component
 public class NotificationQueue {
 
-  private static final String NOTIFICATION_QUEUE = "gotone.notification.queue";
-  private static final String NOTIFICATION_EXCHANGE = "gotone.notification.exchange";
+    private static final String NOTIFICATION_QUEUE = "gotone.notification.queue";
+    private static final String NOTIFICATION_EXCHANGE = "gotone.notification.exchange";
 
-  @Autowired(required = false)
-  private RabbitTemplate rabbitTemplate;
+    @Autowired(required = false)
+    private RabbitTemplate rabbitTemplate;
 
-  // 内存队列作为备选
-  private final BlockingQueue<NotificationRequest> memoryQueue =
-      new PriorityBlockingQueue<>(
-          1000, (r1, r2) -> Integer.compare(r2.getPriority(), r1.getPriority()));
+    // 内存队列作为备选
+    private final BlockingQueue<NotificationRequest> memoryQueue =
+            new PriorityBlockingQueue<>(1000, (r1, r2) -> Integer.compare(r2.getPriority(), r1.getPriority()));
 
-  /** 入队 */
-  public void enqueue(NotificationRequest request) {
-    if (rabbitTemplate != null) {
-      try {
-        rabbitTemplate.convertAndSend(NOTIFICATION_EXCHANGE, "", request);
-        log.debug("Enqueued notification to RabbitMQ: {}", request.getBizId());
-        return;
-      } catch (Exception e) {
-        log.error("Failed to enqueue to RabbitMQ, fallback to memory queue: {}", e.getMessage());
-      }
+    /** 入队 */
+    public void enqueue(NotificationRequest request) {
+        if (rabbitTemplate != null) {
+            try {
+                rabbitTemplate.convertAndSend(NOTIFICATION_EXCHANGE, "", request);
+                log.debug("Enqueued notification to RabbitMQ: {}", request.getBizId());
+                return;
+            } catch (Exception e) {
+                log.error("Failed to enqueue to RabbitMQ, fallback to memory queue: {}", e.getMessage());
+            }
+        }
+
+        // 降级到内存队列
+        boolean success = memoryQueue.offer(request);
+        if (!success) {
+            log.error("Memory queue is full, notification dropped: {}", request.getBizId());
+            throw new RuntimeException("Notification queue is full");
+        }
+        log.debug("Enqueued notification to memory queue: {}", request.getBizId());
     }
 
-    // 降级到内存队列
-    boolean success = memoryQueue.offer(request);
-    if (!success) {
-      log.error("Memory queue is full, notification dropped: {}", request.getBizId());
-      throw new RuntimeException("Notification queue is full");
+    /** 出队 */
+    public NotificationRequest dequeue() throws InterruptedException {
+        return memoryQueue.take();
     }
-    log.debug("Enqueued notification to memory queue: {}", request.getBizId());
-  }
 
-  /** 出队 */
-  public NotificationRequest dequeue() throws InterruptedException {
-    return memoryQueue.take();
-  }
-
-  /** 获取队列大小 */
-  public int size() {
-    return memoryQueue.size();
-  }
+    /** 获取队列大小 */
+    public int size() {
+        return memoryQueue.size();
+    }
 }

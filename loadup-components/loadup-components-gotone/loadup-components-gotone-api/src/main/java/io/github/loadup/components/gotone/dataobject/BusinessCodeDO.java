@@ -37,32 +37,33 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("gotone_business_code")
 public class BusinessCodeDO extends BaseDO implements Persistable<String> {
 
-  @Id
-  @Column("id")
-  private String id;
+    @Id
+    @Column("id")
+    private String id;
 
-  @Column("business_code")
-  private String businessCode;
+    @Column("business_code")
+    private String businessCode;
 
-  @Column("business_name")
-  private String businessName;
+    @Column("business_name")
+    private String businessName;
 
-  @Column("description")
-  private String description;
+    @Column("description")
+    private String description;
 
-  @Column("enabled")
-  private Boolean enabled;
+    @Column("enabled")
+    private Boolean enabled;
 
-  @Transient private boolean isNew = true;
+    @Transient
+    private boolean isNew = true;
 
-  @Override
-  public boolean isNew() {
-    // 如果 createdAt 为 null，说明是新实体（还未持久化）
-    return getCreatedAt() == null;
-  }
+    @Override
+    public boolean isNew() {
+        // 如果 createdAt 为 null，说明是新实体（还未持久化）
+        return getCreatedAt() == null;
+    }
 
-  // 用于测试时标记为非新实体（可选）
-  public void markNotNew() {
-    this.isNew = false;
-  }
+    // 用于测试时标记为非新实体（可选）
+    public void markNotNew() {
+        this.isNew = false;
+    }
 }

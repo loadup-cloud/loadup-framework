@@ -74,52 +74,52 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class CaffeineCacheBinderCfg extends CacheBinderCfg {
-  public CaffeineCacheBinderCfg() {
-    // 在构造函数中修改默认值
-    this.setSerializerBeanName(null);
-  }
+    public CaffeineCacheBinderCfg() {
+        // 在构造函数中修改默认值
+        this.setSerializerBeanName(null);
+    }
 
-  /**
-   * Caffeine cache spec string
-   *
-   * <p>Format: key1=value1,key2=value2,...
-   *
-   * <p>Override: loadup.cache.binder.caffeine.spec
-   *
-   * <p>Default: spring.cache.caffeine.spec
-   *
-   * <p>Supported parameters:
-   *
-   * <ul>
-   *   <li>initialCapacity - 初始容量
-   *   <li>maximumSize - 最大条目数
-   *   <li>maximumWeight - 最大权重
-   *   <li>expireAfterWrite - 写入后过期时间
-   *   <li>expireAfterAccess - 访问后过期时间
-   *   <li>weakKeys - 使用弱引用存储键
-   *   <li>weakValues - 使用弱引用存储值
-   *   <li>softValues - 使用软引用存储值
-   *   <li>recordStats - 记录统计信息
-   * </ul>
-   */
-  private String spec;
+    /**
+     * Caffeine cache spec string
+     *
+     * <p>Format: key1=value1,key2=value2,...
+     *
+     * <p>Override: loadup.cache.binder.caffeine.spec
+     *
+     * <p>Default: spring.cache.caffeine.spec
+     *
+     * <p>Supported parameters:
+     *
+     * <ul>
+     *   <li>initialCapacity - 初始容量
+     *   <li>maximumSize - 最大条目数
+     *   <li>maximumWeight - 最大权重
+     *   <li>expireAfterWrite - 写入后过期时间
+     *   <li>expireAfterAccess - 访问后过期时间
+     *   <li>weakKeys - 使用弱引用存储键
+     *   <li>weakValues - 使用弱引用存储值
+     *   <li>softValues - 使用软引用存储值
+     *   <li>recordStats - 记录统计信息
+     * </ul>
+     */
+    private String spec;
 
-  private long maximumSize;
-  private Duration expireAfterWrite;
-  private Duration expireAfterAccess;
+    private long maximumSize;
+    private Duration expireAfterWrite;
+    private Duration expireAfterAccess;
 
-  /** 是否开启随机过期 */
-  private boolean enableRandomExpiry = false;
+    /** 是否开启随机过期 */
+    private boolean enableRandomExpiry = false;
 
-  /** 随机因子 (例如 0.2 表示在 100%~120% 之间波动) */
-  private double randomFactor = 0.2;
+    /** 随机因子 (例如 0.2 表示在 100%~120% 之间波动) */
+    private double randomFactor = 0.2;
 
-  /**
-   * Check if any custom configuration is provided
-   *
-   * @return true if any custom configuration field is set
-   */
-  public boolean hasCustomConfig() {
-    return spec != null && !spec.isEmpty();
-  }
+    /**
+     * Check if any custom configuration is provided
+     *
+     * @return true if any custom configuration field is set
+     */
+    public boolean hasCustomConfig() {
+        return spec != null && !spec.isEmpty();
+    }
 }

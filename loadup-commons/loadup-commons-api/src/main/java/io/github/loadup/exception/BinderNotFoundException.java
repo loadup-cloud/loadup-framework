@@ -23,7 +23,7 @@ package io.github.loadup.exception;
  */
 
 public class BinderNotFoundException extends BindingException {
-  public BinderNotFoundException(String message) {
-    super(message);
-  }
+    public BinderNotFoundException(String message) {
+        super(message);
+    }
 }

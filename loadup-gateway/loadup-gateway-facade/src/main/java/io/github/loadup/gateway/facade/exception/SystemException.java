@@ -25,39 +25,34 @@ package io.github.loadup.gateway.facade.exception;
 /** System exception */
 public class SystemException extends GatewayException {
 
-  private static final String MODULE = "SYSTEM";
+    private static final String MODULE = "SYSTEM";
 
-  public SystemException(ErrorCode errorCode, String message) {
-    super(errorCode.getCode(), ErrorType.SYSTEM, MODULE, errorCode.getMessage() + ":" + message);
-  }
+    public SystemException(ErrorCode errorCode, String message) {
+        super(errorCode.getCode(), ErrorType.SYSTEM, MODULE, errorCode.getMessage() + ":" + message);
+    }
 
-  public SystemException(ErrorCode errorCode, String message, Throwable cause) {
-    super(
-        errorCode.getCode(),
-        ErrorType.SYSTEM,
-        MODULE,
-        errorCode.getMessage() + ":" + message,
-        cause);
-  }
+    public SystemException(ErrorCode errorCode, String message, Throwable cause) {
+        super(errorCode.getCode(), ErrorType.SYSTEM, MODULE, errorCode.getMessage() + ":" + message, cause);
+    }
 
-  // Convenience methods
-  public static SystemException configurationError(String message) {
-    return new SystemException(ErrorCode.CONFIGURATION_ERROR, message);
-  }
+    // Convenience methods
+    public static SystemException configurationError(String message) {
+        return new SystemException(ErrorCode.CONFIGURATION_ERROR, message);
+    }
 
-  public static SystemException initializationError(String component, Throwable cause) {
-    return new SystemException(ErrorCode.INITIALIZATION_ERROR, component, cause);
-  }
+    public static SystemException initializationError(String component, Throwable cause) {
+        return new SystemException(ErrorCode.INITIALIZATION_ERROR, component, cause);
+    }
 
-  public static SystemException internalError(String message) {
-    return new SystemException(ErrorCode.SYSTEM_ERROR, message);
-  }
+    public static SystemException internalError(String message) {
+        return new SystemException(ErrorCode.SYSTEM_ERROR, message);
+    }
 
-  public static SystemException internalError(String message, Throwable cause) {
-    return new SystemException(ErrorCode.SYSTEM_ERROR, message, cause);
-  }
+    public static SystemException internalError(String message, Throwable cause) {
+        return new SystemException(ErrorCode.SYSTEM_ERROR, message, cause);
+    }
 
-  public static SystemException operationNotSupported(String operation) {
-    return new SystemException(ErrorCode.OPERATION_NOT_SUPPORTED, operation);
-  }
+    public static SystemException operationNotSupported(String operation) {
+        return new SystemException(ErrorCode.OPERATION_NOT_SUPPORTED, operation);
+    }
 }

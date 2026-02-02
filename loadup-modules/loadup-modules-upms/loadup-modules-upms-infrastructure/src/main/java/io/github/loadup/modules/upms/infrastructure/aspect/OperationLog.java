@@ -37,15 +37,15 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OperationLog {
 
-  /** Operation type: CREATE/UPDATE/DELETE/QUERY/LOGIN/LOGOUT etc. */
-  String type();
+    /** Operation type: CREATE/UPDATE/DELETE/QUERY/LOGIN/LOGOUT etc. */
+    String type();
 
-  /** Operation module */
-  String module();
+    /** Operation module */
+    String module();
 
-  /** Operation description */
-  String description() default "";
+    /** Operation description */
+    String description() default "";
 
-  /** Whether to record response */
-  boolean recordResponse() default false;
+    /** Whether to record response */
+    boolean recordResponse() default false;
 }

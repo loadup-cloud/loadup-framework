@@ -30,12 +30,12 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(
-    componentModel = "spring",
-    imports = {JsonUtils.class, Date.class})
+        componentModel = "spring",
+        imports = {JsonUtils.class, Date.class})
 public interface RouteMapper {
 
-  @Mapping(target = "routeId", expression = "java(config.getRouteId())")
-  @Mapping(target = "routeName", expression = "java(config.getRouteName())")
-  @Mapping(target = "properties", expression = "java(JsonUtils.toJson(config.getProperties()))")
-  RouteEntity toEntity(RouteConfig config);
+    @Mapping(target = "routeId", expression = "java(config.getRouteId())")
+    @Mapping(target = "routeName", expression = "java(config.getRouteName())")
+    @Mapping(target = "properties", expression = "java(JsonUtils.toJson(config.getProperties()))")
+    RouteEntity toEntity(RouteConfig config);
 }

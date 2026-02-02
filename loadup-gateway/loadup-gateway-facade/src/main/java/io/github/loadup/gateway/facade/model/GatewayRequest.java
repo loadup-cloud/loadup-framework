@@ -37,39 +37,39 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GatewayRequest {
 
-  /** Request ID */
-  private String requestId;
+    /** Request ID */
+    private String requestId;
 
-  /** Request path */
-  private String path;
+    /** Request path */
+    private String path;
 
-  /** HTTP method */
-  private String method;
+    /** HTTP method */
+    private String method;
 
-  /** Request headers */
-  private Map<String, String> headers;
+    /** Request headers */
+    private Map<String, String> headers;
 
-  /** Query parameters */
-  private Map<String, List<String>> queryParameters;
+    /** Query parameters */
+    private Map<String, List<String>> queryParameters;
 
-  /** Path parameters */
-  private Map<String, String> pathParameters;
+    /** Path parameters */
+    private Map<String, String> pathParameters;
 
-  /** Request body */
-  private String body;
+    /** Request body */
+    private String body;
 
-  /** Content type */
-  private String contentType;
+    /** Content type */
+    private String contentType;
 
-  /** Client IP */
-  private String clientIp;
+    /** Client IP */
+    private String clientIp;
 
-  /** User agent */
-  private String userAgent;
+    /** User agent */
+    private String userAgent;
 
-  /** Request time */
-  private LocalDateTime requestTime;
+    /** Request time */
+    private LocalDateTime requestTime;
 
-  /** Extension attributes */
-  private Map<String, Object> attributes;
+    /** Extension attributes */
+    private Map<String, Object> attributes;
 }

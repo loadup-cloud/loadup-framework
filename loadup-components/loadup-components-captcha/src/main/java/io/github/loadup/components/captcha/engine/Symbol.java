@@ -34,34 +34,34 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Symbol {
 
-  /** 标识符 */
-  NUM("n", false),
+    /** 标识符 */
+    NUM("n", false),
 
-  /** 加法 */
-  ADD("+", false),
+    /** 加法 */
+    ADD("+", false),
 
-  /** 减发 */
-  SUB("-", false),
+    /** 减发 */
+    SUB("-", false),
 
-  /** 乘法 */
-  MUL("x", true),
+    /** 乘法 */
+    MUL("x", true),
 
-  /** 除法 */
-  DIV("÷", true);
+    /** 除法 */
+    DIV("÷", true);
 
-  /** 算数符号 */
-  private final String value;
+    /** 算数符号 */
+    private final String value;
 
-  /** 是否优先计算 */
-  private final boolean priority;
+    /** 是否优先计算 */
+    private final boolean priority;
 
-  public static Symbol of(String c) {
-    Symbol[] values = Symbol.values();
-    for (Symbol value : values) {
-      if (value.value.equals(c)) {
-        return value;
-      }
+    public static Symbol of(String c) {
+        Symbol[] values = Symbol.values();
+        for (Symbol value : values) {
+            if (value.value.equals(c)) {
+                return value;
+            }
+        }
+        throw new IllegalArgumentException("不支持的标识符，仅仅支持(+、-、×、÷)");
     }
-    throw new IllegalArgumentException("不支持的标识符，仅仅支持(+、-、×、÷)");
-  }
 }

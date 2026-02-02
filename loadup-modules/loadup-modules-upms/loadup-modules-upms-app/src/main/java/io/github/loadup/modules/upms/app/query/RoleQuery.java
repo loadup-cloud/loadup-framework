@@ -39,15 +39,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RoleQuery {
 
-  private String roleName;
-  private String roleCode;
-  private String parentId;
-  private Short status;
-  private Boolean deleted;
+    private String roleName;
+    private String roleCode;
+    private String parentId;
+    private Short status;
+    private Boolean deleted;
 
-  // Pagination
-  private Integer page = 1;
-  private Integer size = 20;
-  private String sortBy = "sortOrder";
-  private String sortOrder = "ASC";
+    // Pagination
+    private Integer page = 1;
+    private Integer size = 20;
+    private String sortBy = "sortOrder";
+    private String sortOrder = "ASC";
 }

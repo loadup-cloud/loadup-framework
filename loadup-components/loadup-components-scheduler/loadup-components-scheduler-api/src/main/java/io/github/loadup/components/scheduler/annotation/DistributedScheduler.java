@@ -29,10 +29,10 @@ import java.lang.annotation.*;
 @Documented
 public @interface DistributedScheduler {
 
-  String bizTag() default "default";
+    String bizTag() default "default";
 
-  /** */
-  String name() default "";
+    /** */
+    String name() default "";
 
-  String cron() default "";
+    String cron() default "";
 }

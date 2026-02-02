@@ -33,62 +33,60 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-  private final JdbcTemplate jdbcTemplate;
-  @Autowired private OrderService orderService;
+    private final JdbcTemplate jdbcTemplate;
 
-  public UserService(JdbcTemplate jdbcTemplate) {
-    this.jdbcTemplate = jdbcTemplate;
-  }
+    @Autowired
+    private OrderService orderService;
 
-  /** Create a new user. */
-  public User createUser(User user) {
-    LocalDateTime createdAt = LocalDateTime.now();
-    //        if(user.getUserId().equals("Exception-123")){
-    //            throw new IllegalArgumentException("Simulated exception for userId: " +
-    // user.getUserId());
-    //        }
+    public UserService(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
-    String sql =
-        "INSERT INTO users (user_id, user_name, email, status, created_at) VALUES (?, ?, ?, ?, ?)";
-    jdbcTemplate.update(
-        sql, user.getUserId(), user.getUserName(), user.getEmail(), "ACTIVE", createdAt);
+    /** Create a new user. */
+    public User createUser(User user) {
+        LocalDateTime createdAt = LocalDateTime.now();
+        //        if(user.getUserId().equals("Exception-123")){
+        //            throw new IllegalArgumentException("Simulated exception for userId: " +
+        // user.getUserId());
+        //        }
 
-    System.out.println(
-        ">>> [EXEC] OrderService instance: " + System.identityHashCode(orderService));
-    Order order = orderService.createOrder(user.getUserId(), user.getUserName());
-    user.setOrder(order);
-    user.setCreatedAt(LocalDateTime.now());
-    return user;
-  }
+        String sql = "INSERT INTO users (user_id, user_name, email, status, created_at) VALUES (?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, user.getUserId(), user.getUserName(), user.getEmail(), "ACTIVE", createdAt);
 
-  /** Get user by ID. */
-  public User getUserById(String userId) {
-    String sql = "SELECT * FROM users WHERE user_id = ?";
-    User user1 =
-        jdbcTemplate.queryForObject(
-            sql,
-            (rs, rowNum) -> {
-              User user = new User();
-              user.setUserId(rs.getString("user_id"));
-              user.setUserName(rs.getString("user_name"));
-              user.setEmail(rs.getString("email"));
-              user.setStatus(rs.getString("status"));
-              user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-              return user;
-            },
-            userId);
-    return user1;
-  }
+        System.out.println(">>> [EXEC] OrderService instance: " + System.identityHashCode(orderService));
+        Order order = orderService.createOrder(user.getUserId(), user.getUserName());
+        user.setOrder(order);
+        user.setCreatedAt(LocalDateTime.now());
+        return user;
+    }
 
-  /** Update user status. */
-  public void updateUserStatus(String userId, String newStatus) {
-    String sql = "UPDATE users SET status = ? WHERE user_id = ?";
-    jdbcTemplate.update(sql, newStatus, userId);
-  }
+    /** Get user by ID. */
+    public User getUserById(String userId) {
+        String sql = "SELECT * FROM users WHERE user_id = ?";
+        User user1 = jdbcTemplate.queryForObject(
+                sql,
+                (rs, rowNum) -> {
+                    User user = new User();
+                    user.setUserId(rs.getString("user_id"));
+                    user.setUserName(rs.getString("user_name"));
+                    user.setEmail(rs.getString("email"));
+                    user.setStatus(rs.getString("status"));
+                    user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                    return user;
+                },
+                userId);
+        return user1;
+    }
 
-  /** Delete user. */
-  public void deleteUser(String userId) {
-    String sql = "DELETE FROM users WHERE user_id = ?";
-    jdbcTemplate.update(sql, userId);
-  }
+    /** Update user status. */
+    public void updateUserStatus(String userId, String newStatus) {
+        String sql = "UPDATE users SET status = ? WHERE user_id = ?";
+        jdbcTemplate.update(sql, newStatus, userId);
+    }
+
+    /** Delete user. */
+    public void deleteUser(String userId) {
+        String sql = "DELETE FROM users WHERE user_id = ?";
+        jdbcTemplate.update(sql, userId);
+    }
 }

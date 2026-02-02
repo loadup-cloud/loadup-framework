@@ -53,27 +53,27 @@ import org.springframework.core.env.ConfigurableEnvironment;
 @Slf4j
 public class KafkaContainerInitializer extends BaseContainerInitializer {
 
-  @Override
-  protected String getContainerName() {
-    return "Kafka";
-  }
+    @Override
+    protected String getContainerName() {
+        return "Kafka";
+    }
 
-  @Override
-  protected ContainerConfig getContainerConfig(TestContainersProperties p) {
-    return p.getKafka();
-  }
+    @Override
+    protected ContainerConfig getContainerConfig(TestContainersProperties p) {
+        return p.getKafka();
+    }
 
-  @Override
-  protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
-    SharedKafkaContainer.startContainer(config);
-    applyProperties(
-        env,
-        Map.of(
-            "spring.kafka.bootstrap-servers",
-            SharedKafkaContainer.getBootstrapServers(),
-            "spring.kafka.consumer.bootstrap-servers",
-            SharedKafkaContainer.getBootstrapServers(),
-            "spring.kafka.producer.bootstrap-servers",
-            SharedKafkaContainer.getBootstrapServers()));
-  }
+    @Override
+    protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
+        SharedKafkaContainer.startContainer(config);
+        applyProperties(
+                env,
+                Map.of(
+                        "spring.kafka.bootstrap-servers",
+                        SharedKafkaContainer.getBootstrapServers(),
+                        "spring.kafka.consumer.bootstrap-servers",
+                        SharedKafkaContainer.getBootstrapServers(),
+                        "spring.kafka.producer.bootstrap-servers",
+                        SharedKafkaContainer.getBootstrapServers()));
+    }
 }

@@ -34,15 +34,15 @@ import java.util.Collection;
  * @param <S> 业务配置类型：必须是 CacheBindingCfg 或其子类
  */
 public interface CacheBinding extends Binding<CacheBinder<?, CacheBindingCfg>, CacheBindingCfg> {
-  boolean set(String key, Object value);
+    boolean set(String key, Object value);
 
-  Object get(String key);
+    Object get(String key);
 
-  <T> T getObject(String key, Class<T> cls);
+    <T> T getObject(String key, Class<T> cls);
 
-  boolean delete(String key);
+    boolean delete(String key);
 
-  boolean deleteAll(Collection<String> keys);
+    boolean deleteAll(Collection<String> keys);
 
-  void cleanUp();
+    void cleanUp();
 }

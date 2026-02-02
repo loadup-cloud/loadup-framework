@@ -6,7 +6,7 @@
 #   ./spotless.sh check   - 检查代码格式
 #
 
-PLUGIN_COORDINATES="com.diffplug.spotless:spotless-maven-plugin:3.1.0"
+PLUGIN_COORDINATES="com.diffplug.spotless:spotless-maven-plugin"
 
 case "$1" in
     apply)

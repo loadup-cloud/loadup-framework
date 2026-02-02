@@ -40,54 +40,54 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 public class SecurityUser implements UserDetails {
 
-  private final AuthUserDTO user;
-  private final Set<String> permissions;
+    private final AuthUserDTO user;
+    private final Set<String> permissions;
 
-  public SecurityUser(AuthUserDTO user, Set<String> permissions) {
-    this.user = user;
-    this.permissions = permissions;
-  }
+    public SecurityUser(AuthUserDTO user, Set<String> permissions) {
+        this.user = user;
+        this.permissions = permissions;
+    }
 
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return permissions.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
-  }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return permissions.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
+    }
 
-  @Override
-  public String getPassword() {
-    return user.getPassword();
-  }
+    @Override
+    public String getPassword() {
+        return user.getPassword();
+    }
 
-  @Override
-  public String getUsername() {
-    return user.getUsername();
-  }
+    @Override
+    public String getUsername() {
+        return user.getUsername();
+    }
 
-  @Override
-  public boolean isAccountNonExpired() {
-    return true;
-  }
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-  @Override
-  public boolean isAccountNonLocked() {
-    return true;
-  }
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return true;
-  }
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
-  @Override
-  public boolean isEnabled() {
-    return user.actived();
-  }
+    @Override
+    public boolean isEnabled() {
+        return user.actived();
+    }
 
-  public String getUserId() {
-    return user.getUserId();
-  }
+    public String getUserId() {
+        return user.getUserId();
+    }
 
-  public String getNickname() {
-    return user.getNickname();
-  }
+    public String getNickname() {
+        return user.getNickname();
+    }
 }

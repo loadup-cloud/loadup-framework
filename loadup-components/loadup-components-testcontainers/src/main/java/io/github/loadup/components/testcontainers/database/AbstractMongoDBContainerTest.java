@@ -48,19 +48,19 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(initializers = MongoDBContainerInitializer.class)
 public abstract class AbstractMongoDBContainerTest {
 
-  protected String getConnectionString() {
-    return SharedMongoDBContainer.getConnectionString();
-  }
+    protected String getConnectionString() {
+        return SharedMongoDBContainer.getConnectionString();
+    }
 
-  protected String getHost() {
-    return SharedMongoDBContainer.getHost();
-  }
+    protected String getHost() {
+        return SharedMongoDBContainer.getHost();
+    }
 
-  protected Integer getPort() {
-    return SharedMongoDBContainer.getPort();
-  }
+    protected Integer getPort() {
+        return SharedMongoDBContainer.getPort();
+    }
 
-  protected String getReplicaSetUrl() {
-    return SharedMongoDBContainer.getReplicaSetUrl();
-  }
+    protected String getReplicaSetUrl() {
+        return SharedMongoDBContainer.getReplicaSetUrl();
+    }
 }

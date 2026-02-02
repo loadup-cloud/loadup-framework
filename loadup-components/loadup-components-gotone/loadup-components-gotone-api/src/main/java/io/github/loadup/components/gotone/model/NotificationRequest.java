@@ -33,41 +33,43 @@ import lombok.Data;
 @Data
 @Builder
 public class NotificationRequest implements Serializable {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  /** 业务ID（用于幂等） */
-  private String bizId;
+    /** 业务ID（用于幂等） */
+    private String bizId;
 
-  /** 渠道 */
-  private NotificationChannel channel;
+    /** 渠道 */
+    private NotificationChannel channel;
 
-  /** 接收人列表 */
-  private List<String> receivers;
+    /** 接收人列表 */
+    private List<String> receivers;
 
-  /** 模板代码 */
-  private String templateCode;
+    /** 模板代码 */
+    private String templateCode;
 
-  /** 模板参数 */
-  private Map<String, Object> templateParams;
+    /** 模板参数 */
+    private Map<String, Object> templateParams;
 
-  /** 标题（用于邮件、站内信等） */
-  private String title;
+    /** 标题（用于邮件、站内信等） */
+    private String title;
 
-  /** 内容（当不使用模板时） */
-  private String content;
+    /** 内容（当不使用模板时） */
+    private String content;
 
-  /** 附加数据 */
-  private Map<String, Object> extraData;
+    /** 附加数据 */
+    private Map<String, Object> extraData;
 
-  /** 业务场景（用于扩展点） */
-  private String bizScenario;
+    /** 业务场景（用于扩展点） */
+    private String bizScenario;
 
-  /** 优先级（1-10，10最高） */
-  @Builder.Default private Integer priority = 5;
+    /** 优先级（1-10，10最高） */
+    @Builder.Default
+    private Integer priority = 5;
 
-  /** 是否异步发送 */
-  @Builder.Default private Boolean async = true;
+    /** 是否异步发送 */
+    @Builder.Default
+    private Boolean async = true;
 
-  /** 提供商列表（用于多提供商降级） */
-  private List<String> providers;
+    /** 提供商列表（用于多提供商降级） */
+    private List<String> providers;
 }

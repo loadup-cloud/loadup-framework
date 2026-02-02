@@ -45,31 +45,31 @@ import java.lang.annotation.*;
 @Documented
 public @interface DataScope {
 
-  /**
-   * Department table alias (for SQL filtering)
-   *
-   * @return table alias, default "d"
-   */
-  String deptAlias() default "d";
+    /**
+     * Department table alias (for SQL filtering)
+     *
+     * @return table alias, default "d"
+     */
+    String deptAlias() default "d";
 
-  /**
-   * User table alias (for SQL filtering when SELF scope)
-   *
-   * @return table alias, default "u"
-   */
-  String userAlias() default "u";
+    /**
+     * User table alias (for SQL filtering when SELF scope)
+     *
+     * @return table alias, default "u"
+     */
+    String userAlias() default "u";
 
-  /**
-   * Department ID column name
-   *
-   * @return column name, default "dept_id"
-   */
-  String deptIdColumn() default "dept_id";
+    /**
+     * Department ID column name
+     *
+     * @return column name, default "dept_id"
+     */
+    String deptIdColumn() default "dept_id";
 
-  /**
-   * User ID column name (for SELF scope)
-   *
-   * @return column name, default "user_id"
-   */
-  String userIdColumn() default "user_id";
+    /**
+     * User ID column name (for SELF scope)
+     *
+     * @return column name, default "user_id"
+     */
+    String userIdColumn() default "user_id";
 }

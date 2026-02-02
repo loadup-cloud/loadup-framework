@@ -29,33 +29,40 @@ import lombok.Value;
 @Builder
 public class BizScenario {
 
-  public static final String DEFAULT_BIZ_CODE = "#defaultBizCode#";
-  public static final String DEFAULT_USE_CASE = "#defaultUseCase#";
-  public static final String DEFAULT_SCENARIO = "#defaultScenario#";
-  private static final String DOT_SEPARATOR = ".";
+    public static final String DEFAULT_BIZ_CODE = "#defaultBizCode#";
+    public static final String DEFAULT_USE_CASE = "#defaultUseCase#";
+    public static final String DEFAULT_SCENARIO = "#defaultScenario#";
+    private static final String DOT_SEPARATOR = ".";
 
-  @Builder.Default String bizCode = DEFAULT_BIZ_CODE;
+    @Builder.Default
+    String bizCode = DEFAULT_BIZ_CODE;
 
-  @Builder.Default String useCase = DEFAULT_USE_CASE;
+    @Builder.Default
+    String useCase = DEFAULT_USE_CASE;
 
-  @Builder.Default String scenario = DEFAULT_SCENARIO;
+    @Builder.Default
+    String scenario = DEFAULT_SCENARIO;
 
-  public String getUniqueIdentity() {
-    return bizCode + DOT_SEPARATOR + useCase + DOT_SEPARATOR + scenario;
-  }
+    public String getUniqueIdentity() {
+        return bizCode + DOT_SEPARATOR + useCase + DOT_SEPARATOR + scenario;
+    }
 
-  /** 创建一个只包含 bizCode 的基础场景 */
-  public static BizScenario valueOf(String bizCode) {
-    return BizScenario.builder().bizCode(bizCode).build();
-  }
+    /** 创建一个只包含 bizCode 的基础场景 */
+    public static BizScenario valueOf(String bizCode) {
+        return BizScenario.builder().bizCode(bizCode).build();
+    }
 
-  /** 创建包含 bizCode 和 useCase 的场景 */
-  public static BizScenario valueOf(String bizCode, String useCase) {
-    return BizScenario.builder().bizCode(bizCode).useCase(useCase).build();
-  }
+    /** 创建包含 bizCode 和 useCase 的场景 */
+    public static BizScenario valueOf(String bizCode, String useCase) {
+        return BizScenario.builder().bizCode(bizCode).useCase(useCase).build();
+    }
 
-  /** 创建包含所有维度的完整场景 */
-  public static BizScenario valueOf(String bizCode, String useCase, String scenario) {
-    return BizScenario.builder().bizCode(bizCode).useCase(useCase).scenario(scenario).build();
-  }
+    /** 创建包含所有维度的完整场景 */
+    public static BizScenario valueOf(String bizCode, String useCase, String scenario) {
+        return BizScenario.builder()
+                .bizCode(bizCode)
+                .useCase(useCase)
+                .scenario(scenario)
+                .build();
+    }
 }

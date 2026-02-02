@@ -33,23 +33,23 @@ import lombok.*;
 @AllArgsConstructor
 public class User implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  private String id;
-  private String name;
-  private String email;
-  private Integer age;
-  private LocalDateTime createTime;
-  private LocalDateTime updateTime;
+    private String id;
+    private String name;
+    private String email;
+    private Integer age;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 
-  public static User createTestUser(String id) {
-    return User.builder()
-        .id(id)
-        .name("User" + id)
-        .email("user" + id + "@test.com")
-        .age(25)
-        .createTime(LocalDateTime.now())
-        .updateTime(LocalDateTime.now())
-        .build();
-  }
+    public static User createTestUser(String id) {
+        return User.builder()
+                .id(id)
+                .name("User" + id)
+                .email("user" + id + "@test.com")
+                .age(25)
+                .createTime(LocalDateTime.now())
+                .updateTime(LocalDateTime.now())
+                .build();
+    }
 }

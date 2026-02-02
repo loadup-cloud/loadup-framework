@@ -39,34 +39,34 @@ import lombok.EqualsAndHashCode;
 @Table("upms_operation_log")
 public class OperationLogDO extends BaseDO {
 
-  private String traceId;
+    private String traceId;
 
-  private String userId;
+    private String userId;
 
-  private String username;
+    private String username;
 
-  private String operationType;
+    private String operationType;
 
-  private String operationModule;
+    private String operationModule;
 
-  private String operationDesc;
-  private LocalDateTime operationTime;
+    private String operationDesc;
+    private LocalDateTime operationTime;
 
-  private String requestMethod;
+    private String requestMethod;
 
-  private String requestUrl;
+    private String requestUrl;
 
-  private String requestParams;
+    private String requestParams;
 
-  private String responseResult;
+    private String responseResult;
 
-  private String ipAddress;
+    private String ipAddress;
 
-  private String userAgent;
+    private String userAgent;
 
-  private Long executionTime;
+    private Long executionTime;
 
-  private Short status;
+    private Short status;
 
-  private String errorMessage;
+    private String errorMessage;
 }

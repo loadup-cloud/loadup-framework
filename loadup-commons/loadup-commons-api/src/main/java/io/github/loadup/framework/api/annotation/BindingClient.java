@@ -28,6 +28,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface BindingClient {
-  /** 对应 YAML 中的 bindings.key */
-  String value() default "default";
+    /** 对应 YAML 中的 bindings.key */
+    String value() default "default";
 }

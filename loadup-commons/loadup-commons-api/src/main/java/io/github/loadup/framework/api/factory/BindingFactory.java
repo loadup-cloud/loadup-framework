@@ -33,11 +33,11 @@ import io.github.loadup.framework.api.context.BindingContext;
 @FunctionalInterface
 public interface BindingFactory<T extends Binding> {
 
-  /**
-   * 创建 Binding 实例的核心方法
-   *
-   * @param context 包含配置和驱动的上下文
-   * @return 组装好的 Binding 实例
-   */
-  T create(BindingContext<?, ?> context);
+    /**
+     * 创建 Binding 实例的核心方法
+     *
+     * @param context 包含配置和驱动的上下文
+     * @return 组装好的 Binding 实例
+     */
+    T create(BindingContext<?, ?> context);
 }

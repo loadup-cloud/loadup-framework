@@ -45,52 +45,49 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 @EnableConfigurationProperties(SchedulerGroupProperties.class)
 public class SchedulerBindingAutoConfiguration {
-  /** 将 SchedulerBindingManager 定义为一个单例 Bean 依赖的 props 和 context 会由 Spring 自动注入到方法参数中 */
-  @Bean
-  @ConditionalOnMissingBean
-  public SchedulerBindingManager bindingManager(
-      SchedulerGroupProperties props, ApplicationContext context) {
-    return new SchedulerBindingManager(props, context);
-  }
+    /** 将 SchedulerBindingManager 定义为一个单例 Bean 依赖的 props 和 context 会由 Spring 自动注入到方法参数中 */
+    @Bean
+    @ConditionalOnMissingBean
+    public SchedulerBindingManager bindingManager(SchedulerGroupProperties props, ApplicationContext context) {
+        return new SchedulerBindingManager(props, context);
+    }
 
-  @Bean
-  public BindingPostProcessor bindingPostProcessor(ApplicationContext context) {
-    // 显式传入 context
-    return new BindingPostProcessor(context);
-  }
+    @Bean
+    public BindingPostProcessor bindingPostProcessor(ApplicationContext context) {
+        // 显式传入 context
+        return new BindingPostProcessor(context);
+    }
 
-  /** 核心：注册初始化器，它会自动处理注解任务 */
-  @Bean
-  public SchedulerJobInitializer schedulerJobInitializer(
-      ApplicationContext context, SchedulerBindingManager manager) {
-    return new SchedulerJobInitializer(context, manager);
-  }
+    /** 核心：注册初始化器，它会自动处理注解任务 */
+    @Bean
+    public SchedulerJobInitializer schedulerJobInitializer(
+            ApplicationContext context, SchedulerBindingManager manager) {
+        return new SchedulerJobInitializer(context, manager);
+    }
 
-  /** 当 classpath 中存在 Caffeine 时，注册其元数据 */
-  @Bean
-  @ConditionalOnClass(
-      name = "io.github.loadup.components.scheduler.simplejob.binder.SimpleJobSchedulerBinder")
-  public BindingMetadata<?, ?, ?, ?> simpleJobMetadata() {
-    return new BindingMetadata<>(
-        "simplejob",
-        DefaultSchedulerBinding.class,
-        SimpleJobSchedulerBinder.class,
-        SchedulerBindingCfg.class,
-        SimpleJobSchedulerBinderCfg.class,
-        ctx -> new DefaultSchedulerBinding());
-  }
+    /** 当 classpath 中存在 Caffeine 时，注册其元数据 */
+    @Bean
+    @ConditionalOnClass(name = "io.github.loadup.components.scheduler.simplejob.binder.SimpleJobSchedulerBinder")
+    public BindingMetadata<?, ?, ?, ?> simpleJobMetadata() {
+        return new BindingMetadata<>(
+                "simplejob",
+                DefaultSchedulerBinding.class,
+                SimpleJobSchedulerBinder.class,
+                SchedulerBindingCfg.class,
+                SimpleJobSchedulerBinderCfg.class,
+                ctx -> new DefaultSchedulerBinding());
+    }
 
-  /** 当 classpath 中存在 Caffeine 时，注册其元数据 */
-  @Bean
-  @ConditionalOnClass(
-      name = "io.github.loadup.components.scheduler.quartz.binder.QuartzJobSchedulerBinder")
-  public BindingMetadata<?, ?, ?, ?> quartzJobMetadata() {
-    return new BindingMetadata<>(
-        "simplejob",
-        DefaultSchedulerBinding.class,
-        QuartzJobSchedulerBinder.class,
-        SchedulerBindingCfg.class,
-        QuartzJobSchedulerBinderCfg.class,
-        ctx -> new DefaultSchedulerBinding());
-  }
+    /** 当 classpath 中存在 Caffeine 时，注册其元数据 */
+    @Bean
+    @ConditionalOnClass(name = "io.github.loadup.components.scheduler.quartz.binder.QuartzJobSchedulerBinder")
+    public BindingMetadata<?, ?, ?, ?> quartzJobMetadata() {
+        return new BindingMetadata<>(
+                "simplejob",
+                DefaultSchedulerBinding.class,
+                QuartzJobSchedulerBinder.class,
+                SchedulerBindingCfg.class,
+                QuartzJobSchedulerBinderCfg.class,
+                ctx -> new DefaultSchedulerBinding());
+    }
 }

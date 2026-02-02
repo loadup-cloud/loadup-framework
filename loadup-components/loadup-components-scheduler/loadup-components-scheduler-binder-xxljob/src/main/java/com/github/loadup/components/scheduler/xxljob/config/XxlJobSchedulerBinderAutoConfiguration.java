@@ -36,10 +36,10 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnProperty(prefix = "loadup.scheduler", name = "type", havingValue = "xxljob")
 public class XxlJobSchedulerBinderAutoConfiguration {
 
-  @Bean
-  @ConditionalOnMissingBean(SchedulerBinder.class)
-  public SchedulerBinder xxlJobSchedulerBinder() {
-    log.info("Creating XXL-Job scheduler binder");
-    return new XxlJobSchedulerBinder();
-  }
+    @Bean
+    @ConditionalOnMissingBean(SchedulerBinder.class)
+    public SchedulerBinder xxlJobSchedulerBinder() {
+        log.info("Creating XXL-Job scheduler binder");
+        return new XxlJobSchedulerBinder();
+    }
 }

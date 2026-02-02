@@ -31,33 +31,33 @@ import org.quartz.*;
 @Slf4j
 public class SchedulerTaskJob implements Job {
 
-  @Override
-  public void execute(JobExecutionContext context) throws JobExecutionException {
-    SchedulerTask task =
-        (SchedulerTask) context.getJobDetail().getJobDataMap().get("schedulerTask");
+    @Override
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+        SchedulerTask task =
+                (SchedulerTask) context.getJobDetail().getJobDataMap().get("schedulerTask");
 
-    if (task == null) {
-      log.error("SchedulerTask not found in job data");
-      return;
+        if (task == null) {
+            log.error("SchedulerTask not found in job data");
+            return;
+        }
+
+        String taskName = task.getTaskName();
+        Method method = task.getMethod();
+        Object targetBean = task.getTargetBean();
+
+        try {
+            log.debug("Executing Quartz job for task: {}", taskName);
+            long startTime = System.currentTimeMillis();
+
+            method.setAccessible(true); // Allow access to methods in nested classes
+            method.invoke(targetBean);
+
+            long duration = System.currentTimeMillis() - startTime;
+            log.debug("Task '{}' executed successfully in {} ms", taskName, duration);
+
+        } catch (Exception e) {
+            log.error("Error executing task: {}", taskName, e);
+            throw new JobExecutionException("Failed to execute task: " + taskName, e);
+        }
     }
-
-    String taskName = task.getTaskName();
-    Method method = task.getMethod();
-    Object targetBean = task.getTargetBean();
-
-    try {
-      log.debug("Executing Quartz job for task: {}", taskName);
-      long startTime = System.currentTimeMillis();
-
-      method.setAccessible(true); // Allow access to methods in nested classes
-      method.invoke(targetBean);
-
-      long duration = System.currentTimeMillis() - startTime;
-      log.debug("Task '{}' executed successfully in {} ms", taskName, duration);
-
-    } catch (Exception e) {
-      log.error("Error executing task: {}", taskName, e);
-      throw new JobExecutionException("Failed to execute task: " + taskName, e);
-    }
-  }
 }

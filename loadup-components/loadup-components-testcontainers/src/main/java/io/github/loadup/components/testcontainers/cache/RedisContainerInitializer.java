@@ -71,29 +71,29 @@ import org.springframework.core.env.ConfigurableEnvironment;
  */
 @Slf4j
 public class RedisContainerInitializer extends BaseContainerInitializer {
-  @Override
-  protected String getContainerName() {
-    return "Redis";
-  }
+    @Override
+    protected String getContainerName() {
+        return "Redis";
+    }
 
-  @Override
-  protected ContainerConfig getContainerConfig(TestContainersProperties p) {
-    return p.getRedis();
-  }
+    @Override
+    protected ContainerConfig getContainerConfig(TestContainersProperties p) {
+        return p.getRedis();
+    }
 
-  @Override
-  protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
-    SharedRedisContainer.startContainer(config);
-    applyProperties(
-        env,
-        Map.of(
-            "spring.data.redis.host",
-            SharedRedisContainer.getHost(),
-            "spring.data.redis.port",
-            String.valueOf(SharedRedisContainer.getPort()),
-            "loadup.cache.redis.host",
-            SharedRedisContainer.getHost(),
-            "loadup.cache.redis.port",
-            String.valueOf(SharedRedisContainer.getPort())));
-  }
+    @Override
+    protected void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env) {
+        SharedRedisContainer.startContainer(config);
+        applyProperties(
+                env,
+                Map.of(
+                        "spring.data.redis.host",
+                        SharedRedisContainer.getHost(),
+                        "spring.data.redis.port",
+                        String.valueOf(SharedRedisContainer.getPort()),
+                        "loadup.cache.redis.host",
+                        SharedRedisContainer.getHost(),
+                        "loadup.cache.redis.port",
+                        String.valueOf(SharedRedisContainer.getPort())));
+    }
 }

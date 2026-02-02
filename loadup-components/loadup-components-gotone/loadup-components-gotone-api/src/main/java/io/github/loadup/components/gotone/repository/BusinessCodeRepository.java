@@ -33,7 +33,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BusinessCodeRepository extends CrudRepository<BusinessCodeDO, String> {
 
-  @Query(
-      "SELECT * FROM gotone_business_code WHERE business_code = :businessCode AND enabled = true")
-  Optional<BusinessCodeDO> findByBusinessCodeAndEnabled(@Param("businessCode") String businessCode);
+    @Query("SELECT * FROM gotone_business_code WHERE business_code = :businessCode AND enabled = true")
+    Optional<BusinessCodeDO> findByBusinessCodeAndEnabled(@Param("businessCode") String businessCode);
 }

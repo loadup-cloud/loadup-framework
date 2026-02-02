@@ -25,32 +25,23 @@ package io.github.loadup.gateway.facade.exception;
 /** Serialization exception */
 public class SerializationException extends GatewayException {
 
-  private static final String MODULE = "SERIALIZATION";
+    private static final String MODULE = "SERIALIZATION";
 
-  public SerializationException(ErrorCode errorCode, String message) {
-    super(
-        errorCode.getCode(),
-        ErrorType.SERIALIZATION,
-        MODULE,
-        errorCode.getMessage() + ":" + message);
-  }
+    public SerializationException(ErrorCode errorCode, String message) {
+        super(errorCode.getCode(), ErrorType.SERIALIZATION, MODULE, errorCode.getMessage() + ":" + message);
+    }
 
-  public SerializationException(ErrorCode errorCode, String message, Throwable cause) {
-    super(
-        errorCode.getCode(),
-        ErrorType.SERIALIZATION,
-        MODULE,
-        errorCode.getMessage() + ":" + message,
-        cause);
-  }
+    public SerializationException(ErrorCode errorCode, String message, Throwable cause) {
+        super(errorCode.getCode(), ErrorType.SERIALIZATION, MODULE, errorCode.getMessage() + ":" + message, cause);
+    }
 
-  // Convenience methods
-  public static SerializationException jsonParseError(String json, Throwable cause) {
-    return new SerializationException(ErrorCode.JSON_PARSE_ERROR, json, cause);
-  }
+    // Convenience methods
+    public static SerializationException jsonParseError(String json, Throwable cause) {
+        return new SerializationException(ErrorCode.JSON_PARSE_ERROR, json, cause);
+    }
 
-  public static SerializationException jsonSerializeError(Object object, Throwable cause) {
-    return new SerializationException(
-        ErrorCode.JSON_SERIALIZE_ERROR, object.getClass().getSimpleName(), cause);
-  }
+    public static SerializationException jsonSerializeError(Object object, Throwable cause) {
+        return new SerializationException(
+                ErrorCode.JSON_SERIALIZE_ERROR, object.getClass().getSimpleName(), cause);
+    }
 }

@@ -32,41 +32,44 @@ import java.util.Collection;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"result", "data", "pageInfo"})
 public record SuccessResponse<T>(
-    @Schema(description = "结果元数据") @JsonProperty("result") Result result,
-    @Schema(description = "业务数据") @JsonProperty("data") T data,
-    @Schema(description = "分页信息") @JsonProperty("pageInfo") PageInfo pageInfo)
-    implements IResponse<T> {
+        @Schema(description = "结果元数据") @JsonProperty("result")
+        Result result,
 
-  @Override
-  public Result getResult() {
-    return result;
-  }
+        @Schema(description = "业务数据") @JsonProperty("data") T data,
 
-  // --- 静态工厂方法 ---
+        @Schema(description = "分页信息") @JsonProperty("pageInfo")
+        PageInfo pageInfo)
+        implements IResponse<T> {
 
-  /** 单体数据成功 */
-  public static <T> SuccessResponse<T> of(T data) {
-    return new SuccessResponse<>(Result.buildSuccess(), data, null);
-  }
+    @Override
+    public Result getResult() {
+        return result;
+    }
 
-  /** 无数据成功 (Void) */
-  public static SuccessResponse<Void> success() {
-    return new SuccessResponse<>(Result.buildSuccess(), null, null);
-  }
+    // --- 静态工厂方法 ---
 
-  /** 分页数据成功 */
-  public static <T> SuccessResponse<Collection<T>> ofPage(
-      Collection<T> data, Long total, Long size, Long index) {
-    return new SuccessResponse<>(Result.buildSuccess(), data, new PageInfo(total, size, index));
-  }
+    /** 单体数据成功 */
+    public static <T> SuccessResponse<T> of(T data) {
+        return new SuccessResponse<>(Result.buildSuccess(), data, null);
+    }
 
-  public static <T> SuccessResponse<Collection<T>> ofPage(PageDTO<T> dto) {
-    return new SuccessResponse<>(
-        Result.buildSuccess(),
-        dto.getData(),
-        new PageInfo(
-            dto.getPageInfo().totalCount(),
-            dto.getPageInfo().pageSize(),
-            dto.getPageInfo().pageIndex()));
-  }
+    /** 无数据成功 (Void) */
+    public static SuccessResponse<Void> success() {
+        return new SuccessResponse<>(Result.buildSuccess(), null, null);
+    }
+
+    /** 分页数据成功 */
+    public static <T> SuccessResponse<Collection<T>> ofPage(Collection<T> data, Long total, Long size, Long index) {
+        return new SuccessResponse<>(Result.buildSuccess(), data, new PageInfo(total, size, index));
+    }
+
+    public static <T> SuccessResponse<Collection<T>> ofPage(PageDTO<T> dto) {
+        return new SuccessResponse<>(
+                Result.buildSuccess(),
+                dto.getData(),
+                new PageInfo(
+                        dto.getPageInfo().totalCount(),
+                        dto.getPageInfo().pageSize(),
+                        dto.getPageInfo().pageIndex()));
+    }
 }

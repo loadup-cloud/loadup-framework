@@ -77,5 +77,5 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class LocalDfsBinderCfg extends DfsBinderCfg {
-  private String basePath = System.getProperty("user.home") + "/dfs-storage";
+    private String basePath = System.getProperty("user.home") + "/dfs-storage";
 }

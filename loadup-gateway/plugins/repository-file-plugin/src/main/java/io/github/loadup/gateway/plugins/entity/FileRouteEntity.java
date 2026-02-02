@@ -30,14 +30,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FileRouteEntity extends RouteStructure {
-  private String routeId;
-  private String path;
-  private String method;
-  private String target;
-  private String requestTemplate;
-  private String responseTemplate;
-  private Boolean enabled;
+    private String routeId;
+    private String path;
+    private String method;
+    private String target;
+    private String requestTemplate;
+    private String responseTemplate;
+    private Boolean enabled;
 
-  /** Raw properties string as persisted in CSV (either JSON or key=value;...) */
-  private String properties;
+    /** Raw properties string as persisted in CSV (either JSON or key=value;...) */
+    private String properties;
 }

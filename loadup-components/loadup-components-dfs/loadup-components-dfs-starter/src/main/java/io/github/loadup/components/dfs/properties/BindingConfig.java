@@ -29,6 +29,6 @@ import lombok.Setter;
 @Setter
 public class BindingConfig {
 
-  /** 存储类型 */
-  private BinderType binderType;
+    /** 存储类型 */
+    private BinderType binderType;
 }

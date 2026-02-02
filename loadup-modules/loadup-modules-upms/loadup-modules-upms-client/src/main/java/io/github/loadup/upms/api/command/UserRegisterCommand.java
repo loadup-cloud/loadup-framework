@@ -33,19 +33,19 @@ import lombok.Data;
 @Data
 public class UserRegisterCommand {
 
-  private String username;
+    private String username;
 
-  private String password;
+    private String password;
 
-  private String nickname;
+    private String nickname;
 
-  private String email;
+    private String email;
 
-  private String mobile;
+    private String mobile;
 
-  private String captchaKey;
+    private String captchaKey;
 
-  private String captchaCode;
+    private String captchaCode;
 
-  private String smsCode;
+    private String smsCode;
 }

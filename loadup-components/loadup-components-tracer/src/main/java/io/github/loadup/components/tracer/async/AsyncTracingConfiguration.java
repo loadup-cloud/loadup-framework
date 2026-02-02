@@ -35,26 +35,26 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 @EnableAsync
 @ConditionalOnProperty(
-    prefix = "loadup.tracer",
-    name = "enable-async-tracing",
-    havingValue = "true",
-    matchIfMissing = true)
+        prefix = "loadup.tracer",
+        name = "enable-async-tracing",
+        havingValue = "true",
+        matchIfMissing = true)
 public class AsyncTracingConfiguration implements AsyncConfigurer {
 
-  @Override
-  public Executor getAsyncExecutor() {
-    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(5);
-    executor.setMaxPoolSize(10);
-    executor.setQueueCapacity(100);
-    executor.setThreadNamePrefix("traced-async-");
-    executor.setTaskDecorator(tracingTaskDecorator());
-    executor.initialize();
-    return executor;
-  }
+    @Override
+    public Executor getAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("traced-async-");
+        executor.setTaskDecorator(tracingTaskDecorator());
+        executor.initialize();
+        return executor;
+    }
 
-  @Bean
-  public TaskDecorator tracingTaskDecorator() {
-    return new TracingTaskDecorator();
-  }
+    @Bean
+    public TaskDecorator tracingTaskDecorator() {
+        return new TracingTaskDecorator();
+    }
 }

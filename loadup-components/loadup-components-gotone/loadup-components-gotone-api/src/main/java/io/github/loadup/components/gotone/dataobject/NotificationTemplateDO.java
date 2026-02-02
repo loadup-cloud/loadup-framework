@@ -35,28 +35,28 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("gotone_notification_template")
 public class NotificationTemplateDO extends BaseDO {
 
-  @Id
-  @Column("id")
-  private String id;
+    @Id
+    @Column("id")
+    private String id;
 
-  @Column("template_code")
-  private String templateCode;
+    @Column("template_code")
+    private String templateCode;
 
-  @Column("template_name")
-  private String templateName;
+    @Column("template_name")
+    private String templateName;
 
-  @Column("channel")
-  private String channel;
+    @Column("channel")
+    private String channel;
 
-  @Column("content")
-  private String content;
+    @Column("content")
+    private String content;
 
-  @Column("title_template")
-  private String titleTemplate;
+    @Column("title_template")
+    private String titleTemplate;
 
-  @Column("template_type")
-  private String templateType;
+    @Column("template_type")
+    private String templateType;
 
-  @Column("enabled")
-  private Boolean enabled;
+    @Column("enabled")
+    private Boolean enabled;
 }

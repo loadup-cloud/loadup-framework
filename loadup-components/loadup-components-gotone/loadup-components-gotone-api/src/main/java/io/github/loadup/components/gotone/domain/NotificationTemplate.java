@@ -30,12 +30,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class NotificationTemplate extends BaseDomain {
-  private String id;
-  private String templateCode;
-  private String templateName;
-  private String channel;
-  private String content;
-  private String titleTemplate;
-  private String templateType;
-  private Boolean enabled;
+    private String id;
+    private String templateCode;
+    private String templateName;
+    private String channel;
+    private String content;
+    private String titleTemplate;
+    private String templateType;
+    private Boolean enabled;
 }

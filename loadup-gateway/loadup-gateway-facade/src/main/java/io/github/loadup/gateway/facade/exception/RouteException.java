@@ -25,31 +25,26 @@ package io.github.loadup.gateway.facade.exception;
 /** Route related exception */
 public class RouteException extends GatewayException {
 
-  private static final String MODULE = "ROUTE";
+    private static final String MODULE = "ROUTE";
 
-  public RouteException(ErrorCode errorCode, String message) {
-    super(errorCode.getCode(), ErrorType.ROUTING, MODULE, errorCode.getMessage() + ":" + message);
-  }
+    public RouteException(ErrorCode errorCode, String message) {
+        super(errorCode.getCode(), ErrorType.ROUTING, MODULE, errorCode.getMessage() + ":" + message);
+    }
 
-  public RouteException(ErrorCode errorCode, String message, Throwable cause) {
-    super(
-        errorCode.getCode(),
-        ErrorType.ROUTING,
-        MODULE,
-        errorCode.getMessage() + ":" + message,
-        cause);
-  }
+    public RouteException(ErrorCode errorCode, String message, Throwable cause) {
+        super(errorCode.getCode(), ErrorType.ROUTING, MODULE, errorCode.getMessage() + ":" + message, cause);
+    }
 
-  // Convenience methods
-  public static RouteException notFound(String path) {
-    return new RouteException(ErrorCode.ROUTE_NOT_FOUND, path);
-  }
+    // Convenience methods
+    public static RouteException notFound(String path) {
+        return new RouteException(ErrorCode.ROUTE_NOT_FOUND, path);
+    }
 
-  public static RouteException invalidPath(String path) {
-    return new RouteException(ErrorCode.ROUTE_INVALID_PATH, path);
-  }
+    public static RouteException invalidPath(String path) {
+        return new RouteException(ErrorCode.ROUTE_INVALID_PATH, path);
+    }
 
-  public static RouteException configError(String message) {
-    return new RouteException(ErrorCode.ROUTE_CONFIG_ERROR, message);
-  }
+    public static RouteException configError(String message) {
+        return new RouteException(ErrorCode.ROUTE_CONFIG_ERROR, message);
+    }
 }

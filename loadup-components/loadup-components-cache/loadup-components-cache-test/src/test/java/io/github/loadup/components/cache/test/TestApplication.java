@@ -36,17 +36,17 @@ import org.springframework.context.annotation.Primary;
 @SpringBootApplication
 public class TestApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(TestApplication.class, args);
-  }
-
-  @Configuration
-  @EnableAutoConfiguration
-  static class TestConfiguration {
-    @Bean(name = CacheConstants.DEFAULT_TICKER)
-    @Primary
-    public CacheTicker fakeTicker() {
-      return new FakeTicker();
+    public static void main(String[] args) {
+        SpringApplication.run(TestApplication.class, args);
     }
-  }
+
+    @Configuration
+    @EnableAutoConfiguration
+    static class TestConfiguration {
+        @Bean(name = CacheConstants.DEFAULT_TICKER)
+        @Primary
+        public CacheTicker fakeTicker() {
+            return new FakeTicker();
+        }
+    }
 }

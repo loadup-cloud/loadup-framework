@@ -31,7 +31,7 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 public class SchedulerBindingCfg extends BaseBindingCfg {
-  private String cron;
-  private Long fixedDelay;
-  private Long initialDelay;
+    private String cron;
+    private Long fixedDelay;
+    private Long initialDelay;
 }

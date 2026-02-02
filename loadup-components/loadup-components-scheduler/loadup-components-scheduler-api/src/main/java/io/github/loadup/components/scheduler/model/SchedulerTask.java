@@ -33,39 +33,43 @@ import lombok.*;
 @AllArgsConstructor
 public class SchedulerTask {
 
-  /** Unique name of the task */
-  private String taskName;
+    /** Unique name of the task */
+    private String taskName;
 
-  /** Cron expression for scheduling */
-  private String cron;
+    /** Cron expression for scheduling */
+    private String cron;
 
-  /** Task description */
-  private String description;
+    /** Task description */
+    private String description;
 
-  /** Task group for categorization */
-  private String taskGroup;
+    /** Task group for categorization */
+    private String taskGroup;
 
-  /** Method to be invoked */
-  private Method method;
+    /** Method to be invoked */
+    private Method method;
 
-  /** Bean instance containing the method */
-  private Object targetBean;
+    /** Bean instance containing the method */
+    private Object targetBean;
 
-  /** Annotation class that triggered this task registration */
-  private Class<?> annotation;
+    /** Annotation class that triggered this task registration */
+    private Class<?> annotation;
 
-  /** Additional parameters for the task */
-  private Map<String, Object> parameters;
+    /** Additional parameters for the task */
+    private Map<String, Object> parameters;
 
-  /** Whether task is enabled */
-  @Builder.Default private boolean enabled = true;
+    /** Whether task is enabled */
+    @Builder.Default
+    private boolean enabled = true;
 
-  /** Priority of the task (higher value = higher priority) */
-  @Builder.Default private int priority = 0;
+    /** Priority of the task (higher value = higher priority) */
+    @Builder.Default
+    private int priority = 0;
 
-  /** Timeout in milliseconds (0 = no timeout) */
-  @Builder.Default private long timeoutMillis = 0;
+    /** Timeout in milliseconds (0 = no timeout) */
+    @Builder.Default
+    private long timeoutMillis = 0;
 
-  /** Maximum retry times on failure */
-  @Builder.Default private int maxRetries = 0;
+    /** Maximum retry times on failure */
+    @Builder.Default
+    private int maxRetries = 0;
 }

@@ -30,20 +30,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ActionDispatcher {
 
-  private final List<GatewayAction> actions;
+    private final List<GatewayAction> actions;
 
-  public ActionDispatcher(List<GatewayAction> actions) {
-    this.actions = actions;
-  }
-
-  /** Dispatch request to appropriate handler */
-  public void dispatch(GatewayContext context) {
-    if (actions == null || actions.isEmpty()) {
-      log.warn("No actions configured for dispatcher");
-      return;
+    public ActionDispatcher(List<GatewayAction> actions) {
+        this.actions = actions;
     }
 
-    // Execute Chain
-    new DefaultGatewayActionChain(actions).proceed(context);
-  }
+    /** Dispatch request to appropriate handler */
+    public void dispatch(GatewayContext context) {
+        if (actions == null || actions.isEmpty()) {
+            log.warn("No actions configured for dispatcher");
+            return;
+        }
+
+        // Execute Chain
+        new DefaultGatewayActionChain(actions).proceed(context);
+    }
 }

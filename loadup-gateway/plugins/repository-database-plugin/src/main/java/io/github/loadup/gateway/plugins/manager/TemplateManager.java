@@ -31,7 +31,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TemplateManager extends CrudRepository<TemplateEntity, Long> {
 
-  Optional<TemplateEntity> findByTemplateIdAndTemplateType(String templateId, String templateType);
+    Optional<TemplateEntity> findByTemplateIdAndTemplateType(String templateId, String templateType);
 
-  void deleteByTemplateIdAndTemplateType(String templateId, String templateType);
+    void deleteByTemplateIdAndTemplateType(String templateId, String templateType);
 }

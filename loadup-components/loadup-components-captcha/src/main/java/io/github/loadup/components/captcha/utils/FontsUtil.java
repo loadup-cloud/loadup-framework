@@ -44,46 +44,46 @@ import java.io.*;
  */
 public class FontsUtil {
 
-  /**
-   * 手动复制字体文件到临时目录. 调用传文件的构造方法创建字体
-   *
-   * @param fontName 字体文件名称
-   * @return
-   */
-  public static Font getFont(String fontName, int style, float size) {
-    Font font = null;
+    /**
+     * 手动复制字体文件到临时目录. 调用传文件的构造方法创建字体
+     *
+     * @param fontName 字体文件名称
+     * @return
+     */
+    public static Font getFont(String fontName, int style, float size) {
+        Font font = null;
 
-    String path = System.getProperty("java.io.tmpdir");
+        String path = System.getProperty("java.io.tmpdir");
 
-    // https://gitee.com/log4j/pig/issues/IAFW9O
-    File tempFontFile = new File(path + File.separator + fontName);
-    if (!tempFontFile.exists()) {
-      // 临时文件不存在
-      copyTempFontFile(fontName, tempFontFile);
+        // https://gitee.com/log4j/pig/issues/IAFW9O
+        File tempFontFile = new File(path + File.separator + fontName);
+        if (!tempFontFile.exists()) {
+            // 临时文件不存在
+            copyTempFontFile(fontName, tempFontFile);
+        }
+        if (tempFontFile.exists()) {
+            try {
+                font = Font.createFont(Font.TRUETYPE_FONT, tempFontFile).deriveFont(style, size);
+                ;
+            } catch (FontFormatException | IOException e) {
+                e.printStackTrace();
+                tempFontFile.delete();
+            }
+        }
+        return font;
     }
-    if (tempFontFile.exists()) {
-      try {
-        font = Font.createFont(Font.TRUETYPE_FONT, tempFontFile).deriveFont(style, size);
-        ;
-      } catch (FontFormatException | IOException e) {
-        e.printStackTrace();
-        tempFontFile.delete();
-      }
-    }
-    return font;
-  }
 
-  /**
-   * 复制字体文件到临时文件目录
-   *
-   * @param fontName
-   * @param tempFontFile
-   */
-  private static synchronized void copyTempFontFile(String fontName, File tempFontFile) {
-    try (InputStream is = FontsUtil.class.getResourceAsStream("/" + fontName)) {
-      FileUtil.copyToFile(is, tempFontFile);
-    } catch (IOException e) {
-      e.printStackTrace();
+    /**
+     * 复制字体文件到临时文件目录
+     *
+     * @param fontName
+     * @param tempFontFile
+     */
+    private static synchronized void copyTempFontFile(String fontName, File tempFontFile) {
+        try (InputStream is = FontsUtil.class.getResourceAsStream("/" + fontName)) {
+            FileUtil.copyToFile(is, tempFontFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-  }
 }

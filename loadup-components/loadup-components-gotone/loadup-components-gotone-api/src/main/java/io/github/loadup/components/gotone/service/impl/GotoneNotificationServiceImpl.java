@@ -56,227 +56,224 @@ import org.springframework.util.CollectionUtils;
 @Service
 public class GotoneNotificationServiceImpl implements GotoneNotificationService {
 
-  private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([^}]+)\\}");
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([^}]+)\\}");
 
-  @Autowired private ChannelMappingRepository channelMappingRepository;
+    @Autowired
+    private ChannelMappingRepository channelMappingRepository;
 
-  @Autowired private NotificationTemplateRepository templateRepository;
+    @Autowired
+    private NotificationTemplateRepository templateRepository;
 
-  @Autowired private NotificationRecordRepository recordRepository;
+    @Autowired
+    private NotificationRecordRepository recordRepository;
 
-  @Autowired private ExtensionExecutor extensionExecutor;
+    @Autowired
+    private ExtensionExecutor extensionExecutor;
 
-  @Autowired private CircuitBreakerRegistry circuitBreakerRegistry;
+    @Autowired
+    private CircuitBreakerRegistry circuitBreakerRegistry;
 
-  @Autowired private GotoneConverter gotoneConverter;
+    @Autowired
+    private GotoneConverter gotoneConverter;
 
-  @Override
-  public boolean send(String businessCode, List<String> addresses, Map<String, Object> params) {
-    return send(businessCode, UUID.randomUUID().toString(), addresses, params);
-  }
+    @Override
+    public boolean send(String businessCode, List<String> addresses, Map<String, Object> params) {
+        return send(businessCode, UUID.randomUUID().toString(), addresses, params);
+    }
 
-  @Override
-  public boolean send(
-      String businessCode, String bizId, List<String> addresses, Map<String, Object> params) {
-    log.info("Sending notification for businessCode: {}, bizId: {}", businessCode, bizId);
+    @Override
+    public boolean send(String businessCode, String bizId, List<String> addresses, Map<String, Object> params) {
+        log.info("Sending notification for businessCode: {}, bizId: {}", businessCode, bizId);
 
-    try {
-      // 1. 查询渠道映射
-      List<ChannelMappingDO> mappingDOs =
-          channelMappingRepository.findByBusinessCodeAndEnabled(businessCode);
-      if (CollectionUtils.isEmpty(mappingDOs)) {
-        log.warn("No channel mapping found for businessCode: {}", businessCode);
-        return false;
-      }
-
-      // 2. 转换为 Domain 对象
-      List<ChannelMapping> mappings = gotoneConverter.toChannelMappingList(mappingDOs);
-
-      // 3. 为每个渠道发送通知
-      boolean allSuccess = true;
-      for (ChannelMapping mapping : mappings) {
         try {
-          boolean success = sendChannel(mapping, bizId, addresses, params);
-          if (!success) {
-            allSuccess = false;
-          }
+            // 1. 查询渠道映射
+            List<ChannelMappingDO> mappingDOs = channelMappingRepository.findByBusinessCodeAndEnabled(businessCode);
+            if (CollectionUtils.isEmpty(mappingDOs)) {
+                log.warn("No channel mapping found for businessCode: {}", businessCode);
+                return false;
+            }
+
+            // 2. 转换为 Domain 对象
+            List<ChannelMapping> mappings = gotoneConverter.toChannelMappingList(mappingDOs);
+
+            // 3. 为每个渠道发送通知
+            boolean allSuccess = true;
+            for (ChannelMapping mapping : mappings) {
+                try {
+                    boolean success = sendChannel(mapping, bizId, addresses, params);
+                    if (!success) {
+                        allSuccess = false;
+                    }
+                } catch (Exception e) {
+                    log.error("Failed to send channel {}: {}", mapping.getChannel(), e.getMessage(), e);
+                    allSuccess = false;
+                }
+            }
+
+            return allSuccess;
         } catch (Exception e) {
-          log.error("Failed to send channel {}: {}", mapping.getChannel(), e.getMessage(), e);
-          allSuccess = false;
+            log.error("Failed to send notification: {}", e.getMessage(), e);
+            return false;
         }
-      }
-
-      return allSuccess;
-    } catch (Exception e) {
-      log.error("Failed to send notification: {}", e.getMessage(), e);
-      return false;
-    }
-  }
-
-  @Override
-  public void sendAsync(String businessCode, List<String> addresses, Map<String, Object> params) {
-    sendAsync(businessCode, UUID.randomUUID().toString(), addresses, params);
-  }
-
-  @Override
-  public void sendAsync(
-      String businessCode, String bizId, List<String> addresses, Map<String, Object> params) {
-    CompletableFuture.runAsync(() -> send(businessCode, bizId, addresses, params));
-  }
-
-  /** 发送单个渠道 */
-  private boolean sendChannel(
-      ChannelMapping mapping, String bizId, List<String> addresses, Map<String, Object> params) {
-    log.debug("Sending channel: {} for bizId: {}", mapping.getChannel(), bizId);
-
-    // 1. 加载模板
-    NotificationTemplateDO templateDO =
-        templateRepository.findByTemplateCodeAndEnabled(mapping.getTemplateCode()).orElse(null);
-
-    if (templateDO == null) {
-      log.warn("Template not found: {}", mapping.getTemplateCode());
-      return false;
     }
 
-    // 2. 渲染模板
-    String content = renderTemplate(templateDO.getContent(), params);
-    String title =
-        templateDO.getTitleTemplate() != null
-            ? renderTemplate(templateDO.getTitleTemplate(), params)
-            : null;
-
-    // 3. 构建发送请求
-    NotificationRequest request =
-        NotificationRequest.builder()
-            .bizId(bizId + "-" + mapping.getChannel())
-            .channel(NotificationChannel.valueOf(mapping.getChannel()))
-            .receivers(addresses)
-            .templateCode(mapping.getTemplateCode())
-            .title(title)
-            .content(content)
-            .priority(mapping.getPriority())
-            .providers(mapping.getProviderList())
-            .async(false)
-            .build();
-
-    // 4. 发送（带降级和重试）
-    NotificationResponse response = sendWithFallback(request);
-
-    // 5. 保存记录
-    saveRecord(mapping.getBusinessCode(), request, response);
-
-    return response.getSuccess();
-  }
-
-  /** 带降级发送 */
-  private NotificationResponse sendWithFallback(NotificationRequest request) {
-    List<String> providers = request.getProviders();
-
-    if (CollectionUtils.isEmpty(providers)) {
-      // 使用扩展点默认路由
-      return sendWithExtension(request, "default");
+    @Override
+    public void sendAsync(String businessCode, List<String> addresses, Map<String, Object> params) {
+        sendAsync(businessCode, UUID.randomUUID().toString(), addresses, params);
     }
 
-    // 按提供商列表依次尝试
-    NotificationResponse lastResponse = null;
-    for (String provider : providers) {
-      try {
-        NotificationResponse response = sendWithExtension(request, provider);
-        if (response.getSuccess()) {
-          log.info("Sent successfully via provider: {}", provider);
-          return response;
+    @Override
+    public void sendAsync(String businessCode, String bizId, List<String> addresses, Map<String, Object> params) {
+        CompletableFuture.runAsync(() -> send(businessCode, bizId, addresses, params));
+    }
+
+    /** 发送单个渠道 */
+    private boolean sendChannel(
+            ChannelMapping mapping, String bizId, List<String> addresses, Map<String, Object> params) {
+        log.debug("Sending channel: {} for bizId: {}", mapping.getChannel(), bizId);
+
+        // 1. 加载模板
+        NotificationTemplateDO templateDO = templateRepository
+                .findByTemplateCodeAndEnabled(mapping.getTemplateCode())
+                .orElse(null);
+
+        if (templateDO == null) {
+            log.warn("Template not found: {}", mapping.getTemplateCode());
+            return false;
         }
-        lastResponse = response;
-        log.warn("Provider {} failed: {}", provider, response.getErrorMessage());
-      } catch (Exception e) {
-        log.error("Provider {} error: {}", provider, e.getMessage());
-        lastResponse = buildFailedResponse(request, provider, e.getMessage());
-      }
+
+        // 2. 渲染模板
+        String content = renderTemplate(templateDO.getContent(), params);
+        String title =
+                templateDO.getTitleTemplate() != null ? renderTemplate(templateDO.getTitleTemplate(), params) : null;
+
+        // 3. 构建发送请求
+        NotificationRequest request = NotificationRequest.builder()
+                .bizId(bizId + "-" + mapping.getChannel())
+                .channel(NotificationChannel.valueOf(mapping.getChannel()))
+                .receivers(addresses)
+                .templateCode(mapping.getTemplateCode())
+                .title(title)
+                .content(content)
+                .priority(mapping.getPriority())
+                .providers(mapping.getProviderList())
+                .async(false)
+                .build();
+
+        // 4. 发送（带降级和重试）
+        NotificationResponse response = sendWithFallback(request);
+
+        // 5. 保存记录
+        saveRecord(mapping.getBusinessCode(), request, response);
+
+        return response.getSuccess();
     }
 
-    return lastResponse != null
-        ? lastResponse
-        : buildFailedResponse(request, null, "All providers failed");
-  }
+    /** 带降级发送 */
+    private NotificationResponse sendWithFallback(NotificationRequest request) {
+        List<String> providers = request.getProviders();
 
-  /** 使用扩展点发送 */
-  private NotificationResponse sendWithExtension(NotificationRequest request, String provider) {
-    BizScenario scenario = BizScenario.valueOf(request.getChannel().name(), provider, "default");
+        if (CollectionUtils.isEmpty(providers)) {
+            // 使用扩展点默认路由
+            return sendWithExtension(request, "default");
+        }
 
-    CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker(provider);
+        // 按提供商列表依次尝试
+        NotificationResponse lastResponse = null;
+        for (String provider : providers) {
+            try {
+                NotificationResponse response = sendWithExtension(request, provider);
+                if (response.getSuccess()) {
+                    log.info("Sent successfully via provider: {}", provider);
+                    return response;
+                }
+                lastResponse = response;
+                log.warn("Provider {} failed: {}", provider, response.getErrorMessage());
+            } catch (Exception e) {
+                log.error("Provider {} error: {}", provider, e.getMessage());
+                lastResponse = buildFailedResponse(request, provider, e.getMessage());
+            }
+        }
 
-    return circuitBreaker.executeSupplier(
-        () ->
-            extensionExecutor.execute(INotificationProvider.class, scenario, p -> p.send(request)));
-  }
-
-  /** 渲染模板 */
-  private String renderTemplate(String template, Map<String, Object> params) {
-    if (template == null || params == null) {
-      return template;
+        return lastResponse != null ? lastResponse : buildFailedResponse(request, null, "All providers failed");
     }
 
-    Matcher matcher = PLACEHOLDER_PATTERN.matcher(template);
-    StringBuffer result = new StringBuffer();
+    /** 使用扩展点发送 */
+    private NotificationResponse sendWithExtension(NotificationRequest request, String provider) {
+        BizScenario scenario = BizScenario.valueOf(request.getChannel().name(), provider, "default");
 
-    while (matcher.find()) {
-      String key = matcher.group(1);
-      Object value = params.get(key);
-      String replacement = value != null ? value.toString() : "";
-      matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker(provider);
+
+        return circuitBreaker.executeSupplier(
+                () -> extensionExecutor.execute(INotificationProvider.class, scenario, p -> p.send(request)));
     }
-    matcher.appendTail(result);
 
-    return result.toString();
-  }
+    /** 渲染模板 */
+    private String renderTemplate(String template, Map<String, Object> params) {
+        if (template == null || params == null) {
+            return template;
+        }
 
-  /** 保存发送记录 */
-  private void saveRecord(
-      String businessCode, NotificationRequest request, NotificationResponse response) {
-    try {
-      NotificationRecord record = new NotificationRecord();
-      record.setId(UUID.randomUUID().toString());
-      record.setTraceId(getCurrentTraceId());
-      record.setBusinessCode(businessCode);
-      record.setBizId(request.getBizId());
-      record.setMessageId(response.getMessageId());
-      record.setChannel(request.getChannel().name());
-      record.setReceivers(request.getReceivers());
-      record.setTemplateCode(request.getTemplateCode());
-      record.setTitle(request.getTitle());
-      record.setContent(request.getContent());
-      record.setProvider(response.getProvider());
-      record.setStatus(response.getStatus().name());
-      record.setRetryCount(0);
-      record.setPriority(request.getPriority());
-      record.setErrorMessage(response.getErrorMessage());
-      record.setSendTime(response.getSendTime());
-      record.setCreatedAt(LocalDateTime.now());
-      record.setUpdatedAt(LocalDateTime.now());
+        Matcher matcher = PLACEHOLDER_PATTERN.matcher(template);
+        StringBuffer result = new StringBuffer();
 
-      // 转换为 DO 并保存
-      recordRepository.save(gotoneConverter.toNotificationRecordDO(record));
-    } catch (Exception e) {
-      log.error("Failed to save notification record: {}", e.getMessage(), e);
+        while (matcher.find()) {
+            String key = matcher.group(1);
+            Object value = params.get(key);
+            String replacement = value != null ? value.toString() : "";
+            matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
+        }
+        matcher.appendTail(result);
+
+        return result.toString();
     }
-  }
 
-  /** 获取当前链路追踪ID（集成 LoadUp Tracer） */
-  private String getCurrentTraceId() {
-    // TODO: 集成 LoadUp Tracer 组件
-    return UUID.randomUUID().toString();
-  }
+    /** 保存发送记录 */
+    private void saveRecord(String businessCode, NotificationRequest request, NotificationResponse response) {
+        try {
+            NotificationRecord record = new NotificationRecord();
+            record.setId(UUID.randomUUID().toString());
+            record.setTraceId(getCurrentTraceId());
+            record.setBusinessCode(businessCode);
+            record.setBizId(request.getBizId());
+            record.setMessageId(response.getMessageId());
+            record.setChannel(request.getChannel().name());
+            record.setReceivers(request.getReceivers());
+            record.setTemplateCode(request.getTemplateCode());
+            record.setTitle(request.getTitle());
+            record.setContent(request.getContent());
+            record.setProvider(response.getProvider());
+            record.setStatus(response.getStatus().name());
+            record.setRetryCount(0);
+            record.setPriority(request.getPriority());
+            record.setErrorMessage(response.getErrorMessage());
+            record.setSendTime(response.getSendTime());
+            record.setCreatedAt(LocalDateTime.now());
+            record.setUpdatedAt(LocalDateTime.now());
 
-  /** 构建失败响应 */
-  private NotificationResponse buildFailedResponse(
-      NotificationRequest request, String provider, String errorMessage) {
-    return NotificationResponse.builder()
-        .success(false)
-        .status(NotificationStatus.FAILED)
-        .bizId(request.getBizId())
-        .provider(provider)
-        .errorMessage(errorMessage)
-        .sendTime(LocalDateTime.now())
-        .build();
-  }
+            // 转换为 DO 并保存
+            recordRepository.save(gotoneConverter.toNotificationRecordDO(record));
+        } catch (Exception e) {
+            log.error("Failed to save notification record: {}", e.getMessage(), e);
+        }
+    }
+
+    /** 获取当前链路追踪ID（集成 LoadUp Tracer） */
+    private String getCurrentTraceId() {
+        // TODO: 集成 LoadUp Tracer 组件
+        return UUID.randomUUID().toString();
+    }
+
+    /** 构建失败响应 */
+    private NotificationResponse buildFailedResponse(
+            NotificationRequest request, String provider, String errorMessage) {
+        return NotificationResponse.builder()
+                .success(false)
+                .status(NotificationStatus.FAILED)
+                .bizId(request.getBizId())
+                .provider(provider)
+                .errorMessage(errorMessage)
+                .sendTime(LocalDateTime.now())
+                .build();
+    }
 }

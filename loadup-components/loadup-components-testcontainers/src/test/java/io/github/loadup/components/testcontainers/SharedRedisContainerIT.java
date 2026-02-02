@@ -60,79 +60,78 @@ import org.testcontainers.containers.GenericContainer;
 @Slf4j
 @ActiveProfiles("test")
 @SpringBootTest(classes = TestApplication.class)
-@TestPropertySource(
-    properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.redis.enabled=true"})
+@TestPropertySource(properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.redis.enabled=true"})
 class SharedRedisContainerIT extends AbstractRedisContainerTest {
 
-  @Test
-  void testContainerIsRunning() {
-    GenericContainer<?> container = SharedRedisContainer.getInstance();
-    assertNotNull(container, "Container should not be null");
-    assertTrue(container.isRunning(), "Container should be running");
-  }
-
-  @Test
-  void testContainerProperties() {
-    assertNotNull(SharedRedisContainer.getHost(), "Host should not be null");
-    assertNotNull(SharedRedisContainer.getPort(), "Port should not be null");
-    assertNotNull(SharedRedisContainer.getUrl(), "Redis URL should not be null");
-    assertNotNull(SharedRedisContainer.getMappedPort(), "Mapped port should not be null");
-
-    log.info("Host: {}", SharedRedisContainer.getHost());
-    log.info("Port: {}", SharedRedisContainer.getPort());
-    log.info("Redis URL: {}", SharedRedisContainer.getUrl());
-  }
-
-  @Test
-  void testRedisConnection() {
-    String redisUrl = SharedRedisContainer.getUrl();
-    RedisClient redisClient = RedisClient.create(redisUrl);
-
-    try (StatefulRedisConnection<String, String> connection = redisClient.connect()) {
-      assertNotNull(connection, "Connection should not be null");
-
-      RedisCommands<String, String> commands = connection.sync();
-      String pingResponse = commands.ping();
-      assertEquals("PONG", pingResponse, "Ping response should be PONG");
-
-      log.info("Successfully connected to Redis");
-    } finally {
-      redisClient.shutdown();
+    @Test
+    void testContainerIsRunning() {
+        GenericContainer<?> container = SharedRedisContainer.getInstance();
+        assertNotNull(container, "Container should not be null");
+        assertTrue(container.isRunning(), "Container should be running");
     }
-  }
 
-  @Test
-  void testRedisOperations() {
-    String redisUrl = SharedRedisContainer.getUrl();
-    RedisClient redisClient = RedisClient.create(redisUrl);
+    @Test
+    void testContainerProperties() {
+        assertNotNull(SharedRedisContainer.getHost(), "Host should not be null");
+        assertNotNull(SharedRedisContainer.getPort(), "Port should not be null");
+        assertNotNull(SharedRedisContainer.getUrl(), "Redis URL should not be null");
+        assertNotNull(SharedRedisContainer.getMappedPort(), "Mapped port should not be null");
 
-    try (StatefulRedisConnection<String, String> connection = redisClient.connect()) {
-      RedisCommands<String, String> commands = connection.sync();
-
-      // Set a value
-      commands.set("testKey", "testValue");
-
-      // Get the value
-      String value = commands.get("testKey");
-      assertEquals("testValue", value, "Value should be 'testValue'");
-
-      // Delete the key
-      Long deleted = commands.del("testKey");
-      assertEquals(1L, deleted, "Should delete 1 key");
-
-      // Verify key is deleted
-      String deletedValue = commands.get("testKey");
-      assertNull(deletedValue, "Value should be null after deletion");
-    } finally {
-      redisClient.shutdown();
+        log.info("Host: {}", SharedRedisContainer.getHost());
+        log.info("Port: {}", SharedRedisContainer.getPort());
+        log.info("Redis URL: {}", SharedRedisContainer.getUrl());
     }
-  }
 
-  @Test
-  void testSameContainerAcrossTests() {
-    GenericContainer<?> container1 = SharedRedisContainer.getInstance();
-    GenericContainer<?> container2 = SharedRedisContainer.getInstance();
+    @Test
+    void testRedisConnection() {
+        String redisUrl = SharedRedisContainer.getUrl();
+        RedisClient redisClient = RedisClient.create(redisUrl);
 
-    assertSame(container1, container2, "Should return the same container instance");
-  }
+        try (StatefulRedisConnection<String, String> connection = redisClient.connect()) {
+            assertNotNull(connection, "Connection should not be null");
+
+            RedisCommands<String, String> commands = connection.sync();
+            String pingResponse = commands.ping();
+            assertEquals("PONG", pingResponse, "Ping response should be PONG");
+
+            log.info("Successfully connected to Redis");
+        } finally {
+            redisClient.shutdown();
+        }
+    }
+
+    @Test
+    void testRedisOperations() {
+        String redisUrl = SharedRedisContainer.getUrl();
+        RedisClient redisClient = RedisClient.create(redisUrl);
+
+        try (StatefulRedisConnection<String, String> connection = redisClient.connect()) {
+            RedisCommands<String, String> commands = connection.sync();
+
+            // Set a value
+            commands.set("testKey", "testValue");
+
+            // Get the value
+            String value = commands.get("testKey");
+            assertEquals("testValue", value, "Value should be 'testValue'");
+
+            // Delete the key
+            Long deleted = commands.del("testKey");
+            assertEquals(1L, deleted, "Should delete 1 key");
+
+            // Verify key is deleted
+            String deletedValue = commands.get("testKey");
+            assertNull(deletedValue, "Value should be null after deletion");
+        } finally {
+            redisClient.shutdown();
+        }
+    }
+
+    @Test
+    void testSameContainerAcrossTests() {
+        GenericContainer<?> container1 = SharedRedisContainer.getInstance();
+        GenericContainer<?> container2 = SharedRedisContainer.getInstance();
+
+        assertSame(container1, container2, "Should return the same container instance");
+    }
 }

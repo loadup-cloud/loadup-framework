@@ -29,11 +29,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderService {
 
-  /** Create a new user. */
-  public Order createOrder(String orderId, String orderName) {
-    Order order = new Order();
-    order.setOrderId(orderId);
-    order.setOrderName(orderName);
-    return order;
-  }
+    /** Create a new user. */
+    public Order createOrder(String orderId, String orderName) {
+        Order order = new Order();
+        order.setOrderId(orderId);
+        order.setOrderName(orderName);
+        return order;
+    }
 }
