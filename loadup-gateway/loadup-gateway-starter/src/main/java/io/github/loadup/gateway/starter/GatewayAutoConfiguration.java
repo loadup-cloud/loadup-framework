@@ -1,0 +1,128 @@
+package io.github.loadup.gateway.starter;
+
+/*-
+ * #%L
+ * LoadUp Gateway Starter
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
+import io.github.loadup.gateway.core.action.*;
+import io.github.loadup.gateway.core.handler.GatewayHandlerAdapter;
+import io.github.loadup.gateway.core.handler.GatewayHandlerMapping;
+import io.github.loadup.gateway.core.plugin.PluginManager;
+import io.github.loadup.gateway.core.router.RouteResolver;
+import io.github.loadup.gateway.core.template.TemplateEngine;
+import io.github.loadup.gateway.facade.config.GatewayProperties;
+import io.github.loadup.gateway.facade.spi.ProxyProcessor;
+import io.github.loadup.gateway.facade.spi.RepositoryPlugin;
+import java.util.Arrays;
+import java.util.List;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+/** Gateway auto-configuration */
+@Configuration
+@EnableConfigurationProperties(GatewayProperties.class)
+// @ConditionalOnClass(GatewayFilter.class)
+@ComponentScan(basePackages = "io.github.loadup.gateway")
+public class GatewayAutoConfiguration {
+
+  @Bean
+  @ConditionalOnMissingBean
+  public RouteResolver routeResolver(
+      RepositoryPlugin repositoryPlugin, GatewayProperties gatewayProperties) {
+    return new RouteResolver(repositoryPlugin, gatewayProperties);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public PluginManager pluginManager(List<ProxyProcessor> proxyProcessors) {
+    return new PluginManager(proxyProcessors);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public TemplateEngine templateEngine() {
+    return new TemplateEngine();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public RouteAction routeAction(RouteResolver routeResolver) {
+    return new RouteAction(routeResolver);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ProxyAction proxyAction(PluginManager pluginManager) {
+    return new ProxyAction(pluginManager);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public RequestTemplateAction requestTemplateAction(TemplateEngine templateEngine) {
+    return new RequestTemplateAction(templateEngine);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ResponseTemplateAction responseTemplateAction(TemplateEngine templateEngine) {
+    return new ResponseTemplateAction(templateEngine);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ResponseWrapperAction responseWrapperAction(GatewayProperties gatewayProperties) {
+    return new ResponseWrapperAction(gatewayProperties);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ActionDispatcher actionDispatcher(
+      RouteAction routeAction,
+      RequestTemplateAction requestTemplateAction,
+      ResponseWrapperAction responseWrapperAction,
+      ResponseTemplateAction responseTemplateAction,
+      ProxyAction proxyAction) {
+    List<GatewayAction> actionChain =
+        Arrays.asList(
+            routeAction, // 1. 寻址
+            requestTemplateAction, // 2. 处理请求参数
+            proxyAction, // 3. 处于最内层，发送请求
+            responseTemplateAction, // 4.  转换结果
+            responseWrapperAction // 5.  包装结果
+            );
+    return new ActionDispatcher(actionChain);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public GatewayHandlerAdapter gatewayHandlerAdapter(ActionDispatcher actionDispatcher) {
+    return new GatewayHandlerAdapter(actionDispatcher);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public GatewayHandlerMapping gatewayHandlerMapping(RepositoryPlugin repositoryPlugin) {
+    return new GatewayHandlerMapping(repositoryPlugin);
+  }
+}

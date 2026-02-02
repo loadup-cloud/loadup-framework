@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.loadup-cloud</groupId>
+        <artifactId>loadup-parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>loadup-testify</artifactId>
+    <packaging>pom</packaging>
+
+    <name>Loadup Test Component</name>
+    <description>Loadup Test Component</description>
+
+    <modules>
+        <module>loadup-testify-core</module>
+        <module>loadup-testify-data-engine</module>
+        <module>loadup-testify-assert-engine</module>
+        <module>loadup-testify-mock-engine</module>
+        <module>loadup-testify-spring-boot-starter</module>
+        <module>loadup-testify-infra-container</module>
+        <module>loadup-testify-demo</module>
+    </modules>
+
+
+</project>

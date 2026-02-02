@@ -1,0 +1,2 @@
+user_id,user_name,created_at,status
+${userId2},Admin2,2026-01-01 00:00:00,ACTIVE

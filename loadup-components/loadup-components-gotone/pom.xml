@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.loadup-cloud</groupId>
+        <artifactId>loadup-parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-components-gotone</artifactId>
+    <packaging>pom</packaging>
+    <description>LoadUp Notification Component - Support Email, SMS, Push, Internal Message</description>
+    <name>Loadup Components Gotone</name>
+
+    <properties>
+        <!-- Skip Spotless for aggregator POM - no source code -->
+        <spotless.skip>true</spotless.skip>
+    </properties>
+
+    <modules>
+        <module>loadup-components-gotone-api</module>
+        <module>loadup-components-gotone-binder-email</module>
+        <module>loadup-components-gotone-binder-sms</module>
+        <module>loadup-components-gotone-binder-push</module>
+        <module>loadup-components-gotone-test</module>
+    </modules>
+
+
+</project>
+
