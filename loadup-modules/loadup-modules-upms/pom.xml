@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.loadup-cloud</groupId>
+        <artifactId>loadup-parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-upms</artifactId>
+    <name>Loadup Modules UPMS</name>
+    <packaging>pom</packaging>
+    <description>User Permission Management System - RBAC3 Model with COLA 4.0 Architecture</description>
+
+    <modules>
+        <module>loadup-modules-upms-client</module>
+        <module>loadup-modules-upms-domain</module>
+        <module>loadup-modules-upms-security</module>
+        <module>loadup-modules-upms-infrastructure</module>
+        <module>loadup-modules-upms-app</module>
+        <module>loadup-modules-upms-adapter</module>
+        <module>loadup-modules-upms-starter</module>
+        <module>loadup-modules-upms-test</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <upms.version>1.0.0-SNAPSHOT</upms.version>
+    </properties>
+
+</project>
