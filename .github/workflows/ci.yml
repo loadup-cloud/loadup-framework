@@ -31,7 +31,7 @@ jobs:
           cache: 'maven'
 
       - name: Check Code Formatting
-        run: mvn spotless:check -B -P github,aliyun
+        run: mvn com.diffplug.spotless:spotless-maven-plugin:check -B -P github,aliyun
         env:
           GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
           GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
