@@ -11,8 +11,8 @@
     <artifactId>loadup-testify</artifactId>
     <packaging>pom</packaging>
 
-    <name>Loadup Test Component</name>
-    <description>Loadup Test Component</description>
+    <name>Loadup Testify Component</name>
+    <description>Loadup Testify Component</description>
 
     <modules>
         <module>loadup-testify-core</module>
@@ -21,7 +21,7 @@
         <module>loadup-testify-mock-engine</module>
         <module>loadup-testify-spring-boot-starter</module>
         <module>loadup-testify-infra-container</module>
-        <module>loadup-testify-demo</module>
+<!--        <module>loadup-testify-demo</module>-->
     </modules>
 
 </project>
