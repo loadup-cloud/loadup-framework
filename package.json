@@ -2,17 +2,11 @@
   "name": "loadup-docs",
   "private": true,
   "version": "0.0.0",
-  "engines": {
-    "node": ">=14"
-  },
   "scripts": {
-    "start": "docusaurus start",
-    "build": "docusaurus build",
-    "serve": "docusaurus serve",
-    "deploy": "docusaurus deploy"
+    "mkdocs-serve": "mkdocs serve -a 0.0.0.0:8000",
+    "mkdocs-build": "mkdocs build",
+    "clean-docs": "rm -rf site/"
   },
-  "dependencies": {
-    "@docusaurus/core": "^2.4.0",
-    "@docusaurus/preset-classic": "^2.4.0"
-  }
+  "devDependencies": {},
+  "dependencies": {}
 }

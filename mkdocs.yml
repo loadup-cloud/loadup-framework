@@ -1,0 +1,64 @@
+site_name: LoadUp Documentation
+site_description: Documentation for LoadUp enterprise platform
+site_url: https://loadup-cloud.github.io
+repo_url: https://github.com/loadup-cloud/loadup-framework
+
+nav:
+  - Home: index.md
+  - Project Overview: project-overview.md
+  - Quick Start: ai-project-context.md
+  - Components:
+    - Overview: components.md
+    - Cache: components/cache.md
+    - Captcha: components/captcha.md
+    - Database: components/database-architecture.md
+    - DFS: components/dfs.md
+    - Extension: components/extension.md
+    - Gotone: components/gotone.md
+    - Liquibase: components/liquibase.md
+    - Scheduler: components/scheduler.md
+    - Testcontainers: components/testcontainers.md
+    - Tracer: components/tracer.md
+  - Commons:
+    - Overview: commons.md
+    - DTO: commons/commons-dto.md
+    - Utilities: commons/commons-util.md
+  - Modules:
+    - Overview: modules.md
+    - UPMS: modules/modules-upms.md
+    - UPMS Architecture: modules/modules-upms-architecture.md
+  - Gateway: gateway.md
+  - Dependencies: dependencies.md
+  - Original Docs:
+    - Root README: original/root-README.md
+    - Components (original):
+      - DFS README: original/loadup-components-dfs-README.md
+      - Tracer README: original/loadup-components-tracer-README.md
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+
+extra:
+  social:
+    - type: github
+      link: https://github.com/loadup-cloud/loadup-framework
+
+# docs dir is default 'docs' so no change needed
