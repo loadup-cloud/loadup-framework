@@ -1,9 +1,8 @@
 ---
-id: components-database-architecture
-title: LoadUp Database Component - Architecture
+id: components-database
+title: LoadUp Database Component
 ---
 
-> 来源: `loadup-components/loadup-components-database/ARCHITECTURE.md`
 
 # LoadUp Database Component - Architecture
 

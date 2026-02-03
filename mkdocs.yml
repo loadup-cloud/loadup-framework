@@ -1,64 +1,86 @@
 site_name: LoadUp Documentation
 site_description: Documentation for LoadUp enterprise platform
-site_url: https://loadup-cloud.github.io
+site_url: https://loadup-cloud.laysan.site
 repo_url: https://github.com/loadup-cloud/loadup-framework
 
 nav:
   - Home: index.md
   - Project Overview: project-overview.md
-  - Quick Start: ai-project-context.md
+  - Quick Start: quick-start.md
+  - AI Coding: ai-project-context.md
   - Components:
-    - Overview: components.md
-    - Cache: components/cache.md
-    - Captcha: components/captcha.md
-    - Database: components/database-architecture.md
-    - DFS: components/dfs.md
-    - Extension: components/extension.md
-    - Gotone: components/gotone.md
-    - Liquibase: components/liquibase.md
-    - Scheduler: components/scheduler.md
-    - Testcontainers: components/testcontainers.md
-    - Tracer: components/tracer.md
+      - Overview: components.md
+      - Cache: components/cache.md
+      - Captcha: components/captcha.md
+      - Database: components/database.md
+      - DFS: components/dfs.md
+      - Extension: components/extension.md
+      - Gotone: components/gotone.md
+      - Liquibase: components/liquibase.md
+      - Scheduler: components/scheduler.md
+      - Testcontainers: components/testcontainers.md
+      - Tracer: components/tracer.md
   - Commons:
-    - Overview: commons.md
-    - DTO: commons/commons-dto.md
-    - Utilities: commons/commons-util.md
+      - Overview: commons.md
+      - API: commons/commons-api.md
+      - DTO: commons/commons-dto.md
+      - Utils: commons/commons-util.md
   - Modules:
-    - Overview: modules.md
-    - UPMS: modules/modules-upms.md
-    - UPMS Architecture: modules/modules-upms-architecture.md
+      - Overview: modules.md
+      - UPMS: modules/modules-upms.md
   - Gateway: gateway.md
   - Dependencies: dependencies.md
-  - Original Docs:
-    - Root README: original/root-README.md
-    - Components (original):
-      - DFS README: original/loadup-components-dfs-README.md
-      - Tracer README: original/loadup-components-tracer-README.md
 
 theme:
   name: material
+  language: zh
   palette:
-    - scheme: default
-      primary: indigo
+    # 亮色模式
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue grey
       accent: indigo
-  font:
-    text: Roboto
-    code: Roboto Mono
+      toggle:
+        icon: material/weather-sunny
+        name: 切换到暗色模式
+    # 暗色模式
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue grey
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: 切换到亮色模式
+  features:
+    - content.code.copy
+    - navigation.top        # 回到顶部按钮（技术文档必备）
+    - navigation.tracking   # 滚动时自动更新 URL 锚点
 
 plugins:
   - search
 
 markdown_extensions:
   - admonition
+  - pymdownx.details # 支持可折叠的代码块或备注
   - toc:
       permalink: true
   - pymdownx.highlight:
       anchor_linenums: true
-  - pymdownx.superfences
+      pygments_lang_class: true
+  - pymdownx.inlinehilite:
+  - pymdownx.snippets:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 
+          # 在文档末尾添加以下配置，自动处理 Mermaid 主题切换
+extra_javascript:
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
 extra:
   social:
-    - type: github
+    - icon: fontawesome/brands/github
       link: https://github.com/loadup-cloud/loadup-framework
-
-# docs dir is default 'docs' so no change needed
+extra_css:
+  - stylesheets/extra.css

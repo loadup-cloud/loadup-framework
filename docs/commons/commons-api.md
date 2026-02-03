@@ -1,3 +1,7 @@
+---
+id: commons-dto
+title: LoadUp Commons DTO
+---
 # LoadUp Commons API
 
 ## 📋 概述
@@ -233,8 +237,9 @@ the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 ```
 
-详见 [LICENSE](../../LICENSE) 文件。
+详见 [LICENSE](../LICENSE) 文件。
 
 ---
 
 **最后更新**: 2025-12-30
+

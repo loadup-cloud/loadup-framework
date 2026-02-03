@@ -40,12 +40,12 @@
   - 严禁循环依赖。
 - 包前缀：`io.github.loadup`。
 - 包结构建议：
-  - `io.github.loadup.{{module}}.controller`
-  - `io.github.loadup.{{module}}.service`
-  - `io.github.loadup.{{module}}.service.impl`
-  - `io.github.loadup.{{module}}.mapper`
-  - `io.github.loadup.{{module}}.entity` 或 `domain` / `do`
-  - `io.github.loadup.{{module}}.dto`
+  - `io.github.loadup.{ {module} }.controller`
+  - `io.github.loadup.{ {module} }.service`
+  - `io.github.loadup.{ {module} }.service.impl`
+  - `io.github.loadup.{ {module} }.mapper`
+  - `io.github.loadup.{ {module} }.entity` 或 `domain` / `do`
+  - `io.github.loadup.{ {module} }.dto`
 - 强制措施建议：在 CI 中使用 Maven Enforcer / ArchUnit 检查模块反向依赖和包边界。
 
 ---
@@ -66,31 +66,34 @@
 说明：生成代码必须包含完整的 import 列表、JavaDoc 注释、参数校验、异常处理与基本单元测试示例。
 
 5.1 Controller 模板要求（必备注解）
-- 注解：`@RestController`, `@RequestMapping`, `@Slf4j`, `@RequiredArgsConstructor`
+- 注解：`@RestController', `@RequestMapping', `@Slf4j', `@RequiredArgsConstructor'
 - 返回类型：统一使用 `Result<T>`（项目内通用响应封装），或 `ResponseEntity<Result<T>>`。
-- 参数校验：入参 DTO 使用 `@Valid`，方法参数和路径参数使用 `@PathVariable', `@RequestParam`, `@RequestBody` 对应注解。
-- OpenAPI：使用 `@Operation` / `@Tag` 为每个接口添加说明。
+- 参数校验：入参 DTO 使用 `@Valid`，方法参数和路径参数使用 `@PathVariable', `@RequestParam', `@RequestBody' 对应注解。
+- OpenAPI：使用 `@Operation' / `@Tag' 为每个接口添加说明。
 
 完整 import 列表（示例）:
-- import org.springframework.web.bind.annotation.RestController;
-- import org.springframework.web.bind.annotation.RequestMapping;
-- import org.springframework.web.bind.annotation.GetMapping;
-- import org.springframework.web.bind.annotation.PostMapping;
-- import org.springframework.web.bind.annotation.PutMapping;
-- import org.springframework.web.bind.annotation.DeleteMapping;
-- import org.springframework.web.bind.annotation.PathVariable;
-- import org.springframework.web.bind.annotation.RequestParam;
-- import org.springframework.web.bind.annotation.RequestBody;
-- import org.springframework.http.ResponseEntity;
-- import jakarta.validation.Valid;
-- import lombok.RequiredArgsConstructor;
-- import lombok.extern.slf4j.Slf4j;
-- import io.swagger.v3.oas.annotations.Operation;
-- import io.swagger.v3.oas.annotations.tags.Tag;
-- import io.github.loadup.commons.dto.Result; // 根据项目实际路径
-- import io.github.loadup.{{module}}.dto.XxxRequest;
-- import io.github.loadup.{{module}}.dto.XxxResponse;
-- import io.github.loadup.{{module}}.service.XxxService;
+
+```java
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.github.loadup.commons.dto.Result; // 根据项目实际路径
+import io.github.loadup.module.dto.XxxRequest;
+import io.github.loadup.module.dto.XxxResponse;
+import io.github.loadup.module.service.XxxService;
+```
 
 Controller 生成约定：
 - 使用构造器注入（`@RequiredArgsConstructor`），避免 `@Autowired` 字段注入。
@@ -105,9 +108,9 @@ Controller 生成约定：
 - import org.springframework.stereotype.Service;
 - import org.springframework.transaction.annotation.Transactional;
 - import lombok.RequiredArgsConstructor;
-- import io.github.loadup.{{module}}.mapper.XxxMapper;
-- import io.github.loadup.{{module}}.entity.XxxEntity;
-- import io.github.loadup.{{module}}.dto.XxxDTO;
+- import io.github.loadup.{ {module} }.mapper.XxxMapper;
+- import io.github.loadup.{ {module} }.entity.XxxEntity;
+- import io.github.loadup.{ {module} }.dto.XxxDTO;
 - import io.github.loadup.commons.exception.BusinessException;
 
 Service 生成约定：
@@ -116,5 +119,3 @@ Service 生成约定：
 - 公共方法提供 JavaDoc，说明并发/线程安全假定。
 
 ---
-
-... (truncated for brevity) ...

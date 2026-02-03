@@ -1,7 +1,5 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/mainio.github.loadup.components.gatewaytarget/
-!**/src/testio.github.loadup.components.gatewaytarget/
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
@@ -29,8 +27,6 @@ target/
 /nbdist/
 /.nb-gradle/
 build/
-!**/src/mainio.github.loadup.components.gatewaybuild/
-!**/src/testio.github.loadup.components.gatewaybuild/
 
 ### VS Code ###
 .vscode/
@@ -38,6 +34,6 @@ build/
 ### Mac OS ###
 .DS_Store
 
-loadup-dependencies
-loadup-capability
 *.log
+node_modules
+.venv

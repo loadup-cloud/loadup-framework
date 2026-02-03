@@ -21,7 +21,7 @@
         <module>loadup-testify-mock-engine</module>
         <module>loadup-testify-spring-boot-starter</module>
         <module>loadup-testify-infra-container</module>
-<!--        <module>loadup-testify-demo</module>-->
+        <!--        <module>loadup-testify-demo</module>-->
     </modules>
 
 </project>

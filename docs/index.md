@@ -7,7 +7,7 @@
 - [项目概览与上下文](./ai-project-context.md) — 为 AI 助手提供的项目上下文、快速开始、模块说明与开发约定。
 - [GitHub Copilot 指令](./copilot-instructions.md) — 用于指导 Copilot 在本项目中生成代码的详细指令与模板（中文）。
 - [Cursor AI 规则](./cursor-rules.md) — 指导 Cursor AI 为本项目生成或修改代码时应遵守的规则（中文）。
-- [根 README](../README.md) — 项目顶层 README，包含更详尽的组件与使用示例。
+- [根 README](./README.md) — 项目顶层 README，包含更详尽的组件与使用示例。
 
 ## 如何使用
 

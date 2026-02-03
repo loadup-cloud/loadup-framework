@@ -83,11 +83,12 @@ mvn spring-boot:run
 
 ## 代码模式示例（典型模板）
 
-说明：下面模板为 AI 生成代码时的参考样式，包含完整 imports、注解与约定。占位符使用 `{{Module}}` / `{{Entity}}` / `{{dto}}` 等，请由 AI 在生成时替换为实际值。
+说明：下面模板为 AI 生成代码时的参考样式，包含完整 imports、注解与约定。占位符使用 `{ {Module} }` / `{ {Entity} }` / `{ {dto} }` 等，请由 AI 在生成时替换为实际值。
 
 ### Controller 模板（示例）
 
-package io.github.loadup.{{module}}.controller;
+```java
+package io.github.loadup.{ {module} }.controller;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -97,91 +98,97 @@ import lombok.extern.slf4j.Slf4j;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.github.loadup.commons.dto.Result;
-import io.github.loadup.{{module}}.dto.{{Entity}}Request;
-import io.github.loadup.{{module}}.dto.{{Entity}}Response;
-import io.github.loadup.{{module}}.service.{{Entity}}Service;
+import io.github.loadup.{ {module} }.dto.{ {Entity} }Request;
+import io.github.loadup.{ {module} }.dto.{ {Entity} }Response;
+import io.github.loadup.{ {module} }.service.{ {Entity} }Service;
 
 /**
- * {{Entity}}Controller
+ * { {Entity} }Controller
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/{{module}}/{{entity}}")
+@RequestMapping("/api/{ {module} }/{ {entity} }")
 @RequiredArgsConstructor
-@Tag(name = "{{Entity}} API", description = "{{Entity}} 相关接口")
-public class {{Entity}}Controller {
+@Tag(name = "{ {Entity} } API", description = "{ {Entity} } 相关接口")
+public class { {Entity} }Controller {
 
-    private final {{Entity}}Service {{entity}}Service;
+    private final { {Entity} }Service { {entity} }Service;
 
-    @Operation(summary = "创建 {{Entity}}")
+    @Operation(summary = "创建 { {Entity} }")
     @PostMapping
-    public ResponseEntity<Result<{{Entity}}Response>> create(@Valid @RequestBody {{Entity}}Request req) {
-        var resp = {{entity}}Service.create(req);
+    public ResponseEntity<Result<{ {Entity} }Response>> create(@Valid @RequestBody { {Entity} }Request req) {
+        var resp = { {entity} }Service.create(req);
         return ResponseEntity.ok(Result.success(resp));
     }
 
     // get/list/update/delete 模板方法略
 }
+```
 
 ### Service 模板（示例）
 
-package io.github.loadup.{{module}}.service;
+```java
+package io.github.loadup.{ {module} }.service;
 
-import io.github.loadup.{{module}}.dto.{{Entity}}Request;
-import io.github.loadup.{{module}}.dto.{{Entity}}Response;
+import io.github.loadup.{ {module} }.dto.{ {Entity} }Request;
+import io.github.loadup.{ {module} }.dto.{ {Entity} }Response;
 
-public interface {{Entity}}Service {
-    {{Entity}}Response create({{Entity}}Request request);
+public interface { {Entity} }Service {
+    { {Entity} }Response create({ {Entity} }Request request);
 }
 
-package io.github.loadup.{{module}}.service.impl;
+package io.github.loadup.{ {module} }.service.impl;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-import io.github.loadup.{{module}}.mapper.{{Entity}}Mapper;
-import io.github.loadup.{{module}}.entity.{{Entity}}Entity;
-import io.github.loadup.{{module}}.dto.{{Entity}}Request;
-import io.github.loadup.{{module}}.dto.{{Entity}}Response;
-import io.github.loadup.{{module}}.service.{{Entity}}Service;
+import io.github.loadup.{ {module} }.mapper.{ {Entity} }Mapper;
+import io.github.loadup.{ {module} }.entity.{ {Entity} }Entity;
+import io.github.loadup.{ {module} }.dto.{ {Entity} }Request;
+import io.github.loadup.{ {module} }.dto.{ {Entity} }Response;
+import io.github.loadup.{ {module} }.service.{ {Entity} }Service;
 import io.github.loadup.commons.exception.BusinessException;
 
 @Service
 @RequiredArgsConstructor
-public class {{Entity}}ServiceImpl implements {{Entity}}Service {
+public class { {Entity} }ServiceImpl implements { {Entity} }Service {
 
-    private final {{Entity}}Mapper {{entity}}Mapper;
+    private final { {Entity} }Mapper { {entity} }Mapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public {{Entity}}Response create({{Entity}}Request request) {
+    public { {Entity} }Response create({ {Entity} }Request request) {
         // 验证 -> DTO -> Entity -> 持久化 -> 返回
-        {{Entity}}Entity e = new {{Entity}}Entity();
+        { {Entity} }Entity e = new { {Entity} }Entity();
         // set fields
-        int inserted = {{entity}}Mapper.insert(e);
+        int inserted = { {entity} }Mapper.insert(e);
         if (inserted != 1) {
             throw new BusinessException("创建失败");
         }
-        return new {{Entity}}Response();
+        return new { {Entity} }Response();
     }
 }
+```
 
 ### Mapper 模板（示例）
 
-package io.github.loadup.{{module}}.mapper;
+```java
+package io.github.loadup.{ {module} }.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import io.github.loadup.{{module}}.entity.{{Entity}}Entity;
+import io.github.loadup.{ {module} }.entity.{ {Entity} }Entity;
 
 @Mapper
-public interface {{Entity}}Mapper extends BaseMapper<{{Entity}}Entity> {
+public interface { {Entity} }Mapper extends BaseMapper<{ {Entity} }Entity> {
     // 自定义查询方法示例
 }
+```
 
 ### Entity 模板（示例）
 
-package io.github.loadup.{{module}}.entity;
+```java
+package io.github.loadup.{ {module} }.entity;
 
 import java.io.Serializable;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -197,8 +204,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("t_{{entity}}")
-public class {{Entity}}Entity implements Serializable {
+@TableName("t_{ {entity} }")
+public class { {Entity} }Entity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(type = IdType.ASSIGN_ID)
@@ -209,6 +216,7 @@ public class {{Entity}}Entity implements Serializable {
     @JsonIgnore
     private String password; // 密码字段必须加 @JsonIgnore
 }
+```
 
 ---
 
