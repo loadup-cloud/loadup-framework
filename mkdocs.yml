@@ -4,32 +4,36 @@ site_url: https://loadup-cloud.laysan.site
 repo_url: https://github.com/loadup-cloud/loadup-framework
 
 nav:
-  - Home: index.md
-  - Project Overview: project-overview.md
-  - Quick Start: quick-start.md
-  - AI Coding: ai-project-context.md
-  - Components:
-      - Overview: components.md
-      - Cache: components/cache.md
-      - Captcha: components/captcha.md
-      - Database: components/database.md
-      - DFS: components/dfs.md
-      - Extension: components/extension.md
-      - Gotone: components/gotone.md
-      - Liquibase: components/liquibase.md
-      - Scheduler: components/scheduler.md
-      - Testcontainers: components/testcontainers.md
-      - Tracer: components/tracer.md
-  - Commons:
-      - Overview: commons.md
-      - API: commons/commons-api.md
-      - DTO: commons/commons-dto.md
-      - Utils: commons/commons-util.md
-  - Modules:
-      - Overview: modules.md
-      - UPMS: modules/modules-upms.md
-  - Gateway: gateway.md
-  - Dependencies: dependencies.md
+  - 主页: index.md
+  - 项目概览: project-overview.md
+  - 架构设计: architecture.md
+  - 快速开始: quick-start.md
+  - AI 编码指南: ai-project-context.md
+  - 核心模块:
+      - Dependencies: dependencies.md
+      - Commons:
+          - 概览: commons.md
+          - API: commons/commons-api.md
+          - DTO: commons/commons-dto.md
+          - Utils: commons/commons-util.md
+      - Components:
+          - 概览: components.md
+          - Database: components/database.md
+          - Cache: components/cache.md
+          - Scheduler: components/scheduler.md
+          - Tracer: components/tracer.md
+          - DFS: components/dfs.md
+          - Captcha: components/captcha.md
+          - Extension: components/extension.md
+          - Gotone: components/gotone.md
+          - Liquibase: components/liquibase.md
+          - Testcontainers: components/testcontainers.md
+      - Modules:
+          - 概览: modules.md
+          - UPMS: modules/upms.md
+      - Gateway: gateway.md
+      - Testify: testify.md
+      - Application: application.md
 
 theme:
   name: material

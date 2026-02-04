@@ -55,7 +55,7 @@
 - DTO：`XxxDTO` / `XxxRequest` / `XxxResponse`。
 - VO：`XxxVO`（视图层专用）。
 - Service 接口：`XxxService`；实现类：`XxxServiceImpl`（位于 `service.impl` 包）。
-- Mapper：`XxxMapper`（继承 MyBatis-Plus `BaseMapper<XxxEntity>`）。
+- Mapper：`XxxMapper`（继承 MyBatis-Flex `BaseMapper<XxxEntity>`）。
 - Controller：`XxxController`。
 - Lombok：优先使用 `@Data`, `@Builder`, `@NoArgsConstructor`, `@AllArgsConstructor`，但对外 API 的 DTO 需明确定义字段约束与 JavaDoc。
 - 日志：统一使用 `@Slf4j`（lombok.extern.slf4j.Slf4j）。
@@ -163,7 +163,7 @@ Mapper 生成约定：
 
 7. 性能建议（高优先级）
 - 缓存：对读多写少的数据使用 Redis（Redisson）或本地缓存（Caffeine），并定义清晰的失效与一致性策略。
-- 批量操作：对大量写入使用批量接口或 MyBatis-Plus 的 `saveBatch` 等方法，注意分批大小与事务边界。
+- 批量操作：对大量写入使用批量接口或 MyBatis-Flex 的 `insertBatch` / `updateBatch` 等方法，注意分批大小与事务边界。
 - N+1 问题：在数据模型设计或查询中避免 N+1 查询，使用 join 或批量获取策略。
 - 分页查询：对大数据量使用游标/分页策略（限制单页大小），并在 SQL 添加合理索引。
 - 连接池与资源：调优 HikariCP、设置合理的最大连接数，避免过度并发导致数据库连接耗尽。
@@ -319,9 +319,9 @@ public class {{Entity}}ServiceImpl implements {{Entity}}Service {
 package io.github.loadup.{{module}}.entity;
 
 import java.io.Serializable;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.IdType;
+import com.mybatisflex.annotation.Table;
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
 import lombok.Data;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -335,12 +335,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("t_{{entity}}")
+@Table("t_{{entity}}")
 public class {{Entity}}Entity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(type = IdType.ASSIGN_ID)
+    @Id(keyType = KeyType.None)  // ID 由审计功能自动生成
     private String id;
 
     private String name;
@@ -349,6 +349,7 @@ public class {{Entity}}Entity implements Serializable {
     private String password; // 密码字段必须加 @JsonIgnore
 
     // ... 其他字段，字段名使用 snake_case 映射
+}    // ... 其他字段，字段名使用 snake_case 映射
 }
 
 
@@ -357,7 +358,7 @@ public class {{Entity}}Entity implements Serializable {
 package io.github.loadup.{{module}}.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.mybatisflex.core.BaseMapper;
 import io.github.loadup.{{module}}.entity.{{Entity}}Entity;
 
 @Mapper

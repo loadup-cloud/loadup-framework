@@ -14,9 +14,9 @@ LoadUp Framework 是一个基于 Spring Boot 的微服务开发框架，提供�
 - `loadup-application` - 应用启动器（admin / api 等）
 
 ## 技术栈（摘要）
-- Java 17/21（项目有部分模块基于 Java 17，近期迁移目标为 Java 21）
-- Spring Boot 3.x
-- MyBatis / MyBatis-Flex / MyBatis-Plus
+- Java 21
+- Spring Boot 3.4.3
+- MyBatis-Flex 1.11.5
 - Redis, HikariCP, Liquibase
 - OpenAPI (Swagger)
 

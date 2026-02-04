@@ -21,7 +21,7 @@
 2. 技术栈（必须遵守）
 - Java: 21
 - Spring Boot: 3.4.3
-- MyBatis-Plus: 3.5.4.1 (持久层)
+- MyBatis-Flex: 1.11.5 (持久层)
 - 数据库: MySQL 8.0
 - 缓存: Redis（Redisson 客户端 / 连接池）
 - 认证: JWT（注意：安全细节参见安全规范）

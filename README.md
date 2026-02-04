@@ -38,11 +38,14 @@ loadup-framework/
 
 ## 技术栈
 
-- Java 17
-- Spring Boot 3.1.2
-- Spring Cloud 2022.0.4
-- COLA 4.3.2
-- Maven (依赖管理)
+- **Java**: 21
+- **Spring Boot**: 3.4.3
+- **MyBatis-Flex**: 1.11.5
+- **MySQL**: 8.0+
+- **Redis**: Redisson
+- **Maven**: 3.6+
+
+详细技术栈请查看 [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ---
 

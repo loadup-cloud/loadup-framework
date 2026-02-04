@@ -251,7 +251,7 @@ public class { {Entity} }Entity implements Serializable {
 - 业务逻辑必须放在 `loadup-modules` 下的具体模块中。
 - 代码风格：遵循仓库现有格式化和静态检查规则（Spotless / Checkstyle / PMD / SpotBugs）。
 - 安全：敏感字段（如 password）在实体与 DTO 中应加 `@JsonIgnore`（或在 DTO 层不返回）；日志中不得打印完整 Token 或密码。
-- SQL 安全：避免字符串拼接的 SQL，使用 MyBatis-Plus 的参数化查询或 Mapper 注解/XML 参数化语句。
+- SQL 安全：避免字符串拼接的 SQL，使用 MyBatis-Flex 的参数化查询（QueryWrapper）或 Mapper 注解/XML 参数化语句。
 - 参数校验：Controller 入参使用 `@Valid` 与 jakarta.validation 注解（@NotNull/@NotBlank/@Size 等）。
 - 事务：写操作在 ServiceImpl 中使用 `@Transactional(rollbackFor = Exception.class)`。
 
