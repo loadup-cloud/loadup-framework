@@ -66,13 +66,6 @@
             <version>7.11.0</version>
         </dependency>
 
-        <!-- Spring Security Test -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <!-- LoadUp TestContainers Component (includes MySQL, TestContainers, and MySQL Driver) -->
         <!--        <dependency>-->
         <!--            <groupId>io.github.loadup-cloud</groupId>-->

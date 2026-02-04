@@ -28,19 +28,18 @@ import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Data Scope Aspect - Intercepts methods with @DataScope annotation
@@ -60,17 +59,23 @@ public class DataScopeAspect {
     private final RoleGateway roleGateway;
     private final DepartmentGateway departmentGateway;
 
-    /** Get current data scope context */
+    /**
+     * Get current data scope context
+     */
     public static DataScopeContext getCurrentContext() {
         return CONTEXT_HOLDER.get();
     }
 
-    /** Clear data scope context */
+    /**
+     * Clear data scope context
+     */
     public static void clearContext() {
         CONTEXT_HOLDER.remove();
     }
 
-    /** Before method execution, build data scope context */
+    /**
+     * Before method execution, build data scope context
+     */
     @Before("@annotation(datascope.security.infrastructure.upms.modules.loadup.github.io.DataScope)")
     public void before(JoinPoint joinPoint) {
         try {
@@ -84,13 +89,8 @@ public class DataScopeAspect {
             }
 
             // Get current authenticated user
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated()) {
-                log.debug("No authenticated user, skipping data scope");
-                return;
-            }
 
-            String username = authentication.getName();
+            String username = "";
             User user = userGateway.findByUsername(username).orElse(null);
             if (user == null) {
                 log.warn("User not found: {}", username);
@@ -108,14 +108,16 @@ public class DataScopeAspect {
         }
     }
 
-    /** Build data scope context for user */
+    /**
+     * Build data scope context for user
+     */
     private DataScopeContext buildDataScopeContext(User user) {
         // Get user's roles
         List<Role> roles = roleGateway.findByUserId(user.getId());
 
         // Check if user is super admin (has ADMIN role)
         boolean isSuperAdmin = roles.stream()
-                .anyMatch(r -> "ROLE_ADMIN".equals(r.getRoleCode()) || "ROLE_SUPER_ADMIN".equals(r.getRoleCode()));
+            .anyMatch(r -> "ROLE_ADMIN".equals(r.getRoleCode()) || "ROLE_SUPER_ADMIN".equals(r.getRoleCode()));
 
         // Find the most permissive data scope from all roles
         DataScopeType maxDataScope = DataScopeType.SELF; // Most restrictive by default
@@ -143,16 +145,18 @@ public class DataScopeAspect {
         }
 
         return DataScopeContext.builder()
-                .userId(user.getId())
-                .deptId(user.getDeptId())
-                .dataScopeType(maxDataScope)
-                .customDeptIds(customDeptIds.stream().distinct().collect(Collectors.toList()))
-                .subDeptIds(subDeptIds)
-                .isSuperAdmin(isSuperAdmin)
-                .build();
+            .userId(user.getId())
+            .deptId(user.getDeptId())
+            .dataScopeType(maxDataScope)
+            .customDeptIds(customDeptIds.stream().distinct().collect(Collectors.toList()))
+            .subDeptIds(subDeptIds)
+            .isSuperAdmin(isSuperAdmin)
+            .build();
     }
 
-    /** Get all sub-department IDs recursively */
+    /**
+     * Get all sub-department IDs recursively
+     */
     private List<String> getAllSubDepartmentIds(String parentDeptId) {
         List<String> allIds = new ArrayList<>();
         List<Department> children = departmentGateway.findByParentId(parentDeptId);

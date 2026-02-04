@@ -76,6 +76,9 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
     public GatewayResponse proxy(GatewayRequest request, RouteConfig route) throws Exception {
 
         try {
+            // Set user context from request attributes (populated by SecurityAction)
+            setupUserContext(request);
+
             String target = route.getTargetBean() + ":" + route.getTargetMethod();
             String[] parts = target.split(":");
             if (parts.length != 2) {
@@ -130,6 +133,9 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
             // Wrap and handle other exceptions
             GatewayException wrappedException = GatewayExceptionFactory.wrap(e, "SPRINGBEAN_PROXY");
             return ExceptionHandler.handleException(request.getRequestId(), wrappedException);
+        } finally {
+            // Always clear user context to prevent memory leaks
+            clearUserContext();
         }
     }
 
@@ -174,5 +180,53 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
         }
 
         return args;
+    }
+
+    /**
+     * Setup user context from request attributes (if authorization component is available)
+     */
+    private void setupUserContext(GatewayRequest request) {
+        try {
+            String userId = (String) request.getAttributes().get("userId");
+            if (userId == null) {
+                return; // No user info, skip
+            }
+
+            String username = (String) request.getAttributes().get("username");
+            @SuppressWarnings("unchecked")
+            java.util.List<String> roles = (java.util.List<String>) request.getAttributes().get("roles");
+
+            // Dynamically load UserContext and LoadUpUser if loadup-components-authorization is in classpath
+            Class<?> userContextClass = Class.forName("io.github.loadup.components.authorization.context.UserContext");
+            Class<?> userClass = Class.forName("io.github.loadup.components.authorization.model.LoadUpUser");
+
+            // Create LoadUpUser using builder
+            Object userBuilder = userClass.getMethod("builder").invoke(null);
+            userBuilder.getClass().getMethod("userId", String.class).invoke(userBuilder, userId);
+            userBuilder.getClass().getMethod("username", String.class).invoke(userBuilder, username);
+            userBuilder.getClass().getMethod("roles", java.util.List.class).invoke(userBuilder, roles);
+            Object user = userBuilder.getClass().getMethod("build").invoke(userBuilder);
+
+            // Set to UserContext
+            userContextClass.getMethod("set", userClass).invoke(null, user);
+
+            log.debug("UserContext set for user: {}", userId);
+        } catch (ClassNotFoundException e) {
+            log.debug("loadup-components-authorization not in classpath, skipping UserContext setup");
+        } catch (Exception e) {
+            log.warn("Failed to setup UserContext", e);
+        }
+    }
+
+    /**
+     * Clear user context
+     */
+    private void clearUserContext() {
+        try {
+            Class<?> userContextClass = Class.forName("io.github.loadup.components.authorization.context.UserContext");
+            userContextClass.getMethod("clear").invoke(null);
+        } catch (Exception e) {
+            // Silently ignore if authorization component is not available
+        }
     }
 }

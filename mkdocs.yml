@@ -18,22 +18,27 @@ nav:
           - Utils: commons/commons-util.md
       - Components:
           - 概览: components.md
-          - Database: components/database.md
+          - Authorization: components/authorization.md
           - Cache: components/cache.md
-          - Scheduler: components/scheduler.md
-          - Tracer: components/tracer.md
-          - DFS: components/dfs.md
           - Captcha: components/captcha.md
+          - Database: components/database.md
+          - DFS: components/dfs.md
           - Extension: components/extension.md
           - Gotone: components/gotone.md
           - Liquibase: components/liquibase.md
+          - Scheduler: components/scheduler.md
           - Testcontainers: components/testcontainers.md
+          - Tracer: components/tracer.md
       - Modules:
           - 概览: modules.md
           - UPMS: modules/upms.md
       - Gateway: gateway.md
       - Testify: testify.md
       - Application: application.md
+  - 故障排查:
+      - 401 错误修复: troubleshooting/FIX_401_ERROR.md
+      - 401 修复总结: troubleshooting/FIX_401_SUMMARY.md
+      - 401 快速修复指南: troubleshooting/QUICK_START_401_FIX.md
 
 theme:
   name: material

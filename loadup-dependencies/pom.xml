@@ -476,11 +476,7 @@
                 <artifactId>loadup-modules-upms-infrastructure</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-upms-security</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-modules-upms-starter</artifactId>
@@ -494,7 +490,7 @@
             <!-- ========== loadup-components start ==========-->
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-security</artifactId>
+                <artifactId>loadup-components-authorization</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>

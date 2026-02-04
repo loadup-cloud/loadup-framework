@@ -32,7 +32,7 @@ import io.github.loadup.modules.upms.domain.gateway.LoginLogGateway;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.service.UserPermissionService;
-import io.github.loadup.modules.upms.security.config.UpmsSecurityProperties;
+import io.github.loadup.modules.upms.app.config.UpmsSecurityProperties;
 import io.github.loadup.upms.api.command.UserLoginCommand;
 import io.github.loadup.upms.api.command.UserRegisterCommand;
 import io.github.loadup.upms.api.constant.UpmsResultCode;
@@ -52,8 +52,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -160,10 +158,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public void logout() {
         // 对于无状态 JWT 架构，通常由前端销毁 Token
         // 如果需要主动失效，可在此处将当前 Token 加入 Redis 黑名单
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            log.info("用户 {} 退出登录", auth.getName());
-            SecurityContextHolder.clearContext();
+        String currentUserId = io.github.loadup.modules.upms.app.util.SecurityContextHelper.getUserId();
+        if (currentUserId != null) {
+            log.info("用户 {} 退出登录", currentUserId);
+            // TODO: 可选实现 - 将 Token 加入黑名单
+            // redisTemplate.opsForValue().set("blacklist:" + token, "1", expiration, TimeUnit.MILLISECONDS);
         }
     }
 

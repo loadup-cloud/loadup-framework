@@ -1,8 +1,8 @@
-package io.github.loadup.modules.upms.app.util;
+package io.github.loadup.components.authorization.annotation;
 
 /*-
  * #%L
- * Loadup Modules UPMS App Layer
+ * LoadUp Components Authorization
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,19 +22,17 @@ package io.github.loadup.modules.upms.app.util;
  * #L%
  */
 
-import io.github.loadup.components.authorization.context.UserContext;
-
 /**
- * Security Context Helper
- * Delegates to lightweight authorization component
+ * Logical operator for combining multiple role or permission checks
  */
-public class SecurityContextHelper {
+public enum Logical {
+    /**
+     * Any one of the specified roles/permissions is sufficient (default)
+     */
+    OR,
 
-    public static String getUserId() {
-        return UserContext.getUserId();
-    }
-
-    public static String getUsername() {
-        return UserContext.getUsername();
-    }
+    /**
+     * All specified roles/permissions are required
+     */
+    AND
 }

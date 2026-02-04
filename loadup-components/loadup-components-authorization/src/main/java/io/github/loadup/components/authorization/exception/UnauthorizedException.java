@@ -1,8 +1,8 @@
-package io.github.loadup.modules.upms.app.util;
+package io.github.loadup.components.authorization.exception;
 
 /*-
  * #%L
- * Loadup Modules UPMS App Layer
+ * LoadUp Components Authorization
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,19 +22,16 @@ package io.github.loadup.modules.upms.app.util;
  * #L%
  */
 
-import io.github.loadup.components.authorization.context.UserContext;
-
 /**
- * Security Context Helper
- * Delegates to lightweight authorization component
+ * Exception thrown when user is not authenticated (401 Unauthorized)
  */
-public class SecurityContextHelper {
+public class UnauthorizedException extends RuntimeException {
 
-    public static String getUserId() {
-        return UserContext.getUserId();
+    public UnauthorizedException(String message) {
+        super(message);
     }
 
-    public static String getUsername() {
-        return UserContext.getUsername();
+    public UnauthorizedException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

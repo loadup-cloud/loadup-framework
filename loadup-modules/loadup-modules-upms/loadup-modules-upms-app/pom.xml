@@ -53,11 +53,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
+            <artifactId>loadup-components-authorization</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

@@ -35,9 +35,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -121,43 +118,12 @@ public class DefaultSecurityStrategy implements SecurityStrategy {
             request.getAttributes().put("roles", roles);
             request.getAttributes().put("claims", claims);
 
-            // 6. Populate SecurityContext for @PreAuthorize support
-            populateSecurityContext(userId, username, roles);
-
         } catch (io.jsonwebtoken.JwtException e) {
             log.warn("JWT validation failed", e);
             throw GatewayExceptionFactory.unauthorized("Invalid token: " + e.getMessage());
         } catch (Exception e) {
             log.error("Unexpected error during JWT authentication", e);
             throw GatewayExceptionFactory.systemError("Authentication failed");
-        }
-    }
-
-    /**
-     * Populate Spring Security Context for downstream @PreAuthorize support.
-     */
-    private void populateSecurityContext(String userId, String username, List<String> roles) {
-        try {
-            // Dynamically load LoadUpUser if loadup-components-security is in classpath
-            Class<?> userClass = Class.forName("io.github.loadup.components.security.core.LoadUpUser");
-            Object user = userClass.getDeclaredConstructor().newInstance();
-
-            // Use reflection to set fields
-            userClass.getMethod("setUserId", String.class).invoke(user, userId);
-            userClass.getMethod("setUsername", String.class).invoke(user, username);
-            userClass.getMethod("setRoles", List.class).invoke(user, roles);
-
-            Authentication auth = new UsernamePasswordAuthenticationToken(
-                user, null,
-                ((org.springframework.security.core.userdetails.UserDetails) user).getAuthorities()
-            );
-            SecurityContextHolder.getContext().setAuthentication(auth);
-
-            log.debug("SecurityContext populated for user: {}", userId);
-        } catch (ClassNotFoundException e) {
-            log.debug("loadup-components-security not in classpath, skipping SecurityContext population");
-        } catch (Exception e) {
-            log.warn("Failed to populate SecurityContext", e);
         }
     }
 }

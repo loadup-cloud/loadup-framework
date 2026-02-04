@@ -23,11 +23,7 @@
             <artifactId>loadup-commons-util</artifactId>
         </dependency>
         <!-- Spring Security for SecurityContext support (optional) -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-            <optional>true</optional>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
