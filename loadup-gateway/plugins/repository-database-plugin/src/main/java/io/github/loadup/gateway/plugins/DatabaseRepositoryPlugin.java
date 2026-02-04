@@ -176,6 +176,7 @@ public class DatabaseRepositoryPlugin implements RepositoryPlugin {
                 .path(entity.getPath())
                 .method(entity.getMethod())
                 .target(entity.getTarget())
+                .securityCode(entity.getSecurityCode())
                 .requestTemplate(entity.getRequestTemplate())
                 .responseTemplate(entity.getResponseTemplate())
                 .enabled(enabled)

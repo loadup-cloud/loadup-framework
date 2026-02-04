@@ -17,7 +17,7 @@
 
     <properties>
         <!-- Skip Spotless for aggregator POM - no source code -->
-        <spotless.skip>true</spotless.skip>
+        <skip.spotless>true</skip.spotless>
     </properties>
 
     <modules>

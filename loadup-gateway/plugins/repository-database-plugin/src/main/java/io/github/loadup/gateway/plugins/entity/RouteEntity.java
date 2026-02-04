@@ -51,6 +51,9 @@ public class RouteEntity extends RouteStructure {
     /** http://..., bean://service:method, rpc://class:method:version */
     private String target;
 
+    /** Security code for authentication/authorization strategy (e.g. "OFF", "default", "signature", "internal") */
+    private String securityCode;
+
     /** request template */
     private String requestTemplate;
 

@@ -51,6 +51,25 @@ public class GatewayProperties {
     /** Default retry count */
     private int defaultRetryCount = 1;
 
+    /** Default verify response wrapper */
+    private boolean defaultWrapResponse = false;
+
+    /** Security configuration */
+    @NestedConfigurationProperty
+    private SecurityConfig security = new SecurityConfig();
+
+    @Data
+    public static class SecurityConfig {
+        /** JWT secret key (must be consistent with auth server) */
+        private String secret = "loadup-gateway-secret-key-must-be-long-enough-32bytes";
+
+        /** Token header name */
+        private String header = "Authorization";
+
+        /** Token prefix */
+        private String prefix = "Bearer ";
+    }
+
     /** Storage related configuration */
 
     // Replace the generic map with a strongly-typed Plugins holder so IDEs can provide YAML

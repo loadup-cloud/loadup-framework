@@ -150,6 +150,21 @@ public final class GatewayExceptionFactory {
         return TemplateException.executionError(templateName, cause);
     }
 
+    /** Create security exception */
+    public static GatewayException unauthorized(String message) {
+        return new GatewayException(
+                ErrorCode.SECURITY_UNAUTHORIZED.getCode(), ErrorType.SECURITY, "SECURITY", message, null);
+    }
+
+    public static GatewayException forbidden(String message) {
+        return new GatewayException(
+                ErrorCode.SECURITY_FORBIDDEN.getCode(), ErrorType.SECURITY, "SECURITY", message, null);
+    }
+
+    public static GatewayException systemError(String message) {
+        return new GatewayException(ErrorCode.SYSTEM_ERROR.getCode(), ErrorType.SYSTEM, "SYSTEM", message, null);
+    }
+
     // Private method: Map exception type to error code
     private static ErrorCode mapToErrorCode(Throwable cause) {
         if (cause instanceof IllegalArgumentException) {

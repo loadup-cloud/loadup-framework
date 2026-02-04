@@ -27,6 +27,22 @@
             <artifactId>loadup-modules-upms-starter</artifactId>
             <version>0.0.2-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-gateway-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-gateway-repository-file-plugin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-gateway-proxy-http-plugin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-gateway-proxy-springbean-plugin</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

@@ -32,7 +32,7 @@ loadup:
       type: FILE
       # When type = FILE, configure the `file` group below
       file:
-        base-path: /Users/lise/PersonalSpace/loadup-cloud/loadup-gateway-old/loadup-gateway-launcher/src/main/resources/gateway-config
+        base-path: /Users/lise/PersonalSpace/loadup-cloud/loadup-parent/loadup-application/src/main/resources/gateway-config
 
       #
 

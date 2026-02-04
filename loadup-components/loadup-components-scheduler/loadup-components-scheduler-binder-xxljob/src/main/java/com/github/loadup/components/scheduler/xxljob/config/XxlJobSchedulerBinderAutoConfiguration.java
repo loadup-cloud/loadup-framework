@@ -26,16 +26,25 @@ import io.github.loadup.components.scheduler.binder.SchedulerBinder;
 import io.github.loadup.components.scheduler.xxljob.binder.XxlJobSchedulerBinder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
-/** Auto-configuration for XXL-Job scheduler binder. */
+/**
+ * Auto-configuration for XXL-Job scheduler binder.
+ */
 @Slf4j
 @AutoConfiguration
 @ConditionalOnClass(name = "com.xxl.job.core.executor.XxlJobExecutor")
 @ConditionalOnProperty(prefix = "loadup.scheduler", name = "type", havingValue = "xxljob")
 public class XxlJobSchedulerBinderAutoConfiguration {
 
+    /**
+     * SchedulerBinder
+     *
+     * @return SchedulerBinder
+     */
     @Bean
     @ConditionalOnMissingBean(SchedulerBinder.class)
     public SchedulerBinder xxlJobSchedulerBinder() {

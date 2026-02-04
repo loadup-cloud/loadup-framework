@@ -78,6 +78,13 @@ public enum ErrorCode {
     STORAGE_WRITE_ERROR("7002", "Storage write error"),
     STORAGE_CONNECTION_ERROR("7003", "Storage connection error"),
 
+    // Security errors (8000-8099) - Reserving 8000 range for system, maybe use 8500? Or shift System to 9000?
+    // Let's use 4100-4199 for Security (Standard HTTP is 401/403)
+    SECURITY_UNAUTHORIZED("4101", "Unauthorized"),
+    SECURITY_FORBIDDEN("4103", "Forbidden"),
+    SECURITY_SIGNATURE_INVALID("4104", "Invalid Signature"),
+    SECURITY_TOKEN_EXPIRED("4105", "Token Expired"),
+
     // System errors (8000-8999)
     SYSTEM_ERROR("8001", "System internal error"),
     CONFIGURATION_ERROR("8002", "Configuration error"),

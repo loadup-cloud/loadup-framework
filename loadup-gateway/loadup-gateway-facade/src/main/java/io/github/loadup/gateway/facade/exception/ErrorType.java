@@ -22,53 +22,75 @@ package io.github.loadup.gateway.facade.exception;
  * #L%
  */
 
-/** Error type enumeration */
+/**
+ * Error type enumeration
+ */
 public enum ErrorType {
 
-    /** Configuration error */
+    /**
+     * Configuration error
+     */
     CONFIGURATION("Configuration error"),
 
-    /** Routing error */
+    /**
+     * Routing error
+     */
     ROUTING("Routing error"),
 
-    /** Plugin error */
+    /**
+     * Plugin error
+     */
     PLUGIN("Plugin error"),
 
-    /** Proxy error */
+    /**
+     * Proxy error
+     */
     PROXY("Proxy error"),
 
-    /** Parameter validation error */
+    /**
+     * Parameter validation error
+     */
     VALIDATION("Validation error"),
 
-    /** Business logic error */
+    /**
+     * Business logic error
+     */
     BUSINESS("Business logic error"),
 
-    /** System error */
+    /**
+     * System error
+     */
     SYSTEM("System error"),
 
-    /** Network error */
+    /**
+     * Network error
+     */
     NETWORK("Network error"),
 
-    /** Serialization/Deserialization error */
+    /**
+     * Serialization/Deserialization error
+     */
     SERIALIZATION("Serialization error"),
 
-    /** Template processing error */
-    TEMPLATE("Template processing error"),
+    /**
+     * Template error
+     */
+    TEMPLATE("Template error"),
 
-    /** Storage error */
+    /**
+     * Storage error
+     */
     STORAGE("Storage error"),
 
-    /** Authorization error */
+    /**
+     * Security error
+     */
+    SECURITY("Security error"),
     AUTHORIZATION("Authorization error"),
-
-    /** Rate limiting error */
     RATE_LIMIT("Rate limit error"),
-
-    /** Timeout error */
     TIMEOUT("Timeout error"),
-
-    /** Unknown error */
-    UNKNOWN("Unknown error");
+    UNKNOWN("Unknown error"),
+    ;
 
     private final String description;
 

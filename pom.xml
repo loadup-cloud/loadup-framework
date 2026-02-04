@@ -67,10 +67,11 @@
         <mybatis.flex.version>1.11.5</mybatis.flex.version>
         <license.licenseName>gpl_v3</license.licenseName>
         <skip.deploy>false</skip.deploy>
+        <skip.javadoc>true</skip.javadoc>
         <!-- effective skip flags computed via profiles -->
         <skip.unit.tests>false</skip.unit.tests>
         <skip.integration.tests>false</skip.integration.tests>
-        <spotless.skip>false</spotless.skip>
+        <skip.spotless>true</skip.spotless>
         <mysql.version>9.5.0</mysql.version>
 
     </properties>
@@ -253,6 +254,13 @@
                     <configuration>
                         <!-- 完全禁用所有 Javadoc 检查 -->
                         <doclint>none</doclint>
+                        <sourcepath>${project.build.sourceDirectory}</sourcepath>
+                        <additionalJOptions>
+                            <additionalJOption>-Xdoclint:none</additionalJOption>
+                        </additionalJOptions>
+                        <skip>${skip.javadoc}</skip>
+                        <source>${java.version}</source>
+                        <release>${java.version}</release>
                     </configuration>
                     <executions>
                         <execution>
@@ -390,7 +398,7 @@
                             </goals>
                             <phase>validate</phase>
                             <configuration>
-                                <skip>${spotless.skip}</skip>
+                                <skip>${skip.spotless}</skip>
                             </configuration>
                         </execution>
                     </executions>

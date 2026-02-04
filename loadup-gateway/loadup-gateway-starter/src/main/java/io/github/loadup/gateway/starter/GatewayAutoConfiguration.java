@@ -27,6 +27,7 @@ import io.github.loadup.gateway.core.handler.GatewayHandlerAdapter;
 import io.github.loadup.gateway.core.handler.GatewayHandlerMapping;
 import io.github.loadup.gateway.core.plugin.PluginManager;
 import io.github.loadup.gateway.core.router.RouteResolver;
+import io.github.loadup.gateway.core.security.SecurityStrategyManager;
 import io.github.loadup.gateway.core.template.TemplateEngine;
 import io.github.loadup.gateway.facade.config.GatewayProperties;
 import io.github.loadup.gateway.facade.spi.ProxyProcessor;
@@ -96,18 +97,26 @@ public class GatewayAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public SecurityAction securityAction(SecurityStrategyManager strategyManager) {
+        return new SecurityAction(strategyManager);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public ActionDispatcher actionDispatcher(
             RouteAction routeAction,
+            SecurityAction securityAction,
             RequestTemplateAction requestTemplateAction,
             ResponseWrapperAction responseWrapperAction,
             ResponseTemplateAction responseTemplateAction,
             ProxyAction proxyAction) {
         List<GatewayAction> actionChain = Arrays.asList(
                 routeAction, // 1. 寻址
-                requestTemplateAction, // 2. 处理请求参数
-                proxyAction, // 3. 处于最内层，发送请求
-                responseTemplateAction, // 4.  转换结果
-                responseWrapperAction // 5.  包装结果
+                securityAction, // 2. 安全检查
+                requestTemplateAction, // 3. 处理请求参数
+                proxyAction, // 4. 处于最内层，发送请求
+                responseTemplateAction, // 5.  转换结果
+                responseWrapperAction // 6.  包装结果
                 );
         return new ActionDispatcher(actionChain);
     }

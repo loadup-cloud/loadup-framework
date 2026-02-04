@@ -34,6 +34,7 @@ public class FileRouteEntity extends RouteStructure {
     private String path;
     private String method;
     private String target;
+    private String securityCode;
     private String requestTemplate;
     private String responseTemplate;
     private Boolean enabled;

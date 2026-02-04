@@ -22,6 +22,10 @@ package io.github.loadup.gateway.facade.model;
  * #L%
  */
 
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.Integer.parseInt;
+import static java.lang.Long.parseLong;
+
 import io.github.loadup.gateway.facade.constants.GatewayConstants;
 import java.util.Collections;
 import java.util.HashMap;
@@ -82,6 +86,9 @@ public class RouteConfig {
     /** Parsed wrapResponse (null means use global configuration) */
     private final Boolean parsedWrapResponse;
 
+    /** Security code for authentication/signing strategy (e.g. "OFF", "default", "hmac") */
+    private final String securityCode;
+
     // Private constructor, called by Builder
     private RouteConfig(RouteConfigBuilder b) {
         this.path = Objects.requireNonNull(b.path, "path is required");
@@ -110,6 +117,18 @@ public class RouteConfig {
         this.parsedTimeout = ppr.timeout;
         this.parsedRetryCount = ppr.retryCount;
         this.parsedWrapResponse = ppr.wrapResponse;
+
+        // Parse security code from properties or builder (if we add it to builder)
+        // Check properties first, default to "default" or "OFF"?
+        // Let's assume passed via builder or property.
+        String secCode = b.securityCode;
+        if (secCode == null) {
+            Object propVal = this.properties.get("securityCode");
+            if (propVal != null) {
+                secCode = propVal.toString();
+            }
+        }
+        this.securityCode = StringUtils.defaultIfBlank(secCode, "default");
 
         // Generate id/name
         this.routeId = generateRouteId(this.path, this.method);
@@ -184,7 +203,7 @@ public class RouteConfig {
             r.timeout = ((Number) timeout).longValue();
         } else if (timeout instanceof String) {
             try {
-                r.timeout = Long.parseLong((String) timeout);
+                r.timeout = parseLong((String) timeout);
             } catch (NumberFormatException ignored) {
             }
         }
@@ -194,7 +213,7 @@ public class RouteConfig {
             r.retryCount = ((Number) retry).intValue();
         } else if (retry instanceof String) {
             try {
-                r.retryCount = Integer.parseInt((String) retry);
+                r.retryCount = parseInt((String) retry);
             } catch (NumberFormatException ignored) {
             }
         }
@@ -203,7 +222,7 @@ public class RouteConfig {
         if (wrap instanceof Boolean) {
             r.wrapResponse = (Boolean) wrap;
         } else if (wrap instanceof String) {
-            r.wrapResponse = Boolean.parseBoolean((String) wrap);
+            r.wrapResponse = parseBoolean((String) wrap);
         }
 
         return r;
@@ -231,12 +250,12 @@ public class RouteConfig {
     public static class RouteConfigBuilder {
         private String path;
         private String method;
-        private String protocol;
         private String target;
         private String requestTemplate;
         private String responseTemplate;
-        private boolean enabled;
+        private boolean enabled = true;
         private Map<String, Object> properties;
+        private String securityCode;
 
         public RouteConfigBuilder path(String path) {
             this.path = path;
@@ -245,11 +264,6 @@ public class RouteConfig {
 
         public RouteConfigBuilder method(String method) {
             this.method = method;
-            return this;
-        }
-
-        public RouteConfigBuilder protocol(String protocol) {
-            this.protocol = protocol;
             return this;
         }
 
@@ -278,6 +292,11 @@ public class RouteConfig {
             return this;
         }
 
+        public RouteConfigBuilder securityCode(String securityCode) {
+            this.securityCode = securityCode;
+            return this;
+        }
+
         public RouteConfig build() {
             if (StringUtils.isBlank(this.path)) {
                 throw new IllegalArgumentException("path is required and cannot be empty");
@@ -301,8 +320,8 @@ public class RouteConfig {
         if (rc == null) return b;
         b.path(rc.getPath());
         b.method(rc.getMethod());
-        b.protocol(rc.getProtocol());
         b.target(rc.getTarget());
+        b.securityCode(rc.getSecurityCode());
         b.requestTemplate(rc.getRequestTemplate());
         b.responseTemplate(rc.getResponseTemplate());
         b.enabled(rc.isEnabled());

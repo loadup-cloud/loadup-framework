@@ -359,22 +359,26 @@ public class FileRepositoryPlugin implements RepositoryPlugin {
             return null;
         }
 
-        // LatestFormat：path,method,target,requestTemplate,responseTemplate,enabled,properties
+        // LatestFormat：path,method,target,securityCode,requestTemplate,responseTemplate,enabled,properties
         if (line.length >= 3) {
             // Build a FileRouteEntity DTO and delegate conversion to convertToRouteConfig
             FileRouteEntity entity = new FileRouteEntity();
             entity.setPath(line[0]);
             entity.setMethod(line[1]);
             entity.setTarget(line[2]);
-            entity.setRequestTemplate(line.length > 3 ? line[3] : "");
-            entity.setResponseTemplate(line.length > 4 ? line[4] : "");
-            if (line.length > 5 && line[5] != null && !line[5].isEmpty()) {
-                entity.setEnabled(Boolean.parseBoolean(line[5]));
+
+            // securityCode is now at index 3
+            entity.setSecurityCode(line.length > 3 ? line[3] : null);
+
+            entity.setRequestTemplate(line.length > 4 ? line[4] : "");
+            entity.setResponseTemplate(line.length > 5 ? line[5] : "");
+            if (line.length > 6 && line[6] != null && !line[6].isEmpty()) {
+                entity.setEnabled(Boolean.parseBoolean(line[6]));
             } else {
                 entity.setEnabled(null); // unspecified
             }
-            if (line.length > 6) {
-                entity.setProperties(line[6]);
+            if (line.length > 7) {
+                entity.setProperties(line[7]);
             } else {
                 entity.setProperties(null);
             }
@@ -422,6 +426,7 @@ public class FileRepositoryPlugin implements RepositoryPlugin {
                 .path(entity.getPath())
                 .method(entity.getMethod() != null ? entity.getMethod() : "POST")
                 .target(entity.getTarget())
+                .securityCode(entity.getSecurityCode())
                 .requestTemplate(entity.getRequestTemplate())
                 .responseTemplate(entity.getResponseTemplate())
                 .enabled(enabled)
@@ -433,7 +438,14 @@ public class FileRepositoryPlugin implements RepositoryPlugin {
     private void createRoutesFile(Path routesFile) throws IOException {
         try (CSVWriter writer = new CSVWriter(new FileWriter(routesFile.toFile()))) {
             String[] headers = {
-                "path", "method", "target", "requestTemplate", "responseTemplate", "enabled", "properties"
+                "path",
+                "method",
+                "target",
+                "securityCode",
+                "requestTemplate",
+                "responseTemplate",
+                "enabled",
+                "properties"
             };
             writer.writeNext(headers);
         }
