@@ -22,7 +22,7 @@ package io.github.loadup.components.testcontainers.annotation;
  * #L%
  */
 
-import io.github.loadup.components.testcontainers.initializer.TestContainersContextInitializer;
+import io.github.loadup.components.testcontainers.initializer.TestContainersPropertyInitializer;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,15 +33,26 @@ import org.springframework.test.context.ContextConfiguration;
 /**
  * Annotation to enable specific testcontainers for integration tests.
  *
- * <p>This annotation works with both JUnit 5 and TestNG tests.
- * The test class information is automatically detected by the initializer.
+ * <p>This annotation is automatically detected by {@link io.github.loadup.components.testcontainers.listener.TestContainersExecutionListener}
+ * which is registered via spring.factories. No additional configuration is needed.
+ *
+ * <p>Works with both JUnit 5 and TestNG tests.
  *
  * <p>Usage example:
  * <pre>
  * &#64;SpringBootTest
- * &#64;EnableTestContainers(ContainerType.MYSQL, ContainerType.REDIS)
+ * &#64;EnableTestContainers(ContainerType.MYSQL)
  * class MyIntegrationTest {
- *     // Your test code here
+ *     // MySQL container automatically started before test class initialization
+ *     // Connection properties automatically injected into Spring environment
+ * }
+ * </pre>
+ *
+ * <p>Multiple containers:
+ * <pre>
+ * &#64;EnableTestContainers({ContainerType.MYSQL, ContainerType.REDIS, ContainerType.KAFKA})
+ * class IntegrationTest {
+ *     // All three containers started
  * }
  * </pre>
  *
@@ -51,7 +62,7 @@ import org.springframework.test.context.ContextConfiguration;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ContextConfiguration(initializers = TestContainersContextInitializer.class)
+@ContextConfiguration(initializers = TestContainersPropertyInitializer.class)
 public @interface EnableTestContainers {
 
     /**
@@ -62,7 +73,16 @@ public @interface EnableTestContainers {
 
     /**
      * Whether to reuse containers across test runs.
-     * @return true to reuse containers, false otherwise
+     * When enabled, containers will not be stopped after tests complete,
+     * allowing subsequent test runs to reuse the same container instances.
+     *
+     * <p>Note: Container reuse requires Testcontainers to be configured with
+     * reuse enabled in ~/.testcontainers.properties:
+     * <pre>
+     * testcontainers.reuse.enable=true
+     * </pre>
+     *
+     * @return true to reuse containers (default), false to stop after each test
      */
     boolean reuse() default true;
 }
