@@ -22,6 +22,8 @@ package io.github.loadup.testify.test.service;
  * #L%
  */
 
+import io.github.loadup.components.testcontainers.annotation.ContainerType;
+import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import io.github.loadup.testify.core.annotation.TestifyParam;
 import io.github.loadup.testify.test.model.User;
 import io.github.loadup.testify.starter.base.TestifyBase;
@@ -37,6 +39,7 @@ import org.testng.annotations.Test;
  * - Database assertions with rich diff reporting - Zero-code test logic (just method signature)
  */
 @SpringBootTest(classes = TestApplication.class)
+@EnableTestContainers(ContainerType.MYSQL)
 public class UserServiceTest extends TestifyBase {
 
     @Autowired

@@ -32,27 +32,25 @@ import io.github.loadup.testify.core.variable.VariableContext;
 import io.github.loadup.testify.data.engine.db.SqlExecutionEngine;
 import io.github.loadup.testify.data.engine.variable.VariableEngine;
 import io.github.loadup.testify.mock.engine.MockEngine;
-import io.github.loadup.components.testcontainers.initializer.TestContainersContextInitializer;
 import io.github.loadup.testify.starter.loader.YamlLoader;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.*;
-import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.ITestContext;
 import org.testng.Reporter;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.*;
+import java.util.function.Supplier;
+
 @Slf4j
 @SpringBootTest
-@ContextConfiguration(initializers = TestContainersContextInitializer.class)
 public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
 
     @Autowired
@@ -101,7 +99,7 @@ public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
             return dataList.iterator();
         } catch (Exception e) {
             throw new RuntimeException(
-                    "Testify DataProvider failed for " + method.getName() + ": " + e.getMessage(), e);
+                "Testify DataProvider failed for " + method.getName() + ": " + e.getMessage(), e);
         }
     }
 
@@ -123,7 +121,8 @@ public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
                 return map;
             } else {
                 // 如果是对象，直接转换
-                return JsonUtil.convertValue(inputNode, new TypeReference<LinkedHashMap<String, Object>>() {});
+                return JsonUtil.convertValue(inputNode, new TypeReference<LinkedHashMap<String, Object>>() {
+                });
             }
 
         } catch (IllegalArgumentException e) {
@@ -134,7 +133,9 @@ public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
 
     // ================ 私有辅助方法 ================
 
-    /** 加载测试上下文 */
+    /**
+     * 加载测试上下文
+     */
     private TestContext loadTestContext(Method method) {
         String className = method.getDeclaringClass().getSimpleName();
         String methodName = method.getName();
@@ -147,26 +148,35 @@ public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
         return testContext;
     }
 
-    /** 解析变量 */
+    /**
+     * 解析变量
+     */
     private Map<String, Object> resolveVariables(TestContext testContext) {
         Map<String, String> rawVars = testContext.variables() != null
-                ? JsonUtil.convertValue(testContext.variables(), new TypeReference<>() {})
-                : Collections.emptyMap();
+            ? JsonUtil.convertValue(testContext.variables(), new TypeReference<>() {
+        })
+            : Collections.emptyMap();
         return variableEngine.resolveVariables(rawVars);
     }
 
-    /** 存储测试上下文到TestNG */
+    /**
+     * 存储测试上下文到TestNG
+     */
     private void storeTestContext(ITestContext testngContext, Method method, TestContext testContext) {
         String contextKey = getContextKey(method);
         testngContext.setAttribute(contextKey, testContext);
     }
 
-    /** 获取上下文键 */
+    /**
+     * 获取上下文键
+     */
     private String getContextKey(Method method) {
         return method.getDeclaringClass().getName() + "." + method.getName();
     }
 
-    /** 转换输入参数 */
+    /**
+     * 转换输入参数
+     */
     private List<Object[]> convertInputToArguments(Map<String, Object> inputNode, Method method) {
         List<Object[]> dataList = new ArrayList<>();
         Class<?>[] parameterTypes = method.getParameterTypes();
@@ -206,12 +216,12 @@ public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
                 // --- 策略 C: 顺序索引兜底 ---
                 rawValue = (i < yamlValues.size()) ? yamlValues.get(i) : null;
                 log.warn(
-                        ">>> [TESTIFY] Param [{}] fallback to sequential index matching. "
-                                + "Please enable '-parameters' for better clarity.",
-                        i);
+                    ">>> [TESTIFY] Param [{}] fallback to sequential index matching. "
+                        + "Please enable '-parameters' for better clarity.",
+                    i);
             }
             // 4. 递归解析变量 + Jackson 强转 POJO
-            dataList.add(new Object[] {resolveAndConvert(rawValue, param.getType())});
+            dataList.add(new Object[]{resolveAndConvert(rawValue, param.getType())});
         }
 
         return dataList;
@@ -225,7 +235,9 @@ public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
         return JsonUtil.convertValue(resolved, targetType);
     }
 
-    /** 核心编排方法 */
+    /**
+     * 核心编排方法
+     */
     protected <T> void runTest(Supplier<T> action) {
         try {
             Map<String, Object> resolvedVars = VariableContext.get();
@@ -257,7 +269,9 @@ public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
         }
     }
 
-    /** 准备测试环境 */
+    /**
+     * 准备测试环境
+     */
     private void prepareTestEnvironment(Map<String, Object> resolvedVars) {
         log.info("Resolved Variables: {}", resolvedVars);
 
@@ -272,12 +286,16 @@ public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
         }
     }
 
-    /** 执行断言 */
+    /**
+     * 执行断言
+     */
     private List<String> executeAssertions(Object actualResult, Throwable businessError) {
         return assertionFacade.executeAll(currentTestContext.expect(), actualResult, businessError);
     }
 
-    /** 清理资源 */
+    /**
+     * 清理资源
+     */
     private void cleanup() {
         VariableContext.clear();
         // 如果需要重置Mock，可以在这里添加
@@ -306,7 +324,9 @@ public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
         }
     }
 
-    /** 提供一个静态便捷方法给业务代码使用，尽量缩短代码长度 */
+    /**
+     * 提供一个静态便捷方法给业务代码使用，尽量缩短代码长度
+     */
     @SuppressWarnings("unchecked")
     protected <V> V val(V raw) {
         if (raw == null) return null;

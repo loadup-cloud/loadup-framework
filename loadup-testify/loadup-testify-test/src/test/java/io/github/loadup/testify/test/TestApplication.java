@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /** Demo application for Testify framework. */
 @SpringBootApplication
-@EnableTestContainers(ContainerType.MYSQL)
 public class TestApplication {
 
     public static void main(String[] args) {
