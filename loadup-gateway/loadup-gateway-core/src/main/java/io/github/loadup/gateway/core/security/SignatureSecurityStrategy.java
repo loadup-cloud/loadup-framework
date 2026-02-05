@@ -68,9 +68,8 @@ public class SignatureSecurityStrategy implements SecurityStrategy {
 
     // TODO: Load from database or config
     private static final Map<String, String> APP_SECRETS = Map.of(
-        "test-app-001", "test-secret-key-001",
-        "test-app-002", "test-secret-key-002"
-    );
+            "test-app-001", "test-secret-key-001",
+            "test-app-002", "test-secret-key-002");
 
     private static final long TIMESTAMP_TOLERANCE_SECONDS = 300; // 5 minutes
 
@@ -112,12 +111,7 @@ public class SignatureSecurityStrategy implements SecurityStrategy {
 
         // 4. Calculate server signature
         Map<String, String> params = flattenQueryParams(request.getQueryParameters());
-        String serverSignature = calculateSignature(
-            params,
-            timestamp,
-            nonce,
-            appSecret
-        );
+        String serverSignature = calculateSignature(params, timestamp, nonce, appSecret);
 
         // 5. Compare signatures
         if (!serverSignature.equalsIgnoreCase(clientSignature)) {
@@ -137,10 +131,10 @@ public class SignatureSecurityStrategy implements SecurityStrategy {
         if (value == null) {
             // Try case-insensitive
             value = request.getHeaders().entrySet().stream()
-                .filter(e -> e.getKey().equalsIgnoreCase(headerName))
-                .map(Map.Entry::getValue)
-                .findFirst()
-                .orElse(null);
+                    .filter(e -> e.getKey().equalsIgnoreCase(headerName))
+                    .map(Map.Entry::getValue)
+                    .findFirst()
+                    .orElse(null);
         }
         return value;
     }

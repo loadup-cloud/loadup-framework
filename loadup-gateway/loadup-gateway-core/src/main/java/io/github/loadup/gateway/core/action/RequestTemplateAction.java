@@ -27,7 +27,6 @@ import io.github.loadup.gateway.facade.context.GatewayContext;
 import io.github.loadup.gateway.facade.exception.GatewayExceptionFactory;
 import io.github.loadup.gateway.facade.model.GatewayRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.Ordered;
 
 /** Action for request template processing */
 @Slf4j
@@ -53,9 +52,5 @@ public class RequestTemplateAction implements GatewayAction {
             }
         }
         chain.proceed(context);
-    }
-
-    public int getOrder() {
-        return Ordered.HIGHEST_PRECEDENCE + 2000; // Early in the chain
     }
 }

@@ -56,7 +56,9 @@ public class DefaultSecurityStrategy implements SecurityStrategy {
 
     @Override
     public void process(GatewayContext context) {
-        log.debug("Processing JWT security strategy for route: {}", context.getRoute().getRouteId());
+        log.debug(
+                "Processing JWT security strategy for route: {}",
+                context.getRoute().getRouteId());
 
         GatewayRequest request = context.getRequest();
         GatewayProperties.SecurityConfig securityConfig = gatewayProperties.getSecurity();
@@ -66,10 +68,10 @@ public class DefaultSecurityStrategy implements SecurityStrategy {
         if (authHeader == null) {
             // Try case-insensitive lookup
             authHeader = request.getHeaders().entrySet().stream()
-                .filter(e -> e.getKey().equalsIgnoreCase(securityConfig.getHeader()))
-                .map(java.util.Map.Entry::getValue)
-                .findFirst()
-                .orElse(null);
+                    .filter(e -> e.getKey().equalsIgnoreCase(securityConfig.getHeader()))
+                    .map(java.util.Map.Entry::getValue)
+                    .findFirst()
+                    .orElse(null);
         }
 
         if (StringUtils.isBlank(authHeader)) {

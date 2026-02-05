@@ -55,26 +55,26 @@ public class InternalSecurityStrategy implements SecurityStrategy {
 
     private static final String HEADER_INTERNAL_CALL = "X-Internal-Call";
     private static final List<String> INTERNAL_IP_PREFIXES = Arrays.asList(
-        "127.",      // Localhost
-        "10.",       // Private Class A
-        "172.16.",   // Private Class B
-        "172.17.",
-        "172.18.",
-        "172.19.",
-        "172.20.",
-        "172.21.",
-        "172.22.",
-        "172.23.",
-        "172.24.",
-        "172.25.",
-        "172.26.",
-        "172.27.",
-        "172.28.",
-        "172.29.",
-        "172.30.",
-        "172.31.",
-        "192.168."   // Private Class C
-    );
+            "127.", // Localhost
+            "10.", // Private Class A
+            "172.16.", // Private Class B
+            "172.17.",
+            "172.18.",
+            "172.19.",
+            "172.20.",
+            "172.21.",
+            "172.22.",
+            "172.23.",
+            "172.24.",
+            "172.25.",
+            "172.26.",
+            "172.27.",
+            "172.28.",
+            "172.29.",
+            "172.30.",
+            "172.31.",
+            "192.168." // Private Class C
+            );
 
     @Override
     public String getCode() {
@@ -108,10 +108,10 @@ public class InternalSecurityStrategy implements SecurityStrategy {
         String value = request.getHeaders().get(headerName);
         if (value == null) {
             value = request.getHeaders().entrySet().stream()
-                .filter(e -> e.getKey().equalsIgnoreCase(headerName))
-                .map(java.util.Map.Entry::getValue)
-                .findFirst()
-                .orElse(null);
+                    .filter(e -> e.getKey().equalsIgnoreCase(headerName))
+                    .map(java.util.Map.Entry::getValue)
+                    .findFirst()
+                    .orElse(null);
         }
         return value;
     }
@@ -136,7 +136,7 @@ public class InternalSecurityStrategy implements SecurityStrategy {
         // Fallback to servlet request
         try {
             ServletRequestAttributes attributes =
-                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (attributes != null) {
                 HttpServletRequest servletRequest = attributes.getRequest();
                 return servletRequest.getRemoteAddr();

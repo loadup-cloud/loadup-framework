@@ -28,7 +28,6 @@ import io.github.loadup.gateway.facade.exception.GatewayExceptionFactory;
 import io.github.loadup.gateway.facade.model.RouteConfig;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.Ordered;
 
 /** Action to resolve the route for the request. */
 @Slf4j
@@ -58,9 +57,5 @@ public class RouteAction implements GatewayAction {
 
         // Proceed
         chain.proceed(context);
-    }
-
-    public int getOrder() {
-        return Ordered.HIGHEST_PRECEDENCE + 1000;
     }
 }

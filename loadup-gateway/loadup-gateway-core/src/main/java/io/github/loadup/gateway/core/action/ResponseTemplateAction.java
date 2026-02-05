@@ -27,7 +27,6 @@ import io.github.loadup.gateway.facade.context.GatewayContext;
 import io.github.loadup.gateway.facade.exception.GatewayExceptionFactory;
 import io.github.loadup.gateway.facade.model.GatewayResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.Ordered;
 
 /** Action for response template processing */
 @Slf4j
@@ -56,9 +55,5 @@ public class ResponseTemplateAction implements GatewayAction {
                         context.getRoute().getResponseTemplate(), e);
             }
         }
-    }
-
-    public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE - 2000;
     }
 }

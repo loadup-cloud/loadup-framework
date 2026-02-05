@@ -30,7 +30,6 @@ import io.github.loadup.gateway.facade.spi.SecurityStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.Ordered;
 
 /**
  * Action to execute security checks based on RouteConfig.securityCode.
@@ -68,17 +67,13 @@ public class SecurityAction implements GatewayAction {
             log.debug("Executing security strategy: {} for route: {}", code, route.getRouteId());
             strategy.process(context);
         } catch (Exception e) {
-            log.warn("Security check failed for request: {}", context.getRequest().getRequestId(), e);
+            log.warn(
+                    "Security check failed for request: {}",
+                    context.getRequest().getRequestId(),
+                    e);
             throw e; // Let exception handler handle it (e.g. 401/403)
         }
 
         chain.proceed(context);
-    }
-
-    public int getOrder() {
-        // Execute after RouteAction (HIGH + 1000) and before ProxyAction (LOW - 1000)
-        // Let's execute early, right after route resolution.
-        // RouteAction is HIGHEST + 1000 = -2147482648
-        return Ordered.HIGHEST_PRECEDENCE + 2000;
     }
 }

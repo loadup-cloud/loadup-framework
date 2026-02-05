@@ -36,7 +36,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.core.Ordered;
 
 /** Action to wrap response in standard format */
 @Slf4j
@@ -112,9 +111,5 @@ public class ResponseWrapperAction implements GatewayAction {
                 // On error, we might leave the response as is or set error response
             }
         }
-    }
-
-    public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE - 3000;
     }
 }

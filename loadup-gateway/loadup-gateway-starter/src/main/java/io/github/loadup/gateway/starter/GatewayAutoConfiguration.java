@@ -32,15 +32,18 @@ import io.github.loadup.gateway.core.template.TemplateEngine;
 import io.github.loadup.gateway.facade.config.GatewayProperties;
 import io.github.loadup.gateway.facade.spi.ProxyProcessor;
 import io.github.loadup.gateway.facade.spi.RepositoryPlugin;
-import java.util.Arrays;
-import java.util.List;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-/** Gateway auto-configuration */
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * Gateway auto-configuration
+ */
 @Configuration
 @EnableConfigurationProperties(GatewayProperties.class)
 // @ConditionalOnClass(GatewayFilter.class)
@@ -63,6 +66,12 @@ public class GatewayAutoConfiguration {
     @ConditionalOnMissingBean
     public TemplateEngine templateEngine() {
         return new TemplateEngine();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ExceptionAction exceptionAction() {
+        return new ExceptionAction();
     }
 
     @Bean
@@ -104,20 +113,22 @@ public class GatewayAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ActionDispatcher actionDispatcher(
-            RouteAction routeAction,
-            SecurityAction securityAction,
-            RequestTemplateAction requestTemplateAction,
-            ResponseWrapperAction responseWrapperAction,
-            ResponseTemplateAction responseTemplateAction,
-            ProxyAction proxyAction) {
+        ExceptionAction exceptionAction,
+        RouteAction routeAction,
+        SecurityAction securityAction,
+        RequestTemplateAction requestTemplateAction,
+        ResponseWrapperAction responseWrapperAction,
+        ResponseTemplateAction responseTemplateAction,
+        ProxyAction proxyAction) {
         List<GatewayAction> actionChain = Arrays.asList(
-                routeAction, // 1. 寻址
-                securityAction, // 2. 安全检查
-                requestTemplateAction, // 3. 处理请求参数
-                proxyAction, // 4. 处于最内层，发送请求
-                responseTemplateAction, // 5.  转换结果
-                responseWrapperAction // 6.  包装结果
-                );
+            exceptionAction, // 0. 异常
+            routeAction, // 1. 寻址
+            securityAction, // 2. 安全检查
+            requestTemplateAction, // 3. 处理请求参数
+            proxyAction, // 4. 处于最内层，发送请求
+            responseTemplateAction, // 5.  转换结果
+            responseWrapperAction // 6.  包装结果
+        );
         return new ActionDispatcher(actionChain);
     }
 

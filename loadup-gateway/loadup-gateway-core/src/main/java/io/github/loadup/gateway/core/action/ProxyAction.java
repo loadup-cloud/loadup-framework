@@ -26,7 +26,6 @@ import io.github.loadup.gateway.core.plugin.PluginManager;
 import io.github.loadup.gateway.facade.context.GatewayContext;
 import io.github.loadup.gateway.facade.model.GatewayResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.Ordered;
 
 /** Action to execute the proxy request. */
 @Slf4j
@@ -54,9 +53,5 @@ public class ProxyAction implements GatewayAction {
             // Exception)
             throw new RuntimeException("Proxy execution failed", e);
         }
-    }
-
-    public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE - 1000;
     }
 }

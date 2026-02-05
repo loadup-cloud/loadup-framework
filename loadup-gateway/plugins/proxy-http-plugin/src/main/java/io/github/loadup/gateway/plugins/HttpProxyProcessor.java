@@ -70,104 +70,92 @@ public class HttpProxyProcessor implements ProxyProcessor {
     }
 
     @Override
-    public GatewayResponse proxy(GatewayRequest request, RouteConfig route) {
-        try {
-            String target = route.getTargetUrl();
-            // Build request headers
-            HttpHeaders headers = new HttpHeaders();
-            if (request.getHeaders() != null) {
-                request.getHeaders().forEach(headers::set);
-            }
+    public GatewayResponse proxy(GatewayRequest request, RouteConfig route) throws Exception {
+        String target = route.getTargetUrl();
 
-            // Determine HTTP method
-            HttpMethod httpMethod = HttpMethod.valueOf(request.getMethod().toUpperCase());
-
-            // Build full URL using UriComponentsBuilder to ensure encoding
-            String fullUrl = buildFullUrl(target, request);
-
-            log.debug("Proxying {} request to: {}", httpMethod, fullUrl);
-
-            // Execute HTTP request using RestClient fluent API per method
-            ResponseEntity<String> response;
-            URI uri = URI.create(fullUrl);
-
-            if (httpMethod == HttpMethod.GET) {
-                response = restClient
-                        .get()
-                        .uri(uri)
-                        .headers(h -> h.putAll(headers))
-                        .retrieve()
-                        .toEntity(String.class);
-            } else if (httpMethod == HttpMethod.POST) {
-                response = restClient
-                        .post()
-                        .uri(uri)
-                        .headers(h -> h.putAll(headers))
-                        .body(request.getBody())
-                        .retrieve()
-                        .toEntity(String.class);
-            } else if (httpMethod == HttpMethod.PUT) {
-                response = restClient
-                        .put()
-                        .uri(uri)
-                        .headers(h -> h.putAll(headers))
-                        .body(request.getBody())
-                        .retrieve()
-                        .toEntity(String.class);
-            } else if (httpMethod == HttpMethod.DELETE) {
-                response = restClient
-                        .delete()
-                        .uri(uri)
-                        .headers(h -> h.putAll(headers))
-                        .retrieve()
-                        .toEntity(String.class);
-            } else if (httpMethod == HttpMethod.PATCH) {
-                response = restClient
-                        .patch()
-                        .uri(uri)
-                        .headers(h -> h.putAll(headers))
-                        .body(request.getBody())
-                        .retrieve()
-                        .toEntity(String.class);
-            } else {
-                // Fallback to POST if method is unknown
-                response = restClient
-                        .post()
-                        .uri(uri)
-                        .headers(h -> h.putAll(headers))
-                        .body(request.getBody())
-                        .retrieve()
-                        .toEntity(String.class);
-            }
-
-            // Build gateway response
-            Map<String, String> responseHeaders = new HashMap<>();
-            response.getHeaders().forEach((key, values) -> {
-                if (!values.isEmpty()) {
-                    responseHeaders.put(key, values.get(0));
-                }
-            });
-
-            return GatewayResponse.builder()
-                    .requestId(request.getRequestId())
-                    .statusCode(response.getStatusCode().value())
-                    .headers(responseHeaders)
-                    .body(response.getBody())
-                    .contentType(responseHeaders.get("Content-Type"))
-                    .responseTime(LocalDateTime.now())
-                    .build();
-
-        } catch (Exception e) {
-            log.error("HTTP proxy failed", e);
-            return GatewayResponse.builder()
-                    .requestId(request.getRequestId())
-                    .statusCode(GatewayConstants.Status.INTERNAL_ERROR)
-                    .body("{\"error\":\"HTTP proxy failed\",\"message\":\"" + e.getMessage() + "\"}")
-                    .contentType(GatewayConstants.ContentType.JSON)
-                    .responseTime(LocalDateTime.now())
-                    .errorMessage(e.getMessage())
-                    .build();
+        // Build request headers
+        HttpHeaders headers = new HttpHeaders();
+        if (request.getHeaders() != null) {
+            request.getHeaders().forEach(headers::set);
         }
+
+        // Determine HTTP method
+        HttpMethod httpMethod = HttpMethod.valueOf(request.getMethod().toUpperCase());
+
+        // Build full URL using UriComponentsBuilder to ensure encoding
+        String fullUrl = buildFullUrl(target, request);
+
+        log.debug("Proxying {} request to: {}", httpMethod, fullUrl);
+
+        // Execute HTTP request using RestClient fluent API per method
+        ResponseEntity<String> response;
+        URI uri = URI.create(fullUrl);
+
+        if (httpMethod == HttpMethod.GET) {
+            response = restClient
+                    .get()
+                    .uri(uri)
+                    .headers(h -> h.putAll(headers))
+                    .retrieve()
+                    .toEntity(String.class);
+        } else if (httpMethod == HttpMethod.POST) {
+            response = restClient
+                    .post()
+                    .uri(uri)
+                    .headers(h -> h.putAll(headers))
+                    .body(request.getBody())
+                    .retrieve()
+                    .toEntity(String.class);
+        } else if (httpMethod == HttpMethod.PUT) {
+            response = restClient
+                    .put()
+                    .uri(uri)
+                    .headers(h -> h.putAll(headers))
+                    .body(request.getBody())
+                    .retrieve()
+                    .toEntity(String.class);
+        } else if (httpMethod == HttpMethod.DELETE) {
+            response = restClient
+                    .delete()
+                    .uri(uri)
+                    .headers(h -> h.putAll(headers))
+                    .retrieve()
+                    .toEntity(String.class);
+        } else if (httpMethod == HttpMethod.PATCH) {
+            response = restClient
+                    .patch()
+                    .uri(uri)
+                    .headers(h -> h.putAll(headers))
+                    .body(request.getBody())
+                    .retrieve()
+                    .toEntity(String.class);
+        } else {
+            // Fallback to POST if method is unknown
+            response = restClient
+                    .post()
+                    .uri(uri)
+                    .headers(h -> h.putAll(headers))
+                    .body(request.getBody())
+                    .retrieve()
+                    .toEntity(String.class);
+        }
+
+        // Build gateway response
+        Map<String, String> responseHeaders = new HashMap<>();
+        response.getHeaders().forEach((key, values) -> {
+            if (!values.isEmpty()) {
+                responseHeaders.put(key, values.get(0));
+            }
+        });
+
+        return GatewayResponse.builder()
+                .requestId(request.getRequestId())
+                .statusCode(response.getStatusCode().value())
+                .headers(responseHeaders)
+                .body(response.getBody())
+                .contentType(responseHeaders.get("Content-Type"))
+                .responseTime(LocalDateTime.now())
+                .build();
     }
 
     @Override

@@ -74,22 +74,20 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
 
     @Override
     public GatewayResponse proxy(GatewayRequest request, RouteConfig route) throws Exception {
+        // Set user context from request attributes (populated by SecurityAction)
+        setupUserContext(request);
 
         try {
-            // Set user context from request attributes (populated by SecurityAction)
-            setupUserContext(request);
-
             String target = route.getTargetBean() + ":" + route.getTargetMethod();
             String[] parts = target.split(":");
             if (parts.length != 2) {
-
                 throw GatewayExceptionFactory.invalidBeanTarget(target);
             }
 
             String beanName = parts[0];
             String methodName = parts[1];
 
-            // GetSpring Bean
+            // Get Spring Bean
             Object bean;
             try {
                 bean = applicationContext.getBean(beanName);
@@ -111,12 +109,12 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
             try {
                 result = method.invoke(bean, args);
             } catch (java.lang.reflect.InvocationTargetException e) {
-                // Extract original exception and wrap
+                // Extract original exception and re-throw
                 Throwable cause = e.getCause() != null ? e.getCause() : e;
                 throw GatewayExceptionFactory.methodInvokeFailed(beanName, methodName, cause);
             }
 
-            // Build response
+            // Build success response
             return GatewayResponse.builder()
                     .requestId(request.getRequestId())
                     .statusCode(GatewayConstants.Status.SUCCESS)
@@ -126,13 +124,6 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
                     .responseTime(LocalDateTime.now())
                     .build();
 
-        } catch (GatewayException e) {
-            // Gateway exceptions are handled directly using exception handler
-            return ExceptionHandler.handleException(request.getRequestId(), e);
-        } catch (Exception e) {
-            // Wrap and handle other exceptions
-            GatewayException wrappedException = GatewayExceptionFactory.wrap(e, "SPRINGBEAN_PROXY");
-            return ExceptionHandler.handleException(request.getRequestId(), wrappedException);
         } finally {
             // Always clear user context to prevent memory leaks
             clearUserContext();
