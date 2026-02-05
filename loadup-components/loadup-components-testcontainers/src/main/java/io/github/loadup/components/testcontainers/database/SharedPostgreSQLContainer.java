@@ -113,7 +113,7 @@ public class SharedPostgreSQLContainer {
                 return;
             }
 
-            String imageName = (config.getVersion() != null) ? config.getVersion() : DEFAULT_POSTGRES_VERSION;
+            String imageName = (config.getImage() != null) ? config.getImage() : DEFAULT_POSTGRES_VERSION;
 
             log.info("🚀 Starting Shared PostgreSQL TestContainer: {}", imageName);
 
@@ -122,7 +122,7 @@ public class SharedPostgreSQLContainer {
                     .withUsername(getValue(config.getUsername(), DEFAULT_USERNAME))
                     .withPassword(getValue(config.getPassword(), DEFAULT_PASSWORD))
                     // 允许重用
-                    .withReuse(config.isReuse());
+                    .withReuse(config.isReusable());
 
             POSTGRES_CONTAINER.start();
             STARTED.set(true);
@@ -137,7 +137,7 @@ public class SharedPostgreSQLContainer {
 
             // JVM 退出时自动关闭
             // 2. 智能关闭钩子
-            if (!config.isReuse()) {
+            if (!config.isReusable()) {
                 log.info("Reuse is disabled. Registering shutdown hook to stop container.");
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     if (POSTGRES_CONTAINER != null) {

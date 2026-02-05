@@ -89,6 +89,7 @@ public class TestContainersProperties {
 
     /** LocalStack container configuration */
     private ContainerConfig localstack = new ContainerConfig();
+    private boolean reusable;
 
     /**
      * Configuration for a specific container type.
@@ -98,11 +99,11 @@ public class TestContainersProperties {
      */
     @Data
     public static class ContainerConfig {
-        /** Enable this specific container (default: true) */
-        private boolean enabled = true;
+        /** Enable this specific container (default: false, must be explicitly enabled) */
+        private boolean enabled = false;
 
         /** Docker image version (e.g., "mysql:8.0") */
-        private String version;
+        private String image;
 
         /** Database name (for database containers) */
         private String database;
@@ -113,7 +114,7 @@ public class TestContainersProperties {
         /** Password (for services requiring authentication) */
         private String password;
 
-        /** * 开启复用，默认为 true。 极大提升本地多次运行测试的速度。 */
-        private boolean reuse = true;
+        /** 开启复用，默认为 true。极大提升本地多次运行测试的速度。 */
+        private boolean reusable = true;
     }
 }

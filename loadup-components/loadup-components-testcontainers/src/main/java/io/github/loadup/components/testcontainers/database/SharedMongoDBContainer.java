@@ -88,11 +88,11 @@ public class SharedMongoDBContainer {
                 return;
             }
 
-            String imageName = (config.getVersion() != null) ? config.getVersion() : DEFAULT_MONGODB_VERSION;
+            String imageName = (config.getImage() != null) ? config.getImage() : DEFAULT_MONGODB_VERSION;
 
             log.info("🚀 Starting Shared MongoDB TestContainer: {}", imageName);
 
-            MONGODB_CONTAINER = new MongoDBContainer(DockerImageName.parse(imageName)).withReuse(config.isReuse());
+            MONGODB_CONTAINER = new MongoDBContainer(DockerImageName.parse(imageName)).withReuse(config.isReusable());
 
             MONGODB_CONTAINER.start();
             STARTED.set(true);
@@ -106,7 +106,7 @@ public class SharedMongoDBContainer {
 
             // JVM 退出时自动关闭
             // 2. 智能关闭钩子
-            if (!config.isReuse()) {
+            if (!config.isReusable()) {
                 log.info("Reuse is disabled. Registering shutdown hook to stop container.");
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     if (MONGODB_CONTAINER != null) {

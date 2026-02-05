@@ -85,7 +85,7 @@ public class SharedElasticsearchContainer {
                 return;
             }
 
-            String imageName = (config.getVersion() != null) ? config.getVersion() : DEFAULT_ELASTICSEARCH_VERSION;
+            String imageName = (config.getImage() != null) ? config.getImage() : DEFAULT_ELASTICSEARCH_VERSION;
 
             log.info("🚀 Starting Shared Elasticsearch TestContainer: {}", imageName);
 
@@ -98,7 +98,7 @@ public class SharedElasticsearchContainer {
                     // 增加启动超时时间（ES 启动确实慢）
                     .withStartupTimeout(Duration.ofMinutes(3))
                     .waitingFor(Wait.forHttp("/").forStatusCode(200))
-                    .withReuse(config.isReuse());
+                    .withReuse(config.isReusable());
 
             ELASTICSEARCH_CONTAINER.start();
             STARTED.set(true);
@@ -110,7 +110,7 @@ public class SharedElasticsearchContainer {
 
             // JVM 退出时自动关闭
             // 2. 智能关闭钩子
-            if (!config.isReuse()) {
+            if (!config.isReusable()) {
                 log.info("Reuse is disabled. Registering shutdown hook to stop container.");
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     if (ELASTICSEARCH_CONTAINER != null) {

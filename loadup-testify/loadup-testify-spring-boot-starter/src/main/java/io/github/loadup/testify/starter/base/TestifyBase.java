@@ -32,7 +32,7 @@ import io.github.loadup.testify.core.variable.VariableContext;
 import io.github.loadup.testify.data.engine.db.SqlExecutionEngine;
 import io.github.loadup.testify.data.engine.variable.VariableEngine;
 import io.github.loadup.testify.mock.engine.MockEngine;
-import io.github.loadup.testify.starter.container.TestifyInfraInitializer;
+import io.github.loadup.components.testcontainers.initializer.TestContainersContextInitializer;
 import io.github.loadup.testify.starter.loader.YamlLoader;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -52,7 +52,7 @@ import org.testng.annotations.DataProvider;
 
 @Slf4j
 @SpringBootTest
-@ContextConfiguration(initializers = TestifyInfraInitializer.class)
+@ContextConfiguration(initializers = TestContainersContextInitializer.class)
 public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
 
     @Autowired

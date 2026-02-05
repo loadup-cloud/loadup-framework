@@ -118,7 +118,7 @@ public class SharedMySQLContainer {
             }
 
             String imageName =
-                    (config != null && config.getVersion() != null) ? config.getVersion() : DEFAULT_MYSQL_VERSION;
+                    (config != null && config.getImage() != null) ? config.getImage() : DEFAULT_MYSQL_VERSION;
 
             log.info("🚀 Starting Shared MySQL TestContainer: {}", imageName);
 
@@ -128,7 +128,7 @@ public class SharedMySQLContainer {
                     .withPassword(getValue(config.getPassword(), DEFAULT_PASSWORD))
                     // 优化：增加重用和性能参数
                     .withCommand("--max-allowed-packet=268435456")
-                    .withReuse(config.isReuse()); // 1. 应用复用配置
+                    .withReuse(config.isReusable()); // 1. 应用复用配置
 
             MYSQL_CONTAINER.start();
             STARTED.set(true);
@@ -141,7 +141,7 @@ public class SharedMySQLContainer {
 
             // JVM 退出时自动关闭
             // 2. 智能关闭钩子
-            if (!config.isReuse()) {
+            if (!config.isReusable()) {
                 log.info("Reuse is disabled. Registering shutdown hook to stop container.");
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     if (MYSQL_CONTAINER != null) {

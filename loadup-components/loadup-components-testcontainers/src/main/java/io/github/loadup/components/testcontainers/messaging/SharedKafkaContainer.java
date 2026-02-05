@@ -76,11 +76,11 @@ public class SharedKafkaContainer {
                 return;
             }
 
-            String imageName = (config.getVersion() != null) ? config.getVersion() : DEFAULT_KAFKA_VERSION;
+            String imageName = (config.getImage() != null) ? config.getImage() : DEFAULT_KAFKA_VERSION;
 
             log.info("🚀 Starting Shared Kafka TestContainer: {}", imageName);
 
-            KAFKA_CONTAINER = new KafkaContainer(DockerImageName.parse(imageName)).withReuse(config.isReuse());
+            KAFKA_CONTAINER = new KafkaContainer(DockerImageName.parse(imageName)).withReuse(config.isReusable());
 
             KAFKA_CONTAINER.start();
             STARTED.set(true);
@@ -91,7 +91,7 @@ public class SharedKafkaContainer {
 
             // JVM 退出时自动关闭
             // 2. 智能关闭钩子
-            if (!config.isReuse()) {
+            if (!config.isReusable()) {
                 log.info("Reuse is disabled. Registering shutdown hook to stop container.");
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     if (KAFKA_CONTAINER != null) {

@@ -183,6 +183,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- JUnit Jupiter API for @ExtendWith annotation -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!-- JUnit Jupiter for testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

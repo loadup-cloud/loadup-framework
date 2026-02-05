@@ -112,9 +112,12 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <!-- LoadUp Components Testcontainers -->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-testify-infra-container-common</artifactId>
+            <artifactId>loadup-components-testcontainers</artifactId>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

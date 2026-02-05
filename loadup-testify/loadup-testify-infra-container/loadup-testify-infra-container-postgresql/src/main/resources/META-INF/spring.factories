@@ -1,2 +1,0 @@
-io.github.loadup.testify.infra.container.InfraProvider=\
-io.github.loadup.testify.infra.container.providers.PostgresInfraProvider
