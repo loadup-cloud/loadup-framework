@@ -2,10 +2,8 @@ site_name: LoadUp Documentation
 site_description: Documentation for LoadUp enterprise platform
 site_url: https://loadup-cloud.laysan.site
 repo_url: https://github.com/loadup-cloud/loadup-framework
-
 nav:
   - 主页: index.md
-  - 项目概览: project-overview.md
   - 架构设计: architecture.md
   - 快速开始: quick-start.md
   - AI 编码指南: ai-project-context.md
@@ -43,6 +41,8 @@ nav:
 theme:
   name: material
   language: zh
+  logo: img/logo.svg
+  favicon: img/favicon.ico
   palette:
     # 亮色模式
     - media: "(prefers-color-scheme: light)"
