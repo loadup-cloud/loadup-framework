@@ -26,7 +26,6 @@
         <module>loadup-components-authorization</module>
         <module>loadup-components-tracer</module>
 
-
     </modules>
 
 </project>

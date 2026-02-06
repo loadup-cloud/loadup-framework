@@ -1,4 +1,3 @@
-
 package io.github.loadup.components.testcontainers.listener;
 
 /*-
@@ -26,20 +25,16 @@ package io.github.loadup.components.testcontainers.listener;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
-import io.github.loadup.components.testcontainers.database.SharedMySQLContainer;
 import io.github.loadup.components.testcontainers.database.SharedMongoDBContainer;
+import io.github.loadup.components.testcontainers.database.SharedMySQLContainer;
 import io.github.loadup.components.testcontainers.database.SharedPostgreSQLContainer;
 import io.github.loadup.components.testcontainers.messaging.SharedKafkaContainer;
 import io.github.loadup.components.testcontainers.search.SharedElasticsearchContainer;
-
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
@@ -89,8 +84,7 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
 
         // Check if already processed to avoid duplicate initialization
         if (PROCESSED_TEST_CLASS.get() == testClass) {
-            log.debug(">>> [TESTCONTAINERS] Test class {} already processed, skipping",
-                     testClass.getSimpleName());
+            log.debug(">>> [TESTCONTAINERS] Test class {} already processed, skipping", testClass.getSimpleName());
             return;
         }
 
@@ -101,8 +95,8 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
         EnableTestContainers annotation = AnnotationUtils.findAnnotation(testClass, EnableTestContainers.class);
 
         if (annotation == null) {
-            log.debug(">>> [TESTCONTAINERS] No @EnableTestContainers annotation found on {}",
-                     testClass.getSimpleName());
+            log.debug(
+                    ">>> [TESTCONTAINERS] No @EnableTestContainers annotation found on {}", testClass.getSimpleName());
             return;
         }
 
@@ -114,8 +108,7 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
             return;
         }
 
-        log.info(">>> [TESTCONTAINERS] Found @EnableTestContainers with containers: {}",
-                (Object) containerTypes);
+        log.info(">>> [TESTCONTAINERS] Found @EnableTestContainers with containers: {}", (Object) containerTypes);
         log.info(">>> [TESTCONTAINERS] Container reuse enabled: {}", reuse);
 
         // Start containers and collect properties (but don't inject yet - ApplicationContext not ready)
@@ -127,17 +120,18 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
 
                 if (!containerProperties.isEmpty()) {
                     allProperties.putAll(containerProperties);
-                    log.info(">>> [TESTCONTAINERS] Successfully started {} container, collected {} properties",
-                            type, containerProperties.size());
+                    log.info(
+                            ">>> [TESTCONTAINERS] Successfully started {} container, collected {} properties",
+                            type,
+                            containerProperties.size());
                 } else {
                     log.warn(">>> [TESTCONTAINERS] Container {} started but no properties collected", type);
                 }
 
             } catch (Exception e) {
-                log.error(">>> [TESTCONTAINERS] Failed to start {} container: {}",
-                         type, e.getMessage(), e);
-                throw new RuntimeException("Failed to start " + type + " container for test class "
-                                         + testClass.getName(), e);
+                log.error(">>> [TESTCONTAINERS] Failed to start {} container: {}", type, e.getMessage(), e);
+                throw new RuntimeException(
+                        "Failed to start " + type + " container for test class " + testClass.getName(), e);
             }
         }
 

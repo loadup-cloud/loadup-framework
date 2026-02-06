@@ -22,19 +22,18 @@ package io.github.loadup.components.tracer.config;
  * #L%
  */
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for TracerProperties validation
@@ -99,8 +98,8 @@ class TracerPropertiesTest {
         Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
         assertFalse(violations.isEmpty(), "Invalid OTLP endpoint should have violations");
         assertTrue(
-            violations.stream().anyMatch(v -> v.getMessage().contains("OTLP endpoint must be a valid URL format")),
-            "Should have URL validation message");
+                violations.stream().anyMatch(v -> v.getMessage().contains("OTLP endpoint must be a valid URL format")),
+                "Should have URL validation message");
     }
 
     @Test

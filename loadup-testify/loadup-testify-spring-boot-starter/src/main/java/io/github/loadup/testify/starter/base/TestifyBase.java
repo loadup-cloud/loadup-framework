@@ -33,6 +33,10 @@ import io.github.loadup.testify.data.engine.db.SqlExecutionEngine;
 import io.github.loadup.testify.data.engine.variable.VariableEngine;
 import io.github.loadup.testify.mock.engine.MockEngine;
 import io.github.loadup.testify.starter.loader.YamlLoader;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.*;
+import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,11 +47,6 @@ import org.testng.ITestContext;
 import org.testng.Reporter;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.*;
-import java.util.function.Supplier;
 
 @Slf4j
 @SpringBootTest
@@ -99,7 +98,7 @@ public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
             return dataList.iterator();
         } catch (Exception e) {
             throw new RuntimeException(
-                "Testify DataProvider failed for " + method.getName() + ": " + e.getMessage(), e);
+                    "Testify DataProvider failed for " + method.getName() + ": " + e.getMessage(), e);
         }
     }
 
@@ -121,8 +120,7 @@ public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
                 return map;
             } else {
                 // 如果是对象，直接转换
-                return JsonUtil.convertValue(inputNode, new TypeReference<LinkedHashMap<String, Object>>() {
-                });
+                return JsonUtil.convertValue(inputNode, new TypeReference<LinkedHashMap<String, Object>>() {});
             }
 
         } catch (IllegalArgumentException e) {
@@ -153,9 +151,8 @@ public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
      */
     private Map<String, Object> resolveVariables(TestContext testContext) {
         Map<String, String> rawVars = testContext.variables() != null
-            ? JsonUtil.convertValue(testContext.variables(), new TypeReference<>() {
-        })
-            : Collections.emptyMap();
+                ? JsonUtil.convertValue(testContext.variables(), new TypeReference<>() {})
+                : Collections.emptyMap();
         return variableEngine.resolveVariables(rawVars);
     }
 
@@ -216,12 +213,12 @@ public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
                 // --- 策略 C: 顺序索引兜底 ---
                 rawValue = (i < yamlValues.size()) ? yamlValues.get(i) : null;
                 log.warn(
-                    ">>> [TESTIFY] Param [{}] fallback to sequential index matching. "
-                        + "Please enable '-parameters' for better clarity.",
-                    i);
+                        ">>> [TESTIFY] Param [{}] fallback to sequential index matching. "
+                                + "Please enable '-parameters' for better clarity.",
+                        i);
             }
             // 4. 递归解析变量 + Jackson 强转 POJO
-            dataList.add(new Object[]{resolveAndConvert(rawValue, param.getType())});
+            dataList.add(new Object[] {resolveAndConvert(rawValue, param.getType())});
         }
 
         return dataList;

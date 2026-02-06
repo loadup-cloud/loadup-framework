@@ -24,7 +24,7 @@ package io.github.loadup.modules.upms.app.service;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.util.JwtUtils;
-import io.github.loadup.commons.util.JsonUtil;
+import io.github.loadup.modules.upms.app.config.UpmsSecurityProperties;
 import io.github.loadup.modules.upms.domain.entity.LoginLog;
 import io.github.loadup.modules.upms.domain.entity.Role;
 import io.github.loadup.modules.upms.domain.entity.User;
@@ -32,7 +32,6 @@ import io.github.loadup.modules.upms.domain.gateway.LoginLogGateway;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.service.UserPermissionService;
-import io.github.loadup.modules.upms.app.config.UpmsSecurityProperties;
 import io.github.loadup.upms.api.command.UserLoginCommand;
 import io.github.loadup.upms.api.command.UserRegisterCommand;
 import io.github.loadup.upms.api.constant.UpmsResultCode;
@@ -42,7 +41,6 @@ import io.github.loadup.upms.api.dto.AuthUserDTO;
 import io.github.loadup.upms.api.dto.UserDetailDTO;
 import io.github.loadup.upms.api.gateway.AuthGateway;
 import io.github.loadup.upms.api.service.AuthenticationService;
-import io.jsonwebtoken.Claims;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +49,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,12 +72,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthGateway authGateway;
     private final UpmsSecurityProperties securityProperties;
 
-    // Remove obsolete AuthenticationManager as we don't effectively use Spring Security authentication flow for Login now,
+    // Remove obsolete AuthenticationManager as we don't effectively use Spring Security authentication flow for Login
+    // now,
     // or we are refactoring to custom logic.
     // If we want to use AuthManager, we need a SecurityConfig that exposes it.
     // However, in this refactor we are manually checking password via PasswordEncoder
     // let's stick to simple logic or fix AuthManager injection if SecurityConfig is present.
-    // Since we deleted SecurityConfig in upms-security, AuthManager bean might not be available unless we add one back or use
+    // Since we deleted SecurityConfig in upms-security, AuthManager bean might not be available unless we add one back
+    // or use
     // components-security configuration.
     // For now, let's replace AuthManager logic with manual verification.
 
@@ -109,8 +108,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         // Manual password check
         if (!passwordEncoder.matches(command.getPassword(), user.getPassword())) {
-             handleLoginFailure(user, command);
-             throw new RuntimeException("用户名或密码错误");
+            handleLoginFailure(user, command);
+            throw new RuntimeException("用户名或密码错误");
         }
 
         try {
@@ -126,19 +125,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             claims.put("username", user.getUsername());
 
             // long ttl = securityProperties.getJwt().getExpiration() * 1000L;
-            // In properties its already millis according to comments? "86400000L". Let's check getter logic or assume simple getter.
-            // If the comment says milliseconds, the name `expiration` usually means millis in JWT context or seconds in some.
+            // In properties its already millis according to comments? "86400000L". Let's check getter logic or assume
+            // simple getter.
+            // If the comment says milliseconds, the name `expiration` usually means millis in JWT context or seconds in
+            // some.
             // But code previously used `getExpireSeconds` which suggests it was refactored.
-            // Let's assume `expiration` is Milliseconds as per typical behavior for long types in properties unless specified.
+            // Let's assume `expiration` is Milliseconds as per typical behavior for long types in properties unless
+            // specified.
             // But JwtUtils.createToken takes ttlMillis.
             // Let's trust field name and comment in UpmsSecurityProperties.
             long ttl = securityProperties.getJwt().getExpiration();
             String token = JwtUtils.createToken(
-                String.valueOf(user.getId()),
-                claims,
-                securityProperties.getJwt().getSecret(),
-                ttl
-            );
+                    String.valueOf(user.getId()),
+                    claims,
+                    securityProperties.getJwt().getSecret(),
+                    ttl);
             UserDetailDTO userInfo = buildUserInfo(user);
 
             return AccessTokenDTO.builder()
@@ -218,7 +219,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // 1. Validate Token (Using JwtUtils)
         io.jsonwebtoken.Claims claims = null;
         try {
-            claims = JwtUtils.parseToken(refreshToken, securityProperties.getJwt().getSecret());
+            claims = JwtUtils.parseToken(
+                    refreshToken, securityProperties.getJwt().getSecret());
             if (JwtUtils.isExpired(claims)) {
                 throw new CommonException(UpmsResultCode.UNAUTHORIZED); // Token expired
             }
@@ -233,24 +235,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         AuthUserDTO authUserDTO = authGateway.getAuthUserByUserId(userId);
-        if (authUserDTO == null || authUserDTO.getStatus() != 1) { // Assuming 1 is active, 0 is inactive/locked in AuthUserDTO logic or as per your domain
-             // The original code used status != 0 check, I will assume != 1 for active based on register logic (status=1)
-             // Let's check logic: Register sets status = 1. So 1 is active.
-             // Original: authUserDTO.getStatus() != 0 -> throw Locked. So 0 was active? No, wait.
-             // If status 1 is normal, and 0 is disabled.
-             // Original code: if (status != 0) throw locked. This implies 0 is the ONLY valid status.
-             // But register sets status=1.
-             // Let's assume 1 is Active based on register method.
-             // So if status != 1, throw locked.
+        if (authUserDTO == null
+                || authUserDTO.getStatus()
+                        != 1) { // Assuming 1 is active, 0 is inactive/locked in AuthUserDTO logic or as per your domain
+            // The original code used status != 0 check, I will assume != 1 for active based on register logic
+            // (status=1)
+            // Let's check logic: Register sets status = 1. So 1 is active.
+            // Original: authUserDTO.getStatus() != 0 -> throw Locked. So 0 was active? No, wait.
+            // If status 1 is normal, and 0 is disabled.
+            // Original code: if (status != 0) throw locked. This implies 0 is the ONLY valid status.
+            // But register sets status=1.
+            // Let's assume 1 is Active based on register method.
+            // So if status != 1, throw locked.
 
-             // Wait, let's look at Register:
-             // .status((short) 1) -> 1 is Normal.
-             // So if (status != 1) throw locked.
-             // Original code logic might have been reversed or using different constants.
-             // I will use 1 as active.
-             if (authUserDTO.getStatus() != 1) {
-                 throw new CommonException(UpmsResultCode.USER_LOCKED);
-             }
+            // Wait, let's look at Register:
+            // .status((short) 1) -> 1 is Normal.
+            // So if (status != 1) throw locked.
+            // Original code logic might have been reversed or using different constants.
+            // I will use 1 as active.
+            if (authUserDTO.getStatus() != 1) {
+                throw new CommonException(UpmsResultCode.USER_LOCKED);
+            }
         }
 
         User user = userGateway.findById(userId).orElseThrow(() -> new CommonException(UpmsResultCode.USER_NOT_FOUND));
@@ -264,21 +269,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         long ttl = securityProperties.getJwt().getExpiration();
         String newAccessToken = JwtUtils.createToken(
-            String.valueOf(user.getId()),
-            newClaims,
-            securityProperties.getJwt().getSecret(),
-            ttl
-        );
+                String.valueOf(user.getId()),
+                newClaims,
+                securityProperties.getJwt().getSecret(),
+                ttl);
 
         // 4. Generate new Refresh Token (optional rolling)
-        long refreshTtl = securityProperties.getJwt().getRefreshExpiration() != null ? securityProperties.getJwt().getRefreshExpiration() : ttl * 7;
+        long refreshTtl = securityProperties.getJwt().getRefreshExpiration() != null
+                ? securityProperties.getJwt().getRefreshExpiration()
+                : ttl * 7;
 
         String newRefreshToken = JwtUtils.createToken(
-            String.valueOf(user.getId()),
-            newClaims,
-            securityProperties.getJwt().getSecret(),
-            refreshTtl
-        );
+                String.valueOf(user.getId()),
+                newClaims,
+                securityProperties.getJwt().getSecret(),
+                refreshTtl);
 
         UserDetailDTO userInfo = buildUserInfo(user);
 

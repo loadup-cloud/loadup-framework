@@ -25,7 +25,7 @@ package io.github.loadup.gateway.facade.spi;
 /**
  * Gateway plugin SPI interface
  *
- * @param <T>
+ * @param
  */
 public interface GatewayPlugin {
 

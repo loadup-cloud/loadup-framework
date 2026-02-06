@@ -1,4 +1,3 @@
-
 package io.github.loadup.components.testcontainers.database;
 
 /*-
@@ -159,9 +158,7 @@ public class SharedMongoDBContainer {
      * @return map of property names to values
      */
     public static java.util.Map<String, String> getProperties() {
-        return java.util.Map.of(
-            "spring.data.mongodb.uri", getConnectionString()
-        );
+        return java.util.Map.of("spring.data.mongodb.uri", getConnectionString());
     }
 
     private SharedMongoDBContainer() {

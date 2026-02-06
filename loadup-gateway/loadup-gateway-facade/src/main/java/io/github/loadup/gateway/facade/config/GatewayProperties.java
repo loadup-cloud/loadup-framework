@@ -28,7 +28,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.springframework.stereotype.Component;
 
 /** Gateway configuration properties (corresponds to loadup.gateway in application.yml) */
 @Data

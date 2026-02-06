@@ -28,6 +28,10 @@ import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -35,11 +39,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Data Scope Aspect - Intercepts methods with @DataScope annotation
@@ -117,7 +116,7 @@ public class DataScopeAspect {
 
         // Check if user is super admin (has ADMIN role)
         boolean isSuperAdmin = roles.stream()
-            .anyMatch(r -> "ROLE_ADMIN".equals(r.getRoleCode()) || "ROLE_SUPER_ADMIN".equals(r.getRoleCode()));
+                .anyMatch(r -> "ROLE_ADMIN".equals(r.getRoleCode()) || "ROLE_SUPER_ADMIN".equals(r.getRoleCode()));
 
         // Find the most permissive data scope from all roles
         DataScopeType maxDataScope = DataScopeType.SELF; // Most restrictive by default
@@ -145,13 +144,13 @@ public class DataScopeAspect {
         }
 
         return DataScopeContext.builder()
-            .userId(user.getId())
-            .deptId(user.getDeptId())
-            .dataScopeType(maxDataScope)
-            .customDeptIds(customDeptIds.stream().distinct().collect(Collectors.toList()))
-            .subDeptIds(subDeptIds)
-            .isSuperAdmin(isSuperAdmin)
-            .build();
+                .userId(user.getId())
+                .deptId(user.getDeptId())
+                .dataScopeType(maxDataScope)
+                .customDeptIds(customDeptIds.stream().distinct().collect(Collectors.toList()))
+                .subDeptIds(subDeptIds)
+                .isSuperAdmin(isSuperAdmin)
+                .build();
     }
 
     /**

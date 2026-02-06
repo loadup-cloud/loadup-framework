@@ -22,11 +22,9 @@ package io.github.loadup.components.testcontainers.initializer;
  * #L%
  */
 
-import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties;
-import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
-import io.github.loadup.components.testcontainers.database.SharedMySQLContainer;
 import io.github.loadup.components.testcontainers.database.SharedMongoDBContainer;
+import io.github.loadup.components.testcontainers.database.SharedMySQLContainer;
 import io.github.loadup.components.testcontainers.database.SharedPostgreSQLContainer;
 import io.github.loadup.components.testcontainers.listener.TestContainersExecutionListener;
 import io.github.loadup.components.testcontainers.messaging.SharedKafkaContainer;
@@ -92,7 +90,8 @@ public class TestContainersPropertyInitializer
         Map<String, String> properties = TestContainersExecutionListener.getStoredProperties();
 
         if (properties != null && !properties.isEmpty()) {
-            log.info(">>> [TESTCONTAINERS] Found {} properties from TestExecutionListener (annotation mode)",
+            log.info(
+                    ">>> [TESTCONTAINERS] Found {} properties from TestExecutionListener (annotation mode)",
                     properties.size());
             injectProperties(applicationContext, properties);
             return;
@@ -169,8 +168,7 @@ public class TestContainersPropertyInitializer
     private void injectProperties(ConfigurableApplicationContext context, Map<String, String> properties) {
         log.info(">>> [TESTCONTAINERS] Injecting {} properties into ApplicationContext", properties.size());
 
-        TestPropertyValues.of(properties)
-                .applyTo(context.getEnvironment());
+        TestPropertyValues.of(properties).applyTo(context.getEnvironment());
 
         log.info(">>> [TESTCONTAINERS] ========== Property Injection Complete ==========");
     }

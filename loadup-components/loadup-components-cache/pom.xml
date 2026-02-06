@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
@@ -12,8 +11,16 @@
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-cache</artifactId>
     <packaging>pom</packaging>
-    <description>LoadUp Cache Component</description>
     <name>LoadUp Components Cache</name>
+    <description>LoadUp Cache Component</description>
+
+    <modules>
+        <module>loadup-components-cache-api</module>
+        <module>loadup-components-cache-binder-caffeine</module>
+        <module>loadup-components-cache-binder-redis</module>
+        <module>loadup-components-cache-starter</module>
+        <module>loadup-components-cache-test</module>
+    </modules>
 
     <properties>
         <skip.spotless>true</skip.spotless>
@@ -26,14 +33,6 @@
         <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
     </properties>
-
-    <modules>
-        <module>loadup-components-cache-api</module>
-        <module>loadup-components-cache-binder-caffeine</module>
-        <module>loadup-components-cache-binder-redis</module>
-        <module>loadup-components-cache-starter</module>
-        <module>loadup-components-cache-test</module>
-    </modules>
 
     <dependencyManagement>
         <dependencies>

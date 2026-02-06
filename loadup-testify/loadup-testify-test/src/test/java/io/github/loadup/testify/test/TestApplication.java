@@ -22,8 +22,6 @@ package io.github.loadup.testify.test;
  * #L%
  */
 
-import io.github.loadup.components.testcontainers.annotation.ContainerType;
-import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

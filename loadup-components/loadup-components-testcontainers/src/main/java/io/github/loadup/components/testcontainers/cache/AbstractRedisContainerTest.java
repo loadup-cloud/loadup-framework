@@ -1,4 +1,3 @@
-
 package io.github.loadup.components.testcontainers.cache;
 
 /*-

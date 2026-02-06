@@ -23,8 +23,6 @@ package io.github.loadup.gateway.plugins;
  */
 
 import io.github.loadup.gateway.facade.constants.GatewayConstants;
-import io.github.loadup.gateway.facade.exception.ExceptionHandler;
-import io.github.loadup.gateway.facade.exception.GatewayException;
 import io.github.loadup.gateway.facade.exception.GatewayExceptionFactory;
 import io.github.loadup.gateway.facade.model.GatewayRequest;
 import io.github.loadup.gateway.facade.model.GatewayResponse;
@@ -183,7 +181,8 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
 
             String username = (String) request.getAttributes().get("username");
             @SuppressWarnings("unchecked")
-            java.util.List<String> roles = (java.util.List<String>) request.getAttributes().get("roles");
+            java.util.List<String> roles =
+                    (java.util.List<String>) request.getAttributes().get("roles");
 
             // Dynamically load UserContext and LoadUpUser if loadup-components-authorization is in classpath
             Class<?> userContextClass = Class.forName("io.github.loadup.components.authorization.context.UserContext");

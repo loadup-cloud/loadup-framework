@@ -1,4 +1,3 @@
-
 package io.github.loadup.components.testcontainers.database;
 
 /*-
@@ -232,11 +231,10 @@ public class SharedMySQLContainer {
      */
     public static java.util.Map<String, String> getProperties() {
         return java.util.Map.of(
-            "spring.datasource.url", getJdbcUrl(),
-            "spring.datasource.username", getUsername(),
-            "spring.datasource.password", getPassword(),
-            "spring.datasource.driver-class-name", getDriverClassName()
-        );
+                "spring.datasource.url", getJdbcUrl(),
+                "spring.datasource.username", getUsername(),
+                "spring.datasource.password", getPassword(),
+                "spring.datasource.driver-class-name", getDriverClassName());
     }
 
     /** Private constructor to prevent instantiation */

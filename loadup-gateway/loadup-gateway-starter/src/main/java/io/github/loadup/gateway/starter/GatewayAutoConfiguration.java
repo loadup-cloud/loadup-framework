@@ -35,6 +35,8 @@ import io.github.loadup.gateway.facade.spi.RepositoryPlugin;
 import io.github.loadup.gateway.facade.spi.SecurityStrategy;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.propagation.TextMapPropagator;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -43,9 +45,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Gateway auto-configuration.
@@ -92,7 +91,8 @@ public class GatewayAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SecurityStrategyManager securityStrategyManager(@Autowired(required = false) List<SecurityStrategy> strategies) {
+    public SecurityStrategyManager securityStrategyManager(
+            @Autowired(required = false) List<SecurityStrategy> strategies) {
         return new SecurityStrategyManager(strategies);
     }
 
@@ -126,7 +126,8 @@ public class GatewayAutoConfiguration {
     public SecurityStrategy internalSecurityStrategy() {
         try {
             Class<?> strategyClass = Class.forName("io.github.loadup.gateway.core.security.InternalSecurityStrategy");
-            SecurityStrategy strategy = (SecurityStrategy) strategyClass.getDeclaredConstructor().newInstance();
+            SecurityStrategy strategy =
+                    (SecurityStrategy) strategyClass.getDeclaredConstructor().newInstance();
             log.info(">>> [GATEWAY] InternalSecurityStrategy (code: {}) initialized", strategy.getCode());
             return strategy;
         } catch (Exception e) {
@@ -142,7 +143,8 @@ public class GatewayAutoConfiguration {
     public SecurityStrategy signatureSecurityStrategy() {
         try {
             Class<?> strategyClass = Class.forName("io.github.loadup.gateway.core.security.SignatureSecurityStrategy");
-            SecurityStrategy strategy = (SecurityStrategy) strategyClass.getDeclaredConstructor().newInstance();
+            SecurityStrategy strategy =
+                    (SecurityStrategy) strategyClass.getDeclaredConstructor().newInstance();
             log.info(">>> [GATEWAY] SignatureSecurityStrategy (code: {}) initialized", strategy.getCode());
             return strategy;
         } catch (Exception e) {
@@ -204,8 +206,7 @@ public class GatewayAutoConfiguration {
     @ConditionalOnProperty(prefix = "loadup.tracer", name = "enabled", havingValue = "true", matchIfMissing = true)
     @ConditionalOnMissingBean
     public TracingAction tracingAction(
-            @Autowired(required = false) Tracer tracer,
-            @Autowired(required = false) TextMapPropagator propagator) {
+            @Autowired(required = false) Tracer tracer, @Autowired(required = false) TextMapPropagator propagator) {
         if (tracer == null || propagator == null) {
             log.warn(">>> [GATEWAY] Tracer or TextMapPropagator not available, skipping TracingAction");
             return null;
@@ -221,31 +222,31 @@ public class GatewayAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ActionDispatcher actionDispatcher(
-        ExceptionAction exceptionAction,
-        RouteAction routeAction,
-        SecurityAction securityAction,
-        RequestTemplateAction requestTemplateAction,
-        ResponseWrapperAction responseWrapperAction,
-        ResponseTemplateAction responseTemplateAction,
-        ProxyAction proxyAction,
-        @Autowired(required = false) TracingAction tracingAction) {
+            ExceptionAction exceptionAction,
+            RouteAction routeAction,
+            SecurityAction securityAction,
+            RequestTemplateAction requestTemplateAction,
+            ResponseWrapperAction responseWrapperAction,
+            ResponseTemplateAction responseTemplateAction,
+            ProxyAction proxyAction,
+            @Autowired(required = false) TracingAction tracingAction) {
 
         // Build action chain dynamically with optional TracingAction
         List<GatewayAction> actionChain = new ArrayList<>();
-        actionChain.add(exceptionAction);       // 0. 异常处理
+        actionChain.add(exceptionAction); // 0. 异常处理
 
         // Add TracingAction if available (should be early in chain)
         if (tracingAction != null) {
-            actionChain.add(tracingAction);     // 1. 分布式追踪
+            actionChain.add(tracingAction); // 1. 分布式追踪
             log.info(">>> [GATEWAY] TracingAction added to action chain at position 1");
         }
 
-        actionChain.add(routeAction);            // 2. 路由寻址
-        actionChain.add(securityAction);         // 3. 安全检查
-        actionChain.add(requestTemplateAction);  // 4. 处理请求参数
-        actionChain.add(proxyAction);            // 5. 发送请求（最内层）
+        actionChain.add(routeAction); // 2. 路由寻址
+        actionChain.add(securityAction); // 3. 安全检查
+        actionChain.add(requestTemplateAction); // 4. 处理请求参数
+        actionChain.add(proxyAction); // 5. 发送请求（最内层）
         actionChain.add(responseTemplateAction); // 6. 转换结果
-        actionChain.add(responseWrapperAction);  // 7. 包装结果
+        actionChain.add(responseWrapperAction); // 7. 包装结果
 
         log.info(">>> [GATEWAY] ActionDispatcher initialized with {} actions", actionChain.size());
         return new ActionDispatcher(actionChain);
@@ -265,106 +266,5 @@ public class GatewayAutoConfiguration {
     @ConditionalOnMissingBean
     public GatewayHandlerMapping gatewayHandlerMapping(RepositoryPlugin repositoryPlugin) {
         return new GatewayHandlerMapping(repositoryPlugin);
-    }
-
-    // ========================================
-    // Repository Plugins
-    // ========================================
-
-    /**
-     * File Repository Plugin - Default storage type.
-     */
-    @Bean
-    @ConditionalOnProperty(prefix = "loadup.gateway.storage", name = "type", havingValue = "FILE", matchIfMissing = true)
-    @ConditionalOnMissingBean(name = "fileRepositoryPlugin")
-    public RepositoryPlugin fileRepositoryPlugin(GatewayProperties gatewayProperties) {
-        try {
-            Class<?> pluginClass = Class.forName("io.github.loadup.gateway.plugins.FileRepositoryPlugin");
-            RepositoryPlugin plugin = (RepositoryPlugin) pluginClass.getDeclaredConstructor().newInstance();
-            // Inject GatewayProperties via reflection
-            java.lang.reflect.Field field = pluginClass.getDeclaredField("gatewayProperties");
-            field.setAccessible(true);
-            field.set(plugin, gatewayProperties);
-            plugin.initialize();
-            log.info(">>> [GATEWAY] FileRepositoryPlugin initialized");
-            return plugin;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize FileRepositoryPlugin", e);
-        }
-    }
-
-    /**
-     * Database Repository Plugin - When storage type is DATABASE.
-     */
-    @Bean
-    @ConditionalOnProperty(prefix = "loadup.gateway.storage", name = "type", havingValue = "DATABASE")
-    @ConditionalOnMissingBean(name = "databaseRepositoryPlugin")
-    public RepositoryPlugin databaseRepositoryPlugin(GatewayProperties gatewayProperties) {
-        try {
-            Class<?> pluginClass = Class.forName("io.github.loadup.gateway.plugins.DatabaseRepositoryPlugin");
-            RepositoryPlugin plugin = (RepositoryPlugin) pluginClass.getDeclaredConstructor().newInstance();
-            // Note: DatabaseRepositoryPlugin dependencies (RouteManager, TemplateManager, etc.)
-            // need to be injected by Spring context
-            plugin.initialize();
-            log.info(">>> [GATEWAY] DatabaseRepositoryPlugin initialized");
-            return plugin;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize DatabaseRepositoryPlugin", e);
-        }
-    }
-
-    // ========================================
-    // Proxy Processors
-    // ========================================
-
-    /**
-     * HTTP Proxy Processor - Always available.
-     */
-    @Bean
-    @ConditionalOnMissingBean(name = "httpProxyProcessor")
-    public ProxyProcessor httpProxyProcessor() {
-        try {
-            Class<?> processorClass = Class.forName("io.github.loadup.gateway.plugins.HttpProxyProcessor");
-            ProxyProcessor processor = (ProxyProcessor) processorClass.getDeclaredConstructor().newInstance();
-            processor.initialize();
-            log.info(">>> [GATEWAY] HttpProxyProcessor initialized");
-            return processor;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize HttpProxyProcessor", e);
-        }
-    }
-
-    /**
-     * RPC Proxy Processor - Always available.
-     */
-    @Bean
-    @ConditionalOnMissingBean(name = "rpcProxyProcessor")
-    public ProxyProcessor rpcProxyProcessor() {
-        try {
-            Class<?> processorClass = Class.forName("io.github.loadup.gateway.plugins.RpcProxyProcessor");
-            ProxyProcessor processor = (ProxyProcessor) processorClass.getDeclaredConstructor().newInstance();
-            processor.initialize();
-            log.info(">>> [GATEWAY] RpcProxyProcessor initialized");
-            return processor;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize RpcProxyProcessor", e);
-        }
-    }
-
-    /**
-     * Spring Bean Proxy Processor - Always available.
-     */
-    @Bean
-    @ConditionalOnMissingBean(name = "springBeanProxyProcessor")
-    public ProxyProcessor springBeanProxyProcessor() {
-        try {
-            Class<?> processorClass = Class.forName("io.github.loadup.gateway.plugins.SpringBeanProxyProcessor");
-            ProxyProcessor processor = (ProxyProcessor) processorClass.getDeclaredConstructor().newInstance();
-            processor.initialize();
-            log.info(">>> [GATEWAY] SpringBeanProxyProcessor initialized");
-            return processor;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize SpringBeanProxyProcessor", e);
-        }
     }
 }

@@ -1,4 +1,3 @@
-
 package io.github.loadup.components.testcontainers.messaging;
 
 /*-
@@ -141,9 +140,7 @@ public class SharedKafkaContainer {
      * @return map of property names to values
      */
     public static java.util.Map<String, String> getProperties() {
-        return java.util.Map.of(
-            "spring.kafka.bootstrap-servers", getBootstrapServers()
-        );
+        return java.util.Map.of("spring.kafka.bootstrap-servers", getBootstrapServers());
     }
 
     private SharedKafkaContainer() {

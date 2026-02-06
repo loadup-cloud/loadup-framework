@@ -22,7 +22,6 @@ package io.github.loadup.components.authorization.aspect;
  * #L%
  */
 
-import io.github.loadup.components.authorization.annotation.Logical;
 import io.github.loadup.components.authorization.annotation.RequirePermission;
 import io.github.loadup.components.authorization.annotation.RequireRole;
 import io.github.loadup.components.authorization.context.UserContext;
@@ -73,10 +72,7 @@ public class AuthorizationAspect {
         List<String> userRoles = user.getRoles();
 
         if (userRoles == null || userRoles.isEmpty()) {
-            log.warn(
-                    "User {} has no roles, denying access to method: {}",
-                    user.getUserId(),
-                    pjp.getSignature());
+            log.warn("User {} has no roles, denying access to method: {}", user.getUserId(), pjp.getSignature());
             throw new ForbiddenException("Insufficient permissions");
         }
 
@@ -121,10 +117,7 @@ public class AuthorizationAspect {
         List<String> userPermissions = user.getPermissions();
 
         if (userPermissions == null || userPermissions.isEmpty()) {
-            log.warn(
-                    "User {} has no permissions, denying access to method: {}",
-                    user.getUserId(),
-                    pjp.getSignature());
+            log.warn("User {} has no permissions, denying access to method: {}", user.getUserId(), pjp.getSignature());
             throw new ForbiddenException("Insufficient permissions");
         }
 

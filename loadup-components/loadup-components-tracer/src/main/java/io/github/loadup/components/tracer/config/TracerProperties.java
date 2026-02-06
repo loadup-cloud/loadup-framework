@@ -24,7 +24,6 @@ package io.github.loadup.components.tracer.config;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +46,6 @@ public class TracerProperties {
 
     /** Enable async task tracing. */
     private boolean enableAsyncTracing = true;
-
 
     /** Include request headers in spans. */
     private boolean includeHeaders = false;

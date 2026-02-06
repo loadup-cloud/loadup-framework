@@ -1,4 +1,3 @@
-
 package io.github.loadup.gateway.core.action;
 
 /*-
@@ -35,11 +34,10 @@ import io.opentelemetry.context.Scope;
 import io.opentelemetry.context.propagation.TextMapGetter;
 import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.context.propagation.TextMapSetter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.Collections;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Tracing action for distributed tracing in LoadUp Gateway.
@@ -68,22 +66,18 @@ public class TracingAction implements GatewayAction {
         GatewayResponse response = context.getResponse();
 
         // Extract parent context from incoming request headers
-        Context extractedContext = propagator.extract(
-            Context.current(),
-            request,
-            GatewayRequestGetter.INSTANCE
-        );
+        Context extractedContext = propagator.extract(Context.current(), request, GatewayRequestGetter.INSTANCE);
 
         // Create span for this gateway request
         String routeId = context.getRoute() != null ? context.getRoute().getRouteId() : "unknown";
         Span span = tracer.spanBuilder("gateway." + request.getMethod())
-            .setParent(extractedContext)
-            .setSpanKind(SpanKind.SERVER)
-            .setAttribute("http.method", request.getMethod())
-            .setAttribute("http.target", request.getPath())
-            .setAttribute("gateway.route", routeId)
-            .setAttribute("gateway.request_id", request.getRequestId())
-            .startSpan();
+                .setParent(extractedContext)
+                .setSpanKind(SpanKind.SERVER)
+                .setAttribute("http.method", request.getMethod())
+                .setAttribute("http.target", request.getPath())
+                .setAttribute("gateway.route", routeId)
+                .setAttribute("gateway.request_id", request.getRequestId())
+                .startSpan();
 
         // Add client IP if available
         if (request.getClientIp() != null) {
@@ -93,11 +87,7 @@ public class TracingAction implements GatewayAction {
         // Make span current and propagate to downstream
         try (Scope ignored = span.makeCurrent()) {
             // Inject tracing context into request headers (for downstream)
-            propagator.inject(
-                Context.current(),
-                request,
-                GatewayRequestSetter.INSTANCE
-            );
+            propagator.inject(Context.current(), request, GatewayRequestSetter.INSTANCE);
 
             // Continue the chain
             chain.proceed(context);

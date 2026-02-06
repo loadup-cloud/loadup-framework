@@ -1,4 +1,3 @@
-
 package io.github.loadup.components.testcontainers.search;
 
 /*-
@@ -160,9 +159,7 @@ public class SharedElasticsearchContainer {
      * @return map of property names to values
      */
     public static java.util.Map<String, String> getProperties() {
-        return java.util.Map.of(
-            "spring.elasticsearch.uris", getHttpHostAddress()
-        );
+        return java.util.Map.of("spring.elasticsearch.uris", getHttpHostAddress());
     }
 
     private SharedElasticsearchContainer() {

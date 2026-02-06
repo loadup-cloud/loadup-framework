@@ -1,4 +1,3 @@
-
 package io.github.loadup.components.testcontainers.config;
 
 /*-
@@ -75,6 +74,7 @@ public class TestContainersProperties {
 
     /** LocalStack container configuration */
     private ContainerConfig localstack = new ContainerConfig();
+
     private boolean reusable;
 
     /**
