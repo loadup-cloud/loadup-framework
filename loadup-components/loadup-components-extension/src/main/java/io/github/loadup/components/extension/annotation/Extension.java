@@ -30,7 +30,6 @@ import org.springframework.stereotype.Component;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-@Component
 public @interface Extension {
     /** 扩展点的唯一标识，默认为接口全限定名 */
     String bizCode() default "";

@@ -16,9 +16,11 @@
 
     <modules>
         <module>loadup-components-gotone-api</module>
-        <module>loadup-components-gotone-binder-email</module>
-        <module>loadup-components-gotone-binder-sms</module>
-        <module>loadup-components-gotone-binder-push</module>
+        <module>loadup-components-gotone-core</module>
+        <module>channels/loadup-components-gotone-channel-email</module>
+        <module>channels/loadup-components-gotone-channel-sms</module>
+        <module>channels/loadup-components-gotone-channel-push</module>
+        <module>loadup-components-gotone-starter</module>
         <module>loadup-components-gotone-test</module>
     </modules>
 

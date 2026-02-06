@@ -61,7 +61,7 @@ loadup-components-gotone/
         <!-- 选择需要的提供商 -->
 <dependency>
 <groupId>io.github.loadup-cloud</groupId>
-<artifactId>loadup-components-gotone-binder-email</artifactId>
+<artifactId>loadup-components-gotone-provider-email</artifactId>
 <version>${loadup.version}</version>
 </dependency>
 

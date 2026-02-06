@@ -555,17 +555,27 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-gotone-binder-email</artifactId>
+                <artifactId>loadup-components-gotone-core</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-gotone-binder-push</artifactId>
+                <artifactId>loadup-components-gotone-starter</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-gotone-binder-sms</artifactId>
+                <artifactId>loadup-components-gotone-channel-email</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-gotone-channel-push</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-gotone-channel-sms</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>

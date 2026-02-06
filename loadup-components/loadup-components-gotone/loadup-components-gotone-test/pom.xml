@@ -19,32 +19,28 @@
         <!-- Gotone API -->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-gotone-api</artifactId>
-            <version>${project.version}</version>
+            <artifactId>loadup-components-gotone-starter</artifactId>
             <scope>test</scope>
         </dependency>
 
         <!-- SMS Binder -->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-gotone-binder-sms</artifactId>
-            <version>${project.version}</version>
+            <artifactId>loadup-components-gotone-channel-sms</artifactId>
             <scope>test</scope>
         </dependency>
 
         <!-- Email Binder -->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-gotone-binder-email</artifactId>
-            <version>${project.version}</version>
+            <artifactId>loadup-components-gotone-channel-email</artifactId>
             <scope>test</scope>
         </dependency>
 
         <!-- Push Binder -->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-gotone-binder-push</artifactId>
-            <version>${project.version}</version>
+            <artifactId>loadup-components-gotone-channel-push</artifactId>
             <scope>test</scope>
         </dependency>
 
