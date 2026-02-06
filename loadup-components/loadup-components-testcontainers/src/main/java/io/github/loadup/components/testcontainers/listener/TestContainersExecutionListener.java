@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2026 LoadUp Framework
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package io.github.loadup.components.testcontainers.listener;
 
 /*-
@@ -45,6 +31,8 @@ import io.github.loadup.components.testcontainers.database.SharedMongoDBContaine
 import io.github.loadup.components.testcontainers.database.SharedPostgreSQLContainer;
 import io.github.loadup.components.testcontainers.messaging.SharedKafkaContainer;
 import io.github.loadup.components.testcontainers.search.SharedElasticsearchContainer;
+
+import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -96,7 +84,7 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
     }
 
     @Override
-    public void beforeTestClass(TestContext testContext) throws Exception {
+    public void beforeTestClass(TestContext testContext) {
         Class<?> testClass = testContext.getTestClass();
 
         // Check if already processed to avoid duplicate initialization
@@ -131,13 +119,13 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
         log.info(">>> [TESTCONTAINERS] Container reuse enabled: {}", reuse);
 
         // Start containers and collect properties (but don't inject yet - ApplicationContext not ready)
-        Map<String, String> allProperties = new java.util.HashMap<>();
+        Map<String, String> allProperties = new HashMap<>();
 
         for (ContainerType type : containerTypes) {
             try {
                 Map<String, String> containerProperties = startContainer(type, reuse);
 
-                if (containerProperties != null && !containerProperties.isEmpty()) {
+                if (!containerProperties.isEmpty()) {
                     allProperties.putAll(containerProperties);
                     log.info(">>> [TESTCONTAINERS] Successfully started {} container, collected {} properties",
                             type, containerProperties.size());
@@ -197,29 +185,17 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
             case MYSQL -> {
                 log.info(">>> [TESTCONTAINERS] Starting MySQL container...");
                 SharedMySQLContainer.startContainer(config);
-                yield Map.of(
-                        "spring.datasource.url", SharedMySQLContainer.getJdbcUrl(),
-                        "spring.datasource.username", SharedMySQLContainer.getUsername(),
-                        "spring.datasource.password", SharedMySQLContainer.getPassword(),
-                        "spring.datasource.driver-class-name", SharedMySQLContainer.getDriverClassName()
-                );
+                yield SharedMySQLContainer.getProperties();
             }
             case POSTGRESQL -> {
                 log.info(">>> [TESTCONTAINERS] Starting PostgreSQL container...");
                 SharedPostgreSQLContainer.startContainer(config);
-                yield Map.of(
-                        "spring.datasource.url", SharedPostgreSQLContainer.getJdbcUrl(),
-                        "spring.datasource.username", SharedPostgreSQLContainer.getUsername(),
-                        "spring.datasource.password", SharedPostgreSQLContainer.getPassword(),
-                        "spring.datasource.driver-class-name", SharedPostgreSQLContainer.getDriverClassName()
-                );
+                yield SharedPostgreSQLContainer.getProperties();
             }
             case MONGODB -> {
                 log.info(">>> [TESTCONTAINERS] Starting MongoDB container...");
                 SharedMongoDBContainer.startContainer(config);
-                yield Map.of(
-                        "spring.data.mongodb.uri", SharedMongoDBContainer.getConnectionString()
-                );
+                yield SharedMongoDBContainer.getProperties();
             }
             case REDIS -> {
                 log.warn(">>> [TESTCONTAINERS] Redis container not yet fully implemented");
@@ -228,16 +204,12 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
             case KAFKA -> {
                 log.info(">>> [TESTCONTAINERS] Starting Kafka container...");
                 SharedKafkaContainer.startContainer(config);
-                yield Map.of(
-                        "spring.kafka.bootstrap-servers", SharedKafkaContainer.getBootstrapServers()
-                );
+                yield SharedKafkaContainer.getProperties();
             }
             case ELASTICSEARCH -> {
                 log.info(">>> [TESTCONTAINERS] Starting Elasticsearch container...");
                 SharedElasticsearchContainer.startContainer(config);
-                yield Map.of(
-                        "spring.elasticsearch.uris", SharedElasticsearchContainer.getHttpHostAddress()
-                );
+                yield SharedElasticsearchContainer.getProperties();
             }
             case LOCALSTACK -> {
                 log.warn(">>> [TESTCONTAINERS] LocalStack container requires additional configuration");
