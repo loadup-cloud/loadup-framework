@@ -28,7 +28,6 @@ import static org.mockito.Mockito.when;
 import io.github.loadup.components.gotone.api.INotificationProvider;
 import io.github.loadup.components.gotone.binder.email.SmtpEmailProvider;
 import io.github.loadup.components.gotone.binder.push.FcmPushProvider;
-import io.github.loadup.components.gotone.binder.sms.*;
 import io.github.loadup.components.gotone.binder.sms.AliyunSmsProvider;
 import io.github.loadup.components.gotone.binder.sms.HuaweiSmsProvider;
 import io.github.loadup.components.gotone.binder.sms.TencentSmsProvider;
@@ -101,7 +100,7 @@ class AllProvidersIntegrationTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("integration-test-001")
                 .channel(NotificationChannel.valueOf(channel))
-                .receivers(Arrays.asList("test-receiver"))
+                .addressList(Arrays.asList("test-receiver"))
                 .title("集成测试")
                 .content("集成测试内容")
                 .build();
@@ -209,7 +208,7 @@ class AllProvidersIntegrationTest {
             NotificationRequest request = NotificationRequest.builder()
                     .bizId("test")
                     .channel(NotificationChannel.SMS)
-                    .receivers(Arrays.asList("test"))
+                    .addressList(Arrays.asList("test"))
                     .content("test")
                     .build();
 

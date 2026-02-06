@@ -43,7 +43,7 @@ class ModelTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("test-001")
                 .channel(NotificationChannel.SMS)
-                .receivers(List.of("13800138000"))
+                .addressList(List.of("13800138000"))
                 .templateCode("TEST_TEMPLATE")
                 .title("Test Title")
                 .content("Test Content")
@@ -57,7 +57,7 @@ class ModelTest {
         assertThat(request).isNotNull();
         assertThat(request.getBizId()).isEqualTo("test-001");
         assertThat(request.getChannel()).isEqualTo(NotificationChannel.SMS);
-        assertThat(request.getReceivers()).containsExactly("13800138000");
+        assertThat(request.getAddressList()).containsExactly("13800138000");
         assertThat(request.getTemplateCode()).isEqualTo("TEST_TEMPLATE");
         assertThat(request.getTitle()).isEqualTo("Test Title");
         assertThat(request.getContent()).isEqualTo("Test Content");
@@ -73,7 +73,7 @@ class ModelTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("biz-001")
                 .channel(NotificationChannel.EMAIL)
-                .receivers(List.of("user@example.com"))
+                .addressList(List.of("user@example.com"))
                 .templateCode("EMAIL_TEMPLATE")
                 .title("Email Title")
                 .content("Email Content")
@@ -83,7 +83,7 @@ class ModelTest {
         // Then
         assertThat(request.getBizId()).isEqualTo("biz-001");
         assertThat(request.getChannel()).isEqualTo(NotificationChannel.EMAIL);
-        assertThat(request.getReceivers()).hasSize(1);
+        assertThat(request.getAddressList()).hasSize(1);
         assertThat(request.getTitle()).isEqualTo("Email Title");
         assertThat(request.getTemplateCode()).isEqualTo("EMAIL_TEMPLATE");
         assertThat(request.getContent()).isEqualTo("Email Content");
@@ -148,13 +148,13 @@ class ModelTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId(null)
                 .channel(NotificationChannel.SMS)
-                .receivers(null)
+                .addressList(null)
                 .templateParams(null)
                 .build();
 
         // Then
         assertThat(request.getBizId()).isNull();
-        assertThat(request.getReceivers()).isNull();
+        assertThat(request.getAddressList()).isNull();
         assertThat(request.getTemplateParams()).isNull();
     }
 
@@ -179,12 +179,12 @@ class ModelTest {
     void testNotificationRequestMultipleReceivers() {
         // When
         NotificationRequest request = NotificationRequest.builder()
-                .receivers(Arrays.asList("user1@example.com", "user2@example.com", "user3@example.com"))
+                .addressList(Arrays.asList("user1@example.com", "user2@example.com", "user3@example.com"))
                 .build();
 
         // Then
-        assertThat(request.getReceivers()).hasSize(3);
-        assertThat(request.getReceivers()).contains("user1@example.com", "user2@example.com", "user3@example.com");
+        assertThat(request.getAddressList()).hasSize(3);
+        assertThat(request.getAddressList()).contains("user1@example.com", "user2@example.com", "user3@example.com");
     }
 
     @Test

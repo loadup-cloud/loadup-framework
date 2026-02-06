@@ -53,7 +53,7 @@ class TencentSmsProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("tencent-001")
                 .channel(NotificationChannel.SMS)
-                .receivers(Arrays.asList("13800138000"))
+                .addressList(Arrays.asList("13800138000"))
                 .content("腾讯云短信测试")
                 .build();
 
@@ -102,7 +102,7 @@ class TencentSmsProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("tencent-002")
                 .channel(NotificationChannel.SMS)
-                .receivers(Arrays.asList("13800138000", "13900139000"))
+                .addressList(Arrays.asList("13800138000", "13900139000"))
                 .content("批量短信")
                 .build();
 

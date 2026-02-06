@@ -69,7 +69,7 @@ class SmsProviderIntegrationTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("integration-test-001")
                 .channel(NotificationChannel.SMS)
-                .receivers(Arrays.asList("13800138000"))
+                .addressList(Arrays.asList("13800138000"))
                 .content("集成测试")
                 .build();
 

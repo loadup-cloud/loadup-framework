@@ -53,7 +53,7 @@ class AliyunSmsProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("test-001")
                 .channel(NotificationChannel.SMS)
-                .receivers(Arrays.asList("13800138000", "13900139000"))
+                .addressList(Arrays.asList("13800138000", "13900139000"))
                 .content("您的验证码是123456")
                 .templateParams(new HashMap())
                 .build();
@@ -78,7 +78,7 @@ class AliyunSmsProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("test-002")
                 .channel(NotificationChannel.SMS)
-                .receivers(null)
+                .addressList(null)
                 .content("测试内容")
                 .build();
 
@@ -96,7 +96,7 @@ class AliyunSmsProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("test-003")
                 .channel(NotificationChannel.SMS)
-                .receivers(Arrays.asList("13800138000"))
+                .addressList(Arrays.asList("13800138000"))
                 .content("")
                 .build();
 
@@ -144,7 +144,7 @@ class AliyunSmsProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("test-004")
                 .channel(NotificationChannel.SMS)
-                .receivers(Arrays.asList("13800138000", "13900139000", "13700137000"))
+                .addressList(Arrays.asList("13800138000", "13900139000", "13700137000"))
                 .content("批量发送测试")
                 .build();
 
@@ -167,7 +167,7 @@ class AliyunSmsProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("test-005")
                 .channel(NotificationChannel.SMS)
-                .receivers(Arrays.asList("13800138000"))
+                .addressList(Arrays.asList("13800138000"))
                 .content("您的验证码是${code}，${minutes}分钟内有效")
                 .templateParams(params)
                 .build();
@@ -186,7 +186,7 @@ class AliyunSmsProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("test-006")
                 .channel(NotificationChannel.SMS)
-                .receivers(Arrays.asList("13800138000"))
+                .addressList(Arrays.asList("13800138000"))
                 .content("测试响应字段")
                 .build();
 

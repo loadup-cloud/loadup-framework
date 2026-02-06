@@ -70,7 +70,7 @@ class SmtpEmailProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("email-001")
                 .channel(NotificationChannel.EMAIL)
-                .receivers(Arrays.asList("user@example.com"))
+                .addressList(Arrays.asList("user@example.com"))
                 .title("测试邮件")
                 .content("这是一封测试邮件")
                 .build();
@@ -98,7 +98,7 @@ class SmtpEmailProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("email-002")
                 .channel(NotificationChannel.EMAIL)
-                .receivers(Arrays.asList("user1@example.com", "user2@example.com", "user3@example.com"))
+                .addressList(Arrays.asList("user1@example.com", "user2@example.com", "user3@example.com"))
                 .title("批量邮件")
                 .content("批量发送测试")
                 .build();
@@ -122,7 +122,7 @@ class SmtpEmailProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("email-003")
                 .channel(NotificationChannel.EMAIL)
-                .receivers(Arrays.asList("user@example.com"))
+                .addressList(Arrays.asList("user@example.com"))
                 .title("测试")
                 .content("内容")
                 .build();
@@ -143,7 +143,7 @@ class SmtpEmailProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("email-004")
                 .channel(NotificationChannel.EMAIL)
-                .receivers(Arrays.asList("invalid@"))
+                .addressList(Arrays.asList("invalid@"))
                 .title("测试")
                 .content("内容")
                 .build();
@@ -182,7 +182,7 @@ class SmtpEmailProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("email-005")
                 .channel(NotificationChannel.EMAIL)
-                .receivers(Arrays.asList("user@example.com"))
+                .addressList(Arrays.asList("user@example.com"))
                 .title("")
                 .content("只有内容没有标题")
                 .build();
@@ -202,7 +202,7 @@ class SmtpEmailProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("email-006")
                 .channel(NotificationChannel.EMAIL)
-                .receivers(Arrays.asList("user@example.com"))
+                .addressList(Arrays.asList("user@example.com"))
                 .title("测试标题")
                 .content(null)
                 .build();
@@ -223,7 +223,7 @@ class SmtpEmailProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("email-007")
                 .channel(NotificationChannel.EMAIL)
-                .receivers(Arrays.asList("user@example.com"))
+                .addressList(Arrays.asList("user@example.com"))
                 .title("测试")
                 .content("测试内容")
                 .build();
@@ -252,7 +252,7 @@ class SmtpEmailProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("email-008")
                 .channel(NotificationChannel.EMAIL)
-                .receivers(Arrays.asList("user@example.com"))
+                .addressList(Arrays.asList("user@example.com"))
                 .title("订单通知")
                 .content("尊敬的${userName}，您的订单${orderId}已确认")
                 .templateParams(params)

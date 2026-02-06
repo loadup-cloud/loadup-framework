@@ -118,7 +118,7 @@ public class NotificationQueueConsumer {
             gotoneNotificationService.send(
                     businessCode,
                     request.getBizId(),
-                    request.getReceivers(),
+                    request.getAddressList(),
                     request.getTemplateParams() != null ? request.getTemplateParams() : new java.util.HashMap<>());
 
         } catch (Exception e) {

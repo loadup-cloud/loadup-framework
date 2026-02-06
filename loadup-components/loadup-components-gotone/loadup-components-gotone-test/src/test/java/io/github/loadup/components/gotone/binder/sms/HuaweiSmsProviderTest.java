@@ -53,7 +53,7 @@ class HuaweiSmsProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("huawei-001")
                 .channel(NotificationChannel.SMS)
-                .receivers(Arrays.asList("13800138000"))
+                .addressList(Arrays.asList("13800138000"))
                 .content("华为云短信测试")
                 .build();
 
@@ -95,7 +95,7 @@ class HuaweiSmsProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("huawei-002")
                 .channel(NotificationChannel.SMS)
-                .receivers(Arrays.asList("13800138000"))
+                .addressList(Arrays.asList("13800138000"))
                 .content("测试")
                 .build();
 

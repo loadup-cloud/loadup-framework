@@ -51,7 +51,7 @@ class YunpianSmsProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("yunpian-001")
                 .channel(NotificationChannel.SMS)
-                .receivers(Arrays.asList("13800138000"))
+                .addressList(Arrays.asList("13800138000"))
                 .content("云片短信测试")
                 .build();
 
@@ -96,7 +96,7 @@ class YunpianSmsProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("yunpian-002")
                 .channel(NotificationChannel.SMS)
-                .receivers(Arrays.asList("13800138000"))
+                .addressList(Arrays.asList("13800138000"))
                 .content("测试")
                 .build();
 
@@ -113,7 +113,7 @@ class YunpianSmsProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("yunpian-003")
                 .channel(NotificationChannel.SMS)
-                .receivers(Arrays.asList("13800138000", "13900139000", "13700137000"))
+                .addressList(Arrays.asList("13800138000", "13900139000", "13700137000"))
                 .content("批量发送")
                 .build();
 

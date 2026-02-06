@@ -35,7 +35,6 @@ import io.github.loadup.components.gotone.enums.NotificationChannel;
 import io.github.loadup.components.gotone.enums.NotificationStatus;
 import io.github.loadup.components.gotone.model.NotificationRequest;
 import io.github.loadup.components.gotone.model.NotificationResponse;
-import io.github.loadup.components.gotone.repository.*;
 import io.github.loadup.components.gotone.repository.ChannelMappingRepository;
 import io.github.loadup.components.gotone.repository.NotificationRecordRepository;
 import io.github.loadup.components.gotone.repository.NotificationTemplateRepository;
@@ -151,7 +150,7 @@ public class GotoneNotificationServiceImpl implements GotoneNotificationService 
         NotificationRequest request = NotificationRequest.builder()
                 .bizId(bizId + "-" + mapping.getChannel())
                 .channel(NotificationChannel.valueOf(mapping.getChannel()))
-                .receivers(addresses)
+                .addressList(addresses)
                 .templateCode(mapping.getTemplateCode())
                 .title(title)
                 .content(content)
@@ -238,7 +237,7 @@ public class GotoneNotificationServiceImpl implements GotoneNotificationService 
             record.setBizId(request.getBizId());
             record.setMessageId(response.getMessageId());
             record.setChannel(request.getChannel().name());
-            record.setReceivers(request.getReceivers());
+            record.setReceivers(request.getAddressList());
             record.setTemplateCode(request.getTemplateCode());
             record.setTitle(request.getTitle());
             record.setContent(request.getContent());

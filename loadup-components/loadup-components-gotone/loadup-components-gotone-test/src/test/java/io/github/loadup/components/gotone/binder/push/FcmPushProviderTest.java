@@ -51,7 +51,7 @@ class FcmPushProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("push-001")
                 .channel(NotificationChannel.PUSH)
-                .receivers(Arrays.asList("device-token-123"))
+                .addressList(Arrays.asList("device-token-123"))
                 .title("推送标题")
                 .content("推送内容")
                 .build();
@@ -75,7 +75,7 @@ class FcmPushProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("push-002")
                 .channel(NotificationChannel.PUSH)
-                .receivers(Arrays.asList("device-token-1", "device-token-2", "device-token-3"))
+                .addressList(Arrays.asList("device-token-1", "device-token-2", "device-token-3"))
                 .title("批量推送")
                 .content("批量推送测试")
                 .build();
@@ -116,7 +116,7 @@ class FcmPushProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("push-003")
                 .channel(NotificationChannel.PUSH)
-                .receivers(null)
+                .addressList(null)
                 .title("测试")
                 .content("测试内容")
                 .build();
@@ -135,7 +135,7 @@ class FcmPushProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("push-004")
                 .channel(NotificationChannel.PUSH)
-                .receivers(Arrays.asList("device-token-123"))
+                .addressList(Arrays.asList("device-token-123"))
                 .title("")
                 .content("只有内容")
                 .build();
@@ -153,7 +153,7 @@ class FcmPushProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("push-005")
                 .channel(NotificationChannel.PUSH)
-                .receivers(Arrays.asList("device-token-123"))
+                .addressList(Arrays.asList("device-token-123"))
                 .title("标题")
                 .content(null)
                 .build();
@@ -171,7 +171,7 @@ class FcmPushProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("push-006")
                 .channel(NotificationChannel.PUSH)
-                .receivers(Arrays.asList("device-token-123"))
+                .addressList(Arrays.asList("device-token-123"))
                 .title("测试")
                 .content("测试内容")
                 .build();
@@ -198,7 +198,7 @@ class FcmPushProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("push-007")
                 .channel(NotificationChannel.PUSH)
-                .receivers(Arrays.asList("device-token-123"))
+                .addressList(Arrays.asList("device-token-123"))
                 .title("消息通知")
                 .content("${userName}，${message}")
                 .templateParams(params)
@@ -217,7 +217,7 @@ class FcmPushProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("push-008")
                 .channel(NotificationChannel.PUSH)
-                .receivers(Arrays.asList("device-token-123"))
+                .addressList(Arrays.asList("device-token-123"))
                 .title("紧急通知")
                 .content("这是一条紧急通知")
                 .priority(10)
@@ -238,7 +238,7 @@ class FcmPushProviderTest {
         NotificationRequest request = NotificationRequest.builder()
                 .bizId("push-009")
                 .channel(NotificationChannel.PUSH)
-                .receivers(Arrays.asList("device-token-123"))
+                .addressList(Arrays.asList("device-token-123"))
                 .title("长内容测试")
                 .content(longContent)
                 .build();

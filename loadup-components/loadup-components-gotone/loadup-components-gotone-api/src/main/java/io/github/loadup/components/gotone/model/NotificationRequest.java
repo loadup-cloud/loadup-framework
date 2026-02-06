@@ -42,7 +42,7 @@ public class NotificationRequest implements Serializable {
     private NotificationChannel channel;
 
     /** 接收人列表 */
-    private List<String> receivers;
+    private List<String> addressList;
 
     /** 模板代码 */
     private String templateCode;
