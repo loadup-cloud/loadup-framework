@@ -27,13 +27,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 /**
  * Manages security strategies.
  */
 @Slf4j
-@Component
 public class SecurityStrategyManager {
 
     private final Map<String, SecurityStrategy> strategyMap = new ConcurrentHashMap<>();

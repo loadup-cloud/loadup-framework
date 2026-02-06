@@ -36,11 +36,9 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.*;
 import org.apache.dubbo.rpc.service.GenericService;
-import org.springframework.stereotype.Component;
 
 /** Dubbo RPC proxy plugin */
 @Slf4j
-@Component
 public class RpcProxyProcessor implements ProxyProcessor {
 
     private ApplicationConfig applicationConfig;

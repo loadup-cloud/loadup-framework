@@ -35,7 +35,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 /**
  * Default JWT-based security strategy.
@@ -43,7 +42,6 @@ import org.springframework.stereotype.Component;
  * <p>Validates JWT token and populates SecurityContext for downstream authorization.</p>
  */
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class DefaultSecurityStrategy implements SecurityStrategy {
 

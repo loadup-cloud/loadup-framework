@@ -58,7 +58,6 @@ import org.springframework.stereotype.Component;
  * </pre>
  */
 @Slf4j
-@Component
 public class SignatureSecurityStrategy implements SecurityStrategy {
 
     private static final String HEADER_APP_ID = "X-App-Id";

@@ -22,17 +22,23 @@ package io.github.loadup.components.tracer.config;
  * #L%
  */
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/** Tests for TracerProperties validation */
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for TracerProperties validation
+ */
 class TracerPropertiesTest {
 
     private Validator validator;
@@ -45,8 +51,7 @@ class TracerPropertiesTest {
 
     @Test
     void testValidOtlpEndpoint() {
-        TracerProperties properties = new TracerProperties();
-        properties.setOtlpEndpoint("http://localhost:4317");
+        TracerProperties properties = getTracerProperties("http://localhost:4317");
 
         Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
         assertTrue(violations.isEmpty(), "Valid OTLP endpoint should have no violations");
@@ -54,17 +59,26 @@ class TracerPropertiesTest {
 
     @Test
     void testValidHttpsOtlpEndpoint() {
-        TracerProperties properties = new TracerProperties();
-        properties.setOtlpEndpoint("https://otel-collector.example.com:4317");
+        TracerProperties properties = getTracerProperties("https://otel-collector.example.com:4317");
 
         Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
         assertTrue(violations.isEmpty(), "Valid HTTPS OTLP endpoint should have no violations");
     }
 
+    @NotNull
+    private static TracerProperties getTracerProperties(String url) {
+        TracerProperties properties = new TracerProperties();
+        List<TracerProperties.ExporterConfig> ex = new ArrayList<>();
+        TracerProperties.ExporterConfig e = new TracerProperties.ExporterConfig();
+        e.setEndpoint(url);
+        ex.add(e);
+        properties.setExporters(ex);
+        return properties;
+    }
+
     @Test
     void testValidOtlpEndpointWithPath() {
-        TracerProperties properties = new TracerProperties();
-        properties.setOtlpEndpoint("http://localhost:4317/v1/traces");
+        TracerProperties properties = getTracerProperties("http://localhost:4317/v1/traces");
 
         Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
         assertTrue(violations.isEmpty(), "Valid OTLP endpoint with path should have no violations");
@@ -72,8 +86,7 @@ class TracerPropertiesTest {
 
     @Test
     void testValidOtlpEndpointWithoutScheme() {
-        TracerProperties properties = new TracerProperties();
-        properties.setOtlpEndpoint("localhost:4317");
+        TracerProperties properties = getTracerProperties("localhost:4317");
 
         Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
         assertTrue(violations.isEmpty(), "OTLP endpoint without scheme should be valid");
@@ -81,20 +94,18 @@ class TracerPropertiesTest {
 
     @Test
     void testInvalidOtlpEndpoint() {
-        TracerProperties properties = new TracerProperties();
-        properties.setOtlpEndpoint("not a valid url!");
+        TracerProperties properties = getTracerProperties("not a valid url!");
 
         Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
         assertFalse(violations.isEmpty(), "Invalid OTLP endpoint should have violations");
         assertTrue(
-                violations.stream().anyMatch(v -> v.getMessage().contains("OTLP endpoint must be a valid URL format")),
-                "Should have URL validation message");
+            violations.stream().anyMatch(v -> v.getMessage().contains("OTLP endpoint must be a valid URL format")),
+            "Should have URL validation message");
     }
 
     @Test
     void testNullOtlpEndpoint() {
-        TracerProperties properties = new TracerProperties();
-        properties.setOtlpEndpoint(null);
+        TracerProperties properties = getTracerProperties(null);
 
         Set<ConstraintViolation<TracerProperties>> violations = validator.validate(properties);
         assertTrue(violations.isEmpty(), "Null OTLP endpoint should be valid (optional)");

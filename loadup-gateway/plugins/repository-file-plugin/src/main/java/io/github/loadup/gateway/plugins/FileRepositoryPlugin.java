@@ -43,11 +43,9 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
 
 /** File storage plugin - Using CSV format */
 @Slf4j
-@Component
 @ConditionalOnProperty(prefix = "loadup.gateway.storage", name = "type", havingValue = "FILE", matchIfMissing = true)
 public class FileRepositoryPlugin implements RepositoryPlugin {
 

@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
 
 /** Gateway configuration properties (corresponds to loadup.gateway in application.yml) */
 @Data
-@Component
 @ConfigurationProperties(prefix = "loadup.gateway")
 public class GatewayProperties {
 

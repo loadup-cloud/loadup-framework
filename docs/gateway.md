@@ -11,13 +11,14 @@ LoadUp Gateway 是一个轻量级、高性能的 API 网关框架，基于 Sprin
 - ✅ 模板转换（Groovy/Velocity）
 - ✅ 插件化架构（SPI 扩展）
 - ✅ 统一异常处理（Result 格式）
+- ✅ 分布式追踪（OpenTelemetry/SkyWalking）
 
 ## 架构
 
 请求处理采用责任链模式（Action Chain）：
 
 ```
-ExceptionAction → RouteAction → SecurityAction → ProxyAction → ResponseWrapperAction
+ExceptionAction → TracingAction → RouteAction → SecurityAction → ProxyAction → ResponseWrapperAction
 ```
 
 详细架构请查看 [详细文档](../docs/gateway.md)。
@@ -110,6 +111,310 @@ path,method,target,securityCode
   "meta": {"requestId": "xxx", "timestamp": "xxx"}
 }
 ```
+
+### 分布式追踪
+
+Gateway 集成了 OpenTelemetry，支持完整的分布式追踪能力，可以追踪请求在整个微服务调用链中的流转。
+
+#### 支持的追踪后端
+
+- **SkyWalking** - Apache SkyWalking OAP Server
+- **Jaeger** - 通过 OTLP 协议
+- **Zipkin** - Zipkin 追踪系统
+- **Tempo** - Grafana Tempo
+- **Console** - 控制台日志（开发环境）
+
+#### 快速开始
+
+**1. 添加 Tracer 依赖**
+
+```xml
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-gateway-starter</artifactId>
+</dependency>
+
+<!-- 添加 Tracer 组件 -->
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-components-tracer</artifactId>
+</dependency>
+```
+
+**2. 配置追踪**
+
+```yaml
+spring:
+  application:
+    name: my-gateway
+
+loadup:
+  tracer:
+    enabled: true
+    exporters:
+      - type: skywalking
+        oap-server: http://skywalking-oap:11800
+        authentication: ${SW_TOKEN:}
+```
+
+**3. 自动生效**
+
+TracingAction 会自动添加到 Action Chain，无需额外配置：
+
+```
+ExceptionAction → TracingAction → RouteAction → SecurityAction → ...
+```
+
+#### 配置示例
+
+**SkyWalking 配置（推荐）**
+
+```yaml
+loadup:
+  tracer:
+    enabled: true
+    exporters:
+      - type: skywalking
+        oap-server: http://skywalking-oap:11800
+        timeout: 10
+```
+
+**多后端配置**
+
+```yaml
+loadup:
+  tracer:
+    enabled: true
+    exporters:
+      # 主要后端：SkyWalking
+      - type: skywalking
+        oap-server: http://skywalking:11800
+      
+      # 备用后端：Zipkin
+      - type: zipkin
+        endpoint: http://zipkin:9411/api/v2/spans
+      
+      # 开发环境：控制台日志
+      - type: logging
+```
+
+**采样配置（性能优化）**
+
+```yaml
+loadup:
+  tracer:
+    enabled: true
+    
+    # 采样配置
+    sampler:
+      type: parent_based  # 跟随父 span 的采样决策
+      probability: 0.1    # 10% 采样率
+    
+    # 批处理优化
+    batch-processor:
+      max-queue-size: 2048
+      max-export-batch-size: 512
+      schedule-delay-millis: 5000
+    
+    exporters:
+      - type: skywalking
+        oap-server: http://skywalking:11800
+```
+
+**资源属性配置**
+
+```yaml
+loadup:
+  tracer:
+    enabled: true
+    
+    # 自定义资源属性
+    resource:
+      attributes:
+        deployment.environment: production
+        service.namespace: ${K8S_NAMESPACE:default}
+        service.instance.id: ${HOSTNAME}
+        service.version: ${project.version}
+    
+    exporters:
+      - type: skywalking
+        oap-server: http://skywalking:11800
+```
+
+#### 追踪信息
+
+TracingAction 会自动记录以下信息：
+
+**请求信息**
+- HTTP Method
+- Request Path
+- Route ID
+- Request ID
+- Client IP
+
+**响应信息**
+- HTTP Status Code
+- 处理状态（成功/失败）
+
+**示例 Span 数据**
+
+```json
+{
+  "name": "gateway.GET",
+  "kind": "SERVER",
+  "attributes": {
+    "http.method": "GET",
+    "http.target": "/api/users/123",
+    "gateway.route": "user-service",
+    "gateway.request_id": "req-abc123",
+    "http.client_ip": "192.168.1.100",
+    "http.status_code": 200
+  },
+  "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+  "spanId": "00f067aa0ba902b7"
+}
+```
+
+#### 上下文传播
+
+TracingAction 自动处理追踪上下文的提取和注入：
+
+**提取上游上下文**
+```
+Client Request (with traceparent header)
+    ↓
+TracingAction.extract()  ← 提取 W3C TraceContext
+    ↓
+Create Gateway Span (with parent context)
+```
+
+**注入到下游**
+```
+TracingAction.inject()  → 注入 traceparent header
+    ↓
+ProxyAction
+    ↓
+Downstream Service (receives traceparent)
+```
+
+#### 禁用追踪
+
+**方式 1：配置禁用**
+```yaml
+loadup:
+  tracer:
+    enabled: false
+```
+
+**方式 2：不添加依赖**
+
+不添加 `loadup-components-tracer` 依赖，TracingAction 不会被创建。
+
+#### Action Chain 顺序
+
+**启用追踪时（8个 Action）**
+```
+0. ExceptionAction      - 异常处理
+1. TracingAction        - 分布式追踪 ⭐
+2. RouteAction          - 路由寻址
+3. SecurityAction       - 安全检查
+4. RequestTemplateAction - 请求参数处理
+5. ProxyAction          - 发送请求
+6. ResponseTemplateAction - 响应转换
+7. ResponseWrapperAction - 响应包装
+```
+
+**禁用追踪时（7个 Action）**
+```
+0. ExceptionAction
+1. RouteAction          - 直接路由（跳过 TracingAction）
+2. SecurityAction
+3. RequestTemplateAction
+4. ProxyAction
+5. ResponseTemplateAction
+6. ResponseWrapperAction
+```
+
+#### 最佳实践
+
+**生产环境配置**
+
+```yaml
+loadup:
+  tracer:
+    enabled: true
+    
+    # 使用采样降低性能开销
+    sampler:
+      type: parent_based
+      probability: 0.1  # 10% 采样
+    
+    # 批处理优化
+    batch-processor:
+      max-queue-size: 2048
+      max-export-batch-size: 512
+    
+    # 生产后端
+    exporters:
+      - type: skywalking
+        oap-server: http://skywalking-oap:11800
+        timeout: 10
+```
+
+**开发环境配置**
+
+```yaml
+loadup:
+  tracer:
+    enabled: true
+    
+    # 100% 采样
+    sampler:
+      type: always_on
+    
+    # 控制台日志
+    exporters:
+      - type: logging
+```
+
+#### 监控指标
+
+启动日志会显示追踪状态：
+
+```
+INFO  i.g.l.g.s.GatewayAutoConfiguration - >>> [GATEWAY] Distributed tracing enabled
+INFO  i.g.l.g.s.GatewayAutoConfiguration - >>> [GATEWAY] TracingAction added to action chain at position 1
+INFO  i.g.l.g.s.GatewayAutoConfiguration - >>> [GATEWAY] ActionDispatcher initialized with 8 actions
+```
+
+#### 故障排查
+
+**问题：TracingAction 未生效**
+
+检查：
+1. ✅ `loadup-components-tracer` 依赖已添加
+2. ✅ `loadup.tracer.enabled=true`
+3. ✅ Tracer 和 TextMapPropagator Bean 已创建
+
+**问题：追踪数据未上报**
+
+检查：
+1. ✅ Exporter 配置正确（endpoint, authentication）
+2. ✅ 网络连通性（Gateway → SkyWalking OAP）
+3. ✅ 查看日志中的错误信息
+
+**问题：性能影响**
+
+优化：
+1. ✅ 降低采样率（probability: 0.1）
+2. ✅ 调整批处理参数
+3. ✅ 使用异步导出
+
+#### 相关文档
+
+- [Tracer 组件文档](../components/tracer.md)
+- [OpenTelemetry 官方文档](https://opentelemetry.io/)
+- [SkyWalking 文档](https://skywalking.apache.org/)
 
 ## 扩展开发
 

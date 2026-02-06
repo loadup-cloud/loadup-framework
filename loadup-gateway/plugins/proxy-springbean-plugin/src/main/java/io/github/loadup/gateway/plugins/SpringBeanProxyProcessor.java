@@ -37,11 +37,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 
 /** Spring Bean proxy plugin */
 @Slf4j
-@Component
 public class SpringBeanProxyProcessor implements ProxyProcessor {
 
     @Resource

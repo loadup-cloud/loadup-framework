@@ -33,12 +33,10 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 /** HTTP proxy plugin */
 @Slf4j
-@Component
 public class HttpProxyProcessor implements ProxyProcessor {
 
     private final RestClient restClient = RestClient.create();
