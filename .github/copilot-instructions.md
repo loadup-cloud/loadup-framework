@@ -21,7 +21,7 @@
 2. 技术栈（必须遵守）
 - Java: 21
 - Spring Boot: 3.4.3
-- MyBatis-Plus: 3.5.4.1 (持久层)
+- MyBatis-Flex: 3.5.4.1 (持久层)
 - 数据库: MySQL 8.0
 - 缓存: Redis（Redisson 客户端 / 连接池）
 - 认证: JWT（注意：安全细节参见安全规范）
@@ -118,7 +118,7 @@ Service 生成约定：
 5.3 实体类（Entity）模板要求
 - 实体必须实现 `java.io.Serializable`。
 - 使用 Lombok 注解（`@Data', `@Builder`, `@NoArgsConstructor`, `@AllArgsConstructor`）。
-- 使用 MyBatis-Plus 注解映射表与 id（`@TableName', `@TableId`）。
+- 使用 MyBatis-Flex 注解映射表与 id（`@TableName', `@TableId`）。
 
 完整 import 列表（示例）:
 - import java.io.Serializable;
@@ -135,18 +135,17 @@ Service 生成约定：
 - 表名使用 `t_xxx`（snake_case），字段使用 snake_case。主键字段名为 `id`，类型为 `String`（非自增），由 `IdGenerator` 或 UUID/Snowflake 生成。
 - 敏感字段（如 password）标注 `@JsonIgnore`，且在日志或 toString 中避免打印。
 
-5.4 Mapper（MyBatis-Plus）模板要求
-- 继承 `com.baomidou.mybatisplus.core.mapper.BaseMapper<XxxEntity>`。
+5.4 Mapper（MyBatis-Flex）模板要求
+- 继承 `BaseMapper<XxxEntity>`。
 - 标注 `@Mapper` 或在 MyBatis 扫描配置中包含该包。
 
 完整 import 列表（示例）:
 - import org.apache.ibatis.annotations.Mapper;
-- import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 - import io.github.loadup.{{module}}.entity.XxxEntity;
 
 Mapper 生成约定：
 - 提供符合业务语义的自定义方法时，使用参数化查询并写好 SQL 注释。
-- 避免在 Mapper 中编写动态字符串拼接的 SQL，优先使用 MyBatis-Plus 提供的 Wrapper 或注解参数化查询。
+- 避免在 Mapper 中编写动态字符串拼接的 SQL，优先使用 MyBatis-Flex 提供的 Wrapper 或注解参数化查询。
 
 ---
 
@@ -154,7 +153,7 @@ Mapper 生成约定：
 - 密码字段：实体/DTO 中密码字段必须标注 `@JsonIgnore`，并尽量在 DTO 层不返回密码字段。
 - 敏感信息脱敏：对输出（日志/接口响应）中包含的敏感信息（手机号、身份证号、邮箱等）进行脱敏处理（公用工具 `commons` 中应提供脱敏方法）。
 - 输入校验：所有外部接口入参必须进行校验（`@Valid` + `@NotNull/@NotBlank/@Size` 等）。
-- SQL 安全：严禁字符串拼接形成 SQL；所有 SQL 使用参数化查询（MyBatis-Plus wrapper/API 或注解方式）。
+- SQL 安全：严禁字符串拼接形成 SQL；所有 SQL 使用参数化查询（MyBatis-Flex wrapper/API 或注解方式）。
 - JWT：Token 验证应在过滤器/拦截器层进行，控制器方法只聚焦业务逻辑并声明必要权限注解（如 `@PreAuthorize`）。
 - 日志安全：禁止将完整 Token、密码或敏感字段写入日志；对异常栈中的敏感信息做脱敏。
 - 依赖安全：CI 中集成 SCA（如 OWASP Dependency-Check），发现高危依赖必须阻断合并。

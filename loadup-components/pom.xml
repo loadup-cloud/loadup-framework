@@ -25,7 +25,6 @@
         <module>loadup-components-testcontainers</module>
         <module>loadup-components-authorization</module>
         <module>loadup-components-tracer</module>
-        <module>loadup-components-web</module>
 
 
     </modules>

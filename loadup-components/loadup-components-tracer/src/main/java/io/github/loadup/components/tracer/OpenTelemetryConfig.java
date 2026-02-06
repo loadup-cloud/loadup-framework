@@ -32,7 +32,9 @@ import io.opentelemetry.api.trace.*;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
-import io.opentelemetry.exporter.logging.*;
+import io.opentelemetry.exporter.logging.LoggingMetricExporter;
+import io.opentelemetry.exporter.logging.LoggingSpanExporter;
+import io.opentelemetry.exporter.logging.SystemOutLogRecordExporter;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.logs.SdkLoggerProvider;
@@ -43,8 +45,7 @@ import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
-import java.util.Arrays;
-import java.util.List;
+import io.opentelemetry.sdk.trace.samplers.Sampler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,6 +53,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -65,45 +71,176 @@ public class OpenTelemetryConfig {
 
     @Bean
     public OpenTelemetry openTelemetry() {
-        LoggingSpanExporter logExporter = LoggingSpanExporter.create();
-        SpanExporter spanExporter = logExporter;
+        // Create resource with service name and custom attributes
+        var resourceBuilder = Resource.getDefault().toBuilder()
+            .put(AttributeKey.stringKey("service.name"), applicationName)
+            .put(AttributeKey.stringKey("service.version"), "1.0.0");
 
-        // Configure OTLP exporter if endpoint is provided
-        if (StringUtils.hasText(tracerProperties.getOtlpEndpoint())) {
-            OtlpGrpcSpanExporter otlpGrpcSpanExporter = OtlpGrpcSpanExporter.builder()
-                    .setEndpoint(tracerProperties.getOtlpEndpoint())
-                    .build();
-            spanExporter = SpanExporter.composite(logExporter, otlpGrpcSpanExporter);
-        }
+        // Add custom resource attributes
+        tracerProperties.getResource().getAttributes().forEach((key, value) ->
+            resourceBuilder.put(AttributeKey.stringKey(key), value)
+        );
+        Resource resource = resourceBuilder.build();
 
-        // Create resource with service name and version
-        Resource resource = Resource.getDefault().toBuilder()
-                .put(AttributeKey.stringKey("service.name"), applicationName)
-                .put(AttributeKey.stringKey("service.version"), "1.0.0")
-                .build();
+        // Build span exporters from configuration
+        List<SpanExporter> spanExporters = buildSpanExporters();
+        SpanExporter compositeExporter = spanExporters.isEmpty()
+            ? LoggingSpanExporter.create()
+            : SpanExporter.composite(spanExporters);
 
-        SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
-                .setResource(resource)
-                .addSpanProcessor(BatchSpanProcessor.builder(spanExporter).build())
-                .build();
+        // Create tracer provider with sampler and batch processor
+        var batchConfig = tracerProperties.getBatchProcessor();
+        var tracerBuilder = SdkTracerProvider.builder()
+            .setResource(resource)
+            .setSampler(buildSampler())
+            .addSpanProcessor(BatchSpanProcessor.builder(compositeExporter)
+                .setMaxQueueSize(batchConfig.getMaxQueueSize())
+                .setMaxExportBatchSize(batchConfig.getMaxExportBatchSize())
+                .setScheduleDelay(Duration.ofMillis(batchConfig.getScheduleDelayMillis()))
+                .setExporterTimeout(Duration.ofMillis(batchConfig.getExportTimeoutMillis()))
+                .build());
 
+        SdkTracerProvider sdkTracerProvider = tracerBuilder.build();
+
+        // Meter and Logger providers
         SdkMeterProvider sdkMeterProvider = SdkMeterProvider.builder()
-                .registerMetricReader(PeriodicMetricReader.builder(LoggingMetricExporter.create())
-                        .build())
-                .build();
+            .setResource(resource)
+            .registerMetricReader(PeriodicMetricReader.builder(LoggingMetricExporter.create())
+                .build())
+            .build();
 
         SdkLoggerProvider sdkLoggerProvider = SdkLoggerProvider.builder()
-                .addLogRecordProcessor(BatchLogRecordProcessor.builder(SystemOutLogRecordExporter.create())
-                        .build())
-                .build();
+            .setResource(resource)
+            .addLogRecordProcessor(BatchLogRecordProcessor.builder(SystemOutLogRecordExporter.create())
+                .build())
+            .build();
 
         return OpenTelemetrySdk.builder()
-                .setTracerProvider(sdkTracerProvider)
-                .setMeterProvider(sdkMeterProvider)
-                .setLoggerProvider(sdkLoggerProvider)
-                .setPropagators(ContextPropagators.create(TextMapPropagator.composite(
-                        W3CTraceContextPropagator.getInstance(), W3CBaggagePropagator.getInstance())))
-                .build();
+            .setTracerProvider(sdkTracerProvider)
+            .setMeterProvider(sdkMeterProvider)
+            .setLoggerProvider(sdkLoggerProvider)
+            .setPropagators(ContextPropagators.create(TextMapPropagator.composite(
+                W3CTraceContextPropagator.getInstance(),
+                W3CBaggagePropagator.getInstance())))
+            .build();
+    }
+
+    /**
+     * Build span exporters based on configuration.
+     */
+    private List<SpanExporter> buildSpanExporters() {
+        List<SpanExporter> exporters = new ArrayList<>();
+
+        for (TracerProperties.ExporterConfig config : tracerProperties.getExporters()) {
+            try {
+                SpanExporter exporter = createExporter(config);
+                if (exporter != null) {
+                    exporters.add(exporter);
+                }
+            } catch (Exception e) {
+                // Log error but continue with other exporters
+                System.err.println("Failed to create exporter: " + config.getType() + ", error: " + e.getMessage());
+            }
+        }
+
+        // If no exporters configured, add logging exporter for development
+        if (exporters.isEmpty()) {
+            exporters.add(LoggingSpanExporter.create());
+        }
+
+        return exporters;
+    }
+
+    /**
+     * Create span exporter based on type.
+     */
+    private SpanExporter createExporter(TracerProperties.ExporterConfig config) {
+        return switch (config.getType()) {
+            case OTLP -> createOtlpExporter(config);
+            case SKYWALKING -> createSkyWalkingExporter(config);
+            case ZIPKIN -> createZipkinExporter(config);
+            case LOGGING -> LoggingSpanExporter.create();
+        };
+    }
+
+    /**
+     * Create OTLP exporter (gRPC or HTTP).
+     */
+    private SpanExporter createOtlpExporter(TracerProperties.ExporterConfig config) {
+        if (!StringUtils.hasText(config.getEndpoint())) {
+            throw new IllegalArgumentException("OTLP endpoint is required");
+        }
+
+        var builder = OtlpGrpcSpanExporter.builder()
+            .setEndpoint(config.getEndpoint())
+            .setTimeout(Duration.ofSeconds(config.getTimeout()));
+
+        // Add custom headers
+        if (config.getHeaders() != null && !config.getHeaders().isEmpty()) {
+            config.getHeaders().forEach((key, value) ->
+                builder.addHeader(key, value));
+        }
+
+        return builder.build();
+    }
+
+    /**
+     * Create SkyWalking exporter.
+     * Note: SkyWalking 9.x+ supports OTLP protocol.
+     */
+    private SpanExporter createSkyWalkingExporter(TracerProperties.ExporterConfig config) {
+        String oapServer = StringUtils.hasText(config.getOapServer())
+            ? config.getOapServer()
+            : config.getEndpoint();
+
+        if (!StringUtils.hasText(oapServer)) {
+            throw new IllegalArgumentException("SkyWalking OAP server endpoint is required");
+        }
+
+        // Use OTLP exporter pointing to SkyWalking OAP receiver
+        var builder = OtlpGrpcSpanExporter.builder()
+            .setEndpoint(oapServer)
+            .setTimeout(Duration.ofSeconds(config.getTimeout()));
+
+        // Add authentication header if provided
+        if (StringUtils.hasText(config.getAuthentication())) {
+            builder.addHeader("Authentication", config.getAuthentication());
+        }
+
+        return builder.build();
+    }
+
+    /**
+     * Create Zipkin exporter.
+     * TODO: Add actual Zipkin exporter when opentelemetry-exporter-zipkin dependency is added.
+     */
+    private SpanExporter createZipkinExporter(TracerProperties.ExporterConfig config) {
+        if (!StringUtils.hasText(config.getEndpoint())) {
+            throw new IllegalArgumentException("Zipkin endpoint is required");
+        }
+
+        // For now, use OTLP as placeholder
+        return OtlpGrpcSpanExporter.builder()
+            .setEndpoint(config.getEndpoint())
+            .setTimeout(Duration.ofSeconds(config.getTimeout()))
+            .build();
+    }
+
+    /**
+     * Build sampler based on configuration.
+     */
+    private Sampler buildSampler() {
+        var samplerConfig = tracerProperties.getSampler();
+
+        return switch (samplerConfig.getType()) {
+            case ALWAYS_ON -> Sampler.alwaysOn();
+            case ALWAYS_OFF -> Sampler.alwaysOff();
+            case PROBABILISTIC -> Sampler.traceIdRatioBased(
+                samplerConfig.getProbability());
+            case PARENT_BASED -> Sampler.parentBased(
+                Sampler.traceIdRatioBased(
+                    samplerConfig.getProbability()));
+        };
     }
 
     @Bean
@@ -118,16 +255,11 @@ public class OpenTelemetryConfig {
 
     /**
      * Integrate Micrometer MeterRegistry with OpenTelemetry if available.
-     *
-     * @param meterRegistry Optional MeterRegistry from Micrometer
-     * @param openTelemetry OpenTelemetry instance
      */
     @Bean
     public MeterRegistryIntegration meterRegistryIntegration(
-            @Autowired(required = false) MeterRegistry meterRegistry, OpenTelemetry openTelemetry) {
+        @Autowired(required = false) MeterRegistry meterRegistry, OpenTelemetry openTelemetry) {
         if (meterRegistry != null) {
-            // MeterRegistry is available, metrics will be collected through Micrometer
-            // OpenTelemetry metrics can coexist with Micrometer
             return new MeterRegistryIntegration(meterRegistry);
         }
         return new MeterRegistryIntegration(null);
@@ -135,7 +267,6 @@ public class OpenTelemetryConfig {
 
     @Bean
     public ContextPropagators contextPropagators() {
-        // return ContextPropagators.create(W3CTraceContextPropagator.getInstance());
         return ContextPropagators.create(new CustomTextMapPropagator());
     }
 
@@ -144,6 +275,9 @@ public class OpenTelemetryConfig {
         return propagators.getTextMapPropagator();
     }
 
+    /**
+     * Custom TextMapPropagator that supports both W3C TraceContext and custom traceId header.
+     */
     static class CustomTextMapPropagator implements TextMapPropagator {
 
         private static final String CUSTOM_TRACE_HEADER = "traceId";
@@ -152,10 +286,9 @@ public class OpenTelemetryConfig {
         @Override
         @SuppressWarnings("unchecked")
         public void inject(
-                io.opentelemetry.context.Context context,
-                Object carrier,
-                io.opentelemetry.context.propagation.TextMapSetter setter) {
-            // w3cPropagator.inject(context, carrier, setter);
+            io.opentelemetry.context.Context context,
+            Object carrier,
+            io.opentelemetry.context.propagation.TextMapSetter setter) {
             SpanContext spanContext = Span.fromContext(context).getSpanContext();
             if (spanContext.isValid()) {
                 setter.set(carrier, CUSTOM_TRACE_HEADER, spanContext.getTraceId());
@@ -166,10 +299,9 @@ public class OpenTelemetryConfig {
         @Override
         @SuppressWarnings("unchecked")
         public io.opentelemetry.context.Context extract(
-                io.opentelemetry.context.Context context,
-                Object carrier,
-                io.opentelemetry.context.propagation.TextMapGetter getter) {
-            // return w3cPropagator.extract(context, carrier, getter);
+            io.opentelemetry.context.Context context,
+            Object carrier,
+            io.opentelemetry.context.propagation.TextMapGetter getter) {
             io.opentelemetry.context.Context w3cContext = w3cPropagator.extract(context, carrier, getter);
             if (w3cContext != context) {
                 return w3cContext;
@@ -178,13 +310,13 @@ public class OpenTelemetryConfig {
             String traceId = getter.get(carrier, CUSTOM_TRACE_HEADER);
             if (traceId != null && traceId.length() == 32) {
                 SpanContext spanContext = SpanContext.create(
-                        traceId,
-                        "0000000000000000", // Dummy spanId, 不使用
-                        TraceFlags.getSampled(),
-                        TraceState.getDefault());
+                    traceId,
+                    "0000000000000000",
+                    TraceFlags.getSampled(),
+                    TraceState.getDefault());
                 return context.with(Span.wrap(spanContext));
             }
-            return context; // 如果没有 traceId 或不合法, 则返回 context
+            return context;
         }
 
         @Override
@@ -193,7 +325,9 @@ public class OpenTelemetryConfig {
         }
     }
 
-    /** Integration class for MeterRegistry with OpenTelemetry */
+    /**
+     * Integration class for MeterRegistry with OpenTelemetry
+     */
     static class MeterRegistryIntegration {
         private final MeterRegistry meterRegistry;
 
@@ -206,3 +340,5 @@ public class OpenTelemetryConfig {
         }
     }
 }
+
+

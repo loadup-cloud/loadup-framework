@@ -32,13 +32,14 @@ import io.github.loadup.gateway.core.template.TemplateEngine;
 import io.github.loadup.gateway.facade.config.GatewayProperties;
 import io.github.loadup.gateway.facade.spi.ProxyProcessor;
 import io.github.loadup.gateway.facade.spi.RepositoryPlugin;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,7 +47,6 @@ import java.util.List;
  */
 @Configuration
 @EnableConfigurationProperties(GatewayProperties.class)
-// @ConditionalOnClass(GatewayFilter.class)
 @ComponentScan(basePackages = "io.github.loadup.gateway")
 public class GatewayAutoConfiguration {
 
@@ -119,16 +119,25 @@ public class GatewayAutoConfiguration {
         RequestTemplateAction requestTemplateAction,
         ResponseWrapperAction responseWrapperAction,
         ResponseTemplateAction responseTemplateAction,
-        ProxyAction proxyAction) {
-        List<GatewayAction> actionChain = Arrays.asList(
-            exceptionAction, // 0. 异常
-            routeAction, // 1. 寻址
-            securityAction, // 2. 安全检查
-            requestTemplateAction, // 3. 处理请求参数
-            proxyAction, // 4. 处于最内层，发送请求
-            responseTemplateAction, // 5.  转换结果
-            responseWrapperAction // 6.  包装结果
-        );
+        ProxyAction proxyAction,
+        @Autowired(required = false) TracingAction tracingAction) {
+
+        // Build action chain dynamically with optional TracingAction
+        List<GatewayAction> actionChain = new ArrayList<>();
+        actionChain.add(exceptionAction);       // 0. 异常处理
+
+        // Add TracingAction if available (should be early in chain)
+        if (tracingAction != null) {
+            actionChain.add(tracingAction);     // 1. 分布式追踪
+        }
+
+        actionChain.add(routeAction);            // 2. 路由寻址
+        actionChain.add(securityAction);         // 3. 安全检查
+        actionChain.add(requestTemplateAction);  // 4. 处理请求参数
+        actionChain.add(proxyAction);            // 5. 发送请求（最内层）
+        actionChain.add(responseTemplateAction); // 6. 转换结果
+        actionChain.add(responseWrapperAction);  // 7. 包装结果
+
         return new ActionDispatcher(actionChain);
     }
 
