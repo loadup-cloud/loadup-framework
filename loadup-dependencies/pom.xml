@@ -82,7 +82,7 @@
         <commons.csv.version>1.10.0</commons.csv.version>
         <testcontainers.version>2.0.3</testcontainers.version>
         <commons-codec.version>1.17.2</commons-codec.version>
-        <liquibase.version>4.29.2</liquibase.version>
+        <flyway.version>12.0.0</flyway.version>
         <lombok.version>1.18.36</lombok.version>
         <jjtw.version>0.12.3</jjtw.version>
         <skipUTs>false</skipUTs>
@@ -530,7 +530,7 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-liquibase</artifactId>
+                <artifactId>loadup-components-flyway</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>

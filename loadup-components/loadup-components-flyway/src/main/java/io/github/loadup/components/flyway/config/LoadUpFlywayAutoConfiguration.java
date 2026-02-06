@@ -1,0 +1,165 @@
+/*
+ * Copyright (c) 2026 LoadUp Framework
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.github.loadup.components.flyway.config;
+
+import lombok.extern.slf4j.Slf4j;
+import org.flywaydb.core.Flyway;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import javax.sql.DataSource;
+
+/**
+ * Auto-configuration for Flyway database migrations.
+ *
+ * <p>This configuration provides enhanced Flyway integration for LoadUp Framework,
+ * building on top of Spring Boot's default Flyway support.
+ *
+ * <p>Features:
+ * <ul>
+ *   <li>Additional configuration properties under loadup.flyway prefix</li>
+ *   <li>Automatic migration on startup (configurable)</li>
+ *   <li>Support for placeholders and custom SQL initialization</li>
+ * </ul>
+ *
+ * <p>Configuration example:
+ * <pre>
+ * loadup:
+ *   flyway:
+ *     enabled: true
+ *     locations: classpath:db/migration
+ *     baseline-on-migrate: true
+ * </pre>
+ *
+ * @author LoadUp Framework
+ * @since 1.0.0
+ */
+@Slf4j
+@AutoConfiguration(before = FlywayAutoConfiguration.class)
+@ConditionalOnClass(Flyway.class)
+@ConditionalOnProperty(prefix = "loadup.flyway", name = "enabled", havingValue = "true", matchIfMissing = true)
+@EnableConfigurationProperties(FlywayProperties.class)
+public class LoadUpFlywayAutoConfiguration {
+
+    /**
+     * Configure Flyway with LoadUp-specific properties.
+     *
+     * <p>This customizer runs before Spring Boot's default Flyway configuration,
+     * allowing us to apply custom settings from loadup.flyway.* properties.
+     *
+     * @param properties LoadUp Flyway properties
+     * @return Flyway configuration customizer
+     */
+    @Bean
+    public org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer loadupFlywayConfigurationCustomizer(
+            FlywayProperties properties) {
+
+        return configuration -> {
+            log.info(">>> [FLYWAY] Configuring Flyway with LoadUp properties");
+
+            // Locations
+            if (properties.getLocations() != null && properties.getLocations().length > 0) {
+                configuration.locations(properties.getLocations());
+                log.debug(">>> [FLYWAY] Migration locations: {}", (Object) properties.getLocations());
+            }
+
+            // Baseline configuration
+            configuration.baselineOnMigrate(properties.isBaselineOnMigrate());
+            configuration.baselineVersion(properties.getBaselineVersion());
+            configuration.baselineDescription(properties.getBaselineDescription());
+
+            // Validation
+            configuration.validateOnMigrate(properties.isValidateOnMigrate());
+
+            // Clean (should be disabled in production)
+            configuration.cleanDisabled(properties.isCleanDisabled());
+
+            // Encoding
+            if (properties.getEncoding() != null) {
+                configuration.encoding(java.nio.charset.Charset.forName(properties.getEncoding()));
+            }
+
+            // Placeholders
+            if (properties.getPlaceholders() != null && !properties.getPlaceholders().isEmpty()) {
+                configuration.placeholders(properties.getPlaceholders());
+                configuration.placeholderReplacement(properties.isPlaceholderReplacement());
+                if (properties.getPlaceholderPrefix() != null) {
+                    configuration.placeholderPrefix(properties.getPlaceholderPrefix());
+                }
+                if (properties.getPlaceholderSuffix() != null) {
+                    configuration.placeholderSuffix(properties.getPlaceholderSuffix());
+                }
+            }
+
+            // Init SQLs
+            if (properties.getInitSqls() != null && properties.getInitSqls().length > 0) {
+                configuration.initSql(String.join(";", properties.getInitSqls()));
+            }
+
+            // Target version
+            if (properties.getTarget() != null) {
+                configuration.target(org.flywaydb.core.api.MigrationVersion.fromVersion(properties.getTarget()));
+            }
+
+            log.info(">>> [FLYWAY] Configuration completed");
+        };
+    }
+
+    /**
+     * Configuration for migration execution on startup.
+     */
+    @Configuration
+    @ConditionalOnProperty(prefix = "loadup.flyway", name = "migrate-at-start", havingValue = "true", matchIfMissing = true)
+    static class FlywayMigrationConfiguration {
+
+        /**
+         * Execute Flyway migration on application startup.
+         *
+         * @param flyway Flyway instance
+         * @param dataSource DataSource
+         */
+        @Bean
+        public FlywayMigrationInitializer flywayMigrationInitializer(
+                Flyway flyway,
+                DataSource dataSource) {
+
+            log.info(">>> [FLYWAY] Executing database migrations on startup");
+            return new FlywayMigrationInitializer(flyway);
+        }
+    }
+
+    /**
+     * Initializer that triggers Flyway migration.
+     */
+    static class FlywayMigrationInitializer {
+
+        public FlywayMigrationInitializer(Flyway flyway) {
+            try {
+                log.info(">>> [FLYWAY] Starting migration...");
+                int migrationsApplied = flyway.migrate().migrationsExecuted;
+                log.info(">>> [FLYWAY] Migration completed. {} migrations applied", migrationsApplied);
+            } catch (Exception e) {
+                log.error(">>> [FLYWAY] Migration failed: {}", e.getMessage(), e);
+                throw new RuntimeException("Flyway migration failed", e);
+            }
+        }
+    }
+}

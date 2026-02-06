@@ -19,13 +19,14 @@
         <module>loadup-components-database</module>
         <module>loadup-components-dfs</module>
         <module>loadup-components-extension</module>
+        <module>loadup-components-flyway</module>
         <module>loadup-components-gotone</module>
-        <module>loadup-components-liquibase</module>
         <module>loadup-components-scheduler</module>
-        <module>loadup-components-tracer</module>
-        <module>loadup-components-web</module>
         <module>loadup-components-testcontainers</module>
         <module>loadup-components-authorization</module>
+        <module>loadup-components-tracer</module>
+        <module>loadup-components-web</module>
+
 
     </modules>
 
