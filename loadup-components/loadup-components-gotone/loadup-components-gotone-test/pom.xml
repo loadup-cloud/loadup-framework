@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -15,11 +16,19 @@
     <name>Loadup Gotone Test</name>
     <description>Gotone Gotone Test</description>
 
+    <properties>
+        <!-- Skip Spotless for aggregator POM - no source code -->
+        <skip.spotless>true</skip.spotless>
+        <skip.deploy>true</skip.deploy>
+    </properties>
+
     <dependencies>
         <!-- Gotone API -->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-gotone-starter</artifactId>
+            <version>${loadup.framework.version}</version>
+
             <scope>test</scope>
         </dependency>
 
@@ -27,6 +36,7 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-gotone-channel-sms</artifactId>
+            <version>${loadup.framework.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -34,6 +44,7 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-gotone-channel-email</artifactId>
+            <version>${loadup.framework.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -41,6 +52,7 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-gotone-channel-push</artifactId>
+            <version>${loadup.framework.version}</version>
             <scope>test</scope>
         </dependency>
 

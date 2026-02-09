@@ -2,7 +2,7 @@ package io.github.loadup.components.gotone.binder.email;
 
 /*-
  * #%L
- * loadup-components-gotone-binder-email
+ * loadup-components-gotone-channel-email
  * %%
  * Copyright (C) 2026 LoadUp Cloud
  * %%
@@ -22,37 +22,44 @@ package io.github.loadup.components.gotone.binder.email;
  * #L%
  */
 
-import io.github.loadup.components.extension.annotation.Extension;
-import io.github.loadup.components.gotone.api.INotificationProvider;
+import io.github.loadup.components.gotone.api.NotificationChannelProvider;
+import io.github.loadup.components.gotone.enums.NotificationChannel;
 import io.github.loadup.components.gotone.enums.NotificationStatus;
-import io.github.loadup.components.gotone.model.NotificationRequest;
+import io.github.loadup.components.gotone.model.ChannelSendRequest;
+import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import io.github.loadup.components.gotone.model.NotificationResponse;
 import jakarta.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Component;
 
-/** SMTP 邮件提供商实现 */
+/** SMTP Email Channel Provider */
 @Slf4j
-@Component
-@Extension(bizCode = "EMAIL", useCase = "smtp")
-public class SmtpEmailProvider implements INotificationProvider {
+@RequiredArgsConstructor
+public class SmtpEmailProvider implements NotificationChannelProvider {
 
-    @Autowired(required = false)
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
-    @Value("${spring.mail.username:}")
+    @Value("${spring.mail.username:noreply@example.com}")
     private String fromEmail;
 
     @Override
-    public NotificationResponse send(NotificationRequest request) {
+    public NotificationChannel getChannel() {
+        return NotificationChannel.EMAIL;
+    }
+
+    @Override
+    public ChannelSendResponse send(ChannelSendRequest request) {
+
+
         if (mailSender == null) {
-            return buildErrorResponse(request, "JavaMailSender not configured");
+            return buildErrorResponse("JavaMailSender not configured");
         }
 
         try {
@@ -60,32 +67,21 @@ public class SmtpEmailProvider implements INotificationProvider {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setFrom(fromEmail);
-            helper.setTo(request.getAddressList().toArray(new String[0]));
-            helper.setSubject(request.getTitle() != null ? request.getTitle() : "Notification");
+            helper.setTo(request.getReceivers().toArray(new String[0]));
+            helper.setSubject(request.getContent() != null ? request.getContent() : "Notification");
             helper.setText(request.getContent(), true);
 
             mailSender.send(message);
 
-            log.info("Email sent successfully via SMTP to: {}", request.getAddressList());
+            log.info(">>> [GOTONE] Email sent successfully via SMTP to: {}", request.getReceivers());
 
-            return NotificationResponse.builder()
-                    .success(true)
-                    .status(NotificationStatus.SUCCESS)
-                    .bizId(request.getBizId())
-                    .messageId(UUID.randomUUID().toString())
-                    .provider(getProviderName())
-                    .sendTime(LocalDateTime.now())
-                    .build();
+            return ChannelSendResponse.builder()
+                   .build();
 
         } catch (Exception e) {
-            log.error("Failed to send email via SMTP: {}", e.getMessage(), e);
-            return buildErrorResponse(request, e.getMessage());
+            log.error(">>> [GOTONE] Failed to send email via SMTP", e);
+            return buildErrorResponse(e.getMessage());
         }
-    }
-
-    @Override
-    public String getProviderName() {
-        return "smtp";
     }
 
     @Override
@@ -93,14 +89,13 @@ public class SmtpEmailProvider implements INotificationProvider {
         return mailSender != null;
     }
 
-    private NotificationResponse buildErrorResponse(NotificationRequest request, String errorMessage) {
-        return NotificationResponse.builder()
-                .success(false)
-                .status(NotificationStatus.FAILED)
-                .bizId(request.getBizId())
-                .provider(getProviderName())
-                .errorMessage(errorMessage)
-                .sendTime(LocalDateTime.now())
-                .build();
+    @Override
+    public String getProviderName() {
+        return "smtp";
+    }
+
+    private ChannelSendResponse buildErrorResponse(String errorMessage) {
+        return ChannelSendResponse.builder()
+               .build();
     }
 }

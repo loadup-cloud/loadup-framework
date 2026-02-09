@@ -34,7 +34,7 @@ import lombok.Setter;
 public class NotificationRecord extends BaseDomain {
     private String id;
     private String traceId;
-    private String businessCode;
+    private String bizCode;
     private String bizId;
     private String messageId;
     private String channel;

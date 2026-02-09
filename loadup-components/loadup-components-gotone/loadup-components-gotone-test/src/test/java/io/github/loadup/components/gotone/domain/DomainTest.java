@@ -114,7 +114,7 @@ class DomainTest {
         // When
         record.setId("1");
         record.setTraceId("trace-001");
-        record.setBusinessCode("ORDER_CONFIRM");
+        record.setBizCode("ORDER_CONFIRM");
         record.setBizId("biz-001");
         record.setMessageId("msg-001");
         record.setChannel("SMS");
@@ -132,7 +132,7 @@ class DomainTest {
         // Then
         assertThat(record.getId()).isEqualTo("1");
         assertThat(record.getTraceId()).isEqualTo("trace-001");
-        assertThat(record.getBusinessCode()).isEqualTo("ORDER_CONFIRM");
+        assertThat(record.getBizCode()).isEqualTo("ORDER_CONFIRM");
         assertThat(record.getBizId()).isEqualTo("biz-001");
         assertThat(record.getMessageId()).isEqualTo("msg-001");
         assertThat(record.getChannel()).isEqualTo("SMS");

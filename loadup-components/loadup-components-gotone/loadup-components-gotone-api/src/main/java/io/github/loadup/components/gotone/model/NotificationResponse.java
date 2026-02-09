@@ -22,39 +22,68 @@ package io.github.loadup.components.gotone.model;
  * #L%
  */
 
-import io.github.loadup.components.gotone.enums.NotificationStatus;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 
-/** 通知响应 */
+/**
+ * 通知发送响应
+ */
 @Data
 @Builder
 public class NotificationResponse implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
-    /** 是否成功 */
+    /** 追踪ID（批量发送使用同一个traceId） */
+    private String traceId;
+
+    /** 服务代码 */
+    private String serviceCode;
+
+    /** 总收件人数 */
+    private Integer totalReceivers;
+
+    /** 各渠道发送结果 */
+    private List<ChannelSendResult> channelResults;
+
+    /** 是否成功（至少一个渠道发送成功） */
     private Boolean success;
 
-    /** 状态 */
-    private NotificationStatus status;
-
-    /** 消息ID */
-    private String messageId;
-
-    /** 业务ID */
-    private String bizId;
-
-    /** 提供商 */
-    private String provider;
-
-    /** 错误信息 */
+    /** 错误信息（如果全部失败） */
     private String errorMessage;
 
-    /** 发送时间 */
-    private LocalDateTime sendTime;
+    /**
+     * 渠道发送结果
+     */
+    @Data
+    @Builder
+    public static class ChannelSendResult implements Serializable {
 
-    /** 响应数据 */
-    private Object responseData;
+        private static final long serialVersionUID = 1L;
+
+        /** 渠道：EMAIL/SMS/PUSH */
+        private String channel;
+
+        /** 使用的提供商 */
+        private String provider;
+
+        /** 总收件人数 */
+        private Integer totalReceivers;
+
+        /** 成功数 */
+        private Integer successCount;
+
+        /** 失败数 */
+        private Integer failedCount;
+
+        /** 是否成功 */
+        private Boolean success;
+
+        /** 错误信息 */
+        private String errorMessage;
+    }
 }
+
+

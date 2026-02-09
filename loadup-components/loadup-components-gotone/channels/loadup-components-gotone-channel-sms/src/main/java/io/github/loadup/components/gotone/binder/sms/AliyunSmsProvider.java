@@ -2,7 +2,7 @@ package io.github.loadup.components.gotone.binder.sms;
 
 /*-
  * #%L
- * loadup-components-gotone-binder-sms
+ * loadup-components-gotone-channel-sms
  * %%
  * Copyright (C) 2026 LoadUp Cloud
  * %%
@@ -22,22 +22,22 @@ package io.github.loadup.components.gotone.binder.sms;
  * #L%
  */
 
-import io.github.loadup.components.extension.annotation.Extension;
-import io.github.loadup.components.gotone.api.INotificationProvider;
+import io.github.loadup.components.gotone.api.NotificationChannelProvider;
+import io.github.loadup.components.gotone.enums.NotificationChannel;
 import io.github.loadup.components.gotone.enums.NotificationStatus;
-import io.github.loadup.components.gotone.model.NotificationRequest;
+import io.github.loadup.components.gotone.model.ChannelSendRequest;
+import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import io.github.loadup.components.gotone.model.NotificationResponse;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
-/** 阿里云短信提供商实现 这是一个示例实现，实际使用需要集成阿里云 SDK */
+/** Aliyun SMS Channel Provider (示例实现，需要集成阿里云 SDK) */
 @Slf4j
-@Component
-@Extension(bizCode = "SMS", useCase = "aliyun")
-public class AliyunSmsProvider implements INotificationProvider {
+public class AliyunSmsProvider implements NotificationChannelProvider {
 
     @Value("${loadup.gotone.sms.aliyun.access-key-id:}")
     private String accessKeyId;
@@ -49,38 +49,24 @@ public class AliyunSmsProvider implements INotificationProvider {
     private String signName;
 
     @Override
-    public NotificationResponse send(NotificationRequest request) {
-        try {
-            // TODO: 集成阿里云短信 SDK
-            // DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId,
-            // accessKeySecret);
-            // IAcsClient client = new DefaultAcsClient(profile);
-            // SendSmsRequest smsRequest = new SendSmsRequest();
-            // ...
+    public NotificationChannel getChannel() {
+        return NotificationChannel.SMS;
+    }
+    @Override
+    public ChannelSendResponse send(ChannelSendRequest request) {
 
-            log.info("Sending SMS via Aliyun to: {}", request.getAddressList());
+        try {
+            // TODO: 集成阿里云 SMS SDK
+            log.info(">>> [GOTONE] Sending SMS via Aliyun to: {}, content: {}", request.getReceivers(), request.getContent());
 
             // 模拟发送
-            simulateSend(request);
-
-            return NotificationResponse.builder()
-                    .success(true)
-                    .status(NotificationStatus.SUCCESS)
-                    .bizId(request.getBizId())
-                    .messageId(UUID.randomUUID().toString())
-                    .provider(getProviderName())
-                    .sendTime(LocalDateTime.now())
-                    .build();
+            return ChannelSendResponse.builder()
+                   .build();
 
         } catch (Exception e) {
-            log.error("Failed to send SMS via Aliyun: {}", e.getMessage(), e);
-            return buildErrorResponse(request, e.getMessage());
+            log.error(">>> [GOTONE] Failed to send SMS via Aliyun", e);
+            return buildErrorResponse(e.getMessage());
         }
-    }
-
-    @Override
-    public String getProviderName() {
-        return "aliyun";
     }
 
     @Override
@@ -88,19 +74,15 @@ public class AliyunSmsProvider implements INotificationProvider {
         return accessKeyId != null && !accessKeyId.isEmpty();
     }
 
-    private void simulateSend(NotificationRequest request) {
-        log.info("SMS Content: {}", request.getContent());
-        log.info("SMS Receivers: {}", request.getAddressList());
+    @Override
+    public String getProviderName() {
+        return "aliyun";
     }
 
-    private NotificationResponse buildErrorResponse(NotificationRequest request, String errorMessage) {
-        return NotificationResponse.builder()
-                .success(false)
-                .status(NotificationStatus.FAILED)
-                .bizId(request.getBizId())
-                .provider(getProviderName())
-                .errorMessage(errorMessage)
-                .sendTime(LocalDateTime.now())
-                .build();
+
+
+    private ChannelSendResponse buildErrorResponse(String errorMessage) {
+        return ChannelSendResponse.builder()
+               .build();
     }
 }

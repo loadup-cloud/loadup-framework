@@ -23,11 +23,16 @@ package io.github.loadup.components.gotone.binder.push;
  */
 
 import io.github.loadup.components.extension.annotation.Extension;
-import io.github.loadup.components.gotone.api.INotificationProvider;
+import io.github.loadup.components.gotone.api.NotificationChannelProvider;
+import io.github.loadup.components.gotone.enums.NotificationChannel;
 import io.github.loadup.components.gotone.enums.NotificationStatus;
+import io.github.loadup.components.gotone.model.ChannelSendRequest;
+import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import io.github.loadup.components.gotone.model.NotificationRequest;
 import io.github.loadup.components.gotone.model.NotificationResponse;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,13 +42,12 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @Extension(bizCode = "PUSH", useCase = "fcm")
-public class FcmPushProvider implements INotificationProvider {
+public class FcmPushProvider implements NotificationChannelProvider {
 
     @Value("${loadup.gotone.push.fcm.server-key:}")
     private String serverKey;
 
-    @Override
-    public NotificationResponse send(NotificationRequest request) {
+    public ChannelSendResponse send(ChannelSendRequest request) {
         try {
             // TODO: 集成 Firebase Cloud Messaging SDK
             // FirebaseOptions options = FirebaseOptions.builder()
@@ -51,18 +55,12 @@ public class FcmPushProvider implements INotificationProvider {
             //     .build();
             // FirebaseApp.initializeApp(options);
 
-            log.info("Sending push notification via FCM to: {}", request.getAddressList());
+            log.info("Sending push notification via FCM to: {}", request.getReceivers());
 
             // 模拟发送
             simulateSend(request);
 
-            return NotificationResponse.builder()
-                    .success(true)
-                    .status(NotificationStatus.SUCCESS)
-                    .bizId(request.getBizId())
-                    .messageId(UUID.randomUUID().toString())
-                    .provider(getProviderName())
-                    .sendTime(LocalDateTime.now())
+            return ChannelSendResponse.builder()
                     .build();
 
         } catch (Exception e) {
@@ -77,24 +75,23 @@ public class FcmPushProvider implements INotificationProvider {
     }
 
     @Override
+    public NotificationChannel getChannel() {
+        return null;
+    }
+
+
+
+    @Override
     public boolean isAvailable() {
         return serverKey != null && !serverKey.isEmpty();
     }
 
-    private void simulateSend(NotificationRequest request) {
-        log.info("Push Title: {}", request.getTitle());
-        log.info("Push Content: {}", request.getContent());
-        log.info("Push Receivers: {}", request.getAddressList());
+    private void simulateSend(ChannelSendRequest request) {
+        log.info("Push Receivers: {}", request.getReceivers());
     }
 
-    private NotificationResponse buildErrorResponse(NotificationRequest request, String errorMessage) {
-        return NotificationResponse.builder()
-                .success(false)
-                .status(NotificationStatus.FAILED)
-                .bizId(request.getBizId())
-                .provider(getProviderName())
-                .errorMessage(errorMessage)
-                .sendTime(LocalDateTime.now())
+    private ChannelSendResponse buildErrorResponse(ChannelSendRequest request, String errorMessage) {
+        return ChannelSendResponse.builder()
                 .build();
     }
 }

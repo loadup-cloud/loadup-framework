@@ -698,6 +698,11 @@
                 <version>${mybatis.flex.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-core</artifactId>
+                <version>${mybatis.flex.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations-jakarta</artifactId>
                 <version>2.2.19</version>
