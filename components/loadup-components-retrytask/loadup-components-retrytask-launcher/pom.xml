@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+        <parent>
+        <groupId>io.github.loadup-cloud</groupId>
+        <artifactId>loadup-parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>loadup-components-retrytask-launcher</artifactId>
+    <name>Loadup Components Retrytask Launcher</name>
+    <description>Launcher for retry task framework</description>
+    <properties>
+        <java.version>21</java.version>
+        <project.encoding>UTF-8</project.encoding>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <project.build.encoding>${project.encoding}</project.build.encoding>
+        <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
+    </properties>
+    <dependencies>
+        <!-- Only include available facade dependency -->
+        <dependency>
+           <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-retrytask-facade</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Spring Boot Starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+
+
+
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
+           <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-retrytask-strategy</artifactId>
+        </dependency>
+        <dependency>
+           <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-retrytask-core</artifactId>
+        </dependency>
+        <dependency>
+           <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-retrytask-infra</artifactId>
+        </dependency>
+        <dependency>
+           <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-retrytask-starter</artifactId>
+        </dependency>
+    </dependencies>
+</project>

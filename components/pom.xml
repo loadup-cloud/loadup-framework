@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.loadup-cloud</groupId>
+        <artifactId>loadup-parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>components</artifactId>
+    <name>Loadup Components</name>
+    <description>LoadUp Component</description>
+    <packaging>pom</packaging>
+    <modules>
+        <module>loadup-components-cache</module>
+        <module>loadup-components-captcha</module>
+        <module>loadup-components-database</module>
+        <module>loadup-components-dfs</module>
+        <module>loadup-components-extension</module>
+        <module>loadup-components-flyway</module>
+        <module>loadup-components-gotone</module>
+        <module>loadup-components-scheduler</module>
+        <module>loadup-components-testcontainers</module>
+        <module>loadup-components-authorization</module>
+        <module>loadup-components-tracer</module>
+        <module>loadup-components-retrytask</module>
+    </modules>
+
+</project>

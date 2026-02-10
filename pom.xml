@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.loadup-cloud</groupId>
@@ -29,23 +30,10 @@
 
     <modules>
         <module>loadup-dependencies</module>
-        <module>commons/loadup-commons-api</module>
-        <module>commons/loadup-commons-dto</module>
-        <module>commons/loadup-commons-util</module>
-        <module>components/loadup-components-cache</module>
-        <module>components/loadup-components-captcha</module>
-        <module>components/loadup-components-database</module>
-        <module>components/loadup-components-dfs</module>
-        <module>components/loadup-components-extension</module>
-        <module>components/loadup-components-flyway</module>
-        <module>components/loadup-components-gotone</module>
-        <module>components/loadup-components-scheduler</module>
-        <module>components/loadup-components-testcontainers</module>
-        <module>components/loadup-components-authorization</module>
-        <module>components/loadup-components-tracer</module>
-        <module>modules/loadup-modules-upms</module>
-        <module>middleware/loadup-gateway</module>
-        <module>middleware/loadup-testify</module>
+        <module>commons</module>
+        <module>components</module>
+        <module>middleware</module>
+        <module>modules</module>
         <module>loadup-application</module>
     </modules>
 
@@ -164,7 +152,8 @@
                         <jvmArguments>-XX:+UseZGC
                             -XX:+ZGenerational
                             -Xmx512m
-                            -Xms256m</jvmArguments>
+                            -Xms256m
+                        </jvmArguments>
                         <!-- 分层 JAR 支持 -->
                         <layers>
                             <enabled>true</enabled>
@@ -311,7 +300,8 @@
                             <!-- 启用容器复用 -->
                             <testcontainers.reuse.enable>true</testcontainers.reuse.enable>
                             <!-- 禁用 Ryuk（可选，用于快速测试） -->
-                            <testcontainers.ryuk.container.prune.enabled>false</testcontainers.ryuk.container.prune.enabled>
+                            <testcontainers.ryuk.container.prune.enabled>false
+                            </testcontainers.ryuk.container.prune.enabled>
                         </systemPropertyVariables>
                         <!-- 串行执行测试，避免容器冲突 -->
                         <forkCount>1</forkCount>

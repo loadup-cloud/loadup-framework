@@ -22,8 +22,6 @@ package io.github.loadup.modules.upms.infrastructure.gateway;
  * #L%
  */
 
-import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.OPERATION_LOG_DO;
-
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.modules.upms.domain.entity.OperationLog;
@@ -31,14 +29,17 @@ import io.github.loadup.modules.upms.domain.gateway.OperationLogGateway;
 import io.github.loadup.modules.upms.infrastructure.converter.OperationLogConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.OperationLogDO;
 import io.github.loadup.modules.upms.infrastructure.mapper.OperationLogDOMapper;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.OPERATION_LOG_DO;
 
 /**
  * OperationLog Repository Implementation using MyBatis-Flex
@@ -64,7 +65,7 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
     @Override
     public void batchSave(List<OperationLog> logs) {
         List<OperationLogDO> operationLogDOs =
-                logs.stream().map(operationLogConverter::toDataObject).collect(Collectors.toList());
+            logs.stream().map(operationLogConverter::toDataObject).collect(Collectors.toList());
         operationLogDOMapper.insertBatch(operationLogDOs);
     }
 
@@ -77,58 +78,58 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
     @Override
     public org.springframework.data.domain.Page<OperationLog> findByUserId(String userId, Pageable pageable) {
         QueryWrapper query = QueryWrapper.create()
-                .where(OPERATION_LOG_DO.USER_ID.eq(userId))
-                .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
+            .where(OPERATION_LOG_DO.USER_ID.eq(userId))
+            .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
 
         Page<OperationLogDO> page =
-                operationLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+            operationLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
         List<OperationLog> logs =
-                page.getRecords().stream().map(operationLogConverter::toEntity).collect(Collectors.toList());
+            page.getRecords().stream().map(operationLogConverter::toEntity).collect(Collectors.toList());
 
         return new PageImpl<>(logs, pageable, page.getTotalRow());
     }
 
     @Override
     public org.springframework.data.domain.Page<OperationLog> findByOperationType(
-            String operationType, Pageable pageable) {
+        String operationType, Pageable pageable) {
         QueryWrapper query = QueryWrapper.create()
-                .where(OPERATION_LOG_DO.OPERATION_TYPE.eq(operationType))
-                .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
+            .where(OPERATION_LOG_DO.OPERATION_TYPE.eq(operationType))
+            .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
 
         Page<OperationLogDO> page =
-                operationLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+            operationLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
         List<OperationLog> logs =
-                page.getRecords().stream().map(operationLogConverter::toEntity).collect(Collectors.toList());
+            page.getRecords().stream().map(operationLogConverter::toEntity).collect(Collectors.toList());
 
         return new PageImpl<>(logs, pageable, page.getTotalRow());
     }
 
     @Override
     public org.springframework.data.domain.Page<OperationLog> findByDateRange(
-            LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
+        LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
         QueryWrapper query = QueryWrapper.create()
-                .where(OPERATION_LOG_DO.CREATED_AT.between(startTime, endTime))
-                .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
+            .where(OPERATION_LOG_DO.CREATED_AT.between(startTime, endTime))
+            .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
 
         Page<OperationLogDO> page =
-                operationLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+            operationLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
         List<OperationLog> logs =
-                page.getRecords().stream().map(operationLogConverter::toEntity).collect(Collectors.toList());
+            page.getRecords().stream().map(operationLogConverter::toEntity).collect(Collectors.toList());
 
         return new PageImpl<>(logs, pageable, page.getTotalRow());
     }
 
     @Override
     public org.springframework.data.domain.Page<OperationLog> search(
-            String userId,
-            String operationType,
-            String module,
-            LocalDateTime startTime,
-            LocalDateTime endTime,
-            Pageable pageable) {
+        String userId,
+        String operationType,
+        String module,
+        LocalDateTime startTime,
+        LocalDateTime endTime,
+        Pageable pageable) {
         QueryWrapper query = QueryWrapper.create();
 
         if (userId != null) {
@@ -147,10 +148,10 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
         query.orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
 
         Page<OperationLogDO> page =
-                operationLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+            operationLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
         List<OperationLog> logs =
-                page.getRecords().stream().map(operationLogConverter::toEntity).collect(Collectors.toList());
+            page.getRecords().stream().map(operationLogConverter::toEntity).collect(Collectors.toList());
 
         return new PageImpl<>(logs, pageable, page.getTotalRow());
     }
@@ -163,8 +164,8 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
     @Override
     public List<OperationLog> findByUserId(String userId) {
         QueryWrapper query = QueryWrapper.create()
-                .where(OPERATION_LOG_DO.USER_ID.eq(userId))
-                .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
+            .where(OPERATION_LOG_DO.USER_ID.eq(userId))
+            .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
         List<OperationLogDO> operationLogDOs = operationLogDOMapper.selectListByQuery(query);
         return operationLogDOs.stream().map(operationLogConverter::toEntity).collect(Collectors.toList());
     }
@@ -172,8 +173,8 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
     @Override
     public List<OperationLog> findByOperationType(String operationType) {
         QueryWrapper query = QueryWrapper.create()
-                .where(OPERATION_LOG_DO.OPERATION_TYPE.eq(operationType))
-                .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
+            .where(OPERATION_LOG_DO.OPERATION_TYPE.eq(operationType))
+            .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
         List<OperationLogDO> operationLogDOs = operationLogDOMapper.selectListByQuery(query);
         return operationLogDOs.stream().map(operationLogConverter::toEntity).collect(Collectors.toList());
     }
@@ -181,8 +182,8 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
     @Override
     public List<OperationLog> findByCreatedTimeBetween(LocalDateTime startTime, LocalDateTime endTime) {
         QueryWrapper query = QueryWrapper.create()
-                .where(OPERATION_LOG_DO.CREATED_AT.between(startTime, endTime))
-                .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
+            .where(OPERATION_LOG_DO.CREATED_AT.between(startTime, endTime))
+            .orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
         List<OperationLogDO> operationLogDOs = operationLogDOMapper.selectListByQuery(query);
         return operationLogDOs.stream().map(operationLogConverter::toEntity).collect(Collectors.toList());
     }
@@ -198,10 +199,10 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
         QueryWrapper query = QueryWrapper.create().orderBy(OPERATION_LOG_DO.CREATED_AT.desc());
 
         Page<OperationLogDO> page =
-                operationLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+            operationLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
 
         List<OperationLog> logs =
-                page.getRecords().stream().map(operationLogConverter::toEntity).collect(Collectors.toList());
+            page.getRecords().stream().map(operationLogConverter::toEntity).collect(Collectors.toList());
 
         return new PageImpl<>(logs, pageable, page.getTotalRow());
     }
@@ -209,8 +210,8 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
     @Override
     public long countFailedOperations(LocalDateTime startTime, LocalDateTime endTime) {
         QueryWrapper query = QueryWrapper.create()
-                .where(OPERATION_LOG_DO.CREATED_AT.between(startTime, endTime))
-                .and(OPERATION_LOG_DO.STATUS.eq(0));
+            .where(OPERATION_LOG_DO.CREATED_AT.between(startTime, endTime))
+            .and(OPERATION_LOG_DO.STATUS.eq(0));
         return operationLogDOMapper.selectCountByQuery(query);
     }
 }

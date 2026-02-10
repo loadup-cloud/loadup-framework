@@ -121,7 +121,12 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- Loadup -->
+            <!-- Loadup commons -->
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-commons</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-commons-api</artifactId>
@@ -448,6 +453,11 @@
             <!-- ========== loadup-modules start ==========-->
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-modules</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-modules-upms</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
@@ -488,6 +498,11 @@
                 <version>${loadup.framework.version}</version>
             </dependency>
             <!-- ========== loadup-components start ==========-->
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-authorization</artifactId>
@@ -667,6 +682,59 @@
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-testcontainers</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-retrytask</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-retrytask-facade</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-retrytask-core</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-retrytask-infra</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-retrytask-launcher</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-retrytask-notify</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-retrytask-scheduler</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-retrytask-starter</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-retrytask-strategy</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-retrytask-test</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <!-- ========== loadup-components end ==========-->

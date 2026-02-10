@@ -111,8 +111,8 @@ public interface UserMapper extends BaseMapper<User> {
 #### Static Import
 
 ```java
-import static com.github.loadup.tables.Tables.USER;
-import static com.github.loadup.tables.Tables.ROLE;
+import static io.github.loadup.tables.Tables.USER;
+import static io.github.loadup.tables.Tables.ROLE;
 ```
 
 #### Basic Queries
@@ -446,7 +446,7 @@ public class User {
 ```java
 // ✅ Good: Type-safe
 
-import static com.github.loadup.tables.Tables.USER;
+import static io.github.loadup.tables.Tables.USER;
 
 QueryWrapper query = QueryWrapper.create()
         .where(USER.USERNAME.eq("admin"));

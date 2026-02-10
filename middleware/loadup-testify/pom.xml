@@ -5,14 +5,14 @@
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>loadup-testify</artifactId>
     <packaging>pom</packaging>
 
-    <name>Loadup Testify Component</name>
-    <description>Loadup Testify Component</description>
+    <name>Loadup Middleware Testify </name>
+    <description>Loadup Middleware Testify </description>
 
     <modules>
         <module>loadup-testify-core</module>

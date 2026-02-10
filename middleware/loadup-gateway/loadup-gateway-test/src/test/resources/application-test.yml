@@ -37,5 +37,5 @@ loadup:
 
 logging:
   level:
-    com.github.loadup: DEBUG
+    io.github.loadup: DEBUG
     org.springframework: INFO

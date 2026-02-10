@@ -1,0 +1,49 @@
+spring:
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MYSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=true
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  sql:
+    init:
+      schema-locations: classpath:schema-h2.sql
+      mode: always
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: none
+
+  mail: # 比如：使用qq邮箱服务(也可以其他服务)
+    host: smtp.qq.com
+    #发送方的邮箱
+    username: xxx@qq.com
+    # 设置密码，该处的密码是发送方QQ邮箱开启SMTP的授权码而非QQ密码
+    password: xxxx
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+
+loadup:
+  retrytask:
+    enabled: true
+    default-max-retry-count: 3
+    default-retry-strategy: FIXED
+    default-base-delay-seconds: 60
+    scheduler:
+      enabled: true
+      type: ASYNC
+      thread-pool-size: 5
+
+logging:
+  level:
+    io.github.loadup.retrytask: DEBUG
+    org.springframework.retry: DEBUG
+    org.springframework.jdbc.core: trace
+    org.springframework.jdbc.resultset: trace

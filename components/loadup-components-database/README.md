@@ -49,7 +49,7 @@ public interface UserMapper extends BaseMapper<User> {
 ### 4. 类型安全查询
 
 ```java
-import static com.github.loadup.tables.Tables.USER;
+import static io.github.loadup.tables.Tables.USER;
 
 QueryWrapper query = QueryWrapper.create()
     .where(USER.USERNAME.eq("admin"))
@@ -247,7 +247,7 @@ public interface UserMapper extends BaseMapper<User> {
 #### 3. 类型安全查询
 
 ```java
-import static com.github.loadup.tables.Tables.USER;
+import static io.github.loadup.tables.Tables.USER;
 
 // 基础查询
 QueryWrapper query = QueryWrapper.create()

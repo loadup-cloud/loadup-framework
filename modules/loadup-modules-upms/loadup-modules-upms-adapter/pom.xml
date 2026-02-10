@@ -12,7 +12,16 @@
     <artifactId>loadup-modules-upms-adapter</artifactId>
     <name>Loadup Modules UPMS Adapter Layer</name>
     <description>UPMS Adapter Layer - REST API Controllers and DTOs</description>
-
+    <properties>
+        <java.version>21</java.version>
+        <project.encoding>UTF-8</project.encoding>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <project.build.encoding>${project.encoding}</project.build.encoding>
+        <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

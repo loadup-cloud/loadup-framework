@@ -24,9 +24,9 @@
 //
 // import io.github.loadup.gateway.core.template.TemplateEngine;
 // import io.github.loadup.gateway.test.GatewayTestApplication;
-// import com.github.loadup.testify.core.annotation.TestBean;
-// import com.github.loadup.testify.core.base.TestifyTestBase;
-// import com.github.loadup.testify.core.model.PrepareData;
+// import io.github.loadup.testify.core.annotation.TestBean;
+// import io.github.loadup.testify.core.base.TestifyTestBase;
+// import io.github.loadup.testify.core.model.PrepareData;
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.boot.test.context.SpringBootTest;
 // import org.springframework.test.context.ActiveProfiles;

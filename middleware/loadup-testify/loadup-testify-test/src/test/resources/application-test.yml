@@ -22,5 +22,5 @@ loadup:
       password: test
 logging:
   level:
-    com.github.loadup.testify: DEBUG
+    io.github.loadup.testify: DEBUG
     org.springframework.jdbc: DEBUG
