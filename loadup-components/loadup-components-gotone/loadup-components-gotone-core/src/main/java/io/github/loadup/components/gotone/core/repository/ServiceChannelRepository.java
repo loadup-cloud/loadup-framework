@@ -23,12 +23,14 @@ package io.github.loadup.components.gotone.core.repository;
  */
 
 import com.mybatisflex.core.BaseMapper;
+import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.components.gotone.core.dataobject.ServiceChannelDO;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Optional;
+
+import static io.github.loadup.components.gotone.core.dataobject.table.Tables.SERVICE_CHANNEL_DO;
 
 /**
  * 服务渠道映射 Repository
@@ -39,33 +41,33 @@ public interface ServiceChannelRepository extends BaseMapper<ServiceChannelDO> {
     /**
      * 查询启用的渠道配置（按优先级排序）
      */
-    @Select("""
-        SELECT * FROM gotone_service_channel
-        WHERE service_code = #{serviceCode}
-        AND enabled = TRUE
-        ORDER BY priority DESC, created_at ASC
-        """)
-    List<ServiceChannelDO> findEnabledChannelsByServiceCode(String serviceCode);
+    default List<ServiceChannelDO> findEnabledChannelsByServiceCode(String serviceCode) {
+        QueryWrapper query = QueryWrapper.create()
+            .where(SERVICE_CHANNEL_DO.SERVICE_CODE.eq(serviceCode))
+            .and(SERVICE_CHANNEL_DO.ENABLED.eq(true))
+            .orderBy(SERVICE_CHANNEL_DO.PRIORITY.desc(), SERVICE_CHANNEL_DO.CREATED_AT.asc());
+        return selectListByQuery(query);
+    }
 
     /**
      * 查询指定渠道配置
      */
-    @Select("""
-        SELECT * FROM gotone_service_channel
-        WHERE service_code = #{serviceCode}
-        AND channel = #{channel}
-        AND enabled = TRUE
-        """)
-    Optional<ServiceChannelDO> findByServiceCodeAndChannel(String serviceCode, String channel);
+    default Optional<ServiceChannelDO> findByServiceCodeAndChannel(String serviceCode, String channel) {
+        QueryWrapper query = QueryWrapper.create()
+            .where(SERVICE_CHANNEL_DO.SERVICE_CODE.eq(serviceCode))
+            .and(SERVICE_CHANNEL_DO.CHANNEL.eq(channel))
+            .and(SERVICE_CHANNEL_DO.ENABLED.eq(true));
+        return Optional.ofNullable(selectOneByQuery(query));
+    }
 
     /**
      * 查询所有启用的渠道配置
      */
-    @Select("""
-        SELECT * FROM gotone_service_channel
-        WHERE enabled = TRUE
-        ORDER BY priority DESC
-        """)
-    List<ServiceChannelDO> findAllEnabled();
+    default List<ServiceChannelDO> findAllEnabled() {
+        QueryWrapper query = QueryWrapper.create()
+            .where(SERVICE_CHANNEL_DO.ENABLED.eq(true))
+            .orderBy(SERVICE_CHANNEL_DO.PRIORITY.desc());
+        return selectListByQuery(query);
+    }
 }
 

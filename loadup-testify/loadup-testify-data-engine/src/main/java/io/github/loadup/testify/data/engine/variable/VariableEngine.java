@@ -23,13 +23,8 @@ package io.github.loadup.testify.data.engine.variable;
  */
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.*;
 import io.github.loadup.testify.core.util.JsonUtil;
 import io.github.loadup.testify.data.engine.function.TestifyFunction;
-import java.lang.reflect.Method;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
-import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
 import org.springframework.context.expression.MapAccessor;
@@ -37,7 +32,10 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.util.StringUtils;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Variable resolution engine supporting: - Datafaker expressions: ${faker.name.firstName} - Time
@@ -49,23 +47,7 @@ public class VariableEngine {
 
     private final ExpressionParser spelParser = new SpelExpressionParser();
     private final Map<String, TestifyFunction> functionRegistry = new HashMap<>();
-    // 匹配 ${prefix.method(args)}
-    private final ParserContext templateContext = new ParserContext() {
-        @Override
-        public boolean isTemplate() {
-            return true;
-        }
-
-        @Override
-        public String getExpressionPrefix() {
-            return "${";
-        }
-
-        @Override
-        public String getExpressionSuffix() {
-            return "}";
-        }
-    };
+    private final ParserContext templateContext = ParserContext.TEMPLATE_EXPRESSION;
 
     public VariableEngine(List<TestifyFunction> customFunctions) {
         // 2. 注册用户自定义函数 (由 Spring 注入)
@@ -74,60 +56,27 @@ public class VariableEngine {
         }
     }
 
-    /** 解析入口，假设已经正则匹配出: "time", "afterDays", ["5"] */
-    public Object executeFunction(String prefix, String methodName, String argsStr) {
-        TestifyFunction target = functionRegistry.get(prefix);
-        if (target == null) throw new RuntimeException("Unknown function prefix: " + prefix);
-        // 解析参数列表 (简单处理：按逗号分隔，并去除空格)
-        String[] rawArgs = StringUtils.hasText(argsStr) ? argsStr.split(",") : new String[0];
-        // 1. 找到匹配的方法
-        Method method = Arrays.stream(target.getClass().getMethods())
-                .filter(m -> m.getName().equals(methodName) && m.getParameterCount() == rawArgs.length)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Method not found: " + methodName));
-
-        try {
-            // 2. 动态转换参数类型 (String -> target method type)
-            Object[] convertedArgs = new Object[method.getParameterCount()];
-            Class<?>[] parameterTypes = method.getParameterTypes();
-            for (int i = 0; i < rawArgs.length; i++) {
-                // 利用 Jackson 的强力转换能力，支持基本类型、List、Map 等转换
-                String arg = rawArgs[i].trim().replaceAll("^['\"]|['\"]$", ""); // 去掉可能的引号
-                convertedArgs[i] = JsonUtil.convertValue(arg, parameterTypes[i]);
-            }
-
-            // 3. 反射调用
-            return method.invoke(target, convertedArgs);
-        } catch (Exception e) {
-            throw new RuntimeException("Function execution failed: " + methodName, e);
-        }
-    }
 
     // --- 1. Entry Points (入口方法) ---
     public Map<String, Object> resolveVariables(Map<String, String> rawVariables) {
         Map<String, Object> context = new LinkedHashMap<>();
         if (rawVariables == null) return context;
 
-        // 拓扑排序的简化版：迭代尝试
-        // 假设 a: ${b}, b: 1。第一轮 a 失败, b 成功；第二轮 a 成功。
-        int maxIterations = 3;
-        for (int i = 0; i < maxIterations; i++) {
+        int limit = 10;
+        while (limit-- > 0) {
             boolean changed = false;
             for (Map.Entry<String, String> entry : rawVariables.entrySet()) {
                 String key = entry.getKey();
                 if (context.containsKey(key)) continue;
 
-                try {
-                    Object evaluated = evaluate(entry.getValue(), context);
-                    // 只有当解析结果不再包含 ${ 占位符时，才认为该变量已完全解析
-                    if (evaluated != null && !String.valueOf(evaluated).contains("${")) {
-                        context.put(key, evaluated);
-                        changed = true;
-                    }
-                } catch (Exception ignored) {
+                Object evaluated = evaluate(entry.getValue(), context);
+                // 只有解析结果不再是字符串，或者字符串中不含占位符，才算真正解析完成
+                if (!(evaluated instanceof String s) || !s.contains("${")) {
+                    context.put(key, evaluated);
+                    changed = true;
                 }
             }
-            if (!changed) break; // 如果这一轮没有新变量被解析，提前退出
+            if (!changed) break;
         }
         return context;
     }
@@ -138,52 +87,56 @@ public class VariableEngine {
     public Object evaluate(String text, Map<String, Object> context) {
         if (text == null || !text.contains("${")) return text;
 
+        StandardEvaluationContext spelContext = buildSpelContext(context);
+        String trimmed = text.trim();
+
+        // 场景 A: 纯占位符 "${faker.name()}"
+        if (trimmed.startsWith("${") && trimmed.endsWith("}") && countOccurrences(trimmed, "${") == 1) {
+            return resolveSinglePlaceholder(trimmed, context);
+        }
+
+        // 场景 B: 混合字符串 "User: ${user.name}"
+        // 场景 B: 混合字符串 "User: ${user}, Age: ${age}" -> 局部替换逻辑
+        return resolveMixedText(text, context);
+    }
+    /**
+     * 处理纯占位符：支持返回 Object 类型
+     */
+    private Object resolveSinglePlaceholder(String placeholder, Map<String, Object> context) {
+        String expression = placeholder.substring(2, placeholder.length() - 1);
+        String spelExpr = expression.startsWith("#") ? expression : "#" + expression;
         try {
             StandardEvaluationContext spelContext = buildSpelContext(context);
-            String trimmed = text.trim();
-
-            // 场景 A: 纯占位符 "${faker.name()}"
-            if (trimmed.startsWith("${") && trimmed.endsWith("}") && countOccurrences(trimmed, "${") == 1) {
-                String expression = trimmed.substring(2, trimmed.length() - 1);
-
-                // --- 修复点：针对纯表达式，手动补一个 # ---
-                String spelExpr = expression.startsWith("#") ? expression : "#" + expression;
-
-                return spelParser.parseExpression(spelExpr).getValue(spelContext);
-            }
-
-            // 场景 B: 混合字符串 "Hello ${faker.name()}"
-            // 这里 ensureHashPrefix 会把 "${" 替换成 "${#"
-            String processedText = ensureHashPrefix(text);
-            return spelParser.parseExpression(processedText, templateContext).getValue(spelContext);
-
+            Object value = spelParser.parseExpression(spelExpr).getValue(spelContext);
+            return (value != null) ? value : placeholder; // 找不到返回原始 "${xxx}"
         } catch (Exception e) {
-            log.warn("SpEL 解析失败: {}, 错误: {}", text, e.getMessage());
-            return text;
+            return placeholder;
         }
     }
+    /**
+     * 局部替换：仅替换存在的变量，不存在的保留
+     */
+    private String resolveMixedText(String text, Map<String, Object> context) {
+        // 匹配 ${...}，使用非贪婪匹配
+        Pattern pattern = Pattern.compile("\\$\\{([^}]+)\\}");
+        Matcher matcher = pattern.matcher(text);
+        StringBuilder sb = new StringBuilder();
+        int lastCursor = 0;
 
-    /** 场景 B: 解析整个 JsonNode 树 (用于 input, setup, expect 等) */
-    public JsonNode resolveJsonNode(JsonNode node, Map<String, Object> context) {
-        if (node == null || !node.isContainerNode() && !node.isTextual()) return node;
+        while (matcher.find()) {
+            // 放入占位符之前的普通文本
+            sb.append(text, lastCursor, matcher.start());
 
-        if (node.isTextual()) {
-            return convertToNode(evaluate(node.asText(), context));
+            String placeholder = matcher.group(0); // 完整的 ${xxx}
+            Object resolved = resolveSinglePlaceholder(placeholder, context);
+
+            // 将解析结果拼接到结果中
+            sb.append(resolved != null ? resolved.toString() : placeholder);
+
+            lastCursor = matcher.end();
         }
-
-        if (node.isObject()) {
-            ObjectNode newNode = JsonNodeFactory.instance.objectNode();
-            node.fields()
-                    .forEachRemaining(entry -> newNode.set(entry.getKey(), resolveJsonNode(entry.getValue(), context)));
-            return newNode;
-        }
-
-        if (node.isArray()) {
-            ArrayNode newNode = JsonNodeFactory.instance.arrayNode();
-            node.forEach(item -> newNode.add(resolveJsonNode(item, context)));
-            return newNode;
-        }
-        return node;
+        sb.append(text.substring(lastCursor));
+        return sb.toString();
     }
 
     // --- 3. Helpers (内部辅助) ---
@@ -205,59 +158,76 @@ public class VariableEngine {
     }
 
     private String ensureHashPrefix(String text) {
-        // 匹配 ${ 后面不是 # 的所有情况，自动补上 #。使得 ${time.now()} 变为 ${#time.now()}
-        return text.replaceAll("\\$\\{(?![#0-9'\"\\-])", "\\${#");
-    }
-
-    private JsonNode convertToNode(Object obj) {
-        if (obj == null) return NullNode.instance;
-        return switch (obj) {
-            case JsonNode j -> j;
-            case Integer i -> IntNode.valueOf(i);
-            case Long l -> LongNode.valueOf(l);
-            case Double d -> DoubleNode.valueOf(d);
-            case Boolean b -> BooleanNode.valueOf(b);
-            case TemporalAccessor t ->
-                TextNode.valueOf(
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(t));
-            default -> TextNode.valueOf(obj.toString());
-        };
+        // 匹配 ${ 后紧跟字母或数字的情况（变量名），补上 #
+        // 排除 ${' (字符串), ${# (已补), ${- (负数) 等
+        return text.replaceAll("#\\{(?![#0-9'\"\\-])", "#{#");
     }
 
     private int countOccurrences(String str, String sub) {
         return (str.length() - str.replace(sub, "").length()) / sub.length();
     }
 
-    // 建议添加到 VariableEngine 类中
+
+    /**
+     * 统一递归解析入口：支持 JsonNode, Map, Collection, String
+     */
     public Object resolveValue(Object value, Map<String, Object> context) {
         if (value == null) return null;
 
-        // 1. 如果是 JsonNode (来自 YAML 解析后的原始结构)
+        // 1. 处理 JsonNode (来自 Jackson 解析的原始结构)
         if (value instanceof JsonNode node) {
-            // 调用我们之前实现的递归解析 JsonNode 的方法
-            JsonNode resolvedNode = resolveJsonNode(node, context);
-            // 将解析后的 JsonNode 转回 Java 对象（Map, List, 或基本类型）
-            return JsonUtil.convertValue(resolvedNode, Object.class);
+            if (node.isTextual()) {
+                return evaluate(node.asText(), context);
+            }
+            if (node.isNumber()) return node.numberValue(); // 保持数字类型
+            if (node.isBoolean()) return node.booleanValue(); // 保持布尔类型
+            if (node.isNull()) return null;
+            if (node.isObject()) {
+                Map<String, Object> resolvedMap = new LinkedHashMap<>();
+                node.fields().forEachRemaining(entry -> {
+                    Object resolved = resolveValue(entry.getValue(), context);
+                    if (resolved != null) {
+                        resolvedMap.put(entry.getKey(), resolved);
+                    }
+                });
+                return resolvedMap;
+            }
+            if (node.isArray()) {
+                List<Object> resolvedList = new ArrayList<>();
+                node.forEach(item -> {
+                    Object resolved = resolveValue(item, context);
+                    // 数组中是否过滤 null 取决于需求，通常建议保留以维持索引对齐，
+                    // 或者根据配置过滤。这里演示不过滤数组内部的 null。
+                    resolvedList.add(resolved);
+                });
+                return resolvedList;
+            }
+            return JsonUtil.convertValue(node, Object.class);
         }
 
-        // 2. 如果是 字符串 (比如 "Welcome ${name}")
+        // 2. 处理标准 Java 字符串
         if (value instanceof String str) {
             return evaluate(str, context);
         }
 
-        // 3. 如果是 集合 (手动创建的 List/Map)
-        if (value instanceof Collection<?> col) {
-            return col.stream().map(item -> resolveValue(item, context)).toList();
+        // 3. 处理 Map (支持递归处理嵌套对象)
+        if (value instanceof Map<?, ?> map) {
+            Map<Object, Object> result = new LinkedHashMap<>(map.size());
+            map.forEach((k, v) -> {
+                Object resolved = resolveValue(v, context);
+                if (resolved != null) {
+                    result.put(k, resolved);
+                }
+            });
+            return result;
         }
 
-        // 2. 处理 Map 嵌套 (YAML 中的复杂对象)
-        if (value instanceof Map) {
-            Map<String, Object> map = (Map<String, Object>) value;
-            Map<String, Object> resolvedMap = new LinkedHashMap<>(map.size());
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
-                resolvedMap.put(entry.getKey(), resolveValue(entry.getValue(), context)); // 递归调用
-            }
-            return resolvedMap;
+        // 4. 处理集合
+        if (value instanceof Collection<?> col) {
+            return col.stream()
+                .map(i -> resolveValue(i, context))
+                .filter(Objects::nonNull)
+                .toList();
         }
 
         return value;

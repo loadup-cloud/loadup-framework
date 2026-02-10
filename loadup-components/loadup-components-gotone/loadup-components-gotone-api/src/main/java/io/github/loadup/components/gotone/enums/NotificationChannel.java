@@ -33,6 +33,9 @@ public enum NotificationChannel {
     /** 推送消息 */
     PUSH,
 
+    /** Webhook（钉钉、微信、飞书等机器人） */
+    WEBHOOK,
+
     /** 站内信 */
     INTERNAL_MESSAGE,
 

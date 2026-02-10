@@ -1,0 +1,130 @@
+# NotificationService 集成测试配置
+# 测试多渠道并发发送 (EMAIL + SMS + PUSH)
+
+variables:
+  serviceCode: "PAYMENT_SUCCESS"
+  userEmail: "test@example.com"
+  userPhone: "13800138000"
+  deviceToken: "${faker.lorem().characters(65, 120)}"
+  userName: "王五"
+  orderNo: "ORDER_${time.now()}"
+  amount: "99.00"
+
+setup:
+  clean_sql: |
+    DELETE FROM gotone_notification_record WHERE service_code = '${serviceCode}';
+    DELETE FROM gotone_service_channel WHERE service_code = '${serviceCode}';
+    DELETE FROM gotone_notification_service WHERE service_code = '${serviceCode}';
+
+    INSERT INTO gotone_notification_service (id, service_code, service_name, enabled, priority, created_at, updated_at)
+    VALUES ('SERVICE_TEST_004', '${serviceCode}', '支付成功通知', TRUE, 10, NOW(), NOW());
+
+    -- EMAIL 渠道
+    INSERT INTO gotone_service_channel (
+      id, service_code, channel, template_code, template_content,
+      channel_config, provider, enabled, priority, created_at, updated_at
+    ) VALUES (
+      'CHANNEL_TEST_006',
+      '${serviceCode}',
+      'EMAIL',
+      'PAYMENT_SUCCESS_EMAIL',
+      '订单${orderNoTemp}支付成功，金额${amountTemp}元。',
+      '{"subject": "支付成功"}',
+      'smtp',
+      TRUE,
+      10,
+      NOW(),
+      NOW()
+    );
+
+    -- SMS 渠道
+    INSERT INTO gotone_service_channel (
+      id, service_code, channel, template_code, template_content,
+      channel_config, provider, enabled, priority, created_at, updated_at
+    ) VALUES (
+      'CHANNEL_TEST_007',
+      '${serviceCode}',
+      'SMS',
+      'PAYMENT_SUCCESS_SMS',
+      '订单${orderNoTemp}支付成功，金额${amountTemp}元。',
+      '{"signName": "LoadUp"}',
+      'aliyun',
+      TRUE,
+      9,
+      NOW(),
+      NOW()
+    );
+
+    -- PUSH 渠道
+    INSERT INTO gotone_service_channel (
+      id, service_code, channel, template_code, template_content,
+      channel_config, provider, enabled, priority, created_at, updated_at
+    ) VALUES (
+      'CHANNEL_TEST_008',
+      '${serviceCode}',
+      'PUSH',
+      'PAYMENT_SUCCESS_PUSH',
+      '支付成功！金额${amountTemp}元。',
+      '{"title": "支付成功", "sound": "default"}',
+      'fcm',
+      TRUE,
+      8,
+      NOW(),
+      NOW()
+    );
+
+input:
+  request: {
+    serviceCode: "${serviceCode}",
+    receivers: [ "${userEmail}", "${userPhone}" ,"${deviceToken}"] ,
+    templateParams: { "userNameTemp": "${faker.name().firstName()}", "orderNoTemp": "${orderNo}",amountTemp: "${amount}" }
+  }
+
+#mocks:
+#  - bean: "notificationChannelManager"
+#    method: "getProvider"
+#    args: ["EMAIL", "smtp"]
+#    thenReturn:
+#      channel: "EMAIL"
+#      providerName: "smtp"
+#      available: true
+#
+#  - bean: "notificationChannelManager"
+#    method: "getProvider"
+#    args: ["SMS", "aliyun"]
+#    thenReturn:
+#      channel: "SMS"
+#      providerName: "aliyun"
+#      available: true
+#
+#  - bean: "notificationChannelManager"
+#    method: "getProvider"
+#    args: ["PUSH", "fcm"]
+#    thenReturn:
+#      channel: "PUSH"
+#      providerName: "fcm"
+#      available: true
+
+expect:
+  # 响应断言 - 3个渠道都成功
+  response:
+    "$.success": true
+    "$.totalReceivers": 3
+
+  # 数据库断言 - 验证3条记录
+  database:
+    table: gotone_notification_record
+    timeout: 3000
+    rows:
+      - _match: { service_code: "${serviceCode}", channel: "EMAIL", receiver: "${userEmail}" }
+        status: "SUCCESS"
+        content: { op: contains, val: "${amount}" }
+
+      - _match: { service_code: "${serviceCode}", channel: "SMS", receiver: "${userPhone}" }
+        status: "SUCCESS"
+        content: { op: contains, val: "${amount}" }
+
+      - _match: { service_code: "${serviceCode}", channel: "PUSH", receiver: "${deviceToken}" }
+        status: "SUCCESS"
+        content: { op: contains, val: "${amount}" }
+

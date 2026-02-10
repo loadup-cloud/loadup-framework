@@ -20,6 +20,7 @@
         <module>channels/loadup-components-gotone-channel-email</module>
         <module>channels/loadup-components-gotone-channel-sms</module>
         <module>channels/loadup-components-gotone-channel-push</module>
+        <module>channels/loadup-components-gotone-channel-webhook</module>
         <module>loadup-components-gotone-starter</module>
         <module>loadup-components-gotone-test</module>
     </modules>

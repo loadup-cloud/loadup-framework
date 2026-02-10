@@ -27,7 +27,9 @@ import io.github.loadup.testify.asserts.diff.DiffReportBuilder;
 import io.github.loadup.testify.asserts.model.FieldDiff;
 import io.github.loadup.testify.asserts.model.MatchResult;
 import io.github.loadup.testify.asserts.operator.OperatorProcessor;
+import io.github.loadup.testify.core.util.JsonUtil;
 import io.github.loadup.testify.data.engine.variable.VariableEngine;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +68,7 @@ public class ExceptionAssertEngine implements TestifyAssertEngine {
             String expectType = expectEx.get("type").asText();
             if (!isTypeMatch(expectType, rootCause)) {
                 diffs.add(new FieldDiff(
-                        "exception.type", expectType, rootCause.getClass().getSimpleName(), "Exception type mismatch"));
+                    "exception.type", expectType, rootCause.getClass().getSimpleName(), "Exception type mismatch"));
             }
         }
 
@@ -74,12 +76,13 @@ public class ExceptionAssertEngine implements TestifyAssertEngine {
         if (expectEx.has("message")) {
             JsonNode messageNode = expectEx.get("message");
             String actualMsg = rootCause.getMessage();
-            String expectedObj =
-                    variableEngine.resolveJsonNode(messageNode, context).asText();
-            MatchResult result = OperatorProcessor.process(actualMsg, expectedObj);
+            Object resolved = variableEngine.resolveValue(messageNode, context);
+            String expectedMsg = JsonUtil.valueToTree(resolved).asText();
+
+            MatchResult result = OperatorProcessor.process(actualMsg, expectedMsg);
 
             if (!result.isPassed()) {
-                diffs.add(new FieldDiff("exception.message", expectedObj, actualMsg, result.message()));
+                diffs.add(new FieldDiff("exception.message", expectedMsg, actualMsg, result.message()));
             }
         }
 
@@ -88,7 +91,9 @@ public class ExceptionAssertEngine implements TestifyAssertEngine {
         }
     }
 
-    /** 智能类型匹配：支持全类名或简单类名 */
+    /**
+     * 智能类型匹配：支持全类名或简单类名
+     */
     private boolean isTypeMatch(String expectType, Throwable actualEx) {
         String fullClassName = actualEx.getClass().getName();
         String simpleName = actualEx.getClass().getSimpleName();
@@ -97,7 +102,9 @@ public class ExceptionAssertEngine implements TestifyAssertEngine {
         return fullClassName.equals(expectType) || simpleName.equalsIgnoreCase(expectType);
     }
 
-    /** 递归获取根异常 */
+    /**
+     * 递归获取根异常
+     */
     private Throwable getRootCause(Throwable t) {
         Throwable cause = t;
         while (cause.getCause() != null && cause.getCause() != cause) {

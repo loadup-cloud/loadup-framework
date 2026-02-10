@@ -58,7 +58,8 @@ public class ResponseAssertEngine implements TestifyAssertEngine {
 
         expectMap.forEach((key, expNode) -> {
             // 解析变量（针对 op 中的 val 等）
-            JsonNode resolvedExp = variableEngine.resolveJsonNode(expNode, context);
+            Object resolved = variableEngine.resolveValue(expNode, context);
+            JsonNode resolvedExp = JsonUtil.valueToTree(resolved);
 
             if (key.startsWith("$")) {
                 // --- 场景 A: JsonPath 匹配 ---

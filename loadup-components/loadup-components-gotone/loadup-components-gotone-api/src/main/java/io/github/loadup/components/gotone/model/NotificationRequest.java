@@ -25,8 +25,10 @@ package io.github.loadup.components.gotone.model;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;
@@ -39,6 +41,8 @@ import java.util.Map;
  * <p>业务代码与具体渠道解耦，支持动态启用/禁用渠道。
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class NotificationRequest implements Serializable {
 

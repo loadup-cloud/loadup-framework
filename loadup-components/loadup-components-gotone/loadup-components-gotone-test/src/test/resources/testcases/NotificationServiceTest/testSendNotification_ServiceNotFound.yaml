@@ -1,0 +1,19 @@
+# NotificationService 集成测试配置
+# 测试服务不存在 - 应抛出异常
+
+variables:
+  serviceCode: "NON_EXISTENT_SERVICE"
+
+setup:
+  clean_sql: |
+    DELETE FROM gotone_notification_service WHERE service_code = '${serviceCode}';
+
+input:
+  - "${serviceCode}"
+
+expect:
+  # 异常断言 - 应抛出 CommonException
+  exception:
+    type: "io.github.loadup.commons.error.CommonException"
+    message: "服务不存在或已禁用: NON_EXISTENT_SERVICE"
+

@@ -28,7 +28,6 @@
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-gotone-starter</artifactId>
             <version>${loadup.framework.version}</version>
-
             <scope>test</scope>
         </dependency>
 
@@ -60,6 +59,7 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-database</artifactId>
+            <version>${loadup.framework.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -106,10 +106,23 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- LoadUp Testify - 数据驱动测试框架 -->
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-testify-spring-boot-starter</artifactId>
+            <version>${loadup.framework.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Spring Data JDBC Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jdbc</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

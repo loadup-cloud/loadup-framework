@@ -2,48 +2,75 @@
 
 [![Build Status](https://github.com/loadup-cloud/loadup-framework/workflows/Build%20and%20Test/badge.svg)](https://github.com/loadup-cloud/loadup-framework/actions)
 [![License](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](LICENSE)
-[![Java Version](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.8-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Java Version](https://img.shields.io/badge/Java-21%2B-orange.svg)](https://www.oracle.com/java/technologies/javase-jdk21-downloads.html)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.3-brightgreen.svg)](https://spring.io/projects/spring-boot)
 
 ## 📖 简介
 
-Gotone 是一个企业级高性能通知发送组件，支持多种通知渠道（邮件、短信、推送、站内信等），提供统一的 API 接口，具备熔断降级、异步队列、智能重试、模板管理等企业级特性。
+Gotone 是一个基于 **ServiceCode 驱动的智能路由** 通知组件，支持多渠道（EMAIL/SMS/PUSH）通知发送，实现业务代码与通知渠道的完全解耦。
+
+**架构版本**: v2.0.0 (2026-02-09 重构)  
+**架构类型**: ServiceCode 驱动 + 单表JSON扩展
 
 ### ✨ 核心特性
 
-- 🚀 **多渠道支持** - Email、SMS、Push、站内信等
-- 🔌 **插件化架构** - 基于扩展点，易于扩展自定义提供商
-- 🛡️ **熔断降级** - 多提供商自动降级，保障高可用
-- 🔄 **智能重试** - 失败自动重试，支持定时扫描
-- 📨 **异步队列** - 高并发场景下的异步处理
-- 📝 **模板引擎** - 动态模板渲染，数据库持久化
-- 💾 **发送记录** - 完整的发送历史和追溯
-- ⚡ **高性能缓存** - 模板缓存，自动/手动刷新
-- 📊 **监控指标** - 发送统计、成功率监控
+- ✅ **ServiceCode 驱动** - 业务代码与渠道解耦，配置化管理
+- ✅ **智能路由** - 自动识别收件人类型，智能分发到对应渠道
+- ✅ **多渠道支持** - 一次调用，EMAIL/SMS/PUSH 多渠道并发发送
+- ✅ **动态配置** - 数据库配置，支持动态启用/禁用渠道
+- ✅ **幂等性保证** - 基于 requestId 防止重复发送
+- ✅ **失败重试** - 自动重试机制（规划中）
+- ✅ **单表+JSON** - 简化数据层，3张表替代原来的7张表
+- ✅ **高性能** - 查询减少67%，写入减少50%
+
+### 📊 架构优势
+
+| 维度 | 旧架构 | 新架构 | 改进 |
+|------|--------|--------|------|
+| **数据表** | 7张表 | 3张表 | -57% |
+| **代码量** | ~3000行 | ~800行 | -73% |
+| **查询链路** | 3次查询 | 1次查询 | -67% |
+| **写入次数** | 2次/条 | 1次/条 | -50% |
+| **扩展性** | 需改表改代码 | 只需配置 | ✓ |
+| **业务解耦** | ✗ | ✓ | ✓ |
 
 ## 📦 模块结构
 
 ```
 loadup-components-gotone/
 ├── loadup-components-gotone-api/              # 核心 API 模块
-│   ├── domain/                                # 领域模型
+│   ├── api/                                   # 对外接口
+│   │   ├── NotificationService.java          # 通知服务接口
+│   │   └── NotificationChannelProvider.java  # 渠道提供商接口
+│   ├── model/                                 # 数据模型
+│   │   ├── NotificationRequest.java          # 请求模型
+│   │   ├── NotificationResponse.java         # 响应模型
+│   │   ├── ChannelSendRequest.java           # 渠道请求
+│   │   └── ChannelSendResponse.java          # 渠道响应
+│   └── enums/                                 # 枚举类
+│       └── NotificationChannel.java          # 渠道枚举
+├── loadup-components-gotone-core/             # 核心实现模块
+│   ├── dataobject/                            # 数据对象
+│   │   ├── NotificationServiceDO.java        # 服务配置
+│   │   ├── ServiceChannelDO.java             # 渠道映射
+│   │   └── NotificationRecordDO.java         # 发送记录
 │   ├── repository/                            # 数据访问层
+│   │   ├── NotificationServiceRepository.java
+│   │   ├── ServiceChannelRepository.java
+│   │   └── NotificationRecordRepository.java
 │   ├── service/                               # 业务服务层
-│   └── config/                                # 配置类
-├── loadup-components-gotone-binder-email/     # Email 提供商实现
-│   ├── SmtpEmailProvider                      # SMTP 邮件发送
-│   └── README.md                              # Email 模块文档
-├── loadup-components-gotone-binder-sms/       # SMS 提供商实现
-│   ├── AliyunSmsProvider                      # 阿里云短信
-│   ├── TencentSmsProvider                     # 腾讯云短信
-│   ├── HuaweiSmsProvider                      # 华为云短信
-│   ├── YunpianSmsProvider                     # 云片短信
-│   └── README.md                              # SMS 模块文档
-├── loadup-components-gotone-binder-push/      # Push 提供商实现
-│   ├── FcmPushProvider                        # Firebase Cloud Messaging
-│   └── README.md                              # Push 模块文档
+│   │   └── NotificationServiceImpl.java      # ServiceCode驱动逻辑
+│   ├── manager/                               # 管理器
+│   │   └── NotificationChannelManager.java   # 渠道管理器
+│   └── processor/                             # 处理器
+│       └── TemplateProcessor.java            # 模板处理器
+├── loadup-components-gotone-starter/          # Starter 模块
+│   └── GotoneAutoConfiguration.java          # 自动配置
+├── channels/                                  # 渠道实现（未完成）
+│   ├── loadup-components-gotone-channel-email/
+│   ├── loadup-components-gotone-channel-sms/
+│   └── loadup-components-gotone-channel-push/
 └── loadup-components-gotone-test/             # 测试模块
-    └── README.md                              # 测试文档
 ```
 
 ## 🚀 快速开始

@@ -23,14 +23,8 @@ package io.github.loadup.testify.data.engine.db;
  */
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.github.loadup.testify.core.util.JsonUtil;
 import io.github.loadup.testify.data.engine.variable.VariableEngine;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
@@ -40,6 +34,14 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
+
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -60,25 +62,35 @@ public class SqlExecutionEngine {
 
         // 2. 处理数据填充 (db_setup 列表)
         JsonNode dbSetupNode = setupNode.get("db_setup");
-        if (dbSetupNode != null && dbSetupNode.isArray()) {
-            for (JsonNode item : dbSetupNode) {
-                String tableName = item.get("table").asText();
-                if (item.has("file")) {
-                    executeCsvSetup(tableName, item.get("file").asText(), context, yamlPath);
-                } else if (item.has("data")) {
-                    executeDataSetup(tableName, item.get("data"), context);
+        if (dbSetupNode != null) {
+            if (dbSetupNode.isArray()) {
+                for (JsonNode item : dbSetupNode) {
+                    String tableName = item.get("table").asText();
+                    if (item.has("file")) {
+                        executeCsvSetup(tableName, item.get("file").asText(), context, yamlPath);
+                    }
+                    if (item.has("sql")) {
+                        executeSqlSetup(tableName, item.get("file").asText(), context, yamlPath);
+                    } else if (item.has("data")) {
+                        executeDataSetup(tableName, item.get("data"), context);
+                    }
                 }
+            } else {
+                String initSql = dbSetupNode.asText();
+
             }
         }
     }
 
-    /** 模式 A: 从 YAML 直接读取数据列表并插入 */
+    /**
+     * 模式 A: 从 YAML 直接读取数据列表并插入
+     */
     private void executeDataSetup(String tableName, JsonNode dataNode, Map<String, Object> context) {
         if (!dataNode.isArray() || dataNode.isEmpty()) return;
 
         // 1. 递归解析整个 Data 节点的变量
-        JsonNode resolvedData = variableEngine.resolveJsonNode(dataNode, context);
-
+        Object resolved = variableEngine.resolveValue(dataNode, context);
+        JsonNode resolvedData = JsonUtil.valueToTree(resolved);
         // 2. 提取列名
         List<String> columns = new ArrayList<>();
         resolvedData.get(0).fieldNames().forEachRemaining(columns::add);
@@ -98,21 +110,63 @@ public class SqlExecutionEngine {
         log.info("Loaded {} rows into [{}] from YAML", batchArgs.size(), tableName);
     }
 
-    /** 模式 B: 从 CSV 文件加载数据 */
+    /**
+     * 模式 B: 从 CSV 文件加载数据
+     */
     private void executeCsvSetup(String tableName, String fileName, Map<String, Object> context, String yamlPath) {
         // 计算相对于 YAML 的路径
         String csvPath = yamlPath.substring(0, yamlPath.lastIndexOf("/") + 1) + fileName;
 
         try (Reader reader =
-                new InputStreamReader(new ClassPathResource(csvPath).getInputStream(), StandardCharsets.UTF_8)) {
+                 new InputStreamReader(new ClassPathResource(csvPath).getInputStream(), StandardCharsets.UTF_8)) {
 
             CSVParser csvParser = CSVFormat.DEFAULT
-                    .builder()
-                    .setHeader()
-                    .setSkipHeaderRecord(true)
-                    .setIgnoreSurroundingSpaces(true)
-                    .build()
-                    .parse(reader);
+                .builder()
+                .setHeader()
+                .setSkipHeaderRecord(true)
+                .setIgnoreSurroundingSpaces(true)
+                .build()
+                .parse(reader);
+
+            List<String> headers = csvParser.getHeaderNames();
+            String sql = buildInsertSql(tableName, headers);
+            List<Object[]> batchArgs = new ArrayList<>();
+
+            for (CSVRecord record : csvParser) {
+                Object[] rowValues = new Object[headers.size()];
+                for (int i = 0; i < headers.size(); i++) {
+                    // CSV 文本统一走 VariableEngine.evaluate
+                    Object resolved = variableEngine.evaluate(record.get(i), context);
+                    rowValues[i] = "NULL".equalsIgnoreCase(String.valueOf(resolved)) ? null : resolved;
+                }
+                batchArgs.add(rowValues);
+            }
+
+            jdbcTemplate.batchUpdate(sql, batchArgs);
+            log.info("Loaded {} rows into [{}] from CSV: {}", batchArgs.size(), tableName, fileName);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load CSV: " + csvPath, e);
+        }
+    }
+
+    /**
+     * 模式 C: 直接执行SQL
+     *
+     */
+    private void executeSqlSetup(String tableName, String fileName, Map<String, Object> context, String yamlPath) {
+        // 计算相对于 YAML 的路径
+        String csvPath = yamlPath.substring(0, yamlPath.lastIndexOf("/") + 1) + fileName;
+
+        try (Reader reader =
+                 new InputStreamReader(new ClassPathResource(csvPath).getInputStream(), StandardCharsets.UTF_8)) {
+
+            CSVParser csvParser = CSVFormat.DEFAULT
+                .builder()
+                .setHeader()
+                .setSkipHeaderRecord(true)
+                .setIgnoreSurroundingSpaces(true)
+                .build()
+                .parse(reader);
 
             List<String> headers = csvParser.getHeaderNames();
             String sql = buildInsertSql(tableName, headers);
@@ -138,7 +192,7 @@ public class SqlExecutionEngine {
     /**
      * 执行原始 SQL 脚本，支持多行和变量替换
      *
-     * @param rawSql 包含占位符的原始 SQL 字符串
+     * @param rawSql  包含占位符的原始 SQL 字符串
      * @param context 变量上下文
      */
     private void executeRawSql(String rawSql, Map<String, Object> context) {

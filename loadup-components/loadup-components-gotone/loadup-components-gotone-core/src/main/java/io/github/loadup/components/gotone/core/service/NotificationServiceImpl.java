@@ -40,10 +40,8 @@ import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import io.github.loadup.components.gotone.model.NotificationRequest;
 import io.github.loadup.components.gotone.model.NotificationResponse;
 import io.github.loadup.components.gotone.model.NotificationResponse.ChannelSendResult;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -84,7 +82,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public NotificationResponse send(@Valid NotificationRequest request) {
+    public NotificationResponse send(NotificationRequest request) {
         log.info(">>> [GOTONE] 开始发送通知，serviceCode={}, receivers={}",
             request.getServiceCode(), request.getReceivers());
 
@@ -145,8 +143,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    @Async
-    public void sendAsync(@Valid NotificationRequest request) {
+    public void sendAsync(NotificationRequest request) {
         try {
             send(request);
         } catch (Exception e) {
@@ -308,7 +305,9 @@ public class NotificationServiceImpl implements NotificationService {
             case SMS -> receivers.stream()
                 .filter(this::isValidPhone)
                 .toList();
-            case PUSH -> receivers; // PUSH不做过滤
+            case PUSH -> receivers.stream()
+                .filter(this::isPushCompatibleReceiver)
+                .toList();
             default -> receivers;
         };
     }
@@ -325,6 +324,13 @@ public class NotificationServiceImpl implements NotificationService {
      */
     private boolean isValidPhone(String phone) {
         return phone != null && PHONE_PATTERN.matcher(phone).matches();
+    }
+
+    /**
+     * 判断是否为PUSH兼容的接收人（既不是邮箱也不是手机号）
+     */
+    private boolean isPushCompatibleReceiver(String receiver) {
+        return !isValidEmail(receiver) && !isValidPhone(receiver);
     }
 
     /**

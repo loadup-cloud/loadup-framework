@@ -15,13 +15,44 @@ testcontainers:
   reuse:
     enable: true
 
-# Logging
+# Testify 配置
+testify:
+  enabled: true
+  yaml-path: classpath:testcases/**/*.yaml
+  variable:
+    faker:
+      locale: zh-CN
+  assert:
+    timeout: 5000
+    retry-interval: 500
+
+# Gotone 配置
+loadup:
+  gotone:
+    enabled: true
+    sms:
+      aliyun:
+        enabled: true
+        access-key-id: xxx
+        access-key-secret: yyy
+    email:
+      smtp:
+        enabled: true
+        host: smtp.example.com
+    push:
+      fcm:
+        enabled: true
+        server-key: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+
 logging:
   level:
     io.github.loadup.components.gotone: DEBUG
+    io.github.loadup.testify: DEBUG
     org.springframework.jdbc: DEBUG
     org.testcontainers: INFO
     tc.mysql: INFO
+
+
 
 
 

@@ -23,11 +23,13 @@ package io.github.loadup.components.gotone.core.repository;
  */
 
 import com.mybatisflex.core.BaseMapper;
+import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.components.gotone.core.dataobject.NotificationServiceDO;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.Optional;
+
+import static io.github.loadup.components.gotone.core.dataobject.table.Tables.NOTIFICATION_SERVICE_DO;
 
 /**
  * 通知服务配置 Repository
@@ -38,20 +40,20 @@ public interface NotificationServiceRepository extends BaseMapper<NotificationSe
     /**
      * 根据服务代码查询
      */
-    @Select("""
-        SELECT * FROM gotone_notification_service
-        WHERE service_code = #{serviceCode}
-        """)
-    Optional<NotificationServiceDO> findByServiceCode(String serviceCode);
+    default Optional<NotificationServiceDO> findByServiceCode(String serviceCode) {
+        QueryWrapper query = QueryWrapper.create()
+                .where(NOTIFICATION_SERVICE_DO.SERVICE_CODE.eq(serviceCode));
+        return Optional.ofNullable(selectOneByQuery(query));
+    }
 
     /**
      * 根据服务代码查询启用的服务
      */
-    @Select("""
-        SELECT * FROM gotone_notification_service
-        WHERE service_code = #{serviceCode}
-        AND enabled = TRUE
-        """)
-    Optional<NotificationServiceDO> findEnabledByServiceCode(String serviceCode);
+    default Optional<NotificationServiceDO> findEnabledByServiceCode(String serviceCode) {
+        QueryWrapper query = QueryWrapper.create()
+                .where(NOTIFICATION_SERVICE_DO.SERVICE_CODE.eq(serviceCode))
+                .and(NOTIFICATION_SERVICE_DO.ENABLED.eq(true));
+        return Optional.ofNullable(selectOneByQuery(query));
+    }
 }
 

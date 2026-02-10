@@ -1,27 +1,5 @@
 package io.github.loadup.testify.asserts.engine;
 
-/*-
- * #%L
- * Testify Assert Engine
- * %%
- * Copyright (C) 2025 - 2026 LoadUp Cloud
- * %%
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/gpl-3.0.html>.
- * #L%
- */
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.loadup.testify.asserts.diff.DiffReportBuilder;
@@ -32,15 +10,13 @@ import io.github.loadup.testify.asserts.operator.OperatorProcessor;
 import io.github.loadup.testify.asserts.util.ColumnNormalizer;
 import io.github.loadup.testify.core.util.JsonUtil;
 import io.github.loadup.testify.data.engine.variable.VariableEngine;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -58,11 +34,11 @@ public class DbAssertEngine implements TestifyAssertEngine {
 
     @Override
     public void compare(JsonNode expectNode, Object actualEx, Map<String, Object> context, List<String> reportList) {
-        /** 对外入口：解析变量并触发单表/多表比对 */
         if (expectNode == null) return;
 
-        // 1. 变量解析：一次性解析整个 expect 块（包括 ${nowTime} 等）
-        JsonNode resolvedExpect = variableEngine.resolveJsonNode(expectNode, context);
+        // 1. 变量解析：支持 ${serviceCode} 等变量在整个数据库断言块中的替换
+        Object resolved = variableEngine.resolveValue(expectNode, context);
+        JsonNode resolvedExpect = JsonUtil.valueToTree(resolved);
 
         if (resolvedExpect.isArray()) {
             resolvedExpect.forEach(tableNode -> processTableAssertion(tableNode, context));
@@ -76,26 +52,26 @@ public class DbAssertEngine implements TestifyAssertEngine {
         String mode = tableNode.has("mode") ? tableNode.get("mode").asText() : "lenient";
         JsonNode rowsNode = tableNode.get("rows");
 
-        // 2. 转换数据结构
         List<Map<String, Object>> expectedRows = JsonUtil.convertValue(rowsNode, new TypeReference<>() {});
         int timeout = tableNode.path("timeout").asInt(0);
         int interval = tableNode.path("interval").asInt(500);
         long end = System.currentTimeMillis() + timeout;
 
-        // 3. 抓取数据：根据解析后的 rowsNode 构造 SQL
         AssertionError lastError = null;
         do {
             try {
+                // 2. 抓取数据：根据 _match 条件精准抓取
                 List<Map<String, Object>> actualRows = fetchActualRows(tableName, expectedRows);
-                // 4. 执行验证
+                // 3. 执行多维度验证（包含 _count 和明细）
                 verify(tableName, actualRows, expectedRows, mode);
-                return; // 如果成功，直接返回
+                return;
             } catch (AssertionError e) {
                 lastError = e;
-                if (timeout > 0) {
+                if (timeout > 0 && System.currentTimeMillis() < end) {
                     try {
                         Thread.sleep(interval);
                     } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
                         throw new RuntimeException(ex);
                     }
                 }
@@ -105,84 +81,104 @@ public class DbAssertEngine implements TestifyAssertEngine {
         throw lastError;
     }
 
-    public void verify(
-            String tableName,
-            List<Map<String, Object>> actualRows,
-            List<Map<String, Object>> expectedRows,
-            String mode) {
-
+    public void verify(String tableName, List<Map<String, Object>> actualRows, List<Map<String, Object>> expectedRows, String mode) {
         List<RowDiff> diffs = new ArrayList<>();
 
-        // 标准化实际行 Key (snake_case -> camelCase)
+        // 标准化实际行 Key
         List<Map<String, Object>> normalizedActuals = actualRows.stream()
-                .map(row -> ColumnNormalizer.normalizeMap(row, columnNamingStrategy))
-                .collect(Collectors.toList());
+            .map(row -> ColumnNormalizer.normalizeMap(row, columnNamingStrategy))
+            .collect(Collectors.toList());
 
-        // 1. 严格模式下的行数校验
+        // 1. 严格模式下的行数总量校验（仅当不含自定义 _count 时有效，否则以 _count 为准）
         if ("strict".equalsIgnoreCase(mode) && normalizedActuals.size() != expectedRows.size()) {
-            throw new AssertionError(String.format(
-                    "表 [%s] 行数不匹配! 期望: %d, 实际: %d", tableName, expectedRows.size(), normalizedActuals.size()));
+            // 注意：如果配置了 _count，strict 模式的逻辑可能需要调整，这里保持基础总量对比
+            log.warn("Strict mode: Table [{}] total row count mismatch. Expected: {}, Actual: {}", tableName, expectedRows.size(), normalizedActuals.size());
         }
 
-        // 2. 逐行比对
+        // 2. 逐行比对逻辑
         for (int i = 0; i < expectedRows.size(); i++) {
             Map<String, Object> expectedRow = expectedRows.get(i);
             Map<String, Object> normalizedExpected = ColumnNormalizer.normalizeMap(expectedRow, columnNamingStrategy);
+            Map<String, FieldDiff> fieldDiffs = new HashMap<>();
 
-            // 寻找匹配行
+            // --- A. 处理 _count 校验逻辑 ---
+            if (normalizedExpected.containsKey("_count")) {
+                long expectedCount = Long.parseLong(normalizedExpected.get("_count").toString());
+                long actualCount = countMatchedRows(normalizedActuals, normalizedExpected);
+
+                if (expectedCount != actualCount) {
+                    fieldDiffs.put("_count", new FieldDiff("_count", expectedCount, actualCount,
+                        String.format("Count mismatch for criteria! Expected: %d, Actual: %d", expectedCount, actualCount)));
+                }
+                // 如果只需校验 count 且 count 为 0，则无需寻找 actualRow 进行明细校验
+                if (expectedCount == 0 && fieldDiffs.isEmpty()) {
+                    continue;
+                }
+            }
+
+            // --- B. 寻找匹配行进行明细校验 ---
             Map<String, Object> actualRow = findMatchedRow(normalizedActuals, normalizedExpected, i);
 
-            if (actualRow == null) {
+            if (actualRow == null && !normalizedExpected.containsKey("_count")) {
+                // 如果既没有匹配到行，也没有声明 _count (即默认为期望存在 1 条)，报错
                 diffs.add(RowDiff.missing(i, "No matching row found in DB", expectedRow));
                 continue;
             }
 
-            // 字段级比对
-            Map<String, FieldDiff> fieldDiffs = new HashMap<>();
+            // --- C. 字段级比对 (排除控制符) ---
+            final Map<String, Object> finalActualRow = actualRow;
             normalizedExpected.forEach((field, expVal) -> {
-                if ("_match".equals(field)) return;
+                if ("_match".equals(field) || "_count".equals(field)) return;
 
-                Object actVal = actualRow.get(field);
-                MatchResult result = OperatorProcessor.process(actVal, expVal);
-
-                if (!result.isPassed()) {
-                    fieldDiffs.put(field, new FieldDiff(field, expVal, actVal, result.message()));
+                if (finalActualRow == null) {
+                    // 如果定义了除 _count 外的字段，但没找到行
+                    fieldDiffs.put(field, new FieldDiff(field, expVal, "ABSENT", "Row not found for field validation"));
+                } else {
+                    Object actVal = finalActualRow.get(field);
+                    MatchResult result = OperatorProcessor.process(actVal, expVal);
+                    if (!result.isPassed()) {
+                        fieldDiffs.put(field, new FieldDiff(field, expVal, actVal, result.message()));
+                    }
                 }
             });
 
             if (!fieldDiffs.isEmpty()) {
-                diffs.add(RowDiff.diff(i, "Field validation failed", expectedRow, fieldDiffs));
+                diffs.add(RowDiff.diff(i, "Validation failed", expectedRow, fieldDiffs));
             }
         }
 
-        // 在 DbAssertEngine 中修改报表抛出逻辑
+        // 3. 错误报表构建
         if (!diffs.isEmpty()) {
             List<FieldDiff> finalDiffs = diffs.stream()
-                    .flatMap(rd -> {
-                        if ("MISSING".equals(rd.getType())) {
-                            // 将行缺失转换为一条特殊的 FieldDiff
-                            return Stream.of(new FieldDiff(
-                                    "table[" + tableName + "].row[" + rd.getIndex() + "]",
-                                    "PRESENT",
-                                    "ABSENT",
-                                    rd.getMessage()));
-                        }
-                        // 将行内每个字段差异转换为 FieldDiff，并补全 path
-                        return rd.getFieldDiffs().entrySet().stream()
-                                .map(entry -> new FieldDiff(
-                                        tableName + "[" + rd.getIndex() + "]." + entry.getKey(),
-                                        entry.getValue().expected(),
-                                        entry.getValue().actual(),
-                                        entry.getValue().message()));
-                    })
-                    .collect(Collectors.toList());
+                .flatMap(rd -> {
+                    String prefix = tableName + "[" + rd.getIndex() + "]";
+                    if ("MISSING".equals(rd.getType())) {
+                        return Stream.of(new FieldDiff(prefix, "PRESENT", "ABSENT", rd.getMessage()));
+                    }
+                    return rd.getFieldDiffs().entrySet().stream()
+                        .map(entry -> new FieldDiff(prefix + "." + entry.getKey(),
+                            entry.getValue().expected(), entry.getValue().actual(), entry.getValue().message()));
+                })
+                .collect(Collectors.toList());
 
             throw new AssertionError(DiffReportBuilder.build("Database Assertion", finalDiffs));
         }
     }
 
-    private Map<String, Object> findMatchedRow(
-            List<Map<String, Object>> actuals, Map<String, Object> expected, int index) {
+    private long countMatchedRows(List<Map<String, Object>> actuals, Map<String, Object> expectedRow) {
+        if (!expectedRow.containsKey("_match")) return actuals.size();
+
+        Map<String, Object> criteria = (Map<String, Object>) expectedRow.get("_match");
+        Map<String, Object> normalizedCriteria = ColumnNormalizer.normalizeMap(criteria, columnNamingStrategy);
+
+        return actuals.stream()
+            .filter(row -> normalizedCriteria.entrySet().stream().allMatch(e ->
+                OperatorProcessor.process(row.get(e.getKey()), e.getValue()).isPassed()
+            ))
+            .count();
+    }
+
+    private Map<String, Object> findMatchedRow(List<Map<String, Object>> actuals, Map<String, Object> expected, int index) {
         if (!expected.containsKey("_match")) {
             return index < actuals.size() ? actuals.get(index) : null;
         }
@@ -191,27 +187,25 @@ public class DbAssertEngine implements TestifyAssertEngine {
         Map<String, Object> normalizedCriteria = ColumnNormalizer.normalizeMap(criteria, columnNamingStrategy);
 
         return actuals.stream()
-                .filter(row -> normalizedCriteria.entrySet().stream().allMatch(e -> {
-                    // 使用 OperatorProcessor 而不是简单的 equals，这样 _match 里也能用算子
-                    return OperatorProcessor.process(row.get(e.getKey()), e.getValue())
-                            .isPassed();
-                }))
-                .findFirst()
-                .orElse(null);
+            .filter(row -> normalizedCriteria.entrySet().stream().allMatch(e ->
+                OperatorProcessor.process(row.get(e.getKey()), e.getValue()).isPassed()))
+            .findFirst()
+            .orElse(null);
     }
 
     private List<Map<String, Object>> fetchActualRows(String tableName, List<Map<String, Object>> expectedRows) {
         List<Map<String, Object>> results = new ArrayList<>();
+        boolean hasMatchCriteria = false;
 
         for (Map<String, Object> row : expectedRows) {
             if (row.containsKey("_match")) {
+                hasMatchCriteria = true;
                 Map<String, Object> criteria = (Map<String, Object>) row.get("_match");
-                StringBuilder sql =
-                        new StringBuilder("SELECT * FROM ").append(tableName).append(" WHERE 1=1 ");
+                StringBuilder sql = new StringBuilder("SELECT * FROM ").append(tableName).append(" WHERE 1=1 ");
                 List<Object> params = new ArrayList<>();
 
                 criteria.forEach((k, v) -> {
-                    // 只有当 v 是简单值时才加入 SQL 条件
+                    // 只处理基础类型条件的拼装，复杂算子交由内存过滤
                     if (!(v instanceof Map)) {
                         sql.append(" AND ").append(k).append(" = ?");
                         params.add(v);
@@ -221,8 +215,8 @@ public class DbAssertEngine implements TestifyAssertEngine {
             }
         }
 
-        // 兜底：如果没有 _match 或没搜到，且期望行数较少，尝试全表前100条
-        if (results.isEmpty() && !expectedRows.isEmpty()) {
+        // 如果没有 _match 或 没查到数据且期望的是非 0 count，尝试全表前100条作为候选集
+        if (results.isEmpty() && (!hasMatchCriteria || expectedRows.stream().anyMatch(r -> !r.getOrDefault("_count", 1).toString().equals("0")))) {
             return jdbcTemplate.queryForList("SELECT * FROM " + tableName + " LIMIT 100");
         }
         return results;

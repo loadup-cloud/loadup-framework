@@ -23,13 +23,14 @@ package io.github.loadup.components.gotone.core.repository;
  */
 
 import com.mybatisflex.core.BaseMapper;
+import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.components.gotone.core.dataobject.NotificationRecordDO;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static io.github.loadup.components.gotone.core.dataobject.table.Tables.NOTIFICATION_RECORD_DO;
 
 /**
  * 通知记录 Repository
@@ -40,59 +41,64 @@ public interface NotificationRecordRepository extends BaseMapper<NotificationRec
     /**
      * 根据追踪ID查询记录
      */
-    @Select("""
-        SELECT * FROM gotone_notification_record
-        WHERE trace_id = #{traceId}
-        ORDER BY created_at DESC
-        """)
-    List<NotificationRecordDO> findByTraceId(@Param("traceId") String traceId);
+    default List<NotificationRecordDO> findByTraceId(String traceId) {
+        QueryWrapper query = QueryWrapper.create()
+                .where(NOTIFICATION_RECORD_DO.TRACE_ID.eq(traceId))
+                .orderBy(NOTIFICATION_RECORD_DO.CREATED_AT.desc());
+        return selectListByQuery(query);
+    }
 
     /**
      * 根据请求ID查询记录（幂等性）
      */
-    @Select("""
-        SELECT * FROM gotone_notification_record
-        WHERE request_id = #{requestId}
-        LIMIT 1
-        """)
-    NotificationRecordDO findByRequestId(@Param("requestId") String requestId);
+    default NotificationRecordDO findByRequestId(String requestId) {
+        QueryWrapper query = QueryWrapper.create()
+                .where(NOTIFICATION_RECORD_DO.REQUEST_ID.eq(requestId))
+                .limit(1);
+        return selectOneByQuery(query);
+    }
 
     /**
      * 查询需要重试的失败记录
      */
-    @Select("""
-        SELECT * FROM gotone_notification_record
-        WHERE status IN ('FAILED', 'RETRY')
-        AND retry_count < max_retries
-        AND (next_retry_time IS NULL OR next_retry_time <= #{currentTime})
-        ORDER BY next_retry_time ASC
-        LIMIT #{limit}
-        """)
-    List<NotificationRecordDO> findRetryRecords(
-            @Param("currentTime") LocalDateTime currentTime,
-            @Param("limit") int limit);
+    default List<NotificationRecordDO> findRetryRecords(LocalDateTime currentTime, int limit) {
+        QueryWrapper query = QueryWrapper.create()
+                .where(NOTIFICATION_RECORD_DO.STATUS.in("FAILED", "RETRY"))
+                .and(NOTIFICATION_RECORD_DO.RETRY_COUNT.lt(NOTIFICATION_RECORD_DO.MAX_RETRIES))
+                .and(NOTIFICATION_RECORD_DO.NEXT_RETRY_TIME.isNull()
+                        .or(NOTIFICATION_RECORD_DO.NEXT_RETRY_TIME.le(currentTime)))
+                .orderBy(NOTIFICATION_RECORD_DO.NEXT_RETRY_TIME.asc())
+                .limit(limit);
+        return selectListByQuery(query);
+    }
 
     /**
      * 根据服务代码和状态统计
      */
-    @Select("""
-        SELECT COUNT(*) FROM gotone_notification_record
-        WHERE service_code = #{serviceCode}
-        AND status = #{status}
-        """)
-    long countByServiceCodeAndStatus(
-            @Param("serviceCode") String serviceCode,
-            @Param("status") String status);
+    default long countByServiceCodeAndStatus(String serviceCode, String status) {
+        QueryWrapper query = QueryWrapper.create()
+                .where(NOTIFICATION_RECORD_DO.SERVICE_CODE.eq(serviceCode))
+                .and(NOTIFICATION_RECORD_DO.STATUS.eq(status));
+        return selectCountByQuery(query);
+    }
 
     /**
      * 检查请求ID是否存在（幂等性）
      */
-    @Select("""
-        SELECT COUNT(*) > 0 FROM gotone_notification_record
-        WHERE request_id = #{requestId}
-        """)
-    boolean existsByRequestId(@Param("requestId") String requestId);
+    default boolean existsByRequestId(String requestId) {
+        QueryWrapper query = QueryWrapper.create()
+                .where(NOTIFICATION_RECORD_DO.REQUEST_ID.eq(requestId));
+        return selectCountByQuery(query) > 0;
+    }
 
-    @Select("SELECT * FROM gotone_notification_record WHERE status = 'FAILED' AND retry_count < 3 AND created_at >= #{afterTime}")
-    List<NotificationRecordDO> findRetryableRecords(@Param("afterTime") LocalDateTime afterTime);
+    /**
+     * 查询可重试的失败记录
+     */
+    default List<NotificationRecordDO> findRetryableRecords(LocalDateTime afterTime) {
+        QueryWrapper query = QueryWrapper.create()
+                .where(NOTIFICATION_RECORD_DO.STATUS.eq("FAILED"))
+                .and(NOTIFICATION_RECORD_DO.RETRY_COUNT.lt(3))
+                .and(NOTIFICATION_RECORD_DO.CREATED_AT.ge(afterTime));
+        return selectListByQuery(query);
+    }
 }

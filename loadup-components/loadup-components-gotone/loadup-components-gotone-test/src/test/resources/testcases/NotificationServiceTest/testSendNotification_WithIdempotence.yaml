@@ -1,0 +1,73 @@
+# NotificationService 集成测试配置
+# 测试幂等性 - 相同 requestId 只发送一次
+
+variables:
+  serviceCode: "ORDER_CREATED"
+  requestId: "ORDER_${time.now()}"
+  userEmail: "test@example.com"
+  userName: "张三"
+  orderNo: "12345"
+
+setup:
+  clean_sql: |
+    DELETE FROM gotone_notification_record WHERE request_id = '${requestId}';
+    DELETE FROM gotone_service_channel WHERE service_code = '${serviceCode}';
+    DELETE FROM gotone_notification_service WHERE service_code = '${serviceCode}';
+
+    INSERT INTO gotone_notification_service (id, service_code, service_name, enabled, priority, created_at, updated_at)
+    VALUES ('SERVICE_TEST_002', '${serviceCode}', '订单创建通知', TRUE, 10, NOW(), NOW());
+
+    INSERT INTO gotone_service_channel (
+      id, service_code, channel, template_code, template_content,
+      channel_config, provider, enabled, priority, created_at, updated_at
+    ) VALUES (
+      'CHANNEL_TEST_003',
+      '${serviceCode}',
+      'EMAIL',
+      'ORDER_CREATED_EMAIL',
+      '您的订单${orderNoTemp}已创建。',
+      '{"subject": "订单通知"}',
+      'smtp',
+      TRUE,
+      10,
+      NOW(),
+      NOW()
+    );
+
+    -- 预先插入一条记录（模拟已发送）
+    INSERT INTO gotone_notification_record (
+      id, service_code, request_id, channel, receiver, status, retry_count, created_at, updated_at
+    ) VALUES (
+      'RECORD_TEST_001',
+      '${serviceCode}',
+      '${requestId}',
+      'EMAIL',
+      '${userEmail}',
+      'SUCCESS',
+      0,
+      NOW(),
+      NOW()
+    );
+
+input:
+  request: {
+    serviceCode: "${serviceCode}",
+    receivers: [ "${userEmail}" ] ,
+    requestId: '${requestId}',
+    templateParams: { "userName": "${faker.name().firstName()}", "orderNoTemp": "${orderNo}" }
+  }
+
+
+expect:
+  # 响应断言 - 幂等性应返回成功但有提示信息
+  response:
+    "$.success": true
+    "$.errorMessage": { op: contains, val: "幂等性" }
+
+  # 数据库断言 - 记录数量不变（只有1条）
+  database:
+    table: gotone_notification_record
+    rows:
+      - _match: { request_id: "${requestId}" }
+        _count: 1  # 只有1条记录
+
