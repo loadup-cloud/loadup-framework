@@ -29,11 +29,23 @@
 
     <modules>
         <module>loadup-dependencies</module>
-        <module>loadup-commons</module>
-        <module>loadup-components</module>
-        <module>loadup-modules</module>
-        <module>loadup-gateway</module>
-        <module>loadup-testify</module>
+        <module>commons/loadup-commons-api</module>
+        <module>commons/loadup-commons-dto</module>
+        <module>commons/loadup-commons-util</module>
+        <module>components/loadup-components-cache</module>
+        <module>components/loadup-components-captcha</module>
+        <module>components/loadup-components-database</module>
+        <module>components/loadup-components-dfs</module>
+        <module>components/loadup-components-extension</module>
+        <module>components/loadup-components-flyway</module>
+        <module>components/loadup-components-gotone</module>
+        <module>components/loadup-components-scheduler</module>
+        <module>components/loadup-components-testcontainers</module>
+        <module>components/loadup-components-authorization</module>
+        <module>components/loadup-components-tracer</module>
+        <module>modules/loadup-modules-upms</module>
+        <module>middleware/loadup-gateway</module>
+        <module>middleware/loadup-testify</module>
         <module>loadup-application</module>
     </modules>
 
