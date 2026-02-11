@@ -20,11 +20,11 @@ public class CaffeineCacheAutoConfiguration {
     @Bean
     public BindingMetadata<?, ?, ?, ?> caffeineMetadata() {
         return new BindingMetadata<>(
-            "caffeine",
-            DefaultCacheBinding.class,
-            CaffeineCacheBinder.class,
-            CacheBindingCfg.class,
-            CaffeineCacheBinderCfg.class,
-            ctx -> new DefaultCacheBinding());
+                "caffeine",
+                DefaultCacheBinding.class,
+                CaffeineCacheBinder.class,
+                CacheBindingCfg.class,
+                CaffeineCacheBinderCfg.class,
+                ctx -> new DefaultCacheBinding());
     }
 }

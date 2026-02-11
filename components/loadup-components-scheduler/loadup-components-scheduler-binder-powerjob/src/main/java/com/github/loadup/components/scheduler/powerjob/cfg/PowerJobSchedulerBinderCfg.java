@@ -8,5 +8,4 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class PowerJobSchedulerBinderCfg extends SchedulerBinderCfg {
-}
+public class PowerJobSchedulerBinderCfg extends SchedulerBinderCfg {}

@@ -25,7 +25,6 @@ loadup-modules-upms/
 ├── loadup-modules-upms-domain/          # 领域层（Entity、Domain Service）
 ├── loadup-modules-upms-infrastructure/  # 基础设施层（Repository、Mapper）
 ├── loadup-modules-upms-adapter/         # 适配器层（Controller）
-├── loadup-modules-upms-starter/         # Spring Boot Starter
 └── loadup-modules-upms-test/            # 测试
 ```
 
@@ -64,7 +63,7 @@ loadup-modules-upms/
 ```xml
 <dependency>
     <groupId>io.github.loadup-cloud</groupId>
-    <artifactId>loadup-modules-upms-starter</artifactId>
+    <artifactId>loadup-modules-upms-app</artifactId>
 </dependency>
 ```
 

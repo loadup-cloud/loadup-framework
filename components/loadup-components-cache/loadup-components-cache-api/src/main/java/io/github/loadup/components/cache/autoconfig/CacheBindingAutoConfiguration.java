@@ -65,6 +65,4 @@ public class CacheBindingAutoConfiguration {
     public CacheSerializer defaultJsonCacheSerializer() {
         return new JsonCacheSerializer();
     }
-
-
 }

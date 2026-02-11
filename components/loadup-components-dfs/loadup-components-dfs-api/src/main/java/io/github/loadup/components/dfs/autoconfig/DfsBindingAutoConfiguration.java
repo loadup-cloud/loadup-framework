@@ -40,6 +40,4 @@ public class DfsBindingAutoConfiguration {
     public DfsBindingManager dfsBindingManager(DfsGroupProperties props, ApplicationContext context) {
         return new DfsBindingManager(props, context);
     }
-
-
 }

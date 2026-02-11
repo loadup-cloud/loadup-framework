@@ -13,18 +13,17 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(S3DfsBinder.class)
 public class S3DfsAutoConfiguration {
 
-
     /**
      * S3 模块的自动注册逻辑 只有当 classpath 下存在 S3DfsBinding 类时（即引入了 binder-s3 依赖），这段逻辑才生效
      */
     @Bean
     public BindingMetadata<?, ?, ?, ?> s3Metadata() {
         return new BindingMetadata<>(
-            "s3",
-            DefaultDfsBinding.class,
-            S3DfsBinder.class,
-            DfsBindingCfg.class,
-            S3DfsBinderCfg.class,
-            ctx -> new DefaultDfsBinding());
+                "s3",
+                DefaultDfsBinding.class,
+                S3DfsBinder.class,
+                DfsBindingCfg.class,
+                S3DfsBinderCfg.class,
+                ctx -> new DefaultDfsBinding());
     }
 }

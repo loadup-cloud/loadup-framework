@@ -30,7 +30,6 @@
             <version>${project.version}</version>
         </dependency>
 
-
         <!-- Scheduler Binders for Testing -->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

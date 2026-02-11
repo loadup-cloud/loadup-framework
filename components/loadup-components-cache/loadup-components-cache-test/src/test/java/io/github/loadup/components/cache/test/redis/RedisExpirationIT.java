@@ -22,9 +22,17 @@ package io.github.loadup.components.cache.test.redis;
  * #L%
  */
 
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.*;
+
 import io.github.loadup.components.cache.binding.CacheBinding;
 import io.github.loadup.components.cache.manager.CacheBindingManager;
 import io.github.loadup.components.cache.test.common.model.User;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -32,27 +40,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.*;
-
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * Redis Cache Expiration Strategy Test
  */
 @Slf4j
 @TestPropertySource(
-    properties = {
-        "loadup.cache.database=0",
-        // Configure specific cache with short TTL for testing
-        "loadup.cache.bindings.redis-biz-type.expire-after-write=2s",
-        "loadup.cache.bindings.cache-with-random.expire-after-write=5s",
-        "loadup.cache.bindings.cache-with-random.enable-random-expiration=false",
-    })
+        properties = {
+            "loadup.cache.database=0",
+            // Configure specific cache with short TTL for testing
+            "loadup.cache.bindings.redis-biz-type.expire-after-write=2s",
+            "loadup.cache.bindings.cache-with-random.expire-after-write=5s",
+            "loadup.cache.bindings.cache-with-random.enable-random-expiration=false",
+        })
 @DisplayName("Redis 缓存过期策略测试")
 public class RedisExpirationIT extends BaseRedisCacheTest {
     @Autowired
@@ -149,11 +148,11 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
                         String key = "user:" + index;
                         // Wait for expiration
                         await().atMost(6, TimeUnit.SECONDS)
-                            .pollInterval(50, TimeUnit.MILLISECONDS)
-                            .until(() -> {
-                                User u = redisBinding.getObject(key, User.class);
-                                return u == null;
-                            });
+                                .pollInterval(50, TimeUnit.MILLISECONDS)
+                                .until(() -> {
+                                    User u = redisBinding.getObject(key, User.class);
+                                    return u == null;
+                                });
 
                         long expiredAt = System.currentTimeMillis() - startTime;
                         expirationTimes.put(key, expiredAt);
@@ -178,20 +177,20 @@ public class RedisExpirationIT extends BaseRedisCacheTest {
                 long difference = maxExpiration - minExpiration;
 
                 log.info(
-                    "Expiration times - Min: {}ms, Max: {}ms, Diff: {}ms, Count: {}",
-                    minExpiration,
-                    maxExpiration,
-                    difference,
-                    times.size());
+                        "Expiration times - Min: {}ms, Max: {}ms, Diff: {}ms, Count: {}",
+                        minExpiration,
+                        maxExpiration,
+                        difference,
+                        times.size());
 
                 // Redis random expiration may have limited effect - just verify basic expiration works
                 // Relaxed to just ensure items do expire around the expected time
                 assertTrue(
-                    minExpiration > 2000 && minExpiration < 5000,
-                    "Min expiration should be around base TTL (3s). Got: " + minExpiration + "ms");
+                        minExpiration > 2000 && minExpiration < 5000,
+                        "Min expiration should be around base TTL (3s). Got: " + minExpiration + "ms");
                 assertTrue(
-                    maxExpiration < 6000,
-                    "Max expiration should be within TTL + offset range. Got: " + maxExpiration + "ms");
+                        maxExpiration < 6000,
+                        "Max expiration should be within TTL + offset range. Got: " + maxExpiration + "ms");
             } else {
                 log.warn("Only {} keys expired, skipping validation", expirationTimes.size());
             }

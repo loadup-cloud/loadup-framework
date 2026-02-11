@@ -20,7 +20,6 @@
         <module>loadup-modules-upms-infrastructure</module>
         <module>loadup-modules-upms-app</module>
         <module>loadup-modules-upms-adapter</module>
-        <module>loadup-modules-upms-starter</module>
         <module>loadup-modules-upms-test</module>
     </modules>
 

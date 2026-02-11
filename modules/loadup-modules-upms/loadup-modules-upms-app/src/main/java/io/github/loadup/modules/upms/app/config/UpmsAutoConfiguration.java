@@ -2,7 +2,7 @@ package io.github.loadup.modules.upms.app.config;
 
 /*-
  * #%L
- * Loadup Modules UPMS App Layer
+ * Loadup Modules UPMS Starter
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,16 +22,28 @@ package io.github.loadup.modules.upms.app.config;
  * #L%
  */
 
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * Security Bean Configuration
+ * UPMS Auto Configuration
+ *
+ * @author LoadUp Framework
+ * @since 1.0.0
  */
-@Configuration
-public class PasswordEncoderConfig {
+@AutoConfiguration
+@EnableConfigurationProperties(UpmsSecurityProperties.class)
+@MapperScan("io.github.loadup.modules.upms.infrastructure.mapper")
+@ComponentScan(
+        basePackages = {
+            "io.github.loadup.modules.upms",
+        })
+public class UpmsAutoConfiguration {
 
     @Bean
     public PasswordEncoder passwordEncoder() {

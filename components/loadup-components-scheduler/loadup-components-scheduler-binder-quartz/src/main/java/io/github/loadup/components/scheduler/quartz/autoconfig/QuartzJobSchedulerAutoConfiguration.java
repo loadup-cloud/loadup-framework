@@ -13,18 +13,17 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(QuartzJobSchedulerBinder.class)
 public class QuartzJobSchedulerAutoConfiguration {
 
-
     /**
      *
      */
     @Bean
     public BindingMetadata<?, ?, ?, ?> quartzJobMetadata() {
         return new BindingMetadata<>(
-            "quartzjob",
-            DefaultSchedulerBinding.class,
-            QuartzJobSchedulerBinder.class,
-            SchedulerBindingCfg.class,
-            QuartzJobSchedulerBinderCfg.class,
-            ctx -> new DefaultSchedulerBinding());
+                "quartzjob",
+                DefaultSchedulerBinding.class,
+                QuartzJobSchedulerBinder.class,
+                SchedulerBindingCfg.class,
+                QuartzJobSchedulerBinderCfg.class,
+                ctx -> new DefaultSchedulerBinding());
     }
 }

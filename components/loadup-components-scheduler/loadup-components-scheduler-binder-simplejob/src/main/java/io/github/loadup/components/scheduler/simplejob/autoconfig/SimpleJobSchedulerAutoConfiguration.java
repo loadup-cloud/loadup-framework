@@ -13,15 +13,14 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(SimpleJobSchedulerBinder.class)
 public class SimpleJobSchedulerAutoConfiguration {
 
-
     @Bean
     public BindingMetadata<?, ?, ?, ?> simpleJobMetadata() {
         return new BindingMetadata<>(
-            "simplejob",
-            DefaultSchedulerBinding.class,
-            SimpleJobSchedulerBinder.class,
-            SchedulerBindingCfg.class,
-            SimpleJobSchedulerBinderCfg.class,
-            ctx -> new DefaultSchedulerBinding());
+                "simplejob",
+                DefaultSchedulerBinding.class,
+                SimpleJobSchedulerBinder.class,
+                SchedulerBindingCfg.class,
+                SimpleJobSchedulerBinderCfg.class,
+                ctx -> new DefaultSchedulerBinding());
     }
 }

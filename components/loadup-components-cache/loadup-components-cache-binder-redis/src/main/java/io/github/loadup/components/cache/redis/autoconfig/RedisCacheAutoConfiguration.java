@@ -19,11 +19,11 @@ public class RedisCacheAutoConfiguration {
     @Bean
     public BindingMetadata<?, ?, ?, ?> redisMetadata() {
         return new BindingMetadata<>(
-            "redis",
-            DefaultCacheBinding.class,
-            RedisCacheBinder.class,
-            CacheBindingCfg.class,
-            RedisCacheBinderCfg.class,
-            ctx -> new DefaultCacheBinding());
+                "redis",
+                DefaultCacheBinding.class,
+                RedisCacheBinder.class,
+                CacheBindingCfg.class,
+                RedisCacheBinderCfg.class,
+                ctx -> new DefaultCacheBinding());
     }
 }

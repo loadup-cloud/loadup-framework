@@ -22,8 +22,8 @@ package io.github.loadup.upms.api.constant;
  * #L%
  */
 
-import io.github.loadup.framework.api.result.ResultCode;
 import io.github.loadup.commons.result.ResultStatusEnum;
+import io.github.loadup.framework.api.result.ResultCode;
 import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

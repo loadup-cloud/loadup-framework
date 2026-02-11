@@ -18,11 +18,11 @@ public class DatabaseDfsAutoConfiguration {
     @Bean
     public BindingMetadata<?, ?, ?, ?> dbMetadata() {
         return new BindingMetadata<>(
-            "database",
-            DefaultDfsBinding.class,
-            DatabaseDfsBinder.class,
-            DfsBindingCfg.class,
-            DatabaseDfsBinderCfg.class,
-            ctx -> new DefaultDfsBinding());
+                "database",
+                DefaultDfsBinding.class,
+                DatabaseDfsBinder.class,
+                DfsBindingCfg.class,
+                DatabaseDfsBinderCfg.class,
+                ctx -> new DefaultDfsBinding());
     }
 }

@@ -18,11 +18,11 @@ public class LocalDfsAutoConfiguration {
     @Bean
     public BindingMetadata<?, ?, ?, ?> dbMetadata() {
         return new BindingMetadata<>(
-            "local",
-            DefaultDfsBinding.class,
-            LocalDfsBinder.class,
-            DfsBindingCfg.class,
-            LocalDfsBinderCfg.class,
-            ctx -> new DefaultDfsBinding());
+                "local",
+                DefaultDfsBinding.class,
+                LocalDfsBinder.class,
+                DfsBindingCfg.class,
+                LocalDfsBinderCfg.class,
+                ctx -> new DefaultDfsBinding());
     }
 }

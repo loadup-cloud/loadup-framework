@@ -14,18 +14,17 @@ import tech.powerjob.worker.core.processor.sdk.BasicProcessor;
 @ConditionalOnClass(BasicProcessor.class)
 public class PowerJobSchedulerAutoConfiguration {
 
-
     /**
      * S3 模块的自动注册逻辑 只有当 classpath 下存在 S3DfsBinding 类时（即引入了 binder-s3 依赖），这段逻辑才生效
      */
     @Bean
     public BindingMetadata<?, ?, ?, ?> s3Metadata() {
         return new BindingMetadata<>(
-            "powerjob",
-            DefaultSchedulerBinding.class,
-            PowerJobSchedulerBinder.class,
-            SchedulerBinding.class,
-            PowerJobSchedulerBinderCfg.class,
-            ctx -> new DefaultSchedulerBinding());
+                "powerjob",
+                DefaultSchedulerBinding.class,
+                PowerJobSchedulerBinder.class,
+                SchedulerBinding.class,
+                PowerJobSchedulerBinderCfg.class,
+                ctx -> new DefaultSchedulerBinding());
     }
 }

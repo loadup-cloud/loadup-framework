@@ -48,8 +48,7 @@ public class SchedulerBindingAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public SchedulerJobInitializer schedulerJobInitializer(
-        ApplicationContext context, SchedulerBindingManager manager) {
+            ApplicationContext context, SchedulerBindingManager manager) {
         return new SchedulerJobInitializer(context, manager);
     }
-
 }
