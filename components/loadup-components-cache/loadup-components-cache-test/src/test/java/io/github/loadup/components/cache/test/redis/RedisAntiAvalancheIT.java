@@ -22,19 +22,20 @@ package io.github.loadup.components.cache.test.redis;
  * #L%
  */
 
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.*;
-
 import io.github.loadup.components.cache.binding.CacheBinding;
-import io.github.loadup.components.cache.starter.manager.CacheBindingManager;
+import io.github.loadup.components.cache.manager.CacheBindingManager;
 import io.github.loadup.components.cache.test.common.model.User;
-import java.util.*;
-import java.util.concurrent.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.*;
+import org.springframework.test.context.TestPropertySource;
+
+import java.util.*;
+import java.util.concurrent.*;
+
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Redis Cache Anti-Avalanche Test Tests strategies to prevent cache avalanche, penetration, and
@@ -42,14 +43,14 @@ import org.springframework.test.context.*;
  */
 @Slf4j
 @TestPropertySource(
-        properties = {
-            "loadup.cache.binder=redis",
-            // Configure cache with anti-avalanche strategies
-            "loadup.cache.bindings.redis-biz-type.expire-after-write=5s",
-            "loadup.cache.bindings.cache-with-random.expire-after-write=5s",
-            "loadup.cache.bindings.cache-with-random.enable-random-expiration=true",
-            "loadup.cache.bindings.cache-with-random.random-offset-seconds=2",
-        })
+    properties = {
+        "loadup.cache.binder=redis",
+        // Configure cache with anti-avalanche strategies
+        "loadup.cache.bindings.redis-biz-type.expire-after-write=5s",
+        "loadup.cache.bindings.cache-with-random.expire-after-write=5s",
+        "loadup.cache.bindings.cache-with-random.enable-random-expiration=true",
+        "loadup.cache.bindings.cache-with-random.random-offset-seconds=2",
+    })
 @DisplayName("Redis 缓存防雪崩测试")
 public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
     @Autowired
@@ -123,17 +124,17 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
             long timeRange = maxTime - minTime;
 
             log.info(
-                    "Expiration times - Min: {}ms, Max: {}ms, Range: {}ms, Count: {}",
-                    minTime,
-                    maxTime,
-                    timeRange,
-                    times.size());
+                "Expiration times - Min: {}ms, Max: {}ms, Range: {}ms, Count: {}",
+                minTime,
+                maxTime,
+                timeRange,
+                times.size());
 
             // Redis implementation may have limited random expiration effect
             // Just verify expirations are happening in a reasonable time window
             assertTrue(
-                    minTime > 4000 && minTime < 8000,
-                    "Min expiration should be around base TTL (5s ± offset). Got: " + minTime + "ms");
+                minTime > 4000 && minTime < 8000,
+                "Min expiration should be around base TTL (5s ± offset). Got: " + minTime + "ms");
             assertTrue(maxTime < 10000, "Max expiration should be within reasonable range. Got: " + maxTime + "ms");
 
             log.info("Random expiration test passed with expiration range validation");
@@ -292,11 +293,11 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
 
             // Then - Analyze results
             long withRandomRange = withRandomExpTimes.isEmpty()
-                    ? 0
-                    : Collections.max(withRandomExpTimes) - Collections.min(withRandomExpTimes);
+                ? 0
+                : Collections.max(withRandomExpTimes) - Collections.min(withRandomExpTimes);
             long noRandomRange = noRandomExpTimes.isEmpty()
-                    ? 0
-                    : Collections.max(noRandomExpTimes) - Collections.min(noRandomExpTimes);
+                ? 0
+                : Collections.max(noRandomExpTimes) - Collections.min(noRandomExpTimes);
 
             log.info("With random expiration - Count: {}, Range: {}ms", withRandomExpTimes.size(), withRandomRange);
             log.info("Without random expiration - Count: {}, Range: {}ms", noRandomExpTimes.size(), noRandomRange);
@@ -391,9 +392,9 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
             // If less than half were cached successfully, skip expiration testing
             if (initialCached < massiveKeyCount * 0.5) {
                 log.warn(
-                        "Only {}/{} keys were successfully cached, skipping expiration test",
-                        initialCached,
-                        massiveKeyCount);
+                    "Only {}/{} keys were successfully cached, skipping expiration test",
+                    initialCached,
+                    massiveKeyCount);
                 return;
             }
 
@@ -443,16 +444,16 @@ public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
             // Calculate based on what was actually cached initially
             int expectedMinExpired = (int) (initialCached * 0.5);
             assertTrue(
-                    finalExpired >= expectedMinExpired,
-                    String.format(
-                            "At least half of initially cached keys (%d/%d) should expire. Got: %d",
-                            expectedMinExpired, initialCached, finalExpired));
+                finalExpired >= expectedMinExpired,
+                String.format(
+                    "At least half of initially cached keys (%d/%d) should expire. Got: %d",
+                    expectedMinExpired, initialCached, finalExpired));
 
             log.info(
-                    "Massive key expiration test completed. Final expired: {}/{} (initially cached: {})",
-                    finalExpired,
-                    massiveKeyCount,
-                    initialCached);
+                "Massive key expiration test completed. Final expired: {}/{} (initially cached: {})",
+                finalExpired,
+                massiveKeyCount,
+                initialCached);
 
         } finally {
             //      cacheBinding.deleteAll(cacheName);

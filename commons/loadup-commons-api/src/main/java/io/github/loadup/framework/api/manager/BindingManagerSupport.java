@@ -22,30 +22,41 @@ package io.github.loadup.framework.api.manager;
  * #L%
  */
 
-import io.github.loadup.exception.BinderNotFoundException;
 import io.github.loadup.framework.api.binder.Binder;
 import io.github.loadup.framework.api.binding.Binding;
 import io.github.loadup.framework.api.cfg.BaseBinderCfg;
 import io.github.loadup.framework.api.cfg.BaseBindingCfg;
 import io.github.loadup.framework.api.context.BindingContext;
-import java.util.*;
+import io.github.loadup.framework.api.exception.BinderNotFoundException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.EmbeddedValueResolverAware;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.util.StringValueResolver;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.springframework.context.ApplicationContext;
-import org.springframework.util.StringUtils;
 
-public abstract class BindingManagerSupport<B extends Binder, T extends Binding> {
+public abstract class BindingManagerSupport<B extends Binder, T extends Binding> implements EmbeddedValueResolverAware {
     protected final ApplicationContext context;
     protected final String configPrefix;
 
     protected final Map<String, BindingMetadata<?, ?, ?, ?>> registry = new ConcurrentHashMap<>();
     protected final Map<String, T> bindingCache = new ConcurrentHashMap<>();
+    protected final Map<String, B> binderInstanceCache = new ConcurrentHashMap<>();
     protected final Map<String, Object> binderCfgCache = new ConcurrentHashMap<>();
+    private StringValueResolver valueResolver;
 
     protected BindingManagerSupport(ApplicationContext context, String configPrefix) {
         this.context = context;
         this.configPrefix = configPrefix;
+    }
+
+    @Override
+    public void setEmbeddedValueResolver(StringValueResolver resolver) {
+        this.valueResolver = resolver;
     }
 
     public void register(String type, BindingMetadata<?, ?, ?, ?> meta) {
@@ -65,7 +76,7 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
             // 1. 探测类型 (逻辑不变)
             BaseBindingCfg basic = resolveConfig(configPrefix + ".bindings." + tag, BaseBindingCfg.class);
             String binderTypeStr =
-                    (basic.getBinderType() != null) ? basic.getBinderType().toLowerCase() : getDefaultBinderType();
+                (basic.getBinderType() != null) ? basic.getBinderType().toLowerCase() : getDefaultBinderType();
             // 这里取第一个类型作为 Meta 获取的 Key (通常同领域的 Meta 是共享的)
             String primaryType = binderTypeStr.split(",")[0].trim().toLowerCase();
             // 2. 获取元数据
@@ -79,13 +90,15 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
         });
     }
 
-    /** 捕获方法：在这个方法内，泛型被重新绑定，编译器不再抱怨 Object 转换问题 */
+    /**
+     * 捕获方法：在这个方法内，泛型被重新绑定，编译器不再抱怨 Object 转换问题
+     */
     @SuppressWarnings("unchecked")
     private <B_SUB extends B, CBIND extends BaseBindingCfg, CBINDR extends BaseBinderCfg, T_SUB extends T>
-            T_SUB captureAndCreate(String tag, String binderTypes, BindingMetadata<B_SUB, CBIND, CBINDR, T_SUB> meta) {
+    T_SUB captureAndCreate(String tag, String binderTypes, BindingMetadata<B_SUB, CBIND, CBINDR, T_SUB> meta) {
         // 解析配置
         CBIND bindingCfg = resolveConfig(configPrefix + ".bindings." + tag, meta.bindingCfgClass);
-
+        resolveSpelProperties(bindingCfg);
         // 创建驱动列表 (支持多级缓存核心逻辑)
         List<B_SUB> binders = new ArrayList<>();
         for (String type : binderTypes.split(",")) {
@@ -93,8 +106,12 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
 
             // 获取或缓存组件层配置 (如 Redis 的 Host/DB)
             CBINDR binderCfg = (CBINDR) binderCfgCache.computeIfAbsent(
-                    trimmedType, t -> resolveConfig(configPrefix + ".binders." + t, meta.binderCfgClass));
-
+                trimmedType, t -> {
+                    CBINDR cfg = resolveConfig(configPrefix + ".binders." + t, meta.binderCfgClass);
+                    // D. 【新增】组件层配置也支持 SpEL (例如 redis.host: "${REDIS_HOST}")
+                    resolveSpelProperties(cfg);
+                    return cfg;
+                });
             // 创建并注入配置
             binders.add(createOne(meta, tag, binderCfg, bindingCfg));
         }
@@ -108,19 +125,23 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
     }
 
     private <B_SUB extends B, CBIND extends BaseBindingCfg, CBINDR extends BaseBinderCfg, T_SUB extends T>
-            B_SUB createOne(
-                    BindingMetadata<B_SUB, CBIND, CBINDR, T_SUB> meta,
-                    String name,
-                    CBINDR binderCfg,
-                    CBIND bindingCfg) {
+    B_SUB createOne(
+        BindingMetadata<B_SUB, CBIND, CBINDR, T_SUB> meta,
+        String name,
+        CBINDR binderCfg,
+        CBIND bindingCfg) {
 
-        // 利用 Spring 容器创建实例，保证 @Autowired 生效
-        B_SUB binderInstance = (B_SUB) context.getAutowireCapableBeanFactory().createBean(meta.binderClass);
 
-        // 执行双重配置注入：业务名、组件配置、业务覆盖配置
-        binderInstance.injectConfigs(name, binderCfg, bindingCfg);
+        // 建议按 type + tag 缓存，或者全局按 type 缓存（取决于 Binder 是否可复用）
+        String cacheKey = meta.type + ":" + binderCfg.hashCode();
 
-        return binderInstance;
+        return (B_SUB) binderInstanceCache.computeIfAbsent(cacheKey, k -> {
+            // 利用 Spring 容器创建实例，保证 @Autowired 生效
+            B_SUB binderInstance = (B_SUB) context.getAutowireCapableBeanFactory().createBean(meta.binderClass);
+            binderInstance.injectConfigs(name, binderCfg, bindingCfg);
+            // 如果 Binder 有 init 方法也可以在这里调用
+            return binderInstance;
+        });
     }
 
     protected abstract String getDefaultBinderType();
@@ -131,8 +152,8 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
 
     protected <C> C resolveConfig(String path, Class<C> configClass) {
         return org.springframework.boot.context.properties.bind.Binder.get(context.getEnvironment())
-                .bind(path, configClass)
-                .orElseGet(() -> createDefaultConfig(configClass));
+            .bind(path, configClass)
+            .orElseGet(() -> createDefaultConfig(configClass));
     }
 
     private <C> C createDefaultConfig(Class<C> configClass) {
@@ -142,5 +163,21 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
         } catch (Exception e) {
             throw new RuntimeException(e);
         } // 如果是 getBinding 探测，建议报错：bizTag 未在配置文件中定义
+    }
+
+    protected void resolveSpelProperties(Object config) {
+        if (config == null || valueResolver == null) return;
+
+        ReflectionUtils.doWithFields(config.getClass(), field -> {
+            if (field.getType() == String.class) {
+                ReflectionUtils.makeAccessible(field);
+                String value = (String) field.get(config);
+                if (StringUtils.hasText(value)) {
+                    // 解析 ${...} 或 #{...}
+                    String resolvedValue = valueResolver.resolveStringValue(value);
+                    field.set(config, resolvedValue);
+                }
+            }
+        });
     }
 }

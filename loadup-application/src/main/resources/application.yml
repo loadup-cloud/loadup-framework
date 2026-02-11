@@ -33,8 +33,11 @@ loadup:
       # When type = FILE, configure the `file` group below
       file:
         base-path: /Users/lise/PersonalSpace/loadup-cloud/loadup-parent/loadup-application/src/main/resources/gateway-config
-
-      #
+  retrytask:
+    scheduler:
+      enabled: true
+  scheduler:
+    type: simplejob
 
 logging:
   level:

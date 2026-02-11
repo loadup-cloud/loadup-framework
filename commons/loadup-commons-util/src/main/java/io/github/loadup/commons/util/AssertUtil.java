@@ -24,7 +24,7 @@ package io.github.loadup.commons.util;
 
 import io.github.loadup.commons.error.AssertionCallback;
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.result.ResultCode;
+import io.github.loadup.framework.api.result.ResultCode;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;

@@ -22,7 +22,7 @@ package io.github.loadup.commons.enums;
  * #L%
  */
 
-import io.github.loadup.commons.result.ResultCode;
+import io.github.loadup.framework.api.result.ResultCode;
 import io.github.loadup.commons.result.ResultStatusEnum;
 import java.util.Arrays;
 import lombok.Getter;

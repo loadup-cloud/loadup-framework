@@ -22,7 +22,7 @@ package io.github.loadup.commons.error;
  * #L%
  */
 
-import io.github.loadup.commons.result.ResultCode;
+import io.github.loadup.framework.api.result.ResultCode;
 import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;

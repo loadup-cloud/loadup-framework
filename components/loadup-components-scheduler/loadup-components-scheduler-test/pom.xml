@@ -29,11 +29,7 @@
             <artifactId>loadup-components-scheduler-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-scheduler-starter</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+
 
         <!-- Scheduler Binders for Testing -->
         <dependency>

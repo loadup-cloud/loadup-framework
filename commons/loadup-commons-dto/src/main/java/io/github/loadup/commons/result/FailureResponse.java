@@ -25,6 +25,7 @@ package io.github.loadup.commons.result;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.github.loadup.framework.api.result.ResultCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /** 失败响应实现 使用 Record 保证数据不可变，通过 Jackson 注解确保 JSON 格式平整 */

@@ -27,25 +27,19 @@ import io.github.loadup.retrytask.core.RetryTaskExecutor;
 import io.github.loadup.retrytask.core.RetryTaskService;
 import io.github.loadup.retrytask.core.config.RetryTaskProperties;
 import io.github.loadup.retrytask.facade.model.RetryTask;
+import lombok.extern.slf4j.Slf4j;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
 
 /**
  * Scheduler for scanning and executing retry tasks
  */
 @Slf4j
-@Component
-@ConditionalOnProperty(
-        prefix = "loadup.retrytask",
-        name = "scheduler.enabled",
-        havingValue = "true",
-        matchIfMissing = true)
+
 public class RetryTaskScheduler {
 
     private final RetryTaskService retryTaskService;
@@ -53,9 +47,9 @@ public class RetryTaskScheduler {
     private final RetryTaskProperties retryTaskProperties;
 
     public RetryTaskScheduler(
-            RetryTaskService retryTaskService,
-            RetryTaskExecutor retryTaskExecutor,
-            RetryTaskProperties retryTaskProperties) {
+        RetryTaskService retryTaskService,
+        RetryTaskExecutor retryTaskExecutor,
+        RetryTaskProperties retryTaskProperties) {
         this.retryTaskService = retryTaskService;
         this.retryTaskExecutor = retryTaskExecutor;
         this.retryTaskProperties = retryTaskProperties;
@@ -67,16 +61,17 @@ public class RetryTaskScheduler {
      * Default: every 1 minute
      */
     @DistributedScheduler(
-            name = "RetryTaskScan",
-            cron = "${loadup.retrytask.scheduler.scan-cron:0 * * * * ?}",
-            bizTag = "retry")
+        name = "RetryTaskScan",
+        cron = "${loadup.retrytask.scheduler.scan-cron:0 * * * * ?}",
+        bizTag = "retry")
     public void scanAndExecute() {
         try {
+            log.debug(">>> [RETRY-TASK] Run RetryTaskScan in scheduler");
             int batchSize = 100; // TODO: make configurable
 
             Set<String> bizTypes = retryTaskProperties.getBizTypes() != null
-                    ? retryTaskProperties.getBizTypes().keySet()
-                    : Collections.emptySet();
+                ? retryTaskProperties.getBizTypes().keySet()
+                : Collections.emptySet();
 
             if (bizTypes.isEmpty()) {
                 // If no bizTypes configured, fallback to global pull
@@ -113,9 +108,9 @@ public class RetryTaskScheduler {
         }
 
         log.info(
-                ">>> [RETRY-TASK] Found {} pending tasks to execute for bizType={}",
-                tasks.size(),
-                bizType != null ? bizType : "ALL");
+            ">>> [RETRY-TASK] Found {} pending tasks to execute for bizType={}",
+            tasks.size(),
+            bizType != null ? bizType : "ALL");
 
         // Sort by priority (H > L) and next retry time
         tasks.sort(Comparator.comparing(RetryTask::getPriority).reversed().thenComparing(RetryTask::getNextRetryTime));
@@ -126,10 +121,10 @@ public class RetryTaskScheduler {
                 retryTaskExecutor.executeAsync(task);
             } catch (Exception e) {
                 log.error(
-                        ">>> [RETRY-TASK] Error submitting task: bizType={}, bizId={}",
-                        task.getBizType(),
-                        task.getBizId(),
-                        e);
+                    ">>> [RETRY-TASK] Error submitting task: bizType={}, bizId={}",
+                    task.getBizType(),
+                    task.getBizId(),
+                    e);
             }
         }
     }
@@ -139,9 +134,9 @@ public class RetryTaskScheduler {
      * Default: every 5 minutes
      */
     @DistributedScheduler(
-            name = "RetryTaskZombieCheck",
-            cron = "${loadup.retrytask.scheduler.zombie-check-cron:0 */5 * * * * ?}",
-            bizTag = "retry")
+        name = "RetryTaskZombieCheck",
+        cron = "${loadup.retrytask.scheduler.zombie-check-cron:0 */5 * * * ?}",
+        bizTag = "retry")
     public void resetStuckTasks() {
         try {
             // Tasks running for more than 5 minutes are considered stuck

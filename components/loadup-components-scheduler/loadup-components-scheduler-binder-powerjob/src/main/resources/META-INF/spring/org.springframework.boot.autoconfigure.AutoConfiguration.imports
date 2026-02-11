@@ -1,2 +1,1 @@
-io.github.loadup.components.scheduler.powerjob.config.PowerJobSchedulerBinderAutoConfiguration
-
+com.github.loadup.components.scheduler.powerjob.autoconfig.PowerJobSchedulerAutoConfiguration

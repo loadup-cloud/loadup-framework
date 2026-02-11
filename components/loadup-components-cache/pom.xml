@@ -18,7 +18,6 @@
         <module>loadup-components-cache-api</module>
         <module>loadup-components-cache-binder-caffeine</module>
         <module>loadup-components-cache-binder-redis</module>
-        <module>loadup-components-cache-starter</module>
         <module>loadup-components-cache-test</module>
     </modules>
 

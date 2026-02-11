@@ -628,11 +628,7 @@
                 <artifactId>loadup-components-dfs-binder-local</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-dfs-starter</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-dfs-test</artifactId>
@@ -667,11 +663,6 @@
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-scheduler-binder-xxljob</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-scheduler-starter</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
