@@ -24,6 +24,8 @@ package io.github.loadup.components.testcontainers.listener;
 
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
+import io.github.loadup.components.testcontainers.cache.SharedRedisContainer;
+import io.github.loadup.components.testcontainers.cloud.SharedLocalStackContainer;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import io.github.loadup.components.testcontainers.database.SharedMongoDBContainer;
 import io.github.loadup.components.testcontainers.database.SharedMySQLContainer;
@@ -192,8 +194,9 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
                 yield SharedMongoDBContainer.getProperties();
             }
             case REDIS -> {
-                log.warn(">>> [TESTCONTAINERS] Redis container not yet fully implemented");
-                yield Map.of();
+                log.info(">>> [TESTCONTAINERS] Starting Redis container...");
+                SharedRedisContainer.startContainer(config);
+                yield SharedRedisContainer.getProperties();
             }
             case KAFKA -> {
                 log.info(">>> [TESTCONTAINERS] Starting Kafka container...");
@@ -206,8 +209,9 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
                 yield SharedElasticsearchContainer.getProperties();
             }
             case LOCALSTACK -> {
-                log.warn(">>> [TESTCONTAINERS] LocalStack container requires additional configuration");
-                yield Map.of();
+                log.info(">>> [TESTCONTAINERS] Starting LocalStack container...");
+                SharedLocalStackContainer.startContainer(config);
+                yield SharedLocalStackContainer.getProperties();
             }
         };
     }

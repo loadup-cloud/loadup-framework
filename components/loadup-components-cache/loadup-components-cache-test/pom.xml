@@ -22,6 +22,7 @@
         <project.build.encoding>${project.encoding}</project.build.encoding>
         <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
+        <skip.deploy>true</skip.deploy>
     </properties>
     <dependencies>
 

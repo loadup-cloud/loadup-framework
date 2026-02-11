@@ -23,6 +23,7 @@ package io.github.loadup.components.testcontainers.cache;
  */
 
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.GenericContainer;
@@ -54,24 +55,36 @@ import org.testcontainers.utility.DockerImageName;
 @Slf4j
 public class SharedRedisContainer {
 
-    /** Default Redis version to use */
+    /**
+     * Default Redis version to use
+     */
     public static final String DEFAULT_REDIS_VERSION = "redis:7-alpine";
 
-    /** Redis default port */
+    /**
+     * Redis default port
+     */
     public static final int REDIS_PORT = 6379;
 
-    /** The shared Redis container instance */
+    /**
+     * The shared Redis container instance
+     */
     private static GenericContainer<?> REDIS_CONTAINER;
 
     private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
-    /** Redis host for the shared container */
+    /**
+     * Redis host for the shared container
+     */
     private static String HOST = "localhost";
 
-    /** Redis port for the shared container */
+    /**
+     * Redis port for the shared container
+     */
     private static Integer PORT = REDIS_PORT;
 
-    /** Redis connection URL */
+    /**
+     * Redis connection URL
+     */
     private static String URL;
 
     public static void startContainer(ContainerConfig config) {
@@ -153,12 +166,20 @@ public class SharedRedisContainer {
         return URL;
     }
 
-    /** Private constructor to prevent instantiation */
+    /**
+     * Private constructor to prevent instantiation
+     */
     private SharedRedisContainer() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
     public static boolean isStarted() {
         return STARTED.get();
+    }
+
+    public static Map<String, String> getProperties() {
+        return Map.of(
+                "spring.data.redis.host", getHost(),
+                "spring.data.redis.port", getMappedPort().toString());
     }
 }

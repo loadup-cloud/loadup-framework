@@ -23,6 +23,7 @@ package io.github.loadup.components.testcontainers.database;
  */
 
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.mysql.MySQLContainer;
@@ -55,36 +56,56 @@ import org.testcontainers.utility.DockerImageName;
 @Slf4j
 public class SharedMySQLContainer {
 
-    /** Default MySQL version to use */
+    /**
+     * Default MySQL version to use
+     */
     public static final String DEFAULT_MYSQL_VERSION = "mysql:8.0";
 
-    /** Default database name */
+    /**
+     * Default database name
+     */
     private static final String DEFAULT_DATABASE_NAME = "testdb";
 
-    /** Default username */
+    /**
+     * Default username
+     */
     private static final String DEFAULT_USERNAME = "test";
 
-    /** Default password */
+    /**
+     * Default password
+     */
     private static final String DEFAULT_PASSWORD = "test";
 
-    /** The shared MySQL container instance */
+    /**
+     * The shared MySQL container instance
+     */
     private static MySQLContainer MYSQL_CONTAINER;
 
     private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
-    /** JDBC URL for the shared MySQL container */
+    /**
+     * JDBC URL for the shared MySQL container
+     */
     private static String JDBC_URL;
 
-    /** Username for the shared MySQL container */
+    /**
+     * Username for the shared MySQL container
+     */
     private static String USERNAME;
 
-    /** Password for the shared MySQL container */
+    /**
+     * Password for the shared MySQL container
+     */
     private static String PASSWORD;
 
-    /** Database name for the shared MySQL container */
+    /**
+     * Database name for the shared MySQL container
+     */
     private static String DATABASE_NAME;
 
-    /** JDBC driver class name */
+    /**
+     * JDBC driver class name
+     */
     public static final String DRIVER_CLASS_NAME = "com.mysql.cj.jdbc.Driver";
 
     /**
@@ -229,15 +250,17 @@ public class SharedMySQLContainer {
      *
      * @return map of property names to values
      */
-    public static java.util.Map<String, String> getProperties() {
-        return java.util.Map.of(
+    public static Map<String, String> getProperties() {
+        return Map.of(
                 "spring.datasource.url", getJdbcUrl(),
                 "spring.datasource.username", getUsername(),
                 "spring.datasource.password", getPassword(),
                 "spring.datasource.driver-class-name", getDriverClassName());
     }
 
-    /** Private constructor to prevent instantiation */
+    /**
+     * Private constructor to prevent instantiation
+     */
     private SharedMySQLContainer() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }

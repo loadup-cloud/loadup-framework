@@ -16,7 +16,7 @@ public class LocalDfsAutoConfiguration {
      * Local 模块的自动注册逻辑
      */
     @Bean
-    public BindingMetadata<?, ?, ?, ?> dbMetadata() {
+    public BindingMetadata<?, ?, ?, ?> localMetadata() {
         return new BindingMetadata<>(
                 "local",
                 DefaultDfsBinding.class,

@@ -36,6 +36,7 @@ loadup:
 
   testcontainers:
     enabled: true
+
 logging:
   level:
     io.github.loadup.components.cache: DEBUG

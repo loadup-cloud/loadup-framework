@@ -24,7 +24,8 @@ package io.github.loadup.components.cache.test.redis;
 
 import io.github.loadup.components.cache.binding.CacheBinding;
 import io.github.loadup.components.cache.test.TestApplication;
-import io.github.loadup.components.testcontainers.cache.AbstractRedisContainerTest;
+import io.github.loadup.components.testcontainers.annotation.ContainerType;
+import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import io.github.loadup.framework.api.annotation.BindingClient;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -37,7 +38,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 @Slf4j
 @SpringBootTest(classes = TestApplication.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public abstract class BaseRedisCacheTest extends AbstractRedisContainerTest {
+@EnableTestContainers(ContainerType.REDIS)
+public abstract class BaseRedisCacheTest {
     @BindingClient("redis-biz-type")
     protected CacheBinding redisBinding;
 

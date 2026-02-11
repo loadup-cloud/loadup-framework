@@ -25,7 +25,6 @@
         <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
 
-        <skip.spotless>true</skip.spotless>
         <skip.deploy>true</skip.deploy>
     </properties>
 

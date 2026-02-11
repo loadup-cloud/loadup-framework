@@ -47,10 +47,6 @@
             <artifactId>loadup-modules-upms-adapter</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-modules-upms-app</artifactId>
-        </dependency>
 
         <!-- Database Component -->
         <dependency>
@@ -71,12 +67,6 @@
             <version>7.11.0</version>
         </dependency>
 
-        <!-- LoadUp TestContainers Component (includes MySQL, TestContainers, and MySQL Driver) -->
-        <!--        <dependency>-->
-        <!--            <groupId>io.github.loadup-cloud</groupId>-->
-        <!--            <artifactId>loadup-components-testcontainers</artifactId>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-testify-spring-boot-starter</artifactId>
@@ -84,7 +74,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-testify-infra-container-mysql</artifactId>
+            <artifactId>loadup-components-testcontainers</artifactId>
             <scope>test</scope>
         </dependency>
 

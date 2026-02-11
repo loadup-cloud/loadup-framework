@@ -49,7 +49,7 @@ import org.springframework.test.context.TestPropertySource;
             "loadup.cache.database=0",
             // Configure specific cache with short TTL for testing
             "loadup.cache.bindings.redis-biz-type.expire-after-write=2s",
-            "loadup.cache.bindings.cache-with-random.expire-after-write=5s",
+            "loadup.cache.bindings.cache-with-random.expire-after-write=15s",
             "loadup.cache.bindings.cache-with-random.enable-random-expiration=false",
         })
 @DisplayName("Redis 缓存过期策略测试")

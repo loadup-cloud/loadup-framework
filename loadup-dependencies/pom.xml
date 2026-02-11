@@ -227,58 +227,7 @@
                 <artifactId>loadup-testify-mock-engine</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-testify-infra-container</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
 
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-testify-infra-container-common</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-testify-infra-container-mysql</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-testify-infra-container-redis</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-testify-infra-container-kafka</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-testify-infra-container-localstack</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-testify-infra-container-mongodb</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-testify-infra-container-postgresql</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-testify-infra-container-elasticsearch</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-testify-spring-boot-starter</artifactId>

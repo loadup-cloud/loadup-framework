@@ -22,6 +22,9 @@ package io.github.loadup.components.testcontainers.cloud;
  * #L%
  */
 
+import io.github.loadup.components.testcontainers.config.TestContainersProperties;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.localstack.LocalStackContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -53,26 +56,42 @@ import org.testcontainers.utility.DockerImageName;
 @Slf4j
 public class SharedLocalStackContainer {
 
-    /** Default LocalStack version to use */
+    /**
+     * Default LocalStack version to use
+     */
     public static final String DEFAULT_LOCALSTACK_VERSION = "localstack/localstack:3.0";
 
-    /** Default access key for LocalStack */
-    private static final String ACCESS_KEY = "test";
+    /**
+     * Default access key for LocalStack
+     */
+    private static String ACCESS_KEY = "test";
 
-    /** Default secret key for LocalStack */
-    private static final String SECRET_KEY = "test";
+    /**
+     * Default secret key for LocalStack
+     */
+    private static String SECRET_KEY = "test";
 
-    /** Default region */
-    private static final String REGION = "us-east-1";
+    /**
+     * Default region
+     */
+    private static String REGION = "us-east-1";
 
-    /** Enable flag for TestContainers */
+    /**
+     * Enable flag for TestContainers
+     */
     private static final boolean ENABLED;
 
-    /** The shared LocalStack container instance */
-    private static final LocalStackContainer LOCALSTACK_CONTAINER;
+    /**
+     * The shared LocalStack container instance
+     */
+    private static LocalStackContainer LOCALSTACK_CONTAINER;
 
-    /** S3 endpoint URL */
-    private static final String S3_ENDPOINT;
+    /**
+     * S3 endpoint URL
+     */
+    private static String S3_ENDPOINT;
+
+    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
     static {
         // Check if TestContainers is enabled (global switch AND individual switch)
@@ -84,27 +103,7 @@ public class SharedLocalStackContainer {
 
         if (ENABLED) {
             // Read configuration from system properties or use defaults
-            String localstackVersion =
-                    System.getProperty("testcontainers.localstack.version", DEFAULT_LOCALSTACK_VERSION);
 
-            log.info("Initializing shared LocalStack TestContainer with version: {}", localstackVersion);
-
-            LOCALSTACK_CONTAINER = new LocalStackContainer(DockerImageName.parse(localstackVersion)).withReuse(true);
-
-            LOCALSTACK_CONTAINER.start();
-
-            S3_ENDPOINT = LOCALSTACK_CONTAINER.getEndpoint().toString();
-
-            log.info("Shared LocalStack TestContainer started successfully");
-            log.info("S3 Endpoint: {}", S3_ENDPOINT);
-            log.info("Access Key: {}", ACCESS_KEY);
-            log.info("Region: {}", REGION);
-
-            // Add shutdown hook to stop the container when JVM exits
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                log.info("Stopping shared LocalStack TestContainer");
-                LOCALSTACK_CONTAINER.stop();
-            }));
         } else {
             log.info("LocalStack TestContainer is DISABLED. Using real AWS S3 from configuration.");
             LOCALSTACK_CONTAINER = null;
@@ -174,8 +173,66 @@ public class SharedLocalStackContainer {
         return REGION;
     }
 
-    /** Private constructor to prevent instantiation */
+    /**
+     * Private constructor to prevent instantiation
+     */
     private SharedLocalStackContainer() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
+
+    public static void startContainer(TestContainersProperties.ContainerConfig config) {
+        if (STARTED.get()) {
+            return;
+        }
+        synchronized (SharedLocalStackContainer.class) {
+            if (STARTED.get()) return;
+            String image = (config.getImage() != null) ? config.getImage() : DEFAULT_LOCALSTACK_VERSION;
+            LOCALSTACK_CONTAINER = new LocalStackContainer(DockerImageName.parse(image)).withReuse(true);
+
+            LOCALSTACK_CONTAINER.start();
+            STARTED.set(true);
+
+            S3_ENDPOINT = LOCALSTACK_CONTAINER.getEndpoint().toString();
+            ACCESS_KEY = LOCALSTACK_CONTAINER.getAccessKey();
+            SECRET_KEY = LOCALSTACK_CONTAINER.getSecretKey();
+            REGION = LOCALSTACK_CONTAINER.getRegion();
+
+            log.info("S3 Endpoint: {}", S3_ENDPOINT);
+            log.info("Access Key: {}", ACCESS_KEY);
+            log.info("Secret Key: {}", SECRET_KEY);
+            log.info("Region: {}", REGION);
+            if (!config.isReusable()) {
+                log.info("Reuse is disabled. Registering shutdown hook to stop container.");
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    if (LOCALSTACK_CONTAINER != null) {
+                        log.info("🛑 Stopping LocalStack TestContainer...");
+                        LOCALSTACK_CONTAINER.stop();
+                    }
+                }));
+            } else {
+                log.info("♻️ Reuse is enabled. Container will persist after JVM exits.");
+            }
+        }
+    }
+
+    public static Map<String, String> getProperties() {
+
+        return Map.of(
+                "aws.s3.endpoint",
+                SharedLocalStackContainer.getS3Endpoint(),
+                "aws.access-key-id",
+                SharedLocalStackContainer.getAccessKey(),
+                "aws.secret-access-key",
+                SharedLocalStackContainer.getSecretKey(),
+                "aws.region",
+                SharedLocalStackContainer.getRegion(),
+                "spring.cloud.aws.credentials.access-key",
+                SharedLocalStackContainer.getAccessKey(),
+                "spring.cloud.aws.credentials.secret-key",
+                SharedLocalStackContainer.getSecretKey(),
+                "spring.cloud.aws.s3.endpoint",
+                SharedLocalStackContainer.getS3Endpoint(),
+                "spring.cloud.aws.region.static",
+                SharedLocalStackContainer.getRegion());
     }
 }

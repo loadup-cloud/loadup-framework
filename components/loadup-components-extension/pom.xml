@@ -7,7 +7,6 @@
         <version>0.0.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-extension</artifactId>
     <name>Loadup Components Extension</name>
     <description>LoadUp Component Extension</description>

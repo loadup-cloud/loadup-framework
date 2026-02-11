@@ -3,6 +3,12 @@
 spring:
   application:
     name: testcontainers-test
+  data:
+    redis:
+      host:
+      port: 6379
+      database:
+      username:
 loadup:
   testcontainers:
     # Global switch to enable/disable all TestContainers (default: true)
@@ -28,7 +34,6 @@ loadup:
     mysql:
       enabled: true
     # version: mysql:8.0  # Optional: override default version
-
 
 # This is the default configuration for local development and testing
 
