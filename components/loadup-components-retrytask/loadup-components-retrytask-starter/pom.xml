@@ -41,10 +41,19 @@
            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-retrytask-infra</artifactId>
         </dependency>
-<!--        <dependency>-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!--        <dependency>-->
 <!--           <groupId>io.github.loadup-cloud</groupId>-->
 <!--            <artifactId>loadup-components-retrytask-scheduler-async</artifactId>-->
 <!--        </dependency>-->
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-scheduler-starter</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

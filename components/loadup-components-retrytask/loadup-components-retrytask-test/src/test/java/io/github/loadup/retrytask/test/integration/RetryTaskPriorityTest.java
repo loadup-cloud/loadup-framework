@@ -1,17 +1,14 @@
 package io.github.loadup.retrytask.test.integration;
 
 import io.github.loadup.retrytask.core.RetryTaskService;
-import io.github.loadup.retrytask.facade.model.Priority;
+import io.github.loadup.retrytask.facade.enums.Priority;
 import io.github.loadup.retrytask.facade.model.RetryTask;
 import io.github.loadup.retrytask.facade.request.RetryTaskRegisterRequest;
-import io.github.loadup.retrytask.infra.api.management.RetryTaskManagement;
-import io.github.loadup.retrytask.starter.RetryTaskAutoConfiguration;
+import io.github.loadup.retrytask.infra.repository.RetryTaskRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -20,7 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@SpringBootTest(classes = RetryTaskAutoConfiguration.class)
+@SpringBootTest
 @Transactional
 public class RetryTaskPriorityTest {
 
@@ -29,11 +26,8 @@ public class RetryTaskPriorityTest {
     private RetryTaskService retryTaskService;
 
     @Autowired
-    private RetryTaskManagement retryTaskManagement;
+    private RetryTaskRepository retryTaskRepository;
 
-    @DynamicPropertySource
-    static void configureDataSource(DynamicPropertyRegistry registry) {
-    }
 
     @Test
     @DisplayName("Should prioritize high-priority tasks over low-priority tasks")
@@ -47,13 +41,13 @@ public class RetryTaskPriorityTest {
 
         // Manually update retry times to create a specific scenario where both are ready,
         // but the high-priority one is technically "later"
-        RetryTask lowPriorityTask = retryTaskManagement.findByBizTypeAndBizId("PRIORITY_TEST", "LOW-001").orElseThrow();
+        RetryTask lowPriorityTask = retryTaskRepository.findByBizTypeAndBizId("PRIORITY_TEST", "LOW-001").orElseThrow();
         lowPriorityTask.setNextRetryTime(LocalDateTime.now().minusSeconds(10));
-        retryTaskManagement.save(lowPriorityTask);
+        retryTaskRepository.save(lowPriorityTask);
 
-        RetryTask highPriorityTask = retryTaskManagement.findByBizTypeAndBizId("PRIORITY_TEST", "HIGH-001").orElseThrow();
+        RetryTask highPriorityTask = retryTaskRepository.findByBizTypeAndBizId("PRIORITY_TEST", "HIGH-001").orElseThrow();
         highPriorityTask.setNextRetryTime(LocalDateTime.now().minusSeconds(5));
-        retryTaskManagement.save(highPriorityTask);
+        retryTaskRepository.save(highPriorityTask);
 
         // When: Pull tasks that are ready to be executed
         List<RetryTask> tasks = retryTaskService.pullTasks(10);

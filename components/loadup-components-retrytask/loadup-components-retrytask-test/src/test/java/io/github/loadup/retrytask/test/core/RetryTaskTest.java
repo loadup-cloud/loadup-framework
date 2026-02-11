@@ -1,10 +1,11 @@
 package io.github.loadup.retrytask.test.core;
 
+import io.github.loadup.retrytask.facade.enums.RetryTaskStatus;
 import io.github.loadup.retrytask.facade.model.RetryTask;
-import io.github.loadup.retrytask.facade.model.RetryTaskStatus;
+import io.github.loadup.retrytask.test.BaseRetryTaskTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit tests for RetryTask model
  */
-class RetryTaskTest {
+class RetryTaskTest extends BaseRetryTaskTest {
 
     private RetryTask retryTask;
 

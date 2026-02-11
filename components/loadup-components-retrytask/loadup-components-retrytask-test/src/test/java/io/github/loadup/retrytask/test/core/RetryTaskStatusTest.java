@@ -1,6 +1,6 @@
 package io.github.loadup.retrytask.test.core;
 
-import io.github.loadup.retrytask.facade.model.RetryTaskStatus;
+import io.github.loadup.retrytask.facade.enums.RetryTaskStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;

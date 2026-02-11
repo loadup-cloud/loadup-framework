@@ -1,83 +1,104 @@
 package io.github.loadup.retrytask.test.strategy;
 
 import io.github.loadup.retrytask.facade.model.RetryTask;
-import io.github.loadup.retrytask.strategy.ExponentialBackoffRetryStrategy;
-import io.github.loadup.retrytask.strategy.FixedRetryStrategy;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import io.github.loadup.retrytask.strategy.*;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Unit tests for retry strategies
- */
 class RetryStrategyTest {
 
-    private RetryTask retryTask;
-
-    @BeforeEach
-    void setUp() {
-        retryTask = new RetryTask();
-        retryTask.setRetryCount(0);
-    }
-
     @Test
-    @DisplayName("FixedRetryStrategy should return a time in the future")
-    void testFixedRetryStrategy() {
-        // Given
+    @DisplayName("Fixed Strategy should return constant delay")
+    void testFixedStrategy() {
         FixedRetryStrategy strategy = new FixedRetryStrategy();
+        RetryTask task = new RetryTask();
+        task.setRetryCount(1);
+
         LocalDateTime now = LocalDateTime.now();
+        LocalDateTime next = strategy.nextRetryTime(task);
 
-        // When
-        LocalDateTime nextRetryTime = strategy.nextRetryTime(retryTask);
-
-        // Then
-        assertNotNull(nextRetryTime);
-        assertTrue(nextRetryTime.isAfter(now) || nextRetryTime.isEqual(now));
+        long seconds = ChronoUnit.SECONDS.between(now, next);
+        // Default is 60s, allow small delta
+        assertThat(seconds).isBetween(59L, 61L);
     }
 
     @Test
-    @DisplayName("ExponentialBackoffRetryStrategy should increase delay with each retry")
-    void testExponentialBackoffRetryStrategy() {
-        // Given
+    @DisplayName("Exponential Strategy should return exponential delay")
+    void testExponentialStrategy() {
         ExponentialBackoffRetryStrategy strategy = new ExponentialBackoffRetryStrategy();
-        LocalDateTime now = LocalDateTime.now();
+        RetryTask task = new RetryTask();
 
-        // When - First retry
-        retryTask.setRetryCount(0);
-        LocalDateTime firstRetryTime = strategy.nextRetryTime(retryTask);
+        // Retry 1: 2^1 * 60 = 120s
+        task.setRetryCount(1);
+        LocalDateTime next1 = strategy.nextRetryTime(task);
+        long seconds1 = ChronoUnit.SECONDS.between(LocalDateTime.now(), next1);
+        assertThat(seconds1).isBetween(119L, 121L);
 
-        // Then
-        assertTrue(firstRetryTime.isAfter(now.plusSeconds(0)) && firstRetryTime.isBefore(now.plusMinutes(2)));
-
-        // When - Second retry
-        retryTask.setRetryCount(1);
-        LocalDateTime secondRetryTime = strategy.nextRetryTime(retryTask);
-
-        // Then
-        assertTrue(secondRetryTime.isAfter(firstRetryTime));
-
-        // When - Third retry
-        retryTask.setRetryCount(2);
-        LocalDateTime thirdRetryTime = strategy.nextRetryTime(retryTask);
-
-        // Then
-        assertTrue(thirdRetryTime.isAfter(secondRetryTime));
+        // Retry 2: 2^2 * 60 = 240s
+        task.setRetryCount(2);
+        LocalDateTime next2 = strategy.nextRetryTime(task);
+        long seconds2 = ChronoUnit.SECONDS.between(LocalDateTime.now(), next2);
+        assertThat(seconds2).isBetween(239L, 241L);
     }
 
     @Test
-    @DisplayName("Strategies should handle high retry counts")
-    void testHighRetryCounts() {
-        // Given
-        FixedRetryStrategy fixedStrategy = new FixedRetryStrategy();
-        ExponentialBackoffRetryStrategy exponentialStrategy = new ExponentialBackoffRetryStrategy();
-        retryTask.setRetryCount(10);
+    @DisplayName("Random Strategy should return delay within range")
+    void testRandomStrategy() {
+        RandomWaitRetryStrategy strategy = new RandomWaitRetryStrategy();
+        RetryTask task = new RetryTask();
+        task.setRetryCount(1);
 
-        // When & Then
-        assertDoesNotThrow(() -> fixedStrategy.nextRetryTime(retryTask));
-        assertDoesNotThrow(() -> exponentialStrategy.nextRetryTime(retryTask));
+        LocalDateTime next = strategy.nextRetryTime(task);
+        long seconds = ChronoUnit.SECONDS.between(LocalDateTime.now(), next);
+
+        // Default range 10s - 300s
+        assertThat(seconds).isBetween(10L, 300L);
+    }
+
+    @Test
+    @DisplayName("Incremental Strategy should return incrementally increasing delay")
+    void testIncrementalStrategy() {
+        IncrementalWaitRetryStrategy strategy = new IncrementalWaitRetryStrategy();
+        RetryTask task = new RetryTask();
+
+        // Default: 30s base, formula: base * (count + 1)
+
+        // Retry 1: 30 * (1+1) = 60s
+        task.setRetryCount(1);
+        LocalDateTime next1 = strategy.nextRetryTime(task);
+        long seconds1 = ChronoUnit.SECONDS.between(LocalDateTime.now(), next1);
+        assertThat(seconds1).isBetween(59L, 61L);
+
+        // Retry 2: 30 * (2+1) = 90s
+        task.setRetryCount(2);
+        LocalDateTime next2 = strategy.nextRetryTime(task);
+        long seconds2 = ChronoUnit.SECONDS.between(LocalDateTime.now(), next2);
+        assertThat(seconds2).isBetween(89L, 91L);
+    }
+
+    @Test
+    @DisplayName("Fibonacci Strategy should return fibonacci delay")
+    void testFibonacciStrategy() {
+        FibonacciBackoffRetryStrategy strategy = new FibonacciBackoffRetryStrategy();
+        RetryTask task = new RetryTask();
+
+        // Default multiplier 1s
+        // Fib: 1, 1, 2, 3, 5, 8...
+
+        // Retry 1: Fib(1) * 1 = 1s
+        task.setRetryCount(1);
+        long seconds1 = ChronoUnit.SECONDS.between(LocalDateTime.now(), strategy.nextRetryTime(task));
+        assertThat(seconds1).isBetween(0L, 2L);
+
+        // Retry 3: Fib(3) * 1 = 2 * 1 = 2s
+        task.setRetryCount(3);
+        long seconds3 = ChronoUnit.SECONDS.between(LocalDateTime.now(), strategy.nextRetryTime(task));
+        assertThat(seconds3).isBetween(1L, 3L);
     }
 }
+

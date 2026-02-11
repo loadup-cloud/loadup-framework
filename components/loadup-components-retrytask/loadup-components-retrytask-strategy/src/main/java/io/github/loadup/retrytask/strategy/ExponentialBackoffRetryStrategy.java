@@ -1,14 +1,14 @@
 package io.github.loadup.retrytask.strategy;
 
 import io.github.loadup.retrytask.facade.model.RetryTask;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 /**
- * A retry strategy that retries with an exponential backoff.
+ * Exponential backoff retry strategy - wait time increases exponentially
+ * Formula: delay = 2^retryCount minutes
+ * Example: 2min, 4min, 8min, 16min, 32min, ...
  */
-@Component
 public class ExponentialBackoffRetryStrategy implements RetryStrategy {
 
     public static final String TYPE = "exponential";

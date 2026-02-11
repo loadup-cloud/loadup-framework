@@ -1003,7 +1003,7 @@ spring:
    sql:
       init:
          mode: always
-         schema-locations: classpath:schema-h2.sql
+         schema-locations: classpath:schema.sql
          data-locations: classpath:test-data.sql
 ```
 

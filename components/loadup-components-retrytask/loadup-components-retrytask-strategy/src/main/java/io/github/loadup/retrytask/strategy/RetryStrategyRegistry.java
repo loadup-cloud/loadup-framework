@@ -1,11 +1,12 @@
 package io.github.loadup.retrytask.strategy;
 
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-@Component
+
+/**
+ * Registry for retry strategies
+ */
 public class RetryStrategyRegistry {
 
     private final Map<String, RetryStrategy> strategies = new ConcurrentHashMap<>();

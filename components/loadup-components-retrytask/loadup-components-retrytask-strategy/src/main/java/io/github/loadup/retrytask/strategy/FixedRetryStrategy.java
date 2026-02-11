@@ -1,21 +1,22 @@
 package io.github.loadup.retrytask.strategy;
 
 import io.github.loadup.retrytask.facade.model.RetryTask;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 /**
- * A retry strategy that retries after a fixed delay.
+ * Fixed delay retry strategy - waits a fixed time between retries
+ * Default: 60 seconds
  */
-@Component
 public class FixedRetryStrategy implements RetryStrategy {
 
     public static final String TYPE = "fixed";
 
+    private static final int DEFAULT_DELAY_SECONDS = 60;
+
     @Override
     public LocalDateTime nextRetryTime(RetryTask task) {
-        return LocalDateTime.now().plusMinutes(1); // Default value, should be configurable
+        return LocalDateTime.now().plusSeconds(DEFAULT_DELAY_SECONDS);
     }
 
     @Override

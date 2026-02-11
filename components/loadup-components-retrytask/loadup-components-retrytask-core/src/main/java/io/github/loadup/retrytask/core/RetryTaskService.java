@@ -14,7 +14,7 @@ public interface RetryTaskService {
      * Registers a new retry task.
      *
      * @param request The request to register a new retry task.
-     * @return The unique identifier of the registered task.
+     * @return The ID of the registered task.
      */
     Long register(RetryTaskRegisterRequest request);
 
@@ -43,6 +43,15 @@ public interface RetryTaskService {
     List<RetryTask> pullTasks(int batchSize);
 
     /**
+     * Pulls a batch of retry tasks for a specific business type that are ready to be executed.
+     *
+     * @param bizType The business type.
+     * @param batchSize The maximum number of tasks to pull.
+     * @return A list of retry tasks.
+     */
+    List<RetryTask> pullTasks(String bizType, int batchSize);
+
+    /**
      * Marks a task as successful.
      *
      * @param taskId The unique identifier of the task.
@@ -56,4 +65,18 @@ public interface RetryTaskService {
      * @param reason The reason for the failure.
      */
     void markFailure(Long taskId, String reason);
+
+    /**
+     * Try to lock the task for execution.
+     * @param taskId task id
+     * @return true if locked successfully
+     */
+    boolean tryLock(Long taskId);
+
+    /**
+     * Reset stuck tasks.
+     * @param deadTime time threshold
+     * @return count
+     */
+    int resetStuckTasks(java.time.LocalDateTime deadTime);
 }

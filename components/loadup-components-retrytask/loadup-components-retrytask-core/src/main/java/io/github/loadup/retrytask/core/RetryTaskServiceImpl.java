@@ -1,17 +1,17 @@
 package io.github.loadup.retrytask.core;
 
 import io.github.loadup.retrytask.core.config.RetryTaskProperties;
-import io.github.loadup.retrytask.facade.model.Priority;
+import io.github.loadup.retrytask.facade.RetryTaskFacade;
+import io.github.loadup.retrytask.facade.enums.Priority;
 import io.github.loadup.retrytask.facade.model.RetryTask;
-import io.github.loadup.retrytask.facade.model.RetryTaskStatus;
+import io.github.loadup.retrytask.facade.enums.RetryTaskStatus;
 import io.github.loadup.retrytask.facade.request.RetryTaskRegisterRequest;
-import io.github.loadup.retrytask.infra.api.management.RetryTaskManagement;
+import io.github.loadup.retrytask.infra.repository.RetryTaskRepository;
 import io.github.loadup.retrytask.notify.RetryTaskNotifier;
 import io.github.loadup.retrytask.notify.RetryTaskNotifierRegistry;
 import io.github.loadup.retrytask.strategy.RetryStrategy;
 import io.github.loadup.retrytask.strategy.RetryStrategyRegistry;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -19,24 +19,25 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The default implementation of the {@link RetryTaskService}.
+ * Default implementation of {@link RetryTaskService} and {@link RetryTaskFacade}
  */
-@Service
-public class RetryTaskServiceImpl implements RetryTaskService {
-    private final RetryTaskManagement retryTaskManagement;
+public class RetryTaskServiceImpl implements RetryTaskService, RetryTaskFacade {
+    private final RetryTaskRepository retryTaskRepository;
     private final RetryTaskNotifierRegistry retryTaskNotifierRegistry;
     private final RetryStrategyRegistry retryStrategyRegistry;
     private final RetryTaskProperties retryTaskProperties;
+    private final RetryTaskExecutor retryTaskExecutor;
 
-    @Autowired
-    public RetryTaskServiceImpl(RetryTaskManagement retryTaskManagement,
+    public RetryTaskServiceImpl(RetryTaskRepository retryTaskRepository,
                                 RetryTaskNotifierRegistry retryTaskNotifierRegistry,
                                 RetryStrategyRegistry retryStrategyRegistry,
-                                RetryTaskProperties retryTaskProperties) {
-        this.retryTaskManagement = retryTaskManagement;
+                                RetryTaskProperties retryTaskProperties,
+                                @Lazy RetryTaskExecutor retryTaskExecutor) {
+        this.retryTaskRepository = retryTaskRepository;
         this.retryTaskNotifierRegistry = retryTaskNotifierRegistry;
         this.retryStrategyRegistry = retryStrategyRegistry;
         this.retryTaskProperties = retryTaskProperties;
+        this.retryTaskExecutor = retryTaskExecutor;
     }
 
     @Override
@@ -63,43 +64,65 @@ public class RetryTaskServiceImpl implements RetryTaskService {
         task.setStatus(RetryTaskStatus.PENDING);
         task.setCreateTime(LocalDateTime.now());
         task.setUpdateTime(LocalDateTime.now());
-        RetryTask savedTask = retryTaskManagement.save(task);
+
+        RetryTask savedTask = retryTaskRepository.save(task);
+
+        // Immediate Execution Logic
+        boolean executeImmediately = request.getExecuteImmediately() != null ?
+                request.getExecuteImmediately() : config.isExecuteImmediately();
+
+        if (executeImmediately) {
+            boolean waitResult = request.getWaitResult() != null ?
+                    request.getWaitResult() : config.isWaitResult();
+
+            if (waitResult) {
+                retryTaskExecutor.executeSync(savedTask);
+            } else {
+                retryTaskExecutor.executeAsync(savedTask);
+            }
+        }
+
         return savedTask.getId();
     }
 
     @Override
     @Transactional
     public void delete(String bizType, String bizId) {
-        retryTaskManagement.delete(bizType, bizId);
+        retryTaskRepository.delete(bizType, bizId);
     }
 
     @Override
     @Transactional
     public void reset(String bizType, String bizId) {
-        retryTaskManagement.findByBizTypeAndBizId(bizType, bizId).ifPresent(task -> {
+        retryTaskRepository.findByBizTypeAndBizId(bizType, bizId).ifPresent(task -> {
             task.setRetryCount(0);
             task.setNextRetryTime(LocalDateTime.now());
             task.setStatus(RetryTaskStatus.PENDING);
             task.setUpdateTime(LocalDateTime.now());
-            retryTaskManagement.save(task);
+            retryTaskRepository.save(task);
         });
     }
 
     @Override
     public List<RetryTask> pullTasks(int batchSize) {
-        return retryTaskManagement.findTasksToRetry(LocalDateTime.now(), batchSize);
+        return retryTaskRepository.findTasksToRetry(LocalDateTime.now(), batchSize);
+    }
+
+    @Override
+    public List<RetryTask> pullTasks(String bizType, int batchSize) {
+        return retryTaskRepository.findTasksToRetryByBizType(bizType, LocalDateTime.now(), batchSize);
     }
 
     @Override
     @Transactional
     public void markSuccess(Long taskId) {
-        retryTaskManagement.deleteById(taskId);
+        retryTaskRepository.deleteById(taskId);
     }
 
     @Override
     @Transactional
     public void markFailure(Long taskId, String reason) {
-        retryTaskManagement.findById(taskId).ifPresent(task -> {
+        retryTaskRepository.findById(taskId).ifPresent(task -> {
             task.setRetryCount(task.getRetryCount() + 1);
             task.setLastFailureReason(reason);
 
@@ -124,7 +147,19 @@ public class RetryTaskServiceImpl implements RetryTaskService {
                 task.setNextRetryTime(strategy.nextRetryTime(task));
             }
             task.setUpdateTime(LocalDateTime.now());
-            retryTaskManagement.save(task);
+            retryTaskRepository.save(task);
         });
+    }
+
+    @Override
+    @Transactional
+    public boolean tryLock(Long taskId) {
+        return retryTaskRepository.tryLock(taskId);
+    }
+
+    @Override
+    @Transactional
+    public int resetStuckTasks(LocalDateTime deadTime) {
+        return retryTaskRepository.resetStuckTasks(deadTime);
     }
 }

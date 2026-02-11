@@ -32,10 +32,8 @@
         <module>loadup-components-retrytask-infra</module>
         <module>loadup-components-retrytask-strategy</module>
         <module>loadup-components-retrytask-notify</module>
-        <module>loadup-components-retrytask-scheduler</module>
         <module>loadup-components-retrytask-starter</module>
         <module>loadup-components-retrytask-test</module>
-        <module>loadup-components-retrytask-launcher</module>
     </modules>
 
 

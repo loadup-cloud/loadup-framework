@@ -1,21 +1,16 @@
 package io.github.loadup.retrytask.notify;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A registry for {@link RetryTaskNotifier}s.
+ * Registry for {@link RetryTaskNotifier}s
  */
-@Component
 public class RetryTaskNotifierRegistry {
 
     private final Map<String, RetryTaskNotifier> notifiers = new ConcurrentHashMap<>();
 
-    @Autowired
     public RetryTaskNotifierRegistry(List<RetryTaskNotifier> notifierList) {
         for (RetryTaskNotifier notifier : notifierList) {
             notifiers.put(notifier.getType(), notifier);
@@ -31,4 +26,9 @@ public class RetryTaskNotifierRegistry {
     public RetryTaskNotifier getNotifier(String type) {
         return notifiers.get(type);
     }
+
+    public void register(RetryTaskNotifier notifier) {
+        notifiers.put(notifier.getType(), notifier);
+    }
+
 }

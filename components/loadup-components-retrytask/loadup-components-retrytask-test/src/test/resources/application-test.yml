@@ -1,21 +1,8 @@
 spring:
-  h2:
-    console:
-      enabled: true
-  datasource:
-    url: jdbc:h2:mem:testdb;MODE=MYSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=true
-    driverClassName: org.h2.Driver
-    username: sa
-    password:
   sql:
     init:
-      schema-locations: classpath:schema-h2.sql
+      schema-locations: classpath:schema.sql
       mode: always
-  jpa:
-    show-sql: true
-    generate-ddl: true
-    hibernate:
-      ddl-auto: none
 
   mail: # 比如：使用qq邮箱服务(也可以其他服务)
     host: smtp.qq.com

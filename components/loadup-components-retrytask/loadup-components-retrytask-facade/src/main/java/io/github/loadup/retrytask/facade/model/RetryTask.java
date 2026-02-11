@@ -1,5 +1,7 @@
 package io.github.loadup.retrytask.facade.model;
 
+import io.github.loadup.retrytask.facade.enums.Priority;
+import io.github.loadup.retrytask.facade.enums.RetryTaskStatus;
 import lombok.Data;
 
 import java.io.Serializable;
