@@ -1,5 +1,27 @@
 package io.github.loadup.retrytask.starter;
 
+/*-
+ * #%L
+ * Loadup Components Retrytask Starter
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import io.github.loadup.components.gotone.api.NotificationService;
 import io.github.loadup.retrytask.core.*;
 import io.github.loadup.retrytask.core.config.RetryTaskProperties;
@@ -11,20 +33,15 @@ import io.github.loadup.retrytask.notify.LoggingRetryTaskNotifier;
 import io.github.loadup.retrytask.notify.RetryTaskNotifier;
 import io.github.loadup.retrytask.notify.RetryTaskNotifierRegistry;
 import io.github.loadup.retrytask.strategy.*;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-
-import java.util.concurrent.Executor;
-
-import java.util.List;
 
 /**
  * Auto-configuration for the retry task module
@@ -114,26 +131,34 @@ public class RetryTaskAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public RetryTaskRepository retryTaskRepository(JdbcTemplate jdbcTemplate, RetryTaskProperties properties) {
-        log.info(">>> [RETRY-TASK] Initializing JdbcRetryTaskRepository with table prefix: {}, dbType: {}",
-                properties.getTablePrefix(), properties.getDbType());
+        log.info(
+                ">>> [RETRY-TASK] Initializing JdbcRetryTaskRepository with table prefix: {}, dbType: {}",
+                properties.getTablePrefix(),
+                properties.getDbType());
         return new JdbcRetryTaskRepository(jdbcTemplate, properties.getTablePrefix(), properties.getDbType());
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public RetryTaskService retryTaskService(RetryTaskRepository retryTaskRepository,
-                                           RetryTaskNotifierRegistry retryTaskNotifierRegistry,
-                                           RetryStrategyRegistry retryStrategyRegistry,
-                                           RetryTaskProperties retryTaskProperties,
-                                           @Lazy RetryTaskExecutor retryTaskExecutor) {
+    public RetryTaskService retryTaskService(
+            RetryTaskRepository retryTaskRepository,
+            RetryTaskNotifierRegistry retryTaskNotifierRegistry,
+            RetryStrategyRegistry retryStrategyRegistry,
+            RetryTaskProperties retryTaskProperties,
+            @Lazy RetryTaskExecutor retryTaskExecutor) {
         log.info(">>> [RETRY-TASK] Initializing RetryTaskService");
-        return new RetryTaskServiceImpl(retryTaskRepository, retryTaskNotifierRegistry, retryStrategyRegistry, retryTaskProperties, retryTaskExecutor);
+        return new RetryTaskServiceImpl(
+                retryTaskRepository,
+                retryTaskNotifierRegistry,
+                retryStrategyRegistry,
+                retryTaskProperties,
+                retryTaskExecutor);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public RetryTaskExecutor retryTaskExecutor(RetryTaskProcessorRegistry processorRegistry,
-                                             RetryTaskService retryTaskService) {
+    public RetryTaskExecutor retryTaskExecutor(
+            RetryTaskProcessorRegistry processorRegistry, RetryTaskService retryTaskService) {
         log.info(">>> [RETRY-TASK] Initializing RetryTaskExecutor");
         return new RetryTaskExecutor(processorRegistry, retryTaskService, null);
     }
@@ -146,4 +171,3 @@ public class RetryTaskAutoConfiguration {
         return (RetryTaskFacade) retryTaskService;
     }
 }
-

@@ -11,8 +11,8 @@
     <artifactId>loadup-testify</artifactId>
     <packaging>pom</packaging>
 
-    <name>Loadup Middleware Testify </name>
-    <description>Loadup Middleware Testify </description>
+    <name>Loadup Middleware Testify</name>
+    <description>Loadup Middleware Testify</description>
 
     <modules>
         <module>loadup-testify-core</module>

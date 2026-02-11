@@ -24,7 +24,10 @@ package io.github.loadup.retrytask.test;
 
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
@@ -34,6 +37,11 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @EnableTestContainers(ContainerType.MYSQL)
 public abstract class BaseRetryTaskTest {
+    @Autowired
+    protected JdbcTemplate jdbcTemplate;
 
-
+    @BeforeEach
+    void cleanUp() {
+        jdbcTemplate.update("truncate table retry_task ");
+    }
 }

@@ -1,22 +1,43 @@
 package io.github.loadup.retrytask.core;
 
+/*-
+ * #%L
+ * Loadup Components Retrytask Core
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import io.github.loadup.retrytask.core.config.RetryTaskProperties;
 import io.github.loadup.retrytask.facade.RetryTaskFacade;
 import io.github.loadup.retrytask.facade.enums.Priority;
-import io.github.loadup.retrytask.facade.model.RetryTask;
 import io.github.loadup.retrytask.facade.enums.RetryTaskStatus;
+import io.github.loadup.retrytask.facade.model.RetryTask;
 import io.github.loadup.retrytask.facade.request.RetryTaskRegisterRequest;
 import io.github.loadup.retrytask.infra.repository.RetryTaskRepository;
 import io.github.loadup.retrytask.notify.RetryTaskNotifier;
 import io.github.loadup.retrytask.notify.RetryTaskNotifierRegistry;
 import io.github.loadup.retrytask.strategy.RetryStrategy;
 import io.github.loadup.retrytask.strategy.RetryStrategyRegistry;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Default implementation of {@link RetryTaskService} and {@link RetryTaskFacade}
@@ -28,11 +49,12 @@ public class RetryTaskServiceImpl implements RetryTaskService, RetryTaskFacade {
     private final RetryTaskProperties retryTaskProperties;
     private final RetryTaskExecutor retryTaskExecutor;
 
-    public RetryTaskServiceImpl(RetryTaskRepository retryTaskRepository,
-                                RetryTaskNotifierRegistry retryTaskNotifierRegistry,
-                                RetryStrategyRegistry retryStrategyRegistry,
-                                RetryTaskProperties retryTaskProperties,
-                                @Lazy RetryTaskExecutor retryTaskExecutor) {
+    public RetryTaskServiceImpl(
+            RetryTaskRepository retryTaskRepository,
+            RetryTaskNotifierRegistry retryTaskNotifierRegistry,
+            RetryStrategyRegistry retryStrategyRegistry,
+            RetryTaskProperties retryTaskProperties,
+            @Lazy RetryTaskExecutor retryTaskExecutor) {
         this.retryTaskRepository = retryTaskRepository;
         this.retryTaskNotifierRegistry = retryTaskNotifierRegistry;
         this.retryStrategyRegistry = retryStrategyRegistry;
@@ -68,12 +90,12 @@ public class RetryTaskServiceImpl implements RetryTaskService, RetryTaskFacade {
         RetryTask savedTask = retryTaskRepository.save(task);
 
         // Immediate Execution Logic
-        boolean executeImmediately = request.getExecuteImmediately() != null ?
-                request.getExecuteImmediately() : config.isExecuteImmediately();
+        boolean executeImmediately = request.getExecuteImmediately() != null
+                ? request.getExecuteImmediately()
+                : config.isExecuteImmediately();
 
         if (executeImmediately) {
-            boolean waitResult = request.getWaitResult() != null ?
-                    request.getWaitResult() : config.isWaitResult();
+            boolean waitResult = request.getWaitResult() != null ? request.getWaitResult() : config.isWaitResult();
 
             if (waitResult) {
                 retryTaskExecutor.executeSync(savedTask);

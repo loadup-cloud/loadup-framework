@@ -14,16 +14,6 @@
 
     <name>LoadUp Middleware Gateway</name>
     <description>A flexible gateway framework with plugin architecture</description>
-    <properties>
-        <java.version>21</java.version>
-        <project.encoding>UTF-8</project.encoding>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-        <maven.compiler.release>${java.version}</maven.compiler.release>
-        <project.build.encoding>${project.encoding}</project.build.encoding>
-        <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
-    </properties>
     <modules>
         <module>loadup-gateway-facade</module>
         <module>loadup-gateway-core</module>
@@ -35,5 +25,15 @@
         <module>plugins/repository-file-plugin</module>
         <module>plugins/repository-database-plugin</module>
     </modules>
+    <properties>
+        <java.version>21</java.version>
+        <project.encoding>UTF-8</project.encoding>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <project.build.encoding>${project.encoding}</project.build.encoding>
+        <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
+    </properties>
 
 </project>

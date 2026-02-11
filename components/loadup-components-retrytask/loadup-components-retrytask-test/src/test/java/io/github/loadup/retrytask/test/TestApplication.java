@@ -30,9 +30,7 @@ import org.springframework.context.annotation.ComponentScan;
  * 测试启动类
  */
 @SpringBootApplication
-@ComponentScan(basePackages = {
-    "io.github.loadup.retrytask"
-})
+@ComponentScan(basePackages = {"io.github.loadup.retrytask"})
 public class TestApplication {
 
     public static void main(String[] args) {
