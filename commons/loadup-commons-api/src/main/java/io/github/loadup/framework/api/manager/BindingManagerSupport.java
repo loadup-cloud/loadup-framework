@@ -31,6 +31,7 @@ import io.github.loadup.framework.api.exception.BinderNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.EmbeddedValueResolverAware;
@@ -130,16 +131,15 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
                     CBIND bindingCfg) {
 
         // 建议按 type + tag 缓存，或者全局按 type 缓存（取决于 Binder 是否可复用）
-        String cacheKey = meta.type + ":" + binderCfg.hashCode() + ":" + bindingCfg.hashCode();
+        String cacheKey = meta.type + ":" + Objects.hash(binderCfg);
 
-        return (B_SUB) binderInstanceCache.computeIfAbsent(cacheKey, k -> {
+        B_SUB binderInstance = (B_SUB) binderInstanceCache.computeIfAbsent(cacheKey, k -> {
             // 利用 Spring 容器创建实例，保证 @Autowired 生效
-            B_SUB binderInstance =
-                    (B_SUB) context.getAutowireCapableBeanFactory().createBean(meta.binderClass);
-            binderInstance.injectConfigs(name, binderCfg, bindingCfg);
-            // 如果 Binder 有 init 方法也可以在这里调用
-            return binderInstance;
+            return (B_SUB) context.getAutowireCapableBeanFactory().createBean(meta.binderClass);
         });
+        // 如果 Binder 有 init 方法也可以在这里调用
+        binderInstance.injectConfigs(name, binderCfg, bindingCfg);
+        return binderInstance;
     }
 
     protected abstract String getDefaultBinderType();

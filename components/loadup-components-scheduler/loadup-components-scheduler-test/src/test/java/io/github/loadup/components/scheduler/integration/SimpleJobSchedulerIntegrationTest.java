@@ -26,8 +26,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
+import io.github.loadup.components.scheduler.BaseSchedulerTest;
 import io.github.loadup.components.scheduler.annotation.DistributedScheduler;
-import io.github.loadup.components.scheduler.binding.SchedulerBinding;
 import io.github.loadup.components.scheduler.model.SchedulerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
@@ -38,23 +38,36 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.test.context.TestPropertySource;
 
 /** Integration test for SimpleJob scheduler. */
 @SpringBootTest(classes = SimpleJobSchedulerIntegrationTest.TestConfiguration.class)
-@TestPropertySource(properties = {"loadup.scheduler.type=simplejob"})
-class SimpleJobSchedulerIntegrationTest {
-
-    @Autowired
-    private SchedulerBinding schedulerBinding;
+class SimpleJobSchedulerIntegrationTest extends BaseSchedulerTest {
 
     @Autowired
     private TestScheduledTasks testTasks;
 
+    @Configuration
+    @EnableAutoConfiguration
+    static class TestConfiguration {
+        @Bean
+        public TestScheduledTasks testScheduledTasks() {
+            return new TestScheduledTasks();
+        }
+
+        @Bean
+        public TaskScheduler taskScheduler() {
+            ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+            scheduler.setPoolSize(10);
+            scheduler.setThreadNamePrefix("scheduler-");
+            scheduler.initialize();
+            return scheduler;
+        }
+    }
+
     @Test
     void testSchedulerAutoConfiguration() {
         // Then
-        assertThat(schedulerBinding).isNotNull();
+        assertThat(simpleJobBinding).isNotNull();
     }
 
     @Test
@@ -76,32 +89,14 @@ class SimpleJobSchedulerIntegrationTest {
                 SchedulerTask.builder().taskName(taskName).cron("*/2 * * * * ?").build();
 
         // When
-        boolean registered = schedulerBinding.registerTask(task);
+        boolean registered = simpleJobBinding.registerTask(task);
 
         // Then
         assertThat(registered).isTrue();
-        assertThat(schedulerBinding.taskExists(taskName)).isTrue();
+        assertThat(simpleJobBinding.taskExists(taskName)).isTrue();
 
         // Cleanup
-        schedulerBinding.unregisterTask(taskName);
-    }
-
-    @Configuration
-    @EnableAutoConfiguration
-    static class TestConfiguration {
-        @Bean
-        public TestScheduledTasks testScheduledTasks() {
-            return new TestScheduledTasks();
-        }
-
-        @Bean
-        public TaskScheduler taskScheduler() {
-            ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-            scheduler.setPoolSize(10);
-            scheduler.setThreadNamePrefix("scheduler-");
-            scheduler.initialize();
-            return scheduler;
-        }
+        simpleJobBinding.unregisterTask(taskName);
     }
 
     public static class TestScheduledTasks {

@@ -1,10 +1,13 @@
 loadup:
   scheduler:
     default-binder: simplejob
-    enabled-binders: [ simplejob ]
+    enabled-binders: [ simplejob ,quartz]
+    bindings: # 可选
+      simplejob-biz-type:
+        binder-type: simplejob
+      quartz-biz-type:
+        binder-type: quartz
+
     binders:
       simplejob:
-        pool-size: 10
-#    bindings:
-#      simple-task:
-#        binder-type: simplejob
+        database: ${spring.data.redis.database:0}

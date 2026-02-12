@@ -29,6 +29,7 @@ import static org.awaitility.Awaitility.await;
 import io.github.loadup.components.scheduler.annotation.DistributedScheduler;
 import io.github.loadup.components.scheduler.binding.SchedulerBinding;
 import io.github.loadup.components.scheduler.model.SchedulerTask;
+import io.github.loadup.framework.api.annotation.BindingClient;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +41,10 @@ import org.springframework.test.context.TestPropertySource;
 
 /** Integration test for Quartz scheduler. */
 @SpringBootTest(classes = QuartzSchedulerIntegrationTest.TestConfiguration.class)
-@TestPropertySource(properties = {"loadup.scheduler.type=quartz", "spring.quartz.job-store-type=memory"})
+@TestPropertySource(properties = {"spring.quartz.job-store-type=memory"})
 class QuartzSchedulerIntegrationTest {
 
-    @Autowired
+    @BindingClient("quartz-biz-type")
     private SchedulerBinding schedulerBinding;
 
     @Autowired

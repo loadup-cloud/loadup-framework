@@ -24,7 +24,7 @@ loadup:
     default-retry-strategy: FIXED
     default-base-delay-seconds: 60
     scheduler:
-      enabled: true
+      enabled: false
       type: ASYNC
       thread-pool-size: 5
 

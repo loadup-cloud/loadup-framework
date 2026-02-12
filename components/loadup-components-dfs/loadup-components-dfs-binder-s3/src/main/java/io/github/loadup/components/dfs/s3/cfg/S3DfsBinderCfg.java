@@ -23,12 +23,10 @@ package io.github.loadup.components.dfs.s3.cfg;
  */
 
 import io.github.loadup.components.dfs.cfg.DfsBinderCfg;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(callSuper = true)
 public class S3DfsBinderCfg extends DfsBinderCfg {
     /** S3 存储桶名称（必填） */

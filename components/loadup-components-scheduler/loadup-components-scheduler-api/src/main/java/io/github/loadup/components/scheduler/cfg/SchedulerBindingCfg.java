@@ -23,12 +23,10 @@ package io.github.loadup.components.scheduler.cfg;
  */
 
 import io.github.loadup.framework.api.cfg.BaseBindingCfg;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(callSuper = true)
 public class SchedulerBindingCfg extends BaseBindingCfg {
     private String cron;

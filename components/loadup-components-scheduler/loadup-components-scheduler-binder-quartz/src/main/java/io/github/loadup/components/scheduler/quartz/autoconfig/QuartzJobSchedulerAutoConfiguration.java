@@ -19,7 +19,7 @@ public class QuartzJobSchedulerAutoConfiguration {
     @Bean
     public BindingMetadata<?, ?, ?, ?> quartzJobMetadata() {
         return new BindingMetadata<>(
-                "quartzjob",
+                "quartz",
                 DefaultSchedulerBinding.class,
                 QuartzJobSchedulerBinder.class,
                 SchedulerBindingCfg.class,

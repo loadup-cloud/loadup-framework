@@ -23,5 +23,9 @@ package io.github.loadup.components.dfs.cfg;
  */
 
 import io.github.loadup.framework.api.cfg.BaseBindingCfg;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class DfsBindingCfg extends BaseBindingCfg {}

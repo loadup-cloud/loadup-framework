@@ -26,30 +26,21 @@ import static org.apache.commons.lang3.ThreadUtils.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
+import io.github.loadup.components.scheduler.BaseSchedulerTest;
 import io.github.loadup.components.scheduler.SimpleTestTask;
-import io.github.loadup.components.scheduler.TestApplication;
-import io.github.loadup.components.scheduler.binding.SchedulerBinding;
 import io.github.loadup.components.scheduler.model.SchedulerTask;
-import io.github.loadup.framework.api.annotation.BindingClient;
 import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.*;
-import org.springframework.boot.test.context.SpringBootTest;
 
-/** Unit tests for SimpleJobSchedulerBinder. */
-@SpringBootTest(classes = TestApplication.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class SimpleJobSchedulerBinderTest {
+class SimpleJobSchedulerBinderTest extends BaseSchedulerTest {
 
     private TestTaskExecutor testExecutor;
     private Method testExecutorMethod;
     private static List<String> taskList = new ArrayList<>();
-
-    @BindingClient()
-    private SchedulerBinding schedulerBinding;
 
     @BeforeEach
     void setUp() {
@@ -63,16 +54,8 @@ class SimpleJobSchedulerBinderTest {
 
     @AfterEach
     void tearDown() {
-        if (schedulerBinding != null) {
-            taskList.forEach(v -> schedulerBinding.unregisterTask(v));
-        }
-    }
-
-    protected void safeSleep(long second) {
-        try {
-            sleep(Duration.ofSeconds(second));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        if (simpleJobBinding != null) {
+            taskList.forEach(v -> simpleJobBinding.unregisterTask(v));
         }
     }
 
@@ -89,8 +72,8 @@ class SimpleJobSchedulerBinderTest {
     @DisplayName("Test Unregister SimpleTeskTask task execution")
     void testUnregisterDefaultTask() {
 
-        await().atMost(5, TimeUnit.SECONDS).until(() -> schedulerBinding.taskExists("SimpleTestTask"));
-        boolean result = schedulerBinding.unregisterTask("SimpleTestTask");
+        await().atMost(5, TimeUnit.SECONDS).until(() -> simpleJobBinding.taskExists("SimpleTestTask"));
+        boolean result = simpleJobBinding.unregisterTask("SimpleTestTask");
         Assertions.assertTrue(result);
         int executionCount = SimpleTestTask.a.get();
         safeSleep(2);
@@ -110,11 +93,11 @@ class SimpleJobSchedulerBinderTest {
                 .build();
         taskList.add("testTask");
         // When
-        boolean result = schedulerBinding.registerTask(task);
+        boolean result = simpleJobBinding.registerTask(task);
 
         // Then
         assertThat(result).isTrue();
-        assertThat(schedulerBinding.taskExists("testTask")).isTrue();
+        assertThat(simpleJobBinding.taskExists("testTask")).isTrue();
 
         // Wait for task execution
         await().atMost(5, TimeUnit.SECONDS).until(() -> testExecutor.getExecutionCount() > 2);
@@ -136,8 +119,8 @@ class SimpleJobSchedulerBinderTest {
         taskList.add("duplicateTask");
 
         // When
-        boolean result1 = schedulerBinding.registerTask(task);
-        boolean result2 = schedulerBinding.registerTask(task);
+        boolean result1 = simpleJobBinding.registerTask(task);
+        boolean result2 = simpleJobBinding.registerTask(task);
 
         await().atMost(3, TimeUnit.SECONDS).until(() -> testExecutor.getExecutionCount() > 1);
         // most execute twice within 3 seconds
@@ -146,7 +129,7 @@ class SimpleJobSchedulerBinderTest {
         // Then
         assertThat(result1).isTrue();
         assertThat(result2).isTrue();
-        assertThat(schedulerBinding.taskExists("duplicateTask")).isTrue();
+        assertThat(simpleJobBinding.taskExists("duplicateTask")).isTrue();
     }
 
     @Test
@@ -160,25 +143,25 @@ class SimpleJobSchedulerBinderTest {
                 .method(testExecutorMethod)
                 .targetBean(testExecutor)
                 .build();
-        schedulerBinding.registerTask(task);
+        simpleJobBinding.registerTask(task);
 
         await().atMost(2, TimeUnit.SECONDS).until(() -> testExecutor.getExecutionCount() > 1);
         // When
-        boolean result = schedulerBinding.unregisterTask("unregisterTask");
+        boolean result = simpleJobBinding.unregisterTask("unregisterTask");
         int executionCount = TestTaskExecutor.executionCount;
         assertThat(TestTaskExecutor.executionCount).isLessThan(4);
         sleep(Duration.ofSeconds(2));
         assertThat(TestTaskExecutor.executionCount).isEqualTo(executionCount);
         // Then
         assertThat(result).isTrue();
-        assertThat(schedulerBinding.taskExists("unregisterTask")).isFalse();
+        assertThat(simpleJobBinding.taskExists("unregisterTask")).isFalse();
     }
 
     @Test
     @Order(6)
     void testUnregisterTask_NotFound() {
         // When
-        boolean result = schedulerBinding.unregisterTask("nonExistent");
+        boolean result = simpleJobBinding.unregisterTask("nonExistent");
 
         // Then
         assertThat(result).isFalse();
@@ -188,7 +171,7 @@ class SimpleJobSchedulerBinderTest {
     @Order(7)
     void testPauseTask() {
         // When
-        boolean result = schedulerBinding.pauseTask("anyTask");
+        boolean result = simpleJobBinding.pauseTask("anyTask");
 
         // Then
         assertThat(result).isFalse(); // SimpleJob doesn't support pause
@@ -198,7 +181,7 @@ class SimpleJobSchedulerBinderTest {
     @Order(8)
     void testResumeTask() {
         // When
-        boolean result = schedulerBinding.resumeTask("anyTask");
+        boolean result = simpleJobBinding.resumeTask("anyTask");
 
         // Then
         assertThat(result).isFalse(); // SimpleJob doesn't support resume
@@ -208,7 +191,7 @@ class SimpleJobSchedulerBinderTest {
     @Order(9)
     void testTriggerTask() {
         // When
-        boolean result = schedulerBinding.triggerTask("anyTask");
+        boolean result = simpleJobBinding.triggerTask("anyTask");
 
         // Then
         assertThat(result).isFalse(); // SimpleJob doesn't support manual trigger
@@ -218,7 +201,7 @@ class SimpleJobSchedulerBinderTest {
     @Order(10)
     void testUpdateTaskCron() {
         // When
-        boolean result = schedulerBinding.updateTaskCron("anyTask", "0 0 12 * * ?");
+        boolean result = simpleJobBinding.updateTaskCron("anyTask", "0 0 12 * * ?");
 
         // Then
         assertThat(result).isFalse(); // SimpleJob doesn't support cron update
@@ -237,9 +220,9 @@ class SimpleJobSchedulerBinderTest {
                 .build();
 
         // When
-        boolean beforeRegister = schedulerBinding.taskExists("existTask");
-        schedulerBinding.registerTask(task);
-        boolean afterRegister = schedulerBinding.taskExists("existTask");
+        boolean beforeRegister = simpleJobBinding.taskExists("existTask");
+        simpleJobBinding.registerTask(task);
+        boolean afterRegister = simpleJobBinding.taskExists("existTask");
 
         // Then
         assertThat(beforeRegister).isFalse();
@@ -259,13 +242,13 @@ class SimpleJobSchedulerBinderTest {
                 .build();
 
         // When
-        boolean result = schedulerBinding.registerTask(task);
+        boolean result = simpleJobBinding.registerTask(task);
 
         // Then
         assertThat(result).isTrue();
 
         // Task should still be registered even if it throws exception
-        assertThat(schedulerBinding.taskExists("failingTask")).isTrue();
+        assertThat(simpleJobBinding.taskExists("failingTask")).isTrue();
     }
 
     // Test helper classes

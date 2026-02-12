@@ -24,11 +24,15 @@ package io.github.loadup.components.cache.cfg;
 
 import io.github.loadup.framework.api.cfg.BaseBindingCfg;
 import java.time.Duration;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author lise
  * @version BaseCacheBindingCfg.java, v 0.1 2026年01月13日 18:02 lise
  */
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class CacheBindingCfg extends BaseBindingCfg {
     private int database;
 

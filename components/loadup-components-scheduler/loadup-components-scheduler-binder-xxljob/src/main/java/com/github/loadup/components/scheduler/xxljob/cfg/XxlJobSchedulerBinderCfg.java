@@ -23,12 +23,10 @@ package com.github.loadup.components.scheduler.xxljob.cfg;
  */
 
 import io.github.loadup.components.scheduler.cfg.SchedulerBinderCfg;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(callSuper = true)
 public class XxlJobSchedulerBinderCfg extends SchedulerBinderCfg {
     private int poolSize = 1;
