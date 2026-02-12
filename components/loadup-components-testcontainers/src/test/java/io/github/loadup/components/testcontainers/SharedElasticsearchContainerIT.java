@@ -40,7 +40,6 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
@@ -51,7 +50,6 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
  * @since 1.0.0
  */
 @Slf4j
-@ActiveProfiles("test")
 @SpringBootTest(classes = TestApplication.class)
 @TestPropertySource(
         properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.elasticsearch.enabled=true"})

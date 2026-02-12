@@ -30,7 +30,6 @@ import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.localstack.LocalStackContainer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -46,7 +45,6 @@ import software.amazon.awssdk.services.s3.model.*;
  * @since 1.0.0
  */
 @Slf4j
-@ActiveProfiles("test")
 @SpringBootTest(classes = TestApplication.class)
 @TestPropertySource(
         properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.localstack.enabled=true"})

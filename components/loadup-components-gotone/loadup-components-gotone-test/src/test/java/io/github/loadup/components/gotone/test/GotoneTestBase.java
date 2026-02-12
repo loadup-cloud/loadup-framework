@@ -26,7 +26,6 @@ import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import io.github.loadup.testify.starter.base.TestifyBase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Gotone 测试基类
@@ -35,7 +34,6 @@ import org.springframework.test.context.ActiveProfiles;
  * <p>所有测试类继承此类即可使用 YAML 配置测试
  */
 @SpringBootTest(classes = TestApplication.class)
-@ActiveProfiles("test")
 @EnableTestContainers(ContainerType.MYSQL)
 public abstract class GotoneTestBase extends TestifyBase {
 

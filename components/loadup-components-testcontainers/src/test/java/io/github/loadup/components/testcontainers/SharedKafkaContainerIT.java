@@ -42,7 +42,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.kafka.KafkaContainer;
 
@@ -53,7 +52,6 @@ import org.testcontainers.kafka.KafkaContainer;
  * @since 1.0.0
  */
 @Slf4j
-@ActiveProfiles("test")
 @SpringBootTest(classes = TestApplication.class)
 @TestPropertySource(properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.kafka.enabled=true"})
 class SharedKafkaContainerIT extends AbstractKafkaContainerTest {

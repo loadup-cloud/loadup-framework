@@ -36,7 +36,7 @@
 // * Template functionality specialTest
 // */
 // @SpringBootTest(classes = GatewayTestApplication.class)
-// @ActiveProfiles("test")
+//
 // public class TemplateTest extends TestifyTestBase {
 //
 //    @TestBean

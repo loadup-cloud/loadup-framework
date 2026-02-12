@@ -28,11 +28,9 @@ import io.github.loadup.testify.starter.base.TestifyBase;
 import io.github.loadup.upms.api.command.UserCreateCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.testng.annotations.Test;
 
 @SpringBootTest(classes = TestApplication.class)
-@ActiveProfiles("test")
 public class UserServiceTest extends TestifyBase {
 
     @Autowired

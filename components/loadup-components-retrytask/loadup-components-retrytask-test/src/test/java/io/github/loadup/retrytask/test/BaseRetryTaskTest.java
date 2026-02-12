@@ -28,12 +28,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 
 /**
  * 测试基类，提供通用的测试设置和工具方法
  */
-@ActiveProfiles("test")
 @SpringBootTest
 @EnableTestContainers(ContainerType.MYSQL)
 public abstract class BaseRetryTaskTest {
