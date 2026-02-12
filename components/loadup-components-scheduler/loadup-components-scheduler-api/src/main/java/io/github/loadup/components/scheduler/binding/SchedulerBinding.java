@@ -46,7 +46,8 @@ public interface SchedulerBinding extends Binding<SchedulerBinder<?, SchedulerBi
      * @param taskName the name of the task to unregister
      * @return true if unregistration successful, false otherwise
      */
-    boolean unregisterTask(String taskName);
+    boolean cancel(String taskName);
+
 
     /**
      * Pause a scheduled task by task name.

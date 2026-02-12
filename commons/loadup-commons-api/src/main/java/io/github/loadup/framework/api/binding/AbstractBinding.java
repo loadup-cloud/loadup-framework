@@ -25,6 +25,7 @@ package io.github.loadup.framework.api.binding;
 import io.github.loadup.framework.api.binder.Binder;
 import io.github.loadup.framework.api.cfg.BaseBindingCfg;
 import io.github.loadup.framework.api.context.BindingContext;
+
 import java.util.List;
 
 public abstract class AbstractBinding<B extends Binder, S extends BaseBindingCfg> implements Binding<B, S> {
@@ -34,7 +35,9 @@ public abstract class AbstractBinding<B extends Binder, S extends BaseBindingCfg
     protected String binderType;
     private BindingContext<B, S> context; // 核心上下文
 
-    /** 获取首选驱动（通常 binders 列表中至少有一个） */
+    /**
+     * 获取首选驱动（通常 binders 列表中至少有一个）
+     */
     protected B getBinder() {
         if (binders == null || binders.isEmpty()) {
             throw new IllegalStateException("No binders available for " + bizTag);
@@ -89,9 +92,11 @@ public abstract class AbstractBinding<B extends Binder, S extends BaseBindingCfg
         afterInit();
     }
 
-    /** 子类扩展点：如果 S3Binding 需要在拿到配置后初始化 AmazonS3 客户端，写在这里 */
+    /**
+     * 子类扩展点：如果 S3Binding 需要在拿到配置后初始化 AmazonS3 客户端，写在这里
+     */
     protected void afterInit() {
-        // 默认空实现
+        getBinder().binderInit();
     }
 
     public final void destroy() {

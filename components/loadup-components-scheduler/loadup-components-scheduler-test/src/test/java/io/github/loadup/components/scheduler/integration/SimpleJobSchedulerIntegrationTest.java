@@ -96,7 +96,7 @@ class SimpleJobSchedulerIntegrationTest extends BaseSchedulerTest {
         assertThat(simpleJobBinding.taskExists(taskName)).isTrue();
 
         // Cleanup
-        simpleJobBinding.unregisterTask(taskName);
+        simpleJobBinding.cancel(taskName);
     }
 
     public static class TestScheduledTasks {

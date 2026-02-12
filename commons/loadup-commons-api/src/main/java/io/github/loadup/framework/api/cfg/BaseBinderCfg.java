@@ -22,7 +22,11 @@ package io.github.loadup.framework.api.cfg;
  * #L%
  */
 
-public class BaseBinderCfg {
+import io.github.loadup.framework.api.binder.BinderConfig;
+
+import java.util.Objects;
+
+public abstract class BaseBinderCfg implements BinderConfig {
     protected String name;
     protected String binder;
 
@@ -40,5 +44,23 @@ public class BaseBinderCfg {
 
     public void setBinder(String binder) {
         this.binder = binder;
+    }
+
+    // 强制子类重写这个方法，否则编译不通过
+    @Override
+    public abstract Object getIdentity();
+
+    // 统一定义 hashCode 逻辑，防止子类随意发挥
+    @Override
+    public final int hashCode() {
+        Object id = getIdentity();
+        return id == null ? 0 : id.hashCode();
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof BaseBinderCfg)) return false;
+        return Objects.equals(this.getIdentity(), ((BaseBinderCfg) obj).getIdentity());
     }
 }

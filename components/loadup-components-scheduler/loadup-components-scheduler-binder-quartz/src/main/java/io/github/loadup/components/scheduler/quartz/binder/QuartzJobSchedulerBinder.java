@@ -26,43 +26,61 @@ import io.github.loadup.components.scheduler.binder.AbstractSchedulerBinder;
 import io.github.loadup.components.scheduler.binder.SchedulerBinder;
 import io.github.loadup.components.scheduler.cfg.SchedulerBindingCfg;
 import io.github.loadup.components.scheduler.model.SchedulerTask;
-import io.github.loadup.components.scheduler.quartz.cfg.QuartzJobSchedulerBinderCfg;
+import io.github.loadup.components.scheduler.quartz.cfg.QuartzBinderCfg;
 import io.github.loadup.components.scheduler.quartz.job.SchedulerTaskJob;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /** Quartz scheduler binder implementation. Supports distributed scheduling with Quartz features. */
 @Slf4j
-public class QuartzJobSchedulerBinder extends AbstractSchedulerBinder<QuartzJobSchedulerBinderCfg, SchedulerBindingCfg>
-        implements SchedulerBinder<QuartzJobSchedulerBinderCfg, SchedulerBindingCfg> {
+public class QuartzJobSchedulerBinder extends AbstractSchedulerBinder<QuartzBinderCfg, SchedulerBindingCfg>
+        implements SchedulerBinder<QuartzBinderCfg, SchedulerBindingCfg> {
 
     private static final String BINDER_NAME = "quartz";
     private static final String DEFAULT_GROUP = "DEFAULT";
     // Store task name to group mapping
     private final Map<String, String> taskGroupMap = new ConcurrentHashMap<>();
 
-    @Autowired
     private Scheduler scheduler;
 
     @Override
     protected void onInit() {
         log.info("Initializing Quartz scheduler binder");
         try {
-            if (!scheduler.isStarted()) {
-                scheduler.start();
-                log.info("Quartz scheduler started");
+            Properties props = getBinderCfg().getQuartzProperties();
+
+            // 1. 强制检查并设置最小线程数，防止因配置缺失导致崩溃
+            if (!props.containsKey("org.quartz.threadPool.threadCount")) {
+                // 默认取 10 或从配置中读取
+                props.setProperty("org.quartz.threadPool.threadCount", "10");
             }
+
+            // 2. 设置线程池类（这也是必须的）
+            if (!props.containsKey("org.quartz.threadPool.class")) {
+                props.setProperty("org.quartz.threadPool.class", "org.quartz.simpl.SimpleThreadPool");
+            }
+
+            // 3. 如果是分布式模式，必须配置 JobStore
+            // props.setProperty("org.quartz.jobStore.class", "org.quartz.impl.jdbcjobstore.JobStoreTX");
+
+            SchedulerFactory schedulerFactory = new StdSchedulerFactory(props);
+            this.scheduler = schedulerFactory.getScheduler();
+            // 关键：如果需要 Job 访问 Spring Bean，需设置自定义 JobFactory
+//             this.scheduler.setJobFactory(springBeanJobFactory);
+            this.scheduler.start();
         } catch (SchedulerException e) {
-            log.error("Failed to start Quartz scheduler", e);
+            throw new RuntimeException("Failed to init Quartz Scheduler", e);
         }
     }
 
     @Override
     public String getBinderType() {
-        return BINDER_NAME;
+        return QuartzJobSchedulerBinder.BINDER_NAME;
     }
 
     @Override
@@ -78,8 +96,9 @@ public class QuartzJobSchedulerBinder extends AbstractSchedulerBinder<QuartzJobS
         }
     }
 
+
     @Override
-    public boolean registerTask(SchedulerTask task) {
+    public boolean schedule(SchedulerTask task) {
         try {
             String taskName = task.getTaskName();
             String taskGroup = task.getTaskGroup() != null ? task.getTaskGroup() : DEFAULT_GROUP;
@@ -87,7 +106,7 @@ public class QuartzJobSchedulerBinder extends AbstractSchedulerBinder<QuartzJobS
             // Check if task already exists
             if (taskExists(taskName)) {
                 log.warn("Task '{}' already exists, unregistering first", taskName);
-                unregisterTask(taskName);
+                cancel(taskName);
             }
 
             // Create job detail
@@ -122,8 +141,9 @@ public class QuartzJobSchedulerBinder extends AbstractSchedulerBinder<QuartzJobS
         }
     }
 
+
     @Override
-    public boolean unregisterTask(String taskName) {
+    public boolean cancel(String taskName) {
         try {
             String taskGroup = taskGroupMap.getOrDefault(taskName, DEFAULT_GROUP);
             JobKey jobKey = new JobKey(taskName, taskGroup);

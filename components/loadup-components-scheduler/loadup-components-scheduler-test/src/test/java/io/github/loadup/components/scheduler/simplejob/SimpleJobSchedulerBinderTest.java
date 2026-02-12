@@ -55,7 +55,7 @@ class SimpleJobSchedulerBinderTest extends BaseSchedulerTest {
     @AfterEach
     void tearDown() {
         if (simpleJobBinding != null) {
-            taskList.forEach(v -> simpleJobBinding.unregisterTask(v));
+            taskList.forEach(v -> simpleJobBinding.cancel(v));
         }
     }
 
@@ -73,7 +73,7 @@ class SimpleJobSchedulerBinderTest extends BaseSchedulerTest {
     void testUnregisterDefaultTask() {
 
         await().atMost(5, TimeUnit.SECONDS).until(() -> simpleJobBinding.taskExists("SimpleTestTask"));
-        boolean result = simpleJobBinding.unregisterTask("SimpleTestTask");
+        boolean result = simpleJobBinding.cancel("SimpleTestTask");
         Assertions.assertTrue(result);
         int executionCount = SimpleTestTask.a.get();
         safeSleep(2);
@@ -108,7 +108,7 @@ class SimpleJobSchedulerBinderTest extends BaseSchedulerTest {
     @Test
     @Order(4)
     @DisplayName("Test register duplicate task and execution")
-    void testRegisterTask_DuplicateTask() throws Exception {
+    void testSchedule() throws Exception {
         // Given
         SchedulerTask task = SchedulerTask.builder()
                 .taskName("duplicateTask")
@@ -135,7 +135,7 @@ class SimpleJobSchedulerBinderTest extends BaseSchedulerTest {
     @Test
     @Order(5)
     @DisplayName("Test register and unregister task")
-    void testUnregisterTask() throws InterruptedException {
+    void testCancel() throws InterruptedException {
         // Given
         SchedulerTask task = SchedulerTask.builder()
                 .taskName("unregisterTask")
@@ -147,7 +147,7 @@ class SimpleJobSchedulerBinderTest extends BaseSchedulerTest {
 
         await().atMost(2, TimeUnit.SECONDS).until(() -> testExecutor.getExecutionCount() > 1);
         // When
-        boolean result = simpleJobBinding.unregisterTask("unregisterTask");
+        boolean result = simpleJobBinding.cancel("unregisterTask");
         int executionCount = TestTaskExecutor.executionCount;
         assertThat(TestTaskExecutor.executionCount).isLessThan(4);
         sleep(Duration.ofSeconds(2));
@@ -159,12 +159,12 @@ class SimpleJobSchedulerBinderTest extends BaseSchedulerTest {
 
     @Test
     @Order(6)
-    void testUnregisterTask_NotFound() {
+    void testCancel_NotFound() {
         // When
-        boolean result = simpleJobBinding.unregisterTask("nonExistent");
+        boolean result = simpleJobBinding.cancel("nonExistent");
 
         // Then
-        assertThat(result).isFalse();
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -231,7 +231,7 @@ class SimpleJobSchedulerBinderTest extends BaseSchedulerTest {
 
     @Test
     @Order(12)
-    void testRegisterTask_WithException() throws Exception {
+    void testSchedule_WithException() throws Exception {
         // Given
         Method method = FailingTaskExecutor.class.getMethod("failingMethod");
         SchedulerTask task = SchedulerTask.builder()

@@ -32,13 +32,15 @@ import io.github.loadup.framework.api.binder.Binder;
  * provide concrete logic for different scheduler frameworks.
  */
 public interface SchedulerBinder<C extends SchedulerBinderCfg, S extends SchedulerBindingCfg> extends Binder<C, S> {
+
+
     /**
      * Register a scheduled task.
      *
      * @param task the scheduler task to register
      * @return true if registration successful, false otherwise
      */
-    default boolean registerTask(SchedulerTask task) {
+    default boolean schedule(SchedulerTask task) {
         return false;
     }
 
@@ -48,7 +50,7 @@ public interface SchedulerBinder<C extends SchedulerBinderCfg, S extends Schedul
      * @param taskName the name of the task to unregister
      * @return true if unregistration successful, false otherwise
      */
-    default boolean unregisterTask(String taskName) {
+    default boolean cancel(String taskName) {
         return false;
     }
 
@@ -86,7 +88,7 @@ public interface SchedulerBinder<C extends SchedulerBinderCfg, S extends Schedul
      * Update the cron expression of an existing scheduled task.
      *
      * @param taskName the name of the task
-     * @param cron the new cron expression
+     * @param cron     the new cron expression
      * @return true if update successful, false otherwise
      */
     default boolean updateTaskCron(String taskName, String cron) {

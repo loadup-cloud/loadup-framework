@@ -3,7 +3,7 @@ package io.github.loadup.components.scheduler.quartz.autoconfig;
 import io.github.loadup.components.scheduler.binding.DefaultSchedulerBinding;
 import io.github.loadup.components.scheduler.cfg.SchedulerBindingCfg;
 import io.github.loadup.components.scheduler.quartz.binder.QuartzJobSchedulerBinder;
-import io.github.loadup.components.scheduler.quartz.cfg.QuartzJobSchedulerBinderCfg;
+import io.github.loadup.components.scheduler.quartz.cfg.QuartzBinderCfg;
 import io.github.loadup.framework.api.manager.BindingMetadata;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -23,7 +23,7 @@ public class QuartzJobSchedulerAutoConfiguration {
                 DefaultSchedulerBinding.class,
                 QuartzJobSchedulerBinder.class,
                 SchedulerBindingCfg.class,
-                QuartzJobSchedulerBinderCfg.class,
+                QuartzBinderCfg.class,
                 ctx -> new DefaultSchedulerBinding());
     }
 }

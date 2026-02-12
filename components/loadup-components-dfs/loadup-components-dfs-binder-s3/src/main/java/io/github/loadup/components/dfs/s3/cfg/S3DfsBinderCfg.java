@@ -25,20 +25,32 @@ package io.github.loadup.components.dfs.s3.cfg;
 import io.github.loadup.components.dfs.cfg.DfsBinderCfg;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+import java.util.Arrays;
+
+@Getter
+@Setter
 public class S3DfsBinderCfg extends DfsBinderCfg {
-    /** S3 存储桶名称（必填） */
+    /**
+     * S3 存储桶名称（必填）
+     */
     private String bucket;
 
-    /** S3 访问密钥（可选，未配置时从 AWS 配置或环境变量获取） */
+    /**
+     * S3 访问密钥（可选，未配置时从 AWS 配置或环境变量获取）
+     */
     private String accessKey;
 
-    /** S3 秘密密钥（可选，未配置时从 AWS 配置或环境变量获取） */
+    /**
+     * S3 秘密密钥（可选，未配置时从 AWS 配置或环境变量获取）
+     */
     private String secretKey;
 
-    /** AWS 区域（可选，未配置时从 AWS 配置获取，默认：us-east-1） */
+    /**
+     * AWS 区域（可选，未配置时从 AWS 配置获取，默认：us-east-1）
+     */
     private String region;
 
     /**
@@ -52,4 +64,9 @@ public class S3DfsBinderCfg extends DfsBinderCfg {
      * </ul>
      */
     private String endpoint;
+
+    @Override
+    public Object getIdentity() {
+        return Arrays.asList(accessKey, secretKey, region, bucket);
+    }
 }

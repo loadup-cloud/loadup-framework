@@ -87,7 +87,7 @@ class QuartzSchedulerIntegrationTest {
         assertThat(resumed).isTrue();
 
         // Cleanup
-        schedulerBinding.unregisterTask(taskName);
+        schedulerBinding.cancel(taskName);
         assertThat(schedulerBinding.taskExists(taskName)).isFalse();
     }
 
@@ -106,7 +106,7 @@ class QuartzSchedulerIntegrationTest {
         assertThat(updated).isTrue();
 
         // Cleanup
-        schedulerBinding.unregisterTask(taskName);
+        schedulerBinding.cancel(taskName);
     }
 
     @Test
@@ -126,7 +126,7 @@ class QuartzSchedulerIntegrationTest {
         assertThat(triggered).isTrue();
 
         // Cleanup
-        schedulerBinding.unregisterTask(taskName);
+        schedulerBinding.cancel(taskName);
     }
 
     @Configuration

@@ -31,8 +31,12 @@ public @interface DistributedScheduler {
 
     String bizTag() default "default";
 
-    /** */
+    /**
+     *
+     */
     String name() default "";
+
+    String group() default ""; // 支持显式指定组
 
     String cron() default "";
 }

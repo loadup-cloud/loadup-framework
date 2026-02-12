@@ -25,10 +25,17 @@ package com.github.loadup.components.scheduler.xxljob.cfg;
 import io.github.loadup.components.scheduler.cfg.SchedulerBinderCfg;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 public class XxlJobSchedulerBinderCfg extends SchedulerBinderCfg {
     private int poolSize = 1;
     private String threadNamePrefix = "xxl-scheduler-";
+
+    @Override
+    public Object getIdentity() {
+        return "xxljob:" + getName();
+    }
 }

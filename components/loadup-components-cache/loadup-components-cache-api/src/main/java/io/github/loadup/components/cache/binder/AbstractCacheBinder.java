@@ -31,12 +31,14 @@ import io.github.loadup.framework.api.binder.AbstractBinder;
 import io.github.loadup.framework.api.manager.ConfigurationResolver;
 
 public abstract class AbstractCacheBinder<C extends CacheBinderCfg, S extends CacheBindingCfg>
-        extends AbstractBinder<C, S> implements CacheBinder<C, S> {
+    extends AbstractBinder<C, S> implements CacheBinder<C, S> {
     protected CacheSerializer serializer;
     protected CacheTicker ticker; // 时间源
 
     @Override
     protected void afterConfigInjected(String name, C binderCfg, S bindingCfg) {
+        this.binderCfg = binderCfg;
+        this.bindingCfg = bindingCfg;
         // 自动从容器中根据配置的名称获取序列化器
         this.resolveInternalComponents();
         // 执行子类特有的初始化逻辑
@@ -46,14 +48,14 @@ public abstract class AbstractCacheBinder<C extends CacheBinderCfg, S extends Ca
     private void resolveInternalComponents() {
         // 1. 确定序列化器：优先级 Binding > Binder
         String serializerName =
-                ConfigurationResolver.resolve(bindingCfg.getSerializerBeanName(), binderCfg.getSerializerBeanName());
+            ConfigurationResolver.resolve(bindingCfg.getSerializerBeanName(), binderCfg.getSerializerBeanName());
         if (StringUtils.isNotBlank(serializerName)) {
             this.serializer = context.getBean(serializerName, CacheSerializer.class);
         }
         // 2. 确定时间源
         String tickerName = binderCfg.getTickerBeanName();
         this.ticker =
-                context.containsBean(tickerName) ? context.getBean(tickerName, CacheTicker.class) : CacheTicker.SYSTEM;
+            context.containsBean(tickerName) ? context.getBean(tickerName, CacheTicker.class) : CacheTicker.SYSTEM;
     }
 
     protected abstract void onInit();

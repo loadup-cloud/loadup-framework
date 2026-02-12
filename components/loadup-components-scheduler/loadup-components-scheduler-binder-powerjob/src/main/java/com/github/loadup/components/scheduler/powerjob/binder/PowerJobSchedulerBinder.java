@@ -62,7 +62,7 @@ public class PowerJobSchedulerBinder implements SchedulerBinder {
     }
 
     @Override
-    public boolean registerTask(SchedulerTask task) {
+    public boolean schedule(SchedulerTask task) {
         // PowerJob uses server-side configuration and @PowerJobHandler annotation
         // We store the task for reference but cannot dynamically register
         String taskName = task.getTaskName();
@@ -72,7 +72,7 @@ public class PowerJobSchedulerBinder implements SchedulerBinder {
     }
 
     @Override
-    public boolean unregisterTask(String taskName) {
+    public boolean cancel(String taskName) {
         SchedulerTask removed = taskRegistry.remove(taskName);
         if (removed != null) {
             log.info("Task '{}' removed from local registry", taskName);

@@ -131,7 +131,7 @@ public abstract class BindingManagerSupport<B extends Binder, T extends Binding>
                     CBIND bindingCfg) {
 
         // 建议按 type + tag 缓存，或者全局按 type 缓存（取决于 Binder 是否可复用）
-        String cacheKey = meta.type + ":" + Objects.hash(binderCfg);
+        String cacheKey = meta.type + ":" + binderCfg.getIdentity();
 
         B_SUB binderInstance = (B_SUB) binderInstanceCache.computeIfAbsent(cacheKey, k -> {
             // 利用 Spring 容器创建实例，保证 @Autowired 生效

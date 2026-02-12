@@ -25,6 +25,8 @@ package io.github.loadup.components.dfs.local.cfg;
 import io.github.loadup.components.dfs.cfg.DfsBinderCfg;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Redis Binder Configuration
@@ -74,8 +76,13 @@ import lombok.EqualsAndHashCode;
  *         password: custom-secret
  * </pre>
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 public class LocalDfsBinderCfg extends DfsBinderCfg {
     private String basePath = System.getProperty("user.home") + "/dfs-storage";
+
+    @Override
+    public Object getIdentity() {
+        return basePath;
+    }
 }

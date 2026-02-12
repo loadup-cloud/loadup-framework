@@ -26,16 +26,19 @@ import io.github.loadup.components.cache.constants.CacheConstants;
 import io.github.loadup.framework.api.cfg.BaseBinderCfg;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author lise
  * @version BaseCacheBindingCfg.java, v 0.1 2026年01月13日 18:02 lise
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class CacheBinderCfg extends BaseBinderCfg {
+@Getter
+@Setter
+public abstract class CacheBinderCfg extends BaseBinderCfg {
     // 指定序列化器的 Bean 名称，例如 "defaultJsonCacheSerializer" 或 "kryoSerializer"
     private String serializerBeanName = CacheConstants.SERIALIZER_JSON;
     // 默认使用系统时间源
     private String tickerBeanName = CacheConstants.DEFAULT_TICKER;
+
 }

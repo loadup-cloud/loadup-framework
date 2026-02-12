@@ -23,9 +23,12 @@ package io.github.loadup.components.cache.caffeine.cfg;
  */
 
 import io.github.loadup.components.cache.cfg.CacheBinderCfg;
-import java.time.Duration;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.Duration;
 
 /**
  * Caffeine Binder Configuration
@@ -71,8 +74,8 @@ import lombok.EqualsAndHashCode;
  *         spec: maximumSize=2000,expireAfterWrite=30m  # Override
  * </pre>
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 public class CaffeineCacheBinderCfg extends CacheBinderCfg {
     public CaffeineCacheBinderCfg() {
         // 在构造函数中修改默认值
@@ -108,10 +111,14 @@ public class CaffeineCacheBinderCfg extends CacheBinderCfg {
     private Duration expireAfterWrite;
     private Duration expireAfterAccess;
 
-    /** 是否开启随机过期 */
+    /**
+     * 是否开启随机过期
+     */
     private boolean enableRandomExpiry = false;
 
-    /** 随机因子 (例如 0.2 表示在 100%~120% 之间波动) */
+    /**
+     * 随机因子 (例如 0.2 表示在 100%~120% 之间波动)
+     */
     private double randomFactor = 0.2;
 
     /**
@@ -121,5 +128,10 @@ public class CaffeineCacheBinderCfg extends CacheBinderCfg {
      */
     public boolean hasCustomConfig() {
         return spec != null && !spec.isEmpty();
+    }
+
+    @Override
+    public Object getIdentity() {
+        return "caffeine:" + getName();
     }
 }

@@ -26,6 +26,10 @@ import io.github.loadup.components.cache.cfg.CacheBinderCfg;
 import io.github.loadup.components.cache.constants.CacheConstants;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Arrays;
 
 /**
  * Redis Binder Configuration
@@ -75,13 +79,17 @@ import lombok.EqualsAndHashCode;
  *         password: custom-secret
  * </pre>
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 public class RedisCacheBinderCfg extends CacheBinderCfg {
-    /** 是否开启随机过期 */
+    /**
+     * 是否开启随机过期
+     */
     private boolean enableRandomExpiry = false;
 
-    /** 随机因子 (例如 0.2 表示在 100%~120% 之间波动) */
+    /**
+     * 随机因子 (例如 0.2 表示在 100%~120% 之间波动)
+     */
     private double randomFactor = 0.2;
 
     /**
@@ -90,7 +98,9 @@ public class RedisCacheBinderCfg extends CacheBinderCfg {
      */
     private Integer database;
 
-    /** Redis server host Override: loadup.cache.binder.redis.host Default: spring.data.redis.host */
+    /**
+     * Redis server host Override: loadup.cache.binder.redis.host Default: spring.data.redis.host
+     */
     private String host;
 
     /**
@@ -123,5 +133,10 @@ public class RedisCacheBinderCfg extends CacheBinderCfg {
     public RedisCacheBinderCfg() {
         // Redis 驱动默认建议使用 JSON 序列化，方便跨语言查看
         setSerializerBeanName(CacheConstants.SERIALIZER_JSON);
+    }
+
+    @Override
+    public Object getIdentity() {
+        return Arrays.asList(host, port, database);
     }
 }

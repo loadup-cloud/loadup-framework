@@ -27,24 +27,42 @@ import io.github.loadup.components.scheduler.cfg.SchedulerBindingCfg;
 import io.github.loadup.components.scheduler.model.SchedulerTask;
 import io.github.loadup.framework.api.binding.AbstractBinding;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
-/** Default implementation of SchedulerBinding that delegates to a SchedulerBinder. */
+/**
+ * Default implementation of SchedulerBinding that delegates to a SchedulerBinder.
+ */
 @Slf4j
 public class DefaultSchedulerBinding
-        extends AbstractBinding<SchedulerBinder<?, SchedulerBindingCfg>, SchedulerBindingCfg>
-        implements SchedulerBinding {
+    extends AbstractBinding<SchedulerBinder<?, SchedulerBindingCfg>, SchedulerBindingCfg>
+    implements SchedulerBinding {
 
     @Override
     public boolean registerTask(SchedulerTask task) {
         log.debug("Registering task: {}", task.getTaskName());
-        return getBinder().registerTask(task);
+        if (!task.isEnabled()) {
+            log.info("Task [{}] is disabled, skipping registration.", task.getTaskName());
+            return false;
+        }
+        SchedulerBinder<?, SchedulerBindingCfg> binder = getBinder();
+        // 2. 优先使用注解中定义的 Cron，如果注解没写，则尝试取 YAML 配置里的 Cron
+        String finalCron = StringUtils.hasText(task.getCron()) ?
+            task.getCron() : getBindingCfg().getCron();
+
+        if (!StringUtils.hasText(finalCron)) {
+            log.warn("Task [{}] skipped: No cron expression found in @DistributedScheduler or YAML", task.getTaskName());
+            return false;
+        }
+        binder.schedule(task);
+        return true;
     }
 
     @Override
-    public boolean unregisterTask(String taskName) {
+    public boolean cancel(String taskName) {
         log.debug("Unregistering task: {}", taskName);
-        return getBinder().unregisterTask(taskName);
+        return getBinder().cancel(taskName);
     }
+
 
     @Override
     public boolean pauseTask(String taskName) {
@@ -75,8 +93,5 @@ public class DefaultSchedulerBinding
         return getBinder().taskExists(taskName);
     }
 
-    public void afterInit() {
-        log.info("Initializing scheduler binding");
-        getBinder().binderInit();
-    }
+
 }

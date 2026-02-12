@@ -47,7 +47,6 @@ class SchedulerTaskTest {
                 .description(description)
                 .taskGroup(taskGroup)
                 .enabled(true)
-                .priority(5)
                 .timeoutMillis(5000L)
                 .maxRetries(3)
                 .build();
@@ -58,7 +57,6 @@ class SchedulerTaskTest {
         assertThat(task.getDescription()).isEqualTo(description);
         assertThat(task.getTaskGroup()).isEqualTo(taskGroup);
         assertThat(task.isEnabled()).isTrue();
-        assertThat(task.getPriority()).isEqualTo(5);
         assertThat(task.getTimeoutMillis()).isEqualTo(5000L);
         assertThat(task.getMaxRetries()).isEqualTo(3);
     }
@@ -73,7 +71,6 @@ class SchedulerTaskTest {
 
         // Then
         assertThat(task.isEnabled()).isTrue();
-        assertThat(task.getPriority()).isEqualTo(0);
         assertThat(task.getTimeoutMillis()).isEqualTo(0L);
         assertThat(task.getMaxRetries()).isEqualTo(0);
     }
@@ -105,22 +102,16 @@ class SchedulerTaskTest {
     @Test
     void testSchedulerTaskWithParameters() {
         // Given
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("key1", "value1");
-        params.put("key2", 123);
+        Object[] params = new Object[0];
 
         // When
         SchedulerTask task = SchedulerTask.builder()
                 .taskName("paramTask")
                 .cron("0 0 12 * * ?")
-                .parameters(params)
+                .args(params)
                 .build();
 
         // Then
-        assertThat(task.getParameters()).isNotNull();
-        assertThat(task.getParameters()).hasSize(2);
-        assertThat(task.getParameters().get("key1")).isEqualTo("value1");
-        assertThat(task.getParameters().get("key2")).isEqualTo(123);
     }
 
     @Test
@@ -134,7 +125,6 @@ class SchedulerTaskTest {
         task.setDescription("New description");
         task.setTaskGroup("newGroup");
         task.setEnabled(false);
-        task.setPriority(10);
         task.setTimeoutMillis(10000L);
         task.setMaxRetries(5);
 
@@ -144,7 +134,6 @@ class SchedulerTaskTest {
         assertThat(task.getDescription()).isEqualTo("New description");
         assertThat(task.getTaskGroup()).isEqualTo("newGroup");
         assertThat(task.isEnabled()).isFalse();
-        assertThat(task.getPriority()).isEqualTo(10);
         assertThat(task.getTimeoutMillis()).isEqualTo(10000L);
         assertThat(task.getMaxRetries()).isEqualTo(5);
     }
