@@ -34,8 +34,8 @@ import org.springframework.util.StringUtils;
  */
 @Slf4j
 public class DefaultSchedulerBinding
-    extends AbstractBinding<SchedulerBinder<?, SchedulerBindingCfg>, SchedulerBindingCfg>
-    implements SchedulerBinding {
+        extends AbstractBinding<SchedulerBinder<?, SchedulerBindingCfg>, SchedulerBindingCfg>
+        implements SchedulerBinding {
 
     @Override
     public boolean registerTask(SchedulerTask task) {
@@ -46,11 +46,13 @@ public class DefaultSchedulerBinding
         }
         SchedulerBinder<?, SchedulerBindingCfg> binder = getBinder();
         // 2. 优先使用注解中定义的 Cron，如果注解没写，则尝试取 YAML 配置里的 Cron
-        String finalCron = StringUtils.hasText(task.getCron()) ?
-            task.getCron() : getBindingCfg().getCron();
+        String finalCron = StringUtils.hasText(task.getCron())
+                ? task.getCron()
+                : getBindingCfg().getCron();
 
         if (!StringUtils.hasText(finalCron)) {
-            log.warn("Task [{}] skipped: No cron expression found in @DistributedScheduler or YAML", task.getTaskName());
+            log.warn(
+                    "Task [{}] skipped: No cron expression found in @DistributedScheduler or YAML", task.getTaskName());
             return false;
         }
         binder.schedule(task);
@@ -62,7 +64,6 @@ public class DefaultSchedulerBinding
         log.debug("Unregistering task: {}", taskName);
         return getBinder().cancel(taskName);
     }
-
 
     @Override
     public boolean pauseTask(String taskName) {
@@ -92,6 +93,4 @@ public class DefaultSchedulerBinding
     public boolean taskExists(String taskName) {
         return getBinder().taskExists(taskName);
     }
-
-
 }

@@ -24,8 +24,6 @@ package io.github.loadup.components.cache.cfg;
 
 import io.github.loadup.components.cache.constants.CacheConstants;
 import io.github.loadup.framework.api.cfg.BaseBinderCfg;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,5 +38,4 @@ public abstract class CacheBinderCfg extends BaseBinderCfg {
     private String serializerBeanName = CacheConstants.SERIALIZER_JSON;
     // 默认使用系统时间源
     private String tickerBeanName = CacheConstants.DEFAULT_TICKER;
-
 }

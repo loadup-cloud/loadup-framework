@@ -48,7 +48,6 @@ public interface SchedulerBinding extends Binding<SchedulerBinder<?, SchedulerBi
      */
     boolean cancel(String taskName);
 
-
     /**
      * Pause a scheduled task by task name.
      *

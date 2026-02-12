@@ -25,7 +25,6 @@ package io.github.loadup.framework.api.binding;
 import io.github.loadup.framework.api.binder.Binder;
 import io.github.loadup.framework.api.cfg.BaseBindingCfg;
 import io.github.loadup.framework.api.context.BindingContext;
-
 import java.util.List;
 
 public abstract class AbstractBinding<B extends Binder, S extends BaseBindingCfg> implements Binding<B, S> {

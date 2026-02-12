@@ -24,12 +24,9 @@ package io.github.loadup.components.cache.redis.cfg;
 
 import io.github.loadup.components.cache.cfg.CacheBinderCfg;
 import io.github.loadup.components.cache.constants.CacheConstants;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Arrays;
 
 /**
  * Redis Binder Configuration

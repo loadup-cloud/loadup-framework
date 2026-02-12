@@ -22,15 +22,14 @@ package io.github.loadup.components.scheduler.model;
  * #L%
  */
 
+import java.lang.reflect.Method;
+import java.util.concurrent.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.Method;
-import java.util.concurrent.*;
 
 /**
  * Scheduler task model representing a scheduled task configuration.
@@ -51,12 +50,10 @@ public class SchedulerTask {
      */
     private String taskGroup;
 
-
     /**
      * Task description
      */
     private String description;
-
 
     /**
      * spring bean name of the target method's class
@@ -86,7 +83,6 @@ public class SchedulerTask {
      * Bean instance containing the method
      */
     private Object targetBean;
-
 
     /**
      * Timeout in milliseconds (0 = no timeout)
@@ -126,8 +122,12 @@ public class SchedulerTask {
                     if (attempt > maxRetries) {
                         log.error("Task [{}] failed after {} attempts. Permanent error: ", taskName, attempt, e);
                     } else {
-                        log.warn("Task [{}] failed (attempt {}/{}), retrying... Error: {}",
-                            taskName, attempt, maxRetries, e.getMessage());
+                        log.warn(
+                                "Task [{}] failed (attempt {}/{}), retrying... Error: {}",
+                                taskName,
+                                attempt,
+                                maxRetries,
+                                e.getMessage());
                         backoff(attempt); // 退避策略
                     }
                 }

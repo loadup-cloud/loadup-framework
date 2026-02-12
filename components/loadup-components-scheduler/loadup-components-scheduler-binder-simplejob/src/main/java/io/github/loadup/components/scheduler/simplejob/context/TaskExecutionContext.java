@@ -1,10 +1,9 @@
 package io.github.loadup.components.scheduler.simplejob.context;
 
 import io.github.loadup.components.scheduler.model.SchedulerTask;
+import java.util.concurrent.ScheduledFuture;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.concurrent.ScheduledFuture;
 
 @Data
 @AllArgsConstructor

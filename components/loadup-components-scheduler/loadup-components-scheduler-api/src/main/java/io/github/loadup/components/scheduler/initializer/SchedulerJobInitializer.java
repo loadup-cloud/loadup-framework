@@ -26,6 +26,8 @@ import io.github.loadup.components.scheduler.annotation.DistributedScheduler;
 import io.github.loadup.components.scheduler.binding.SchedulerBinding;
 import io.github.loadup.components.scheduler.manager.SchedulerBindingManager;
 import io.github.loadup.components.scheduler.model.SchedulerTask;
+import java.lang.reflect.Method;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.context.ApplicationContext;
@@ -34,9 +36,6 @@ import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
-
-import java.lang.reflect.Method;
-import java.util.Map;
 
 @Slf4j
 public class SchedulerJobInitializer implements SmartInitializingSingleton, EmbeddedValueResolverAware {
@@ -61,8 +60,8 @@ public class SchedulerJobInitializer implements SmartInitializingSingleton, Embe
 
             // 查找所有标注了 @DistributedScheduler 的方法
             Map<Method, DistributedScheduler> annotatedMethods = MethodIntrospector.selectMethods(
-                targetClass, (MethodIntrospector.MetadataLookup<DistributedScheduler>)
-                    method -> AnnotatedElementUtils.findMergedAnnotation(method, DistributedScheduler.class));
+                    targetClass, (MethodIntrospector.MetadataLookup<DistributedScheduler>)
+                            method -> AnnotatedElementUtils.findMergedAnnotation(method, DistributedScheduler.class));
 
             annotatedMethods.forEach((method, annotation) -> registerJob(bean, method, annotation));
         }
@@ -70,11 +69,11 @@ public class SchedulerJobInitializer implements SmartInitializingSingleton, Embe
 
     private void registerJob(Object bean, Method method, DistributedScheduler ann) {
         String bizTag = (valueResolver != null)
-            ? valueResolver.resolveStringValue(ann.bizTag())
-            : ann.bizTag(); // 如果没指定 name，则使用 "类名#方法名" 确保唯一性
+                ? valueResolver.resolveStringValue(ann.bizTag())
+                : ann.bizTag(); // 如果没指定 name，则使用 "类名#方法名" 确保唯一性
         String taskName = StringUtils.hasText(ann.name())
-            ? ((valueResolver != null) ? valueResolver.resolveStringValue(ann.name()) : ann.name())
-            : bean.getClass().getSimpleName() + "#" + method.getName();
+                ? ((valueResolver != null) ? valueResolver.resolveStringValue(ann.name()) : ann.name())
+                : bean.getClass().getSimpleName() + "#" + method.getName();
         // 这里的 manager.getBinding 会从缓存中获取实例
         SchedulerBinding binding = manager.getBinding(bizTag);
 
@@ -93,11 +92,11 @@ public class SchedulerJobInitializer implements SmartInitializingSingleton, Embe
             resolvedCron = ann.cron();
         }
         SchedulerTask task = SchedulerTask.builder()
-            .taskName(taskName)
-            .cron(resolvedCron)
-            .method(method)
-            .targetBean(bean)
-            .build();
+                .taskName(taskName)
+                .cron(resolvedCron)
+                .method(method)
+                .targetBean(bean)
+                .build();
         // 提交任务到驱动 (Spring/Quartz/XXL-Job)
         binding.registerTask(task);
     }

@@ -23,12 +23,9 @@ package io.github.loadup.components.dfs.s3.cfg;
  */
 
 import io.github.loadup.components.dfs.cfg.DfsBinderCfg;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Arrays;
 
 @Getter
 @Setter

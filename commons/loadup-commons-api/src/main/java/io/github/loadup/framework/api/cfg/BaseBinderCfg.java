@@ -23,7 +23,6 @@ package io.github.loadup.framework.api.cfg;
  */
 
 import io.github.loadup.framework.api.binder.BinderConfig;
-
 import java.util.Objects;
 
 public abstract class BaseBinderCfg implements BinderConfig {

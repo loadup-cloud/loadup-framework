@@ -29,12 +29,11 @@ import io.github.loadup.components.scheduler.model.SchedulerTask;
 import io.github.loadup.components.scheduler.simplejob.cfg.SimpleJobSchedulerBinderCfg;
 import io.github.loadup.components.scheduler.simplejob.context.CustomThreadFactory;
 import io.github.loadup.components.scheduler.simplejob.context.TaskExecutionContext;
+import java.util.Map;
+import java.util.concurrent.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
-
-import java.util.Map;
-import java.util.concurrent.*;
 
 /**
  * Simple job scheduler binder implementation using Spring's TaskScheduler. This is a lightweight
@@ -42,7 +41,7 @@ import java.util.concurrent.*;
  */
 @Slf4j
 public class SimpleJobSchedulerBinder extends AbstractSchedulerBinder<SimpleJobSchedulerBinderCfg, SchedulerBindingCfg>
-    implements SchedulerBinder<SimpleJobSchedulerBinderCfg, SchedulerBindingCfg> {
+        implements SchedulerBinder<SimpleJobSchedulerBinderCfg, SchedulerBindingCfg> {
 
     // 负责计时的调度器
     private ThreadPoolTaskScheduler taskScheduler;
@@ -62,13 +61,13 @@ public class SimpleJobSchedulerBinder extends AbstractSchedulerBinder<SimpleJobS
 
         // 2. 初始化业务执行池 (用于处理 SchedulerTask 中的超时控制)
         this.businessExecutor = new ThreadPoolExecutor(
-            getBinderCfg().getPoolSize(),
-            getBinderCfg().getPoolSize() * 2,
-            60L, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(1000),
-            new CustomThreadFactory("exec-" + getName(), false), // 关键点
-            new ThreadPoolExecutor.CallerRunsPolicy()
-        );
+                getBinderCfg().getPoolSize(),
+                getBinderCfg().getPoolSize() * 2,
+                60L,
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(1000),
+                new CustomThreadFactory("exec-" + getName(), false), // 关键点
+                new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
     @Override
@@ -124,7 +123,8 @@ public class SimpleJobSchedulerBinder extends AbstractSchedulerBinder<SimpleJobS
         }
         // 重新调用调度逻辑
         Runnable runnable = ctx.getTask().toRunnable(businessExecutor);
-        ScheduledFuture<?> future = taskScheduler.schedule(runnable, new CronTrigger(ctx.getTask().getCron()));
+        ScheduledFuture<?> future =
+                taskScheduler.schedule(runnable, new CronTrigger(ctx.getTask().getCron()));
 
         ctx.setFuture(future);
         ctx.setPaused(false);
@@ -155,7 +155,6 @@ public class SimpleJobSchedulerBinder extends AbstractSchedulerBinder<SimpleJobS
         schedule(ctx.getTask());
         log.info("Task [{}] cron updated to: [{}]", taskName, newCron);
         return true;
-
     }
 
     @Override
@@ -171,6 +170,4 @@ public class SimpleJobSchedulerBinder extends AbstractSchedulerBinder<SimpleJobS
         }
         return true;
     }
-
-
 }

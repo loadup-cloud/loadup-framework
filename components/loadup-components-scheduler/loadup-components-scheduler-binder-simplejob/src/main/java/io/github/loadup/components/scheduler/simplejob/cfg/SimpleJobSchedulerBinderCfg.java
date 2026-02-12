@@ -26,7 +26,6 @@ import io.github.loadup.components.scheduler.cfg.SchedulerBinderCfg;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 public class SimpleJobSchedulerBinderCfg extends SchedulerBinderCfg {

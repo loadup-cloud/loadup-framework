@@ -23,11 +23,9 @@ package io.github.loadup.components.scheduler.quartz.cfg;
  */
 
 import io.github.loadup.components.scheduler.cfg.SchedulerBinderCfg;
+import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Properties;
-
 
 @Getter
 @Setter

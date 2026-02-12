@@ -33,7 +33,6 @@ import io.github.loadup.framework.api.binder.Binder;
  */
 public interface SchedulerBinder<C extends SchedulerBinderCfg, S extends SchedulerBindingCfg> extends Binder<C, S> {
 
-
     /**
      * Register a scheduled task.
      *

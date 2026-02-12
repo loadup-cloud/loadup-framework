@@ -34,7 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /** Quartz scheduler binder implementation. Supports distributed scheduling with Quartz features. */
 @Slf4j
@@ -71,7 +70,7 @@ public class QuartzJobSchedulerBinder extends AbstractSchedulerBinder<QuartzBind
             SchedulerFactory schedulerFactory = new StdSchedulerFactory(props);
             this.scheduler = schedulerFactory.getScheduler();
             // 关键：如果需要 Job 访问 Spring Bean，需设置自定义 JobFactory
-//             this.scheduler.setJobFactory(springBeanJobFactory);
+            //             this.scheduler.setJobFactory(springBeanJobFactory);
             this.scheduler.start();
         } catch (SchedulerException e) {
             throw new RuntimeException("Failed to init Quartz Scheduler", e);
@@ -95,7 +94,6 @@ public class QuartzJobSchedulerBinder extends AbstractSchedulerBinder<QuartzBind
             log.error("Failed to shutdown Quartz scheduler", e);
         }
     }
-
 
     @Override
     public boolean schedule(SchedulerTask task) {
@@ -140,7 +138,6 @@ public class QuartzJobSchedulerBinder extends AbstractSchedulerBinder<QuartzBind
             return false;
         }
     }
-
 
     @Override
     public boolean cancel(String taskName) {
