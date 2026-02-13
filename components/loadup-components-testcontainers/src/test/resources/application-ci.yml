@@ -1,67 +1,17 @@
-# CI profile configuration - Uses real services
-# This configuration is used in CI/CD environments where real services are available
-
-loadup:
-  testcontainers:
-    # Disable all TestContainers in CI environment
-    enabled: false
-    mysql:
-      enabled: false
-    postgresql:
-      enabled: false
-    mongodb:
-      enabled: false
-    redis:
-      enabled: false
-    kafka:
-      enabled: false
-    elasticsearch:
-      enabled: false
-    localstack:
-      enabled: false
-
-# Real service configurations
+# Test profile configuration - Uses TestContainers (default)
+# Spring configuration (will be overridden by TestContainers)
 spring:
   application:
-    name: testcontainers-ci
-
-  # MySQL configuration
-  datasource:
-    url: jdbc:mysql://mysql-server:3306/ci_testdb
-    username: ${DB_USER:ci_user}
-    password: ${DB_PASSWORD:ci_password}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  # Redis configuration
-  redis:
-    host: redis-server
-    port: 6379
-
+    name: testcontainers-test
   data:
-    # MongoDB configuration
-    mongodb:
-      uri: mongodb://mongodb-server:27017/ci_testdb
-      host: mongodb-server
-      port: 27017
-
-    # Redis configuration (alternative)
     redis:
-      host: redis-server
+      host: localhost
       port: 6379
+      database: 0
+      username:
+loadup:
+  testcontainers:
+    # Global switch to enable/disable all TestContainers (default: true)
+    enabled: true
 
-  # Kafka configuration
-  kafka:
-    bootstrap-servers: kafka-server:9092
-
-  # Elasticsearch configuration
-  elasticsearch:
-    uris: http://elasticsearch-server:9200
-
-# AWS S3 configuration (real AWS or MinIO)
-aws:
-  s3:
-    endpoint: https://s3.amazonaws.com
-  access-key-id: ${AWS_ACCESS_KEY_ID}
-  secret-access-key: ${AWS_SECRET_ACCESS_KEY}
-  region: us-east-1
 

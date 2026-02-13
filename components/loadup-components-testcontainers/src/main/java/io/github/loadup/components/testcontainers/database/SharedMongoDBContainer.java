@@ -23,6 +23,7 @@ package io.github.loadup.components.testcontainers.database;
  */
 
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.mongodb.MongoDBContainer;
@@ -40,27 +41,41 @@ import org.testcontainers.utility.DockerImageName;
 @Slf4j
 public class SharedMongoDBContainer {
 
-    /** Default MongoDB version to use */
+    /**
+     * Default MongoDB version to use
+     */
     public static final String DEFAULT_MONGODB_VERSION = "mongo:7.0";
 
-    /** Default replica set name */
-    public static final String DEFAULT_REPLICA_SET_NAME = "rs0";
+    /**
+     * Default replica set name
+     */
+    private static final String DEFAULT_DATABASE_NAME = "testdb";
 
-    /** The shared MongoDB container instance */
+    /**
+     * The shared MongoDB container instance
+     */
     private static MongoDBContainer MONGODB_CONTAINER;
 
     private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
-    /** MongoDB connection string */
+    /**
+     * MongoDB connection string
+     */
     private static String CONNECTION_STRING;
 
-    /** MongoDB host */
+    /**
+     * MongoDB host
+     */
     private static String HOST;
 
-    /** MongoDB port */
+    /**
+     * MongoDB port
+     */
     private static Integer PORT;
 
-    /** MongoDB replica set URL */
+    /**
+     * MongoDB replica set URL
+     */
     private static String REPLICA_SET_URL;
 
     public static void startContainer(ContainerConfig config) {
@@ -122,7 +137,6 @@ public class SharedMongoDBContainer {
      * @throws IllegalStateException if TestContainers is disabled
      */
     public static String getConnectionString() {
-        checkStarted();
         return CONNECTION_STRING;
     }
 
@@ -133,7 +147,6 @@ public class SharedMongoDBContainer {
      * @throws IllegalStateException if TestContainers is disabled
      */
     public static String getHost() {
-        checkStarted();
         return HOST;
     }
 
@@ -143,8 +156,7 @@ public class SharedMongoDBContainer {
      * @return the port
      * @throws IllegalStateException if TestContainers is disabled
      */
-    public static Integer getPort() {
-        checkStarted();
+    public static Integer getMappedPort() {
         return PORT;
     }
 
@@ -157,8 +169,16 @@ public class SharedMongoDBContainer {
      *
      * @return map of property names to values
      */
-    public static java.util.Map<String, String> getProperties() {
-        return java.util.Map.of("spring.data.mongodb.uri", getConnectionString());
+    public static Map<String, String> getProperties() {
+        return Map.of(
+                "spring.data.mongodb.uri",
+                getConnectionString(),
+                "spring.data.mongodb.database",
+                DEFAULT_DATABASE_NAME,
+                "spring.data.mongodb.host",
+                getHost(),
+                "spring.data.mongodb.port",
+                getMappedPort().toString());
     }
 
     private SharedMongoDBContainer() {
@@ -167,11 +187,5 @@ public class SharedMongoDBContainer {
 
     public static boolean isStarted() {
         return STARTED.get();
-    }
-
-    private static void checkStarted() {
-        if (!STARTED.get()) {
-            throw new IllegalStateException("MongoDB Container has not been started yet!");
-        }
     }
 }

@@ -5,35 +5,13 @@ spring:
     name: testcontainers-test
   data:
     redis:
-      host:
+      host: localhost
       port: 6379
-      database:
+      database: 0
       username:
 loadup:
   testcontainers:
     # Global switch to enable/disable all TestContainers (default: true)
     enabled: true
-    localstack:
-      # version: localstack/localstack:3.0
-      enabled: true
-    elasticsearch:
-      # version: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
-      enabled: true
-    kafka:
-      # version: apache/kafka:4.1.1
-      enabled: true
-    redis:
-      # version: redis:7-alpine
-      enabled: true
-    mongodb:
-      # version: mongo:7.0
-      enabled: true
-    postgresql:
-      # version: postgres:15-alpine
-      enabled: true
-    mysql:
-      enabled: true
-    # version: mysql:8.0  # Optional: override default version
 
-# This is the default configuration for local development and testing
 

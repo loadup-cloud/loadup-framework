@@ -22,9 +22,6 @@ package io.github.loadup.components.testcontainers.cache;
  * #L%
  */
 
-import io.github.loadup.components.testcontainers.annotation.ContainerType;
-import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
-
 /**
  * Abstract base test class that automatically configures Redis TestContainer.
  *
@@ -49,7 +46,6 @@ import io.github.loadup.components.testcontainers.annotation.EnableTestContainer
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@EnableTestContainers(ContainerType.REDIS)
 public abstract class AbstractRedisContainerTest {
 
     /**

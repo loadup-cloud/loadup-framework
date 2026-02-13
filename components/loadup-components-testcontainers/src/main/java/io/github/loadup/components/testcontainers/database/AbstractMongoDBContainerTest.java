@@ -43,7 +43,7 @@ public abstract class AbstractMongoDBContainerTest {
     }
 
     protected Integer getPort() {
-        return SharedMongoDBContainer.getPort();
+        return SharedMongoDBContainer.getMappedPort();
     }
 
     protected String getReplicaSetUrl() {

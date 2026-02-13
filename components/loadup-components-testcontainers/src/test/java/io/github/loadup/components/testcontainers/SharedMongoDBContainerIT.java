@@ -59,11 +59,11 @@ class SharedMongoDBContainerIT extends AbstractMongoDBContainerTest {
     void testContainerProperties() {
         assertNotNull(SharedMongoDBContainer.getConnectionString(), "Connection string should not be null");
         assertNotNull(SharedMongoDBContainer.getHost(), "Host should not be null");
-        assertNotNull(SharedMongoDBContainer.getPort(), "Port should not be null");
+        assertNotNull(SharedMongoDBContainer.getMappedPort(), "Port should not be null");
 
         log.info("Connection String: {}", SharedMongoDBContainer.getConnectionString());
         log.info("Host: {}", SharedMongoDBContainer.getHost());
-        log.info("Port: {}", SharedMongoDBContainer.getPort());
+        log.info("Port: {}", SharedMongoDBContainer.getMappedPort());
     }
 
     @Test
