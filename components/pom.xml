@@ -19,6 +19,7 @@
         <module>loadup-components-dfs</module>
         <module>loadup-components-extension</module>
         <module>loadup-components-flyway</module>
+        <module>loadup-components-globalunique</module>
         <module>loadup-components-gotone</module>
         <module>loadup-components-scheduler</module>
         <module>loadup-components-testcontainers</module>
