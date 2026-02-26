@@ -22,6 +22,7 @@
         <module>loadup-components-globalunique</module>
         <module>loadup-components-gotone</module>
         <module>loadup-components-scheduler</module>
+        <module>loadup-components-signature</module>
         <module>loadup-components-testcontainers</module>
         <module>loadup-components-authorization</module>
         <module>loadup-components-tracer</module>

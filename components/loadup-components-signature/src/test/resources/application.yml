@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: signature-test
+
+loadup:
+  components:
+    signature:
+      enabled: true
+      default-signature-algorithm: SHA256_WITH_RSA
+      default-digest-algorithm: SHA256
+      key-size:
+        rsa: 2048
+        dsa: 2048
+        ec: 256
+
+logging:
+  level:
+    io.github.loadup.components.signature: DEBUG
+
