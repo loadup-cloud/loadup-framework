@@ -22,7 +22,7 @@ package io.github.loadup.modules.upms.infrastructure.gateway;
  * #L%
  */
 
-import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.USER_DO;
+import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.*;
 
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;

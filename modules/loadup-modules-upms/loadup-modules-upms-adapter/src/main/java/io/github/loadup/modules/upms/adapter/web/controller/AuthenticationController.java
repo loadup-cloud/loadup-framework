@@ -57,6 +57,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     public AccessTokenDTO login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
         UserLoginCommand command = new UserLoginCommand();
+        command.setLoginType(request.getLoginType());
         command.setUsername(request.getUsername());
         command.setPassword(request.getPassword());
         command.setCaptchaKey(request.getCaptchaKey());

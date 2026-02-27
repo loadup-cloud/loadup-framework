@@ -1,8 +1,8 @@
-package io.github.loadup.modules.upms.adapter.web.request;
+package io.github.loadup.upms.api.constant;
 
 /*-
  * #%L
- * Loadup Modules UPMS Adapter Layer
+ * Loadup Modules UPMS Client Layer
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,30 +22,36 @@ package io.github.loadup.modules.upms.adapter.web.request;
  * #L%
  */
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-
 /**
- * Login Request
+ * 登录类型常量
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Data
-public class LoginRequest {
+public final class LoginType {
+
+    private LoginType() {
+        throw new UnsupportedOperationException("Utility class");
+    }
 
     /**
-     * 登录类型：PASSWORD | MOBILE | EMAIL | OAUTH
-     * 如果未指定，默认为 PASSWORD（向后兼容）
+     * 账号密码登录
      */
-    private String loginType;
+    public static final String PASSWORD = "PASSWORD";
 
-    @NotBlank(message = "用户名不能为空")
-    private String username;
+    /**
+     * 手机验证码登录
+     */
+    public static final String MOBILE = "MOBILE";
 
-    @NotBlank(message = "密码不能为空")
-    private String password;
+    /**
+     * 邮箱验证码登录
+     */
+    public static final String EMAIL = "EMAIL";
 
-    private String captchaKey;
-    private String captchaCode;
+    /**
+     * OAuth 登录
+     */
+    public static final String OAUTH = "OAUTH";
 }
+

@@ -22,14 +22,15 @@ package io.github.loadup.modules.upms.domain.entity;
  * #L%
  */
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
- * Login Log Entity - User login/logout audit log
+ * 用户OAuth第三方账号绑定实体
  *
  * @author LoadUp Framework
  * @since 1.0.0
@@ -38,42 +39,71 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginLog {
+public class UserOAuthBinding {
 
+    /**
+     * 主键ID
+     */
     private String id;
 
+    /**
+     * 本地用户ID
+     */
     private String userId;
 
-    private String username;
-
-    private LocalDateTime loginTime;
-
-    private LocalDateTime logoutTime;
-
-    private String ipAddress;
-
-    private String loginLocation;
-
-    private String browser;
-
-    private String os;
-
-    /** Login status: 1-Success, 0-Failure */
-    private Short loginStatus;
-
-    private String loginMessage;
-
     /**
-     * 登录方式：PASSWORD | MOBILE | EMAIL | OAUTH
-     */
-    private String loginType;
-
-    /**
-     * OAuth提供商（仅OAuth登录时有值）：wechat | github | google
+     * OAuth提供商：wechat | github | google
      */
     private String provider;
 
-    public boolean isSuccess() {
-        return loginStatus != null && loginStatus == 1;
-    }
+    /**
+     * 第三方平台用户唯一ID
+     */
+    private String openId;
+
+    /**
+     * 联合ID（如微信UnionID）
+     */
+    private String unionId;
+
+    /**
+     * 第三方昵称
+     */
+    private String nickname;
+
+    /**
+     * 第三方头像
+     */
+    private String avatar;
+
+    /**
+     * 访问令牌（加密存储）
+     */
+    private String accessToken;
+
+    /**
+     * 刷新令牌（加密存储）
+     */
+    private String refreshToken;
+
+    /**
+     * 令牌过期时间
+     */
+    private LocalDateTime expiresAt;
+
+    /**
+     * 绑定时间
+     */
+    private LocalDateTime boundAt;
+
+    /**
+     * 创建时间
+     */
+    private LocalDateTime createdAt;
+
+    /**
+     * 更新时间
+     */
+    private LocalDateTime updatedAt;
 }
+

@@ -58,4 +58,14 @@ public class LoginLogDO extends BaseDO {
     private Short loginStatus;
 
     private String loginMessage;
+
+    /**
+     * 登录方式：PASSWORD | MOBILE | EMAIL | OAUTH
+     */
+    private String loginType;
+
+    /**
+     * OAuth提供商（仅OAuth登录时有值）
+     */
+    private String provider;
 }

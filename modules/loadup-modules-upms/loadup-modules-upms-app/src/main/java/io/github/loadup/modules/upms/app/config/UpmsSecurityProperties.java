@@ -36,6 +36,7 @@ public class UpmsSecurityProperties {
 
     private JwtConfig jwt = new JwtConfig();
     private LoginConfig login = new LoginConfig();
+    private OAuthProvidersConfig oauth = new OAuthProvidersConfig();
 
     @Data
     public static class JwtConfig {
@@ -71,5 +72,35 @@ public class UpmsSecurityProperties {
          * Account lock duration in minutes
          */
         private Integer lockDuration = 30;
+    }
+
+    @Data
+    public static class OAuthProvidersConfig {
+        private OAuthConfig github = new OAuthConfig();
+        private OAuthConfig wechat = new OAuthConfig();
+        private OAuthConfig google = new OAuthConfig();
+    }
+
+    @Data
+    public static class OAuthConfig {
+        /**
+         * 是否启用
+         */
+        private Boolean enabled = false;
+
+        /**
+         * Client ID
+         */
+        private String clientId;
+
+        /**
+         * Client Secret
+         */
+        private String clientSecret;
+
+        /**
+         * 回调地址
+         */
+        private String redirectUri;
     }
 }

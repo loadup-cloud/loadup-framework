@@ -25,6 +25,7 @@ package io.github.loadup.modules.upms.app.service;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.util.JwtUtils;
 import io.github.loadup.modules.upms.app.config.UpmsSecurityProperties;
+import io.github.loadup.modules.upms.app.strategy.LoginStrategyManager;
 import io.github.loadup.modules.upms.domain.entity.LoginLog;
 import io.github.loadup.modules.upms.domain.entity.Role;
 import io.github.loadup.modules.upms.domain.entity.User;
@@ -34,10 +35,13 @@ import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.service.UserPermissionService;
 import io.github.loadup.upms.api.command.UserLoginCommand;
 import io.github.loadup.upms.api.command.UserRegisterCommand;
+import io.github.loadup.upms.api.constant.LoginType;
 import io.github.loadup.upms.api.constant.UpmsResultCode;
 import io.github.loadup.upms.api.dto.*;
 import io.github.loadup.upms.api.dto.AccessTokenDTO;
 import io.github.loadup.upms.api.dto.AuthUserDTO;
+import io.github.loadup.upms.api.dto.AuthenticatedUser;
+import io.github.loadup.upms.api.dto.LoginCredentials;
 import io.github.loadup.upms.api.dto.UserDetailDTO;
 import io.github.loadup.upms.api.gateway.AuthGateway;
 import io.github.loadup.upms.api.service.AuthenticationService;
@@ -49,6 +53,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,88 +76,96 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthGateway authGateway;
     private final UpmsSecurityProperties securityProperties;
-
-    // Remove obsolete AuthenticationManager as we don't effectively use Spring Security authentication flow for Login
-    // now,
-    // or we are refactoring to custom logic.
-    // If we want to use AuthManager, we need a SecurityConfig that exposes it.
-    // However, in this refactor we are manually checking password via PasswordEncoder
-    // let's stick to simple logic or fix AuthManager injection if SecurityConfig is present.
-    // Since we deleted SecurityConfig in upms-security, AuthManager bean might not be available unless we add one back
-    // or use
-    // components-security configuration.
-    // For now, let's replace AuthManager logic with manual verification.
-
-    // @Autowired
-    // private AuthenticationManager authenticationManager;
+    private final LoginStrategyManager loginStrategyManager;
 
     /** User login */
     @Transactional
     @Override
     public AccessTokenDTO login(UserLoginCommand command) {
-        // Validate user
-        log.info("用户 {} 尝试登录", command.getUsername());
-        User user =
-                userGateway.findByUsername(command.getUsername()).orElseThrow(() -> new RuntimeException("用户名或密码错误"));
-
-        // Check account status
-        if (!user.isActive()) {
-            recordLoginFailure(user, command, "账号已被锁定或停用");
-            throw new RuntimeException("账号已被锁定或停用");
-        }
-
-        // Check if account is locked due to failed attempts
-        if (isAccountLocked(user)) {
-            throw new RuntimeException("账号已被锁定，请稍后再试");
-        }
-
-        // Manual password check
-        if (!passwordEncoder.matches(command.getPassword(), user.getPassword())) {
-            handleLoginFailure(user, command);
-            throw new RuntimeException("用户名或密码错误");
-        }
-
         try {
-            // Update user login info
-            user.updateLastLogin(command.getIpAddress());
-            userGateway.update(user);
+            // 1. 构建登录凭证
+            LoginCredentials credentials = buildLoginCredentials(command);
 
-            // Record login success
-            recordLoginSuccess(user, command);
+            // 2. 选择登录策略（如果未指定，默认为密码登录）
+            String loginType = StringUtils.isNotBlank(command.getLoginType())
+                    ? command.getLoginType()
+                    : LoginType.PASSWORD;
 
-            // Generate Token
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("username", user.getUsername());
+            // 3. 执行认证
+            log.info("用户 {} 尝试使用 {} 方式登录",
+                    credentials.getUsername() != null ? credentials.getUsername() : credentials.getMobile(),
+                    loginType);
 
-            // long ttl = securityProperties.getJwt().getExpiration() * 1000L;
-            // In properties its already millis according to comments? "86400000L". Let's check getter logic or assume
-            // simple getter.
-            // If the comment says milliseconds, the name `expiration` usually means millis in JWT context or seconds in
-            // some.
-            // But code previously used `getExpireSeconds` which suggests it was refactored.
-            // Let's assume `expiration` is Milliseconds as per typical behavior for long types in properties unless
-            // specified.
-            // But JwtUtils.createToken takes ttlMillis.
-            // Let's trust field name and comment in UpmsSecurityProperties.
-            long ttl = securityProperties.getJwt().getExpiration();
-            String token = JwtUtils.createToken(
-                    String.valueOf(user.getId()),
-                    claims,
-                    securityProperties.getJwt().getSecret(),
-                    ttl);
-            UserDetailDTO userInfo = buildUserInfo(user);
+            AuthenticatedUser authenticatedUser = loginStrategyManager
+                    .getStrategy(loginType)
+                    .authenticate(credentials);
 
-            return AccessTokenDTO.builder()
-                    .accessToken(token)
-                    .refreshToken(null) // Implement refresh token if needed
-                    .expiresIn(securityProperties.getJwt().getExpiration().longValue() / 1000)
-                    .userInfo(userInfo)
-                    .build();
+            // 4. 查询完整用户信息
+            User user = userGateway.findById(authenticatedUser.getUserId())
+                    .orElseThrow(() -> new RuntimeException("用户不存在"));
+
+            // 5. 生成 Token
+            AccessTokenDTO token = generateToken(user);
+
+            // 6. 记录登录成功日志
+            recordLoginSuccess(user, command, loginType);
+
+            return token;
 
         } catch (Exception e) {
-            handleLoginFailure(user, command);
-            throw new RuntimeException("用户名或密码错误", e);
+            // 记录登录失败
+            recordLoginFailure(command, e.getMessage(),
+                    StringUtils.isNotBlank(command.getLoginType()) ? command.getLoginType() : LoginType.PASSWORD);
+            throw e;
         }
+    }
+
+    /**
+     * 构建登录凭证
+     */
+    private LoginCredentials buildLoginCredentials(UserLoginCommand command) {
+        return LoginCredentials.builder()
+                .loginType(command.getLoginType())
+                .username(command.getUsername())
+                .password(command.getPassword())
+                .mobile(command.getMobile())
+                .smsCode(command.getSmsCode())
+                .email(command.getEmail())
+                .emailCode(command.getEmailCode())
+                .provider(command.getProvider())
+                .code(command.getCode())
+                .state(command.getState())
+                .redirectUri(command.getRedirectUri())
+                .ipAddress(command.getIpAddress())
+                .userAgent(command.getUserAgent())
+                .captchaKey(command.getCaptchaKey())
+                .captchaCode(command.getCaptchaCode())
+                .build();
+    }
+
+    /**
+     * 生成 Token
+     */
+    private AccessTokenDTO generateToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", user.getUsername());
+
+        long ttl = securityProperties.getJwt().getExpiration();
+        String token = JwtUtils.createToken(
+                user.getId(),
+                claims,
+                securityProperties.getJwt().getSecret(),
+                ttl);
+
+        UserDetailDTO userInfo = buildUserInfo(user);
+
+        return AccessTokenDTO.builder()
+                .accessToken(token)
+                .refreshToken(null) // TODO: Implement refresh token
+                .tokenType("Bearer")
+                .expiresIn(securityProperties.getJwt().getExpiration().longValue() / 1000)
+                .userInfo(userInfo)
+                .build();
     }
 
     @Override
@@ -316,43 +329,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    /** Check if account is locked */
-    private boolean isAccountLocked(User user) {
-        if (!Boolean.TRUE.equals(user.getAccountNonLocked())) {
-            if (user.getLockedTime() != null) {
-                LocalDateTime unlockTime = user.getLockedTime()
-                        .plusMinutes(securityProperties.getLogin().getLockDuration());
-                if (LocalDateTime.now().isBefore(unlockTime)) {
-                    return true;
-                } else {
-                    // Auto unlock
-                    user.unlockAccount();
-                    userGateway.update(user);
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /** Handle login failure */
-    private void handleLoginFailure(User user, UserLoginCommand command) {
-        if (Boolean.TRUE.equals(securityProperties.getLogin().getEnableFailureTracking())) {
-            user.incrementLoginFailCount();
-
-            if (user.getLoginFailCount() >= securityProperties.getLogin().getMaxFailAttempts()) {
-                user.lockAccount();
-            }
-
-            userGateway.update(user);
-        }
-
-        recordLoginFailure(user, command, "密码错误");
-    }
-
     /** Record login success */
-    private void recordLoginSuccess(User user, UserLoginCommand command) {
+    private void recordLoginSuccess(User user, UserLoginCommand command, String loginType) {
         LoginLog log = LoginLog.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
@@ -360,20 +338,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .ipAddress(command.getIpAddress())
                 .loginStatus((short) 1)
                 .loginMessage("登录成功")
+                .loginType(loginType)
+                .provider(command.getProvider())
                 .build();
 
         loginLogGateway.save(log);
     }
 
     /** Record login failure */
-    private void recordLoginFailure(User user, UserLoginCommand command, String message) {
+    private void recordLoginFailure(UserLoginCommand command, String message, String loginType) {
         LoginLog log = LoginLog.builder()
-                .userId(user.getId())
-                .username(user.getUsername())
+                .username(command.getUsername() != null ? command.getUsername() : command.getMobile())
                 .loginTime(LocalDateTime.now())
                 .ipAddress(command.getIpAddress())
                 .loginStatus((short) 0)
                 .loginMessage(message)
+                .loginType(loginType)
+                .provider(command.getProvider())
                 .build();
 
         loginLogGateway.save(log);

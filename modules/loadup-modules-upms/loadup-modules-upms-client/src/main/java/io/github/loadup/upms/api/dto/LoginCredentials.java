@@ -1,4 +1,4 @@
-package io.github.loadup.upms.api.command;
+package io.github.loadup.upms.api.dto;
 
 /*-
  * #%L
@@ -22,20 +22,34 @@ package io.github.loadup.upms.api.command;
  * #L%
  */
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * User Login Command
+ * 统一登录凭证对象
+ * 不同策略从中提取所需字段
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
 @Data
-public class UserLoginCommand {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class LoginCredentials implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * 登录类型：PASSWORD | MOBILE | EMAIL | OAUTH
-     * 如果未指定，默认为 PASSWORD
      */
     private String loginType;
 
@@ -75,12 +89,12 @@ public class UserLoginCommand {
     private String provider;
 
     /**
-     * OAuth 登录 - 授���码
+     * OAuth 登录 - 授权码
      */
     private String code;
 
     /**
-     * OAuth 登录 - 状态参数（防CSRF）
+     * OAuth 登录 - ��态参数（防CSRF）
      */
     private String state;
 
@@ -90,22 +104,29 @@ public class UserLoginCommand {
     private String redirectUri;
 
     /**
-     * 图形验证码Key
-     */
-    private String captchaKey;
-
-    /**
-     * 图形验证码值
-     */
-    private String captchaCode;
-
-    /**
-     * IP地址
+     * 通用字段 - IP地址
      */
     private String ipAddress;
 
     /**
-     * 用户代理
+     * 通用字段 - 用户代理
      */
     private String userAgent;
+
+    /**
+     * 通用字段 - 图形验证码Key
+     */
+    private String captchaKey;
+
+    /**
+     * 通用字段 - 图形验证码值
+     */
+    private String captchaCode;
+
+    /**
+     * 扩展字段
+     */
+    @Builder.Default
+    private Map<String, Object> extra = new HashMap<>();
 }
+

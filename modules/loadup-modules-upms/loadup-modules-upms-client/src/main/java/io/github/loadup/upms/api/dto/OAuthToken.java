@@ -1,8 +1,8 @@
-package io.github.loadup.modules.upms.domain.entity;
+package io.github.loadup.upms.api.dto;
 
 /*-
  * #%L
- * Loadup Modules UPMS Domain Layer
+ * Loadup Modules UPMS Client Layer
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,14 +22,16 @@ package io.github.loadup.modules.upms.domain.entity;
  * #L%
  */
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
- * Login Log Entity - User login/logout audit log
+ * OAuth Token
  *
  * @author LoadUp Framework
  * @since 1.0.0
@@ -38,42 +40,29 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginLog {
+public class OAuthToken implements Serializable {
 
-    private String id;
-
-    private String userId;
-
-    private String username;
-
-    private LocalDateTime loginTime;
-
-    private LocalDateTime logoutTime;
-
-    private String ipAddress;
-
-    private String loginLocation;
-
-    private String browser;
-
-    private String os;
-
-    /** Login status: 1-Success, 0-Failure */
-    private Short loginStatus;
-
-    private String loginMessage;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
-     * 登录方式：PASSWORD | MOBILE | EMAIL | OAUTH
+     * 访问令牌
      */
-    private String loginType;
+    private String accessToken;
 
     /**
-     * OAuth提供商（仅OAuth登录时有值）：wechat | github | google
+     * 刷新令牌
      */
-    private String provider;
+    private String refreshToken;
 
-    public boolean isSuccess() {
-        return loginStatus != null && loginStatus == 1;
-    }
+    /**
+     * 过期时间（秒）
+     */
+    private Long expiresIn;
+
+    /**
+     * 作用域
+     */
+    private String scope;
 }
+

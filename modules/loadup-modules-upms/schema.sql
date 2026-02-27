@@ -374,6 +374,40 @@ VALUES ('1', '1', '1', '1', CURRENT_TIMESTAMP),
        ('9', '1', '9', '1', CURRENT_TIMESTAMP);
 
 -- ============================================================================
--- End of Schema
+-- ============================================================================
+-- Additional OAuth and Multi-Login Support Tables
+-- ============================================================================
+
+-- ============================================================================
+-- OAuth 用户绑定表
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS upms_user_oauth_binding
+(
+    id            BIGINT PRIMARY KEY COMMENT '主键ID，由审计功能自动生成',
+    user_id       BIGINT       NOT NULL COMMENT '本地用户ID',
+    provider      VARCHAR(32)  NOT NULL COMMENT 'OAuth提供商：wechat|github|google',
+    open_id       VARCHAR(128) NOT NULL COMMENT '第三方平台用户唯一ID',
+    union_id      VARCHAR(128) COMMENT '联合ID（如微信UnionID）',
+    nickname      VARCHAR(64) COMMENT '第三方昵称',
+    avatar        VARCHAR(255) COMMENT '第三方头像',
+    access_token  VARCHAR(512) COMMENT '访问令牌（加密存储）',
+    refresh_token VARCHAR(512) COMMENT '刷新令牌（加密存储）',
+    expires_at    TIMESTAMP COMMENT '令牌过期时间',
+    bound_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '绑定时间',
+    created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at    TIMESTAMP    NULL     DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    UNIQUE KEY uk_provider_openid (provider, open_id),
+    INDEX idx_user_id (user_id),
+    INDEX idx_provider (provider)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT ='用户OAuth第三方账号绑定表';
+
+-- ============================================================================
+-- 更新登录日志表，添加登录类型和提供商字段
+-- ============================================================================
+ALTER TABLE upms_login_log
+    ADD COLUMN login_type VARCHAR(32) COMMENT '登录方式：PASSWORD|MOBILE|EMAIL|OAUTH' AFTER login_message,
+    ADD COLUMN provider   VARCHAR(32) COMMENT 'OAuth提供商（仅OAuth登录时有值）' AFTER login_type;
 -- ============================================================================
 

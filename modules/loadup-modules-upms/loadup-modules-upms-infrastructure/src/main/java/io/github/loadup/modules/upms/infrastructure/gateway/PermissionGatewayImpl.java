@@ -22,7 +22,7 @@ package io.github.loadup.modules.upms.infrastructure.gateway;
  * #L%
  */
 
-import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.PERMISSION_DO;
+import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.*;
 
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.modules.upms.domain.entity.Permission;

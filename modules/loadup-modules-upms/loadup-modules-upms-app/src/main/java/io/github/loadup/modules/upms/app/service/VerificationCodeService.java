@@ -132,6 +132,34 @@ public class VerificationCodeService {
         return true;
     }
 
+    /**
+     * 验证短信验证码
+     */
+    public boolean verifySmsCode(String mobile, String code) {
+        return validateCode(mobile, "SMS", code);
+    }
+
+    /**
+     * 验证邮箱验证码
+     */
+    public boolean verifyEmailCode(String email, String code) {
+        return validateCode(email, "EMAIL", code);
+    }
+
+    /**
+     * 生成短信验证码
+     */
+    public String generateSmsCode(String mobile) {
+        return generateCode(mobile, "SMS");
+    }
+
+    /**
+     * 生成邮箱验证码
+     */
+    public String generateEmailCode(String email) {
+        return generateCode(email, "EMAIL");
+    }
+
     /** Build storage key */
     private String buildKey(String target, String type) {
         return type + ":" + target;

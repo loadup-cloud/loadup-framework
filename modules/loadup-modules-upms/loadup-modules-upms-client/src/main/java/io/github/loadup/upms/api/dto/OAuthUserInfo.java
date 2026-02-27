@@ -1,8 +1,8 @@
-package io.github.loadup.modules.upms.domain.entity;
+package io.github.loadup.upms.api.dto;
 
 /*-
  * #%L
- * Loadup Modules UPMS Domain Layer
+ * Loadup Modules UPMS Client Layer
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,14 +22,16 @@ package io.github.loadup.modules.upms.domain.entity;
  * #L%
  */
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
- * Login Log Entity - User login/logout audit log
+ * OAuth 用户信息
  *
  * @author LoadUp Framework
  * @since 1.0.0
@@ -38,42 +40,39 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginLog {
+public class OAuthUserInfo implements Serializable {
 
-    private String id;
-
-    private String userId;
-
-    private String username;
-
-    private LocalDateTime loginTime;
-
-    private LocalDateTime logoutTime;
-
-    private String ipAddress;
-
-    private String loginLocation;
-
-    private String browser;
-
-    private String os;
-
-    /** Login status: 1-Success, 0-Failure */
-    private Short loginStatus;
-
-    private String loginMessage;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
-     * 登录方式：PASSWORD | MOBILE | EMAIL | OAUTH
+     * 第三方平台的用户唯一标识
      */
-    private String loginType;
+    private String openId;
 
     /**
-     * OAuth提供商（仅OAuth登录时有值）：wechat | github | google
+     * 联合 ID（如微信的 unionId）
      */
-    private String provider;
+    private String unionId;
 
-    public boolean isSuccess() {
-        return loginStatus != null && loginStatus == 1;
-    }
+    /**
+     * 昵称
+     */
+    private String nickname;
+
+    /**
+     * 头像
+     */
+    private String avatar;
+
+    /**
+     * 邮箱
+     */
+    private String email;
+
+    /**
+     * 手机号
+     */
+    private String mobile;
 }
+

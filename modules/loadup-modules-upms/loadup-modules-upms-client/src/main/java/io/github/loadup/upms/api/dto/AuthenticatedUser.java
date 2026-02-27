@@ -1,8 +1,8 @@
-package io.github.loadup.modules.upms.domain.entity;
+package io.github.loadup.upms.api.dto;
 
 /*-
  * #%L
- * Loadup Modules UPMS Domain Layer
+ * Loadup Modules UPMS Client Layer
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,14 +22,18 @@ package io.github.loadup.modules.upms.domain.entity;
  * #L%
  */
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Login Log Entity - User login/logout audit log
+ * 认证成功后的用户信息
  *
  * @author LoadUp Framework
  * @since 1.0.0
@@ -38,42 +42,51 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginLog {
+public class AuthenticatedUser implements Serializable {
 
-    private String id;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
+    /**
+     * 用户 ID
+     */
     private String userId;
 
+    /**
+     * 用户名
+     */
     private String username;
 
-    private LocalDateTime loginTime;
-
-    private LocalDateTime logoutTime;
-
-    private String ipAddress;
-
-    private String loginLocation;
-
-    private String browser;
-
-    private String os;
-
-    /** Login status: 1-Success, 0-Failure */
-    private Short loginStatus;
-
-    private String loginMessage;
+    /**
+     * 昵称
+     */
+    private String nickname;
 
     /**
-     * 登录方式：PASSWORD | MOBILE | EMAIL | OAUTH
+     * 头像
      */
-    private String loginType;
+    private String avatar;
 
     /**
-     * OAuth提供商（仅OAuth登录时有值）：wechat | github | google
+     * 邮箱
      */
-    private String provider;
+    private String email;
 
-    public boolean isSuccess() {
-        return loginStatus != null && loginStatus == 1;
-    }
+    /**
+     * 手机号
+     */
+    private String mobile;
+
+    /**
+     * 是否新用户（用于首次 OAuth 登录后引导绑定）
+     */
+    @Builder.Default
+    private boolean newUser = false;
+
+    /**
+     * 扩展信息
+     */
+    @Builder.Default
+    private Map<String, Object> attributes = new HashMap<>();
 }
+
