@@ -64,6 +64,16 @@ public abstract class AbstractCacheBinder<C extends CacheBinderCfg, S extends Ca
         return serializer;
     }
 
+    /**
+     * 返回当前使用的时间源。
+     *
+     * <p>子类（如 Caffeine Binder）可通过此方法获取 Ticker 用于缓存过期计算。
+     * 默认返回系统时钟 {@link CacheTicker#SYSTEM}。
+     */
+    public CacheTicker getTicker() {
+        return ticker;
+    }
+
     protected Object wrapValue(CacheValueWrapper value) {
         if (value == null) return null;
 

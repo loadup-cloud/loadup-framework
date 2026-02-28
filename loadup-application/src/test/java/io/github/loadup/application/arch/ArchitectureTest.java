@@ -128,7 +128,7 @@ class ArchitectureTest {
                 .resideOutsideOfPackage("..test..")
                 .should()
                 .dependOnClassesThat()
-                .haveFullyQualifiedClassName("org.springframework.beans.factory.annotation.Autowired")
+                .haveFullyQualifiedName("org.springframework.beans.factory.annotation.Autowired")
                 .because("必须使用构造器注入（@RequiredArgsConstructor），禁止字段 @Autowired")
                 .check(MODULE_CLASSES);
     }
@@ -225,7 +225,7 @@ class ArchitectureTest {
                 .resideOutsideOfPackage("..test..")
                 .should()
                 .dependOnClassesThat()
-                .haveFullyQualifiedClassName("java.io.PrintStream")
+                .haveFullyQualifiedName("java.io.PrintStream")
                 .because("禁止使用 System.out/err，所有日志必须通过 @Slf4j")
                 .check(MODULE_CLASSES);
     }

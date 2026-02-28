@@ -48,10 +48,26 @@
     </Match>
 
     <!--
-      排除 loadup-commons-api 模块的所有类：
-      该模块是框架级 SPI 抽象层（Binder/Binding/Cfg 接口及抽象基类），
-      由框架设计者维护，不适用常规业务代码的 SpotBugs 规则。
+      Spring @ConfigurationProperties 对象由容器统一管理生命周期，
+      在构造器中存储其引用是合理的框架用法，防御性复制无意义。
+      适用于所有 BindingManager / AutoConfiguration 中注入的配置对象。
     -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+        <Class name="~.*Manager$"/>
+    </Match>
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+        <Class name="~.*AutoConfiguration$"/>
+    </Match>
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+        <Class name="~.*Properties$"/>
+    </Match>
+
+<!--      <&#45;&#45; 排除 loadup-commons-api 模块的所有类：-->
+<!--      该模块是框架级 SPI 抽象层（Binder/Binding/Cfg 接口及抽象基类），-->
+<!--      由框架设计者维护，不适用常规业务代码的 SpotBugs 规则。-->
     <Match>
         <Class name="~io\.github\.loadup\.framework\.api\..*"/>
     </Match>

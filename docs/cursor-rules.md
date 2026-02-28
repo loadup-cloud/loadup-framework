@@ -374,17 +374,126 @@ class {Entity}ServiceTest {
 </parent>
 ```
 
+### 测试模块三文件规范 🚫
+
+**每个 `*-test` 模块的 `src/test/resources/` 目录下必须包含以下三个 yml 文件：**
+
+| 文件 | 作用 | 关键配置 |
+|------|------|---------|
+| `application.yml` | 入口，激活 `test` profile | `spring.profiles.active: test` |
+| `application-test.yml` | 本地开发配置 | `testcontainers.reuse.enable: true`，详细日志，`print-sql: true` |
+| `application-ci.yml` | CI 流水线配置 | `testcontainers.reuse.enable: false`，精简连接池，`print-sql: false` |
+
+```yaml
+# application.yml（固定内容）
+spring:
+  profiles:
+    active: test
+```
+
+```yaml
+# application-test.yml（本地开发）
+spring:
+  application:
+    name: loadup-{mod}-test
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: LoadupTestPool
+      minimum-idle: 2
+      maximum-pool-size: 10
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      continue-on-error: false
+mybatis-flex:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    cache-enabled: false
+  global-config:
+    print-sql: true
+testcontainers:
+  reuse:
+    enable: true
+logging:
+  level:
+    io.github.loadup: DEBUG
+    org.springframework.jdbc: DEBUG
+```
+
+```yaml
+# application-ci.yml（CI 环境）
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      continue-on-error: false
+mybatis-flex:
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+  global-config:
+    print-sql: false
+testcontainers:
+  reuse:
+    enable: false
+logging:
+  level:
+    root: WARN
+    io.github.loadup: INFO
+```
+
 ---
 
 ## 数据库规范
 
-- 主键：`VARCHAR(64)`，`UUID.randomUUID().toString().replace("-","")`
+### 必备标准字段 🚫
+
+**每张表都必须包含以下 5 个标准字段，缺一不可：**
+
+| 字段 | 类型 | 约束 | 说明 |
+|------|------|------|------|
+| `id` | `VARCHAR(64)` | `NOT NULL PRIMARY KEY` | UUID，业务层赋值，**禁止** `BIGINT AUTO_INCREMENT` |
+| `tenant_id` | `VARCHAR(64)` | 可为 NULL | 多租户隔离 |
+| `created_at` | `DATETIME` | `NOT NULL DEFAULT CURRENT_TIMESTAMP` | 创建时间 |
+| `updated_at` | `DATETIME` | `NULL ON UPDATE CURRENT_TIMESTAMP` | 更新时间 |
+| `deleted` | `TINYINT` | `NOT NULL DEFAULT 0` | 软删除标记（0/1），**禁止**用 `BOOLEAN` |
+
+```sql
+-- 标准 DDL 模板
+id         VARCHAR(64)  NOT NULL                                    COMMENT 'ID',
+tenant_id  VARCHAR(64)                                              COMMENT '租户ID',
+...业务字段...
+created_by VARCHAR(64)                                              COMMENT '创建人',
+created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP          COMMENT '创建时间',
+updated_by VARCHAR(64)                                              COMMENT '更新人',
+updated_at DATETIME              NULL ON UPDATE CURRENT_TIMESTAMP   COMMENT '更新时间',
+deleted    TINYINT      NOT NULL DEFAULT 0                          COMMENT '删除标记',
+PRIMARY KEY (id),
+```
+
+### 其他规范
+
 - 表名：`snake_case`（不加 `t_` 前缀，如 `config_item`、`dict_type`）
-- 必备审计字段：`created_by`, `created_at`, `updated_by`, `updated_at`
-- 软删除（按需）：`deleted BOOLEAN NOT NULL DEFAULT FALSE`
+- 审计字段（可选）：`created_by VARCHAR(64)`, `updated_by VARCHAR(64)`
 - 大表按月分区：`PARTITION BY RANGE (YEAR(created_at) * 100 + MONTH(created_at))`
 - Schema：模块根目录 `schema.sql`
 - Flyway：`src/main/resources/db/migration/V{n}__{desc}.sql`
+- **测试 schema 必须与生产 schema 字段保持一致**
 
 ---
 
@@ -413,6 +522,10 @@ class {Entity}ServiceTest {
 | DO 中重复定义 `id`/`createdAt`/`updatedAt` | 这些字段已在 `BaseDO` 中定义 |
 | DO 放在 domain 层 | DO 放在 infrastructure 层 |
 | 在 `XxxMapper` 中写额外方法 | 用 `QueryWrapper` 在 GatewayImpl 中操作，Mapper 只继承 `BaseMapper<XxxDO>` |
+| 表主键使用 `BIGINT AUTO_INCREMENT` | 统一使用 `VARCHAR(64)`，业务层赋 UUID |
+| 表字段使用 `BOOLEAN`/`BOOL` 类型 | 统一使用 `TINYINT`（0=false, 1=true） |
+| 表缺少 `tenant_id`/`deleted`/`created_at`/`updated_at` | 每张表必须包含这 5 个标准字段 |
+| 测试 schema 与生产 schema 字段不一致 | 新增/修改字段时同步更新测试 schema |
 | 日志打印密码/Token | 脱敏或不打印 |
 | 新依赖不在 `loadup-dependencies` 声明 | 先在 BOM 中声明 |
 | pom.xml `<parent>` 指向模块自身聚合 pom | 所有子模块 parent 统一指向根 `loadup-parent` |

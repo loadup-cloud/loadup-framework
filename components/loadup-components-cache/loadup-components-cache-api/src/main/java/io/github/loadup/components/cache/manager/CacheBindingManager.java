@@ -33,6 +33,13 @@ public class CacheBindingManager extends BindingManagerSupport<CacheBinder, Cach
 
     private final CacheGroupProperties groupProps;
 
+    /**
+     * 构造 CacheBindingManager。
+     *
+     * @param props   缓存分组配置，由 Spring Boot {@code @ConfigurationProperties} 绑定并由容器管理，
+     *                此处有意存储引用而非防御性复制（配置对象生命周期与容器一致）。
+     * @param context Spring 应用上下文
+     */
     public CacheBindingManager(CacheGroupProperties props, ApplicationContext context) {
         // 传入 Spring 上下文和配置前缀：loadup.cache
         super(context, "loadup.cache");

@@ -1,11 +1,8 @@
-# retrytask-test CI Configuration
+# log-test CI Configuration
 # CI 环境：禁用 Testcontainers 重用，优化连接池
 spring:
-  sql:
-    init:
-      schema-locations: classpath:schema.sql
-      mode: always
   datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 5
       minimum-idle: 2
@@ -13,17 +10,18 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
       connection-test-query: SELECT 1
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      continue-on-error: false
 
-loadup:
-  retrytask:
-    enabled: true
-    default-max-retry-count: 3
-    default-retry-strategy: FIXED
-    default-base-delay-seconds: 60
-    scheduler:
-      enabled: false
-      type: ASYNC
-      thread-pool-size: 2
+mybatis-flex:
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+  global-config:
+    print-sql: false
 
 testcontainers:
   reuse:
@@ -32,4 +30,5 @@ testcontainers:
 logging:
   level:
     root: WARN
-    io.github.loadup.retrytask: INFO
+    io.github.loadup.modules.log: INFO
+

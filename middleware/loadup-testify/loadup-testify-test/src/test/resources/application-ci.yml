@@ -1,26 +1,32 @@
-#spring:
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/testify_demo?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-#    username: root
-#    password: 123456xxxxx
+# testify-test CI Configuration
+# CI 环境：禁用 Testcontainers 重用，优化连接池
 spring:
   sql:
     init:
       mode: always
       schema-locations: classpath:schema.sql
+  datasource:
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
 
 loadup:
   testcontainers:
     enabled: true
-    reuse: true
+    reuse: false   # CI 环境禁用重用
     mysql:
       enabled: true
       image: mysql:8.0
       database: testdb
       username: test
       password: test
+
 logging:
   level:
-    io.github.loadup.testify: DEBUG
-    org.springframework.jdbc: DEBUG
+    root: WARN
+    io.github.loadup.testify: INFO
+    org.springframework.jdbc: WARN

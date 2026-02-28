@@ -1,0 +1,38 @@
+# config-test Local Development Configuration
+spring:
+  application:
+    name: loadup-config-test
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      pool-name: LoadupConfigTestPool
+      minimum-idle: 2
+      maximum-pool-size: 10
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      continue-on-error: false
+
+mybatis-flex:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    cache-enabled: false
+  global-config:
+    print-sql: true
+
+testcontainers:
+  reuse:
+    enable: true   # 本地开发启用重用，加快测试速度
+
+logging:
+  level:
+    root: INFO
+    io.github.loadup.modules.config: DEBUG
+    com.mybatisflex: DEBUG
+    org.springframework.jdbc: DEBUG
+
