@@ -193,62 +193,35 @@ public class AccessLogInterceptor implements HandlerInterceptor {
 
 ### 2.3 审计日志
 
+审计日志用于记录敏感操作和数据变更，通过 `AuditLogService.record()` 手动调用写入，不提供 AOP 自动拦截（变更前后数据对比意义有限，由业务方按需传入关键信息）。
+
+#### 核心场景
+
+**场景: 角色权限变更**
+```java
+// 手动记录，业务方传入关键操作信息
+auditLogService.record(userId, username, "ROLE_PERMISSION", roleId,
+    "ASSIGN", null, null, reason, ip);
+```
+
 #### 功能列表
 
 ```
 审计日志
-├─ 数据变更记录
-│  ├─ 变更前数据
-│  ├─ 变更后数据
-│  ├─ 字段级对比
-│  └─ 变更原因
-├─ 敏感操作记录
-│  ├─ 权限变更
-│  ├─ 密码修改
-│  ├─ 配置变更
-│  └─ 数据导出
-├─ 合规审计
-│  ├─ 操作人追溯
-│  ├─ 操作时间追溯
-│  └─ 操作痕迹不可篡改
-└─ 审计报告
-   ├─ 按时间范围
-   ├─ 按用户
-   └─ 按操作类型
-```
-
-#### 核心场景
-
-**场景1: 用户信息修改**
-```java
-@AuditLog(
-    dataType = "USER",
-    action = "UPDATE"
-)
-public void updateUser(String userId, UserUpdateRequest request) {
-    // 1. 查询修改前数据
-    User oldUser = userRepository.findById(userId);
-    
-    // 2. 执行修改
-    User newUser = userRepository.update(request);
-    
-    // 3. 记录审计日志（自动对比差异）
-    // before: {"username":"old_name","email":"old@example.com"}
-    // after:  {"username":"new_name","email":"new@example.com"}
-    // diff:   {"username":{"old":"old_name","new":"new_name"}}
-}
-```
-
-**场景2: 角色权限变更**
-```java
-@AuditLog(
-    dataType = "ROLE_PERMISSION",
-    action = "ASSIGN",
-    reason = true  // 要求填写变更原因
-)
-public void assignPermissions(String roleId, List<String> permissionIds, String reason) {
-    // 记录变更原因
-}
+├─ 手动记录
+│  ├─ dataType  数据类型 (USER/ROLE/CONFIG...)
+│  ├─ dataId    数据ID
+│  ├─ action    操作 (CREATE/UPDATE/DELETE/ASSIGN...)
+│  ├─ reason    变更原因
+│  └─ ip        操作来源IP
+├─ 多维度查询
+│  ├─ 按用户
+│  ├─ 按数据类型/ID
+│  ├─ 按操作类型
+│  └─ 按时间范围
+└─ 合规审计
+   ├─ 操作人追溯
+   └─ 操作时间追溯
 ```
 
 ### 2.4 错误日志
@@ -353,8 +326,7 @@ loadup-modules-log/
 │        ├─ async/                        # 异步处理
 │        │  ├─ LogAsyncService.java
 │        │  └─ LogThreadPoolConfig.java
-│        ├─ diff/                         # 数据对比
-│        │  └─ DataDiffCalculator.java
+│        ├─ diff/                         # 数据对比（暂不实现，意义有限）
 │        └─ archive/                      # 归档
 │           └─ LogArchiveService.java
 │
@@ -431,58 +403,7 @@ public class OperationLogAspect {
 }
 ```
 
-#### 3.2.2 审计日志切面
-
-```java
-/**
- * 审计日志AOP切面
- */
-@Aspect
-@Component
-@Slf4j
-public class AuditLogAspect {
-    
-    private final LogAsyncService logAsyncService;
-    private final DataDiffCalculator diffCalculator;
-    
-    @Around("@annotation(auditLog)")
-    public Object around(ProceedingJoinPoint joinPoint, AuditLog auditLog) throws Throwable {
-        
-        // 1. 获取方法参数
-        Object[] args = joinPoint.getArgs();
-        
-        // 2. 查询变更前数据（如果是UPDATE操作）
-        Object beforeData = null;
-        if ("UPDATE".equals(auditLog.action()) || "DELETE".equals(auditLog.action())) {
-            beforeData = queryBeforeData(auditLog.dataType(), args);
-        }
-        
-        // 3. 执行方法
-        Object result = joinPoint.proceed();
-        
-        // 4. 查询变更后数据
-        Object afterData = null;
-        if ("UPDATE".equals(auditLog.action()) || "CREATE".equals(auditLog.action())) {
-            afterData = queryAfterData(auditLog.dataType(), args, result);
-        }
-        
-        // 5. 计算差异
-        Map<String, DataDiff> diff = null;
-        if (beforeData != null && afterData != null) {
-            diff = diffCalculator.calculate(beforeData, afterData);
-        }
-        
-        // 6. 异步记录审计日志
-        logAsyncService.saveAuditLog(
-            buildAuditLog(auditLog, beforeData, afterData, diff)
-        );
-        
-        return result;
-    }
-}
-```
-
-#### 3.2.3 异步日志服务
+#### 3.2.2 异步日志服务
 
 ```java
 /**
@@ -816,48 +737,18 @@ public class AuditLogController {
 
 ## 6. 技术实现
 
-### 6.1 数据差异计算
+### 6.1 审计日志写入
+
+审计日志采用**手动调用**方式，由业务方在关键操作处直接调用 `AuditLogService.record()`，传入必要字段（dataType / dataId / action / reason / ip）。不实现自动 AOP 拦截和变更前后对比，原因如下：
+
+- 变更前后数据对比价值有限，增加系统复杂度
+- 业务方对"什么信息值得记录"更清楚，手动调用更精确
+- 避免反射/序列化带来的性能开销和脆弱性
 
 ```java
-/**
- * 数据差异计算器
- */
-@Component
-public class DataDiffCalculator {
-    
-    /**
-     * 计算两个对象的差异
-     */
-    public Map<String, DataDiff> calculate(Object before, Object after) {
-        if (before == null || after == null) {
-            return Collections.emptyMap();
-        }
-        
-        Map<String, DataDiff> diffs = new HashMap<>();
-        
-        // 使用反射对比字段
-        Field[] fields = before.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            field.setAccessible(true);
-            try {
-                Object oldValue = field.get(before);
-                Object newValue = field.get(after);
-                
-                if (!Objects.equals(oldValue, newValue)) {
-                    diffs.put(field.getName(), new DataDiff(
-                        field.getName(),
-                        toJson(oldValue),
-                        toJson(newValue)
-                    ));
-                }
-            } catch (IllegalAccessException e) {
-                // ignore
-            }
-        }
-        
-        return diffs;
-    }
-}
+// 业务代码中手动记录审计日志
+auditLogService.record(userId, username, "CONFIG", configKey,
+    "UPDATE", null, null, "修复生产配置", request.getRemoteAddr());
 ```
 
 ### 6.2 日志归档
@@ -1030,12 +921,10 @@ void testConcurrentLogging() {
 
 ---
 
-### ❌ 未完成项（P1/P2）
+### ❌ 未完成项（P2）
 
 | 优先级 | 项目 | 说明 |
 |--------|------|------|
-| P1 | `@AuditLog` 注解 + AOP 切面 | 自动记录数据变更前后对比 |
-| P1 | `DataDiffCalculator` | 反射对比两对象字段差异，写入 diff_data |
 | P2 | 日志导出（Excel/CSV）| `OperationLogService.export` |
 | P2 | 统计分析接口 | 按模块/操作类型/时间段聚合统计 |
 | P2 | 日志归档 | 按月分区 + 定时归档历史数据 |
@@ -1049,6 +938,5 @@ void testConcurrentLogging() {
 - [x] Flyway migration 就绪
 - [x] 异步写入不阻塞业务线程（独立线程池）
 - [ ] 单元测试覆盖率 > 80%（当前约 70%）
-- [ ] `@AuditLog` 注解 AOP 切面
 - [ ] Code Review 通过
 

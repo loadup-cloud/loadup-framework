@@ -233,6 +233,21 @@ public interface {Entity}Converter {
 
 > **Mapper**：使用 APT 生成的 `{Entity}DOMapper`（`infrastructure.mapper` 包），不手写 Mapper。
 > **表字段引用**：统一通过 `Tables.{ENTITY}_DO` 静态导入，禁止直接用 `{Entity}DOTableDef.{ENTITY}_D_O`。
+>
+> ✅ **`mybatis-flex.config` 只需放在项目根目录一份**，MyBatis-Flex APT 编译时会自动向上逐层查找并合并（冒泡机制），各子模块无需重复放置。
+>
+> 根目录 `mybatis-flex.config`（`loadup-parent/mybatis-flex.config`）：
+>
+> ```properties
+> processor.tables-generate-enable=true
+> processor.entity-generate-enable=false
+> processor.allInTables.enable=true
+> processor.tables-class-name=Tables
+> processor.mapper.generateEnable=true
+> processor.mapper.annotation=true
+> ```
+>
+> ⚠️ 不能通过 Maven `-A` compilerArg 传入这些配置，因为 key 含连字符（如 `tables-generate-enable`）不是合法 Java 标识符，会导致编译报错。
 
 ```java
 package io.github.loadup.modules.{mod}.infrastructure.repository;

@@ -290,6 +290,23 @@ import org.apache.ibatis.annotations.Mapper;
 public interface {Entity}Mapper extends BaseMapper<{Entity}DO> {}
 ```
 
+> ✅ **`mybatis-flex.config` 只需在项目根目录（`loadup-parent/mybatis-flex.config`）放一份**。
+> MyBatis-Flex APT 编译时会自动向上逐层查找并合并配置（冒泡机制），各子模块无需重复放置。
+>
+> 根目录 `mybatis-flex.config` 内容：
+>
+> ```properties
+> processor.tables-generate-enable=true
+> processor.entity-generate-enable=false
+> processor.allInTables.enable=true
+> processor.tables-class-name=Tables
+> processor.mapper.generateEnable=true
+> processor.mapper.annotation=true
+> ```
+>
+> ⚠️ 不能通过 Maven `<compilerArg>-Aprocessor.xxx</compilerArg>` 传入，
+> 因为 key 含连字符（如 `tables-generate-enable`）不是合法 Java 标识符，会导致编译报错。
+
 ### 8.3.1 Tables 表名引用规范
 
 MyBatis-Flex APT 同时生成 `Tables` 聚合类（`entity.table.Tables`）和各 `XxxDOMapper`（`entity.mapper` 包）。

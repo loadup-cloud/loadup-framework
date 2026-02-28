@@ -103,7 +103,6 @@
                         <parameters>true</parameters>
                         <compilerArgs>
                             <!-- 虚拟线程在 JDK 21 中已是正式特性，无需预览 -->
-                            <!-- 但可以添加性能优化参数 -->
                             <compilerArg>-Xlint:all</compilerArg>
                             <compilerArg>-XprintProcessorInfo</compilerArg>
                             <compilerArg>-XprintRounds</compilerArg>

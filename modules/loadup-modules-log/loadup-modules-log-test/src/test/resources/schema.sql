@@ -49,3 +49,74 @@ CREATE TABLE IF NOT EXISTS audit_log (
     KEY idx_operation_time (operation_time)
 );
 
+CREATE TABLE IF NOT EXISTS error_log (
+    id             VARCHAR(64)  NOT NULL,
+    user_id        VARCHAR(64),
+    error_type     VARCHAR(50)  NOT NULL DEFAULT 'SYSTEM',
+    error_code     VARCHAR(50),
+    error_message  TEXT         NOT NULL,
+    stack_trace    TEXT,
+    request_url    VARCHAR(500),
+    request_method VARCHAR(10),
+    request_params TEXT,
+    ip             VARCHAR(128),
+    error_time     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted        BOOLEAN      NOT NULL DEFAULT FALSE,
+    tenant_id      VARCHAR(64),
+    PRIMARY KEY (id),
+    KEY idx_error_type  (error_type),
+    KEY idx_error_time  (error_time),
+    KEY idx_user_id     (user_id)
+);
+
+    id             VARCHAR(64)  NOT NULL,
+    user_id        VARCHAR(64),
+    username       VARCHAR(100),
+    module         VARCHAR(50)  NOT NULL DEFAULT '',
+    operation_type VARCHAR(20)  NOT NULL,
+    description    VARCHAR(500),
+    method         VARCHAR(500),
+    request_params TEXT,
+    response_result TEXT,
+    duration       BIGINT,
+    success        BOOLEAN      NOT NULL DEFAULT TRUE,
+    error_message  TEXT,
+    ip             VARCHAR(128),
+    user_agent     VARCHAR(500),
+    operation_time DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted        BOOLEAN      NOT NULL DEFAULT FALSE,
+    tenant_id      VARCHAR(64),
+    PRIMARY KEY (id),
+    KEY idx_user_id        (user_id),
+    KEY idx_module         (module),
+    KEY idx_operation_type (operation_type),
+    KEY idx_operation_time (operation_time)
+);
+
+CREATE TABLE IF NOT EXISTS audit_log (
+    id             VARCHAR(64)  NOT NULL,
+    user_id        VARCHAR(64)  NOT NULL DEFAULT '',
+    username       VARCHAR(100) NOT NULL DEFAULT '',
+    data_type      VARCHAR(50)  NOT NULL,
+    data_id        VARCHAR(64),
+    action         VARCHAR(20)  NOT NULL,
+    before_data    TEXT,
+    after_data     TEXT,
+    diff_data      TEXT,
+    reason         VARCHAR(500),
+    ip             VARCHAR(128),
+    operation_time DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted        BOOLEAN      NOT NULL DEFAULT FALSE,
+    tenant_id      VARCHAR(64),
+    PRIMARY KEY (id),
+    KEY idx_user_id        (user_id),
+    KEY idx_data_type      (data_type),
+    KEY idx_operation_time (operation_time)
+);
+

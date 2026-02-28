@@ -27,7 +27,12 @@ path,method,target,securityCode,requestTemplate,responseTemplate,enabled,propert
 /api/v1/log/operation/list,POST,bean://operationLogService:listByCondition,default,,,true,
 /api/v1/log/operation/count,POST,bean://operationLogService:countByCondition,default,,,true,
 /api/v1/log/operation/record,POST,bean://operationLogService:record,default,,,true,
+/api/v1/log/operation/statistics,POST,bean://operationLogService:statistics,default,,,true,
 # Log Module - Audit Log
 /api/v1/log/audit/list,POST,bean://auditLogService:listByCondition,default,,,true,
 /api/v1/log/audit/count,POST,bean://auditLogService:countByCondition,default,,,true,
 /api/v1/log/audit/record,POST,bean://auditLogService:record,default,,,true,
+# Log Module - Error Log
+/api/v1/log/error/list,POST,bean://errorLogService:listByCondition,default,,,true,
+/api/v1/log/error/count,POST,bean://errorLogService:countByCondition,default,,,true,
+/api/v1/log/error/record,POST,bean://errorLogService:record,default,,,true,
