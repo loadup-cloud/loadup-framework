@@ -50,7 +50,7 @@ public class UserOAuthBindingDO extends BaseDO {
     private String accessToken;
     /** 刷新令牌（加密存储） */
     private String refreshToken;
+
     private LocalDateTime expiresAt;
     private LocalDateTime boundAt;
 }
-

@@ -1,5 +1,27 @@
 package io.github.loadup.modules.log.infrastructure.repository;
 
+/*-
+ * #%L
+ * Loadup Modules Log Infrastructure
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import static io.github.loadup.modules.log.infrastructure.dataobject.table.Tables.OPERATION_LOG_DO;
 
 import com.mybatisflex.core.query.QueryWrapper;
@@ -38,8 +60,15 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
     }
 
     @Override
-    public List<OperationLog> findByCondition(String userId, String module, String operationType,
-            Boolean success, LocalDateTime startTime, LocalDateTime endTime, int pageNum, int pageSize) {
+    public List<OperationLog> findByCondition(
+            String userId,
+            String module,
+            String operationType,
+            Boolean success,
+            LocalDateTime startTime,
+            LocalDateTime endTime,
+            int pageNum,
+            int pageSize) {
         QueryWrapper qw = buildQuery(userId, module, operationType, success, startTime, endTime);
         qw.orderBy(OPERATION_LOG_DO.OPERATION_TIME.desc());
         qw.limit((long) (pageNum - 1) * pageSize, pageSize);
@@ -47,15 +76,24 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
     }
 
     @Override
-    public long countByCondition(String userId, String module, String operationType,
-            Boolean success, LocalDateTime startTime, LocalDateTime endTime) {
-        return mapper.selectCountByQuery(
-                buildQuery(userId, module, operationType, success, startTime, endTime));
+    public long countByCondition(
+            String userId,
+            String module,
+            String operationType,
+            Boolean success,
+            LocalDateTime startTime,
+            LocalDateTime endTime) {
+        return mapper.selectCountByQuery(buildQuery(userId, module, operationType, success, startTime, endTime));
     }
 
     @Override
-    public List<OperationLog> findAllForExport(String userId, String module, String operationType,
-            Boolean success, LocalDateTime startTime, LocalDateTime endTime) {
+    public List<OperationLog> findAllForExport(
+            String userId,
+            String module,
+            String operationType,
+            Boolean success,
+            LocalDateTime startTime,
+            LocalDateTime endTime) {
         QueryWrapper qw = buildQuery(userId, module, operationType, success, startTime, endTime);
         qw.orderBy(OPERATION_LOG_DO.OPERATION_TIME.desc());
         qw.limit(EXPORT_MAX);
@@ -63,44 +101,60 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
     }
 
     @Override
-    public Map<String, Long> countGroupBy(String groupField, String userId, String module,
-            String operationType, Boolean success, LocalDateTime startTime, LocalDateTime endTime) {
+    public Map<String, Long> countGroupBy(
+            String groupField,
+            String userId,
+            String module,
+            String operationType,
+            Boolean success,
+            LocalDateTime startTime,
+            LocalDateTime endTime) {
         String col = resolveGroupColumnName(groupField);
-        StringBuilder sql = new StringBuilder(
-                "SELECT " + col + " AS grp, COUNT(*) AS cnt FROM operation_log WHERE deleted = 0");
+        StringBuilder sql =
+                new StringBuilder("SELECT " + col + " AS grp, COUNT(*) AS cnt FROM operation_log WHERE deleted = 0");
         List<Object> params = new ArrayList<>();
         sql.append(buildWhereSuffix(userId, module, operationType, success, startTime, endTime, params));
         sql.append(" GROUP BY ").append(col).append(" ORDER BY cnt DESC");
 
         Map<String, Long> result = new LinkedHashMap<>();
-        jdbcTemplate.query(sql.toString(), rs -> {
-            String key = rs.getString("grp");
-            result.put(key == null ? "unknown" : key, rs.getLong("cnt"));
-        }, params.toArray());
+        jdbcTemplate.query(
+                sql.toString(),
+                rs -> {
+                    String key = rs.getString("grp");
+                    result.put(key == null ? "unknown" : key, rs.getLong("cnt"));
+                },
+                params.toArray());
         return result;
     }
 
     @Override
-    public Map<String, Object> durationStats(String userId, String module, String operationType,
-            LocalDateTime startTime, LocalDateTime endTime) {
-        StringBuilder sql = new StringBuilder(
-                "SELECT AVG(duration) AS avgDuration, MAX(duration) AS maxDuration"
+    public Map<String, Object> durationStats(
+            String userId, String module, String operationType, LocalDateTime startTime, LocalDateTime endTime) {
+        StringBuilder sql = new StringBuilder("SELECT AVG(duration) AS avgDuration, MAX(duration) AS maxDuration"
                 + " FROM operation_log WHERE deleted = 0");
         List<Object> params = new ArrayList<>();
         sql.append(buildWhereSuffix(userId, module, operationType, null, startTime, endTime, params));
 
         Map<String, Object> stats = new LinkedHashMap<>();
-        jdbcTemplate.query(sql.toString(), rs -> {
-            stats.put("avgDuration", rs.getObject("avgDuration"));
-            stats.put("maxDuration", rs.getObject("maxDuration"));
-        }, params.toArray());
+        jdbcTemplate.query(
+                sql.toString(),
+                rs -> {
+                    stats.put("avgDuration", rs.getObject("avgDuration"));
+                    stats.put("maxDuration", rs.getObject("maxDuration"));
+                },
+                params.toArray());
         return stats;
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────
 
-    private QueryWrapper buildQuery(String userId, String module, String operationType,
-            Boolean success, LocalDateTime startTime, LocalDateTime endTime) {
+    private QueryWrapper buildQuery(
+            String userId,
+            String module,
+            String operationType,
+            Boolean success,
+            LocalDateTime startTime,
+            LocalDateTime endTime) {
         QueryWrapper qw = QueryWrapper.create();
         if (userId != null) qw.and(OPERATION_LOG_DO.USER_ID.eq(userId));
         if (module != null) qw.and(OPERATION_LOG_DO.MODULE.eq(module));
@@ -111,15 +165,39 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
         return qw;
     }
 
-    private String buildWhereSuffix(String userId, String module, String operationType,
-            Boolean success, LocalDateTime startTime, LocalDateTime endTime, List<Object> params) {
+    private String buildWhereSuffix(
+            String userId,
+            String module,
+            String operationType,
+            Boolean success,
+            LocalDateTime startTime,
+            LocalDateTime endTime,
+            List<Object> params) {
         StringBuilder sb = new StringBuilder();
-        if (userId != null) { sb.append(" AND user_id = ?"); params.add(userId); }
-        if (module != null) { sb.append(" AND module = ?"); params.add(module); }
-        if (operationType != null) { sb.append(" AND operation_type = ?"); params.add(operationType); }
-        if (success != null) { sb.append(" AND success = ?"); params.add(success); }
-        if (startTime != null) { sb.append(" AND operation_time >= ?"); params.add(startTime); }
-        if (endTime != null) { sb.append(" AND operation_time <= ?"); params.add(endTime); }
+        if (userId != null) {
+            sb.append(" AND user_id = ?");
+            params.add(userId);
+        }
+        if (module != null) {
+            sb.append(" AND module = ?");
+            params.add(module);
+        }
+        if (operationType != null) {
+            sb.append(" AND operation_type = ?");
+            params.add(operationType);
+        }
+        if (success != null) {
+            sb.append(" AND success = ?");
+            params.add(success);
+        }
+        if (startTime != null) {
+            sb.append(" AND operation_time >= ?");
+            params.add(startTime);
+        }
+        if (endTime != null) {
+            sb.append(" AND operation_time <= ?");
+            params.add(endTime);
+        }
         return sb.toString();
     }
 
@@ -152,17 +230,24 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
         return e;
     }
 
-    private OperationLog toModel(
-            io.github.loadup.modules.log.infrastructure.dataobject.OperationLogDO e) {
+    private OperationLog toModel(io.github.loadup.modules.log.infrastructure.dataobject.OperationLogDO e) {
         return OperationLog.builder()
-                .id(e.getId()).userId(e.getUserId()).username(e.getUsername())
-                .module(e.getModule()).operationType(e.getOperationType())
-                .description(e.getDescription()).method(e.getMethod())
-                .requestParams(e.getRequestParams()).responseResult(e.getResponseResult())
-                .duration(e.getDuration()).success(e.getSuccess())
-                .errorMessage(e.getErrorMessage()).ip(e.getIp()).userAgent(e.getUserAgent())
-                .operationTime(e.getOperationTime()).createdAt(e.getCreatedAt())
+                .id(e.getId())
+                .userId(e.getUserId())
+                .username(e.getUsername())
+                .module(e.getModule())
+                .operationType(e.getOperationType())
+                .description(e.getDescription())
+                .method(e.getMethod())
+                .requestParams(e.getRequestParams())
+                .responseResult(e.getResponseResult())
+                .duration(e.getDuration())
+                .success(e.getSuccess())
+                .errorMessage(e.getErrorMessage())
+                .ip(e.getIp())
+                .userAgent(e.getUserAgent())
+                .operationTime(e.getOperationTime())
+                .createdAt(e.getCreatedAt())
                 .build();
     }
 }
-

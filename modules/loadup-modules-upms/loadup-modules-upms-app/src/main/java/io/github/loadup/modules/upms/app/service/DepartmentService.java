@@ -22,13 +22,13 @@ package io.github.loadup.modules.upms.app.service;
  * #L%
  */
 
+import io.github.loadup.modules.upms.client.command.DepartmentCreateCommand;
+import io.github.loadup.modules.upms.client.command.DepartmentUpdateCommand;
+import io.github.loadup.modules.upms.client.dto.DepartmentDTO;
 import io.github.loadup.modules.upms.domain.entity.Department;
 import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
-import io.github.loadup.modules.upms.client.command.DepartmentCreateCommand;
-import io.github.loadup.modules.upms.client.command.DepartmentUpdateCommand;
-import io.github.loadup.modules.upms.client.dto.DepartmentDTO;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

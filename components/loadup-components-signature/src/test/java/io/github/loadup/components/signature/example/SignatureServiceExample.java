@@ -1,19 +1,40 @@
 package io.github.loadup.components.signature.example;
 
+/*-
+ * #%L
+ * LoadUp Components :: Signature
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import io.github.loadup.components.signature.enums.KeyAlgorithm;
 import io.github.loadup.components.signature.enums.SignatureAlgorithm;
 import io.github.loadup.components.signature.model.KeyPairInfo;
 import io.github.loadup.components.signature.service.KeyPairService;
 import io.github.loadup.components.signature.service.SignatureService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import jakarta.annotation.PostConstruct;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 /**
  * 签名服务使用示例
@@ -53,20 +74,11 @@ public class SignatureServiceExample {
         log.info("初始化应用签名密钥...");
 
         // 生成应用自身的密钥对
-        KeyPairInfo keyPair = keyPairService.generateKeyPair(
-                KeyAlgorithm.RSA,
-                2048
-        );
+        KeyPairInfo keyPair = keyPairService.generateKeyPair(KeyAlgorithm.RSA, 2048);
 
         // 加载为 Java 对象并缓存
-        this.applicationPrivateKey = keyPairService.loadPrivateKey(
-                keyPair.getPrivateKey(),
-                KeyAlgorithm.RSA
-        );
-        this.applicationPublicKey = keyPairService.loadPublicKey(
-                keyPair.getPublicKey(),
-                KeyAlgorithm.RSA
-        );
+        this.applicationPrivateKey = keyPairService.loadPrivateKey(keyPair.getPrivateKey(), KeyAlgorithm.RSA);
+        this.applicationPublicKey = keyPairService.loadPublicKey(keyPair.getPublicKey(), KeyAlgorithm.RSA);
 
         log.info("应用签名密钥初始化完成");
         log.info("公钥: {}", keyPair.getPublicKey().substring(0, 50) + "...");
@@ -85,11 +97,7 @@ public class SignatureServiceExample {
      * @return Base64 编码的签名
      */
     public String sign(String data) {
-        return signatureService.sign(
-                data.getBytes(),
-                applicationPrivateKey,
-                SignatureAlgorithm.SHA256_WITH_RSA
-        );
+        return signatureService.sign(data.getBytes(), applicationPrivateKey, SignatureAlgorithm.SHA256_WITH_RSA);
     }
 
     /**
@@ -101,11 +109,7 @@ public class SignatureServiceExample {
      */
     public boolean verify(String data, String signature) {
         return signatureService.verify(
-                data.getBytes(),
-                signature,
-                applicationPublicKey,
-                SignatureAlgorithm.SHA256_WITH_RSA
-        );
+                data.getBytes(), signature, applicationPublicKey, SignatureAlgorithm.SHA256_WITH_RSA);
     }
 
     /**
@@ -124,12 +128,7 @@ public class SignatureServiceExample {
             return keyPairService.loadPublicKey(tenantPublicKey, KeyAlgorithm.RSA);
         });
 
-        return signatureService.verify(
-                data.getBytes(),
-                signature,
-                publicKey,
-                SignatureAlgorithm.SHA256_WITH_RSA
-        );
+        return signatureService.verify(data.getBytes(), signature, publicKey, SignatureAlgorithm.SHA256_WITH_RSA);
     }
 
     /**
@@ -153,4 +152,3 @@ public class SignatureServiceExample {
         log.info("已清除租户 {} 的公钥缓存", tenantId);
     }
 }
-

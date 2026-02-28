@@ -22,8 +22,6 @@ package io.github.loadup.commons.util.internal;
  * #L%
  */
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * The internal data structure that stores the thread-local variables for Netty and all {@link
  * InternalThread}s. Note that this class is for internal use only. Use {@link
@@ -32,8 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class InternalThreadLocalMap {
 
-    private static final ThreadLocal<InternalThreadLocalMap> slowThreadLocal = new ThreadLocal<>();
-    private static final AtomicInteger nextIndex = new AtomicInteger();
+    private static final ThreadLocal<InternalThreadLocalMap> SLOW_THREAD_LOCAL = new ThreadLocal<>();
 
     private String requestId;
 
@@ -47,10 +44,10 @@ public final class InternalThreadLocalMap {
     }
 
     private static InternalThreadLocalMap slowGet() {
-        InternalThreadLocalMap ret = slowThreadLocal.get();
+        InternalThreadLocalMap ret = SLOW_THREAD_LOCAL.get();
         if (ret == null) {
             ret = new InternalThreadLocalMap();
-            slowThreadLocal.set(ret);
+            SLOW_THREAD_LOCAL.set(ret);
         }
         return ret;
     }

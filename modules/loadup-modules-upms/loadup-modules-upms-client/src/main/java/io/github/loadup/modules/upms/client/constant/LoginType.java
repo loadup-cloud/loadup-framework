@@ -54,4 +54,3 @@ public final class LoginType {
      */
     public static final String OAUTH = "OAUTH";
 }
-

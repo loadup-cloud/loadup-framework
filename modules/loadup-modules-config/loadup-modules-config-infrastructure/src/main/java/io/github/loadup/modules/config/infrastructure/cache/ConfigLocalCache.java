@@ -7,9 +7,18 @@ package io.github.loadup.modules.config.infrastructure.cache;
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
@@ -42,12 +51,16 @@ public class ConfigLocalCache {
     private static final int DICT_MAX_SIZE = 500;
     private static final Duration TTL = Duration.ofMinutes(5);
 
-    private final Cache<String, ConfigItem> configCache =
-            Caffeine.newBuilder().maximumSize(CONFIG_MAX_SIZE).expireAfterWrite(TTL).build();
+    private final Cache<String, ConfigItem> configCache = Caffeine.newBuilder()
+            .maximumSize(CONFIG_MAX_SIZE)
+            .expireAfterWrite(TTL)
+            .build();
 
     /** Key: dictCode, Value: list of enabled items sorted by sortOrder. */
-    private final Cache<String, List<DictItem>> dictCache =
-            Caffeine.newBuilder().maximumSize(DICT_MAX_SIZE).expireAfterWrite(TTL).build();
+    private final Cache<String, List<DictItem>> dictCache = Caffeine.newBuilder()
+            .maximumSize(DICT_MAX_SIZE)
+            .expireAfterWrite(TTL)
+            .build();
 
     /* ---------- config ---------- */
 
@@ -99,7 +112,9 @@ public class ConfigLocalCache {
     @EventListener
     public void onConfigChanged(ConfigChangedEvent event) {
         evictConfig(event.getConfigKey());
-        log.info("Config cache auto-evicted via event: key={}, changeType={}",
-                event.getConfigKey(), event.getChangeType());
+        log.info(
+                "Config cache auto-evicted via event: key={}, changeType={}",
+                event.getConfigKey(),
+                event.getChangeType());
     }
 }

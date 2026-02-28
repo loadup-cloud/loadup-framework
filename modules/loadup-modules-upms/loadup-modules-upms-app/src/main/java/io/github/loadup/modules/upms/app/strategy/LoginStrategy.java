@@ -59,4 +59,3 @@ public interface LoginStrategy {
         return 0;
     }
 }
-

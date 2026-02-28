@@ -23,7 +23,6 @@ package io.github.loadup.modules.upms.client.service;
  */
 
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
-
 import java.util.List;
 
 /** UPMS 外部调用接口 */

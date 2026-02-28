@@ -1,5 +1,29 @@
 package io.github.loadup.components.globalunique;
 
+/*-
+ * #%L
+ * LoadUp Components :: Global Unique
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.github.loadup.components.globalunique.service.GlobalUniqueService;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
@@ -11,8 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * GlobalUniqueService 集成测试
@@ -54,10 +76,7 @@ class GlobalUniqueServiceTest {
 
         // 验证数据库中已存在
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM global_unique WHERE unique_key = ?",
-                Integer.class,
-                uniqueKey
-        );
+                "SELECT COUNT(*) FROM global_unique WHERE unique_key = ?", Integer.class, uniqueKey);
         assertThat(count).isEqualTo(1);
     }
 
@@ -80,10 +99,7 @@ class GlobalUniqueServiceTest {
 
         // 验证数据库中只有一条记录
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM global_unique WHERE unique_key = ?",
-                Integer.class,
-                uniqueKey
-        );
+                "SELECT COUNT(*) FROM global_unique WHERE unique_key = ?", Integer.class, uniqueKey);
         assertThat(count).isEqualTo(1);
     }
 
@@ -103,10 +119,7 @@ class GlobalUniqueServiceTest {
 
         // 验证 biz_id 字段
         String savedBizId = jdbcTemplate.queryForObject(
-                "SELECT biz_id FROM global_unique WHERE unique_key = ?",
-                String.class,
-                uniqueKey
-        );
+                "SELECT biz_id FROM global_unique WHERE unique_key = ?", String.class, uniqueKey);
         assertThat(savedBizId).isEqualTo(bizId);
     }
 
@@ -127,10 +140,7 @@ class GlobalUniqueServiceTest {
 
         // 验证 request_data 字段
         String savedRequestData = jdbcTemplate.queryForObject(
-                "SELECT request_data FROM global_unique WHERE unique_key = ?",
-                String.class,
-                uniqueKey
-        );
+                "SELECT request_data FROM global_unique WHERE unique_key = ?", String.class, uniqueKey);
         assertThat(savedRequestData).isEqualTo(requestData);
     }
 
@@ -172,10 +182,7 @@ class GlobalUniqueServiceTest {
 
         // 验证数据库中只有一条记录
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM global_unique WHERE unique_key = ?",
-                Integer.class,
-                uniqueKey
-        );
+                "SELECT COUNT(*) FROM global_unique WHERE unique_key = ?", Integer.class, uniqueKey);
         assertThat(count).isEqualTo(1);
     }
 
@@ -198,10 +205,7 @@ class GlobalUniqueServiceTest {
 
         // 验证数据库中有两条记录
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM global_unique WHERE unique_key LIKE 'TEST_COMMON_KEY%'",
-                Integer.class
-        );
+                "SELECT COUNT(*) FROM global_unique WHERE unique_key LIKE 'TEST_COMMON_KEY%'", Integer.class);
         assertThat(count).isEqualTo(2);
     }
 }
-

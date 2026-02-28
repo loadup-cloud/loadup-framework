@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Checkstyle 排除配置
+  排除不需要检查的文件（APT 生成类、测试类等）
+-->
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+<suppressions>
+
+    <!-- 排除 APT 生成的 TableDef 和 Tables 类 -->
+    <suppress files=".*TableDef\.java" checks=".*"/>
+    <suppress files=".*Tables\.java" checks=".*"/>
+
+    <!-- 排除 MapStruct 生成的 Converter 实现 -->
+    <suppress files=".*ConverterImpl\.java" checks=".*"/>
+
+    <!-- 排除 Flyway migration SQL（不是 Java） -->
+    <suppress files=".*\.sql" checks=".*"/>
+
+    <!-- 测试类放宽命名和可见性限制 -->
+    <suppress files=".*Test\.java" checks="VisibilityModifier"/>
+    <suppress files=".*IT\.java" checks="VisibilityModifier"/>
+    <suppress files=".*Test\.java" checks="MagicNumber"/>
+    <suppress files=".*IT\.java" checks="MagicNumber"/>
+
+    <!-- AutoConfiguration 类允许较多方法 -->
+    <suppress files=".*AutoConfiguration\.java" checks="MethodLength"/>
+
+    <!-- DO 实体类（含多字段，放宽长度限制） -->
+    <suppress files=".*DO\.java" checks="MethodLength"/>
+
+    <!--
+      排除 loadup-commons-api 模块所有类：
+      该模块是框架级 SPI 抽象层，不适用标准业务代码的 Checkstyle 规则。
+    -->
+    <suppress files=".*loadup-commons-api.*" checks=".*"/>
+    <suppress files=".*[\\/]framework[\\/]api[\\/].*" checks=".*"/>
+
+    <!--
+      排除 loadup-commons-dto 模块所有类：
+      DTO/Query/Response 是纯数据传输对象，不适用 VisibilityModifier 等规则。
+    -->
+    <suppress files=".*loadup-commons-dto.*" checks=".*"/>
+    <suppress files=".*[\\/]commons[\\/]result[\\/].*" checks=".*"/>
+    <suppress files=".*[\\/]commons[\\/]request[\\/].*" checks=".*"/>
+    <suppress files=".*[\\/]commons[\\/]dto[\\/].*" checks=".*"/>
+
+    <!--
+      排除 loadup-commons-util 模块所有类：
+      工具类使用了静态方法、宽泛异常捕获、参数重赋值等工具库惯用模式，
+      不适用标准业务代码的 Checkstyle 规则。
+    -->
+    <suppress files=".*loadup-commons-util.*" checks=".*"/>
+    <suppress files=".*[\\/]commons[\\/]util[\\/].*" checks=".*"/>
+
+</suppressions>
+

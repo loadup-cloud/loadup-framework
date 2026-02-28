@@ -22,15 +22,14 @@ package io.github.loadup.modules.upms.client.dto;
  * #L%
  */
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 统一登录凭证对象
@@ -129,4 +128,3 @@ public class LoginCredentials implements Serializable {
     @Builder.Default
     private Map<String, Object> extra = new HashMap<>();
 }
-

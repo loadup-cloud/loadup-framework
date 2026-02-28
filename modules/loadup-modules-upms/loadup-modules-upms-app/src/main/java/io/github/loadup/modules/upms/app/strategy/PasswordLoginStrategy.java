@@ -23,17 +23,16 @@ package io.github.loadup.modules.upms.app.strategy;
  */
 
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
-import io.github.loadup.modules.upms.domain.entity.User;
-import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.client.constant.LoginType;
 import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
 import io.github.loadup.modules.upms.client.dto.LoginCredentials;
+import io.github.loadup.modules.upms.domain.entity.User;
+import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 /**
  * 账号密码登录策略
@@ -58,7 +57,8 @@ public class PasswordLoginStrategy implements LoginStrategy {
     @Override
     public AuthenticatedUser authenticate(LoginCredentials credentials) {
         // 1. 查询用户
-        User user = userGateway.findByUsername(credentials.getUsername())
+        User user = userGateway
+                .findByUsername(credentials.getUsername())
                 .orElseThrow(() -> new RuntimeException("用户名或密码错误"));
 
         // 2. 验证密码
@@ -133,4 +133,3 @@ public class PasswordLoginStrategy implements LoginStrategy {
         }
     }
 }
-

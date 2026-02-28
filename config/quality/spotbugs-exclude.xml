@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SpotBugs 排除过滤器
+  排除不需要检查的 Bug 类型（如 Lombok 生成代码、测试代码等）
+-->
+<FindBugsFilter>
+
+    <!-- 排除所有测试类 -->
+    <Match>
+        <Class name="~.*Test$"/>
+    </Match>
+    <Match>
+        <Class name="~.*IT$"/>
+    </Match>
+
+    <!-- 排除 APT 生成的 TableDef 类 -->
+    <Match>
+        <Class name="~.*TableDef$"/>
+    </Match>
+    <Match>
+        <Class name="~.*Tables$"/>
+    </Match>
+
+    <!-- 排除 MapStruct 生成的 Converter 实现类 -->
+    <Match>
+        <Class name="~.*ConverterImpl$"/>
+    </Match>
+
+    <!-- Lombok @Data 生成的 equals/hashCode 中可能触发的 EQ_COMPARETO_USE_OBJECT_EQUALS -->
+    <Match>
+        <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS"/>
+    </Match>
+
+    <!-- 忽略 DO 实体类的序列化字段警告（BaseDO 已处理） -->
+    <Match>
+        <Class name="~.*DO$"/>
+        <Bug pattern="SE_NO_SERIALVERSIONID"/>
+    </Match>
+
+    <!-- 忽略可能的误报：Spring @Autowired 构造器注入的非 null 检查 -->
+    <Match>
+        <Bug pattern="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/>
+    </Match>
+
+    <!-- 忽略 String.format 性能提示（可读性优先） -->
+    <Match>
+        <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
+    </Match>
+
+    <!--
+      排除 loadup-commons-api 模块的所有类：
+      该模块是框架级 SPI 抽象层（Binder/Binding/Cfg 接口及抽象基类），
+      由框架设计者维护，不适用常规业务代码的 SpotBugs 规则。
+    -->
+    <Match>
+        <Class name="~io\.github\.loadup\.framework\.api\..*"/>
+    </Match>
+
+    <!--
+      排除 loadup-commons-dto 模块的所有类：
+      DTO/Query/Response 是数据传输对象，设计上就是可变的，
+      EI_EXPOSE_REP 对 DTO 是误报（防御性复制对传输对象是过度工程）。
+    -->
+    <Match>
+        <Class name="~io\.github\.loadup\.commons\..*"/>
+    </Match>
+
+</FindBugsFilter>
+

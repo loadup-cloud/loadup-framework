@@ -23,11 +23,11 @@ package io.github.loadup.modules.upms.app.strategy;
  */
 
 import io.github.loadup.modules.upms.app.service.VerificationCodeService;
-import io.github.loadup.modules.upms.domain.entity.User;
-import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.client.constant.LoginType;
 import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
 import io.github.loadup.modules.upms.client.dto.LoginCredentials;
+import io.github.loadup.modules.upms.domain.entity.User;
+import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -63,17 +63,13 @@ public class MobileLoginStrategy implements LoginStrategy {
         }
 
         // 2. 验证短信验证码
-        boolean valid = verificationCodeService.verifySmsCode(
-                credentials.getMobile(),
-                credentials.getSmsCode()
-        );
+        boolean valid = verificationCodeService.verifySmsCode(credentials.getMobile(), credentials.getSmsCode());
         if (!valid) {
             throw new RuntimeException("验证码错误或已过期");
         }
 
         // 3. 查询用户
-        User user = userGateway.findByMobile(credentials.getMobile())
-                .orElseThrow(() -> new RuntimeException("手机号未注册"));
+        User user = userGateway.findByMobile(credentials.getMobile()).orElseThrow(() -> new RuntimeException("手机号未注册"));
 
         // 4. 检查账号状态
         if (!user.isActive()) {
@@ -96,4 +92,3 @@ public class MobileLoginStrategy implements LoginStrategy {
                 .build();
     }
 }
-

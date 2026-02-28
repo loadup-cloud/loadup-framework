@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PMD 规则集配置 - LoadUp 项目定制规则
+  文档: https://pmd.github.io/pmd/pmd_rules_java.html
+-->
+<ruleset name="LoadUp PMD Rules"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+
+    <description>LoadUp 项目 PMD 规则集</description>
+
+    <!--
+      排除 loadup-commons-api 模块：
+      该模块是框架级 SPI 抽象层（Binder/Binding/Cfg 接口及抽象基类），
+      使用了大量泛型、模板方法、框架内部规范，不适用标准业务代码的 PMD 规则。
+    -->
+    <exclude-pattern>.*/loadup-commons-api/.*</exclude-pattern>
+    <exclude-pattern>.*/framework/api/.*</exclude-pattern>
+
+    <!--
+      排除 loadup-commons-dto 模块：
+      DTO/Query/Response 是纯数据传输对象，DataClass 等规则对其是误报。
+    -->
+    <exclude-pattern>.*/loadup-commons-dto/.*</exclude-pattern>
+    <exclude-pattern>.*/commons/result/.*</exclude-pattern>
+    <exclude-pattern>.*/commons/request/.*</exclude-pattern>
+
+    <!--
+      排除 loadup-commons-util 模块：
+      工具类使用了大量静态方法、参数重赋值、宽泛异常捕获等工具类惯用模式，
+      这些是工具库的合理设计，不适用业务代码的 PMD 规则。
+    -->
+    <exclude-pattern>.*/loadup-commons-util/.*</exclude-pattern>
+    <exclude-pattern>.*/commons/util/.*</exclude-pattern>
+
+    <!-- ===== Best Practices ===== -->
+    <rule ref="category/java/bestpractices.xml">
+        <!-- 允许测试类使用 JUnit 4 风格（对应 JUnit 5 迁移中的兼容场景） -->
+        <exclude name="JUnit4TestShouldUseTestAnnotation"/>
+        <exclude name="JUnit4SuitesShouldUseSuiteAnnotation"/>
+        <!-- Lombok @Builder 生成的 toString 可能触发，排除 -->
+        <exclude name="UseCollectionIsEmpty"/>
+        <!-- Spring DI 构造器注入时 @Autowired 字段警告，排除（已有 Checkstyle 规则约束） -->
+        <exclude name="LooseCoupling"/>
+        <!-- 允许在测试断言中使用 assertEquals -->
+        <exclude name="UseAssertEqualsInsteadOfAssertTrue"/>
+        <exclude name="UseAssertNullInsteadOfAssertTrue"/>
+        <exclude name="UseAssertSameInsteadOfAssertTrue"/>
+        <exclude name="UseAssertTrueInsteadOfAssertEquals"/>
+    </rule>
+
+    <!-- ===== Code Style ===== -->
+    <rule ref="category/java/codestyle.xml">
+        <!-- 排除对变量命名的过度限制 -->
+        <exclude name="ShortVariable"/>
+        <exclude name="LongVariable"/>
+        <exclude name="ShortMethodName"/>
+        <exclude name="ShortClassName"/>
+        <!-- 允许 Java 21 record/sealed 等新特性 -->
+        <exclude name="LocalVariableCouldBeFinal"/>
+        <exclude name="MethodArgumentCouldBeFinal"/>
+        <!-- 允许 Lombok 注解的 @Builder 等 -->
+        <exclude name="AtLeastOneConstructor"/>
+        <exclude name="OnlyOneReturn"/>
+        <exclude name="CallSuperInConstructor"/>
+        <exclude name="CommentDefaultAccessModifier"/>
+        <exclude name="DefaultPackage"/>
+        <exclude name="TooManyStaticImports"/>
+        <!-- Palantir 格式化风格不强制 -->
+        <exclude name="UnnecessaryConstructor"/>
+    </rule>
+
+    <!-- ===== Design ===== -->
+    <rule ref="category/java/design.xml">
+        <!-- 排除规模较大的 Service 复杂度限制（业务编排服务） -->
+        <exclude name="TooManyMethods"/>
+        <exclude name="TooManyFields"/>
+        <exclude name="ExcessivePublicCount"/>
+        <exclude name="GodClass"/>
+        <exclude name="LawOfDemeter"/>
+        <exclude name="LoosePackageCoupling"/>
+        <!-- AutoConfiguration 类允许有多个 Bean -->
+        <exclude name="CyclomaticComplexity"/>
+        <exclude name="NPathComplexity"/>
+        <exclude name="CouplingBetweenObjects"/>
+    </rule>
+
+    <!-- ===== Error Prone ===== -->
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="BeanMembersShouldSerialize"/>
+        <exclude name="DataflowAnomalyAnalysis"/>
+        <exclude name="MissingSerialVersionUID"/>
+        <!-- 允许在 catch 中 throw 新异常 -->
+        <exclude name="AvoidCatchingGenericException"/>
+        <exclude name="AvoidThrowingRawExceptionTypes"/>
+    </rule>
+
+    <!-- ===== Multithreading ===== -->
+    <rule ref="category/java/multithreading.xml">
+        <exclude name="UseConcurrentHashMap"/>
+        <exclude name="DoNotUseThreads"/>
+    </rule>
+
+    <!-- ===== Performance ===== -->
+    <rule ref="category/java/performance.xml">
+        <exclude name="AvoidInstantiatingObjectsJustToGetClass"/>
+        <exclude name="InsufficientStringBufferDeclaration"/>
+    </rule>
+
+    <!-- ===== Security ===== -->
+    <rule ref="category/java/security.xml"/>
+
+</ruleset>
+

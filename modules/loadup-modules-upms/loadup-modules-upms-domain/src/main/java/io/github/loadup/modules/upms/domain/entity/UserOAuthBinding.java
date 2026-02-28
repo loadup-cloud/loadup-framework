@@ -22,12 +22,11 @@ package io.github.loadup.modules.upms.domain.entity;
  * #L%
  */
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 /**
  * 用户OAuth第三方账号绑定实体
@@ -106,4 +105,3 @@ public class UserOAuthBinding {
      */
     private LocalDateTime updatedAt;
 }
-

@@ -28,6 +28,8 @@ import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
 import io.github.loadup.modules.upms.client.constant.OAuthProvider;
 import io.github.loadup.modules.upms.client.dto.OAuthToken;
 import io.github.loadup.modules.upms.client.dto.OAuthUserInfo;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -36,9 +38,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 /**
  * GitHub OAuth Provider
@@ -67,7 +66,8 @@ public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.st
 
     @Override
     public String getAuthorizationUrl(String state, String redirectUri) {
-        UpmsSecurityProperties.OAuthConfig config = securityProperties.getOauth().getGithub();
+        UpmsSecurityProperties.OAuthConfig config =
+                securityProperties.getOauth().getGithub();
 
         return AUTHORIZE_URL + "?client_id=" + config.getClientId()
                 + "&redirect_uri=" + URLEncoder.encode(redirectUri, StandardCharsets.UTF_8)
@@ -78,7 +78,8 @@ public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.st
     @Override
     public OAuthToken exchangeToken(String code, String redirectUri) {
         try {
-            UpmsSecurityProperties.OAuthConfig config = securityProperties.getOauth().getGithub();
+            UpmsSecurityProperties.OAuthConfig config =
+                    securityProperties.getOauth().getGithub();
 
             // 构建请求参数
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -122,20 +123,22 @@ public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.st
             HttpEntity<String> request = new HttpEntity<>(headers);
 
             // 获取用户信息
-            ResponseEntity<String> response = restTemplate.exchange(
-                    USER_INFO_URL,
-                    HttpMethod.GET,
-                    request,
-                    String.class
-            );
+            ResponseEntity<String> response =
+                    restTemplate.exchange(USER_INFO_URL, HttpMethod.GET, request, String.class);
 
             // 解析响应
             JsonNode jsonNode = objectMapper.readTree(response.getBody());
 
             return OAuthUserInfo.builder()
                     .openId(jsonNode.get("id").asText())
-                    .nickname(jsonNode.has("name") ? jsonNode.get("name").asText() : jsonNode.get("login").asText())
-                    .avatar(jsonNode.has("avatar_url") ? jsonNode.get("avatar_url").asText() : null)
+                    .nickname(
+                            jsonNode.has("name")
+                                    ? jsonNode.get("name").asText()
+                                    : jsonNode.get("login").asText())
+                    .avatar(
+                            jsonNode.has("avatar_url")
+                                    ? jsonNode.get("avatar_url").asText()
+                                    : null)
                     .email(jsonNode.has("email") ? jsonNode.get("email").asText() : null)
                     .build();
 
@@ -145,4 +148,3 @@ public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.st
         }
     }
 }
-

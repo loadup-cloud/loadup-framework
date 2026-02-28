@@ -24,14 +24,14 @@ package io.github.loadup.modules.upms.app.service;
 
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.app.query.RoleQuery;
-import io.github.loadup.modules.upms.domain.entity.Permission;
-import io.github.loadup.modules.upms.domain.entity.Role;
-import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
-import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.client.command.RoleCreateCommand;
 import io.github.loadup.modules.upms.client.command.RoleUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.PermissionDTO;
 import io.github.loadup.modules.upms.client.dto.RoleDTO;
+import io.github.loadup.modules.upms.domain.entity.Permission;
+import io.github.loadup.modules.upms.domain.entity.Role;
+import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
+import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

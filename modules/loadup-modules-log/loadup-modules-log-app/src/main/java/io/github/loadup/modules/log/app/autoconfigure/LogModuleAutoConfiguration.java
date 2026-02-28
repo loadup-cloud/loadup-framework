@@ -1,12 +1,30 @@
 package io.github.loadup.modules.log.app.autoconfigure;
 
+/*-
+ * #%L
+ * Loadup Modules Log App
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.loadup.modules.log.infrastructure.aspect.OperationLogAspect;
 import io.github.loadup.modules.log.infrastructure.async.LogAsyncWriter;
-import io.github.loadup.modules.log.infrastructure.repository.AuditLogGatewayImpl;
-import io.github.loadup.modules.log.infrastructure.repository.OperationLogGatewayImpl;
-import io.github.loadup.modules.log.app.service.AuditLogService;
-import io.github.loadup.modules.log.app.service.OperationLogService;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.mybatis.spring.annotation.MapperScan;
@@ -48,4 +66,3 @@ public class LogModuleAutoConfiguration {
         return new OperationLogAspect(logAsyncWriter, objectMapper);
     }
 }
-

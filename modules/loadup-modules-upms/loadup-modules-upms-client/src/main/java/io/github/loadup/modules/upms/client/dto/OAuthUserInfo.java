@@ -22,13 +22,12 @@ package io.github.loadup.modules.upms.client.dto;
  * #L%
  */
 
+import java.io.Serial;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serial;
-import java.io.Serializable;
 
 /**
  * OAuth 用户信息
@@ -75,4 +74,3 @@ public class OAuthUserInfo implements Serializable {
      */
     private String mobile;
 }
-

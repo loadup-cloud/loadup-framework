@@ -1,5 +1,29 @@
 package io.github.loadup.components.signature;
 
+/*-
+ * #%L
+ * LoadUp Components :: Signature
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.github.loadup.components.signature.enums.DigestAlgorithm;
 import io.github.loadup.components.signature.enums.KeyAlgorithm;
 import io.github.loadup.components.signature.enums.SignatureAlgorithm;
@@ -14,8 +38,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Signature Component 综合测试
@@ -44,19 +66,11 @@ class SignatureComponentTest {
         KeyPairInfo keyPair = keyPairService.generateKeyPair(KeyAlgorithm.RSA, 2048);
 
         // when - 签名
-        String signature = signatureService.sign(
-                data,
-                keyPair.getPrivateKey(),
-                SignatureAlgorithm.SHA256_WITH_RSA
-        );
+        String signature = signatureService.sign(data, keyPair.getPrivateKey(), SignatureAlgorithm.SHA256_WITH_RSA);
 
         // then - 验签
-        boolean valid = signatureService.verify(
-                data,
-                signature,
-                keyPair.getPublicKey(),
-                SignatureAlgorithm.SHA256_WITH_RSA
-        );
+        boolean valid =
+                signatureService.verify(data, signature, keyPair.getPublicKey(), SignatureAlgorithm.SHA256_WITH_RSA);
 
         assertThat(signature).isNotEmpty();
         assertThat(valid).isTrue();
@@ -88,17 +102,9 @@ class SignatureComponentTest {
         KeyPairInfo keyPair = keyPairService.generateKeyPair(KeyAlgorithm.DSA);
 
         // when
-        String signature = signatureService.sign(
-                data,
-                keyPair.getPrivateKey(),
-                SignatureAlgorithm.SHA256_WITH_DSA
-        );
-        boolean valid = signatureService.verify(
-                data,
-                signature,
-                keyPair.getPublicKey(),
-                SignatureAlgorithm.SHA256_WITH_DSA
-        );
+        String signature = signatureService.sign(data, keyPair.getPrivateKey(), SignatureAlgorithm.SHA256_WITH_DSA);
+        boolean valid =
+                signatureService.verify(data, signature, keyPair.getPublicKey(), SignatureAlgorithm.SHA256_WITH_DSA);
 
         // then
         assertThat(signature).isNotEmpty();
@@ -113,17 +119,9 @@ class SignatureComponentTest {
         KeyPairInfo keyPair = keyPairService.generateKeyPair(KeyAlgorithm.EC, 256);
 
         // when
-        String signature = signatureService.sign(
-                data,
-                keyPair.getPrivateKey(),
-                SignatureAlgorithm.SHA256_WITH_ECDSA
-        );
-        boolean valid = signatureService.verify(
-                data,
-                signature,
-                keyPair.getPublicKey(),
-                SignatureAlgorithm.SHA256_WITH_ECDSA
-        );
+        String signature = signatureService.sign(data, keyPair.getPrivateKey(), SignatureAlgorithm.SHA256_WITH_ECDSA);
+        boolean valid =
+                signatureService.verify(data, signature, keyPair.getPublicKey(), SignatureAlgorithm.SHA256_WITH_ECDSA);
 
         // then
         assertThat(signature).isNotEmpty();
@@ -219,19 +217,12 @@ class SignatureComponentTest {
         KeyPairInfo keyPair = keyPairService.generateKeyPair(KeyAlgorithm.RSA);
 
         // when - 对原始数据签名
-        String signature = signatureService.sign(
-                originalData,
-                keyPair.getPrivateKey(),
-                SignatureAlgorithm.SHA256_WITH_RSA
-        );
+        String signature =
+                signatureService.sign(originalData, keyPair.getPrivateKey(), SignatureAlgorithm.SHA256_WITH_RSA);
 
         // then - 使用篡改后的数据验签应失败
         boolean validWithTamperedData = signatureService.verify(
-                tamperedData,
-                signature,
-                keyPair.getPublicKey(),
-                SignatureAlgorithm.SHA256_WITH_RSA
-        );
+                tamperedData, signature, keyPair.getPublicKey(), SignatureAlgorithm.SHA256_WITH_RSA);
 
         assertThat(validWithTamperedData).isFalse();
     }
@@ -252,4 +243,3 @@ class SignatureComponentTest {
         assertThat(hash1).isEqualTo(hash3);
     }
 }
-

@@ -89,10 +89,14 @@
 
 | 工具 | 配置 | 状态 |
 |------|------|------|
-| **代码格式化** | Spotless (Palantir Java Format) | ✅ 已配置 |
+| **代码格式化** | Spotless (Palantir Java Format) | ✅ 已配置，CI 强制检查 |
 | **单元测试** | JUnit 5 + Mockito + AssertJ | ✅ 已配置 |
 | **集成测试** | Testcontainers | ✅ 已配置 |
 | **代码覆盖率** | JaCoCo | ✅ 已配置 |
+| **静态代码分析** | SpotBugs + FindSecBugs | ✅ 已配置，CI 强制检查 |
+| **代码规范检查** | PMD + Checkstyle | ✅ 已配置，CI 强制检查 |
+| **架构约束检查** | ArchUnit | ✅ 已配置，覆盖分层依赖/循环依赖/命名规范 |
+| **安全漏洞扫描** | OWASP Dependency-Check | ✅ 已配置，main/develop 分支触发 |
 | **License检查** | License Maven Plugin | ✅ 已配置 |
 | **依赖管理** | Maven BOM | ✅ 已配置 |
 | **API文档** | OpenAPI/Swagger | ✅ 已集成 |

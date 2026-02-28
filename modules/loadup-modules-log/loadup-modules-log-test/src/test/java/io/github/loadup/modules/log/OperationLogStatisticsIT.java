@@ -1,5 +1,27 @@
 package io.github.loadup.modules.log;
 
+/*-
+ * #%L
+ * Loadup Modules Log Test
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
@@ -66,8 +88,7 @@ class OperationLogStatisticsIT {
         assertThat(stats.getByModule()).isNotEmpty();
         var moduleMap = stats.getByModule().stream()
                 .collect(java.util.stream.Collectors.toMap(
-                        LogStatisticsDTO.StatItem::getName,
-                        LogStatisticsDTO.StatItem::getCount));
+                        LogStatisticsDTO.StatItem::getName, LogStatisticsDTO.StatItem::getCount));
         assertThat(moduleMap.get("用户管理")).isEqualTo(2);
         assertThat(moduleMap.get("角色管理")).isEqualTo(1);
     }
@@ -83,8 +104,7 @@ class OperationLogStatisticsIT {
 
         var typeMap = stats.getByOperationType().stream()
                 .collect(java.util.stream.Collectors.toMap(
-                        LogStatisticsDTO.StatItem::getName,
-                        LogStatisticsDTO.StatItem::getCount));
+                        LogStatisticsDTO.StatItem::getName, LogStatisticsDTO.StatItem::getCount));
         assertThat(typeMap.get("CREATE")).isEqualTo(2);
         assertThat(typeMap.get("DELETE")).isEqualTo(1);
     }
@@ -140,15 +160,13 @@ class OperationLogStatisticsIT {
         operationLogService.exportCsv(query, new PrintWriter(sw));
 
         String csv = sw.toString();
-        List<String> dataLines = csv.lines()
-                .filter(l -> !l.isBlank() && !l.startsWith("ID"))
-                .toList();
+        List<String> dataLines =
+                csv.lines().filter(l -> !l.isBlank() && !l.startsWith("ID")).toList();
         assertThat(dataLines).hasSize(1);
         assertThat(dataLines.getFirst()).contains("false");
     }
 
-    private OperationLog buildLog(String userId, String module, String type,
-            boolean success, long duration) {
+    private OperationLog buildLog(String userId, String module, String type, boolean success, long duration) {
         return OperationLog.builder()
                 .id(UUID.randomUUID().toString().replace("-", ""))
                 .userId(userId)
@@ -162,4 +180,3 @@ class OperationLogStatisticsIT {
                 .build();
     }
 }
-

@@ -1,5 +1,27 @@
 package io.github.loadup.modules.log.infrastructure.aspect;
 
+/*-
+ * #%L
+ * Loadup Modules Log Infrastructure
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.loadup.modules.log.client.annotation.OperationLog;
 import io.github.loadup.modules.log.infrastructure.async.LogAsyncWriter;
@@ -40,8 +62,8 @@ public class OperationLogAspect {
         }
     }
 
-    private void saveLog(ProceedingJoinPoint pjp, OperationLog annotation,
-            Object result, Throwable error, long duration) {
+    private void saveLog(
+            ProceedingJoinPoint pjp, OperationLog annotation, Object result, Throwable error, long duration) {
         try {
             String ip = null;
             String userAgent = null;
@@ -54,21 +76,21 @@ public class OperationLogAspect {
 
             io.github.loadup.modules.log.domain.model.OperationLog model =
                     io.github.loadup.modules.log.domain.model.OperationLog.builder()
-                    .id(UUID.randomUUID().toString().replace("-", ""))
-                    .module(annotation.module())
-                    .operationType(annotation.type())
-                    .description(annotation.description())
-                    .method(pjp.getSignature().toShortString())
-                    .requestParams(annotation.recordParams() ? toJson(pjp.getArgs()) : null)
-                    .responseResult(annotation.recordResponse() && result != null ? toJson(result) : null)
-                    .duration(duration)
-                    .success(error == null)
-                    .errorMessage(error != null ? truncate(error.getMessage(), 500) : null)
-                    .ip(ip)
-                    .userAgent(userAgent)
-                    .operationTime(LocalDateTime.now())
-                    .createdAt(LocalDateTime.now())
-                    .build();
+                            .id(UUID.randomUUID().toString().replace("-", ""))
+                            .module(annotation.module())
+                            .operationType(annotation.type())
+                            .description(annotation.description())
+                            .method(pjp.getSignature().toShortString())
+                            .requestParams(annotation.recordParams() ? toJson(pjp.getArgs()) : null)
+                            .responseResult(annotation.recordResponse() && result != null ? toJson(result) : null)
+                            .duration(duration)
+                            .success(error == null)
+                            .errorMessage(error != null ? truncate(error.getMessage(), 500) : null)
+                            .ip(ip)
+                            .userAgent(userAgent)
+                            .operationTime(LocalDateTime.now())
+                            .createdAt(LocalDateTime.now())
+                            .build();
 
             logAsyncWriter.saveOperationLog(model);
         } catch (Exception e) {

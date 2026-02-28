@@ -23,11 +23,11 @@ package io.github.loadup.modules.upms.app.strategy;
  */
 
 import io.github.loadup.modules.upms.app.service.VerificationCodeService;
-import io.github.loadup.modules.upms.domain.entity.User;
-import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.client.constant.LoginType;
 import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
 import io.github.loadup.modules.upms.client.dto.LoginCredentials;
+import io.github.loadup.modules.upms.domain.entity.User;
+import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -63,17 +63,13 @@ public class EmailLoginStrategy implements LoginStrategy {
         }
 
         // 2. 验证邮箱验证码
-        boolean valid = verificationCodeService.verifyEmailCode(
-                credentials.getEmail(),
-                credentials.getEmailCode()
-        );
+        boolean valid = verificationCodeService.verifyEmailCode(credentials.getEmail(), credentials.getEmailCode());
         if (!valid) {
             throw new RuntimeException("验证码错误或已过期");
         }
 
         // 3. 查询用户
-        User user = userGateway.findByEmail(credentials.getEmail())
-                .orElseThrow(() -> new RuntimeException("邮箱未注册"));
+        User user = userGateway.findByEmail(credentials.getEmail()).orElseThrow(() -> new RuntimeException("邮箱未注册"));
 
         // 4. 检查账号状态
         if (!user.isActive()) {
@@ -96,4 +92,3 @@ public class EmailLoginStrategy implements LoginStrategy {
                 .build();
     }
 }
-

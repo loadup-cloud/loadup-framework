@@ -1,5 +1,27 @@
 package io.github.loadup.modules.log.app.service;
 
+/*-
+ * #%L
+ * Loadup Modules Log App
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import io.github.loadup.modules.log.client.dto.LogStatisticsDTO;
 import io.github.loadup.modules.log.client.dto.LogStatisticsDTO.StatItem;
 import io.github.loadup.modules.log.client.dto.OperationLogDTO;
@@ -39,24 +61,43 @@ public class OperationLogService {
         Assert.notNull(query, "query must not be null");
         int pageNum = query.getPageNum() == null ? 1 : query.getPageNum();
         int pageSize = query.getPageSize() == null ? 20 : Math.min(query.getPageSize(), 200);
-        return gateway.findByCondition(
-                        query.getUserId(), query.getModule(), query.getOperationType(),
-                        query.getSuccess(), query.getStartTime(), query.getEndTime(),
-                        pageNum, pageSize)
-                .stream().map(this::toDTO).toList();
+        return gateway
+                .findByCondition(
+                        query.getUserId(),
+                        query.getModule(),
+                        query.getOperationType(),
+                        query.getSuccess(),
+                        query.getStartTime(),
+                        query.getEndTime(),
+                        pageNum,
+                        pageSize)
+                .stream()
+                .map(this::toDTO)
+                .toList();
     }
 
     /** Count operation logs by condition. */
     public long countByCondition(OperationLogQuery query) {
         Assert.notNull(query, "query must not be null");
         return gateway.countByCondition(
-                query.getUserId(), query.getModule(), query.getOperationType(),
-                query.getSuccess(), query.getStartTime(), query.getEndTime());
+                query.getUserId(),
+                query.getModule(),
+                query.getOperationType(),
+                query.getSuccess(),
+                query.getStartTime(),
+                query.getEndTime());
     }
 
     /** Manually record an operation log (for scenarios without AOP). */
-    public void record(String userId, String username, String module, String operationType,
-            String description, Boolean success, String errorMessage, Long duration) {
+    public void record(
+            String userId,
+            String username,
+            String module,
+            String operationType,
+            String description,
+            Boolean success,
+            String errorMessage,
+            Long duration) {
         OperationLog record = OperationLog.builder()
                 .id(UUID.randomUUID().toString().replace("-", ""))
                 .userId(userId)
@@ -99,16 +140,21 @@ public class OperationLogService {
                 .successCount(success)
                 .failureCount(failure)
                 .successRate(rate)
-                .avgDuration(duration.get("avgDuration") == null ? null
-                        : ((Number) duration.get("avgDuration")).doubleValue())
-                .maxDuration(duration.get("maxDuration") == null ? null
-                        : ((Number) duration.get("maxDuration")).longValue())
+                .avgDuration(
+                        duration.get("avgDuration") == null
+                                ? null
+                                : ((Number) duration.get("avgDuration")).doubleValue())
+                .maxDuration(
+                        duration.get("maxDuration") == null ? null : ((Number) duration.get("maxDuration")).longValue())
                 .byModule(byModule.entrySet().stream()
-                        .map(e -> new StatItem(e.getKey(), e.getValue())).toList())
+                        .map(e -> new StatItem(e.getKey(), e.getValue()))
+                        .toList())
                 .byOperationType(byType.entrySet().stream()
-                        .map(e -> new StatItem(e.getKey(), e.getValue())).toList())
+                        .map(e -> new StatItem(e.getKey(), e.getValue()))
+                        .toList())
                 .byDate(byDate.entrySet().stream()
-                        .map(e -> new StatItem(e.getKey(), e.getValue())).toList())
+                        .map(e -> new StatItem(e.getKey(), e.getValue()))
+                        .toList())
                 .build();
     }
 
@@ -124,12 +170,17 @@ public class OperationLogService {
     public void exportCsv(OperationLogQuery query, PrintWriter writer) {
         Assert.notNull(query, "query must not be null");
         List<OperationLog> logs = gateway.findAllForExport(
-                query.getUserId(), query.getModule(), query.getOperationType(),
-                query.getSuccess(), query.getStartTime(), query.getEndTime());
+                query.getUserId(),
+                query.getModule(),
+                query.getOperationType(),
+                query.getSuccess(),
+                query.getStartTime(),
+                query.getEndTime());
 
         writer.println("ID,用户ID,用户名,模块,操作类型,描述,方法,执行时长(ms),是否成功,IP,操作时间");
         for (OperationLog l : logs) {
-            writer.println(String.join(",",
+            writer.println(String.join(
+                    ",",
                     safe(l.getId()),
                     safe(l.getUserId()),
                     safe(l.getUsername()),
@@ -140,8 +191,7 @@ public class OperationLogService {
                     l.getDuration() == null ? "" : l.getDuration().toString(),
                     l.getSuccess() == null ? "" : l.getSuccess().toString(),
                     safe(l.getIp()),
-                    l.getOperationTime() == null ? "" : l.getOperationTime().format(FORMATTER)
-            ));
+                    l.getOperationTime() == null ? "" : l.getOperationTime().format(FORMATTER)));
         }
         writer.flush();
     }

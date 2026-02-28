@@ -67,4 +67,3 @@ public interface OAuthProvider {
      */
     OAuthUserInfo getUserInfo(String accessToken);
 }
-

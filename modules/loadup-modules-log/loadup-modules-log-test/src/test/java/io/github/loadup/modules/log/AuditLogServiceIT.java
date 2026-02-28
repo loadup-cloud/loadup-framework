@@ -1,5 +1,27 @@
 package io.github.loadup.modules.log;
 
+/*-
+ * #%L
+ * Loadup Modules Log Test
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
@@ -61,7 +83,7 @@ class AuditLogServiceIT {
     @Test
     void listByCondition_shouldFilterByDataId() {
         auditLogGateway.save(buildLog("u001", "alice", "USER", "target-id-1", "CREATE"));
-        auditLogGateway.save(buildLog("u002", "bob",   "USER", "target-id-2", "DELETE"));
+        auditLogGateway.save(buildLog("u002", "bob", "USER", "target-id-2", "DELETE"));
 
         AuditLogQuery query = new AuditLogQuery();
         query.setDataId("target-id-1");
@@ -75,7 +97,7 @@ class AuditLogServiceIT {
     void countByCondition_shouldReturnCorrectCount() {
         auditLogGateway.save(buildLog("u001", "alice", "USER", "d1", "CREATE"));
         auditLogGateway.save(buildLog("u001", "alice", "USER", "d2", "UPDATE"));
-        auditLogGateway.save(buildLog("u002", "bob",   "ROLE", "r1", "ASSIGN"));
+        auditLogGateway.save(buildLog("u002", "bob", "ROLE", "r1", "ASSIGN"));
 
         AuditLogQuery query = new AuditLogQuery();
         query.setDataType("USER");
@@ -86,8 +108,16 @@ class AuditLogServiceIT {
 
     @Test
     void record_shouldPersistAsyncAuditLog() throws InterruptedException {
-        auditLogService.record("u001", "alice", "CONFIG", "c001", "UPDATE",
-                "{\"value\":\"old\"}", "{\"value\":\"new\"}", "bug fix", "127.0.0.1");
+        auditLogService.record(
+                "u001",
+                "alice",
+                "CONFIG",
+                "c001",
+                "UPDATE",
+                "{\"value\":\"old\"}",
+                "{\"value\":\"new\"}",
+                "bug fix",
+                "127.0.0.1");
 
         Thread.sleep(500);
 
@@ -113,4 +143,3 @@ class AuditLogServiceIT {
                 .build();
     }
 }
-

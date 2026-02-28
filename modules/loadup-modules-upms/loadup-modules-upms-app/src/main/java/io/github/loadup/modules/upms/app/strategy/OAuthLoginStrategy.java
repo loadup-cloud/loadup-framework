@@ -23,27 +23,26 @@ package io.github.loadup.modules.upms.app.strategy;
  */
 
 import io.github.loadup.modules.upms.app.strategy.oauth.OAuthProvider;
-import io.github.loadup.modules.upms.domain.entity.User;
-import io.github.loadup.modules.upms.domain.entity.UserOAuthBinding;
-import io.github.loadup.modules.upms.domain.gateway.UserGateway;
-import io.github.loadup.modules.upms.domain.gateway.UserOAuthBindingGateway;
 import io.github.loadup.modules.upms.client.constant.LoginType;
 import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
 import io.github.loadup.modules.upms.client.dto.LoginCredentials;
 import io.github.loadup.modules.upms.client.dto.OAuthToken;
 import io.github.loadup.modules.upms.client.dto.OAuthUserInfo;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-
+import io.github.loadup.modules.upms.domain.entity.User;
+import io.github.loadup.modules.upms.domain.entity.UserOAuthBinding;
+import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import io.github.loadup.modules.upms.domain.gateway.UserOAuthBindingGateway;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 /**
  * OAuth 登录策略
@@ -68,8 +67,7 @@ public class OAuthLoginStrategy implements LoginStrategy {
             List<OAuthProvider> providers,
             UserOAuthBindingGateway bindingGateway,
             UserGateway userGateway,
-            PasswordEncoder passwordEncoder
-    ) {
+            PasswordEncoder passwordEncoder) {
         this.bindingGateway = bindingGateway;
         this.userGateway = userGateway;
         this.passwordEncoder = passwordEncoder;
@@ -110,15 +108,13 @@ public class OAuthLoginStrategy implements LoginStrategy {
         OAuthUserInfo oauthUser = provider.getUserInfo(token.getAccessToken());
 
         // 5. 查询是否已绑定本地账号
-        Optional<UserOAuthBinding> binding = bindingGateway.findByProviderAndOpenId(
-                credentials.getProvider(),
-                oauthUser.getOpenId()
-        );
+        Optional<UserOAuthBinding> binding =
+                bindingGateway.findByProviderAndOpenId(credentials.getProvider(), oauthUser.getOpenId());
 
         if (binding.isPresent()) {
             // 已绑定：直接登录
-            User user = userGateway.findById(binding.get().getUserId())
-                    .orElseThrow(() -> new RuntimeException("关联用户不存在"));
+            User user =
+                    userGateway.findById(binding.get().getUserId()).orElseThrow(() -> new RuntimeException("关联用户不存在"));
 
             // 检查账号状态
             if (!user.isActive()) {
@@ -149,7 +145,7 @@ public class OAuthLoginStrategy implements LoginStrategy {
                     .avatar(oauthUser.getAvatar())
                     .email(newUser.getEmail())
                     .mobile(newUser.getMobile())
-                    .newUser(true)  // 标记为新用户，前端可引导完善信息
+                    .newUser(true) // 标记为新用户，前端可引导完善信息
                     .build();
         }
     }
@@ -159,7 +155,10 @@ public class OAuthLoginStrategy implements LoginStrategy {
      */
     private User autoRegisterUser(OAuthUserInfo oauthUser, String provider, OAuthToken token) {
         // 生成用户名（如 github_123456）
-        String username = provider + "_" + oauthUser.getOpenId().substring(0, Math.min(8, oauthUser.getOpenId().length()));
+        String username = provider + "_"
+                + oauthUser
+                        .getOpenId()
+                        .substring(0, Math.min(8, oauthUser.getOpenId().length()));
 
         // 确保用户名唯一
         int suffix = 1;
@@ -199,9 +198,7 @@ public class OAuthLoginStrategy implements LoginStrategy {
                 .avatar(oauthUser.getAvatar())
                 .accessToken(token.getAccessToken()) // TODO: 加密存储
                 .refreshToken(token.getRefreshToken())
-                .expiresAt(token.getExpiresIn() != null
-                        ? LocalDateTime.now().plusSeconds(token.getExpiresIn())
-                        : null)
+                .expiresAt(token.getExpiresIn() != null ? LocalDateTime.now().plusSeconds(token.getExpiresIn()) : null)
                 .boundAt(LocalDateTime.now())
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -213,4 +210,3 @@ public class OAuthLoginStrategy implements LoginStrategy {
         return user;
     }
 }
-

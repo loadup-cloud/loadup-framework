@@ -1,5 +1,27 @@
 package io.github.loadup.modules.config.app.service;
 
+/*-
+ * #%L
+ * Loadup Modules Config App
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import io.github.loadup.modules.config.client.command.ConfigItemCreateCommand;
 import io.github.loadup.modules.config.client.command.ConfigItemUpdateCommand;
 import io.github.loadup.modules.config.client.dto.ConfigItemDTO;
@@ -88,8 +110,7 @@ public class ConfigItemService {
 
     @Transactional(rollbackFor = Exception.class)
     public String create(@Valid ConfigItemCreateCommand cmd) {
-        Assert.isTrue(!gateway.existsByKey(cmd.getConfigKey()),
-                "Config key already exists: " + cmd.getConfigKey());
+        Assert.isTrue(!gateway.existsByKey(cmd.getConfigKey()), "Config key already exists: " + cmd.getConfigKey());
         ValueType.of(cmd.getValueType());
 
         LocalDateTime now = LocalDateTime.now();
@@ -105,7 +126,8 @@ public class ConfigItemService {
                 .systemDefined(false)
                 .sortOrder(cmd.getSortOrder() == null ? 0 : cmd.getSortOrder())
                 .enabled(true)
-                .createdAt(now).updatedAt(now)
+                .createdAt(now)
+                .updatedAt(now)
                 .build();
 
         gateway.save(item);
@@ -119,8 +141,7 @@ public class ConfigItemService {
     public void update(@Valid ConfigItemUpdateCommand cmd) {
         ConfigItem existing = gateway.findByKey(cmd.getConfigKey())
                 .orElseThrow(() -> new IllegalArgumentException("Config key not found: " + cmd.getConfigKey()));
-        Assert.isTrue(Boolean.TRUE.equals(existing.getEditable()),
-                "Config key is not editable: " + cmd.getConfigKey());
+        Assert.isTrue(Boolean.TRUE.equals(existing.getEditable()), "Config key is not editable: " + cmd.getConfigKey());
         String oldValue = existing.getConfigValue();
         existing.setConfigValue(cmd.getConfigValue());
         existing.setUpdatedAt(LocalDateTime.now());
@@ -135,8 +156,8 @@ public class ConfigItemService {
         Assert.hasText(configKey, "configKey must not be blank");
         ConfigItem existing = gateway.findByKey(configKey)
                 .orElseThrow(() -> new IllegalArgumentException("Config key not found: " + configKey));
-        Assert.isTrue(!Boolean.TRUE.equals(existing.getSystemDefined()),
-                "Cannot delete system-defined config: " + configKey);
+        Assert.isTrue(
+                !Boolean.TRUE.equals(existing.getSystemDefined()), "Cannot delete system-defined config: " + configKey);
         gateway.deleteByKey(configKey);
         recordHistory(configKey, existing.getConfigValue(), null, ChangeType.DELETE);
         publishEvent(configKey, null, ChangeType.DELETE);
@@ -164,8 +185,7 @@ public class ConfigItemService {
     }
 
     private void publishEvent(String configKey, String newValue, ChangeType changeType) {
-        eventPublisher.publishEvent(
-                new ConfigChangedEvent(this, configKey, newValue, changeType, "system"));
+        eventPublisher.publishEvent(new ConfigChangedEvent(this, configKey, newValue, changeType, "system"));
     }
 
     /* ───────────── Converter ───────────── */

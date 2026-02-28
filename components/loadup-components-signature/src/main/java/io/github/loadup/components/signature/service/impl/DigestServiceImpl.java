@@ -1,15 +1,36 @@
 package io.github.loadup.components.signature.service.impl;
 
+/*-
+ * #%L
+ * LoadUp Components :: Signature
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import io.github.loadup.components.signature.enums.DigestAlgorithm;
 import io.github.loadup.components.signature.exception.SignatureException;
 import io.github.loadup.components.signature.service.DigestService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 /**
  * 摘要服务实现
@@ -24,9 +45,7 @@ public class DigestServiceImpl implements DigestService {
     public String digest(byte[] data, DigestAlgorithm algorithm) {
         if (algorithm.isHmac()) {
             throw new SignatureException(
-                    SignatureException.SignatureErrorCode.INVALID_ALGORITHM,
-                    "HMAC 算法需要使用 hmac() 方法"
-            );
+                    SignatureException.SignatureErrorCode.INVALID_ALGORITHM, "HMAC 算法需要使用 hmac() 方法");
         }
 
         try {
@@ -36,10 +55,7 @@ public class DigestServiceImpl implements DigestService {
         } catch (Exception e) {
             log.error("摘要计算失败: algorithm={}, error={}", algorithm, e.getMessage(), e);
             throw new SignatureException(
-                    SignatureException.SignatureErrorCode.DIGEST_FAILED,
-                    "摘要计算失败: " + e.getMessage(),
-                    e
-            );
+                    SignatureException.SignatureErrorCode.DIGEST_FAILED, "摘要计算失败: " + e.getMessage(), e);
         }
     }
 
@@ -53,9 +69,7 @@ public class DigestServiceImpl implements DigestService {
     public String hmac(byte[] data, byte[] key, DigestAlgorithm algorithm) {
         if (!algorithm.isHmac()) {
             throw new SignatureException(
-                    SignatureException.SignatureErrorCode.INVALID_ALGORITHM,
-                    "非 HMAC 算法需要使用 digest() 方法"
-            );
+                    SignatureException.SignatureErrorCode.INVALID_ALGORITHM, "非 HMAC 算法需要使用 digest() 方法");
         }
 
         try {
@@ -67,10 +81,7 @@ public class DigestServiceImpl implements DigestService {
         } catch (Exception e) {
             log.error("HMAC 计算失���: algorithm={}, error={}", algorithm, e.getMessage(), e);
             throw new SignatureException(
-                    SignatureException.SignatureErrorCode.DIGEST_FAILED,
-                    "HMAC 计算失败: " + e.getMessage(),
-                    e
-            );
+                    SignatureException.SignatureErrorCode.DIGEST_FAILED, "HMAC 计算失败: " + e.getMessage(), e);
         }
     }
 
@@ -96,4 +107,3 @@ public class DigestServiceImpl implements DigestService {
         return hexString.toString();
     }
 }
-

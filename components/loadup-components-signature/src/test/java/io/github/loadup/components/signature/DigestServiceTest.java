@@ -1,5 +1,30 @@
 package io.github.loadup.components.signature;
 
+/*-
+ * #%L
+ * LoadUp Components :: Signature
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import io.github.loadup.components.signature.enums.DigestAlgorithm;
 import io.github.loadup.components.signature.exception.SignatureException;
 import io.github.loadup.components.signature.service.DigestService;
@@ -8,9 +33,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * DigestService 测试
@@ -141,22 +163,18 @@ class DigestServiceTest {
     @DisplayName("使用 HMAC 算法调用 digest() 应抛出异常")
     void testDigestWithHmacAlgorithmShouldThrowException() {
         // when & then
-        assertThatThrownBy(() ->
-            digestService.digest("data", DigestAlgorithm.HMAC_SHA256)
-        )
-        .isInstanceOf(SignatureException.class)
-        .hasMessageContaining("HMAC 算法需要使用 hmac() 方法");
+        assertThatThrownBy(() -> digestService.digest("data", DigestAlgorithm.HMAC_SHA256))
+                .isInstanceOf(SignatureException.class)
+                .hasMessageContaining("HMAC 算法需要使用 hmac() 方法");
     }
 
     @Test
     @DisplayName("使用非 HMAC 算法调用 hmac() 应抛出异常")
     void testHmacWithNonHmacAlgorithmShouldThrowException() {
         // when & then
-        assertThatThrownBy(() ->
-            digestService.hmac("data".getBytes(), "key".getBytes(), DigestAlgorithm.SHA256)
-        )
-        .isInstanceOf(SignatureException.class)
-        .hasMessageContaining("非 HMAC 算法需要使用 digest() 方法");
+        assertThatThrownBy(() -> digestService.hmac("data".getBytes(), "key".getBytes(), DigestAlgorithm.SHA256))
+                .isInstanceOf(SignatureException.class)
+                .hasMessageContaining("非 HMAC 算法需要使用 digest() 方法");
     }
 
     @Test
@@ -174,4 +192,3 @@ class DigestServiceTest {
         assertThat(hash).isEqualTo("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
     }
 }
-

@@ -26,13 +26,13 @@ import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tabl
 
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import io.github.loadup.modules.upms.client.dto.AuthUserDTO;
+import io.github.loadup.modules.upms.client.gateway.AuthGateway;
 import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.infrastructure.converter.UserConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.UserDO;
 import io.github.loadup.modules.upms.infrastructure.mapper.UserDOMapper;
-import io.github.loadup.modules.upms.client.dto.AuthUserDTO;
-import io.github.loadup.modules.upms.client.gateway.AuthGateway;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;

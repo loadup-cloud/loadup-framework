@@ -26,13 +26,6 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.util.JwtUtils;
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
 import io.github.loadup.modules.upms.app.strategy.LoginStrategyManager;
-import io.github.loadup.modules.upms.domain.entity.LoginLog;
-import io.github.loadup.modules.upms.domain.entity.Role;
-import io.github.loadup.modules.upms.domain.entity.User;
-import io.github.loadup.modules.upms.domain.gateway.LoginLogGateway;
-import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
-import io.github.loadup.modules.upms.domain.gateway.UserGateway;
-import io.github.loadup.modules.upms.domain.service.UserPermissionService;
 import io.github.loadup.modules.upms.client.command.UserLoginCommand;
 import io.github.loadup.modules.upms.client.command.UserRegisterCommand;
 import io.github.loadup.modules.upms.client.constant.LoginType;
@@ -45,6 +38,13 @@ import io.github.loadup.modules.upms.client.dto.LoginCredentials;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
 import io.github.loadup.modules.upms.client.gateway.AuthGateway;
 import io.github.loadup.modules.upms.client.service.AuthenticationService;
+import io.github.loadup.modules.upms.domain.entity.LoginLog;
+import io.github.loadup.modules.upms.domain.entity.Role;
+import io.github.loadup.modules.upms.domain.entity.User;
+import io.github.loadup.modules.upms.domain.gateway.LoginLogGateway;
+import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
+import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import io.github.loadup.modules.upms.domain.service.UserPermissionService;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -87,21 +87,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             LoginCredentials credentials = buildLoginCredentials(command);
 
             // 2. 选择登录策略（如果未指定，默认为密码登录）
-            String loginType = StringUtils.isNotBlank(command.getLoginType())
-                    ? command.getLoginType()
-                    : LoginType.PASSWORD;
+            String loginType =
+                    StringUtils.isNotBlank(command.getLoginType()) ? command.getLoginType() : LoginType.PASSWORD;
 
             // 3. 执行认证
-            log.info("用户 {} 尝试使用 {} 方式登录",
+            log.info(
+                    "用户 {} 尝试使用 {} 方式登录",
                     credentials.getUsername() != null ? credentials.getUsername() : credentials.getMobile(),
                     loginType);
 
-            AuthenticatedUser authenticatedUser = loginStrategyManager
-                    .getStrategy(loginType)
-                    .authenticate(credentials);
+            AuthenticatedUser authenticatedUser =
+                    loginStrategyManager.getStrategy(loginType).authenticate(credentials);
 
             // 4. 查询完整用户信息
-            User user = userGateway.findById(authenticatedUser.getUserId())
+            User user = userGateway
+                    .findById(authenticatedUser.getUserId())
                     .orElseThrow(() -> new RuntimeException("用户不存在"));
 
             // 5. 生成 Token
@@ -114,7 +114,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         } catch (Exception e) {
             // 记录登录失败
-            recordLoginFailure(command, e.getMessage(),
+            recordLoginFailure(
+                    command,
+                    e.getMessage(),
                     StringUtils.isNotBlank(command.getLoginType()) ? command.getLoginType() : LoginType.PASSWORD);
             throw e;
         }
@@ -152,10 +154,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         long ttl = securityProperties.getJwt().getExpiration();
         String token = JwtUtils.createToken(
-                user.getId(),
-                claims,
-                securityProperties.getJwt().getSecret(),
-                ttl);
+                user.getId(), claims, securityProperties.getJwt().getSecret(), ttl);
 
         UserDetailDTO userInfo = buildUserInfo(user);
 

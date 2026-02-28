@@ -73,6 +73,19 @@
         <skip.spotless>true</skip.spotless>
         <mysql.version>9.5.0</mysql.version>
         <flyway.version>12.0.0</flyway.version>
+        <skip.spotless>false</skip.spotless>
+        <!-- 代码质量工具版本 -->
+        <spotbugs.version>4.8.6</spotbugs.version>
+        <spotbugs.plugin.version>4.8.6.4</spotbugs.plugin.version>
+        <pmd.plugin.version>3.24.0</pmd.plugin.version>
+        <checkstyle.plugin.version>3.5.0</checkstyle.plugin.version>
+        <owasp.dependency.check.version>10.0.4</owasp.dependency.check.version>
+        <archunit.version>1.3.0</archunit.version>
+        <!-- 质量检查跳过标志（CI 统一控制） -->
+        <skip.spotbugs>false</skip.spotbugs>
+        <skip.pmd>false</skip.pmd>
+        <skip.checkstyle>false</skip.checkstyle>
+        <skip.dependency.check>true</skip.dependency.check>
 
     </properties>
     <dependencyManagement>
@@ -433,6 +446,129 @@
                         </dependency>
                     </dependencies>
                 </plugin>
+
+                <!-- ===== 静态代码分析 ===== -->
+
+                <!-- SpotBugs: 字节码级 Bug 检测 -->
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>${spotbugs.plugin.version}</version>
+                    <configuration>
+                        <effort>Max</effort>
+                        <threshold>Medium</threshold>
+                        <failOnError>true</failOnError>
+                        <skip>${skip.spotbugs}</skip>
+                        <excludeFilterFile>${maven.multiModuleProjectDirectory}/config/quality/spotbugs-exclude.xml</excludeFilterFile>
+                        <plugins>
+                            <plugin>
+                                <groupId>com.h3xstream.findsecbugs</groupId>
+                                <artifactId>findsecbugs-plugin</artifactId>
+                                <version>1.13.0</version>
+                            </plugin>
+                        </plugins>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>spotbugs-check</id>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <phase>verify</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- PMD: 代码规范和潜在问题检测 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>${pmd.plugin.version}</version>
+                    <configuration>
+                        <targetJdk>${java.version}</targetJdk>
+                        <failOnViolation>true</failOnViolation>
+                        <printFailingErrors>true</printFailingErrors>
+                        <skip>${skip.pmd}</skip>
+                        <rulesets>
+                            <ruleset>${maven.multiModuleProjectDirectory}/config/quality/pmd-ruleset.xml</ruleset>
+                        </rulesets>
+                        <excludeRoots>
+                            <excludeRoot>target/generated-sources</excludeRoot>
+                        </excludeRoots>
+                        <!-- 排除 commons-api / commons-dto / commons-util 模块（框架 SPI 层 + DTO + 工具类，不适用业务代码规范） -->
+                        <excludes>
+                            <exclude>io/github/loadup/framework/api/**</exclude>
+                            <exclude>io/github/loadup/commons/result/**</exclude>
+                            <exclude>io/github/loadup/commons/request/**</exclude>
+                            <exclude>io/github/loadup/commons/dto/**</exclude>
+                            <exclude>io/github/loadup/commons/util/**</exclude>
+                        </excludes>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>pmd-check</id>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <phase>verify</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Checkstyle: 代码风格检查 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${checkstyle.plugin.version}</version>
+                    <configuration>
+                        <configLocation>${maven.multiModuleProjectDirectory}/config/quality/checkstyle.xml</configLocation>
+                        <suppressionsLocation>${maven.multiModuleProjectDirectory}/config/quality/checkstyle-suppressions.xml</suppressionsLocation>
+                        <failsOnError>true</failsOnError>
+                        <failOnViolation>true</failOnViolation>
+                        <violationSeverity>warning</violationSeverity>
+                        <skip>${skip.checkstyle}</skip>
+                        <includeTestSourceDirectory>false</includeTestSourceDirectory>
+                        <!-- 排除生成代码、commons-api / commons-dto / commons-util -->
+                        <excludes>**/generated/**,**/target/**,**/framework/api/**,**/commons/result/**,**/commons/request/**,**/commons/dto/**,**/commons/util/**</excludes>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>checkstyle-check</id>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <phase>verify</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- OWASP Dependency-Check: 安全漏洞扫描 -->
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>${owasp.dependency.check.version}</version>
+                    <configuration>
+                        <skip>${skip.dependency.check}</skip>
+                        <failBuildOnCVSS>7</failBuildOnCVSS>
+                        <suppressionFile>${maven.multiModuleProjectDirectory}/config/quality/owasp-suppressions.xml</suppressionFile>
+                        <formats>
+                            <format>HTML</format>
+                            <format>JSON</format>
+                        </formats>
+                        <outputDirectory>${project.build.directory}/dependency-check</outputDirectory>
+                        <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                        <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>dependency-check</id>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <phase>verify</phase>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -491,6 +627,30 @@
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
                 <inherited>true</inherited>
+            </plugin>
+
+            <!-- SpotBugs: 字节码级 Bug 检测 -->
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- PMD: 代码规范和潜在问题检测 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+            </plugin>
+
+            <!-- Checkstyle: 代码风格检查 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+
+            <!-- OWASP: 安全漏洞扫描（默认 skip=true，通过 -Dskip.dependency.check=false 或 security profile 激活） -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
             </plugin>
 
         </plugins>
@@ -572,6 +732,37 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+
+        <!--
+          研发阶段质量检查跳过 Profile
+          =====================================================================
+          用途：本地开发时跳过所有静态分析和格式检查，加快编译/测试反馈速度。
+          CI/CD 流水线中 **不得** 激活此 profile。
+
+          使用方式：
+            mvn verify -P dev
+            mvn clean install -P dev -DskipTests
+
+          跳过范围：
+            - Spotless  (代码格式检查)
+            - SpotBugs  (字节码 Bug 检测)
+            - PMD       (代码规范检查)
+            - Checkstyle(代码风格检查)
+            - OWASP     (安全漏洞扫描)
+            - License   (文件头检查)
+        -->
+        <profile>
+            <id>dev</id>
+            <properties>
+                <skip.spotless>true</skip.spotless>
+                <skip.spotbugs>true</skip.spotbugs>
+                <skip.pmd>true</skip.pmd>
+                <skip.checkstyle>true</skip.checkstyle>
+                <skip.dependency.check>true</skip.dependency.check>
+                <!-- 跳过 License 文件头检查 -->
+                <license.skip>true</license.skip>
+            </properties>
         </profile>
 
         <!-- Profiles that compute effective skip flags so the three input properties

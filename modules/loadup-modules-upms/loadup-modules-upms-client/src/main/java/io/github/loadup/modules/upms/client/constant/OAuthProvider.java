@@ -49,4 +49,3 @@ public final class OAuthProvider {
      */
     public static final String GOOGLE = "google";
 }
-

@@ -1,16 +1,36 @@
 package io.github.loadup.components.signature.example;
 
+/*-
+ * #%L
+ * LoadUp Components :: Signature
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import io.github.loadup.components.signature.enums.KeyAlgorithm;
 import io.github.loadup.components.signature.model.KeyPairInfo;
 import io.github.loadup.components.signature.service.KeyPairService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 密钥管理服务示例
@@ -46,10 +66,7 @@ public class KeyManagementServiceExample {
         log.info("为租户 {} 生成密钥对...", tenantId);
 
         // 1. 生成密钥对
-        KeyPairInfo keyPair = keyPairService.generateKeyPair(
-                KeyAlgorithm.RSA,
-                2048
-        );
+        KeyPairInfo keyPair = keyPairService.generateKeyPair(KeyAlgorithm.RSA, 2048);
 
         // 2. 加密私钥
         String encryptedPrivateKey = encryptPrivateKey(keyPair.getPrivateKey());
@@ -243,4 +260,3 @@ public class KeyManagementServiceExample {
 //     void archiveOldKeys(String tenantId, int currentVersion);
 //     List<KeyEntity> findKeysOlderThan(int days);
 // }
-

@@ -1,5 +1,27 @@
 package io.github.loadup.modules.log.app.service;
 
+/*-
+ * #%L
+ * Loadup Modules Log App
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import io.github.loadup.modules.log.client.dto.ErrorLogDTO;
 import io.github.loadup.modules.log.client.query.ErrorLogQuery;
 import io.github.loadup.modules.log.domain.gateway.ErrorLogGateway;
@@ -31,19 +53,29 @@ public class ErrorLogService {
         Assert.notNull(query, "query must not be null");
         int pageNum = query.getPageNum() == null ? 1 : query.getPageNum();
         int pageSize = query.getPageSize() == null ? 20 : Math.min(query.getPageSize(), 200);
-        return gateway.findByCondition(
-                        query.getUserId(), query.getErrorType(), query.getErrorCode(),
-                        query.getStartTime(), query.getEndTime(),
-                        pageNum, pageSize)
-                .stream().map(this::toDTO).toList();
+        return gateway
+                .findByCondition(
+                        query.getUserId(),
+                        query.getErrorType(),
+                        query.getErrorCode(),
+                        query.getStartTime(),
+                        query.getEndTime(),
+                        pageNum,
+                        pageSize)
+                .stream()
+                .map(this::toDTO)
+                .toList();
     }
 
     /** Count error logs by condition. */
     public long countByCondition(ErrorLogQuery query) {
         Assert.notNull(query, "query must not be null");
         return gateway.countByCondition(
-                query.getUserId(), query.getErrorType(), query.getErrorCode(),
-                query.getStartTime(), query.getEndTime());
+                query.getUserId(),
+                query.getErrorType(),
+                query.getErrorCode(),
+                query.getStartTime(),
+                query.getEndTime());
     }
 
     /**
@@ -57,8 +89,15 @@ public class ErrorLogService {
      * @param requestMethod HTTP method (nullable)
      * @param ip client IP (nullable)
      */
-    public void record(String userId, String errorType, String errorCode, String errorMessage,
-            String stackTrace, String requestUrl, String requestMethod, String ip) {
+    public void record(
+            String userId,
+            String errorType,
+            String errorCode,
+            String errorMessage,
+            String stackTrace,
+            String requestUrl,
+            String requestMethod,
+            String ip) {
         Assert.hasText(errorMessage, "errorMessage must not be blank");
         ErrorLog record = ErrorLog.builder()
                 .id(UUID.randomUUID().toString().replace("-", ""))
@@ -79,11 +118,17 @@ public class ErrorLogService {
     /**
      * Record an exception directly, extracting type, message and stack trace automatically.
      */
-    public void recordException(String userId, Throwable ex, String requestUrl,
-            String requestMethod, String ip) {
+    public void recordException(String userId, Throwable ex, String requestUrl, String requestMethod, String ip) {
         String stackTrace = buildStackTrace(ex);
-        record(userId, "SYSTEM", ex.getClass().getSimpleName(),
-                ex.getMessage(), stackTrace, requestUrl, requestMethod, ip);
+        record(
+                userId,
+                "SYSTEM",
+                ex.getClass().getSimpleName(),
+                ex.getMessage(),
+                stackTrace,
+                requestUrl,
+                requestMethod,
+                ip);
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────
@@ -123,4 +168,3 @@ public class ErrorLogService {
         return dto;
     }
 }
-

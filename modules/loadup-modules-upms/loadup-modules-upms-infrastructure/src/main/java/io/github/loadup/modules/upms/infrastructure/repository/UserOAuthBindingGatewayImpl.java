@@ -31,15 +31,13 @@ import io.github.loadup.modules.upms.domain.gateway.UserOAuthBindingGateway;
 import io.github.loadup.modules.upms.infrastructure.converter.UserOAuthBindingConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.UserOAuthBindingDO;
 import io.github.loadup.modules.upms.infrastructure.mapper.UserOAuthBindingDOMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /**
  * 用户OAuth绑定 Gateway 实现
@@ -69,26 +67,24 @@ public class UserOAuthBindingGatewayImpl implements UserOAuthBindingGateway {
 
     @Override
     public Optional<UserOAuthBinding> findByProviderAndOpenId(String provider, String openId) {
-        UserOAuthBindingDO dataObject = mapper.selectOneByQuery(
-                QueryWrapper.create()
-                        .where(USER_OAUTH_BINDING_DO.PROVIDER.eq(provider))
-                        .and(USER_OAUTH_BINDING_DO.OPEN_ID.eq(openId)));
+        UserOAuthBindingDO dataObject = mapper.selectOneByQuery(QueryWrapper.create()
+                .where(USER_OAUTH_BINDING_DO.PROVIDER.eq(provider))
+                .and(USER_OAUTH_BINDING_DO.OPEN_ID.eq(openId)));
         return Optional.ofNullable(converter.toEntity(dataObject));
     }
 
     @Override
     public List<UserOAuthBinding> findByUserId(String userId) {
-        return mapper.selectListByQuery(
-                QueryWrapper.create().where(USER_OAUTH_BINDING_DO.USER_ID.eq(userId)))
-                .stream().map(converter::toEntity).collect(Collectors.toList());
+        return mapper.selectListByQuery(QueryWrapper.create().where(USER_OAUTH_BINDING_DO.USER_ID.eq(userId))).stream()
+                .map(converter::toEntity)
+                .collect(Collectors.toList());
     }
 
     @Override
     public Optional<UserOAuthBinding> findByUserIdAndProvider(String userId, String provider) {
-        UserOAuthBindingDO dataObject = mapper.selectOneByQuery(
-                QueryWrapper.create()
-                        .where(USER_OAUTH_BINDING_DO.USER_ID.eq(userId))
-                        .and(USER_OAUTH_BINDING_DO.PROVIDER.eq(provider)));
+        UserOAuthBindingDO dataObject = mapper.selectOneByQuery(QueryWrapper.create()
+                .where(USER_OAUTH_BINDING_DO.USER_ID.eq(userId))
+                .and(USER_OAUTH_BINDING_DO.PROVIDER.eq(provider)));
         return Optional.ofNullable(converter.toEntity(dataObject));
     }
 
@@ -104,4 +100,3 @@ public class UserOAuthBindingGatewayImpl implements UserOAuthBindingGateway {
                 .and(USER_OAUTH_BINDING_DO.PROVIDER.eq(provider)));
     }
 }
-
