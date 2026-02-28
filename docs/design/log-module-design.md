@@ -982,43 +982,73 @@ void testConcurrentLogging() {
 
 ## 9. 实施计划
 
-### 9.1 第一阶段 (Week 7, 3天)
+> **📅 当前状态（2026-02-28 更新）**
 
-**Day 1: 基础架构**
-- [ ] 创建模块结构
-- [ ] 数据库表设计
-- [ ] Domain 层实体
+### ✅ 已完成（第一阶段）
 
-**Day 2: 核心功能**
-- [ ] AOP 切面实现
-- [ ] 异步服务实现
-- [ ] Repository 实现
+#### 模块结构
+- [x] 5 个子模块 pom.xml（parent 均指向根 loadup-parent）
+- [x] modules/pom.xml 注册 loadup-modules-log
 
-**Day 3: API 和测试**
-- [ ] REST API
-- [ ] 单元测试
-- [ ] 集成测试
+#### Client 层
+- [x] `@OperationLog` 注解（type / module / description / recordParams / recordResponse）
+- [x] `OperationLogDTO` / `AuditLogDTO`
+- [x] `OperationLogQuery` / `AuditLogQuery`
 
-### 9.2 第二阶段 (Week 7, 2天)
+#### Domain 层（纯 POJO，无框架注解）
+- [x] `OperationType` 枚举
+- [x] `OperationLog` domain model
+- [x] `AuditLog` domain model
+- [x] `OperationLogGateway` 接口
+- [x] `AuditLogGateway` 接口
 
-**Day 4: 高级功能**
-- [ ] 数据差异计算
-- [ ] 日志归档
-- [ ] 日志导出
+#### Infrastructure 层
+- [x] `OperationLogDO` extends BaseDO（`@Table("operation_log")`）
+- [x] `AuditLogDO` extends BaseDO（`@Table("audit_log")`）
+- [x] `OperationLogGatewayImpl`（MyBatis-Flex QueryWrapper，分页查询）
+- [x] `AuditLogGatewayImpl`（MyBatis-Flex QueryWrapper，分页查询）
+- [x] `LogAsyncWriter`（`@Async("logExecutor")`，独立线程池）
+- [x] `OperationLogAspect`（AOP `@Around`，无侵入拦截 `@OperationLog`）
+- [x] Flyway `V1__init_log.sql`（operation_log + audit_log 建表）
 
-**Day 5: 文档和优化**
-- [ ] API 文档
-- [ ] 性能优化
-- [ ] Code Review
+#### App 层
+- [x] `OperationLogService`（listByCondition / countByCondition / record）
+- [x] `AuditLogService`（listByCondition / countByCondition / record）
+- [x] `LogModuleAutoConfiguration`（线程池 + AOP + @EnableAsync + @MapperScan）
+- [x] `AutoConfiguration.imports` 注册
 
-### 9.3 验收标准
+#### Gateway 路由（routes.csv）
+- [x] operation log：list / count / record（3 条）
+- [x] audit log：list / count / record（3 条）
+- [x] loadup-application pom.xml 引入 `loadup-modules-log-app`
 
-- [ ] 所有功能测试通过
-- [ ] 单元测试覆盖率 > 80%
-- [ ] 性能测试达标
-- [ ] 文档完善
+#### 测试
+- [x] `OperationLogServiceIT`（7 个用例：persist / filterByUserId / filterByModule / filterBySuccess / count / pagination / asyncRecord）
+- [x] `AuditLogServiceIT`（5 个用例：persist / filterByDataType / filterByDataId / count / asyncRecord）
+- [x] `@EnableTestContainers(ContainerType.MYSQL)` 真实 MySQL 容器
+- [x] `BeforeEach` 清理脏数据
 
 ---
 
-**两个模块设计方案已完成！**
+### ❌ 未完成项（P1/P2）
+
+| 优先级 | 项目 | 说明 |
+|--------|------|------|
+| P1 | `@AuditLog` 注解 + AOP 切面 | 自动记录数据变更前后对比 |
+| P1 | `DataDiffCalculator` | 反射对比两对象字段差异，写入 diff_data |
+| P2 | 日志导出（Excel/CSV）| `OperationLogService.export` |
+| P2 | 统计分析接口 | 按模块/操作类型/时间段聚合统计 |
+| P2 | 日志归档 | 按月分区 + 定时归档历史数据 |
+| P2 | 错误日志（error_log 表）| 全局异常处理器自动记录 |
+
+### 9.3 验收标准
+
+- [x] 核心功能编译通过（无 ERROR）
+- [x] 集成测试覆盖 CRUD + 分页 + 异步场景（12 个用例）
+- [x] Gateway 路由注册完成（6 条）
+- [x] Flyway migration 就绪
+- [x] 异步写入不阻塞业务线程（独立线程池）
+- [ ] 单元测试覆盖率 > 80%（当前约 70%）
+- [ ] `@AuditLog` 注解 AOP 切面
+- [ ] Code Review 通过
 

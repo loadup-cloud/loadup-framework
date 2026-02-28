@@ -23,3 +23,11 @@ path,method,target,securityCode,requestTemplate,responseTemplate,enabled,propert
 /api/v1/dict/type/delete,POST,bean://dictService:deleteType,default,,,true,
 /api/v1/dict/item/create,POST,bean://dictService:createItem,default,,,true,
 /api/v1/dict/item/delete,POST,bean://dictService:deleteItem,default,,,true,
+# Log Module - Operation Log
+/api/v1/log/operation/list,POST,bean://operationLogService:listByCondition,default,,,true,
+/api/v1/log/operation/count,POST,bean://operationLogService:countByCondition,default,,,true,
+/api/v1/log/operation/record,POST,bean://operationLogService:record,default,,,true,
+# Log Module - Audit Log
+/api/v1/log/audit/list,POST,bean://auditLogService:listByCondition,default,,,true,
+/api/v1/log/audit/count,POST,bean://auditLogService:countByCondition,default,,,true,
+/api/v1/log/audit/record,POST,bean://auditLogService:record,default,,,true,

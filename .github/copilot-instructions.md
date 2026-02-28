@@ -587,12 +587,75 @@ class {Entity}ServiceTest {
 <!-- modules/loadup-modules-xxx/pom.xml -->
 <parent>
     <groupId>io.github.loadup-cloud</groupId>
-    <artifactId>modules</artifactId>      <!-- 或 loadup-parent，视情况 -->
     <artifactId>loadup-parent</artifactId>
     <version>0.0.2-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
 </parent>
 ```
+
+---
+
+### 13.2 loadup-dependencies 版本管理规范 🚫
+
+**所有模块（含 commons / components / modules / middleware 下的所有子模块）的版本管理必须统一在 `loadup-dependencies/pom.xml` 的 `<dependencyManagement>` 中声明。**
+
+#### 规则
+
+1. **新建任何模块**，必须同步在 `loadup-dependencies/pom.xml` 的 `<dependencyManagement>` 中添加对应条目：
+
+```xml
+<!-- ========== loadup-modules-xxx start ==========-->
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-xxx</artifactId>
+    <version>${loadup.framework.version}</version>
+</dependency>
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-xxx-client</artifactId>
+    <version>${loadup.framework.version}</version>
+</dependency>
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-xxx-domain</artifactId>
+    <version>${loadup.framework.version}</version>
+</dependency>
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-xxx-infrastructure</artifactId>
+    <version>${loadup.framework.version}</version>
+</dependency>
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-xxx-app</artifactId>
+    <version>${loadup.framework.version}</version>
+</dependency>
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-xxx-test</artifactId>
+    <version>${loadup.framework.version}</version>
+</dependency>
+<!-- ========== loadup-modules-xxx end ==========-->
+```
+
+2. **子模块 pom.xml 中引用同项目内其他模块时，不得写 `<version>`**，版本由 BOM 统一管理：
+
+```xml
+<!-- ✅ 正确：不写 version -->
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-config-domain</artifactId>
+</dependency>
+
+<!-- 🚫 禁止：手动写 version -->
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-config-domain</artifactId>
+    <version>${project.version}</version>
+</dependency>
+```
+
+3. **新增第三方依赖**也必须在 `loadup-dependencies/pom.xml` 中声明版本，子模块中不写 `<version>`。
 
 ---
 

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.loadup-cloud</groupId>
+        <artifactId>loadup-parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>loadup-modules-log</artifactId>
+    <packaging>pom</packaging>
+    <name>Loadup Modules Log</name>
+    <description>Log Center Module - Operation Log, Audit Log, Access Log, Error Log</description>
+
+    <modules>
+        <module>loadup-modules-log-client</module>
+        <module>loadup-modules-log-domain</module>
+        <module>loadup-modules-log-infrastructure</module>
+        <module>loadup-modules-log-app</module>
+        <module>loadup-modules-log-test</module>
+    </modules>
+
+</project>
+

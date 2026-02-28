@@ -429,6 +429,65 @@ class {Entity}ServiceTest {
 
 ---
 
+## loadup-dependencies 版本管理规范 🚫
+
+**所有项目内模块的版本管理必须统一在 `loadup-dependencies/pom.xml` 的 `<dependencyManagement>` 中声明。**
+
+### 规则
+
+1. **新建任何模块**，必须同步在 `loadup-dependencies/pom.xml` 的 `<dependencyManagement>` 中添加全部子模块条目：
+
+```xml
+<!-- ========== loadup-modules-xxx start ==========-->
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-xxx-client</artifactId>
+    <version>${loadup.framework.version}</version>
+</dependency>
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-xxx-domain</artifactId>
+    <version>${loadup.framework.version}</version>
+</dependency>
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-xxx-infrastructure</artifactId>
+    <version>${loadup.framework.version}</version>
+</dependency>
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-xxx-app</artifactId>
+    <version>${loadup.framework.version}</version>
+</dependency>
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-xxx-test</artifactId>
+    <version>${loadup.framework.version}</version>
+</dependency>
+<!-- ========== loadup-modules-xxx end ==========-->
+```
+
+2. **子模块 pom.xml 中引用同项目内其他模块时，不得写 `<version>`**：
+
+```xml
+<!-- ✅ 正确：版本由 BOM 管理 -->
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-config-domain</artifactId>
+</dependency>
+
+<!-- 🚫 禁止：手动写 version -->
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-modules-config-domain</artifactId>
+    <version>${project.version}</version>
+</dependency>
+```
+
+3. **新增第三方依赖**也必须先在 `loadup-dependencies/pom.xml` 声明版本，子模块中不写 `<version>`。
+
+---
+
 ## 质量门
 
 - `mvn clean verify` 通过（含测试）

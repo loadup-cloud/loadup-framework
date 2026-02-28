@@ -14,6 +14,7 @@
     <modules>
         <module>loadup-modules-upms</module>
         <module>loadup-modules-config</module>
+        <module>loadup-modules-log</module>
     </modules>
 
     <properties>

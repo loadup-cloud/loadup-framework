@@ -34,6 +34,14 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-modules-config-app</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-modules-log-app</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-gateway-starter</artifactId>
         </dependency>
         <dependency>
