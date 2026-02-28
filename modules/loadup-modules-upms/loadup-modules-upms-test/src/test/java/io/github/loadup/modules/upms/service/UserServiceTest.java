@@ -24,8 +24,8 @@ package io.github.loadup.modules.upms.service;
 
 import io.github.loadup.modules.upms.TestApplication;
 import io.github.loadup.modules.upms.app.service.UserService;
+import io.github.loadup.modules.upms.client.command.UserCreateCommand;
 import io.github.loadup.testify.starter.base.TestifyBase;
-import io.github.loadup.upms.api.command.UserCreateCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testng.annotations.Test;

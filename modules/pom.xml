@@ -13,6 +13,7 @@
     <description>LoadUp Modules</description>
     <modules>
         <module>loadup-modules-upms</module>
+        <module>loadup-modules-config</module>
     </modules>
 
     <properties>

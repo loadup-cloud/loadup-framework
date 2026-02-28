@@ -22,12 +22,12 @@ package io.github.loadup.modules.upms.app.strategy;
  * #L%
  */
 
-import io.github.loadup.modules.upms.app.config.UpmsSecurityProperties;
+import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
 import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
-import io.github.loadup.upms.api.constant.LoginType;
-import io.github.loadup.upms.api.dto.AuthenticatedUser;
-import io.github.loadup.upms.api.dto.LoginCredentials;
+import io.github.loadup.modules.upms.client.constant.LoginType;
+import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
+import io.github.loadup.modules.upms.client.dto.LoginCredentials;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;

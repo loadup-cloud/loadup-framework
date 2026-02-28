@@ -68,21 +68,21 @@ public class UserOAuthBindingConverter {
             return null;
         }
 
-        return UserOAuthBindingDO.builder()
-                .id(entity.getId())
-                .userId(entity.getUserId())
-                .provider(entity.getProvider())
-                .openId(entity.getOpenId())
-                .unionId(entity.getUnionId())
-                .nickname(entity.getNickname())
-                .avatar(entity.getAvatar())
-                .accessToken(entity.getAccessToken())
-                .refreshToken(entity.getRefreshToken())
-                .expiresAt(entity.getExpiresAt())
-                .boundAt(entity.getBoundAt())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
-                .build();
+        UserOAuthBindingDO dataObject = new UserOAuthBindingDO();
+        dataObject.setId(entity.getId());
+        dataObject.setUserId(entity.getUserId());
+        dataObject.setProvider(entity.getProvider());
+        dataObject.setOpenId(entity.getOpenId());
+        dataObject.setUnionId(entity.getUnionId());
+        dataObject.setNickname(entity.getNickname());
+        dataObject.setAvatar(entity.getAvatar());
+        dataObject.setAccessToken(entity.getAccessToken());
+        dataObject.setRefreshToken(entity.getRefreshToken());
+        dataObject.setExpiresAt(entity.getExpiresAt());
+        dataObject.setBoundAt(entity.getBoundAt());
+        dataObject.setCreatedAt(entity.getCreatedAt());
+        dataObject.setUpdatedAt(entity.getUpdatedAt());
+        return dataObject;
     }
 }
 

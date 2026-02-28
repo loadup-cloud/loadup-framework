@@ -22,8 +22,8 @@ package io.github.loadup.modules.upms.app.strategy;
  * #L%
  */
 
-import io.github.loadup.upms.api.dto.AuthenticatedUser;
-import io.github.loadup.upms.api.dto.LoginCredentials;
+import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
+import io.github.loadup.modules.upms.client.dto.LoginCredentials;
 
 /**
  * 登录策略接口（SPI）

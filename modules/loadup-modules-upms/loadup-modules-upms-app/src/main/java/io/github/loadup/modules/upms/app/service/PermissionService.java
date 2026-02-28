@@ -24,9 +24,9 @@ package io.github.loadup.modules.upms.app.service;
 
 import io.github.loadup.modules.upms.domain.entity.Permission;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
-import io.github.loadup.upms.api.command.PermissionCreateCommand;
-import io.github.loadup.upms.api.command.PermissionUpdateCommand;
-import io.github.loadup.upms.api.dto.PermissionDTO;
+import io.github.loadup.modules.upms.client.command.PermissionCreateCommand;
+import io.github.loadup.modules.upms.client.command.PermissionUpdateCommand;
+import io.github.loadup.modules.upms.client.dto.PermissionDTO;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,1 +1,1 @@
-io.github.loadup.modules.upms.app.config.UpmsAutoConfiguration
+io.github.loadup.modules.upms.app.autoconfigure.UpmsAutoConfiguration

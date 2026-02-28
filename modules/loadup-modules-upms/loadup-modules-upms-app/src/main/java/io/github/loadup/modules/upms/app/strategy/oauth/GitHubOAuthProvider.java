@@ -24,10 +24,10 @@ package io.github.loadup.modules.upms.app.strategy.oauth;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.loadup.modules.upms.app.config.UpmsSecurityProperties;
-import io.github.loadup.upms.api.constant.OAuthProvider;
-import io.github.loadup.upms.api.dto.OAuthToken;
-import io.github.loadup.upms.api.dto.OAuthUserInfo;
+import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
+import io.github.loadup.modules.upms.client.constant.OAuthProvider;
+import io.github.loadup.modules.upms.client.dto.OAuthToken;
+import io.github.loadup.modules.upms.client.dto.OAuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

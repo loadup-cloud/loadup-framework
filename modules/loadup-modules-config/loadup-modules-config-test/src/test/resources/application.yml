@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    # Testcontainers will override these via spring.datasource.url etc.
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis-flex:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  global-config:
+    print-sql: true
+
+logging:
+  level:
+    io.github.loadup.modules.config: DEBUG
+    com.mybatisflex: DEBUG
+

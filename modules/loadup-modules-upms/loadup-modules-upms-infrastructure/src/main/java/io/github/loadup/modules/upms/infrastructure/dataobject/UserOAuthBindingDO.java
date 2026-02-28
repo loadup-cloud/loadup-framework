@@ -22,98 +22,35 @@ package io.github.loadup.modules.upms.infrastructure.dataobject;
  * #L%
  */
 
-import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.io.Serial;
-import java.io.Serializable;
+import io.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * 用户OAuth第三方账号绑定 Data Object
- *
- * @author LoadUp Framework
- * @since 1.0.0
  */
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Table("upms_user_oauth_binding")
-public class UserOAuthBindingDO implements Serializable {
+public class UserOAuthBindingDO extends BaseDO {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 主键ID
-     */
-    @Id(keyType = KeyType.None)
-    private String id;
-
-    /**
-     * 本地用户ID
-     */
     private String userId;
-
-    /**
-     * OAuth提供商：wechat | github | google
-     */
     private String provider;
-
-    /**
-     * 第三方平台用户唯一ID
-     */
     private String openId;
-
-    /**
-     * 联合ID（如微信UnionID）
-     */
     private String unionId;
-
-    /**
-     * 第三方昵称
-     */
     private String nickname;
-
-    /**
-     * 第三方头像
-     */
     private String avatar;
-
-    /**
-     * 访问令牌（加密存储）
-     */
+    /** 访问令牌（加密存储） */
     private String accessToken;
-
-    /**
-     * 刷新令牌（加密存储）
-     */
+    /** 刷新令牌（加密存储） */
     private String refreshToken;
-
-    /**
-     * 令牌过期时间
-     */
     private LocalDateTime expiresAt;
-
-    /**
-     * 绑定时间
-     */
     private LocalDateTime boundAt;
-
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createdAt;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updatedAt;
 }
 

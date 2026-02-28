@@ -25,8 +25,10 @@ package io.github.loadup.modules.upms.infrastructure.dataobject;
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * LoginLog Data Object
@@ -35,6 +37,8 @@ import lombok.EqualsAndHashCode;
  * @since 1.0.0
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Table("upms_login_log")
 public class LoginLogDO extends BaseDO {

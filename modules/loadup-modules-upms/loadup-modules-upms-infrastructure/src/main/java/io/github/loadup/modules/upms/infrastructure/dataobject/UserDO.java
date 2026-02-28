@@ -26,16 +26,17 @@ import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * User Data Object - Database mapping entity
- *
- * @author LoadUp Framework
- * @since 1.0.0
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Table("upms_user")
 public class UserDO extends BaseDO {

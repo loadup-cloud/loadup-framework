@@ -22,8 +22,8 @@ package io.github.loadup.modules.upms.app.strategy.oauth;
  * #L%
  */
 
-import io.github.loadup.upms.api.dto.OAuthToken;
-import io.github.loadup.upms.api.dto.OAuthUserInfo;
+import io.github.loadup.modules.upms.client.dto.OAuthToken;
+import io.github.loadup.modules.upms.client.dto.OAuthUserInfo;
 
 /**
  * OAuth Provider 接口

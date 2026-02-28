@@ -22,7 +22,7 @@ package io.github.loadup.modules.upms.app.dto;
  * #L%
  */
 
-import io.github.loadup.upms.api.dto.RoleDTO;
+import io.github.loadup.modules.upms.client.dto.RoleDTO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;

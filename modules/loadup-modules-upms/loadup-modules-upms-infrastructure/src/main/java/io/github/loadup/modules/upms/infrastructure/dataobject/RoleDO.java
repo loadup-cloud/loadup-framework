@@ -24,16 +24,17 @@ package io.github.loadup.modules.upms.infrastructure.dataobject;
 
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * Role Data Object
- *
- * @author LoadUp Framework
- * @since 1.0.0
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Table("upms_role")
 public class RoleDO extends BaseDO {

@@ -24,7 +24,7 @@ package io.github.loadup.modules.upms.app.service;
 
 import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
-import io.github.loadup.upms.api.command.UserPasswordResetCommand;
+import io.github.loadup.modules.upms.client.command.UserPasswordResetCommand;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

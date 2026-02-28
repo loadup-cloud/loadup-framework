@@ -1,71 +1,438 @@
 # LoadUp 项目 Cursor AI 规则
 
-本文档为 Cursor AI 在 loadup 项目（单仓库 Maven 多模块，基于 Spring Boot 3.4.3）中自动生成或修改代码时的行为规范与检查清单。
-
-简介
-- 项目类型：单仓库（monorepo）Maven 多模块项目
-- Spring Boot 版本：3.4.3
-- 代码包前缀：`io.github.loadup`
-- 核心模块（至少包含）：`dependencies`, `commons`, `components`, `modules`, `gateway`, `application`
-
-目标
-- 保持统一的代码风格与模块边界
-- 避免循环依赖、违反包设计或数据库约定
-- 生成的代码应可直接编译、并遵循现有模块的实现模式
+> 本文件是 `.cursor/rules/loadup.mdc` 的文档镜像版本，供开发者查阅。  
+> Cursor IDE 实际使用 `.cursor/rules/loadup.mdc`（包含 frontmatter）。  
+> **两份文件须保持同步。**
 
 ---
 
-## 项目结构规则
+## ⚡ 最高优先级（违反则立即提醒）
 
-1. 模块依赖关系（单向）：
-   - `commons` → `components` → `modules` → `application`
-   - `gateway` 独立（可依赖 `components` 与 `commons`），但不得被 `modules` 或 `application` 依赖为反向依赖
-2. 禁止循环依赖（任何模块之间都不得形成 A → B → ... → A 的路径）。在生成或修改代码时，始终检查 `pom.xml` 中的模块依赖和代码中的包引用，确保没有引入反向依赖。
-3. 代码包前缀必须为 `io.github.loadup`，子包按照模块名与功能划分（例如：`io.github.loadup.commons.util`，`io.github.loadup.gateway.starter`）。
+1. **🚫 不生成 License 文件头** — Java 文件不得包含 `/*- #%L ... #L% */` 块，CI 由 `license-maven-plugin` 统一插入（License: GPL-3.0）
+2. **🚫 不生成 Controller / adapter 层** — 通过 `bean://beanName:method` Gateway 协议直接调用 App Service
+3. **🚫 集成测试不用 `@MockBean`** — 使用 `@EnableTestContainers(ContainerType.MYSQL)` + `loadup-testify-spring-boot-starter`
+4. **🚫 不用 `@Autowired` 字段注入** — 全部使用 `@RequiredArgsConstructor` 构造器注入
+5. **🚫 不拼接 SQL 字符串** — 使用 MyBatis-Flex `QueryWrapper`
 
-检查要点：
-- 在引入依赖前，先查看根 `pom.xml` 和目标模块的 `pom.xml` 是否允许该依赖。
-- 若需要引用其他模块的类，优先考虑放入 `commons`（通用工具/DTO）或 `components`（可复用组件），避免直接跨越多个层级。
+---
+
+## 技术栈
+
+| 技术 | 选型 | 版本 |
+|------|------|------|
+| 语言 | Java | **21** |
+| 框架 | Spring Boot | **3.4.3** |
+| ORM | MyBatis-Flex | **1.11.5** |
+| 数据库 | MySQL | 8.0+ |
+| 本地缓存 | Caffeine | - |
+| 分布式缓存 | Redis (Redisson) | - |
+| 认证 | JWT | - |
+| 测试 | JUnit 5 + Testify + Testcontainers | - |
+| 格式化 | Spotless (Palantir Java Format) | - |
+| 构建 | Maven | 3.6+ |
+| License | **GPL-3.0** | - |
+
+> 新增第三方依赖必须在 `loadup-dependencies/pom.xml` 中声明。
+
+---
+
+## 项目结构（Monorepo）
+
+```
+loadup-parent/
+├── loadup-dependencies/        # BOM，统一依赖版本
+├── commons/
+│   ├── loadup-commons-api/     # 通用接口、常量
+│   ├── loadup-commons-dto/     # Result<T>、PageDTO
+│   └── loadup-commons-util/    # 工具类
+├── components/                 # 可复用技术组件（无业务逻辑）
+│   ├── loadup-components-authorization/   # @RequirePermission
+│   ├── loadup-components-cache/           # Caffeine/Redis binder
+│   ├── loadup-components-database/        # MyBatis-Flex 配置、多租户
+│   ├── loadup-components-dfs/             # 文件存储
+│   ├── loadup-components-flyway/
+│   ├── loadup-components-globalunique/    # 全局幂等
+│   ├── loadup-components-gotone/          # 消息通知 (Email/SMS/Push/Webhook)
+│   ├── loadup-components-retrytask/       # 重试任务
+│   ├── loadup-components-scheduler/
+│   ├── loadup-components-signature/       # RSA/DSA/MD5 签名
+│   ├── loadup-components-testcontainers/  # 测试容器
+│   └── loadup-components-tracer/          # OpenTelemetry
+├── middleware/
+│   ├── loadup-gateway/         # 自研 API 网关（Spring MVC，非 WebFlux）
+│   │   ├── loadup-gateway-facade/   # SPI、Model、配置属性
+│   │   ├── loadup-gateway-core/     # 路由解析、Action 责任链
+│   │   └── loadup-gateway-starter/
+│   └── loadup-testify/         # 集成测试脚手架
+├── modules/                    # 业务模块（COLA 4.0，无 adapter 层）
+│   ├── loadup-modules-upms/    # 用户权限管理
+│   └── loadup-modules-config/  # 配置管理（系统参数+数据字典）
+└── loadup-application/         # 启动器
+```
+
+---
+
+## 模块依赖规则（严格单向）
+
+```
+dependencies → commons → components → modules → application
+
+gateway  ← 依赖 commons/components，不被 modules/application 依赖
+testify  ← 仅 test scope
+
+modules 之间：禁止横向相互依赖
+```
+
+### 业务模块内部分层（无 adapter 层）
+
+```
+loadup-modules-{xxx}/
+├── -client/          对外 DTO + Command（可被其他模块引用）
+├── -domain/          纯 DDD 模型（POJO）+ Gateway 接口 + 枚举
+│                     ⚠️ 无 Spring 注解、无 @Table、无 ORM 依赖
+├── -infrastructure/  XxxDO extends BaseDO、Mapper、GatewayImpl、本地缓存
+├── -app/             @Service 业务编排 + AutoConfiguration
+└── -test/            集成+单元测试（parent 指向根 loadup-parent pom）
+```
+
+| 层 | 放什么 | 禁止 |
+|----|--------|------|
+| client | DTO、Command、Query | 业务逻辑、DB 注解 |
+| domain | POJO 模型、Gateway 接口、枚举 | `@Table`、`@Service`、任何框架注解 |
+| infrastructure | `XxxDO extends BaseDO`、Mapper、GatewayImpl、Cache | 业务逻辑 |
+| app | `@Service`、AutoConfiguration | 直接操作 DB（通过 Gateway） |
+
+---
+
+## Gateway 集成方式（取代 Controller）
+
+```yaml
+loadup:
+  gateway:
+    routes:
+      - path: /api/v1/config/list
+        method: POST
+        target: "bean://configItemService:listAll"
+        securityCode: "default"          # JWT 认证
+      - path: /api/v1/config/create
+        method: POST
+        target: "bean://configItemService:create"
+        securityCode: "default"
+      - path: /api/v1/public/dict
+        method: POST
+        target: "bean://dictService:getDictData"
+        securityCode: "OFF"              # 关闭认证
+```
+
+| securityCode | 含义 |
+|---|---|
+| `OFF` | 关闭所有安全校验 |
+| `default` | JWT Token 验证 |
+| `hmac` | HMAC 签名验签 |
+| 自定义 | 实现 `SecurityStrategy` SPI |
+
+---
+
+## 包命名规范
+
+业务模块根包：`io.github.loadup.modules.{mod}`
+
+| 子模块 | 层 | 包路径 |
+|--------|-----|--------|
+| `{mod}-client` | DTO | `io.github.loadup.modules.{mod}.client.dto` |
+| `{mod}-client` | Command | `io.github.loadup.modules.{mod}.client.command` |
+| `{mod}-client` | Query | `io.github.loadup.modules.{mod}.client.query` |
+| `{mod}-client` | Service接口 | `io.github.loadup.modules.{mod}.client.service` |
+| `{mod}-domain` | model（纯 POJO）| `io.github.loadup.modules.{mod}.domain.model` |
+| `{mod}-domain` | gateway 接口 | `io.github.loadup.modules.{mod}.domain.gateway` |
+| `{mod}-domain` | enums | `io.github.loadup.modules.{mod}.domain.enums` |
+| `{mod}-domain` | valueobject | `io.github.loadup.modules.{mod}.domain.valueobject` |
+| `{mod}-infrastructure` | DO 实体 | `io.github.loadup.modules.{mod}.infrastructure.dataobject` |
+| `{mod}-infrastructure` | Mapper（APT 生成）| `io.github.loadup.modules.{mod}.infrastructure.mapper` |
+| `{mod}-infrastructure` | Tables/TableDef（APT 生成）| `io.github.loadup.modules.{mod}.infrastructure.dataobject.table` |
+| `{mod}-infrastructure` | MapStruct Converter | `io.github.loadup.modules.{mod}.infrastructure.converter` |
+| `{mod}-infrastructure` | GatewayImpl | `io.github.loadup.modules.{mod}.infrastructure.repository` |
+| `{mod}-infrastructure` | 本地缓存 | `io.github.loadup.modules.{mod}.infrastructure.cache` |
+| `{mod}-app` | @Service 业务服务 | `io.github.loadup.modules.{mod}.app.service` |
+| `{mod}-app` | AutoConfiguration | `io.github.loadup.modules.{mod}.app.autoconfigure` |
 
 ---
 
 ## 命名规范
 
-- 实体（Entity）：`XxxEntity`（对应数据库表 `t_xxx`，参见数据库规范）
-- DTO：`XxxDTO` 或按场景区分 `XxxRequest` / `XxxResponse`
-- VO（视图对象）：`XxxVO`
-- Service 接口：`XxxService`
-- Service 实现：`XxxServiceImpl`
-- Mapper 接口（MyBatis Flex）：`XxxMapper`
-- Controller：`XxxController`
-
-示例：
-- 实体类：`UserEntity` 对应表 `t_user`
-- DTO：`UserDTO` 或 `UserCreateRequest` / `UserResponse`
-
----
-
-## 编码规范
-
-1. Lombok
-   - 优先使用 Lombok 注解以减少样板代码：@Data、@Builder、@AllArgsConstructor、@NoArgsConstructor 等。
-   - 对于需要不可变对象或特定构造逻辑的类，选择合适的 Lombok 注解组合并补充 JavaDoc。
-2. 日志
-   - 使用 `@Slf4j` 作为日志注入（非静态 Logger）。
-3. 异常处理
-   - 统一业务异常类型为 `BusinessException`（位于 `commons` 模块）；所有服务层抛出业务错误时使用该类型。
-   - 全局异常处理器为 `GlobalExceptionHandler`（通常位于 `application` 或 `commons` 的 starter 包），必须处理 `BusinessException` 与通用异常，返回统一 `Result<T>`。
-4. API 返回规范
-   - 控制器统一返回 `Result<T>`（包装成功/失败、错误码、消息与数据）。
-5. 参数校验
-   - 使用 `@Valid` 与 `jakarta.validation` 注解（如 `@NotNull`, `@NotBlank`, `@Size` 等）；Controller 层入参必须加 `@Valid` 并在 DTO 上声明约束。
-6. 并发与性能
-   - 对可能的并发数据结构或静态状态，显式说明线程安全性；优先使用线程安全集合或通过无状态服务/局部变量避免共享可变状态。
-
-约束：
-- 生成代码必须包含完整 import 语句（不要依赖 IDE 自动补全）。
-- 公共（public）方法必须带 JavaDoc，说明输入、返回值和异常。
+| 类型 | 规则 | 示例 |
+|------|------|------|
+| 数据库映射对象 | `XxxDO` | `ConfigItemDO` |
+| DTO（对外） | `XxxDTO` | `ConfigItemDTO` |
+| 创建命令 | `XxxCreateCommand` | `ConfigItemCreateCommand` |
+| 更新命令 | `XxxUpdateCommand` | `ConfigItemUpdateCommand` |
+| Gateway 接口 | `XxxGateway` | `ConfigItemGateway` |
+| Gateway 实现 | `XxxGatewayImpl` | `ConfigItemGatewayImpl` |
+| Mapper | `XxxMapper` | `ConfigItemMapper` |
+| Service（无 impl 分离）| `XxxService` | `ConfigItemService` |
+| 本地缓存 | `XxxLocalCache` | `ConfigLocalCache` |
+| AutoConfig | `XxxModuleAutoConfiguration` | `ConfigModuleAutoConfiguration` |
+| 集成测试 | `XxxServiceIT` | `ConfigItemServiceIT` |
+| 单元测试 | `XxxServiceTest` | `ConfigItemServiceTest` |
 
 ---
 
-... (truncated for brevity) ...
+## 代码模板
+
+### DO 实体（infrastructure 层，继承 BaseDO）
+
+> ⚠️ **DO 放 `infrastructure.dataobject` 包，domain 层只放纯 POJO + Gateway 接口，禁止 `@Table`。**
+> 所有 DO **必须继承 `BaseDO`**，使用 `@Data` + `@NoArgsConstructor` + `@AllArgsConstructor` + `@EqualsAndHashCode(callSuper = true)`。
+> **不使用 `@Builder` / `@SuperBuilder`**（MyBatis-Flex 通过反射填充，无需 builder）。
+> `BaseDO` 已提供 `id`、`createdAt`、`updatedAt`、`tenantId`、`deleted`，子类不得重复定义。
+
+```java
+package io.github.loadup.modules.{mod}.infrastructure.dataobject;
+
+import com.mybatisflex.annotation.Table;
+import io.github.loadup.commons.dataobject.BaseDO;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@Table("{table_name}")
+public class {Entity}DO extends BaseDO {
+
+    // 业务字段（id/createdAt/updatedAt/tenantId/deleted 已在 BaseDO 中，勿重复定义）
+    private String createdBy;
+    private String updatedBy;
+    // ... 其他业务字段
+}
+```
+
+### 对象转换（MapStruct）
+
+**DO ↔ domain model 转换必须使用 MapStruct**，禁止手写 setter 链或 builder 链。
+
+```java
+package io.github.loadup.modules.{mod}.infrastructure.converter;
+
+import io.github.loadup.modules.{mod}.infrastructure.dataobject.{Entity}DO;
+import io.github.loadup.modules.{mod}.model.{Entity};
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
+
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface {Entity}Converter {
+    {Entity} toModel({Entity}DO entity);
+    {Entity}DO toEntity({Entity} model);
+}
+```
+
+### Gateway 实现
+
+> **Mapper**：使用 APT 生成的 `{Entity}DOMapper`（`infrastructure.mapper` 包），不手写 Mapper。
+> **表字段引用**：统一通过 `Tables.{ENTITY}_DO` 静态导入，禁止直接用 `{Entity}DOTableDef.{ENTITY}_D_O`。
+
+```java
+package io.github.loadup.modules.{mod}.infrastructure.repository;
+
+import static io.github.loadup.modules.{mod}.infrastructure.dataobject.table.Tables.{ENTITY}_DO;
+
+import com.mybatisflex.core.query.QueryWrapper;
+import io.github.loadup.modules.{mod}.infrastructure.converter.{Entity}Converter;
+import io.github.loadup.modules.{mod}.infrastructure.mapper.{Entity}DOMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+@Repository
+@RequiredArgsConstructor
+public class {Entity}GatewayImpl implements {Entity}Gateway {
+
+    private final {Entity}DOMapper mapper;
+    private final {Entity}Converter converter;
+
+    @Override
+    public Optional<{Entity}> findById(String id) {
+        return Optional.ofNullable(
+                mapper.selectOneByQuery(QueryWrapper.create().where({ENTITY}_DO.ID.eq(id))))
+                .map(converter::toModel);
+    }
+    // ... 其他方法
+}
+```
+
+### App Service（被 Gateway 直接调用）
+
+```java
+package io.github.loadup.modules.{mod}.service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/** 通过 Gateway 路由暴露：bean://{entity}Service:method */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class {Entity}Service {
+
+    private final {Entity}Gateway gateway;
+    private final {Entity}Converter converter;
+
+    public List<{Entity}DTO> listAll() {
+        return gateway.findAll().stream().map(converter::toModel).toList();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public String create(@Valid {Entity}CreateCommand cmd) {
+        // 1. 校验  2. 构建 domain model（UUID id）  3. gateway.save  4. return id
+    }
+}
+```
+
+### AutoConfiguration
+
+```java
+package io.github.loadup.modules.{mod}.autoconfigure;
+
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+
+@AutoConfiguration
+@ComponentScan(basePackages = "io.github.loadup.modules.{mod}")
+@MapperScan("io.github.loadup.modules.{mod}.infrastructure.mapper")
+public class {Mod}ModuleAutoConfiguration {}
+```
+
+---
+
+## 测试模板
+
+### 集成测试（Testify + Testcontainers）
+
+```java
+@SpringBootTest
+@EnableTestContainers(ContainerType.MYSQL)          // 真实 MySQL 容器
+class {Entity}ServiceIT {
+
+    @Autowired private {Entity}Service service;
+
+    @BeforeEach void setUp() { /* 清数据 */ }
+
+    @Test
+    void create_shouldPersist_whenValidCommand() {
+        var cmd = new {Entity}CreateCommand();
+        String id = service.create(cmd);
+        assertThat(id).isNotBlank();
+    }
+}
+```
+
+### 单元测试（Mockito，无 DB）
+
+```java
+@ExtendWith(MockitoExtension.class)
+class {Entity}ServiceTest {
+    @Mock {Entity}Gateway gateway;
+    @InjectMocks {Entity}Service service;
+
+    @Test
+    void create_shouldThrow_whenKeyExists() {
+        when(gateway.existsByKey(any())).thenReturn(true);
+        assertThatThrownBy(() -> service.create(new {Entity}CreateCommand()))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+}
+```
+
+**test 模块 pom.xml 的 parent 指向根 `loadup-parent`，不是模块 pom：**
+
+```xml
+<parent>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-parent</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+    <relativePath>../../../pom.xml</relativePath>
+</parent>
+```
+
+---
+
+## 数据库规范
+
+- 主键：`VARCHAR(64)`，`UUID.randomUUID().toString().replace("-","")`
+- 表名：`snake_case`（不加 `t_` 前缀，如 `config_item`、`dict_type`）
+- 必备审计字段：`created_by`, `created_at`, `updated_by`, `updated_at`
+- 软删除（按需）：`deleted BOOLEAN NOT NULL DEFAULT FALSE`
+- 大表按月分区：`PARTITION BY RANGE (YEAR(created_at) * 100 + MONTH(created_at))`
+- Schema：模块根目录 `schema.sql`
+- Flyway：`src/main/resources/db/migration/V{n}__{desc}.sql`
+
+---
+
+## 安全规范
+
+- 密码字段 `@JsonIgnore`，DTO 不暴露
+- 日志不打印 Token / 密码 / 敏感字段
+- 权限校验：`@RequirePermission("module:action")`（`loadup-components-authorization`）
+- SQL 全部用 `QueryWrapper`
+
+---
+
+## 禁止项速查 🚫
+
+| 禁止行为 | 正确做法 |
+|---------|---------|
+| `/*- #%L ... #L% */` License 头 | 不写，CI 自动插入 |
+| `@RestController` / adapter 层 | Gateway `bean://` 路由 |
+| `@Autowired` 字段注入 | `@RequiredArgsConstructor` |
+| 集成测试用 `@MockBean` 替换 DB | `@EnableTestContainers(ContainerType.MYSQL)` |
+| 字符串拼接 SQL | `QueryWrapper` |
+| `SELECT *` | 显式列出字段 |
+| modules 间横向依赖 | 通过 client 模块共享 |
+| domain 层加 `@Service` / `@Table` 等框架注解 | domain 纯 POJO |
+| DO 直接 `implements Serializable` 而不继承 `BaseDO` | 继承 `BaseDO`，使用 `@SuperBuilder` |
+| DO 中重复定义 `id`/`createdAt`/`updatedAt` | 这些字段已在 `BaseDO` 中定义 |
+| DO 放在 domain 层 | DO 放在 infrastructure 层 |
+| 在 `XxxMapper` 中写额外方法 | 用 `QueryWrapper` 在 GatewayImpl 中操作，Mapper 只继承 `BaseMapper<XxxDO>` |
+| 日志打印密码/Token | 脱敏或不打印 |
+| 新依赖不在 `loadup-dependencies` 声明 | 先在 BOM 中声明 |
+| pom.xml `<parent>` 指向模块自身聚合 pom | 所有子模块 parent 统一指向根 `loadup-parent` |
+
+---
+
+## pom.xml parent 规范
+
+**所有子模块的 `<parent>` 必须统一指向根 `loadup-parent`**，`relativePath` 按子模块到根 `pom.xml` 的实际相对路径填写：
+
+```xml
+<parent>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-parent</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+    <relativePath>../../../pom.xml</relativePath>
+</parent>
+```
+
+| 子模块位置 | relativePath |
+|-----------|--------------|
+| `modules/loadup-modules-xxx/loadup-modules-xxx-{layer}/` | `../../../pom.xml` |
+| `commons/loadup-commons-xxx/` | `../../pom.xml` |
+| `components/loadup-components-xxx/` | `../../pom.xml` |
+| `middleware/loadup-gateway/loadup-gateway-xxx/` | `../../../pom.xml` |
+| `middleware/loadup-testify/loadup-testify-xxx/` | `../../../pom.xml` |
+
+聚合 pom（如 `modules/loadup-modules-xxx/pom.xml`）才指向其直接父层（`../../pom.xml`）。
+
+---
+
+## 质量门
+
+- `mvn clean verify` 通过（含测试）
+- 覆盖率 ≥ 80%（核心 Service）
+- `mvn spotless:check` 格式化通过
+- 无循环依赖（ArchUnit）
+- 无高危依赖漏洞（OWASP Dependency-Check）
