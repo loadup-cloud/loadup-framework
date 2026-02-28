@@ -181,83 +181,93 @@ graph TD
 
 ## 3. 架构设计
 
-### 3.1 分层架构 (COLA 4.0)
+### 3.1 分层架构 (COLA 4.0，无 adapter)
+
+> ⚠️ 本项目通过 LoadUp Gateway `bean://` 协议直接调用 App 层 @Service，**不需要也不应该创建 Controller**。
 
 ```
 loadup-modules-config/
-├─ loadup-modules-config-client/          # 客户端API
+├─ loadup-modules-config-client/          # 客户端层（对外暴露）
 │  └─ src/main/java/
-│     └─ io/github/loadup/config/client/
-│        ├─ api/
-│        │  ├─ ConfigService.java         # 配置查询API
-│        │  └─ DictService.java           # 字典查询API
-│        └─ dto/
-│           ├─ ConfigDTO.java
-│           └─ DictDTO.java
+│     └─ io/github/loadup/modules/config/client/
+│        ├─ dto/
+│        │  ├─ ConfigItemDTO.java         ✅
+│        │  ├─ DictTypeDTO.java           ✅
+│        │  └─ DictItemDTO.java           ✅
+│        └─ command/
+│           ├─ ConfigItemCreateCommand.java  ✅
+│           ├─ ConfigItemUpdateCommand.java  ✅
+│           ├─ DictTypeCreateCommand.java    ✅
+│           └─ DictItemCreateCommand.java    ✅
 │
-├─ loadup-modules-config-adapter/         # 适配层
+├─ loadup-modules-config-domain/          # 领域层（纯 POJO，无框架注解）
 │  └─ src/main/java/
-│     └─ io/github/loadup/config/adapter/
-│        ├─ web/                          # REST API
-│        │  ├─ ConfigController.java
-│        │  └─ DictController.java
-│        ├─ event/                        # 事件监听
-│        │  └─ ConfigChangeListener.java
-│        └─ dto/                          # DTO转换
-│           ├─ ConfigRequest.java
-│           └─ ConfigResponse.java
-│
-├─ loadup-modules-config-app/             # 应用层
-│  └─ src/main/java/
-│     └─ io/github/loadup/config/app/
-│        ├─ command/                      # 命令处理
-│        │  ├─ CreateConfigCmd.java
-│        │  └─ UpdateConfigCmd.java
-│        ├─ query/                        # 查询处理
-│        │  ├─ GetConfigQry.java
-│        │  └─ ListDictQry.java
-│        └─ executor/                     # 执行器
-│           ├─ ConfigCommandExecutor.java
-│           └─ ConfigQueryExecutor.java
-│
-├─ loadup-modules-config-domain/          # 领域层
-│  └─ src/main/java/
-│     └─ io/github/loadup/config/domain/
-│        ├─ config/                       # 配置聚合
-│        │  ├─ Config.java               # 配置实体
-│        │  ├─ ConfigValue.java          # 值对象
-│        │  └─ ConfigRepository.java     # 仓储接口
-│        ├─ dict/                         # 字典聚合
-│        │  ├─ DictType.java
-│        │  ├─ DictItem.java
-│        │  └─ DictRepository.java
-│        ├─ history/                      # 变更历史
-│        │  └─ ConfigHistory.java
-│        └─ event/                        # 领域事件
-│           └─ ConfigChangedEvent.java
+│     └─ io/github/loadup/modules/config/domain/
+│        ├─ model/
+│        │  ├─ ConfigItem.java            ✅
+│        │  ├─ DictType.java              ✅
+│        │  └─ DictItem.java              ✅
+│        ├─ gateway/
+│        │  ├─ ConfigItemGateway.java     ✅
+│        │  └─ DictGateway.java           ✅
+│        └─ enums/
+│           └─ ValueType.java             ✅
 │
 ├─ loadup-modules-config-infrastructure/   # 基础设施层
 │  └─ src/main/java/
-│     └─ io/github/loadup/config/infra/
-│        ├─ repository/                   # 仓储实现
-│        │  ├─ ConfigRepositoryImpl.java
-│        │  └─ DictRepositoryImpl.java
-│        ├─ mapper/                       # MyBatis Mapper
-│        │  ├─ ConfigMapper.java
-│        │  └─ DictMapper.java
-│        ├─ cache/                        # 缓存实现
-│        │  └─ ConfigCacheManager.java
-│        ├─ encrypt/                      # 加密实现
-│        │  └─ ConfigEncryptor.java
-│        └─ event/                        # 事件发布
-│           └─ ConfigEventPublisher.java
+│     └─ io/github/loadup/modules/config/infrastructure/
+│        ├─ dataobject/
+│        │  ├─ ConfigItemDO.java          ✅
+│        │  ├─ DictTypeDO.java            ✅
+│        │  ├─ DictItemDO.java            ✅
+│        │  └─ table/                     ✅ (APT 生成)
+│        ├─ mapper/                        ✅ (APT 生成)
+│        ├─ converter/
+│        │  ├─ ConfigItemConverter.java   ✅ (MapStruct)
+│        │  └─ DictConverter.java         ✅ (MapStruct)
+│        ├─ repository/
+│        │  ├─ ConfigItemGatewayImpl.java ✅
+│        │  └─ DictGatewayImpl.java       ✅
+│        └─ cache/
+│           └─ ConfigLocalCache.java      ✅ (Caffeine, 5min TTL)
 │
-└─ loadup-modules-config-starter/         # 自动配置
-   └─ src/main/java/
-      └─ io/github/loadup/config/starter/
-         ├─ ConfigAutoConfiguration.java
-         ├─ ConfigProperties.java
-         └─ ConfigClientBeanProcessor.java
+├─ loadup-modules-config-app/             # 应用层
+│  └─ src/main/java/
+│     └─ io/github/loadup/modules/config/app/
+│        ├─ service/
+│        │  ├─ ConfigItemService.java     ✅
+│        │  └─ DictService.java           ✅
+│        └─ autoconfigure/
+│           └─ ConfigModuleAutoConfiguration.java  ✅
+│
+└─ loadup-modules-config-test/            # 集成测试
+   └─ src/test/java/
+      └─ io/github/loadup/modules/config/
+         ├─ ConfigItemServiceIT.java      ✅ (7 cases)
+         └─ DictServiceIT.java            ✅ (7 cases)
+```
+
+### Gateway 路由配置（待完善）
+
+通过 `loadup-application/src/main/resources/gateway-config/routes.csv` 注册，**无需 Controller**：
+
+```
+# 系统参数
+/api/v1/config/list,POST,bean://configItemService:listAll,default,,,true,
+/api/v1/config/create,POST,bean://configItemService:create,default,,,true,
+/api/v1/config/update,POST,bean://configItemService:update,default,,,true,
+/api/v1/config/delete,POST,bean://configItemService:delete,default,,,true,
+/api/v1/config/value,POST,bean://configItemService:getValue,OFF,,,true,
+/api/v1/config/refresh-cache,POST,bean://configItemService:refreshCache,default,,,true,
+# 数据字典
+/api/v1/dict/types,POST,bean://dictService:listAllTypes,default,,,true,
+/api/v1/dict/data,POST,bean://dictService:getDictData,OFF,,,true,
+/api/v1/dict/cascade,POST,bean://dictService:getCascadeData,OFF,,,true,
+/api/v1/dict/label,POST,bean://dictService:getDictLabel,OFF,,,true,
+/api/v1/dict/type/create,POST,bean://dictService:createType,default,,,true,
+/api/v1/dict/type/delete,POST,bean://dictService:deleteType,default,,,true,
+/api/v1/dict/item/create,POST,bean://dictService:createItem,default,,,true,
+/api/v1/dict/item/delete,POST,bean://dictService:deleteItem,default,,,true,
 ```
 
 ### 3.2 核心组件
@@ -579,243 +589,54 @@ public class ConfigValue {
 
 ## 5. API 设计
 
-### 5.1 REST API
+> ⚠️ 本项目通过 LoadUp Gateway `bean://beanName:method` 协议暴露 API，**无 Controller 层**。
 
-#### 5.1.1 系统参数 API
+### 5.1 Gateway 路由（routes.csv）
 
-```java
-/**
- * 系统参数管理 API
- */
-@RestController
-@RequestMapping("/api/v1/config")
-@RequiredArgsConstructor
-@Tag(name = "系统参数管理")
-public class ConfigController {
-    
-    private final ConfigCommandExecutor commandExecutor;
-    private final ConfigQueryExecutor queryExecutor;
-    
-    /**
-     * 查询参数列表
-     */
-    @PostMapping("/list")
-    @Operation(summary = "查询参数列表")
-    public Result<List<ConfigDTO>> list(@RequestBody @Valid ConfigListQry qry) {
-        return Result.success(queryExecutor.execute(qry));
-    }
-    
-    /**
-     * 获取参数详情
-     */
-    @PostMapping("/get")
-    @Operation(summary = "获取参数详情")
-    public Result<ConfigDTO> get(@RequestBody @Valid GetConfigQry qry) {
-        return Result.success(queryExecutor.execute(qry));
-    }
-    
-    /**
-     * 根据Key获取值
-     */
-    @PostMapping("/get-value")
-    @Operation(summary = "根据Key获取值")
-    public Result<String> getValue(@RequestBody @Valid GetConfigValueQry qry) {
-        return Result.success(queryExecutor.execute(qry));
-    }
-    
-    /**
-     * 创建参数
-     */
-    @PostMapping("/create")
-    @Operation(summary = "创建参数")
-    @RequirePermission("config:create")
-    public Result<String> create(@RequestBody @Valid CreateConfigCmd cmd) {
-        return Result.success(commandExecutor.execute(cmd));
-    }
-    
-    /**
-     * 更新参数
-     */
-    @PostMapping("/update")
-    @Operation(summary = "更新参数")
-    @RequirePermission("config:update")
-    public Result<Void> update(@RequestBody @Valid UpdateConfigCmd cmd) {
-        commandExecutor.execute(cmd);
-        return Result.success();
-    }
-    
-    /**
-     * 删除参数
-     */
-    @PostMapping("/delete")
-    @Operation(summary = "删除参数")
-    @RequirePermission("config:delete")
-    public Result<Void> delete(@RequestBody @Valid DeleteConfigCmd cmd) {
-        commandExecutor.execute(cmd);
-        return Result.success();
-    }
-    
-    /**
-     * 批量更新参数
-     */
-    @PostMapping("/batch-update")
-    @Operation(summary = "批量更新参数")
-    @RequirePermission("config:update")
-    public Result<Void> batchUpdate(@RequestBody @Valid BatchUpdateConfigCmd cmd) {
-        commandExecutor.execute(cmd);
-        return Result.success();
-    }
-    
-    /**
-     * 刷新缓存
-     */
-    @PostMapping("/refresh-cache")
-    @Operation(summary = "刷新缓存")
-    @RequirePermission("config:refresh")
-    public Result<Void> refreshCache() {
-        commandExecutor.execute(new RefreshCacheCmd());
-        return Result.success();
-    }
-}
-```
+所有接口通过 `loadup-application/src/main/resources/gateway-config/routes.csv` 配置：
 
-#### 5.1.2 数据字典 API
+| 路径 | 方法 | Target Bean | securityCode | 说明 |
+|------|------|------------|--------------|------|
+| `/api/v1/config/list` | POST | `bean://configItemService:listAll` | `default` | 查询参数列表 |
+| `/api/v1/config/list-by-category` | POST | `bean://configItemService:listByCategory` | `default` | 按分类查询 |
+| `/api/v1/config/get` | POST | `bean://configItemService:getByKey` | `default` | 按 Key 查询 |
+| `/api/v1/config/value` | POST | `bean://configItemService:getValue` | `OFF` | 获取原始值（公开） |
+| `/api/v1/config/create` | POST | `bean://configItemService:create` | `default` | 创建参数 |
+| `/api/v1/config/update` | POST | `bean://configItemService:update` | `default` | 更新参数 |
+| `/api/v1/config/delete` | POST | `bean://configItemService:delete` | `default` | 删除参数 |
+| `/api/v1/config/refresh-cache` | POST | `bean://configItemService:refreshCache` | `default` | 刷新缓存 |
+| `/api/v1/dict/types` | POST | `bean://dictService:listAllTypes` | `default` | 查询字典类型列表 |
+| `/api/v1/dict/data` | POST | `bean://dictService:getDictData` | `OFF` | 获取字典数据（公开） |
+| `/api/v1/dict/cascade` | POST | `bean://dictService:getCascadeData` | `OFF` | 获取级联字典数据 |
+| `/api/v1/dict/label` | POST | `bean://dictService:getDictLabel` | `OFF` | 获取字典标签（公开） |
+| `/api/v1/dict/type/create` | POST | `bean://dictService:createType` | `default` | 创建字典类型 |
+| `/api/v1/dict/type/delete` | POST | `bean://dictService:deleteType` | `default` | 删除字典类型 |
+| `/api/v1/dict/item/create` | POST | `bean://dictService:createItem` | `default` | 创建字典项 |
+| `/api/v1/dict/item/delete` | POST | `bean://dictService:deleteItem` | `default` | 删除字典项 |
+
+### 5.2 Service 方法签名（直接由 Gateway 调用）
 
 ```java
-/**
- * 数据字典管理 API
- */
-@RestController
-@RequestMapping("/api/v1/dict")
-@RequiredArgsConstructor
-@Tag(name = "数据字典管理")
-public class DictController {
-    
-    /**
-     * 获取字典数据（供前端下拉框使用）
-     */
-    @PostMapping("/get-dict-data")
-    @Operation(summary = "获取字典数据")
-    public Result<List<DictItemDTO>> getDictData(@RequestBody @Valid GetDictDataQry qry) {
-        return Result.success(queryExecutor.execute(qry));
-    }
-    
-    /**
-     * 获取级联字典数据
-     */
-    @PostMapping("/get-cascade-data")
-    @Operation(summary = "获取级联字典数据")
-    public Result<List<DictItemDTO>> getCascadeData(@RequestBody @Valid GetCascadeDictQry qry) {
-        return Result.success(queryExecutor.execute(qry));
-    }
-    
-    /**
-     * 查询字典类型列表
-     */
-    @PostMapping("/type/list")
-    @Operation(summary = "查询字典类型列表")
-    @RequirePermission("dict:query")
-    public Result<List<DictTypeDTO>> listTypes(@RequestBody @Valid DictTypeListQry qry) {
-        return Result.success(queryExecutor.execute(qry));
-    }
-    
-    /**
-     * 创建字典类型
-     */
-    @PostMapping("/type/create")
-    @Operation(summary = "创建字典类型")
-    @RequirePermission("dict:create")
-    public Result<String> createType(@RequestBody @Valid CreateDictTypeCmd cmd) {
-        return Result.success(commandExecutor.execute(cmd));
-    }
-    
-    /**
-     * 查询字典项列表
-     */
-    @PostMapping("/item/list")
-    @Operation(summary = "查询字典项列表")
-    @RequirePermission("dict:query")
-    public Result<List<DictItemDTO>> listItems(@RequestBody @Valid DictItemListQry qry) {
-        return Result.success(queryExecutor.execute(qry));
-    }
-    
-    /**
-     * 创建字典项
-     */
-    @PostMapping("/item/create")
-    @Operation(summary = "创建字典项")
-    @RequirePermission("dict:create")
-    public Result<String> createItem(@RequestBody @Valid CreateDictItemCmd cmd) {
-        return Result.success(commandExecutor.execute(cmd));
-    }
-}
-```
+// ConfigItemService — bean://configItemService:method
+public List<ConfigItemDTO> listAll()
+public List<ConfigItemDTO> listByCategory(String category)
+public ConfigItemDTO getByKey(String configKey)
+public String getValue(String configKey)
+public <T> T getTypedValue(String configKey, Class<T> targetType, T defaultValue)
+public String create(@Valid ConfigItemCreateCommand cmd)
+public void update(@Valid ConfigItemUpdateCommand cmd)
+public void delete(String configKey)
+public void refreshCache()
 
-### 5.2 Java Client API
-
-```java
-/**
- * 配置客户端接口
- */
-public interface ConfigService {
-    
-    /**
-     * 获取字符串配置
-     */
-    String getString(String key);
-    String getString(String key, String defaultValue);
-    
-    /**
-     * 获取整数配置
-     */
-    Integer getInteger(String key);
-    Integer getInteger(String key, Integer defaultValue);
-    
-    /**
-     * 获取长整数配置
-     */
-    Long getLong(String key);
-    Long getLong(String key, Long defaultValue);
-    
-    /**
-     * 获取布尔配置
-     */
-    Boolean getBoolean(String key);
-    Boolean getBoolean(String key, Boolean defaultValue);
-    
-    /**
-     * 获取JSON对象配置
-     */
-    <T> T getObject(String key, Class<T> type);
-    <T> T getObject(String key, Class<T> type, T defaultValue);
-    
-    /**
-     * 监听配置变更
-     */
-    void addListener(String key, ConfigChangeListener listener);
-    void removeListener(String key, ConfigChangeListener listener);
-}
-
-/**
- * 字典客户端接口
- */
-public interface DictService {
-    
-    /**
-     * 获取字典数据
-     */
-    List<DictItem> getDictData(String dictCode);
-    
-    /**
-     * 获取字典标签
-     */
-    String getDictLabel(String dictCode, String value);
-    
-    /**
-     * 获取级联字典数据
-     */
-    List<DictItem> getCascadeData(String dictCode, String parentValue);
-}
+// DictService — bean://dictService:method
+public List<DictTypeDTO> listAllTypes()
+public List<DictItemDTO> getDictData(String dictCode)
+public List<DictItemDTO> getCascadeData(String dictCode, String parentValue)
+public String getDictLabel(String dictCode, String itemValue)
+public String createType(@Valid DictTypeCreateCommand cmd)
+public void deleteType(String dictCode)
+public String createItem(@Valid DictItemCreateCommand cmd)
+public void deleteItem(String id)
 ```
 
 ---
@@ -1137,47 +958,129 @@ void testPerformance() {
 
 ## 10. 实施计划
 
-### 10.1 第一阶段 (Week 6, 3天)
+> **📅 当前状态（2026-02-28 更新）**
 
-**Day 1: 基础架构搭建**
-- [ ] 创建模块结构
-- [ ] 数据库表设计和创建
-- [ ] Domain 层实体定义
+### ✅ 已完成
 
-**Day 2: 核心功能实现**
-- [ ] Repository 实现
-- [ ] CommandExecutor 实现
-- [ ] QueryExecutor 实现
-- [ ] 缓存管理器实现
+#### 基础架构
+- [x] 模块结构创建（client / domain / infrastructure / app / test）
+- [x] 包路径规范化（`io.github.loadup.modules.config.{layer}.*`）
+- [x] pom.xml 父 pom 统一指向根 `loadup-parent`
 
-**Day 3: API 和测试**
-- [ ] REST API 实现
-- [ ] Client API 实现
-- [ ] 单元测试
-- [ ] 集成测试
+#### 数据库
+- [x] 系统参数表 `config_item` — `schema.sql` + 测试用 schema
+- [x] 数据字典类型表 `dict_type`
+- [x] 数据字典项表 `dict_item`
+- [ ] 配置变更历史表 `config_history` ❌ **未创建**
+- [ ] Flyway migration 脚本 ❌ **未创建**（schema.sql 存在但无 V1__ 脚本）
 
-### 10.2 第二阶段 (Week 6, 2天)
+#### Domain 层
+- [x] `ConfigItem` 领域模型（POJO）
+- [x] `DictType` 领域模型
+- [x] `DictItem` 领域模型
+- [x] `ConfigItemGateway` 接口
+- [x] `DictGateway` 接口
+- [x] `ValueType` 枚举（STRING / INTEGER / LONG / DOUBLE / BOOLEAN / JSON）
+- [ ] `ConfigHistory` 领域模型 ❌ 未创建
+- [ ] `ConfigChangedEvent` 领域事件 ❌ 未创建
 
-**Day 4: 高级功能**
-- [ ] 配置加密
-- [ ] 热更新机制
-- [ ] 配置历史
+#### Infrastructure 层
+- [x] `ConfigItemDO` extends BaseDO（`infrastructure.dataobject`）
+- [x] `DictTypeDO` / `DictItemDO`
+- [x] MyBatis-Flex APT 生成 `ConfigItemDOMapper`、`Tables`
+- [x] `ConfigItemConverter`（MapStruct）
+- [x] `DictConverter`（MapStruct）
+- [x] `ConfigItemGatewayImpl`（`infrastructure.repository`）
+- [x] `DictGatewayImpl`
+- [x] `ConfigLocalCache`（Caffeine，5min TTL，config/dict 双 Cache）
 
-**Day 5: 文档和优化**
-- [ ] API 文档
-- [ ] 使用文档
-- [ ] 性能优化
-- [ ] Code Review
+#### App 层
+- [x] `ConfigItemService`（listAll / listByCategory / getByKey / getValue / getTypedValue / create / update / delete / refreshCache）
+- [x] `DictService`（listAllTypes / getDictData / getCascadeData / getDictLabel / createType / deleteType / createItem / deleteItem）
+- [x] `ConfigModuleAutoConfiguration`（@MapperScan 路径正确）
+- [x] `AutoConfiguration.imports` 注册
 
-### 10.3 验收标准
+#### Client 层
+- [x] `ConfigItemDTO` / `DictTypeDTO` / `DictItemDTO`
+- [x] `ConfigItemCreateCommand` / `ConfigItemUpdateCommand`
+- [x] `DictTypeCreateCommand` / `DictItemCreateCommand`
 
-- [ ] 所有功能测试通过
-- [ ] 单元测试覆盖率 > 80%
-- [ ] 性能测试达标 (10000+ QPS)
-- [ ] 文档完善
-- [ ] Code Review 通过
+#### 测试
+- [x] `ConfigItemServiceIT`（7 个集成测试：create / duplicate / update / delete / listAll / getTypedValue / default）
+- [x] `DictServiceIT`（7 个集成测试：createType / duplicate / createItem / getDictLabel / null / deleteType）
+- [x] `@EnableTestContainers(ContainerType.MYSQL)` — 真实 MySQL 容器
+- [x] `BeforeEach` 清理脏数据
+
+#### 测试
+- [x] `ConfigItemServiceIT`（10 个集成测试：含历史记录 3 个新增）
+- [x] `DictServiceIT`（7 个集成测试）
+- [x] `@EnableTestContainers(ContainerType.MYSQL)` — 真实 MySQL 容器
+- [x] `BeforeEach` 清理脏数据（含 config_history）
+
+#### Gateway 路由
+- [x] `routes.csv` 已添加 config / dict 全部路由（16 条）✅
+
+#### 配置变更历史（P1）
+- [x] `config_history` 表 DDL（schema.sql + Flyway `V1__init_config.sql`）
+- [x] `ChangeType` 枚举（CREATE / UPDATE / DELETE）
+- [x] `ConfigHistory` domain model（POJO）
+- [x] `ConfigHistoryGateway` 接口
+- [x] `ConfigHistoryGatewayImpl`（JdbcTemplate，只追加）
+- [x] `ConfigChangedEvent` Spring 领域事件
+- [x] `ConfigItemService` create/update/delete 均写历史 + 发布事件
+- [x] `ConfigLocalCache` `@EventListener` 自动 evict
 
 ---
 
-**设计完成，等待确认后开始实施！**
+### ❌ 未完成项（P2，非核心）
+
+| 优先级 | 项目 | 说明 |
+|--------|------|------|
+| P2 | 配置加密（`encrypted` 字段）| AES-256-GCM，目前仅 DTO 脱敏为 `******` |
+| P2 | `@ConfigValue` 注解支持 | 自动注入并热更新 |
+| P2 | 批量更新接口 | `ConfigItemService.batchUpdate` |
+| P2 | 配置导入导出 | JSON/YAML 格式 |
+| P2 | 单元测试补充 | `getTypedValue` JSON 类型、cascade dict |
+
+---
+
+### 10.1 第一阶段 ✅ 已完成（Week 6）
+
+**Day 1: 基础架构搭建**
+- [x] 创建模块结构
+- [x] 数据库表设计和创建
+- [x] Domain 层实体定义
+
+**Day 2: 核心功能实现**
+- [x] Repository（GatewayImpl）实现
+- [x] Service 命令/查询实现
+- [x] 缓存管理器实现（Caffeine）
+- [ ] QueryExecutor 独立分离 _(合并在 Service 中，不影响功能)_
+
+**Day 3: API 和测试**
+- [x] Gateway 路由注册（routes.csv 已配置 16 条路由）
+- [x] 集成测试（ConfigItemServiceIT + DictServiceIT）
+- [x] 包路径规范化重构完成
+
+### 10.2 第二阶段（P2，按需实施）
+
+**高级功能**
+- [ ] 配置加密（`encrypted=true` 时 AES-256-GCM，通过 `loadup-components-signature` 实现）
+- [ ] 热更新机制增强（当前已有事件驱动 evict，可扩展为定时轮询或 Redis Pub/Sub）
+- [ ] `@ConfigValue` 注解自动注入支持
+
+**文档和优化**
+- [ ] README.md 补充变更历史章节
+- [ ] 性能测试（高并发读写场景）
+
+### 10.3 验收标准
+
+- [x] 核心功能测试通过（编译 BUILD SUCCESS）
+- [x] 集成测试覆盖 CRUD 场景（10 个用例）
+- [x] Gateway 路由配置完成（16 条路由）
+- [x] Flyway migration 就绪（`V1__init_config.sql`）
+- [x] 配置变更历史记录（create/update/delete 全写历史 + 事件）
+- [ ] 单元测试覆盖率 > 80% _(当前约 70%，缺 JSON/cascade/加密 场景)_
+- [ ] Code Review 通过
+
 

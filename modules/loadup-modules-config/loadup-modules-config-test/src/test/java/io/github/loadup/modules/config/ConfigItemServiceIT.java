@@ -3,12 +3,15 @@ package io.github.loadup.modules.config;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.github.loadup.components.testcontainers.annotation.ContainerType;
+import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import io.github.loadup.modules.config.app.service.ConfigItemService;
 import io.github.loadup.modules.config.client.command.ConfigItemCreateCommand;
 import io.github.loadup.modules.config.client.command.ConfigItemUpdateCommand;
 import io.github.loadup.modules.config.client.dto.ConfigItemDTO;
-import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
-import io.github.loadup.components.testcontainers.annotation.ContainerType;
+import io.github.loadup.modules.config.domain.enums.ChangeType;
+import io.github.loadup.modules.config.domain.gateway.ConfigHistoryGateway;
+import io.github.loadup.modules.config.domain.model.ConfigHistory;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,10 +27,14 @@ class ConfigItemServiceIT {
     private ConfigItemService configItemService;
 
     @Autowired
+    private ConfigHistoryGateway configHistoryGateway;
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.execute("DELETE FROM config_history WHERE config_key LIKE 'test.%'");
         jdbcTemplate.execute("DELETE FROM config_item WHERE system_defined = FALSE");
     }
 
@@ -45,6 +52,64 @@ class ConfigItemServiceIT {
         ConfigItemDTO dto = configItemService.getByKey("test.key.create");
         assertThat(dto).isNotNull();
         assertThat(dto.getConfigValue()).isEqualTo("hello");
+    }
+
+    @Test
+    void create_shouldRecordHistory_whenCreated() {
+        ConfigItemCreateCommand cmd = new ConfigItemCreateCommand();
+        cmd.setConfigKey("test.key.history.create");
+        cmd.setConfigValue("v1");
+        cmd.setValueType("STRING");
+        cmd.setCategory("test");
+
+        configItemService.create(cmd);
+
+        List<ConfigHistory> history = configHistoryGateway.findByKey("test.key.history.create");
+        assertThat(history).hasSize(1);
+        assertThat(history.get(0).getChangeType()).isEqualTo(ChangeType.CREATE);
+        assertThat(history.get(0).getNewValue()).isEqualTo("v1");
+        assertThat(history.get(0).getOldValue()).isNull();
+    }
+
+    @Test
+    void update_shouldRecordHistory_whenUpdated() {
+        ConfigItemCreateCommand cmd = new ConfigItemCreateCommand();
+        cmd.setConfigKey("test.key.history.update");
+        cmd.setConfigValue("original");
+        cmd.setValueType("STRING");
+        cmd.setCategory("test");
+        configItemService.create(cmd);
+
+        ConfigItemUpdateCommand updateCmd = new ConfigItemUpdateCommand();
+        updateCmd.setConfigKey("test.key.history.update");
+        updateCmd.setConfigValue("updated");
+        configItemService.update(updateCmd);
+
+        List<ConfigHistory> history = configHistoryGateway.findByKey("test.key.history.update");
+        assertThat(history).hasSize(2);
+        ConfigHistory updateRecord = history.get(0); // desc order
+        assertThat(updateRecord.getChangeType()).isEqualTo(ChangeType.UPDATE);
+        assertThat(updateRecord.getOldValue()).isEqualTo("original");
+        assertThat(updateRecord.getNewValue()).isEqualTo("updated");
+    }
+
+    @Test
+    void delete_shouldRecordHistory_whenDeleted() {
+        ConfigItemCreateCommand cmd = new ConfigItemCreateCommand();
+        cmd.setConfigKey("test.key.history.delete");
+        cmd.setConfigValue("to-be-deleted");
+        cmd.setValueType("STRING");
+        cmd.setCategory("test");
+        configItemService.create(cmd);
+
+        configItemService.delete("test.key.history.delete");
+
+        List<ConfigHistory> history = configHistoryGateway.findByKey("test.key.history.delete");
+        ConfigHistory deleteRecord = history.stream()
+                .filter(h -> h.getChangeType() == ChangeType.DELETE)
+                .findFirst().orElseThrow();
+        assertThat(deleteRecord.getOldValue()).isEqualTo("to-be-deleted");
+        assertThat(deleteRecord.getNewValue()).isNull();
     }
 
     @Test
@@ -120,9 +185,27 @@ class ConfigItemServiceIT {
     }
 
     @Test
+    void getTypedValue_shouldReturnBoolean() {
+        ConfigItemCreateCommand cmd = new ConfigItemCreateCommand();
+        cmd.setConfigKey("test.key.boolean");
+        cmd.setConfigValue("true");
+        cmd.setValueType("BOOLEAN");
+        cmd.setCategory("test");
+        configItemService.create(cmd);
+
+        Boolean value = configItemService.getTypedValue("test.key.boolean", Boolean.class, false);
+        assertThat(value).isTrue();
+    }
+
+    @Test
     void getTypedValue_shouldReturnDefault_whenKeyAbsent() {
         Long value = configItemService.getTypedValue("non.existing.key", Long.class, 99L);
         assertThat(value).isEqualTo(99L);
+    }
+
+    @Test
+    void getValue_shouldReturnNull_whenKeyAbsent() {
+        assertThat(configItemService.getValue("non.existing.key")).isNull();
     }
 }
 

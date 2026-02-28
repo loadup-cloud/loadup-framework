@@ -15,12 +15,14 @@ package io.github.loadup.modules.config.infrastructure.cache;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import io.github.loadup.modules.config.domain.event.ConfigChangedEvent;
 import io.github.loadup.modules.config.domain.model.ConfigItem;
 import io.github.loadup.modules.config.domain.model.DictItem;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 /**
@@ -85,5 +87,19 @@ public class ConfigLocalCache {
     public void evictAllDicts() {
         dictCache.invalidateAll();
         log.info("Dict cache cleared");
+    }
+
+    /* ---------- event listener ---------- */
+
+    /**
+     * Automatically evicts the local cache entry when a config item changes.
+     *
+     * <p>Triggered by {@link ConfigChangedEvent} published from {@code ConfigItemService}.
+     */
+    @EventListener
+    public void onConfigChanged(ConfigChangedEvent event) {
+        evictConfig(event.getConfigKey());
+        log.info("Config cache auto-evicted via event: key={}, changeType={}",
+                event.getConfigKey(), event.getChangeType());
     }
 }

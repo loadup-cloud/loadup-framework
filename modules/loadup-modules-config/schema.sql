@@ -97,3 +97,18 @@ VALUES
     ('c02', 'upload.max-file-size',         '10485760',         'LONG',    'upload',   '文件上传大小限制(字节)', TRUE,  FALSE, TRUE),
     ('c03', 'security.password-expire-days','90',               'INTEGER', 'security', '密码过期天数',         TRUE,  FALSE, TRUE);
 
+-- -----------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS config_history (
+    id             VARCHAR(64)  NOT NULL                                COMMENT '主键',
+    config_key     VARCHAR(200) NOT NULL                                COMMENT '配置键',
+    old_value      TEXT                                                 COMMENT '变更前值',
+    new_value      TEXT                                                 COMMENT '变更后值',
+    change_type    VARCHAR(20)  NOT NULL                                COMMENT '变更类型: CREATE/UPDATE/DELETE',
+    operator       VARCHAR(64)  NOT NULL DEFAULT 'system'               COMMENT '操作人',
+    remark         VARCHAR(500)                                         COMMENT '备注',
+    created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP      COMMENT '操作时间',
+    PRIMARY KEY (id),
+    KEY idx_config_key     (config_key),
+    KEY idx_created_at     (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='配置变更历史表';

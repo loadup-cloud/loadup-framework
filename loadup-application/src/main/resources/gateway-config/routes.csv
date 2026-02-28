@@ -5,3 +5,21 @@ path,method,target,securityCode,requestTemplate,responseTemplate,enabled,propert
 /api/test/bean,POST,bean://testService:getData,OFF,test_request_template,test_response_template,true,timeout=30000;retryCount=3
 /api/test/rpc,POST,rpc://com.example.TestService:testMethod:1.0.0,internal,test_request_template,test_response_template,false,timeout=30000;retryCount=3
 /api/test/disabled,GET,http://localhost:8080/disabled,OFF,,,false,timeout=30000;retryCount=3
+# Config Module - System Parameters
+/api/v1/config/list,POST,bean://configItemService:listAll,default,,,true,
+/api/v1/config/list-by-category,POST,bean://configItemService:listByCategory,default,,,true,
+/api/v1/config/get,POST,bean://configItemService:getByKey,default,,,true,
+/api/v1/config/value,POST,bean://configItemService:getValue,OFF,,,true,
+/api/v1/config/create,POST,bean://configItemService:create,default,,,true,
+/api/v1/config/update,POST,bean://configItemService:update,default,,,true,
+/api/v1/config/delete,POST,bean://configItemService:delete,default,,,true,
+/api/v1/config/refresh-cache,POST,bean://configItemService:refreshCache,default,,,true,
+# Config Module - Data Dictionary
+/api/v1/dict/types,POST,bean://dictService:listAllTypes,default,,,true,
+/api/v1/dict/data,POST,bean://dictService:getDictData,OFF,,,true,
+/api/v1/dict/cascade,POST,bean://dictService:getCascadeData,OFF,,,true,
+/api/v1/dict/label,POST,bean://dictService:getDictLabel,OFF,,,true,
+/api/v1/dict/type/create,POST,bean://dictService:createType,default,,,true,
+/api/v1/dict/type/delete,POST,bean://dictService:deleteType,default,,,true,
+/api/v1/dict/item/create,POST,bean://dictService:createItem,default,,,true,
+/api/v1/dict/item/delete,POST,bean://dictService:deleteItem,default,,,true,

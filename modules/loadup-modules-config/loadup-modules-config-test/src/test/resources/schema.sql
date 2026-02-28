@@ -69,6 +69,20 @@ CREATE TABLE IF NOT EXISTS dict_item (
     KEY idx_enabled      (enabled)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='数据字典项表';
 
+CREATE TABLE IF NOT EXISTS config_history (
+    id          VARCHAR(64)  NOT NULL                                   COMMENT '主键',
+    config_key  VARCHAR(200) NOT NULL                                   COMMENT '配置键',
+    old_value   TEXT                                                    COMMENT '变更前值',
+    new_value   TEXT                                                    COMMENT '变更后值',
+    change_type VARCHAR(20)  NOT NULL                                   COMMENT '变更类型: CREATE/UPDATE/DELETE',
+    operator    VARCHAR(64)  NOT NULL DEFAULT 'system'                  COMMENT '操作人',
+    remark      VARCHAR(500)                                            COMMENT '备注',
+    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP         COMMENT '操作时间',
+    PRIMARY KEY (id),
+    KEY idx_config_key (config_key),
+    KEY idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='配置变更历史表';
+
 -- ============================================================
 -- Initial seed data
 -- ============================================================
