@@ -21,7 +21,7 @@ LoadUp Gateway 是一个轻量级、高性能的 API 网关框架，基于 Sprin
 ExceptionAction → TracingAction → RouteAction → SecurityAction → ProxyAction → ResponseWrapperAction
 ```
 
-详细架构请查看 [详细文档](../docs/gateway.md)。
+详细架构说明请参阅下文的核心概念和架构设计章节。
 
 ## 快速开始
 
@@ -58,10 +58,6 @@ path,method,target,securityCode,requestTemplate,responseTemplate,enabled,propert
 
 ## 核心文档
 
-### 使用指南
-- [详细文档](../docs/gateway.md) - 完整的使用指南和架构说明
-- [认证策略](loadup-gateway-core/SECURITY.md) - 认证实现详解
-- [认证实施](loadup-gateway-core/GATEWAY_AUTH_DELIVERY.md) - 认证实施交付文档
 
 ### 架构设计
 - [异常处理分析](EXCEPTION_HANDLING_ANALYSIS.md) - 异常处理架构分析
@@ -412,7 +408,7 @@ INFO  i.g.l.g.s.GatewayAutoConfiguration - >>> [GATEWAY] ActionDispatcher initia
 
 #### 相关文档
 
-- [Tracer 组件文档](../components/tracer.md)
+- [Tracer 组件文档](components/tracer.md)
 - [OpenTelemetry 官方文档](https://opentelemetry.io/)
 - [SkyWalking 文档](https://skywalking.apache.org/)
 
@@ -469,9 +465,8 @@ loadup-gateway/
 
 ## 相关链接
 
-- [项目文档](../docs/gateway.md)
-- [项目概览](../docs/project-overview.md)
-- [快速开始](../docs/quick-start.md)
+- [项目概览](project-overview.md)
+- [快速开始](quick-start.md)
 - [GitHub](https://github.com/loadup-cloud/loadup-parent)
 
 ## 许可证

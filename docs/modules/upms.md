@@ -22,7 +22,7 @@
 
 ### 3. 用户中心
 - 🔐 **多种登录方式**: 用户名/邮箱/手机号登录
-- 📱 **第三方登录**: 支持微信、QQ、GitHub等社交账号
+- 📱 **第三方登录**: 支持微信、QQ、GitHub、Google等社交账号（详见下文"第三方登录"章节）
 - 🖼️ **头像管理**: 集成DFS组件，支持头像上传
 - 🔒 **安全策略**:
     - 登录失败自动锁定
@@ -103,6 +103,29 @@ loadup-modules-upms/
 | id | BIGINT | 主键 |
 | parent_id | BIGINT | 父部门ID |
 | dept_level | INT | 部门层级 |
+
+#### 5. OAuth 配置表 (`oauth_provider_config`)
+存储第三方登录平台的配置信息。
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | BIGINT | 主键 |
+| provider | VARCHAR(50) | 渠道编码（WECHAT_OPEN、GITHUB等） |
+| app_id | VARCHAR(200) | 应用ID/Client ID |
+| app_secret | VARCHAR(500) | 应用密钥（加密存储） |
+| enabled | BOOLEAN | 是否启用 |
+
+#### 6. 用户OAuth绑定表 (`user_oauth_binding`)
+记录用户与第三方账号的绑定关系。
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | BIGINT | 主键 |
+| user_id | BIGINT | 系统用户ID |
+| provider | VARCHAR(50) | 渠道编码 |
+| open_id | VARCHAR(200) | 第三方平台用户ID |
+| union_id | VARCHAR(200) | 联合ID（可选） |
+| bind_time | TIMESTAMP | 绑定时间 |
 
 ### ER图概览
 
@@ -335,6 +358,381 @@ Content-Type: application/json
   "refreshToken": "your-refresh-token"
 }
 ```
+
+### 第三方登录接口
+
+UPMS 支持多种第三方登录方式，采用统一的接口设计，方便扩展新的登录渠道。
+
+#### 支持的登录渠道
+
+| 渠道 | 渠道编码 | 说明 |
+|------|---------|------|
+| 微信开放平台 | `WECHAT_OPEN` | 网页微信登录 |
+| 微信公众号 | `WECHAT_MP` | 公众号内授权登录 |
+| QQ | `QQ` | QQ互联登录 |
+| 微博 | `WEIBO` | 微博登录 |
+| GitHub | `GITHUB` | GitHub OAuth登录 |
+| Google | `GOOGLE` | Google OAuth登录 |
+| 支付宝 | `ALIPAY` | 支付宝授权登录 |
+| 钉钉 | `DINGTALK` | 钉钉扫码登录 |
+| 企业微信 | `WECHAT_WORK` | 企业微信登录 |
+
+#### 1. 获取授权URL
+
+客户端首先调用此接口获取第三方平台的授权URL，然后跳转到该URL让用户授权。
+
+```http
+POST /api/v1/auth/oauth/authorization-url
+Content-Type: application/json
+
+{
+  "provider": "WECHAT_OPEN",
+  "redirectUri": "https://yourapp.com/oauth/callback",
+  "state": "random-state-string"
+}
+```
+
+**响应示例：**
+```json
+{
+  "result": {
+    "success": true
+  },
+  "data": {
+    "authorizationUrl": "https://open.weixin.qq.com/connect/qrconnect?appid=xxx&redirect_uri=xxx&response_type=code&scope=snsapi_login&state=xxx",
+    "provider": "WECHAT_OPEN",
+    "state": "random-state-string"
+  }
+}
+```
+
+#### 2. 授权回调处理
+
+用户在第三方平台完成授权后，第三方平台会回调到 `redirectUri`，携带 `code` 和 `state` 参数。客户端需要将这些参数发送到后端进行处理。
+
+```http
+POST /api/v1/auth/oauth/callback
+Content-Type: application/json
+
+{
+  "provider": "WECHAT_OPEN",
+  "code": "authorization-code-from-provider",
+  "state": "random-state-string"
+}
+```
+
+**响应示例（已绑定账号）：**
+```json
+{
+  "result": {
+    "success": true
+  },
+  "data": {
+    "bound": true,
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "tokenType": "Bearer",
+    "expiresIn": 86400000,
+    "userInfo": {
+      "id": 1,
+      "username": "wechat_user",
+      "nickname": "微信用户",
+      "avatar": "https://wx.qlogo.cn/..."
+    }
+  }
+}
+```
+
+**响应示例（未绑定账号）：**
+```json
+{
+  "result": {
+    "success": true
+  },
+  "data": {
+    "bound": false,
+    "bindToken": "temp-bind-token-for-account-binding",
+    "expiresIn": 300000,
+    "oauthUserInfo": {
+      "provider": "WECHAT_OPEN",
+      "openId": "oauth-provider-user-id",
+      "nickname": "微信昵称",
+      "avatar": "https://wx.qlogo.cn/...",
+      "gender": 1,
+      "unionId": "wechat-union-id"
+    }
+  }
+}
+```
+
+#### 3. 绑定已有账号
+
+当用户首次使用第三方登录且该第三方账号未绑定系统账号时，需要调用此接口进行绑定。
+
+```http
+POST /api/v1/auth/oauth/bind-existing
+Content-Type: application/json
+
+{
+  "bindToken": "temp-bind-token-from-callback",
+  "username": "existing_user",
+  "password": "user_password"
+}
+```
+
+**响应示例：**
+```json
+{
+  "result": {
+    "success": true
+  },
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "tokenType": "Bearer",
+    "expiresIn": 86400000,
+    "userInfo": {
+      "id": 1,
+      "username": "existing_user",
+      "nickname": "用户昵称"
+    }
+  }
+}
+```
+
+#### 4. 创建新账号并绑定
+
+用户也可以选择创建一个新账号并绑定第三方登录。
+
+```http
+POST /api/v1/auth/oauth/bind-new
+Content-Type: application/json
+
+{
+  "bindToken": "temp-bind-token-from-callback",
+  "username": "new_username",
+  "password": "Password123",
+  "nickname": "昵称",
+  "email": "email@example.com",
+  "phone": "13800138000"
+}
+```
+
+**响应格式同上。**
+
+#### 5. 解绑第三方账号
+
+用户可以解绑已绑定的第三方账号。
+
+```http
+POST /api/v1/auth/oauth/unbind
+Content-Type: application/json
+Authorization: Bearer {accessToken}
+
+{
+  "provider": "WECHAT_OPEN"
+}
+```
+
+#### 6. 查询已绑定的第三方账号
+
+```http
+POST /api/v1/auth/oauth/bindings
+Content-Type: application/json
+Authorization: Bearer {accessToken}
+
+{}
+```
+
+**响应示例：**
+```json
+{
+  "result": {
+    "success": true
+  },
+  "data": [
+    {
+      "provider": "WECHAT_OPEN",
+      "openId": "masked-open-id",
+      "nickname": "微信昵称",
+      "avatar": "https://wx.qlogo.cn/...",
+      "bindTime": "2026-01-15T10:30:00"
+    },
+    {
+      "provider": "GITHUB",
+      "openId": "masked-github-id",
+      "nickname": "GitHub User",
+      "avatar": "https://avatars.githubusercontent.com/...",
+      "bindTime": "2026-02-20T15:45:00"
+    }
+  ]
+}
+```
+
+### 第三方登录架构设计
+
+#### 数据库设计
+
+**oauth_provider_config 表**（第三方平台配置）
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | BIGINT | 主键 |
+| provider | VARCHAR(50) | 渠道编码（唯一） |
+| app_id | VARCHAR(200) | 应用ID/Client ID |
+| app_secret | VARCHAR(500) | 应用密钥（加密存储） |
+| authorization_url | VARCHAR(500) | 授权URL模板 |
+| token_url | VARCHAR(500) | 获取Token的URL |
+| user_info_url | VARCHAR(500) | 获取用户信息的URL |
+| enabled | BOOLEAN | 是否启用 |
+| properties | JSON | 扩展配置 |
+
+**user_oauth_binding 表**（用户绑定关系）
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | BIGINT | 主键 |
+| user_id | BIGINT | 系统用户ID |
+| provider | VARCHAR(50) | 渠道编码 |
+| open_id | VARCHAR(200) | 第三方平台用户ID |
+| union_id | VARCHAR(200) | 联合ID（如微信UnionID） |
+| access_token | VARCHAR(500) | 第三方访问令牌 |
+| refresh_token | VARCHAR(500) | 第三方刷新令牌 |
+| expires_at | TIMESTAMP | 令牌过期时间 |
+| user_info | JSON | 第三方用户信息快照 |
+| bind_time | TIMESTAMP | 绑定时间 |
+| last_login_time | TIMESTAMP | 最后登录时间 |
+
+**约束**：
+- 唯一索引：`uk_provider_open_id` (provider + open_id)
+- 索引：`idx_user_id` (user_id)
+
+#### 核心流程
+
+```mermaid
+sequenceDiagram
+    participant C as 客户端
+    participant G as Gateway
+    participant U as UPMS
+    participant O as OAuth Provider
+
+    Note over C,O: 1. 获取授权URL
+    C->>G: POST /oauth/authorization-url
+    G->>U: 转发请求
+    U->>U: 从配置表获取provider配置
+    U->>U: 生成state并缓存
+    U->>C: 返回授权URL
+    
+    Note over C,O: 2. 用户授权
+    C->>O: 重定向到授权页面
+    O->>O: 用户同意授权
+    O->>C: 重定向回调URL (带code和state)
+    
+    Note over C,O: 3. 处理回调
+    C->>G: POST /oauth/callback {code, state}
+    G->>U: 转发请求
+    U->>U: 验证state
+    U->>O: 用code换取access_token
+    O->>U: 返回access_token
+    U->>O: 用access_token获取用户信息
+    O->>U: 返回用户信息
+    U->>U: 根据openId查询绑定关系
+    
+    alt 已绑定
+        U->>U: 生成JWT token
+        U->>C: 返回accessToken和用户信息
+    else 未绑定
+        U->>U: 生成临时bindToken
+        U->>C: 返回bindToken和第三方用户信息
+    end
+    
+    Note over C,O: 4. 绑定账号（如需要）
+    C->>G: POST /oauth/bind-existing
+    G->>U: 转发请求
+    U->>U: 验证bindToken
+    U->>U: 验证用户名密码
+    U->>U: 创建绑定关系
+    U->>U: 生成JWT token
+    U->>C: 返回accessToken和用户信息
+```
+
+#### 配置示例
+
+```yaml
+upms:
+  oauth:
+    providers:
+      wechat-open:
+        app-id: wx1234567890abcdef
+        app-secret: your-wechat-app-secret
+        authorization-url: https://open.weixin.qq.com/connect/qrconnect
+        token-url: https://api.weixin.qq.com/sns/oauth2/access_token
+        user-info-url: https://api.weixin.qq.com/sns/userinfo
+        enabled: true
+        
+      github:
+        app-id: your-github-client-id
+        app-secret: your-github-client-secret
+        authorization-url: https://github.com/login/oauth/authorize
+        token-url: https://github.com/login/oauth/access_token
+        user-info-url: https://api.github.com/user
+        enabled: true
+        
+      google:
+        app-id: your-google-client-id
+        app-secret: your-google-client-secret
+        authorization-url: https://accounts.google.com/o/oauth2/v2/auth
+        token-url: https://oauth2.googleapis.com/token
+        user-info-url: https://www.googleapis.com/oauth2/v2/userinfo
+        enabled: true
+    
+    # 临时bindToken有效期（秒）
+    bind-token-expiration: 300
+    
+    # 是否允许自动创建账号（未绑定时）
+    auto-create-account: false
+```
+
+#### 扩展新的登录渠道
+
+要添加新的第三方登录渠道，只需实现 `OAuthProvider` 接口：
+
+```java
+@Component
+public class CustomOAuthProvider implements OAuthProvider {
+    
+    @Override
+    public String getProviderCode() {
+        return "CUSTOM";
+    }
+    
+    @Override
+    public String buildAuthorizationUrl(OAuthConfig config, String redirectUri, String state) {
+        // 构建授权URL
+        return String.format("%s?client_id=%s&redirect_uri=%s&state=%s",
+            config.getAuthorizationUrl(),
+            config.getAppId(),
+            URLEncoder.encode(redirectUri, StandardCharsets.UTF_8),
+            state);
+    }
+    
+    @Override
+    public OAuthToken getAccessToken(OAuthConfig config, String code) {
+        // 用授权码换取access_token
+        // HTTP调用第三方平台的token接口
+        return oauthToken;
+    }
+    
+    @Override
+    public OAuthUserInfo getUserInfo(OAuthConfig config, String accessToken) {
+        // 获取第三方用户信息
+        // HTTP调用第三方平台的用户信息接口
+        return userInfo;
+    }
+}
+```
+
+注册后，系统会自动发现并支持该渠道。
 
 ### 用户管理接口
 
@@ -606,12 +1004,15 @@ mvn verify -P integration-test
 
 | 组件 | 用途 |
 |------|------|
+| `loadup-components-authorization` | 方法级权限控制 |
 | `loadup-components-database` | 数据库连接池和事务管理 |
 | `loadup-components-cache` | Redis缓存支持 |
 | `loadup-components-captcha` | 验证码生成和验证 |
 | `loadup-components-dfs` | 分布式文件存储（头像） |
 | `loadup-components-gotone` | 短信/邮件通知 |
 | `loadup-components-scheduler` | 定时任务（日志清理） |
+| `loadup-components-signature` | OAuth签名验证 |
+| `loadup-components-globalunique` | 第三方登录幂等性控制 |
 
 ## 🔐 安全最佳实践
 
@@ -636,11 +1037,21 @@ mvn verify -P integration-test
     - 敏感操作二次验证
     - 日志防篡改
 
+5. **第三方登录安全**
+    - **State参数验证**：防止CSRF攻击，每次授权使用唯一的state值
+    - **AppSecret加密存储**：数据库中的app_secret必须加密存储
+    - **令牌有效期管理**：定期刷新第三方平台的access_token
+    - **绑定关系验证**：绑定前验证用户身份（密码或验证码）
+    - **敏感信息脱敏**：第三方用户信息中的openId等脱敏展示
+    - **HTTPS强制**：所有OAuth回调URL必须使用HTTPS
+    - **限流控制**：对授权URL生成和回调处理接口进行限流
+    - **bindToken时效**：临时绑定令牌设置短时效（默认5分钟）
+
 ## 📝 TODO
 
 - [ ] 添加多因素认证（MFA）
 - [ ] 支持LDAP/AD集成
-- [ ] OAuth 2.0 授权服务器
+- [x] OAuth 2.0 第三方登录（已支持微信、QQ、GitHub、Google等）
 - [ ] 细粒度字段级权限控制
 - [ ] 在线用户管理和强制下线
 - [ ] 权限缓存预热和刷新机制

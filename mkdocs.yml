@@ -22,13 +22,17 @@ nav:
           - Database: components/database.md
           - DFS: components/dfs.md
           - Extension: components/extension.md
+          - GlobalUnique: components/globalunique.md
           - Gotone: components/gotone.md
           - Liquibase: components/liquibase.md
+          - RetryTask: components/retrytask.md
           - Scheduler: components/scheduler.md
+          - Signature: components/signature.md
           - Testcontainers: components/testcontainers.md
           - Tracer: components/tracer.md
       - Modules:
           - 概览: modules.md
+          - Auth: modules/auth.md
           - UPMS: modules/upms.md
       - Gateway: gateway.md
       - Testify: testify.md
