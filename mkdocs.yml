@@ -34,6 +34,8 @@ nav:
       - Modules:
           - 概览: modules.md
           - Auth: modules/auth.md
+          - Config: modules/config.md
+          - Log: modules/log.md
           - UPMS: modules/upms.md
       - Gateway: gateway.md
       - Testify: testify.md

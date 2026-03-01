@@ -123,10 +123,22 @@ dependencies = [
     { name = "pymdown-extensions" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "mkdocs" },
+    { name = "pymdown-extensions" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "mkdocs", specifier = ">=1.6.1" },
     { name = "mkdocs-material", specifier = ">=9.7.1" },
+    { name = "pymdown-extensions", specifier = ">=10.20.1" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "mkdocs", specifier = ">=1.6.1" },
     { name = "pymdown-extensions", specifier = ">=10.20.1" },
 ]
 
