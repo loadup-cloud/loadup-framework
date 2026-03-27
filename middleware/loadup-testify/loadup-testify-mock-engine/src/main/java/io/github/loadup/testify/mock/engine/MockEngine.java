@@ -49,7 +49,9 @@ public class MockEngine {
 
     /** 应用 Mock 配置 */
     public void applyMocks(List<MockConfig> configs, Map<String, Object> resolvedVars) {
-        if (configs == null || configs.isEmpty()) return;
+        if (configs == null || configs.isEmpty()) {
+            return;
+        }
 
         for (MockConfig config : configs) {
             try {

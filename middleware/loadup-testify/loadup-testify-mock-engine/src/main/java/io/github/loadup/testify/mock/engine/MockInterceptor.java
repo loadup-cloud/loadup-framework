@@ -173,7 +173,7 @@ public class MockInterceptor implements MethodInterceptor {
     }
 
     /** 执行 Mock 结果：解析变量并处理类型转换 */
-    private Object executeMockAction(MockRule rule) throws Throwable {
+    private Object executeMockAction(MockRule rule) throws Exception {
         // 1. 处理延迟模拟
         if (rule.getDelay() != null && rule.getDelay() > 0) {
             log.info(">>> [TESTIFY-LATENCY] Simulating delay: {}ms", rule.getDelay());
