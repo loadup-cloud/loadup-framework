@@ -70,10 +70,9 @@
         <!-- effective skip flags computed via profiles -->
         <skip.unit.tests>false</skip.unit.tests>
         <skip.integration.tests>false</skip.integration.tests>
-        <skip.spotless>true</skip.spotless>
+        <skip.spotless>false</skip.spotless>
         <mysql.version>9.5.0</mysql.version>
         <flyway.version>12.0.0</flyway.version>
-        <skip.spotless>false</skip.spotless>
         <!-- 代码质量工具版本 -->
         <spotbugs.version>4.8.6</spotbugs.version>
         <spotbugs.plugin.version>4.8.6.4</spotbugs.plugin.version>
@@ -630,28 +629,28 @@
             </plugin>
 
             <!-- SpotBugs: 字节码级 Bug 检测 -->
-            <!--            <plugin>-->
-            <!--                <groupId>com.github.spotbugs</groupId>-->
-            <!--                <artifactId>spotbugs-maven-plugin</artifactId>-->
-            <!--            </plugin>-->
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+            </plugin>
 
             <!-- PMD: 代码规范和潜在问题检测 -->
-            <!--            <plugin>-->
-            <!--                <groupId>org.apache.maven.plugins</groupId>-->
-            <!--                <artifactId>maven-pmd-plugin</artifactId>-->
-            <!--            </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+            </plugin>
 
             <!-- Checkstyle: 代码风格检查 -->
-            <!--            <plugin>-->
-            <!--                <groupId>org.apache.maven.plugins</groupId>-->
-            <!--                <artifactId>maven-checkstyle-plugin</artifactId>-->
-            <!--            </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
 
             <!-- OWASP: 安全漏洞扫描（默认 skip=true，通过 -Dskip.dependency.check=false 或 security profile 激活） -->
-            <!--            <plugin>-->
-            <!--                <groupId>org.owasp</groupId>-->
-            <!--                <artifactId>dependency-check-maven</artifactId>-->
-            <!--            </plugin>-->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+            </plugin>
 
         </plugins>
     </build>

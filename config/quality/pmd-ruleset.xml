@@ -48,6 +48,18 @@
         <exclude name="UseAssertNullInsteadOfAssertTrue"/>
         <exclude name="UseAssertSameInsteadOfAssertTrue"/>
         <exclude name="UseAssertTrueInsteadOfAssertEquals"/>
+        <!--
+          SLF4J 的 {} 占位符本身已是懒加载，无需 if(log.isDebugEnabled()) 守卫。
+          强制守卫会使代码冗长且没有实质收益。
+        -->
+        <exclude name="GuardLogStatement"/>
+        <!--
+          项目中使用 interface 常量（CacheConstants 等）作为类型安全的命名空间，
+          这是项目约定的设计模式，不是 "常量接口" 滥用。
+        -->
+        <exclude name="ConstantsInInterface"/>
+        <!-- 允许 catch(GenericException) — pipeline/executor 层会显式捕获 -->
+        <exclude name="AvoidCatchingGenericException"/>
     </rule>
 
     <!-- ===== Code Style ===== -->
@@ -69,6 +81,20 @@
         <exclude name="TooManyStaticImports"/>
         <!-- Palantir 格式化风格不强制 -->
         <exclude name="UnnecessaryConstructor"/>
+        <!--
+          Pipeline/Extension API 使用描述性泛型名称（REQ, DATA, RES, CTX）以提升可读性，
+          单字母命名（T, E, R）对业务 API 可读性较差。
+        -->
+        <exclude name="GenericsNaming"/>
+        <!--
+          项目大量使用 Fluent Builder（setXxx 返回 this），
+          这是有意为之的链式 API 设计，不是语义错误。
+        -->
+        <exclude name="LinguisticNaming"/>
+        <!-- 枚举/类内部对自身类名的完全限定引用，可读性无害 -->
+        <exclude name="UnnecessaryFullyQualifiedName"/>
+        <!-- 显式 = false / = null 初始化更清晰，不是冗余 -->
+        <exclude name="RedundantFieldInitializer"/>
     </rule>
 
     <!-- ===== Design ===== -->
@@ -84,6 +110,33 @@
         <exclude name="CyclomaticComplexity"/>
         <exclude name="NPathComplexity"/>
         <exclude name="CouplingBetweenObjects"/>
+        <!--
+          Abstract base classes without abstract methods are used as template-method base
+          classes (e.g. CacheBinderCfg, AbstractPipelineBuilder). The abstract keyword
+          intentionally prevents direct instantiation — this is correct OOP.
+        -->
+        <exclude name="AbstractClassWithoutAbstractMethod"/>
+        <exclude name="AbstractClassWithoutAnyMethod"/>
+        <!--
+          PipelineSpec, GatewayContext, etc. are intentional data-holder/spec objects.
+          DataClass rule is noise for these structural patterns.
+        -->
+        <exclude name="DataClass"/>
+        <!--
+          Pipeline executor intentionally re-throws caught exceptions via sneakyThrow.
+          This is not a control-flow misuse but a deliberate checked-exception bypass.
+        -->
+        <exclude name="ExceptionAsFlowControl"/>
+        <!--
+          CognitiveComplexity is already covered by the broader CyclomaticComplexity exclusion;
+          aligning for consistency.
+        -->
+        <exclude name="CognitiveComplexity"/>
+        <!--
+          Marker/sentinel classes (EndTxMarker) intentionally have a private constructor
+          and no static members — they exist only as type tokens in generics/instanceof checks.
+        -->
+        <exclude name="MissingStaticMethodInNonInstantiatableClass"/>
     </rule>
 
     <!-- ===== Error Prone ===== -->
@@ -94,18 +147,39 @@
         <!-- 允许在 catch 中 throw 新异常 -->
         <exclude name="AvoidCatchingGenericException"/>
         <exclude name="AvoidThrowingRawExceptionTypes"/>
+        <!--
+          PipelineExecutor must catch Throwable to implement the finally-stage guarantee
+          and route errors to ExceptionHandlerBus regardless of Error vs Exception.
+        -->
+        <exclude name="AvoidCatchingThrowable"/>
+        <!--
+          @SuppressWarnings("unchecked") / @SuppressWarnings("rawtypes") strings are
+          annotation literals, not magic strings — AvoidDuplicateLiterals is a false positive.
+        -->
+        <exclude name="AvoidDuplicateLiterals"/>
     </rule>
 
     <!-- ===== Multithreading ===== -->
     <rule ref="category/java/multithreading.xml">
         <exclude name="UseConcurrentHashMap"/>
         <exclude name="DoNotUseThreads"/>
+        <!--
+          ExtensionRegistry uses `volatile boolean initialized` for a standard
+          double-checked locking pattern. Banning volatile here would break thread safety.
+        -->
+        <exclude name="AvoidUsingVolatile"/>
     </rule>
 
     <!-- ===== Performance ===== -->
     <rule ref="category/java/performance.xml">
         <exclude name="AvoidInstantiatingObjectsJustToGetClass"/>
         <exclude name="InsufficientStringBufferDeclaration"/>
+        <!--
+          PipelineExecutor creates a TransactionTemplate per TX-block iteration
+          (each block may declare different propagation), and ExtensionRegistry builds
+          ScenarioKey instances during startup warmup — both are intentional.
+        -->
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
     </rule>
 
     <!-- ===== Security ===== -->
