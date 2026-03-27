@@ -88,7 +88,9 @@ public class SimpleJobSchedulerBinder extends AbstractSchedulerBinder<SimpleJobS
         String taskName = task.getTaskName();
         cancel(taskName); // 确保幂等，如果存在则先停止
 
-        if (!task.isEnabled()) return false;
+        if (!task.isEnabled()) {
+            return false;
+        }
 
         // 包装为带超时和重试的安全 Runnable
         Runnable runnable = task.toRunnable(businessExecutor);

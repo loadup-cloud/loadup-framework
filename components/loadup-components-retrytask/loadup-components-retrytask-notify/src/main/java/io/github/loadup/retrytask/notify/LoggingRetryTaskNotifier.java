@@ -31,13 +31,13 @@ import org.slf4j.LoggerFactory;
  */
 public class LoggingRetryTaskNotifier implements RetryTaskNotifier {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoggingRetryTaskNotifier.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingRetryTaskNotifier.class);
 
     public static final String TYPE = "log";
 
     @Override
     public void notify(RetryTask task) {
-        logger.warn(
+        LOGGER.warn(
                 ">>> [RETRY-TASK] Task failed: bizType={}, bizId={}, retryCount={}, failureReason={}",
                 task.getBizType(),
                 task.getBizId(),

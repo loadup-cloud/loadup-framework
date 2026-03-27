@@ -280,8 +280,8 @@ public class RoleService {
     private List<RoleDTO> buildRoleTree(List<Role> allRoles, Long parentId) {
         List<RoleDTO> tree = new ArrayList<>();
         for (Role role : allRoles) {
-            if ((parentId == null && role.getParentId() == null)
-                    || (parentId != null && parentId.equals(role.getParentId()))) {
+            if (parentId == null && role.getParentId() == null
+                    || parentId != null && parentId.equals(role.getParentId())) {
                 RoleDTO dto = convertToDTO(role);
                 tree.add(dto);
             }

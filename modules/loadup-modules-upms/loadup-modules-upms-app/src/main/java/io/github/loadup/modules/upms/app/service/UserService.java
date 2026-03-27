@@ -213,8 +213,12 @@ public class UserService {
         Page<User> userPage;
         if (query.getUsername() != null || query.getEmail() != null || query.getMobile() != null) {
             String keyword = query.getUsername();
-            if (keyword == null) keyword = query.getEmail();
-            if (keyword == null) keyword = query.getMobile();
+            if (keyword == null) {
+                keyword = query.getEmail();
+            }
+            if (keyword == null) {
+                keyword = query.getMobile();
+            }
             userPage = userGateway.search(keyword, pageable);
         } else {
             userPage = userGateway.findAll(pageable);

@@ -151,10 +151,10 @@ public class RouteConfig {
 
     // Internal static helper class and methods
     private static class TargetParseResult {
-        String protocol;
-        String targetUrl;
-        String targetBean;
-        String targetMethod;
+        private String protocol;
+        private String targetUrl;
+        private String targetBean;
+        private String targetMethod;
     }
 
     private static TargetParseResult parseTarget(String target) {
@@ -174,8 +174,12 @@ public class RouteConfig {
             r.protocol = GatewayConstants.Protocol.BEAN;
             String beanTarget = target.substring(7); // remove "bean://"
             String[] parts = beanTarget.split(":");
-            if (parts.length >= 1) r.targetBean = parts[0];
-            if (parts.length >= 2) r.targetMethod = parts[1];
+            if (parts.length >= 1) {
+                r.targetBean = parts[0];
+            }
+            if (parts.length >= 2) {
+                r.targetMethod = parts[1];
+            }
             return r;
         }
 
@@ -189,14 +193,16 @@ public class RouteConfig {
     }
 
     private static class PropertiesParseResult {
-        long timeout = 30000L;
-        int retryCount = 3;
-        Boolean wrapResponse = null;
+        private long timeout = 30000L;
+        private int retryCount = 3;
+        private Boolean wrapResponse = null;
     }
 
     private static PropertiesParseResult parseProperties(Map<String, Object> properties) {
         PropertiesParseResult r = new PropertiesParseResult();
-        if (properties == null || properties.isEmpty()) return r;
+        if (properties == null || properties.isEmpty()) {
+            return r;
+        }
 
         Object timeout = properties.get(GatewayConstants.PropertyKeys.TIMEOUT);
         if (timeout instanceof Number) {
@@ -238,7 +244,9 @@ public class RouteConfig {
                 .replaceAll("/", " ")
                 .replaceAll("-", " ")
                 .trim();
-        if (name.isEmpty()) name = "root";
+        if (name.isEmpty()) {
+            name = "root";
+        }
         name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
         return name + " (" + method + ")";
     }
@@ -317,7 +325,9 @@ public class RouteConfig {
     /** Compatibility helper to create a builder pre-populated from an existing instance. */
     public static RouteConfigBuilder builderFrom(RouteConfig rc) {
         RouteConfigBuilder b = new RouteConfigBuilder();
-        if (rc == null) return b;
+        if (rc == null) {
+            return b;
+        }
         b.path(rc.getPath());
         b.method(rc.getMethod());
         b.target(rc.getTarget());

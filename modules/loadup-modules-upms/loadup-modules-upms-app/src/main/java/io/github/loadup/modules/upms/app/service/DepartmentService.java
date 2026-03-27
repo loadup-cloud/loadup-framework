@@ -61,7 +61,7 @@ public class DepartmentService {
 
         // Validate parent department exists
         Integer deptLevel = 1;
-        if (command.getParentId() != null && command.getParentId() != "0") {
+        if (command.getParentId() != null && !"0".equals(command.getParentId())) {
             Department parentDept =
                     departmentGateway.findById(command.getParentId()).orElseThrow(() -> new RuntimeException("父部门不存在"));
             deptLevel = (parentDept.getDeptLevel() != null ? parentDept.getDeptLevel() : 0) + 1;
@@ -101,7 +101,7 @@ public class DepartmentService {
                 departmentGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("部门不存在"));
 
         // Validate parent department (prevent circular reference)
-        if (command.getParentId() != null && command.getParentId() != "0") {
+        if (command.getParentId() != null && !"0".equals(command.getParentId())) {
             if (command.getParentId().equals(command.getId())) {
                 throw new RuntimeException("父部门不能是自己");
             }
@@ -199,7 +199,7 @@ public class DepartmentService {
         Department department = departmentGateway.findById(deptId).orElseThrow(() -> new RuntimeException("部门不存在"));
 
         // Validate new parent exists
-        if (newParentId != null && newParentId != "0") {
+        if (newParentId != null && !"0".equals(newParentId)) {
             if (newParentId.equals(deptId)) {
                 throw new RuntimeException("父部门不能是自己");
             }
@@ -266,10 +266,10 @@ public class DepartmentService {
     private List<DepartmentDTO> buildDepartmentTree(List<Department> allDepartments, String parentId) {
         List<DepartmentDTO> tree = new ArrayList<>();
         for (Department department : allDepartments) {
-            if ((parentId == null
+            if (parentId == null
                             && (department.getParentId() == null
-                                    || department.getParentId().equals("0")))
-                    || (parentId != null && parentId.equals(department.getParentId()))) {
+                                    || department.getParentId().equals("0"))
+                    || parentId != null && parentId.equals(department.getParentId())) {
                 DepartmentDTO dto = convertToDTO(department);
                 List<DepartmentDTO> children = buildDepartmentTree(allDepartments, department.getId());
                 if (!children.isEmpty()) {

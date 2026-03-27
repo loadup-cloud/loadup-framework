@@ -35,13 +35,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class YamlLoader {
 
-    private static final ObjectMapper yamlMapper;
+    private static final ObjectMapper YAML_MAPPER;
 
     static {
-        yamlMapper = new ObjectMapper(new YAMLFactory());
-        yamlMapper.registerModule(new JavaTimeModule());
+        YAML_MAPPER = new ObjectMapper(new YAMLFactory());
+        YAML_MAPPER.registerModule(new JavaTimeModule());
         // 允许 YAML 中存在 TestContext 未定义的字段
-        yamlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        YAML_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     @SneakyThrows
@@ -55,7 +55,7 @@ public class YamlLoader {
 
             // 直接将 YAML 文件反序列化为 TestContext Record
             // 此时里面的 JsonNode 仍然保留着原始的占位符文本，如 "${faker.name()}"
-            TestContext context = yamlMapper.readValue(is, TestContext.class);
+            TestContext context = YAML_MAPPER.readValue(is, TestContext.class);
             // 如果需要从路径推断测试名称，可以在这里进行简单的元数据补充
             String testName = path.substring(path.lastIndexOf("/") + 1)
                     .replace(".yaml", "")

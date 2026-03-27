@@ -199,7 +199,9 @@ public class OperationLogService {
     // ── helpers ──────────────────────────────────────────────────────────────
 
     private String safe(String s) {
-        if (s == null) return "";
+        if (s == null) {
+            return "";
+        }
         // escape CSV: wrap in quotes if contains comma/newline/quote
         if (s.contains(",") || s.contains("\"") || s.contains("\n")) {
             return "\"" + s.replace("\"", "\"\"") + "\"";

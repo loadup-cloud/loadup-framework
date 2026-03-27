@@ -34,7 +34,7 @@ public class TestService {
     class Response {
         private String message;
 
-        public Response(String message) {
+        Response(String message) {
             this.message = message;
         }
 

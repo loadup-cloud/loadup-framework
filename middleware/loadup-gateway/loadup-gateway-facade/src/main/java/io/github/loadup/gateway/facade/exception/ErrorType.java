@@ -89,8 +89,7 @@ public enum ErrorType {
     AUTHORIZATION("Authorization error"),
     RATE_LIMIT("Rate limit error"),
     TIMEOUT("Timeout error"),
-    UNKNOWN("Unknown error"),
-    ;
+    UNKNOWN("Unknown error");
 
     private final String description;
 

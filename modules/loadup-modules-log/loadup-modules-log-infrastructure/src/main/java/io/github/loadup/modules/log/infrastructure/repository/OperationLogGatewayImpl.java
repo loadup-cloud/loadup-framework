@@ -156,12 +156,24 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
             LocalDateTime startTime,
             LocalDateTime endTime) {
         QueryWrapper qw = QueryWrapper.create();
-        if (userId != null) qw.and(OPERATION_LOG_DO.USER_ID.eq(userId));
-        if (module != null) qw.and(OPERATION_LOG_DO.MODULE.eq(module));
-        if (operationType != null) qw.and(OPERATION_LOG_DO.OPERATION_TYPE.eq(operationType));
-        if (success != null) qw.and(OPERATION_LOG_DO.SUCCESS.eq(success));
-        if (startTime != null) qw.and(OPERATION_LOG_DO.OPERATION_TIME.ge(startTime));
-        if (endTime != null) qw.and(OPERATION_LOG_DO.OPERATION_TIME.le(endTime));
+        if (userId != null) {
+            qw.and(OPERATION_LOG_DO.USER_ID.eq(userId));
+        }
+        if (module != null) {
+            qw.and(OPERATION_LOG_DO.MODULE.eq(module));
+        }
+        if (operationType != null) {
+            qw.and(OPERATION_LOG_DO.OPERATION_TYPE.eq(operationType));
+        }
+        if (success != null) {
+            qw.and(OPERATION_LOG_DO.SUCCESS.eq(success));
+        }
+        if (startTime != null) {
+            qw.and(OPERATION_LOG_DO.OPERATION_TIME.ge(startTime));
+        }
+        if (endTime != null) {
+            qw.and(OPERATION_LOG_DO.OPERATION_TIME.le(endTime));
+        }
         return qw;
     }
 

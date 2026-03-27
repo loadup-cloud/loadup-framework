@@ -51,8 +51,8 @@ public class FileRepositoryPlugin implements RepositoryPlugin {
 
     // basePath will be resolved during initialize. Default source is classpath:/gateway-config
     private String basePath = null; // resolved filesystem directory
-    private final String ROUTES_FILE = "routes.csv";
-    private final String TEMPLATES_DIR = "templates";
+    private static final String ROUTES_FILE = "routes.csv";
+    private static final String TEMPLATES_DIR = "templates";
 
     @Resource
     private GatewayProperties gatewayProperties;

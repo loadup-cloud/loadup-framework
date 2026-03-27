@@ -90,12 +90,17 @@ public class ConfigItemService {
         String raw = opt.get().getConfigValue();
         try {
             Object v;
-            if (targetType == String.class) v = raw;
-            else if (targetType == Integer.class) v = Integer.valueOf(raw);
-            else if (targetType == Long.class) v = Long.valueOf(raw);
-            else if (targetType == Double.class) v = Double.valueOf(raw);
-            else if (targetType == Boolean.class) v = Boolean.valueOf(raw);
-            else {
+            if (targetType == String.class) {
+                v = raw;
+            } else if (targetType == Integer.class) {
+                v = Integer.valueOf(raw);
+            } else if (targetType == Long.class) {
+                v = Long.valueOf(raw);
+            } else if (targetType == Double.class) {
+                v = Double.valueOf(raw);
+            } else if (targetType == Boolean.class) {
+                v = Boolean.valueOf(raw);
+            } else {
                 log.warn("Unsupported target type {} for key={}", targetType, configKey);
                 return defaultValue;
             }
