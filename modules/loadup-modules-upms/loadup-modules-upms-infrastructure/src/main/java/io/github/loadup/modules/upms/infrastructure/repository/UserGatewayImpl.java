@@ -208,7 +208,9 @@ public class UserGatewayImpl implements UserGateway, AuthGateway {
         QueryWrapper query = QueryWrapper.create().eq("phone", mobile);
         UserDO userDO = userDOMapper.selectOneByQuery(query);
 
-        if (userDO == null) return null;
+        if (userDO == null) {
+            return null;
+        }
 
         AuthUserDTO dto = new AuthUserDTO();
         dto.setUserId(userDO.getId());

@@ -121,7 +121,9 @@ public class OperationLogAspect {
     }
 
     private String truncate(String s, int maxLen) {
-        if (s == null) return null;
+        if (s == null) {
+            return null;
+        }
         return s.length() <= maxLen ? s : s.substring(0, maxLen);
     }
 }

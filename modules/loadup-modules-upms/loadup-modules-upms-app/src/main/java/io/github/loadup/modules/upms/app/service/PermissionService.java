@@ -55,7 +55,7 @@ public class PermissionService {
             throw new RuntimeException("权限编码已存在");
         }
 
-        if (command.getParentId() != null && command.getParentId() != "0") {
+        if (command.getParentId() != null && !"0".equals(command.getParentId())) {
             permissionGateway.findById(command.getParentId()).orElseThrow(() -> new RuntimeException("父权限不存在"));
         }
 
@@ -86,24 +86,46 @@ public class PermissionService {
         Permission permission =
                 permissionGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("权限不存在"));
 
-        if (command.getParentId() != null && command.getParentId() != "0") {
+        if (command.getParentId() != null && !"0".equals(command.getParentId())) {
             if (command.getParentId().equals(command.getId())) {
                 throw new RuntimeException("父权限不能是自己");
             }
             permissionGateway.findById(command.getParentId()).orElseThrow(() -> new RuntimeException("父权限不存在"));
         }
 
-        if (command.getParentId() != null) permission.setParentId(command.getParentId());
-        if (command.getPermissionName() != null) permission.setPermissionName(command.getPermissionName());
-        if (command.getPermissionType() != null) permission.setPermissionType(command.getPermissionType());
-        if (command.getResourcePath() != null) permission.setResourcePath(command.getResourcePath());
-        if (command.getHttpMethod() != null) permission.setHttpMethod(command.getHttpMethod());
-        if (command.getIcon() != null) permission.setIcon(command.getIcon());
-        if (command.getComponentPath() != null) permission.setComponentPath(command.getComponentPath());
-        if (command.getSortOrder() != null) permission.setSortOrder(command.getSortOrder());
-        if (command.getVisible() != null) permission.setVisible(command.getVisible());
-        if (command.getStatus() != null) permission.setStatus(command.getStatus());
-        if (command.getRemark() != null) permission.setRemark(command.getRemark());
+        if (command.getParentId() != null) {
+            permission.setParentId(command.getParentId());
+        }
+        if (command.getPermissionName() != null) {
+            permission.setPermissionName(command.getPermissionName());
+        }
+        if (command.getPermissionType() != null) {
+            permission.setPermissionType(command.getPermissionType());
+        }
+        if (command.getResourcePath() != null) {
+            permission.setResourcePath(command.getResourcePath());
+        }
+        if (command.getHttpMethod() != null) {
+            permission.setHttpMethod(command.getHttpMethod());
+        }
+        if (command.getIcon() != null) {
+            permission.setIcon(command.getIcon());
+        }
+        if (command.getComponentPath() != null) {
+            permission.setComponentPath(command.getComponentPath());
+        }
+        if (command.getSortOrder() != null) {
+            permission.setSortOrder(command.getSortOrder());
+        }
+        if (command.getVisible() != null) {
+            permission.setVisible(command.getVisible());
+        }
+        if (command.getStatus() != null) {
+            permission.setStatus(command.getStatus());
+        }
+        if (command.getRemark() != null) {
+            permission.setRemark(command.getRemark());
+        }
 
         permission.setUpdatedBy(command.getUpdatedBy());
         permission.setUpdatedTime(LocalDateTime.now());
@@ -174,10 +196,10 @@ public class PermissionService {
     private List<PermissionDTO> buildPermissionTree(List<Permission> allPermissions, String parentId) {
         List<PermissionDTO> tree = new ArrayList<>();
         for (Permission permission : allPermissions) {
-            if ((parentId == null
+            if (parentId == null
                             && (permission.getParentId() == null
-                                    || permission.getParentId().equals("0")))
-                    || (parentId != null && parentId.equals(permission.getParentId()))) {
+                                    || permission.getParentId().equals("0"))
+                    || parentId != null && parentId.equals(permission.getParentId())) {
                 PermissionDTO dto = convertToDTO(permission);
                 List<PermissionDTO> children = buildPermissionTree(allPermissions, permission.getId());
                 if (!children.isEmpty()) {

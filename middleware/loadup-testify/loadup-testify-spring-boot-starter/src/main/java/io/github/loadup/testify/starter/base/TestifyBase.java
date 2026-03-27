@@ -247,7 +247,7 @@ public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
             Throwable businessError = null;
             try {
                 actualResult = action.get();
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 businessError = e;
                 logger.error(e);
             }
@@ -326,7 +326,9 @@ public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
      */
     @SuppressWarnings("unchecked")
     protected <V> V val(V raw) {
-        if (raw == null) return null;
+        if (raw == null) {
+            return null;
+        }
 
         // 从ThreadLocal拿到已经解析好的variables映射表
         Map<String, Object> currentContext = VariableContext.get();

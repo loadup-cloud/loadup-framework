@@ -1,4 +1,4 @@
-package io.github.loadup.components.scheduler.powerjob.binder;
+package com.github.loadup.components.scheduler.powerjob.binder;
 
 /*-
  * #%L

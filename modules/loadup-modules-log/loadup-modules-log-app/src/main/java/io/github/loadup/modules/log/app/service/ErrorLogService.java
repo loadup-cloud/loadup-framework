@@ -134,12 +134,16 @@ public class ErrorLogService {
     // ── helpers ──────────────────────────────────────────────────────────────
 
     private String truncate(String s, int max) {
-        if (s == null) return null;
+        if (s == null) {
+            return null;
+        }
         return s.length() <= max ? s : s.substring(0, max);
     }
 
     private String buildStackTrace(Throwable ex) {
-        if (ex == null) return null;
+        if (ex == null) {
+            return null;
+        }
         StringBuilder sb = new StringBuilder();
         sb.append(ex.getClass().getName()).append(": ").append(ex.getMessage()).append("\n");
         for (StackTraceElement el : ex.getStackTrace()) {

@@ -43,13 +43,9 @@
         <exclude name="UseCollectionIsEmpty"/>
         <!-- Spring DI 构造器注入时 @Autowired 字段警告，排除（已有 Checkstyle 规则约束） -->
         <exclude name="LooseCoupling"/>
-        <!-- 允许在测试断言中使用 assertEquals -->
-        <exclude name="UseAssertEqualsInsteadOfAssertTrue"/>
-        <exclude name="UseAssertNullInsteadOfAssertTrue"/>
-        <exclude name="UseAssertSameInsteadOfAssertTrue"/>
-        <exclude name="UseAssertTrueInsteadOfAssertEquals"/>
+        <!-- 允许在测试断言中使用 assertEquals（JUnit4 对应规则在 PMD 7.x 中已移除） -->
         <!--
-          SLF4J 的 {} 占位符本身已是懒加载，无需 if(log.isDebugEnabled()) 守卫。
+          SLF4J 的占位符本身已是懒加载，无需 if(log.isDebugEnabled()) 守卫。
           强制守卫会使代码冗长且没有实质收益。
         -->
         <exclude name="GuardLogStatement"/>

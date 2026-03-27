@@ -146,7 +146,9 @@ public class GatewayHandlerAdapter implements HandlerAdapter, Ordered {
         // Set response headers
         if (gatewayResponse.getHeaders() != null) {
             gatewayResponse.getHeaders().forEach((k, v) -> {
-                if (k == null || v == null) return;
+                if (k == null || v == null) {
+                    return;
+                }
                 String lower = k.toLowerCase(Locale.ROOT);
                 if ("content-length".equals(lower) || "transfer-encoding".equals(lower)) {
                     // skip these; container will set proper values
@@ -160,7 +162,7 @@ public class GatewayHandlerAdapter implements HandlerAdapter, Ordered {
         if (gatewayResponse.getContentType() != null) {
             response.setContentType(gatewayResponse.getContentType());
             String currentEncoding = response.getCharacterEncoding();
-            if ((currentEncoding == null || currentEncoding.isEmpty())) {
+            if (currentEncoding == null || currentEncoding.isEmpty()) {
                 String ct = gatewayResponse.getContentType().toLowerCase(Locale.ROOT);
                 if (ct.startsWith("application/json")
                         || ct.startsWith("text/")

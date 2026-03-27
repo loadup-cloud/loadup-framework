@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RetryTaskExecutor {
 
-    private static final Logger logger = LoggerFactory.getLogger(RetryTaskExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RetryTaskExecutor.class);
 
     private final RetryTaskProcessorRegistry processorRegistry;
     private final RetryTaskService retryTaskService;
@@ -65,13 +65,13 @@ public class RetryTaskExecutor {
     public void executeSync(RetryTask task) {
         // Optimistic locking: PENDING -> RUNNING
         if (!retryTaskService.tryLock(task.getId())) {
-            logger.debug("Task {} locked by other node or not in PENDING status", task.getId());
+            LOGGER.debug("Task {} locked by other node or not in PENDING status", task.getId());
             return;
         }
 
         RetryTaskProcessor processor = processorRegistry.getProcessor(task.getBizType());
         if (processor == null) {
-            logger.warn("No processor found for bizType: {}", task.getBizType());
+            LOGGER.warn("No processor found for bizType: {}", task.getBizType());
             // Mark failure if no processor found to avoid stuck in RUNNING
             retryTaskService.markFailure(task.getId(), "No processor found");
             return;
@@ -85,7 +85,7 @@ public class RetryTaskExecutor {
                 retryTaskService.markFailure(task.getId(), "Processor returned false");
             }
         } catch (Exception e) {
-            logger.error("Error processing task: {}", task.getId(), e);
+            LOGGER.error("Error processing task: {}", task.getId(), e);
             retryTaskService.markFailure(task.getId(), e.getMessage());
         }
     }

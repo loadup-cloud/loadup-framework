@@ -54,6 +54,22 @@
     <suppress files=".*DO\.java" checks="MethodLength"/>
 
     <!--
+      AOP Aspect 类 @Around 通知必须声明 throws Throwable（AspectJ API 约束：
+      ProceedingJoinPoint.proceed() 本身声明了 throws Throwable），
+      无法改为 throws Exception，否则编译报错。
+      同样，catch(Throwable) 在 @Around 中是必要的，以便正确传播原始异常。
+    -->
+    <suppress files=".*Aspect\.java" checks="IllegalThrows"/>
+    <suppress files=".*Aspect\.java" checks="IllegalCatch"/>
+
+    <!--
+      Pipeline 执行引擎：PipelineExecutor 是责任链框架的核心分发器，
+      需要 catch(Throwable) 以确保所有 Stage 的异常（含 Error 子类）
+      均能被 ExceptionHandlerBus 统一处理，避免异常在框架内部泄漏。
+    -->
+    <suppress files=".*PipelineExecutor\.java" checks="IllegalCatch"/>
+
+    <!--
       排除 loadup-commons-api 模块所有类：
       该模块是框架级 SPI 抽象层，不适用标准业务代码的 Checkstyle 规则。
     -->

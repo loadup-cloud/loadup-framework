@@ -87,12 +87,24 @@ public class AuditLogGatewayImpl implements AuditLogGateway {
             LocalDateTime startTime,
             LocalDateTime endTime) {
         QueryWrapper qw = QueryWrapper.create();
-        if (userId != null) qw.and(AUDIT_LOG_DO.USER_ID.eq(userId));
-        if (dataType != null) qw.and(AUDIT_LOG_DO.DATA_TYPE.eq(dataType));
-        if (dataId != null) qw.and(AUDIT_LOG_DO.DATA_ID.eq(dataId));
-        if (action != null) qw.and(AUDIT_LOG_DO.ACTION.eq(action));
-        if (startTime != null) qw.and(AUDIT_LOG_DO.OPERATION_TIME.ge(startTime));
-        if (endTime != null) qw.and(AUDIT_LOG_DO.OPERATION_TIME.le(endTime));
+        if (userId != null) {
+            qw.and(AUDIT_LOG_DO.USER_ID.eq(userId));
+        }
+        if (dataType != null) {
+            qw.and(AUDIT_LOG_DO.DATA_TYPE.eq(dataType));
+        }
+        if (dataId != null) {
+            qw.and(AUDIT_LOG_DO.DATA_ID.eq(dataId));
+        }
+        if (action != null) {
+            qw.and(AUDIT_LOG_DO.ACTION.eq(action));
+        }
+        if (startTime != null) {
+            qw.and(AUDIT_LOG_DO.OPERATION_TIME.ge(startTime));
+        }
+        if (endTime != null) {
+            qw.and(AUDIT_LOG_DO.OPERATION_TIME.le(endTime));
+        }
         return qw;
     }
 
