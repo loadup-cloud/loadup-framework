@@ -300,7 +300,7 @@ public class SmtpEmailProvider implements NotificationChannelProvider {
         // 或者配置中明确指定批量发送
         boolean batchConfig = Boolean.parseBoolean(getConfigValue(request.getChannelConfig(), "batch", "false"));
 
-        return batchConfig || (request.getReceivers().size() <= 10);
+        return batchConfig || request.getReceivers().size() <= 10;
     }
 
     /**

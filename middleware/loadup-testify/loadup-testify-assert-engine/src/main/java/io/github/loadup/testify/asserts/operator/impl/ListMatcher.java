@@ -45,7 +45,7 @@ public class ListMatcher implements OperatorMatcher {
 
         int expStr = Integer.parseInt(String.valueOf(val));
 
-        boolean matched = (actStr == expStr);
+        boolean matched = actStr == expStr;
         return matched
                 ? MatchResult.pass()
                 : MatchResult.fail(actual, val, "Actual List size does not matched expected size");

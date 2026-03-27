@@ -138,10 +138,10 @@ public class SharedMySQLContainer {
 
             MYSQL_CONTAINER.start();
             STARTED.set(true);
-            JDBC_URL = (MYSQL_CONTAINER.getJdbcUrl());
-            USERNAME = (MYSQL_CONTAINER.getUsername());
-            PASSWORD = (MYSQL_CONTAINER.getPassword());
-            DATABASE_NAME = (MYSQL_CONTAINER.getDatabaseName());
+            JDBC_URL = MYSQL_CONTAINER.getJdbcUrl();
+            USERNAME = MYSQL_CONTAINER.getUsername();
+            PASSWORD = MYSQL_CONTAINER.getPassword();
+            DATABASE_NAME = MYSQL_CONTAINER.getDatabaseName();
 
             log.info("✅ MySQL Container started at: {}", MYSQL_CONTAINER.getJdbcUrl());
 

@@ -55,7 +55,9 @@ public class DefaultCacheBinding extends AbstractBinding<CacheBinder<?, CacheBin
 
     @Override
     public boolean set(String key, Object value) {
-        if (value == null) return false;
+        if (value == null) {
+            return false;
+        }
         String finalKey = decorateKey(key);
         // 遍历所有 Binder 写入（如同时写入内存和 Redis）
         getBinder().set(finalKey, wrapValue(value));
@@ -64,7 +66,9 @@ public class DefaultCacheBinding extends AbstractBinding<CacheBinder<?, CacheBin
 
     @Override
     public boolean delete(String key) {
-        if (key == null) return true;
+        if (key == null) {
+            return true;
+        }
         String finalKey = decorateKey(key);
         getBinder().delete(finalKey);
         return true;
@@ -72,7 +76,9 @@ public class DefaultCacheBinding extends AbstractBinding<CacheBinder<?, CacheBin
 
     @Override
     public boolean deleteAll(Collection<String> keys) {
-        if (keys == null || keys.isEmpty()) return false;
+        if (keys == null || keys.isEmpty()) {
+            return false;
+        }
         List<String> finalKeys = keys.stream().map(this::decorateKey).collect(Collectors.toList());
         getBinder().deleteAll(finalKeys);
         return true;

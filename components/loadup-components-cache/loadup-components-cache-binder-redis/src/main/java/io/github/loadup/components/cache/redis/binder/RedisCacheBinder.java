@@ -130,7 +130,9 @@ public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg, C
 
     @Override
     public boolean set(String key, CacheValueWrapper value) {
-        if (value == null) return false;
+        if (value == null) {
+            return false;
+        }
 
         // 核心：调用父类的 wrapValue。
         // 因为 AbstractCacheBinder 注入了 serializer，wrapValue 会返回 byte[]

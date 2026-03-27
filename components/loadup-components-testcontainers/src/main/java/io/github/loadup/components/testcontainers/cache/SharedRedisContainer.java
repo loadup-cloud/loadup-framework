@@ -88,18 +88,22 @@ public class SharedRedisContainer {
     private static String URL;
 
     public static void startContainer(ContainerConfig config) {
-        if (STARTED.get()) return;
+        if (STARTED.get()) {
+            return;
+        }
         synchronized (SharedRedisContainer.class) {
-            if (STARTED.get()) return;
+            if (STARTED.get()) {
+                return;
+            }
             String image = (config.getImage() != null) ? config.getImage() : DEFAULT_REDIS_VERSION;
             REDIS_CONTAINER = new GenericContainer<>(DockerImageName.parse(image))
                     .withExposedPorts(REDIS_PORT)
                     .withReuse(config.isReusable());
             REDIS_CONTAINER.start();
             STARTED.set(true);
-            HOST = (REDIS_CONTAINER.getHost());
-            PORT = (REDIS_CONTAINER.getMappedPort(REDIS_PORT));
-            URL = ("redis://" + HOST + ":" + PORT);
+            HOST = REDIS_CONTAINER.getHost();
+            PORT = REDIS_CONTAINER.getMappedPort(REDIS_PORT);
+            URL = "redis://" + HOST + ":" + PORT;
 
             if (!config.isReusable()) {
                 log.info("Reuse is disabled. Registering shutdown hook to stop container.");

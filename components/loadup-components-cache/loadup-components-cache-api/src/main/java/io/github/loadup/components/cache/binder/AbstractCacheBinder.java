@@ -75,7 +75,9 @@ public abstract class AbstractCacheBinder<C extends CacheBinderCfg, S extends Ca
     }
 
     protected Object wrapValue(CacheValueWrapper value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
 
         // 如果当前驱动配置了序列化器，则转为字节数组
         if (this.serializer != null) {

@@ -160,7 +160,7 @@ public class LoadUpFlywayAutoConfiguration {
      */
     static class FlywayMigrationInitializer {
 
-        public FlywayMigrationInitializer(Flyway flyway) {
+        FlywayMigrationInitializer(Flyway flyway) {
             try {
                 log.info(">>> [FLYWAY] Starting migration...");
                 int migrationsApplied = flyway.migrate().migrationsExecuted;

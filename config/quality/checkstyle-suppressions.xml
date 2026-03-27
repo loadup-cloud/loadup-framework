@@ -24,6 +24,29 @@
     <suppress files=".*Test\.java" checks="MagicNumber"/>
     <suppress files=".*IT\.java" checks="MagicNumber"/>
 
+    <!--
+      排除 testcontainers 共享容器类的静态变量命名检查：
+      SharedXxxContainer 类中的静态字段采用 UPPER_CASE 命名，
+      遵循 Testcontainers 共享单例模式约定，概念上等同于延迟初始化的常量。
+    -->
+    <suppress files=".*Shared.*Container\.java" checks="StaticVariableName"/>
+
+    <!--
+      排除 captcha 工具类：
+      GifEncoder、Encoder、Quant、FontsUtil、FileUtil、ChineseGifCaptcha 是验证码算法的
+      内部实现（NeuQuant 色彩量化、LZW GIF 编码等），采用了 C 语言风格的命名约定，
+      是算法代码的惯用写法，不适用标准 Java 命名规范。
+    -->
+    <suppress files=".*captcha.*GifEncoder\.java" checks=".*"/>
+    <suppress files=".*captcha.*Encoder\.java" checks=".*"/>
+    <suppress files=".*captcha.*Quant\.java" checks=".*"/>
+    <suppress files=".*captcha.*FontsUtil\.java" checks=".*"/>
+    <suppress files=".*captcha.*FileUtil\.java" checks=".*"/>
+    <suppress files=".*captcha.*ChineseGifCaptcha\.java" checks="MultipleVariableDeclarations"/>
+    <suppress files=".*captcha.*GifCaptcha\.java" checks="MultipleVariableDeclarations"/>
+    <suppress files=".*captcha.*base/Captcha\.java" checks="MultipleVariableDeclarations"/>
+    <suppress files=".*captcha.*base/Randoms\.java" checks="StaticVariableName"/>
+
     <!-- AutoConfiguration 类允许较多方法 -->
     <suppress files=".*AutoConfiguration\.java" checks="MethodLength"/>
 

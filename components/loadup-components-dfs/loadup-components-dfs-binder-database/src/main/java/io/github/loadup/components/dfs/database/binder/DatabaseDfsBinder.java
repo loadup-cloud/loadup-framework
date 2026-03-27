@@ -53,14 +53,14 @@ public class DatabaseDfsBinder extends AbstractDfsBinder<DatabaseDfsBinderCfg, D
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private String TABLE_NAME = "file_storage";
+    private String tableName = "file_storage";
 
     private final Map<String, String> sqlMap = new HashMap<>();
-    private final String INSERT_SQL =
+    private final String insertSql =
             "INSERT INTO %s (file_id, filename, content, size, content_type, hash,biz_type, biz_id, public_access, upload_time, metadata) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    private final String QUERY_SQL = "SELECT * FROM %s WHERE file_id = ?";
-    private final String DELETE_SQL = "DELETE FROM %s WHERE file_id = ?";
-    private final String COUNT_SQL = "SELECT COUNT(*) FROM %s WHERE file_id = ?";
+    private final String querySql = "SELECT * FROM %s WHERE file_id = ?";
+    private final String deleteSql = "DELETE FROM %s WHERE file_id = ?";
+    private final String countSql = "SELECT COUNT(*) FROM %s WHERE file_id = ?";
 
     @Override
     public String getBinderType() {
@@ -69,14 +69,14 @@ public class DatabaseDfsBinder extends AbstractDfsBinder<DatabaseDfsBinderCfg, D
 
     @Override
     protected void afterConfigInjected(String name, DatabaseDfsBinderCfg binderCfg, DfsBindingCfg bindingCfg) {
-        String tableName = this.binderCfg.getTableName();
-        if (StringUtils.isNotBlank(tableName)) {
-            TABLE_NAME = tableName;
+        String tableNameConfig = this.binderCfg.getTableName();
+        if (StringUtils.isNotBlank(tableNameConfig)) {
+            tableName = tableNameConfig;
         }
-        sqlMap.put("INSERT", INSERT_SQL.formatted(TABLE_NAME));
-        sqlMap.put("QUERY", QUERY_SQL.formatted(TABLE_NAME));
-        sqlMap.put("DELETE", DELETE_SQL.formatted(TABLE_NAME));
-        sqlMap.put("COUNT", COUNT_SQL.formatted(TABLE_NAME));
+        sqlMap.put("INSERT", insertSql.formatted(tableName));
+        sqlMap.put("QUERY", querySql.formatted(tableName));
+        sqlMap.put("DELETE", deleteSql.formatted(tableName));
+        sqlMap.put("COUNT", countSql.formatted(tableName));
     }
 
     @Override

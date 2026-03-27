@@ -35,13 +35,13 @@ public class BizScenario {
     private static final String DOT_SEPARATOR = ".";
 
     @Builder.Default
-    String bizCode = DEFAULT_BIZ_CODE;
+    private String bizCode = DEFAULT_BIZ_CODE;
 
     @Builder.Default
-    String useCase = DEFAULT_USE_CASE;
+    private String useCase = DEFAULT_USE_CASE;
 
     @Builder.Default
-    String scenario = DEFAULT_SCENARIO;
+    private String scenario = DEFAULT_SCENARIO;
 
     public String getUniqueIdentity() {
         return bizCode + DOT_SEPARATOR + useCase + DOT_SEPARATOR + scenario;

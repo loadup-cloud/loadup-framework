@@ -33,8 +33,7 @@ import lombok.Getter;
 @Getter
 public enum CacheBinderType {
     CAFFEINE("caffeine"),
-    REDIS("redis"),
-    ;
+    REDIS("redis");
 
     private final String value;
 
@@ -49,7 +48,9 @@ public enum CacheBinderType {
 
     @JsonCreator
     public static CacheBinderType fromString(String value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
 
         for (CacheBinderType type : CacheBinderType.values()) {
             if (type.value.equalsIgnoreCase(value)) {

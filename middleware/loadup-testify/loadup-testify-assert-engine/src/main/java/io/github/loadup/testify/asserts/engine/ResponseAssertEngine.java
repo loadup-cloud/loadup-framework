@@ -103,9 +103,8 @@ public class ResponseAssertEngine implements TestifyAssertEngine {
                 String key = entry.getKey();
                 recursiveCheck(path + "." + key, entry.getValue(), act.path(key), diffs);
             });
-        }
         // 情况 C: 期望节点是数组(递归)
-        else if (exp.isArray()) {
+        } else if (exp.isArray()) {
             if (!act.isArray() || exp.size() != act.size()) {
                 diffs.add(new FieldDiff(path, "Size: " + exp.size(), "Size: " + act.size(), "Array size mismatch"));
             } else {
@@ -113,9 +112,8 @@ public class ResponseAssertEngine implements TestifyAssertEngine {
                     recursiveCheck(path + "[" + i + "]", exp.get(i), act.get(i), diffs);
                 }
             }
-        }
         // 情况 D: 叶子节点，直接进行等值对比
-        else {
+        } else {
             Object expVal = getValueFromJsonNode(exp);
             Object actVal = getValueFromJsonNode(act);
             // 统一走 OperatorProcessor，这样即使是普通值，也能享受 SimpleMatcher 提供的类型兼容性比对
@@ -131,9 +129,15 @@ public class ResponseAssertEngine implements TestifyAssertEngine {
     }
 
     private Object getValueFromJsonNode(JsonNode node) {
-        if (node == null || node.isMissingNode() || node.isNull()) return null;
-        if (node.isNumber()) return node.numberValue();
-        if (node.isBoolean()) return node.booleanValue();
+        if (node == null || node.isMissingNode() || node.isNull()) {
+            return null;
+        }
+        if (node.isNumber()) {
+            return node.numberValue();
+        }
+        if (node.isBoolean()) {
+            return node.booleanValue();
+        }
         return node.asText();
     }
 }

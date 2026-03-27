@@ -35,7 +35,7 @@ import java.util.Map;
  * strings - Epoch milliseconds (Long)
  */
 public class ApproxTimeMatcher implements OperatorMatcher {
-    private static final TimeParser timeParser = new TimeParser();
+    private static final TimeParser TIME_PARSER = new TimeParser();
 
     @Override
     public boolean support(String op) {
@@ -62,10 +62,14 @@ public class ApproxTimeMatcher implements OperatorMatcher {
     }
 
     private long toMillis(Object value) {
-        if (value == null) throw new IllegalArgumentException("时间值不能为空");
+        if (value == null) {
+            throw new IllegalArgumentException("时间值不能为空");
+        }
 
         // 如果是数字（时间戳）
-        if (value instanceof Number n) return n.longValue();
+        if (value instanceof Number n) {
+            return n.longValue();
+        }
 
         // 如果是 Java 8 时间对象
         if (value instanceof java.time.temporal.TemporalAccessor ta) {
@@ -80,11 +84,13 @@ public class ApproxTimeMatcher implements OperatorMatcher {
         }
 
         // 如果是 SQL Timestamp 或 Date
-        if (value instanceof java.util.Date d) return d.getTime();
+        if (value instanceof java.util.Date d) {
+            return d.getTime();
+        }
 
         // 如果是字符串，尝试多种常用格式解析
         if (value instanceof String str) {
-            return timeParser.toMillis(str);
+            return TIME_PARSER.toMillis(str);
         }
 
         throw new IllegalArgumentException("不支持的时间格式: " + value.getClass());

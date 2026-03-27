@@ -242,7 +242,7 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
         private final String useCase;
         private final String scenario;
 
-        public ScenarioKey(Class<?> extensionType, BizScenario bizScenario) {
+        ScenarioKey(Class<?> extensionType, BizScenario bizScenario) {
             this.extensionType = extensionType;
             this.bizCode = bizScenario.getBizCode();
             this.useCase = bizScenario.getUseCase();
@@ -251,8 +251,12 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             ScenarioKey that = (ScenarioKey) o;
             return Objects.equals(extensionType, that.extensionType)
                     && Objects.equals(bizCode, that.bizCode)
