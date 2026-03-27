@@ -84,8 +84,8 @@ public class RetryTaskServiceImpl implements RetryTaskService, RetryTaskFacade {
         task.setMaxRetryCount(config.getMaxRetryCount());
         task.setNextRetryTime(LocalDateTime.now());
         task.setStatus(RetryTaskStatus.PENDING);
-        task.setCreateTime(LocalDateTime.now());
-        task.setUpdateTime(LocalDateTime.now());
+        task.setCreatedAt(LocalDateTime.now());
+        task.setUpdatedAt(LocalDateTime.now());
 
         RetryTask savedTask = retryTaskRepository.save(task);
 
@@ -120,7 +120,7 @@ public class RetryTaskServiceImpl implements RetryTaskService, RetryTaskFacade {
             task.setRetryCount(0);
             task.setNextRetryTime(LocalDateTime.now());
             task.setStatus(RetryTaskStatus.PENDING);
-            task.setUpdateTime(LocalDateTime.now());
+            task.setUpdatedAt(LocalDateTime.now());
             retryTaskRepository.save(task);
         });
     }
@@ -168,7 +168,7 @@ public class RetryTaskServiceImpl implements RetryTaskService, RetryTaskFacade {
                 }
                 task.setNextRetryTime(strategy.nextRetryTime(task));
             }
-            task.setUpdateTime(LocalDateTime.now());
+            task.setUpdatedAt(LocalDateTime.now());
             retryTaskRepository.save(task);
         });
     }

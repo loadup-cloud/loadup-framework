@@ -24,6 +24,7 @@ package io.github.loadup.components.extension.exector;
 
 import io.github.loadup.components.extension.annotation.Extension;
 import io.github.loadup.components.extension.api.IExtensionPoint;
+import io.github.loadup.components.extension.context.BizContextHolder;
 import io.github.loadup.components.extension.core.BizScenario;
 import io.github.loadup.components.extension.register.ExtensionCoordinate;
 import io.github.loadup.components.extension.register.ExtensionRegistry;
@@ -55,6 +56,17 @@ public class ExtensionExecutor {
         return action.apply(extension);
     }
 
+    /**
+     * 从 {@link BizContextHolder} 读取当前线程的业务场景并执行（有返回值）。
+     *
+     * <p>配合 {@code @BizScenario} 方法注解使用，无需显式传入 {@link BizScenario}。
+     *
+     * @throws IllegalStateException 若当前线程无业务场景上下文
+     */
+    public <E extends IExtensionPoint, R> R execute(Class<E> extensionPointClass, Function<E, R> action) {
+        return execute(extensionPointClass, requireContext(), action);
+    }
+
     /** 执行单个最佳匹配的扩展点（无返回值） */
     public <E extends IExtensionPoint> void run(
             Class<E> extensionPointClass, BizScenario scenario, Consumer<E> action) {
@@ -62,6 +74,11 @@ public class ExtensionExecutor {
         log.debug(
                 "Run extension {} for scenario {}", extension.getClass().getSimpleName(), scenario.getUniqueIdentity());
         action.accept(extension);
+    }
+
+    /** 从 {@link BizContextHolder} 读取场景并执行（无返回值）。 */
+    public <E extends IExtensionPoint> void run(Class<E> extensionPointClass, Consumer<E> action) {
+        run(extensionPointClass, requireContext(), action);
     }
 
     /** 执行指定场景的所有匹配扩展点（精确匹配） */
@@ -203,6 +220,15 @@ public class ExtensionExecutor {
             return false;
         }
         return !matchScenario || Objects.equals(meta.scenario(), scenario.getScenario());
+    }
+
+    private BizScenario requireContext() {
+        BizScenario scenario = BizContextHolder.get();
+        if (scenario == null) {
+            throw new IllegalStateException("No BizScenario found in current thread context. "
+                    + "Please annotate the calling method with @BizScenario or call BizContextHolder.set() manually.");
+        }
+        return scenario;
     }
 
     public static class ExtensionNotFoundException extends RuntimeException {

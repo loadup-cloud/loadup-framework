@@ -52,7 +52,7 @@ public class RetryTaskDO {
 
     private String lastFailureReason;
 
-    private LocalDateTime createTime;
+    private LocalDateTime createdAt;
 
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 }

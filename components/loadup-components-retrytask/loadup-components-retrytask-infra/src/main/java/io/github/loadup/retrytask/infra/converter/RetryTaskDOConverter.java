@@ -60,8 +60,8 @@ public class RetryTaskDOConverter {
             }
         }
         domain.setLastFailureReason(dbo.getLastFailureReason());
-        domain.setCreateTime(dbo.getCreateTime());
-        domain.setUpdateTime(dbo.getUpdateTime());
+        domain.setCreatedAt(dbo.getCreatedAt());
+        domain.setUpdatedAt(dbo.getUpdatedAt());
         return domain;
     }
 
@@ -86,8 +86,8 @@ public class RetryTaskDOConverter {
             dbo.setPriority(Priority.LOW.getWeight()); // 默认低优先级
         }
         dbo.setLastFailureReason(domain.getLastFailureReason());
-        dbo.setCreateTime(domain.getCreateTime());
-        dbo.setUpdateTime(domain.getUpdateTime());
+        dbo.setCreatedAt(domain.getCreatedAt());
+        dbo.setUpdatedAt(domain.getUpdatedAt());
         return dbo;
     }
 }

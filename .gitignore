@@ -37,4 +37,4 @@ build/
 *.log
 node_modules
 .venv
-/site/
+site/

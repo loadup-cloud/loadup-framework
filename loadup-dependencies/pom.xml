@@ -569,7 +569,12 @@
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-extension</artifactId>
-                <version>${loadup.framework.version}</version>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-pipeline</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>

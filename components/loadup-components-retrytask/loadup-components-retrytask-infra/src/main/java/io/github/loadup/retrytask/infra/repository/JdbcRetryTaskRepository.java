@@ -73,14 +73,14 @@ public class JdbcRetryTaskRepository implements RetryTaskRepository {
         sqlMap.put(
                 "INSERT",
                 String.format(
-                        "INSERT INTO %s (biz_type, biz_id, retry_count, max_retry_count, next_retry_time, status, priority, last_failure_reason, create_time, update_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        "INSERT INTO %s (biz_type, biz_id, retry_count, max_retry_count, next_retry_time, status, priority, last_failure_reason, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         tableName));
 
         // UPDATE
         sqlMap.put(
                 "UPDATE",
                 String.format(
-                        "UPDATE %s SET biz_type=?, biz_id=?, retry_count=?, max_retry_count=?, next_retry_time=?, status=?, priority=?, last_failure_reason=?, create_time=?, update_time=? WHERE id=?",
+                        "UPDATE %s SET biz_type=?, biz_id=?, retry_count=?, max_retry_count=?, next_retry_time=?, status=?, priority=?, last_failure_reason=?, created_at=?, updated_at=? WHERE id=?",
                         tableName));
 
         // SELECT_BY_ID
@@ -131,19 +131,19 @@ public class JdbcRetryTaskRepository implements RetryTaskRepository {
         sqlMap.put(
                 "TRY_LOCK",
                 String.format(
-                        "UPDATE %s SET status = 'RUNNING', update_time = %s WHERE id = ? AND status = 'PENDING'",
+                        "UPDATE %s SET status = 'RUNNING', updated_at = %s WHERE id = ? AND status = 'PENDING'",
                         tableName, nowFunc));
 
         // UPDATE_STATUS
         sqlMap.put(
                 "UPDATE_STATUS",
-                String.format("UPDATE %s SET status = ?, update_time = %s WHERE id = ?", tableName, nowFunc));
+                String.format("UPDATE %s SET status = ?, updated_at = %s WHERE id = ?", tableName, nowFunc));
 
         // RESET_STUCK_TASKS
         sqlMap.put(
                 "RESET_STUCK_TASKS",
                 String.format(
-                        "UPDATE %s SET status = 'PENDING', update_time = %s WHERE status = 'RUNNING' AND update_time < ?",
+                        "UPDATE %s SET status = 'PENDING', updated_at = %s WHERE status = 'RUNNING' AND updated_at < ?",
                         tableName, nowFunc));
     }
 
@@ -179,8 +179,8 @@ public class JdbcRetryTaskRepository implements RetryTaskRepository {
                     ps.setString(6, entity.getStatus());
                     ps.setInt(7, entity.getPriority() != null ? entity.getPriority() : 1);
                     ps.setString(8, entity.getLastFailureReason());
-                    ps.setTimestamp(9, Timestamp.valueOf(entity.getCreateTime()));
-                    ps.setTimestamp(10, Timestamp.valueOf(entity.getUpdateTime()));
+                    ps.setTimestamp(9, Timestamp.valueOf(entity.getCreatedAt()));
+                    ps.setTimestamp(10, Timestamp.valueOf(entity.getUpdatedAt()));
                     return ps;
                 },
                 keyHolder);
@@ -203,8 +203,8 @@ public class JdbcRetryTaskRepository implements RetryTaskRepository {
                 entity.getStatus(),
                 entity.getPriority() != null ? entity.getPriority() : 1,
                 entity.getLastFailureReason(),
-                entity.getCreateTime(),
-                entity.getUpdateTime(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
                 entity.getId());
         return entity;
     }

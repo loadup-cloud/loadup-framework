@@ -324,7 +324,7 @@ class RetryTaskCompleteWorkflowTest extends BaseRetryTaskTest {
 
         // Simulate stuck task by updating time
         RetryTask task = retryTaskRepository.findById(taskId).orElseThrow();
-        task.setUpdateTime(LocalDateTime.now().minusMinutes(20));
+        task.setUpdatedAt(LocalDateTime.now().minusMinutes(20));
         retryTaskRepository.save(task);
 
         // Reset stuck tasks

@@ -23,6 +23,7 @@ nav:
           - Database: components/database.md
           - DFS: components/dfs.md
           - Extension: components/extension.md
+          - Pipeline: components/pipeline.md
           - GlobalUnique: components/globalunique.md
           - Gotone: components/gotone.md
           - Liquibase: components/liquibase.md

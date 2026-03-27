@@ -230,7 +230,7 @@ class RetryTaskServiceTest extends BaseRetryTaskTest {
 
         // Manually update time to simulate stuck task
         RetryTask task = retryTaskRepository.findById(taskId).orElseThrow();
-        task.setUpdateTime(LocalDateTime.now().minusMinutes(10));
+        task.setUpdatedAt(LocalDateTime.now().minusMinutes(10));
         retryTaskRepository.save(task);
 
         int count = retryTaskService.resetStuckTasks(LocalDateTime.now().minusMinutes(5));

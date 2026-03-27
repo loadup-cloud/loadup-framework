@@ -117,9 +117,9 @@ class JdbcRetryTaskRepositoryIntegrationTest extends BaseRetryTaskTest {
         stuck.setStatus(RetryTaskStatus.RUNNING);
         stuck = repository.save(stuck);
 
-        // Force update_time in DB because save() updates it to NOW()
+        // Force updated_at in DB because save() updates it to NOW()
         jdbcTemplate.update(
-                "UPDATE retry_task SET update_time = ? WHERE id = ?",
+                "UPDATE retry_task SET updated_at = ? WHERE id = ?",
                 LocalDateTime.now().minusMinutes(10),
                 stuck.getId());
 
@@ -162,8 +162,8 @@ class JdbcRetryTaskRepositoryIntegrationTest extends BaseRetryTaskTest {
         task.setNextRetryTime(LocalDateTime.now());
         task.setRetryCount(0);
         task.setMaxRetryCount(3);
-        task.setCreateTime(LocalDateTime.now());
-        task.setUpdateTime(LocalDateTime.now());
+        task.setCreatedAt(LocalDateTime.now());
+        task.setUpdatedAt(LocalDateTime.now());
         return task;
     }
 }

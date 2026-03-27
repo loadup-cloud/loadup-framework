@@ -84,10 +84,10 @@ public class RetryTask implements Serializable {
     /**
      * The time when the task was created.
      */
-    private LocalDateTime createTime;
+    private LocalDateTime createdAt;
 
     /**
      * The time when the task was last updated.
      */
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 }

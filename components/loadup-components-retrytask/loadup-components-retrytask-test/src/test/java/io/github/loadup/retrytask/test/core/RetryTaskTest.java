@@ -48,7 +48,7 @@ class RetryTaskTest extends BaseRetryTaskTest {
         retryTask.setMaxRetryCount(3);
         retryTask.setRetryCount(0);
         retryTask.setStatus(RetryTaskStatus.PENDING);
-        retryTask.setCreateTime(LocalDateTime.now());
+        retryTask.setCreatedAt(LocalDateTime.now());
     }
 
     @Test
@@ -62,7 +62,7 @@ class RetryTaskTest extends BaseRetryTaskTest {
         assertEquals(3, retryTask.getMaxRetryCount());
         assertEquals(0, retryTask.getRetryCount());
         assertEquals(RetryTaskStatus.PENDING, retryTask.getStatus());
-        assertNotNull(retryTask.getCreateTime());
+        assertNotNull(retryTask.getCreatedAt());
     }
 
     @Test
@@ -127,7 +127,7 @@ class RetryTaskTest extends BaseRetryTaskTest {
         assertNull(nullTask.getBizType());
         assertNull(nullTask.getBizId());
         assertNull(nullTask.getStatus());
-        assertNull(nullTask.getCreateTime());
+        assertNull(nullTask.getCreatedAt());
     }
 
     @Test

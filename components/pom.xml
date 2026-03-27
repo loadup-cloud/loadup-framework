@@ -27,6 +27,7 @@
         <module>loadup-components-authorization</module>
         <module>loadup-components-tracer</module>
         <module>loadup-components-retrytask</module>
+        <module>loadup-components-pipeline</module>
     </modules>
 
 </project>

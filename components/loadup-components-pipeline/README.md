@@ -1,0 +1,225 @@
+# LoadUp Components Pipeline
+
+基于 Spring Boot 3 的**流程编排组件**，将业务逻辑拆分为`验参 → 准备 → 处理 → 组装`四个固定阶段，通过类型安全的 Fluent DSL 声明式地定义和执行流程。
+
+## 核心特性
+
+- ✅ **四阶段标准流程** — verify → prepare → process → assemble，职责清晰
+- ✅ **类型安全 DSL** — 链式 Builder，编译期保证阶段顺序正确
+- ✅ **两种 Stage 定义方式** — Spring Bean 类 / Lambda 内联函数
+- ✅ **控制流** — `IControlStage` 支持条件性提前结束流程
+- ✅ **Finally 阶段** — `IFinallyStage` 保证清理逻辑必然执行
+- ✅ **类型化异常路由** — `ExceptionHandlerBus` 按异常类型分发，支持 overflow / bottom 降级
+- ✅ **Spring 事务集成** — `startTx / endTx` 包裹任意阶段，使用 `PlatformTransactionManager`
+- ✅ **零私有依赖** — 纯 Spring 原生，不依赖任何云厂商 SDK
+
+---
+
+## 快速开始
+
+### 1. 添加依赖
+
+```xml
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-components-pipeline</artifactId>
+</dependency>
+```
+
+### 2. 定义 Stage
+
+```java
+// 参数校验
+@Component
+public class CreateOrderVerifyStage implements IParamVerifyStage<CreateOrderCmd> {
+    @Override
+    public void verify(CreateOrderCmd cmd) {
+        Assert.hasText(cmd.getUserId(), "userId 不能为空");
+        Assert.notEmpty(cmd.getItems(), "订单商品不能为空");
+    }
+}
+
+// 数据准备
+@Component
+public class CreateOrderPrepareStage implements IDataPrepareStage<OrderDO> {
+    private final OrderGateway gateway;
+
+    @Override
+    public OrderDO prepare(PipelineContext ctx) {
+        CreateOrderCmd cmd = ctx.getRequest(CreateOrderCmd.class);
+        return OrderDO.create(cmd.getUserId(), cmd.getItems());
+    }
+}
+
+// 业务处理
+@Component
+public class CreateOrderProcessStage implements IBizProcessStage {
+    private final OrderGateway gateway;
+
+    @Override
+    public void process(PipelineContext ctx) {
+        OrderDO order = ctx.getModel(OrderDO.class);
+        gateway.save(order);
+    }
+}
+
+// 结果组装
+@Component
+public class CreateOrderAssembleStage implements IResultAssembleStage<OrderDTO> {
+    @Override
+    public OrderDTO assemble(PipelineContext ctx) {
+        OrderDO order = ctx.getModel(OrderDO.class);
+        return OrderConverter.toDTO(order);
+    }
+}
+```
+
+### 3. 定义 Pipeline
+
+```java
+@Service
+public class CreateOrderPipelineDefinition implements IPipelineDefinition {
+
+    @Override
+    public PipelineSpec definePipeline() {
+        return PipelineBuilder.builder()
+            .verify(CreateOrderVerifyStage.class)
+            .prepare(CreateOrderPrepareStage.class)
+            .process(CreateOrderProcessStage.class)
+            .assemble(CreateOrderAssembleStage.class)
+            .build();
+    }
+
+    @Override
+    public ExceptionHandlerBus exceptions() {
+        return ExceptionHandlerBus.builder()
+            .register(BizException.class, OrderBizExceptionHandler.class)
+            .bottom(OrderSystemExceptionHandler.class);
+    }
+}
+```
+
+### 4. 执行流程
+
+```java
+@Service
+@RequiredArgsConstructor
+public class OrderService {
+
+    private final PipelineExecutor pipelineExecutor;
+    private final CreateOrderPipelineDefinition createOrderPipeline;
+
+    public OrderDTO createOrder(CreateOrderCmd cmd) {
+        return pipelineExecutor.execute(createOrderPipeline, cmd);
+    }
+}
+```
+
+---
+
+## Lambda 内联写法
+
+无需创建 Stage Bean，直接内联 Lambda：
+
+```java
+@Override
+public PipelineSpec definePipeline() {
+    return PipelineBuilder.builder()
+        .<CreateOrderCmd>verify(cmd -> {
+            Assert.hasText(cmd.getUserId(), "userId 不能为空");
+        })
+        .<OrderDO>prepare(ctx -> {
+            CreateOrderCmd cmd = ctx.getRequest(CreateOrderCmd.class);
+            return OrderDO.create(cmd.getUserId());
+        })
+        .process((PipelineContext ctx) -> {
+            gateway.save(ctx.getModel(OrderDO.class));
+        })
+        .<OrderDTO>assemble(ctx -> OrderConverter.toDTO(ctx.getModel(OrderDO.class)))
+        .build();
+}
+```
+
+---
+
+## 事务支持
+
+用 `startTx / endTx` 包裹需要在同一事务中执行的阶段：
+
+```java
+PipelineBuilder.builder()
+    .verify(VerifyStage.class)
+    .prepare(PrepareStage.class)
+    .startTx(DefaultSpringTxInitializer.class)   // ── 开启事务
+        .process(SaveOrderStage.class)
+        .process(SaveInventoryStage.class)
+    .endTx()                                      // ── 提交/回滚
+    .assemble(AssembleStage.class)
+    .build();
+```
+
+---
+
+## 异常处理
+
+```java
+@Component
+public class OrderBizExceptionHandler implements IExceptionClassHandler<OrderDTO> {
+
+    @Override
+    public void handleException(Throwable t, PipelineContext ctx) {
+        log.warn("[Order] 业务异常: {}", t.getMessage());
+    }
+
+    @Override
+    public OrderDTO assembleResultOnException(Throwable t, PipelineContext ctx) {
+        return OrderDTO.fail(t.getMessage());
+    }
+}
+```
+
+异常路由规则：
+1. **精确匹配** — 按注册的异常类查找
+2. **父类匹配** — 按继承关系向上查找
+3. **overflow** — 已注册为 overflow 的异常直接重新抛出，绕过所有 Handler
+4. **bottom 降级** — 无匹配时使用 bottom Handler
+
+---
+
+## Stage 类型速查
+
+| 接口 | 方法签名 | 场景 |
+|------|----------|------|
+| `IParamVerifyStage<REQ>` | `void verify(REQ req)` | 参数校验，抛异常即失败 |
+| `IDataPrepareStage<DATA>` | `DATA prepare(PipelineContext ctx)` | 加载领域模型 |
+| `IBizProcessStage` | `void process(PipelineContext ctx)` | 纯业务逻辑，无需模型引用 |
+| `IDataProcessStage<DATA>` | `void process(DATA data, PipelineContext ctx)` | 对领域模型做变换/写操作 |
+| `IResultAssembleStage<RES>` | `RES assemble(PipelineContext ctx)` | DO → DTO 映射 |
+| `IControlStage` | `boolean shouldStop(PipelineContext ctx)` | 条件性终止流程 |
+| `IFinallyStage` | `void doFinally(PipelineContext ctx)` | 清理，必然执行 |
+
+---
+
+## 与 Extension 组件配合
+
+Pipeline 负责**流程顺序**，Extension 负责**实现路由**，两者正交互补：
+
+```java
+// IBizProcessStage 内部通过 ExtensionExecutor 路由到正确的策略实现
+@Component
+public class CalculatePriceStage implements IBizProcessStage {
+
+    private final ExtensionExecutor extensionExecutor;
+
+    @Override
+    public void process(PipelineContext ctx) {
+        // BizContextHolder 已由 @BizScenario 拦截器自动注入
+        BigDecimal price = extensionExecutor.execute(
+            IPriceStrategy.class,
+            strategy -> strategy.calculate(ctx.getModel(OrderDO.class))
+        );
+        ctx.putProperty("calculatedPrice", price);
+    }
+}
+```
+

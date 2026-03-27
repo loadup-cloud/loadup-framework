@@ -22,18 +22,16 @@ package io.github.loadup.components.cache.caffeine.binder;
  * #L%
  */
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.Expiry;
+import com.github.benmanes.caffeine.cache.*;
 import io.github.loadup.components.cache.binder.AbstractCacheBinder;
 import io.github.loadup.components.cache.binder.CacheBinder;
 import io.github.loadup.components.cache.caffeine.cfg.CaffeineCacheBinderCfg;
 import io.github.loadup.components.cache.cfg.CacheBindingCfg;
 import io.github.loadup.components.cache.model.CacheValueWrapper;
 import io.github.loadup.framework.api.manager.ConfigurationResolver;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Collection;
-import java.util.concurrent.ThreadLocalRandom;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
@@ -43,6 +41,7 @@ public class CaffeineCacheBinder extends AbstractCacheBinder<CaffeineCacheBinder
 
     // 每一个 Binder 实例持有一个物理上的 Caffeine Cache 对象
     private Cache<String, Object> nativeCache;
+    private final SecureRandom secureRandom = new SecureRandom();
 
     @Override
     public String getBinderType() {
@@ -112,8 +111,7 @@ public class CaffeineCacheBinder extends AbstractCacheBinder<CaffeineCacheBinder
 
         // 计算范围: [base, base * (1+factor)]
         long max = (long) (baseNanos * (1 + factor));
-
-        return ThreadLocalRandom.current().nextLong(baseNanos, max);
+        return secureRandom.nextLong(baseNanos, max);
     }
 
     @Override
