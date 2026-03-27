@@ -423,8 +423,12 @@ public class TimeParser {
         String[] parts = dateStr.split("[- :]");
         if (parts.length >= 3) {
             // 补全月和日
-            if (parts[1].length() == 1) parts[1] = "0" + parts[1];
-            if (parts[2].length() == 1) parts[2] = "0" + parts[2];
+            if (parts[1].length() == 1) {
+                parts[1] = "0" + parts[1];
+            }
+            if (parts[2].length() == 1) {
+                parts[2] = "0" + parts[2];
+            }
 
             // 补全时间部分（如果有）
             if (parts.length > 3) {

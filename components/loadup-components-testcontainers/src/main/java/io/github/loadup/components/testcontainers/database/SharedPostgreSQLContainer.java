@@ -65,7 +65,7 @@ public class SharedPostgreSQLContainer {
     private static final String DRIVER_CLASS_NAME = "org.postgresql.Driver";
 
     /** Enable flag for TestContainers */
-    private static AtomicBoolean STARTED = new AtomicBoolean(false);
+    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
     /** The shared PostgreSQL container instance */
     private static PostgreSQLContainer POSTGRES_CONTAINER;

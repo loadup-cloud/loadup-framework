@@ -75,14 +75,20 @@ public class DiffReportBuilder {
     }
 
     private static String formatValue(Object val) {
-        if (val == null) return "null";
+        if (val == null) {
+            return "null";
+        }
         // 如果是日期、对象等，可以在这里特殊处理
         return val.toString().replace("\n", " ").replace("\r", "");
     }
 
     private static String truncate(String str, int max, TruncateMode mode) {
-        if (str == null) return "";
-        if (str.length() <= max) return str;
+        if (str == null) {
+            return "";
+        }
+        if (str.length() <= max) {
+            return str;
+        }
 
         return switch (mode) {
             // 模式 1：保留头部 "...ta.user_id"

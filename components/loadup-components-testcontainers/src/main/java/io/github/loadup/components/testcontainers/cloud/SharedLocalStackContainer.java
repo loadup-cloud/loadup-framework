@@ -185,7 +185,9 @@ public class SharedLocalStackContainer {
             return;
         }
         synchronized (SharedLocalStackContainer.class) {
-            if (STARTED.get()) return;
+            if (STARTED.get()) {
+                return;
+            }
             String image = (config.getImage() != null) ? config.getImage() : DEFAULT_LOCALSTACK_VERSION;
             LOCALSTACK_CONTAINER = new LocalStackContainer(DockerImageName.parse(image)).withReuse(true);
 

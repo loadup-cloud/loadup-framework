@@ -148,7 +148,9 @@ public class SchedulerTask {
         } catch (ExecutionException e) {
             // 提取真正的业务异常
             Throwable cause = e.getCause();
-            if (cause instanceof Exception) throw (Exception) cause;
+            if (cause instanceof Exception) {
+                throw (Exception) cause;
+            }
             throw new RuntimeException(cause);
         }
     }

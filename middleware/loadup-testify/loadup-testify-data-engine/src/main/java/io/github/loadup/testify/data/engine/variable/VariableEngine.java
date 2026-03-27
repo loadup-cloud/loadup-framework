@@ -58,14 +58,18 @@ public class VariableEngine {
     // --- 1. Entry Points (入口方法) ---
     public Map<String, Object> resolveVariables(Map<String, String> rawVariables) {
         Map<String, Object> context = new LinkedHashMap<>();
-        if (rawVariables == null) return context;
+        if (rawVariables == null) {
+            return context;
+        }
 
         int limit = 10;
         while (limit-- > 0) {
             boolean changed = false;
             for (Map.Entry<String, String> entry : rawVariables.entrySet()) {
                 String key = entry.getKey();
-                if (context.containsKey(key)) continue;
+                if (context.containsKey(key)) {
+                    continue;
+                }
 
                 Object evaluated = evaluate(entry.getValue(), context);
                 // 只有解析结果不再是字符串，或者字符串中不含占位符，才算真正解析完成
@@ -74,7 +78,9 @@ public class VariableEngine {
                     changed = true;
                 }
             }
-            if (!changed) break;
+            if (!changed) {
+                break;
+            }
         }
         return context;
     }
@@ -83,7 +89,9 @@ public class VariableEngine {
 
     // 修改后的 evaluate 核心逻辑
     public Object evaluate(String text, Map<String, Object> context) {
-        if (text == null || !text.contains("${")) return text;
+        if (text == null || !text.contains("${")) {
+            return text;
+        }
 
         StandardEvaluationContext spelContext = buildSpelContext(context);
         String trimmed = text.trim();
@@ -169,16 +177,24 @@ public class VariableEngine {
      * 统一递归解析入口：支持 JsonNode, Map, Collection, String
      */
     public Object resolveValue(Object value, Map<String, Object> context) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
 
         // 1. 处理 JsonNode (来自 Jackson 解析的原始结构)
         if (value instanceof JsonNode node) {
             if (node.isTextual()) {
                 return evaluate(node.asText(), context);
             }
-            if (node.isNumber()) return node.numberValue(); // 保持数字类型
-            if (node.isBoolean()) return node.booleanValue(); // 保持布尔类型
-            if (node.isNull()) return null;
+            if (node.isNumber()) {
+                return node.numberValue(); // 保持数字类型
+            }
+            if (node.isBoolean()) {
+                return node.booleanValue(); // 保持布尔类型
+            }
+            if (node.isNull()) {
+                return null;
+            }
             if (node.isObject()) {
                 Map<String, Object> resolvedMap = new LinkedHashMap<>();
                 node.fields().forEachRemaining(entry -> {

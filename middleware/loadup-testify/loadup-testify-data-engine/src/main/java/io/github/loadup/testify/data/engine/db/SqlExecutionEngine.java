@@ -50,7 +50,9 @@ public class SqlExecutionEngine {
     private final VariableEngine variableEngine;
 
     public void execute(JsonNode setupNode, Map<String, Object> context, String yamlPath) {
-        if (setupNode == null || setupNode.isNull()) return;
+        if (setupNode == null || setupNode.isNull()) {
+            return;
+        }
 
         // 1. 处理原始 SQL
         if (setupNode.has("clean_sql")) {
@@ -84,7 +86,9 @@ public class SqlExecutionEngine {
      * 模式 A: 从 YAML 直接读取数据列表并插入
      */
     private void executeDataSetup(String tableName, JsonNode dataNode, Map<String, Object> context) {
-        if (!dataNode.isArray() || dataNode.isEmpty()) return;
+        if (!dataNode.isArray() || dataNode.isEmpty()) {
+            return;
+        }
 
         // 1. 递归解析整个 Data 节点的变量
         Object resolved = variableEngine.resolveValue(dataNode, context);
@@ -194,7 +198,9 @@ public class SqlExecutionEngine {
      * @param context 变量上下文
      */
     private void executeRawSql(String rawSql, Map<String, Object> context) {
-        if (rawSql == null || rawSql.isBlank()) return;
+        if (rawSql == null || rawSql.isBlank()) {
+            return;
+        }
 
         // 解析 SQL 中的变量占位符
         String processedSql = String.valueOf(variableEngine.evaluate(rawSql, context));
@@ -213,9 +219,15 @@ public class SqlExecutionEngine {
     }
 
     private Object extractValue(JsonNode node) {
-        if (node == null || node.isNull()) return null;
-        if (node.isNumber()) return node.numberValue();
-        if (node.isBoolean()) return node.booleanValue();
+        if (node == null || node.isNull()) {
+            return null;
+        }
+        if (node.isNumber()) {
+            return node.numberValue();
+        }
+        if (node.isBoolean()) {
+            return node.booleanValue();
+        }
         return node.asText();
     }
 }

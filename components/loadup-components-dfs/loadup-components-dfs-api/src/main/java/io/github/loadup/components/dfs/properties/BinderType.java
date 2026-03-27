@@ -46,7 +46,9 @@ public enum BinderType {
 
     @JsonCreator
     public static BinderType fromString(String value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
 
         for (BinderType type : BinderType.values()) {
             if (type.value.equalsIgnoreCase(value)) {

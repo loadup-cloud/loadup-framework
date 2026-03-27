@@ -35,19 +35,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JsonUtil {
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     static {
-        mapper.registerModule(new JavaTimeModule());
+        MAPPER.registerModule(new JavaTimeModule());
         // 允许未知的属性，防止反序列化失败
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     /** 将对象转为 JSON 字符串 */
     public static String toJson(Object obj) {
         try {
-            return mapper.writeValueAsString(obj);
+            return MAPPER.writeValueAsString(obj);
         } catch (Exception e) {
             throw new RuntimeException("Json serialization failed", e);
         }
@@ -55,31 +55,31 @@ public class JsonUtil {
 
     /** 将 JsonNode 转换为特定的 List<Map>，用于 DbAssertEngine */
     public static List<Map<String, Object>> toListMap(JsonNode node) {
-        return mapper.convertValue(node, new TypeReference<>() {});
+        return MAPPER.convertValue(node, new TypeReference<>() {});
     }
 
     public static JsonNode valueToTree(Object obj) {
-        return mapper.valueToTree(obj);
+        return MAPPER.valueToTree(obj);
     }
 
     public static <T> T convertValue(JsonNode exp, TypeReference<T> typeReference) {
-        return mapper.convertValue(exp, typeReference);
+        return MAPPER.convertValue(exp, typeReference);
     }
 
     public static <T> T convertValue(String exp, Class<T> parameterType) {
-        return mapper.convertValue(exp, parameterType);
+        return MAPPER.convertValue(exp, parameterType);
     }
 
     public static <T> T convertValue(Map<String, Object> variables, TypeReference<T> typeReference) {
-        return mapper.convertValue(variables, typeReference);
+        return MAPPER.convertValue(variables, typeReference);
     }
 
     public static <T> T convertValue(JsonNode jsonNode, Class<T> parameterType) {
-        return mapper.convertValue(jsonNode, parameterType);
+        return MAPPER.convertValue(jsonNode, parameterType);
     }
 
     public static Object convertValue(Object resolvedValue, Class<?> returnType) {
-        return mapper.convertValue(resolvedValue, returnType);
+        return MAPPER.convertValue(resolvedValue, returnType);
     }
 
     public static boolean equals(Object expected, Object actual) {

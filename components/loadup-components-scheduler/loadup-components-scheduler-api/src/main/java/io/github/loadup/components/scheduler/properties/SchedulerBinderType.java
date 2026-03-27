@@ -31,8 +31,7 @@ public enum SchedulerBinderType {
     SIMPLE_JOB("simplejob"),
     QUARTZ("quartz"),
     XXL_JOB("xxljob"),
-    POWER_JOB("powerjob"),
-    ;
+    POWER_JOB("powerjob");
 
     private final String value;
 
@@ -47,7 +46,9 @@ public enum SchedulerBinderType {
 
     @JsonCreator
     public static SchedulerBinderType fromString(String value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
 
         for (SchedulerBinderType type : SchedulerBinderType.values()) {
             if (type.value.equalsIgnoreCase(value)) {

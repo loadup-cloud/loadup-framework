@@ -55,7 +55,9 @@ public class DbAssertEngine implements TestifyAssertEngine {
 
     @Override
     public void compare(JsonNode expectNode, Object actualEx, Map<String, Object> context, List<String> reportList) {
-        if (expectNode == null) return;
+        if (expectNode == null) {
+            return;
+        }
 
         // 1. 变量解析：支持 ${serviceCode} 等变量在整个数据库断言块中的替换
         Object resolved = variableEngine.resolveValue(expectNode, context);
@@ -165,7 +167,9 @@ public class DbAssertEngine implements TestifyAssertEngine {
             // --- C. 字段级比对 (排除控制符) ---
             final Map<String, Object> finalActualRow = actualRow;
             normalizedExpected.forEach((field, expVal) -> {
-                if ("_match".equals(field) || "_count".equals(field)) return;
+                if ("_match".equals(field) || "_count".equals(field)) {
+                    return;
+                }
 
                 if (finalActualRow == null) {
                     // 如果定义了除 _count 外的字段，但没找到行
@@ -206,7 +210,9 @@ public class DbAssertEngine implements TestifyAssertEngine {
     }
 
     private long countMatchedRows(List<Map<String, Object>> actuals, Map<String, Object> expectedRow) {
-        if (!expectedRow.containsKey("_match")) return actuals.size();
+        if (!expectedRow.containsKey("_match")) {
+            return actuals.size();
+        }
 
         Map<String, Object> criteria = (Map<String, Object>) expectedRow.get("_match");
         Map<String, Object> normalizedCriteria = ColumnNormalizer.normalizeMap(criteria, columnNamingStrategy);

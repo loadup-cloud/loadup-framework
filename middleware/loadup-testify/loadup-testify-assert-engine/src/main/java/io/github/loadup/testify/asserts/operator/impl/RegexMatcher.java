@@ -35,7 +35,9 @@ public class RegexMatcher implements OperatorMatcher {
 
     @Override
     public MatchResult match(Object actual, Object val, Map<String, Object> config) {
-        if (actual == null) return MatchResult.fail(null, val, "Actual value is null");
+        if (actual == null) {
+            return MatchResult.fail(null, val, "Actual value is null");
+        }
 
         String regex = String.valueOf(val);
         boolean matches = String.valueOf(actual).matches(regex);
