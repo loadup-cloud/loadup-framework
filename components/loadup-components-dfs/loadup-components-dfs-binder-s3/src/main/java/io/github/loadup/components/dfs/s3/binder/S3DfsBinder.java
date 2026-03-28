@@ -164,8 +164,8 @@ public class S3DfsBinder extends AbstractDfsBinder<S3DfsBinderCfg, DfsBindingCfg
 
             byte[] content = baos.toByteArray();
 
-            // 计算MD5哈希
-            MessageDigest md = MessageDigest.getInstance("MD5");
+            // 计算SHA-256哈希（用于文件完整性校验，非加密用途）
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
             String hash = bytesToHex(md.digest(content));
 
             LocalDateTime uploadTime = LocalDateTime.now();

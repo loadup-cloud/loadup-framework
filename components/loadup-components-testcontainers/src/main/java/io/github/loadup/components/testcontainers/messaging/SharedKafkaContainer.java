@@ -38,7 +38,7 @@ import org.testcontainers.utility.DockerImageName;
  * @since 1.0.0
  */
 @Slf4j
-public class SharedKafkaContainer {
+public final class SharedKafkaContainer {
 
     /** Default Kafka version to use */
     public static final String DEFAULT_KAFKA_VERSION = "apache/kafka:4.1.1";

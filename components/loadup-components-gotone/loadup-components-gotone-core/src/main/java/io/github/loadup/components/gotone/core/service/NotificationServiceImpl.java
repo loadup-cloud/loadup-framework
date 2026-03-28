@@ -269,6 +269,7 @@ public class NotificationServiceImpl implements NotificationService {
                 data.put("title", config.get("title"));
                 data.put("sound", config.get("sound"));
             }
+            default -> log.warn("Unsupported notification channel: {}", channelConfig.getChannel());
         }
 
         return data;
