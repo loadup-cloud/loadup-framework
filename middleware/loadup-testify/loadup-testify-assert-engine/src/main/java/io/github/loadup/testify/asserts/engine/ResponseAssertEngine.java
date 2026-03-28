@@ -103,7 +103,7 @@ public class ResponseAssertEngine implements TestifyAssertEngine {
                 String key = entry.getKey();
                 recursiveCheck(path + "." + key, entry.getValue(), act.path(key), diffs);
             });
-        // 情况 C: 期望节点是数组(递归)
+            // 情况 C: 期望节点是数组(递归)
         } else if (exp.isArray()) {
             if (!act.isArray() || exp.size() != act.size()) {
                 diffs.add(new FieldDiff(path, "Size: " + exp.size(), "Size: " + act.size(), "Array size mismatch"));
@@ -112,7 +112,7 @@ public class ResponseAssertEngine implements TestifyAssertEngine {
                     recursiveCheck(path + "[" + i + "]", exp.get(i), act.get(i), diffs);
                 }
             }
-        // 情况 D: 叶子节点，直接进行等值对比
+            // 情况 D: 叶子节点，直接进行等值对比
         } else {
             Object expVal = getValueFromJsonNode(exp);
             Object actVal = getValueFromJsonNode(act);
