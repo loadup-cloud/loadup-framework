@@ -90,9 +90,7 @@ public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg, C
     /** 判断配置是否与 spring.redis 一致 */
     private boolean isMatchDefaultConfig() {
         // 如果 Binder 没有配置 Host，或者配置的 Host 和 DB 与 Spring 默认的一样
-        boolean dbMatch =
-                binderCfg.getDatabase() == 0 || binderCfg.getDatabase() == springRedisProperties.getDatabase();
-        return dbMatch;
+        return binderCfg.getDatabase() == 0 || binderCfg.getDatabase() == springRedisProperties.getDatabase();
     }
 
     /** 创建独立的工厂 */
@@ -158,8 +156,7 @@ public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg, C
     @Override
     public CacheValueWrapper get(String key) {
         byte[] value = redisTemplate.opsForValue().get(key);
-        CacheValueWrapper valueWrapper = this.serializer.deserialize(value, Object.class);
-        return valueWrapper;
+        return this.serializer.deserialize(value, Object.class);
     }
 
     @Override
@@ -178,12 +175,13 @@ public class RedisCacheBinder extends AbstractCacheBinder<RedisCacheBinderCfg, C
     public void cleanUp() {}
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void afterDestroy() {
         // 只有当我们自己 new 了工厂时，才需要手动销毁
         // 如果是复用的 defaultFactory，Spring 容器会自动管理它的生命周期
         if (this.redisTemplate.getConnectionFactory() instanceof LettuceConnectionFactory) {
             LettuceConnectionFactory factory = (LettuceConnectionFactory) this.redisTemplate.getConnectionFactory();
-            if (factory != defaultFactory) { // 关键判断：不是默认的才销毁
+            if (factory != defaultFactory) { // 关键判断：不是默认的才销毁（引用相等性检查是正确的）
                 factory.destroy();
                 log.info("私有 RedisConnectionFactory [{}] 已销毁", name);
             }

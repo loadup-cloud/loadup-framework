@@ -89,8 +89,6 @@
         <exclude name="LinguisticNaming"/>
         <!-- 枚举/类内部对自身类名的完全限定引用，可读性无害 -->
         <exclude name="UnnecessaryFullyQualifiedName"/>
-        <!-- 显式 = false / = null 初始化更清晰，不是冗余 -->
-        <exclude name="RedundantFieldInitializer"/>
     </rule>
 
     <!-- ===== Design ===== -->
@@ -133,6 +131,32 @@
           and no static members — they exist only as type tokens in generics/instanceof checks.
         -->
         <exclude name="MissingStaticMethodInNonInstantiatableClass"/>
+        <!--
+          PMD 7.x moved AvoidCatchingGenericException from bestpractices/errorprone to design.
+          crypto/JCA APIs only declare checked sub-types of GeneralSecurityException;
+          catching Exception is the only practical way to guard against undocumented RuntimeExceptions.
+          Same exclusion already present in bestpractices and errorprone for backward compatibility.
+        -->
+        <exclude name="AvoidCatchingGenericException"/>
+        <!--
+          PMD 7.x moved AvoidThrowingRawExceptionTypes from errorprone to design.
+          Already excluded from errorprone; kept consistent here.
+          Some framework integration points (Flyway init, entity listeners) must wrap
+          arbitrary third-party exceptions before the typed exception hierarchy is available.
+        -->
+        <exclude name="AvoidThrowingRawExceptionTypes"/>
+        <!--
+          AvoidRethrowingException: the pattern "catch(SpecificException e) { throw e; }"
+          is used deliberately to distinguish typed exceptions from generic fallback handlers.
+          Removing the catch would merge the specific and generic paths.
+        -->
+        <exclude name="AvoidRethrowingException"/>
+        <!--
+          UseObjectForClearerAPI: service APIs like insertAndCheck(key, bizType, bizId, requestData)
+          intentionally expose individual String parameters to keep callers lightweight
+          (no additional DTO required for simple idempotency checks).
+        -->
+        <exclude name="UseObjectForClearerAPI"/>
     </rule>
 
     <!-- ===== Error Prone ===== -->
@@ -140,7 +164,7 @@
         <exclude name="BeanMembersShouldSerialize"/>
         <exclude name="DataflowAnomalyAnalysis"/>
         <exclude name="MissingSerialVersionUID"/>
-        <!-- 允许在 catch 中 throw 新异常 -->
+        <!-- 允许在 catch 中 throw 新异常 (kept for backward compat; rule now lives in design.xml) -->
         <exclude name="AvoidCatchingGenericException"/>
         <exclude name="AvoidThrowingRawExceptionTypes"/>
         <!--
@@ -153,6 +177,13 @@
           annotation literals, not magic strings — AvoidDuplicateLiterals is a false positive.
         -->
         <exclude name="AvoidDuplicateLiterals"/>
+        <!--
+          Spring Boot @ConfigurationProperties beans and framework-level base classes
+          set defaults by calling inherited Lombok-generated setters from their constructors.
+          This pattern is intentional and safe — the setter is a trivial field assignment
+          and will never be overridden with side-effecting logic.
+        -->
+        <exclude name="ConstructorCallsOverridableMethod"/>
     </rule>
 
     <!-- ===== Multithreading ===== -->
@@ -176,6 +207,13 @@
           ScenarioKey instances during startup warmup — both are intentional.
         -->
         <exclude name="AvoidInstantiatingObjectsInLoops"/>
+        <!--
+          PMD 7.x moved RedundantFieldInitializer from codestyle to performance.
+          Explicit = false / = null / = 0 initializers are kept for documentation clarity —
+          they make the intended default value obvious to the reader without relying on
+          JVM-specified zero-values.
+        -->
+        <exclude name="RedundantFieldInitializer"/>
     </rule>
 
     <!-- ===== Security ===== -->

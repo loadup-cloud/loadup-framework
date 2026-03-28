@@ -26,6 +26,7 @@ import io.github.loadup.components.signature.enums.DigestAlgorithm;
 import io.github.loadup.components.signature.enums.SignatureAlgorithm;
 import jakarta.validation.constraints.NotNull;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -61,13 +62,15 @@ public class SignatureProperties {
     /**
      * 密钥长度配置
      */
-    private Map<String, Integer> keySize = new HashMap<>() {
-        {
-            put("rsa", 2048);
-            put("dsa", 2048);
-            put("ec", 256);
-        }
-    };
+    private Map<String, Integer> keySize = createDefaultKeySizeMap();
+
+    private static Map<String, Integer> createDefaultKeySizeMap() {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("rsa", 2048);
+        map.put("dsa", 2048);
+        map.put("ec", 256);
+        return map;
+    }
 
     /**
      * 获取指定算法的密钥长度
@@ -76,6 +79,6 @@ public class SignatureProperties {
      * @return 密钥长度
      */
     public int getKeySize(String algorithm) {
-        return keySize.getOrDefault(algorithm.toLowerCase(), 2048);
+        return keySize.getOrDefault(algorithm.toLowerCase(Locale.ROOT), 2048);
     }
 }

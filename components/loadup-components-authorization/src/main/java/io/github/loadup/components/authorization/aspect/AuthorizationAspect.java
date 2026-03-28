@@ -157,7 +157,7 @@ public class AuthorizationAspect {
     /**
      * Check if user has any of the required roles
      */
-    private boolean hasAnyRole(List<String> userRoles, String[] requiredRoles) {
+    private boolean hasAnyRole(List<String> userRoles, String... requiredRoles) {
         return Arrays.stream(requiredRoles)
                 .anyMatch(role -> userRoles.contains(role) || userRoles.contains("ROLE_" + role));
     }
@@ -165,7 +165,7 @@ public class AuthorizationAspect {
     /**
      * Check if user has all of the required roles
      */
-    private boolean hasAllRoles(List<String> userRoles, String[] requiredRoles) {
+    private boolean hasAllRoles(List<String> userRoles, String... requiredRoles) {
         return Arrays.stream(requiredRoles)
                 .allMatch(role -> userRoles.contains(role) || userRoles.contains("ROLE_" + role));
     }
@@ -173,14 +173,14 @@ public class AuthorizationAspect {
     /**
      * Check if user has any of the required permissions
      */
-    private boolean hasAnyPermission(List<String> userPermissions, String[] requiredPermissions) {
+    private boolean hasAnyPermission(List<String> userPermissions, String... requiredPermissions) {
         return Arrays.stream(requiredPermissions).anyMatch(userPermissions::contains);
     }
 
     /**
      * Check if user has all of the required permissions
      */
-    private boolean hasAllPermissions(List<String> userPermissions, String[] requiredPermissions) {
+    private boolean hasAllPermissions(List<String> userPermissions, String... requiredPermissions) {
         return Arrays.stream(requiredPermissions).allMatch(userPermissions::contains);
     }
 }

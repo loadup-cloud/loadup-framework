@@ -26,7 +26,7 @@ import io.github.loadup.components.globalunique.entity.GlobalUniqueEntity;
 import io.github.loadup.components.globalunique.enums.DbType;
 import io.github.loadup.components.globalunique.properties.GlobalUniqueProperties;
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,7 @@ public class GlobalUniqueMapper {
     /**
      * SQL 语句映射
      */
-    private static final Map<DbType, String> INSERT_SQL_MAP = new HashMap<>();
+    private static final Map<DbType, String> INSERT_SQL_MAP = new EnumMap<>(DbType.class);
 
     static {
         // MySQL
@@ -80,7 +80,7 @@ public class GlobalUniqueMapper {
      * @return 插入成功返回 1，失败返回 0
      * @throws DuplicateKeyException 唯一键冲突时抛出
      */
-    public int insert(GlobalUniqueEntity entity) throws DuplicateKeyException {
+    public int insert(GlobalUniqueEntity entity) {
         String sql = getInsertSql();
         LocalDateTime now = LocalDateTime.now();
 

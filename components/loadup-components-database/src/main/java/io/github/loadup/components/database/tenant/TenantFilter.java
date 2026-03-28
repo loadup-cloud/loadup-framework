@@ -103,7 +103,7 @@ public class TenantFilter extends OncePerRequestFilter {
         String serverName = request.getServerName();
         if (serverName != null && serverName.contains(".")) {
             String subdomain = serverName.substring(0, serverName.indexOf('.'));
-            if (!subdomain.equals("www") && !subdomain.equals("api")) {
+            if (!"www".equals(subdomain) && !"api".equals(subdomain)) {
                 return subdomain;
             }
         }

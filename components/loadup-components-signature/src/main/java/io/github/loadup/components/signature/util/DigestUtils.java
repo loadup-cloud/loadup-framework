@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author loadup
  */
 @Slf4j
-public class DigestUtils {
+public final class DigestUtils {
 
     private DigestUtils() {
         throw new UnsupportedOperationException("Utility class");
@@ -156,11 +156,7 @@ public class DigestUtils {
     private static String bytesToHex(byte[] bytes) {
         StringBuilder hexString = new StringBuilder();
         for (byte b : bytes) {
-            String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) {
-                hexString.append('0');
-            }
-            hexString.append(hex);
+            hexString.append(String.format("%02x", b));
         }
         return hexString.toString();
     }

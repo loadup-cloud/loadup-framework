@@ -31,6 +31,7 @@ import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -74,7 +75,7 @@ public class KeyPairServiceImpl implements KeyPairService {
 
     @Override
     public KeyPairInfo generateKeyPair(KeyAlgorithm algorithm) {
-        int keySize = properties.getKeySize(algorithm.name().toLowerCase());
+        int keySize = properties.getKeySize(algorithm.name().toLowerCase(Locale.ROOT));
         return generateKeyPair(algorithm, keySize);
     }
 
