@@ -28,6 +28,7 @@ import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -190,7 +191,7 @@ public class AliyunSmsProvider implements NotificationChannelProvider {
                 templateCode);
 
         // 模拟：90% 成功率
-        return Math.random() > 0.1;
+        return ThreadLocalRandom.current().nextDouble() > 0.1;
     }
 
     /**

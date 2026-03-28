@@ -53,7 +53,7 @@ import org.testcontainers.utility.DockerImageName;
  * @since 1.0.0
  */
 @Slf4j
-public class SharedRedisContainer {
+public final class SharedRedisContainer {
 
     /**
      * Default Redis version to use

@@ -34,10 +34,10 @@ public abstract class ArithmeticCaptchaAbstract extends Captcha {
     private String arithmeticString;
 
     /** 难度 */
-    protected static int difficulty = 10;
+    protected int difficulty = 10;
 
     /** 表达式复杂度 */
-    protected static int algorithmSign = 4;
+    protected int algorithmSign = 4;
 
     public ArithmeticCaptchaAbstract() {
         setLen(2);
@@ -115,7 +115,7 @@ public abstract class ArithmeticCaptchaAbstract extends Captcha {
         if (difficulty <= 0) {
             difficulty = 10;
         }
-        ArithmeticCaptchaAbstract.difficulty = difficulty;
+        this.difficulty = difficulty;
     }
 
     /**
@@ -141,6 +141,6 @@ public abstract class ArithmeticCaptchaAbstract extends Captcha {
         if (algorithmSign > 5) {
             algorithmSign = 5;
         }
-        ArithmeticCaptchaAbstract.algorithmSign = algorithmSign;
+        this.algorithmSign = algorithmSign;
     }
 }

@@ -39,7 +39,7 @@ import org.testcontainers.utility.DockerImageName;
  * @since 1.0.0
  */
 @Slf4j
-public class SharedMongoDBContainer {
+public final class SharedMongoDBContainer {
 
     /**
      * Default MongoDB version to use

@@ -28,6 +28,7 @@ import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -72,7 +73,6 @@ public class DingtalkWebhookProvider implements NotificationChannelProvider {
         }
 
         String webhookUrl = getConfigValue(request.getChannelConfig(), "webhookUrl", null);
-        String secret = getConfigValue(request.getChannelConfig(), "secret", null);
         String msgType = getConfigValue(request.getChannelConfig(), "msgtype", "text");
         boolean atAll = Boolean.parseBoolean(getConfigValue(request.getChannelConfig(), "atAll", "false"));
 
@@ -189,7 +189,7 @@ public class DingtalkWebhookProvider implements NotificationChannelProvider {
                 content.length());
 
         // 模拟：92% 成功率
-        return Math.random() > 0.08;
+        return ThreadLocalRandom.current().nextDouble() > 0.08;
     }
 
     /**

@@ -153,10 +153,14 @@ public class GlobalUniqueMapper {
     }
 
     /**
-     * 获取表名（带前缀）
+     * 获取表名（带前缀），并验证表名合法性（防止 SQL 注入）。
      */
     private String getTableName() {
-        return properties.getFullTableName();
+        String tableName = properties.getFullTableName();
+        if (tableName == null || !tableName.matches("[a-zA-Z_][a-zA-Z0-9_.]*")) {
+            throw new IllegalArgumentException("Invalid table name: " + tableName);
+        }
+        return tableName;
     }
 
     /**
