@@ -72,7 +72,7 @@
         <skip.integration.tests>false</skip.integration.tests>
         <skip.spotless>false</skip.spotless>
         <mysql.version>9.5.0</mysql.version>
-        <flyway.version>12.0.0</flyway.version>
+        <flyway.version>12.2.0</flyway.version>
         <!-- 代码质量工具版本 -->
         <spotbugs.version>4.8.6</spotbugs.version>
         <spotbugs.plugin.version>4.8.6.4</spotbugs.plugin.version>
