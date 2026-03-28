@@ -81,5 +81,14 @@
         <Class name="~io\.github\.loadup\.commons\..*"/>
     </Match>
 
+    <!--
+      RedisCacheBinder.calculateRandomDuration 使用 ThreadLocalRandom 做缓存过期时间抖动（防止缓存雪崩），
+      这不是安全敏感场景，PREDICTABLE_RANDOM 属于误报。
+    -->
+    <Match>
+        <Class name="io.github.loadup.components.cache.redis.binder.RedisCacheBinder"/>
+        <Bug pattern="PREDICTABLE_RANDOM"/>
+    </Match>
+
 </FindBugsFilter>
 

@@ -22,10 +22,10 @@ package com.github.loadup.components.scheduler.xxljob.autoconfig;
  * #L%
  */
 
+import com.github.loadup.components.scheduler.xxljob.binder.XxlJobSchedulerBinder;
 import com.github.loadup.components.scheduler.xxljob.cfg.XxlJobSchedulerBinderCfg;
 import io.github.loadup.components.scheduler.binding.DefaultSchedulerBinding;
 import io.github.loadup.components.scheduler.cfg.SchedulerBindingCfg;
-import io.github.loadup.components.scheduler.xxljob.binder.XxlJobSchedulerBinder;
 import io.github.loadup.framework.api.manager.BindingMetadata;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

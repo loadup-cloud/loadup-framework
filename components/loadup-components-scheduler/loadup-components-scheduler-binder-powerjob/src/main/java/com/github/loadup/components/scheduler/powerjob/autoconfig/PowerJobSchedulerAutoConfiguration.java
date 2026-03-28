@@ -22,10 +22,10 @@ package com.github.loadup.components.scheduler.powerjob.autoconfig;
  * #L%
  */
 
+import com.github.loadup.components.scheduler.powerjob.binder.PowerJobSchedulerBinder;
 import com.github.loadup.components.scheduler.powerjob.cfg.PowerJobSchedulerBinderCfg;
 import io.github.loadup.components.scheduler.binding.DefaultSchedulerBinding;
 import io.github.loadup.components.scheduler.binding.SchedulerBinding;
-import io.github.loadup.components.scheduler.powerjob.binder.PowerJobSchedulerBinder;
 import io.github.loadup.framework.api.manager.BindingMetadata;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
