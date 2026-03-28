@@ -37,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author loadup
  */
 @Slf4j
-public class SignatureUtils {
+public final class SignatureUtils {
 
     private SignatureUtils() {
         throw new UnsupportedOperationException("Utility class");
@@ -123,7 +123,8 @@ public class SignatureUtils {
     /**
      * 加载私钥
      */
-    private static PrivateKey loadPrivateKey(String base64PrivateKey, String keyAlgorithm) throws Exception {
+    private static PrivateKey loadPrivateKey(String base64PrivateKey, String keyAlgorithm)
+            throws GeneralSecurityException {
         byte[] keyBytes = Base64.getDecoder().decode(base64PrivateKey);
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
         KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm);
@@ -133,7 +134,8 @@ public class SignatureUtils {
     /**
      * 加载公钥
      */
-    private static PublicKey loadPublicKey(String base64PublicKey, String keyAlgorithm) throws Exception {
+    private static PublicKey loadPublicKey(String base64PublicKey, String keyAlgorithm)
+            throws GeneralSecurityException {
         byte[] keyBytes = Base64.getDecoder().decode(base64PublicKey);
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
         KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm);

@@ -34,9 +34,13 @@ import lombok.extern.slf4j.Slf4j;
  * @since 1.0.0
  */
 @Slf4j
-public class TenantContextHolder {
+public final class TenantContextHolder {
 
     private static final ThreadLocal<String> TENANT_ID = new InheritableThreadLocal<>();
+
+    private TenantContextHolder() {
+        throw new UnsupportedOperationException("Utility class");
+    }
 
     /**
      * Set current tenant ID

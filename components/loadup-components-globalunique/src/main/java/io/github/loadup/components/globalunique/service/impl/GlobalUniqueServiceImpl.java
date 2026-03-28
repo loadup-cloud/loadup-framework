@@ -64,7 +64,7 @@ public class GlobalUniqueServiceImpl implements GlobalUniqueService {
 
             int inserted = globalUniqueMapper.insert(entity);
 
-            if (inserted == 1) {
+            if (inserted > 0) {
                 log.debug("全局唯一性检查通过: uniqueKey={}, bizType={}, bizId={}", uniqueKey, bizType, bizId);
                 return true;
             }

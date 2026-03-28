@@ -43,7 +43,6 @@ public class JsonCacheSerializer implements CacheSerializer {
         if (bytes == null || bytes.length == 0) {
             return new CacheValueWrapper<>("NULL", null, null);
         }
-        CacheValueWrapper<T> wrapper = JsonUtil.fromBytes(bytes, new TypeReference<>() {});
-        return wrapper;
+        return JsonUtil.fromBytes(bytes, new TypeReference<>() {});
     }
 }

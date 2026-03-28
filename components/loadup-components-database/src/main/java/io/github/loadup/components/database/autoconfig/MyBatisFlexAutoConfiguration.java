@@ -81,7 +81,7 @@ public class MyBatisFlexAutoConfiguration {
                 LogicDeleteManager.setProcessor(new BooleanLogicDeleteProcessor());
             }
             // Enable SQL audit in development mode (optional)
-            MyBatisFlexAutoConfiguration.this.enableSqlAuditIfNeeded();
+            enableSqlAuditIfNeeded();
         };
     }
 

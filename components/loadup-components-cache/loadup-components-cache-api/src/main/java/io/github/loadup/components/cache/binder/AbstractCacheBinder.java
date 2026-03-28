@@ -60,6 +60,7 @@ public abstract class AbstractCacheBinder<C extends CacheBinderCfg, S extends Ca
 
     protected abstract void onInit();
 
+    @Override
     public CacheSerializer getSerializer() {
         return serializer;
     }

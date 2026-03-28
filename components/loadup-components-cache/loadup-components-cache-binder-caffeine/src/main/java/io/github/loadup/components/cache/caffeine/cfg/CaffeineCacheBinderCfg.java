@@ -74,10 +74,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CaffeineCacheBinderCfg extends CacheBinderCfg {
-    public CaffeineCacheBinderCfg() {
-        // 在构造函数中修改默认值
-        this.setSerializerBeanName(null);
-    }
 
     /**
      * Caffeine cache spec string
@@ -117,6 +113,11 @@ public class CaffeineCacheBinderCfg extends CacheBinderCfg {
      * 随机因子 (例如 0.2 表示在 100%~120% 之间波动)
      */
     private double randomFactor = 0.2;
+
+    public CaffeineCacheBinderCfg() {
+        // 在构造函数中修改默认值
+        this.setSerializerBeanName(null);
+    }
 
     /**
      * Check if any custom configuration is provided
