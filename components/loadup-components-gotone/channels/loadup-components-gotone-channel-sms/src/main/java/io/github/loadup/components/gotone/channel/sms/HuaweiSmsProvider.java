@@ -28,6 +28,7 @@ import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -206,7 +207,7 @@ public class HuaweiSmsProvider implements NotificationChannelProvider {
                 templateId);
 
         // 模拟：87% 成功率
-        return Math.random() > 0.13;
+        return ThreadLocalRandom.current().nextDouble() > 0.13;
     }
 
     /**

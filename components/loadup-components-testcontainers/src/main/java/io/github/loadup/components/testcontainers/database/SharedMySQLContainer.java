@@ -54,7 +54,7 @@ import org.testcontainers.utility.DockerImageName;
  * @since 1.0.0
  */
 @Slf4j
-public class SharedMySQLContainer {
+public final class SharedMySQLContainer {
 
     /**
      * Default MySQL version to use
@@ -123,8 +123,11 @@ public class SharedMySQLContainer {
                 return;
             }
 
-            String imageName =
-                    (config != null && config.getImage() != null) ? config.getImage() : DEFAULT_MYSQL_VERSION;
+            if (config == null) {
+                config = new ContainerConfig();
+            }
+
+            String imageName = (config.getImage() != null) ? config.getImage() : DEFAULT_MYSQL_VERSION;
 
             log.info("🚀 Starting Shared MySQL TestContainer: {}", imageName);
 

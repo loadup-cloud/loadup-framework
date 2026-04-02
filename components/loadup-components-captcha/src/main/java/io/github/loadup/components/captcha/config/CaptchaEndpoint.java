@@ -48,7 +48,6 @@ public class CaptchaEndpoint {
     @GetMapping("${captcha.create.path:/create}")
     public void create(HttpServletResponse response) {
         ArithmeticCaptcha captcha = new ArithmeticCaptcha(properties.getWidth(), properties.getHeight());
-        String result = captcha.text();
         // 设置响应头
         response.setContentType(captcha.getContentType());
         response.setHeader("Pragma", "No-cache");

@@ -56,11 +56,11 @@ public class DatabaseDfsBinder extends AbstractDfsBinder<DatabaseDfsBinderCfg, D
     private String tableName = "file_storage";
 
     private final Map<String, String> sqlMap = new HashMap<>();
-    private final String insertSql =
+    private static final String INSERT_SQL =
             "INSERT INTO %s (file_id, filename, content, size, content_type, hash,biz_type, biz_id, public_access, upload_time, metadata) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    private final String querySql = "SELECT * FROM %s WHERE file_id = ?";
-    private final String deleteSql = "DELETE FROM %s WHERE file_id = ?";
-    private final String countSql = "SELECT COUNT(*) FROM %s WHERE file_id = ?";
+    private static final String QUERY_SQL = "SELECT * FROM %s WHERE file_id = ?";
+    private static final String DELETE_SQL = "DELETE FROM %s WHERE file_id = ?";
+    private static final String COUNT_SQL = "SELECT COUNT(*) FROM %s WHERE file_id = ?";
 
     @Override
     public String getBinderType() {
@@ -71,12 +71,17 @@ public class DatabaseDfsBinder extends AbstractDfsBinder<DatabaseDfsBinderCfg, D
     protected void afterConfigInjected(String name, DatabaseDfsBinderCfg binderCfg, DfsBindingCfg bindingCfg) {
         String tableNameConfig = this.binderCfg.getTableName();
         if (StringUtils.isNotBlank(tableNameConfig)) {
+            // 验证表名：只允许字母、数字和下划线，防止 SQL 注入
+            if (!tableNameConfig.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
+                throw new IllegalArgumentException(
+                        "Invalid table name (only letters, digits, underscores allowed): " + tableNameConfig);
+            }
             tableName = tableNameConfig;
         }
-        sqlMap.put("INSERT", insertSql.formatted(tableName));
-        sqlMap.put("QUERY", querySql.formatted(tableName));
-        sqlMap.put("DELETE", deleteSql.formatted(tableName));
-        sqlMap.put("COUNT", countSql.formatted(tableName));
+        sqlMap.put("INSERT", INSERT_SQL.formatted(tableName));
+        sqlMap.put("QUERY", QUERY_SQL.formatted(tableName));
+        sqlMap.put("DELETE", DELETE_SQL.formatted(tableName));
+        sqlMap.put("COUNT", COUNT_SQL.formatted(tableName));
     }
 
     @Override
@@ -101,8 +106,8 @@ public class DatabaseDfsBinder extends AbstractDfsBinder<DatabaseDfsBinderCfg, D
 
             byte[] content = baos.toByteArray();
 
-            // 计算MD5哈希
-            MessageDigest md = MessageDigest.getInstance("MD5");
+            // 计算SHA-256哈希（用于文件完整性校验，非加密用途）
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
             String hash = bytesToHex(md.digest(content));
 
             // 生成文件ID
@@ -308,6 +313,6 @@ public class DatabaseDfsBinder extends AbstractDfsBinder<DatabaseDfsBinderCfg, D
     }
 
     public Map<String, String> getSqlMap() {
-        return sqlMap;
+        return Collections.unmodifiableMap(sqlMap);
     }
 }

@@ -28,6 +28,7 @@ import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -171,7 +172,7 @@ public class WechatWebhookProvider implements NotificationChannelProvider {
                 content.length());
 
         // 模拟：93% 成功率
-        return Math.random() > 0.07;
+        return ThreadLocalRandom.current().nextDouble() > 0.07;
     }
 
     /**

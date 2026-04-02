@@ -73,10 +73,14 @@ public class LocalDfsBinder extends AbstractDfsBinder<LocalDfsBinderCfg, DfsBind
 
             // 生成存储路径: basePath/bizType/yyyy/MM/dd/fileId
             String relativePath = buildRelativePath(request.getBizType(), fileId);
-            Path targetPath = Paths.get(basePath, relativePath);
+            Path targetPath = Paths.get(basePath, relativePath).normalize();
+            validatePath(basePath, targetPath);
 
             // 创建目录
-            Files.createDirectories(targetPath.getParent());
+            Path parentDir = targetPath.getParent();
+            if (parentDir != null) {
+                Files.createDirectories(parentDir);
+            }
 
             // 保存文件并计算哈希
             String hash;
@@ -95,8 +99,8 @@ public class LocalDfsBinder extends AbstractDfsBinder<LocalDfsBinderCfg, DfsBind
                     size += bytesRead;
                 }
 
-                // 计算MD5哈希
-                MessageDigest md = MessageDigest.getInstance("MD5");
+                // 计算SHA-256哈希（用于文件完整性校验，非加密用途）
+                MessageDigest md = MessageDigest.getInstance("SHA-256");
                 hash = bytesToHex(md.digest(baos.toByteArray()));
             }
 
@@ -124,6 +128,9 @@ public class LocalDfsBinder extends AbstractDfsBinder<LocalDfsBinderCfg, DfsBind
 
             return metadata;
 
+        } catch (IOException e) {
+            log.error("Failed to upload file to local storage: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to upload file", e);
         } catch (Exception e) {
             log.error("Failed to upload file to local storage: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to upload file", e);
@@ -136,12 +143,14 @@ public class LocalDfsBinder extends AbstractDfsBinder<LocalDfsBinderCfg, DfsBind
             FileMetadata metadata = getMetadata(fileId);
             String basePath = binderCfg.getBasePath();
 
-            Path filePath = Paths.get(basePath, metadata.getPath());
+            Path filePath = Paths.get(basePath, metadata.getPath()).normalize();
+            validatePath(basePath, filePath);
 
             if (!Files.exists(filePath)) {
                 throw new FileNotFoundException("File not found: " + fileId);
             }
 
+            // 调用方负责关闭此 InputStream（streaming download 场景）
             InputStream inputStream = new FileInputStream(filePath.toFile());
 
             return FileDownloadResponse.builder()
@@ -161,13 +170,15 @@ public class LocalDfsBinder extends AbstractDfsBinder<LocalDfsBinderCfg, DfsBind
             FileMetadata metadata = getMetadata(fileId);
             String basePath = binderCfg.getBasePath();
 
-            Path filePath = Paths.get(basePath, metadata.getPath());
+            Path filePath = Paths.get(basePath, metadata.getPath()).normalize();
+            validatePath(basePath, filePath);
 
             if (Files.exists(filePath)) {
                 Files.delete(filePath);
 
                 // 删除元数据文件
-                Path metaPath = Paths.get(basePath, ".meta", fileId + ".json");
+                Path metaPath = Paths.get(basePath, ".meta", fileId + ".json").normalize();
+                validatePath(basePath, metaPath);
                 if (Files.exists(metaPath)) {
                     Files.delete(metaPath);
                 }
@@ -190,7 +201,8 @@ public class LocalDfsBinder extends AbstractDfsBinder<LocalDfsBinderCfg, DfsBind
             FileMetadata metadata = getMetadata(fileId);
             String basePath = binderCfg.getBasePath();
 
-            Path filePath = Paths.get(basePath, metadata.getPath());
+            Path filePath = Paths.get(basePath, metadata.getPath()).normalize();
+            validatePath(basePath, filePath);
             return Files.exists(filePath);
 
         } catch (Exception e) {
@@ -208,7 +220,8 @@ public class LocalDfsBinder extends AbstractDfsBinder<LocalDfsBinderCfg, DfsBind
             }
 
             // 读取.meta文件
-            Path metaPath = Paths.get(basePath, ".meta", fileId + ".json");
+            Path metaPath = Paths.get(basePath, ".meta", fileId + ".json").normalize();
+            validatePath(basePath, metaPath);
             if (!Files.exists(metaPath)) {
                 throw new FileNotFoundException("Metadata not found for fileId: " + fileId);
             }
@@ -218,6 +231,21 @@ public class LocalDfsBinder extends AbstractDfsBinder<LocalDfsBinderCfg, DfsBind
         } catch (Exception e) {
             log.error("Failed to get metadata for fileId: {}", fileId, e);
             throw new RuntimeException("Failed to get metadata", e);
+        }
+    }
+
+    /**
+     * 验证路径不超出 basePath 范围，防止路径穿越攻击。
+     *
+     * @param basePath 基础目录
+     * @param targetPath 目标路径（已 normalize）
+     * @throws SecurityException 当目标路径超出 basePath 范围时
+     */
+    private static void validatePath(String basePath, Path targetPath) {
+        Path normalizedBase = Paths.get(basePath).normalize().toAbsolutePath();
+        Path normalizedTarget = targetPath.toAbsolutePath();
+        if (!normalizedTarget.startsWith(normalizedBase)) {
+            throw new SecurityException("Path traversal attempt detected: " + targetPath);
         }
     }
 
@@ -239,7 +267,8 @@ public class LocalDfsBinder extends AbstractDfsBinder<LocalDfsBinderCfg, DfsBind
 
     private void saveMetadata(String basePath, String fileId, FileMetadata metadata) throws IOException {
         // 在basePath/.meta目录下保存元数据为JSON文件
-        Path metaDir = Paths.get(basePath, ".meta");
+        Path metaDir = Paths.get(basePath, ".meta").normalize();
+        validatePath(basePath, metaDir);
         Files.createDirectories(metaDir);
 
         Path metaPath = metaDir.resolve(fileId + ".json");

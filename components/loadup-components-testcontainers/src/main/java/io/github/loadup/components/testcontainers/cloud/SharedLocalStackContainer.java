@@ -54,7 +54,7 @@ import org.testcontainers.utility.DockerImageName;
  * @since 1.0.0
  */
 @Slf4j
-public class SharedLocalStackContainer {
+public final class SharedLocalStackContainer {
 
     /**
      * Default LocalStack version to use

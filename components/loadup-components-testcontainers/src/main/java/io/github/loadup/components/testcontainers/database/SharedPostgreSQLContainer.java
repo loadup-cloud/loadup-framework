@@ -47,7 +47,7 @@ import org.testcontainers.utility.DockerImageName;
  * @since 1.0.0
  */
 @Slf4j
-public class SharedPostgreSQLContainer {
+public final class SharedPostgreSQLContainer {
 
     /** Default PostgreSQL version to use */
     public static final String DEFAULT_POSTGRES_VERSION = "postgres:15-alpine";

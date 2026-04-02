@@ -40,7 +40,7 @@ import org.testcontainers.utility.DockerImageName;
  * @since 1.0.0
  */
 @Slf4j
-public class SharedElasticsearchContainer {
+public final class SharedElasticsearchContainer {
 
     /** Default Elasticsearch version to use */
     public static final String DEFAULT_ELASTICSEARCH_VERSION = "docker.elastic.co/elasticsearch/elasticsearch:8.11.0";

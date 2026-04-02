@@ -158,7 +158,7 @@ public class LoadUpFlywayAutoConfiguration {
     /**
      * Initializer that triggers Flyway migration.
      */
-    static class FlywayMigrationInitializer {
+    static final class FlywayMigrationInitializer {
 
         FlywayMigrationInitializer(Flyway flyway) {
             try {
