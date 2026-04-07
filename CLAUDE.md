@@ -33,7 +33,7 @@ mvn test -pl modules/loadup-modules-config/loadup-modules-config-test
 | # | 禁止行为 | 正确做法 |
 |---|---------|---------|
 | 1 | Java 文件头写 `/*- #%L ... #L% */` License 块 | 不写，CI 的 `license-maven-plugin` 自动插入 |
-| 2 | 创建 `@RestController` / `@Controller` | 在 `application.yml` 用 `bean://serviceName:method` 路由 |
+| 2 | 创建 `@RestController` / `@Controller` | 在 `routes.csv` 或 `gateway_routes` 表用 `bean://serviceName:method` 路由 |
 | 3 | 集成测试中用 `@MockBean` 替代 DB | 用 `@EnableTestContainers(ContainerType.MYSQL)` 启动真实容器 |
 | 4 | `@Autowired` 字段注入 | 构造器注入：类加 `@RequiredArgsConstructor`，字段加 `final` |
 | 5 | 字符串拼接 SQL | 使用 MyBatis-Flex `QueryWrapper` |
@@ -81,20 +81,40 @@ loadup-modules-{mod}/
 
 ## API 暴露方式（无 Controller）
 
+Gateway **不支持** YAML 路由数组，路由通过 **CSV 文件** 或 **数据库** 管理。
+
 ```yaml
-# loadup-application/src/main/resources/application.yml
+# application.yml — 仅配置存储类型和安全密钥
 loadup:
   gateway:
-    routes:
-      - path: /api/v1/config/list
-        method: POST
-        target: "bean://configItemService:listAll"
-        securityCode: "default"   # JWT 认证
-      - path: /api/v1/config/value
-        method: POST
-        target: "bean://configItemService:getValue"
-        securityCode: "OFF"       # 关闭认证
+    enabled: true
+    storage:
+      type: FILE          # FILE | DATABASE | CONFIG_CENTER（规划中，暂未实现）
+    security:
+      secret: "your-jwt-secret-key"
 ```
+
+**FILE 存储**（开发默认）：在 `resources/gateway-config/routes.csv` 追加行：
+
+```csv
+# path,method,target,securityCode,requestTemplate,responseTemplate,enabled,properties
+/api/v1/config/list,POST,bean://configItemService:listAll,default,,,true,
+/api/v1/config/value,POST,bean://configItemService:getValue,OFF,,,true,
+```
+
+**DATABASE 存储**（生产推荐）：INSERT 到 `gateway_routes` 表：
+
+```sql
+INSERT INTO gateway_routes (route_id, route_name, path, method, target, security_code, enabled)
+VALUES ('config-list', '配置列表', '/api/v1/config/list', 'POST',
+        'bean://configItemService:listAll', 'default', 1);
+```
+
+| storage.type | 适用场景 | 状态 |
+|---|---|---|
+| `FILE` | 开发 / 小规模部署 | ✅ 已实现 |
+| `DATABASE` | 生产环境 | ✅ 已实现 |
+| `CONFIG_CENTER` | 外部配置中心（RepositoryPlugin SPI） | 📋 规划中 |
 
 ---
 

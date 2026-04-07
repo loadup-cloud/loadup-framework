@@ -3,6 +3,11 @@
 > 本文件指导 GitHub Copilot / AI 代码生成工具在 LoadUp 项目中自动生成或修改代码时的行为约束。
 > **请严格遵守所有规则**，尤其是标注 🚫 的禁止项。
 
+> **My skills are stored in the `.ai/skills` folder. Always check them for specific coding standards.**
+> - `.ai/skills/api-generator.md` — COLA 4.0 分层代码模板、Gateway 路由集成规范
+> - `.ai/skills/unit-test-testify.md` — Testify 测试框架专属规范（YAML 驱动集成测试）
+> - `.ai/skills/mybatis-mapper.md` — MyBatis-Flex DO / Mapper / GatewayImpl 编写规范
+
 ---
 
 ## 0. 核心原则（优先级最高）
@@ -17,7 +22,7 @@
 
 - 本项目通过 **LoadUp Gateway** 以 `bean://serviceName:method` 协议直接调用 App 层 `@Service` Bean
 - **不需要**也**不应该**创建 `@RestController`、`@Controller` 等 HTTP 控制器
-- API 路由统一在 Gateway 路由配置（YAML / 数据库）中声明
+- API 路由统一在 Gateway 路由配置（CSV 文件 / 数据库）中声明
 
 ### 0.3 测试必须使用 Testify 组件 🚫
 
@@ -139,43 +144,67 @@ loadup-modules-xxx/
 
 ## 5. Gateway 集成方式
 
-所有业务接口通过 Gateway 路由配置暴露，无需编写 Controller：
+所有业务接口通过 Gateway 路由配置暴露，无需编写 Controller。
+Gateway **不支持** YAML 路由数组，路由通过 **CSV 文件** 或 **数据库** 管理。
+
+### 5.1 基础配置（application.yml）
 
 ```yaml
 # loadup-application/src/main/resources/application.yml
 loadup:
   gateway:
-    routes:
-      - path: /api/v1/config/list
-        method: POST
-        target: "bean://configItemService:listAll"
-        securityCode: "default"        # JWT 认证
-      - path: /api/v1/config/create
-        method: POST
-        target: "bean://configItemService:create"
-        securityCode: "default"
-      - path: /api/v1/config/value
-        method: POST
-        target: "bean://configItemService:getValue"
-        securityCode: "OFF"            # 关闭认证
+    enabled: true
+    storage:
+      type: FILE          # FILE（CSV）| DATABASE | CONFIG_CENTER（规划中，暂未实现）
+    security:
+      secret: "your-jwt-secret-key"
 ```
 
-**target 格式说明**：
+### 5.2 FILE 存储（默认，开发/小规模部署）
+
+在 `src/main/resources/gateway-config/routes.csv` 追加路由行：
+
+```csv
+path,method,target,securityCode,requestTemplate,responseTemplate,enabled,properties
+/api/v1/config/list,POST,bean://configItemService:listAll,default,,,true,
+/api/v1/config/create,POST,bean://configItemService:create,default,,,true,
+/api/v1/config/value,POST,bean://configItemService:getValue,OFF,,,true,
+```
+
+**CSV 字段（8 列，顺序固定）**：`path` / `method` / `target` / `securityCode` / `requestTemplate` / `responseTemplate` / `enabled` / `properties`
+
+### 5.3 DATABASE 存储（生产推荐）
+
+```yaml
+loadup:
+  gateway:
+    storage:
+      type: DATABASE
+```
+
+```sql
+INSERT INTO gateway_routes (route_id, route_name, path, method, target, security_code, enabled)
+VALUES ('config-list', '配置列表', '/api/v1/config/list', 'POST',
+        'bean://configItemService:listAll', 'default', 1);
+```
+
+### 5.4 target 格式说明
 
 | 协议 | 格式 | 说明 |
 |------|------|------|
 | BEAN | `bean://beanName:methodName` | 调用 Spring Bean 方法（主要方式） |
 | HTTP | `http://host:port/path` | HTTP 反向代理转发 |
-| RPC  | `rpc://serviceName:method` | Dubbo RPC（按需启用） |
+| RPC  | `rpc://interfaceName:method:version` | Dubbo RPC（按需启用） |
 
-**securityCode 说明**：
+### 5.5 securityCode 说明
 
 | 值 | 含义 |
 |----|------|
-| `OFF` | 关闭所有安全校验 |
-| `default` | 默认 JWT Token 验证 |
-| `hmac` | HMAC 签名验签 |
-| 自定义 | 通过 `SecurityStrategy` SPI 扩展 |
+| `OFF` | 关闭所有安全校验（公开接口） |
+| `default` | JWT Bearer Token 验证（用户接口） |
+| `signature` | HMAC-SHA256 签名验签（Open API） |
+| `internal` | 内部调用（IP 白名单 / `X-Internal-Call: true` 头） |
+| 自定义 | 实现 `SecurityStrategy` SPI 并注册为 `@Component` |
 
 ---
 

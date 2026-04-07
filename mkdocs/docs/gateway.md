@@ -72,12 +72,113 @@ path,method,target,securityCode,requestTemplate,responseTemplate,enabled,propert
 
 ### 路由配置
 
-支持文件（CSV）和数据库两种方式：
+Gateway 支持三种路由存储方式，通过 `storage.type` 配置切换：
+
+| storage.type | 适用场景 | 状态 |
+|---|---|---|
+| `FILE` | CSV 文件，适合开发 / 小规模部署 | ✅ 已实现 |
+| `DATABASE` | Spring Data JDBC，适合生产环境 | ✅ 已实现 |
+| `CONFIG_CENTER` | 外部配置中心（作为 `RepositoryPlugin` SPI 实现扩展） | 📋 规划中，暂未实现 |
+
+#### FILE 存储（默认）
+
+在 `src/main/resources/gateway-config/routes.csv` 追加路由行：
 
 ```csv
-path,method,target,securityCode
-/api/users/**,GET,bean://userService:getUser,default
+path,method,target,securityCode,requestTemplate,responseTemplate,enabled,properties
+/api/v1/config/list,POST,bean://configItemService:listAll,default,,,true,
+/api/v1/config/create,POST,bean://configItemService:create,default,,,true,
+/api/v1/config/value,POST,bean://configItemService:getValue,OFF,,,true,
+/api/users/**,GET,bean://userService:getUser,default,,,true,
 ```
+
+**CSV 字段说明（8 列，顺序固定）**：
+
+| 列 | 字段 | 说明 |
+|----|------|------|
+| 1 | `path` | 路径，支持 `**` 通配 |
+| 2 | `method` | HTTP 方法（GET/POST/PUT/DELETE） |
+| 3 | `target` | 目标（见下方协议说明） |
+| 4 | `securityCode` | 认证策略（见下方说明） |
+| 5 | `requestTemplate` | 请求模板 ID（可为空） |
+| 6 | `responseTemplate` | 响应模板 ID（可为空） |
+| 7 | `enabled` | `true` / `false` |
+| 8 | `properties` | 附加属性，`key=val;key2=val2` 格式（可为空） |
+
+#### DATABASE 存储（生产推荐）
+
+```yaml
+# application.yml
+loadup:
+  gateway:
+    storage:
+      type: DATABASE
+```
+
+向 `gateway_routes` 表插入路由：
+
+```sql
+INSERT INTO gateway_routes (route_id, route_name, path, method, target, security_code, enabled)
+VALUES ('config-list', '配置列表', '/api/v1/config/list', 'POST',
+        'bean://configItemService:listAll', 'default', 1);
+```
+
+`gateway_routes` 表结构：
+
+```sql
+CREATE TABLE gateway_routes (
+    route_id          VARCHAR(64)   NOT NULL PRIMARY KEY  COMMENT '路由ID',
+    route_name        VARCHAR(128)                        COMMENT '路由名称',
+    path              VARCHAR(255)  NOT NULL              COMMENT '路径',
+    method            VARCHAR(16)   NOT NULL              COMMENT 'HTTP方法',
+    target            VARCHAR(512)  NOT NULL              COMMENT '目标（bean://...）',
+    security_code     VARCHAR(32)                         COMMENT '认证策略',
+    request_template  TEXT                                COMMENT '请求模板ID',
+    response_template TEXT                                COMMENT '响应模板ID',
+    enabled           TINYINT       NOT NULL DEFAULT 1    COMMENT '是否启用',
+    properties        TEXT                                COMMENT '附加属性（JSON 或 k=v; 格式）',
+    created_at        DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at        DATETIME               NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+模板存储（可选，用于请求/响应 Groovy 转换）：
+
+```sql
+CREATE TABLE gateway_templates (
+    id            BIGINT        NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    template_id   VARCHAR(64)   NOT NULL UNIQUE COMMENT '模板ID',
+    template_type VARCHAR(32)   NOT NULL        COMMENT '模板类型（request/response）',
+    content       TEXT          NOT NULL        COMMENT 'Groovy 脚本内容',
+    updated_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+#### RepositoryPlugin SPI（自定义存储后端）
+
+如需接入外部配置中心（Config Center 规划中），可实现 `RepositoryPlugin` SPI：
+
+```java
+@Component
+public class MyRepositoryPlugin implements RepositoryPlugin {
+    @Override
+    public String getStorageType() {
+        return "MY_CENTER";   // 对应 storage.type 的值
+    }
+
+    @Override
+    public List<RouteConfig> loadRoutes() {
+        // 从外部配置中心拉取路由
+    }
+
+    @Override
+    public List<TemplateConfig> loadTemplates() {
+        // 从外部配置中心拉取模板
+    }
+}
+```
+
+`FILE` 和 `DATABASE` 即为两个内置的参考实现。
 
 ### 认证策略
 
