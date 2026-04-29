@@ -28,6 +28,7 @@
         <module>loadup-components-tracer</module>
         <module>loadup-components-retrytask</module>
         <module>loadup-components-pipeline</module>
+        <module>loadup-components-configcenter</module>
     </modules>
 
 </project>

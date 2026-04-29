@@ -63,6 +63,8 @@
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <commons-collections4.version>4.5.0</commons-collections4.version>
 
+        <nacos.version>2.4.3</nacos.version>
+        <apollo.version>2.3.0</apollo.version>
         <dubbo.version>3.2.8</dubbo.version>
         <okhttp.version>5.3.2</okhttp.version>
         <spotless.version>3.1.0</spotless.version>
@@ -751,7 +753,49 @@
                 <artifactId>loadup-components-retrytask-test</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-            <!-- ========== loadup-components end ==========-->
+            <!-- ========== loadup-components-configcenter start ==========-->
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-configcenter</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-configcenter-api</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-configcenter-binder-local</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-configcenter-binder-nacos</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-configcenter-binder-apollo</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-configcenter-test</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <!-- Third-party config center clients -->
+            <dependency>
+                <groupId>com.alibaba.nacos</groupId>
+                <artifactId>nacos-client</artifactId>
+                <version>${nacos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ctrip.framework.apollo</groupId>
+                <artifactId>apollo-client</artifactId>
+                <version>${apollo.version}</version>
+            </dependency>
+            <!-- ========== loadup-components-configcenter end ==========-->
 
 
             <!-- ========== loadup-modules end ==========-->
