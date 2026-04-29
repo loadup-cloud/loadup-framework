@@ -8,14 +8,16 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 
 /**
- * 可选的配置自动刷新配置。
+ * Optional auto-configuration for automatic Spring context refresh on config change.
  *
- * <p>当 classpath 中存在 {@code spring-cloud-context} 时才激活，
- * 监听 {@link ConfigChangeEvent} 并触发 Spring Cloud 的 {@link ContextRefresher#refresh()}，
- * 从而自动刷新 {@code @Value} / {@code @ConfigurationProperties} 等绑定的 Bean。
+ * <p>Activates only when {@code spring-cloud-context} is on the classpath.
+ * Listens for {@link ConfigChangeEvent} and triggers
+ * {@link ContextRefresher#refresh()} so that {@code @Value} /
+ * {@code @ConfigurationProperties} beans are refreshed automatically.
  *
- * <p>通过 {@link io.github.loadup.components.configcenter.annotation.EnableConfigAutoRefresh}
- * 注解按需导入本配置类，不自动激活。
+ * <p>Import this class on demand via
+ * {@link io.github.loadup.components.configcenter.annotation.EnableConfigAutoRefresh};
+ * it is not activated automatically.
  */
 @AutoConfiguration
 @ConditionalOnClass(ContextRefresher.class)

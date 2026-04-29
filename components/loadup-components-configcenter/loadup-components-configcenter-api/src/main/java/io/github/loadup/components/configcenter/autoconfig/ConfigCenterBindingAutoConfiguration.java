@@ -10,11 +10,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 /**
- * 配置中心核心自动配置。
+ * Core auto-configuration for the config center.
  *
- * <p>注册 {@link ConfigCenterBindingManager} 单例 Bean，
- * binder 模块（local / nacos / apollo）各自通过 {@link io.github.loadup.framework.api.manager.BindingMetadata}
- * Bean 向管理器注册自己的元数据。
+ * <p>Registers the {@link ConfigCenterBindingManager} singleton bean.
+ * Each binder module (local / nacos / apollo) registers its own
+ * {@link io.github.loadup.framework.api.manager.BindingMetadata} bean into the manager.
  */
 @Slf4j
 @AutoConfiguration

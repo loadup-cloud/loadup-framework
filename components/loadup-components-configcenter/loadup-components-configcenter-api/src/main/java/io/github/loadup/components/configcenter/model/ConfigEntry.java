@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 配置条目包装器，封装从配置中心读取的一条完整配置。
+ * Wrapper that holds a single configuration entry retrieved from the config center.
  */
 @Data
 @Builder
@@ -15,24 +15,24 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ConfigEntry {
 
-    /** 配置项 ID（Key）。 */
+    /** Config item ID (key). */
     private String dataId;
 
-    /** 配置分组。 */
+    /** Config group. */
     private String group;
 
-    /** 命名空间 / 租户。 */
+    /** Namespace / tenant. */
     private String namespace;
 
-    /** 配置内容（明文）。 */
+    /** Config content (plain text). */
     private String content;
 
-    /** 内容类型，如 yaml / properties / json / text。 */
+    /** Content type, e.g. yaml / properties / json / text. */
     private String contentType;
 
-    /** 版本号（由配置中心返回，不支持时为 null）。 */
+    /** Version returned by the config center; null if not supported. */
     private String version;
 
-    /** 最后修改时间（由配置中心返回，不支持时为 null）。 */
+    /** Last-modified timestamp returned by the config center; null if not supported. */
     private Instant lastModified;
 }

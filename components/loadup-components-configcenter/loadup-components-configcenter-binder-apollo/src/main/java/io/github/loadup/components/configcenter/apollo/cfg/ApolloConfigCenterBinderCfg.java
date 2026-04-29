@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Apollo binder 配置。
+ * Configuration for the Apollo binder.
  *
  * <pre>
  * loadup:
@@ -23,21 +23,22 @@ import lombok.Setter;
 @Setter
 public class ApolloConfigCenterBinderCfg extends ConfigCenterBinderCfg {
 
-    /** Apollo Meta Server 地址。 */
+    /** Apollo Meta Server address. */
     private String meta;
 
-    /** Apollo AppId。 */
+    /** Apollo AppId. */
     private String appId;
 
-    /** 环境（DEV / FAT / UAT / PRO）。 */
+    /** Environment (DEV / FAT / UAT / PRO). */
     private String env = "DEV";
 
-    /** 集群名。 */
+    /** Cluster name. */
     private String cluster = "default";
 
     /**
-     * Apollo Namespace（对应 Apollo 中的配置集名称，区别于 binderCfg.namespace 租户概念）。
-     * 默认为 {@code application}。
+     * Apollo Namespace (corresponds to a config-set name in Apollo;
+     * distinct from the tenant {@code binderCfg.namespace} concept).
+     * Defaults to {@code application}.
      */
     private String apolloNamespace = "application";
 

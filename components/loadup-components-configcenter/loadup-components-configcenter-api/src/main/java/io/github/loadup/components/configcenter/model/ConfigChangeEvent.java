@@ -4,10 +4,11 @@ import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * 配置变更 Spring 事件。
+ * Spring application event fired when a config item changes.
  *
- * <p>当配置中心检测到某个配置项发生变化时，由 {@code DefaultConfigCenterBinding} 发布此事件。
- * 应用可监听此事件并触发相应的刷新逻辑（如结合 {@code @EnableConfigAutoRefresh}）。
+ * <p>Published by {@code DefaultConfigCenterBinding} whenever the underlying binder
+ * detects a change. Applications can listen to this event to trigger refresh logic
+ * (e.g. combined with {@code @EnableConfigAutoRefresh}).
  */
 @Getter
 public class ConfigChangeEvent extends ApplicationEvent {

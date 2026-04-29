@@ -5,18 +5,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 配置中心 Binder 基础配置。
+ * Base configuration for all config-center binders.
  *
- * <p>所有具体 binder（Local / Nacos / Apollo）的配置类必须继承此类。
+ * <p>All concrete binder configs (Local / Nacos / Apollo) must extend this class.
  */
 @Getter
 @Setter
 public abstract class ConfigCenterBinderCfg extends BaseBinderCfg {
 
-    /** 命名空间（Nacos namespace / Apollo appId prefix 等）。 */
+    /** Namespace (Nacos namespace / Apollo appId prefix, etc.). */
     private String namespace = "";
 
-    /** 默认分组，未指定时使用。 */
+    /** Default group used when no group is explicitly specified. */
     private String defaultGroup = "DEFAULT_GROUP";
 
     @Override

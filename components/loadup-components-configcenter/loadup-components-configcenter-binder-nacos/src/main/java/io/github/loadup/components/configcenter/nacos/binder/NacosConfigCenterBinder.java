@@ -19,9 +19,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
- * Nacos 配置中心 Binder。
+ * Nacos config-center binder.
  *
- * <p>封装 Nacos {@link ConfigService}，实现配置的查询、发布、删除与变更监听。
+ * <p>Wraps the Nacos {@link ConfigService} to implement config read, publish,
+ * removal, and change listening.
  */
 @Slf4j
 @Component
@@ -30,7 +31,7 @@ public class NacosConfigCenterBinder
 
     private ConfigService configService;
 
-    /** listener key → nacos AbstractListener（保存以便后续 removeListener 使用）。 */
+    /** listener key → nacos AbstractListener (stored for later removeListener calls). */
     private final Map<String, com.alibaba.nacos.api.config.listener.Listener> nacosListenerMap =
             new ConcurrentHashMap<>();
 

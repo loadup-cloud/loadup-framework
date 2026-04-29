@@ -27,15 +27,16 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 /**
- * 本地文件系统配置 Binder。
+ * Local file-system config binder.
  *
- * <p>读取策略（优先级由高到低）：
+ * <p>Read priority (high to low):
  * <ol>
- *   <li>本地文件：{@code {basePath}/{group}/{dataId}}</li>
- *   <li>Spring {@code Environment}：{@code environment.getProperty(dataId)}</li>
+ *   <li>Local file: {@code {basePath}/{group}/{dataId}}</li>
+ *   <li>Spring {@code Environment}: {@code environment.getProperty(dataId)}</li>
  * </ol>
  *
- * <p>文件变更通过定时轮询（{@code refreshInterval}）检测，检测到 mtime 变化后回调所有注册的监听器。
+ * <p>File changes are detected by a scheduled poller ({@code refreshInterval}) that
+ * compares the file's {@code lastModified} timestamp and notifies registered listeners.
  */
 @Slf4j
 @Component
@@ -87,7 +88,7 @@ public class LocalConfigCenterBinder
 
     @Override
     public Optional<String> getConfig(String dataId, String group, ConfigCenterBindingCfg settings) {
-        // 1. 尝试本地文件
+        // 1. Try local file
         Path filePath = resolvePath(dataId, group);
         if (Files.exists(filePath)) {
             try {
@@ -136,7 +137,7 @@ public class LocalConfigCenterBinder
         String key = listenerKey(dataId, group);
         listenerRegistry.computeIfAbsent(key, k -> new CopyOnWriteArrayList<>())
                 .add(new ListenerEntry(dataId, group, listener));
-        // 记录当前 mtime
+        // Record current mtime
         Path filePath = resolvePath(dataId, group);
         if (Files.exists(filePath)) {
             mtimeRegistry.put(key, filePath.toFile().lastModified());

@@ -12,6 +12,8 @@
 
 - [Captcha](./components/captcha.md)：验证码生成与验证
 
+- [ConfigCenter](./components/configcenter.md)：配置中心抽象与实现（Local / Nacos / Apollo 绑定器，支持配置推送与监听）
+
 - [Database](./components/database.md)：数据库访问与工具，包含 migration 与 schema 示例
 
 - [Extension](./components/extension.md)：插件化扩展框架

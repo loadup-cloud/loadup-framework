@@ -18,13 +18,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
- * Ctrip Apollo 配置中心 Binder。
+ * Ctrip Apollo config-center binder.
  *
- * <p>读取通过 Apollo {@link ConfigService} 的 Java API；
- * 写入（publishConfig / removeConfig）需要 Apollo Open API（HTTP），
- * 当前版本通过日志警告提示，完整实现留待后续接入 Apollo Portal API。
+ * <p>Reads configuration via Apollo's Java {@link ConfigService} API.
+ * Write operations ({@code publishConfig} / {@code removeConfig}) require the Apollo Open API
+ * (HTTP) and are currently stubbed with a WARN log pending integration of the Apollo Portal API.
  *
- * <p>监听通过 {@link Config#addChangeListener(ConfigChangeListener)} 实现。
+ * <p>Change listening is implemented via {@link Config#addChangeListener(ConfigChangeListener)}.
  */
 @Slf4j
 @Component
@@ -33,7 +33,7 @@ public class ApolloConfigCenterBinder
 
     private Config apolloConfig;
 
-    /** listener key → apollo ConfigChangeListener（用于 removeListener）。 */
+    /** listener key → Apollo ConfigChangeListener (stored for removeListener). */
     private final Map<String, ConfigChangeListener> apolloListenerMap = new ConcurrentHashMap<>();
 
     @Override
@@ -44,7 +44,7 @@ public class ApolloConfigCenterBinder
     @Override
     protected void afterConfigInjected(
             String name, ApolloConfigCenterBinderCfg cfg, ConfigCenterBindingCfg bindingCfg) {
-        // 设置系统属性，Apollo SDK 启动时读取
+        // Set system properties read by Apollo SDK on startup
         if (StringUtils.hasText(cfg.getMeta())) {
             System.setProperty("apollo.meta", cfg.getMeta());
         }
@@ -65,7 +65,7 @@ public class ApolloConfigCenterBinder
 
     @Override
     public Optional<String> getConfig(String dataId, String group, ConfigCenterBindingCfg settings) {
-        // Apollo 中 group 映射为 namespace；dataId 为 property key
+        // In Apollo, group maps to namespace; dataId is the property key
         Config cfg = resolveConfig(group);
         String value = cfg.getProperty(dataId, null);
         return Optional.ofNullable(value);
@@ -73,14 +73,14 @@ public class ApolloConfigCenterBinder
 
     @Override
     public boolean publishConfig(String dataId, String group, String content, ConfigCenterBindingCfg settings) {
-        // TODO: 通过 Apollo Open API（HTTP PUT /openapi/v1/envs/.../apps/.../clusters/.../namespaces/.../items/...) 实现
+        // TODO: implement via Apollo Open API (HTTP PUT /openapi/v1/envs/.../items/...)
         log.warn("[ConfigCenter-Apollo] publishConfig is not yet implemented via Open API: dataId={}", dataId);
         return false;
     }
 
     @Override
     public boolean removeConfig(String dataId, String group, ConfigCenterBindingCfg settings) {
-        // TODO: 通过 Apollo Open API 删除配置项
+        // TODO: remove config item via Apollo Open API
         log.warn("[ConfigCenter-Apollo] removeConfig is not yet implemented via Open API: dataId={}", dataId);
         return false;
     }
@@ -137,8 +137,8 @@ public class ApolloConfigCenterBinder
     // ── Private helpers ────────────────────────────────────────────────────
 
     /**
-     * 当 group 有值时，将其视为 Apollo namespace 加载；
-     * 否则使用 binderCfg.apolloNamespace（已在 afterConfigInjected 中加载）。
+     * If group is non-empty and differs from the default group, treat it as an Apollo namespace
+     * and load it; otherwise use the namespace already loaded in afterConfigInjected.
      */
     private Config resolveConfig(String group) {
         if (StringUtils.hasText(group) && !group.equals(binderCfg.getDefaultGroup())) {

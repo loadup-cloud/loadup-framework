@@ -7,17 +7,19 @@ import io.github.loadup.framework.api.binder.Binder;
 import java.util.Optional;
 
 /**
- * 配置中心高阶业务接口。
+ * High-level business interface for the config center.
  *
- * <p>屏蔽 binder 细节，提供面向业务的配置读写与监听 API。
- * 通过 {@link io.github.loadup.components.configcenter.manager.ConfigCenterBindingManager} 获取实例。
+ * <p>Hides binder details and provides a business-oriented API for reading,
+ * writing, and listening to configuration changes.
+ * Obtain an instance via
+ * {@link io.github.loadup.components.configcenter.manager.ConfigCenterBindingManager}.
  *
  * <pre>
- * // 获取默认 binding
+ * // Get the default binding
  * ConfigCenterBinding binding = manager.getBinding();
  * Optional&lt;String&gt; value = binding.getConfig("feature.flag");
  *
- * // 监听变更
+ * // Listen for changes
  * binding.addListener("feature.flag", event -> log.info("changed: {}", event.getNewContent()));
  * </pre>
  */
@@ -25,87 +27,87 @@ import java.util.Optional;
 public interface ConfigCenterBinding extends Binding<Binder, ConfigCenterBindingCfg> {
 
     /**
-     * 查询配置（使用 binding 配置的 defaultGroup）。
+     * Retrieves config using the binding-level default group.
      *
-     * @param dataId 配置项 ID
-     * @return 配置内容，不存在时为 empty
+     * @param dataId config item ID
+     * @return config content, or empty if not found
      */
     Optional<String> getConfig(String dataId);
 
     /**
-     * 查询配置（指定 group）。
+     * Retrieves config for the given group.
      *
-     * @param dataId 配置项 ID
-     * @param group  配置分组
-     * @return 配置内容，不存在时为 empty
+     * @param dataId config item ID
+     * @param group  config group
+     * @return config content, or empty if not found
      */
     Optional<String> getConfig(String dataId, String group);
 
     /**
-     * 发布配置（使用 binding 配置的 defaultGroup）。
+     * Publishes config using the binding-level default group.
      *
-     * @param dataId  配置项 ID
-     * @param content 配置内容
+     * @param dataId  config item ID
+     * @param content config content
      */
     void publishConfig(String dataId, String content);
 
     /**
-     * 发布配置（指定 group）。
+     * Publishes config for the given group.
      *
-     * @param dataId  配置项 ID
-     * @param group   配置分组
-     * @param content 配置内容
+     * @param dataId  config item ID
+     * @param group   config group
+     * @param content config content
      */
     void publishConfig(String dataId, String group, String content);
 
     /**
-     * 删除配置（使用 binding 配置的 defaultGroup）。
+     * Removes config using the binding-level default group.
      *
-     * @param dataId 配置项 ID
-     * @return true 表示成功
+     * @param dataId config item ID
+     * @return {@code true} on success
      */
     boolean removeConfig(String dataId);
 
     /**
-     * 删除配置（指定 group）。
+     * Removes config for the given group.
      *
-     * @param dataId 配置项 ID
-     * @param group  配置分组
-     * @return true 表示成功
+     * @param dataId config item ID
+     * @param group  config group
+     * @return {@code true} on success
      */
     boolean removeConfig(String dataId, String group);
 
     /**
-     * 注册配置变更监听器（使用 binding 配置的 defaultGroup）。
+     * Registers a change listener using the binding-level default group.
      *
-     * @param dataId   配置项 ID
-     * @param listener 变更回调
+     * @param dataId   config item ID
+     * @param listener change callback
      */
     void addListener(String dataId, ConfigChangeListener listener);
 
     /**
-     * 注册配置变更监听器（指定 group）。
+     * Registers a change listener for the given group.
      *
-     * @param dataId   配置项 ID
-     * @param group    配置分组
-     * @param listener 变更回调
+     * @param dataId   config item ID
+     * @param group    config group
+     * @param listener change callback
      */
     void addListener(String dataId, String group, ConfigChangeListener listener);
 
     /**
-     * 移除配置变更监听器（使用 binding 配置的 defaultGroup）。
+     * Removes a change listener using the binding-level default group.
      *
-     * @param dataId   配置项 ID
-     * @param listener 要移除的回调
+     * @param dataId   config item ID
+     * @param listener the callback to remove
      */
     void removeListener(String dataId, ConfigChangeListener listener);
 
     /**
-     * 移除配置变更监听器（指定 group）。
+     * Removes a change listener for the given group.
      *
-     * @param dataId   配置项 ID
-     * @param group    配置分组
-     * @param listener 要移除的回调
+     * @param dataId   config item ID
+     * @param group    config group
+     * @param listener the callback to remove
      */
     void removeListener(String dataId, String group, ConfigChangeListener listener);
 }

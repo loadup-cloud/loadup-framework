@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * 配置中心全局属性。
+ * Global properties for the config center.
  *
  * <pre>
  * loadup:
@@ -18,6 +18,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.configcenter")
 public class ConfigCenterGroupProperties {
 
-    /** 默认 binder 类型，未在 binding 级别指定时使用。 */
+    /** Default binder type used when none is specified at the binding level. */
     private ConfigCenterBinderType defaultBinder = ConfigCenterBinderType.LOCAL;
 }

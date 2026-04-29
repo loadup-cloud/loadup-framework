@@ -7,55 +7,55 @@ import io.github.loadup.framework.api.binder.Binder;
 import java.util.Optional;
 
 /**
- * 配置中心底层驱动接口。
+ * Low-level driver interface for a config center backend.
  *
- * <p>每个 binder 实现封装一种具体的配置中心 SDK（Local 文件系统 / Nacos / Apollo 等），
- * 通过统一接口屏蔽底层差异。
+ * <p>Each binder implementation wraps a specific config-center SDK
+ * (local file system / Nacos / Apollo, etc.) behind a uniform interface.
  *
- * @param <C> binder 级别配置（如 NacosConfigCenterBinderCfg）
- * @param <S> binding 级别配置（ConfigCenterBindingCfg 或其子类）
+ * @param <C> binder-level configuration (e.g. NacosConfigCenterBinderCfg)
+ * @param <S> binding-level configuration (ConfigCenterBindingCfg or a subclass)
  */
 public interface ConfigCenterBinder<C extends ConfigCenterBinderCfg, S extends ConfigCenterBindingCfg>
         extends Binder<C, S> {
 
     /**
-     * 查询配置内容。
+     * Retrieves the config content.
      *
-     * @param dataId   配置项 ID
-     * @param group    配置分组
-     * @param settings binding 级别配置
-     * @return 配置内容，不存在时返回 {@link Optional#empty()}
+     * @param dataId   config item ID
+     * @param group    config group
+     * @param settings binding-level settings
+     * @return config content, or {@link Optional#empty()} if not found
      */
     Optional<String> getConfig(String dataId, String group, S settings);
 
     /**
-     * 发布（写入）配置内容到配置中心。
+     * Publishes (writes) config content to the config center.
      *
-     * @param dataId   配置项 ID
-     * @param group    配置分组
-     * @param content  配置内容
-     * @param settings binding 级别配置
-     * @return true 表示成功
+     * @param dataId   config item ID
+     * @param group    config group
+     * @param content  config content
+     * @param settings binding-level settings
+     * @return {@code true} on success
      */
     boolean publishConfig(String dataId, String group, String content, S settings);
 
     /**
-     * 从配置中心删除配置项。
+     * Removes a config item from the config center.
      *
-     * @param dataId   配置项 ID
-     * @param group    配置分组
-     * @param settings binding 级别配置
-     * @return true 表示成功
+     * @param dataId   config item ID
+     * @param group    config group
+     * @param settings binding-level settings
+     * @return {@code true} on success
      */
     boolean removeConfig(String dataId, String group, S settings);
 
     /**
-     * 注册配置变更监听器。
+     * Registers a config-change listener.
      *
-     * @param dataId   配置项 ID
-     * @param group    配置分组
-     * @param listener 变更回调
-     * @param settings binding 级别配置
+     * @param dataId   config item ID
+     * @param group    config group
+     * @param listener change callback
+     * @param settings binding-level settings
      */
     void addListener(String dataId, String group, ConfigChangeListener listener, S settings);
 

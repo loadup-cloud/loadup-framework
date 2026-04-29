@@ -1,17 +1,17 @@
 package io.github.loadup.components.configcenter.properties;
 
 /**
- * 配置中心 Binder 类型枚举。
+ * Enum of supported config-center binder types.
  */
 public enum ConfigCenterBinderType {
 
-    /** 本地文件系统 + Spring Environment fallback。 */
+    /** Local file system with Spring Environment fallback. */
     LOCAL("local"),
 
-    /** Alibaba Nacos 配置中心。 */
+    /** Alibaba Nacos config center. */
     NACOS("nacos"),
 
-    /** Ctrip Apollo 配置中心。 */
+    /** Ctrip Apollo config center. */
     APOLLO("apollo");
 
     private final String value;

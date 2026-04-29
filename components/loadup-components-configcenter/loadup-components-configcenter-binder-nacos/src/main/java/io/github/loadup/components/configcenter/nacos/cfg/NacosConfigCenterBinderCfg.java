@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Nacos binder 配置。
+ * Configuration for the Nacos binder.
  *
  * <pre>
  * loadup:
@@ -23,19 +23,19 @@ import lombok.Setter;
 @Setter
 public class NacosConfigCenterBinderCfg extends ConfigCenterBinderCfg {
 
-    /** Nacos 服务端地址，多个用逗号分隔，如 {@code 127.0.0.1:8848}。 */
+    /** Nacos server address; multiple addresses separated by commas, e.g. {@code 127.0.0.1:8848}. */
     private String serverAddr = "127.0.0.1:8848";
 
-    /** Nacos 用户名（2.x 鉴权模式）。 */
+    /** Nacos username (for 2.x auth mode). */
     private String username;
 
-    /** Nacos 密码（2.x 鉴权模式）。 */
+    /** Nacos password (for 2.x auth mode). */
     private String password;
 
-    /** Nacos 访问 Token（bearer token，可选）。 */
+    /** Nacos access token (bearer token, optional). */
     private String accessToken;
 
-    /** 获取配置超时时间（毫秒）。 */
+    /** Config fetch timeout in milliseconds. */
     private long timeout = 3000L;
 
     @Override

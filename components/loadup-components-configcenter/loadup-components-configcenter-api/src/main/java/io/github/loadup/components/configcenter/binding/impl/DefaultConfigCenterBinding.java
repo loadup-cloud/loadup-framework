@@ -14,10 +14,11 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 
 /**
- * {@link ConfigCenterBinding} 默认实现。
+ * Default implementation of {@link ConfigCenterBinding}.
  *
- * <p>委托底层 {@link ConfigCenterBinder} 完成实际读写，同时将变更事件发布到 Spring 事件总线，
- * 使 {@code @EnableConfigAutoRefresh} 等机制能够感知变化。
+ * <p>Delegates actual reads and writes to the underlying {@link ConfigCenterBinder},
+ * and publishes change events to the Spring application event bus so that mechanisms
+ * such as {@code @EnableConfigAutoRefresh} can react to configuration changes.
  */
 @Slf4j
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -31,7 +32,7 @@ public class DefaultConfigCenterBinding extends AbstractBinding<ConfigCenterBind
         this.eventPublisher = applicationEventPublisher;
     }
 
-    // ── 查询 ────────────────────────────────────────────────────────────────
+    // ── Read ────────────────────────────────────────────────────────────────
 
     @Override
     public Optional<String> getConfig(String dataId) {
@@ -44,7 +45,7 @@ public class DefaultConfigCenterBinding extends AbstractBinding<ConfigCenterBind
         return binder.getConfig(dataId, group, bindingCfg);
     }
 
-    // ── 发布 ────────────────────────────────────────────────────────────────
+    // ── Publish ─────────────────────────────────────────────────────────────
 
     @Override
     public void publishConfig(String dataId, String content) {
@@ -60,7 +61,7 @@ public class DefaultConfigCenterBinding extends AbstractBinding<ConfigCenterBind
         }
     }
 
-    // ── 删除 ────────────────────────────────────────────────────────────────
+    // ── Remove ──────────────────────────────────────────────────────────────
 
     @Override
     public boolean removeConfig(String dataId) {
@@ -73,7 +74,7 @@ public class DefaultConfigCenterBinding extends AbstractBinding<ConfigCenterBind
         return binder.removeConfig(dataId, group, bindingCfg);
     }
 
-    // ── 监听 ────────────────────────────────────────────────────────────────
+    // ── Listen ──────────────────────────────────────────────────────────────
 
     @Override
     public void addListener(String dataId, ConfigChangeListener listener) {
@@ -83,7 +84,7 @@ public class DefaultConfigCenterBinding extends AbstractBinding<ConfigCenterBind
     @Override
     public void addListener(String dataId, String group, ConfigChangeListener listener) {
         ConfigCenterBinder binder = getBinder();
-        // 包装原始 listener：先回调业务监听器，再发布 Spring 事件
+        // Wrap the original listener: invoke user callback first, then publish Spring event
         ConfigChangeListener wrapped = event -> {
             listener.onChange(event);
             publishChangeEvent(event);
@@ -102,7 +103,7 @@ public class DefaultConfigCenterBinding extends AbstractBinding<ConfigCenterBind
         binder.removeListener(dataId, group, listener, bindingCfg);
     }
 
-    // ── 私有辅助 ─────────────────────────────────────────────────────────────
+    // ── Private helpers ───────────────────────────────────────────────────
 
     private String resolveGroup(String group) {
         if (group != null && !group.isBlank()) {
@@ -111,7 +112,7 @@ public class DefaultConfigCenterBinding extends AbstractBinding<ConfigCenterBind
         if (bindingCfg != null && bindingCfg.getGroup() != null && !bindingCfg.getGroup().isBlank()) {
             return bindingCfg.getGroup();
         }
-        // fallback：从 binderCfg 获取 defaultGroup
+        // fallback: read defaultGroup from binderCfg
         ConfigCenterBinder binder = getBinder();
         if (binder instanceof AbstractConfigCenterBinder<?, ?> abstractBinder) {
             ConfigCenterBinderCfg cfg = abstractBinder.getBinderCfg();
@@ -129,7 +130,7 @@ public class DefaultConfigCenterBinding extends AbstractBinding<ConfigCenterBind
     }
 
     /**
-     * 工具方法：构建变更事件（供 binder 实现调用）。
+     * Utility method for building a change event (called by binder implementations).
      */
     public static ConfigChangeEvent buildChangeEvent(
             Object source,

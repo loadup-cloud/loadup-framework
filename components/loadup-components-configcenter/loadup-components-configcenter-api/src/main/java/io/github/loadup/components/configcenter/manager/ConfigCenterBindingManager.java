@@ -7,16 +7,16 @@ import io.github.loadup.framework.api.manager.BindingManagerSupport;
 import org.springframework.context.ApplicationContext;
 
 /**
- * 配置中心绑定管理器。
+ * Binding manager for the config center.
  *
- * <p>通过 Spring 容器管理所有已注册的 binder 元数据，
- * 运行时按 binding name 懒加载 {@link ConfigCenterBinding} 实例。
+ * <p>Manages all registered binder metadata via the Spring container and
+ * lazily creates {@link ConfigCenterBinding} instances by binding name at runtime.
  *
  * <pre>
- * // 使用默认 binding
+ * // Use the default binding
  * ConfigCenterBinding binding = manager.getBinding();
  *
- * // 使用命名 binding（对应 loadup.configcenter.bindings.xxx）
+ * // Use a named binding (matching loadup.configcenter.bindings.xxx)
  * ConfigCenterBinding nacos = manager.getBinding("my-nacos-config");
  * </pre>
  */

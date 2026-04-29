@@ -30,6 +30,12 @@
 - 禁止在集成测试中用 `@MockBean` 替代真实数据库；使用 `@EnableTestContainers(ContainerType.MYSQL)` 启动真实容器
 - 纯逻辑单元测试（无 DB 交互）可使用 Mockito + `@ExtendWith(MockitoExtension.class)`
 
+### 0.4 Java 源码注释和 Javadoc 必须使用英文 🚫
+
+- 所有 `.java` 文件中的注释（`//`、`/* */`、`/** */` Javadoc）**必须使用英文**，禁止出现中文
+- 包括：类级 Javadoc、方法 Javadoc、字段注释、行内注释、`TODO` / `FIXME` 说明
+- **文档文件**（`README.md`、`ARCHITECTURE.md`、`mkdocs/docs/**/*.md`）可以使用中文
+
 ---
 
 ## 1. 角色定义

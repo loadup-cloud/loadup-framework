@@ -5,18 +5,18 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 配置中心 Binding 业务配置。
+ * Business-level binding configuration for the config center.
  *
- * <p>每个 binding（命名空间/业务标识）可以指定自己的 dataId / group，
- * 覆盖 binder 层的默认值。
+ * <p>Each binding (namespace/bizTag) may specify its own dataId / group
+ * to override the binder-level defaults.
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ConfigCenterBindingCfg extends BaseBindingCfg {
 
-    /** 配置项 ID（Key），不指定时使用 bizTag 作为 dataId。 */
+    /** Config item ID (key). When unset, the bizTag is used as the dataId. */
     private String dataId;
 
-    /** 配置分组，不指定时使用 binder 层 defaultGroup。 */
+    /** Config group. When unset, falls back to the binder-level defaultGroup. */
     private String group;
 }

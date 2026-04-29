@@ -20,6 +20,7 @@ nav:
           - Authorization: components/authorization.md
           - Cache: components/cache.md
           - Captcha: components/captcha.md
+          - ConfigCenter: components/configcenter.md
           - Database: components/database.md
           - DFS: components/dfs.md
           - Extension: components/extension.md

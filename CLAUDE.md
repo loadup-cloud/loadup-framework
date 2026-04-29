@@ -42,6 +42,7 @@ mvn test -pl modules/loadup-modules-config/loadup-modules-config-test
 | 8 | 子模块内写 `<version>` 引用同项目模块 | 版本由 `loadup-dependencies` BOM 统一管理，不写 `<version>` |
 | 9 | 表主键 `BIGINT AUTO_INCREMENT` | 主键 `VARCHAR(64)`，业务层用 `UUID.randomUUID()` 赋值 |
 | 10 | modules 之间横向互相依赖 | 严格单向：commons → components → modules → application |
+| 11 | Java 文件中写中文注释或 Javadoc | 注释/Javadoc 统一使用英文；中文只允许出现在 `*.md` 文档文件中 |
 
 ---
 
