@@ -27,11 +27,6 @@
             <email>lslvxy@gmail.com</email>
         </developer>
     </developers>
-    <scm>
-        <connection>scm:git:git://github.com/loadup-cloud/loadup-parent.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/loadup-cloud/loadup-parent.git</developerConnection>
-        <url>https://github.com/loadup-cloud/loadup-parent</url>
-    </scm>
 
     <modules>
         <module>loadup-dependencies</module>
@@ -113,6 +108,11 @@
         <module>loadup-testify/loadup-testify-test</module>
         <module>loadup-application</module>
     </modules>
+    <scm>
+        <connection>scm:git:git://github.com/loadup-cloud/loadup-framework.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/loadup-cloud/loadup-framework.git</developerConnection>
+        <url>https://github.com/loadup-cloud/loadup-framework</url>
+    </scm>
 
     <properties>
         <java.version>21</java.version>

@@ -41,11 +41,7 @@
             <artifactId>loadup-modules-upms-app</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-modules-upms-adapter</artifactId>
-            <scope>test</scope>
-        </dependency>
+
 
         <!-- Database Component -->
         <dependency>
