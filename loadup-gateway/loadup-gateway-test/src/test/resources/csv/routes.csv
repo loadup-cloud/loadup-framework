@@ -1,0 +1,13 @@
+path,method,target,securityCode,requestTemplate,responseTemplate,enabled,properties
+/api/test/http,GET,http://localhost:8080/mock/api/test,OFF,test_request_template,test_response_template,true,timeout=30000;retryCount=3
+/api/test/http,POST,http://localhost:8080/mock/api/test,OFF,test_request_template,test_response_template,true,timeout=30000;retryCount=3
+/api/test/bean,GET,bean://testService:getData,OFF,test_request_template,test_response_template,true,timeout=30000;retryCount=3
+/api/test/bean,POST,bean://testService:saveData,OFF,test_request_template,test_response_template,true,timeout=30000;retryCount=3
+/api/test/rpc,POST,rpc://com.example.TestService:testMethod:1.0.0,OFF,test_request_template,test_response_template,false,timeout=30000;retryCount=3
+/api/test/disabled,GET,http://localhost:8080/disabled,OFF,,,false,timeout=30000;retryCount=3
+/api/user/{id},GET,http://localhost:8080/mock/api/user,OFF,,,true,timeout=5000
+/api/user/{id},PUT,http://localhost:8080/mock/api/user,OFF,test_request_template,,true,timeout=5000
+/api/order/{orderId}/item/{itemId},GET,http://localhost:8080/mock/api/item,OFF,,,true,timeout=5000
+/api/secure/profile,GET,http://localhost:8080/mock/api/profile,default,,test_response_template,true,timeout=5000
+/api/ratelimited/data,GET,http://localhost:8080/mock/api/data,OFF,,,true,timeout=5000;rateLimit.enabled=true;rateLimit.capacity=5;rateLimit.refillRate=2;rateLimit.keySource=COMBINED
+/api/circuitbreaker/backend,POST,http://localhost:8080/mock/api/slow,OFF,,,true,timeout=5000;circuitBreaker.enabled=true;circuitBreaker.failureThreshold=3;circuitBreaker.openTimeout=10;circuitBreaker.halfOpenMax=2;circuitBreaker.successThreshold=2

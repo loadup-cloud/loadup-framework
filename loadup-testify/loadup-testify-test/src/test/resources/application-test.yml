@@ -1,0 +1,26 @@
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/testify_demo?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+#    username: root
+#    password: 123456xxxxx
+spring:
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
+loadup:
+  testcontainers:
+    enabled: true
+    reuse: true
+    mysql:
+      enabled: true
+      image: mysql:8.0
+      database: testdb
+      username: test
+      password: test
+logging:
+  level:
+    io.github.loadup.testify: DEBUG
+    org.springframework.jdbc: DEBUG

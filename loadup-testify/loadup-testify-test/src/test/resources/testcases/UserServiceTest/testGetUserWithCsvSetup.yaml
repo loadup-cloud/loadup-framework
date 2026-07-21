@@ -1,0 +1,33 @@
+variables:
+  userId: "test-12345"
+  userId2: "${faker.random().nextLong(1000)}"
+  userName: "${faker.name().firstName()}"
+  email: test@example.com
+  nowTime: ${time.now()}
+
+input:
+  id: '${userId2}'
+
+
+setup:
+  clean_sql: DELETE FROM users WHERE user_id = '${userId}';
+  db_setup:
+    - table: users
+      file: users.csv
+expect:
+  response:
+    userId: "${userId2}"
+    userName: 'Admin2'
+    createdAt:
+      op: approx
+      val: '2026-01-01 00:00:00'
+  database:
+    table: users
+    mode: strict
+    rows:
+      - _match: { user_id: "${userId2}" }
+        user_name: 'Admin2'
+        status: ACTIVE
+        created_at:
+          op: approx
+          val: '2026-01-01 00:00:00'
