@@ -1,0 +1,38 @@
+path,method,target,securityCode,requestTemplate,responseTemplate,enabled,properties
+/api/test/http,GET,http://localhost:8080/mock/api/test,OFF,test_request_template,test_response_template,true,timeout=30000;retryCount=3
+/api/test/http,POST,http://localhost:8080/mock/api/test,OFF,test_request_template,test_response_template,true,timeout=30000;retryCount=3
+/api/test/bean,GET,bean://demoService:getData2,OFF,test_request_template,test_response_template,true,timeout=30000;retryCount=3
+/api/test/bean,POST,bean://demoService:getData,OFF,test_request_template,test_response_template,true,timeout=30000;retryCount=3
+/api/test/rpc,POST,rpc://com.example.TestService:testMethod:1.0.0,internal,test_request_template,test_response_template,false,timeout=30000;retryCount=3
+/api/test/disabled,GET,http://localhost:8080/disabled,OFF,,,false,timeout=30000;retryCount=3
+# Config Module - System Parameters
+/api/v1/config/list,POST,bean://configItemService:listAll,default,,,true,
+/api/v1/config/list-by-category,POST,bean://configItemService:listByCategory,default,,,true,
+/api/v1/config/get,POST,bean://configItemService:getByKey,default,,,true,
+/api/v1/config/value,POST,bean://configItemService:getValue,OFF,,,true,
+/api/v1/config/create,POST,bean://configItemService:create,default,,,true,
+/api/v1/config/update,POST,bean://configItemService:update,default,,,true,
+/api/v1/config/delete,POST,bean://configItemService:delete,default,,,true,
+/api/v1/config/refresh-cache,POST,bean://configItemService:refreshCache,default,,,true,
+# Config Module - Data Dictionary
+/api/v1/dict/types,POST,bean://dictService:listAllTypes,default,,,true,
+/api/v1/dict/data,POST,bean://dictService:getDictData,OFF,,,true,
+/api/v1/dict/cascade,POST,bean://dictService:getCascadeData,OFF,,,true,
+/api/v1/dict/label,POST,bean://dictService:getDictLabel,OFF,,,true,
+/api/v1/dict/type/create,POST,bean://dictService:createType,default,,,true,
+/api/v1/dict/type/delete,POST,bean://dictService:deleteType,default,,,true,
+/api/v1/dict/item/create,POST,bean://dictService:createItem,default,,,true,
+/api/v1/dict/item/delete,POST,bean://dictService:deleteItem,default,,,true,
+# Log Module - Operation Log
+/api/v1/log/operation/list,POST,bean://operationLogService:listByCondition,default,,,true,
+/api/v1/log/operation/count,POST,bean://operationLogService:countByCondition,default,,,true,
+/api/v1/log/operation/record,POST,bean://operationLogService:record,default,,,true,
+/api/v1/log/operation/statistics,POST,bean://operationLogService:statistics,default,,,true,
+# Log Module - Audit Log
+/api/v1/log/audit/list,POST,bean://auditLogService:listByCondition,default,,,true,
+/api/v1/log/audit/count,POST,bean://auditLogService:countByCondition,default,,,true,
+/api/v1/log/audit/record,POST,bean://auditLogService:record,default,,,true,
+# Log Module - Error Log
+/api/v1/log/error/list,POST,bean://errorLogService:listByCondition,default,,,true,
+/api/v1/log/error/count,POST,bean://errorLogService:countByCondition,default,,,true,
+/api/v1/log/error/record,POST,bean://errorLogService:record,default,,,true,

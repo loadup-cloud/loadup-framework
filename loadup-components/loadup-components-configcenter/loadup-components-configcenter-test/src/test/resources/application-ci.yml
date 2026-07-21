@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: loadup-configcenter-test
+
+loadup:
+  configcenter:
+    default-binder: local
+    binders:
+      local:
+        base-path: target/configcenter-test
+        refresh-interval: 5s
+
+logging:
+  level:
+    root: WARN
+    io.github.loadup: INFO

@@ -1,0 +1,278 @@
+package io.github.loadup.components.scheduler.simplejob;
+
+/*-
+ * #%L
+ * loadup-components-scheduler-test
+ * %%
+ * Copyright (C) 2025 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
+import static org.apache.commons.lang3.ThreadUtils.sleep;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+
+import io.github.loadup.components.scheduler.BaseSchedulerTest;
+import io.github.loadup.components.scheduler.SimpleTestTask;
+import io.github.loadup.components.scheduler.model.SchedulerTask;
+import java.lang.reflect.Method;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+
+class SimpleJobSchedulerBinderTest extends BaseSchedulerTest {
+
+    private TestTaskExecutor testExecutor;
+    private Method testExecutorMethod;
+    private static List<String> taskList = new ArrayList<>();
+
+    @BeforeEach
+    void setUp() {
+        try {
+            testExecutor = new TestTaskExecutor();
+            testExecutorMethod = TestTaskExecutor.class.getMethod("execute");
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (simpleJobBinding != null) {
+            taskList.forEach(v -> simpleJobBinding.cancel(v));
+        }
+    }
+
+    @Test
+    @Order(1)
+    @DisplayName("Test SimpleTeskTask task execution")
+    void testDefaultTask() {
+        await().atMost(2, TimeUnit.SECONDS).until(() -> SimpleTestTask.a.get() > 1);
+        Assertions.assertTrue(SimpleTestTask.a.get() > 1);
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("Test Unregister SimpleTeskTask task execution")
+    void testUnregisterDefaultTask() {
+
+        await().atMost(5, TimeUnit.SECONDS).until(() -> simpleJobBinding.taskExists("SimpleTestTask"));
+        boolean result = simpleJobBinding.cancel("SimpleTestTask");
+        Assertions.assertTrue(result);
+        int executionCount = SimpleTestTask.a.get();
+        safeSleep(2);
+        Assertions.assertEquals(executionCount, SimpleTestTask.a.get());
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("Test register new task and execution")
+    void testRegisterTask() throws Exception {
+        // Given
+        SchedulerTask task = SchedulerTask.builder()
+                .taskName("testTask")
+                .cron("*/1 * * * * ?")
+                .method(testExecutorMethod)
+                .targetBean(testExecutor)
+                .build();
+        taskList.add("testTask");
+        // When
+        boolean result = simpleJobBinding.registerTask(task);
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(simpleJobBinding.taskExists("testTask")).isTrue();
+
+        // Wait for task execution
+        await().atMost(5, TimeUnit.SECONDS).until(() -> testExecutor.getExecutionCount() > 2);
+
+        assertThat(testExecutor.getExecutionCount()).isGreaterThan(0);
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("Test register duplicate task and execution")
+    void testSchedule() throws Exception {
+        // Given
+        SchedulerTask task = SchedulerTask.builder()
+                .taskName("duplicateTask")
+                .cron("*/1 * * * * ?")
+                .method(testExecutorMethod)
+                .targetBean(testExecutor)
+                .build();
+        taskList.add("duplicateTask");
+
+        // When
+        boolean result1 = simpleJobBinding.registerTask(task);
+        boolean result2 = simpleJobBinding.registerTask(task);
+
+        await().atMost(3, TimeUnit.SECONDS).until(() -> testExecutor.getExecutionCount() > 1);
+        // most execute twice within 3 seconds
+        assertThat(TestTaskExecutor.executionCount).isLessThan(4);
+
+        // Then
+        assertThat(result1).isTrue();
+        assertThat(result2).isTrue();
+        assertThat(simpleJobBinding.taskExists("duplicateTask")).isTrue();
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("Test register and unregister task")
+    void testCancel() throws InterruptedException {
+        // Given
+        SchedulerTask task = SchedulerTask.builder()
+                .taskName("unregisterTask")
+                .cron("*/1 * * * * ?")
+                .method(testExecutorMethod)
+                .targetBean(testExecutor)
+                .build();
+        simpleJobBinding.registerTask(task);
+
+        await().atMost(2, TimeUnit.SECONDS).until(() -> testExecutor.getExecutionCount() > 1);
+        // When
+        boolean result = simpleJobBinding.cancel("unregisterTask");
+        int executionCount = TestTaskExecutor.executionCount;
+        assertThat(TestTaskExecutor.executionCount).isLessThan(4);
+        sleep(Duration.ofSeconds(2));
+        assertThat(TestTaskExecutor.executionCount).isEqualTo(executionCount);
+        // Then
+        assertThat(result).isTrue();
+        assertThat(simpleJobBinding.taskExists("unregisterTask")).isFalse();
+    }
+
+    @Test
+    @Order(6)
+    void testCancel_NotFound() {
+        // When
+        boolean result = simpleJobBinding.cancel("nonExistent");
+
+        // Then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @Order(7)
+    void testPauseTask() {
+        // When
+        boolean result = simpleJobBinding.pauseTask("anyTask");
+
+        // Then
+        assertThat(result).isFalse(); // SimpleJob doesn't support pause
+    }
+
+    @Test
+    @Order(8)
+    void testResumeTask() {
+        // When
+        boolean result = simpleJobBinding.resumeTask("anyTask");
+
+        // Then
+        assertThat(result).isFalse(); // SimpleJob doesn't support resume
+    }
+
+    @Test
+    @Order(9)
+    void testTriggerTask() {
+        // When
+        boolean result = simpleJobBinding.triggerTask("anyTask");
+
+        // Then
+        assertThat(result).isFalse(); // SimpleJob doesn't support manual trigger
+    }
+
+    @Test
+    @Order(10)
+    void testUpdateTaskCron() {
+        // When
+        boolean result = simpleJobBinding.updateTaskCron("anyTask", "0 0 12 * * ?");
+
+        // Then
+        assertThat(result).isFalse(); // SimpleJob doesn't support cron update
+    }
+
+    @Test
+    @Order(11)
+    void testTaskExists() {
+        // Given
+
+        SchedulerTask task = SchedulerTask.builder()
+                .taskName("existTask")
+                .cron("0 0 12 * * ?")
+                .method(testExecutorMethod)
+                .targetBean(testExecutor)
+                .build();
+
+        // When
+        boolean beforeRegister = simpleJobBinding.taskExists("existTask");
+        simpleJobBinding.registerTask(task);
+        boolean afterRegister = simpleJobBinding.taskExists("existTask");
+
+        // Then
+        assertThat(beforeRegister).isFalse();
+        assertThat(afterRegister).isTrue();
+    }
+
+    @Test
+    @Order(12)
+    void testSchedule_WithException() throws Exception {
+        // Given
+        Method method = FailingTaskExecutor.class.getMethod("failingMethod");
+        SchedulerTask task = SchedulerTask.builder()
+                .taskName("failingTask")
+                .cron("*/1 * * * * ?")
+                .method(method)
+                .targetBean(new FailingTaskExecutor())
+                .build();
+
+        // When
+        boolean result = simpleJobBinding.registerTask(task);
+
+        // Then
+        assertThat(result).isTrue();
+
+        // Task should still be registered even if it throws exception
+        assertThat(simpleJobBinding.taskExists("failingTask")).isTrue();
+    }
+
+    // Test helper classes
+    public static class TestTaskExecutor {
+        public static int executionCount = 0;
+
+        public void execute() {
+            executionCount++;
+            System.out.println(executionCount);
+        }
+
+        public int getExecutionCount() {
+            return executionCount;
+        }
+    }
+
+    public static class FailingTaskExecutor {
+        public void failingMethod() {
+            throw new RuntimeException("Task execution failed");
+        }
+    }
+}

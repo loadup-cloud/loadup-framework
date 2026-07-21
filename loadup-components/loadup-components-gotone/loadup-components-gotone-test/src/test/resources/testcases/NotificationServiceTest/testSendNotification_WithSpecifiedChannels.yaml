@@ -1,0 +1,89 @@
+# NotificationService 集成测试配置
+# 测试指定渠道发送 - 只发送 EMAIL
+
+variables:
+  serviceCode: "ORDER_CREATED"
+  userEmail: "test@example.com"
+  userPhone: "13800138000"
+  userName: "李四"
+  orderNo: "ORDER_${time.now()}"
+
+setup:
+  clean_sql: |
+    DELETE FROM gotone_notification_record WHERE service_code = '${serviceCode}';
+    DELETE FROM gotone_service_channel WHERE service_code = '${serviceCode}';
+    DELETE FROM gotone_notification_service WHERE service_code = '${serviceCode}';
+
+    INSERT INTO gotone_notification_service (id, service_code, service_name, enabled, priority, created_at, updated_at)
+    VALUES ('SERVICE_TEST_003', '${serviceCode}', '订单创建通知', TRUE, 10, NOW(), NOW());
+
+    -- 配置 EMAIL 渠道
+    INSERT INTO gotone_service_channel (
+      id, service_code, channel, template_code, template_content,
+      channel_config, provider, enabled, priority, created_at, updated_at
+    ) VALUES (
+      'CHANNEL_TEST_004',
+      '${serviceCode}',
+      'EMAIL',
+      'ORDER_CREATED_EMAIL',
+      '您的订单${orderNoTemp}已创建。',
+      '{"subject": "订单通知"}',
+      'smtp',
+      TRUE,
+      10,
+      NOW(),
+      NOW()
+    );
+
+    -- 配置 SMS 渠道（但测试中不会使用）
+    INSERT INTO gotone_service_channel (
+      id, service_code, channel, template_code, template_content,
+      channel_config, provider, enabled, priority, created_at, updated_at
+    ) VALUES (
+      'CHANNEL_TEST_005',
+      '${serviceCode}',
+      'SMS',
+      'ORDER_CREATED_SMS',
+      '您的订单${orderNoTemp}已创建。',
+      '{"signName": "LoadUp"}',
+      'aliyun',
+      TRUE,
+      9,
+      NOW(),
+      NOW()
+    );
+
+input:
+  request: {
+    serviceCode: "${serviceCode}",
+    receivers: [ "${userEmail}", "${userPhone}" ] ,
+    templateParams: { "userName": "${faker.name().firstName()}", "orderNoTemp": "${orderNo}" },
+    channels: [ "EMAIL" ]
+  }
+  # 指定只发送 EMAIL 渠道
+
+#mocks:
+#  - bean: "notificationChannelManager"
+#    method: "getProvider"
+#    args: ["EMAIL", "smtp"]
+#    thenReturn:
+#      channel: "EMAIL"
+#      providerName: "smtp"
+#      available: true
+
+expect:
+  # 响应断言 - 只有 EMAIL 渠道结果
+  response:
+    "$.success": true
+    "$.channelResults[0].channel": "EMAIL"
+
+  # 数据库断言 - 只有 EMAIL 记录，没有 SMS 记录
+  database:
+    table: gotone_notification_record
+    timeout: 3000
+    rows:
+      - _match: { service_code: "${serviceCode}", channel: "EMAIL" }
+        status: "SUCCESS"
+      - _match: { service_code: "${serviceCode}", channel: "SMS" }
+        _count: 0  # SMS 记录数为 0
+

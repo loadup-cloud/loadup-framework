@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!--
+        Standard console format (default profile).
+        Includes [traceId, spanId] from MDC populated by loadup-components-tracer.
+    -->
+    <springProfile name="!json">
+        <property name="LOADUP_CONSOLE_PATTERN"
+                  value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} [%X{traceId:-},%X{spanId:-}] %m%n%wEx"/>
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${LOADUP_CONSOLE_PATTERN}</pattern>
+                <charset>utf-8</charset>
+            </encoder>
+        </appender>
+        <root level="${LOG_LEVEL:-INFO}">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!--
+        JSON structured logging (activate with: spring.profiles.active=json).
+        Uses Logback's built-in JsonEncoder (Logback 1.5+, included via Spring Boot 3.4).
+        MDC fields (traceId, spanId) are automatically serialized as top-level JSON keys.
+    -->
+    <springProfile name="json">
+        <appender name="CONSOLE_JSON" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="ch.qos.logback.classic.encoder.JsonEncoder">
+                <withFormattedMessage>true</withFormattedMessage>
+            </encoder>
+        </appender>
+        <root level="${LOG_LEVEL:-INFO}">
+            <appender-ref ref="CONSOLE_JSON"/>
+        </root>
+    </springProfile>
+
+</configuration>

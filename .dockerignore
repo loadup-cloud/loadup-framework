@@ -1,0 +1,36 @@
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.idea/
+.vscode/
+*.iml
+.cursor/
+
+# Build artifacts
+**/target/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation (not needed at runtime)
+mkdocs/
+*.md
+!CLAUDE.md
+
+# CI/CD (not needed in image)
+.github/
+.gitlab-ci.yml
+
+# Config (use env vars / external config server at runtime)
+config/
+
+# Maven wrapper (use the official Maven image)
+.mvn/
+
+# AI assistants
+.ai/

@@ -1,0 +1,117 @@
+# NotificationService 集成测试配置
+# 测试成功发送通知（EMAIL + SMS 多渠道）
+
+variables:
+  serviceCode: "ORDER_CREATED"
+  userEmail: 'test@example.com'
+  userPhone: '13888888888'
+  orderNoVar: "ORDER_${time.now()}"
+
+setup:
+  # 准备测试数据 - 插入服务配置
+  clean_sql: |
+    DELETE FROM gotone_notification_record WHERE service_code = '${serviceCode}';
+    DELETE FROM gotone_service_channel WHERE service_code = '${serviceCode}';
+    DELETE FROM gotone_notification_service WHERE service_code = '${serviceCode}';
+
+    INSERT INTO gotone_notification_service (id, service_code, service_name, enabled, priority, created_at, updated_at)
+    VALUES ('SERVICE_TEST_001', '${serviceCode}', '订单创建通知', TRUE, 10, NOW(), NOW());
+
+    INSERT INTO gotone_service_channel (
+      id, service_code, channel, template_code, template_content,
+      channel_config, provider, enabled, priority, created_at, updated_at
+    ) VALUES (
+      'CHANNEL_TEST_001',
+      '${serviceCode}',
+      'EMAIL',
+      'ORDER_CREATED_EMAIL',
+      '尊敬的${userName}，您的订单${orderNo}已创建成功。',
+      '{"subject": "订单创建通知", "from": "order@example.com"}',
+      'smtp',
+      TRUE,
+      10,
+      NOW(),
+      NOW()
+    );
+
+    INSERT INTO gotone_service_channel (
+      id, service_code, channel, template_code, template_content,
+      channel_config, provider, enabled, priority, created_at, updated_at
+    ) VALUES (
+      'CHANNEL_TEST_002',
+      '${serviceCode}',
+      'SMS',
+      'ORDER_CREATED_SMS',
+      '您的订单${orderNo}已创建，感谢购买！',
+      '{"signName": "LoadUp商城", "templateId": "SMS_123456"}',
+      'aliyun',
+      TRUE,
+      9,
+      NOW(),
+      NOW()
+    );
+
+
+
+
+input:
+  request: {
+    serviceCode: "${serviceCode}",
+    receivers: [ "${userEmail}", "${userPhone}" ] ,
+    templateParams: { "userName": "${faker.name().firstName()}", "orderNo": "${orderNoVar}" }
+  }
+
+#mocks:
+#  # Mock EMAIL 渠道提供商
+#  - bean: "notificationChannelManager"
+#    method: "getProvider"
+#    args: ["EMAIL", "smtp"]
+#    thenReturn:
+#      channel: "EMAIL"
+#      providerName: "smtp"
+#      available: true
+#      # 模拟发送成功
+#      sendResult:
+#        successCount: 1
+#        failedCount: 0
+#
+#  # Mock SMS 渠道提供商
+#  - bean: "notificationChannelManager"
+#    method: "getProvider"
+#    args: ["SMS", "aliyun"]
+#    thenReturn:
+#      channel: "SMS"
+#      providerName: "aliyun"
+#      available: true
+#      sendResult:
+#        successCount: 1
+#        failedCount: 0
+
+expect:
+  # 响应断言
+  response:
+    "$.success": true
+    "$.serviceCode": "${serviceCode}"
+    "$.totalReceivers": 2
+    "$.channelResults[0].channel": "EMAIL"
+    "$.channelResults[1].channel": "SMS"
+
+  # 数据库断言 - 验证记录已保存
+  database:
+    table: gotone_notification_record
+    timeout: 3000  # 3秒异步重试
+    rows:
+      # EMAIL 记录
+      - _match: { service_code: "${serviceCode}", channel: "EMAIL", receiver: "${userEmail}" }
+        status: "SUCCESS"
+        content: { op: contains, val: "${orderNoVar}" }
+        retry_count: 0
+        created_at: { op: approx, val: "${time.now()}" }
+
+      # SMS 记录
+      - _match: { service_code: "${serviceCode}", channel: "SMS", receiver: "${userPhone}" }
+        status: "SUCCESS"
+        content: { op: contains, val: "${orderNoVar}" }
+        retry_count: 0
+        created_at: { op: approx, val: "${time.now()}" }
+

@@ -1,0 +1,48 @@
+# DFS Component Configuration Example (YAML format)
+
+loadup:
+  dfs:
+    # Default storage provider
+    default-provider: local
+
+    # Maximum file size (100MB)
+    max-file-size: 104857600
+
+    # Allowed content types (optional, leave empty to allow all)
+    allowed-content-types:
+      - image/jpeg
+      - image/png
+      - image/gif
+      - application/pdf
+      - application/msword
+      - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+
+    # Provider configurations
+    providers:
+      # Local filesystem storage
+      local:
+        enabled: true
+        base-path: /var/dfs/files
+
+      # Database storage
+      database:
+        enabled: false
+
+      # S3-compatible storage
+      s3:
+        enabled: false
+        endpoint: https://s3.amazonaws.com
+        access-key: your-access-key
+        secret-key: your-secret-key
+        bucket: my-bucket
+        region: us-east-1
+
+      # MinIO storage (S3-compatible)
+      minio:
+        enabled: false
+        endpoint: http://localhost:9000
+        access-key: minioadmin
+        secret-key: minioadmin
+        bucket: dfs-files
+        region: us-east-1
+

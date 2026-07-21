@@ -1,0 +1,33 @@
+{
+  "properties": [
+    {
+      "name": "captcha.create.path",
+      "type": "java.lang.String",
+      "description": "生成验证码请求路径",
+      "defaultValue": "/create"
+    },
+    {
+      "name": "captcha.len",
+      "type": "java.lang.Integer",
+      "description": "验证码长度",
+      "defaultValue": 4
+    },
+    {
+      "name": "captcha.width",
+      "type": "java.lang.Integer",
+      "description": "验证码图片宽度",
+      "defaultValue": 130
+    },
+    {
+      "name": "captcha.height",
+      "type": "java.lang.Integer",
+      "description": "验证码图片高度",
+      "defaultValue": 48
+    },
+    {
+      "name": "captcha.custom-characters",
+      "type": "java.lang.String",
+      "description": "自定义验证码字符集，如果不设置则使用默认字符集（已移除容易混淆的字符：0, O, 1, I, L, i, l, o）"
+    }
+  ]
+}

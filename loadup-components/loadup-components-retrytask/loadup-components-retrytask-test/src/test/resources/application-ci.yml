@@ -1,0 +1,35 @@
+# retrytask-test CI Configuration
+# CI 环境：禁用 Testcontainers 重用，优化连接池
+spring:
+  sql:
+    init:
+      schema-locations: classpath:schema.sql
+      mode: always
+  datasource:
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+
+loadup:
+  retrytask:
+    enabled: true
+    default-max-retry-count: 3
+    default-retry-strategy: FIXED
+    default-base-delay-seconds: 60
+    scheduler:
+      enabled: false
+      type: ASYNC
+      thread-pool-size: 2
+
+testcontainers:
+  reuse:
+    enable: false   # CI 环境禁用重用
+
+logging:
+  level:
+    root: WARN
+    io.github.loadup.retrytask: INFO

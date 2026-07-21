@@ -1,0 +1,49 @@
+# Test Application Configuration
+spring:
+  application:
+    name: loadup-upms-test
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      pool-name: LoadupUpmsTestPool
+      minimum-idle: 2
+      maximum-pool-size: 10
+      auto-commit: true
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+    # url/username/password 由 Testcontainers 自动注入，无需手动配置
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema-test.sql
+      data-locations: classpath:test-data.sql
+      continue-on-error: false
+
+mybatis-flex:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    lazy-loading-enabled: false
+  global-config:
+    print-sql: true
+    print-banner: false
+
+testcontainers:
+  reuse:
+    enable: true   # 本地开发启用重用，加快测试速度
+
+logging:
+  level:
+    root: INFO
+    io.github.loadup.modules.upms: DEBUG
+    com.mybatisflex: DEBUG
+    org.springframework.jdbc: DEBUG
+    org.springframework.transaction: DEBUG
+
+loadup:
+  tracer:
+    enabled: false

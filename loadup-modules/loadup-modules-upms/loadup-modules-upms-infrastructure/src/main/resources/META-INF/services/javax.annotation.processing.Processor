@@ -1,0 +1,4 @@
+lombok.launch.AnnotationProcessorHider$AnnotationProcessor
+org.mapstruct.ap.MappingProcessor
+com.mybatisflex.processor.MybatisFlexProcessor
+org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor

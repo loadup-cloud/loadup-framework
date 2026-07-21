@@ -1,0 +1,3 @@
+io.github.loadup.components.database.autoconfig.MultiTenantAutoConfiguration
+io.github.loadup.components.database.autoconfig.MyBatisFlexAutoConfiguration
+io.github.loadup.components.database.flyway.LoadUpFlywayAutoConfiguration

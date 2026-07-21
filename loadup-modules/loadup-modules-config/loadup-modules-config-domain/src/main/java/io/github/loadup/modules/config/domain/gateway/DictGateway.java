@@ -1,0 +1,64 @@
+package io.github.loadup.modules.config.domain.gateway;
+
+/*-
+ * #%L
+ * Loadup Modules Config Domain
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
+import io.github.loadup.modules.config.domain.model.DictItem;
+import io.github.loadup.modules.config.domain.model.DictType;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Gateway interface for dictionary persistence.
+ *
+ * @author LoadUp Framework
+ */
+public interface DictGateway {
+
+    /* ---- DictType ---- */
+
+    List<DictType> findAllTypes();
+
+    Optional<DictType> findTypeByCode(String dictCode);
+
+    void saveType(DictType type);
+
+    void updateType(DictType type);
+
+    void deleteTypeByCode(String dictCode);
+
+    boolean existsTypeByCode(String dictCode);
+
+    /* ---- DictItem ---- */
+
+    List<DictItem> findItemsByCode(String dictCode);
+
+    List<DictItem> findItemsByCodeAndParent(String dictCode, String parentValue);
+
+    void saveItem(DictItem item);
+
+    void updateItem(DictItem item);
+
+    void deleteItemById(String id);
+
+    void deleteItemsByCode(String dictCode);
+}

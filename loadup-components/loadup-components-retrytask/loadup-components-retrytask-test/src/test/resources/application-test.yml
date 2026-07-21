@@ -1,0 +1,36 @@
+spring:
+  sql:
+    init:
+      schema-locations: classpath:schema.sql
+      mode: always
+
+  mail: # 比如：使用qq邮箱服务(也可以其他服务)
+    host: smtp.qq.com
+    #发送方的邮箱
+    username: xxx@qq.com
+    # 设置密码，该处的密码是发送方QQ邮箱开启SMTP的授权码而非QQ密码
+    password: xxxx
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+
+loadup:
+  retrytask:
+    enabled: true
+    default-max-retry-count: 3
+    default-retry-strategy: FIXED
+    default-base-delay-seconds: 60
+    scheduler:
+      enabled: false
+      type: ASYNC
+      thread-pool-size: 5
+
+logging:
+  level:
+    io.github.loadup.retrytask: DEBUG
+    org.springframework.retry: DEBUG
+    org.springframework.jdbc.core: trace
+    org.springframework.jdbc.resultset: trace

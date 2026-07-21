@@ -1,0 +1,28 @@
+default:
+  before_script:
+    - docker info
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=/opt/m2/repository"
+
+stages:
+  - install
+test_job:
+  stage: install
+  script:
+    - export JAVA_HOME=~/.sdkman/candidates/java/current/
+    - export M2_HOME=~/.sdkman/candidates/maven/current/
+    - export PATH=$JAVA_HOME/bin:$M2_HOME/bin:$PATH
+    - pwd
+    - whoami
+    - ls -l /opt/m2
+    - cat /opt/m2/settings.xml
+    - cp /opt/m2/settings.xml ~/.m2/settings.xml
+    - mvn -s /opt/m2/settings.xml clean install -DskipTests
+  tags:
+    - build
+  only:
+    - main
+  artifacts:
+    paths:
+      - target/
