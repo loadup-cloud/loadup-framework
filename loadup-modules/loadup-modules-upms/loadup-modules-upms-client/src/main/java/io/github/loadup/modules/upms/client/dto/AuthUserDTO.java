@@ -131,29 +131,8 @@ public class AuthUserDTO implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(userId, username, password, nickname, status, permissions, roles);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AuthUserDTO other = (AuthUserDTO) o;
-        if (!java.util.Objects.equals(userId, other.userId)) return false;
-        if (!java.util.Objects.equals(username, other.username)) return false;
-        if (!java.util.Objects.equals(password, other.password)) return false;
-        if (!java.util.Objects.equals(nickname, other.nickname)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(permissions, other.permissions)) return false;
-        if (!java.util.Objects.equals(roles, other.roles)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "AuthUserDTO(" + "userId=" + userId + ", " + "username=" + username + ", " + "password=" + password
-                + ", " + "nickname=" + nickname + ", " + "status=" + status + ", " + "permissions=" + permissions + ", "
-                + "roles=" + roles + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

@@ -98,29 +98,6 @@ public class ChannelSendRequest implements Serializable {
         this.templateParams = templateParams;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(receivers, content, channelConfig, templateParams);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChannelSendRequest other = (ChannelSendRequest) o;
-        if (!java.util.Objects.equals(receivers, other.receivers)) return false;
-        if (!java.util.Objects.equals(content, other.content)) return false;
-        if (!java.util.Objects.equals(channelConfig, other.channelConfig)) return false;
-        if (!java.util.Objects.equals(templateParams, other.templateParams)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ChannelSendRequest(" + "receivers=" + receivers + ", " + "content=" + content + ", " + "channelConfig="
-                + channelConfig + ", " + "templateParams=" + templateParams + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -154,5 +131,11 @@ public class ChannelSendRequest implements Serializable {
         public ChannelSendRequest build() {
             return new ChannelSendRequest(this.receivers, this.content, this.channelConfig, this.templateParams);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

@@ -85,25 +85,8 @@ public class DictTypeCreateCommand {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(dictCode, dictName, description, sortOrder);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DictTypeCreateCommand other = (DictTypeCreateCommand) o;
-        if (!java.util.Objects.equals(dictCode, other.dictCode)) return false;
-        if (!java.util.Objects.equals(dictName, other.dictName)) return false;
-        if (!java.util.Objects.equals(description, other.description)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "DictTypeCreateCommand(" + "dictCode=" + dictCode + ", " + "dictName=" + dictName + ", " + "description="
-                + description + ", " + "sortOrder=" + sortOrder + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

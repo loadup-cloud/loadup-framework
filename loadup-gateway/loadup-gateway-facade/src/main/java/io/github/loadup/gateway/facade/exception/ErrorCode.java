@@ -120,6 +120,7 @@ public enum ErrorCode {
 
     @Override
     public String toString() {
-        return code + ": " + message;
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

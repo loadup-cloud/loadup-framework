@@ -189,38 +189,6 @@ public class FileUploadRequest {
         this.overwrite = overwrite;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                filename, inputStream, size, contentType, bizType, bizId, path, publicAccess, metadata, overwrite);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FileUploadRequest other = (FileUploadRequest) o;
-        if (!java.util.Objects.equals(filename, other.filename)) return false;
-        if (!java.util.Objects.equals(inputStream, other.inputStream)) return false;
-        if (!java.util.Objects.equals(size, other.size)) return false;
-        if (!java.util.Objects.equals(contentType, other.contentType)) return false;
-        if (!java.util.Objects.equals(bizType, other.bizType)) return false;
-        if (!java.util.Objects.equals(bizId, other.bizId)) return false;
-        if (!java.util.Objects.equals(path, other.path)) return false;
-        if (!java.util.Objects.equals(publicAccess, other.publicAccess)) return false;
-        if (!java.util.Objects.equals(metadata, other.metadata)) return false;
-        if (!java.util.Objects.equals(overwrite, other.overwrite)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "FileUploadRequest(" + "filename=" + filename + ", " + "inputStream=" + inputStream + ", " + "size="
-                + size + ", " + "contentType=" + contentType + ", " + "bizType=" + bizType + ", " + "bizId=" + bizId
-                + ", " + "path=" + path + ", " + "publicAccess=" + publicAccess + ", " + "metadata=" + metadata + ", "
-                + "overwrite=" + overwrite + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -300,5 +268,11 @@ public class FileUploadRequest {
                     this.metadata,
                     this.overwrite);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

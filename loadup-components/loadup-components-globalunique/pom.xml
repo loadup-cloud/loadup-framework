@@ -12,6 +12,10 @@
     <description>Global uniqueness control component based on database unique key constraint</description>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
         <!-- Spring Boot JDBC Starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

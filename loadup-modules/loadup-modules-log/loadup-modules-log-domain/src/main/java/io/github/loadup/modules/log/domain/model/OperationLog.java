@@ -246,68 +246,6 @@ public class OperationLog {
         this.createdAt = createdAt;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                id,
-                traceId,
-                userId,
-                username,
-                module,
-                operationType,
-                description,
-                method,
-                requestMethod,
-                requestUrl,
-                requestParams,
-                responseResult,
-                duration,
-                success,
-                errorMessage,
-                ip,
-                userAgent,
-                operationTime,
-                createdAt);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OperationLog other = (OperationLog) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(traceId, other.traceId)) return false;
-        if (!java.util.Objects.equals(userId, other.userId)) return false;
-        if (!java.util.Objects.equals(username, other.username)) return false;
-        if (!java.util.Objects.equals(module, other.module)) return false;
-        if (!java.util.Objects.equals(operationType, other.operationType)) return false;
-        if (!java.util.Objects.equals(description, other.description)) return false;
-        if (!java.util.Objects.equals(method, other.method)) return false;
-        if (!java.util.Objects.equals(requestMethod, other.requestMethod)) return false;
-        if (!java.util.Objects.equals(requestUrl, other.requestUrl)) return false;
-        if (!java.util.Objects.equals(requestParams, other.requestParams)) return false;
-        if (!java.util.Objects.equals(responseResult, other.responseResult)) return false;
-        if (!java.util.Objects.equals(duration, other.duration)) return false;
-        if (!java.util.Objects.equals(success, other.success)) return false;
-        if (!java.util.Objects.equals(errorMessage, other.errorMessage)) return false;
-        if (!java.util.Objects.equals(ip, other.ip)) return false;
-        if (!java.util.Objects.equals(userAgent, other.userAgent)) return false;
-        if (!java.util.Objects.equals(operationTime, other.operationTime)) return false;
-        if (!java.util.Objects.equals(createdAt, other.createdAt)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "OperationLog(" + "id=" + id + ", " + "traceId=" + traceId + ", " + "userId=" + userId + ", "
-                + "username=" + username + ", " + "module=" + module + ", " + "operationType=" + operationType + ", "
-                + "description=" + description + ", " + "method=" + method + ", " + "requestMethod=" + requestMethod
-                + ", " + "requestUrl=" + requestUrl + ", " + "requestParams=" + requestParams + ", " + "responseResult="
-                + responseResult + ", " + "duration=" + duration + ", " + "success=" + success + ", " + "errorMessage="
-                + errorMessage + ", " + "ip=" + ip + ", " + "userAgent=" + userAgent + ", " + "operationTime="
-                + operationTime + ", " + "createdAt=" + createdAt + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -450,5 +388,11 @@ public class OperationLog {
                     this.operationTime,
                     this.createdAt);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

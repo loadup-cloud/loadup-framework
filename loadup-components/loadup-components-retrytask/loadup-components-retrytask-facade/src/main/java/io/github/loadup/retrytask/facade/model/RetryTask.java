@@ -205,45 +205,8 @@ public class RetryTask implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                id,
-                bizType,
-                bizId,
-                retryCount,
-                maxRetryCount,
-                nextRetryTime,
-                status,
-                priority,
-                lastFailureReason,
-                createdAt,
-                updatedAt);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RetryTask other = (RetryTask) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(bizType, other.bizType)) return false;
-        if (!java.util.Objects.equals(bizId, other.bizId)) return false;
-        if (!java.util.Objects.equals(retryCount, other.retryCount)) return false;
-        if (!java.util.Objects.equals(maxRetryCount, other.maxRetryCount)) return false;
-        if (!java.util.Objects.equals(nextRetryTime, other.nextRetryTime)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(priority, other.priority)) return false;
-        if (!java.util.Objects.equals(lastFailureReason, other.lastFailureReason)) return false;
-        if (!java.util.Objects.equals(createdAt, other.createdAt)) return false;
-        if (!java.util.Objects.equals(updatedAt, other.updatedAt)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "RetryTask(" + "id=" + id + ", " + "bizType=" + bizType + ", " + "bizId=" + bizId + ", " + "retryCount="
-                + retryCount + ", " + "maxRetryCount=" + maxRetryCount + ", " + "nextRetryTime=" + nextRetryTime + ", "
-                + "status=" + status + ", " + "priority=" + priority + ", " + "lastFailureReason=" + lastFailureReason
-                + ", " + "createdAt=" + createdAt + ", " + "updatedAt=" + updatedAt + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

@@ -121,30 +121,8 @@ public class OperationLogQuery {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(userId, module, operationType, success, startTime, endTime, pageNum, pageSize);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OperationLogQuery other = (OperationLogQuery) o;
-        if (!java.util.Objects.equals(userId, other.userId)) return false;
-        if (!java.util.Objects.equals(module, other.module)) return false;
-        if (!java.util.Objects.equals(operationType, other.operationType)) return false;
-        if (!java.util.Objects.equals(success, other.success)) return false;
-        if (!java.util.Objects.equals(startTime, other.startTime)) return false;
-        if (!java.util.Objects.equals(endTime, other.endTime)) return false;
-        if (!java.util.Objects.equals(pageNum, other.pageNum)) return false;
-        if (!java.util.Objects.equals(pageSize, other.pageSize)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "OperationLogQuery(" + "userId=" + userId + ", " + "module=" + module + ", " + "operationType="
-                + operationType + ", " + "success=" + success + ", " + "startTime=" + startTime + ", " + "endTime="
-                + endTime + ", " + "pageNum=" + pageNum + ", " + "pageSize=" + pageSize + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

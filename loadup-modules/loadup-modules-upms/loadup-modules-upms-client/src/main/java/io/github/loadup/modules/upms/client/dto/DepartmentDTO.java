@@ -204,58 +204,6 @@ public class DepartmentDTO {
         this.updatedTime = updatedTime;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                id,
-                parentId,
-                deptName,
-                deptCode,
-                deptLevel,
-                sortOrder,
-                leaderUserId,
-                leaderUserName,
-                mobile,
-                email,
-                status,
-                children,
-                remark,
-                createdTime,
-                updatedTime);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DepartmentDTO other = (DepartmentDTO) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
-        if (!java.util.Objects.equals(deptName, other.deptName)) return false;
-        if (!java.util.Objects.equals(deptCode, other.deptCode)) return false;
-        if (!java.util.Objects.equals(deptLevel, other.deptLevel)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        if (!java.util.Objects.equals(leaderUserId, other.leaderUserId)) return false;
-        if (!java.util.Objects.equals(leaderUserName, other.leaderUserName)) return false;
-        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
-        if (!java.util.Objects.equals(email, other.email)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(children, other.children)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        if (!java.util.Objects.equals(createdTime, other.createdTime)) return false;
-        if (!java.util.Objects.equals(updatedTime, other.updatedTime)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "DepartmentDTO(" + "id=" + id + ", " + "parentId=" + parentId + ", " + "deptName=" + deptName + ", "
-                + "deptCode=" + deptCode + ", " + "deptLevel=" + deptLevel + ", " + "sortOrder=" + sortOrder + ", "
-                + "leaderUserId=" + leaderUserId + ", " + "leaderUserName=" + leaderUserName + ", " + "mobile=" + mobile
-                + ", " + "email=" + email + ", " + "status=" + status + ", " + "children=" + children + ", " + "remark="
-                + remark + ", " + "createdTime=" + createdTime + ", " + "updatedTime=" + updatedTime + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -370,5 +318,11 @@ public class DepartmentDTO {
                     this.createdTime,
                     this.updatedTime);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

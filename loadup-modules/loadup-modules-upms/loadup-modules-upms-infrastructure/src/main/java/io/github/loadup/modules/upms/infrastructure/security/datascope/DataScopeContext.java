@@ -175,32 +175,6 @@ public class DataScopeContext {
         this.isSuperAdmin = isSuperAdmin;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(userId, deptId, dataScopeType, customDeptIds, subDeptIds, isSuperAdmin);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DataScopeContext other = (DataScopeContext) o;
-        if (!java.util.Objects.equals(userId, other.userId)) return false;
-        if (!java.util.Objects.equals(deptId, other.deptId)) return false;
-        if (!java.util.Objects.equals(dataScopeType, other.dataScopeType)) return false;
-        if (!java.util.Objects.equals(customDeptIds, other.customDeptIds)) return false;
-        if (!java.util.Objects.equals(subDeptIds, other.subDeptIds)) return false;
-        if (!java.util.Objects.equals(isSuperAdmin, other.isSuperAdmin)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "DataScopeContext(" + "userId=" + userId + ", " + "deptId=" + deptId + ", " + "dataScopeType="
-                + dataScopeType + ", " + "customDeptIds=" + customDeptIds + ", " + "subDeptIds=" + subDeptIds + ", "
-                + "isSuperAdmin=" + isSuperAdmin + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -252,5 +226,11 @@ public class DataScopeContext {
                     this.subDeptIds,
                     this.isSuperAdmin);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

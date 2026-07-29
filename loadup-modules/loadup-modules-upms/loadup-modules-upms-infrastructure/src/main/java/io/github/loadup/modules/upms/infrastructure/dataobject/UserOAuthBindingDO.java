@@ -154,47 +154,4 @@ public class UserOAuthBindingDO extends BaseDO {
     public void setBoundAt(LocalDateTime boundAt) {
         this.boundAt = boundAt;
     }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                super.hashCode(),
-                userId,
-                provider,
-                openId,
-                unionId,
-                nickname,
-                avatar,
-                accessToken,
-                refreshToken,
-                expiresAt,
-                boundAt);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        UserOAuthBindingDO other = (UserOAuthBindingDO) o;
-        if (!java.util.Objects.equals(userId, other.userId)) return false;
-        if (!java.util.Objects.equals(provider, other.provider)) return false;
-        if (!java.util.Objects.equals(openId, other.openId)) return false;
-        if (!java.util.Objects.equals(unionId, other.unionId)) return false;
-        if (!java.util.Objects.equals(nickname, other.nickname)) return false;
-        if (!java.util.Objects.equals(avatar, other.avatar)) return false;
-        if (!java.util.Objects.equals(accessToken, other.accessToken)) return false;
-        if (!java.util.Objects.equals(refreshToken, other.refreshToken)) return false;
-        if (!java.util.Objects.equals(expiresAt, other.expiresAt)) return false;
-        if (!java.util.Objects.equals(boundAt, other.boundAt)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "UserOAuthBindingDO(" + "super=" + super.toString() + ", " + "userId=" + userId + ", " + "provider="
-                + provider + ", " + "openId=" + openId + ", " + "unionId=" + unionId + ", " + "nickname=" + nickname
-                + ", " + "avatar=" + avatar + ", " + "accessToken=" + accessToken + ", " + "refreshToken="
-                + refreshToken + ", " + "expiresAt=" + expiresAt + ", " + "boundAt=" + boundAt + ")";
-    }
 }

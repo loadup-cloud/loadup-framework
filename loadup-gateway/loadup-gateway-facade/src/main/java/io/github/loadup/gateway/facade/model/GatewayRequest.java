@@ -216,52 +216,6 @@ public class GatewayRequest {
         this.attributes = attributes;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                requestId,
-                path,
-                method,
-                headers,
-                queryParameters,
-                pathParameters,
-                body,
-                contentType,
-                clientIp,
-                userAgent,
-                requestTime,
-                attributes);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GatewayRequest other = (GatewayRequest) o;
-        if (!java.util.Objects.equals(requestId, other.requestId)) return false;
-        if (!java.util.Objects.equals(path, other.path)) return false;
-        if (!java.util.Objects.equals(method, other.method)) return false;
-        if (!java.util.Objects.equals(headers, other.headers)) return false;
-        if (!java.util.Objects.equals(queryParameters, other.queryParameters)) return false;
-        if (!java.util.Objects.equals(pathParameters, other.pathParameters)) return false;
-        if (!java.util.Objects.equals(body, other.body)) return false;
-        if (!java.util.Objects.equals(contentType, other.contentType)) return false;
-        if (!java.util.Objects.equals(clientIp, other.clientIp)) return false;
-        if (!java.util.Objects.equals(userAgent, other.userAgent)) return false;
-        if (!java.util.Objects.equals(requestTime, other.requestTime)) return false;
-        if (!java.util.Objects.equals(attributes, other.attributes)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "GatewayRequest(" + "requestId=" + requestId + ", " + "path=" + path + ", " + "method=" + method + ", "
-                + "headers=" + headers + ", " + "queryParameters=" + queryParameters + ", " + "pathParameters="
-                + pathParameters + ", " + "body=" + body + ", " + "contentType=" + contentType + ", " + "clientIp="
-                + clientIp + ", " + "userAgent=" + userAgent + ", " + "requestTime=" + requestTime + ", "
-                + "attributes=" + attributes + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -355,5 +309,11 @@ public class GatewayRequest {
                     this.requestTime,
                     this.attributes);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

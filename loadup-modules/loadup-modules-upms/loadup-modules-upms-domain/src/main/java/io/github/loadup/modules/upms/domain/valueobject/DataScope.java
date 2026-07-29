@@ -107,22 +107,8 @@ public class DataScope {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(scope, description);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DataScope other = (DataScope) o;
-        if (!java.util.Objects.equals(scope, other.scope)) return false;
-        if (!java.util.Objects.equals(description, other.description)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "DataScope(" + "scope=" + scope + ", " + "description=" + description + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

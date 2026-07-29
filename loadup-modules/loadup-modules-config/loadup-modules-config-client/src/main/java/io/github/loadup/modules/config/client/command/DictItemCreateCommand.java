@@ -117,28 +117,8 @@ public class DictItemCreateCommand {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(dictCode, itemLabel, itemValue, parentValue, cssClass, sortOrder);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DictItemCreateCommand other = (DictItemCreateCommand) o;
-        if (!java.util.Objects.equals(dictCode, other.dictCode)) return false;
-        if (!java.util.Objects.equals(itemLabel, other.itemLabel)) return false;
-        if (!java.util.Objects.equals(itemValue, other.itemValue)) return false;
-        if (!java.util.Objects.equals(parentValue, other.parentValue)) return false;
-        if (!java.util.Objects.equals(cssClass, other.cssClass)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "DictItemCreateCommand(" + "dictCode=" + dictCode + ", " + "itemLabel=" + itemLabel + ", " + "itemValue="
-                + itemValue + ", " + "parentValue=" + parentValue + ", " + "cssClass=" + cssClass + ", " + "sortOrder="
-                + sortOrder + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

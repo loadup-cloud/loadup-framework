@@ -200,50 +200,8 @@ public class PermissionUpdateCommand {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                id,
-                parentId,
-                permissionName,
-                permissionType,
-                resourcePath,
-                httpMethod,
-                icon,
-                componentPath,
-                sortOrder,
-                visible,
-                status,
-                remark,
-                updatedBy);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PermissionUpdateCommand other = (PermissionUpdateCommand) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
-        if (!java.util.Objects.equals(permissionName, other.permissionName)) return false;
-        if (!java.util.Objects.equals(permissionType, other.permissionType)) return false;
-        if (!java.util.Objects.equals(resourcePath, other.resourcePath)) return false;
-        if (!java.util.Objects.equals(httpMethod, other.httpMethod)) return false;
-        if (!java.util.Objects.equals(icon, other.icon)) return false;
-        if (!java.util.Objects.equals(componentPath, other.componentPath)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        if (!java.util.Objects.equals(visible, other.visible)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        if (!java.util.Objects.equals(updatedBy, other.updatedBy)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "PermissionUpdateCommand(" + "id=" + id + ", " + "parentId=" + parentId + ", " + "permissionName="
-                + permissionName + ", " + "permissionType=" + permissionType + ", " + "resourcePath=" + resourcePath
-                + ", " + "httpMethod=" + httpMethod + ", " + "icon=" + icon + ", " + "componentPath=" + componentPath
-                + ", " + "sortOrder=" + sortOrder + ", " + "visible=" + visible + ", " + "status=" + status + ", "
-                + "remark=" + remark + ", " + "updatedBy=" + updatedBy + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

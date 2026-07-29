@@ -171,34 +171,8 @@ public class DepartmentCreateCommand {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                parentId, deptName, deptCode, sortOrder, leaderUserId, mobile, email, status, remark, createdBy);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DepartmentCreateCommand other = (DepartmentCreateCommand) o;
-        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
-        if (!java.util.Objects.equals(deptName, other.deptName)) return false;
-        if (!java.util.Objects.equals(deptCode, other.deptCode)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        if (!java.util.Objects.equals(leaderUserId, other.leaderUserId)) return false;
-        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
-        if (!java.util.Objects.equals(email, other.email)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        if (!java.util.Objects.equals(createdBy, other.createdBy)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "DepartmentCreateCommand(" + "parentId=" + parentId + ", " + "deptName=" + deptName + ", " + "deptCode="
-                + deptCode + ", " + "sortOrder=" + sortOrder + ", " + "leaderUserId=" + leaderUserId + ", " + "mobile="
-                + mobile + ", " + "email=" + email + ", " + "status=" + status + ", " + "remark=" + remark + ", "
-                + "createdBy=" + createdBy + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

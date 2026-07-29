@@ -131,34 +131,4 @@ public class RoleDO extends BaseDO {
     public void setRemark(String remark) {
         this.remark = remark;
     }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                super.hashCode(), roleName, roleCode, parentId, roleLevel, dataScope, sortOrder, status, remark);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        RoleDO other = (RoleDO) o;
-        if (!java.util.Objects.equals(roleName, other.roleName)) return false;
-        if (!java.util.Objects.equals(roleCode, other.roleCode)) return false;
-        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
-        if (!java.util.Objects.equals(roleLevel, other.roleLevel)) return false;
-        if (!java.util.Objects.equals(dataScope, other.dataScope)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "RoleDO(" + "super=" + super.toString() + ", " + "roleName=" + roleName + ", " + "roleCode=" + roleCode
-                + ", " + "parentId=" + parentId + ", " + "roleLevel=" + roleLevel + ", " + "dataScope=" + dataScope
-                + ", " + "sortOrder=" + sortOrder + ", " + "status=" + status + ", " + "remark=" + remark + ")";
-    }
 }

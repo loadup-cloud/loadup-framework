@@ -76,28 +76,6 @@ public class FileDownloadResponse {
         this.contentLength = contentLength;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(metadata, inputStream, contentLength);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FileDownloadResponse other = (FileDownloadResponse) o;
-        if (!java.util.Objects.equals(metadata, other.metadata)) return false;
-        if (!java.util.Objects.equals(inputStream, other.inputStream)) return false;
-        if (!java.util.Objects.equals(contentLength, other.contentLength)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "FileDownloadResponse(" + "metadata=" + metadata + ", " + "inputStream=" + inputStream + ", "
-                + "contentLength=" + contentLength + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -125,5 +103,11 @@ public class FileDownloadResponse {
         public FileDownloadResponse build() {
             return new FileDownloadResponse(this.metadata, this.inputStream, this.contentLength);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

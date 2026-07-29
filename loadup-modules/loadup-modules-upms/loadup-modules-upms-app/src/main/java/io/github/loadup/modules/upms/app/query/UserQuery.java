@@ -170,40 +170,6 @@ public class UserQuery {
         this.sortOrder = sortOrder;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                username, nickname, realName, email, mobile, deptId, status, deleted, page, size, sortBy, sortOrder);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserQuery other = (UserQuery) o;
-        if (!java.util.Objects.equals(username, other.username)) return false;
-        if (!java.util.Objects.equals(nickname, other.nickname)) return false;
-        if (!java.util.Objects.equals(realName, other.realName)) return false;
-        if (!java.util.Objects.equals(email, other.email)) return false;
-        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
-        if (!java.util.Objects.equals(deptId, other.deptId)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(deleted, other.deleted)) return false;
-        if (!java.util.Objects.equals(page, other.page)) return false;
-        if (!java.util.Objects.equals(size, other.size)) return false;
-        if (!java.util.Objects.equals(sortBy, other.sortBy)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "UserQuery(" + "username=" + username + ", " + "nickname=" + nickname + ", " + "realName=" + realName
-                + ", " + "email=" + email + ", " + "mobile=" + mobile + ", " + "deptId=" + deptId + ", " + "status="
-                + status + ", " + "deleted=" + deleted + ", " + "page=" + page + ", " + "size=" + size + ", "
-                + "sortBy=" + sortBy + ", " + "sortOrder=" + sortOrder + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -297,5 +263,11 @@ public class UserQuery {
                     this.sortBy,
                     this.sortOrder);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

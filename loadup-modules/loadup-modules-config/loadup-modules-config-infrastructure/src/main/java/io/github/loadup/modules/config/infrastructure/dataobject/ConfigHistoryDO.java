@@ -103,31 +103,4 @@ public class ConfigHistoryDO extends BaseDO {
     public void setRemark(String remark) {
         this.remark = remark;
     }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(super.hashCode(), configKey, oldValue, newValue, changeType, operator, remark);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        ConfigHistoryDO other = (ConfigHistoryDO) o;
-        if (!java.util.Objects.equals(configKey, other.configKey)) return false;
-        if (!java.util.Objects.equals(oldValue, other.oldValue)) return false;
-        if (!java.util.Objects.equals(newValue, other.newValue)) return false;
-        if (!java.util.Objects.equals(changeType, other.changeType)) return false;
-        if (!java.util.Objects.equals(operator, other.operator)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ConfigHistoryDO(" + "super=" + super.toString() + ", " + "configKey=" + configKey + ", " + "oldValue="
-                + oldValue + ", " + "newValue=" + newValue + ", " + "changeType=" + changeType + ", " + "operator="
-                + operator + ", " + "remark=" + remark + ")";
-    }
 }

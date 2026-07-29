@@ -163,34 +163,6 @@ public class AuthenticatedUser implements Serializable {
         this.attributes = attributes;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(userId, username, nickname, avatar, email, mobile, newUser, attributes);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AuthenticatedUser other = (AuthenticatedUser) o;
-        if (!java.util.Objects.equals(userId, other.userId)) return false;
-        if (!java.util.Objects.equals(username, other.username)) return false;
-        if (!java.util.Objects.equals(nickname, other.nickname)) return false;
-        if (!java.util.Objects.equals(avatar, other.avatar)) return false;
-        if (!java.util.Objects.equals(email, other.email)) return false;
-        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
-        if (!java.util.Objects.equals(newUser, other.newUser)) return false;
-        if (!java.util.Objects.equals(attributes, other.attributes)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "AuthenticatedUser(" + "userId=" + userId + ", " + "username=" + username + ", " + "nickname=" + nickname
-                + ", " + "avatar=" + avatar + ", " + "email=" + email + ", " + "mobile=" + mobile + ", " + "newUser="
-                + newUser + ", " + "attributes=" + attributes + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -256,5 +228,11 @@ public class AuthenticatedUser implements Serializable {
                     this.newUser,
                     this.attributes);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

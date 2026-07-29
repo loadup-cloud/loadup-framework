@@ -121,43 +121,4 @@ public class DictTypeDO extends BaseDO {
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                super.hashCode(),
-                dictCode,
-                dictName,
-                description,
-                systemDefined,
-                sortOrder,
-                enabled,
-                createdBy,
-                updatedBy);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        DictTypeDO other = (DictTypeDO) o;
-        if (!java.util.Objects.equals(dictCode, other.dictCode)) return false;
-        if (!java.util.Objects.equals(dictName, other.dictName)) return false;
-        if (!java.util.Objects.equals(description, other.description)) return false;
-        if (!java.util.Objects.equals(systemDefined, other.systemDefined)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
-        if (!java.util.Objects.equals(createdBy, other.createdBy)) return false;
-        if (!java.util.Objects.equals(updatedBy, other.updatedBy)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "DictTypeDO(" + "super=" + super.toString() + ", " + "dictCode=" + dictCode + ", " + "dictName="
-                + dictName + ", " + "description=" + description + ", " + "systemDefined=" + systemDefined + ", "
-                + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy=" + createdBy + ", "
-                + "updatedBy=" + updatedBy + ")";
-    }
 }

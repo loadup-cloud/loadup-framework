@@ -159,39 +159,6 @@ public class LoginLogDTO {
         this.loginTime = loginTime;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                id, userId, username, loginType, ipAddress, location, browser, os, success, message, loginTime);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LoginLogDTO other = (LoginLogDTO) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(userId, other.userId)) return false;
-        if (!java.util.Objects.equals(username, other.username)) return false;
-        if (!java.util.Objects.equals(loginType, other.loginType)) return false;
-        if (!java.util.Objects.equals(ipAddress, other.ipAddress)) return false;
-        if (!java.util.Objects.equals(location, other.location)) return false;
-        if (!java.util.Objects.equals(browser, other.browser)) return false;
-        if (!java.util.Objects.equals(os, other.os)) return false;
-        if (!java.util.Objects.equals(success, other.success)) return false;
-        if (!java.util.Objects.equals(message, other.message)) return false;
-        if (!java.util.Objects.equals(loginTime, other.loginTime)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "LoginLogDTO(" + "id=" + id + ", " + "userId=" + userId + ", " + "username=" + username + ", "
-                + "loginType=" + loginType + ", " + "ipAddress=" + ipAddress + ", " + "location=" + location + ", "
-                + "browser=" + browser + ", " + "os=" + os + ", " + "success=" + success + ", " + "message=" + message
-                + ", " + "loginTime=" + loginTime + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -278,5 +245,11 @@ public class LoginLogDTO {
                     this.message,
                     this.loginTime);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

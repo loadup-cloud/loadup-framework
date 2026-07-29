@@ -215,61 +215,6 @@ public class PermissionDTO {
         this.updatedTime = updatedTime;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                id,
-                parentId,
-                permissionName,
-                permissionCode,
-                permissionType,
-                resourcePath,
-                httpMethod,
-                icon,
-                componentPath,
-                sortOrder,
-                visible,
-                status,
-                children,
-                remark,
-                createdTime,
-                updatedTime);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PermissionDTO other = (PermissionDTO) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
-        if (!java.util.Objects.equals(permissionName, other.permissionName)) return false;
-        if (!java.util.Objects.equals(permissionCode, other.permissionCode)) return false;
-        if (!java.util.Objects.equals(permissionType, other.permissionType)) return false;
-        if (!java.util.Objects.equals(resourcePath, other.resourcePath)) return false;
-        if (!java.util.Objects.equals(httpMethod, other.httpMethod)) return false;
-        if (!java.util.Objects.equals(icon, other.icon)) return false;
-        if (!java.util.Objects.equals(componentPath, other.componentPath)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        if (!java.util.Objects.equals(visible, other.visible)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(children, other.children)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        if (!java.util.Objects.equals(createdTime, other.createdTime)) return false;
-        if (!java.util.Objects.equals(updatedTime, other.updatedTime)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "PermissionDTO(" + "id=" + id + ", " + "parentId=" + parentId + ", " + "permissionName=" + permissionName
-                + ", " + "permissionCode=" + permissionCode + ", " + "permissionType=" + permissionType + ", "
-                + "resourcePath=" + resourcePath + ", " + "httpMethod=" + httpMethod + ", " + "icon=" + icon + ", "
-                + "componentPath=" + componentPath + ", " + "sortOrder=" + sortOrder + ", " + "visible=" + visible
-                + ", " + "status=" + status + ", " + "children=" + children + ", " + "remark=" + remark + ", "
-                + "createdTime=" + createdTime + ", " + "updatedTime=" + updatedTime + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -391,5 +336,11 @@ public class PermissionDTO {
                     this.createdTime,
                     this.updatedTime);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

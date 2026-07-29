@@ -110,29 +110,8 @@ public class ErrorLogQuery {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(userId, errorType, errorCode, startTime, endTime, pageNum, pageSize);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ErrorLogQuery other = (ErrorLogQuery) o;
-        if (!java.util.Objects.equals(userId, other.userId)) return false;
-        if (!java.util.Objects.equals(errorType, other.errorType)) return false;
-        if (!java.util.Objects.equals(errorCode, other.errorCode)) return false;
-        if (!java.util.Objects.equals(startTime, other.startTime)) return false;
-        if (!java.util.Objects.equals(endTime, other.endTime)) return false;
-        if (!java.util.Objects.equals(pageNum, other.pageNum)) return false;
-        if (!java.util.Objects.equals(pageSize, other.pageSize)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "ErrorLogQuery(" + "userId=" + userId + ", " + "errorType=" + errorType + ", " + "errorCode=" + errorCode
-                + ", " + "startTime=" + startTime + ", " + "endTime=" + endTime + ", " + "pageNum=" + pageNum + ", "
-                + "pageSize=" + pageSize + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

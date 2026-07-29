@@ -12,6 +12,10 @@
     <description>Digital signature and digest service component (RSA, DSA, ECDSA, MD5, SHA, HMAC)</description>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
         <!-- Spring Boot Starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

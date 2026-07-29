@@ -141,31 +141,8 @@ public class ConfigItemCreateCommand {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                configKey, configValue, valueType, category, description, editable, encrypted, sortOrder);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ConfigItemCreateCommand other = (ConfigItemCreateCommand) o;
-        if (!java.util.Objects.equals(configKey, other.configKey)) return false;
-        if (!java.util.Objects.equals(configValue, other.configValue)) return false;
-        if (!java.util.Objects.equals(valueType, other.valueType)) return false;
-        if (!java.util.Objects.equals(category, other.category)) return false;
-        if (!java.util.Objects.equals(description, other.description)) return false;
-        if (!java.util.Objects.equals(editable, other.editable)) return false;
-        if (!java.util.Objects.equals(encrypted, other.encrypted)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "ConfigItemCreateCommand(" + "configKey=" + configKey + ", " + "configValue=" + configValue + ", "
-                + "valueType=" + valueType + ", " + "category=" + category + ", " + "description=" + description + ", "
-                + "editable=" + editable + ", " + "encrypted=" + encrypted + ", " + "sortOrder=" + sortOrder + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

@@ -173,51 +173,6 @@ public class DictItem {
         this.updatedAt = updatedAt;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                id,
-                dictCode,
-                itemLabel,
-                itemValue,
-                parentValue,
-                cssClass,
-                sortOrder,
-                enabled,
-                createdBy,
-                createdAt,
-                updatedBy,
-                updatedAt);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DictItem other = (DictItem) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(dictCode, other.dictCode)) return false;
-        if (!java.util.Objects.equals(itemLabel, other.itemLabel)) return false;
-        if (!java.util.Objects.equals(itemValue, other.itemValue)) return false;
-        if (!java.util.Objects.equals(parentValue, other.parentValue)) return false;
-        if (!java.util.Objects.equals(cssClass, other.cssClass)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
-        if (!java.util.Objects.equals(createdBy, other.createdBy)) return false;
-        if (!java.util.Objects.equals(createdAt, other.createdAt)) return false;
-        if (!java.util.Objects.equals(updatedBy, other.updatedBy)) return false;
-        if (!java.util.Objects.equals(updatedAt, other.updatedAt)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "DictItem(" + "id=" + id + ", " + "dictCode=" + dictCode + ", " + "itemLabel=" + itemLabel + ", "
-                + "itemValue=" + itemValue + ", " + "parentValue=" + parentValue + ", " + "cssClass=" + cssClass + ", "
-                + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy=" + createdBy + ", "
-                + "createdAt=" + createdAt + ", " + "updatedBy=" + updatedBy + ", " + "updatedAt=" + updatedAt + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -311,5 +266,11 @@ public class DictItem {
                     this.updatedBy,
                     this.updatedAt);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

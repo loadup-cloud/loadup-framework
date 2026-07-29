@@ -289,49 +289,6 @@ public class SchedulerTask {
         this.maxRetries = maxRetries;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                taskName,
-                taskGroup,
-                description,
-                beanName,
-                method,
-                args,
-                cron,
-                enabled,
-                targetBean,
-                timeoutMillis,
-                maxRetries);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SchedulerTask other = (SchedulerTask) o;
-        if (!java.util.Objects.equals(taskName, other.taskName)) return false;
-        if (!java.util.Objects.equals(taskGroup, other.taskGroup)) return false;
-        if (!java.util.Objects.equals(description, other.description)) return false;
-        if (!java.util.Objects.equals(beanName, other.beanName)) return false;
-        if (!java.util.Objects.equals(method, other.method)) return false;
-        if (!java.util.Objects.equals(args, other.args)) return false;
-        if (!java.util.Objects.equals(cron, other.cron)) return false;
-        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
-        if (!java.util.Objects.equals(targetBean, other.targetBean)) return false;
-        if (!java.util.Objects.equals(timeoutMillis, other.timeoutMillis)) return false;
-        if (!java.util.Objects.equals(maxRetries, other.maxRetries)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "SchedulerTask(" + "taskName=" + taskName + ", " + "taskGroup=" + taskGroup + ", " + "description="
-                + description + ", " + "beanName=" + beanName + ", " + "method=" + method + ", " + "args=" + args + ", "
-                + "cron=" + cron + ", " + "enabled=" + enabled + ", " + "targetBean=" + targetBean + ", "
-                + "timeoutMillis=" + timeoutMillis + ", " + "maxRetries=" + maxRetries + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -418,5 +375,11 @@ public class SchedulerTask {
                     this.timeoutMillis,
                     this.maxRetries);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

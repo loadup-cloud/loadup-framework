@@ -126,34 +126,6 @@ public class ConfigHistory {
         this.createdAt = createdAt;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(id, configKey, oldValue, newValue, changeType, operator, remark, createdAt);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ConfigHistory other = (ConfigHistory) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(configKey, other.configKey)) return false;
-        if (!java.util.Objects.equals(oldValue, other.oldValue)) return false;
-        if (!java.util.Objects.equals(newValue, other.newValue)) return false;
-        if (!java.util.Objects.equals(changeType, other.changeType)) return false;
-        if (!java.util.Objects.equals(operator, other.operator)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        if (!java.util.Objects.equals(createdAt, other.createdAt)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ConfigHistory(" + "id=" + id + ", " + "configKey=" + configKey + ", " + "oldValue=" + oldValue + ", "
-                + "newValue=" + newValue + ", " + "changeType=" + changeType + ", " + "operator=" + operator + ", "
-                + "remark=" + remark + ", " + "createdAt=" + createdAt + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -219,5 +191,11 @@ public class ConfigHistory {
                     this.remark,
                     this.createdAt);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

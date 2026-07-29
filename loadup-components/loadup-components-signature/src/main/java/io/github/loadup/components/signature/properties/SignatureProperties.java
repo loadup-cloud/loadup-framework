@@ -109,30 +109,6 @@ public class SignatureProperties {
         this.keySize = keySize;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(enabled, defaultSignatureAlgorithm, defaultDigestAlgorithm, keySize);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SignatureProperties other = (SignatureProperties) o;
-        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
-        if (!java.util.Objects.equals(defaultSignatureAlgorithm, other.defaultSignatureAlgorithm)) return false;
-        if (!java.util.Objects.equals(defaultDigestAlgorithm, other.defaultDigestAlgorithm)) return false;
-        if (!java.util.Objects.equals(keySize, other.keySize)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "SignatureProperties(" + "enabled=" + enabled + ", " + "defaultSignatureAlgorithm="
-                + defaultSignatureAlgorithm + ", " + "defaultDigestAlgorithm=" + defaultDigestAlgorithm + ", "
-                + "keySize=" + keySize + ")";
-    }
-
     public boolean isEnabled() {
         return this.enabled;
     }
@@ -147,5 +123,11 @@ public class SignatureProperties {
 
     public Map<String, Integer> getKeySize() {
         return this.keySize;
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

@@ -165,34 +165,8 @@ public class DepartmentUpdateCommand {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                id, parentId, deptName, sortOrder, leaderUserId, mobile, email, status, remark, updatedBy);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DepartmentUpdateCommand other = (DepartmentUpdateCommand) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
-        if (!java.util.Objects.equals(deptName, other.deptName)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        if (!java.util.Objects.equals(leaderUserId, other.leaderUserId)) return false;
-        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
-        if (!java.util.Objects.equals(email, other.email)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        if (!java.util.Objects.equals(updatedBy, other.updatedBy)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "DepartmentUpdateCommand(" + "id=" + id + ", " + "parentId=" + parentId + ", " + "deptName=" + deptName
-                + ", " + "sortOrder=" + sortOrder + ", " + "leaderUserId=" + leaderUserId + ", " + "mobile=" + mobile
-                + ", " + "email=" + email + ", " + "status=" + status + ", " + "remark=" + remark + ", " + "updatedBy="
-                + updatedBy + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

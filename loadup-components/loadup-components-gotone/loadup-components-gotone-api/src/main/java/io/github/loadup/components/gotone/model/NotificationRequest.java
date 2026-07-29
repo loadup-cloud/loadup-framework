@@ -154,32 +154,6 @@ public class NotificationRequest implements Serializable {
         this.async = async;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(serviceCode, receivers, templateParams, requestId, channels, async);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        NotificationRequest other = (NotificationRequest) o;
-        if (!java.util.Objects.equals(serviceCode, other.serviceCode)) return false;
-        if (!java.util.Objects.equals(receivers, other.receivers)) return false;
-        if (!java.util.Objects.equals(templateParams, other.templateParams)) return false;
-        if (!java.util.Objects.equals(requestId, other.requestId)) return false;
-        if (!java.util.Objects.equals(channels, other.channels)) return false;
-        if (!java.util.Objects.equals(async, other.async)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "NotificationRequest(" + "serviceCode=" + serviceCode + ", " + "receivers=" + receivers + ", "
-                + "templateParams=" + templateParams + ", " + "requestId=" + requestId + ", " + "channels=" + channels
-                + ", " + "async=" + async + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -226,5 +200,11 @@ public class NotificationRequest implements Serializable {
             return new NotificationRequest(
                     this.serviceCode, this.receivers, this.templateParams, this.requestId, this.channels, this.async);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

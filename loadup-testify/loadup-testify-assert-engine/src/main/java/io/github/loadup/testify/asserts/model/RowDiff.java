@@ -124,26 +124,8 @@ public class RowDiff {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(index, type, message, expectedRow, fieldDiffs);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RowDiff other = (RowDiff) o;
-        if (!java.util.Objects.equals(index, other.index)) return false;
-        if (!java.util.Objects.equals(type, other.type)) return false;
-        if (!java.util.Objects.equals(message, other.message)) return false;
-        if (!java.util.Objects.equals(expectedRow, other.expectedRow)) return false;
-        if (!java.util.Objects.equals(fieldDiffs, other.fieldDiffs)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "RowDiff(" + "index=" + index + ", " + "type=" + type + ", " + "message=" + message + ", "
-                + "expectedRow=" + expectedRow + ", " + "fieldDiffs=" + fieldDiffs + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

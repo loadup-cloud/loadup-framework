@@ -94,25 +94,8 @@ public class CaptchaProperties {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(len, width, height, customCharacters);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CaptchaProperties other = (CaptchaProperties) o;
-        if (!java.util.Objects.equals(len, other.len)) return false;
-        if (!java.util.Objects.equals(width, other.width)) return false;
-        if (!java.util.Objects.equals(height, other.height)) return false;
-        if (!java.util.Objects.equals(customCharacters, other.customCharacters)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "CaptchaProperties(" + "len=" + len + ", " + "width=" + width + ", " + "height=" + height + ", "
-                + "customCharacters=" + customCharacters + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

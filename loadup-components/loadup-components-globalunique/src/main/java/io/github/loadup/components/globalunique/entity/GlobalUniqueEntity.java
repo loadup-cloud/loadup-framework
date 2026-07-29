@@ -144,33 +144,6 @@ public class GlobalUniqueEntity implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(id, uniqueKey, bizType, bizId, requestData, createdAt, updatedAt);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GlobalUniqueEntity other = (GlobalUniqueEntity) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(uniqueKey, other.uniqueKey)) return false;
-        if (!java.util.Objects.equals(bizType, other.bizType)) return false;
-        if (!java.util.Objects.equals(bizId, other.bizId)) return false;
-        if (!java.util.Objects.equals(requestData, other.requestData)) return false;
-        if (!java.util.Objects.equals(createdAt, other.createdAt)) return false;
-        if (!java.util.Objects.equals(updatedAt, other.updatedAt)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "GlobalUniqueEntity(" + "id=" + id + ", " + "uniqueKey=" + uniqueKey + ", " + "bizType=" + bizType + ", "
-                + "bizId=" + bizId + ", " + "requestData=" + requestData + ", " + "createdAt=" + createdAt + ", "
-                + "updatedAt=" + updatedAt + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -229,5 +202,11 @@ public class GlobalUniqueEntity implements Serializable {
                     this.createdAt,
                     this.updatedAt);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

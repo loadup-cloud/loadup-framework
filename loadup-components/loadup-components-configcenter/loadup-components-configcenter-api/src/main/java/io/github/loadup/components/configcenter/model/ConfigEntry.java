@@ -139,33 +139,6 @@ public class ConfigEntry {
         this.lastModified = lastModified;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(dataId, group, namespace, content, contentType, version, lastModified);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ConfigEntry other = (ConfigEntry) o;
-        if (!java.util.Objects.equals(dataId, other.dataId)) return false;
-        if (!java.util.Objects.equals(group, other.group)) return false;
-        if (!java.util.Objects.equals(namespace, other.namespace)) return false;
-        if (!java.util.Objects.equals(content, other.content)) return false;
-        if (!java.util.Objects.equals(contentType, other.contentType)) return false;
-        if (!java.util.Objects.equals(version, other.version)) return false;
-        if (!java.util.Objects.equals(lastModified, other.lastModified)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ConfigEntry(" + "dataId=" + dataId + ", " + "group=" + group + ", " + "namespace=" + namespace + ", "
-                + "content=" + content + ", " + "contentType=" + contentType + ", " + "version=" + version + ", "
-                + "lastModified=" + lastModified + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -224,5 +197,11 @@ public class ConfigEntry {
                     this.version,
                     this.lastModified);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

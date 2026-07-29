@@ -84,26 +84,8 @@ public class LogStatisticsQuery {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(userId, module, operationType, startTime, endTime);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LogStatisticsQuery other = (LogStatisticsQuery) o;
-        if (!java.util.Objects.equals(userId, other.userId)) return false;
-        if (!java.util.Objects.equals(module, other.module)) return false;
-        if (!java.util.Objects.equals(operationType, other.operationType)) return false;
-        if (!java.util.Objects.equals(startTime, other.startTime)) return false;
-        if (!java.util.Objects.equals(endTime, other.endTime)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "LogStatisticsQuery(" + "userId=" + userId + ", " + "module=" + module + ", " + "operationType="
-                + operationType + ", " + "startTime=" + startTime + ", " + "endTime=" + endTime + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

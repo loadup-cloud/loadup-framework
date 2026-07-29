@@ -125,31 +125,6 @@ public class OAuthUserInfo implements Serializable {
         this.mobile = mobile;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(openId, unionId, nickname, avatar, email, mobile);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OAuthUserInfo other = (OAuthUserInfo) o;
-        if (!java.util.Objects.equals(openId, other.openId)) return false;
-        if (!java.util.Objects.equals(unionId, other.unionId)) return false;
-        if (!java.util.Objects.equals(nickname, other.nickname)) return false;
-        if (!java.util.Objects.equals(avatar, other.avatar)) return false;
-        if (!java.util.Objects.equals(email, other.email)) return false;
-        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "OAuthUserInfo(" + "openId=" + openId + ", " + "unionId=" + unionId + ", " + "nickname=" + nickname
-                + ", " + "avatar=" + avatar + ", " + "email=" + email + ", " + "mobile=" + mobile + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -195,5 +170,11 @@ public class OAuthUserInfo implements Serializable {
         public OAuthUserInfo build() {
             return new OAuthUserInfo(this.openId, this.unionId, this.nickname, this.avatar, this.email, this.mobile);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

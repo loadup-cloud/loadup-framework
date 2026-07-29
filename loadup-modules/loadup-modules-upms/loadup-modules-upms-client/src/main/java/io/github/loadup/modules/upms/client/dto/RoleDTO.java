@@ -193,56 +193,6 @@ public class RoleDTO {
         this.updatedTime = updatedTime;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                id,
-                roleName,
-                roleCode,
-                parentId,
-                parentRoleName,
-                roleLevel,
-                dataScope,
-                sortOrder,
-                status,
-                permissions,
-                departmentIds,
-                remark,
-                createdTime,
-                updatedTime);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RoleDTO other = (RoleDTO) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(roleName, other.roleName)) return false;
-        if (!java.util.Objects.equals(roleCode, other.roleCode)) return false;
-        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
-        if (!java.util.Objects.equals(parentRoleName, other.parentRoleName)) return false;
-        if (!java.util.Objects.equals(roleLevel, other.roleLevel)) return false;
-        if (!java.util.Objects.equals(dataScope, other.dataScope)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(permissions, other.permissions)) return false;
-        if (!java.util.Objects.equals(departmentIds, other.departmentIds)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        if (!java.util.Objects.equals(createdTime, other.createdTime)) return false;
-        if (!java.util.Objects.equals(updatedTime, other.updatedTime)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "RoleDTO(" + "id=" + id + ", " + "roleName=" + roleName + ", " + "roleCode=" + roleCode + ", "
-                + "parentId=" + parentId + ", " + "parentRoleName=" + parentRoleName + ", " + "roleLevel=" + roleLevel
-                + ", " + "dataScope=" + dataScope + ", " + "sortOrder=" + sortOrder + ", " + "status=" + status + ", "
-                + "permissions=" + permissions + ", " + "departmentIds=" + departmentIds + ", " + "remark=" + remark
-                + ", " + "createdTime=" + createdTime + ", " + "updatedTime=" + updatedTime + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -350,5 +300,11 @@ public class RoleDTO {
                     this.createdTime,
                     this.updatedTime);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

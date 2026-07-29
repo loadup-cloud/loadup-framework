@@ -73,24 +73,8 @@ public class ConfigItemUpdateCommand {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(configKey, configValue, remark);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ConfigItemUpdateCommand other = (ConfigItemUpdateCommand) o;
-        if (!java.util.Objects.equals(configKey, other.configKey)) return false;
-        if (!java.util.Objects.equals(configValue, other.configValue)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "ConfigItemUpdateCommand(" + "configKey=" + configKey + ", " + "configValue=" + configValue + ", "
-                + "remark=" + remark + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

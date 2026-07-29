@@ -97,29 +97,6 @@ public class OAuthToken implements Serializable {
         this.scope = scope;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(accessToken, refreshToken, expiresIn, scope);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OAuthToken other = (OAuthToken) o;
-        if (!java.util.Objects.equals(accessToken, other.accessToken)) return false;
-        if (!java.util.Objects.equals(refreshToken, other.refreshToken)) return false;
-        if (!java.util.Objects.equals(expiresIn, other.expiresIn)) return false;
-        if (!java.util.Objects.equals(scope, other.scope)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "OAuthToken(" + "accessToken=" + accessToken + ", " + "refreshToken=" + refreshToken + ", "
-                + "expiresIn=" + expiresIn + ", " + "scope=" + scope + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -153,5 +130,11 @@ public class OAuthToken implements Serializable {
         public OAuthToken build() {
             return new OAuthToken(this.accessToken, this.refreshToken, this.expiresIn, this.scope);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

@@ -87,30 +87,6 @@ public class AccessTokenDTO {
         this.userInfo = userInfo;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(accessToken, refreshToken, tokenType, expiresIn, userInfo);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AccessTokenDTO other = (AccessTokenDTO) o;
-        if (!java.util.Objects.equals(accessToken, other.accessToken)) return false;
-        if (!java.util.Objects.equals(refreshToken, other.refreshToken)) return false;
-        if (!java.util.Objects.equals(tokenType, other.tokenType)) return false;
-        if (!java.util.Objects.equals(expiresIn, other.expiresIn)) return false;
-        if (!java.util.Objects.equals(userInfo, other.userInfo)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "AccessTokenDTO(" + "accessToken=" + accessToken + ", " + "refreshToken=" + refreshToken + ", "
-                + "tokenType=" + tokenType + ", " + "expiresIn=" + expiresIn + ", " + "userInfo=" + userInfo + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -151,5 +127,11 @@ public class AccessTokenDTO {
             return new AccessTokenDTO(
                     this.accessToken, this.refreshToken, this.tokenType, this.expiresIn, this.userInfo);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

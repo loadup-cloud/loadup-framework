@@ -284,61 +284,6 @@ public class LoginCredentials implements Serializable {
         this.extra = extra;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                loginType,
-                username,
-                password,
-                mobile,
-                smsCode,
-                email,
-                emailCode,
-                provider,
-                code,
-                state,
-                redirectUri,
-                ipAddress,
-                userAgent,
-                captchaKey,
-                captchaCode,
-                extra);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LoginCredentials other = (LoginCredentials) o;
-        if (!java.util.Objects.equals(loginType, other.loginType)) return false;
-        if (!java.util.Objects.equals(username, other.username)) return false;
-        if (!java.util.Objects.equals(password, other.password)) return false;
-        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
-        if (!java.util.Objects.equals(smsCode, other.smsCode)) return false;
-        if (!java.util.Objects.equals(email, other.email)) return false;
-        if (!java.util.Objects.equals(emailCode, other.emailCode)) return false;
-        if (!java.util.Objects.equals(provider, other.provider)) return false;
-        if (!java.util.Objects.equals(code, other.code)) return false;
-        if (!java.util.Objects.equals(state, other.state)) return false;
-        if (!java.util.Objects.equals(redirectUri, other.redirectUri)) return false;
-        if (!java.util.Objects.equals(ipAddress, other.ipAddress)) return false;
-        if (!java.util.Objects.equals(userAgent, other.userAgent)) return false;
-        if (!java.util.Objects.equals(captchaKey, other.captchaKey)) return false;
-        if (!java.util.Objects.equals(captchaCode, other.captchaCode)) return false;
-        if (!java.util.Objects.equals(extra, other.extra)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "LoginCredentials(" + "loginType=" + loginType + ", " + "username=" + username + ", " + "password="
-                + password + ", " + "mobile=" + mobile + ", " + "smsCode=" + smsCode + ", " + "email=" + email + ", "
-                + "emailCode=" + emailCode + ", " + "provider=" + provider + ", " + "code=" + code + ", " + "state="
-                + state + ", " + "redirectUri=" + redirectUri + ", " + "ipAddress=" + ipAddress + ", " + "userAgent="
-                + userAgent + ", " + "captchaKey=" + captchaKey + ", " + "captchaCode=" + captchaCode + ", " + "extra="
-                + extra + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -460,5 +405,11 @@ public class LoginCredentials implements Serializable {
                     this.captchaCode,
                     this.extra);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

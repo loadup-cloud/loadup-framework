@@ -137,35 +137,6 @@ public class RoleQuery {
         this.sortOrder = sortOrder;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(roleName, roleCode, parentId, status, deleted, page, size, sortBy, sortOrder);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RoleQuery other = (RoleQuery) o;
-        if (!java.util.Objects.equals(roleName, other.roleName)) return false;
-        if (!java.util.Objects.equals(roleCode, other.roleCode)) return false;
-        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(deleted, other.deleted)) return false;
-        if (!java.util.Objects.equals(page, other.page)) return false;
-        if (!java.util.Objects.equals(size, other.size)) return false;
-        if (!java.util.Objects.equals(sortBy, other.sortBy)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "RoleQuery(" + "roleName=" + roleName + ", " + "roleCode=" + roleCode + ", " + "parentId=" + parentId
-                + ", " + "status=" + status + ", " + "deleted=" + deleted + ", " + "page=" + page + ", " + "size="
-                + size + ", " + "sortBy=" + sortBy + ", " + "sortOrder=" + sortOrder + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -238,5 +209,11 @@ public class RoleQuery {
                     this.sortBy,
                     this.sortOrder);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

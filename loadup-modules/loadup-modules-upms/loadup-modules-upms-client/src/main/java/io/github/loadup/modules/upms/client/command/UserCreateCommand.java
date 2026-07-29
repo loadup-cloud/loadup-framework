@@ -221,40 +221,8 @@ public class UserCreateCommand {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                username, password, nickname, realName, deptId, email, mobile, avatar, gender, birthday, status,
-                roleIds, remark, createdBy);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserCreateCommand other = (UserCreateCommand) o;
-        if (!java.util.Objects.equals(username, other.username)) return false;
-        if (!java.util.Objects.equals(password, other.password)) return false;
-        if (!java.util.Objects.equals(nickname, other.nickname)) return false;
-        if (!java.util.Objects.equals(realName, other.realName)) return false;
-        if (!java.util.Objects.equals(deptId, other.deptId)) return false;
-        if (!java.util.Objects.equals(email, other.email)) return false;
-        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
-        if (!java.util.Objects.equals(avatar, other.avatar)) return false;
-        if (!java.util.Objects.equals(gender, other.gender)) return false;
-        if (!java.util.Objects.equals(birthday, other.birthday)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(roleIds, other.roleIds)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        if (!java.util.Objects.equals(createdBy, other.createdBy)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "UserCreateCommand(" + "username=" + username + ", " + "password=" + password + ", " + "nickname="
-                + nickname + ", " + "realName=" + realName + ", " + "deptId=" + deptId + ", " + "email=" + email + ", "
-                + "mobile=" + mobile + ", " + "avatar=" + avatar + ", " + "gender=" + gender + ", " + "birthday="
-                + birthday + ", " + "status=" + status + ", " + "roleIds=" + roleIds + ", " + "remark=" + remark + ", "
-                + "createdBy=" + createdBy + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

@@ -144,47 +144,4 @@ public class ErrorLogDO extends BaseDO {
     public void setErrorTime(LocalDateTime errorTime) {
         this.errorTime = errorTime;
     }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                super.hashCode(),
-                userId,
-                errorType,
-                errorCode,
-                errorMessage,
-                stackTrace,
-                requestUrl,
-                requestMethod,
-                requestParams,
-                ip,
-                errorTime);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        ErrorLogDO other = (ErrorLogDO) o;
-        if (!java.util.Objects.equals(userId, other.userId)) return false;
-        if (!java.util.Objects.equals(errorType, other.errorType)) return false;
-        if (!java.util.Objects.equals(errorCode, other.errorCode)) return false;
-        if (!java.util.Objects.equals(errorMessage, other.errorMessage)) return false;
-        if (!java.util.Objects.equals(stackTrace, other.stackTrace)) return false;
-        if (!java.util.Objects.equals(requestUrl, other.requestUrl)) return false;
-        if (!java.util.Objects.equals(requestMethod, other.requestMethod)) return false;
-        if (!java.util.Objects.equals(requestParams, other.requestParams)) return false;
-        if (!java.util.Objects.equals(ip, other.ip)) return false;
-        if (!java.util.Objects.equals(errorTime, other.errorTime)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ErrorLogDO(" + "super=" + super.toString() + ", " + "userId=" + userId + ", " + "errorType=" + errorType
-                + ", " + "errorCode=" + errorCode + ", " + "errorMessage=" + errorMessage + ", " + "stackTrace="
-                + stackTrace + ", " + "requestUrl=" + requestUrl + ", " + "requestMethod=" + requestMethod + ", "
-                + "requestParams=" + requestParams + ", " + "ip=" + ip + ", " + "errorTime=" + errorTime + ")";
-    }
 }

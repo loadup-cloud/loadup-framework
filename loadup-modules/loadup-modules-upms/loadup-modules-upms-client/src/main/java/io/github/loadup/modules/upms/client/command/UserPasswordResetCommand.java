@@ -107,27 +107,8 @@ public class UserPasswordResetCommand {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(username, verificationCode, newPassword, confirmPassword, verificationType);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserPasswordResetCommand other = (UserPasswordResetCommand) o;
-        if (!java.util.Objects.equals(username, other.username)) return false;
-        if (!java.util.Objects.equals(verificationCode, other.verificationCode)) return false;
-        if (!java.util.Objects.equals(newPassword, other.newPassword)) return false;
-        if (!java.util.Objects.equals(confirmPassword, other.confirmPassword)) return false;
-        if (!java.util.Objects.equals(verificationType, other.verificationType)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "UserPasswordResetCommand(" + "username=" + username + ", " + "verificationCode=" + verificationCode
-                + ", " + "newPassword=" + newPassword + ", " + "confirmPassword=" + confirmPassword + ", "
-                + "verificationType=" + verificationType + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

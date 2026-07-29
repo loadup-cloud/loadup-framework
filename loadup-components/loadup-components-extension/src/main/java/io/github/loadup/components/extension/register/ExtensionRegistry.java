@@ -31,11 +31,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -274,25 +276,11 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
             this.useCase = bizScenario.useCase();
             this.scenario = bizScenario.scenario();
         }
+    }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            ScenarioKey that = (ScenarioKey) o;
-            return Objects.equals(extensionType, that.extensionType)
-                    && Objects.equals(bizCode, that.bizCode)
-                    && Objects.equals(useCase, that.useCase)
-                    && Objects.equals(scenario, that.scenario);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(extensionType, bizCode, useCase, scenario);
-        }
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(
+                this, ToStringStyle.JSON_STYLE);
     }
 }

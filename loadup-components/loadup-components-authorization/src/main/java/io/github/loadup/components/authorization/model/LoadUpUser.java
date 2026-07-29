@@ -165,30 +165,6 @@ public class LoadUpUser implements Serializable {
         this.attributes = attributes;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(userId, username, roles, permissions, attributes);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LoadUpUser other = (LoadUpUser) o;
-        if (!java.util.Objects.equals(userId, other.userId)) return false;
-        if (!java.util.Objects.equals(username, other.username)) return false;
-        if (!java.util.Objects.equals(roles, other.roles)) return false;
-        if (!java.util.Objects.equals(permissions, other.permissions)) return false;
-        if (!java.util.Objects.equals(attributes, other.attributes)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "LoadUpUser(" + "userId=" + userId + ", " + "username=" + username + ", " + "roles=" + roles + ", "
-                + "permissions=" + permissions + ", " + "attributes=" + attributes + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -228,5 +204,11 @@ public class LoadUpUser implements Serializable {
         public LoadUpUser build() {
             return new LoadUpUser(this.userId, this.username, this.roles, this.permissions, this.attributes);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

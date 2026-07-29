@@ -25,7 +25,6 @@ package io.github.loadup.gateway.facade.model;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * YAML-friendly filter definition.
@@ -56,18 +55,6 @@ public class FilterDefinition {
         return props == null ? Collections.emptyMap() : Collections.unmodifiableMap(props);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof FilterDefinition that)) return false;
-        return Objects.equals(name, that.name) && Objects.equals(props, that.props);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, props);
-    }
-
     public FilterDefinition(String name, Map<String, Object> props) {
         this.name = name;
         this.props = props;
@@ -85,11 +72,6 @@ public class FilterDefinition {
 
     public void setProps(Map<String, Object> props) {
         this.props = props;
-    }
-
-    @Override
-    public String toString() {
-        return "FilterDefinition(" + "name=" + name + ", " + "props=" + props + ")";
     }
 
     public static Builder builder() {
@@ -113,5 +95,11 @@ public class FilterDefinition {
         public FilterDefinition build() {
             return new FilterDefinition(this.name, this.props);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

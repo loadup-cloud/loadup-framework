@@ -87,22 +87,8 @@ public class UserStatus {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(status, description);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserStatus other = (UserStatus) o;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(description, other.description)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "UserStatus(" + "status=" + status + ", " + "description=" + description + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

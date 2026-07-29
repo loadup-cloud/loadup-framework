@@ -11,6 +11,10 @@
     <description>Log Module Domain Layer - Pure DDD Models, Gateway Interfaces, Enums</description>
     <dependencies>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-log-client</artifactId>
         </dependency>

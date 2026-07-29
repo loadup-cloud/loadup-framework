@@ -206,58 +206,6 @@ public class ConfigItem {
         this.updatedAt = updatedAt;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                id,
-                configKey,
-                configValue,
-                valueType,
-                category,
-                description,
-                editable,
-                encrypted,
-                systemDefined,
-                sortOrder,
-                enabled,
-                createdBy,
-                createdAt,
-                updatedBy,
-                updatedAt);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ConfigItem other = (ConfigItem) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(configKey, other.configKey)) return false;
-        if (!java.util.Objects.equals(configValue, other.configValue)) return false;
-        if (!java.util.Objects.equals(valueType, other.valueType)) return false;
-        if (!java.util.Objects.equals(category, other.category)) return false;
-        if (!java.util.Objects.equals(description, other.description)) return false;
-        if (!java.util.Objects.equals(editable, other.editable)) return false;
-        if (!java.util.Objects.equals(encrypted, other.encrypted)) return false;
-        if (!java.util.Objects.equals(systemDefined, other.systemDefined)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
-        if (!java.util.Objects.equals(createdBy, other.createdBy)) return false;
-        if (!java.util.Objects.equals(createdAt, other.createdAt)) return false;
-        if (!java.util.Objects.equals(updatedBy, other.updatedBy)) return false;
-        if (!java.util.Objects.equals(updatedAt, other.updatedAt)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ConfigItem(" + "id=" + id + ", " + "configKey=" + configKey + ", " + "configValue=" + configValue + ", "
-                + "valueType=" + valueType + ", " + "category=" + category + ", " + "description=" + description + ", "
-                + "editable=" + editable + ", " + "encrypted=" + encrypted + ", " + "systemDefined=" + systemDefined
-                + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy=" + createdBy + ", "
-                + "createdAt=" + createdAt + ", " + "updatedBy=" + updatedBy + ", " + "updatedAt=" + updatedAt + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -372,5 +320,11 @@ public class ConfigItem {
                     this.updatedBy,
                     this.updatedAt);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

@@ -188,53 +188,6 @@ public class AuditLog {
         this.createdAt = createdAt;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                id,
-                userId,
-                username,
-                dataType,
-                dataId,
-                action,
-                beforeData,
-                afterData,
-                diffData,
-                reason,
-                ip,
-                operationTime,
-                createdAt);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AuditLog other = (AuditLog) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(userId, other.userId)) return false;
-        if (!java.util.Objects.equals(username, other.username)) return false;
-        if (!java.util.Objects.equals(dataType, other.dataType)) return false;
-        if (!java.util.Objects.equals(dataId, other.dataId)) return false;
-        if (!java.util.Objects.equals(action, other.action)) return false;
-        if (!java.util.Objects.equals(beforeData, other.beforeData)) return false;
-        if (!java.util.Objects.equals(afterData, other.afterData)) return false;
-        if (!java.util.Objects.equals(diffData, other.diffData)) return false;
-        if (!java.util.Objects.equals(reason, other.reason)) return false;
-        if (!java.util.Objects.equals(ip, other.ip)) return false;
-        if (!java.util.Objects.equals(operationTime, other.operationTime)) return false;
-        if (!java.util.Objects.equals(createdAt, other.createdAt)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "AuditLog(" + "id=" + id + ", " + "userId=" + userId + ", " + "username=" + username + ", " + "dataType="
-                + dataType + ", " + "dataId=" + dataId + ", " + "action=" + action + ", " + "beforeData=" + beforeData
-                + ", " + "afterData=" + afterData + ", " + "diffData=" + diffData + ", " + "reason=" + reason + ", "
-                + "ip=" + ip + ", " + "operationTime=" + operationTime + ", " + "createdAt=" + createdAt + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -335,5 +288,11 @@ public class AuditLog {
                     this.operationTime,
                     this.createdAt);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

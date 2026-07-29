@@ -203,38 +203,8 @@ public class UserUpdateCommand {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                updatedBy, remark, roleIds, status, birthday, gender, avatar, mobile, email, deptId, realName, nickname,
-                id);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserUpdateCommand other = (UserUpdateCommand) o;
-        if (!java.util.Objects.equals(updatedBy, other.updatedBy)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        if (!java.util.Objects.equals(roleIds, other.roleIds)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(birthday, other.birthday)) return false;
-        if (!java.util.Objects.equals(gender, other.gender)) return false;
-        if (!java.util.Objects.equals(avatar, other.avatar)) return false;
-        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
-        if (!java.util.Objects.equals(email, other.email)) return false;
-        if (!java.util.Objects.equals(deptId, other.deptId)) return false;
-        if (!java.util.Objects.equals(realName, other.realName)) return false;
-        if (!java.util.Objects.equals(nickname, other.nickname)) return false;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "UserUpdateCommand(" + "updatedBy=" + updatedBy + ", " + "remark=" + remark + ", " + "roleIds=" + roleIds
-                + ", " + "status=" + status + ", " + "birthday=" + birthday + ", " + "gender=" + gender + ", "
-                + "avatar=" + avatar + ", " + "mobile=" + mobile + ", " + "email=" + email + ", " + "deptId=" + deptId
-                + ", " + "realName=" + realName + ", " + "nickname=" + nickname + ", " + "id=" + id + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

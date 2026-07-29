@@ -170,45 +170,6 @@ public class GatewayResponse {
         this.attributes = attributes;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                requestId,
-                statusCode,
-                headers,
-                body,
-                contentType,
-                responseTime,
-                processingTime,
-                errorMessage,
-                attributes);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GatewayResponse other = (GatewayResponse) o;
-        if (!java.util.Objects.equals(requestId, other.requestId)) return false;
-        if (!java.util.Objects.equals(statusCode, other.statusCode)) return false;
-        if (!java.util.Objects.equals(headers, other.headers)) return false;
-        if (!java.util.Objects.equals(body, other.body)) return false;
-        if (!java.util.Objects.equals(contentType, other.contentType)) return false;
-        if (!java.util.Objects.equals(responseTime, other.responseTime)) return false;
-        if (!java.util.Objects.equals(processingTime, other.processingTime)) return false;
-        if (!java.util.Objects.equals(errorMessage, other.errorMessage)) return false;
-        if (!java.util.Objects.equals(attributes, other.attributes)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "GatewayResponse(" + "requestId=" + requestId + ", " + "statusCode=" + statusCode + ", " + "headers="
-                + headers + ", " + "body=" + body + ", " + "contentType=" + contentType + ", " + "responseTime="
-                + responseTime + ", " + "processingTime=" + processingTime + ", " + "errorMessage=" + errorMessage
-                + ", " + "attributes=" + attributes + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -281,5 +242,11 @@ public class GatewayResponse {
                     this.errorMessage,
                     this.attributes);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

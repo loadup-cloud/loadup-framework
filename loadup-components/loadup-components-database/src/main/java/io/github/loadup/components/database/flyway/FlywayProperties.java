@@ -281,56 +281,8 @@ public class FlywayProperties {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                enabled,
-                locations,
-                baselineOnMigrate,
-                baselineVersion,
-                baselineDescription,
-                validateOnMigrate,
-                cleanDisabled,
-                encoding,
-                placeholders,
-                placeholderPrefix,
-                placeholderSuffix,
-                placeholderReplacement,
-                initSqls,
-                target,
-                migrateAtStart);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FlywayProperties other = (FlywayProperties) o;
-        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
-        if (!java.util.Objects.equals(locations, other.locations)) return false;
-        if (!java.util.Objects.equals(baselineOnMigrate, other.baselineOnMigrate)) return false;
-        if (!java.util.Objects.equals(baselineVersion, other.baselineVersion)) return false;
-        if (!java.util.Objects.equals(baselineDescription, other.baselineDescription)) return false;
-        if (!java.util.Objects.equals(validateOnMigrate, other.validateOnMigrate)) return false;
-        if (!java.util.Objects.equals(cleanDisabled, other.cleanDisabled)) return false;
-        if (!java.util.Objects.equals(encoding, other.encoding)) return false;
-        if (!java.util.Objects.equals(placeholders, other.placeholders)) return false;
-        if (!java.util.Objects.equals(placeholderPrefix, other.placeholderPrefix)) return false;
-        if (!java.util.Objects.equals(placeholderSuffix, other.placeholderSuffix)) return false;
-        if (!java.util.Objects.equals(placeholderReplacement, other.placeholderReplacement)) return false;
-        if (!java.util.Objects.equals(initSqls, other.initSqls)) return false;
-        if (!java.util.Objects.equals(target, other.target)) return false;
-        if (!java.util.Objects.equals(migrateAtStart, other.migrateAtStart)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "FlywayProperties(" + "enabled=" + enabled + ", " + "locations=" + locations + ", "
-                + "baselineOnMigrate=" + baselineOnMigrate + ", " + "baselineVersion=" + baselineVersion + ", "
-                + "baselineDescription=" + baselineDescription + ", " + "validateOnMigrate=" + validateOnMigrate + ", "
-                + "cleanDisabled=" + cleanDisabled + ", " + "encoding=" + encoding + ", " + "placeholders="
-                + placeholders + ", " + "placeholderPrefix=" + placeholderPrefix + ", " + "placeholderSuffix="
-                + placeholderSuffix + ", " + "placeholderReplacement=" + placeholderReplacement + ", " + "initSqls="
-                + initSqls + ", " + "target=" + target + ", " + "migrateAtStart=" + migrateAtStart + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

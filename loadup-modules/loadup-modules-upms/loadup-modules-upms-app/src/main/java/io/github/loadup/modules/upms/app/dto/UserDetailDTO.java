@@ -261,70 +261,6 @@ public class UserDetailDTO {
         this.updatedTime = updatedTime;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                id,
-                username,
-                nickname,
-                realName,
-                deptId,
-                deptName,
-                email,
-                emailVerified,
-                mobile,
-                mobileVerified,
-                avatar,
-                gender,
-                birthday,
-                status,
-                lastLoginTime,
-                lastLoginIp,
-                roles,
-                remark,
-                createdTime,
-                updatedTime);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserDetailDTO other = (UserDetailDTO) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(username, other.username)) return false;
-        if (!java.util.Objects.equals(nickname, other.nickname)) return false;
-        if (!java.util.Objects.equals(realName, other.realName)) return false;
-        if (!java.util.Objects.equals(deptId, other.deptId)) return false;
-        if (!java.util.Objects.equals(deptName, other.deptName)) return false;
-        if (!java.util.Objects.equals(email, other.email)) return false;
-        if (!java.util.Objects.equals(emailVerified, other.emailVerified)) return false;
-        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
-        if (!java.util.Objects.equals(mobileVerified, other.mobileVerified)) return false;
-        if (!java.util.Objects.equals(avatar, other.avatar)) return false;
-        if (!java.util.Objects.equals(gender, other.gender)) return false;
-        if (!java.util.Objects.equals(birthday, other.birthday)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(lastLoginTime, other.lastLoginTime)) return false;
-        if (!java.util.Objects.equals(lastLoginIp, other.lastLoginIp)) return false;
-        if (!java.util.Objects.equals(roles, other.roles)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        if (!java.util.Objects.equals(createdTime, other.createdTime)) return false;
-        if (!java.util.Objects.equals(updatedTime, other.updatedTime)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "UserDetailDTO(" + "id=" + id + ", " + "username=" + username + ", " + "nickname=" + nickname + ", "
-                + "realName=" + realName + ", " + "deptId=" + deptId + ", " + "deptName=" + deptName + ", " + "email="
-                + email + ", " + "emailVerified=" + emailVerified + ", " + "mobile=" + mobile + ", " + "mobileVerified="
-                + mobileVerified + ", " + "avatar=" + avatar + ", " + "gender=" + gender + ", " + "birthday=" + birthday
-                + ", " + "status=" + status + ", " + "lastLoginTime=" + lastLoginTime + ", " + "lastLoginIp="
-                + lastLoginIp + ", " + "roles=" + roles + ", " + "remark=" + remark + ", " + "createdTime="
-                + createdTime + ", " + "updatedTime=" + updatedTime + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -474,5 +410,11 @@ public class UserDetailDTO {
                     this.createdTime,
                     this.updatedTime);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

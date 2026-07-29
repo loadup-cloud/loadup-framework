@@ -94,29 +94,6 @@ public class KeyPairInfo implements Serializable {
         this.keySize = keySize;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(publicKey, privateKey, algorithm, keySize);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        KeyPairInfo other = (KeyPairInfo) o;
-        if (!java.util.Objects.equals(publicKey, other.publicKey)) return false;
-        if (!java.util.Objects.equals(privateKey, other.privateKey)) return false;
-        if (!java.util.Objects.equals(algorithm, other.algorithm)) return false;
-        if (!java.util.Objects.equals(keySize, other.keySize)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "KeyPairInfo(" + "publicKey=" + publicKey + ", " + "privateKey=" + privateKey + ", " + "algorithm="
-                + algorithm + ", " + "keySize=" + keySize + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -154,5 +131,11 @@ public class KeyPairInfo implements Serializable {
 
     public long getSerialVersionUID() {
         return this.serialVersionUID;
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

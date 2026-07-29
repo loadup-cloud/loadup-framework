@@ -175,43 +175,8 @@ public class RoleCreateCommand {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                roleName,
-                roleCode,
-                parentId,
-                dataScope,
-                sortOrder,
-                status,
-                permissionIds,
-                departmentIds,
-                remark,
-                createdBy);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RoleCreateCommand other = (RoleCreateCommand) o;
-        if (!java.util.Objects.equals(roleName, other.roleName)) return false;
-        if (!java.util.Objects.equals(roleCode, other.roleCode)) return false;
-        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
-        if (!java.util.Objects.equals(dataScope, other.dataScope)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(permissionIds, other.permissionIds)) return false;
-        if (!java.util.Objects.equals(departmentIds, other.departmentIds)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        if (!java.util.Objects.equals(createdBy, other.createdBy)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "RoleCreateCommand(" + "roleName=" + roleName + ", " + "roleCode=" + roleCode + ", " + "parentId="
-                + parentId + ", " + "dataScope=" + dataScope + ", " + "sortOrder=" + sortOrder + ", " + "status="
-                + status + ", " + "permissionIds=" + permissionIds + ", " + "departmentIds=" + departmentIds + ", "
-                + "remark=" + remark + ", " + "createdBy=" + createdBy + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

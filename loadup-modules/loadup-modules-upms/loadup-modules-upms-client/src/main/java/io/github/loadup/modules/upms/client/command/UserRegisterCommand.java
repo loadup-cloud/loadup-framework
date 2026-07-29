@@ -132,30 +132,8 @@ public class UserRegisterCommand {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(username, password, nickname, email, mobile, captchaKey, captchaCode, smsCode);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserRegisterCommand other = (UserRegisterCommand) o;
-        if (!java.util.Objects.equals(username, other.username)) return false;
-        if (!java.util.Objects.equals(password, other.password)) return false;
-        if (!java.util.Objects.equals(nickname, other.nickname)) return false;
-        if (!java.util.Objects.equals(email, other.email)) return false;
-        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
-        if (!java.util.Objects.equals(captchaKey, other.captchaKey)) return false;
-        if (!java.util.Objects.equals(captchaCode, other.captchaCode)) return false;
-        if (!java.util.Objects.equals(smsCode, other.smsCode)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "UserRegisterCommand(" + "username=" + username + ", " + "password=" + password + ", " + "nickname="
-                + nickname + ", " + "email=" + email + ", " + "mobile=" + mobile + ", " + "captchaKey=" + captchaKey
-                + ", " + "captchaCode=" + captchaCode + ", " + "smsCode=" + smsCode + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

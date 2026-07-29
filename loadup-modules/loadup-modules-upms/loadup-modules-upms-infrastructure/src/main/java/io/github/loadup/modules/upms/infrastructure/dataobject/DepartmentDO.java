@@ -158,47 +158,4 @@ public class DepartmentDO extends BaseDO {
     public void setRemark(String remark) {
         this.remark = remark;
     }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                super.hashCode(),
-                parentId,
-                deptName,
-                deptCode,
-                deptLevel,
-                sortOrder,
-                leaderUserId,
-                mobile,
-                email,
-                status,
-                remark);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        DepartmentDO other = (DepartmentDO) o;
-        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
-        if (!java.util.Objects.equals(deptName, other.deptName)) return false;
-        if (!java.util.Objects.equals(deptCode, other.deptCode)) return false;
-        if (!java.util.Objects.equals(deptLevel, other.deptLevel)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        if (!java.util.Objects.equals(leaderUserId, other.leaderUserId)) return false;
-        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
-        if (!java.util.Objects.equals(email, other.email)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "DepartmentDO(" + "super=" + super.toString() + ", " + "parentId=" + parentId + ", " + "deptName="
-                + deptName + ", " + "deptCode=" + deptCode + ", " + "deptLevel=" + deptLevel + ", " + "sortOrder="
-                + sortOrder + ", " + "leaderUserId=" + leaderUserId + ", " + "mobile=" + mobile + ", " + "email="
-                + email + ", " + "status=" + status + ", " + "remark=" + remark + ")";
-    }
 }

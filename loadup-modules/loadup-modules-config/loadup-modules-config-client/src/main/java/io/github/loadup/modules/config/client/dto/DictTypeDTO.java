@@ -126,31 +126,8 @@ public class DictTypeDTO {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                id, dictCode, dictName, description, systemDefined, sortOrder, enabled, updatedAt);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DictTypeDTO other = (DictTypeDTO) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(dictCode, other.dictCode)) return false;
-        if (!java.util.Objects.equals(dictName, other.dictName)) return false;
-        if (!java.util.Objects.equals(description, other.description)) return false;
-        if (!java.util.Objects.equals(systemDefined, other.systemDefined)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
-        if (!java.util.Objects.equals(updatedAt, other.updatedAt)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "DictTypeDTO(" + "id=" + id + ", " + "dictCode=" + dictCode + ", " + "dictName=" + dictName + ", "
-                + "description=" + description + ", " + "systemDefined=" + systemDefined + ", " + "sortOrder="
-                + sortOrder + ", " + "enabled=" + enabled + ", " + "updatedAt=" + updatedAt + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

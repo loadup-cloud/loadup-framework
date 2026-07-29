@@ -171,52 +171,6 @@ public class ErrorLog {
         this.createdAt = createdAt;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                id,
-                userId,
-                errorType,
-                errorCode,
-                errorMessage,
-                stackTrace,
-                requestUrl,
-                requestMethod,
-                requestParams,
-                ip,
-                errorTime,
-                createdAt);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ErrorLog other = (ErrorLog) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(userId, other.userId)) return false;
-        if (!java.util.Objects.equals(errorType, other.errorType)) return false;
-        if (!java.util.Objects.equals(errorCode, other.errorCode)) return false;
-        if (!java.util.Objects.equals(errorMessage, other.errorMessage)) return false;
-        if (!java.util.Objects.equals(stackTrace, other.stackTrace)) return false;
-        if (!java.util.Objects.equals(requestUrl, other.requestUrl)) return false;
-        if (!java.util.Objects.equals(requestMethod, other.requestMethod)) return false;
-        if (!java.util.Objects.equals(requestParams, other.requestParams)) return false;
-        if (!java.util.Objects.equals(ip, other.ip)) return false;
-        if (!java.util.Objects.equals(errorTime, other.errorTime)) return false;
-        if (!java.util.Objects.equals(createdAt, other.createdAt)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ErrorLog(" + "id=" + id + ", " + "userId=" + userId + ", " + "errorType=" + errorType + ", "
-                + "errorCode=" + errorCode + ", " + "errorMessage=" + errorMessage + ", " + "stackTrace=" + stackTrace
-                + ", " + "requestUrl=" + requestUrl + ", " + "requestMethod=" + requestMethod + ", " + "requestParams="
-                + requestParams + ", " + "ip=" + ip + ", " + "errorTime=" + errorTime + ", " + "createdAt=" + createdAt
-                + ")";
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -310,5 +264,11 @@ public class ErrorLog {
                     this.errorTime,
                     this.createdAt);
         }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

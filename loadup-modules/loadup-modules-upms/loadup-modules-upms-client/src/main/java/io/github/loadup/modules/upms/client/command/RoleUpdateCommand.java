@@ -165,34 +165,8 @@ public class RoleUpdateCommand {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(
-                id, roleName, parentId, dataScope, sortOrder, status, permissionIds, departmentIds, remark, updatedBy);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RoleUpdateCommand other = (RoleUpdateCommand) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(roleName, other.roleName)) return false;
-        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
-        if (!java.util.Objects.equals(dataScope, other.dataScope)) return false;
-        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(permissionIds, other.permissionIds)) return false;
-        if (!java.util.Objects.equals(departmentIds, other.departmentIds)) return false;
-        if (!java.util.Objects.equals(remark, other.remark)) return false;
-        if (!java.util.Objects.equals(updatedBy, other.updatedBy)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "RoleUpdateCommand(" + "id=" + id + ", " + "roleName=" + roleName + ", " + "parentId=" + parentId + ", "
-                + "dataScope=" + dataScope + ", " + "sortOrder=" + sortOrder + ", " + "status=" + status + ", "
-                + "permissionIds=" + permissionIds + ", " + "departmentIds=" + departmentIds + ", " + "remark=" + remark
-                + ", " + "updatedBy=" + updatedBy + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

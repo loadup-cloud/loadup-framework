@@ -11,6 +11,10 @@
     <description>Log Module Infrastructure Layer - DO, Mapper, GatewayImpl, Async Writer, AOP</description>
     <dependencies>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-log-domain</artifactId>
         </dependency>

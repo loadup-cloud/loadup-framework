@@ -147,29 +147,8 @@ public class RetryTaskRegisterRequest implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(bizType, bizId, priority, nextRetryTime, args, executeImmediately, waitResult);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RetryTaskRegisterRequest other = (RetryTaskRegisterRequest) o;
-        if (!java.util.Objects.equals(bizType, other.bizType)) return false;
-        if (!java.util.Objects.equals(bizId, other.bizId)) return false;
-        if (!java.util.Objects.equals(priority, other.priority)) return false;
-        if (!java.util.Objects.equals(nextRetryTime, other.nextRetryTime)) return false;
-        if (!java.util.Objects.equals(args, other.args)) return false;
-        if (!java.util.Objects.equals(executeImmediately, other.executeImmediately)) return false;
-        if (!java.util.Objects.equals(waitResult, other.waitResult)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "RetryTaskRegisterRequest(" + "bizType=" + bizType + ", " + "bizId=" + bizId + ", " + "priority="
-                + priority + ", " + "nextRetryTime=" + nextRetryTime + ", " + "args=" + args + ", "
-                + "executeImmediately=" + executeImmediately + ", " + "waitResult=" + waitResult + ")";
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }
