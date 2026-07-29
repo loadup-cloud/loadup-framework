@@ -24,11 +24,7 @@ package io.github.loadup.commons.result;
 
 import java.util.Arrays;
 import java.util.Objects;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-@Getter
-@AllArgsConstructor
 public enum ResultStatusEnum {
     SUCCESS("S"),
     FAIL("F"),
@@ -41,5 +37,13 @@ public enum ResultStatusEnum {
                 .filter(resultStatusEnum -> Objects.equals(resultStatusEnum.getCode(), code))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private ResultStatusEnum(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return this.code;
     }
 }

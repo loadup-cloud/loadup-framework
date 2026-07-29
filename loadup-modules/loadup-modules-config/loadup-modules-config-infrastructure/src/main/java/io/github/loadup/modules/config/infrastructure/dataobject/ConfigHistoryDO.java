@@ -24,20 +24,12 @@ package io.github.loadup.modules.config.infrastructure.dataobject;
 
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * config_history 表映射对象。
  *
  * <p>历史记录只追加不修改，不继承 BaseDO（无 updatedAt/tenantId/deleted 字段需求）。
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Table("config_history")
 public class ConfigHistoryDO extends BaseDO {
 
@@ -51,4 +43,89 @@ public class ConfigHistoryDO extends BaseDO {
 
     private String operator;
     private String remark;
+
+    public ConfigHistoryDO(String configKey, String oldValue, String newValue, String changeType, String operator, String remark) {
+        this.configKey = configKey;
+        this.oldValue = oldValue;
+        this.newValue = newValue;
+        this.changeType = changeType;
+        this.operator = operator;
+        this.remark = remark;
+    }
+
+    public ConfigHistoryDO() {
+    }
+
+    public String getConfigKey() {
+        return this.configKey;
+    }
+
+    public String getOldValue() {
+        return this.oldValue;
+    }
+
+    public String getNewValue() {
+        return this.newValue;
+    }
+
+    public String getChangeType() {
+        return this.changeType;
+    }
+
+    public String getOperator() {
+        return this.operator;
+    }
+
+    public String getRemark() {
+        return this.remark;
+    }
+
+    public void setConfigKey(String configKey) {
+        this.configKey = configKey;
+    }
+
+    public void setOldValue(String oldValue) {
+        this.oldValue = oldValue;
+    }
+
+    public void setNewValue(String newValue) {
+        this.newValue = newValue;
+    }
+
+    public void setChangeType(String changeType) {
+        this.changeType = changeType;
+    }
+
+    public void setOperator(String operator) {
+        this.operator = operator;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(super.hashCode(), configKey, oldValue, newValue, changeType, operator, remark);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ConfigHistoryDO other = (ConfigHistoryDO) o;
+        if (!java.util.Objects.equals(configKey, other.configKey)) return false;
+        if (!java.util.Objects.equals(oldValue, other.oldValue)) return false;
+        if (!java.util.Objects.equals(newValue, other.newValue)) return false;
+        if (!java.util.Objects.equals(changeType, other.changeType)) return false;
+        if (!java.util.Objects.equals(operator, other.operator)) return false;
+        if (!java.util.Objects.equals(remark, other.remark)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ConfigHistoryDO(" + "super=" + super.toString() + ", " + "configKey=" + configKey + ", " + "oldValue=" + oldValue + ", " + "newValue=" + newValue + ", " + "changeType=" + changeType + ", " + "operator=" + operator + ", " + "remark=" + remark + ")";
+    }
 }

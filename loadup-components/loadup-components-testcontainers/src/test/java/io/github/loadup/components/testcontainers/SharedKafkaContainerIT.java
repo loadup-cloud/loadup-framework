@@ -34,7 +34,6 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.UUID;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -49,15 +48,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.kafka.KafkaContainer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Integration test class for SharedKafkaContainer.
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 @SpringBootTest(classes = TestApplication.class)
-@TestPropertySource(properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.kafka.enabled=true"})
+@TestPropertySource(properties = {
+    private static final Logger log = LoggerFactory.getLogger(SharedKafkaContainerIT.class);
+"loadup.testcontainers.enabled=true", "loadup.testcontainers.kafka.enabled=true"})
 class SharedKafkaContainerIT extends AbstractKafkaContainerTest {
 
     @Test

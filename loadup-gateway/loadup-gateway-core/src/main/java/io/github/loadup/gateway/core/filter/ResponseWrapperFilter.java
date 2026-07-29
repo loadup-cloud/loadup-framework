@@ -13,16 +13,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Response wrapper filter — wraps backend responses in standard {@code {result, data, meta}} format.
  *
  * <p>Runs after the proxy has populated {@code context.getResponse()}.
  * Respects per-route {@code wrapResponse} and global {@code loadup.gateway.response.wrap} config.
  */
-@Slf4j
 public class ResponseWrapperFilter implements GatewayFilter {
+    private static final Logger log = LoggerFactory.getLogger(ResponseWrapperFilter.class);
+
 
     private final GatewayProperties gatewayProperties;
 

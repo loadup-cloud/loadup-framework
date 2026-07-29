@@ -24,7 +24,6 @@ package io.github.loadup.components.database.flyway;
 
 import java.util.HashMap;
 import java.util.Map;
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -44,7 +43,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Data
 @ConfigurationProperties(prefix = "loadup.flyway")
 public class FlywayProperties {
 
@@ -126,4 +124,178 @@ public class FlywayProperties {
      * Whether to automatically call migrate when the application starts.
      */
     private boolean migrateAtStart = true;
+
+    public FlywayProperties(boolean enabled, String[] locations, boolean baselineOnMigrate, String baselineVersion, String baselineDescription, boolean validateOnMigrate, boolean cleanDisabled, String encoding, Map<String, String> placeholders, String placeholderPrefix, String placeholderSuffix, boolean placeholderReplacement, String[] initSqls, String target, boolean migrateAtStart) {
+        this.enabled = enabled;
+        this.locations = locations;
+        this.baselineOnMigrate = baselineOnMigrate;
+        this.baselineVersion = baselineVersion;
+        this.baselineDescription = baselineDescription;
+        this.validateOnMigrate = validateOnMigrate;
+        this.cleanDisabled = cleanDisabled;
+        this.encoding = encoding;
+        this.placeholders = placeholders;
+        this.placeholderPrefix = placeholderPrefix;
+        this.placeholderSuffix = placeholderSuffix;
+        this.placeholderReplacement = placeholderReplacement;
+        this.initSqls = initSqls;
+        this.target = target;
+        this.migrateAtStart = migrateAtStart;
+    }
+
+    public FlywayProperties() {
+    }
+
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public String[] getLocations() {
+        return this.locations;
+    }
+
+    public boolean isBaselineOnMigrate() {
+        return this.baselineOnMigrate;
+    }
+
+    public String getBaselineVersion() {
+        return this.baselineVersion;
+    }
+
+    public String getBaselineDescription() {
+        return this.baselineDescription;
+    }
+
+    public boolean isValidateOnMigrate() {
+        return this.validateOnMigrate;
+    }
+
+    public boolean isCleanDisabled() {
+        return this.cleanDisabled;
+    }
+
+    public String getEncoding() {
+        return this.encoding;
+    }
+
+    public Map<String, String> getPlaceholders() {
+        return this.placeholders;
+    }
+
+    public String getPlaceholderPrefix() {
+        return this.placeholderPrefix;
+    }
+
+    public String getPlaceholderSuffix() {
+        return this.placeholderSuffix;
+    }
+
+    public boolean isPlaceholderReplacement() {
+        return this.placeholderReplacement;
+    }
+
+    public String[] getInitSqls() {
+        return this.initSqls;
+    }
+
+    public String getTarget() {
+        return this.target;
+    }
+
+    public boolean isMigrateAtStart() {
+        return this.migrateAtStart;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setLocations(String[] locations) {
+        this.locations = locations;
+    }
+
+    public void setBaselineOnMigrate(boolean baselineOnMigrate) {
+        this.baselineOnMigrate = baselineOnMigrate;
+    }
+
+    public void setBaselineVersion(String baselineVersion) {
+        this.baselineVersion = baselineVersion;
+    }
+
+    public void setBaselineDescription(String baselineDescription) {
+        this.baselineDescription = baselineDescription;
+    }
+
+    public void setValidateOnMigrate(boolean validateOnMigrate) {
+        this.validateOnMigrate = validateOnMigrate;
+    }
+
+    public void setCleanDisabled(boolean cleanDisabled) {
+        this.cleanDisabled = cleanDisabled;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    public void setPlaceholders(Map<String, String> placeholders) {
+        this.placeholders = placeholders;
+    }
+
+    public void setPlaceholderPrefix(String placeholderPrefix) {
+        this.placeholderPrefix = placeholderPrefix;
+    }
+
+    public void setPlaceholderSuffix(String placeholderSuffix) {
+        this.placeholderSuffix = placeholderSuffix;
+    }
+
+    public void setPlaceholderReplacement(boolean placeholderReplacement) {
+        this.placeholderReplacement = placeholderReplacement;
+    }
+
+    public void setInitSqls(String[] initSqls) {
+        this.initSqls = initSqls;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
+    }
+
+    public void setMigrateAtStart(boolean migrateAtStart) {
+        this.migrateAtStart = migrateAtStart;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(enabled, locations, baselineOnMigrate, baselineVersion, baselineDescription, validateOnMigrate, cleanDisabled, encoding, placeholders, placeholderPrefix, placeholderSuffix, placeholderReplacement, initSqls, target, migrateAtStart);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FlywayProperties other = (FlywayProperties) o;
+        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
+        if (!java.util.Objects.equals(locations, other.locations)) return false;
+        if (!java.util.Objects.equals(baselineOnMigrate, other.baselineOnMigrate)) return false;
+        if (!java.util.Objects.equals(baselineVersion, other.baselineVersion)) return false;
+        if (!java.util.Objects.equals(baselineDescription, other.baselineDescription)) return false;
+        if (!java.util.Objects.equals(validateOnMigrate, other.validateOnMigrate)) return false;
+        if (!java.util.Objects.equals(cleanDisabled, other.cleanDisabled)) return false;
+        if (!java.util.Objects.equals(encoding, other.encoding)) return false;
+        if (!java.util.Objects.equals(placeholders, other.placeholders)) return false;
+        if (!java.util.Objects.equals(placeholderPrefix, other.placeholderPrefix)) return false;
+        if (!java.util.Objects.equals(placeholderSuffix, other.placeholderSuffix)) return false;
+        if (!java.util.Objects.equals(placeholderReplacement, other.placeholderReplacement)) return false;
+        if (!java.util.Objects.equals(initSqls, other.initSqls)) return false;
+        if (!java.util.Objects.equals(target, other.target)) return false;
+        if (!java.util.Objects.equals(migrateAtStart, other.migrateAtStart)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "FlywayProperties(" + "enabled=" + enabled + ", " + "locations=" + locations + ", " + "baselineOnMigrate=" + baselineOnMigrate + ", " + "baselineVersion=" + baselineVersion + ", " + "baselineDescription=" + baselineDescription + ", " + "validateOnMigrate=" + validateOnMigrate + ", " + "cleanDisabled=" + cleanDisabled + ", " + "encoding=" + encoding + ", " + "placeholders=" + placeholders + ", " + "placeholderPrefix=" + placeholderPrefix + ", " + "placeholderSuffix=" + placeholderSuffix + ", " + "placeholderReplacement=" + placeholderReplacement + ", " + "initSqls=" + initSqls + ", " + "target=" + target + ", " + "migrateAtStart=" + migrateAtStart + ")";
+    }
 }

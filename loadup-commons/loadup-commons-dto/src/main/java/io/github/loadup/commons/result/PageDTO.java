@@ -25,17 +25,7 @@ package io.github.loadup.commons.result;
 import io.github.loadup.commons.dto.DTO;
 import java.util.Collection;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
 public class PageDTO<T> extends DTO {
     private Collection<T> data;
     private PageInfo pageInfo;
@@ -45,5 +35,73 @@ public class PageDTO<T> extends DTO {
                 .data(records)
                 .pageInfo(new PageInfo(total, size.longValue(), page.longValue()))
                 .build();
+    }
+
+    public PageDTO(Collection<T> data, PageInfo pageInfo) {
+        this.data = data;
+        this.pageInfo = pageInfo;
+    }
+
+    public PageDTO() {
+    }
+
+    public Collection<T> getData() {
+        return this.data;
+    }
+
+    public PageInfo getPageInfo() {
+        return this.pageInfo;
+    }
+
+    public void setData(Collection<T> data) {
+        this.data = data;
+    }
+
+    public void setPageInfo(PageInfo pageInfo) {
+        this.pageInfo = pageInfo;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(super.hashCode(), data, pageInfo);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        PageDTO<?> other = (PageDTO<?>) o;
+        if (!java.util.Objects.equals(data, other.data)) return false;
+        if (!java.util.Objects.equals(pageInfo, other.pageInfo)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "PageDTO(" + "super=" + super.toString() + ", " + "data=" + data + ", " + "pageInfo=" + pageInfo + ")";
+    }
+
+    public static <T> Builder<T> builder() {
+        return new Builder<>();
+    }
+
+    public static class Builder<T> {
+        private Collection<T> data;
+        private PageInfo pageInfo;
+
+        public Builder<T> data(Collection<T> data) {
+            this.data = data;
+            return this;
+        }
+
+        public Builder<T> pageInfo(PageInfo pageInfo) {
+            this.pageInfo = pageInfo;
+            return this;
+        }
+
+        public PageDTO<T> build() {
+            return new PageDTO<>(this.data, this.pageInfo);
+        }
     }
 }

@@ -38,13 +38,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-@RequiredArgsConstructor
-@Slf4j
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class DbAssertEngine implements TestifyAssertEngine {
+    private static final Logger log = LoggerFactory.getLogger(DbAssertEngine.class);
+
 
     private final JdbcTemplate jdbcTemplate;
     private final VariableEngine variableEngine;
@@ -276,5 +276,10 @@ public class DbAssertEngine implements TestifyAssertEngine {
             return jdbcTemplate.queryForList("SELECT * FROM " + tableName + " LIMIT 100");
         }
         return results;
+    }
+
+    public DbAssertEngine(JdbcTemplate jdbcTemplate, VariableEngine variableEngine) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.variableEngine = variableEngine;
     }
 }

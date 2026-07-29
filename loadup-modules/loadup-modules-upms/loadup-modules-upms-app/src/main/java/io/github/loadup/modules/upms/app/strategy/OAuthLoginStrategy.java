@@ -39,22 +39,22 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * OAuth 登录策略
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 @Component
 public class OAuthLoginStrategy implements LoginStrategy {
+    private static final Logger log = LoggerFactory.getLogger(OAuthLoginStrategy.class);
+
 
     private final Map<String, OAuthProvider> providerMap = new ConcurrentHashMap<>();
     private final UserOAuthBindingGateway bindingGateway;

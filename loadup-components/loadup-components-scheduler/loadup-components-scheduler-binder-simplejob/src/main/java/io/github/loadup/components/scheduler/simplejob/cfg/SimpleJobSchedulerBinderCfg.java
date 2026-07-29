@@ -23,11 +23,7 @@ package io.github.loadup.components.scheduler.simplejob.cfg;
  */
 
 import io.github.loadup.components.scheduler.cfg.SchedulerBinderCfg;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 public class SimpleJobSchedulerBinderCfg extends SchedulerBinderCfg {
     private int poolSize = Runtime.getRuntime().availableProcessors();
 
@@ -37,5 +33,13 @@ public class SimpleJobSchedulerBinderCfg extends SchedulerBinderCfg {
     public Object getIdentity() {
         // 如果 poolSize 相同，可以复用 Binder
         return "SPRING_SCHEDULER:" + poolSize;
+    }
+
+    public void setPoolSize(int poolSize) {
+        this.poolSize = poolSize;
+    }
+
+    public void setThreadNamePrefix(String threadNamePrefix) {
+        this.threadNamePrefix = threadNamePrefix;
     }
 }

@@ -25,18 +25,10 @@ package io.github.loadup.modules.upms.infrastructure.dataobject;
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * 用户OAuth第三方账号绑定 Data Object
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Table("upms_user_oauth_binding")
 public class UserOAuthBindingDO extends BaseDO {
 
@@ -57,4 +49,129 @@ public class UserOAuthBindingDO extends BaseDO {
 
     private LocalDateTime expiresAt;
     private LocalDateTime boundAt;
+
+    public UserOAuthBindingDO(String userId, String provider, String openId, String unionId, String nickname, String avatar, String accessToken, String refreshToken, LocalDateTime expiresAt, LocalDateTime boundAt) {
+        this.userId = userId;
+        this.provider = provider;
+        this.openId = openId;
+        this.unionId = unionId;
+        this.nickname = nickname;
+        this.avatar = avatar;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.expiresAt = expiresAt;
+        this.boundAt = boundAt;
+    }
+
+    public UserOAuthBindingDO() {
+    }
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public String getProvider() {
+        return this.provider;
+    }
+
+    public String getOpenId() {
+        return this.openId;
+    }
+
+    public String getUnionId() {
+        return this.unionId;
+    }
+
+    public String getNickname() {
+        return this.nickname;
+    }
+
+    public String getAvatar() {
+        return this.avatar;
+    }
+
+    public String getAccessToken() {
+        return this.accessToken;
+    }
+
+    public String getRefreshToken() {
+        return this.refreshToken;
+    }
+
+    public LocalDateTime getExpiresAt() {
+        return this.expiresAt;
+    }
+
+    public LocalDateTime getBoundAt() {
+        return this.boundAt;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
+    }
+
+    public void setUnionId(String unionId) {
+        this.unionId = unionId;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public void setExpiresAt(LocalDateTime expiresAt) {
+        this.expiresAt = expiresAt;
+    }
+
+    public void setBoundAt(LocalDateTime boundAt) {
+        this.boundAt = boundAt;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(super.hashCode(), userId, provider, openId, unionId, nickname, avatar, accessToken, refreshToken, expiresAt, boundAt);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        UserOAuthBindingDO other = (UserOAuthBindingDO) o;
+        if (!java.util.Objects.equals(userId, other.userId)) return false;
+        if (!java.util.Objects.equals(provider, other.provider)) return false;
+        if (!java.util.Objects.equals(openId, other.openId)) return false;
+        if (!java.util.Objects.equals(unionId, other.unionId)) return false;
+        if (!java.util.Objects.equals(nickname, other.nickname)) return false;
+        if (!java.util.Objects.equals(avatar, other.avatar)) return false;
+        if (!java.util.Objects.equals(accessToken, other.accessToken)) return false;
+        if (!java.util.Objects.equals(refreshToken, other.refreshToken)) return false;
+        if (!java.util.Objects.equals(expiresAt, other.expiresAt)) return false;
+        if (!java.util.Objects.equals(boundAt, other.boundAt)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "UserOAuthBindingDO(" + "super=" + super.toString() + ", " + "userId=" + userId + ", " + "provider=" + provider + ", " + "openId=" + openId + ", " + "unionId=" + unionId + ", " + "nickname=" + nickname + ", " + "avatar=" + avatar + ", " + "accessToken=" + accessToken + ", " + "refreshToken=" + refreshToken + ", " + "expiresAt=" + expiresAt + ", " + "boundAt=" + boundAt + ")";
+    }
 }

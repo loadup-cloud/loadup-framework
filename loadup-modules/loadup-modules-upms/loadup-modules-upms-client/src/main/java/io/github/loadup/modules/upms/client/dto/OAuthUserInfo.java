@@ -24,10 +24,6 @@ package io.github.loadup.modules.upms.client.dto;
 
 import java.io.Serial;
 import java.io.Serializable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * OAuth 用户信息
@@ -35,10 +31,6 @@ import lombok.NoArgsConstructor;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class OAuthUserInfo implements Serializable {
 
     @Serial
@@ -73,4 +65,135 @@ public class OAuthUserInfo implements Serializable {
      * 手机号
      */
     private String mobile;
+
+    public OAuthUserInfo(String openId, String unionId, String nickname, String avatar, String email, String mobile) {
+        this.openId = openId;
+        this.unionId = unionId;
+        this.nickname = nickname;
+        this.avatar = avatar;
+        this.email = email;
+        this.mobile = mobile;
+    }
+
+    public OAuthUserInfo() {
+    }
+
+    public String getOpenId() {
+        return this.openId;
+    }
+
+    public String getUnionId() {
+        return this.unionId;
+    }
+
+    public String getNickname() {
+        return this.nickname;
+    }
+
+    public String getAvatar() {
+        return this.avatar;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getMobile() {
+        return this.mobile;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
+    }
+
+    public void setUnionId(String unionId) {
+        this.unionId = unionId;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(openId, unionId, nickname, avatar, email, mobile);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OAuthUserInfo other = (OAuthUserInfo) o;
+        if (!java.util.Objects.equals(openId, other.openId)) return false;
+        if (!java.util.Objects.equals(unionId, other.unionId)) return false;
+        if (!java.util.Objects.equals(nickname, other.nickname)) return false;
+        if (!java.util.Objects.equals(avatar, other.avatar)) return false;
+        if (!java.util.Objects.equals(email, other.email)) return false;
+        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "OAuthUserInfo(" + "openId=" + openId + ", " + "unionId=" + unionId + ", " + "nickname=" + nickname + ", " + "avatar=" + avatar + ", " + "email=" + email + ", " + "mobile=" + mobile + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String openId;
+        private String unionId;
+        private String nickname;
+        private String avatar;
+        private String email;
+        private String mobile;
+
+        public Builder openId(String openId) {
+            this.openId = openId;
+            return this;
+        }
+
+        public Builder unionId(String unionId) {
+            this.unionId = unionId;
+            return this;
+        }
+
+        public Builder nickname(String nickname) {
+            this.nickname = nickname;
+            return this;
+        }
+
+        public Builder avatar(String avatar) {
+            this.avatar = avatar;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder mobile(String mobile) {
+            this.mobile = mobile;
+            return this;
+        }
+
+        public OAuthUserInfo build() {
+            return new OAuthUserInfo(this.openId, this.unionId, this.nickname, this.avatar, this.email, this.mobile);
+        }
+    }
 }

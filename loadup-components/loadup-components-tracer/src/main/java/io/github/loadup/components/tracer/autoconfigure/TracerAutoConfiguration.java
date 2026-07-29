@@ -52,7 +52,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -61,6 +60,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Single-entry Spring Boot {@link AutoConfiguration} for the LoadUp tracer component.
  *
@@ -73,15 +74,15 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  *   <li>Conditional web filter and async context propagation.</li>
  * </ul>
  */
-@Slf4j
 @AutoConfiguration
 @EnableAspectJAutoProxy
 @EnableConfigurationProperties(TracerProperties.class)
 @ConditionalOnProperty(prefix = "loadup.tracer", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class TracerAutoConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(TracerAutoConfiguration.class);
 
-    @Value("${spring.application.name:unknown-service}")
-    private String applicationName;
+
+    private final String applicationName;
 
     // -------------------------------------------------------------------------
     // Core OTel beans
@@ -244,5 +245,9 @@ public class TracerAutoConfiguration {
         if (ratio >= 1.0) return Sampler.alwaysOn();
         if (ratio <= 0.0) return Sampler.alwaysOff();
         return Sampler.traceIdRatioBased(ratio);
+    }
+
+    public TracerAutoConfiguration(String applicationName) {
+        this.applicationName = applicationName;
     }
 }

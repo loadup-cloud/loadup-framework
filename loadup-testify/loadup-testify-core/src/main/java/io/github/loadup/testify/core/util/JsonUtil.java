@@ -30,10 +30,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.List;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class JsonUtil {
+    private static final Logger log = LoggerFactory.getLogger(JsonUtil.class);
+
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 

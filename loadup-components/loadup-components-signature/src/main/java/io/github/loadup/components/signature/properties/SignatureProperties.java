@@ -28,7 +28,6 @@ import jakarta.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -37,7 +36,6 @@ import org.springframework.validation.annotation.Validated;
  *
  * @author loadup
  */
-@Data
 @Validated
 @ConfigurationProperties(prefix = "loadup.components.signature")
 public class SignatureProperties {
@@ -80,5 +78,53 @@ public class SignatureProperties {
      */
     public int getKeySize(String algorithm) {
         return keySize.getOrDefault(algorithm.toLowerCase(Locale.ROOT), 2048);
+    }
+
+    public SignatureProperties(boolean enabled, SignatureAlgorithm defaultSignatureAlgorithm, DigestAlgorithm defaultDigestAlgorithm, Map<String, Integer> keySize) {
+        this.enabled = enabled;
+        this.defaultSignatureAlgorithm = defaultSignatureAlgorithm;
+        this.defaultDigestAlgorithm = defaultDigestAlgorithm;
+        this.keySize = keySize;
+    }
+
+    public SignatureProperties() {
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setDefaultSignatureAlgorithm(SignatureAlgorithm defaultSignatureAlgorithm) {
+        this.defaultSignatureAlgorithm = defaultSignatureAlgorithm;
+    }
+
+    public void setDefaultDigestAlgorithm(DigestAlgorithm defaultDigestAlgorithm) {
+        this.defaultDigestAlgorithm = defaultDigestAlgorithm;
+    }
+
+    public void setKeySize(Map<String, Integer> keySize) {
+        this.keySize = keySize;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(enabled, defaultSignatureAlgorithm, defaultDigestAlgorithm, keySize);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SignatureProperties other = (SignatureProperties) o;
+        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
+        if (!java.util.Objects.equals(defaultSignatureAlgorithm, other.defaultSignatureAlgorithm)) return false;
+        if (!java.util.Objects.equals(defaultDigestAlgorithm, other.defaultDigestAlgorithm)) return false;
+        if (!java.util.Objects.equals(keySize, other.keySize)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "SignatureProperties(" + "enabled=" + enabled + ", " + "defaultSignatureAlgorithm=" + defaultSignatureAlgorithm + ", " + "defaultDigestAlgorithm=" + defaultDigestAlgorithm + ", " + "keySize=" + keySize + ")";
     }
 }

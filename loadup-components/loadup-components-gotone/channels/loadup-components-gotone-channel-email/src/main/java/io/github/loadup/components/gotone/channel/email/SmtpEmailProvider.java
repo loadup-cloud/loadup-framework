@@ -33,12 +33,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * SMTP 邮件渠道提供商
  *
@@ -54,17 +54,15 @@ import org.springframework.mail.javamail.MimeMessageHelper;
  * spring.mail.properties.mail.smtp.starttls.enable=true
  * </pre>
  */
-@Slf4j
-@RequiredArgsConstructor
 public class SmtpEmailProvider implements NotificationChannelProvider {
+    private static final Logger log = LoggerFactory.getLogger(SmtpEmailProvider.class);
+
 
     private final JavaMailSender mailSender;
 
-    @Value("${spring.mail.username:noreply@example.com}")
-    private String fromEmail;
+    private final String fromEmail;
 
-    @Value("${spring.mail.from-name:LoadUp Notification}")
-    private String fromName;
+    private final String fromName;
 
     @Override
     public NotificationChannel getChannel() {
@@ -389,5 +387,15 @@ public class SmtpEmailProvider implements NotificationChannelProvider {
                 .receiverStatus(receiverStatus)
                 .receiverErrors(receiverErrors)
                 .build();
+    }
+
+    public SmtpEmailProvider(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
+
+    public SmtpEmailProvider(JavaMailSender mailSender, String fromEmail, String fromName) {
+        this.mailSender = mailSender;
+        this.fromEmail = fromEmail;
+        this.fromName = fromName;
     }
 }

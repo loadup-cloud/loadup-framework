@@ -42,7 +42,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.DefaultParameterNameDiscoverer;
@@ -53,9 +52,12 @@ import org.testng.Reporter;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 
-@Slf4j
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @SpringBootTest
 public abstract class TestifyBase extends AbstractTestNGSpringContextTests {
+    private static final Logger log = LoggerFactory.getLogger(TestifyBase.class);
+
 
     @Autowired
     protected AssertionFacade assertionFacade;

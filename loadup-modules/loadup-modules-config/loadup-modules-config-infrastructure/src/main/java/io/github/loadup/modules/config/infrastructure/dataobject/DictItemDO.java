@@ -24,15 +24,7 @@ package io.github.loadup.modules.config.infrastructure.dataobject;
 
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Table("dict_item")
 public class DictItemDO extends BaseDO {
 
@@ -45,4 +37,119 @@ public class DictItemDO extends BaseDO {
     private Boolean enabled;
     private String createdBy;
     private String updatedBy;
+
+    public DictItemDO(String dictCode, String itemLabel, String itemValue, String parentValue, String cssClass, Integer sortOrder, Boolean enabled, String createdBy, String updatedBy) {
+        this.dictCode = dictCode;
+        this.itemLabel = itemLabel;
+        this.itemValue = itemValue;
+        this.parentValue = parentValue;
+        this.cssClass = cssClass;
+        this.sortOrder = sortOrder;
+        this.enabled = enabled;
+        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
+    }
+
+    public DictItemDO() {
+    }
+
+    public String getDictCode() {
+        return this.dictCode;
+    }
+
+    public String getItemLabel() {
+        return this.itemLabel;
+    }
+
+    public String getItemValue() {
+        return this.itemValue;
+    }
+
+    public String getParentValue() {
+        return this.parentValue;
+    }
+
+    public String getCssClass() {
+        return this.cssClass;
+    }
+
+    public Integer getSortOrder() {
+        return this.sortOrder;
+    }
+
+    public Boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public String getCreatedBy() {
+        return this.createdBy;
+    }
+
+    public String getUpdatedBy() {
+        return this.updatedBy;
+    }
+
+    public void setDictCode(String dictCode) {
+        this.dictCode = dictCode;
+    }
+
+    public void setItemLabel(String itemLabel) {
+        this.itemLabel = itemLabel;
+    }
+
+    public void setItemValue(String itemValue) {
+        this.itemValue = itemValue;
+    }
+
+    public void setParentValue(String parentValue) {
+        this.parentValue = parentValue;
+    }
+
+    public void setCssClass(String cssClass) {
+        this.cssClass = cssClass;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(super.hashCode(), dictCode, itemLabel, itemValue, parentValue, cssClass, sortOrder, enabled, createdBy, updatedBy);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        DictItemDO other = (DictItemDO) o;
+        if (!java.util.Objects.equals(dictCode, other.dictCode)) return false;
+        if (!java.util.Objects.equals(itemLabel, other.itemLabel)) return false;
+        if (!java.util.Objects.equals(itemValue, other.itemValue)) return false;
+        if (!java.util.Objects.equals(parentValue, other.parentValue)) return false;
+        if (!java.util.Objects.equals(cssClass, other.cssClass)) return false;
+        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
+        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
+        if (!java.util.Objects.equals(createdBy, other.createdBy)) return false;
+        if (!java.util.Objects.equals(updatedBy, other.updatedBy)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DictItemDO(" + "super=" + super.toString() + ", " + "dictCode=" + dictCode + ", " + "itemLabel=" + itemLabel + ", " + "itemValue=" + itemValue + ", " + "parentValue=" + parentValue + ", " + "cssClass=" + cssClass + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy=" + createdBy + ", " + "updatedBy=" + updatedBy + ")";
+    }
 }

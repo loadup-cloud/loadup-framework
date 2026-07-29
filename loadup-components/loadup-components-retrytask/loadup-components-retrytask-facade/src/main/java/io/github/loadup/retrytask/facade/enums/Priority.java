@@ -22,12 +22,10 @@ package io.github.loadup.retrytask.facade.enums;
  * #L%
  */
 
-import lombok.Getter;
 
 /**
  * Represents the priority of a retry task.
  */
-@Getter
 public enum Priority {
     HIGH("H", 10),
     LOW("L", 1);
@@ -38,5 +36,13 @@ public enum Priority {
     Priority(String code, int weight) {
         this.code = code;
         this.weight = weight;
+    }
+
+    public String getCode() {
+        return this.code;
+    }
+
+    public int getWeight() {
+        return this.weight;
     }
 }

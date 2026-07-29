@@ -28,9 +28,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
-import lombok.Data;
 
-@Data
 
 /**
  * @since 1.0.0
@@ -69,4 +67,158 @@ public class UserUpdateCommand {
 
     @NotNull(message = "用户ID不能为空")
     private String id;
+
+    public UserUpdateCommand(String updatedBy, String remark, List<String> roleIds, Short status, LocalDate birthday, Short gender, String avatar, String mobile, String email, String deptId, String realName, String nickname, String id) {
+        this.updatedBy = updatedBy;
+        this.remark = remark;
+        this.roleIds = roleIds;
+        this.status = status;
+        this.birthday = birthday;
+        this.gender = gender;
+        this.avatar = avatar;
+        this.mobile = mobile;
+        this.email = email;
+        this.deptId = deptId;
+        this.realName = realName;
+        this.nickname = nickname;
+        this.id = id;
+    }
+
+    public UserUpdateCommand() {
+    }
+
+    public String getUpdatedBy() {
+        return this.updatedBy;
+    }
+
+    public String getRemark() {
+        return this.remark;
+    }
+
+    public List<String> getRoleIds() {
+        return this.roleIds;
+    }
+
+    public Short getStatus() {
+        return this.status;
+    }
+
+    public LocalDate getBirthday() {
+        return this.birthday;
+    }
+
+    public Short getGender() {
+        return this.gender;
+    }
+
+    public String getAvatar() {
+        return this.avatar;
+    }
+
+    public String getMobile() {
+        return this.mobile;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getDeptId() {
+        return this.deptId;
+    }
+
+    public String getRealName() {
+        return this.realName;
+    }
+
+    public String getNickname() {
+        return this.nickname;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public void setRoleIds(List<String> roleIds) {
+        this.roleIds = roleIds;
+    }
+
+    public void setStatus(Short status) {
+        this.status = status;
+    }
+
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
+    }
+
+    public void setGender(Short gender) {
+        this.gender = gender;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setDeptId(String deptId) {
+        this.deptId = deptId;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(updatedBy, remark, roleIds, status, birthday, gender, avatar, mobile, email, deptId, realName, nickname, id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserUpdateCommand other = (UserUpdateCommand) o;
+        if (!java.util.Objects.equals(updatedBy, other.updatedBy)) return false;
+        if (!java.util.Objects.equals(remark, other.remark)) return false;
+        if (!java.util.Objects.equals(roleIds, other.roleIds)) return false;
+        if (!java.util.Objects.equals(status, other.status)) return false;
+        if (!java.util.Objects.equals(birthday, other.birthday)) return false;
+        if (!java.util.Objects.equals(gender, other.gender)) return false;
+        if (!java.util.Objects.equals(avatar, other.avatar)) return false;
+        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
+        if (!java.util.Objects.equals(email, other.email)) return false;
+        if (!java.util.Objects.equals(deptId, other.deptId)) return false;
+        if (!java.util.Objects.equals(realName, other.realName)) return false;
+        if (!java.util.Objects.equals(nickname, other.nickname)) return false;
+        if (!java.util.Objects.equals(id, other.id)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "UserUpdateCommand(" + "updatedBy=" + updatedBy + ", " + "remark=" + remark + ", " + "roleIds=" + roleIds + ", " + "status=" + status + ", " + "birthday=" + birthday + ", " + "gender=" + gender + ", " + "avatar=" + avatar + ", " + "mobile=" + mobile + ", " + "email=" + email + ", " + "deptId=" + deptId + ", " + "realName=" + realName + ", " + "nickname=" + nickname + ", " + "id=" + id + ")";
+    }
 }

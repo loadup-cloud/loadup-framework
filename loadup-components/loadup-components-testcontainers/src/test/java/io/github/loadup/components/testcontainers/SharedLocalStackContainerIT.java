@@ -30,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.github.loadup.components.testcontainers.cloud.AbstractLocalStackContainerTest;
 import io.github.loadup.components.testcontainers.cloud.SharedLocalStackContainer;
 import java.net.URI;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -47,16 +46,19 @@ import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
 import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Integration test class for SharedLocalStackContainer.
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 @SpringBootTest(classes = TestApplication.class)
 @TestPropertySource(
-        properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.localstack.enabled=true"})
+        properties = {
+    private static final Logger log = LoggerFactory.getLogger(SharedLocalStackContainerIT.class);
+"loadup.testcontainers.enabled=true", "loadup.testcontainers.localstack.enabled=true"})
 class SharedLocalStackContainerIT extends AbstractLocalStackContainerTest {
 
     @Test

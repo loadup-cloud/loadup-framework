@@ -28,9 +28,10 @@ import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Firebase Cloud Messaging (FCM) 推送提供商
  *
@@ -40,14 +41,13 @@ import org.springframework.beans.factory.annotation.Value;
  * loadup.gotone.push.fcm.project-id=YOUR_PROJECT_ID
  * </pre>
  */
-@Slf4j
 public class FcmPushProvider implements NotificationChannelProvider {
+    private static final Logger log = LoggerFactory.getLogger(FcmPushProvider.class);
 
-    @Value("${loadup.gotone.push.fcm.server-key:}")
-    private String serverKey;
 
-    @Value("${loadup.gotone.push.fcm.project-id:}")
-    private String projectId;
+    private final String serverKey;
+
+    private final String projectId;
 
     @Override
     public NotificationChannel getChannel() {
@@ -259,5 +259,10 @@ public class FcmPushProvider implements NotificationChannelProvider {
                 .receiverStatus(receiverStatus)
                 .receiverErrors(receiverErrors)
                 .build();
+    }
+
+    public FcmPushProvider(String serverKey, String projectId) {
+        this.serverKey = serverKey;
+        this.projectId = projectId;
     }
 }

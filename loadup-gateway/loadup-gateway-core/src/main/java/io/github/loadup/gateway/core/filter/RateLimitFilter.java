@@ -11,8 +11,8 @@ import io.github.loadup.gateway.facade.spi.FilterChain;
 import io.github.loadup.gateway.facade.spi.GatewayFilter;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicLong;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Token-bucket rate limiting filter.
  *
@@ -27,8 +27,9 @@ import lombok.extern.slf4j.Slf4j;
  *   rateLimit.keySource=COMBINED  (IP | ROUTE | COMBINED)
  * </pre>
  */
-@Slf4j
 public class RateLimitFilter implements GatewayFilter {
+    private static final Logger log = LoggerFactory.getLogger(RateLimitFilter.class);
+
 
     private final GatewayProperties gatewayProperties;
     private final Cache<String, TokenBucket> buckets;

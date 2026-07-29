@@ -11,14 +11,16 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.config.RegistryConfig;
 import org.apache.dubbo.rpc.service.GenericService;
 
-@Slf4j
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class RpcProxyProcessor implements ProxyProcessor {
+    private static final Logger log = LoggerFactory.getLogger(RpcProxyProcessor.class);
+
 
     private final ApplicationConfig applicationConfig;
     private final RegistryConfig registryConfig;

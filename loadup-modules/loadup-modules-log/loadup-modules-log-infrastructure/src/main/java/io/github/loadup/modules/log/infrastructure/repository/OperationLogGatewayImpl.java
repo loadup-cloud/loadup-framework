@@ -34,12 +34,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RequiredArgsConstructor
 public class OperationLogGatewayImpl implements OperationLogGateway {
 
     private static final int EXPORT_MAX = 10_000;
@@ -267,5 +265,10 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
                 .operationTime(e.getOperationTime())
                 .createdAt(e.getCreatedAt())
                 .build();
+    }
+
+    public OperationLogGatewayImpl(OperationLogDOMapper mapper, JdbcTemplate jdbcTemplate) {
+        this.mapper = mapper;
+        this.jdbcTemplate = jdbcTemplate;
     }
 }

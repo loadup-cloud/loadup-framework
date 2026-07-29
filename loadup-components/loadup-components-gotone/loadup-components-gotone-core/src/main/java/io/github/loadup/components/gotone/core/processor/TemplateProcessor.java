@@ -25,16 +25,17 @@ package io.github.loadup.components.gotone.core.processor;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Template Processor.
  *
  * <p>Renders template content by replacing placeholders with actual values.
  * Supports ${varName} syntax.
  */
-@Slf4j
 public class TemplateProcessor {
+    private static final Logger log = LoggerFactory.getLogger(TemplateProcessor.class);
+
 
     private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([^}]+)}");
 

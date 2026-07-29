@@ -22,9 +22,6 @@ package io.github.loadup.modules.upms.domain.valueobject;
  * #L%
  */
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Data Scope Value Object Represents different levels of data access scope
@@ -32,9 +29,6 @@ import lombok.NoArgsConstructor;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class DataScope {
 
     public static final short ALL = 1;
@@ -96,5 +90,41 @@ public class DataScope {
 
     public boolean isSelfOnly() {
         return scope == SELF_ONLY;
+    }
+
+    public DataScope(short scope, String description) {
+        this.scope = scope;
+        this.description = description;
+    }
+
+    public DataScope() {
+    }
+
+    public void setScope(short scope) {
+        this.scope = scope;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(scope, description);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DataScope other = (DataScope) o;
+        if (!java.util.Objects.equals(scope, other.scope)) return false;
+        if (!java.util.Objects.equals(description, other.description)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DataScope(" + "scope=" + scope + ", " + "description=" + description + ")";
     }
 }

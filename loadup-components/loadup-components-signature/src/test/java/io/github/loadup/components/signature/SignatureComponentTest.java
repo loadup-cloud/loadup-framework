@@ -33,21 +33,23 @@ import io.github.loadup.components.signature.service.KeyPairService;
 import io.github.loadup.components.signature.service.SignatureService;
 import io.github.loadup.components.signature.util.DigestUtils;
 import io.github.loadup.components.signature.util.SignatureUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Signature Component 综合测试
  *
  * @author loadup
  */
-@Slf4j
 @SpringBootTest
 @DisplayName("Signature 组件综合测试")
 class SignatureComponentTest {
+    private static final Logger log = LoggerFactory.getLogger(SignatureComponentTest.class);
+
 
     @Autowired
     private SignatureService signatureService;

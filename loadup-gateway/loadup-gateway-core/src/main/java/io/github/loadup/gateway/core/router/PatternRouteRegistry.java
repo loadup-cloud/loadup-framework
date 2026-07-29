@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Pattern-aware route registry that supports Ant-style path variables.
  *
@@ -48,8 +48,9 @@ import lombok.extern.slf4j.Slf4j;
  *   <li>Pattern with more variables last (less specific)</li>
  * </ol>
  */
-@Slf4j
 public class PatternRouteRegistry {
+    private static final Logger log = LoggerFactory.getLogger(PatternRouteRegistry.class);
+
 
     /** Exact-match routes keyed by method:path */
     private final ConcurrentHashMap<String, RouteConfig> exactRoutes = new ConcurrentHashMap<>();

@@ -26,11 +26,12 @@ import io.github.loadup.components.gotone.api.NotificationChannelProvider;
 import io.github.loadup.components.gotone.channel.webhook.provider.DingtalkWebhookProvider;
 import io.github.loadup.components.gotone.channel.webhook.provider.FeishuWebhookProvider;
 import io.github.loadup.components.gotone.channel.webhook.provider.WechatWebhookProvider;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Webhook Channel Auto Configuration.
  *
@@ -41,8 +42,9 @@ import org.springframework.context.annotation.Bean;
  *   <li>feishu - 飞书机器人</li>
  * </ul>
  */
-@Slf4j
 public class WebhookChannelAutoConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(WebhookChannelAutoConfiguration.class);
+
 
     /**
      * 钉钉 Webhook 提供商

@@ -34,21 +34,23 @@ import io.github.loadup.components.testcontainers.cache.SharedRedisContainer;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.containers.GenericContainer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Integration test class for SharedRedisContainer.
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 @SpringBootTest(classes = TestApplication.class)
 @EnableTestContainers(ContainerType.REDIS)
 public class SharedRedisContainerIT {
+    private static final Logger log = LoggerFactory.getLogger(SharedRedisContainerIT.class);
+
 
     @Test
     void testContainerIsRunning() {

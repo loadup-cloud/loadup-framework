@@ -24,10 +24,6 @@ package io.github.loadup.modules.upms.client.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Department DTO (Tree Node)
@@ -35,10 +31,6 @@ import lombok.NoArgsConstructor;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class DepartmentDTO {
 
     private String id;
@@ -56,4 +48,279 @@ public class DepartmentDTO {
     private String remark;
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;
+
+    public DepartmentDTO(String id, String parentId, String deptName, String deptCode, Integer deptLevel, Integer sortOrder, String leaderUserId, String leaderUserName, String mobile, String email, Short status, List<DepartmentDTO> children, String remark, LocalDateTime createdTime, LocalDateTime updatedTime) {
+        this.id = id;
+        this.parentId = parentId;
+        this.deptName = deptName;
+        this.deptCode = deptCode;
+        this.deptLevel = deptLevel;
+        this.sortOrder = sortOrder;
+        this.leaderUserId = leaderUserId;
+        this.leaderUserName = leaderUserName;
+        this.mobile = mobile;
+        this.email = email;
+        this.status = status;
+        this.children = children;
+        this.remark = remark;
+        this.createdTime = createdTime;
+        this.updatedTime = updatedTime;
+    }
+
+    public DepartmentDTO() {
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getParentId() {
+        return this.parentId;
+    }
+
+    public String getDeptName() {
+        return this.deptName;
+    }
+
+    public String getDeptCode() {
+        return this.deptCode;
+    }
+
+    public Integer getDeptLevel() {
+        return this.deptLevel;
+    }
+
+    public Integer getSortOrder() {
+        return this.sortOrder;
+    }
+
+    public String getLeaderUserId() {
+        return this.leaderUserId;
+    }
+
+    public String getLeaderUserName() {
+        return this.leaderUserName;
+    }
+
+    public String getMobile() {
+        return this.mobile;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public Short getStatus() {
+        return this.status;
+    }
+
+    public List<DepartmentDTO> getChildren() {
+        return this.children;
+    }
+
+    public String getRemark() {
+        return this.remark;
+    }
+
+    public LocalDateTime getCreatedTime() {
+        return this.createdTime;
+    }
+
+    public LocalDateTime getUpdatedTime() {
+        return this.updatedTime;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public void setDeptName(String deptName) {
+        this.deptName = deptName;
+    }
+
+    public void setDeptCode(String deptCode) {
+        this.deptCode = deptCode;
+    }
+
+    public void setDeptLevel(Integer deptLevel) {
+        this.deptLevel = deptLevel;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    public void setLeaderUserId(String leaderUserId) {
+        this.leaderUserId = leaderUserId;
+    }
+
+    public void setLeaderUserName(String leaderUserName) {
+        this.leaderUserName = leaderUserName;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setStatus(Short status) {
+        this.status = status;
+    }
+
+    public void setChildren(List<DepartmentDTO> children) {
+        this.children = children;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public void setCreatedTime(LocalDateTime createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public void setUpdatedTime(LocalDateTime updatedTime) {
+        this.updatedTime = updatedTime;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(id, parentId, deptName, deptCode, deptLevel, sortOrder, leaderUserId, leaderUserName, mobile, email, status, children, remark, createdTime, updatedTime);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DepartmentDTO other = (DepartmentDTO) o;
+        if (!java.util.Objects.equals(id, other.id)) return false;
+        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
+        if (!java.util.Objects.equals(deptName, other.deptName)) return false;
+        if (!java.util.Objects.equals(deptCode, other.deptCode)) return false;
+        if (!java.util.Objects.equals(deptLevel, other.deptLevel)) return false;
+        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
+        if (!java.util.Objects.equals(leaderUserId, other.leaderUserId)) return false;
+        if (!java.util.Objects.equals(leaderUserName, other.leaderUserName)) return false;
+        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
+        if (!java.util.Objects.equals(email, other.email)) return false;
+        if (!java.util.Objects.equals(status, other.status)) return false;
+        if (!java.util.Objects.equals(children, other.children)) return false;
+        if (!java.util.Objects.equals(remark, other.remark)) return false;
+        if (!java.util.Objects.equals(createdTime, other.createdTime)) return false;
+        if (!java.util.Objects.equals(updatedTime, other.updatedTime)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DepartmentDTO(" + "id=" + id + ", " + "parentId=" + parentId + ", " + "deptName=" + deptName + ", " + "deptCode=" + deptCode + ", " + "deptLevel=" + deptLevel + ", " + "sortOrder=" + sortOrder + ", " + "leaderUserId=" + leaderUserId + ", " + "leaderUserName=" + leaderUserName + ", " + "mobile=" + mobile + ", " + "email=" + email + ", " + "status=" + status + ", " + "children=" + children + ", " + "remark=" + remark + ", " + "createdTime=" + createdTime + ", " + "updatedTime=" + updatedTime + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String id;
+        private String parentId;
+        private String deptName;
+        private String deptCode;
+        private Integer deptLevel;
+        private Integer sortOrder;
+        private String leaderUserId;
+        private String leaderUserName;
+        private String mobile;
+        private String email;
+        private Short status;
+        private List<DepartmentDTO> children;
+        private String remark;
+        private LocalDateTime createdTime;
+        private LocalDateTime updatedTime;
+
+        public Builder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder parentId(String parentId) {
+            this.parentId = parentId;
+            return this;
+        }
+
+        public Builder deptName(String deptName) {
+            this.deptName = deptName;
+            return this;
+        }
+
+        public Builder deptCode(String deptCode) {
+            this.deptCode = deptCode;
+            return this;
+        }
+
+        public Builder deptLevel(Integer deptLevel) {
+            this.deptLevel = deptLevel;
+            return this;
+        }
+
+        public Builder sortOrder(Integer sortOrder) {
+            this.sortOrder = sortOrder;
+            return this;
+        }
+
+        public Builder leaderUserId(String leaderUserId) {
+            this.leaderUserId = leaderUserId;
+            return this;
+        }
+
+        public Builder leaderUserName(String leaderUserName) {
+            this.leaderUserName = leaderUserName;
+            return this;
+        }
+
+        public Builder mobile(String mobile) {
+            this.mobile = mobile;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder status(Short status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder children(List<DepartmentDTO> children) {
+            this.children = children;
+            return this;
+        }
+
+        public Builder remark(String remark) {
+            this.remark = remark;
+            return this;
+        }
+
+        public Builder createdTime(LocalDateTime createdTime) {
+            this.createdTime = createdTime;
+            return this;
+        }
+
+        public Builder updatedTime(LocalDateTime updatedTime) {
+            this.updatedTime = updatedTime;
+            return this;
+        }
+
+        public DepartmentDTO build() {
+            return new DepartmentDTO(this.id, this.parentId, this.deptName, this.deptCode, this.deptLevel, this.sortOrder, this.leaderUserId, this.leaderUserName, this.mobile, this.email, this.status, this.children, this.remark, this.createdTime, this.updatedTime);
+        }
+    }
 }

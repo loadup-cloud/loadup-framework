@@ -10,12 +10,12 @@ package io.github.loadup.components.springdoc.autoconfigure;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -30,7 +30,6 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -38,6 +37,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Auto-configuration for LoadUp SpringDoc / knife4j component.
  *
@@ -48,12 +49,13 @@ import org.springframework.context.annotation.Bean;
  * JWT Bearer security scheme. A custom bean of type {@link OpenAPI} defined elsewhere
  * takes precedence ({@link ConditionalOnMissingBean}).
  */
-@Slf4j
 @AutoConfiguration
 @ConditionalOnClass(name = "com.github.xiaoymin.knife4j.spring.extension.OpenApiExtensionResolver")
 @ConditionalOnProperty(prefix = "loadup.springdoc", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(SpringDocProperties.class)
 public class SpringDocAutoConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(SpringDocAutoConfiguration.class);
+
 
     /**
      * Builds the global {@link OpenAPI} descriptor from {@link SpringDocProperties}.
@@ -108,4 +110,3 @@ public class SpringDocAutoConfiguration {
                         .url(l.getUrl()));
     }
 }
-

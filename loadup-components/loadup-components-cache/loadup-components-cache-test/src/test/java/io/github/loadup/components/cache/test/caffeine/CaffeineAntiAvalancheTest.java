@@ -30,12 +30,13 @@ import io.github.loadup.components.cache.test.common.model.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Anti-Avalanche and Anti-Breakdown Test 测试防缓存雪崩和缓存击穿策略
  */
@@ -47,8 +48,9 @@ import org.springframework.test.context.TestPropertySource;
             "loadup.cache.binders.caffeine.randomFactor=0.2"
         })
 @DisplayName("Caffeine 防缓存雪崩和击穿测试")
-@Slf4j
 public class CaffeineAntiAvalancheTest extends BaseCacheTest {
+    private static final Logger log = LoggerFactory.getLogger(CaffeineAntiAvalancheTest.class);
+
 
     @Test
     @DisplayName("测试随机过期时间防止缓存雪崩")

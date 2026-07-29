@@ -22,9 +22,6 @@ package io.github.loadup.modules.upms.domain.valueobject;
  * #L%
  */
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * User Status Value Object
@@ -32,9 +29,6 @@ import lombok.NoArgsConstructor;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class UserStatus {
 
     public static final short NORMAL = 1;
@@ -76,5 +70,41 @@ public class UserStatus {
 
     public boolean isLocked() {
         return status == LOCKED;
+    }
+
+    public UserStatus(short status, String description) {
+        this.status = status;
+        this.description = description;
+    }
+
+    public UserStatus() {
+    }
+
+    public void setStatus(short status) {
+        this.status = status;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(status, description);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserStatus other = (UserStatus) o;
+        if (!java.util.Objects.equals(status, other.status)) return false;
+        if (!java.util.Objects.equals(description, other.description)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "UserStatus(" + "status=" + status + ", " + "description=" + description + ")";
     }
 }

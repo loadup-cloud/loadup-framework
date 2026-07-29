@@ -24,12 +24,10 @@ package io.github.loadup.modules.config.client.command;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 
 /**
  * Command to create a dict item.
  */
-@Data
 public class DictItemCreateCommand {
 
     @NotBlank
@@ -52,4 +50,88 @@ public class DictItemCreateCommand {
     private String cssClass;
 
     private Integer sortOrder = 0;
+
+    public DictItemCreateCommand(String dictCode, String itemLabel, String itemValue, String parentValue, String cssClass, Integer sortOrder) {
+        this.dictCode = dictCode;
+        this.itemLabel = itemLabel;
+        this.itemValue = itemValue;
+        this.parentValue = parentValue;
+        this.cssClass = cssClass;
+        this.sortOrder = sortOrder;
+    }
+
+    public DictItemCreateCommand() {
+    }
+
+    public String getDictCode() {
+        return this.dictCode;
+    }
+
+    public String getItemLabel() {
+        return this.itemLabel;
+    }
+
+    public String getItemValue() {
+        return this.itemValue;
+    }
+
+    public String getParentValue() {
+        return this.parentValue;
+    }
+
+    public String getCssClass() {
+        return this.cssClass;
+    }
+
+    public Integer getSortOrder() {
+        return this.sortOrder;
+    }
+
+    public void setDictCode(String dictCode) {
+        this.dictCode = dictCode;
+    }
+
+    public void setItemLabel(String itemLabel) {
+        this.itemLabel = itemLabel;
+    }
+
+    public void setItemValue(String itemValue) {
+        this.itemValue = itemValue;
+    }
+
+    public void setParentValue(String parentValue) {
+        this.parentValue = parentValue;
+    }
+
+    public void setCssClass(String cssClass) {
+        this.cssClass = cssClass;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(dictCode, itemLabel, itemValue, parentValue, cssClass, sortOrder);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DictItemCreateCommand other = (DictItemCreateCommand) o;
+        if (!java.util.Objects.equals(dictCode, other.dictCode)) return false;
+        if (!java.util.Objects.equals(itemLabel, other.itemLabel)) return false;
+        if (!java.util.Objects.equals(itemValue, other.itemValue)) return false;
+        if (!java.util.Objects.equals(parentValue, other.parentValue)) return false;
+        if (!java.util.Objects.equals(cssClass, other.cssClass)) return false;
+        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DictItemCreateCommand(" + "dictCode=" + dictCode + ", " + "itemLabel=" + itemLabel + ", " + "itemValue=" + itemValue + ", " + "parentValue=" + parentValue + ", " + "cssClass=" + cssClass + ", " + "sortOrder=" + sortOrder + ")";
+    }
 }

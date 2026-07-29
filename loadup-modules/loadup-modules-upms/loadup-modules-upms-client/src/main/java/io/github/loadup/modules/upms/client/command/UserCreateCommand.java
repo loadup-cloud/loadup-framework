@@ -28,7 +28,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
-import lombok.Data;
 
 /**
  * User Create Command
@@ -36,7 +35,6 @@ import lombok.Data;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Data
 public class UserCreateCommand {
 
     @NotBlank(message = "用户名不能为空")
@@ -76,4 +74,168 @@ public class UserCreateCommand {
     private String remark;
 
     private String createdBy;
+
+    public UserCreateCommand(String username, String password, String nickname, String realName, String deptId, String email, String mobile, String avatar, Short gender, LocalDate birthday, Short status, List<String> roleIds, String remark, String createdBy) {
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.realName = realName;
+        this.deptId = deptId;
+        this.email = email;
+        this.mobile = mobile;
+        this.avatar = avatar;
+        this.gender = gender;
+        this.birthday = birthday;
+        this.status = status;
+        this.roleIds = roleIds;
+        this.remark = remark;
+        this.createdBy = createdBy;
+    }
+
+    public UserCreateCommand() {
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public String getNickname() {
+        return this.nickname;
+    }
+
+    public String getRealName() {
+        return this.realName;
+    }
+
+    public String getDeptId() {
+        return this.deptId;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getMobile() {
+        return this.mobile;
+    }
+
+    public String getAvatar() {
+        return this.avatar;
+    }
+
+    public Short getGender() {
+        return this.gender;
+    }
+
+    public LocalDate getBirthday() {
+        return this.birthday;
+    }
+
+    public Short getStatus() {
+        return this.status;
+    }
+
+    public List<String> getRoleIds() {
+        return this.roleIds;
+    }
+
+    public String getRemark() {
+        return this.remark;
+    }
+
+    public String getCreatedBy() {
+        return this.createdBy;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
+    public void setDeptId(String deptId) {
+        this.deptId = deptId;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public void setGender(Short gender) {
+        this.gender = gender;
+    }
+
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
+    }
+
+    public void setStatus(Short status) {
+        this.status = status;
+    }
+
+    public void setRoleIds(List<String> roleIds) {
+        this.roleIds = roleIds;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(username, password, nickname, realName, deptId, email, mobile, avatar, gender, birthday, status, roleIds, remark, createdBy);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserCreateCommand other = (UserCreateCommand) o;
+        if (!java.util.Objects.equals(username, other.username)) return false;
+        if (!java.util.Objects.equals(password, other.password)) return false;
+        if (!java.util.Objects.equals(nickname, other.nickname)) return false;
+        if (!java.util.Objects.equals(realName, other.realName)) return false;
+        if (!java.util.Objects.equals(deptId, other.deptId)) return false;
+        if (!java.util.Objects.equals(email, other.email)) return false;
+        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
+        if (!java.util.Objects.equals(avatar, other.avatar)) return false;
+        if (!java.util.Objects.equals(gender, other.gender)) return false;
+        if (!java.util.Objects.equals(birthday, other.birthday)) return false;
+        if (!java.util.Objects.equals(status, other.status)) return false;
+        if (!java.util.Objects.equals(roleIds, other.roleIds)) return false;
+        if (!java.util.Objects.equals(remark, other.remark)) return false;
+        if (!java.util.Objects.equals(createdBy, other.createdBy)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "UserCreateCommand(" + "username=" + username + ", " + "password=" + password + ", " + "nickname=" + nickname + ", " + "realName=" + realName + ", " + "deptId=" + deptId + ", " + "email=" + email + ", " + "mobile=" + mobile + ", " + "avatar=" + avatar + ", " + "gender=" + gender + ", " + "birthday=" + birthday + ", " + "status=" + status + ", " + "roleIds=" + roleIds + ", " + "remark=" + remark + ", " + "createdBy=" + createdBy + ")";
+    }
 }

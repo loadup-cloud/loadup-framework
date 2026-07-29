@@ -32,19 +32,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 核心拦截器：实现 AOP 方法拦截、多规则参数匹配及动态变量解析
  */
-@Slf4j
 public class MockInterceptor implements MethodInterceptor {
+    private static final Logger log = LoggerFactory.getLogger(MockInterceptor.class);
+
 
     private final VariableEngine variableEngine;
     // 注入 Spring 的转换服务
@@ -53,7 +54,6 @@ public class MockInterceptor implements MethodInterceptor {
     /**
      * 存储结构：Map<BeanName, Map<MethodName, List<MockRule>>> 一个方法可以对应多个 Rule（不同参数对应不同返回值）
      */
-    @Getter
     private final Map<String, Map<String, List<MockRule>>> mockRules = new ConcurrentHashMap<>();
 
     public MockInterceptor(VariableEngine variableEngine) {
@@ -259,5 +259,17 @@ public class MockInterceptor implements MethodInterceptor {
             log.warn(">>> [TESTIFY-JSONPATH] 匹配失败: {} , 异常: {}", expression, e.getMessage());
             return false;
         }
+    }
+
+    public VariableEngine getVariableEngine() {
+        return this.variableEngine;
+    }
+
+    public ConversionService getConversionService() {
+        return this.conversionService;
+    }
+
+    public Map<String, Map<String, List<MockRule>>> getMockRules() {
+        return this.mockRules;
     }
 }

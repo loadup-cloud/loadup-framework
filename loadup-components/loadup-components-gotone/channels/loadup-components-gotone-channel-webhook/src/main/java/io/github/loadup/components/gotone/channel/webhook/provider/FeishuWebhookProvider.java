@@ -29,8 +29,8 @@ import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 飞书机器人 Webhook 提供商
  *
@@ -48,8 +48,9 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @see <a href="https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN">飞书自定义机器人使用指南</a>
  */
-@Slf4j
 public class FeishuWebhookProvider implements NotificationChannelProvider {
+    private static final Logger log = LoggerFactory.getLogger(FeishuWebhookProvider.class);
+
 
     @Override
     public NotificationChannel getChannel() {

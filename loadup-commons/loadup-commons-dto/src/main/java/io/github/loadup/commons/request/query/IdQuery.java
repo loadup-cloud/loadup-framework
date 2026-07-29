@@ -25,11 +25,7 @@ package io.github.loadup.commons.request.query;
 import io.github.loadup.commons.dto.DTO;
 import jakarta.validation.constraints.NotBlank;
 import java.io.Serial;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 public class IdQuery extends DTO {
     @Serial
     private static final long serialVersionUID = 7157141921495739675L;
@@ -40,5 +36,13 @@ public class IdQuery extends DTO {
         IdQuery idQuery = new IdQuery();
         idQuery.setId(id);
         return idQuery;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

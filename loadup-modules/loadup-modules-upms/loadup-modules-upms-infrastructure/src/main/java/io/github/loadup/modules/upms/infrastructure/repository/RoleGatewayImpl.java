@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -47,7 +46,6 @@ import org.springframework.stereotype.Repository;
  * @since 1.0.0
  */
 @Repository
-@RequiredArgsConstructor
 public class RoleGatewayImpl implements RoleGateway {
 
     private final RoleDOMapper roleDOMapper;
@@ -182,5 +180,10 @@ public class RoleGatewayImpl implements RoleGateway {
     public long countUsersByRoleId(String roleId) {
         // TODO: 实现统计角色的用户数（需要查询 user_role 表）
         throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public RoleGatewayImpl(RoleDOMapper roleDOMapper, RoleConverter roleConverter) {
+        this.roleDOMapper = roleDOMapper;
+        this.roleConverter = roleConverter;
     }
 }

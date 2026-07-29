@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Default gateway engine — resolves routes and executes per-route filter chains.
  *
@@ -31,8 +31,9 @@ import lombok.extern.slf4j.Slf4j;
  * <p>RouteFilter is the pivot: it resolves the route, then builds and executes
  * the route-specific sub-chain from the {@link RouteDefinition}.
  */
-@Slf4j
 public class DefaultGatewayEngine implements GatewayEngine {
+    private static final Logger log = LoggerFactory.getLogger(DefaultGatewayEngine.class);
+
 
     private final Map<String, GatewayFilter> filterRegistry;
     private final RouteResolver routeResolver;

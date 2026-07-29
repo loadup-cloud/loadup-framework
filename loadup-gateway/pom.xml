@@ -78,11 +78,7 @@
         <palantir-java-format.version>2.86.0</palantir-java-format.version>
         <findsecbugs-plugin.version>1.13.0</findsecbugs-plugin.version>
 
-        <!-- Annotation processor versions -->
-        <lombok.version>1.18.46</lombok.version>
-        <mapstruct.version>1.6.3</mapstruct.version>
-        <mapstruct-lombok-binding.version>0.2.0</mapstruct-lombok-binding.version>
-        <mybatis-flex.version>1.11.7</mybatis-flex.version>
+        <!-- Annotation processor versions -->        <mapstruct.version>1.6.3</mapstruct.version>        <mybatis-flex.version>1.11.7</mybatis-flex.version>
         <spring-boot.version>4.1.0</spring-boot.version>
 
         <!-- Flyway plugin support -->
@@ -101,7 +97,6 @@
         <skip.enforcer>false</skip.enforcer>
     </properties>
 
-
     <build>
         <pluginManagement>
             <plugins>
@@ -118,18 +113,7 @@
                         <compilerArgs>
                             <compilerArg>-Xlint:all</compilerArg>
                         </compilerArgs>
-                        <annotationProcessorPaths>
-                            <path>
-                                <groupId>org.projectlombok</groupId>
-                                <artifactId>lombok</artifactId>
-                                <version>${lombok.version}</version>
-                            </path>
-                            <path>
-                                <groupId>org.projectlombok</groupId>
-                                <artifactId>lombok-mapstruct-binding</artifactId>
-                                <version>${mapstruct-lombok-binding.version}</version>
-                            </path>
-                            <path>
+                        <annotationProcessorPaths>                            <path>
                                 <groupId>org.mapstruct</groupId>
                                 <artifactId>mapstruct-processor</artifactId>
                                 <version>${mapstruct.version}</version>

@@ -41,11 +41,6 @@
                     <artifactId>error_prone_annotations</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-    </dependencies>
+        </dependency>    </dependencies>
 
 </project>

@@ -23,18 +23,54 @@ package io.github.loadup.components.gotone.domain;
  */
 
 import io.github.loadup.commons.domain.BaseDomain;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * 业务代码领域对象
  */
-@Getter
-@Setter
 public class BusinessCode extends BaseDomain {
     private String id;
     private String bizCode;
     private String bizName;
     private String description;
     private Boolean enabled;
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getBizCode() {
+        return this.bizCode;
+    }
+
+    public String getBizName() {
+        return this.bizName;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public Boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setBizCode(String bizCode) {
+        this.bizCode = bizCode;
+    }
+
+    public void setBizName(String bizName) {
+        this.bizName = bizName;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
 }

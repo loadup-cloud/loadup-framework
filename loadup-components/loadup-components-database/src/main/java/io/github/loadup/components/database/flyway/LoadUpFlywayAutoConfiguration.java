@@ -23,7 +23,6 @@ package io.github.loadup.components.database.flyway;
  */
 
 import javax.sql.DataSource;
-import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
@@ -36,6 +35,8 @@ import org.springframework.boot.flyway.autoconfigure.FlywayMigrationStrategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Auto-configuration for Flyway database migrations.
  *
@@ -59,12 +60,13 @@ import org.springframework.context.annotation.Bean;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 @AutoConfiguration(before = FlywayAutoConfiguration.class)
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnProperty(prefix = "loadup.flyway", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(FlywayProperties.class)
 public class LoadUpFlywayAutoConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(LoadUpFlywayAutoConfiguration.class);
+
 
     /**
      * Create the Flyway bean with LoadUp-specific configuration.

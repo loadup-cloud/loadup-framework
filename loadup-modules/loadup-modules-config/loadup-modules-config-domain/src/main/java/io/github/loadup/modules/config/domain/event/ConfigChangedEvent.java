@@ -23,7 +23,6 @@ package io.github.loadup.modules.config.domain.event;
  */
 
 import io.github.loadup.modules.config.domain.enums.ChangeType;
-import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -32,7 +31,6 @@ import org.springframework.context.ApplicationEvent;
  * <p>Listeners (e.g. {@code ConfigLocalCache}) subscribe via Spring's
  * {@code @EventListener} to react to these changes.
  */
-@Getter
 public class ConfigChangedEvent extends ApplicationEvent {
 
     private final String configKey;
@@ -47,5 +45,21 @@ public class ConfigChangedEvent extends ApplicationEvent {
         this.newValue = newValue;
         this.changeType = changeType;
         this.operator = operator;
+    }
+
+    public String getConfigKey() {
+        return this.configKey;
+    }
+
+    public String getNewValue() {
+        return this.newValue;
+    }
+
+    public ChangeType getChangeType() {
+        return this.changeType;
+    }
+
+    public String getOperator() {
+        return this.operator;
     }
 }

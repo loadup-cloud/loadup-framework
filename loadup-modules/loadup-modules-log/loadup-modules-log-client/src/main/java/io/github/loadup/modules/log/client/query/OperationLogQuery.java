@@ -23,9 +23,7 @@ package io.github.loadup.modules.log.client.query;
  */
 
 import java.time.LocalDateTime;
-import lombok.Data;
 
-@Data
 public class OperationLogQuery {
 
     private String userId;
@@ -36,4 +34,108 @@ public class OperationLogQuery {
     private LocalDateTime endTime;
     private Integer pageNum;
     private Integer pageSize;
+
+    public OperationLogQuery(String userId, String module, String operationType, Boolean success, LocalDateTime startTime, LocalDateTime endTime, Integer pageNum, Integer pageSize) {
+        this.userId = userId;
+        this.module = module;
+        this.operationType = operationType;
+        this.success = success;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.pageNum = pageNum;
+        this.pageSize = pageSize;
+    }
+
+    public OperationLogQuery() {
+    }
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public String getModule() {
+        return this.module;
+    }
+
+    public String getOperationType() {
+        return this.operationType;
+    }
+
+    public Boolean isSuccess() {
+        return this.success;
+    }
+
+    public LocalDateTime getStartTime() {
+        return this.startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return this.endTime;
+    }
+
+    public Integer getPageNum() {
+        return this.pageNum;
+    }
+
+    public Integer getPageSize() {
+        return this.pageSize;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setModule(String module) {
+        this.module = module;
+    }
+
+    public void setOperationType(String operationType) {
+        this.operationType = operationType;
+    }
+
+    public void setSuccess(Boolean success) {
+        this.success = success;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setPageNum(Integer pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(userId, module, operationType, success, startTime, endTime, pageNum, pageSize);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OperationLogQuery other = (OperationLogQuery) o;
+        if (!java.util.Objects.equals(userId, other.userId)) return false;
+        if (!java.util.Objects.equals(module, other.module)) return false;
+        if (!java.util.Objects.equals(operationType, other.operationType)) return false;
+        if (!java.util.Objects.equals(success, other.success)) return false;
+        if (!java.util.Objects.equals(startTime, other.startTime)) return false;
+        if (!java.util.Objects.equals(endTime, other.endTime)) return false;
+        if (!java.util.Objects.equals(pageNum, other.pageNum)) return false;
+        if (!java.util.Objects.equals(pageSize, other.pageSize)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "OperationLogQuery(" + "userId=" + userId + ", " + "module=" + module + ", " + "operationType=" + operationType + ", " + "success=" + success + ", " + "startTime=" + startTime + ", " + "endTime=" + endTime + ", " + "pageNum=" + pageNum + ", " + "pageSize=" + pageSize + ")";
+    }
 }

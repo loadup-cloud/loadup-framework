@@ -32,7 +32,6 @@ import io.github.loadup.components.gotone.core.repository.ServiceChannelReposito
 import io.github.loadup.components.gotone.core.service.NotificationServiceImpl;
 import io.github.loadup.components.gotone.starter.properties.GotoneProperties;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -41,6 +40,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Gotone Auto Configuration.
  *
@@ -52,13 +53,14 @@ import org.springframework.scheduling.annotation.EnableAsync;
  *   <li>Channel providers are registered by their own modules</li>
  * </ul>
  */
-@Slf4j
 @AutoConfiguration
 @EnableAsync
 @EnableConfigurationProperties(GotoneProperties.class)
 @MapperScan("io.github.loadup.components.gotone.core.repository")
 @ConditionalOnProperty(prefix = "loadup.gotone", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class GotoneAutoConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(GotoneAutoConfiguration.class);
+
 
     /**
      * Template Processor Bean.

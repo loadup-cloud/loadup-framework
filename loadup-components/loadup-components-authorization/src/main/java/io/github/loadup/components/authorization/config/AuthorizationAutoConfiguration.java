@@ -23,20 +23,22 @@ package io.github.loadup.components.authorization.config;
  */
 
 import io.github.loadup.components.authorization.aspect.AuthorizationAspect;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Auto-configuration for LoadUp Authorization Component.
  *
  * <p>Automatically configures the authorization aspect for method-level access control.</p>
  */
-@Slf4j
 @AutoConfiguration
 @EnableAspectJAutoProxy
 public class AuthorizationAutoConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(AuthorizationAutoConfiguration.class);
+
 
     @Bean
     public AuthorizationAspect authorizationAspect() {

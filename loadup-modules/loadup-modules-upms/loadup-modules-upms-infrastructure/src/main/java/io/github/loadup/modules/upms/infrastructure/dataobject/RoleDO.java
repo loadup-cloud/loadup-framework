@@ -24,18 +24,10 @@ package io.github.loadup.modules.upms.infrastructure.dataobject;
 
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * Role Data Object
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Table("upms_role")
 public class RoleDO extends BaseDO {
 
@@ -54,4 +46,109 @@ public class RoleDO extends BaseDO {
     private Short status;
 
     private String remark;
+
+    public RoleDO(String roleName, String roleCode, String parentId, Integer roleLevel, Short dataScope, Integer sortOrder, Short status, String remark) {
+        this.roleName = roleName;
+        this.roleCode = roleCode;
+        this.parentId = parentId;
+        this.roleLevel = roleLevel;
+        this.dataScope = dataScope;
+        this.sortOrder = sortOrder;
+        this.status = status;
+        this.remark = remark;
+    }
+
+    public RoleDO() {
+    }
+
+    public String getRoleName() {
+        return this.roleName;
+    }
+
+    public String getRoleCode() {
+        return this.roleCode;
+    }
+
+    public String getParentId() {
+        return this.parentId;
+    }
+
+    public Integer getRoleLevel() {
+        return this.roleLevel;
+    }
+
+    public Short getDataScope() {
+        return this.dataScope;
+    }
+
+    public Integer getSortOrder() {
+        return this.sortOrder;
+    }
+
+    public Short getStatus() {
+        return this.status;
+    }
+
+    public String getRemark() {
+        return this.remark;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public void setRoleCode(String roleCode) {
+        this.roleCode = roleCode;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public void setRoleLevel(Integer roleLevel) {
+        this.roleLevel = roleLevel;
+    }
+
+    public void setDataScope(Short dataScope) {
+        this.dataScope = dataScope;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    public void setStatus(Short status) {
+        this.status = status;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(super.hashCode(), roleName, roleCode, parentId, roleLevel, dataScope, sortOrder, status, remark);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        RoleDO other = (RoleDO) o;
+        if (!java.util.Objects.equals(roleName, other.roleName)) return false;
+        if (!java.util.Objects.equals(roleCode, other.roleCode)) return false;
+        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
+        if (!java.util.Objects.equals(roleLevel, other.roleLevel)) return false;
+        if (!java.util.Objects.equals(dataScope, other.dataScope)) return false;
+        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
+        if (!java.util.Objects.equals(status, other.status)) return false;
+        if (!java.util.Objects.equals(remark, other.remark)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "RoleDO(" + "super=" + super.toString() + ", " + "roleName=" + roleName + ", " + "roleCode=" + roleCode + ", " + "parentId=" + parentId + ", " + "roleLevel=" + roleLevel + ", " + "dataScope=" + dataScope + ", " + "sortOrder=" + sortOrder + ", " + "status=" + status + ", " + "remark=" + remark + ")";
+    }
 }

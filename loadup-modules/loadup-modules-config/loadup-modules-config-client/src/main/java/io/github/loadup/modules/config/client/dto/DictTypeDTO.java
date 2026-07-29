@@ -23,14 +23,12 @@ package io.github.loadup.modules.config.client.dto;
  */
 
 import java.time.LocalDateTime;
-import lombok.Data;
 
 /**
  * Data dictionary type DTO.
  *
  * @author LoadUp Framework
  */
-@Data
 public class DictTypeDTO {
 
     private String id;
@@ -41,4 +39,108 @@ public class DictTypeDTO {
     private Integer sortOrder;
     private Boolean enabled;
     private LocalDateTime updatedAt;
+
+    public DictTypeDTO(String id, String dictCode, String dictName, String description, Boolean systemDefined, Integer sortOrder, Boolean enabled, LocalDateTime updatedAt) {
+        this.id = id;
+        this.dictCode = dictCode;
+        this.dictName = dictName;
+        this.description = description;
+        this.systemDefined = systemDefined;
+        this.sortOrder = sortOrder;
+        this.enabled = enabled;
+        this.updatedAt = updatedAt;
+    }
+
+    public DictTypeDTO() {
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getDictCode() {
+        return this.dictCode;
+    }
+
+    public String getDictName() {
+        return this.dictName;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public Boolean isSystemDefined() {
+        return this.systemDefined;
+    }
+
+    public Integer getSortOrder() {
+        return this.sortOrder;
+    }
+
+    public Boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setDictCode(String dictCode) {
+        this.dictCode = dictCode;
+    }
+
+    public void setDictName(String dictName) {
+        this.dictName = dictName;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setSystemDefined(Boolean systemDefined) {
+        this.systemDefined = systemDefined;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(id, dictCode, dictName, description, systemDefined, sortOrder, enabled, updatedAt);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DictTypeDTO other = (DictTypeDTO) o;
+        if (!java.util.Objects.equals(id, other.id)) return false;
+        if (!java.util.Objects.equals(dictCode, other.dictCode)) return false;
+        if (!java.util.Objects.equals(dictName, other.dictName)) return false;
+        if (!java.util.Objects.equals(description, other.description)) return false;
+        if (!java.util.Objects.equals(systemDefined, other.systemDefined)) return false;
+        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
+        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
+        if (!java.util.Objects.equals(updatedAt, other.updatedAt)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DictTypeDTO(" + "id=" + id + ", " + "dictCode=" + dictCode + ", " + "dictName=" + dictName + ", " + "description=" + description + ", " + "systemDefined=" + systemDefined + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "updatedAt=" + updatedAt + ")";
+    }
 }

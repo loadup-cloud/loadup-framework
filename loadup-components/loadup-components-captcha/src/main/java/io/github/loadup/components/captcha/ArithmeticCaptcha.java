@@ -28,13 +28,14 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.imageio.ImageIO;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * png格式验证码 Created by 王帆 on 2018-07-27 上午 10:08.
  */
-@Slf4j
 public class ArithmeticCaptcha extends ArithmeticCaptchaAbstract {
+    private static final Logger log = LoggerFactory.getLogger(ArithmeticCaptcha.class);
+
 
     public ArithmeticCaptcha() {}
 

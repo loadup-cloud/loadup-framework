@@ -28,10 +28,6 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * 通知发送请求（ServiceCode驱动架构）
@@ -39,10 +35,6 @@ import lombok.NoArgsConstructor;
  * <p>通过 serviceCode 驱动通知发送，后台自动根据配置路由到对应渠道。
  * <p>业务代码与具体渠道解耦，支持动态启用/禁用渠道。
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class NotificationRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -96,4 +88,135 @@ public class NotificationRequest implements Serializable {
      * <p>true = 异步发送，false = 同步发送
      */
     private Boolean async;
+
+    public NotificationRequest(String serviceCode, List<String> receivers, Map<String, Object> templateParams, String requestId, List<String> channels, Boolean async) {
+        this.serviceCode = serviceCode;
+        this.receivers = receivers;
+        this.templateParams = templateParams;
+        this.requestId = requestId;
+        this.channels = channels;
+        this.async = async;
+    }
+
+    public NotificationRequest() {
+    }
+
+    public String getServiceCode() {
+        return this.serviceCode;
+    }
+
+    public List<String> getReceivers() {
+        return this.receivers;
+    }
+
+    public Map<String, Object> getTemplateParams() {
+        return this.templateParams;
+    }
+
+    public String getRequestId() {
+        return this.requestId;
+    }
+
+    public List<String> getChannels() {
+        return this.channels;
+    }
+
+    public Boolean isAsync() {
+        return this.async;
+    }
+
+    public void setServiceCode(String serviceCode) {
+        this.serviceCode = serviceCode;
+    }
+
+    public void setReceivers(List<String> receivers) {
+        this.receivers = receivers;
+    }
+
+    public void setTemplateParams(Map<String, Object> templateParams) {
+        this.templateParams = templateParams;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    public void setChannels(List<String> channels) {
+        this.channels = channels;
+    }
+
+    public void setAsync(Boolean async) {
+        this.async = async;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(serviceCode, receivers, templateParams, requestId, channels, async);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NotificationRequest other = (NotificationRequest) o;
+        if (!java.util.Objects.equals(serviceCode, other.serviceCode)) return false;
+        if (!java.util.Objects.equals(receivers, other.receivers)) return false;
+        if (!java.util.Objects.equals(templateParams, other.templateParams)) return false;
+        if (!java.util.Objects.equals(requestId, other.requestId)) return false;
+        if (!java.util.Objects.equals(channels, other.channels)) return false;
+        if (!java.util.Objects.equals(async, other.async)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "NotificationRequest(" + "serviceCode=" + serviceCode + ", " + "receivers=" + receivers + ", " + "templateParams=" + templateParams + ", " + "requestId=" + requestId + ", " + "channels=" + channels + ", " + "async=" + async + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String serviceCode;
+        private List<String> receivers;
+        private Map<String, Object> templateParams;
+        private String requestId;
+        private List<String> channels;
+        private Boolean async;
+
+        public Builder serviceCode(String serviceCode) {
+            this.serviceCode = serviceCode;
+            return this;
+        }
+
+        public Builder receivers(List<String> receivers) {
+            this.receivers = receivers;
+            return this;
+        }
+
+        public Builder templateParams(Map<String, Object> templateParams) {
+            this.templateParams = templateParams;
+            return this;
+        }
+
+        public Builder requestId(String requestId) {
+            this.requestId = requestId;
+            return this;
+        }
+
+        public Builder channels(List<String> channels) {
+            this.channels = channels;
+            return this;
+        }
+
+        public Builder async(Boolean async) {
+            this.async = async;
+            return this;
+        }
+
+        public NotificationRequest build() {
+            return new NotificationRequest(this.serviceCode, this.receivers, this.templateParams, this.requestId, this.channels, this.async);
+        }
+    }
 }

@@ -24,18 +24,10 @@ package io.github.loadup.components.cache.test.common.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Test User entity
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -56,5 +48,136 @@ public class User implements Serializable {
                 .createTime(LocalDateTime.now())
                 .updateTime(LocalDateTime.now())
                 .build();
+    }
+
+    public User(String id, String name, String email, Integer age, LocalDateTime createTime, LocalDateTime updateTime) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.age = age;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
+    }
+
+    public User() {
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public Integer getAge() {
+        return this.age;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return this.createTime;
+    }
+
+    public LocalDateTime getUpdateTime() {
+        return this.updateTime;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(id, name, email, age, createTime, updateTime);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User other = (User) o;
+        if (!java.util.Objects.equals(id, other.id)) return false;
+        if (!java.util.Objects.equals(name, other.name)) return false;
+        if (!java.util.Objects.equals(email, other.email)) return false;
+        if (!java.util.Objects.equals(age, other.age)) return false;
+        if (!java.util.Objects.equals(createTime, other.createTime)) return false;
+        if (!java.util.Objects.equals(updateTime, other.updateTime)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "User(" + "id=" + id + ", " + "name=" + name + ", " + "email=" + email + ", " + "age=" + age + ", " + "createTime=" + createTime + ", " + "updateTime=" + updateTime + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String id;
+        private String name;
+        private String email;
+        private Integer age;
+        private LocalDateTime createTime;
+        private LocalDateTime updateTime;
+
+        public Builder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder age(Integer age) {
+            this.age = age;
+            return this;
+        }
+
+        public Builder createTime(LocalDateTime createTime) {
+            this.createTime = createTime;
+            return this;
+        }
+
+        public Builder updateTime(LocalDateTime updateTime) {
+            this.updateTime = updateTime;
+            return this;
+        }
+
+        public User build() {
+            return new User(this.id, this.name, this.email, this.age, this.createTime, this.updateTime);
+        }
     }
 }

@@ -52,12 +52,5 @@
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-tracer</artifactId>
             <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-    </dependencies>
+        </dependency>    </dependencies>
 </project>

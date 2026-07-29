@@ -42,7 +42,6 @@
             <scope>test</scope>
         </dependency>
 
-
         <!-- Database Component -->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
@@ -106,14 +105,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- JUnit Jupiter -->
+                <!-- JUnit Jupiter -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>

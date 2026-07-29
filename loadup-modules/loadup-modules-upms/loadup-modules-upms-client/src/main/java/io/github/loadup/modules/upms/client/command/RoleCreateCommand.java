@@ -26,7 +26,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.List;
-import lombok.Data;
 
 /**
  * Role Create Command
@@ -34,7 +33,6 @@ import lombok.Data;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Data
 public class RoleCreateCommand {
 
     @NotBlank(message = "角色名称不能为空")
@@ -70,4 +68,128 @@ public class RoleCreateCommand {
     private String remark;
 
     private String createdBy;
+
+    public RoleCreateCommand(String roleName, String roleCode, String parentId, Short dataScope, Integer sortOrder, Short status, List<String> permissionIds, List<String> departmentIds, String remark, String createdBy) {
+        this.roleName = roleName;
+        this.roleCode = roleCode;
+        this.parentId = parentId;
+        this.dataScope = dataScope;
+        this.sortOrder = sortOrder;
+        this.status = status;
+        this.permissionIds = permissionIds;
+        this.departmentIds = departmentIds;
+        this.remark = remark;
+        this.createdBy = createdBy;
+    }
+
+    public RoleCreateCommand() {
+    }
+
+    public String getRoleName() {
+        return this.roleName;
+    }
+
+    public String getRoleCode() {
+        return this.roleCode;
+    }
+
+    public String getParentId() {
+        return this.parentId;
+    }
+
+    public Short getDataScope() {
+        return this.dataScope;
+    }
+
+    public Integer getSortOrder() {
+        return this.sortOrder;
+    }
+
+    public Short getStatus() {
+        return this.status;
+    }
+
+    public List<String> getPermissionIds() {
+        return this.permissionIds;
+    }
+
+    public List<String> getDepartmentIds() {
+        return this.departmentIds;
+    }
+
+    public String getRemark() {
+        return this.remark;
+    }
+
+    public String getCreatedBy() {
+        return this.createdBy;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public void setRoleCode(String roleCode) {
+        this.roleCode = roleCode;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public void setDataScope(Short dataScope) {
+        this.dataScope = dataScope;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    public void setStatus(Short status) {
+        this.status = status;
+    }
+
+    public void setPermissionIds(List<String> permissionIds) {
+        this.permissionIds = permissionIds;
+    }
+
+    public void setDepartmentIds(List<String> departmentIds) {
+        this.departmentIds = departmentIds;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(roleName, roleCode, parentId, dataScope, sortOrder, status, permissionIds, departmentIds, remark, createdBy);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RoleCreateCommand other = (RoleCreateCommand) o;
+        if (!java.util.Objects.equals(roleName, other.roleName)) return false;
+        if (!java.util.Objects.equals(roleCode, other.roleCode)) return false;
+        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
+        if (!java.util.Objects.equals(dataScope, other.dataScope)) return false;
+        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
+        if (!java.util.Objects.equals(status, other.status)) return false;
+        if (!java.util.Objects.equals(permissionIds, other.permissionIds)) return false;
+        if (!java.util.Objects.equals(departmentIds, other.departmentIds)) return false;
+        if (!java.util.Objects.equals(remark, other.remark)) return false;
+        if (!java.util.Objects.equals(createdBy, other.createdBy)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "RoleCreateCommand(" + "roleName=" + roleName + ", " + "roleCode=" + roleCode + ", " + "parentId=" + parentId + ", " + "dataScope=" + dataScope + ", " + "sortOrder=" + sortOrder + ", " + "status=" + status + ", " + "permissionIds=" + permissionIds + ", " + "departmentIds=" + departmentIds + ", " + "remark=" + remark + ", " + "createdBy=" + createdBy + ")";
+    }
 }

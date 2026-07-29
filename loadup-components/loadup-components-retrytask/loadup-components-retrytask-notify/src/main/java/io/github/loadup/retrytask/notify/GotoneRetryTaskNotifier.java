@@ -27,14 +27,15 @@ import io.github.loadup.components.gotone.model.NotificationRequest;
 import io.github.loadup.retrytask.facade.model.RetryTask;
 import java.util.List;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Gotone integration for retry task notifications
  * Sends notifications through Gotone component (email/sms/webhook)
  */
-@Slf4j
 public class GotoneRetryTaskNotifier implements RetryTaskNotifier {
+    private static final Logger log = LoggerFactory.getLogger(GotoneRetryTaskNotifier.class);
+
 
     public static final String TYPE = "gotone";
 

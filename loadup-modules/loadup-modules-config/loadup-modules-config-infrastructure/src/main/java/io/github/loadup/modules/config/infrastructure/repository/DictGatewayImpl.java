@@ -37,14 +37,14 @@ import io.github.loadup.modules.config.infrastructure.mapper.DictTypeDOMapper;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-@Slf4j
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Repository
-@RequiredArgsConstructor
 public class DictGatewayImpl implements DictGateway {
+    private static final Logger log = LoggerFactory.getLogger(DictGatewayImpl.class);
+
 
     private final DictTypeDOMapper typeMapper;
     private final DictItemDOMapper itemMapper;
@@ -145,5 +145,12 @@ public class DictGatewayImpl implements DictGateway {
     public void deleteItemsByCode(String dictCode) {
         itemMapper.deleteByQuery(QueryWrapper.create().where(DICT_ITEM_DO.DICT_CODE.eq(dictCode)));
         localCache.evictDict(dictCode);
+    }
+
+    public DictGatewayImpl(DictTypeDOMapper typeMapper, DictItemDOMapper itemMapper, ConfigLocalCache localCache, DictConverter converter) {
+        this.typeMapper = typeMapper;
+        this.itemMapper = itemMapper;
+        this.localCache = localCache;
+        this.converter = converter;
     }
 }

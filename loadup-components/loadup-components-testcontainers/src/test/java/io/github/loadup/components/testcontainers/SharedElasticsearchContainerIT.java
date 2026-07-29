@@ -1,3 +1,5 @@
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 //package io.github.loadup.components.testcontainers;
 //
 ///*-
@@ -39,8 +41,7 @@
 //import co.elastic.clients.transport.rest_client.RestClientTransport;
 //import io.github.loadup.components.testcontainers.search.AbstractElasticsearchContainerTest;
 //import io.github.loadup.components.testcontainers.search.SharedElasticsearchContainer;
-//import lombok.extern.slf4j.Slf4j;
-//import org.apache.http.HttpHost;
+////import org.apache.http.HttpHost;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.test.context.TestPropertySource;
@@ -52,10 +53,11 @@
 // * @author LoadUp Framework
 // * @since 1.0.0
 // */
-//@Slf4j
-//@SpringBootTest(classes = TestApplication.class)
+////@SpringBootTest(classes = TestApplication.class)
 //@TestPropertySource(
-//        properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.elasticsearch.enabled=true"})
+//        properties = {
+    private static final Logger log = LoggerFactory.getLogger(SharedElasticsearchContainerIT.class);
+"loadup.testcontainers.enabled=true", "loadup.testcontainers.elasticsearch.enabled=true"})
 //class SharedElasticsearchContainerIT extends AbstractElasticsearchContainerTest {
 //
 //    @Test

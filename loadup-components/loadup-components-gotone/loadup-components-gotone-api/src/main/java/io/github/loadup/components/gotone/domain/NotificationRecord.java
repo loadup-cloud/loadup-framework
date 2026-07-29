@@ -25,14 +25,10 @@ package io.github.loadup.components.gotone.domain;
 import io.github.loadup.commons.domain.BaseDomain;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * 通知记录领域对象
  */
-@Getter
-@Setter
 public class NotificationRecord extends BaseDomain {
     private String id;
     private String traceId;
@@ -50,4 +46,132 @@ public class NotificationRecord extends BaseDomain {
     private Integer priority;
     private String errorMessage;
     private LocalDateTime sendTime;
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getTraceId() {
+        return this.traceId;
+    }
+
+    public String getBizCode() {
+        return this.bizCode;
+    }
+
+    public String getBizId() {
+        return this.bizId;
+    }
+
+    public String getMessageId() {
+        return this.messageId;
+    }
+
+    public String getChannel() {
+        return this.channel;
+    }
+
+    public List<String> getReceivers() {
+        return this.receivers;
+    }
+
+    public String getTemplateCode() {
+        return this.templateCode;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public String getContent() {
+        return this.content;
+    }
+
+    public String getProvider() {
+        return this.provider;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public Integer getRetryCount() {
+        return this.retryCount;
+    }
+
+    public Integer getPriority() {
+        return this.priority;
+    }
+
+    public String getErrorMessage() {
+        return this.errorMessage;
+    }
+
+    public LocalDateTime getSendTime() {
+        return this.sendTime;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setTraceId(String traceId) {
+        this.traceId = traceId;
+    }
+
+    public void setBizCode(String bizCode) {
+        this.bizCode = bizCode;
+    }
+
+    public void setBizId(String bizId) {
+        this.bizId = bizId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
+    public void setReceivers(List<String> receivers) {
+        this.receivers = receivers;
+    }
+
+    public void setTemplateCode(String templateCode) {
+        this.templateCode = templateCode;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setRetryCount(Integer retryCount) {
+        this.retryCount = retryCount;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public void setSendTime(LocalDateTime sendTime) {
+        this.sendTime = sendTime;
+    }
 }

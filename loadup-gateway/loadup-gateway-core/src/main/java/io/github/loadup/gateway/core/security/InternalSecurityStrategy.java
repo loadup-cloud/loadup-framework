@@ -29,11 +29,12 @@ import io.github.loadup.gateway.facade.spi.SecurityStrategy;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Internal Call Security Strategy
  *
@@ -48,8 +49,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  *
  * <p>Use case: Service-to-service calls within the same application or trusted network.</p>
  */
-@Slf4j
 public class InternalSecurityStrategy implements SecurityStrategy {
+    private static final Logger log = LoggerFactory.getLogger(InternalSecurityStrategy.class);
+
 
     private static final String HEADER_INTERNAL_CALL = "X-Internal-Call";
     private static final List<String> INTERNAL_IP_PREFIXES = Arrays.asList(

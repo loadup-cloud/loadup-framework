@@ -27,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.github.loadup.components.globalunique.service.GlobalUniqueService;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,17 +35,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * GlobalUniqueService 集成测试
  *
  * @author loadup
  */
-@Slf4j
 @SpringBootTest
 @ActiveProfiles("test")
 @EnableTestContainers(ContainerType.MYSQL)
 @DisplayName("GlobalUniqueService 集成测试")
 class GlobalUniqueServiceTest {
+    private static final Logger log = LoggerFactory.getLogger(GlobalUniqueServiceTest.class);
+
 
     @Autowired
     private GlobalUniqueService globalUniqueService;

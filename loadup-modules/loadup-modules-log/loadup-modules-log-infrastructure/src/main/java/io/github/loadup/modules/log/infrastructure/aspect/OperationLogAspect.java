@@ -28,18 +28,18 @@ import io.github.loadup.modules.log.infrastructure.async.LogAsyncWriter;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-@Slf4j
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Aspect
-@RequiredArgsConstructor
 public class OperationLogAspect {
+    private static final Logger log = LoggerFactory.getLogger(OperationLogAspect.class);
+
 
     private final LogAsyncWriter logAsyncWriter;
     private final ObjectMapper objectMapper;
@@ -131,5 +131,10 @@ public class OperationLogAspect {
             return null;
         }
         return s.length() <= maxLen ? s : s.substring(0, maxLen);
+    }
+
+    public OperationLogAspect(LogAsyncWriter logAsyncWriter, ObjectMapper objectMapper) {
+        this.logAsyncWriter = logAsyncWriter;
+        this.objectMapper = objectMapper;
     }
 }

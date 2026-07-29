@@ -24,11 +24,7 @@ package io.github.loadup.components.scheduler.quartz.cfg;
 
 import io.github.loadup.components.scheduler.cfg.SchedulerBinderCfg;
 import java.util.Properties;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 public class QuartzBinderCfg extends SchedulerBinderCfg {
     // 数据源名称（如果有多个数据源）
     private String dataSourceName;
@@ -48,5 +44,17 @@ public class QuartzBinderCfg extends SchedulerBinderCfg {
     @Override
     public Object getIdentity() {
         return "QUARTZ:" + quartzProperties.getProperty("org.quartz.threadPool.threadCount");
+    }
+
+    public void setDataSourceName(String dataSourceName) {
+        this.dataSourceName = dataSourceName;
+    }
+
+    public void setOverwriteExistingJobs(boolean overwriteExistingJobs) {
+        this.overwriteExistingJobs = overwriteExistingJobs;
+    }
+
+    public void setQuartzProperties(Properties quartzProperties) {
+        this.quartzProperties = quartzProperties;
     }
 }

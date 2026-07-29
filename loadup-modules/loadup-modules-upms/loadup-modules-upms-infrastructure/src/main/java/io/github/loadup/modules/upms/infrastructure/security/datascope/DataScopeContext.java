@@ -23,10 +23,6 @@ package io.github.loadup.modules.upms.infrastructure.security.datascope;
  */
 
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Data Scope Context - Holds current user's data scope information
@@ -34,10 +30,6 @@ import lombok.NoArgsConstructor;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class DataScopeContext {
 
     /**
@@ -116,5 +108,136 @@ public class DataScopeContext {
                 .map(id -> "'" + id + "'")
                 .reduce((a, b) -> a + "," + b)
                 .orElse("");
+    }
+
+    public DataScopeContext(String userId, String deptId, DataScopeType dataScopeType, List<String> customDeptIds, List<String> subDeptIds, boolean isSuperAdmin) {
+        this.userId = userId;
+        this.deptId = deptId;
+        this.dataScopeType = dataScopeType;
+        this.customDeptIds = customDeptIds;
+        this.subDeptIds = subDeptIds;
+        this.isSuperAdmin = isSuperAdmin;
+    }
+
+    public DataScopeContext() {
+    }
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public String getDeptId() {
+        return this.deptId;
+    }
+
+    public DataScopeType getDataScopeType() {
+        return this.dataScopeType;
+    }
+
+    public List<String> getCustomDeptIds() {
+        return this.customDeptIds;
+    }
+
+    public List<String> getSubDeptIds() {
+        return this.subDeptIds;
+    }
+
+    public boolean isIsSuperAdmin() {
+        return this.isSuperAdmin;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setDeptId(String deptId) {
+        this.deptId = deptId;
+    }
+
+    public void setDataScopeType(DataScopeType dataScopeType) {
+        this.dataScopeType = dataScopeType;
+    }
+
+    public void setCustomDeptIds(List<String> customDeptIds) {
+        this.customDeptIds = customDeptIds;
+    }
+
+    public void setSubDeptIds(List<String> subDeptIds) {
+        this.subDeptIds = subDeptIds;
+    }
+
+    public void setIsSuperAdmin(boolean isSuperAdmin) {
+        this.isSuperAdmin = isSuperAdmin;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(userId, deptId, dataScopeType, customDeptIds, subDeptIds, isSuperAdmin);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DataScopeContext other = (DataScopeContext) o;
+        if (!java.util.Objects.equals(userId, other.userId)) return false;
+        if (!java.util.Objects.equals(deptId, other.deptId)) return false;
+        if (!java.util.Objects.equals(dataScopeType, other.dataScopeType)) return false;
+        if (!java.util.Objects.equals(customDeptIds, other.customDeptIds)) return false;
+        if (!java.util.Objects.equals(subDeptIds, other.subDeptIds)) return false;
+        if (!java.util.Objects.equals(isSuperAdmin, other.isSuperAdmin)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DataScopeContext(" + "userId=" + userId + ", " + "deptId=" + deptId + ", " + "dataScopeType=" + dataScopeType + ", " + "customDeptIds=" + customDeptIds + ", " + "subDeptIds=" + subDeptIds + ", " + "isSuperAdmin=" + isSuperAdmin + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String userId;
+        private String deptId;
+        private DataScopeType dataScopeType;
+        private List<String> customDeptIds;
+        private List<String> subDeptIds;
+        private boolean isSuperAdmin;
+
+        public Builder userId(String userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public Builder deptId(String deptId) {
+            this.deptId = deptId;
+            return this;
+        }
+
+        public Builder dataScopeType(DataScopeType dataScopeType) {
+            this.dataScopeType = dataScopeType;
+            return this;
+        }
+
+        public Builder customDeptIds(List<String> customDeptIds) {
+            this.customDeptIds = customDeptIds;
+            return this;
+        }
+
+        public Builder subDeptIds(List<String> subDeptIds) {
+            this.subDeptIds = subDeptIds;
+            return this;
+        }
+
+        public Builder isSuperAdmin(boolean isSuperAdmin) {
+            this.isSuperAdmin = isSuperAdmin;
+            return this;
+        }
+
+        public DataScopeContext build() {
+            return new DataScopeContext(this.userId, this.deptId, this.dataScopeType, this.customDeptIds, this.subDeptIds, this.isSuperAdmin);
+        }
     }
 }

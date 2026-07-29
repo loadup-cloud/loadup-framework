@@ -11,11 +11,13 @@ import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 
-@Slf4j
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class SpringBeanProxyProcessor implements ProxyProcessor {
+    private static final Logger log = LoggerFactory.getLogger(SpringBeanProxyProcessor.class);
+
 
     private final ApplicationContext applicationContext;
 

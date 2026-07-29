@@ -25,11 +25,12 @@ package io.github.loadup.components.testcontainers.search;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
-import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Shared Elasticsearch TestContainer instance that can be reused across multiple tests.
  *
@@ -39,8 +40,9 @@ import org.testcontainers.utility.DockerImageName;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 public final class SharedElasticsearchContainer {
+    private static final Logger log = LoggerFactory.getLogger(SharedElasticsearchContainer.class);
+
 
     /**
      * Default Elasticsearch version to use

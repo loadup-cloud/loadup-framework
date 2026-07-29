@@ -23,8 +23,6 @@ package io.github.loadup.components.configcenter.nacos.cfg;
  */
 
 import io.github.loadup.components.configcenter.cfg.ConfigCenterBinderCfg;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Configuration for the Nacos binder.
@@ -41,8 +39,6 @@ import lombok.Setter;
  *         timeout: 3000
  * </pre>
  */
-@Getter
-@Setter
 public class NacosConfigCenterBinderCfg extends ConfigCenterBinderCfg {
 
     /**
@@ -73,5 +69,25 @@ public class NacosConfigCenterBinderCfg extends ConfigCenterBinderCfg {
     @Override
     public Object getIdentity() {
         return serverAddr + "@" + getNamespace();
+    }
+
+    public void setServerAddr(String serverAddr) {
+        this.serverAddr = serverAddr;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
     }
 }

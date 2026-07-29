@@ -13,16 +13,17 @@ import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Circuit breaker filter — wraps the proxy chain.
  *
  * <p>Uses Caffeine with TTL eviction to prevent memory leaks.
  * CLOSED → OPEN → HALF_OPEN → CLOSED lifecycle.
  */
-@Slf4j
 public class CircuitBreakerFilter implements GatewayFilter {
+    private static final Logger log = LoggerFactory.getLogger(CircuitBreakerFilter.class);
+
 
     private final GatewayProperties gatewayProperties;
     private final Clock clock;

@@ -26,11 +26,7 @@ import io.github.loadup.commons.dto.DTO;
 import jakarta.validation.constraints.NotBlank;
 import java.io.Serial;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 public class IdListQuery extends DTO {
     @Serial
     private static final long serialVersionUID = 7157141921495739675L;
@@ -41,5 +37,13 @@ public class IdListQuery extends DTO {
         IdListQuery idQuery = new IdListQuery();
         idQuery.setIdList(idList);
         return idQuery;
+    }
+
+    public List<String> getIdList() {
+        return this.idList;
+    }
+
+    public void setIdList(List<String> idList) {
+        this.idList = idList;
     }
 }

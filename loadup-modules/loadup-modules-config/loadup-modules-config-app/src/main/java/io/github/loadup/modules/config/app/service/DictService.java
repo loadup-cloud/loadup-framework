@@ -37,21 +37,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Application service for data dictionary management.
  *
  * <p>Exposed to Gateway via {@code bean://dictService:method}.
  */
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class DictService {
+    private static final Logger log = LoggerFactory.getLogger(DictService.class);
+
 
     private final DictGateway dictGateway;
     private final ConfigLocalCache localCache;
@@ -175,5 +175,10 @@ public class DictService {
         dto.setSortOrder(i.getSortOrder());
         dto.setEnabled(i.getEnabled());
         return dto;
+    }
+
+    public DictService(DictGateway dictGateway, ConfigLocalCache localCache) {
+        this.dictGateway = dictGateway;
+        this.localCache = localCache;
     }
 }

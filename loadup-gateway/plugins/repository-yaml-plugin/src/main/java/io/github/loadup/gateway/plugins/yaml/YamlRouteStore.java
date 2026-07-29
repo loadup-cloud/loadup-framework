@@ -27,11 +27,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import io.github.loadup.gateway.plugins.yaml.event.RouteStoreRefreshedEvent;
 import org.yaml.snakeyaml.Yaml;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * YAML file route store with file-watcher hot reload.
  *
@@ -64,8 +65,9 @@ import org.yaml.snakeyaml.Yaml;
  *     wrapResponse: false
  * </pre>
  */
-@Slf4j
 public class YamlRouteStore implements RouteStore {
+    private static final Logger log = LoggerFactory.getLogger(YamlRouteStore.class);
+
 
     private static final String DEFAULT_CONFIG_FILE = "gateway-routes.yml";
 

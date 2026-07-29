@@ -33,15 +33,16 @@ import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 签名工具类（静态方法）
  *
  * @author loadup
  */
-@Slf4j
 public final class SignatureUtils {
+    private static final Logger log = LoggerFactory.getLogger(SignatureUtils.class);
+
 
     private SignatureUtils() {
         throw new UnsupportedOperationException("Utility class");

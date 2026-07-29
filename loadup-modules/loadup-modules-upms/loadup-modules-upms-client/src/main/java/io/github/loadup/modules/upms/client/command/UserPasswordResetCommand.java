@@ -24,7 +24,6 @@ package io.github.loadup.modules.upms.client.command;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 
 /**
  * User Password Reset Command (with verification code)
@@ -32,7 +31,6 @@ import lombok.Data;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Data
 public class UserPasswordResetCommand {
 
     @NotBlank(message = "用户名不能为空")
@@ -52,4 +50,78 @@ public class UserPasswordResetCommand {
      * Verification type: EMAIL or SMS
      */
     private String verificationType;
+
+    public UserPasswordResetCommand(String username, String verificationCode, String newPassword, String confirmPassword, String verificationType) {
+        this.username = username;
+        this.verificationCode = verificationCode;
+        this.newPassword = newPassword;
+        this.confirmPassword = confirmPassword;
+        this.verificationType = verificationType;
+    }
+
+    public UserPasswordResetCommand() {
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public String getVerificationCode() {
+        return this.verificationCode;
+    }
+
+    public String getNewPassword() {
+        return this.newPassword;
+    }
+
+    public String getConfirmPassword() {
+        return this.confirmPassword;
+    }
+
+    public String getVerificationType() {
+        return this.verificationType;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
+    public void setVerificationType(String verificationType) {
+        this.verificationType = verificationType;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(username, verificationCode, newPassword, confirmPassword, verificationType);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserPasswordResetCommand other = (UserPasswordResetCommand) o;
+        if (!java.util.Objects.equals(username, other.username)) return false;
+        if (!java.util.Objects.equals(verificationCode, other.verificationCode)) return false;
+        if (!java.util.Objects.equals(newPassword, other.newPassword)) return false;
+        if (!java.util.Objects.equals(confirmPassword, other.confirmPassword)) return false;
+        if (!java.util.Objects.equals(verificationType, other.verificationType)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "UserPasswordResetCommand(" + "username=" + username + ", " + "verificationCode=" + verificationCode + ", " + "newPassword=" + newPassword + ", " + "confirmPassword=" + confirmPassword + ", " + "verificationType=" + verificationType + ")";
+    }
 }

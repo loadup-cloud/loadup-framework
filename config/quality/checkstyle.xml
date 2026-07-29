@@ -77,8 +77,7 @@
                       value="org.springframework.beans.factory.annotation.Autowired,
                              org.springframework.beans.factory.annotation.Value,
                              com.fasterxml.jackson.annotation.JsonIgnore,
-                             lombok.Getter,
-                             lombok.Setter"/>
+"/>
         </module>
 
         <!-- ===== 修饰符 ===== -->

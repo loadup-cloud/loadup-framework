@@ -43,17 +43,17 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Redis Cache Anti-Avalanche Test Tests strategies to prevent cache avalanche, penetration, and
  * breakdown scenarios
  */
-@Slf4j
 @TestPropertySource(
         properties = {
             "loadup.cache.binder=redis",
@@ -65,6 +65,8 @@ import org.springframework.test.context.TestPropertySource;
         })
 @DisplayName("Redis 缓存防雪崩测试")
 public class RedisAntiAvalancheIT extends BaseRedisCacheTest {
+    private static final Logger log = LoggerFactory.getLogger(RedisAntiAvalancheIT.class);
+
     @Autowired
     private CacheBindingManager manager;
 

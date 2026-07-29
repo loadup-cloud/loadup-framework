@@ -26,7 +26,6 @@ import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -38,7 +37,6 @@ import org.springframework.beans.factory.annotation.Value;
  *
  * <p>MDC keys injected: {@code traceId}, {@code spanId}.
  */
-@RequiredArgsConstructor
 public class TraceUtil {
 
     public static final String MDC_TRACE_ID = "traceId";
@@ -52,8 +50,7 @@ public class TraceUtil {
     private final OpenTelemetry openTelemetry;
     private final Tracer tracer;
 
-    @Value("${spring.application.name:unknown-service}")
-    private String applicationName;
+    private final String applicationName;
 
     @PostConstruct
     void init() {
@@ -178,5 +175,16 @@ public class TraceUtil {
      */
     public static void clearTraceId() {
         clearMdc();
+    }
+
+    public TraceUtil(OpenTelemetry openTelemetry, Tracer tracer) {
+        this.openTelemetry = openTelemetry;
+        this.tracer = tracer;
+    }
+
+    public TraceUtil(OpenTelemetry openTelemetry, Tracer tracer, String applicationName) {
+        this.openTelemetry = openTelemetry;
+        this.tracer = tracer;
+        this.applicationName = applicationName;
     }
 }

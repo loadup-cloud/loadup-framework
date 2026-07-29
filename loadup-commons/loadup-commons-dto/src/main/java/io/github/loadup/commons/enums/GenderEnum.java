@@ -22,15 +22,11 @@ package io.github.loadup.commons.enums;
  * #L%
  */
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 /**
  * @author Lise
  * @since 1.0.0
  */
-@Getter
-@AllArgsConstructor
 public enum GenderEnum implements IEnum {
     MALE("MALE", "Male"),
     FEMALE("FEMALE", "Female"),
@@ -42,5 +38,18 @@ public enum GenderEnum implements IEnum {
 
     public static GenderEnum getByCode(String code) {
         return IEnum.EnumLookup.fromCode(GenderEnum.class, code);
+    }
+
+    private GenderEnum(String code, String description) {
+        this.code = code;
+        this.description = description;
+    }
+
+    public String getCode() {
+        return this.code;
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 }

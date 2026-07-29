@@ -36,14 +36,16 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 扩展点执行器
  */
-@Slf4j
 public class ExtensionExecutor {
+    private static final Logger log = LoggerFactory.getLogger(ExtensionExecutor.class);
+
 
     private final ExtensionRegistry extensionRegistry;
 
@@ -236,10 +238,10 @@ public class ExtensionExecutor {
         if (!Objects.equals(meta.bizCode(), scenario.getBizCode())) {
             return false;
         }
-        if (matchUseCase && !Objects.equals(meta.useCase(), scenario.getUseCase())) {
+        if (matchUseCase && !Objects.equals(meta.useCase(), scenario.useCase())) {
             return false;
         }
-        return !matchScenario || Objects.equals(meta.scenario(), scenario.getScenario());
+        return !matchScenario || Objects.equals(meta.scenario(), scenario.scenario());
     }
 
     private BizScenario requireContext() {

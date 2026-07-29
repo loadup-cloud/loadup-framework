@@ -28,10 +28,11 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.imageio.ImageIO;
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class ChineseCaptcha extends ChineseCaptchaAbstract {
+    private static final Logger log = LoggerFactory.getLogger(ChineseCaptcha.class);
+
 
     public ChineseCaptcha() {
         super();

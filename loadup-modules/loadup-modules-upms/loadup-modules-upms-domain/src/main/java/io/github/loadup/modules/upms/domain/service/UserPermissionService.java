@@ -31,7 +31,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -42,7 +41,6 @@ import org.springframework.stereotype.Service;
  * @since 1.0.0
  */
 @Service
-@RequiredArgsConstructor
 public class UserPermissionService {
 
     private final RoleGateway roleGateway;
@@ -181,5 +179,10 @@ public class UserPermissionService {
                     }
                 })
                 .collect(Collectors.toList());
+    }
+
+    public UserPermissionService(RoleGateway roleGateway, PermissionGateway permissionGateway) {
+        this.roleGateway = roleGateway;
+        this.permissionGateway = permissionGateway;
     }
 }

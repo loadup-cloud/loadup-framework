@@ -13,9 +13,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Request body parser filter — normalizes request parameters into a unified
  * parsed representation for downstream filters and proxy processors.
@@ -29,8 +30,9 @@ import org.apache.commons.lang3.StringUtils;
  *
  * <p>Parsed result is stored in {@code request.attributes["parsedBody"]}.
  */
-@Slf4j
 public class BodyParserFilter implements GatewayFilter {
+    private static final Logger log = LoggerFactory.getLogger(BodyParserFilter.class);
+
 
     @Override
     public String name() {

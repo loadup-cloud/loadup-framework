@@ -30,15 +30,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.github.loadup.components.cache.test.common.BaseCacheTest;
 import io.github.loadup.components.cache.test.common.model.User;
 import java.util.concurrent.TimeUnit;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Caffeine Cache Expiration Strategy Test
  */
-@Slf4j
 @TestPropertySource(
         properties = {
             "loadup.cache.binder=caffeine",
@@ -48,6 +48,8 @@ import org.springframework.test.context.TestPropertySource;
         })
 @DisplayName("Caffeine 缓存过期策略测试")
 public class CaffeineExpirationTest extends BaseCacheTest {
+    private static final Logger log = LoggerFactory.getLogger(CaffeineExpirationTest.class);
+
     // 假设测试配置中覆盖了 defaultCacheTicker
     @Test
     @DisplayName("测试写入后过期 (expire-after-write)")

@@ -24,11 +24,7 @@ package io.github.loadup.testify.core.model;
 
 import java.util.List;
 import java.util.Map;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 
-@Data
-@AllArgsConstructor
 public class MockRule {
     private List<Object> expectedArgs; // 预期参数条件
     private Object returnValue; // 原始返回配置
@@ -37,4 +33,88 @@ public class MockRule {
     private Map<String, Object> context; // 变量上下文
     private Long delay; // 新增存储
     private boolean hit; // 记录是否被触发过
+
+    public MockRule(List<Object> expectedArgs, Object returnValue, Throwable throwEx, Map<String, Object> context, Long delay, boolean hit) {
+        this.expectedArgs = expectedArgs;
+        this.returnValue = returnValue;
+        this.throwEx = throwEx;
+        this.context = context;
+        this.delay = delay;
+        this.hit = hit;
+    }
+
+    public MockRule() {
+    }
+
+    public List<Object> getExpectedArgs() {
+        return this.expectedArgs;
+    }
+
+    public Object getReturnValue() {
+        return this.returnValue;
+    }
+
+    public Throwable getThrowEx() {
+        return this.throwEx;
+    }
+
+    public Map<String, Object> getContext() {
+        return this.context;
+    }
+
+    public Long getDelay() {
+        return this.delay;
+    }
+
+    public boolean isHit() {
+        return this.hit;
+    }
+
+    public void setExpectedArgs(List<Object> expectedArgs) {
+        this.expectedArgs = expectedArgs;
+    }
+
+    public void setReturnValue(Object returnValue) {
+        this.returnValue = returnValue;
+    }
+
+    public void setThrowEx(Throwable throwEx) {
+        this.throwEx = throwEx;
+    }
+
+    public void setContext(Map<String, Object> context) {
+        this.context = context;
+    }
+
+    public void setDelay(Long delay) {
+        this.delay = delay;
+    }
+
+    public void setHit(boolean hit) {
+        this.hit = hit;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(expectedArgs, returnValue, throwEx, context, delay, hit);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MockRule other = (MockRule) o;
+        if (!java.util.Objects.equals(expectedArgs, other.expectedArgs)) return false;
+        if (!java.util.Objects.equals(returnValue, other.returnValue)) return false;
+        if (!java.util.Objects.equals(throwEx, other.throwEx)) return false;
+        if (!java.util.Objects.equals(context, other.context)) return false;
+        if (!java.util.Objects.equals(delay, other.delay)) return false;
+        if (!java.util.Objects.equals(hit, other.hit)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "MockRule(" + "expectedArgs=" + expectedArgs + ", " + "returnValue=" + returnValue + ", " + "throwEx=" + throwEx + ", " + "context=" + context + ", " + "delay=" + delay + ", " + "hit=" + hit + ")";
+    }
 }

@@ -25,8 +25,6 @@ package io.github.loadup.commons.dataobject;
 import com.mybatisflex.annotation.Id;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -40,8 +38,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Getter
-@Setter
 public abstract class BaseDO implements Serializable {
     // @Id(keyType = KeyType.Generator, value = KeyGenerators.flexId)
     @Id
@@ -81,5 +77,45 @@ public abstract class BaseDO implements Serializable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public String getTenantId() {
+        return this.tenantId;
+    }
+
+    public Boolean isDeleted() {
+        return this.deleted;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

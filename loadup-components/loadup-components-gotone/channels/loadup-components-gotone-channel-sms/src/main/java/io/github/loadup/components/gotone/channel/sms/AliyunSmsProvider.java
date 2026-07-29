@@ -29,9 +29,10 @@ import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 阿里云短信渠道提供商
  *
@@ -43,20 +44,17 @@ import org.springframework.beans.factory.annotation.Value;
  * loadup.gotone.sms.aliyun.region-id=cn-hangzhou
  * </pre>
  */
-@Slf4j
 public class AliyunSmsProvider implements NotificationChannelProvider {
+    private static final Logger log = LoggerFactory.getLogger(AliyunSmsProvider.class);
 
-    @Value("${loadup.gotone.sms.aliyun.access-key-id:}")
-    private String accessKeyId;
 
-    @Value("${loadup.gotone.sms.aliyun.access-key-secret:}")
-    private String accessKeySecret;
+    private final String accessKeyId;
 
-    @Value("${loadup.gotone.sms.aliyun.sign-name:}")
-    private String signName;
+    private final String accessKeySecret;
 
-    @Value("${loadup.gotone.sms.aliyun.region-id:cn-hangzhou}")
-    private String regionId;
+    private final String signName;
+
+    private final String regionId;
 
     @Override
     public NotificationChannel getChannel() {
@@ -245,5 +243,12 @@ public class AliyunSmsProvider implements NotificationChannelProvider {
                 .receiverStatus(receiverStatus)
                 .receiverErrors(receiverErrors)
                 .build();
+    }
+
+    public AliyunSmsProvider(String accessKeyId, String accessKeySecret, String signName, String regionId) {
+        this.accessKeyId = accessKeyId;
+        this.accessKeySecret = accessKeySecret;
+        this.signName = signName;
+        this.regionId = regionId;
     }
 }

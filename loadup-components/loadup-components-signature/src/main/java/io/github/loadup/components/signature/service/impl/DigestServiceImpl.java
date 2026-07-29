@@ -29,17 +29,19 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 摘要服务实现
  *
  * @author loadup
  */
-@Slf4j
 @Service
 public class DigestServiceImpl implements DigestService {
+    private static final Logger log = LoggerFactory.getLogger(DigestServiceImpl.class);
+
 
     @Override
     public String digest(byte[] data, DigestAlgorithm algorithm) {

@@ -34,12 +34,12 @@ import com.mybatisflex.spring.boot.MyBatisFlexCustomizer;
 import io.github.loadup.commons.dataobject.BaseDO;
 import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.database.listener.BaseEntityListener;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * MyBatis-Flex Auto Configuration
  *
@@ -48,11 +48,11 @@ import org.springframework.context.annotation.Bean;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 @AutoConfiguration
 @EnableConfigurationProperties(DatabaseProperties.class)
-@RequiredArgsConstructor
 public class MyBatisFlexAutoConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(MyBatisFlexAutoConfiguration.class);
+
 
     private final DatabaseProperties databaseProperties;
 
@@ -103,4 +103,8 @@ public class MyBatisFlexAutoConfiguration {
     }
 
     // MyBatis-Flex 会自动扫描 Mapper 接口并配置
+
+    public MyBatisFlexAutoConfiguration(DatabaseProperties databaseProperties) {
+        this.databaseProperties = databaseProperties;
+    }
 }

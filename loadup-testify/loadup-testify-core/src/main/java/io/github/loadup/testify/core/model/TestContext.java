@@ -25,16 +25,12 @@ package io.github.loadup.testify.core.model;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author lise
  * @version TestContext.java, v 0.1 2026年01月13日 10:34 lise
  */
 // 对应 YAML 的根结构
-@Getter
-@Setter
 public final class TestContext {
     private String testName;
     private String yamlPath;
@@ -70,5 +66,61 @@ public final class TestContext {
 
     public JsonNode expect() {
         return expect;
+    }
+
+    public String getTestName() {
+        return this.testName;
+    }
+
+    public String getYamlPath() {
+        return this.yamlPath;
+    }
+
+    public Map<String, Object> getVariables() {
+        return this.variables;
+    }
+
+    public JsonNode getInput() {
+        return this.input;
+    }
+
+    public List<MockConfig> getMocks() {
+        return this.mocks;
+    }
+
+    public JsonNode getSetup() {
+        return this.setup;
+    }
+
+    public JsonNode getExpect() {
+        return this.expect;
+    }
+
+    public void setTestName(String testName) {
+        this.testName = testName;
+    }
+
+    public void setYamlPath(String yamlPath) {
+        this.yamlPath = yamlPath;
+    }
+
+    public void setVariables(Map<String, Object> variables) {
+        this.variables = variables;
+    }
+
+    public void setInput(JsonNode input) {
+        this.input = input;
+    }
+
+    public void setMocks(List<MockConfig> mocks) {
+        this.mocks = mocks;
+    }
+
+    public void setSetup(JsonNode setup) {
+        this.setup = setup;
+    }
+
+    public void setExpect(JsonNode expect) {
+        this.expect = expect;
     }
 }

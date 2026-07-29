@@ -26,9 +26,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 登录策略管理器
  * 管理所有登录策略，根据 loginType 路由
@@ -36,9 +37,10 @@ import org.springframework.stereotype.Component;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 @Component
 public class LoginStrategyManager {
+    private static final Logger log = LoggerFactory.getLogger(LoginStrategyManager.class);
+
 
     private final Map<String, LoginStrategy> strategyMap = new ConcurrentHashMap<>();
 

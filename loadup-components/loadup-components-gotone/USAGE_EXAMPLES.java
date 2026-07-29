@@ -3,22 +3,22 @@ package io.github.loadup.components.gotone.example;
 import io.github.loadup.components.gotone.api.NotificationService;
 import io.github.loadup.components.gotone.model.NotificationRequest;
 import io.github.loadup.components.gotone.model.NotificationResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Gotone 组件使用示例
  *
  * <p>本示例展示了 ServiceCode 驱动架构的各种使用场景
  */
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class GotoneUsageExample {
+    private static final Logger log = LoggerFactory.getLogger(GotoneUsageExample.class);
+
 
     private final NotificationService notificationService;
 
@@ -211,7 +211,6 @@ public class GotoneUsageExample {
      * 示例10：集成到业务流程
      */
     @Service
-    @RequiredArgsConstructor
     public static class OrderService {
 
         private final NotificationService notificationService;
@@ -276,5 +275,9 @@ public class GotoneUsageExample {
             return amount;
         }
     }
-}
 
+    public GotoneUsageExample(NotificationService notificationService, NotificationService notificationService) {
+        this.notificationService = notificationService;
+        this.notificationService = notificationService;
+    }
+}

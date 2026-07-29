@@ -23,9 +23,7 @@ package io.github.loadup.modules.log.client.query;
  */
 
 import java.time.LocalDateTime;
-import lombok.Data;
 
-@Data
 public class LogStatisticsQuery {
 
     private String userId;
@@ -33,4 +31,78 @@ public class LogStatisticsQuery {
     private String operationType;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+
+    public LogStatisticsQuery(String userId, String module, String operationType, LocalDateTime startTime, LocalDateTime endTime) {
+        this.userId = userId;
+        this.module = module;
+        this.operationType = operationType;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    public LogStatisticsQuery() {
+    }
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public String getModule() {
+        return this.module;
+    }
+
+    public String getOperationType() {
+        return this.operationType;
+    }
+
+    public LocalDateTime getStartTime() {
+        return this.startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return this.endTime;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setModule(String module) {
+        this.module = module;
+    }
+
+    public void setOperationType(String operationType) {
+        this.operationType = operationType;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(userId, module, operationType, startTime, endTime);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LogStatisticsQuery other = (LogStatisticsQuery) o;
+        if (!java.util.Objects.equals(userId, other.userId)) return false;
+        if (!java.util.Objects.equals(module, other.module)) return false;
+        if (!java.util.Objects.equals(operationType, other.operationType)) return false;
+        if (!java.util.Objects.equals(startTime, other.startTime)) return false;
+        if (!java.util.Objects.equals(endTime, other.endTime)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "LogStatisticsQuery(" + "userId=" + userId + ", " + "module=" + module + ", " + "operationType=" + operationType + ", " + "startTime=" + startTime + ", " + "endTime=" + endTime + ")";
+    }
 }

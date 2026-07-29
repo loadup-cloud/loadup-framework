@@ -25,10 +25,8 @@ package io.github.loadup.commons.enums;
 import io.github.loadup.commons.result.ResultStatusEnum;
 import io.github.loadup.framework.api.result.ResultCode;
 import java.util.Arrays;
-import lombok.Getter;
 import org.apache.commons.lang3.Strings;
 
-@Getter
 public enum CommonResultCodeEnum implements ResultCode {
     SUCCESS(ResultStatusEnum.SUCCESS, "Success."),
     UNKNOWN(ResultStatusEnum.UNKNOWN, "Unknown failed."),

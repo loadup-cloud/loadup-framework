@@ -24,10 +24,6 @@ package io.github.loadup.modules.upms.infrastructure.dataobject;
 
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * Department Data Object
@@ -35,10 +31,6 @@ import lombok.NoArgsConstructor;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Table("upms_department")
 public class DepartmentDO extends BaseDO {
 
@@ -61,4 +53,129 @@ public class DepartmentDO extends BaseDO {
     private Short status;
 
     private String remark;
+
+    public DepartmentDO(String parentId, String deptName, String deptCode, Integer deptLevel, Integer sortOrder, String leaderUserId, String mobile, String email, Short status, String remark) {
+        this.parentId = parentId;
+        this.deptName = deptName;
+        this.deptCode = deptCode;
+        this.deptLevel = deptLevel;
+        this.sortOrder = sortOrder;
+        this.leaderUserId = leaderUserId;
+        this.mobile = mobile;
+        this.email = email;
+        this.status = status;
+        this.remark = remark;
+    }
+
+    public DepartmentDO() {
+    }
+
+    public String getParentId() {
+        return this.parentId;
+    }
+
+    public String getDeptName() {
+        return this.deptName;
+    }
+
+    public String getDeptCode() {
+        return this.deptCode;
+    }
+
+    public Integer getDeptLevel() {
+        return this.deptLevel;
+    }
+
+    public Integer getSortOrder() {
+        return this.sortOrder;
+    }
+
+    public String getLeaderUserId() {
+        return this.leaderUserId;
+    }
+
+    public String getMobile() {
+        return this.mobile;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public Short getStatus() {
+        return this.status;
+    }
+
+    public String getRemark() {
+        return this.remark;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public void setDeptName(String deptName) {
+        this.deptName = deptName;
+    }
+
+    public void setDeptCode(String deptCode) {
+        this.deptCode = deptCode;
+    }
+
+    public void setDeptLevel(Integer deptLevel) {
+        this.deptLevel = deptLevel;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    public void setLeaderUserId(String leaderUserId) {
+        this.leaderUserId = leaderUserId;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setStatus(Short status) {
+        this.status = status;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(super.hashCode(), parentId, deptName, deptCode, deptLevel, sortOrder, leaderUserId, mobile, email, status, remark);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        DepartmentDO other = (DepartmentDO) o;
+        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
+        if (!java.util.Objects.equals(deptName, other.deptName)) return false;
+        if (!java.util.Objects.equals(deptCode, other.deptCode)) return false;
+        if (!java.util.Objects.equals(deptLevel, other.deptLevel)) return false;
+        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
+        if (!java.util.Objects.equals(leaderUserId, other.leaderUserId)) return false;
+        if (!java.util.Objects.equals(mobile, other.mobile)) return false;
+        if (!java.util.Objects.equals(email, other.email)) return false;
+        if (!java.util.Objects.equals(status, other.status)) return false;
+        if (!java.util.Objects.equals(remark, other.remark)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DepartmentDO(" + "super=" + super.toString() + ", " + "parentId=" + parentId + ", " + "deptName=" + deptName + ", " + "deptCode=" + deptCode + ", " + "deptLevel=" + deptLevel + ", " + "sortOrder=" + sortOrder + ", " + "leaderUserId=" + leaderUserId + ", " + "mobile=" + mobile + ", " + "email=" + email + ", " + "status=" + status + ", " + "remark=" + remark + ")";
+    }
 }

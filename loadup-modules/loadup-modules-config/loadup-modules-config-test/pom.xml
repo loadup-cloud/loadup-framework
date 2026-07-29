@@ -51,12 +51,6 @@
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-cache-binder-caffeine</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+        </dependency>    </dependencies>
 
 </project>

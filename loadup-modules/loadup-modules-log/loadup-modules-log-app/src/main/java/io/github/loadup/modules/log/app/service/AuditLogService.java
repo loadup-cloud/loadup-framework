@@ -30,20 +30,20 @@ import io.github.loadup.modules.log.infrastructure.async.LogAsyncWriter;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Application service for audit log management.
  *
  * <p>Exposed to Gateway via {@code bean://auditLogService:method}.
  */
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class AuditLogService {
+    private static final Logger log = LoggerFactory.getLogger(AuditLogService.class);
+
 
     private final AuditLogGateway gateway;
     private final LogAsyncWriter logAsyncWriter;
@@ -135,5 +135,10 @@ public class AuditLogService {
         dto.setIp(m.getIp());
         dto.setOperationTime(m.getOperationTime());
         return dto;
+    }
+
+    public AuditLogService(AuditLogGateway gateway, LogAsyncWriter logAsyncWriter) {
+        this.gateway = gateway;
+        this.logAsyncWriter = logAsyncWriter;
     }
 }

@@ -32,8 +32,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -42,9 +40,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 
-@RequiredArgsConstructor
-@Slf4j
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class SqlExecutionEngine {
+    private static final Logger log = LoggerFactory.getLogger(SqlExecutionEngine.class);
+
 
     private final JdbcTemplate jdbcTemplate;
     private final VariableEngine variableEngine;
@@ -229,5 +229,10 @@ public class SqlExecutionEngine {
             return node.booleanValue();
         }
         return node.asText();
+    }
+
+    public SqlExecutionEngine(JdbcTemplate jdbcTemplate, VariableEngine variableEngine) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.variableEngine = variableEngine;
     }
 }

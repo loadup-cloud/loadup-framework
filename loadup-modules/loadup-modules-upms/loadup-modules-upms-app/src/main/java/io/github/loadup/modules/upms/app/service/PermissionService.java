@@ -31,21 +31,21 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Permission Management Service
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class PermissionService {
+    private static final Logger log = LoggerFactory.getLogger(PermissionService.class);
+
 
     private final PermissionGateway permissionGateway;
 
@@ -209,5 +209,9 @@ public class PermissionService {
             }
         }
         return tree;
+    }
+
+    public PermissionService(PermissionGateway permissionGateway) {
+        this.permissionGateway = permissionGateway;
     }
 }

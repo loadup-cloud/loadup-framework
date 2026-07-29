@@ -23,9 +23,7 @@ package io.github.loadup.modules.log.client.query;
  */
 
 import java.time.LocalDateTime;
-import lombok.Data;
 
-@Data
 public class ErrorLogQuery {
 
     private String userId;
@@ -35,4 +33,98 @@ public class ErrorLogQuery {
     private LocalDateTime endTime;
     private Integer pageNum;
     private Integer pageSize;
+
+    public ErrorLogQuery(String userId, String errorType, String errorCode, LocalDateTime startTime, LocalDateTime endTime, Integer pageNum, Integer pageSize) {
+        this.userId = userId;
+        this.errorType = errorType;
+        this.errorCode = errorCode;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.pageNum = pageNum;
+        this.pageSize = pageSize;
+    }
+
+    public ErrorLogQuery() {
+    }
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public String getErrorType() {
+        return this.errorType;
+    }
+
+    public String getErrorCode() {
+        return this.errorCode;
+    }
+
+    public LocalDateTime getStartTime() {
+        return this.startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return this.endTime;
+    }
+
+    public Integer getPageNum() {
+        return this.pageNum;
+    }
+
+    public Integer getPageSize() {
+        return this.pageSize;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setErrorType(String errorType) {
+        this.errorType = errorType;
+    }
+
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setPageNum(Integer pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(userId, errorType, errorCode, startTime, endTime, pageNum, pageSize);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ErrorLogQuery other = (ErrorLogQuery) o;
+        if (!java.util.Objects.equals(userId, other.userId)) return false;
+        if (!java.util.Objects.equals(errorType, other.errorType)) return false;
+        if (!java.util.Objects.equals(errorCode, other.errorCode)) return false;
+        if (!java.util.Objects.equals(startTime, other.startTime)) return false;
+        if (!java.util.Objects.equals(endTime, other.endTime)) return false;
+        if (!java.util.Objects.equals(pageNum, other.pageNum)) return false;
+        if (!java.util.Objects.equals(pageSize, other.pageSize)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ErrorLogQuery(" + "userId=" + userId + ", " + "errorType=" + errorType + ", " + "errorCode=" + errorCode + ", " + "startTime=" + startTime + ", " + "endTime=" + endTime + ", " + "pageNum=" + pageNum + ", " + "pageSize=" + pageSize + ")";
+    }
 }

@@ -29,9 +29,10 @@ import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 云片短信渠道提供商
  *
@@ -41,14 +42,13 @@ import org.springframework.beans.factory.annotation.Value;
  * loadup.gotone.sms.yunpian.api-url=https://sms.yunpian.com/v2/sms/single_send.json
  * </pre>
  */
-@Slf4j
 public class YunpianSmsProvider implements NotificationChannelProvider {
+    private static final Logger log = LoggerFactory.getLogger(YunpianSmsProvider.class);
 
-    @Value("${loadup.gotone.sms.yunpian.api-key:}")
-    private String apiKey;
 
-    @Value("${loadup.gotone.sms.yunpian.api-url:https://sms.yunpian.com/v2/sms/single_send.json}")
-    private String apiUrl;
+    private final String apiKey;
+
+    private final String apiUrl;
 
     @Override
     public NotificationChannel getChannel() {
@@ -223,5 +223,10 @@ public class YunpianSmsProvider implements NotificationChannelProvider {
                 .receiverStatus(receiverStatus)
                 .receiverErrors(receiverErrors)
                 .build();
+    }
+
+    public YunpianSmsProvider(String apiKey, String apiUrl) {
+        this.apiKey = apiKey;
+        this.apiUrl = apiUrl;
     }
 }

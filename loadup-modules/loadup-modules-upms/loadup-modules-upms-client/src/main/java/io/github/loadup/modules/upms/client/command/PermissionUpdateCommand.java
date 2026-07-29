@@ -24,7 +24,6 @@ package io.github.loadup.modules.upms.client.command;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 
 /**
  * Permission Update Command
@@ -32,7 +31,6 @@ import lombok.Data;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Data
 public class PermissionUpdateCommand {
 
     @NotNull(message = "权限ID不能为空")
@@ -65,4 +63,158 @@ public class PermissionUpdateCommand {
     private String remark;
 
     private String updatedBy;
+
+    public PermissionUpdateCommand(String id, String parentId, String permissionName, Short permissionType, String resourcePath, String httpMethod, String icon, String componentPath, Integer sortOrder, Boolean visible, Short status, String remark, String updatedBy) {
+        this.id = id;
+        this.parentId = parentId;
+        this.permissionName = permissionName;
+        this.permissionType = permissionType;
+        this.resourcePath = resourcePath;
+        this.httpMethod = httpMethod;
+        this.icon = icon;
+        this.componentPath = componentPath;
+        this.sortOrder = sortOrder;
+        this.visible = visible;
+        this.status = status;
+        this.remark = remark;
+        this.updatedBy = updatedBy;
+    }
+
+    public PermissionUpdateCommand() {
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getParentId() {
+        return this.parentId;
+    }
+
+    public String getPermissionName() {
+        return this.permissionName;
+    }
+
+    public Short getPermissionType() {
+        return this.permissionType;
+    }
+
+    public String getResourcePath() {
+        return this.resourcePath;
+    }
+
+    public String getHttpMethod() {
+        return this.httpMethod;
+    }
+
+    public String getIcon() {
+        return this.icon;
+    }
+
+    public String getComponentPath() {
+        return this.componentPath;
+    }
+
+    public Integer getSortOrder() {
+        return this.sortOrder;
+    }
+
+    public Boolean isVisible() {
+        return this.visible;
+    }
+
+    public Short getStatus() {
+        return this.status;
+    }
+
+    public String getRemark() {
+        return this.remark;
+    }
+
+    public String getUpdatedBy() {
+        return this.updatedBy;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public void setPermissionName(String permissionName) {
+        this.permissionName = permissionName;
+    }
+
+    public void setPermissionType(Short permissionType) {
+        this.permissionType = permissionType;
+    }
+
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
+    }
+
+    public void setHttpMethod(String httpMethod) {
+        this.httpMethod = httpMethod;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public void setComponentPath(String componentPath) {
+        this.componentPath = componentPath;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
+    }
+
+    public void setStatus(Short status) {
+        this.status = status;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(id, parentId, permissionName, permissionType, resourcePath, httpMethod, icon, componentPath, sortOrder, visible, status, remark, updatedBy);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PermissionUpdateCommand other = (PermissionUpdateCommand) o;
+        if (!java.util.Objects.equals(id, other.id)) return false;
+        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
+        if (!java.util.Objects.equals(permissionName, other.permissionName)) return false;
+        if (!java.util.Objects.equals(permissionType, other.permissionType)) return false;
+        if (!java.util.Objects.equals(resourcePath, other.resourcePath)) return false;
+        if (!java.util.Objects.equals(httpMethod, other.httpMethod)) return false;
+        if (!java.util.Objects.equals(icon, other.icon)) return false;
+        if (!java.util.Objects.equals(componentPath, other.componentPath)) return false;
+        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
+        if (!java.util.Objects.equals(visible, other.visible)) return false;
+        if (!java.util.Objects.equals(status, other.status)) return false;
+        if (!java.util.Objects.equals(remark, other.remark)) return false;
+        if (!java.util.Objects.equals(updatedBy, other.updatedBy)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "PermissionUpdateCommand(" + "id=" + id + ", " + "parentId=" + parentId + ", " + "permissionName=" + permissionName + ", " + "permissionType=" + permissionType + ", " + "resourcePath=" + resourcePath + ", " + "httpMethod=" + httpMethod + ", " + "icon=" + icon + ", " + "componentPath=" + componentPath + ", " + "sortOrder=" + sortOrder + ", " + "visible=" + visible + ", " + "status=" + status + ", " + "remark=" + remark + ", " + "updatedBy=" + updatedBy + ")";
+    }
 }

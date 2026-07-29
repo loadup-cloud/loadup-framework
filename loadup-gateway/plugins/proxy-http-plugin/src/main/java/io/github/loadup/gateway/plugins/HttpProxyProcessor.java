@@ -11,13 +11,15 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
 
-@Slf4j
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class HttpProxyProcessor implements ProxyProcessor {
+    private static final Logger log = LoggerFactory.getLogger(HttpProxyProcessor.class);
+
 
     private final RestClient restClient;
 

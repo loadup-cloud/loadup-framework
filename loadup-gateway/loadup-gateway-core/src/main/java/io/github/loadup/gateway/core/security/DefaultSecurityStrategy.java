@@ -32,18 +32,18 @@ import io.jsonwebtoken.Claims;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Default JWT-based security strategy.
  *
  * <p>Validates JWT token and populates SecurityContext for downstream authorization.</p>
  */
-@Slf4j
-@RequiredArgsConstructor
 public class DefaultSecurityStrategy implements SecurityStrategy {
+    private static final Logger log = LoggerFactory.getLogger(DefaultSecurityStrategy.class);
+
 
     private final GatewayProperties gatewayProperties;
 
@@ -125,5 +125,9 @@ public class DefaultSecurityStrategy implements SecurityStrategy {
             log.error("Unexpected error during JWT authentication", e);
             throw GatewayExceptionFactory.systemError("Authentication failed");
         }
+    }
+
+    public DefaultSecurityStrategy(GatewayProperties gatewayProperties) {
+        this.gatewayProperties = gatewayProperties;
     }
 }

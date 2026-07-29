@@ -31,20 +31,10 @@ import io.github.loadup.commons.dataobject.BaseDO;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * 服务渠道映射配置
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Table("gotone_service_channel")
 public class ServiceChannelDO extends BaseDO implements Serializable {
 
@@ -115,4 +105,232 @@ public class ServiceChannelDO extends BaseDO implements Serializable {
      * 优先级（数字越大越优先）
      */
     private Integer priority;
+
+    public ServiceChannelDO(String id, String serviceCode, String channel, String templateCode, String templateContent, Map<String, Object> channelConfig, String provider, List<String> fallbackProviders, String sendStrategy, Map<String, Object> retryConfig, Boolean enabled, Integer priority) {
+        this.id = id;
+        this.serviceCode = serviceCode;
+        this.channel = channel;
+        this.templateCode = templateCode;
+        this.templateContent = templateContent;
+        this.channelConfig = channelConfig;
+        this.provider = provider;
+        this.fallbackProviders = fallbackProviders;
+        this.sendStrategy = sendStrategy;
+        this.retryConfig = retryConfig;
+        this.enabled = enabled;
+        this.priority = priority;
+    }
+
+    public ServiceChannelDO() {
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getServiceCode() {
+        return this.serviceCode;
+    }
+
+    public String getChannel() {
+        return this.channel;
+    }
+
+    public String getTemplateCode() {
+        return this.templateCode;
+    }
+
+    public String getTemplateContent() {
+        return this.templateContent;
+    }
+
+    public Map<String, Object> getChannelConfig() {
+        return this.channelConfig;
+    }
+
+    public String getProvider() {
+        return this.provider;
+    }
+
+    public List<String> getFallbackProviders() {
+        return this.fallbackProviders;
+    }
+
+    public String getSendStrategy() {
+        return this.sendStrategy;
+    }
+
+    public Map<String, Object> getRetryConfig() {
+        return this.retryConfig;
+    }
+
+    public Boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public Integer getPriority() {
+        return this.priority;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setServiceCode(String serviceCode) {
+        this.serviceCode = serviceCode;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
+    public void setTemplateCode(String templateCode) {
+        this.templateCode = templateCode;
+    }
+
+    public void setTemplateContent(String templateContent) {
+        this.templateContent = templateContent;
+    }
+
+    public void setChannelConfig(Map<String, Object> channelConfig) {
+        this.channelConfig = channelConfig;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public void setFallbackProviders(List<String> fallbackProviders) {
+        this.fallbackProviders = fallbackProviders;
+    }
+
+    public void setSendStrategy(String sendStrategy) {
+        this.sendStrategy = sendStrategy;
+    }
+
+    public void setRetryConfig(Map<String, Object> retryConfig) {
+        this.retryConfig = retryConfig;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(super.hashCode(), id, serviceCode, channel, templateCode, templateContent, channelConfig, provider, fallbackProviders, sendStrategy, retryConfig, enabled, priority);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ServiceChannelDO other = (ServiceChannelDO) o;
+        if (!java.util.Objects.equals(id, other.id)) return false;
+        if (!java.util.Objects.equals(serviceCode, other.serviceCode)) return false;
+        if (!java.util.Objects.equals(channel, other.channel)) return false;
+        if (!java.util.Objects.equals(templateCode, other.templateCode)) return false;
+        if (!java.util.Objects.equals(templateContent, other.templateContent)) return false;
+        if (!java.util.Objects.equals(channelConfig, other.channelConfig)) return false;
+        if (!java.util.Objects.equals(provider, other.provider)) return false;
+        if (!java.util.Objects.equals(fallbackProviders, other.fallbackProviders)) return false;
+        if (!java.util.Objects.equals(sendStrategy, other.sendStrategy)) return false;
+        if (!java.util.Objects.equals(retryConfig, other.retryConfig)) return false;
+        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
+        if (!java.util.Objects.equals(priority, other.priority)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ServiceChannelDO(" + "super=" + super.toString() + ", " + "id=" + id + ", " + "serviceCode=" + serviceCode + ", " + "channel=" + channel + ", " + "templateCode=" + templateCode + ", " + "templateContent=" + templateContent + ", " + "channelConfig=" + channelConfig + ", " + "provider=" + provider + ", " + "fallbackProviders=" + fallbackProviders + ", " + "sendStrategy=" + sendStrategy + ", " + "retryConfig=" + retryConfig + ", " + "enabled=" + enabled + ", " + "priority=" + priority + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String id;
+        private String serviceCode;
+        private String channel;
+        private String templateCode;
+        private String templateContent;
+        private Map<String, Object> channelConfig;
+        private String provider;
+        private List<String> fallbackProviders;
+        private String sendStrategy;
+        private Map<String, Object> retryConfig;
+        private Boolean enabled;
+        private Integer priority;
+
+        public Builder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder serviceCode(String serviceCode) {
+            this.serviceCode = serviceCode;
+            return this;
+        }
+
+        public Builder channel(String channel) {
+            this.channel = channel;
+            return this;
+        }
+
+        public Builder templateCode(String templateCode) {
+            this.templateCode = templateCode;
+            return this;
+        }
+
+        public Builder templateContent(String templateContent) {
+            this.templateContent = templateContent;
+            return this;
+        }
+
+        public Builder channelConfig(Map<String, Object> channelConfig) {
+            this.channelConfig = channelConfig;
+            return this;
+        }
+
+        public Builder provider(String provider) {
+            this.provider = provider;
+            return this;
+        }
+
+        public Builder fallbackProviders(List<String> fallbackProviders) {
+            this.fallbackProviders = fallbackProviders;
+            return this;
+        }
+
+        public Builder sendStrategy(String sendStrategy) {
+            this.sendStrategy = sendStrategy;
+            return this;
+        }
+
+        public Builder retryConfig(Map<String, Object> retryConfig) {
+            this.retryConfig = retryConfig;
+            return this;
+        }
+
+        public Builder enabled(Boolean enabled) {
+            this.enabled = enabled;
+            return this;
+        }
+
+        public Builder priority(Integer priority) {
+            this.priority = priority;
+            return this;
+        }
+
+        public ServiceChannelDO build() {
+            return new ServiceChannelDO(this.id, this.serviceCode, this.channel, this.templateCode, this.templateContent, this.channelConfig, this.provider, this.fallbackProviders, this.sendStrategy, this.retryConfig, this.enabled, this.priority);
+        }
+    }
 }

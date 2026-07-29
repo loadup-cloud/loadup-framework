@@ -31,20 +31,10 @@ import io.github.loadup.commons.dataobject.BaseDO;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Map;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * 通知发送记录 - 单表+JSON扩展字段架构
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Table("gotone_notification_record")
 public class NotificationRecordDO extends BaseDO implements Serializable {
 
@@ -141,4 +131,328 @@ public class NotificationRecordDO extends BaseDO implements Serializable {
      * 成功时间
      */
     private LocalDateTime successTime;
+
+    public NotificationRecordDO(String id, String serviceCode, String traceId, String requestId, String channel, String provider, String receiver, String templateCode, String content, Map<String, Object> channelData, String status, String errorCode, String errorMessage, Integer retryCount, Integer maxRetries, LocalDateTime nextRetryTime, LocalDateTime sendTime, LocalDateTime successTime) {
+        this.id = id;
+        this.serviceCode = serviceCode;
+        this.traceId = traceId;
+        this.requestId = requestId;
+        this.channel = channel;
+        this.provider = provider;
+        this.receiver = receiver;
+        this.templateCode = templateCode;
+        this.content = content;
+        this.channelData = channelData;
+        this.status = status;
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+        this.retryCount = retryCount;
+        this.maxRetries = maxRetries;
+        this.nextRetryTime = nextRetryTime;
+        this.sendTime = sendTime;
+        this.successTime = successTime;
+    }
+
+    public NotificationRecordDO() {
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getServiceCode() {
+        return this.serviceCode;
+    }
+
+    public String getTraceId() {
+        return this.traceId;
+    }
+
+    public String getRequestId() {
+        return this.requestId;
+    }
+
+    public String getChannel() {
+        return this.channel;
+    }
+
+    public String getProvider() {
+        return this.provider;
+    }
+
+    public String getReceiver() {
+        return this.receiver;
+    }
+
+    public String getTemplateCode() {
+        return this.templateCode;
+    }
+
+    public String getContent() {
+        return this.content;
+    }
+
+    public Map<String, Object> getChannelData() {
+        return this.channelData;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public String getErrorCode() {
+        return this.errorCode;
+    }
+
+    public String getErrorMessage() {
+        return this.errorMessage;
+    }
+
+    public Integer getRetryCount() {
+        return this.retryCount;
+    }
+
+    public Integer getMaxRetries() {
+        return this.maxRetries;
+    }
+
+    public LocalDateTime getNextRetryTime() {
+        return this.nextRetryTime;
+    }
+
+    public LocalDateTime getSendTime() {
+        return this.sendTime;
+    }
+
+    public LocalDateTime getSuccessTime() {
+        return this.successTime;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setServiceCode(String serviceCode) {
+        this.serviceCode = serviceCode;
+    }
+
+    public void setTraceId(String traceId) {
+        this.traceId = traceId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public void setReceiver(String receiver) {
+        this.receiver = receiver;
+    }
+
+    public void setTemplateCode(String templateCode) {
+        this.templateCode = templateCode;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setChannelData(Map<String, Object> channelData) {
+        this.channelData = channelData;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public void setRetryCount(Integer retryCount) {
+        this.retryCount = retryCount;
+    }
+
+    public void setMaxRetries(Integer maxRetries) {
+        this.maxRetries = maxRetries;
+    }
+
+    public void setNextRetryTime(LocalDateTime nextRetryTime) {
+        this.nextRetryTime = nextRetryTime;
+    }
+
+    public void setSendTime(LocalDateTime sendTime) {
+        this.sendTime = sendTime;
+    }
+
+    public void setSuccessTime(LocalDateTime successTime) {
+        this.successTime = successTime;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(super.hashCode(), id, serviceCode, traceId, requestId, channel, provider, receiver, templateCode, content, channelData, status, errorCode, errorMessage, retryCount, maxRetries, nextRetryTime, sendTime, successTime);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        NotificationRecordDO other = (NotificationRecordDO) o;
+        if (!java.util.Objects.equals(id, other.id)) return false;
+        if (!java.util.Objects.equals(serviceCode, other.serviceCode)) return false;
+        if (!java.util.Objects.equals(traceId, other.traceId)) return false;
+        if (!java.util.Objects.equals(requestId, other.requestId)) return false;
+        if (!java.util.Objects.equals(channel, other.channel)) return false;
+        if (!java.util.Objects.equals(provider, other.provider)) return false;
+        if (!java.util.Objects.equals(receiver, other.receiver)) return false;
+        if (!java.util.Objects.equals(templateCode, other.templateCode)) return false;
+        if (!java.util.Objects.equals(content, other.content)) return false;
+        if (!java.util.Objects.equals(channelData, other.channelData)) return false;
+        if (!java.util.Objects.equals(status, other.status)) return false;
+        if (!java.util.Objects.equals(errorCode, other.errorCode)) return false;
+        if (!java.util.Objects.equals(errorMessage, other.errorMessage)) return false;
+        if (!java.util.Objects.equals(retryCount, other.retryCount)) return false;
+        if (!java.util.Objects.equals(maxRetries, other.maxRetries)) return false;
+        if (!java.util.Objects.equals(nextRetryTime, other.nextRetryTime)) return false;
+        if (!java.util.Objects.equals(sendTime, other.sendTime)) return false;
+        if (!java.util.Objects.equals(successTime, other.successTime)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "NotificationRecordDO(" + "super=" + super.toString() + ", " + "id=" + id + ", " + "serviceCode=" + serviceCode + ", " + "traceId=" + traceId + ", " + "requestId=" + requestId + ", " + "channel=" + channel + ", " + "provider=" + provider + ", " + "receiver=" + receiver + ", " + "templateCode=" + templateCode + ", " + "content=" + content + ", " + "channelData=" + channelData + ", " + "status=" + status + ", " + "errorCode=" + errorCode + ", " + "errorMessage=" + errorMessage + ", " + "retryCount=" + retryCount + ", " + "maxRetries=" + maxRetries + ", " + "nextRetryTime=" + nextRetryTime + ", " + "sendTime=" + sendTime + ", " + "successTime=" + successTime + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String id;
+        private String serviceCode;
+        private String traceId;
+        private String requestId;
+        private String channel;
+        private String provider;
+        private String receiver;
+        private String templateCode;
+        private String content;
+        private Map<String, Object> channelData;
+        private String status;
+        private String errorCode;
+        private String errorMessage;
+        private Integer retryCount;
+        private Integer maxRetries;
+        private LocalDateTime nextRetryTime;
+        private LocalDateTime sendTime;
+        private LocalDateTime successTime;
+
+        public Builder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder serviceCode(String serviceCode) {
+            this.serviceCode = serviceCode;
+            return this;
+        }
+
+        public Builder traceId(String traceId) {
+            this.traceId = traceId;
+            return this;
+        }
+
+        public Builder requestId(String requestId) {
+            this.requestId = requestId;
+            return this;
+        }
+
+        public Builder channel(String channel) {
+            this.channel = channel;
+            return this;
+        }
+
+        public Builder provider(String provider) {
+            this.provider = provider;
+            return this;
+        }
+
+        public Builder receiver(String receiver) {
+            this.receiver = receiver;
+            return this;
+        }
+
+        public Builder templateCode(String templateCode) {
+            this.templateCode = templateCode;
+            return this;
+        }
+
+        public Builder content(String content) {
+            this.content = content;
+            return this;
+        }
+
+        public Builder channelData(Map<String, Object> channelData) {
+            this.channelData = channelData;
+            return this;
+        }
+
+        public Builder status(String status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder errorCode(String errorCode) {
+            this.errorCode = errorCode;
+            return this;
+        }
+
+        public Builder errorMessage(String errorMessage) {
+            this.errorMessage = errorMessage;
+            return this;
+        }
+
+        public Builder retryCount(Integer retryCount) {
+            this.retryCount = retryCount;
+            return this;
+        }
+
+        public Builder maxRetries(Integer maxRetries) {
+            this.maxRetries = maxRetries;
+            return this;
+        }
+
+        public Builder nextRetryTime(LocalDateTime nextRetryTime) {
+            this.nextRetryTime = nextRetryTime;
+            return this;
+        }
+
+        public Builder sendTime(LocalDateTime sendTime) {
+            this.sendTime = sendTime;
+            return this;
+        }
+
+        public Builder successTime(LocalDateTime successTime) {
+            this.successTime = successTime;
+            return this;
+        }
+
+        public NotificationRecordDO build() {
+            return new NotificationRecordDO(this.id, this.serviceCode, this.traceId, this.requestId, this.channel, this.provider, this.receiver, this.templateCode, this.content, this.channelData, this.status, this.errorCode, this.errorMessage, this.retryCount, this.maxRetries, this.nextRetryTime, this.sendTime, this.successTime);
+        }
+    }
 }

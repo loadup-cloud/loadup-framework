@@ -22,13 +22,11 @@ package io.github.loadup.components.gotone.starter.properties;
  * #L%
  */
 
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Gotone Configuration Properties.
  */
-@Data
 @ConfigurationProperties(prefix = "loadup.gotone")
 public class GotoneProperties {
 
@@ -46,4 +44,58 @@ public class GotoneProperties {
      * Template cache TTL in seconds.
      */
     private int templateCacheTtl = 3600;
+
+    public GotoneProperties(boolean enabled, boolean asyncEnabled, int templateCacheTtl) {
+        this.enabled = enabled;
+        this.asyncEnabled = asyncEnabled;
+        this.templateCacheTtl = templateCacheTtl;
+    }
+
+    public GotoneProperties() {
+    }
+
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public boolean isAsyncEnabled() {
+        return this.asyncEnabled;
+    }
+
+    public int getTemplateCacheTtl() {
+        return this.templateCacheTtl;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setAsyncEnabled(boolean asyncEnabled) {
+        this.asyncEnabled = asyncEnabled;
+    }
+
+    public void setTemplateCacheTtl(int templateCacheTtl) {
+        this.templateCacheTtl = templateCacheTtl;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(enabled, asyncEnabled, templateCacheTtl);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GotoneProperties other = (GotoneProperties) o;
+        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
+        if (!java.util.Objects.equals(asyncEnabled, other.asyncEnabled)) return false;
+        if (!java.util.Objects.equals(templateCacheTtl, other.templateCacheTtl)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "GotoneProperties(" + "enabled=" + enabled + ", " + "asyncEnabled=" + asyncEnabled + ", " + "templateCacheTtl=" + templateCacheTtl + ")";
+    }
 }

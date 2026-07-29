@@ -33,7 +33,6 @@ import io.github.loadup.modules.upms.infrastructure.mapper.PermissionDOMapper;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -43,7 +42,6 @@ import org.springframework.stereotype.Repository;
  * @since 1.0.0
  */
 @Repository
-@RequiredArgsConstructor
 public class PermissionGatewayImpl implements PermissionGateway {
 
     private final PermissionDOMapper permissionDOMapper;
@@ -166,5 +164,10 @@ public class PermissionGatewayImpl implements PermissionGateway {
     public List<String> getRolePermissionIds(String roleId) {
         // TODO: 实现获取角色的权限ID列表（需要查询 role_permission 表）
         throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public PermissionGatewayImpl(PermissionDOMapper permissionDOMapper, PermissionConverter permissionConverter) {
+        this.permissionDOMapper = permissionDOMapper;
+        this.permissionConverter = permissionConverter;
     }
 }

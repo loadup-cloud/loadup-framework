@@ -14,8 +14,8 @@ import io.github.loadup.gateway.facade.spi.GatewayFilter;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Outermost exception filter — catches all errors from the downstream chain
  * and converts them to a unified {@code {result, data, meta}} error response.
@@ -23,8 +23,9 @@ import lombok.extern.slf4j.Slf4j;
  * <p>This replaces both the old ExceptionAction and the inconsistent
  * ExceptionHandler utility. All error responses are now consistently formatted.
  */
-@Slf4j
 public class ExceptionFilter implements GatewayFilter {
+    private static final Logger log = LoggerFactory.getLogger(ExceptionFilter.class);
+
 
     @Override
     public String name() {

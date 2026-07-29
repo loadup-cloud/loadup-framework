@@ -24,15 +24,7 @@ package io.github.loadup.modules.config.infrastructure.dataobject;
 
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Table("dict_type")
 public class DictTypeDO extends BaseDO {
 
@@ -44,4 +36,109 @@ public class DictTypeDO extends BaseDO {
     private Boolean enabled;
     private String createdBy;
     private String updatedBy;
+
+    public DictTypeDO(String dictCode, String dictName, String description, Boolean systemDefined, Integer sortOrder, Boolean enabled, String createdBy, String updatedBy) {
+        this.dictCode = dictCode;
+        this.dictName = dictName;
+        this.description = description;
+        this.systemDefined = systemDefined;
+        this.sortOrder = sortOrder;
+        this.enabled = enabled;
+        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
+    }
+
+    public DictTypeDO() {
+    }
+
+    public String getDictCode() {
+        return this.dictCode;
+    }
+
+    public String getDictName() {
+        return this.dictName;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public Boolean isSystemDefined() {
+        return this.systemDefined;
+    }
+
+    public Integer getSortOrder() {
+        return this.sortOrder;
+    }
+
+    public Boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public String getCreatedBy() {
+        return this.createdBy;
+    }
+
+    public String getUpdatedBy() {
+        return this.updatedBy;
+    }
+
+    public void setDictCode(String dictCode) {
+        this.dictCode = dictCode;
+    }
+
+    public void setDictName(String dictName) {
+        this.dictName = dictName;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setSystemDefined(Boolean systemDefined) {
+        this.systemDefined = systemDefined;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(super.hashCode(), dictCode, dictName, description, systemDefined, sortOrder, enabled, createdBy, updatedBy);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        DictTypeDO other = (DictTypeDO) o;
+        if (!java.util.Objects.equals(dictCode, other.dictCode)) return false;
+        if (!java.util.Objects.equals(dictName, other.dictName)) return false;
+        if (!java.util.Objects.equals(description, other.description)) return false;
+        if (!java.util.Objects.equals(systemDefined, other.systemDefined)) return false;
+        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
+        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
+        if (!java.util.Objects.equals(createdBy, other.createdBy)) return false;
+        if (!java.util.Objects.equals(updatedBy, other.updatedBy)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DictTypeDO(" + "super=" + super.toString() + ", " + "dictCode=" + dictCode + ", " + "dictName=" + dictName + ", " + "description=" + description + ", " + "systemDefined=" + systemDefined + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy=" + createdBy + ", " + "updatedBy=" + updatedBy + ")";
+    }
 }

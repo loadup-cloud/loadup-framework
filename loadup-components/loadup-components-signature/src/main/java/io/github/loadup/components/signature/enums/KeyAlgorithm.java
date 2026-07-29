@@ -22,14 +22,12 @@ package io.github.loadup.components.signature.enums;
  * #L%
  */
 
-import lombok.Getter;
 
 /**
  * 密钥算法枚举
  *
  * @author loadup
  */
-@Getter
 public enum KeyAlgorithm {
 
     /**
@@ -60,5 +58,13 @@ public enum KeyAlgorithm {
     KeyAlgorithm(String jcaName, int defaultKeySize) {
         this.jcaName = jcaName;
         this.defaultKeySize = defaultKeySize;
+    }
+
+    public String getJcaName() {
+        return this.jcaName;
+    }
+
+    public int getDefaultKeySize() {
+        return this.defaultKeySize;
     }
 }

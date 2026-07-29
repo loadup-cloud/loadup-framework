@@ -22,15 +22,11 @@ package io.github.loadup.commons.enums;
  * #L%
  */
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 /**
  * @author Lise
  * @since 1.0.0
  */
-@Getter
-@AllArgsConstructor
 public enum OSTypeEnum implements IEnum {
     /**
      * Android
@@ -79,5 +75,18 @@ public enum OSTypeEnum implements IEnum {
 
     public static OSTypeEnum getByCode(String code) {
         return IEnum.EnumLookup.fromCode(OSTypeEnum.class, code);
+    }
+
+    private OSTypeEnum(String code, String description) {
+        this.code = code;
+        this.description = description;
+    }
+
+    public String getCode() {
+        return this.code;
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 }

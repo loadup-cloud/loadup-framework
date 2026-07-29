@@ -27,15 +27,16 @@ import io.github.loadup.components.gotone.enums.NotificationChannel;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 通知渠道管理器
  *
  * <p>管理所有渠道提供商，支持按渠道类型和提供商名称查找
  */
-@Slf4j
 public class NotificationChannelManager {
+    private static final Logger log = LoggerFactory.getLogger(NotificationChannelManager.class);
+
 
     // channel -> (providerName -> provider)
     private final Map<NotificationChannel, Map<String, NotificationChannelProvider>> providerMap =

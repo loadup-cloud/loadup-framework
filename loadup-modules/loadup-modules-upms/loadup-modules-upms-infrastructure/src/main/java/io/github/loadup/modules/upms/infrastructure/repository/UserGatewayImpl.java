@@ -34,7 +34,6 @@ import io.github.loadup.modules.upms.infrastructure.mapper.UserDOMapper;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -49,7 +48,6 @@ import org.springframework.stereotype.Repository;
  * @since 1.0.0
  */
 @Repository
-@RequiredArgsConstructor
 public class UserGatewayImpl implements UserGateway {
 
     private final UserDOMapper userDOMapper;
@@ -167,5 +165,10 @@ public class UserGatewayImpl implements UserGateway {
     public long countByDeptId(String deptId) {
         QueryWrapper query = QueryWrapper.create().where(USER_DO.DEPT_ID.eq(deptId));
         return userDOMapper.selectCountByQuery(query);
+    }
+
+    public UserGatewayImpl(UserDOMapper userDOMapper, UserConverter userConverter) {
+        this.userDOMapper = userDOMapper;
+        this.userConverter = userConverter;
     }
 }

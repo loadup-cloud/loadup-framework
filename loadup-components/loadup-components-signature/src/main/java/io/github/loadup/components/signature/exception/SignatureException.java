@@ -22,14 +22,12 @@ package io.github.loadup.components.signature.exception;
  * #L%
  */
 
-import lombok.Getter;
 
 /**
  * 签名异常
  *
  * @author loadup
  */
-@Getter
 public class SignatureException extends RuntimeException {
 
     private final SignatureErrorCode errorCode;
@@ -57,7 +55,6 @@ public class SignatureException extends RuntimeException {
     /**
      * 签名错误码
      */
-    @Getter
     public enum SignatureErrorCode {
         INVALID_KEY("无效的密钥"),
         INVALID_ALGORITHM("不支持的算法"),
@@ -72,5 +69,13 @@ public class SignatureException extends RuntimeException {
         SignatureErrorCode(String message) {
             this.message = message;
         }
+    }
+
+    public SignatureErrorCode getErrorCode() {
+        return this.errorCode;
+    }
+
+    public String getMessage() {
+        return this.message;
     }
 }

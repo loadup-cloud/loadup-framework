@@ -35,7 +35,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -47,7 +46,6 @@ import org.springframework.stereotype.Repository;
  * @since 1.0.0
  */
 @Repository
-@RequiredArgsConstructor
 public class LoginLogGatewayImpl implements LoginLogGateway {
 
     private final LoginLogDOMapper loginLogDOMapper;
@@ -189,5 +187,10 @@ public class LoginLogGatewayImpl implements LoginLogGateway {
                 .limit(1);
         LoginLogDO loginLogDO = loginLogDOMapper.selectOneByQuery(query);
         return Optional.ofNullable(loginLogDO).map(loginLogConverter::toEntity);
+    }
+
+    public LoginLogGatewayImpl(LoginLogDOMapper loginLogDOMapper, LoginLogConverter loginLogConverter) {
+        this.loginLogDOMapper = loginLogDOMapper;
+        this.loginLogConverter = loginLogConverter;
     }
 }

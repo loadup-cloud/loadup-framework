@@ -26,11 +26,12 @@ import io.github.loadup.components.gotone.api.NotificationChannelProvider;
 import io.github.loadup.components.gotone.channel.sms.AliyunSmsProvider;
 import io.github.loadup.components.gotone.channel.sms.HuaweiSmsProvider;
 import io.github.loadup.components.gotone.channel.sms.YunpianSmsProvider;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * SMS Channel Auto Configuration.
  *
@@ -41,8 +42,9 @@ import org.springframework.context.annotation.Bean;
  *   <li>yunpian - 云片短信</li>
  * </ul>
  */
-@Slf4j
 public class SmsChannelAutoConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(SmsChannelAutoConfiguration.class);
+
 
     /**
      * 阿里云短信提供商

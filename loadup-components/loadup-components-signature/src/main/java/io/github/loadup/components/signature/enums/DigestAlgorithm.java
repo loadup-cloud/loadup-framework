@@ -22,14 +22,12 @@ package io.github.loadup.components.signature.enums;
  * #L%
  */
 
-import lombok.Getter;
 
 /**
  * 摘要算法枚举
  *
  * @author loadup
  */
-@Getter
 public enum DigestAlgorithm {
 
     /**
@@ -75,5 +73,13 @@ public enum DigestAlgorithm {
     DigestAlgorithm(String jcaName, boolean isHmac) {
         this.jcaName = jcaName;
         this.isHmac = isHmac;
+    }
+
+    public String getJcaName() {
+        return this.jcaName;
+    }
+
+    public boolean isIsHmac() {
+        return this.isHmac;
     }
 }

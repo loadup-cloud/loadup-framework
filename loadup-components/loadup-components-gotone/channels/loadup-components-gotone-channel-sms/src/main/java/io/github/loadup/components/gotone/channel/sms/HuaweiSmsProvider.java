@@ -29,9 +29,10 @@ import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 华为云短信渠道提供商
  *
@@ -44,23 +45,19 @@ import org.springframework.beans.factory.annotation.Value;
  * loadup.gotone.sms.huawei.endpoint=https://smsapi.cn-north-4.myhuaweicloud.com:443
  * </pre>
  */
-@Slf4j
 public class HuaweiSmsProvider implements NotificationChannelProvider {
+    private static final Logger log = LoggerFactory.getLogger(HuaweiSmsProvider.class);
 
-    @Value("${loadup.gotone.sms.huawei.app-key:}")
-    private String appKey;
 
-    @Value("${loadup.gotone.sms.huawei.app-secret:}")
-    private String appSecret;
+    private final String appKey;
 
-    @Value("${loadup.gotone.sms.huawei.sender:}")
-    private String sender;
+    private final String appSecret;
 
-    @Value("${loadup.gotone.sms.huawei.signature:}")
-    private String signature;
+    private final String sender;
 
-    @Value("${loadup.gotone.sms.huawei.endpoint:https://smsapi.cn-north-4.myhuaweicloud.com:443}")
-    private String endpoint;
+    private final String signature;
+
+    private final String endpoint;
 
     @Override
     public NotificationChannel getChannel() {
@@ -261,5 +258,13 @@ public class HuaweiSmsProvider implements NotificationChannelProvider {
                 .receiverStatus(receiverStatus)
                 .receiverErrors(receiverErrors)
                 .build();
+    }
+
+    public HuaweiSmsProvider(String appKey, String appSecret, String sender, String signature, String endpoint) {
+        this.appKey = appKey;
+        this.appSecret = appSecret;
+        this.sender = sender;
+        this.signature = signature;
+        this.endpoint = endpoint;
     }
 }

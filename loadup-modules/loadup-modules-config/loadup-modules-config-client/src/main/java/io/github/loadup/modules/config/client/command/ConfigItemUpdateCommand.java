@@ -24,14 +24,12 @@ package io.github.loadup.modules.config.client.command;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 
 /**
  * Command to update a config item value.
  *
  * @author LoadUp Framework
  */
-@Data
 public class ConfigItemUpdateCommand {
 
     @NotBlank(message = "配置键不能为空")
@@ -41,4 +39,58 @@ public class ConfigItemUpdateCommand {
 
     @Size(max = 500)
     private String remark;
+
+    public ConfigItemUpdateCommand(String configKey, String configValue, String remark) {
+        this.configKey = configKey;
+        this.configValue = configValue;
+        this.remark = remark;
+    }
+
+    public ConfigItemUpdateCommand() {
+    }
+
+    public String getConfigKey() {
+        return this.configKey;
+    }
+
+    public String getConfigValue() {
+        return this.configValue;
+    }
+
+    public String getRemark() {
+        return this.remark;
+    }
+
+    public void setConfigKey(String configKey) {
+        this.configKey = configKey;
+    }
+
+    public void setConfigValue(String configValue) {
+        this.configValue = configValue;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(configKey, configValue, remark);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ConfigItemUpdateCommand other = (ConfigItemUpdateCommand) o;
+        if (!java.util.Objects.equals(configKey, other.configKey)) return false;
+        if (!java.util.Objects.equals(configValue, other.configValue)) return false;
+        if (!java.util.Objects.equals(remark, other.remark)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ConfigItemUpdateCommand(" + "configKey=" + configKey + ", " + "configValue=" + configValue + ", " + "remark=" + remark + ")";
+    }
 }

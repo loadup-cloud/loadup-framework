@@ -25,12 +25,8 @@ package io.github.loadup.modules.upms.client.constant;
 import io.github.loadup.commons.result.ResultStatusEnum;
 import io.github.loadup.framework.api.result.ResultCode;
 import java.util.Arrays;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.apache.commons.lang3.Strings;
 
-@Getter
-@AllArgsConstructor
 public enum UpmsResultCode implements ResultCode {
     USER_NOT_FOUND(ResultStatusEnum.FAIL, "用户不存在"),
     USER_LOCKED(ResultStatusEnum.FAIL, "用户已被锁定"),
@@ -67,5 +63,10 @@ public enum UpmsResultCode implements ResultCode {
     @Override
     public String getMessage() {
         return message;
+    }
+
+    public UpmsResultCode(String status, String message) {
+        this.status = status;
+        this.message = message;
     }
 }

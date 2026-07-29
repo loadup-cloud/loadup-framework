@@ -23,12 +23,10 @@ package io.github.loadup.retrytask.infra.model;
  */
 
 import java.time.LocalDateTime;
-import lombok.Data;
 
 /**
  * Represents a retry task entity in the database.
  */
-@Data
 public class RetryTaskDO {
 
     private Long id;
@@ -55,4 +53,138 @@ public class RetryTaskDO {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    public RetryTaskDO(Long id, String bizType, String bizId, Integer retryCount, Integer maxRetryCount, LocalDateTime nextRetryTime, String status, Integer priority, String lastFailureReason, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.bizType = bizType;
+        this.bizId = bizId;
+        this.retryCount = retryCount;
+        this.maxRetryCount = maxRetryCount;
+        this.nextRetryTime = nextRetryTime;
+        this.status = status;
+        this.priority = priority;
+        this.lastFailureReason = lastFailureReason;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public RetryTaskDO() {
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public String getBizType() {
+        return this.bizType;
+    }
+
+    public String getBizId() {
+        return this.bizId;
+    }
+
+    public Integer getRetryCount() {
+        return this.retryCount;
+    }
+
+    public Integer getMaxRetryCount() {
+        return this.maxRetryCount;
+    }
+
+    public LocalDateTime getNextRetryTime() {
+        return this.nextRetryTime;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public Integer getPriority() {
+        return this.priority;
+    }
+
+    public String getLastFailureReason() {
+        return this.lastFailureReason;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setBizType(String bizType) {
+        this.bizType = bizType;
+    }
+
+    public void setBizId(String bizId) {
+        this.bizId = bizId;
+    }
+
+    public void setRetryCount(Integer retryCount) {
+        this.retryCount = retryCount;
+    }
+
+    public void setMaxRetryCount(Integer maxRetryCount) {
+        this.maxRetryCount = maxRetryCount;
+    }
+
+    public void setNextRetryTime(LocalDateTime nextRetryTime) {
+        this.nextRetryTime = nextRetryTime;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    public void setLastFailureReason(String lastFailureReason) {
+        this.lastFailureReason = lastFailureReason;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(id, bizType, bizId, retryCount, maxRetryCount, nextRetryTime, status, priority, lastFailureReason, createdAt, updatedAt);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RetryTaskDO other = (RetryTaskDO) o;
+        if (!java.util.Objects.equals(id, other.id)) return false;
+        if (!java.util.Objects.equals(bizType, other.bizType)) return false;
+        if (!java.util.Objects.equals(bizId, other.bizId)) return false;
+        if (!java.util.Objects.equals(retryCount, other.retryCount)) return false;
+        if (!java.util.Objects.equals(maxRetryCount, other.maxRetryCount)) return false;
+        if (!java.util.Objects.equals(nextRetryTime, other.nextRetryTime)) return false;
+        if (!java.util.Objects.equals(status, other.status)) return false;
+        if (!java.util.Objects.equals(priority, other.priority)) return false;
+        if (!java.util.Objects.equals(lastFailureReason, other.lastFailureReason)) return false;
+        if (!java.util.Objects.equals(createdAt, other.createdAt)) return false;
+        if (!java.util.Objects.equals(updatedAt, other.updatedAt)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "RetryTaskDO(" + "id=" + id + ", " + "bizType=" + bizType + ", " + "bizId=" + bizId + ", " + "retryCount=" + retryCount + ", " + "maxRetryCount=" + maxRetryCount + ", " + "nextRetryTime=" + nextRetryTime + ", " + "status=" + status + ", " + "priority=" + priority + ", " + "lastFailureReason=" + lastFailureReason + ", " + "createdAt=" + createdAt + ", " + "updatedAt=" + updatedAt + ")";
+    }
 }

@@ -22,15 +22,11 @@ package io.github.loadup.commons.enums;
  * #L%
  */
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 /**
  * @author Lise
  * @since 1.0.0
  */
-@Getter
-@AllArgsConstructor
 public enum PlatFormEnum implements IEnum {
     /**
      * X86
@@ -58,5 +54,18 @@ public enum PlatFormEnum implements IEnum {
 
     public static PlatFormEnum getByCode(String code) {
         return IEnum.EnumLookup.fromCode(PlatFormEnum.class, code);
+    }
+
+    private PlatFormEnum(String code, String description) {
+        this.code = code;
+        this.description = description;
+    }
+
+    public String getCode() {
+        return this.code;
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 }

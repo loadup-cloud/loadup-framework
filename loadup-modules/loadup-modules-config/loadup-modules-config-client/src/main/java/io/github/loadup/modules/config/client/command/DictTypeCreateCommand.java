@@ -24,12 +24,10 @@ package io.github.loadup.modules.config.client.command;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 
 /**
  * Command to create a dict type.
  */
-@Data
 public class DictTypeCreateCommand {
 
     @NotBlank
@@ -44,4 +42,68 @@ public class DictTypeCreateCommand {
     private String description;
 
     private Integer sortOrder = 0;
+
+    public DictTypeCreateCommand(String dictCode, String dictName, String description, Integer sortOrder) {
+        this.dictCode = dictCode;
+        this.dictName = dictName;
+        this.description = description;
+        this.sortOrder = sortOrder;
+    }
+
+    public DictTypeCreateCommand() {
+    }
+
+    public String getDictCode() {
+        return this.dictCode;
+    }
+
+    public String getDictName() {
+        return this.dictName;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public Integer getSortOrder() {
+        return this.sortOrder;
+    }
+
+    public void setDictCode(String dictCode) {
+        this.dictCode = dictCode;
+    }
+
+    public void setDictName(String dictName) {
+        this.dictName = dictName;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(dictCode, dictName, description, sortOrder);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DictTypeCreateCommand other = (DictTypeCreateCommand) o;
+        if (!java.util.Objects.equals(dictCode, other.dictCode)) return false;
+        if (!java.util.Objects.equals(dictName, other.dictName)) return false;
+        if (!java.util.Objects.equals(description, other.description)) return false;
+        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DictTypeCreateCommand(" + "dictCode=" + dictCode + ", " + "dictName=" + dictName + ", " + "description=" + description + ", " + "sortOrder=" + sortOrder + ")";
+    }
 }

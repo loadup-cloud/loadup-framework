@@ -105,14 +105,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- LoadUp Components Testcontainers -->
+        </dependency>        <!-- LoadUp Components Testcontainers -->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-testcontainers</artifactId>

@@ -27,20 +27,10 @@ import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 import java.io.Serializable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * 通知服务配置
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Table("gotone_notification_service")
 public class NotificationServiceDO extends BaseDO implements Serializable {
 
@@ -73,4 +63,136 @@ public class NotificationServiceDO extends BaseDO implements Serializable {
      * 优先级
      */
     private Integer priority;
+
+    public NotificationServiceDO(String id, String serviceCode, String serviceName, String description, Boolean enabled, Integer priority) {
+        this.id = id;
+        this.serviceCode = serviceCode;
+        this.serviceName = serviceName;
+        this.description = description;
+        this.enabled = enabled;
+        this.priority = priority;
+    }
+
+    public NotificationServiceDO() {
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getServiceCode() {
+        return this.serviceCode;
+    }
+
+    public String getServiceName() {
+        return this.serviceName;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public Boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public Integer getPriority() {
+        return this.priority;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setServiceCode(String serviceCode) {
+        this.serviceCode = serviceCode;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(super.hashCode(), id, serviceCode, serviceName, description, enabled, priority);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        NotificationServiceDO other = (NotificationServiceDO) o;
+        if (!java.util.Objects.equals(id, other.id)) return false;
+        if (!java.util.Objects.equals(serviceCode, other.serviceCode)) return false;
+        if (!java.util.Objects.equals(serviceName, other.serviceName)) return false;
+        if (!java.util.Objects.equals(description, other.description)) return false;
+        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
+        if (!java.util.Objects.equals(priority, other.priority)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "NotificationServiceDO(" + "super=" + super.toString() + ", " + "id=" + id + ", " + "serviceCode=" + serviceCode + ", " + "serviceName=" + serviceName + ", " + "description=" + description + ", " + "enabled=" + enabled + ", " + "priority=" + priority + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String id;
+        private String serviceCode;
+        private String serviceName;
+        private String description;
+        private Boolean enabled;
+        private Integer priority;
+
+        public Builder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder serviceCode(String serviceCode) {
+            this.serviceCode = serviceCode;
+            return this;
+        }
+
+        public Builder serviceName(String serviceName) {
+            this.serviceName = serviceName;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder enabled(Boolean enabled) {
+            this.enabled = enabled;
+            return this;
+        }
+
+        public Builder priority(Integer priority) {
+            this.priority = priority;
+            return this;
+        }
+
+        public NotificationServiceDO build() {
+            return new NotificationServiceDO(this.id, this.serviceCode, this.serviceName, this.description, this.enabled, this.priority);
+        }
+    }
 }

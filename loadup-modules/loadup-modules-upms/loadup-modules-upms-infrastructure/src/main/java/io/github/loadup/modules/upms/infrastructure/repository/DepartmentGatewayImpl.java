@@ -35,7 +35,6 @@ import io.github.loadup.modules.upms.infrastructure.mapper.UserDOMapper;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -45,7 +44,6 @@ import org.springframework.stereotype.Repository;
  * @since 1.0.0
  */
 @Repository
-@RequiredArgsConstructor
 public class DepartmentGatewayImpl implements DepartmentGateway {
 
     private final DepartmentDOMapper departmentDOMapper;
@@ -155,5 +153,11 @@ public class DepartmentGatewayImpl implements DepartmentGateway {
                 .peek(child -> buildChildren(child, allDepartments))
                 .collect(Collectors.toList());
         parent.setChildren(children);
+    }
+
+    public DepartmentGatewayImpl(DepartmentDOMapper departmentDOMapper, UserDOMapper userDOMapper, DepartmentConverter departmentConverter) {
+        this.departmentDOMapper = departmentDOMapper;
+        this.userDOMapper = userDOMapper;
+        this.departmentConverter = departmentConverter;
     }
 }

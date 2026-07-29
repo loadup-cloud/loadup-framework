@@ -8,8 +8,8 @@ import io.github.loadup.gateway.facade.model.RouteConfig;
 import io.github.loadup.gateway.facade.spi.FilterChain;
 import io.github.loadup.gateway.facade.spi.GatewayFilter;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Route resolution filter — the pivot between the global pre-chain and
  * the per-route dynamic sub-chain.
@@ -18,8 +18,9 @@ import lombok.extern.slf4j.Slf4j;
  * in the context, then delegates to {@link DefaultGatewayEngine#executeRouteChain}
  * to build and run the route-specific filter pipeline.
  */
-@Slf4j
 public class RouteFilter implements GatewayFilter {
+    private static final Logger log = LoggerFactory.getLogger(RouteFilter.class);
+
 
     private final RouteResolver routeResolver;
     private final DefaultGatewayEngine engine;

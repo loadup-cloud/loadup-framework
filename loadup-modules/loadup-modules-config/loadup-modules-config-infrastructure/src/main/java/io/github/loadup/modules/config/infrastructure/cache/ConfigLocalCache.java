@@ -30,10 +30,11 @@ import io.github.loadup.modules.config.domain.model.DictItem;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Local (Caffeine) cache for config items and dictionary items.
  *
@@ -43,9 +44,10 @@ import org.springframework.stereotype.Component;
  *
  * @author LoadUp Framework
  */
-@Slf4j
 @Component
 public class ConfigLocalCache {
+    private static final Logger log = LoggerFactory.getLogger(ConfigLocalCache.class);
+
 
     private static final int CONFIG_MAX_SIZE = 2_000;
     private static final int DICT_MAX_SIZE = 500;

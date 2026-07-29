@@ -24,11 +24,7 @@ package io.github.loadup.components.dfs.s3.cfg;
 
 import io.github.loadup.components.dfs.cfg.DfsBinderCfg;
 import java.util.Arrays;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 public class S3DfsBinderCfg extends DfsBinderCfg {
     /**
      * S3 存储桶名称（必填）
@@ -65,5 +61,25 @@ public class S3DfsBinderCfg extends DfsBinderCfg {
     @Override
     public Object getIdentity() {
         return Arrays.asList(accessKey, secretKey, region, bucket);
+    }
+
+    public void setBucket(String bucket) {
+        this.bucket = bucket;
+    }
+
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
     }
 }

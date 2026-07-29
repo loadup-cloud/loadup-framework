@@ -38,18 +38,20 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Redis Cache Concurrency Test
  */
-@Slf4j
 @TestPropertySource(properties = {"loadup.cache.binder=redis", "loadup.cache.database=0"})
 @DisplayName("Redis 缓存并发测试")
 public class RedisConcurrencyIT extends BaseRedisCacheTest {
+    private static final Logger log = LoggerFactory.getLogger(RedisConcurrencyIT.class);
+
 
     @Test
     @DisplayName("测试并发写入")

@@ -32,21 +32,21 @@ import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Department Management Service
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class DepartmentService {
+    private static final Logger log = LoggerFactory.getLogger(DepartmentService.class);
+
 
     private final DepartmentGateway departmentGateway;
     private final UserGateway userGateway;
@@ -299,5 +299,10 @@ public class DepartmentService {
             }
         }
         return tree;
+    }
+
+    public DepartmentService(DepartmentGateway departmentGateway, UserGateway userGateway) {
+        this.departmentGateway = departmentGateway;
+        this.userGateway = userGateway;
     }
 }

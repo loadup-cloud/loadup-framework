@@ -39,22 +39,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Application service for system configuration items.
  *
  * <p>Exposed to Gateway via {@code bean://configItemService:method}, no Controller needed.
  */
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class ConfigItemService {
+    private static final Logger log = LoggerFactory.getLogger(ConfigItemService.class);
+
 
     private final ConfigItemGateway gateway;
     private final ConfigHistoryGateway historyGateway;
@@ -210,5 +210,12 @@ public class ConfigItemService {
         dto.setEnabled(item.getEnabled());
         dto.setUpdatedAt(item.getUpdatedAt());
         return dto;
+    }
+
+    public ConfigItemService(ConfigItemGateway gateway, ConfigHistoryGateway historyGateway, ConfigLocalCache localCache, ApplicationEventPublisher eventPublisher) {
+        this.gateway = gateway;
+        this.historyGateway = historyGateway;
+        this.localCache = localCache;
+        this.eventPublisher = eventPublisher;
     }
 }

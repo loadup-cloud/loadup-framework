@@ -22,7 +22,6 @@ package io.github.loadup.components.configcenter.model;
  * #L%
  */
 
-import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -32,7 +31,6 @@ import org.springframework.context.ApplicationEvent;
  * detects a change. Applications can listen to this event to trigger refresh logic
  * (e.g. combined with {@code @EnableConfigAutoRefresh}).
  */
-@Getter
 public class ConfigChangeEvent extends ApplicationEvent {
 
     private final String dataId;
@@ -57,5 +55,29 @@ public class ConfigChangeEvent extends ApplicationEvent {
         this.oldContent = oldContent;
         this.newContent = newContent;
         this.changeType = changeType;
+    }
+
+    public String getDataId() {
+        return this.dataId;
+    }
+
+    public String getGroup() {
+        return this.group;
+    }
+
+    public String getNamespace() {
+        return this.namespace;
+    }
+
+    public String getOldContent() {
+        return this.oldContent;
+    }
+
+    public String getNewContent() {
+        return this.newContent;
+    }
+
+    public ConfigChangeType getChangeType() {
+        return this.changeType;
     }
 }

@@ -26,12 +26,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.util.Set;
-import lombok.Data;
 
 /**
  * 安全上下文中的用户信息契约
  */
-@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuthUserDTO implements Serializable {
     private String userId;
@@ -55,5 +53,99 @@ public class AuthUserDTO implements Serializable {
 
     public boolean actived() {
         return status == 0;
+    }
+
+    public AuthUserDTO(String userId, String username, String password, String nickname, Integer status, Set<String> permissions, Set<String> roles) {
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.status = status;
+        this.permissions = permissions;
+        this.roles = roles;
+    }
+
+    public AuthUserDTO() {
+    }
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public String getNickname() {
+        return this.nickname;
+    }
+
+    public Integer getStatus() {
+        return this.status;
+    }
+
+    public Set<String> getPermissions() {
+        return this.permissions;
+    }
+
+    public Set<String> getRoles() {
+        return this.roles;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public void setPermissions(Set<String> permissions) {
+        this.permissions = permissions;
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(userId, username, password, nickname, status, permissions, roles);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AuthUserDTO other = (AuthUserDTO) o;
+        if (!java.util.Objects.equals(userId, other.userId)) return false;
+        if (!java.util.Objects.equals(username, other.username)) return false;
+        if (!java.util.Objects.equals(password, other.password)) return false;
+        if (!java.util.Objects.equals(nickname, other.nickname)) return false;
+        if (!java.util.Objects.equals(status, other.status)) return false;
+        if (!java.util.Objects.equals(permissions, other.permissions)) return false;
+        if (!java.util.Objects.equals(roles, other.roles)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "AuthUserDTO(" + "userId=" + userId + ", " + "username=" + username + ", " + "password=" + password + ", " + "nickname=" + nickname + ", " + "status=" + status + ", " + "permissions=" + permissions + ", " + "roles=" + roles + ")";
     }
 }

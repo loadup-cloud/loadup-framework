@@ -29,8 +29,8 @@ import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 钉钉机器人 Webhook 提供商
  *
@@ -48,8 +48,9 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @see <a href="https://open.dingtalk.com/document/robots/custom-robot-access">钉钉自定义机器人</a>
  */
-@Slf4j
 public class DingtalkWebhookProvider implements NotificationChannelProvider {
+    private static final Logger log = LoggerFactory.getLogger(DingtalkWebhookProvider.class);
+
 
     @Override
     public NotificationChannel getChannel() {

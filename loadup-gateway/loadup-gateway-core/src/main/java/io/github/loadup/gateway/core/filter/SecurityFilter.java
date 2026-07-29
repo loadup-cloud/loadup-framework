@@ -7,10 +7,10 @@ import io.github.loadup.gateway.facade.model.RouteConfig;
 import io.github.loadup.gateway.facade.spi.FilterChain;
 import io.github.loadup.gateway.facade.spi.GatewayFilter;
 import io.github.loadup.gateway.facade.spi.SecurityStrategy;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Security filter — delegates to a named {@link SecurityStrategy} based on
  * the route's {@code securityCode}.
@@ -18,9 +18,9 @@ import org.apache.commons.lang3.StringUtils;
  * <p>The filter is always registered; it reads the security code from the
  * resolved route at runtime. If the code is {@code OFF} or blank, it skips.
  */
-@Slf4j
-@RequiredArgsConstructor
 public class SecurityFilter implements GatewayFilter {
+    private static final Logger log = LoggerFactory.getLogger(SecurityFilter.class);
+
 
     private final SecurityStrategyManager strategyManager;
 
@@ -57,5 +57,9 @@ public class SecurityFilter implements GatewayFilter {
         }
 
         chain.filter(context);
+    }
+
+    public SecurityFilter(SecurityStrategyManager strategyManager) {
+        this.strategyManager = strategyManager;
     }
 }

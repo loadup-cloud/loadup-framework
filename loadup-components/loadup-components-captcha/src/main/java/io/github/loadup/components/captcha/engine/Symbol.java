@@ -22,16 +22,12 @@ package io.github.loadup.components.captcha.engine;
  * #L%
  */
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * 标识符
  *
  * @author L.cm
  */
-@Getter
-@RequiredArgsConstructor
 public enum Symbol {
 
     /**
@@ -77,5 +73,18 @@ public enum Symbol {
             }
         }
         throw new IllegalArgumentException("不支持的标识符，仅仅支持(+、-、×、÷)");
+    }
+
+    public Symbol(String value, boolean priority) {
+        this.value = value;
+        this.priority = priority;
+    }
+
+    public String getValue() {
+        return this.value;
+    }
+
+    public boolean isPriority() {
+        return this.priority;
     }
 }

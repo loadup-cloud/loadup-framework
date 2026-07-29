@@ -32,11 +32,9 @@ import io.github.loadup.modules.config.infrastructure.dataobject.ConfigHistoryDO
 import io.github.loadup.modules.config.infrastructure.mapper.ConfigHistoryDOMapper;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RequiredArgsConstructor
 public class ConfigHistoryGatewayImpl implements ConfigHistoryGateway {
 
     private final ConfigHistoryDOMapper mapper;
@@ -85,5 +83,9 @@ public class ConfigHistoryGatewayImpl implements ConfigHistoryGateway {
                 .remark(e.getRemark())
                 .createdAt(e.getCreatedAt())
                 .build();
+    }
+
+    public ConfigHistoryGatewayImpl(ConfigHistoryDOMapper mapper) {
+        this.mapper = mapper;
     }
 }

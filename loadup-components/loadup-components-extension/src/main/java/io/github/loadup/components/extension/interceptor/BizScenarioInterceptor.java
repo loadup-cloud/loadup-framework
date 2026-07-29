@@ -26,11 +26,12 @@ import io.github.loadup.components.extension.annotation.BizScenario;
 import io.github.loadup.components.extension.api.BizIdentity;
 import io.github.loadup.components.extension.context.BizContextHolder;
 import io.github.loadup.components.extension.core.BizScenario.BizScenarioBuilder;
-import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.util.StringUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 业务场景 AOP 拦截器。
  *
@@ -45,8 +46,9 @@ import org.springframework.util.StringUtils;
  *   <li>以上都不满足 → 跳过（不覆盖已有上下文）
  * </ol>
  */
-@Slf4j
 public class BizScenarioInterceptor implements MethodInterceptor {
+    private static final Logger log = LoggerFactory.getLogger(BizScenarioInterceptor.class);
+
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {

@@ -29,21 +29,21 @@ import java.time.LocalDateTime;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * GlobalUnique Mapper 基于 JdbcTemplate
  *
  * @author loadup
  */
-@Slf4j
 @Repository
-@RequiredArgsConstructor
 public class GlobalUniqueMapper {
+    private static final Logger log = LoggerFactory.getLogger(GlobalUniqueMapper.class);
+
 
     private final JdbcTemplate jdbcTemplate;
     private final GlobalUniqueProperties properties;
@@ -168,5 +168,10 @@ public class GlobalUniqueMapper {
      */
     private String generateId() {
         return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    public GlobalUniqueMapper(JdbcTemplate jdbcTemplate, GlobalUniqueProperties properties) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.properties = properties;
     }
 }

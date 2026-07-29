@@ -36,21 +36,21 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Role Management Service
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class RoleService {
+    private static final Logger log = LoggerFactory.getLogger(RoleService.class);
+
 
     private final RoleGateway roleGateway;
     private final PermissionGateway permissionGateway;
@@ -311,5 +311,10 @@ public class RoleService {
             }
         }
         return tree;
+    }
+
+    public RoleService(RoleGateway roleGateway, PermissionGateway permissionGateway) {
+        this.roleGateway = roleGateway;
+        this.permissionGateway = permissionGateway;
     }
 }

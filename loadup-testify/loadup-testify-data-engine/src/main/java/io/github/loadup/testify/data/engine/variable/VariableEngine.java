@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.ExpressionParser;
@@ -42,13 +41,16 @@ import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Variable resolution engine supporting: - Datafaker expressions: ${faker.name.firstName} - Time
  * functions with offsets: ${time.now('+1d')}, ${time.now('-2h')} - Custom functions: ${fn.uuid()},
  * ${fn.random(1, 100)} - Variable cross-references with dependency resolution
  */
-@Slf4j
 public class VariableEngine {
+    private static final Logger log = LoggerFactory.getLogger(VariableEngine.class);
+
 
     private final ExpressionParser spelParser = new SpelExpressionParser();
     private final Map<String, TestifyFunction> functionRegistry = new HashMap<>();

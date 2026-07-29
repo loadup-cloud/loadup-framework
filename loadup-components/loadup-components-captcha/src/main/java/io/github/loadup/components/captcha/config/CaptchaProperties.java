@@ -22,14 +22,12 @@ package io.github.loadup.components.captcha.config;
  * #L%
  */
 
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * @author lengleng
  * @date 2020/7/31 验证码配置属性
  */
-@Data
 @ConfigurationProperties(prefix = "captcha")
 public class CaptchaProperties {
 
@@ -53,4 +51,68 @@ public class CaptchaProperties {
      * 示例：customCharacters=23456789ABCDEFGHJKMNPQRSTUVWXYZ
      */
     private String customCharacters;
+
+    public CaptchaProperties(int len, int width, int height, String customCharacters) {
+        this.len = len;
+        this.width = width;
+        this.height = height;
+        this.customCharacters = customCharacters;
+    }
+
+    public CaptchaProperties() {
+    }
+
+    public int getLen() {
+        return this.len;
+    }
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+
+    public String getCustomCharacters() {
+        return this.customCharacters;
+    }
+
+    public void setLen(int len) {
+        this.len = len;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setCustomCharacters(String customCharacters) {
+        this.customCharacters = customCharacters;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(len, width, height, customCharacters);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CaptchaProperties other = (CaptchaProperties) o;
+        if (!java.util.Objects.equals(len, other.len)) return false;
+        if (!java.util.Objects.equals(width, other.width)) return false;
+        if (!java.util.Objects.equals(height, other.height)) return false;
+        if (!java.util.Objects.equals(customCharacters, other.customCharacters)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "CaptchaProperties(" + "len=" + len + ", " + "width=" + width + ", " + "height=" + height + ", " + "customCharacters=" + customCharacters + ")";
+    }
 }

@@ -22,14 +22,12 @@ package io.github.loadup.components.signature.enums;
  * #L%
  */
 
-import lombok.Getter;
 
 /**
  * 签名算法枚举
  *
  * @author loadup
  */
-@Getter
 public enum SignatureAlgorithm {
 
     /**
@@ -65,5 +63,13 @@ public enum SignatureAlgorithm {
     SignatureAlgorithm(String jcaName, String keyAlgorithm) {
         this.jcaName = jcaName;
         this.keyAlgorithm = keyAlgorithm;
+    }
+
+    public String getJcaName() {
+        return this.jcaName;
+    }
+
+    public String getKeyAlgorithm() {
+        return this.keyAlgorithm;
     }
 }

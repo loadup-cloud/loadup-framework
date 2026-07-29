@@ -10,19 +10,18 @@ package io.github.loadup.components.springdoc.properties;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -46,7 +45,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *       url: https://opensource.org/license/gpl-3-0
  * }</pre>
  */
-@Data
 @ConfigurationProperties(prefix = "loadup.springdoc")
 public class SpringDocProperties {
 
@@ -75,7 +73,6 @@ public class SpringDocProperties {
     private License license = new License();
 
     /** Contact sub-properties. */
-    @Data
     public static class Contact {
         /** Contact display name. */
         private String name = "LoadUp Team";
@@ -86,12 +83,164 @@ public class SpringDocProperties {
     }
 
     /** License sub-properties. */
-    @Data
     public static class License {
         /** License name. */
         private String name = "GPL-3.0";
         /** License URL. */
         private String url = "https://opensource.org/license/gpl-3-0";
     }
-}
 
+    public SpringDocProperties(boolean enabled, String title, String description, String version, boolean jwtEnabled, String jwtSchemeName, Contact contact, License license, String name, String url, String email, String name, String url) {
+        this.enabled = enabled;
+        this.title = title;
+        this.description = description;
+        this.version = version;
+        this.jwtEnabled = jwtEnabled;
+        this.jwtSchemeName = jwtSchemeName;
+        this.contact = contact;
+        this.license = license;
+        this.name = name;
+        this.url = url;
+        this.email = email;
+        this.name = name;
+        this.url = url;
+    }
+
+    public SpringDocProperties() {
+    }
+
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public String getVersion() {
+        return this.version;
+    }
+
+    public boolean isJwtEnabled() {
+        return this.jwtEnabled;
+    }
+
+    public String getJwtSchemeName() {
+        return this.jwtSchemeName;
+    }
+
+    public Contact getContact() {
+        return this.contact;
+    }
+
+    public License getLicense() {
+        return this.license;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getUrl() {
+        return this.url;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getUrl() {
+        return this.url;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public void setJwtEnabled(boolean jwtEnabled) {
+        this.jwtEnabled = jwtEnabled;
+    }
+
+    public void setJwtSchemeName(String jwtSchemeName) {
+        this.jwtSchemeName = jwtSchemeName;
+    }
+
+    public void setContact(Contact contact) {
+        this.contact = contact;
+    }
+
+    public void setLicense(License license) {
+        this.license = license;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(enabled, title, description, version, jwtEnabled, jwtSchemeName, contact, license, name, url, email, name, url);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SpringDocProperties other = (SpringDocProperties) o;
+        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
+        if (!java.util.Objects.equals(title, other.title)) return false;
+        if (!java.util.Objects.equals(description, other.description)) return false;
+        if (!java.util.Objects.equals(version, other.version)) return false;
+        if (!java.util.Objects.equals(jwtEnabled, other.jwtEnabled)) return false;
+        if (!java.util.Objects.equals(jwtSchemeName, other.jwtSchemeName)) return false;
+        if (!java.util.Objects.equals(contact, other.contact)) return false;
+        if (!java.util.Objects.equals(license, other.license)) return false;
+        if (!java.util.Objects.equals(name, other.name)) return false;
+        if (!java.util.Objects.equals(url, other.url)) return false;
+        if (!java.util.Objects.equals(email, other.email)) return false;
+        if (!java.util.Objects.equals(name, other.name)) return false;
+        if (!java.util.Objects.equals(url, other.url)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "SpringDocProperties(" + "enabled=" + enabled + ", " + "title=" + title + ", " + "description=" + description + ", " + "version=" + version + ", " + "jwtEnabled=" + jwtEnabled + ", " + "jwtSchemeName=" + jwtSchemeName + ", " + "contact=" + contact + ", " + "license=" + license + ", " + "name=" + name + ", " + "url=" + url + ", " + "email=" + email + ", " + "name=" + name + ", " + "url=" + url + ")";
+    }
+}

@@ -23,9 +23,27 @@ package io.github.loadup.components.dfs.cfg;
  */
 
 import io.github.loadup.framework.api.cfg.BaseBindingCfg;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
 public class DfsBindingCfg extends BaseBindingCfg {}
+
+    public DfsBindingCfg() {
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(super.hashCode(), );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        DfsBindingCfg other = (DfsBindingCfg) o;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DfsBindingCfg(" + "super=" + super.toString() + ")";
+    }

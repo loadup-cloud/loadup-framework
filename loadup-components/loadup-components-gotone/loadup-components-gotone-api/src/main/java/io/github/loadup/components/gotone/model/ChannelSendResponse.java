@@ -25,14 +25,10 @@ package io.github.loadup.components.gotone.model;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.Builder;
-import lombok.Data;
 
 /**
  * 渠道发送响应（内部使用）
  */
-@Data
-@Builder
 public class ChannelSendResponse implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -55,13 +51,11 @@ public class ChannelSendResponse implements Serializable {
     /**
      * 每个收件人的成功状态
      */
-    @Builder.Default
     private Map<String, Boolean> receiverStatus = new HashMap<>();
 
     /**
      * 每个收件人的错误信息
      */
-    @Builder.Default
     private Map<String, String> receiverErrors = new HashMap<>();
 
     /**
@@ -76,5 +70,100 @@ public class ChannelSendResponse implements Serializable {
      */
     public String getErrorMessage(String receiver) {
         return receiverErrors.get(receiver);
+    }
+
+    public ChannelSendResponse(String content, Integer successCount, Integer failedCount, Map<String, Boolean> receiverStatus, Map<String, String> receiverErrors) {
+        this.content = content;
+        this.successCount = successCount;
+        this.failedCount = failedCount;
+        this.receiverStatus = receiverStatus;
+        this.receiverErrors = receiverErrors;
+    }
+
+    public ChannelSendResponse() {
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setSuccessCount(Integer successCount) {
+        this.successCount = successCount;
+    }
+
+    public void setFailedCount(Integer failedCount) {
+        this.failedCount = failedCount;
+    }
+
+    public void setReceiverStatus(Map<String, Boolean> receiverStatus) {
+        this.receiverStatus = receiverStatus;
+    }
+
+    public void setReceiverErrors(Map<String, String> receiverErrors) {
+        this.receiverErrors = receiverErrors;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(content, successCount, failedCount, receiverStatus, receiverErrors);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChannelSendResponse other = (ChannelSendResponse) o;
+        if (!java.util.Objects.equals(content, other.content)) return false;
+        if (!java.util.Objects.equals(successCount, other.successCount)) return false;
+        if (!java.util.Objects.equals(failedCount, other.failedCount)) return false;
+        if (!java.util.Objects.equals(receiverStatus, other.receiverStatus)) return false;
+        if (!java.util.Objects.equals(receiverErrors, other.receiverErrors)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ChannelSendResponse(" + "content=" + content + ", " + "successCount=" + successCount + ", " + "failedCount=" + failedCount + ", " + "receiverStatus=" + receiverStatus + ", " + "receiverErrors=" + receiverErrors + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String content;
+        private Integer successCount;
+        private Integer failedCount;
+        private Map<String, Boolean> receiverStatus = new HashMap<>();
+        private Map<String, String> receiverErrors = new HashMap<>();
+
+        public Builder content(String content) {
+            this.content = content;
+            return this;
+        }
+
+        public Builder successCount(Integer successCount) {
+            this.successCount = successCount;
+            return this;
+        }
+
+        public Builder failedCount(Integer failedCount) {
+            this.failedCount = failedCount;
+            return this;
+        }
+
+        public Builder receiverStatus(Map<String, Boolean> receiverStatus) {
+            this.receiverStatus = receiverStatus;
+            return this;
+        }
+
+        public Builder receiverErrors(Map<String, String> receiverErrors) {
+            this.receiverErrors = receiverErrors;
+            return this;
+        }
+
+        public ChannelSendResponse build() {
+            return new ChannelSendResponse(this.content, this.successCount, this.failedCount, this.receiverStatus, this.receiverErrors);
+        }
     }
 }

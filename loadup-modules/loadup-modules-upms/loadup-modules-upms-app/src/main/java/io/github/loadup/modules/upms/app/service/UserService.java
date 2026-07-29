@@ -38,8 +38,6 @@ import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,16 +46,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * User Management Service
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class UserService {
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
 
     private final UserGateway userGateway;
     private final RoleGateway roleGateway;
@@ -333,5 +333,12 @@ public class UserService {
                 .dataScope(role.getDataScope())
                 .status(role.getStatus())
                 .build();
+    }
+
+    public UserService(UserGateway userGateway, RoleGateway roleGateway, DepartmentGateway departmentGateway, PasswordEncoder passwordEncoder) {
+        this.userGateway = userGateway;
+        this.roleGateway = roleGateway;
+        this.departmentGateway = departmentGateway;
+        this.passwordEncoder = passwordEncoder;
     }
 }

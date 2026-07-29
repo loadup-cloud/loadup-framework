@@ -23,16 +23,16 @@ package io.github.loadup.components.dfs.database.cfg;
  */
 
 import io.github.loadup.components.dfs.cfg.DfsBinderCfg;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 public class DatabaseDfsBinderCfg extends DfsBinderCfg {
     private String tableName = "file_storage";
 
     @Override
     public Object getIdentity() {
         return "database:" + getName();
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 }

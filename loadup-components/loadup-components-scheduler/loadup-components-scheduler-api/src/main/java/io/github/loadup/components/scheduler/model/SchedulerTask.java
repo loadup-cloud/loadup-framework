@@ -28,22 +28,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ReflectionUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Scheduler task model representing a scheduled task configuration.
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Slf4j
 public class SchedulerTask {
+    private static final Logger log = LoggerFactory.getLogger(SchedulerTask.class);
+
 
     /**
      * Unique name of the task
@@ -80,7 +74,6 @@ public class SchedulerTask {
     /**
      * Whether task is enabled
      */
-    @Builder.Default
     private boolean enabled = true;
 
     /**
@@ -91,13 +84,11 @@ public class SchedulerTask {
     /**
      * Timeout in milliseconds (0 = no timeout)
      */
-    @Builder.Default
     private long timeoutMillis = 0;
 
     /**
      * Maximum retry times on failure
      */
-    @Builder.Default
     private int maxRetries = 0;
 
     /**
@@ -181,6 +172,217 @@ public class SchedulerTask {
             Thread.sleep(Math.min(sleepTime, 30_000L)); // Maximum wait: 30 s
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
+        }
+    }
+
+    public SchedulerTask(String taskName, String taskGroup, String description, String beanName, Method method, Object[] args, String cron, boolean enabled, Object targetBean, long timeoutMillis, int maxRetries) {
+        this.taskName = taskName;
+        this.taskGroup = taskGroup;
+        this.description = description;
+        this.beanName = beanName;
+        this.method = method;
+        this.args = args;
+        this.cron = cron;
+        this.enabled = enabled;
+        this.targetBean = targetBean;
+        this.timeoutMillis = timeoutMillis;
+        this.maxRetries = maxRetries;
+    }
+
+    public SchedulerTask() {
+    }
+
+    public String getTaskName() {
+        return this.taskName;
+    }
+
+    public String getTaskGroup() {
+        return this.taskGroup;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public String getBeanName() {
+        return this.beanName;
+    }
+
+    public Method getMethod() {
+        return this.method;
+    }
+
+    public Object[] getArgs() {
+        return this.args;
+    }
+
+    public String getCron() {
+        return this.cron;
+    }
+
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public Object getTargetBean() {
+        return this.targetBean;
+    }
+
+    public long getTimeoutMillis() {
+        return this.timeoutMillis;
+    }
+
+    public int getMaxRetries() {
+        return this.maxRetries;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
+
+    public void setTaskGroup(String taskGroup) {
+        this.taskGroup = taskGroup;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
+
+    public void setMethod(Method method) {
+        this.method = method;
+    }
+
+    public void setArgs(Object[] args) {
+        this.args = args;
+    }
+
+    public void setCron(String cron) {
+        this.cron = cron;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setTargetBean(Object targetBean) {
+        this.targetBean = targetBean;
+    }
+
+    public void setTimeoutMillis(long timeoutMillis) {
+        this.timeoutMillis = timeoutMillis;
+    }
+
+    public void setMaxRetries(int maxRetries) {
+        this.maxRetries = maxRetries;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(taskName, taskGroup, description, beanName, method, args, cron, enabled, targetBean, timeoutMillis, maxRetries);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SchedulerTask other = (SchedulerTask) o;
+        if (!java.util.Objects.equals(taskName, other.taskName)) return false;
+        if (!java.util.Objects.equals(taskGroup, other.taskGroup)) return false;
+        if (!java.util.Objects.equals(description, other.description)) return false;
+        if (!java.util.Objects.equals(beanName, other.beanName)) return false;
+        if (!java.util.Objects.equals(method, other.method)) return false;
+        if (!java.util.Objects.equals(args, other.args)) return false;
+        if (!java.util.Objects.equals(cron, other.cron)) return false;
+        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
+        if (!java.util.Objects.equals(targetBean, other.targetBean)) return false;
+        if (!java.util.Objects.equals(timeoutMillis, other.timeoutMillis)) return false;
+        if (!java.util.Objects.equals(maxRetries, other.maxRetries)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "SchedulerTask(" + "taskName=" + taskName + ", " + "taskGroup=" + taskGroup + ", " + "description=" + description + ", " + "beanName=" + beanName + ", " + "method=" + method + ", " + "args=" + args + ", " + "cron=" + cron + ", " + "enabled=" + enabled + ", " + "targetBean=" + targetBean + ", " + "timeoutMillis=" + timeoutMillis + ", " + "maxRetries=" + maxRetries + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String taskName;
+        private String taskGroup;
+        private String description;
+        private String beanName;
+        private Method method;
+        private Object[] args;
+        private String cron;
+        private boolean enabled = true;
+        private Object targetBean;
+        private long timeoutMillis = 0;
+        private int maxRetries = 0;
+
+        public Builder taskName(String taskName) {
+            this.taskName = taskName;
+            return this;
+        }
+
+        public Builder taskGroup(String taskGroup) {
+            this.taskGroup = taskGroup;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder beanName(String beanName) {
+            this.beanName = beanName;
+            return this;
+        }
+
+        public Builder method(Method method) {
+            this.method = method;
+            return this;
+        }
+
+        public Builder args(Object[] args) {
+            this.args = args;
+            return this;
+        }
+
+        public Builder cron(String cron) {
+            this.cron = cron;
+            return this;
+        }
+
+        public Builder enabled(boolean enabled) {
+            this.enabled = enabled;
+            return this;
+        }
+
+        public Builder targetBean(Object targetBean) {
+            this.targetBean = targetBean;
+            return this;
+        }
+
+        public Builder timeoutMillis(long timeoutMillis) {
+            this.timeoutMillis = timeoutMillis;
+            return this;
+        }
+
+        public Builder maxRetries(int maxRetries) {
+            this.maxRetries = maxRetries;
+            return this;
+        }
+
+        public SchedulerTask build() {
+            return new SchedulerTask(this.taskName, this.taskGroup, this.description, this.beanName, this.method, this.args, this.cron, this.enabled, this.targetBean, this.timeoutMillis, this.maxRetries);
         }
     }
 }

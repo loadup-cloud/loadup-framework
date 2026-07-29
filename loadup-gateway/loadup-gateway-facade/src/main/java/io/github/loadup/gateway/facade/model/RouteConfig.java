@@ -32,13 +32,11 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * Route configuration model (immutable)
  */
-@Getter
 public class RouteConfig {
 
     /**

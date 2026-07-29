@@ -13,11 +13,13 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-@Slf4j
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class SignatureSecurityStrategy implements SecurityStrategy {
+    private static final Logger log = LoggerFactory.getLogger(SignatureSecurityStrategy.class);
+
 
     private static final String HEADER_APP_ID = "X-App-Id";
     private static final String HEADER_TIMESTAMP = "X-Timestamp";

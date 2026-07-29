@@ -41,11 +41,11 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Servlet filter that instruments every incoming HTTP request with an OpenTelemetry span.
  *
@@ -62,9 +62,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
  *
  * <p>Fallback: if span creation fails for any reason the request proceeds normally.
  */
-@Slf4j
-@RequiredArgsConstructor
 public class TracingWebFilter extends OncePerRequestFilter {
+    private static final Logger log = LoggerFactory.getLogger(TracingWebFilter.class);
+
 
     private static final TextMapGetter<HttpServletRequest> GETTER = new HttpServletRequestGetter();
 
@@ -160,7 +160,6 @@ public class TracingWebFilter extends OncePerRequestFilter {
     }
 
 
-
     /**
      * Adapts {@link HttpServletRequest} to the OTel {@link TextMapGetter} contract.
      */
@@ -174,5 +173,11 @@ public class TracingWebFilter extends OncePerRequestFilter {
         public String get(HttpServletRequest carrier, String key) {
             return carrier == null ? null : carrier.getHeader(key);
         }
+    }
+
+    public TracingWebFilter(TracerProperties properties, OpenTelemetry openTelemetry, AntPathMatcher pathMatcher) {
+        this.properties = properties;
+        this.openTelemetry = openTelemetry;
+        this.pathMatcher = pathMatcher;
     }
 }

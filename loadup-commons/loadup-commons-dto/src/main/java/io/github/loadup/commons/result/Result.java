@@ -27,16 +27,12 @@ import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.framework.api.result.ResultCode;
 import java.io.Serial;
 import java.io.Serializable;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Lise
  * @since 1.0.0
  */
-@Getter
-@Setter
 public class Result extends DTO implements ResultCode, Serializable {
 
     @Serial
@@ -108,5 +104,29 @@ public class Result extends DTO implements ResultCode, Serializable {
         result.setStatus(errorCode.getStatus());
         result.setMessage(errorCode.getMessage());
         return result;
+    }
+
+    public String getCode() {
+        return this.code;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public String getMessage() {
+        return this.message;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

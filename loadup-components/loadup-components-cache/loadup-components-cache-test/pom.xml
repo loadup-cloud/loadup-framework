@@ -47,13 +47,7 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-
-        <dependency>
+        </dependency>        <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-cache-api</artifactId>
             <version>${loadup.framework.version}</version>

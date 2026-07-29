@@ -25,7 +25,6 @@ package io.github.loadup.components.globalunique.properties;
 import io.github.loadup.commons.enums.DbType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -34,7 +33,6 @@ import org.springframework.validation.annotation.Validated;
  *
  * @author loadup
  */
-@Data
 @Validated
 @ConfigurationProperties(prefix = "loadup.components.globalunique")
 public class GlobalUniqueProperties {
@@ -70,5 +68,53 @@ public class GlobalUniqueProperties {
      */
     public String getFullTableName() {
         return tablePrefix + tableName;
+    }
+
+    public GlobalUniqueProperties(boolean enabled, DbType dbType, String tablePrefix, String tableName) {
+        this.enabled = enabled;
+        this.dbType = dbType;
+        this.tablePrefix = tablePrefix;
+        this.tableName = tableName;
+    }
+
+    public GlobalUniqueProperties() {
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setDbType(DbType dbType) {
+        this.dbType = dbType;
+    }
+
+    public void setTablePrefix(String tablePrefix) {
+        this.tablePrefix = tablePrefix;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(enabled, dbType, tablePrefix, tableName);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GlobalUniqueProperties other = (GlobalUniqueProperties) o;
+        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
+        if (!java.util.Objects.equals(dbType, other.dbType)) return false;
+        if (!java.util.Objects.equals(tablePrefix, other.tablePrefix)) return false;
+        if (!java.util.Objects.equals(tableName, other.tableName)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "GlobalUniqueProperties(" + "enabled=" + enabled + ", " + "dbType=" + dbType + ", " + "tablePrefix=" + tablePrefix + ", " + "tableName=" + tableName + ")";
     }
 }

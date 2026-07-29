@@ -28,14 +28,14 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.github.loadup.testify.core.model.TestContext;
 import java.io.InputStream;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * YamlLoader 仅负责将 YAML 物理文件读取为 TestContext 对象。 不再持有 VariableEngine，不再进行变量解析。
  */
-@Slf4j
 public class YamlLoader {
+    private static final Logger log = LoggerFactory.getLogger(YamlLoader.class);
+
 
     private static final ObjectMapper YAML_MAPPER;
 
@@ -46,7 +46,6 @@ public class YamlLoader {
         YAML_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    @SneakyThrows
     public TestContext load(String path) {
         log.info("Loading raw YAML test case from classpath: {}", path);
 

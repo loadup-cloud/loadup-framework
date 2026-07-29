@@ -31,11 +31,9 @@ import io.github.loadup.modules.log.infrastructure.mapper.AuditLogDOMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RequiredArgsConstructor
 public class AuditLogGatewayImpl implements AuditLogGateway {
 
     private final AuditLogDOMapper mapper;
@@ -142,5 +140,9 @@ public class AuditLogGatewayImpl implements AuditLogGateway {
                 .operationTime(e.getOperationTime())
                 .createdAt(e.getCreatedAt())
                 .build();
+    }
+
+    public AuditLogGatewayImpl(AuditLogDOMapper mapper) {
+        this.mapper = mapper;
     }
 }

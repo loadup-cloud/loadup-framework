@@ -24,14 +24,10 @@ package io.github.loadup.components.gotone.domain;
 
 import io.github.loadup.commons.domain.BaseDomain;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * 渠道映射领域对象
  */
-@Getter
-@Setter
 public class ChannelMapping extends BaseDomain {
     private String id;
     private String businessCode;
@@ -40,4 +36,60 @@ public class ChannelMapping extends BaseDomain {
     private List<String> providerList;
     private Integer priority;
     private Boolean enabled;
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getBusinessCode() {
+        return this.businessCode;
+    }
+
+    public String getChannel() {
+        return this.channel;
+    }
+
+    public String getTemplateCode() {
+        return this.templateCode;
+    }
+
+    public List<String> getProviderList() {
+        return this.providerList;
+    }
+
+    public Integer getPriority() {
+        return this.priority;
+    }
+
+    public Boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setBusinessCode(String businessCode) {
+        this.businessCode = businessCode;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
+    public void setTemplateCode(String templateCode) {
+        this.templateCode = templateCode;
+    }
+
+    public void setProviderList(List<String> providerList) {
+        this.providerList = providerList;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
 }

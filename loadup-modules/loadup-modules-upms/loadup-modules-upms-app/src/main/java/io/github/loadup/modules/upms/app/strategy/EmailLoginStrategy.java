@@ -28,21 +28,21 @@ import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
 import io.github.loadup.modules.upms.client.dto.LoginCredentials;
 import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 邮箱验证码登录策略
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 @Component
-@RequiredArgsConstructor
 public class EmailLoginStrategy implements LoginStrategy {
+    private static final Logger log = LoggerFactory.getLogger(EmailLoginStrategy.class);
+
 
     private final UserGateway userGateway;
     private final VerificationCodeService verificationCodeService;
@@ -90,5 +90,10 @@ public class EmailLoginStrategy implements LoginStrategy {
                 .mobile(user.getMobile())
                 .newUser(false)
                 .build();
+    }
+
+    public EmailLoginStrategy(UserGateway userGateway, VerificationCodeService verificationCodeService) {
+        this.userGateway = userGateway;
+        this.verificationCodeService = verificationCodeService;
     }
 }

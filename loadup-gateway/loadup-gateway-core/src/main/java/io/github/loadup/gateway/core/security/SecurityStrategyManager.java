@@ -26,13 +26,14 @@ import io.github.loadup.gateway.facade.spi.SecurityStrategy;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Manages security strategies.
  */
-@Slf4j
 public class SecurityStrategyManager {
+    private static final Logger log = LoggerFactory.getLogger(SecurityStrategyManager.class);
+
 
     private final Map<String, SecurityStrategy> strategyMap = new ConcurrentHashMap<>();
 

@@ -32,10 +32,10 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 签名服务使用示例
  * <p>
@@ -51,10 +51,10 @@ import org.springframework.stereotype.Service;
  *
  * @author loadup
  */
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class SignatureServiceExample {
+    private static final Logger log = LoggerFactory.getLogger(SignatureServiceExample.class);
+
 
     private final SignatureService signatureService;
     private final KeyPairService keyPairService;
@@ -150,5 +150,11 @@ public class SignatureServiceExample {
     public void evictTenantPublicKey(String tenantId) {
         tenantPublicKeys.remove(tenantId);
         log.info("已清除租户 {} 的公钥缓存", tenantId);
+    }
+
+    public SignatureServiceExample(SignatureService signatureService, KeyPairService keyPairService, Map<String, PublicKey> tenantPublicKeys) {
+        this.signatureService = signatureService;
+        this.keyPairService = keyPairService;
+        this.tenantPublicKeys = tenantPublicKeys;
     }
 }

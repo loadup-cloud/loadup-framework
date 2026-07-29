@@ -23,14 +23,10 @@ package io.github.loadup.components.gotone.domain;
  */
 
 import io.github.loadup.commons.domain.BaseDomain;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * 通知模板领域对象
  */
-@Getter
-@Setter
 public class NotificationTemplate extends BaseDomain {
     private String id;
     private String templateCode;
@@ -40,4 +36,68 @@ public class NotificationTemplate extends BaseDomain {
     private String titleTemplate;
     private String templateType;
     private Boolean enabled;
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getTemplateCode() {
+        return this.templateCode;
+    }
+
+    public String getTemplateName() {
+        return this.templateName;
+    }
+
+    public String getChannel() {
+        return this.channel;
+    }
+
+    public String getContent() {
+        return this.content;
+    }
+
+    public String getTitleTemplate() {
+        return this.titleTemplate;
+    }
+
+    public String getTemplateType() {
+        return this.templateType;
+    }
+
+    public Boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setTemplateCode(String templateCode) {
+        this.templateCode = templateCode;
+    }
+
+    public void setTemplateName(String templateName) {
+        this.templateName = templateName;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setTitleTemplate(String titleTemplate) {
+        this.titleTemplate = titleTemplate;
+    }
+
+    public void setTemplateType(String templateType) {
+        this.templateType = templateType;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
 }

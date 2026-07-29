@@ -23,16 +23,10 @@ package io.github.loadup.testify.asserts.model;
  */
 
 import java.util.Map;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * 数据库行差异模型
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class RowDiff {
     /**
      * YAML 中定义的期望行索引（从 0 开始）
@@ -72,5 +66,79 @@ public class RowDiff {
     public static RowDiff diff(
             int index, String message, Map<String, Object> expectedRow, Map<String, FieldDiff> fieldDiffs) {
         return new RowDiff(index, "DIFF", message, expectedRow, fieldDiffs);
+    }
+
+    public RowDiff(int index, String type, String message, Map<String, Object> expectedRow, Map<String, FieldDiff> fieldDiffs) {
+        this.index = index;
+        this.type = type;
+        this.message = message;
+        this.expectedRow = expectedRow;
+        this.fieldDiffs = fieldDiffs;
+    }
+
+    public RowDiff() {
+    }
+
+    public int getIndex() {
+        return this.index;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public String getMessage() {
+        return this.message;
+    }
+
+    public Map<String, Object> getExpectedRow() {
+        return this.expectedRow;
+    }
+
+    public Map<String, FieldDiff> getFieldDiffs() {
+        return this.fieldDiffs;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setExpectedRow(Map<String, Object> expectedRow) {
+        this.expectedRow = expectedRow;
+    }
+
+    public void setFieldDiffs(Map<String, FieldDiff> fieldDiffs) {
+        this.fieldDiffs = fieldDiffs;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(index, type, message, expectedRow, fieldDiffs);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RowDiff other = (RowDiff) o;
+        if (!java.util.Objects.equals(index, other.index)) return false;
+        if (!java.util.Objects.equals(type, other.type)) return false;
+        if (!java.util.Objects.equals(message, other.message)) return false;
+        if (!java.util.Objects.equals(expectedRow, other.expectedRow)) return false;
+        if (!java.util.Objects.equals(fieldDiffs, other.fieldDiffs)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "RowDiff(" + "index=" + index + ", " + "type=" + type + ", " + "message=" + message + ", " + "expectedRow=" + expectedRow + ", " + "fieldDiffs=" + fieldDiffs + ")";
     }
 }

@@ -24,11 +24,12 @@ package io.github.loadup.components.gotone.channel.push.config;
 
 import io.github.loadup.components.gotone.api.NotificationChannelProvider;
 import io.github.loadup.components.gotone.channel.push.FcmPushProvider;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Push Channel Auto Configuration.
  *
@@ -37,8 +38,9 @@ import org.springframework.context.annotation.Bean;
  *   <li>fcm - Firebase Cloud Messaging</li>
  * </ul>
  */
-@Slf4j
 public class PushChannelAutoConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(PushChannelAutoConfiguration.class);
+
 
     /**
      * Firebase Cloud Messaging 推送提供商

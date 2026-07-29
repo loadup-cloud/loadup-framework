@@ -23,20 +23,12 @@ package io.github.loadup.components.signature.model;
  */
 
 import java.io.Serializable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * 密钥对信息
  *
  * @author loadup
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class KeyPairInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -60,4 +52,103 @@ public class KeyPairInfo implements Serializable {
      * 密钥长度
      */
     private Integer keySize;
+
+    public KeyPairInfo(String publicKey, String privateKey, String algorithm, Integer keySize) {
+        this.publicKey = publicKey;
+        this.privateKey = privateKey;
+        this.algorithm = algorithm;
+        this.keySize = keySize;
+    }
+
+    public KeyPairInfo() {
+    }
+
+    public String getPublicKey() {
+        return this.publicKey;
+    }
+
+    public String getPrivateKey() {
+        return this.privateKey;
+    }
+
+    public String getAlgorithm() {
+        return this.algorithm;
+    }
+
+    public Integer getKeySize() {
+        return this.keySize;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
+
+    public void setPrivateKey(String privateKey) {
+        this.privateKey = privateKey;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public void setKeySize(Integer keySize) {
+        this.keySize = keySize;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(publicKey, privateKey, algorithm, keySize);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        KeyPairInfo other = (KeyPairInfo) o;
+        if (!java.util.Objects.equals(publicKey, other.publicKey)) return false;
+        if (!java.util.Objects.equals(privateKey, other.privateKey)) return false;
+        if (!java.util.Objects.equals(algorithm, other.algorithm)) return false;
+        if (!java.util.Objects.equals(keySize, other.keySize)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "KeyPairInfo(" + "publicKey=" + publicKey + ", " + "privateKey=" + privateKey + ", " + "algorithm=" + algorithm + ", " + "keySize=" + keySize + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String publicKey;
+        private String privateKey;
+        private String algorithm;
+        private Integer keySize;
+
+        public Builder publicKey(String publicKey) {
+            this.publicKey = publicKey;
+            return this;
+        }
+
+        public Builder privateKey(String privateKey) {
+            this.privateKey = privateKey;
+            return this;
+        }
+
+        public Builder algorithm(String algorithm) {
+            this.algorithm = algorithm;
+            return this;
+        }
+
+        public Builder keySize(Integer keySize) {
+            this.keySize = keySize;
+            return this;
+        }
+
+        public KeyPairInfo build() {
+            return new KeyPairInfo(this.publicKey, this.privateKey, this.algorithm, this.keySize);
+        }
+    }
 }

@@ -29,8 +29,8 @@ import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 企业微信机器人 Webhook 提供商
  *
@@ -47,8 +47,9 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @see <a href="https://developer.work.weixin.qq.com/document/path/91770">企业微信群机器人配置说明</a>
  */
-@Slf4j
 public class WechatWebhookProvider implements NotificationChannelProvider {
+    private static final Logger log = LoggerFactory.getLogger(WechatWebhookProvider.class);
+
 
     @Override
     public NotificationChannel getChannel() {

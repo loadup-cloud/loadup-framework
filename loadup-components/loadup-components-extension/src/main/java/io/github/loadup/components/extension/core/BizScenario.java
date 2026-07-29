@@ -22,53 +22,65 @@ package io.github.loadup.components.extension.core;
  * #L%
  */
 
-import lombok.Builder;
-import lombok.Value;
-
-@Value
-@Builder
-public class BizScenario {
+public record BizScenario(String bizCode, String useCase, String scenario) {
 
     public static final String DEFAULT_BIZ_CODE = "#defaultBizCode#";
     public static final String DEFAULT_USE_CASE = "#defaultUseCase#";
     public static final String DEFAULT_SCENARIO = "#defaultScenario#";
     private static final String DOT_SEPARATOR = ".";
 
-    @Builder.Default
-    private String bizCode = DEFAULT_BIZ_CODE;
-
-    @Builder.Default
-    private String useCase = DEFAULT_USE_CASE;
-
-    @Builder.Default
-    private String scenario = DEFAULT_SCENARIO;
+    public BizScenario {
+        if (bizCode == null) bizCode = DEFAULT_BIZ_CODE;
+        if (useCase == null) useCase = DEFAULT_USE_CASE;
+        if (scenario == null) scenario = DEFAULT_SCENARIO;
+    }
 
     public String getUniqueIdentity() {
         return bizCode + DOT_SEPARATOR + useCase + DOT_SEPARATOR + scenario;
     }
 
-    /**
-     * 创建一个只包含 bizCode 的基础场景
-     */
     public static BizScenario valueOf(String bizCode) {
         return BizScenario.builder().bizCode(bizCode).build();
     }
 
-    /**
-     * 创建包含 bizCode 和 useCase 的场景
-     */
     public static BizScenario valueOf(String bizCode, String useCase) {
         return BizScenario.builder().bizCode(bizCode).useCase(useCase).build();
     }
 
-    /**
-     * 创建包含所有维度的完整场景
-     */
     public static BizScenario valueOf(String bizCode, String useCase, String scenario) {
         return BizScenario.builder()
                 .bizCode(bizCode)
                 .useCase(useCase)
                 .scenario(scenario)
                 .build();
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String bizCode = DEFAULT_BIZ_CODE;
+        private String useCase = DEFAULT_USE_CASE;
+        private String scenario = DEFAULT_SCENARIO;
+
+        public Builder bizCode(String bizCode) {
+            this.bizCode = bizCode;
+            return this;
+        }
+
+        public Builder useCase(String useCase) {
+            this.useCase = useCase;
+            return this;
+        }
+
+        public Builder scenario(String scenario) {
+            this.scenario = scenario;
+            return this;
+        }
+
+        public BizScenario build() {
+            return new BizScenario(bizCode, useCase, scenario);
+        }
     }
 }

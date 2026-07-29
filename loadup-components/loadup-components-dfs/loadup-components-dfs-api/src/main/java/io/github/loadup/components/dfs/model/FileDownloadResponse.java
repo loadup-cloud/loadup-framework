@@ -23,18 +23,10 @@ package io.github.loadup.components.dfs.model;
  */
 
 import java.io.InputStream;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * 文件下载响应
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class FileDownloadResponse {
 
     /**
@@ -51,4 +43,87 @@ public class FileDownloadResponse {
      * 内容长度
      */
     private Long contentLength;
+
+    public FileDownloadResponse(FileMetadata metadata, InputStream inputStream, Long contentLength) {
+        this.metadata = metadata;
+        this.inputStream = inputStream;
+        this.contentLength = contentLength;
+    }
+
+    public FileDownloadResponse() {
+    }
+
+    public FileMetadata getMetadata() {
+        return this.metadata;
+    }
+
+    public InputStream getInputStream() {
+        return this.inputStream;
+    }
+
+    public Long getContentLength() {
+        return this.contentLength;
+    }
+
+    public void setMetadata(FileMetadata metadata) {
+        this.metadata = metadata;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
+
+    public void setContentLength(Long contentLength) {
+        this.contentLength = contentLength;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(metadata, inputStream, contentLength);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FileDownloadResponse other = (FileDownloadResponse) o;
+        if (!java.util.Objects.equals(metadata, other.metadata)) return false;
+        if (!java.util.Objects.equals(inputStream, other.inputStream)) return false;
+        if (!java.util.Objects.equals(contentLength, other.contentLength)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "FileDownloadResponse(" + "metadata=" + metadata + ", " + "inputStream=" + inputStream + ", " + "contentLength=" + contentLength + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private FileMetadata metadata;
+        private InputStream inputStream;
+        private Long contentLength;
+
+        public Builder metadata(FileMetadata metadata) {
+            this.metadata = metadata;
+            return this;
+        }
+
+        public Builder inputStream(InputStream inputStream) {
+            this.inputStream = inputStream;
+            return this;
+        }
+
+        public Builder contentLength(Long contentLength) {
+            this.contentLength = contentLength;
+            return this;
+        }
+
+        public FileDownloadResponse build() {
+            return new FileDownloadResponse(this.metadata, this.inputStream, this.contentLength);
+        }
+    }
 }

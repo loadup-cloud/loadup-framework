@@ -10,19 +10,18 @@ package io.github.loadup.commons.enums;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
-import lombok.Getter;
 
 /**
  * Supported database type enumeration.
@@ -30,7 +29,6 @@ import lombok.Getter;
  * <p>Originally duplicated across {@code loadup-components-globalunique} and
  * {@code loadup-components-retrytask-facade}; consolidated here as the single source of truth.
  */
-@Getter
 public enum DbType {
 
     MYSQL("mysql", "MySQL"),
@@ -56,5 +54,13 @@ public enum DbType {
             }
         }
         return MYSQL;
+    }
+
+    public String getValue() {
+        return this.value;
+    }
+
+    public String getDisplayName() {
+        return this.displayName;
     }
 }

@@ -26,12 +26,10 @@ import io.github.loadup.retrytask.facade.enums.Priority;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Map;
-import lombok.Data;
 
 /**
  * A request to register a new retry task.
  */
-@Data
 public class RetryTaskRegisterRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -72,4 +70,98 @@ public class RetryTaskRegisterRequest implements Serializable {
      * If true, the registration method will block until the task is processed.
      */
     private Boolean waitResult;
+
+    public RetryTaskRegisterRequest(String bizType, String bizId, Priority priority, LocalDateTime nextRetryTime, Map<String, String> args, Boolean executeImmediately, Boolean waitResult) {
+        this.bizType = bizType;
+        this.bizId = bizId;
+        this.priority = priority;
+        this.nextRetryTime = nextRetryTime;
+        this.args = args;
+        this.executeImmediately = executeImmediately;
+        this.waitResult = waitResult;
+    }
+
+    public RetryTaskRegisterRequest() {
+    }
+
+    public String getBizType() {
+        return this.bizType;
+    }
+
+    public String getBizId() {
+        return this.bizId;
+    }
+
+    public Priority getPriority() {
+        return this.priority;
+    }
+
+    public LocalDateTime getNextRetryTime() {
+        return this.nextRetryTime;
+    }
+
+    public Map<String, String> getArgs() {
+        return this.args;
+    }
+
+    public Boolean isExecuteImmediately() {
+        return this.executeImmediately;
+    }
+
+    public Boolean isWaitResult() {
+        return this.waitResult;
+    }
+
+    public void setBizType(String bizType) {
+        this.bizType = bizType;
+    }
+
+    public void setBizId(String bizId) {
+        this.bizId = bizId;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
+    public void setNextRetryTime(LocalDateTime nextRetryTime) {
+        this.nextRetryTime = nextRetryTime;
+    }
+
+    public void setArgs(Map<String, String> args) {
+        this.args = args;
+    }
+
+    public void setExecuteImmediately(Boolean executeImmediately) {
+        this.executeImmediately = executeImmediately;
+    }
+
+    public void setWaitResult(Boolean waitResult) {
+        this.waitResult = waitResult;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(bizType, bizId, priority, nextRetryTime, args, executeImmediately, waitResult);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RetryTaskRegisterRequest other = (RetryTaskRegisterRequest) o;
+        if (!java.util.Objects.equals(bizType, other.bizType)) return false;
+        if (!java.util.Objects.equals(bizId, other.bizId)) return false;
+        if (!java.util.Objects.equals(priority, other.priority)) return false;
+        if (!java.util.Objects.equals(nextRetryTime, other.nextRetryTime)) return false;
+        if (!java.util.Objects.equals(args, other.args)) return false;
+        if (!java.util.Objects.equals(executeImmediately, other.executeImmediately)) return false;
+        if (!java.util.Objects.equals(waitResult, other.waitResult)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "RetryTaskRegisterRequest(" + "bizType=" + bizType + ", " + "bizId=" + bizId + ", " + "priority=" + priority + ", " + "nextRetryTime=" + nextRetryTime + ", " + "args=" + args + ", " + "executeImmediately=" + executeImmediately + ", " + "waitResult=" + waitResult + ")";
+    }
 }

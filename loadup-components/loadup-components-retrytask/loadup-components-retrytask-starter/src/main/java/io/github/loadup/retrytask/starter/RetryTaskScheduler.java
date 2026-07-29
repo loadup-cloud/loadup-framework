@@ -32,13 +32,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Scheduler for scanning and executing retry tasks
  */
-@Slf4j
 public class RetryTaskScheduler {
+    private static final Logger log = LoggerFactory.getLogger(RetryTaskScheduler.class);
+
 
     private final RetryTaskService retryTaskService;
     private final RetryTaskExecutor retryTaskExecutor;

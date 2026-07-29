@@ -35,20 +35,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 用户OAuth绑定 Gateway 实现
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 @Component
-@RequiredArgsConstructor
 public class UserOAuthBindingGatewayImpl implements UserOAuthBindingGateway {
+    private static final Logger log = LoggerFactory.getLogger(UserOAuthBindingGatewayImpl.class);
+
 
     private final UserOAuthBindingDOMapper mapper;
     private final UserOAuthBindingConverter converter;
@@ -98,5 +98,10 @@ public class UserOAuthBindingGatewayImpl implements UserOAuthBindingGateway {
         mapper.deleteByQuery(QueryWrapper.create()
                 .where(USER_OAUTH_BINDING_DO.USER_ID.eq(userId))
                 .and(USER_OAUTH_BINDING_DO.PROVIDER.eq(provider)));
+    }
+
+    public UserOAuthBindingGatewayImpl(UserOAuthBindingDOMapper mapper, UserOAuthBindingConverter converter) {
+        this.mapper = mapper;
+        this.converter = converter;
     }
 }

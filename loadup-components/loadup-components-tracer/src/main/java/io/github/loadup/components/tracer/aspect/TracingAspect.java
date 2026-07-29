@@ -30,14 +30,14 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.context.Scope;
 import java.util.Arrays;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.AnnotationUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * AOP aspect that wraps methods annotated with {@link Traced} in an OpenTelemetry span.
  *
@@ -49,10 +49,10 @@ import org.springframework.core.annotation.AnnotationUtils;
  *   <li>MDC ({@code traceId}, {@code spanId}) is restored to the parent values on exit.</li>
  * </ul>
  */
-@Slf4j
 @Aspect
-@RequiredArgsConstructor
 public class TracingAspect {
+    private static final Logger log = LoggerFactory.getLogger(TracingAspect.class);
+
 
     @Around("@annotation(io.github.loadup.components.tracer.annotation.Traced) "
             + "|| @within(io.github.loadup.components.tracer.annotation.Traced)")

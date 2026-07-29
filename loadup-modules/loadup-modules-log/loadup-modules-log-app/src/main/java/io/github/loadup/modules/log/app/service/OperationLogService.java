@@ -36,20 +36,20 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Application service for operation log management.
  *
  * <p>Exposed to Gateway via {@code bean://operationLogService:method}.
  */
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class OperationLogService {
+    private static final Logger log = LoggerFactory.getLogger(OperationLogService.class);
+
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -233,5 +233,10 @@ public class OperationLogService {
         dto.setUserAgent(m.getUserAgent());
         dto.setOperationTime(m.getOperationTime());
         return dto;
+    }
+
+    public OperationLogService(OperationLogGateway gateway, LogAsyncWriter logAsyncWriter) {
+        this.gateway = gateway;
+        this.logAsyncWriter = logAsyncWriter;
     }
 }

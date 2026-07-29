@@ -29,7 +29,6 @@ import io.github.loadup.modules.upms.infrastructure.dataobject.UserDO;
 import io.github.loadup.modules.upms.infrastructure.mapper.UserDOMapper;
 import java.util.Collections;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -42,7 +41,6 @@ import org.springframework.stereotype.Repository;
  * @since 1.0.0
  */
 @Repository
-@RequiredArgsConstructor
 public class AuthGatewayImpl implements AuthGateway {
 
     private final UserDOMapper userDOMapper;
@@ -112,5 +110,9 @@ public class AuthGatewayImpl implements AuthGateway {
         dto.setStatus(0);
         dto.setNickname(userDO.getNickname());
         return dto;
+    }
+
+    public AuthGatewayImpl(UserDOMapper userDOMapper) {
+        this.userDOMapper = userDOMapper;
     }
 }

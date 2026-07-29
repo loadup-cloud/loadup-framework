@@ -24,8 +24,6 @@ package io.github.loadup.components.configcenter.local.cfg;
 
 import io.github.loadup.components.configcenter.cfg.ConfigCenterBinderCfg;
 import java.time.Duration;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Configuration for the local-file binder.
@@ -39,8 +37,6 @@ import lombok.Setter;
  *         refresh-interval: 30s     # polling interval for file-change detection
  * </pre>
  */
-@Getter
-@Setter
 public class LocalConfigCenterBinderCfg extends ConfigCenterBinderCfg {
 
     /**
@@ -59,5 +55,13 @@ public class LocalConfigCenterBinderCfg extends ConfigCenterBinderCfg {
     @Override
     public Object getIdentity() {
         return basePath;
+    }
+
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
+    }
+
+    public void setRefreshInterval(Duration refreshInterval) {
+        this.refreshInterval = refreshInterval;
     }
 }

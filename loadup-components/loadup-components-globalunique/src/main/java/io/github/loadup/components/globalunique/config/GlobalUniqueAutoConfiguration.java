@@ -23,18 +23,18 @@ package io.github.loadup.components.globalunique.config;
  */
 
 import io.github.loadup.components.globalunique.properties.GlobalUniqueProperties;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * GlobalUnique 自动配置
  *
  * @author loadup
  */
-@Slf4j
 @AutoConfiguration
 @ConditionalOnProperty(
         prefix = "loadup.components.globalunique",
@@ -44,6 +44,8 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableConfigurationProperties(GlobalUniqueProperties.class)
 @ComponentScan(basePackages = "io.github.loadup.components.globalunique")
 public class GlobalUniqueAutoConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(GlobalUniqueAutoConfiguration.class);
+
 
     public GlobalUniqueAutoConfiguration(GlobalUniqueProperties properties) {
         log.info(

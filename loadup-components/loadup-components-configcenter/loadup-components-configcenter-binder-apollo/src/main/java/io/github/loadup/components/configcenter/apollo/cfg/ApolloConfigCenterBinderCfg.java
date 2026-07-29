@@ -23,8 +23,6 @@ package io.github.loadup.components.configcenter.apollo.cfg;
  */
 
 import io.github.loadup.components.configcenter.cfg.ConfigCenterBinderCfg;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Configuration for the Apollo binder.
@@ -41,8 +39,6 @@ import lombok.Setter;
  *         apollo-namespace: application
  * </pre>
  */
-@Getter
-@Setter
 public class ApolloConfigCenterBinderCfg extends ConfigCenterBinderCfg {
 
     /**
@@ -75,5 +71,25 @@ public class ApolloConfigCenterBinderCfg extends ConfigCenterBinderCfg {
     @Override
     public Object getIdentity() {
         return appId + "@" + env + "/" + apolloNamespace;
+    }
+
+    public void setMeta(String meta) {
+        this.meta = meta;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
+    public void setEnv(String env) {
+        this.env = env;
+    }
+
+    public void setCluster(String cluster) {
+        this.cluster = cluster;
+    }
+
+    public void setApolloNamespace(String apolloNamespace) {
+        this.apolloNamespace = apolloNamespace;
     }
 }

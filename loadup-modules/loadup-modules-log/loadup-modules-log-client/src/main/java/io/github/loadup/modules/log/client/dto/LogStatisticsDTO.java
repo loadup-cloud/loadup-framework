@@ -23,18 +23,10 @@ package io.github.loadup.modules.log.client.dto;
  */
 
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Operation log statistics DTO.
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class LogStatisticsDTO {
 
     /**
@@ -82,11 +74,219 @@ public class LogStatisticsDTO {
      */
     private List<StatItem> byDate;
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
     public static class StatItem {
         private String name;
         private long count;
+    }
+
+    public LogStatisticsDTO(long total, long successCount, long failureCount, double successRate, Double avgDuration, Long maxDuration, List<StatItem> byModule, List<StatItem> byOperationType, List<StatItem> byDate, String name, long count) {
+        this.total = total;
+        this.successCount = successCount;
+        this.failureCount = failureCount;
+        this.successRate = successRate;
+        this.avgDuration = avgDuration;
+        this.maxDuration = maxDuration;
+        this.byModule = byModule;
+        this.byOperationType = byOperationType;
+        this.byDate = byDate;
+        this.name = name;
+        this.count = count;
+    }
+
+    public LogStatisticsDTO() {
+    }
+
+    public long getTotal() {
+        return this.total;
+    }
+
+    public long getSuccessCount() {
+        return this.successCount;
+    }
+
+    public long getFailureCount() {
+        return this.failureCount;
+    }
+
+    public double getSuccessRate() {
+        return this.successRate;
+    }
+
+    public Double getAvgDuration() {
+        return this.avgDuration;
+    }
+
+    public Long getMaxDuration() {
+        return this.maxDuration;
+    }
+
+    public List<StatItem> getByModule() {
+        return this.byModule;
+    }
+
+    public List<StatItem> getByOperationType() {
+        return this.byOperationType;
+    }
+
+    public List<StatItem> getByDate() {
+        return this.byDate;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public long getCount() {
+        return this.count;
+    }
+
+    public void setTotal(long total) {
+        this.total = total;
+    }
+
+    public void setSuccessCount(long successCount) {
+        this.successCount = successCount;
+    }
+
+    public void setFailureCount(long failureCount) {
+        this.failureCount = failureCount;
+    }
+
+    public void setSuccessRate(double successRate) {
+        this.successRate = successRate;
+    }
+
+    public void setAvgDuration(Double avgDuration) {
+        this.avgDuration = avgDuration;
+    }
+
+    public void setMaxDuration(Long maxDuration) {
+        this.maxDuration = maxDuration;
+    }
+
+    public void setByModule(List<StatItem> byModule) {
+        this.byModule = byModule;
+    }
+
+    public void setByOperationType(List<StatItem> byOperationType) {
+        this.byOperationType = byOperationType;
+    }
+
+    public void setByDate(List<StatItem> byDate) {
+        this.byDate = byDate;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCount(long count) {
+        this.count = count;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(total, successCount, failureCount, successRate, avgDuration, maxDuration, byModule, byOperationType, byDate, name, count);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LogStatisticsDTO other = (LogStatisticsDTO) o;
+        if (!java.util.Objects.equals(total, other.total)) return false;
+        if (!java.util.Objects.equals(successCount, other.successCount)) return false;
+        if (!java.util.Objects.equals(failureCount, other.failureCount)) return false;
+        if (!java.util.Objects.equals(successRate, other.successRate)) return false;
+        if (!java.util.Objects.equals(avgDuration, other.avgDuration)) return false;
+        if (!java.util.Objects.equals(maxDuration, other.maxDuration)) return false;
+        if (!java.util.Objects.equals(byModule, other.byModule)) return false;
+        if (!java.util.Objects.equals(byOperationType, other.byOperationType)) return false;
+        if (!java.util.Objects.equals(byDate, other.byDate)) return false;
+        if (!java.util.Objects.equals(name, other.name)) return false;
+        if (!java.util.Objects.equals(count, other.count)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "LogStatisticsDTO(" + "total=" + total + ", " + "successCount=" + successCount + ", " + "failureCount=" + failureCount + ", " + "successRate=" + successRate + ", " + "avgDuration=" + avgDuration + ", " + "maxDuration=" + maxDuration + ", " + "byModule=" + byModule + ", " + "byOperationType=" + byOperationType + ", " + "byDate=" + byDate + ", " + "name=" + name + ", " + "count=" + count + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private long total;
+        private long successCount;
+        private long failureCount;
+        private double successRate;
+        private Double avgDuration;
+        private Long maxDuration;
+        private List<StatItem> byModule;
+        private List<StatItem> byOperationType;
+        private List<StatItem> byDate;
+        private String name;
+        private long count;
+
+        public Builder total(long total) {
+            this.total = total;
+            return this;
+        }
+
+        public Builder successCount(long successCount) {
+            this.successCount = successCount;
+            return this;
+        }
+
+        public Builder failureCount(long failureCount) {
+            this.failureCount = failureCount;
+            return this;
+        }
+
+        public Builder successRate(double successRate) {
+            this.successRate = successRate;
+            return this;
+        }
+
+        public Builder avgDuration(Double avgDuration) {
+            this.avgDuration = avgDuration;
+            return this;
+        }
+
+        public Builder maxDuration(Long maxDuration) {
+            this.maxDuration = maxDuration;
+            return this;
+        }
+
+        public Builder byModule(List<StatItem> byModule) {
+            this.byModule = byModule;
+            return this;
+        }
+
+        public Builder byOperationType(List<StatItem> byOperationType) {
+            this.byOperationType = byOperationType;
+            return this;
+        }
+
+        public Builder byDate(List<StatItem> byDate) {
+            this.byDate = byDate;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder count(long count) {
+            this.count = count;
+            return this;
+        }
+
+        public LogStatisticsDTO build() {
+            return new LogStatisticsDTO(this.total, this.successCount, this.failureCount, this.successRate, this.avgDuration, this.maxDuration, this.byModule, this.byOperationType, this.byDate, this.name, this.count);
+        }
     }
 }

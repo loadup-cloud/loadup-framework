@@ -22,8 +22,6 @@ package io.github.loadup.components.configcenter.properties;
  * #L%
  */
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -35,8 +33,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *     default-binder: local    # local | nacos | apollo
  * </pre>
  */
-@Getter
-@Setter
 @ConfigurationProperties(prefix = "loadup.configcenter")
 public class ConfigCenterGroupProperties {
 
@@ -44,4 +40,12 @@ public class ConfigCenterGroupProperties {
      * Default binder type used when none is specified at the binding level.
      */
     private ConfigCenterBinderType defaultBinder = ConfigCenterBinderType.LOCAL;
+
+    public ConfigCenterBinderType getDefaultBinder() {
+        return this.defaultBinder;
+    }
+
+    public void setDefaultBinder(ConfigCenterBinderType defaultBinder) {
+        this.defaultBinder = defaultBinder;
+    }
 }

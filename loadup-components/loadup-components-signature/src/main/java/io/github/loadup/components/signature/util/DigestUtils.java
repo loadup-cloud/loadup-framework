@@ -6,13 +6,14 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Digest utility wrapping commons with signature-specific enum support.
  */
-@Slf4j
 public final class DigestUtils {
+    private static final Logger log = LoggerFactory.getLogger(DigestUtils.class);
+
 
     private DigestUtils() {}
 

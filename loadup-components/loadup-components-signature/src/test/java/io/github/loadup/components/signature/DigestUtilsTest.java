@@ -26,18 +26,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.loadup.components.signature.enums.DigestAlgorithm;
 import io.github.loadup.components.signature.util.DigestUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * DigestUtils 工具类测试
  *
  * @author loadup
  */
-@Slf4j
 @DisplayName("DigestUtils 工具类测试")
 class DigestUtilsTest {
+    private static final Logger log = LoggerFactory.getLogger(DigestUtilsTest.class);
+
 
     @Test
     @DisplayName("MD5 快速方法")

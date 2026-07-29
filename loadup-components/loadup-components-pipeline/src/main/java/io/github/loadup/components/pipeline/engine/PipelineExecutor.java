@@ -46,12 +46,12 @@ import io.github.loadup.components.pipeline.tx.ITxInitializer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Core pipeline execution engine.
  *
@@ -73,9 +73,9 @@ import org.springframework.transaction.support.TransactionTemplate;
  * <p>Exception handling is delegated to the {@link ExceptionHandlerBus} returned by
  * {@link IPipelineDefinition#exceptions()}.
  */
-@Slf4j
-@RequiredArgsConstructor
 public class PipelineExecutor {
+    private static final Logger log = LoggerFactory.getLogger(PipelineExecutor.class);
+
 
     private final ApplicationContext applicationContext;
 
@@ -313,5 +313,9 @@ public class PipelineExecutor {
     @SuppressWarnings("unchecked")
     private static <T extends Throwable> void sneakyThrow(Throwable t) throws T {
         throw (T) t;
+    }
+
+    public PipelineExecutor(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 }

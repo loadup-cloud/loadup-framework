@@ -25,10 +25,11 @@ package io.github.loadup.components.testcontainers.cloud;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.localstack.LocalStackContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Shared LocalStack TestContainer instance for S3 testing.
  *
@@ -41,6 +42,8 @@ import org.testcontainers.utility.DockerImageName;
  * <pre>
  * &#64;SpringBootTest
  * &#64;TestPropertySource(properties = {
+    private static final Logger log = LoggerFactory.getLogger(SharedLocalStackContainer.class);
+
  *     "aws.s3.endpoint=" + SharedLocalStackContainer.getS3Endpoint(),
  *     "aws.access-key-id=" + SharedLocalStackContainer.ACCESS_KEY,
  *     "aws.secret-access-key=" + SharedLocalStackContainer.SECRET_KEY
@@ -53,7 +56,6 @@ import org.testcontainers.utility.DockerImageName;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 public final class SharedLocalStackContainer {
 
     /**

@@ -25,20 +25,20 @@ package io.github.loadup.components.globalunique.service.impl;
 import io.github.loadup.components.globalunique.entity.GlobalUniqueEntity;
 import io.github.loadup.components.globalunique.mapper.GlobalUniqueMapper;
 import io.github.loadup.components.globalunique.service.GlobalUniqueService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 全局唯一性服务实现
  *
  * @author loadup
  */
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class GlobalUniqueServiceImpl implements GlobalUniqueService {
+    private static final Logger log = LoggerFactory.getLogger(GlobalUniqueServiceImpl.class);
+
 
     private final GlobalUniqueMapper globalUniqueMapper;
 
@@ -76,5 +76,9 @@ public class GlobalUniqueServiceImpl implements GlobalUniqueService {
             log.debug("幂等拦截: uniqueKey={}, bizType={}, bizId={}", uniqueKey, bizType, bizId);
             return false;
         }
+    }
+
+    public GlobalUniqueServiceImpl(GlobalUniqueMapper globalUniqueMapper) {
+        this.globalUniqueMapper = globalUniqueMapper;
     }
 }

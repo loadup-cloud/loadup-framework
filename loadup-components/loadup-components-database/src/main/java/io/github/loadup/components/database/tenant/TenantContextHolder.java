@@ -1,5 +1,8 @@
 package io.github.loadup.components.database.tenant;
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /*-
  * #%L
  * loadup-components-database
@@ -22,8 +25,6 @@ package io.github.loadup.components.database.tenant;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * Tenant Context Holder
  *
@@ -33,8 +34,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 public final class TenantContextHolder {
+    private static final Logger log = LoggerFactory.getLogger(TenantContextHolder.class);
+
 
     private static final ThreadLocal<String> TENANT_ID = new InheritableThreadLocal<>();
 

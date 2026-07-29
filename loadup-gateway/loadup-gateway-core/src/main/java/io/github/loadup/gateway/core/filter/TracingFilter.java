@@ -8,14 +8,15 @@ import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.context.propagation.TextMapPropagator;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Distributed tracing filter — creates an OpenTelemetry span for each request.
  * Optional: only registered when a {@link Tracer} bean is present.
  */
-@Slf4j
 public class TracingFilter implements GatewayFilter {
+    private static final Logger log = LoggerFactory.getLogger(TracingFilter.class);
+
 
     private final Tracer tracer;
     private final TextMapPropagator propagator;

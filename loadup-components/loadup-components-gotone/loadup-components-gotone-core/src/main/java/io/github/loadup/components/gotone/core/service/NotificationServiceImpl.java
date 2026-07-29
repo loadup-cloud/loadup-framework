@@ -47,12 +47,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 通知服务实现 - ServiceCode驱动的智能路由
  *
@@ -66,11 +66,11 @@ import org.springframework.validation.annotation.Validated;
  *   <li>保存发送记录</li>
  * </ol>
  */
-@Slf4j
 @Service
 @Validated
-@RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
+    private static final Logger log = LoggerFactory.getLogger(NotificationServiceImpl.class);
+
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
     private static final Pattern PHONE_PATTERN = Pattern.compile("^1[3-9]\\d{9}$");
@@ -350,5 +350,13 @@ public class NotificationServiceImpl implements NotificationService {
                 .success(true)
                 .errorMessage("请求已处理（幂等性）")
                 .build();
+    }
+
+    public NotificationServiceImpl(NotificationServiceRepository serviceRepository, ServiceChannelRepository channelRepository, NotificationRecordRepository recordRepository, NotificationChannelManager channelManager, TemplateProcessor templateProcessor) {
+        this.serviceRepository = serviceRepository;
+        this.channelRepository = channelRepository;
+        this.recordRepository = recordRepository;
+        this.channelManager = channelManager;
+        this.templateProcessor = templateProcessor;
     }
 }

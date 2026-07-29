@@ -36,19 +36,19 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Locale;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 密钥对管理服务实现
  *
  * @author loadup
  */
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class KeyPairServiceImpl implements KeyPairService {
+    private static final Logger log = LoggerFactory.getLogger(KeyPairServiceImpl.class);
+
 
     private final SignatureProperties properties;
 
@@ -109,5 +109,9 @@ public class KeyPairServiceImpl implements KeyPairService {
             throw new SignatureException(
                     SignatureException.SignatureErrorCode.INVALID_KEY, "公钥加载失败: " + e.getMessage(), e);
         }
+    }
+
+    public KeyPairServiceImpl(SignatureProperties properties) {
+        this.properties = properties;
     }
 }

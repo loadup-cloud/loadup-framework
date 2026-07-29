@@ -15,18 +15,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Database-backed RouteStore using Spring Data JDBC.
  *
  * <p>Stores route definitions in a relational database.
  * Supports full CRUD for the admin API.
  */
-@Slf4j
-@RequiredArgsConstructor
 public class DatabaseRouteStore implements RouteStore {
+    private static final Logger log = LoggerFactory.getLogger(DatabaseRouteStore.class);
+
 
     private final RouteManager routeManager;
 
@@ -178,5 +177,9 @@ public class DatabaseRouteStore implements RouteStore {
             }
         }
         return all.isEmpty() ? null : JsonUtil.toJson(all);
+    }
+
+    public DatabaseRouteStore(RouteManager routeManager) {
+        this.routeManager = routeManager;
     }
 }

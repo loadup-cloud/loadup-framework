@@ -31,7 +31,6 @@ import io.github.loadup.components.authorization.model.LoadUpUser;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -39,17 +38,20 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * AOP aspect for authorization checks.
  *
  * <p>Intercepts methods annotated with {@link RequireRole} or {@link RequirePermission}
  * and validates user permissions before method execution.</p>
  */
-@Slf4j
 @Aspect
 @Component
 @Order(100) // Execute before transaction management
 public class AuthorizationAspect {
+    private static final Logger log = LoggerFactory.getLogger(AuthorizationAspect.class);
+
 
     /**
      * Intercept methods with {@link RequireRole} annotation

@@ -22,15 +22,11 @@ package io.github.loadup.commons.enums;
  * #L%
  */
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 /**
  * @author Lise
  * @since 1.0.0
  */
-@Getter
-@AllArgsConstructor
 public enum TimeUnitEnum implements IEnum {
     /**
      * SECOND
@@ -62,5 +58,18 @@ public enum TimeUnitEnum implements IEnum {
 
     public static TimeUnitEnum getByCode(String code) {
         return IEnum.EnumLookup.fromCode(TimeUnitEnum.class, code);
+    }
+
+    private TimeUnitEnum(String code, String description) {
+        this.code = code;
+        this.description = description;
+    }
+
+    public String getCode() {
+        return this.code;
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 }

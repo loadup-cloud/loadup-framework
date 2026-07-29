@@ -50,13 +50,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Authentication Service Handles user login, register, and token management
  *
@@ -64,9 +64,9 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.0.0
  */
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
+    private static final Logger log = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
+
 
     private final UserGateway userGateway;
     private final RoleGateway roleGateway;
@@ -378,5 +378,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         roleGateway
                 .findByRoleCode("ROLE_USER")
                 .ifPresent(role -> roleGateway.assignRoleToUser(userId, role.getId(), "0"));
+    }
+
+    public AuthenticationServiceImpl(UserGateway userGateway, RoleGateway roleGateway, LoginLogGateway loginLogGateway, UserPermissionService permissionService, PasswordEncoder passwordEncoder, AuthGateway authGateway, UpmsSecurityProperties securityProperties, LoginStrategyManager loginStrategyManager) {
+        this.userGateway = userGateway;
+        this.roleGateway = roleGateway;
+        this.loginLogGateway = loginLogGateway;
+        this.permissionService = permissionService;
+        this.passwordEncoder = passwordEncoder;
+        this.authGateway = authGateway;
+        this.securityProperties = securityProperties;
+        this.loginStrategyManager = loginStrategyManager;
     }
 }

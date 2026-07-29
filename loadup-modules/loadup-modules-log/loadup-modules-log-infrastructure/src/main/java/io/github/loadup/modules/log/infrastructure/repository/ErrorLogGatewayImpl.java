@@ -28,13 +28,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RequiredArgsConstructor
 public class ErrorLogGatewayImpl implements ErrorLogGateway {
 
     private final JdbcTemplate jdbcTemplate;
@@ -137,5 +135,9 @@ public class ErrorLogGatewayImpl implements ErrorLogGateway {
             params.add(endTime);
         }
         return sb.toString();
+    }
+
+    public ErrorLogGatewayImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 }

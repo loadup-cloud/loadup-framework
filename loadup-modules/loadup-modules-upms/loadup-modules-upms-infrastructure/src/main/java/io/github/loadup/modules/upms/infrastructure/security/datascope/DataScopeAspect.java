@@ -32,25 +32,25 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Data Scope Aspect - Intercepts methods with @DataScope annotation
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 @Aspect
 @Component
-@RequiredArgsConstructor
 public class DataScopeAspect {
+    private static final Logger log = LoggerFactory.getLogger(DataScopeAspect.class);
+
 
     private static final ThreadLocal<DataScopeContext> CONTEXT_HOLDER = new ThreadLocal<>();
 
@@ -166,5 +166,11 @@ public class DataScopeAspect {
         }
 
         return allIds;
+    }
+
+    public DataScopeAspect(UserGateway userGateway, RoleGateway roleGateway, DepartmentGateway departmentGateway) {
+        this.userGateway = userGateway;
+        this.roleGateway = roleGateway;
+        this.departmentGateway = departmentGateway;
     }
 }

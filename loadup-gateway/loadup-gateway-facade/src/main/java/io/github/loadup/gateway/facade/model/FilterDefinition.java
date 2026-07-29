@@ -4,10 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * YAML-friendly filter definition.
@@ -26,17 +22,12 @@ import lombok.NoArgsConstructor;
  *   - name: jwt-auth
  * </pre>
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class FilterDefinition {
 
     /** Filter name matching a registered GatewayFilter bean. */
     private String name;
 
     /** Filter-specific properties. */
-    @Builder.Default
     private Map<String, Object> props = new HashMap<>();
 
     public Map<String, Object> getProps() {
@@ -53,5 +44,57 @@ public class FilterDefinition {
     @Override
     public int hashCode() {
         return Objects.hash(name, props);
+    }
+
+    public FilterDefinition(String name, Map<String, Object> props) {
+        this.name = name;
+        this.props = props;
+    }
+
+    public FilterDefinition() {
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public Map<String, Object> getProps() {
+        return this.props;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setProps(Map<String, Object> props) {
+        this.props = props;
+    }
+
+    @Override
+    public String toString() {
+        return "FilterDefinition(" + "name=" + name + ", " + "props=" + props + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String name;
+        private Map<String, Object> props = new HashMap<>();
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder props(Map<String, Object> props) {
+            this.props = props;
+            return this;
+        }
+
+        public FilterDefinition build() {
+            return new FilterDefinition(this.name, this.props);
+        }
     }
 }

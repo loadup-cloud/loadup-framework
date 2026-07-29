@@ -29,9 +29,8 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 密钥管理服务示例
  * <p>
@@ -45,9 +44,9 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author loadup
  */
-@Slf4j
-@RequiredArgsConstructor
 public class KeyManagementServiceExample {
+    private static final Logger log = LoggerFactory.getLogger(KeyManagementServiceExample.class);
+
 
     private final KeyPairService keyPairService;
     // private final KeyRepository keyRepository;  // 需要自行实现
@@ -227,6 +226,200 @@ public class KeyManagementServiceExample {
     private String getMasterKey() {
         // return System.getenv("MASTER_KEY");
         return "master-key-from-env-or-kms";
+    }
+
+    public KeyManagementServiceExample(KeyPairService keyPairService, KeyRepository keyRepository, Map<String, PrivateKey> privateKeyCache, Map<String, PublicKey> publicKeyCache) {
+        this.keyPairService = keyPairService;
+        this.keyRepository = keyRepository;
+        this.privateKeyCache = privateKeyCache;
+        this.publicKeyCache = publicKeyCache;
+    }
+
+    public KeyManagementServiceExample(KeyPairService keyPairService, KeyRepository keyRepository, Map<String, PrivateKey> privateKeyCache, Map<String, PublicKey> publicKeyCache, Long id, String tenantId, String publicKey, String privateKey, String algorithm, Integer keySize, Integer version, String status, LocalDateTime createdAt, LocalDateTime expiredAt) {
+        this.keyPairService = keyPairService;
+        this.keyRepository = keyRepository;
+        this.privateKeyCache = privateKeyCache;
+        this.publicKeyCache = publicKeyCache;
+        this.id = id;
+        this.tenantId = tenantId;
+        this.publicKey = publicKey;
+        this.privateKey = privateKey;
+        this.algorithm = algorithm;
+        this.keySize = keySize;
+        this.version = version;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.expiredAt = expiredAt;
+    }
+
+    public KeyManagementServiceExample() {
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
+
+    public void setPrivateKey(String privateKey) {
+        this.privateKey = privateKey;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public void setKeySize(Integer keySize) {
+        this.keySize = keySize;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setExpiredAt(LocalDateTime expiredAt) {
+        this.expiredAt = expiredAt;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(keyPairService, keyRepository, privateKeyCache, publicKeyCache, id, tenantId, publicKey, privateKey, algorithm, keySize, version, status, createdAt, expiredAt);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        KeyManagementServiceExample other = (KeyManagementServiceExample) o;
+        if (!java.util.Objects.equals(keyPairService, other.keyPairService)) return false;
+        if (!java.util.Objects.equals(keyRepository, other.keyRepository)) return false;
+        if (!java.util.Objects.equals(privateKeyCache, other.privateKeyCache)) return false;
+        if (!java.util.Objects.equals(publicKeyCache, other.publicKeyCache)) return false;
+        if (!java.util.Objects.equals(id, other.id)) return false;
+        if (!java.util.Objects.equals(tenantId, other.tenantId)) return false;
+        if (!java.util.Objects.equals(publicKey, other.publicKey)) return false;
+        if (!java.util.Objects.equals(privateKey, other.privateKey)) return false;
+        if (!java.util.Objects.equals(algorithm, other.algorithm)) return false;
+        if (!java.util.Objects.equals(keySize, other.keySize)) return false;
+        if (!java.util.Objects.equals(version, other.version)) return false;
+        if (!java.util.Objects.equals(status, other.status)) return false;
+        if (!java.util.Objects.equals(createdAt, other.createdAt)) return false;
+        if (!java.util.Objects.equals(expiredAt, other.expiredAt)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "KeyManagementServiceExample(" + "keyPairService=" + keyPairService + ", " + "keyRepository=" + keyRepository + ", " + "privateKeyCache=" + privateKeyCache + ", " + "publicKeyCache=" + publicKeyCache + ", " + "id=" + id + ", " + "tenantId=" + tenantId + ", " + "publicKey=" + publicKey + ", " + "privateKey=" + privateKey + ", " + "algorithm=" + algorithm + ", " + "keySize=" + keySize + ", " + "version=" + version + ", " + "status=" + status + ", " + "createdAt=" + createdAt + ", " + "expiredAt=" + expiredAt + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private KeyPairService keyPairService;
+        private KeyRepository keyRepository;
+        private Map<String, PrivateKey> privateKeyCache = new ConcurrentHashMap<>();
+        private Map<String, PublicKey> publicKeyCache = new ConcurrentHashMap<>();
+        private Long id;
+        private String tenantId;
+        private String publicKey;
+        private String privateKey;
+        private String algorithm;
+        private Integer keySize;
+        private Integer version;
+        private String status;
+        private LocalDateTime createdAt;
+        private LocalDateTime expiredAt;
+
+        public Builder keyPairService(KeyPairService keyPairService) {
+            this.keyPairService = keyPairService;
+            return this;
+        }
+
+        public Builder keyRepository(KeyRepository keyRepository) {
+            this.keyRepository = keyRepository;
+            return this;
+        }
+
+        public Builder privateKeyCache(Map<String, PrivateKey> privateKeyCache) {
+            this.privateKeyCache = privateKeyCache;
+            return this;
+        }
+
+        public Builder publicKeyCache(Map<String, PublicKey> publicKeyCache) {
+            this.publicKeyCache = publicKeyCache;
+            return this;
+        }
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder tenantId(String tenantId) {
+            this.tenantId = tenantId;
+            return this;
+        }
+
+        public Builder publicKey(String publicKey) {
+            this.publicKey = publicKey;
+            return this;
+        }
+
+        public Builder privateKey(String privateKey) {
+            this.privateKey = privateKey;
+            return this;
+        }
+
+        public Builder algorithm(String algorithm) {
+            this.algorithm = algorithm;
+            return this;
+        }
+
+        public Builder keySize(Integer keySize) {
+            this.keySize = keySize;
+            return this;
+        }
+
+        public Builder version(Integer version) {
+            this.version = version;
+            return this;
+        }
+
+        public Builder status(String status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder createdAt(LocalDateTime createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public Builder expiredAt(LocalDateTime expiredAt) {
+            this.expiredAt = expiredAt;
+            return this;
+        }
+
+        public KeyManagementServiceExample build() {
+            return new KeyManagementServiceExample(this.keyPairService, this.keyRepository, this.privateKeyCache, this.publicKeyCache, this.id, this.tenantId, this.publicKey, this.privateKey, this.algorithm, this.keySize, this.version, this.status, this.createdAt, this.expiredAt);
+        }
     }
 }
 

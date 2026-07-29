@@ -29,15 +29,17 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.context.ApplicationContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Mock 引擎：负责解析配置并向 AOP 拦截器注册 Mock 规则
  */
-@Slf4j
 public class MockEngine {
+    private static final Logger log = LoggerFactory.getLogger(MockEngine.class);
+
     private final ApplicationContext applicationContext;
     private final VariableEngine variableEngine;
     private final MockInterceptor mockInterceptor;

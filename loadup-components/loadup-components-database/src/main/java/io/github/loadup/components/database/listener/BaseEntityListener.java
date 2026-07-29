@@ -29,9 +29,8 @@ import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.database.tenant.TenantContextHolder;
 import io.micrometer.common.util.StringUtils;
 import java.time.LocalDateTime;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Base Entity Listener
  *
@@ -47,9 +46,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
-@RequiredArgsConstructor
 public class BaseEntityListener implements InsertListener, UpdateListener {
+    private static final Logger log = LoggerFactory.getLogger(BaseEntityListener.class);
+
     private final DatabaseProperties databaseProperties;
 
     @Override
@@ -94,5 +93,9 @@ public class BaseEntityListener implements InsertListener, UpdateListener {
 
         // Update timestamp
         baseDO.setUpdatedAt(LocalDateTime.now());
+    }
+
+    public BaseEntityListener(DatabaseProperties databaseProperties) {
+        this.databaseProperties = databaseProperties;
     }
 }

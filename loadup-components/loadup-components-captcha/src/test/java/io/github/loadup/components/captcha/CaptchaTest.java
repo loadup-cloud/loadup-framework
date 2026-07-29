@@ -27,14 +27,16 @@ import java.io.FileOutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 测试类 Created by 王帆 on 2018-07-27 上午 10:08.
  */
-@Slf4j
 public class CaptchaTest {
+    private static final Logger log = LoggerFactory.getLogger(CaptchaTest.class);
+
     private static final Integer DEFAULT_IMAGE_WIDTH = 100;
 
     private static final Integer DEFAULT_IMAGE_HEIGHT = 40;

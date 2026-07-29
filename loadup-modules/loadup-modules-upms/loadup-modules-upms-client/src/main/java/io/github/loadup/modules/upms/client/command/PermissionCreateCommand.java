@@ -25,7 +25,6 @@ package io.github.loadup.modules.upms.client.command;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 
 /**
  * Permission Create Command
@@ -33,7 +32,6 @@ import lombok.Data;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Data
 public class PermissionCreateCommand {
 
     private String parentId;
@@ -72,4 +70,158 @@ public class PermissionCreateCommand {
     private String remark;
 
     private String createdBy;
+
+    public PermissionCreateCommand(String parentId, String permissionName, String permissionCode, Short permissionType, String resourcePath, String httpMethod, String icon, String componentPath, Integer sortOrder, Boolean visible, Short status, String remark, String createdBy) {
+        this.parentId = parentId;
+        this.permissionName = permissionName;
+        this.permissionCode = permissionCode;
+        this.permissionType = permissionType;
+        this.resourcePath = resourcePath;
+        this.httpMethod = httpMethod;
+        this.icon = icon;
+        this.componentPath = componentPath;
+        this.sortOrder = sortOrder;
+        this.visible = visible;
+        this.status = status;
+        this.remark = remark;
+        this.createdBy = createdBy;
+    }
+
+    public PermissionCreateCommand() {
+    }
+
+    public String getParentId() {
+        return this.parentId;
+    }
+
+    public String getPermissionName() {
+        return this.permissionName;
+    }
+
+    public String getPermissionCode() {
+        return this.permissionCode;
+    }
+
+    public Short getPermissionType() {
+        return this.permissionType;
+    }
+
+    public String getResourcePath() {
+        return this.resourcePath;
+    }
+
+    public String getHttpMethod() {
+        return this.httpMethod;
+    }
+
+    public String getIcon() {
+        return this.icon;
+    }
+
+    public String getComponentPath() {
+        return this.componentPath;
+    }
+
+    public Integer getSortOrder() {
+        return this.sortOrder;
+    }
+
+    public Boolean isVisible() {
+        return this.visible;
+    }
+
+    public Short getStatus() {
+        return this.status;
+    }
+
+    public String getRemark() {
+        return this.remark;
+    }
+
+    public String getCreatedBy() {
+        return this.createdBy;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public void setPermissionName(String permissionName) {
+        this.permissionName = permissionName;
+    }
+
+    public void setPermissionCode(String permissionCode) {
+        this.permissionCode = permissionCode;
+    }
+
+    public void setPermissionType(Short permissionType) {
+        this.permissionType = permissionType;
+    }
+
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
+    }
+
+    public void setHttpMethod(String httpMethod) {
+        this.httpMethod = httpMethod;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public void setComponentPath(String componentPath) {
+        this.componentPath = componentPath;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
+    }
+
+    public void setStatus(Short status) {
+        this.status = status;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(parentId, permissionName, permissionCode, permissionType, resourcePath, httpMethod, icon, componentPath, sortOrder, visible, status, remark, createdBy);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PermissionCreateCommand other = (PermissionCreateCommand) o;
+        if (!java.util.Objects.equals(parentId, other.parentId)) return false;
+        if (!java.util.Objects.equals(permissionName, other.permissionName)) return false;
+        if (!java.util.Objects.equals(permissionCode, other.permissionCode)) return false;
+        if (!java.util.Objects.equals(permissionType, other.permissionType)) return false;
+        if (!java.util.Objects.equals(resourcePath, other.resourcePath)) return false;
+        if (!java.util.Objects.equals(httpMethod, other.httpMethod)) return false;
+        if (!java.util.Objects.equals(icon, other.icon)) return false;
+        if (!java.util.Objects.equals(componentPath, other.componentPath)) return false;
+        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
+        if (!java.util.Objects.equals(visible, other.visible)) return false;
+        if (!java.util.Objects.equals(status, other.status)) return false;
+        if (!java.util.Objects.equals(remark, other.remark)) return false;
+        if (!java.util.Objects.equals(createdBy, other.createdBy)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "PermissionCreateCommand(" + "parentId=" + parentId + ", " + "permissionName=" + permissionName + ", " + "permissionCode=" + permissionCode + ", " + "permissionType=" + permissionType + ", " + "resourcePath=" + resourcePath + ", " + "httpMethod=" + httpMethod + ", " + "icon=" + icon + ", " + "componentPath=" + componentPath + ", " + "sortOrder=" + sortOrder + ", " + "visible=" + visible + ", " + "status=" + status + ", " + "remark=" + remark + ", " + "createdBy=" + createdBy + ")";
+    }
 }

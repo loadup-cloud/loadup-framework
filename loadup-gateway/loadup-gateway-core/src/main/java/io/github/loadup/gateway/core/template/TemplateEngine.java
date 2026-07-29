@@ -28,13 +28,14 @@ import io.github.loadup.gateway.facade.model.GatewayRequest;
 import io.github.loadup.gateway.facade.model.GatewayResponse;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Template engine - supports Groovy scripts
  */
-@Slf4j
 public class TemplateEngine {
+    private static final Logger log = LoggerFactory.getLogger(TemplateEngine.class);
+
 
     private final ConcurrentHashMap<String, groovy.lang.Script> scriptCache = new ConcurrentHashMap<>();
     private final GroovyShell groovyShell = new GroovyShell();

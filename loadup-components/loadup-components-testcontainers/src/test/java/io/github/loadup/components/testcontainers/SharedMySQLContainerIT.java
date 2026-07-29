@@ -34,21 +34,23 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.mysql.MySQLContainer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Integration test class for SharedMySQLContainer.
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 @SpringBootTest(classes = TestApplication.class)
-@TestPropertySource(properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.mysql.enabled=true"})
+@TestPropertySource(properties = {
+    private static final Logger log = LoggerFactory.getLogger(SharedMySQLContainerIT.class);
+"loadup.testcontainers.enabled=true", "loadup.testcontainers.mysql.enabled=true"})
 class SharedMySQLContainerIT extends AbstractMySQLContainerTest {
 
     @Test

@@ -24,10 +24,11 @@ package io.github.loadup.components.testcontainers.database;
 
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import java.util.concurrent.atomic.AtomicBoolean;
-import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Shared PostgreSQL TestContainer instance that can be reused across multiple tests.
  *
@@ -46,8 +47,9 @@ import org.testcontainers.utility.DockerImageName;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
 public final class SharedPostgreSQLContainer {
+    private static final Logger log = LoggerFactory.getLogger(SharedPostgreSQLContainer.class);
+
 
     /**
      * Default PostgreSQL version to use

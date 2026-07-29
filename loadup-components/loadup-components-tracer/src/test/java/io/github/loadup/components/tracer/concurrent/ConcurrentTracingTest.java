@@ -45,7 +45,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,13 +52,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 高并发场景测试 - 测试 TraceContext 在多线程环境下的线程安全性
  */
-@Slf4j
 @SpringBootTest(classes = TestConfiguration.class)
 @TestPropertySource(properties = {"spring.application.name=concurrent-test-service", "loadup.tracer.enabled=true"})
 class ConcurrentTracingTest {
+    private static final Logger log = LoggerFactory.getLogger(ConcurrentTracingTest.class);
+
 
     @Autowired
     private Tracer tracer;

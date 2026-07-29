@@ -26,13 +26,11 @@ import io.github.loadup.framework.api.result.ResultCode;
 import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.Getter;
 
 /**
  * @author Lise
  * @since 1.0.0
  */
-@Getter
 public class CommonException extends RuntimeException {
 
     @Serial
@@ -92,5 +90,9 @@ public class CommonException extends RuntimeException {
                 .replace("\n", "\\n")
                 .replace("\r", "\\r")
                 .replace("\t", "\\t");
+    }
+
+    public ResultCode getResultCode() {
+        return this.resultCode;
     }
 }

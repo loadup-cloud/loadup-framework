@@ -30,10 +30,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Multi-Tenant Interceptor for MyBatis-Flex
  *
@@ -43,9 +43,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Slf4j
-@RequiredArgsConstructor
 public class TenantInterceptor implements HandlerInterceptor {
+    private static final Logger log = LoggerFactory.getLogger(TenantInterceptor.class);
+
 
     private final DatabaseProperties databaseProperties;
     private final Set<String> ignoreTables = new HashSet<>();
@@ -78,5 +78,10 @@ public class TenantInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         return HandlerInterceptor.super.preHandle(request, response, handler);
+    }
+
+    public TenantInterceptor(DatabaseProperties databaseProperties, Set<String> ignoreTables) {
+        this.databaseProperties = databaseProperties;
+        this.ignoreTables = ignoreTables;
     }
 }

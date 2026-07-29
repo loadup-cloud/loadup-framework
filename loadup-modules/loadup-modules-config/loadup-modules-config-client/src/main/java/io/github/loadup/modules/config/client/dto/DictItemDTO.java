@@ -22,14 +22,12 @@ package io.github.loadup.modules.config.client.dto;
  * #L%
  */
 
-import lombok.Data;
 
 /**
  * Data dictionary item DTO.
  *
  * @author LoadUp Framework
  */
-@Data
 public class DictItemDTO {
 
     private String id;
@@ -40,4 +38,108 @@ public class DictItemDTO {
     private String cssClass;
     private Integer sortOrder;
     private Boolean enabled;
+
+    public DictItemDTO(String id, String dictCode, String itemLabel, String itemValue, String parentValue, String cssClass, Integer sortOrder, Boolean enabled) {
+        this.id = id;
+        this.dictCode = dictCode;
+        this.itemLabel = itemLabel;
+        this.itemValue = itemValue;
+        this.parentValue = parentValue;
+        this.cssClass = cssClass;
+        this.sortOrder = sortOrder;
+        this.enabled = enabled;
+    }
+
+    public DictItemDTO() {
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getDictCode() {
+        return this.dictCode;
+    }
+
+    public String getItemLabel() {
+        return this.itemLabel;
+    }
+
+    public String getItemValue() {
+        return this.itemValue;
+    }
+
+    public String getParentValue() {
+        return this.parentValue;
+    }
+
+    public String getCssClass() {
+        return this.cssClass;
+    }
+
+    public Integer getSortOrder() {
+        return this.sortOrder;
+    }
+
+    public Boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setDictCode(String dictCode) {
+        this.dictCode = dictCode;
+    }
+
+    public void setItemLabel(String itemLabel) {
+        this.itemLabel = itemLabel;
+    }
+
+    public void setItemValue(String itemValue) {
+        this.itemValue = itemValue;
+    }
+
+    public void setParentValue(String parentValue) {
+        this.parentValue = parentValue;
+    }
+
+    public void setCssClass(String cssClass) {
+        this.cssClass = cssClass;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(id, dictCode, itemLabel, itemValue, parentValue, cssClass, sortOrder, enabled);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DictItemDTO other = (DictItemDTO) o;
+        if (!java.util.Objects.equals(id, other.id)) return false;
+        if (!java.util.Objects.equals(dictCode, other.dictCode)) return false;
+        if (!java.util.Objects.equals(itemLabel, other.itemLabel)) return false;
+        if (!java.util.Objects.equals(itemValue, other.itemValue)) return false;
+        if (!java.util.Objects.equals(parentValue, other.parentValue)) return false;
+        if (!java.util.Objects.equals(cssClass, other.cssClass)) return false;
+        if (!java.util.Objects.equals(sortOrder, other.sortOrder)) return false;
+        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DictItemDTO(" + "id=" + id + ", " + "dictCode=" + dictCode + ", " + "itemLabel=" + itemLabel + ", " + "itemValue=" + itemValue + ", " + "parentValue=" + parentValue + ", " + "cssClass=" + cssClass + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ")";
+    }
 }

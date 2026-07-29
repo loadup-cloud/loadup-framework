@@ -44,7 +44,6 @@ import io.github.loadup.retrytask.strategy.RandomWaitRetryStrategy;
 import io.github.loadup.retrytask.strategy.RetryStrategy;
 import io.github.loadup.retrytask.strategy.RetryStrategyRegistry;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -53,13 +52,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Auto-configuration for the retry task module
  */
-@Slf4j
 @Configuration
 @EnableConfigurationProperties(RetryTaskProperties.class)
 public class RetryTaskAutoConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(RetryTaskAutoConfiguration.class);
+
 
     // ========== Strategy Beans ==========
 

@@ -27,20 +27,12 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * User model for authorization context.
  *
  * <p>This is a lightweight user model without Spring Security dependencies.</p>
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class LoadUpUser implements Serializable {
 
     @Serial
@@ -59,13 +51,11 @@ public class LoadUpUser implements Serializable {
     /**
      * User roles (e.g., ["ADMIN", "USER"] or ["ROLE_ADMIN", "ROLE_USER"])
      */
-    @Builder.Default
     private List<String> roles = Collections.emptyList();
 
     /**
      * User permissions (e.g., ["user:read", "user:write"])
      */
-    @Builder.Default
     private List<String> permissions = Collections.emptyList();
 
     /**
@@ -118,5 +108,120 @@ public class LoadUpUser implements Serializable {
      */
     public boolean hasPermission(String permission) {
         return permissions != null && permissions.contains(permission);
+    }
+
+    public LoadUpUser(String userId, String username, List<String> roles, List<String> permissions, Map<String, Object> attributes) {
+        this.userId = userId;
+        this.username = username;
+        this.roles = roles;
+        this.permissions = permissions;
+        this.attributes = attributes;
+    }
+
+    public LoadUpUser() {
+    }
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public List<String> getRoles() {
+        return this.roles;
+    }
+
+    public List<String> getPermissions() {
+        return this.permissions;
+    }
+
+    public Map<String, Object> getAttributes() {
+        return this.attributes;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+    public void setPermissions(List<String> permissions) {
+        this.permissions = permissions;
+    }
+
+    public void setAttributes(Map<String, Object> attributes) {
+        this.attributes = attributes;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(userId, username, roles, permissions, attributes);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LoadUpUser other = (LoadUpUser) o;
+        if (!java.util.Objects.equals(userId, other.userId)) return false;
+        if (!java.util.Objects.equals(username, other.username)) return false;
+        if (!java.util.Objects.equals(roles, other.roles)) return false;
+        if (!java.util.Objects.equals(permissions, other.permissions)) return false;
+        if (!java.util.Objects.equals(attributes, other.attributes)) return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "LoadUpUser(" + "userId=" + userId + ", " + "username=" + username + ", " + "roles=" + roles + ", " + "permissions=" + permissions + ", " + "attributes=" + attributes + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String userId;
+        private String username;
+        private List<String> roles = Collections.emptyList();
+        private List<String> permissions = Collections.emptyList();
+        private Map<String, Object> attributes;
+
+        public Builder userId(String userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public Builder username(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public Builder roles(List<String> roles) {
+            this.roles = roles;
+            return this;
+        }
+
+        public Builder permissions(List<String> permissions) {
+            this.permissions = permissions;
+            return this;
+        }
+
+        public Builder attributes(Map<String, Object> attributes) {
+            this.attributes = attributes;
+            return this;
+        }
+
+        public LoadUpUser build() {
+            return new LoadUpUser(this.userId, this.username, this.roles, this.permissions, this.attributes);
+        }
     }
 }
