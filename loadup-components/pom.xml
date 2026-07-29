@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.loadup-cloud</groupId>
+        <artifactId>loadup-parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>loadup-components</artifactId>
+    <packaging>pom</packaging>
+    <name>Loadup Components</name>
+    <description>Loadup Components — reusable technical components</description>
+
+    <modules>
+        <module>loadup-components-authorization</module>
+        <module>loadup-components-cache</module>
+        <module>loadup-components-captcha</module>
+        <module>loadup-components-configcenter</module>
+        <module>loadup-components-database</module>
+        <module>loadup-components-dfs</module>
+        <module>loadup-components-extension</module>
+        <module>loadup-components-globalunique</module>
+        <module>loadup-components-gotone</module>
+        <module>loadup-components-pipeline</module>
+        <module>loadup-components-retrytask</module>
+        <module>loadup-components-scheduler</module>
+        <module>loadup-components-signature</module>
+        <module>loadup-components-springdoc</module>
+        <module>loadup-components-testcontainers</module>
+        <module>loadup-components-tracer</module>
+    </modules>
+</project>

@@ -22,7 +22,6 @@ package io.github.loadup.modules.upms.domain.valueobject;
  * #L%
  */
 
-
 /**
  * Data Scope Value Object Represents different levels of data access scope
  *
@@ -97,8 +96,7 @@ public class DataScope {
         this.description = description;
     }
 
-    public DataScope() {
-    }
+    public DataScope() {}
 
     public void setScope(short scope) {
         this.scope = scope;

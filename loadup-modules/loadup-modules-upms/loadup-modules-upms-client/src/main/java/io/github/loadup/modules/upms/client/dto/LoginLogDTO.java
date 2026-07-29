@@ -44,7 +44,18 @@ public class LoginLogDTO {
     private String message;
     private LocalDateTime loginTime;
 
-    public LoginLogDTO(String id, String userId, String username, String loginType, String ipAddress, String location, String browser, String os, Boolean success, String message, LocalDateTime loginTime) {
+    public LoginLogDTO(
+            String id,
+            String userId,
+            String username,
+            String loginType,
+            String ipAddress,
+            String location,
+            String browser,
+            String os,
+            Boolean success,
+            String message,
+            LocalDateTime loginTime) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -58,8 +69,7 @@ public class LoginLogDTO {
         this.loginTime = loginTime;
     }
 
-    public LoginLogDTO() {
-    }
+    public LoginLogDTO() {}
 
     public String getId() {
         return this.id;
@@ -151,7 +161,8 @@ public class LoginLogDTO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, userId, username, loginType, ipAddress, location, browser, os, success, message, loginTime);
+        return java.util.Objects.hash(
+                id, userId, username, loginType, ipAddress, location, browser, os, success, message, loginTime);
     }
 
     @Override
@@ -175,7 +186,10 @@ public class LoginLogDTO {
 
     @Override
     public String toString() {
-        return "LoginLogDTO(" + "id=" + id + ", " + "userId=" + userId + ", " + "username=" + username + ", " + "loginType=" + loginType + ", " + "ipAddress=" + ipAddress + ", " + "location=" + location + ", " + "browser=" + browser + ", " + "os=" + os + ", " + "success=" + success + ", " + "message=" + message + ", " + "loginTime=" + loginTime + ")";
+        return "LoginLogDTO(" + "id=" + id + ", " + "userId=" + userId + ", " + "username=" + username + ", "
+                + "loginType=" + loginType + ", " + "ipAddress=" + ipAddress + ", " + "location=" + location + ", "
+                + "browser=" + browser + ", " + "os=" + os + ", " + "success=" + success + ", " + "message=" + message
+                + ", " + "loginTime=" + loginTime + ")";
     }
 
     public static Builder builder() {
@@ -251,7 +265,18 @@ public class LoginLogDTO {
         }
 
         public LoginLogDTO build() {
-            return new LoginLogDTO(this.id, this.userId, this.username, this.loginType, this.ipAddress, this.location, this.browser, this.os, this.success, this.message, this.loginTime);
+            return new LoginLogDTO(
+                    this.id,
+                    this.userId,
+                    this.username,
+                    this.loginType,
+                    this.ipAddress,
+                    this.location,
+                    this.browser,
+                    this.os,
+                    this.success,
+                    this.message,
+                    this.loginTime);
         }
     }
 }

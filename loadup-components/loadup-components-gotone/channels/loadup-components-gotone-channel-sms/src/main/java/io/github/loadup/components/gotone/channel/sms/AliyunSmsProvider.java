@@ -22,17 +22,15 @@ package io.github.loadup.components.gotone.channel.sms;
  * #L%
  */
 
-import io.github.loadup.components.gotone.api.NotificationChannelProvider;
-import io.github.loadup.components.gotone.enums.NotificationChannel;
+import io.github.loadup.components.gotone.GotoneProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import org.springframework.beans.factory.annotation.Value;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * 阿里云短信渠道提供商
  *
@@ -44,9 +42,8 @@ import org.slf4j.LoggerFactory;
  * loadup.gotone.sms.aliyun.region-id=cn-hangzhou
  * </pre>
  */
-public class AliyunSmsProvider implements NotificationChannelProvider {
+public class AliyunSmsProvider implements GotoneProvider {
     private static final Logger log = LoggerFactory.getLogger(AliyunSmsProvider.class);
-
 
     private final String accessKeyId;
 
@@ -57,8 +54,8 @@ public class AliyunSmsProvider implements NotificationChannelProvider {
     private final String regionId;
 
     @Override
-    public NotificationChannel getChannel() {
-        return NotificationChannel.SMS;
+    public String getChannelType() {
+        return "SMS";
     }
 
     @Override
@@ -123,13 +120,13 @@ public class AliyunSmsProvider implements NotificationChannelProvider {
                 }
             }
 
-            return ChannelSendResponse.builder()
-                    .content(request.getContent())
-                    .successCount(successCount)
-                    .failedCount(failedCount)
-                    .receiverStatus(receiverStatus)
-                    .receiverErrors(receiverErrors)
-                    .build();
+            ChannelSendResponse sendResponse = new ChannelSendResponse();
+            sendResponse.setContent(request.getContent());
+            sendResponse.setSuccessCount(successCount);
+            sendResponse.setFailedCount(failedCount);
+            sendResponse.setReceiverStatus(receiverStatus);
+            sendResponse.setReceiverErrors(receiverErrors);
+            return sendResponse;
 
         } catch (Exception e) {
             log.error(">>> [GOTONE-SMS-ALIYUN] 发送短信异常", e);
@@ -140,13 +137,13 @@ public class AliyunSmsProvider implements NotificationChannelProvider {
                 receiverErrors.put(receiver, "系统异常: " + e.getMessage());
             }
 
-            return ChannelSendResponse.builder()
-                    .content(request.getContent())
-                    .successCount(0)
-                    .failedCount(request.getReceivers().size())
-                    .receiverStatus(receiverStatus)
-                    .receiverErrors(receiverErrors)
-                    .build();
+            ChannelSendResponse sendResponse = new ChannelSendResponse();
+            sendResponse.setContent(request.getContent());
+            sendResponse.setSuccessCount(0);
+            sendResponse.setFailedCount(request.getReceivers().size());
+            sendResponse.setReceiverStatus(receiverStatus);
+            sendResponse.setReceiverErrors(receiverErrors);
+            return sendResponse;
         }
     }
 
@@ -236,13 +233,13 @@ public class AliyunSmsProvider implements NotificationChannelProvider {
 
         log.error(">>> [GOTONE-SMS-ALIYUN] {}", errorMessage);
 
-        return ChannelSendResponse.builder()
-                .content(null)
-                .successCount(success)
-                .failedCount(total - success)
-                .receiverStatus(receiverStatus)
-                .receiverErrors(receiverErrors)
-                .build();
+        ChannelSendResponse sendResponse = new ChannelSendResponse();
+        sendResponse.setContent(null);
+        sendResponse.setSuccessCount(success);
+        sendResponse.setFailedCount(total - success);
+        sendResponse.setReceiverStatus(receiverStatus);
+        sendResponse.setReceiverErrors(receiverErrors);
+        return sendResponse;
     }
 
     public AliyunSmsProvider(String accessKeyId, String accessKeySecret, String signName, String regionId) {

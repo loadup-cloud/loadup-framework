@@ -22,13 +22,14 @@ package io.github.loadup.retrytask.notify;
  * #L%
  */
 
-import io.github.loadup.components.gotone.api.NotificationService;
+import io.github.loadup.components.gotone.GotoneTemplate;
 import io.github.loadup.components.gotone.model.NotificationRequest;
 import io.github.loadup.retrytask.facade.model.RetryTask;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Gotone integration for retry task notifications
  * Sends notifications through Gotone component (email/sms/webhook)
@@ -36,23 +37,22 @@ import org.slf4j.LoggerFactory;
 public class GotoneRetryTaskNotifier implements RetryTaskNotifier {
     private static final Logger log = LoggerFactory.getLogger(GotoneRetryTaskNotifier.class);
 
-
     public static final String TYPE = "gotone";
 
-    private final NotificationService notificationService;
+    private final GotoneTemplate gotoneTemplate;
     private final String serviceCode;
 
     /**
-     * @param notificationService Gotone notification service
+     * @param gotoneTemplate Gotone notification template
      * @param serviceCode         Service code for notifications (default: RETRY_TASK_FAILURE)
      */
-    public GotoneRetryTaskNotifier(NotificationService notificationService, String serviceCode) {
-        this.notificationService = notificationService;
+    public GotoneRetryTaskNotifier(GotoneTemplate gotoneTemplate, String serviceCode) {
+        this.gotoneTemplate = gotoneTemplate;
         this.serviceCode = serviceCode != null ? serviceCode : "RETRY_TASK_FAILURE";
     }
 
-    public GotoneRetryTaskNotifier(NotificationService notificationService) {
-        this(notificationService, "RETRY_TASK_FAILURE");
+    public GotoneRetryTaskNotifier(GotoneTemplate gotoneTemplate) {
+        this(gotoneTemplate, "RETRY_TASK_FAILURE");
     }
 
     @Override
@@ -74,7 +74,7 @@ public class GotoneRetryTaskNotifier implements RetryTaskNotifier {
                             task.getLastFailureReason() != null ? task.getLastFailureReason() : "Unknown"))
                     .build();
 
-            notificationService.send(request);
+            gotoneTemplate.send(request);
 
             log.info(
                     ">>> [RETRY-TASK-GOTONE] Sent notification for task: bizType={}, bizId={}",

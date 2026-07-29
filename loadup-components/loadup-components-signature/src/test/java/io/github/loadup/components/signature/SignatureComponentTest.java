@@ -35,11 +35,11 @@ import io.github.loadup.components.signature.util.DigestUtils;
 import io.github.loadup.components.signature.util.SignatureUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Signature Component 综合测试
  *
@@ -49,7 +49,6 @@ import org.slf4j.LoggerFactory;
 @DisplayName("Signature 组件综合测试")
 class SignatureComponentTest {
     private static final Logger log = LoggerFactory.getLogger(SignatureComponentTest.class);
-
 
     @Autowired
     private SignatureService signatureService;
@@ -243,5 +242,21 @@ class SignatureComponentTest {
         // then - 结果应完全一致
         assertThat(hash1).isEqualTo(hash2);
         assertThat(hash1).isEqualTo(hash3);
+    }
+
+    public Logger getLog() {
+        return this.log;
+    }
+
+    public SignatureService getSignatureService() {
+        return this.signatureService;
+    }
+
+    public DigestService getDigestService() {
+        return this.digestService;
+    }
+
+    public KeyPairService getKeyPairService() {
+        return this.keyPairService;
     }
 }

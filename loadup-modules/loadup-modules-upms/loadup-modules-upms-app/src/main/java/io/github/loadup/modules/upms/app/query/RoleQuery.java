@@ -22,7 +22,6 @@ package io.github.loadup.modules.upms.app.query;
  * #L%
  */
 
-
 /**
  * Role Query Parameters
  *
@@ -43,7 +42,16 @@ public class RoleQuery {
     private String sortBy = "sortOrder";
     private String sortOrder = "ASC";
 
-    public RoleQuery(String roleName, String roleCode, String parentId, Short status, Boolean deleted, Integer page, Integer size, String sortBy, String sortOrder) {
+    public RoleQuery(
+            String roleName,
+            String roleCode,
+            String parentId,
+            Short status,
+            Boolean deleted,
+            Integer page,
+            Integer size,
+            String sortBy,
+            String sortOrder) {
         this.roleName = roleName;
         this.roleCode = roleCode;
         this.parentId = parentId;
@@ -55,8 +63,7 @@ public class RoleQuery {
         this.sortOrder = sortOrder;
     }
 
-    public RoleQuery() {
-    }
+    public RoleQuery() {}
 
     public String getRoleName() {
         return this.roleName;
@@ -154,7 +161,9 @@ public class RoleQuery {
 
     @Override
     public String toString() {
-        return "RoleQuery(" + "roleName=" + roleName + ", " + "roleCode=" + roleCode + ", " + "parentId=" + parentId + ", " + "status=" + status + ", " + "deleted=" + deleted + ", " + "page=" + page + ", " + "size=" + size + ", " + "sortBy=" + sortBy + ", " + "sortOrder=" + sortOrder + ")";
+        return "RoleQuery(" + "roleName=" + roleName + ", " + "roleCode=" + roleCode + ", " + "parentId=" + parentId
+                + ", " + "status=" + status + ", " + "deleted=" + deleted + ", " + "page=" + page + ", " + "size="
+                + size + ", " + "sortBy=" + sortBy + ", " + "sortOrder=" + sortOrder + ")";
     }
 
     public static Builder builder() {
@@ -218,7 +227,16 @@ public class RoleQuery {
         }
 
         public RoleQuery build() {
-            return new RoleQuery(this.roleName, this.roleCode, this.parentId, this.status, this.deleted, this.page, this.size, this.sortBy, this.sortOrder);
+            return new RoleQuery(
+                    this.roleName,
+                    this.roleCode,
+                    this.parentId,
+                    this.status,
+                    this.deleted,
+                    this.page,
+                    this.size,
+                    this.sortBy,
+                    this.sortOrder);
         }
     }
 }

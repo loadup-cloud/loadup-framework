@@ -22,7 +22,6 @@ package io.github.loadup.components.signature.enums;
  * #L%
  */
 
-
 /**
  * 密钥算法枚举
  *

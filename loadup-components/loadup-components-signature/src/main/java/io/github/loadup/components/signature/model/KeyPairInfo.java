@@ -60,8 +60,7 @@ public class KeyPairInfo implements Serializable {
         this.keySize = keySize;
     }
 
-    public KeyPairInfo() {
-    }
+    public KeyPairInfo() {}
 
     public String getPublicKey() {
         return this.publicKey;
@@ -114,7 +113,8 @@ public class KeyPairInfo implements Serializable {
 
     @Override
     public String toString() {
-        return "KeyPairInfo(" + "publicKey=" + publicKey + ", " + "privateKey=" + privateKey + ", " + "algorithm=" + algorithm + ", " + "keySize=" + keySize + ")";
+        return "KeyPairInfo(" + "publicKey=" + publicKey + ", " + "privateKey=" + privateKey + ", " + "algorithm="
+                + algorithm + ", " + "keySize=" + keySize + ")";
     }
 
     public static Builder builder() {
@@ -150,5 +150,9 @@ public class KeyPairInfo implements Serializable {
         public KeyPairInfo build() {
             return new KeyPairInfo(this.publicKey, this.privateKey, this.algorithm, this.keySize);
         }
+    }
+
+    public long getSerialVersionUID() {
+        return this.serialVersionUID;
     }
 }

@@ -77,7 +77,29 @@ public class UserDO extends BaseDO {
 
     private String remark;
 
-    public UserDO(String username, String password, String nickname, String realName, String deptId, String email, Boolean emailVerified, String mobile, Boolean mobileVerified, String avatar, Short gender, LocalDate birthday, Short status, Boolean accountNonExpired, Boolean accountNonLocked, Boolean credentialsNonExpired, LocalDateTime lastLoginTime, String lastLoginIp, Integer loginFailCount, LocalDateTime lockedTime, LocalDateTime passwordUpdateTime, String remark) {
+    public UserDO(
+            String username,
+            String password,
+            String nickname,
+            String realName,
+            String deptId,
+            String email,
+            Boolean emailVerified,
+            String mobile,
+            Boolean mobileVerified,
+            String avatar,
+            Short gender,
+            LocalDate birthday,
+            Short status,
+            Boolean accountNonExpired,
+            Boolean accountNonLocked,
+            Boolean credentialsNonExpired,
+            LocalDateTime lastLoginTime,
+            String lastLoginIp,
+            Integer loginFailCount,
+            LocalDateTime lockedTime,
+            LocalDateTime passwordUpdateTime,
+            String remark) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
@@ -102,8 +124,7 @@ public class UserDO extends BaseDO {
         this.remark = remark;
     }
 
-    public UserDO() {
-    }
+    public UserDO() {}
 
     public String getUsername() {
         return this.username;
@@ -283,7 +304,30 @@ public class UserDO extends BaseDO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(super.hashCode(), username, password, nickname, realName, deptId, email, emailVerified, mobile, mobileVerified, avatar, gender, birthday, status, accountNonExpired, accountNonLocked, credentialsNonExpired, lastLoginTime, lastLoginIp, loginFailCount, lockedTime, passwordUpdateTime, remark);
+        return java.util.Objects.hash(
+                super.hashCode(),
+                username,
+                password,
+                nickname,
+                realName,
+                deptId,
+                email,
+                emailVerified,
+                mobile,
+                mobileVerified,
+                avatar,
+                gender,
+                birthday,
+                status,
+                accountNonExpired,
+                accountNonLocked,
+                credentialsNonExpired,
+                lastLoginTime,
+                lastLoginIp,
+                loginFailCount,
+                lockedTime,
+                passwordUpdateTime,
+                remark);
     }
 
     @Override
@@ -319,6 +363,14 @@ public class UserDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "UserDO(" + "super=" + super.toString() + ", " + "username=" + username + ", " + "password=" + password + ", " + "nickname=" + nickname + ", " + "realName=" + realName + ", " + "deptId=" + deptId + ", " + "email=" + email + ", " + "emailVerified=" + emailVerified + ", " + "mobile=" + mobile + ", " + "mobileVerified=" + mobileVerified + ", " + "avatar=" + avatar + ", " + "gender=" + gender + ", " + "birthday=" + birthday + ", " + "status=" + status + ", " + "accountNonExpired=" + accountNonExpired + ", " + "accountNonLocked=" + accountNonLocked + ", " + "credentialsNonExpired=" + credentialsNonExpired + ", " + "lastLoginTime=" + lastLoginTime + ", " + "lastLoginIp=" + lastLoginIp + ", " + "loginFailCount=" + loginFailCount + ", " + "lockedTime=" + lockedTime + ", " + "passwordUpdateTime=" + passwordUpdateTime + ", " + "remark=" + remark + ")";
+        return "UserDO(" + "super=" + super.toString() + ", " + "username=" + username + ", " + "password=" + password
+                + ", " + "nickname=" + nickname + ", " + "realName=" + realName + ", " + "deptId=" + deptId + ", "
+                + "email=" + email + ", " + "emailVerified=" + emailVerified + ", " + "mobile=" + mobile + ", "
+                + "mobileVerified=" + mobileVerified + ", " + "avatar=" + avatar + ", " + "gender=" + gender + ", "
+                + "birthday=" + birthday + ", " + "status=" + status + ", " + "accountNonExpired=" + accountNonExpired
+                + ", " + "accountNonLocked=" + accountNonLocked + ", " + "credentialsNonExpired="
+                + credentialsNonExpired + ", " + "lastLoginTime=" + lastLoginTime + ", " + "lastLoginIp=" + lastLoginIp
+                + ", " + "loginFailCount=" + loginFailCount + ", " + "lockedTime=" + lockedTime + ", "
+                + "passwordUpdateTime=" + passwordUpdateTime + ", " + "remark=" + remark + ")";
     }
 }

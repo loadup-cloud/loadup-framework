@@ -40,7 +40,18 @@ public class AuditLogDO extends BaseDO {
     private String ip;
     private java.time.LocalDateTime operationTime;
 
-    public AuditLogDO(String userId, String username, String dataType, String dataId, String action, String beforeData, String afterData, String diffData, String reason, String ip, java.time.LocalDateTime operationTime) {
+    public AuditLogDO(
+            String userId,
+            String username,
+            String dataType,
+            String dataId,
+            String action,
+            String beforeData,
+            String afterData,
+            String diffData,
+            String reason,
+            String ip,
+            java.time.LocalDateTime operationTime) {
         this.userId = userId;
         this.username = username;
         this.dataType = dataType;
@@ -54,8 +65,7 @@ public class AuditLogDO extends BaseDO {
         this.operationTime = operationTime;
     }
 
-    public AuditLogDO() {
-    }
+    public AuditLogDO() {}
 
     public String getUserId() {
         return this.userId;
@@ -147,7 +157,19 @@ public class AuditLogDO extends BaseDO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(super.hashCode(), userId, username, dataType, dataId, action, beforeData, afterData, diffData, reason, ip, operationTime);
+        return java.util.Objects.hash(
+                super.hashCode(),
+                userId,
+                username,
+                dataType,
+                dataId,
+                action,
+                beforeData,
+                afterData,
+                diffData,
+                reason,
+                ip,
+                operationTime);
     }
 
     @Override
@@ -172,6 +194,9 @@ public class AuditLogDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "AuditLogDO(" + "super=" + super.toString() + ", " + "userId=" + userId + ", " + "username=" + username + ", " + "dataType=" + dataType + ", " + "dataId=" + dataId + ", " + "action=" + action + ", " + "beforeData=" + beforeData + ", " + "afterData=" + afterData + ", " + "diffData=" + diffData + ", " + "reason=" + reason + ", " + "ip=" + ip + ", " + "operationTime=" + operationTime + ")";
+        return "AuditLogDO(" + "super=" + super.toString() + ", " + "userId=" + userId + ", " + "username=" + username
+                + ", " + "dataType=" + dataType + ", " + "dataId=" + dataId + ", " + "action=" + action + ", "
+                + "beforeData=" + beforeData + ", " + "afterData=" + afterData + ", " + "diffData=" + diffData + ", "
+                + "reason=" + reason + ", " + "ip=" + ip + ", " + "operationTime=" + operationTime + ")";
     }
 }

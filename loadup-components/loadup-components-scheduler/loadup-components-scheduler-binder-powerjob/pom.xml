@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
-        <artifactId>loadup-dependencies</artifactId>
+        <artifactId>loadup-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
     </parent>
     <artifactId>loadup-components-scheduler-binder-powerjob</artifactId>
@@ -38,6 +38,7 @@
             <groupId>tech.powerjob</groupId>
             <artifactId>powerjob-worker-spring-boot-starter</artifactId>
             <version>4.3.9</version>
-        </dependency>    </dependencies>
+        </dependency>
+    </dependencies>
 
 </project>

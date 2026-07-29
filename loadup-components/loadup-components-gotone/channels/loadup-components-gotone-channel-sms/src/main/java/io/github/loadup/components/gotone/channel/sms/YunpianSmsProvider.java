@@ -22,17 +22,15 @@ package io.github.loadup.components.gotone.channel.sms;
  * #L%
  */
 
-import io.github.loadup.components.gotone.api.NotificationChannelProvider;
-import io.github.loadup.components.gotone.enums.NotificationChannel;
+import io.github.loadup.components.gotone.GotoneProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import org.springframework.beans.factory.annotation.Value;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * 云片短信渠道提供商
  *
@@ -42,17 +40,16 @@ import org.slf4j.LoggerFactory;
  * loadup.gotone.sms.yunpian.api-url=https://sms.yunpian.com/v2/sms/single_send.json
  * </pre>
  */
-public class YunpianSmsProvider implements NotificationChannelProvider {
+public class YunpianSmsProvider implements GotoneProvider {
     private static final Logger log = LoggerFactory.getLogger(YunpianSmsProvider.class);
-
 
     private final String apiKey;
 
     private final String apiUrl;
 
     @Override
-    public NotificationChannel getChannel() {
-        return NotificationChannel.SMS;
+    public String getChannelType() {
+        return "SMS";
     }
 
     @Override
@@ -121,13 +118,13 @@ public class YunpianSmsProvider implements NotificationChannelProvider {
                 }
             }
 
-            return ChannelSendResponse.builder()
-                    .content(request.getContent())
-                    .successCount(successCount)
-                    .failedCount(failedCount)
-                    .receiverStatus(receiverStatus)
-                    .receiverErrors(receiverErrors)
-                    .build();
+            ChannelSendResponse sendResponse = new ChannelSendResponse();
+            sendResponse.setContent(request.getContent());
+            sendResponse.setSuccessCount(successCount);
+            sendResponse.setFailedCount(failedCount);
+            sendResponse.setReceiverStatus(receiverStatus);
+            sendResponse.setReceiverErrors(receiverErrors);
+            return sendResponse;
 
         } catch (Exception e) {
             log.error(">>> [GOTONE-SMS-YUNPIAN] 发送短信异常", e);
@@ -138,13 +135,13 @@ public class YunpianSmsProvider implements NotificationChannelProvider {
                 receiverErrors.put(receiver, "系统异常: " + e.getMessage());
             }
 
-            return ChannelSendResponse.builder()
-                    .content(request.getContent())
-                    .successCount(0)
-                    .failedCount(request.getReceivers().size())
-                    .receiverStatus(receiverStatus)
-                    .receiverErrors(receiverErrors)
-                    .build();
+            ChannelSendResponse sendResponse = new ChannelSendResponse();
+            sendResponse.setContent(request.getContent());
+            sendResponse.setSuccessCount(0);
+            sendResponse.setFailedCount(request.getReceivers().size());
+            sendResponse.setReceiverStatus(receiverStatus);
+            sendResponse.setReceiverErrors(receiverErrors);
+            return sendResponse;
         }
     }
 
@@ -216,13 +213,13 @@ public class YunpianSmsProvider implements NotificationChannelProvider {
 
         log.error(">>> [GOTONE-SMS-YUNPIAN] {}", errorMessage);
 
-        return ChannelSendResponse.builder()
-                .content(null)
-                .successCount(success)
-                .failedCount(total - success)
-                .receiverStatus(receiverStatus)
-                .receiverErrors(receiverErrors)
-                .build();
+        ChannelSendResponse sendResponse = new ChannelSendResponse();
+        sendResponse.setContent(null);
+        sendResponse.setSuccessCount(success);
+        sendResponse.setFailedCount(total - success);
+        sendResponse.setReceiverStatus(receiverStatus);
+        sendResponse.setReceiverErrors(receiverErrors);
+        return sendResponse;
     }
 
     public YunpianSmsProvider(String apiKey, String apiUrl) {

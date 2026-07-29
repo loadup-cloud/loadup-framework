@@ -28,11 +28,11 @@ import io.github.loadup.modules.log.domain.gateway.OperationLogGateway;
 import io.github.loadup.modules.log.domain.model.AuditLog;
 import io.github.loadup.modules.log.domain.model.ErrorLog;
 import io.github.loadup.modules.log.domain.model.OperationLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Async log writer.
  *
@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class LogAsyncWriter {
     private static final Logger log = LoggerFactory.getLogger(LogAsyncWriter.class);
-
 
     private final OperationLogGateway operationLogGateway;
     private final AuditLogGateway auditLogGateway;
@@ -85,7 +84,8 @@ public class LogAsyncWriter {
         }
     }
 
-    public LogAsyncWriter(OperationLogGateway operationLogGateway, AuditLogGateway auditLogGateway, ErrorLogGateway errorLogGateway) {
+    public LogAsyncWriter(
+            OperationLogGateway operationLogGateway, AuditLogGateway auditLogGateway, ErrorLogGateway errorLogGateway) {
         this.operationLogGateway = operationLogGateway;
         this.auditLogGateway = auditLogGateway;
         this.errorLogGateway = errorLogGateway;

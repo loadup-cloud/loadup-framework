@@ -24,10 +24,9 @@ package io.github.loadup.components.captcha.config;
 
 import io.github.loadup.components.captcha.ArithmeticCaptcha;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import java.io.IOException;
 
 /**
  * @author lengleng

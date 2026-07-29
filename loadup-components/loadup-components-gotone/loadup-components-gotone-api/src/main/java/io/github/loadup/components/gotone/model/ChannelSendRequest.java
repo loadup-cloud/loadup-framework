@@ -53,15 +53,18 @@ public class ChannelSendRequest implements Serializable {
      */
     private Map<String, Object> templateParams;
 
-    public ChannelSendRequest(List<String> receivers, String content, Map<String, Object> channelConfig, Map<String, Object> templateParams) {
+    public ChannelSendRequest(
+            List<String> receivers,
+            String content,
+            Map<String, Object> channelConfig,
+            Map<String, Object> templateParams) {
         this.receivers = receivers;
         this.content = content;
         this.channelConfig = channelConfig;
         this.templateParams = templateParams;
     }
 
-    public ChannelSendRequest() {
-    }
+    public ChannelSendRequest() {}
 
     public List<String> getReceivers() {
         return this.receivers;
@@ -114,7 +117,8 @@ public class ChannelSendRequest implements Serializable {
 
     @Override
     public String toString() {
-        return "ChannelSendRequest(" + "receivers=" + receivers + ", " + "content=" + content + ", " + "channelConfig=" + channelConfig + ", " + "templateParams=" + templateParams + ")";
+        return "ChannelSendRequest(" + "receivers=" + receivers + ", " + "content=" + content + ", " + "channelConfig="
+                + channelConfig + ", " + "templateParams=" + templateParams + ")";
     }
 
     public static Builder builder() {

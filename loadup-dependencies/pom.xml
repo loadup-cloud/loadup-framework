@@ -3,6 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>4.1.0</version>
+        <relativePath/>
+    </parent>
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-dependencies</artifactId>
     <version>0.0.2-SNAPSHOT</version>
@@ -33,20 +39,10 @@
 
     </scm>
 
-    <properties>
-        <license.licenseName>gpl_v3</license.licenseName>
-        <java.version>21</java.version>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <maven.compiler.release>21</maven.compiler.release>
-        <project.encoding>UTF-8</project.encoding>
-        <project.build.encoding>UTF-8</project.build.encoding>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-        <!-- Spring Framework (FROZEN) -->
+    <properties>        <!-- Spring Framework (FROZEN) -->
         <spring.boot.version>4.1.0</spring.boot.version>
         <spring-cloud.version>2025.1.2</spring-cloud.version>
+        <license.licenseName>gpl_v3</license.licenseName>
 
         <!-- Loadup Framework -->
         <loadup.framework.version>0.0.2-SNAPSHOT</loadup.framework.version>
@@ -56,7 +52,8 @@
         <mysql.version>9.1.0</mysql.version>
         <flyway.version>12.6.1</flyway.version>
 
-        <!-- Code Generation -->        <org.mapstruct.version>1.6.3</org.mapstruct.version>        <!-- Apache Commons -->
+        <!-- Code Generation -->
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>        <!-- Apache Commons -->
         <commons-io.version>2.20.0</commons-io.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <commons-collections4.version>4.5.0</commons-collections4.version>
@@ -122,16 +119,20 @@
 
     </properties>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>${spotless.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
     <dependencyManagement>
         <dependencies>
-
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -377,7 +378,8 @@
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity-engine-core</artifactId>
                 <version>${velocity.version}</version>
-            </dependency>            <dependency>
+            </dependency>
+            <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
                 <version>${org.mapstruct.version}</version>
@@ -606,16 +608,7 @@
                 <artifactId>loadup-components-gotone-api</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-gotone-core</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-gotone-starter</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-gotone-channel-email</artifactId>
@@ -984,95 +977,4 @@
 
         </dependencies>
     </dependencyManagement>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.diffplug.spotless</groupId>
-                <artifactId>spotless-maven-plugin</artifactId>
-                <version>${spotless.version}</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <profiles>
-        <profile>
-            <id>github</id>
-            <activation>
-                <!-- Not active by default; activate explicitly via -P github in CI -->
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <distributionManagement>
-                <repository>
-                    <id>github</id>
-                    <name>LoadUp Apache Maven Packages</name>
-                    <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
-                </repository>
-                <snapshotRepository>
-                    <id>github</id>
-                    <name>LoadUp Apache Maven Packages</name>
-                    <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
-                </snapshotRepository>
-            </distributionManagement>
-            <repositories>
-                <repository>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                    <snapshots>
-                        <enabled>true</enabled>
-                    </snapshots>
-                    <id>github</id>
-                    <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
-                </repository>
-                <repository>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <id>aliyun</id>
-                    <url>https://maven.aliyun.com/repository/public</url>
-                </repository>
-            </repositories>
-        </profile>
-        <profile>
-            <id>release</id>
-            <distributionManagement>
-                <repository>
-                    <id>central</id>
-                    <url>https://central.sonatype.com/repository/maven-releases/</url>
-                </repository>
-            </distributionManagement>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.sonatype.central</groupId>
-                        <artifactId>central-publishing-maven-plugin</artifactId>
-                        <version>0.9.0</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <publishingServerId>central</publishingServerId>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.8</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                                <phase>verify</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

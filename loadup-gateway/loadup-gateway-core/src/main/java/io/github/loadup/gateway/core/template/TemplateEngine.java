@@ -30,12 +30,12 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Template engine - supports Groovy scripts
  */
 public class TemplateEngine {
     private static final Logger log = LoggerFactory.getLogger(TemplateEngine.class);
-
 
     private final ConcurrentHashMap<String, groovy.lang.Script> scriptCache = new ConcurrentHashMap<>();
     private final GroovyShell groovyShell = new GroovyShell();

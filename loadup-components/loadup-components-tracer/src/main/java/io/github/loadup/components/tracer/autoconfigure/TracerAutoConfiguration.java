@@ -52,7 +52,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -60,8 +61,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Single-entry Spring Boot {@link AutoConfiguration} for the LoadUp tracer component.
  *
@@ -80,7 +79,6 @@ import org.slf4j.LoggerFactory;
 @ConditionalOnProperty(prefix = "loadup.tracer", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class TracerAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(TracerAutoConfiguration.class);
-
 
     private final String applicationName;
 

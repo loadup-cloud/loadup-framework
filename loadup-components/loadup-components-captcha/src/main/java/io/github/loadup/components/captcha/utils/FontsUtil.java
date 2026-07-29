@@ -22,8 +22,6 @@ package io.github.loadup.components.captcha.utils;
  * #L%
  */
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
-
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -85,7 +83,7 @@ public class FontsUtil {
      */
     private static synchronized void copyTempFontFile(String fontName, File tempFontFile) {
         try (InputStream is = FontsUtil.class.getResourceAsStream("/" + fontName)) {
-//            IOUtils.copyToFile(is, tempFontFile);
+            //            IOUtils.copyToFile(is, tempFontFile);
         } catch (IOException e) {
             e.printStackTrace();
         }

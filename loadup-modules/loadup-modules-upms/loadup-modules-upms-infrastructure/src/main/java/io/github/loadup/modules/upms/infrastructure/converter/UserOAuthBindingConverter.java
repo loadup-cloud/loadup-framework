@@ -42,22 +42,21 @@ public class UserOAuthBindingConverter {
         if (dataObject == null) {
             return null;
         }
-
-        return UserOAuthBinding.builder()
-                .id(dataObject.getId())
-                .userId(dataObject.getUserId())
-                .provider(dataObject.getProvider())
-                .openId(dataObject.getOpenId())
-                .unionId(dataObject.getUnionId())
-                .nickname(dataObject.getNickname())
-                .avatar(dataObject.getAvatar())
-                .accessToken(dataObject.getAccessToken())
-                .refreshToken(dataObject.getRefreshToken())
-                .expiresAt(dataObject.getExpiresAt())
-                .boundAt(dataObject.getBoundAt())
-                .createdAt(dataObject.getCreatedAt())
-                .updatedAt(dataObject.getUpdatedAt())
-                .build();
+        UserOAuthBinding userOAuthBinding = new UserOAuthBinding();
+        userOAuthBinding.setId(dataObject.getId());
+        userOAuthBinding.setUserId(dataObject.getUserId());
+        userOAuthBinding.setProvider(dataObject.getProvider());
+        userOAuthBinding.setOpenId(dataObject.getOpenId());
+        userOAuthBinding.setUnionId(dataObject.getUnionId());
+        userOAuthBinding.setNickname(dataObject.getNickname());
+        userOAuthBinding.setAvatar(dataObject.getAvatar());
+        userOAuthBinding.setAccessToken(dataObject.getAccessToken());
+        userOAuthBinding.setRefreshToken(dataObject.getRefreshToken());
+        userOAuthBinding.setExpiresAt(dataObject.getExpiresAt());
+        userOAuthBinding.setBoundAt(dataObject.getBoundAt());
+        userOAuthBinding.setCreatedAt(dataObject.getCreatedAt());
+        userOAuthBinding.setUpdatedAt(dataObject.getUpdatedAt());
+        return userOAuthBinding;
     }
 
     /**

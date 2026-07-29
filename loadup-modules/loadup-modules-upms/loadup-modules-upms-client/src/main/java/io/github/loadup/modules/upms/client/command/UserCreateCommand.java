@@ -75,7 +75,21 @@ public class UserCreateCommand {
 
     private String createdBy;
 
-    public UserCreateCommand(String username, String password, String nickname, String realName, String deptId, String email, String mobile, String avatar, Short gender, LocalDate birthday, Short status, List<String> roleIds, String remark, String createdBy) {
+    public UserCreateCommand(
+            String username,
+            String password,
+            String nickname,
+            String realName,
+            String deptId,
+            String email,
+            String mobile,
+            String avatar,
+            Short gender,
+            LocalDate birthday,
+            Short status,
+            List<String> roleIds,
+            String remark,
+            String createdBy) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
@@ -92,8 +106,7 @@ public class UserCreateCommand {
         this.createdBy = createdBy;
     }
 
-    public UserCreateCommand() {
-    }
+    public UserCreateCommand() {}
 
     public String getUsername() {
         return this.username;
@@ -209,7 +222,9 @@ public class UserCreateCommand {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(username, password, nickname, realName, deptId, email, mobile, avatar, gender, birthday, status, roleIds, remark, createdBy);
+        return java.util.Objects.hash(
+                username, password, nickname, realName, deptId, email, mobile, avatar, gender, birthday, status,
+                roleIds, remark, createdBy);
     }
 
     @Override
@@ -236,6 +251,10 @@ public class UserCreateCommand {
 
     @Override
     public String toString() {
-        return "UserCreateCommand(" + "username=" + username + ", " + "password=" + password + ", " + "nickname=" + nickname + ", " + "realName=" + realName + ", " + "deptId=" + deptId + ", " + "email=" + email + ", " + "mobile=" + mobile + ", " + "avatar=" + avatar + ", " + "gender=" + gender + ", " + "birthday=" + birthday + ", " + "status=" + status + ", " + "roleIds=" + roleIds + ", " + "remark=" + remark + ", " + "createdBy=" + createdBy + ")";
+        return "UserCreateCommand(" + "username=" + username + ", " + "password=" + password + ", " + "nickname="
+                + nickname + ", " + "realName=" + realName + ", " + "deptId=" + deptId + ", " + "email=" + email + ", "
+                + "mobile=" + mobile + ", " + "avatar=" + avatar + ", " + "gender=" + gender + ", " + "birthday="
+                + birthday + ", " + "status=" + status + ", " + "roleIds=" + roleIds + ", " + "remark=" + remark + ", "
+                + "createdBy=" + createdBy + ")";
     }
 }

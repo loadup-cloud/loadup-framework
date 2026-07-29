@@ -59,119 +59,77 @@ public class RetryTaskProperties {
         private boolean executeImmediately = false; // Whether to execute immediately by default
 
         private boolean waitResult = false; // Whether to wait for result by default
-    }
 
-    public RetryTaskProperties(Map<String, BizTypeConfig> bizTypes, String tablePrefix, DbType dbType, String strategy, int maxRetryCount, String notifier, String priority, boolean executeImmediately, boolean waitResult) {
-        this.bizTypes = bizTypes;
-        this.tablePrefix = tablePrefix;
-        this.dbType = dbType;
-        this.strategy = strategy;
-        this.maxRetryCount = maxRetryCount;
-        this.notifier = notifier;
-        this.priority = priority;
-        this.executeImmediately = executeImmediately;
-        this.waitResult = waitResult;
-    }
+        public String getStrategy() {
+            return strategy;
+        }
 
-    public RetryTaskProperties() {
+        public void setStrategy(String strategy) {
+            this.strategy = strategy;
+        }
+
+        public int getMaxRetryCount() {
+            return maxRetryCount;
+        }
+
+        public void setMaxRetryCount(int maxRetryCount) {
+            this.maxRetryCount = maxRetryCount;
+        }
+
+        public String getNotifier() {
+            return notifier;
+        }
+
+        public void setNotifier(String notifier) {
+            this.notifier = notifier;
+        }
+
+        public String getPriority() {
+            return priority;
+        }
+
+        public void setPriority(String priority) {
+            this.priority = priority;
+        }
+
+        public boolean isExecuteImmediately() {
+            return executeImmediately;
+        }
+
+        public void setExecuteImmediately(boolean executeImmediately) {
+            this.executeImmediately = executeImmediately;
+        }
+
+        public boolean isWaitResult() {
+            return waitResult;
+        }
+
+        public void setWaitResult(boolean waitResult) {
+            this.waitResult = waitResult;
+        }
     }
 
     public Map<String, BizTypeConfig> getBizTypes() {
-        return this.bizTypes;
-    }
-
-    public String getTablePrefix() {
-        return this.tablePrefix;
-    }
-
-    public DbType getDbType() {
-        return this.dbType;
-    }
-
-    public String getStrategy() {
-        return this.strategy;
-    }
-
-    public int getMaxRetryCount() {
-        return this.maxRetryCount;
-    }
-
-    public String getNotifier() {
-        return this.notifier;
-    }
-
-    public String getPriority() {
-        return this.priority;
-    }
-
-    public boolean isExecuteImmediately() {
-        return this.executeImmediately;
-    }
-
-    public boolean isWaitResult() {
-        return this.waitResult;
+        return bizTypes;
     }
 
     public void setBizTypes(Map<String, BizTypeConfig> bizTypes) {
         this.bizTypes = bizTypes;
     }
 
+    public String getTablePrefix() {
+        return tablePrefix;
+    }
+
     public void setTablePrefix(String tablePrefix) {
         this.tablePrefix = tablePrefix;
     }
 
+    public DbType getDbType() {
+        return dbType;
+    }
+
     public void setDbType(DbType dbType) {
         this.dbType = dbType;
-    }
-
-    public void setStrategy(String strategy) {
-        this.strategy = strategy;
-    }
-
-    public void setMaxRetryCount(int maxRetryCount) {
-        this.maxRetryCount = maxRetryCount;
-    }
-
-    public void setNotifier(String notifier) {
-        this.notifier = notifier;
-    }
-
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
-
-    public void setExecuteImmediately(boolean executeImmediately) {
-        this.executeImmediately = executeImmediately;
-    }
-
-    public void setWaitResult(boolean waitResult) {
-        this.waitResult = waitResult;
-    }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(bizTypes, tablePrefix, dbType, strategy, maxRetryCount, notifier, priority, executeImmediately, waitResult);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RetryTaskProperties other = (RetryTaskProperties) o;
-        if (!java.util.Objects.equals(bizTypes, other.bizTypes)) return false;
-        if (!java.util.Objects.equals(tablePrefix, other.tablePrefix)) return false;
-        if (!java.util.Objects.equals(dbType, other.dbType)) return false;
-        if (!java.util.Objects.equals(strategy, other.strategy)) return false;
-        if (!java.util.Objects.equals(maxRetryCount, other.maxRetryCount)) return false;
-        if (!java.util.Objects.equals(notifier, other.notifier)) return false;
-        if (!java.util.Objects.equals(priority, other.priority)) return false;
-        if (!java.util.Objects.equals(executeImmediately, other.executeImmediately)) return false;
-        if (!java.util.Objects.equals(waitResult, other.waitResult)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "RetryTaskProperties(" + "bizTypes=" + bizTypes + ", " + "tablePrefix=" + tablePrefix + ", " + "dbType=" + dbType + ", " + "strategy=" + strategy + ", " + "maxRetryCount=" + maxRetryCount + ", " + "notifier=" + notifier + ", " + "priority=" + priority + ", " + "executeImmediately=" + executeImmediately + ", " + "waitResult=" + waitResult + ")";
     }
 }

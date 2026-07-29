@@ -30,6 +30,8 @@ import io.github.loadup.modules.upms.client.dto.OAuthToken;
 import io.github.loadup.modules.upms.client.dto.OAuthUserInfo;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -41,8 +43,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * GitHub OAuth Provider
  *
@@ -53,7 +53,6 @@ import org.slf4j.LoggerFactory;
 @ConditionalOnProperty(prefix = "loadup.upms.security.oauth.github", name = "enabled", havingValue = "true")
 public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.strategy.oauth.OAuthProvider {
     private static final Logger log = LoggerFactory.getLogger(GitHubOAuthProvider.class);
-
 
     private final UpmsSecurityProperties securityProperties;
     private final RestTemplate restTemplate = new RestTemplate();
@@ -152,9 +151,7 @@ public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.st
         }
     }
 
-    public GitHubOAuthProvider(UpmsSecurityProperties securityProperties, RestTemplate restTemplate, ObjectMapper objectMapper) {
+    public GitHubOAuthProvider(UpmsSecurityProperties securityProperties) {
         this.securityProperties = securityProperties;
-        this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
     }
 }

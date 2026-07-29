@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
-        <artifactId>loadup-dependencies</artifactId>
+        <artifactId>loadup-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
-        <relativePath>../../loadup-dependencies/pom.xml</relativePath>
+        <relativePath>../../loadup-parent/pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-gotone-engine</artifactId>
     <name>Loadup Gotone Engine</name>
@@ -20,7 +18,8 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
-        </dependency>        <dependency>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>

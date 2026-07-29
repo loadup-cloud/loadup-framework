@@ -51,7 +51,22 @@ public class ConfigItem {
     private String updatedBy;
     private LocalDateTime updatedAt;
 
-    public ConfigItem(String id, String configKey, String configValue, String valueType, String category, String description, Boolean editable, Boolean encrypted, Boolean systemDefined, Integer sortOrder, Boolean enabled, String createdBy, LocalDateTime createdAt, String updatedBy, LocalDateTime updatedAt) {
+    public ConfigItem(
+            String id,
+            String configKey,
+            String configValue,
+            String valueType,
+            String category,
+            String description,
+            Boolean editable,
+            Boolean encrypted,
+            Boolean systemDefined,
+            Integer sortOrder,
+            Boolean enabled,
+            String createdBy,
+            LocalDateTime createdAt,
+            String updatedBy,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.configKey = configKey;
         this.configValue = configValue;
@@ -69,8 +84,7 @@ public class ConfigItem {
         this.updatedAt = updatedAt;
     }
 
-    public ConfigItem() {
-    }
+    public ConfigItem() {}
 
     public String getId() {
         return this.id;
@@ -194,7 +208,22 @@ public class ConfigItem {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, configKey, configValue, valueType, category, description, editable, encrypted, systemDefined, sortOrder, enabled, createdBy, createdAt, updatedBy, updatedAt);
+        return java.util.Objects.hash(
+                id,
+                configKey,
+                configValue,
+                valueType,
+                category,
+                description,
+                editable,
+                encrypted,
+                systemDefined,
+                sortOrder,
+                enabled,
+                createdBy,
+                createdAt,
+                updatedBy,
+                updatedAt);
     }
 
     @Override
@@ -222,7 +251,11 @@ public class ConfigItem {
 
     @Override
     public String toString() {
-        return "ConfigItem(" + "id=" + id + ", " + "configKey=" + configKey + ", " + "configValue=" + configValue + ", " + "valueType=" + valueType + ", " + "category=" + category + ", " + "description=" + description + ", " + "editable=" + editable + ", " + "encrypted=" + encrypted + ", " + "systemDefined=" + systemDefined + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy=" + createdBy + ", " + "createdAt=" + createdAt + ", " + "updatedBy=" + updatedBy + ", " + "updatedAt=" + updatedAt + ")";
+        return "ConfigItem(" + "id=" + id + ", " + "configKey=" + configKey + ", " + "configValue=" + configValue + ", "
+                + "valueType=" + valueType + ", " + "category=" + category + ", " + "description=" + description + ", "
+                + "editable=" + editable + ", " + "encrypted=" + encrypted + ", " + "systemDefined=" + systemDefined
+                + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy=" + createdBy + ", "
+                + "createdAt=" + createdAt + ", " + "updatedBy=" + updatedBy + ", " + "updatedAt=" + updatedAt + ")";
     }
 
     public static Builder builder() {
@@ -322,7 +355,22 @@ public class ConfigItem {
         }
 
         public ConfigItem build() {
-            return new ConfigItem(this.id, this.configKey, this.configValue, this.valueType, this.category, this.description, this.editable, this.encrypted, this.systemDefined, this.sortOrder, this.enabled, this.createdBy, this.createdAt, this.updatedBy, this.updatedAt);
+            return new ConfigItem(
+                    this.id,
+                    this.configKey,
+                    this.configValue,
+                    this.valueType,
+                    this.category,
+                    this.description,
+                    this.editable,
+                    this.encrypted,
+                    this.systemDefined,
+                    this.sortOrder,
+                    this.enabled,
+                    this.createdBy,
+                    this.createdAt,
+                    this.updatedBy,
+                    this.updatedAt);
         }
     }
 }

@@ -34,10 +34,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.core.annotation.AnnotationUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.AnnotationUtils;
+
 /**
  * AOP aspect that wraps methods annotated with {@link Traced} in an OpenTelemetry span.
  *
@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
 @Aspect
 public class TracingAspect {
     private static final Logger log = LoggerFactory.getLogger(TracingAspect.class);
-
 
     @Around("@annotation(io.github.loadup.components.tracer.annotation.Traced) "
             + "|| @within(io.github.loadup.components.tracer.annotation.Traced)")

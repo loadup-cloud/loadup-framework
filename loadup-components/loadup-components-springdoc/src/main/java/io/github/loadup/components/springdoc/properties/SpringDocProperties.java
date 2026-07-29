@@ -48,199 +48,179 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.springdoc")
 public class SpringDocProperties {
 
-    /** Whether the SpringDoc / knife4j auto-configuration is enabled. */
+    /**
+     * Whether the SpringDoc / knife4j auto-configuration is enabled.
+     */
     private boolean enabled = true;
 
-    /** OpenAPI {@code info.title}. */
+    /**
+     * OpenAPI {@code info.title}.
+     */
     private String title = "LoadUp API";
 
-    /** OpenAPI {@code info.description}. */
+    /**
+     * OpenAPI {@code info.description}.
+     */
     private String description = "LoadUp Framework REST API documentation.";
 
-    /** OpenAPI {@code info.version}. */
+    /**
+     * OpenAPI {@code info.version}.
+     */
     private String version = "0.0.2-SNAPSHOT";
 
-    /** Whether to register a global JWT Bearer security scheme. */
+    /**
+     * Whether to register a global JWT Bearer security scheme.
+     */
     private boolean jwtEnabled = true;
 
-    /** Name of the JWT security scheme registered in OpenAPI components. */
+    /**
+     * Name of the JWT security scheme registered in OpenAPI components.
+     */
     private String jwtSchemeName = "BearerAuth";
 
-    /** Contact information shown in the API documentation. */
+    /**
+     * Contact information shown in the API documentation.
+     */
     private Contact contact = new Contact();
 
-    /** License information shown in the API documentation. */
+    /**
+     * License information shown in the API documentation.
+     */
     private License license = new License();
 
-    /** Contact sub-properties. */
+    /**
+     * Contact sub-properties.
+     */
     public static class Contact {
-        /** Contact display name. */
+        /**
+         * Contact display name.
+         */
         private String name = "LoadUp Team";
-        /** Contact URL. */
+        /**
+         * Contact URL.
+         */
         private String url = "https://github.com/loadup-cloud";
-        /** Contact e-mail. */
+        /**
+         * Contact e-mail.
+         */
         private String email = "";
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
     }
 
-    /** License sub-properties. */
+    /**
+     * License sub-properties.
+     */
     public static class License {
-        /** License name. */
+        /**
+         * License name.
+         */
         private String name = "GPL-3.0";
-        /** License URL. */
+        /**
+         * License URL.
+         */
         private String url = "https://opensource.org/license/gpl-3-0";
-    }
 
-    public SpringDocProperties(boolean enabled, String title, String description, String version, boolean jwtEnabled, String jwtSchemeName, Contact contact, License license, String name, String url, String email, String name, String url) {
-        this.enabled = enabled;
-        this.title = title;
-        this.description = description;
-        this.version = version;
-        this.jwtEnabled = jwtEnabled;
-        this.jwtSchemeName = jwtSchemeName;
-        this.contact = contact;
-        this.license = license;
-        this.name = name;
-        this.url = url;
-        this.email = email;
-        this.name = name;
-        this.url = url;
-    }
+        public String getName() {
+            return name;
+        }
 
-    public SpringDocProperties() {
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
     }
 
     public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public String getVersion() {
-        return this.version;
-    }
-
-    public boolean isJwtEnabled() {
-        return this.jwtEnabled;
-    }
-
-    public String getJwtSchemeName() {
-        return this.jwtSchemeName;
-    }
-
-    public Contact getContact() {
-        return this.contact;
-    }
-
-    public License getLicense() {
-        return this.license;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getUrl() {
-        return this.url;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getUrl() {
-        return this.url;
+        return enabled;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
+    public String getVersion() {
+        return version;
+    }
+
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public boolean isJwtEnabled() {
+        return jwtEnabled;
     }
 
     public void setJwtEnabled(boolean jwtEnabled) {
         this.jwtEnabled = jwtEnabled;
     }
 
+    public String getJwtSchemeName() {
+        return jwtSchemeName;
+    }
+
     public void setJwtSchemeName(String jwtSchemeName) {
         this.jwtSchemeName = jwtSchemeName;
+    }
+
+    public Contact getContact() {
+        return contact;
     }
 
     public void setContact(Contact contact) {
         this.contact = contact;
     }
 
+    public License getLicense() {
+        return license;
+    }
+
     public void setLicense(License license) {
         this.license = license;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(enabled, title, description, version, jwtEnabled, jwtSchemeName, contact, license, name, url, email, name, url);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SpringDocProperties other = (SpringDocProperties) o;
-        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
-        if (!java.util.Objects.equals(title, other.title)) return false;
-        if (!java.util.Objects.equals(description, other.description)) return false;
-        if (!java.util.Objects.equals(version, other.version)) return false;
-        if (!java.util.Objects.equals(jwtEnabled, other.jwtEnabled)) return false;
-        if (!java.util.Objects.equals(jwtSchemeName, other.jwtSchemeName)) return false;
-        if (!java.util.Objects.equals(contact, other.contact)) return false;
-        if (!java.util.Objects.equals(license, other.license)) return false;
-        if (!java.util.Objects.equals(name, other.name)) return false;
-        if (!java.util.Objects.equals(url, other.url)) return false;
-        if (!java.util.Objects.equals(email, other.email)) return false;
-        if (!java.util.Objects.equals(name, other.name)) return false;
-        if (!java.util.Objects.equals(url, other.url)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "SpringDocProperties(" + "enabled=" + enabled + ", " + "title=" + title + ", " + "description=" + description + ", " + "version=" + version + ", " + "jwtEnabled=" + jwtEnabled + ", " + "jwtSchemeName=" + jwtSchemeName + ", " + "contact=" + contact + ", " + "license=" + license + ", " + "name=" + name + ", " + "url=" + url + ", " + "email=" + email + ", " + "name=" + name + ", " + "url=" + url + ")";
     }
 }

@@ -46,12 +46,12 @@ import io.github.loadup.components.pipeline.tx.ITxInitializer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Core pipeline execution engine.
  *
@@ -75,7 +75,6 @@ import org.slf4j.LoggerFactory;
  */
 public class PipelineExecutor {
     private static final Logger log = LoggerFactory.getLogger(PipelineExecutor.class);
-
 
     private final ApplicationContext applicationContext;
 

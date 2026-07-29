@@ -46,7 +46,19 @@ public class ErrorLog {
     private LocalDateTime errorTime;
     private LocalDateTime createdAt;
 
-    public ErrorLog(String id, String userId, String errorType, String errorCode, String errorMessage, String stackTrace, String requestUrl, String requestMethod, String requestParams, String ip, LocalDateTime errorTime, LocalDateTime createdAt) {
+    public ErrorLog(
+            String id,
+            String userId,
+            String errorType,
+            String errorCode,
+            String errorMessage,
+            String stackTrace,
+            String requestUrl,
+            String requestMethod,
+            String requestParams,
+            String ip,
+            LocalDateTime errorTime,
+            LocalDateTime createdAt) {
         this.id = id;
         this.userId = userId;
         this.errorType = errorType;
@@ -61,8 +73,7 @@ public class ErrorLog {
         this.createdAt = createdAt;
     }
 
-    public ErrorLog() {
-    }
+    public ErrorLog() {}
 
     public String getId() {
         return this.id;
@@ -162,7 +173,19 @@ public class ErrorLog {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, userId, errorType, errorCode, errorMessage, stackTrace, requestUrl, requestMethod, requestParams, ip, errorTime, createdAt);
+        return java.util.Objects.hash(
+                id,
+                userId,
+                errorType,
+                errorCode,
+                errorMessage,
+                stackTrace,
+                requestUrl,
+                requestMethod,
+                requestParams,
+                ip,
+                errorTime,
+                createdAt);
     }
 
     @Override
@@ -187,7 +210,11 @@ public class ErrorLog {
 
     @Override
     public String toString() {
-        return "ErrorLog(" + "id=" + id + ", " + "userId=" + userId + ", " + "errorType=" + errorType + ", " + "errorCode=" + errorCode + ", " + "errorMessage=" + errorMessage + ", " + "stackTrace=" + stackTrace + ", " + "requestUrl=" + requestUrl + ", " + "requestMethod=" + requestMethod + ", " + "requestParams=" + requestParams + ", " + "ip=" + ip + ", " + "errorTime=" + errorTime + ", " + "createdAt=" + createdAt + ")";
+        return "ErrorLog(" + "id=" + id + ", " + "userId=" + userId + ", " + "errorType=" + errorType + ", "
+                + "errorCode=" + errorCode + ", " + "errorMessage=" + errorMessage + ", " + "stackTrace=" + stackTrace
+                + ", " + "requestUrl=" + requestUrl + ", " + "requestMethod=" + requestMethod + ", " + "requestParams="
+                + requestParams + ", " + "ip=" + ip + ", " + "errorTime=" + errorTime + ", " + "createdAt=" + createdAt
+                + ")";
     }
 
     public static Builder builder() {
@@ -269,7 +296,19 @@ public class ErrorLog {
         }
 
         public ErrorLog build() {
-            return new ErrorLog(this.id, this.userId, this.errorType, this.errorCode, this.errorMessage, this.stackTrace, this.requestUrl, this.requestMethod, this.requestParams, this.ip, this.errorTime, this.createdAt);
+            return new ErrorLog(
+                    this.id,
+                    this.userId,
+                    this.errorType,
+                    this.errorCode,
+                    this.errorMessage,
+                    this.stackTrace,
+                    this.requestUrl,
+                    this.requestMethod,
+                    this.requestParams,
+                    this.ip,
+                    this.errorTime,
+                    this.createdAt);
         }
     }
 }

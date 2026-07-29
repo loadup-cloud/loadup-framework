@@ -38,6 +38,8 @@ import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -46,8 +48,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * User Management Service
  *
@@ -57,7 +57,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
-
 
     private final UserGateway userGateway;
     private final RoleGateway roleGateway;
@@ -85,28 +84,27 @@ public class UserService {
         }
 
         // Create user entity
-        User user = User.builder()
-                .username(command.getUsername())
-                .password(passwordEncoder.encode(command.getPassword()))
-                .nickname(command.getNickname())
-                .realName(command.getRealName())
-                .deptId(command.getDeptId())
-                .email(command.getEmail())
-                .mobile(command.getMobile())
-                .avatar(command.getAvatar())
-                .gender(command.getGender())
-                .birthday(command.getBirthday())
-                .status(command.getStatus() != null ? command.getStatus() : (short) 1)
-                .accountNonExpired(true)
-                .accountNonLocked(true)
-                .credentialsNonExpired(true)
-                .emailVerified(false)
-                .mobileVerified(false)
-                .deleted(false)
-                .remark(command.getRemark())
-                .createdBy(command.getCreatedBy())
-                .createdTime(LocalDateTime.now())
-                .build();
+        User user = new User();
+        user.setUsername(command.getUsername());
+        user.setPassword(passwordEncoder.encode(command.getPassword()));
+        user.setNickname(command.getNickname());
+        user.setRealName(command.getRealName());
+        user.setDeptId(command.getDeptId());
+        user.setEmail(command.getEmail());
+        user.setMobile(command.getMobile());
+        user.setAvatar(command.getAvatar());
+        user.setGender(command.getGender());
+        user.setBirthday(command.getBirthday());
+        user.setStatus(command.getStatus() != null ? command.getStatus() : (short) 1);
+        user.setAccountNonExpired(true);
+        user.setAccountNonLocked(true);
+        user.setCredentialsNonExpired(true);
+        user.setEmailVerified(false);
+        user.setMobileVerified(false);
+        user.setDeleted(false);
+        user.setRemark(command.getRemark());
+        user.setCreatedBy(command.getCreatedBy());
+        user.setCreatedTime(LocalDateTime.now());
 
         user = userGateway.save(user);
 
@@ -335,7 +333,11 @@ public class UserService {
                 .build();
     }
 
-    public UserService(UserGateway userGateway, RoleGateway roleGateway, DepartmentGateway departmentGateway, PasswordEncoder passwordEncoder) {
+    public UserService(
+            UserGateway userGateway,
+            RoleGateway roleGateway,
+            DepartmentGateway departmentGateway,
+            PasswordEncoder passwordEncoder) {
         this.userGateway = userGateway;
         this.roleGateway = roleGateway;
         this.departmentGateway = departmentGateway;

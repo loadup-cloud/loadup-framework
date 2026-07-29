@@ -35,6 +35,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * 签名工具类（静态方法）
  *
@@ -42,7 +43,6 @@ import org.slf4j.LoggerFactory;
  */
 public final class SignatureUtils {
     private static final Logger log = LoggerFactory.getLogger(SignatureUtils.class);
-
 
     private SignatureUtils() {
         throw new UnsupportedOperationException("Utility class");
@@ -145,5 +145,9 @@ public final class SignatureUtils {
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
         KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm);
         return keyFactory.generatePublic(keySpec);
+    }
+
+    public Logger getLog() {
+        return this.log;
     }
 }

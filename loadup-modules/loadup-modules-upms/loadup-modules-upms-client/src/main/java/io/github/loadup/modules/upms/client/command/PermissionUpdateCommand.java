@@ -64,7 +64,20 @@ public class PermissionUpdateCommand {
 
     private String updatedBy;
 
-    public PermissionUpdateCommand(String id, String parentId, String permissionName, Short permissionType, String resourcePath, String httpMethod, String icon, String componentPath, Integer sortOrder, Boolean visible, Short status, String remark, String updatedBy) {
+    public PermissionUpdateCommand(
+            String id,
+            String parentId,
+            String permissionName,
+            Short permissionType,
+            String resourcePath,
+            String httpMethod,
+            String icon,
+            String componentPath,
+            Integer sortOrder,
+            Boolean visible,
+            Short status,
+            String remark,
+            String updatedBy) {
         this.id = id;
         this.parentId = parentId;
         this.permissionName = permissionName;
@@ -80,8 +93,7 @@ public class PermissionUpdateCommand {
         this.updatedBy = updatedBy;
     }
 
-    public PermissionUpdateCommand() {
-    }
+    public PermissionUpdateCommand() {}
 
     public String getId() {
         return this.id;
@@ -189,7 +201,20 @@ public class PermissionUpdateCommand {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, parentId, permissionName, permissionType, resourcePath, httpMethod, icon, componentPath, sortOrder, visible, status, remark, updatedBy);
+        return java.util.Objects.hash(
+                id,
+                parentId,
+                permissionName,
+                permissionType,
+                resourcePath,
+                httpMethod,
+                icon,
+                componentPath,
+                sortOrder,
+                visible,
+                status,
+                remark,
+                updatedBy);
     }
 
     @Override
@@ -215,6 +240,10 @@ public class PermissionUpdateCommand {
 
     @Override
     public String toString() {
-        return "PermissionUpdateCommand(" + "id=" + id + ", " + "parentId=" + parentId + ", " + "permissionName=" + permissionName + ", " + "permissionType=" + permissionType + ", " + "resourcePath=" + resourcePath + ", " + "httpMethod=" + httpMethod + ", " + "icon=" + icon + ", " + "componentPath=" + componentPath + ", " + "sortOrder=" + sortOrder + ", " + "visible=" + visible + ", " + "status=" + status + ", " + "remark=" + remark + ", " + "updatedBy=" + updatedBy + ")";
+        return "PermissionUpdateCommand(" + "id=" + id + ", " + "parentId=" + parentId + ", " + "permissionName="
+                + permissionName + ", " + "permissionType=" + permissionType + ", " + "resourcePath=" + resourcePath
+                + ", " + "httpMethod=" + httpMethod + ", " + "icon=" + icon + ", " + "componentPath=" + componentPath
+                + ", " + "sortOrder=" + sortOrder + ", " + "visible=" + visible + ", " + "status=" + status + ", "
+                + "remark=" + remark + ", " + "updatedBy=" + updatedBy + ")";
     }
 }

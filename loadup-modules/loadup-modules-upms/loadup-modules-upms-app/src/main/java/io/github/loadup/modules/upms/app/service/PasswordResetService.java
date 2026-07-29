@@ -26,12 +26,12 @@ import io.github.loadup.modules.upms.client.command.UserPasswordResetCommand;
 import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import java.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Password Reset Service - Handles password reset with email/SMS verification
  *
@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class PasswordResetService {
     private static final Logger log = LoggerFactory.getLogger(PasswordResetService.class);
-
 
     private final UserGateway userGateway;
     private final VerificationCodeService verificationCodeService;
@@ -130,7 +129,8 @@ public class PasswordResetService {
         log.info("Password reset successful for user: {}", user.getUsername());
     }
 
-    public PasswordResetService(UserGateway userGateway, VerificationCodeService verificationCodeService, PasswordEncoder passwordEncoder) {
+    public PasswordResetService(
+            UserGateway userGateway, VerificationCodeService verificationCodeService, PasswordEncoder passwordEncoder) {
         this.userGateway = userGateway;
         this.verificationCodeService = verificationCodeService;
         this.passwordEncoder = passwordEncoder;

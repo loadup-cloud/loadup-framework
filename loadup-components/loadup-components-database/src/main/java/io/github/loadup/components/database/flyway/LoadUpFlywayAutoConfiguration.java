@@ -26,17 +26,17 @@ import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.flyway.autoconfigure.FlywayMigrationStrategy;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Auto-configuration for Flyway database migrations.
  *
@@ -67,7 +67,6 @@ import org.slf4j.LoggerFactory;
 public class LoadUpFlywayAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(LoadUpFlywayAutoConfiguration.class);
 
-
     /**
      * Create the Flyway bean with LoadUp-specific configuration.
      *
@@ -83,8 +82,7 @@ public class LoadUpFlywayAutoConfiguration {
     public Flyway flyway(DataSource dataSource, FlywayProperties properties) {
         log.info(">>> [FLYWAY] Configuring Flyway with LoadUp properties");
 
-        FluentConfiguration config = Flyway.configure()
-                .dataSource(dataSource);
+        FluentConfiguration config = Flyway.configure().dataSource(dataSource);
 
         // Migration locations
         if (properties.getLocations() != null && properties.getLocations().length > 0) {
@@ -113,7 +111,8 @@ public class LoadUpFlywayAutoConfiguration {
         }
 
         // Placeholders
-        if (properties.getPlaceholders() != null && !properties.getPlaceholders().isEmpty()) {
+        if (properties.getPlaceholders() != null
+                && !properties.getPlaceholders().isEmpty()) {
             config.placeholders(properties.getPlaceholders());
         }
         config.placeholderReplacement(properties.isPlaceholderReplacement());

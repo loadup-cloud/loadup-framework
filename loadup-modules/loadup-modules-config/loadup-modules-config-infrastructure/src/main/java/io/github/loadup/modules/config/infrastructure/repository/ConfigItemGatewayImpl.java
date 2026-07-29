@@ -12,10 +12,10 @@ import io.github.loadup.modules.config.infrastructure.mapper.ConfigItemDOMapper;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Repository;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
+
 /*-
  * #%L
  * Loadup Modules Config Infrastructure
@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 @Repository
 public class ConfigItemGatewayImpl implements ConfigItemGateway {
     private static final Logger log = LoggerFactory.getLogger(ConfigItemGatewayImpl.class);
-
 
     private final ConfigItemDOMapper mapper;
     private final ConfigLocalCache localCache;
@@ -109,7 +108,8 @@ public class ConfigItemGatewayImpl implements ConfigItemGateway {
         return mapper.selectCountByQuery(QueryWrapper.create().where(CONFIG_ITEM_DO.CONFIG_KEY.eq(configKey))) > 0;
     }
 
-    public ConfigItemGatewayImpl(ConfigItemDOMapper mapper, ConfigLocalCache localCache, ConfigItemConverter converter) {
+    public ConfigItemGatewayImpl(
+            ConfigItemDOMapper mapper, ConfigLocalCache localCache, ConfigItemConverter converter) {
         this.mapper = mapper;
         this.localCache = localCache;
         this.converter = converter;

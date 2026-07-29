@@ -22,30 +22,22 @@ package io.github.loadup.components.scheduler.quartz.autoconfig;
  * #L%
  */
 
-import io.github.loadup.components.scheduler.binding.DefaultSchedulerBinding;
-import io.github.loadup.components.scheduler.cfg.SchedulerBindingCfg;
-import io.github.loadup.components.scheduler.quartz.binder.QuartzJobSchedulerBinder;
-import io.github.loadup.components.scheduler.quartz.cfg.QuartzBinderCfg;
-import io.github.loadup.framework.api.manager.BindingMetadata;
+import io.github.loadup.components.scheduler.SchedulerProvider;
+import io.github.loadup.components.scheduler.quartz.QuartzSchedulerConfig;
+import io.github.loadup.components.scheduler.quartz.QuartzSchedulerProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 @AutoConfiguration
-@ConditionalOnClass(QuartzJobSchedulerBinder.class)
+@ConditionalOnProperty(prefix = "loadup.scheduler", name = "binder-type", havingValue = "quartz")
+@EnableConfigurationProperties(QuartzSchedulerConfig.class)
 public class QuartzJobSchedulerAutoConfiguration {
-
-    /**
-     *
-     */
     @Bean
-    public BindingMetadata<?, ?, ?, ?> quartzJobMetadata() {
-        return new BindingMetadata<>(
-                "quartz",
-                DefaultSchedulerBinding.class,
-                QuartzJobSchedulerBinder.class,
-                SchedulerBindingCfg.class,
-                QuartzBinderCfg.class,
-                ctx -> new DefaultSchedulerBinding());
+    @ConditionalOnMissingBean
+    public SchedulerProvider quartzSchedulerProvider(QuartzSchedulerConfig config) {
+        return new QuartzSchedulerProvider(config);
     }
 }

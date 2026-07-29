@@ -78,7 +78,15 @@ public class AuthenticatedUser implements Serializable {
      */
     private Map<String, Object> attributes = new HashMap<>();
 
-    public AuthenticatedUser(String userId, String username, String nickname, String avatar, String email, String mobile, boolean newUser, Map<String, Object> attributes) {
+    public AuthenticatedUser(
+            String userId,
+            String username,
+            String nickname,
+            String avatar,
+            String email,
+            String mobile,
+            boolean newUser,
+            Map<String, Object> attributes) {
         this.userId = userId;
         this.username = username;
         this.nickname = nickname;
@@ -89,8 +97,7 @@ public class AuthenticatedUser implements Serializable {
         this.attributes = attributes;
     }
 
-    public AuthenticatedUser() {
-    }
+    public AuthenticatedUser() {}
 
     public String getUserId() {
         return this.userId;
@@ -179,7 +186,9 @@ public class AuthenticatedUser implements Serializable {
 
     @Override
     public String toString() {
-        return "AuthenticatedUser(" + "userId=" + userId + ", " + "username=" + username + ", " + "nickname=" + nickname + ", " + "avatar=" + avatar + ", " + "email=" + email + ", " + "mobile=" + mobile + ", " + "newUser=" + newUser + ", " + "attributes=" + attributes + ")";
+        return "AuthenticatedUser(" + "userId=" + userId + ", " + "username=" + username + ", " + "nickname=" + nickname
+                + ", " + "avatar=" + avatar + ", " + "email=" + email + ", " + "mobile=" + mobile + ", " + "newUser="
+                + newUser + ", " + "attributes=" + attributes + ")";
     }
 
     public static Builder builder() {
@@ -237,7 +246,15 @@ public class AuthenticatedUser implements Serializable {
         }
 
         public AuthenticatedUser build() {
-            return new AuthenticatedUser(this.userId, this.username, this.nickname, this.avatar, this.email, this.mobile, this.newUser, this.attributes);
+            return new AuthenticatedUser(
+                    this.userId,
+                    this.username,
+                    this.nickname,
+                    this.avatar,
+                    this.email,
+                    this.mobile,
+                    this.newUser,
+                    this.attributes);
         }
     }
 }

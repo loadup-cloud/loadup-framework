@@ -34,7 +34,14 @@ public class MockRule {
     private Long delay; // 新增存储
     private boolean hit; // 记录是否被触发过
 
-    public MockRule(List<Object> expectedArgs, Object returnValue, Throwable throwEx, Map<String, Object> context, Long delay, boolean hit) {
+    public MockRule(
+            List<Object> expectedArgs,
+            Object returnValue,
+            Throwable throwEx,
+            Class<?> returnType,
+            Map<String, Object> context,
+            Long delay,
+            boolean hit) {
         this.expectedArgs = expectedArgs;
         this.returnValue = returnValue;
         this.throwEx = throwEx;
@@ -43,8 +50,7 @@ public class MockRule {
         this.hit = hit;
     }
 
-    public MockRule() {
-    }
+    public MockRule() {}
 
     public List<Object> getExpectedArgs() {
         return this.expectedArgs;
@@ -94,27 +100,11 @@ public class MockRule {
         this.hit = hit;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(expectedArgs, returnValue, throwEx, context, delay, hit);
+    public Class<?> getReturnType() {
+        return returnType;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MockRule other = (MockRule) o;
-        if (!java.util.Objects.equals(expectedArgs, other.expectedArgs)) return false;
-        if (!java.util.Objects.equals(returnValue, other.returnValue)) return false;
-        if (!java.util.Objects.equals(throwEx, other.throwEx)) return false;
-        if (!java.util.Objects.equals(context, other.context)) return false;
-        if (!java.util.Objects.equals(delay, other.delay)) return false;
-        if (!java.util.Objects.equals(hit, other.hit)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "MockRule(" + "expectedArgs=" + expectedArgs + ", " + "returnValue=" + returnValue + ", " + "throwEx=" + throwEx + ", " + "context=" + context + ", " + "delay=" + delay + ", " + "hit=" + hit + ")";
+    public void setReturnType(Class<?> returnType) {
+        this.returnType = returnType;
     }
 }

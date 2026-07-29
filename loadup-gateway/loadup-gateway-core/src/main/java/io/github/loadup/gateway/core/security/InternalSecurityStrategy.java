@@ -30,11 +30,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Internal Call Security Strategy
  *
@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
  */
 public class InternalSecurityStrategy implements SecurityStrategy {
     private static final Logger log = LoggerFactory.getLogger(InternalSecurityStrategy.class);
-
 
     private static final String HEADER_INTERNAL_CALL = "X-Internal-Call";
     private static final List<String> INTERNAL_IP_PREFIXES = Arrays.asList(

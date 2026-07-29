@@ -34,12 +34,12 @@ import com.mybatisflex.spring.boot.MyBatisFlexCustomizer;
 import io.github.loadup.commons.dataobject.BaseDO;
 import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.database.listener.BaseEntityListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * MyBatis-Flex Auto Configuration
  *
@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
 @EnableConfigurationProperties(DatabaseProperties.class)
 public class MyBatisFlexAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(MyBatisFlexAutoConfiguration.class);
-
 
     private final DatabaseProperties databaseProperties;
 

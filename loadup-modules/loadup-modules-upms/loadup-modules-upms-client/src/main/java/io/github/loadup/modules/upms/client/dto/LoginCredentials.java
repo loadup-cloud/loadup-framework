@@ -119,7 +119,23 @@ public class LoginCredentials implements Serializable {
      */
     private Map<String, Object> extra = new HashMap<>();
 
-    public LoginCredentials(String loginType, String username, String password, String mobile, String smsCode, String email, String emailCode, String provider, String code, String state, String redirectUri, String ipAddress, String userAgent, String captchaKey, String captchaCode, Map<String, Object> extra) {
+    public LoginCredentials(
+            String loginType,
+            String username,
+            String password,
+            String mobile,
+            String smsCode,
+            String email,
+            String emailCode,
+            String provider,
+            String code,
+            String state,
+            String redirectUri,
+            String ipAddress,
+            String userAgent,
+            String captchaKey,
+            String captchaCode,
+            Map<String, Object> extra) {
         this.loginType = loginType;
         this.username = username;
         this.password = password;
@@ -138,8 +154,7 @@ public class LoginCredentials implements Serializable {
         this.extra = extra;
     }
 
-    public LoginCredentials() {
-    }
+    public LoginCredentials() {}
 
     public String getLoginType() {
         return this.loginType;
@@ -271,7 +286,23 @@ public class LoginCredentials implements Serializable {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(loginType, username, password, mobile, smsCode, email, emailCode, provider, code, state, redirectUri, ipAddress, userAgent, captchaKey, captchaCode, extra);
+        return java.util.Objects.hash(
+                loginType,
+                username,
+                password,
+                mobile,
+                smsCode,
+                email,
+                emailCode,
+                provider,
+                code,
+                state,
+                redirectUri,
+                ipAddress,
+                userAgent,
+                captchaKey,
+                captchaCode,
+                extra);
     }
 
     @Override
@@ -300,7 +331,12 @@ public class LoginCredentials implements Serializable {
 
     @Override
     public String toString() {
-        return "LoginCredentials(" + "loginType=" + loginType + ", " + "username=" + username + ", " + "password=" + password + ", " + "mobile=" + mobile + ", " + "smsCode=" + smsCode + ", " + "email=" + email + ", " + "emailCode=" + emailCode + ", " + "provider=" + provider + ", " + "code=" + code + ", " + "state=" + state + ", " + "redirectUri=" + redirectUri + ", " + "ipAddress=" + ipAddress + ", " + "userAgent=" + userAgent + ", " + "captchaKey=" + captchaKey + ", " + "captchaCode=" + captchaCode + ", " + "extra=" + extra + ")";
+        return "LoginCredentials(" + "loginType=" + loginType + ", " + "username=" + username + ", " + "password="
+                + password + ", " + "mobile=" + mobile + ", " + "smsCode=" + smsCode + ", " + "email=" + email + ", "
+                + "emailCode=" + emailCode + ", " + "provider=" + provider + ", " + "code=" + code + ", " + "state="
+                + state + ", " + "redirectUri=" + redirectUri + ", " + "ipAddress=" + ipAddress + ", " + "userAgent="
+                + userAgent + ", " + "captchaKey=" + captchaKey + ", " + "captchaCode=" + captchaCode + ", " + "extra="
+                + extra + ")";
     }
 
     public static Builder builder() {
@@ -406,7 +442,23 @@ public class LoginCredentials implements Serializable {
         }
 
         public LoginCredentials build() {
-            return new LoginCredentials(this.loginType, this.username, this.password, this.mobile, this.smsCode, this.email, this.emailCode, this.provider, this.code, this.state, this.redirectUri, this.ipAddress, this.userAgent, this.captchaKey, this.captchaCode, this.extra);
+            return new LoginCredentials(
+                    this.loginType,
+                    this.username,
+                    this.password,
+                    this.mobile,
+                    this.smsCode,
+                    this.email,
+                    this.emailCode,
+                    this.provider,
+                    this.code,
+                    this.state,
+                    this.redirectUri,
+                    this.ipAddress,
+                    this.userAgent,
+                    this.captchaKey,
+                    this.captchaCode,
+                    this.extra);
         }
     }
 }

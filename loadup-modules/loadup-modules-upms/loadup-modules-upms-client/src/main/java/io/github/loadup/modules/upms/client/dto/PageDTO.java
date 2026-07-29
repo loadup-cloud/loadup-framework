@@ -40,13 +40,13 @@ public class PageDTO<T> {
 
     public static <T> PageDTO<T> of(List<T> records, Long total, Integer page, Integer size) {
         int pages = (int) Math.ceil((double) total / size);
-        return PageDTO.<T>builder()
-                .data(records)
-                .totalCount(total)
-                .pageIndex(page)
-                .pageSize(size)
-                .totalPages(pages)
-                .build();
+        PageDTO<T> dto = new PageDTO<>();
+        dto.setData(records);
+        dto.setTotalCount(total);
+        dto.setPageIndex(page);
+        dto.setPageSize(size);
+        dto.setTotalPages(pages);
+        return dto;
     }
 
     public PageDTO(List<T> data, Long totalCount, Integer pageIndex, Integer pageSize, Integer totalPages) {
@@ -57,8 +57,7 @@ public class PageDTO<T> {
         this.totalPages = totalPages;
     }
 
-    public PageDTO() {
-    }
+    public PageDTO() {}
 
     public List<T> getData() {
         return this.data;
@@ -98,69 +97,5 @@ public class PageDTO<T> {
 
     public void setTotalPages(Integer totalPages) {
         this.totalPages = totalPages;
-    }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(data, totalCount, pageIndex, pageSize, totalPages);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PageDTO other = (PageDTO) o;
-        if (!java.util.Objects.equals(data, other.data)) return false;
-        if (!java.util.Objects.equals(totalCount, other.totalCount)) return false;
-        if (!java.util.Objects.equals(pageIndex, other.pageIndex)) return false;
-        if (!java.util.Objects.equals(pageSize, other.pageSize)) return false;
-        if (!java.util.Objects.equals(totalPages, other.totalPages)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "PageDTO(" + "data=" + data + ", " + "totalCount=" + totalCount + ", " + "pageIndex=" + pageIndex + ", " + "pageSize=" + pageSize + ", " + "totalPages=" + totalPages + ")";
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private List<T> data;
-        private Long totalCount;
-        private Integer pageIndex;
-        private Integer pageSize;
-        private Integer totalPages;
-
-        public Builder data(List<T> data) {
-            this.data = data;
-            return this;
-        }
-
-        public Builder totalCount(Long totalCount) {
-            this.totalCount = totalCount;
-            return this;
-        }
-
-        public Builder pageIndex(Integer pageIndex) {
-            this.pageIndex = pageIndex;
-            return this;
-        }
-
-        public Builder pageSize(Integer pageSize) {
-            this.pageSize = pageSize;
-            return this;
-        }
-
-        public Builder totalPages(Integer totalPages) {
-            this.totalPages = totalPages;
-            return this;
-        }
-
-        public PageDTO build() {
-            return new PageDTO(this.data, this.totalCount, this.pageIndex, this.pageSize, this.totalPages);
-        }
     }
 }

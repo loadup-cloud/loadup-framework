@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 public class DefaultGotoneTemplate implements GotoneTemplate {
     private static final Logger log = LoggerFactory.getLogger(DefaultGotoneTemplate.class);
 
@@ -92,27 +93,33 @@ public class DefaultGotoneTemplate implements GotoneTemplate {
                 }
 
                 // 构建响应
-                results.add(NotificationResponse.ChannelSendResult.builder()
-                        .channel(cfg.channel())
-                        .provider(sendResult.getSuccessfulProvider())
-                        .success(sendResult.success())
-                        .successCount(sendResult.response() != null ? sendResult.response().getSuccessCount() : 0)
-                        .failedCount(sendResult.response() != null ? sendResult.response().getFailedCount() : 0)
-                        .build());
+                NotificationResponse.ChannelSendResult channelSendResult = new NotificationResponse.ChannelSendResult();
+                channelSendResult.setChannel(cfg.channel());
+                channelSendResult.setProvider(sendResult.getSuccessfulProvider());
+                channelSendResult.setSuccess(sendResult.success());
+                channelSendResult.setSuccessCount(
+                        sendResult.response() != null ? sendResult.response().getSuccessCount() : 0);
+                channelSendResult.setFailedCount(
+                        sendResult.response() != null ? sendResult.response().getFailedCount() : 0);
+                results.add(channelSendResult);
             } catch (Exception e) {
                 log.warn("Channel {} send failed", cfg.channel(), e);
-                results.add(NotificationResponse.ChannelSendResult.builder()
-                        .channel(cfg.channel()).success(false).errorMessage(e.getMessage()).build());
+                NotificationResponse.ChannelSendResult channelSendResult = new NotificationResponse.ChannelSendResult();
+                channelSendResult.setChannel(cfg.channel());
+                channelSendResult.setSuccess(false);
+                channelSendResult.setErrorMessage(e.getMessage());
+                results.add(channelSendResult);
             }
         }
 
         boolean anySuccess = results.stream().anyMatch(NotificationResponse.ChannelSendResult::getSuccess);
-        return NotificationResponse.builder()
-                .traceId(traceId)
-                .totalReceivers(request.getReceivers() != null ? request.getReceivers().size() : 0)
-                .channelResults(results)
-                .success(anySuccess)
-                .build();
+        NotificationResponse notificationResponse = new NotificationResponse();
+        notificationResponse.setTraceId(traceId);
+        notificationResponse.setTotalReceivers(
+                request.getReceivers() != null ? request.getReceivers().size() : 0);
+        notificationResponse.setChannelResults(results);
+        notificationResponse.setSuccess(anySuccess);
+        return notificationResponse;
     }
 
     @Override
@@ -136,7 +143,8 @@ public class DefaultGotoneTemplate implements GotoneTemplate {
 
     private SendAttemptResult toAttemptResult(NotificationChannelManager.SendResult sr) {
         return new SendAttemptResult(
-                sr.getSuccessfulProvider(), sr.success(),
+                sr.getSuccessfulProvider(),
+                sr.success(),
                 sr.response() != null ? sr.response().getSuccessCount() : 0,
                 sr.response() != null ? sr.response().getFailedCount() : 0,
                 sr.attempts().stream()

@@ -22,15 +22,16 @@ package io.github.loadup.modules.upms.app.service;
  * #L%
  */
 
+import io.github.loadup.modules.upms.domain.entity.VerificationCode;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import org.springframework.stereotype.Service;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 /**
  * Verification Code Service - For email/SMS verification
  *
@@ -40,7 +41,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class VerificationCodeService {
     private static final Logger log = LoggerFactory.getLogger(VerificationCodeService.class);
-
 
     private static final int CODE_LENGTH = 6;
     private static final int CODE_EXPIRY_MINUTES = 5;
@@ -57,14 +57,13 @@ public class VerificationCodeService {
         String code = generateRandomCode();
         String key = buildKey(target, type);
 
-        VerificationCode verificationCode = VerificationCode.builder()
-                .code(code)
-                .target(target)
-                .type(type)
-                .attempts(0)
-                .createdTime(LocalDateTime.now())
-                .expiryTime(LocalDateTime.now().plusMinutes(CODE_EXPIRY_MINUTES))
-                .build();
+        VerificationCode verificationCode = new VerificationCode();
+        verificationCode.setCode(code);
+        verificationCode.setTarget(target);
+        verificationCode.setType(type);
+        verificationCode.setAttempts(0);
+        verificationCode.setCreatedTime(LocalDateTime.now());
+        verificationCode.setExpiryTime(LocalDateTime.now().plusMinutes(CODE_EXPIRY_MINUTES));
 
         codeStorage.put(key, verificationCode);
 
@@ -178,164 +177,5 @@ public class VerificationCodeService {
             code.append(RANDOM.nextInt(10));
         }
         return code.toString();
-    }
-
-    /**
-     * Verification Code data class
-     */
-    private static class VerificationCode {
-        private String code;
-        private String target; // Email or phone
-        private String type; // EMAIL or SMS
-        private Integer attempts;
-        private LocalDateTime createdTime;
-        private LocalDateTime expiryTime;
-    }
-
-    public VerificationCodeService(Map<String, VerificationCode> codeStorage) {
-        this.codeStorage = codeStorage;
-    }
-
-    public VerificationCodeService(Map<String, VerificationCode> codeStorage, String code, String target, String type, Integer attempts, LocalDateTime createdTime, LocalDateTime expiryTime) {
-        this.codeStorage = codeStorage;
-        this.code = code;
-        this.target = target;
-        this.type = type;
-        this.attempts = attempts;
-        this.createdTime = createdTime;
-        this.expiryTime = expiryTime;
-    }
-
-    public VerificationCodeService() {
-    }
-
-    public Map<String, VerificationCode> getCodeStorage() {
-        return this.codeStorage;
-    }
-
-    public String getCode() {
-        return this.code;
-    }
-
-    public String getTarget() {
-        return this.target;
-    }
-
-    public String getType() {
-        return this.type;
-    }
-
-    public Integer getAttempts() {
-        return this.attempts;
-    }
-
-    public LocalDateTime getCreatedTime() {
-        return this.createdTime;
-    }
-
-    public LocalDateTime getExpiryTime() {
-        return this.expiryTime;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setAttempts(Integer attempts) {
-        this.attempts = attempts;
-    }
-
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public void setExpiryTime(LocalDateTime expiryTime) {
-        this.expiryTime = expiryTime;
-    }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(codeStorage, code, target, type, attempts, createdTime, expiryTime);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        VerificationCodeService other = (VerificationCodeService) o;
-        if (!java.util.Objects.equals(codeStorage, other.codeStorage)) return false;
-        if (!java.util.Objects.equals(code, other.code)) return false;
-        if (!java.util.Objects.equals(target, other.target)) return false;
-        if (!java.util.Objects.equals(type, other.type)) return false;
-        if (!java.util.Objects.equals(attempts, other.attempts)) return false;
-        if (!java.util.Objects.equals(createdTime, other.createdTime)) return false;
-        if (!java.util.Objects.equals(expiryTime, other.expiryTime)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "VerificationCodeService(" + "codeStorage=" + codeStorage + ", " + "code=" + code + ", " + "target=" + target + ", " + "type=" + type + ", " + "attempts=" + attempts + ", " + "createdTime=" + createdTime + ", " + "expiryTime=" + expiryTime + ")";
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private Map<String, VerificationCode> codeStorage = new ConcurrentHashMap<>();
-        private String code;
-        private String target;
-        private String type;
-        private Integer attempts;
-        private LocalDateTime createdTime;
-        private LocalDateTime expiryTime;
-
-        public Builder codeStorage(Map<String, VerificationCode> codeStorage) {
-            this.codeStorage = codeStorage;
-            return this;
-        }
-
-        public Builder code(String code) {
-            this.code = code;
-            return this;
-        }
-
-        public Builder target(String target) {
-            this.target = target;
-            return this;
-        }
-
-        public Builder type(String type) {
-            this.type = type;
-            return this;
-        }
-
-        public Builder attempts(Integer attempts) {
-            this.attempts = attempts;
-            return this;
-        }
-
-        public Builder createdTime(LocalDateTime createdTime) {
-            this.createdTime = createdTime;
-            return this;
-        }
-
-        public Builder expiryTime(LocalDateTime expiryTime) {
-            this.expiryTime = expiryTime;
-            return this;
-        }
-
-        public VerificationCodeService build() {
-            return new VerificationCodeService(this.codeStorage, this.code, this.target, this.type, this.attempts, this.createdTime, this.expiryTime);
-        }
     }
 }

@@ -35,11 +35,11 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * AOP aspect for authorization checks.
  *
@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
 @Order(100) // Execute before transaction management
 public class AuthorizationAspect {
     private static final Logger log = LoggerFactory.getLogger(AuthorizationAspect.class);
-
 
     /**
      * Intercept methods with {@link RequireRole} annotation

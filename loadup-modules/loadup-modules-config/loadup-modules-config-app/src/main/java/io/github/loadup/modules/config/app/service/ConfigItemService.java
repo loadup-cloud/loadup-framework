@@ -39,13 +39,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Application service for system configuration items.
  *
@@ -54,7 +54,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class ConfigItemService {
     private static final Logger log = LoggerFactory.getLogger(ConfigItemService.class);
-
 
     private final ConfigItemGateway gateway;
     private final ConfigHistoryGateway historyGateway;
@@ -126,8 +125,8 @@ public class ConfigItemService {
                 .valueType(cmd.getValueType().toUpperCase(java.util.Locale.ROOT))
                 .category(cmd.getCategory())
                 .description(cmd.getDescription())
-                .editable(Boolean.TRUE.equals(cmd.getEditable()))
-                .encrypted(Boolean.TRUE.equals(cmd.getEncrypted()))
+                .editable(Boolean.TRUE.equals(cmd.isEditable()))
+                .encrypted(Boolean.TRUE.equals(cmd.isEncrypted()))
                 .systemDefined(false)
                 .sortOrder(cmd.getSortOrder() == null ? 0 : cmd.getSortOrder())
                 .enabled(true)
@@ -146,7 +145,7 @@ public class ConfigItemService {
     public void update(@Valid ConfigItemUpdateCommand cmd) {
         ConfigItem existing = gateway.findByKey(cmd.getConfigKey())
                 .orElseThrow(() -> new IllegalArgumentException("Config key not found: " + cmd.getConfigKey()));
-        Assert.isTrue(Boolean.TRUE.equals(existing.getEditable()), "Config key is not editable: " + cmd.getConfigKey());
+        Assert.isTrue(Boolean.TRUE.equals(existing.isEditable()), "Config key is not editable: " + cmd.getConfigKey());
         String oldValue = existing.getConfigValue();
         existing.setConfigValue(cmd.getConfigValue());
         existing.setUpdatedAt(LocalDateTime.now());
@@ -162,7 +161,7 @@ public class ConfigItemService {
         ConfigItem existing = gateway.findByKey(configKey)
                 .orElseThrow(() -> new IllegalArgumentException("Config key not found: " + configKey));
         Assert.isTrue(
-                !Boolean.TRUE.equals(existing.getSystemDefined()), "Cannot delete system-defined config: " + configKey);
+                !Boolean.TRUE.equals(existing.isSystemDefined()), "Cannot delete system-defined config: " + configKey);
         gateway.deleteByKey(configKey);
         recordHistory(configKey, existing.getConfigValue(), null, ChangeType.DELETE);
         publishEvent(configKey, null, ChangeType.DELETE);
@@ -199,20 +198,24 @@ public class ConfigItemService {
         ConfigItemDTO dto = new ConfigItemDTO();
         dto.setId(item.getId());
         dto.setConfigKey(item.getConfigKey());
-        dto.setConfigValue(Boolean.TRUE.equals(item.getEncrypted()) ? "******" : item.getConfigValue());
+        dto.setConfigValue(Boolean.TRUE.equals(item.isEncrypted()) ? "******" : item.getConfigValue());
         dto.setValueType(item.getValueType());
         dto.setCategory(item.getCategory());
         dto.setDescription(item.getDescription());
-        dto.setEditable(item.getEditable());
-        dto.setEncrypted(item.getEncrypted());
-        dto.setSystemDefined(item.getSystemDefined());
+        dto.setEditable(item.isEditable());
+        dto.setEncrypted(item.isEncrypted());
+        dto.setSystemDefined(item.isSystemDefined());
         dto.setSortOrder(item.getSortOrder());
-        dto.setEnabled(item.getEnabled());
+        dto.setEnabled(item.isEnabled());
         dto.setUpdatedAt(item.getUpdatedAt());
         return dto;
     }
 
-    public ConfigItemService(ConfigItemGateway gateway, ConfigHistoryGateway historyGateway, ConfigLocalCache localCache, ApplicationEventPublisher eventPublisher) {
+    public ConfigItemService(
+            ConfigItemGateway gateway,
+            ConfigHistoryGateway historyGateway,
+            ConfigLocalCache localCache,
+            ApplicationEventPublisher eventPublisher) {
         this.gateway = gateway;
         this.historyGateway = historyGateway;
         this.localCache = localCache;

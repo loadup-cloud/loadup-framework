@@ -155,7 +155,8 @@ public class DepartmentGatewayImpl implements DepartmentGateway {
         parent.setChildren(children);
     }
 
-    public DepartmentGatewayImpl(DepartmentDOMapper departmentDOMapper, UserDOMapper userDOMapper, DepartmentConverter departmentConverter) {
+    public DepartmentGatewayImpl(
+            DepartmentDOMapper departmentDOMapper, UserDOMapper userDOMapper, DepartmentConverter departmentConverter) {
         this.departmentDOMapper = departmentDOMapper;
         this.userDOMapper = userDOMapper;
         this.departmentConverter = departmentConverter;

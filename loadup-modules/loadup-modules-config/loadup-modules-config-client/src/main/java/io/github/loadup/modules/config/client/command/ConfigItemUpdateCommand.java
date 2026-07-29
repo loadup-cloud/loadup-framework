@@ -46,8 +46,7 @@ public class ConfigItemUpdateCommand {
         this.remark = remark;
     }
 
-    public ConfigItemUpdateCommand() {
-    }
+    public ConfigItemUpdateCommand() {}
 
     public String getConfigKey() {
         return this.configKey;
@@ -91,6 +90,7 @@ public class ConfigItemUpdateCommand {
 
     @Override
     public String toString() {
-        return "ConfigItemUpdateCommand(" + "configKey=" + configKey + ", " + "configValue=" + configValue + ", " + "remark=" + remark + ")";
+        return "ConfigItemUpdateCommand(" + "configKey=" + configKey + ", " + "configValue=" + configValue + ", "
+                + "remark=" + remark + ")";
     }
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.loadup-cloud</groupId>
+        <artifactId>loadup-parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>loadup-components-retrytask</artifactId>
+    <packaging>pom</packaging>
+    <name>Loadup RetryTask Component</name>
+    <description>Loadup RetryTask — distributed retry task framework</description>
+
+    <modules>
+        <module>loadup-components-retrytask-core</module>
+        <module>loadup-components-retrytask-facade</module>
+        <module>loadup-components-retrytask-infra</module>
+        <module>loadup-components-retrytask-notify</module>
+        <module>loadup-components-retrytask-starter</module>
+        <module>loadup-components-retrytask-strategy</module>
+        <module>loadup-components-retrytask-test</module>
+    </modules>
+</project>

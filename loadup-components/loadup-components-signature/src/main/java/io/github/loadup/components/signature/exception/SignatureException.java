@@ -22,7 +22,6 @@ package io.github.loadup.components.signature.exception;
  * #L%
  */
 
-
 /**
  * 签名异常
  *
@@ -69,13 +68,13 @@ public class SignatureException extends RuntimeException {
         SignatureErrorCode(String message) {
             this.message = message;
         }
+
+        public String getMessage() {
+            return message;
+        }
     }
 
     public SignatureErrorCode getErrorCode() {
         return this.errorCode;
-    }
-
-    public String getMessage() {
-        return this.message;
     }
 }

@@ -30,75 +30,12 @@
 
     <modules>
         <module>loadup-dependencies</module>
-        <module>loadup-commons/loadup-commons-api</module>
-        <module>loadup-commons/loadup-commons-dto</module>
-        <module>loadup-commons/loadup-commons-util</module>
-        <!--        <module>loadup-components/loadup-components-authorization</module>-->
-        <!--        <module>loadup-components/loadup-components-cache/loadup-components-cache-api</module>-->
-        <!--        <module>loadup-components/loadup-components-cache/loadup-components-cache-binder-caffeine</module>-->
-        <!--        <module>loadup-components/loadup-components-cache/loadup-components-cache-binder-redis</module>-->
-        <!--        <module>loadup-components/loadup-components-cache/loadup-components-cache-test</module>-->
-        <module>loadup-components/loadup-components-captcha</module>
-        <!--        <module>loadup-components/loadup-components-configcenter/loadup-components-configcenter-api</module>-->
-        <!--        <module>loadup-components/loadup-components-configcenter/loadup-components-configcenter-binder-apollo</module>-->
-        <!--        <module>loadup-components/loadup-components-configcenter/loadup-components-configcenter-binder-local</module>-->
-        <!--        <module>loadup-components/loadup-components-configcenter/loadup-components-configcenter-binder-nacos</module>-->
-        <!--        <module>loadup-components/loadup-components-configcenter/loadup-components-configcenter-test</module>-->
-        <module>loadup-components/loadup-components-database</module>
-        <!--        <module>loadup-components/loadup-components-dfs/loadup-components-dfs-api</module>-->
-        <!--        <module>loadup-components/loadup-components-dfs/loadup-components-dfs-binder-database</module>-->
-        <!--        <module>loadup-components/loadup-components-dfs/loadup-components-dfs-binder-local</module>-->
-        <!--        <module>loadup-components/loadup-components-dfs/loadup-components-dfs-binder-s3</module>-->
-        <!--        <module>loadup-components/loadup-components-dfs/loadup-components-dfs-test</module>-->
-        <module>loadup-components/loadup-components-extension</module>
-        <module>loadup-components/loadup-components-globalunique</module>
-        <!--        <module>loadup-components/loadup-components-gotone/channels/loadup-components-gotone-channel-email</module>-->
-        <!--        <module>loadup-components/loadup-components-gotone/channels/loadup-components-gotone-channel-push</module>-->
-        <!--        <module>loadup-components/loadup-components-gotone/channels/loadup-components-gotone-channel-sms</module>-->
-        <!--        <module>loadup-components/loadup-components-gotone/channels/loadup-components-gotone-channel-webhook</module>-->
-        <!--        <module>loadup-components/loadup-components-gotone/loadup-components-gotone-api</module>-->
-        <!--        <module>loadup-components/loadup-components-gotone/loadup-components-gotone-engine</module>-->
-        <!--        <module>loadup-components/loadup-components-pipeline</module>-->
-        <!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-core</module>-->
-        <!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-facade</module>-->
-        <!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-infra</module>-->
-        <!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-notify</module>-->
-        <!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-starter</module>-->
-        <!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-strategy</module>-->
-        <!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-test</module>-->
-        <!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-api</module>-->
-        <!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-binder-powerjob</module>-->
-        <!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-binder-quartz</module>-->
-        <!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-binder-simplejob</module>-->
-        <!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-binder-xxljob</module>-->
-        <!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-test</module>-->
-        <!--        <module>loadup-components/loadup-components-signature</module>-->
-        <!--        <module>loadup-components/loadup-components-springdoc</module>-->
-        <!--        <module>loadup-components/loadup-components-testcontainers</module>-->
-        <!--        <module>loadup-components/loadup-components-tracer</module>-->
+        <module>loadup-commons</module>
+        <module>loadup-components</module>
         <module>loadup-gateway</module>
-        <!--        <module>loadup-modules/loadup-modules-config/loadup-modules-config-app</module>-->
-        <!--        <module>loadup-modules/loadup-modules-config/loadup-modules-config-client</module>-->
-        <!--        <module>loadup-modules/loadup-modules-config/loadup-modules-config-domain</module>-->
-        <!--        <module>loadup-modules/loadup-modules-config/loadup-modules-config-infrastructure</module>-->
-        <!--        <module>loadup-modules/loadup-modules-config/loadup-modules-config-test</module>-->
-        <!--        <module>loadup-modules/loadup-modules-log/loadup-modules-log-app</module>-->
-        <!--        <module>loadup-modules/loadup-modules-log/loadup-modules-log-client</module>-->
-        <!--        <module>loadup-modules/loadup-modules-log/loadup-modules-log-domain</module>-->
-        <!--        <module>loadup-modules/loadup-modules-log/loadup-modules-log-infrastructure</module>-->
-        <!--        <module>loadup-modules/loadup-modules-log/loadup-modules-log-test</module>-->
-        <!--        <module>loadup-modules/loadup-modules-upms/loadup-modules-upms-app</module>-->
-        <!--        <module>loadup-modules/loadup-modules-upms/loadup-modules-upms-client</module>-->
-        <!--        <module>loadup-modules/loadup-modules-upms/loadup-modules-upms-domain</module>-->
-        <!--        <module>loadup-modules/loadup-modules-upms/loadup-modules-upms-infrastructure</module>-->
-        <!--        <module>loadup-modules/loadup-modules-upms/loadup-modules-upms-test</module>-->
-        <!--        <module>loadup-testify/loadup-testify-assert-engine</module>-->
-        <!--        <module>loadup-testify/loadup-testify-core</module>-->
-        <!--        <module>loadup-testify/loadup-testify-data-engine</module>-->
-        <!--        <module>loadup-testify/loadup-testify-mock-engine</module>-->
-        <!--        <module>loadup-testify/loadup-testify-spring-boot-starter</module>-->
-        <!--        <module>loadup-testify/loadup-testify-test</module>-->
-        <!--        <module>loadup-application</module>-->
+        <module>loadup-modules</module>
+        <module>loadup-testify</module>
+        <module>loadup-application</module>
     </modules>
     <scm>
         <connection>scm:git:git://github.com/loadup-cloud/loadup-framework.git</connection>
@@ -113,13 +50,25 @@
         <loadup.framework.version>0.0.2-SNAPSHOT</loadup.framework.version>
 
         <!-- Plugin versions managed here; dependency versions managed in loadup-dependencies BOM -->
-        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
-        <maven-javadoc-plugin.version>3.10.1</maven-javadoc-plugin.version>
-        <maven-deploy-plugin.version>3.1.3</maven-deploy-plugin.version>
-        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
+        <maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>
+        <maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
+        <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
+        <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
+        <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
+        <maven-failsafe-plugin.version>3.5.6</maven-failsafe-plugin.version>
+        <maven-help-plugin.version>3.5.1</maven-help-plugin.version>
+        <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
+        <maven-invoker-plugin.version>3.9.1</maven-invoker-plugin.version>
+        <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+        <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
+        <maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
+        <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+        <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+        <maven-war-plugin.version>3.5.1</maven-war-plugin.version>
+
         <jacoco-plugin.version>0.8.14</jacoco-plugin.version>
         <versions-plugin.version>2.17.1</versions-plugin.version>
         <license-plugin.version>2.7.0</license-plugin.version>

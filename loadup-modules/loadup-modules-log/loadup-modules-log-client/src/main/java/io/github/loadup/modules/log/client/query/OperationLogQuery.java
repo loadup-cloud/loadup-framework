@@ -35,7 +35,15 @@ public class OperationLogQuery {
     private Integer pageNum;
     private Integer pageSize;
 
-    public OperationLogQuery(String userId, String module, String operationType, Boolean success, LocalDateTime startTime, LocalDateTime endTime, Integer pageNum, Integer pageSize) {
+    public OperationLogQuery(
+            String userId,
+            String module,
+            String operationType,
+            Boolean success,
+            LocalDateTime startTime,
+            LocalDateTime endTime,
+            Integer pageNum,
+            Integer pageSize) {
         this.userId = userId;
         this.module = module;
         this.operationType = operationType;
@@ -46,8 +54,7 @@ public class OperationLogQuery {
         this.pageSize = pageSize;
     }
 
-    public OperationLogQuery() {
-    }
+    public OperationLogQuery() {}
 
     public String getUserId() {
         return this.userId;
@@ -136,6 +143,8 @@ public class OperationLogQuery {
 
     @Override
     public String toString() {
-        return "OperationLogQuery(" + "userId=" + userId + ", " + "module=" + module + ", " + "operationType=" + operationType + ", " + "success=" + success + ", " + "startTime=" + startTime + ", " + "endTime=" + endTime + ", " + "pageNum=" + pageNum + ", " + "pageSize=" + pageSize + ")";
+        return "OperationLogQuery(" + "userId=" + userId + ", " + "module=" + module + ", " + "operationType="
+                + operationType + ", " + "success=" + success + ", " + "startTime=" + startTime + ", " + "endTime="
+                + endTime + ", " + "pageNum=" + pageNum + ", " + "pageSize=" + pageSize + ")";
     }
 }

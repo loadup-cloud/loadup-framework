@@ -31,6 +31,8 @@ import io.github.loadup.components.testcontainers.cloud.AbstractLocalStackContai
 import io.github.loadup.components.testcontainers.cloud.SharedLocalStackContainer;
 import java.net.URI;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.localstack.LocalStackContainer;
@@ -46,8 +48,6 @@ import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
 import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Integration test class for SharedLocalStackContainer.
  *
@@ -56,10 +56,9 @@ import org.slf4j.LoggerFactory;
  */
 @SpringBootTest(classes = TestApplication.class)
 @TestPropertySource(
-        properties = {
-    private static final Logger log = LoggerFactory.getLogger(SharedLocalStackContainerIT.class);
-"loadup.testcontainers.enabled=true", "loadup.testcontainers.localstack.enabled=true"})
+        properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.localstack.enabled=true"})
 class SharedLocalStackContainerIT extends AbstractLocalStackContainerTest {
+    private static final Logger log = LoggerFactory.getLogger(SharedLocalStackContainerIT.class);
 
     @Test
     void testContainerIsRunning() {

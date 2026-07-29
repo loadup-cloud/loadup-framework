@@ -75,8 +75,7 @@ public class OAuthUserInfo implements Serializable {
         this.mobile = mobile;
     }
 
-    public OAuthUserInfo() {
-    }
+    public OAuthUserInfo() {}
 
     public String getOpenId() {
         return this.openId;
@@ -147,7 +146,8 @@ public class OAuthUserInfo implements Serializable {
 
     @Override
     public String toString() {
-        return "OAuthUserInfo(" + "openId=" + openId + ", " + "unionId=" + unionId + ", " + "nickname=" + nickname + ", " + "avatar=" + avatar + ", " + "email=" + email + ", " + "mobile=" + mobile + ")";
+        return "OAuthUserInfo(" + "openId=" + openId + ", " + "unionId=" + unionId + ", " + "nickname=" + nickname
+                + ", " + "avatar=" + avatar + ", " + "email=" + email + ", " + "mobile=" + mobile + ")";
     }
 
     public static Builder builder() {

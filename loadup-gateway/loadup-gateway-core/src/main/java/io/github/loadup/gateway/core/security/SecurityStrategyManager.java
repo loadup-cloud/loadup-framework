@@ -28,12 +28,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Manages security strategies.
  */
 public class SecurityStrategyManager {
     private static final Logger log = LoggerFactory.getLogger(SecurityStrategyManager.class);
-
 
     private final Map<String, SecurityStrategy> strategyMap = new ConcurrentHashMap<>();
 

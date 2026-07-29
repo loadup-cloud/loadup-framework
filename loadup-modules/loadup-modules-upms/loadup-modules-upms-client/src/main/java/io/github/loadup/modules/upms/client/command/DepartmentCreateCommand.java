@@ -65,7 +65,17 @@ public class DepartmentCreateCommand {
 
     private String createdBy;
 
-    public DepartmentCreateCommand(String parentId, String deptName, String deptCode, Integer sortOrder, String leaderUserId, String mobile, String email, Short status, String remark, String createdBy) {
+    public DepartmentCreateCommand(
+            String parentId,
+            String deptName,
+            String deptCode,
+            Integer sortOrder,
+            String leaderUserId,
+            String mobile,
+            String email,
+            Short status,
+            String remark,
+            String createdBy) {
         this.parentId = parentId;
         this.deptName = deptName;
         this.deptCode = deptCode;
@@ -78,8 +88,7 @@ public class DepartmentCreateCommand {
         this.createdBy = createdBy;
     }
 
-    public DepartmentCreateCommand() {
-    }
+    public DepartmentCreateCommand() {}
 
     public String getParentId() {
         return this.parentId;
@@ -163,7 +172,8 @@ public class DepartmentCreateCommand {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(parentId, deptName, deptCode, sortOrder, leaderUserId, mobile, email, status, remark, createdBy);
+        return java.util.Objects.hash(
+                parentId, deptName, deptCode, sortOrder, leaderUserId, mobile, email, status, remark, createdBy);
     }
 
     @Override
@@ -186,6 +196,9 @@ public class DepartmentCreateCommand {
 
     @Override
     public String toString() {
-        return "DepartmentCreateCommand(" + "parentId=" + parentId + ", " + "deptName=" + deptName + ", " + "deptCode=" + deptCode + ", " + "sortOrder=" + sortOrder + ", " + "leaderUserId=" + leaderUserId + ", " + "mobile=" + mobile + ", " + "email=" + email + ", " + "status=" + status + ", " + "remark=" + remark + ", " + "createdBy=" + createdBy + ")";
+        return "DepartmentCreateCommand(" + "parentId=" + parentId + ", " + "deptName=" + deptName + ", " + "deptCode="
+                + deptCode + ", " + "sortOrder=" + sortOrder + ", " + "leaderUserId=" + leaderUserId + ", " + "mobile="
+                + mobile + ", " + "email=" + email + ", " + "status=" + status + ", " + "remark=" + remark + ", "
+                + "createdBy=" + createdBy + ")";
     }
 }

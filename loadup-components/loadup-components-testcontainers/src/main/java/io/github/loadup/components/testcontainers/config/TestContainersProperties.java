@@ -22,6 +22,8 @@ package io.github.loadup.components.testcontainers.config;
  * #L%
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -49,6 +51,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.testcontainers")
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class TestContainersProperties {
+    private static final Logger log = LoggerFactory.getLogger(TestContainersProperties.class);
 
     /**
      * Global switch to enable/disable all TestContainers (default: true)
@@ -128,179 +131,125 @@ public class TestContainersProperties {
          * 开启复用，默认为 true。极大提升本地多次运行测试的速度。
          */
         private boolean reusable = true;
-    }
 
-    public provides(boolean enabled, ContainerConfig mysql, ContainerConfig postgresql, ContainerConfig mongodb, ContainerConfig redis, ContainerConfig kafka, ContainerConfig elasticsearch, ContainerConfig localstack, boolean reusable, boolean enabled, String image, String database, String username, String password, boolean reusable) {
-        this.enabled = enabled;
-        this.mysql = mysql;
-        this.postgresql = postgresql;
-        this.mongodb = mongodb;
-        this.redis = redis;
-        this.kafka = kafka;
-        this.elasticsearch = elasticsearch;
-        this.localstack = localstack;
-        this.reusable = reusable;
-        this.enabled = enabled;
-        this.image = image;
-        this.database = database;
-        this.username = username;
-        this.password = password;
-        this.reusable = reusable;
-    }
+        public boolean isEnabled() {
+            return enabled;
+        }
 
-    public provides() {
-    }
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
 
-    public boolean isEnabled() {
-        return this.enabled;
-    }
+        public String getImage() {
+            return image;
+        }
 
-    public ContainerConfig getMysql() {
-        return this.mysql;
-    }
+        public void setImage(String image) {
+            this.image = image;
+        }
 
-    public ContainerConfig getPostgresql() {
-        return this.postgresql;
-    }
+        public String getDatabase() {
+            return database;
+        }
 
-    public ContainerConfig getMongodb() {
-        return this.mongodb;
-    }
+        public void setDatabase(String database) {
+            this.database = database;
+        }
 
-    public ContainerConfig getRedis() {
-        return this.redis;
-    }
+        public String getUsername() {
+            return username;
+        }
 
-    public ContainerConfig getKafka() {
-        return this.kafka;
-    }
+        public void setUsername(String username) {
+            this.username = username;
+        }
 
-    public ContainerConfig getElasticsearch() {
-        return this.elasticsearch;
-    }
+        public String getPassword() {
+            return password;
+        }
 
-    public ContainerConfig getLocalstack() {
-        return this.localstack;
-    }
+        public void setPassword(String password) {
+            this.password = password;
+        }
 
-    public boolean isReusable() {
-        return this.reusable;
+        public boolean isReusable() {
+            return reusable;
+        }
+
+        public void setReusable(boolean reusable) {
+            this.reusable = reusable;
+        }
     }
 
     public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    public String getImage() {
-        return this.image;
-    }
-
-    public String getDatabase() {
-        return this.database;
-    }
-
-    public String getUsername() {
-        return this.username;
-    }
-
-    public String getPassword() {
-        return this.password;
-    }
-
-    public boolean isReusable() {
-        return this.reusable;
+        return enabled;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public ContainerConfig getMysql() {
+        return mysql;
     }
 
     public void setMysql(ContainerConfig mysql) {
         this.mysql = mysql;
     }
 
+    public ContainerConfig getPostgresql() {
+        return postgresql;
+    }
+
     public void setPostgresql(ContainerConfig postgresql) {
         this.postgresql = postgresql;
+    }
+
+    public ContainerConfig getMongodb() {
+        return mongodb;
     }
 
     public void setMongodb(ContainerConfig mongodb) {
         this.mongodb = mongodb;
     }
 
+    public ContainerConfig getRedis() {
+        return redis;
+    }
+
     public void setRedis(ContainerConfig redis) {
         this.redis = redis;
+    }
+
+    public ContainerConfig getKafka() {
+        return kafka;
     }
 
     public void setKafka(ContainerConfig kafka) {
         this.kafka = kafka;
     }
 
+    public ContainerConfig getElasticsearch() {
+        return elasticsearch;
+    }
+
     public void setElasticsearch(ContainerConfig elasticsearch) {
         this.elasticsearch = elasticsearch;
+    }
+
+    public ContainerConfig getLocalstack() {
+        return localstack;
     }
 
     public void setLocalstack(ContainerConfig localstack) {
         this.localstack = localstack;
     }
 
-    public void setReusable(boolean reusable) {
-        this.reusable = reusable;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public void setDatabase(String database) {
-        this.database = database;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public boolean isReusable() {
+        return reusable;
     }
 
     public void setReusable(boolean reusable) {
         this.reusable = reusable;
-    }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(enabled, mysql, postgresql, mongodb, redis, kafka, elasticsearch, localstack, reusable, enabled, image, database, username, password, reusable);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        provides other = (provides) o;
-        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
-        if (!java.util.Objects.equals(mysql, other.mysql)) return false;
-        if (!java.util.Objects.equals(postgresql, other.postgresql)) return false;
-        if (!java.util.Objects.equals(mongodb, other.mongodb)) return false;
-        if (!java.util.Objects.equals(redis, other.redis)) return false;
-        if (!java.util.Objects.equals(kafka, other.kafka)) return false;
-        if (!java.util.Objects.equals(elasticsearch, other.elasticsearch)) return false;
-        if (!java.util.Objects.equals(localstack, other.localstack)) return false;
-        if (!java.util.Objects.equals(reusable, other.reusable)) return false;
-        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
-        if (!java.util.Objects.equals(image, other.image)) return false;
-        if (!java.util.Objects.equals(database, other.database)) return false;
-        if (!java.util.Objects.equals(username, other.username)) return false;
-        if (!java.util.Objects.equals(password, other.password)) return false;
-        if (!java.util.Objects.equals(reusable, other.reusable)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "provides(" + "enabled=" + enabled + ", " + "mysql=" + mysql + ", " + "postgresql=" + postgresql + ", " + "mongodb=" + mongodb + ", " + "redis=" + redis + ", " + "kafka=" + kafka + ", " + "elasticsearch=" + elasticsearch + ", " + "localstack=" + localstack + ", " + "reusable=" + reusable + ", " + "enabled=" + enabled + ", " + "image=" + image + ", " + "database=" + database + ", " + "username=" + username + ", " + "password=" + password + ", " + "reusable=" + reusable + ")";
     }
 }

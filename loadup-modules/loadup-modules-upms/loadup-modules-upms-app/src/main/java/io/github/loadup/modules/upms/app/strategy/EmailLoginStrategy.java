@@ -29,10 +29,10 @@ import io.github.loadup.modules.upms.client.dto.LoginCredentials;
 import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 /**
  * 邮箱验证码登录策略
  *
@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 @Component
 public class EmailLoginStrategy implements LoginStrategy {
     private static final Logger log = LoggerFactory.getLogger(EmailLoginStrategy.class);
-
 
     private final UserGateway userGateway;
     private final VerificationCodeService verificationCodeService;

@@ -56,7 +56,27 @@ public class UserDetailDTO {
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;
 
-    public UserDetailDTO(String id, String username, String nickname, String realName, String deptId, String deptName, String email, Boolean emailVerified, String mobile, Boolean mobileVerified, String avatar, Short gender, LocalDate birthday, Short status, LocalDateTime lastLoginTime, String lastLoginIp, List<RoleDTO> roles, String remark, LocalDateTime createdTime, LocalDateTime updatedTime) {
+    public UserDetailDTO(
+            String id,
+            String username,
+            String nickname,
+            String realName,
+            String deptId,
+            String deptName,
+            String email,
+            Boolean emailVerified,
+            String mobile,
+            Boolean mobileVerified,
+            String avatar,
+            Short gender,
+            LocalDate birthday,
+            Short status,
+            LocalDateTime lastLoginTime,
+            String lastLoginIp,
+            List<RoleDTO> roles,
+            String remark,
+            LocalDateTime createdTime,
+            LocalDateTime updatedTime) {
         this.id = id;
         this.username = username;
         this.nickname = nickname;
@@ -79,8 +99,7 @@ public class UserDetailDTO {
         this.updatedTime = updatedTime;
     }
 
-    public UserDetailDTO() {
-    }
+    public UserDetailDTO() {}
 
     public String getId() {
         return this.id;
@@ -244,7 +263,27 @@ public class UserDetailDTO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, username, nickname, realName, deptId, deptName, email, emailVerified, mobile, mobileVerified, avatar, gender, birthday, status, lastLoginTime, lastLoginIp, roles, remark, createdTime, updatedTime);
+        return java.util.Objects.hash(
+                id,
+                username,
+                nickname,
+                realName,
+                deptId,
+                deptName,
+                email,
+                emailVerified,
+                mobile,
+                mobileVerified,
+                avatar,
+                gender,
+                birthday,
+                status,
+                lastLoginTime,
+                lastLoginIp,
+                roles,
+                remark,
+                createdTime,
+                updatedTime);
     }
 
     @Override
@@ -277,7 +316,13 @@ public class UserDetailDTO {
 
     @Override
     public String toString() {
-        return "UserDetailDTO(" + "id=" + id + ", " + "username=" + username + ", " + "nickname=" + nickname + ", " + "realName=" + realName + ", " + "deptId=" + deptId + ", " + "deptName=" + deptName + ", " + "email=" + email + ", " + "emailVerified=" + emailVerified + ", " + "mobile=" + mobile + ", " + "mobileVerified=" + mobileVerified + ", " + "avatar=" + avatar + ", " + "gender=" + gender + ", " + "birthday=" + birthday + ", " + "status=" + status + ", " + "lastLoginTime=" + lastLoginTime + ", " + "lastLoginIp=" + lastLoginIp + ", " + "roles=" + roles + ", " + "remark=" + remark + ", " + "createdTime=" + createdTime + ", " + "updatedTime=" + updatedTime + ")";
+        return "UserDetailDTO(" + "id=" + id + ", " + "username=" + username + ", " + "nickname=" + nickname + ", "
+                + "realName=" + realName + ", " + "deptId=" + deptId + ", " + "deptName=" + deptName + ", " + "email="
+                + email + ", " + "emailVerified=" + emailVerified + ", " + "mobile=" + mobile + ", " + "mobileVerified="
+                + mobileVerified + ", " + "avatar=" + avatar + ", " + "gender=" + gender + ", " + "birthday=" + birthday
+                + ", " + "status=" + status + ", " + "lastLoginTime=" + lastLoginTime + ", " + "lastLoginIp="
+                + lastLoginIp + ", " + "roles=" + roles + ", " + "remark=" + remark + ", " + "createdTime="
+                + createdTime + ", " + "updatedTime=" + updatedTime + ")";
     }
 
     public static Builder builder() {
@@ -407,7 +452,27 @@ public class UserDetailDTO {
         }
 
         public UserDetailDTO build() {
-            return new UserDetailDTO(this.id, this.username, this.nickname, this.realName, this.deptId, this.deptName, this.email, this.emailVerified, this.mobile, this.mobileVerified, this.avatar, this.gender, this.birthday, this.status, this.lastLoginTime, this.lastLoginIp, this.roles, this.remark, this.createdTime, this.updatedTime);
+            return new UserDetailDTO(
+                    this.id,
+                    this.username,
+                    this.nickname,
+                    this.realName,
+                    this.deptId,
+                    this.deptName,
+                    this.email,
+                    this.emailVerified,
+                    this.mobile,
+                    this.mobileVerified,
+                    this.avatar,
+                    this.gender,
+                    this.birthday,
+                    this.status,
+                    this.lastLoginTime,
+                    this.lastLoginIp,
+                    this.roles,
+                    this.remark,
+                    this.createdTime,
+                    this.updatedTime);
         }
     }
 }

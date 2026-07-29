@@ -59,8 +59,7 @@ public class User implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public User() {
-    }
+    public User() {}
 
     public String getId() {
         return this.id;
@@ -131,7 +130,8 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User(" + "id=" + id + ", " + "name=" + name + ", " + "email=" + email + ", " + "age=" + age + ", " + "createTime=" + createTime + ", " + "updateTime=" + updateTime + ")";
+        return "User(" + "id=" + id + ", " + "name=" + name + ", " + "email=" + email + ", " + "age=" + age + ", "
+                + "createTime=" + createTime + ", " + "updateTime=" + updateTime + ")";
     }
 
     public static Builder builder() {

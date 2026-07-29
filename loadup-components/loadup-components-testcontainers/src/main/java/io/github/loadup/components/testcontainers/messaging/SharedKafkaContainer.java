@@ -24,11 +24,11 @@ package io.github.loadup.components.testcontainers.messaging;
 
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Shared Kafka TestContainer instance that can be reused across multiple tests.
  *
@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
  */
 public final class SharedKafkaContainer {
     private static final Logger log = LoggerFactory.getLogger(SharedKafkaContainer.class);
-
 
     /**
      * Default Kafka version to use

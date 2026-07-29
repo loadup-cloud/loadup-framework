@@ -55,7 +55,15 @@ public class ConfigItemCreateCommand {
     private Boolean encrypted = Boolean.FALSE;
     private Integer sortOrder = 0;
 
-    public ConfigItemCreateCommand(String configKey, String configValue, String valueType, String category, String description, Boolean editable, Boolean encrypted, Integer sortOrder) {
+    public ConfigItemCreateCommand(
+            String configKey,
+            String configValue,
+            String valueType,
+            String category,
+            String description,
+            Boolean editable,
+            Boolean encrypted,
+            Integer sortOrder) {
         this.configKey = configKey;
         this.configValue = configValue;
         this.valueType = valueType;
@@ -66,8 +74,7 @@ public class ConfigItemCreateCommand {
         this.sortOrder = sortOrder;
     }
 
-    public ConfigItemCreateCommand() {
-    }
+    public ConfigItemCreateCommand() {}
 
     public String getConfigKey() {
         return this.configKey;
@@ -135,7 +142,8 @@ public class ConfigItemCreateCommand {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(configKey, configValue, valueType, category, description, editable, encrypted, sortOrder);
+        return java.util.Objects.hash(
+                configKey, configValue, valueType, category, description, editable, encrypted, sortOrder);
     }
 
     @Override
@@ -156,6 +164,8 @@ public class ConfigItemCreateCommand {
 
     @Override
     public String toString() {
-        return "ConfigItemCreateCommand(" + "configKey=" + configKey + ", " + "configValue=" + configValue + ", " + "valueType=" + valueType + ", " + "category=" + category + ", " + "description=" + description + ", " + "editable=" + editable + ", " + "encrypted=" + encrypted + ", " + "sortOrder=" + sortOrder + ")";
+        return "ConfigItemCreateCommand(" + "configKey=" + configKey + ", " + "configValue=" + configValue + ", "
+                + "valueType=" + valueType + ", " + "category=" + category + ", " + "description=" + description + ", "
+                + "editable=" + editable + ", " + "encrypted=" + encrypted + ", " + "sortOrder=" + sortOrder + ")";
     }
 }

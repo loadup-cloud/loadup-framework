@@ -45,7 +45,25 @@ public class OperationLogDTO {
     private String userAgent;
     private LocalDateTime operationTime;
 
-    public OperationLogDTO(String id, String traceId, String userId, String username, String module, String operationType, String description, String method, String requestMethod, String requestUrl, String requestParams, String responseResult, Long duration, Boolean success, String errorMessage, String ip, String userAgent, LocalDateTime operationTime) {
+    public OperationLogDTO(
+            String id,
+            String traceId,
+            String userId,
+            String username,
+            String module,
+            String operationType,
+            String description,
+            String method,
+            String requestMethod,
+            String requestUrl,
+            String requestParams,
+            String responseResult,
+            Long duration,
+            Boolean success,
+            String errorMessage,
+            String ip,
+            String userAgent,
+            LocalDateTime operationTime) {
         this.id = id;
         this.traceId = traceId;
         this.userId = userId;
@@ -66,8 +84,7 @@ public class OperationLogDTO {
         this.operationTime = operationTime;
     }
 
-    public OperationLogDTO() {
-    }
+    public OperationLogDTO() {}
 
     public String getId() {
         return this.id;
@@ -215,7 +232,25 @@ public class OperationLogDTO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, traceId, userId, username, module, operationType, description, method, requestMethod, requestUrl, requestParams, responseResult, duration, success, errorMessage, ip, userAgent, operationTime);
+        return java.util.Objects.hash(
+                id,
+                traceId,
+                userId,
+                username,
+                module,
+                operationType,
+                description,
+                method,
+                requestMethod,
+                requestUrl,
+                requestParams,
+                responseResult,
+                duration,
+                success,
+                errorMessage,
+                ip,
+                userAgent,
+                operationTime);
     }
 
     @Override
@@ -246,6 +281,12 @@ public class OperationLogDTO {
 
     @Override
     public String toString() {
-        return "OperationLogDTO(" + "id=" + id + ", " + "traceId=" + traceId + ", " + "userId=" + userId + ", " + "username=" + username + ", " + "module=" + module + ", " + "operationType=" + operationType + ", " + "description=" + description + ", " + "method=" + method + ", " + "requestMethod=" + requestMethod + ", " + "requestUrl=" + requestUrl + ", " + "requestParams=" + requestParams + ", " + "responseResult=" + responseResult + ", " + "duration=" + duration + ", " + "success=" + success + ", " + "errorMessage=" + errorMessage + ", " + "ip=" + ip + ", " + "userAgent=" + userAgent + ", " + "operationTime=" + operationTime + ")";
+        return "OperationLogDTO(" + "id=" + id + ", " + "traceId=" + traceId + ", " + "userId=" + userId + ", "
+                + "username=" + username + ", " + "module=" + module + ", " + "operationType=" + operationType + ", "
+                + "description=" + description + ", " + "method=" + method + ", " + "requestMethod=" + requestMethod
+                + ", " + "requestUrl=" + requestUrl + ", " + "requestParams=" + requestParams + ", " + "responseResult="
+                + responseResult + ", " + "duration=" + duration + ", " + "success=" + success + ", " + "errorMessage="
+                + errorMessage + ", " + "ip=" + ip + ", " + "userAgent=" + userAgent + ", " + "operationTime="
+                + operationTime + ")";
     }
 }

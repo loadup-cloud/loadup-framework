@@ -39,7 +39,19 @@ public class AuditLogDTO {
     private String ip;
     private LocalDateTime operationTime;
 
-    public AuditLogDTO(String id, String userId, String username, String dataType, String dataId, String action, String beforeData, String afterData, String diffData, String reason, String ip, LocalDateTime operationTime) {
+    public AuditLogDTO(
+            String id,
+            String userId,
+            String username,
+            String dataType,
+            String dataId,
+            String action,
+            String beforeData,
+            String afterData,
+            String diffData,
+            String reason,
+            String ip,
+            LocalDateTime operationTime) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -54,8 +66,7 @@ public class AuditLogDTO {
         this.operationTime = operationTime;
     }
 
-    public AuditLogDTO() {
-    }
+    public AuditLogDTO() {}
 
     public String getId() {
         return this.id;
@@ -155,7 +166,19 @@ public class AuditLogDTO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, userId, username, dataType, dataId, action, beforeData, afterData, diffData, reason, ip, operationTime);
+        return java.util.Objects.hash(
+                id,
+                userId,
+                username,
+                dataType,
+                dataId,
+                action,
+                beforeData,
+                afterData,
+                diffData,
+                reason,
+                ip,
+                operationTime);
     }
 
     @Override
@@ -180,6 +203,9 @@ public class AuditLogDTO {
 
     @Override
     public String toString() {
-        return "AuditLogDTO(" + "id=" + id + ", " + "userId=" + userId + ", " + "username=" + username + ", " + "dataType=" + dataType + ", " + "dataId=" + dataId + ", " + "action=" + action + ", " + "beforeData=" + beforeData + ", " + "afterData=" + afterData + ", " + "diffData=" + diffData + ", " + "reason=" + reason + ", " + "ip=" + ip + ", " + "operationTime=" + operationTime + ")";
+        return "AuditLogDTO(" + "id=" + id + ", " + "userId=" + userId + ", " + "username=" + username + ", "
+                + "dataType=" + dataType + ", " + "dataId=" + dataId + ", " + "action=" + action + ", " + "beforeData="
+                + beforeData + ", " + "afterData=" + afterData + ", " + "diffData=" + diffData + ", " + "reason="
+                + reason + ", " + "ip=" + ip + ", " + "operationTime=" + operationTime + ")";
     }
 }

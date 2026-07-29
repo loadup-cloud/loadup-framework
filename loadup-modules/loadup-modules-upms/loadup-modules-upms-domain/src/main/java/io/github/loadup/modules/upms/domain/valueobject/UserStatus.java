@@ -22,7 +22,6 @@ package io.github.loadup.modules.upms.domain.valueobject;
  * #L%
  */
 
-
 /**
  * User Status Value Object
  *
@@ -77,8 +76,7 @@ public class UserStatus {
         this.description = description;
     }
 
-    public UserStatus() {
-    }
+    public UserStatus() {}
 
     public void setStatus(short status) {
         this.status = status;

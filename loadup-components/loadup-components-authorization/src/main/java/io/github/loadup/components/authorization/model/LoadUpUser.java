@@ -110,7 +110,12 @@ public class LoadUpUser implements Serializable {
         return permissions != null && permissions.contains(permission);
     }
 
-    public LoadUpUser(String userId, String username, List<String> roles, List<String> permissions, Map<String, Object> attributes) {
+    public LoadUpUser(
+            String userId,
+            String username,
+            List<String> roles,
+            List<String> permissions,
+            Map<String, Object> attributes) {
         this.userId = userId;
         this.username = username;
         this.roles = roles;
@@ -118,8 +123,7 @@ public class LoadUpUser implements Serializable {
         this.attributes = attributes;
     }
 
-    public LoadUpUser() {
-    }
+    public LoadUpUser() {}
 
     public String getUserId() {
         return this.userId;
@@ -181,7 +185,8 @@ public class LoadUpUser implements Serializable {
 
     @Override
     public String toString() {
-        return "LoadUpUser(" + "userId=" + userId + ", " + "username=" + username + ", " + "roles=" + roles + ", " + "permissions=" + permissions + ", " + "attributes=" + attributes + ")";
+        return "LoadUpUser(" + "userId=" + userId + ", " + "username=" + username + ", " + "roles=" + roles + ", "
+                + "permissions=" + permissions + ", " + "attributes=" + attributes + ")";
     }
 
     public static Builder builder() {

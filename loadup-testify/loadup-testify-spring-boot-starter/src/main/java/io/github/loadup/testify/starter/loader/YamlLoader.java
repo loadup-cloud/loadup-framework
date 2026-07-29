@@ -27,15 +27,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.github.loadup.testify.core.model.TestContext;
+import java.io.IOException;
 import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * YamlLoader 仅负责将 YAML 物理文件读取为 TestContext 对象。 不再持有 VariableEngine，不再进行变量解析。
  */
 public class YamlLoader {
     private static final Logger log = LoggerFactory.getLogger(YamlLoader.class);
-
 
     private static final ObjectMapper YAML_MAPPER;
 
@@ -66,6 +67,8 @@ public class YamlLoader {
 
             // 返回最原始的 Context 对象，变量解析交给后续的 runTest 环节
             return context;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

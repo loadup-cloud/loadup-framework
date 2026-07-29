@@ -1,5 +1,27 @@
 package io.github.loadup.gateway.core.filter;
 
+/*-
+ * #%L
+ * LoadUp Gateway Core
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import io.github.loadup.gateway.facade.config.GatewayProperties;
@@ -15,6 +37,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Circuit breaker filter — wraps the proxy chain.
  *
@@ -23,7 +46,6 @@ import org.slf4j.LoggerFactory;
  */
 public class CircuitBreakerFilter implements GatewayFilter {
     private static final Logger log = LoggerFactory.getLogger(CircuitBreakerFilter.class);
-
 
     private final GatewayProperties gatewayProperties;
     private final Clock clock;
@@ -92,7 +114,8 @@ public class CircuitBreakerFilter implements GatewayFilter {
         return GatewayResponse.builder()
                 .requestId(context.getRequest().getRequestId())
                 .statusCode(503)
-                .body("{\"result\":{\"code\":\"CIRCUIT_OPEN\",\"status\":\"FAIL\",\"message\":\"Circuit breaker open\"},\"data\":null}")
+                .body(
+                        "{\"result\":{\"code\":\"CIRCUIT_OPEN\",\"status\":\"FAIL\",\"message\":\"Circuit breaker open\"},\"data\":null}")
                 .contentType("application/json")
                 .build();
     }
@@ -112,12 +135,22 @@ public class CircuitBreakerFilter implements GatewayFilter {
     private static int parseInt(RouteConfig r, String key, int def) {
         Object v = r.getProperties().get(key);
         if (v instanceof Number n) return n.intValue();
-        if (v instanceof String s) { try { return Integer.parseInt(s); } catch (NumberFormatException ignored) {} }
+        if (v instanceof String s) {
+            try {
+                return Integer.parseInt(s);
+            } catch (NumberFormatException ignored) {
+            }
+        }
         return def;
     }
 
     static class CircuitBreaker {
-        enum State { CLOSED, OPEN, HALF_OPEN }
+        enum State {
+            CLOSED,
+            OPEN,
+            HALF_OPEN
+        }
+
         private final CBConfig config;
         private final AtomicReference<State> state = new AtomicReference<>(State.CLOSED);
         private final AtomicInteger failureCount = new AtomicInteger(0);
@@ -126,7 +159,10 @@ public class CircuitBreakerFilter implements GatewayFilter {
         private final AtomicLong openedAtMillis = new AtomicLong(0);
         private final Clock clock;
 
-        CircuitBreaker(CBConfig config, Clock clock) { this.config = config; this.clock = clock; }
+        CircuitBreaker(CBConfig config, Clock clock) {
+            this.config = config;
+            this.clock = clock;
+        }
 
         boolean allowRequest() {
             State s = state.get();
@@ -134,7 +170,8 @@ public class CircuitBreakerFilter implements GatewayFilter {
             if (s == State.OPEN) {
                 if (clock.millis() - openedAtMillis.get() >= config.openTimeoutSeconds * 1000L) {
                     if (state.compareAndSet(State.OPEN, State.HALF_OPEN)) {
-                        halfOpenRequests.set(0); successCount.set(0);
+                        halfOpenRequests.set(0);
+                        successCount.set(0);
                         log.info("Circuit breaker → HALF_OPEN");
                     }
                     return allowRequest();
@@ -163,7 +200,8 @@ public class CircuitBreakerFilter implements GatewayFilter {
             } else if (state.get() == State.HALF_OPEN) {
                 if (state.compareAndSet(State.HALF_OPEN, State.OPEN)) {
                     openedAtMillis.set(clock.millis());
-                    failureCount.set(0); halfOpenRequests.set(0);
+                    failureCount.set(0);
+                    halfOpenRequests.set(0);
                     log.warn("Circuit breaker → RE-OPENED");
                 }
             }

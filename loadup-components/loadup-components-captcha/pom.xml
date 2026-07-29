@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
-        <artifactId>loadup-dependencies</artifactId>
+        <artifactId>loadup-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
     </parent>
 
@@ -25,7 +25,8 @@
         <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
     </properties>
 
-    <dependencies>        <dependency>
+    <dependencies>
+        <dependency>
             <groupId>com.googlecode.aviator</groupId>
             <artifactId>aviator</artifactId>
             <version>5.3.0</version>

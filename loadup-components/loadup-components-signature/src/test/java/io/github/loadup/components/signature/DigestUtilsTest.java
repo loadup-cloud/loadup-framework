@@ -28,9 +28,9 @@ import io.github.loadup.components.signature.enums.DigestAlgorithm;
 import io.github.loadup.components.signature.util.DigestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * DigestUtils 工具类测试
  *
@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 @DisplayName("DigestUtils 工具类测试")
 class DigestUtilsTest {
     private static final Logger log = LoggerFactory.getLogger(DigestUtilsTest.class);
-
 
     @Test
     @DisplayName("MD5 快速方法")
@@ -150,5 +149,9 @@ class DigestUtilsTest {
         // MD5("") = d41d8cd98f00b204e9800998ecf8427e
         String hash = DigestUtils.md5("");
         assertThat(hash).isEqualTo("d41d8cd98f00b204e9800998ecf8427e");
+    }
+
+    public Logger getLog() {
+        return this.log;
     }
 }

@@ -64,7 +64,14 @@ public class ConfigEntry {
      */
     private Instant lastModified;
 
-    public ConfigEntry(String dataId, String group, String namespace, String content, String contentType, String version, Instant lastModified) {
+    public ConfigEntry(
+            String dataId,
+            String group,
+            String namespace,
+            String content,
+            String contentType,
+            String version,
+            Instant lastModified) {
         this.dataId = dataId;
         this.group = group;
         this.namespace = namespace;
@@ -74,8 +81,7 @@ public class ConfigEntry {
         this.lastModified = lastModified;
     }
 
-    public ConfigEntry() {
-    }
+    public ConfigEntry() {}
 
     public String getDataId() {
         return this.dataId;
@@ -155,7 +161,9 @@ public class ConfigEntry {
 
     @Override
     public String toString() {
-        return "ConfigEntry(" + "dataId=" + dataId + ", " + "group=" + group + ", " + "namespace=" + namespace + ", " + "content=" + content + ", " + "contentType=" + contentType + ", " + "version=" + version + ", " + "lastModified=" + lastModified + ")";
+        return "ConfigEntry(" + "dataId=" + dataId + ", " + "group=" + group + ", " + "namespace=" + namespace + ", "
+                + "content=" + content + ", " + "contentType=" + contentType + ", " + "version=" + version + ", "
+                + "lastModified=" + lastModified + ")";
     }
 
     public static Builder builder() {
@@ -207,7 +215,14 @@ public class ConfigEntry {
         }
 
         public ConfigEntry build() {
-            return new ConfigEntry(this.dataId, this.group, this.namespace, this.content, this.contentType, this.version, this.lastModified);
+            return new ConfigEntry(
+                    this.dataId,
+                    this.group,
+                    this.namespace,
+                    this.content,
+                    this.contentType,
+                    this.version,
+                    this.lastModified);
         }
     }
 }

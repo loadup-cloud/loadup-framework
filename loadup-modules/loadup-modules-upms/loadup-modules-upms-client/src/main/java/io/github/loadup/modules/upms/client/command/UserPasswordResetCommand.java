@@ -51,7 +51,12 @@ public class UserPasswordResetCommand {
      */
     private String verificationType;
 
-    public UserPasswordResetCommand(String username, String verificationCode, String newPassword, String confirmPassword, String verificationType) {
+    public UserPasswordResetCommand(
+            String username,
+            String verificationCode,
+            String newPassword,
+            String confirmPassword,
+            String verificationType) {
         this.username = username;
         this.verificationCode = verificationCode;
         this.newPassword = newPassword;
@@ -59,8 +64,7 @@ public class UserPasswordResetCommand {
         this.verificationType = verificationType;
     }
 
-    public UserPasswordResetCommand() {
-    }
+    public UserPasswordResetCommand() {}
 
     public String getUsername() {
         return this.username;
@@ -122,6 +126,8 @@ public class UserPasswordResetCommand {
 
     @Override
     public String toString() {
-        return "UserPasswordResetCommand(" + "username=" + username + ", " + "verificationCode=" + verificationCode + ", " + "newPassword=" + newPassword + ", " + "confirmPassword=" + confirmPassword + ", " + "verificationType=" + verificationType + ")";
+        return "UserPasswordResetCommand(" + "username=" + username + ", " + "verificationCode=" + verificationCode
+                + ", " + "newPassword=" + newPassword + ", " + "confirmPassword=" + confirmPassword + ", "
+                + "verificationType=" + verificationType + ")";
     }
 }

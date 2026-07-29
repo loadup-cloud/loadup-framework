@@ -22,7 +22,6 @@ package io.github.loadup.modules.upms.client.command;
  * #L%
  */
 
-
 /**
  * User Login Command
  *
@@ -107,7 +106,22 @@ public class UserLoginCommand {
      */
     private String userAgent;
 
-    public UserLoginCommand(String loginType, String username, String password, String mobile, String smsCode, String email, String emailCode, String provider, String code, String state, String redirectUri, String captchaKey, String captchaCode, String ipAddress, String userAgent) {
+    public UserLoginCommand(
+            String loginType,
+            String username,
+            String password,
+            String mobile,
+            String smsCode,
+            String email,
+            String emailCode,
+            String provider,
+            String code,
+            String state,
+            String redirectUri,
+            String captchaKey,
+            String captchaCode,
+            String ipAddress,
+            String userAgent) {
         this.loginType = loginType;
         this.username = username;
         this.password = password;
@@ -125,8 +139,7 @@ public class UserLoginCommand {
         this.userAgent = userAgent;
     }
 
-    public UserLoginCommand() {
-    }
+    public UserLoginCommand() {}
 
     public String getLoginType() {
         return this.loginType;
@@ -250,7 +263,22 @@ public class UserLoginCommand {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(loginType, username, password, mobile, smsCode, email, emailCode, provider, code, state, redirectUri, captchaKey, captchaCode, ipAddress, userAgent);
+        return java.util.Objects.hash(
+                loginType,
+                username,
+                password,
+                mobile,
+                smsCode,
+                email,
+                emailCode,
+                provider,
+                code,
+                state,
+                redirectUri,
+                captchaKey,
+                captchaCode,
+                ipAddress,
+                userAgent);
     }
 
     @Override
@@ -278,6 +306,11 @@ public class UserLoginCommand {
 
     @Override
     public String toString() {
-        return "UserLoginCommand(" + "loginType=" + loginType + ", " + "username=" + username + ", " + "password=" + password + ", " + "mobile=" + mobile + ", " + "smsCode=" + smsCode + ", " + "email=" + email + ", " + "emailCode=" + emailCode + ", " + "provider=" + provider + ", " + "code=" + code + ", " + "state=" + state + ", " + "redirectUri=" + redirectUri + ", " + "captchaKey=" + captchaKey + ", " + "captchaCode=" + captchaCode + ", " + "ipAddress=" + ipAddress + ", " + "userAgent=" + userAgent + ")";
+        return "UserLoginCommand(" + "loginType=" + loginType + ", " + "username=" + username + ", " + "password="
+                + password + ", " + "mobile=" + mobile + ", " + "smsCode=" + smsCode + ", " + "email=" + email + ", "
+                + "emailCode=" + emailCode + ", " + "provider=" + provider + ", " + "code=" + code + ", " + "state="
+                + state + ", " + "redirectUri=" + redirectUri + ", " + "captchaKey=" + captchaKey + ", "
+                + "captchaCode=" + captchaCode + ", " + "ipAddress=" + ipAddress + ", " + "userAgent=" + userAgent
+                + ")";
     }
 }

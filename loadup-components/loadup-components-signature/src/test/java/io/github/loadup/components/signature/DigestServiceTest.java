@@ -30,11 +30,11 @@ import io.github.loadup.components.signature.exception.SignatureException;
 import io.github.loadup.components.signature.service.DigestService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * DigestService 测试
  *
@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 @DisplayName("DigestService 测试")
 class DigestServiceTest {
     private static final Logger log = LoggerFactory.getLogger(DigestServiceTest.class);
-
 
     @Autowired
     private DigestService digestService;
@@ -192,5 +191,13 @@ class DigestServiceTest {
         assertThat(hash).isNotEmpty();
         // 空字符串的 SHA-256 是固定值
         assertThat(hash).isEqualTo("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+    }
+
+    public Logger getLog() {
+        return this.log;
+    }
+
+    public DigestService getDigestService() {
+        return this.digestService;
     }
 }

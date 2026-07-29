@@ -30,6 +30,8 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -37,8 +39,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Auto-configuration for LoadUp SpringDoc / knife4j component.
  *
@@ -56,7 +56,6 @@ import org.slf4j.LoggerFactory;
 public class SpringDocAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(SpringDocAutoConfiguration.class);
 
-
     /**
      * Builds the global {@link OpenAPI} descriptor from {@link SpringDocProperties}.
      *
@@ -71,8 +70,7 @@ public class SpringDocAutoConfiguration {
         OpenAPI openAPI = new OpenAPI().info(buildInfo(props));
 
         if (props.isJwtEnabled()) {
-            openAPI
-                    .addSecurityItem(new SecurityRequirement().addList(props.getJwtSchemeName()))
+            openAPI.addSecurityItem(new SecurityRequirement().addList(props.getJwtSchemeName()))
                     .components(new Components()
                             .addSecuritySchemes(
                                     props.getJwtSchemeName(),
@@ -81,9 +79,8 @@ public class SpringDocAutoConfiguration {
                                             .type(SecurityScheme.Type.HTTP)
                                             .scheme("bearer")
                                             .bearerFormat("JWT")
-                                            .description(
-                                                    "JWT Bearer token. Pass the token obtained from the"
-                                                            + " authentication endpoint in this field.")));
+                                            .description("JWT Bearer token. Pass the token obtained from the"
+                                                    + " authentication endpoint in this field.")));
         }
 
         return openAPI;
@@ -101,12 +98,7 @@ public class SpringDocAutoConfiguration {
                 .title(props.getTitle())
                 .description(props.getDescription())
                 .version(props.getVersion())
-                .contact(new Contact()
-                        .name(c.getName())
-                        .url(c.getUrl())
-                        .email(c.getEmail()))
-                .license(new License()
-                        .name(l.getName())
-                        .url(l.getUrl()));
+                .contact(new Contact().name(c.getName()).url(c.getUrl()).email(c.getEmail()))
+                .license(new License().name(l.getName()).url(l.getUrl()));
     }
 }

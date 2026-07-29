@@ -32,7 +32,8 @@ public class LogStatisticsQuery {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
-    public LogStatisticsQuery(String userId, String module, String operationType, LocalDateTime startTime, LocalDateTime endTime) {
+    public LogStatisticsQuery(
+            String userId, String module, String operationType, LocalDateTime startTime, LocalDateTime endTime) {
         this.userId = userId;
         this.module = module;
         this.operationType = operationType;
@@ -40,8 +41,7 @@ public class LogStatisticsQuery {
         this.endTime = endTime;
     }
 
-    public LogStatisticsQuery() {
-    }
+    public LogStatisticsQuery() {}
 
     public String getUserId() {
         return this.userId;
@@ -103,6 +103,7 @@ public class LogStatisticsQuery {
 
     @Override
     public String toString() {
-        return "LogStatisticsQuery(" + "userId=" + userId + ", " + "module=" + module + ", " + "operationType=" + operationType + ", " + "startTime=" + startTime + ", " + "endTime=" + endTime + ")";
+        return "LogStatisticsQuery(" + "userId=" + userId + ", " + "module=" + module + ", " + "operationType="
+                + operationType + ", " + "startTime=" + startTime + ", " + "endTime=" + endTime + ")";
     }
 }

@@ -32,11 +32,11 @@ import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Department Management Service
  *
@@ -46,7 +46,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class DepartmentService {
     private static final Logger log = LoggerFactory.getLogger(DepartmentService.class);
-
 
     private final DepartmentGateway departmentGateway;
     private final UserGateway userGateway;
@@ -73,23 +72,21 @@ public class DepartmentService {
         if (command.getLeaderUserId() != null) {
             userGateway.findById(command.getLeaderUserId()).orElseThrow(() -> new RuntimeException("部门负责人不存在"));
         }
-
+        Department department = new Department();
         // Create department entity
-        Department department = Department.builder()
-                .parentId(command.getParentId())
-                .deptName(command.getDeptName())
-                .deptCode(command.getDeptCode())
-                .deptLevel(deptLevel)
-                .sortOrder(command.getSortOrder())
-                .leaderUserId(command.getLeaderUserId())
-                .mobile(command.getMobile())
-                .email(command.getEmail())
-                .status(command.getStatus() != null ? command.getStatus() : (short) 1)
-                .deleted(false)
-                .remark(command.getRemark())
-                .createdBy(command.getCreatedBy())
-                .createdTime(LocalDateTime.now())
-                .build();
+        department.setParentId(command.getParentId());
+        department.setDeptName(command.getDeptName());
+        department.setDeptCode(command.getDeptCode());
+        department.setDeptLevel(deptLevel);
+        department.setSortOrder(command.getSortOrder());
+        department.setLeaderUserId(command.getLeaderUserId());
+        department.setMobile(command.getMobile());
+        department.setEmail(command.getEmail());
+        department.setStatus(command.getStatus() != null ? command.getStatus() : (short) 1);
+        department.setDeleted(false);
+        department.setRemark(command.getRemark());
+        department.setCreatedBy(command.getCreatedBy());
+        department.setCreatedTime(LocalDateTime.now());
 
         department = departmentGateway.save(department);
 

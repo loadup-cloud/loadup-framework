@@ -27,7 +27,6 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Static facade for the OpenTelemetry tracer.
@@ -180,6 +179,7 @@ public class TraceUtil {
     public TraceUtil(OpenTelemetry openTelemetry, Tracer tracer) {
         this.openTelemetry = openTelemetry;
         this.tracer = tracer;
+        this.applicationName = "";
     }
 
     public TraceUtil(OpenTelemetry openTelemetry, Tracer tracer, String applicationName) {

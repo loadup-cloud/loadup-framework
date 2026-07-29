@@ -47,9 +47,9 @@ public class RedisCacheAutoConfiguration {
         RedisTemplate<String, byte[]> template = new RedisTemplate<>();
         template.setConnectionFactory(factory);
         template.setKeySerializer(StringRedisSerializer.UTF_8);
-//        template.setValueSerializer(ByteArrayRedisSerializer.INSTANCE);
+        //        template.setValueSerializer(ByteArrayRedisSerializer.INSTANCE);
         template.setHashKeySerializer(StringRedisSerializer.UTF_8);
-//        template.setHashValueSerializer(ByteArrayRedisSerializer.INSTANCE);
+        //        template.setHashValueSerializer(ByteArrayRedisSerializer.INSTANCE);
         template.afterPropertiesSet();
         return template;
     }

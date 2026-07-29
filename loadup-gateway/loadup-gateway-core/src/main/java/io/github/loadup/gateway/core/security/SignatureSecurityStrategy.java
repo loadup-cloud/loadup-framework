@@ -1,5 +1,27 @@
 package io.github.loadup.gateway.core.security;
 
+/*-
+ * #%L
+ * LoadUp Gateway Core
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import io.github.loadup.gateway.facade.config.GatewayProperties;
 import io.github.loadup.gateway.facade.context.GatewayContext;
 import io.github.loadup.gateway.facade.exception.GatewayExceptionFactory;
@@ -14,12 +36,11 @@ import java.util.TreeMap;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang3.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 public class SignatureSecurityStrategy implements SecurityStrategy {
     private static final Logger log = LoggerFactory.getLogger(SignatureSecurityStrategy.class);
-
 
     private static final String HEADER_APP_ID = "X-App-Id";
     private static final String HEADER_TIMESTAMP = "X-Timestamp";
@@ -42,7 +63,9 @@ public class SignatureSecurityStrategy implements SecurityStrategy {
     }
 
     @Override
-    public String getCode() { return "signature"; }
+    public String getCode() {
+        return "signature";
+    }
 
     @Override
     public void process(GatewayContext context) {
@@ -88,7 +111,8 @@ public class SignatureSecurityStrategy implements SecurityStrategy {
             value = request.getHeaders().entrySet().stream()
                     .filter(e -> e.getKey().equalsIgnoreCase(name))
                     .map(Map.Entry::getValue)
-                    .findFirst().orElse(null);
+                    .findFirst()
+                    .orElse(null);
         }
         return value;
     }
@@ -96,7 +120,9 @@ public class SignatureSecurityStrategy implements SecurityStrategy {
     private Map<String, String> flattenQueryParams(Map<String, List<String>> params) {
         Map<String, String> result = new HashMap<>();
         if (params != null) {
-            params.forEach((k, v) -> { if (v != null && !v.isEmpty()) result.put(k, v.get(0)); });
+            params.forEach((k, v) -> {
+                if (v != null && !v.isEmpty()) result.put(k, v.get(0));
+            });
         }
         return result;
     }
@@ -105,7 +131,8 @@ public class SignatureSecurityStrategy implements SecurityStrategy {
         try {
             TreeMap<String, String> sorted = new TreeMap<>(params);
             StringBuilder sb = new StringBuilder();
-            sorted.forEach((k, v) -> sb.append(sb.isEmpty() ? "" : "&").append(k).append("=").append(v));
+            sorted.forEach((k, v) ->
+                    sb.append(sb.isEmpty() ? "" : "&").append(k).append("=").append(v));
             if (!sb.isEmpty()) sb.append("&");
             sb.append("timestamp=").append(timestamp).append("&nonce=").append(nonce);
 

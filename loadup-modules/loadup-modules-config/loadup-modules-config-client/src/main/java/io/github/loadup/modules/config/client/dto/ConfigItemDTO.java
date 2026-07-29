@@ -51,7 +51,19 @@ public class ConfigItemDTO {
     private Boolean enabled;
     private LocalDateTime updatedAt;
 
-    public ConfigItemDTO(String id, String configKey, String configValue, String valueType, String category, String description, Boolean editable, Boolean encrypted, Boolean systemDefined, Integer sortOrder, Boolean enabled, LocalDateTime updatedAt) {
+    public ConfigItemDTO(
+            String id,
+            String configKey,
+            String configValue,
+            String valueType,
+            String category,
+            String description,
+            Boolean editable,
+            Boolean encrypted,
+            Boolean systemDefined,
+            Integer sortOrder,
+            Boolean enabled,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.configKey = configKey;
         this.configValue = configValue;
@@ -66,8 +78,7 @@ public class ConfigItemDTO {
         this.updatedAt = updatedAt;
     }
 
-    public ConfigItemDTO() {
-    }
+    public ConfigItemDTO() {}
 
     public String getId() {
         return this.id;
@@ -167,7 +178,19 @@ public class ConfigItemDTO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, configKey, configValue, valueType, category, description, editable, encrypted, systemDefined, sortOrder, enabled, updatedAt);
+        return java.util.Objects.hash(
+                id,
+                configKey,
+                configValue,
+                valueType,
+                category,
+                description,
+                editable,
+                encrypted,
+                systemDefined,
+                sortOrder,
+                enabled,
+                updatedAt);
     }
 
     @Override
@@ -192,6 +215,10 @@ public class ConfigItemDTO {
 
     @Override
     public String toString() {
-        return "ConfigItemDTO(" + "id=" + id + ", " + "configKey=" + configKey + ", " + "configValue=" + configValue + ", " + "valueType=" + valueType + ", " + "category=" + category + ", " + "description=" + description + ", " + "editable=" + editable + ", " + "encrypted=" + encrypted + ", " + "systemDefined=" + systemDefined + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "updatedAt=" + updatedAt + ")";
+        return "ConfigItemDTO(" + "id=" + id + ", " + "configKey=" + configKey + ", " + "configValue=" + configValue
+                + ", " + "valueType=" + valueType + ", " + "category=" + category + ", " + "description=" + description
+                + ", " + "editable=" + editable + ", " + "encrypted=" + encrypted + ", " + "systemDefined="
+                + systemDefined + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "updatedAt="
+                + updatedAt + ")";
     }
 }

@@ -46,7 +46,24 @@ public class OperationLogDO extends BaseDO {
     private String userAgent;
     private java.time.LocalDateTime operationTime;
 
-    public OperationLogDO(String traceId, String userId, String username, String module, String operationType, String description, String method, String requestMethod, String requestUrl, String requestParams, String responseResult, Long duration, Boolean success, String errorMessage, String ip, String userAgent, java.time.LocalDateTime operationTime) {
+    public OperationLogDO(
+            String traceId,
+            String userId,
+            String username,
+            String module,
+            String operationType,
+            String description,
+            String method,
+            String requestMethod,
+            String requestUrl,
+            String requestParams,
+            String responseResult,
+            Long duration,
+            Boolean success,
+            String errorMessage,
+            String ip,
+            String userAgent,
+            java.time.LocalDateTime operationTime) {
         this.traceId = traceId;
         this.userId = userId;
         this.username = username;
@@ -66,8 +83,7 @@ public class OperationLogDO extends BaseDO {
         this.operationTime = operationTime;
     }
 
-    public OperationLogDO() {
-    }
+    public OperationLogDO() {}
 
     public String getTraceId() {
         return this.traceId;
@@ -207,7 +223,25 @@ public class OperationLogDO extends BaseDO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(super.hashCode(), traceId, userId, username, module, operationType, description, method, requestMethod, requestUrl, requestParams, responseResult, duration, success, errorMessage, ip, userAgent, operationTime);
+        return java.util.Objects.hash(
+                super.hashCode(),
+                traceId,
+                userId,
+                username,
+                module,
+                operationType,
+                description,
+                method,
+                requestMethod,
+                requestUrl,
+                requestParams,
+                responseResult,
+                duration,
+                success,
+                errorMessage,
+                ip,
+                userAgent,
+                operationTime);
     }
 
     @Override
@@ -238,6 +272,12 @@ public class OperationLogDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "OperationLogDO(" + "super=" + super.toString() + ", " + "traceId=" + traceId + ", " + "userId=" + userId + ", " + "username=" + username + ", " + "module=" + module + ", " + "operationType=" + operationType + ", " + "description=" + description + ", " + "method=" + method + ", " + "requestMethod=" + requestMethod + ", " + "requestUrl=" + requestUrl + ", " + "requestParams=" + requestParams + ", " + "responseResult=" + responseResult + ", " + "duration=" + duration + ", " + "success=" + success + ", " + "errorMessage=" + errorMessage + ", " + "ip=" + ip + ", " + "userAgent=" + userAgent + ", " + "operationTime=" + operationTime + ")";
+        return "OperationLogDO(" + "super=" + super.toString() + ", " + "traceId=" + traceId + ", " + "userId=" + userId
+                + ", " + "username=" + username + ", " + "module=" + module + ", " + "operationType=" + operationType
+                + ", " + "description=" + description + ", " + "method=" + method + ", " + "requestMethod="
+                + requestMethod + ", " + "requestUrl=" + requestUrl + ", " + "requestParams=" + requestParams + ", "
+                + "responseResult=" + responseResult + ", " + "duration=" + duration + ", " + "success=" + success
+                + ", " + "errorMessage=" + errorMessage + ", " + "ip=" + ip + ", " + "userAgent=" + userAgent + ", "
+                + "operationTime=" + operationTime + ")";
     }
 }

@@ -54,7 +54,18 @@ public class RetryTaskDO {
 
     private LocalDateTime updatedAt;
 
-    public RetryTaskDO(Long id, String bizType, String bizId, Integer retryCount, Integer maxRetryCount, LocalDateTime nextRetryTime, String status, Integer priority, String lastFailureReason, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public RetryTaskDO(
+            Long id,
+            String bizType,
+            String bizId,
+            Integer retryCount,
+            Integer maxRetryCount,
+            LocalDateTime nextRetryTime,
+            String status,
+            Integer priority,
+            String lastFailureReason,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.bizType = bizType;
         this.bizId = bizId;
@@ -68,8 +79,7 @@ public class RetryTaskDO {
         this.updatedAt = updatedAt;
     }
 
-    public RetryTaskDO() {
-    }
+    public RetryTaskDO() {}
 
     public Long getId() {
         return this.id;
@@ -161,7 +171,18 @@ public class RetryTaskDO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, bizType, bizId, retryCount, maxRetryCount, nextRetryTime, status, priority, lastFailureReason, createdAt, updatedAt);
+        return java.util.Objects.hash(
+                id,
+                bizType,
+                bizId,
+                retryCount,
+                maxRetryCount,
+                nextRetryTime,
+                status,
+                priority,
+                lastFailureReason,
+                createdAt,
+                updatedAt);
     }
 
     @Override
@@ -185,6 +206,10 @@ public class RetryTaskDO {
 
     @Override
     public String toString() {
-        return "RetryTaskDO(" + "id=" + id + ", " + "bizType=" + bizType + ", " + "bizId=" + bizId + ", " + "retryCount=" + retryCount + ", " + "maxRetryCount=" + maxRetryCount + ", " + "nextRetryTime=" + nextRetryTime + ", " + "status=" + status + ", " + "priority=" + priority + ", " + "lastFailureReason=" + lastFailureReason + ", " + "createdAt=" + createdAt + ", " + "updatedAt=" + updatedAt + ")";
+        return "RetryTaskDO(" + "id=" + id + ", " + "bizType=" + bizType + ", " + "bizId=" + bizId + ", "
+                + "retryCount=" + retryCount + ", " + "maxRetryCount=" + maxRetryCount + ", " + "nextRetryTime="
+                + nextRetryTime + ", " + "status=" + status + ", " + "priority=" + priority + ", "
+                + "lastFailureReason=" + lastFailureReason + ", " + "createdAt=" + createdAt + ", " + "updatedAt="
+                + updatedAt + ")";
     }
 }

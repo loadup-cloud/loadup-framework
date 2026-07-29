@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
-        <artifactId>loadup-dependencies</artifactId>
+        <artifactId>loadup-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
     </parent>
     <artifactId>loadup-components-cache-binder-redis</artifactId>
@@ -47,6 +47,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-        </dependency>    </dependencies>
+        </dependency>
+    </dependencies>
 
 </project>

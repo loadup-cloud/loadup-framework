@@ -24,15 +24,14 @@ package io.github.loadup.gateway.core.router;
 
 import io.github.loadup.gateway.facade.model.PathPattern;
 import io.github.loadup.gateway.facade.model.RouteConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Pattern-aware route registry that supports Ant-style path variables.
@@ -52,7 +51,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class PatternRouteRegistry {
     private static final Logger log = LoggerFactory.getLogger(PatternRouteRegistry.class);
-
 
     /**
      * Exact-match routes keyed by method:path
@@ -96,9 +94,7 @@ public class PatternRouteRegistry {
         this.patternRoutes = newPatterns;
 
         log.info(
-            "PatternRouteRegistry loaded: {} exact routes, {} pattern routes",
-            newExact.size(),
-            newPatterns.size());
+                "PatternRouteRegistry loaded: {} exact routes, {} pattern routes", newExact.size(), newPatterns.size());
     }
 
     /**
@@ -147,8 +143,7 @@ public class PatternRouteRegistry {
         }
 
         // Store path params in route properties for downstream access
-        java.util.Map<String, Object> enrichedProps =
-            new java.util.HashMap<>(route.getProperties());
+        java.util.Map<String, Object> enrichedProps = new java.util.HashMap<>(route.getProperties());
         enrichedProps.put("_pathParams", pathParams);
         enrichedProps.put("_matchedPattern", route.getPath());
 

@@ -50,7 +50,17 @@ public class UserOAuthBindingDO extends BaseDO {
     private LocalDateTime expiresAt;
     private LocalDateTime boundAt;
 
-    public UserOAuthBindingDO(String userId, String provider, String openId, String unionId, String nickname, String avatar, String accessToken, String refreshToken, LocalDateTime expiresAt, LocalDateTime boundAt) {
+    public UserOAuthBindingDO(
+            String userId,
+            String provider,
+            String openId,
+            String unionId,
+            String nickname,
+            String avatar,
+            String accessToken,
+            String refreshToken,
+            LocalDateTime expiresAt,
+            LocalDateTime boundAt) {
         this.userId = userId;
         this.provider = provider;
         this.openId = openId;
@@ -63,8 +73,7 @@ public class UserOAuthBindingDO extends BaseDO {
         this.boundAt = boundAt;
     }
 
-    public UserOAuthBindingDO() {
-    }
+    public UserOAuthBindingDO() {}
 
     public String getUserId() {
         return this.userId;
@@ -148,7 +157,18 @@ public class UserOAuthBindingDO extends BaseDO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(super.hashCode(), userId, provider, openId, unionId, nickname, avatar, accessToken, refreshToken, expiresAt, boundAt);
+        return java.util.Objects.hash(
+                super.hashCode(),
+                userId,
+                provider,
+                openId,
+                unionId,
+                nickname,
+                avatar,
+                accessToken,
+                refreshToken,
+                expiresAt,
+                boundAt);
     }
 
     @Override
@@ -172,6 +192,9 @@ public class UserOAuthBindingDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "UserOAuthBindingDO(" + "super=" + super.toString() + ", " + "userId=" + userId + ", " + "provider=" + provider + ", " + "openId=" + openId + ", " + "unionId=" + unionId + ", " + "nickname=" + nickname + ", " + "avatar=" + avatar + ", " + "accessToken=" + accessToken + ", " + "refreshToken=" + refreshToken + ", " + "expiresAt=" + expiresAt + ", " + "boundAt=" + boundAt + ")";
+        return "UserOAuthBindingDO(" + "super=" + super.toString() + ", " + "userId=" + userId + ", " + "provider="
+                + provider + ", " + "openId=" + openId + ", " + "unionId=" + unionId + ", " + "nickname=" + nickname
+                + ", " + "avatar=" + avatar + ", " + "accessToken=" + accessToken + ", " + "refreshToken="
+                + refreshToken + ", " + "expiresAt=" + expiresAt + ", " + "boundAt=" + boundAt + ")";
     }
 }

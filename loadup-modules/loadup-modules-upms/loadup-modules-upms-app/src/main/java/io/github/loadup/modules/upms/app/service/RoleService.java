@@ -36,11 +36,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Role Management Service
  *
@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class RoleService {
     private static final Logger log = LoggerFactory.getLogger(RoleService.class);
-
 
     private final RoleGateway roleGateway;
     private final PermissionGateway permissionGateway;
@@ -71,18 +70,17 @@ public class RoleService {
         }
 
         // Create role entity
-        Role role = Role.builder()
-                .roleName(command.getRoleName())
-                .roleCode(command.getRoleCode())
-                .parentId(command.getParentId())
-                .dataScope(command.getDataScope() != null ? command.getDataScope() : (short) 1)
-                .sortOrder(command.getSortOrder())
-                .status(command.getStatus() != null ? command.getStatus() : (short) 1)
-                .deleted(false)
-                .remark(command.getRemark())
-                .createdBy(command.getCreatedBy())
-                .createdTime(LocalDateTime.now())
-                .build();
+        Role role = new Role();
+        role.setRoleName(command.getRoleName());
+        role.setRoleCode(command.getRoleCode());
+        role.setParentId(command.getParentId());
+        role.setDataScope(command.getDataScope() != null ? command.getDataScope() : (short) 1);
+        role.setSortOrder(command.getSortOrder());
+        role.setStatus(command.getStatus() != null ? command.getStatus() : (short) 1);
+        role.setDeleted(false);
+        role.setRemark(command.getRemark());
+        role.setCreatedBy(command.getCreatedBy());
+        role.setCreatedTime(LocalDateTime.now());
 
         role = roleGateway.save(role);
 

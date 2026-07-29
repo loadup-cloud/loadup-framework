@@ -2,9 +2,9 @@ package io.github.loadup.components.gotone.channel.push.config;
 
 /*-
  * #%L
- * loadup-components-gotone-channel-push
+ * Loadup Gotone Channel Push
  * %%
- * Copyright (C) 2026 LoadUp Cloud
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,38 +22,31 @@ package io.github.loadup.components.gotone.channel.push.config;
  * #L%
  */
 
-import io.github.loadup.components.gotone.api.NotificationChannelProvider;
+import io.github.loadup.components.gotone.GotoneProvider;
+import io.github.loadup.components.gotone.channel.push.FcmPushConfig;
 import io.github.loadup.components.gotone.channel.push.FcmPushProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-/**
- * Push Channel Auto Configuration.
- *
- * <p>支持 PUSH 提供商：
- * <ul>
- *   <li>fcm - Firebase Cloud Messaging</li>
- * </ul>
- */
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+
+@AutoConfiguration
+@ConditionalOnProperty(
+        prefix = "loadup.gotone.binder.push.fcm",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = true)
+@EnableConfigurationProperties(FcmPushConfig.class)
 public class PushChannelAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(PushChannelAutoConfiguration.class);
 
-
-    /**
-     * Firebase Cloud Messaging 推送提供商
-     */
     @Bean
-    @ConditionalOnProperty(
-            prefix = "loadup.gotone.push.fcm",
-            name = "enabled",
-            havingValue = "true",
-            matchIfMissing = true)
     @ConditionalOnMissingBean(name = "fcmPushProvider")
-    public NotificationChannelProvider fcmPushProvider() {
-        log.info(">>> [GOTONE] FcmPushProvider initialized");
-        return new FcmPushProvider();
+    public GotoneProvider fcmPushProvider(FcmPushConfig config) {
+        log.info(">>> [GOTONE] FcmPushProvider initialized with projectId={}", config.getProjectId());
+        return new FcmPushProvider(config.getServerKey(), config.getProjectId());
     }
 }

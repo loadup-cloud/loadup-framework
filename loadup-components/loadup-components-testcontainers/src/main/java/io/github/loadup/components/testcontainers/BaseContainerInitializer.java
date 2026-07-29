@@ -25,18 +25,17 @@ package io.github.loadup.components.testcontainers;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 public abstract class BaseContainerInitializer
         implements ApplicationContextInitializer<ConfigurableApplicationContext> {
     private static final Logger log = LoggerFactory.getLogger(BaseContainerInitializer.class);
-
 
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {

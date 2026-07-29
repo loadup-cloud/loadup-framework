@@ -71,7 +71,20 @@ public class PermissionCreateCommand {
 
     private String createdBy;
 
-    public PermissionCreateCommand(String parentId, String permissionName, String permissionCode, Short permissionType, String resourcePath, String httpMethod, String icon, String componentPath, Integer sortOrder, Boolean visible, Short status, String remark, String createdBy) {
+    public PermissionCreateCommand(
+            String parentId,
+            String permissionName,
+            String permissionCode,
+            Short permissionType,
+            String resourcePath,
+            String httpMethod,
+            String icon,
+            String componentPath,
+            Integer sortOrder,
+            Boolean visible,
+            Short status,
+            String remark,
+            String createdBy) {
         this.parentId = parentId;
         this.permissionName = permissionName;
         this.permissionCode = permissionCode;
@@ -87,8 +100,7 @@ public class PermissionCreateCommand {
         this.createdBy = createdBy;
     }
 
-    public PermissionCreateCommand() {
-    }
+    public PermissionCreateCommand() {}
 
     public String getParentId() {
         return this.parentId;
@@ -196,7 +208,20 @@ public class PermissionCreateCommand {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(parentId, permissionName, permissionCode, permissionType, resourcePath, httpMethod, icon, componentPath, sortOrder, visible, status, remark, createdBy);
+        return java.util.Objects.hash(
+                parentId,
+                permissionName,
+                permissionCode,
+                permissionType,
+                resourcePath,
+                httpMethod,
+                icon,
+                componentPath,
+                sortOrder,
+                visible,
+                status,
+                remark,
+                createdBy);
     }
 
     @Override
@@ -222,6 +247,10 @@ public class PermissionCreateCommand {
 
     @Override
     public String toString() {
-        return "PermissionCreateCommand(" + "parentId=" + parentId + ", " + "permissionName=" + permissionName + ", " + "permissionCode=" + permissionCode + ", " + "permissionType=" + permissionType + ", " + "resourcePath=" + resourcePath + ", " + "httpMethod=" + httpMethod + ", " + "icon=" + icon + ", " + "componentPath=" + componentPath + ", " + "sortOrder=" + sortOrder + ", " + "visible=" + visible + ", " + "status=" + status + ", " + "remark=" + remark + ", " + "createdBy=" + createdBy + ")";
+        return "PermissionCreateCommand(" + "parentId=" + parentId + ", " + "permissionName=" + permissionName + ", "
+                + "permissionCode=" + permissionCode + ", " + "permissionType=" + permissionType + ", "
+                + "resourcePath=" + resourcePath + ", " + "httpMethod=" + httpMethod + ", " + "icon=" + icon + ", "
+                + "componentPath=" + componentPath + ", " + "sortOrder=" + sortOrder + ", " + "visible=" + visible
+                + ", " + "status=" + status + ", " + "remark=" + remark + ", " + "createdBy=" + createdBy + ")";
     }
 }

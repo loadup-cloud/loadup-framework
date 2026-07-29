@@ -65,7 +65,19 @@ public class LoginLogDO extends BaseDO {
      */
     private String provider;
 
-    public LoginLogDO(String userId, String username, LocalDateTime loginTime, LocalDateTime logoutTime, String ipAddress, String loginLocation, String browser, String os, Short loginStatus, String loginMessage, String loginType, String provider) {
+    public LoginLogDO(
+            String userId,
+            String username,
+            LocalDateTime loginTime,
+            LocalDateTime logoutTime,
+            String ipAddress,
+            String loginLocation,
+            String browser,
+            String os,
+            Short loginStatus,
+            String loginMessage,
+            String loginType,
+            String provider) {
         this.userId = userId;
         this.username = username;
         this.loginTime = loginTime;
@@ -80,8 +92,7 @@ public class LoginLogDO extends BaseDO {
         this.provider = provider;
     }
 
-    public LoginLogDO() {
-    }
+    public LoginLogDO() {}
 
     public String getUserId() {
         return this.userId;
@@ -181,7 +192,20 @@ public class LoginLogDO extends BaseDO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(super.hashCode(), userId, username, loginTime, logoutTime, ipAddress, loginLocation, browser, os, loginStatus, loginMessage, loginType, provider);
+        return java.util.Objects.hash(
+                super.hashCode(),
+                userId,
+                username,
+                loginTime,
+                logoutTime,
+                ipAddress,
+                loginLocation,
+                browser,
+                os,
+                loginStatus,
+                loginMessage,
+                loginType,
+                provider);
     }
 
     @Override
@@ -207,6 +231,10 @@ public class LoginLogDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "LoginLogDO(" + "super=" + super.toString() + ", " + "userId=" + userId + ", " + "username=" + username + ", " + "loginTime=" + loginTime + ", " + "logoutTime=" + logoutTime + ", " + "ipAddress=" + ipAddress + ", " + "loginLocation=" + loginLocation + ", " + "browser=" + browser + ", " + "os=" + os + ", " + "loginStatus=" + loginStatus + ", " + "loginMessage=" + loginMessage + ", " + "loginType=" + loginType + ", " + "provider=" + provider + ")";
+        return "LoginLogDO(" + "super=" + super.toString() + ", " + "userId=" + userId + ", " + "username=" + username
+                + ", " + "loginTime=" + loginTime + ", " + "logoutTime=" + logoutTime + ", " + "ipAddress=" + ipAddress
+                + ", " + "loginLocation=" + loginLocation + ", " + "browser=" + browser + ", " + "os=" + os + ", "
+                + "loginStatus=" + loginStatus + ", " + "loginMessage=" + loginMessage + ", " + "loginType=" + loginType
+                + ", " + "provider=" + provider + ")";
     }
 }

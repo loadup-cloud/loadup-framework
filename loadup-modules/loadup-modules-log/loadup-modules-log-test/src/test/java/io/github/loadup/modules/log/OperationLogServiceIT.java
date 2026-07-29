@@ -104,7 +104,7 @@ class OperationLogServiceIT {
         List<OperationLogDTO> results = operationLogService.listByCondition(query);
 
         assertThat(results).hasSize(1);
-        assertThat(results.get(0).getSuccess()).isFalse();
+        assertThat(results.get(0).isSuccess()).isFalse();
     }
 
     @Test

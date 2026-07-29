@@ -63,8 +63,7 @@ public class OAuthToken implements Serializable {
         this.scope = scope;
     }
 
-    public OAuthToken() {
-    }
+    public OAuthToken() {}
 
     public String getAccessToken() {
         return this.accessToken;
@@ -117,7 +116,8 @@ public class OAuthToken implements Serializable {
 
     @Override
     public String toString() {
-        return "OAuthToken(" + "accessToken=" + accessToken + ", " + "refreshToken=" + refreshToken + ", " + "expiresIn=" + expiresIn + ", " + "scope=" + scope + ")";
+        return "OAuthToken(" + "accessToken=" + accessToken + ", " + "refreshToken=" + refreshToken + ", "
+                + "expiresIn=" + expiresIn + ", " + "scope=" + scope + ")";
     }
 
     public static Builder builder() {

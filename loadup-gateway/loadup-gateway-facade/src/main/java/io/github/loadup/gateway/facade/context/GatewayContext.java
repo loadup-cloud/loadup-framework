@@ -27,7 +27,6 @@ import io.github.loadup.gateway.facade.model.GatewayResponse;
 import io.github.loadup.gateway.facade.model.RouteConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -110,7 +109,14 @@ public class GatewayContext {
         }
     }
 
-    public GatewayContext(GatewayRequest request, HttpServletRequest originalRequest, GatewayResponse response, HttpServletResponse originalResponse, RouteConfig route, Map<String, Object> attributes, Throwable exception) {
+    public GatewayContext(
+            GatewayRequest request,
+            HttpServletRequest originalRequest,
+            GatewayResponse response,
+            HttpServletResponse originalResponse,
+            RouteConfig route,
+            Map<String, Object> attributes,
+            Throwable exception) {
         this.request = request;
         this.originalRequest = originalRequest;
         this.response = response;
@@ -120,8 +126,7 @@ public class GatewayContext {
         this.exception = exception;
     }
 
-    public GatewayContext() {
-    }
+    public GatewayContext() {}
 
     public GatewayRequest getRequest() {
         return this.request;

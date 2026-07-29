@@ -31,15 +31,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Plugin manager
  */
 public class PluginManager {
     private static final Logger log = LoggerFactory.getLogger(PluginManager.class);
-
 
     private final List<ProxyProcessor> proxyProcessors;
 

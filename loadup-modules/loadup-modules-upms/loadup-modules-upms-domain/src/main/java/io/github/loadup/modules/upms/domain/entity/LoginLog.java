@@ -71,7 +71,20 @@ public class LoginLog {
         return loginStatus != null && loginStatus == 1;
     }
 
-    public LoginLog(String id, String userId, String username, LocalDateTime loginTime, LocalDateTime logoutTime, String ipAddress, String loginLocation, String browser, String os, Short loginStatus, String loginMessage, String loginType, String provider) {
+    public LoginLog(
+            String id,
+            String userId,
+            String username,
+            LocalDateTime loginTime,
+            LocalDateTime logoutTime,
+            String ipAddress,
+            String loginLocation,
+            String browser,
+            String os,
+            Short loginStatus,
+            String loginMessage,
+            String loginType,
+            String provider) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -87,8 +100,7 @@ public class LoginLog {
         this.provider = provider;
     }
 
-    public LoginLog() {
-    }
+    public LoginLog() {}
 
     public void setId(String id) {
         this.id = id;
@@ -142,123 +154,55 @@ public class LoginLog {
         this.provider = provider;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(id, userId, username, loginTime, logoutTime, ipAddress, loginLocation, browser, os, loginStatus, loginMessage, loginType, provider);
+    public String getId() {
+        return id;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LoginLog other = (LoginLog) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(userId, other.userId)) return false;
-        if (!java.util.Objects.equals(username, other.username)) return false;
-        if (!java.util.Objects.equals(loginTime, other.loginTime)) return false;
-        if (!java.util.Objects.equals(logoutTime, other.logoutTime)) return false;
-        if (!java.util.Objects.equals(ipAddress, other.ipAddress)) return false;
-        if (!java.util.Objects.equals(loginLocation, other.loginLocation)) return false;
-        if (!java.util.Objects.equals(browser, other.browser)) return false;
-        if (!java.util.Objects.equals(os, other.os)) return false;
-        if (!java.util.Objects.equals(loginStatus, other.loginStatus)) return false;
-        if (!java.util.Objects.equals(loginMessage, other.loginMessage)) return false;
-        if (!java.util.Objects.equals(loginType, other.loginType)) return false;
-        if (!java.util.Objects.equals(provider, other.provider)) return false;
-        return true;
+    public String getUserId() {
+        return userId;
     }
 
-    @Override
-    public String toString() {
-        return "LoginLog(" + "id=" + id + ", " + "userId=" + userId + ", " + "username=" + username + ", " + "loginTime=" + loginTime + ", " + "logoutTime=" + logoutTime + ", " + "ipAddress=" + ipAddress + ", " + "loginLocation=" + loginLocation + ", " + "browser=" + browser + ", " + "os=" + os + ", " + "loginStatus=" + loginStatus + ", " + "loginMessage=" + loginMessage + ", " + "loginType=" + loginType + ", " + "provider=" + provider + ")";
+    public String getUsername() {
+        return username;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public LocalDateTime getLoginTime() {
+        return loginTime;
     }
 
-    public static class Builder {
-        private String id;
-        private String userId;
-        private String username;
-        private LocalDateTime loginTime;
-        private LocalDateTime logoutTime;
-        private String ipAddress;
-        private String loginLocation;
-        private String browser;
-        private String os;
-        private Short loginStatus;
-        private String loginMessage;
-        private String loginType;
-        private String provider;
+    public LocalDateTime getLogoutTime() {
+        return logoutTime;
+    }
 
-        public Builder id(String id) {
-            this.id = id;
-            return this;
-        }
+    public String getIpAddress() {
+        return ipAddress;
+    }
 
-        public Builder userId(String userId) {
-            this.userId = userId;
-            return this;
-        }
+    public String getLoginLocation() {
+        return loginLocation;
+    }
 
-        public Builder username(String username) {
-            this.username = username;
-            return this;
-        }
+    public String getBrowser() {
+        return browser;
+    }
 
-        public Builder loginTime(LocalDateTime loginTime) {
-            this.loginTime = loginTime;
-            return this;
-        }
+    public String getOs() {
+        return os;
+    }
 
-        public Builder logoutTime(LocalDateTime logoutTime) {
-            this.logoutTime = logoutTime;
-            return this;
-        }
+    public Short getLoginStatus() {
+        return loginStatus;
+    }
 
-        public Builder ipAddress(String ipAddress) {
-            this.ipAddress = ipAddress;
-            return this;
-        }
+    public String getLoginMessage() {
+        return loginMessage;
+    }
 
-        public Builder loginLocation(String loginLocation) {
-            this.loginLocation = loginLocation;
-            return this;
-        }
+    public String getLoginType() {
+        return loginType;
+    }
 
-        public Builder browser(String browser) {
-            this.browser = browser;
-            return this;
-        }
-
-        public Builder os(String os) {
-            this.os = os;
-            return this;
-        }
-
-        public Builder loginStatus(Short loginStatus) {
-            this.loginStatus = loginStatus;
-            return this;
-        }
-
-        public Builder loginMessage(String loginMessage) {
-            this.loginMessage = loginMessage;
-            return this;
-        }
-
-        public Builder loginType(String loginType) {
-            this.loginType = loginType;
-            return this;
-        }
-
-        public Builder provider(String provider) {
-            this.provider = provider;
-            return this;
-        }
-
-        public LoginLog build() {
-            return new LoginLog(this.id, this.userId, this.username, this.loginTime, this.logoutTime, this.ipAddress, this.loginLocation, this.browser, this.os, this.loginStatus, this.loginMessage, this.loginType, this.provider);
-        }
+    public String getProvider() {
+        return provider;
     }
 }

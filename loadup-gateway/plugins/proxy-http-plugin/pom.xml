@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
-        <artifactId>loadup-dependencies</artifactId>
+        <artifactId>loadup-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
     </parent>
 
@@ -29,5 +29,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>    </dependencies>
+        </dependency>
+    </dependencies>
 </project>

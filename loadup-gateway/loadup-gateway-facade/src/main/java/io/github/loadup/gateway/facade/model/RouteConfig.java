@@ -22,18 +22,13 @@ package io.github.loadup.gateway.facade.model;
  * #L%
  */
 
-import io.github.loadup.gateway.facade.constants.GatewayConstants;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
+
+import io.github.loadup.gateway.facade.constants.GatewayConstants;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Route configuration model (immutable)
@@ -43,88 +38,87 @@ public class RouteConfig {
     /**
      * Route ID (auto-generated, based on path + method)
      */
-    private  String routeId;
+    private String routeId;
 
     /**
      * Route name (auto-generated, based on path)
      */
-    private  String routeName;
+    private String routeName;
 
     /**
      * Match path
      */
-    private  String path;
+    private String path;
 
     /**
      * HTTP method
      */
-    private  String method;
+    private String method;
 
     /**
      * Protocol type (HTTP/RPC/BEAN)
      */
-    private  String protocol;
+    private String protocol;
 
     /**
      * Unified target configuration (original string)
      */
-    private  String target;
+    private String target;
 
     /**
      * Target URL (used for HTTP/RPC)
      */
-    private  String targetUrl;
+    private String targetUrl;
 
     /**
      * Target Bean name (used for BEAN protocol)
      */
-    private  String targetBean;
+    private String targetBean;
 
     /**
      * Target method name (used for BEAN protocol)
      */
-    private  String targetMethod;
+    private String targetMethod;
 
     /**
      * Request template script
      */
-    private  String requestTemplate;
+    private String requestTemplate;
 
     /**
      * Response template script
      */
-    private  String responseTemplate;
+    private String responseTemplate;
 
     /**
      * Whether enabled
      */
-    private  boolean enabled;
+    private boolean enabled;
 
     /**
      * Extended configuration (immutable copy)
      */
-    private  Map<String, Object> properties;
+    private Map<String, Object> properties;
 
     /**
      * Parsed timeout (milliseconds)
      */
-    private  long parsedTimeout;
+    private long parsedTimeout;
 
     /**
      * Parsed retry count
      */
-    private  int parsedRetryCount;
+    private int parsedRetryCount;
 
     /**
      * Parsed wrapResponse (null means use global configuration)
      */
-    private  Boolean parsedWrapResponse;
+    private Boolean parsedWrapResponse;
 
     /**
      * Security code for authentication/signing strategy (e.g. "OFF", "default", "hmac")
      */
-    private  String securityCode;
-
+    private String securityCode;
 
     public String getRouteId() {
         return routeId;
@@ -291,7 +285,7 @@ public class RouteConfig {
         }
 
         if (startsWithIgnoreCase(target, GatewayConstants.Protocol.HTTP + "://")
-            || startsWithIgnoreCase(target, GatewayConstants.Protocol.HTTP + "s://")) {
+                || startsWithIgnoreCase(target, GatewayConstants.Protocol.HTTP + "s://")) {
             r.protocol = GatewayConstants.Protocol.HTTP;
             r.targetUrl = target;
             return r;
@@ -372,15 +366,13 @@ public class RouteConfig {
 
     private static String generateRouteName(String path, String method) {
         String name = path.replaceAll("^/", "")
-            .replaceAll("/", " ")
-            .replaceAll("-", " ")
-            .trim();
+                .replaceAll("/", " ")
+                .replaceAll("-", " ")
+                .trim();
         if (name.isEmpty()) {
             name = "root";
         }
         name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
         return name + " (" + method + ")";
     }
-
-
 }

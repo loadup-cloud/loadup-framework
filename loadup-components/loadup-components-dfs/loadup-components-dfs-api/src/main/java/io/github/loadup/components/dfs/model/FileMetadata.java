@@ -22,7 +22,6 @@ package io.github.loadup.components.dfs.model;
  * #L%
  */
 
-import io.github.loadup.components.dfs.enums.FileStatus;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -84,7 +83,7 @@ public class FileMetadata {
     /**
      * 文件状态
      */
-    private FileStatus status;
+    private String status;
 
     /**
      * 是否公开访问
@@ -116,28 +115,7 @@ public class FileMetadata {
      */
     private Long accessCount;
 
-    public FileMetadata(String fileId, String filename, Long size, String contentType, String provider, String path, String url, String hash, String bizType, String bizId, FileStatus status, Boolean publicAccess, Map<String, String> metadata, LocalDateTime uploadTime, String uploader, LocalDateTime lastAccessTime, Long accessCount) {
-        this.fileId = fileId;
-        this.filename = filename;
-        this.size = size;
-        this.contentType = contentType;
-        this.provider = provider;
-        this.path = path;
-        this.url = url;
-        this.hash = hash;
-        this.bizType = bizType;
-        this.bizId = bizId;
-        this.status = status;
-        this.publicAccess = publicAccess;
-        this.metadata = metadata;
-        this.uploadTime = uploadTime;
-        this.uploader = uploader;
-        this.lastAccessTime = lastAccessTime;
-        this.accessCount = accessCount;
-    }
-
-    public FileMetadata() {
-    }
+    public FileMetadata() {}
 
     public String getFileId() {
         return this.fileId;
@@ -177,10 +155,6 @@ public class FileMetadata {
 
     public String getBizId() {
         return this.bizId;
-    }
-
-    public FileStatus getStatus() {
-        return this.status;
     }
 
     public Boolean isPublicAccess() {
@@ -247,10 +221,6 @@ public class FileMetadata {
         this.bizId = bizId;
     }
 
-    public void setStatus(FileStatus status) {
-        this.status = status;
-    }
-
     public void setPublicAccess(Boolean publicAccess) {
         this.publicAccess = publicAccess;
     }
@@ -275,151 +245,15 @@ public class FileMetadata {
         this.accessCount = accessCount;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(fileId, filename, size, contentType, provider, path, url, hash, bizType, bizId, status, publicAccess, metadata, uploadTime, uploader, lastAccessTime, accessCount);
+    public String getStatus() {
+        return status;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FileMetadata other = (FileMetadata) o;
-        if (!java.util.Objects.equals(fileId, other.fileId)) return false;
-        if (!java.util.Objects.equals(filename, other.filename)) return false;
-        if (!java.util.Objects.equals(size, other.size)) return false;
-        if (!java.util.Objects.equals(contentType, other.contentType)) return false;
-        if (!java.util.Objects.equals(provider, other.provider)) return false;
-        if (!java.util.Objects.equals(path, other.path)) return false;
-        if (!java.util.Objects.equals(url, other.url)) return false;
-        if (!java.util.Objects.equals(hash, other.hash)) return false;
-        if (!java.util.Objects.equals(bizType, other.bizType)) return false;
-        if (!java.util.Objects.equals(bizId, other.bizId)) return false;
-        if (!java.util.Objects.equals(status, other.status)) return false;
-        if (!java.util.Objects.equals(publicAccess, other.publicAccess)) return false;
-        if (!java.util.Objects.equals(metadata, other.metadata)) return false;
-        if (!java.util.Objects.equals(uploadTime, other.uploadTime)) return false;
-        if (!java.util.Objects.equals(uploader, other.uploader)) return false;
-        if (!java.util.Objects.equals(lastAccessTime, other.lastAccessTime)) return false;
-        if (!java.util.Objects.equals(accessCount, other.accessCount)) return false;
-        return true;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    @Override
-    public String toString() {
-        return "FileMetadata(" + "fileId=" + fileId + ", " + "filename=" + filename + ", " + "size=" + size + ", " + "contentType=" + contentType + ", " + "provider=" + provider + ", " + "path=" + path + ", " + "url=" + url + ", " + "hash=" + hash + ", " + "bizType=" + bizType + ", " + "bizId=" + bizId + ", " + "status=" + status + ", " + "publicAccess=" + publicAccess + ", " + "metadata=" + metadata + ", " + "uploadTime=" + uploadTime + ", " + "uploader=" + uploader + ", " + "lastAccessTime=" + lastAccessTime + ", " + "accessCount=" + accessCount + ")";
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private String fileId;
-        private String filename;
-        private Long size;
-        private String contentType;
-        private String provider;
-        private String path;
-        private String url;
-        private String hash;
-        private String bizType;
-        private String bizId;
-        private FileStatus status;
-        private Boolean publicAccess;
-        private Map<String, String> metadata;
-        private LocalDateTime uploadTime;
-        private String uploader;
-        private LocalDateTime lastAccessTime;
-        private Long accessCount;
-
-        public Builder fileId(String fileId) {
-            this.fileId = fileId;
-            return this;
-        }
-
-        public Builder filename(String filename) {
-            this.filename = filename;
-            return this;
-        }
-
-        public Builder size(Long size) {
-            this.size = size;
-            return this;
-        }
-
-        public Builder contentType(String contentType) {
-            this.contentType = contentType;
-            return this;
-        }
-
-        public Builder provider(String provider) {
-            this.provider = provider;
-            return this;
-        }
-
-        public Builder path(String path) {
-            this.path = path;
-            return this;
-        }
-
-        public Builder url(String url) {
-            this.url = url;
-            return this;
-        }
-
-        public Builder hash(String hash) {
-            this.hash = hash;
-            return this;
-        }
-
-        public Builder bizType(String bizType) {
-            this.bizType = bizType;
-            return this;
-        }
-
-        public Builder bizId(String bizId) {
-            this.bizId = bizId;
-            return this;
-        }
-
-        public Builder status(FileStatus status) {
-            this.status = status;
-            return this;
-        }
-
-        public Builder publicAccess(Boolean publicAccess) {
-            this.publicAccess = publicAccess;
-            return this;
-        }
-
-        public Builder metadata(Map<String, String> metadata) {
-            this.metadata = metadata;
-            return this;
-        }
-
-        public Builder uploadTime(LocalDateTime uploadTime) {
-            this.uploadTime = uploadTime;
-            return this;
-        }
-
-        public Builder uploader(String uploader) {
-            this.uploader = uploader;
-            return this;
-        }
-
-        public Builder lastAccessTime(LocalDateTime lastAccessTime) {
-            this.lastAccessTime = lastAccessTime;
-            return this;
-        }
-
-        public Builder accessCount(Long accessCount) {
-            this.accessCount = accessCount;
-            return this;
-        }
-
-        public FileMetadata build() {
-            return new FileMetadata(this.fileId, this.filename, this.size, this.contentType, this.provider, this.path, this.url, this.hash, this.bizType, this.bizId, this.status, this.publicAccess, this.metadata, this.uploadTime, this.uploader, this.lastAccessTime, this.accessCount);
-        }
+    public Boolean getPublicAccess() {
+        return publicAccess;
     }
 }

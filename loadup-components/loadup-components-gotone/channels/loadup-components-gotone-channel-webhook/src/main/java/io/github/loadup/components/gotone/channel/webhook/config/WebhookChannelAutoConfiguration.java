@@ -2,9 +2,9 @@ package io.github.loadup.components.gotone.channel.webhook.config;
 
 /*-
  * #%L
- * loadup-components-gotone-channel-webhook
+ * Loadup Gotone Channel Webhook
  * %%
- * Copyright (C) 2026 LoadUp Cloud
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,71 +22,53 @@ package io.github.loadup.components.gotone.channel.webhook.config;
  * #L%
  */
 
-import io.github.loadup.components.gotone.api.NotificationChannelProvider;
+import io.github.loadup.components.gotone.GotoneProvider;
 import io.github.loadup.components.gotone.channel.webhook.provider.DingtalkWebhookProvider;
 import io.github.loadup.components.gotone.channel.webhook.provider.FeishuWebhookProvider;
 import io.github.loadup.components.gotone.channel.webhook.provider.WechatWebhookProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-/**
- * Webhook Channel Auto Configuration.
- *
- * <p>支持 Webhook 提供商：
- * <ul>
- *   <li>dingtalk - 钉钉机器人</li>
- *   <li>wechat - 企业微信机器人</li>
- *   <li>feishu - 飞书机器人</li>
- * </ul>
- */
+@AutoConfiguration
 public class WebhookChannelAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(WebhookChannelAutoConfiguration.class);
 
-
-    /**
-     * 钉钉 Webhook 提供商
-     */
     @Bean
     @ConditionalOnProperty(
-            prefix = "loadup.gotone.webhook.dingtalk",
+            prefix = "loadup.gotone.binder.webhook.dingtalk",
             name = "enabled",
             havingValue = "true",
             matchIfMissing = true)
     @ConditionalOnMissingBean(name = "dingtalkWebhookProvider")
-    public NotificationChannelProvider dingtalkWebhookProvider() {
+    public GotoneProvider dingtalkWebhookProvider() {
         log.info(">>> [GOTONE] DingtalkWebhookProvider initialized");
         return new DingtalkWebhookProvider();
     }
 
-    /**
-     * 企业微信 Webhook 提供商
-     */
     @Bean
     @ConditionalOnProperty(
-            prefix = "loadup.gotone.webhook.wechat",
+            prefix = "loadup.gotone.binder.webhook.wechat",
             name = "enabled",
             havingValue = "true",
             matchIfMissing = true)
     @ConditionalOnMissingBean(name = "wechatWebhookProvider")
-    public NotificationChannelProvider wechatWebhookProvider() {
+    public GotoneProvider wechatWebhookProvider() {
         log.info(">>> [GOTONE] WechatWebhookProvider initialized");
         return new WechatWebhookProvider();
     }
 
-    /**
-     * 飞书 Webhook 提供商
-     */
     @Bean
     @ConditionalOnProperty(
-            prefix = "loadup.gotone.webhook.feishu",
+            prefix = "loadup.gotone.binder.webhook.feishu",
             name = "enabled",
             havingValue = "true",
             matchIfMissing = true)
     @ConditionalOnMissingBean(name = "feishuWebhookProvider")
-    public NotificationChannelProvider feishuWebhookProvider() {
+    public GotoneProvider feishuWebhookProvider() {
         log.info(">>> [GOTONE] FeishuWebhookProvider initialized");
         return new FeishuWebhookProvider();
     }

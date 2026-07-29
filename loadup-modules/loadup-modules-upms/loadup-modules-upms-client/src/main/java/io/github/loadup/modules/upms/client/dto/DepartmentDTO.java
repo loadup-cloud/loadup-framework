@@ -49,7 +49,22 @@ public class DepartmentDTO {
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;
 
-    public DepartmentDTO(String id, String parentId, String deptName, String deptCode, Integer deptLevel, Integer sortOrder, String leaderUserId, String leaderUserName, String mobile, String email, Short status, List<DepartmentDTO> children, String remark, LocalDateTime createdTime, LocalDateTime updatedTime) {
+    public DepartmentDTO(
+            String id,
+            String parentId,
+            String deptName,
+            String deptCode,
+            Integer deptLevel,
+            Integer sortOrder,
+            String leaderUserId,
+            String leaderUserName,
+            String mobile,
+            String email,
+            Short status,
+            List<DepartmentDTO> children,
+            String remark,
+            LocalDateTime createdTime,
+            LocalDateTime updatedTime) {
         this.id = id;
         this.parentId = parentId;
         this.deptName = deptName;
@@ -67,8 +82,7 @@ public class DepartmentDTO {
         this.updatedTime = updatedTime;
     }
 
-    public DepartmentDTO() {
-    }
+    public DepartmentDTO() {}
 
     public String getId() {
         return this.id;
@@ -192,7 +206,22 @@ public class DepartmentDTO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, parentId, deptName, deptCode, deptLevel, sortOrder, leaderUserId, leaderUserName, mobile, email, status, children, remark, createdTime, updatedTime);
+        return java.util.Objects.hash(
+                id,
+                parentId,
+                deptName,
+                deptCode,
+                deptLevel,
+                sortOrder,
+                leaderUserId,
+                leaderUserName,
+                mobile,
+                email,
+                status,
+                children,
+                remark,
+                createdTime,
+                updatedTime);
     }
 
     @Override
@@ -220,7 +249,11 @@ public class DepartmentDTO {
 
     @Override
     public String toString() {
-        return "DepartmentDTO(" + "id=" + id + ", " + "parentId=" + parentId + ", " + "deptName=" + deptName + ", " + "deptCode=" + deptCode + ", " + "deptLevel=" + deptLevel + ", " + "sortOrder=" + sortOrder + ", " + "leaderUserId=" + leaderUserId + ", " + "leaderUserName=" + leaderUserName + ", " + "mobile=" + mobile + ", " + "email=" + email + ", " + "status=" + status + ", " + "children=" + children + ", " + "remark=" + remark + ", " + "createdTime=" + createdTime + ", " + "updatedTime=" + updatedTime + ")";
+        return "DepartmentDTO(" + "id=" + id + ", " + "parentId=" + parentId + ", " + "deptName=" + deptName + ", "
+                + "deptCode=" + deptCode + ", " + "deptLevel=" + deptLevel + ", " + "sortOrder=" + sortOrder + ", "
+                + "leaderUserId=" + leaderUserId + ", " + "leaderUserName=" + leaderUserName + ", " + "mobile=" + mobile
+                + ", " + "email=" + email + ", " + "status=" + status + ", " + "children=" + children + ", " + "remark="
+                + remark + ", " + "createdTime=" + createdTime + ", " + "updatedTime=" + updatedTime + ")";
     }
 
     public static Builder builder() {
@@ -320,7 +353,22 @@ public class DepartmentDTO {
         }
 
         public DepartmentDTO build() {
-            return new DepartmentDTO(this.id, this.parentId, this.deptName, this.deptCode, this.deptLevel, this.sortOrder, this.leaderUserId, this.leaderUserName, this.mobile, this.email, this.status, this.children, this.remark, this.createdTime, this.updatedTime);
+            return new DepartmentDTO(
+                    this.id,
+                    this.parentId,
+                    this.deptName,
+                    this.deptCode,
+                    this.deptLevel,
+                    this.sortOrder,
+                    this.leaderUserId,
+                    this.leaderUserName,
+                    this.mobile,
+                    this.email,
+                    this.status,
+                    this.children,
+                    this.remark,
+                    this.createdTime,
+                    this.updatedTime);
         }
     }
 }

@@ -44,7 +44,8 @@ public class ConfigHistoryDO extends BaseDO {
     private String operator;
     private String remark;
 
-    public ConfigHistoryDO(String configKey, String oldValue, String newValue, String changeType, String operator, String remark) {
+    public ConfigHistoryDO(
+            String configKey, String oldValue, String newValue, String changeType, String operator, String remark) {
         this.configKey = configKey;
         this.oldValue = oldValue;
         this.newValue = newValue;
@@ -53,8 +54,7 @@ public class ConfigHistoryDO extends BaseDO {
         this.remark = remark;
     }
 
-    public ConfigHistoryDO() {
-    }
+    public ConfigHistoryDO() {}
 
     public String getConfigKey() {
         return this.configKey;
@@ -126,6 +126,8 @@ public class ConfigHistoryDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "ConfigHistoryDO(" + "super=" + super.toString() + ", " + "configKey=" + configKey + ", " + "oldValue=" + oldValue + ", " + "newValue=" + newValue + ", " + "changeType=" + changeType + ", " + "operator=" + operator + ", " + "remark=" + remark + ")";
+        return "ConfigHistoryDO(" + "super=" + super.toString() + ", " + "configKey=" + configKey + ", " + "oldValue="
+                + oldValue + ", " + "newValue=" + newValue + ", " + "changeType=" + changeType + ", " + "operator="
+                + operator + ", " + "remark=" + remark + ")";
     }
 }

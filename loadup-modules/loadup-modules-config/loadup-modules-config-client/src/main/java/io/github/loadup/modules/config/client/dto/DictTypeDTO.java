@@ -40,7 +40,15 @@ public class DictTypeDTO {
     private Boolean enabled;
     private LocalDateTime updatedAt;
 
-    public DictTypeDTO(String id, String dictCode, String dictName, String description, Boolean systemDefined, Integer sortOrder, Boolean enabled, LocalDateTime updatedAt) {
+    public DictTypeDTO(
+            String id,
+            String dictCode,
+            String dictName,
+            String description,
+            Boolean systemDefined,
+            Integer sortOrder,
+            Boolean enabled,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.dictCode = dictCode;
         this.dictName = dictName;
@@ -51,8 +59,7 @@ public class DictTypeDTO {
         this.updatedAt = updatedAt;
     }
 
-    public DictTypeDTO() {
-    }
+    public DictTypeDTO() {}
 
     public String getId() {
         return this.id;
@@ -120,7 +127,8 @@ public class DictTypeDTO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, dictCode, dictName, description, systemDefined, sortOrder, enabled, updatedAt);
+        return java.util.Objects.hash(
+                id, dictCode, dictName, description, systemDefined, sortOrder, enabled, updatedAt);
     }
 
     @Override
@@ -141,6 +149,8 @@ public class DictTypeDTO {
 
     @Override
     public String toString() {
-        return "DictTypeDTO(" + "id=" + id + ", " + "dictCode=" + dictCode + ", " + "dictName=" + dictName + ", " + "description=" + description + ", " + "systemDefined=" + systemDefined + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "updatedAt=" + updatedAt + ")";
+        return "DictTypeDTO(" + "id=" + id + ", " + "dictCode=" + dictCode + ", " + "dictName=" + dictName + ", "
+                + "description=" + description + ", " + "systemDefined=" + systemDefined + ", " + "sortOrder="
+                + sortOrder + ", " + "enabled=" + enabled + ", " + "updatedAt=" + updatedAt + ")";
     }
 }

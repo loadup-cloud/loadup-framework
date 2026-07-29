@@ -64,9 +64,4 @@ public enum UpmsResultCode implements ResultCode {
     public String getMessage() {
         return message;
     }
-
-    public UpmsResultCode(String status, String message) {
-        this.status = status;
-        this.message = message;
-    }
 }

@@ -36,16 +36,15 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.springframework.util.CollectionUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
+
 /**
  * 扩展点执行器
  */
 public class ExtensionExecutor {
     private static final Logger log = LoggerFactory.getLogger(ExtensionExecutor.class);
-
 
     private final ExtensionRegistry extensionRegistry;
 

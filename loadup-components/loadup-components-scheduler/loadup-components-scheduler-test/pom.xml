@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
-        <artifactId>loadup-dependencies</artifactId>
+        <artifactId>loadup-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
     </parent>
     <artifactId>loadup-components-scheduler-test</artifactId>
@@ -81,7 +81,7 @@
             <scope>test</scope>
         </dependency>
 
-                <!-- H2 Database for Quartz testing -->
+        <!-- H2 Database for Quartz testing -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>

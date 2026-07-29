@@ -1,5 +1,27 @@
 package io.github.loadup.gateway.plugins;
 
+/*-
+ * #%L
+ * Proxy HTTP Plugin
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import io.github.loadup.gateway.facade.config.GatewayProperties;
 import io.github.loadup.gateway.facade.constants.GatewayConstants;
 import io.github.loadup.gateway.facade.model.GatewayRequest;
@@ -11,15 +33,14 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 public class HttpProxyProcessor implements ProxyProcessor {
     private static final Logger log = LoggerFactory.getLogger(HttpProxyProcessor.class);
-
 
     private final RestClient restClient;
 
@@ -28,13 +49,36 @@ public class HttpProxyProcessor implements ProxyProcessor {
         log.info("HttpProxyProcessor initialized with default RestClient");
     }
 
-    @Override public String getName() { return "HttpProxyPlugin"; }
-    @Override public String getType() { return "PROXY"; }
-    @Override public String getVersion() { return "2.0.0"; }
-    @Override public int getPriority() { return 200; }
-    @Override public void initialize() {}
-    @Override public void destroy() {}
-    @Override public String getSupportedProtocol() { return GatewayConstants.Protocol.HTTP; }
+    @Override
+    public String getName() {
+        return "HttpProxyPlugin";
+    }
+
+    @Override
+    public String getType() {
+        return "PROXY";
+    }
+
+    @Override
+    public String getVersion() {
+        return "2.0.0";
+    }
+
+    @Override
+    public int getPriority() {
+        return 200;
+    }
+
+    @Override
+    public void initialize() {}
+
+    @Override
+    public void destroy() {}
+
+    @Override
+    public String getSupportedProtocol() {
+        return GatewayConstants.Protocol.HTTP;
+    }
 
     @Override
     public GatewayResponse proxy(GatewayRequest request, RouteConfig route) throws Exception {
@@ -49,13 +93,24 @@ public class HttpProxyProcessor implements ProxyProcessor {
         if (method == HttpMethod.GET) {
             response = restClient.get().uri(uri).retrieve().toEntity(String.class);
         } else if (method == HttpMethod.PUT) {
-            response = restClient.put().uri(uri).body(request.getBody()).retrieve().toEntity(String.class);
+            response =
+                    restClient.put().uri(uri).body(request.getBody()).retrieve().toEntity(String.class);
         } else if (method == HttpMethod.DELETE) {
             response = restClient.delete().uri(uri).retrieve().toEntity(String.class);
         } else if (method == HttpMethod.PATCH) {
-            response = restClient.patch().uri(uri).body(request.getBody()).retrieve().toEntity(String.class);
+            response = restClient
+                    .patch()
+                    .uri(uri)
+                    .body(request.getBody())
+                    .retrieve()
+                    .toEntity(String.class);
         } else {
-            response = restClient.post().uri(uri).body(request.getBody()).retrieve().toEntity(String.class);
+            response = restClient
+                    .post()
+                    .uri(uri)
+                    .body(request.getBody())
+                    .retrieve()
+                    .toEntity(String.class);
         }
 
         Map<String, String> responseHeaders = new HashMap<>();

@@ -25,11 +25,11 @@ package io.github.loadup.components.testcontainers.database;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.mongodb.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Shared MongoDB TestContainer instance that can be reused across multiple tests.
  *
@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
  */
 public final class SharedMongoDBContainer {
     private static final Logger log = LoggerFactory.getLogger(SharedMongoDBContainer.class);
-
 
     /**
      * Default MongoDB version to use

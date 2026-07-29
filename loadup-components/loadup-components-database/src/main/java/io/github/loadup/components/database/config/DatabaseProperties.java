@@ -148,9 +148,7 @@ public class DatabaseProperties {
         }
     }
 
-
-    public DatabaseProperties() {
-    }
+    public DatabaseProperties() {}
 
     public MultiTenant getMultiTenant() {
         return this.multiTenant;
@@ -159,6 +157,4 @@ public class DatabaseProperties {
     public LogicalDelete getLogicalDelete() {
         return this.logicalDelete;
     }
-
-
 }

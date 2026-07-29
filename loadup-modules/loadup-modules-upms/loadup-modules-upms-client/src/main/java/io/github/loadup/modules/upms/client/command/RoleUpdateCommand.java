@@ -59,7 +59,17 @@ public class RoleUpdateCommand {
 
     private String updatedBy;
 
-    public RoleUpdateCommand(String id, String roleName, String parentId, Short dataScope, Integer sortOrder, Short status, List<String> permissionIds, List<String> departmentIds, String remark, String updatedBy) {
+    public RoleUpdateCommand(
+            String id,
+            String roleName,
+            String parentId,
+            Short dataScope,
+            Integer sortOrder,
+            Short status,
+            List<String> permissionIds,
+            List<String> departmentIds,
+            String remark,
+            String updatedBy) {
         this.id = id;
         this.roleName = roleName;
         this.parentId = parentId;
@@ -72,8 +82,7 @@ public class RoleUpdateCommand {
         this.updatedBy = updatedBy;
     }
 
-    public RoleUpdateCommand() {
-    }
+    public RoleUpdateCommand() {}
 
     public String getId() {
         return this.id;
@@ -157,7 +166,8 @@ public class RoleUpdateCommand {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, roleName, parentId, dataScope, sortOrder, status, permissionIds, departmentIds, remark, updatedBy);
+        return java.util.Objects.hash(
+                id, roleName, parentId, dataScope, sortOrder, status, permissionIds, departmentIds, remark, updatedBy);
     }
 
     @Override
@@ -180,6 +190,9 @@ public class RoleUpdateCommand {
 
     @Override
     public String toString() {
-        return "RoleUpdateCommand(" + "id=" + id + ", " + "roleName=" + roleName + ", " + "parentId=" + parentId + ", " + "dataScope=" + dataScope + ", " + "sortOrder=" + sortOrder + ", " + "status=" + status + ", " + "permissionIds=" + permissionIds + ", " + "departmentIds=" + departmentIds + ", " + "remark=" + remark + ", " + "updatedBy=" + updatedBy + ")";
+        return "RoleUpdateCommand(" + "id=" + id + ", " + "roleName=" + roleName + ", " + "parentId=" + parentId + ", "
+                + "dataScope=" + dataScope + ", " + "sortOrder=" + sortOrder + ", " + "status=" + status + ", "
+                + "permissionIds=" + permissionIds + ", " + "departmentIds=" + departmentIds + ", " + "remark=" + remark
+                + ", " + "updatedBy=" + updatedBy + ")";
     }
 }

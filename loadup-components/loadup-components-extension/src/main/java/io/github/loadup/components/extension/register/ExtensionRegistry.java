@@ -36,18 +36,17 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * 扩展点注册中心 支持基于注解的扩展点注册和 SPI 机制的扩展点加载
  */
 public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEvent> {
     private static final Logger log = LoggerFactory.getLogger(ExtensionRegistry.class);
-
 
     // 内部存储结构，Key是扩展点接口类，Value是该接口的所有实现
     private final Map<Class<?>, List<ExtensionCoordinate>> extensionRegister = new ConcurrentHashMap<>();

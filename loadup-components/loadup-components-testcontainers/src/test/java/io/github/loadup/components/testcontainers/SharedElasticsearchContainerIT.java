@@ -1,8 +1,6 @@
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-//package io.github.loadup.components.testcontainers;
+// package io.github.loadup.components.testcontainers;
 //
-///*-
+/// *-
 // * #%L
 // * Loadup Components TestContainers
 // * %%
@@ -24,41 +22,40 @@ import org.slf4j.LoggerFactory;
 // * #L%
 // */
 //
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.junit.jupiter.api.Assertions.assertNotNull;
-//import static org.junit.jupiter.api.Assertions.assertSame;
-//import static org.junit.jupiter.api.Assertions.assertTrue;
+// import static org.junit.jupiter.api.Assertions.assertEquals;
+// import static org.junit.jupiter.api.Assertions.assertNotNull;
+// import static org.junit.jupiter.api.Assertions.assertSame;
+// import static org.junit.jupiter.api.Assertions.assertTrue;
 //
-//import co.elastic.clients.elasticsearch.ElasticsearchClient;
-//import co.elastic.clients.elasticsearch.core.DeleteResponse;
-//import co.elastic.clients.elasticsearch.core.GetResponse;
-//import co.elastic.clients.elasticsearch.core.IndexResponse;
-//import co.elastic.clients.elasticsearch.core.SearchResponse;
-//import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
-//import co.elastic.clients.elasticsearch.indices.DeleteIndexResponse;
-//import co.elastic.clients.json.jackson.JacksonJsonpMapper;
-//import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
-//import co.elastic.clients.transport.rest_client.RestClientTransport;
-//import io.github.loadup.components.testcontainers.search.AbstractElasticsearchContainerTest;
-//import io.github.loadup.components.testcontainers.search.SharedElasticsearchContainer;
-////import org.apache.http.HttpHost;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.test.context.TestPropertySource;
-//import org.testcontainers.elasticsearch.ElasticsearchContainer;
+// import co.elastic.clients.elasticsearch.ElasticsearchClient;
+// import co.elastic.clients.elasticsearch.core.DeleteResponse;
+// import co.elastic.clients.elasticsearch.core.GetResponse;
+// import co.elastic.clients.elasticsearch.core.IndexResponse;
+// import co.elastic.clients.elasticsearch.core.SearchResponse;
+// import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
+// import co.elastic.clients.elasticsearch.indices.DeleteIndexResponse;
+// import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+// import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
+// import co.elastic.clients.transport.rest_client.RestClientTransport;
+// import io.github.loadup.components.testcontainers.search.AbstractElasticsearchContainerTest;
+// import io.github.loadup.components.testcontainers.search.SharedElasticsearchContainer;
+//// import org.apache.http.HttpHost;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
+// import org.springframework.test.context.TestPropertySource;
+// import org.testcontainers.elasticsearch.ElasticsearchContainer;
 //
-///**
+/// **
 // * Integration test class for SharedElasticsearchContainer.
 // *
 // * @author LoadUp Framework
 // * @since 1.0.0
 // */
-////@SpringBootTest(classes = TestApplication.class)
-//@TestPropertySource(
+//// @SpringBootTest(classes = TestApplication.class)
+// @TestPropertySource(
 //        properties = {
-    private static final Logger log = LoggerFactory.getLogger(SharedElasticsearchContainerIT.class);
-"loadup.testcontainers.enabled=true", "loadup.testcontainers.elasticsearch.enabled=true"})
-//class SharedElasticsearchContainerIT extends AbstractElasticsearchContainerTest {
+//    "loadup.testcontainers.enabled=true", "loadup.testcontainers.elasticsearch.enabled=true"})
+// class SharedElasticsearchContainerIT extends AbstractElasticsearchContainerTest {
 //
 //    @Test
 //    void testContainerIsRunning() {
@@ -269,4 +266,4 @@ import org.slf4j.LoggerFactory;
 //            return "TestDocument{name='" + name + "', age=" + age + "}";
 //        }
 //    }
-//}
+// }

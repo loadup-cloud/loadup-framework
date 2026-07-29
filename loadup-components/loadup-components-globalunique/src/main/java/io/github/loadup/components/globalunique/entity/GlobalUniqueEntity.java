@@ -69,7 +69,14 @@ public class GlobalUniqueEntity implements Serializable {
      */
     private LocalDateTime updatedAt;
 
-    public GlobalUniqueEntity(String id, String uniqueKey, String bizType, String bizId, String requestData, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public GlobalUniqueEntity(
+            String id,
+            String uniqueKey,
+            String bizType,
+            String bizId,
+            String requestData,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.uniqueKey = uniqueKey;
         this.bizType = bizType;
@@ -79,8 +86,7 @@ public class GlobalUniqueEntity implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public GlobalUniqueEntity() {
-    }
+    public GlobalUniqueEntity() {}
 
     public String getId() {
         return this.id;
@@ -160,7 +166,9 @@ public class GlobalUniqueEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "GlobalUniqueEntity(" + "id=" + id + ", " + "uniqueKey=" + uniqueKey + ", " + "bizType=" + bizType + ", " + "bizId=" + bizId + ", " + "requestData=" + requestData + ", " + "createdAt=" + createdAt + ", " + "updatedAt=" + updatedAt + ")";
+        return "GlobalUniqueEntity(" + "id=" + id + ", " + "uniqueKey=" + uniqueKey + ", " + "bizType=" + bizType + ", "
+                + "bizId=" + bizId + ", " + "requestData=" + requestData + ", " + "createdAt=" + createdAt + ", "
+                + "updatedAt=" + updatedAt + ")";
     }
 
     public static Builder builder() {
@@ -212,7 +220,14 @@ public class GlobalUniqueEntity implements Serializable {
         }
 
         public GlobalUniqueEntity build() {
-            return new GlobalUniqueEntity(this.id, this.uniqueKey, this.bizType, this.bizId, this.requestData, this.createdAt, this.updatedAt);
+            return new GlobalUniqueEntity(
+                    this.id,
+                    this.uniqueKey,
+                    this.bizType,
+                    this.bizId,
+                    this.requestData,
+                    this.createdAt,
+                    this.updatedAt);
         }
     }
 }

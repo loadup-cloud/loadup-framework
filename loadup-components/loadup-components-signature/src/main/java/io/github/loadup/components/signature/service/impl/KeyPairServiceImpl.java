@@ -36,10 +36,10 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Locale;
-import org.springframework.stereotype.Service;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 /**
  * 密钥对管理服务实现
  *
@@ -48,7 +48,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class KeyPairServiceImpl implements KeyPairService {
     private static final Logger log = LoggerFactory.getLogger(KeyPairServiceImpl.class);
-
 
     private final SignatureProperties properties;
 
@@ -113,5 +112,13 @@ public class KeyPairServiceImpl implements KeyPairService {
 
     public KeyPairServiceImpl(SignatureProperties properties) {
         this.properties = properties;
+    }
+
+    public Logger getLog() {
+        return this.log;
+    }
+
+    public SignatureProperties getProperties() {
+        return this.properties;
     }
 }

@@ -31,11 +31,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Permission Management Service
  *
@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class PermissionService {
     private static final Logger log = LoggerFactory.getLogger(PermissionService.class);
-
 
     private final PermissionGateway permissionGateway;
 
@@ -59,23 +58,22 @@ public class PermissionService {
             permissionGateway.findById(command.getParentId()).orElseThrow(() -> new RuntimeException("父权限不存在"));
         }
 
-        Permission permission = Permission.builder()
-                .parentId(command.getParentId())
-                .permissionName(command.getPermissionName())
-                .permissionCode(command.getPermissionCode())
-                .permissionType(command.getPermissionType())
-                .resourcePath(command.getResourcePath())
-                .httpMethod(command.getHttpMethod())
-                .icon(command.getIcon())
-                .componentPath(command.getComponentPath())
-                .sortOrder(command.getSortOrder())
-                .visible(command.getVisible() != null ? command.getVisible() : true)
-                .status(command.getStatus() != null ? command.getStatus() : (short) 1)
-                .deleted(false)
-                .remark(command.getRemark())
-                .createdBy(command.getCreatedBy())
-                .createdTime(LocalDateTime.now())
-                .build();
+        Permission permission = new Permission();
+        permission.setParentId(command.getParentId());
+        permission.setPermissionName(command.getPermissionName());
+        permission.setPermissionCode(command.getPermissionCode());
+        permission.setPermissionType(command.getPermissionType());
+        permission.setResourcePath(command.getResourcePath());
+        permission.setHttpMethod(command.getHttpMethod());
+        permission.setIcon(command.getIcon());
+        permission.setComponentPath(command.getComponentPath());
+        permission.setSortOrder(command.getSortOrder());
+        permission.setVisible(command.isVisible() != null ? command.isVisible() : true);
+        permission.setStatus(command.getStatus() != null ? command.getStatus() : (short) 1);
+        permission.setDeleted(false);
+        permission.setRemark(command.getRemark());
+        permission.setCreatedBy(command.getCreatedBy());
+        permission.setCreatedTime(LocalDateTime.now());
 
         permission = permissionGateway.save(permission);
         return convertToDTO(permission);
@@ -117,8 +115,8 @@ public class PermissionService {
         if (command.getSortOrder() != null) {
             permission.setSortOrder(command.getSortOrder());
         }
-        if (command.getVisible() != null) {
-            permission.setVisible(command.getVisible());
+        if (command.isVisible() != null) {
+            permission.setVisible(command.isVisible());
         }
         if (command.getStatus() != null) {
             permission.setStatus(command.getStatus());
@@ -168,7 +166,7 @@ public class PermissionService {
 
     public List<PermissionDTO> getUserMenuTree(String userId) {
         List<Permission> menuPermissions = permissionGateway.findByUserId(userId).stream()
-                .filter(p -> p.getPermissionType() == 1 && Boolean.TRUE.equals(p.getVisible()))
+                .filter(p -> p.getPermissionType() == 1 && Boolean.TRUE.equals(p.isVisible()))
                 .collect(Collectors.toList());
         return buildPermissionTree(menuPermissions, null);
     }
@@ -185,7 +183,7 @@ public class PermissionService {
                 .icon(permission.getIcon())
                 .componentPath(permission.getComponentPath())
                 .sortOrder(permission.getSortOrder())
-                .visible(permission.getVisible())
+                .visible(permission.isVisible())
                 .status(permission.getStatus())
                 .remark(permission.getRemark())
                 .createdTime(permission.getCreatedTime())

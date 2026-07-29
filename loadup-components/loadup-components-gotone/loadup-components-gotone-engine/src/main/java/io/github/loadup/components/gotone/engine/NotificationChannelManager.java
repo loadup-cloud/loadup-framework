@@ -35,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 public class NotificationChannelManager {
     private static final Logger log = LoggerFactory.getLogger(NotificationChannelManager.class);
 
@@ -44,15 +45,15 @@ public class NotificationChannelManager {
         if (providers != null) {
             for (GotoneProvider p : providers) {
                 providerMap
-                    .computeIfAbsent(p.getChannelType(), k -> new ConcurrentHashMap<>())
-                    .put(p.getProviderName(), p);
+                        .computeIfAbsent(p.getChannelType(), k -> new ConcurrentHashMap<>())
+                        .put(p.getProviderName(), p);
                 log.info("Registered provider: {} for channel: {}", p.getProviderName(), p.getChannelType());
             }
         }
     }
 
-    public SendResult sendWithFallback(String channelType, String primaryProvider,
-                                       List<String> fallbackChain, ChannelSendRequest request) {
+    public SendResult sendWithFallback(
+            String channelType, String primaryProvider, List<String> fallbackChain, ChannelSendRequest request) {
         List<GotoneProvider> chain = buildProviderChain(channelType, primaryProvider, fallbackChain);
         List<Attempt> attempts = new ArrayList<>();
 
@@ -95,5 +96,6 @@ public class NotificationChannelManager {
             return attempts.get(attempts.size() - 1).providerName();
         }
     }
+
     public record Attempt(String providerName, boolean success, String error) {}
 }

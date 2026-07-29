@@ -73,7 +73,9 @@ public class CommonException extends RuntimeException {
                 sb.append(",");
             }
             first = false;
-            sb.append('"').append(entry.getKey()).append("\":\"")
+            sb.append('"')
+                    .append(entry.getKey())
+                    .append("\":\"")
                     .append(entry.getValue() != null ? entry.getValue() : "")
                     .append('"');
         }

@@ -84,7 +84,17 @@ public class FileUploadRequest {
      */
     private Boolean overwrite = false;
 
-    public FileUploadRequest(String filename, InputStream inputStream, Long size, String contentType, String bizType, String bizId, String path, Boolean publicAccess, Map<String, String> metadata, Boolean overwrite) {
+    public FileUploadRequest(
+            String filename,
+            InputStream inputStream,
+            Long size,
+            String contentType,
+            String bizType,
+            String bizId,
+            String path,
+            Boolean publicAccess,
+            Map<String, String> metadata,
+            Boolean overwrite) {
         this.filename = filename;
         this.inputStream = inputStream;
         this.size = size;
@@ -97,8 +107,7 @@ public class FileUploadRequest {
         this.overwrite = overwrite;
     }
 
-    public FileUploadRequest() {
-    }
+    public FileUploadRequest() {}
 
     public String getFilename() {
         return this.filename;
@@ -182,7 +191,8 @@ public class FileUploadRequest {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(filename, inputStream, size, contentType, bizType, bizId, path, publicAccess, metadata, overwrite);
+        return java.util.Objects.hash(
+                filename, inputStream, size, contentType, bizType, bizId, path, publicAccess, metadata, overwrite);
     }
 
     @Override
@@ -205,7 +215,10 @@ public class FileUploadRequest {
 
     @Override
     public String toString() {
-        return "FileUploadRequest(" + "filename=" + filename + ", " + "inputStream=" + inputStream + ", " + "size=" + size + ", " + "contentType=" + contentType + ", " + "bizType=" + bizType + ", " + "bizId=" + bizId + ", " + "path=" + path + ", " + "publicAccess=" + publicAccess + ", " + "metadata=" + metadata + ", " + "overwrite=" + overwrite + ")";
+        return "FileUploadRequest(" + "filename=" + filename + ", " + "inputStream=" + inputStream + ", " + "size="
+                + size + ", " + "contentType=" + contentType + ", " + "bizType=" + bizType + ", " + "bizId=" + bizId
+                + ", " + "path=" + path + ", " + "publicAccess=" + publicAccess + ", " + "metadata=" + metadata + ", "
+                + "overwrite=" + overwrite + ")";
     }
 
     public static Builder builder() {
@@ -275,7 +288,17 @@ public class FileUploadRequest {
         }
 
         public FileUploadRequest build() {
-            return new FileUploadRequest(this.filename, this.inputStream, this.size, this.contentType, this.bizType, this.bizId, this.path, this.publicAccess, this.metadata, this.overwrite);
+            return new FileUploadRequest(
+                    this.filename,
+                    this.inputStream,
+                    this.size,
+                    this.contentType,
+                    this.bizType,
+                    this.bizId,
+                    this.path,
+                    this.publicAccess,
+                    this.metadata,
+                    this.overwrite);
         }
     }
 }

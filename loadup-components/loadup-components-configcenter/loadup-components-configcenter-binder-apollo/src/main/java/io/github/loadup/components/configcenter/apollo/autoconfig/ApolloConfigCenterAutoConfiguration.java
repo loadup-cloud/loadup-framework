@@ -23,30 +23,25 @@ package io.github.loadup.components.configcenter.apollo.autoconfig;
  */
 
 import com.ctrip.framework.apollo.ConfigService;
-import io.github.loadup.components.configcenter.apollo.binder.ApolloConfigCenterBinder;
-import io.github.loadup.components.configcenter.apollo.cfg.ApolloConfigCenterBinderCfg;
-import io.github.loadup.components.configcenter.binding.impl.DefaultConfigCenterBinding;
-import io.github.loadup.components.configcenter.cfg.ConfigCenterBindingCfg;
-import io.github.loadup.framework.api.manager.BindingMetadata;
+import io.github.loadup.components.configcenter.ConfigCenterProvider;
+import io.github.loadup.components.configcenter.apollo.ApolloConfigCenterConfig;
+import io.github.loadup.components.configcenter.apollo.ApolloConfigCenterProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Apollo binder 自动配置。
- */
 @AutoConfiguration
 @ConditionalOnClass(ConfigService.class)
+@ConditionalOnProperty(prefix = "loadup.configcenter", name = "binder-type", havingValue = "apollo")
+@EnableConfigurationProperties(ApolloConfigCenterConfig.class)
 public class ApolloConfigCenterAutoConfiguration {
 
     @Bean
-    public BindingMetadata<?, ?, ?, ?> apolloConfigCenterMetadata() {
-        return new BindingMetadata<>(
-                "apollo",
-                DefaultConfigCenterBinding.class,
-                ApolloConfigCenterBinder.class,
-                ConfigCenterBindingCfg.class,
-                ApolloConfigCenterBinderCfg.class,
-                ctx -> new DefaultConfigCenterBinding());
+    @ConditionalOnMissingBean
+    public ConfigCenterProvider apolloConfigCenterProvider(ApolloConfigCenterConfig config) {
+        return new ApolloConfigCenterProvider(config);
     }
 }

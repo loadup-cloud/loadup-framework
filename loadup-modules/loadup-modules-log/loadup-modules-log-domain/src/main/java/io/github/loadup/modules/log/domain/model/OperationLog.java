@@ -51,7 +51,26 @@ public class OperationLog {
     private LocalDateTime operationTime;
     private LocalDateTime createdAt;
 
-    public OperationLog(String id, String traceId, String userId, String username, String module, String operationType, String description, String method, String requestMethod, String requestUrl, String requestParams, String responseResult, Long duration, Boolean success, String errorMessage, String ip, String userAgent, LocalDateTime operationTime, LocalDateTime createdAt) {
+    public OperationLog(
+            String id,
+            String traceId,
+            String userId,
+            String username,
+            String module,
+            String operationType,
+            String description,
+            String method,
+            String requestMethod,
+            String requestUrl,
+            String requestParams,
+            String responseResult,
+            Long duration,
+            Boolean success,
+            String errorMessage,
+            String ip,
+            String userAgent,
+            LocalDateTime operationTime,
+            LocalDateTime createdAt) {
         this.id = id;
         this.traceId = traceId;
         this.userId = userId;
@@ -73,8 +92,7 @@ public class OperationLog {
         this.createdAt = createdAt;
     }
 
-    public OperationLog() {
-    }
+    public OperationLog() {}
 
     public String getId() {
         return this.id;
@@ -230,7 +248,26 @@ public class OperationLog {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, traceId, userId, username, module, operationType, description, method, requestMethod, requestUrl, requestParams, responseResult, duration, success, errorMessage, ip, userAgent, operationTime, createdAt);
+        return java.util.Objects.hash(
+                id,
+                traceId,
+                userId,
+                username,
+                module,
+                operationType,
+                description,
+                method,
+                requestMethod,
+                requestUrl,
+                requestParams,
+                responseResult,
+                duration,
+                success,
+                errorMessage,
+                ip,
+                userAgent,
+                operationTime,
+                createdAt);
     }
 
     @Override
@@ -262,7 +299,13 @@ public class OperationLog {
 
     @Override
     public String toString() {
-        return "OperationLog(" + "id=" + id + ", " + "traceId=" + traceId + ", " + "userId=" + userId + ", " + "username=" + username + ", " + "module=" + module + ", " + "operationType=" + operationType + ", " + "description=" + description + ", " + "method=" + method + ", " + "requestMethod=" + requestMethod + ", " + "requestUrl=" + requestUrl + ", " + "requestParams=" + requestParams + ", " + "responseResult=" + responseResult + ", " + "duration=" + duration + ", " + "success=" + success + ", " + "errorMessage=" + errorMessage + ", " + "ip=" + ip + ", " + "userAgent=" + userAgent + ", " + "operationTime=" + operationTime + ", " + "createdAt=" + createdAt + ")";
+        return "OperationLog(" + "id=" + id + ", " + "traceId=" + traceId + ", " + "userId=" + userId + ", "
+                + "username=" + username + ", " + "module=" + module + ", " + "operationType=" + operationType + ", "
+                + "description=" + description + ", " + "method=" + method + ", " + "requestMethod=" + requestMethod
+                + ", " + "requestUrl=" + requestUrl + ", " + "requestParams=" + requestParams + ", " + "responseResult="
+                + responseResult + ", " + "duration=" + duration + ", " + "success=" + success + ", " + "errorMessage="
+                + errorMessage + ", " + "ip=" + ip + ", " + "userAgent=" + userAgent + ", " + "operationTime="
+                + operationTime + ", " + "createdAt=" + createdAt + ")";
     }
 
     public static Builder builder() {
@@ -386,7 +429,26 @@ public class OperationLog {
         }
 
         public OperationLog build() {
-            return new OperationLog(this.id, this.traceId, this.userId, this.username, this.module, this.operationType, this.description, this.method, this.requestMethod, this.requestUrl, this.requestParams, this.responseResult, this.duration, this.success, this.errorMessage, this.ip, this.userAgent, this.operationTime, this.createdAt);
+            return new OperationLog(
+                    this.id,
+                    this.traceId,
+                    this.userId,
+                    this.username,
+                    this.module,
+                    this.operationType,
+                    this.description,
+                    this.method,
+                    this.requestMethod,
+                    this.requestUrl,
+                    this.requestParams,
+                    this.responseResult,
+                    this.duration,
+                    this.success,
+                    this.errorMessage,
+                    this.ip,
+                    this.userAgent,
+                    this.operationTime,
+                    this.createdAt);
         }
     }
 }

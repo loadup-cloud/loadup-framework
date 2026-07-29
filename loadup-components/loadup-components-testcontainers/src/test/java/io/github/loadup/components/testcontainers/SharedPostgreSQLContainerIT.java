@@ -35,12 +35,12 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Integration test class for SharedPostgreSQLContainer.
  *
@@ -49,10 +49,9 @@ import org.slf4j.LoggerFactory;
  */
 @SpringBootTest(classes = TestApplication.class)
 @TestPropertySource(
-        properties = {
-    private static final Logger log = LoggerFactory.getLogger(SharedPostgreSQLContainerIT.class);
-"loadup.testcontainers.enabled=true", "loadup.testcontainers.postgresql.enabled=true"})
+        properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.postgresql.enabled=true"})
 class SharedPostgreSQLContainerIT extends AbstractPostgreSQLContainerTest {
+    private static final Logger log = LoggerFactory.getLogger(SharedPostgreSQLContainerIT.class);
 
     @Test
     void testContainerIsRunning() {

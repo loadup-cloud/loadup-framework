@@ -23,7 +23,6 @@ package io.github.loadup.modules.upms.app.autoconfigure;
  */
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 /**
  * UPMS Security Configuration Properties
@@ -50,6 +49,30 @@ public class UpmsSecurityProperties {
          * Refresh token expiration time in milliseconds (default: 7 days)
          */
         private Long refreshExpiration = 604800000L;
+
+        public String getSecret() {
+            return secret;
+        }
+
+        public void setSecret(String secret) {
+            this.secret = secret;
+        }
+
+        public Long getExpiration() {
+            return expiration;
+        }
+
+        public void setExpiration(Long expiration) {
+            this.expiration = expiration;
+        }
+
+        public Long getRefreshExpiration() {
+            return refreshExpiration;
+        }
+
+        public void setRefreshExpiration(Long refreshExpiration) {
+            this.refreshExpiration = refreshExpiration;
+        }
     }
 
     public static class LoginConfig {
@@ -67,12 +90,60 @@ public class UpmsSecurityProperties {
          * Account lock duration in minutes
          */
         private Integer lockDuration = 30;
+
+        public Boolean getEnableFailureTracking() {
+            return enableFailureTracking;
+        }
+
+        public void setEnableFailureTracking(Boolean enableFailureTracking) {
+            this.enableFailureTracking = enableFailureTracking;
+        }
+
+        public Integer getMaxFailAttempts() {
+            return maxFailAttempts;
+        }
+
+        public void setMaxFailAttempts(Integer maxFailAttempts) {
+            this.maxFailAttempts = maxFailAttempts;
+        }
+
+        public Integer getLockDuration() {
+            return lockDuration;
+        }
+
+        public void setLockDuration(Integer lockDuration) {
+            this.lockDuration = lockDuration;
+        }
     }
 
     public static class OAuthProvidersConfig {
         private OAuthConfig github = new OAuthConfig();
         private OAuthConfig wechat = new OAuthConfig();
         private OAuthConfig google = new OAuthConfig();
+
+        public OAuthConfig getGithub() {
+            return github;
+        }
+
+        public void setGithub(OAuthConfig github) {
+            this.github = github;
+        }
+
+        public OAuthConfig getWechat() {
+            return wechat;
+        }
+
+        public void setWechat(OAuthConfig wechat) {
+            this.wechat = wechat;
+        }
+
+        public OAuthConfig getGoogle() {
+            return google;
+        }
+
+        public void setGoogle(OAuthConfig google) {
+            this.google = google;
+        }
     }
 
     public static class OAuthConfig {
@@ -95,189 +166,61 @@ public class UpmsSecurityProperties {
          * 回调地址
          */
         private String redirectUri;
-    }
 
-    public UpmsSecurityProperties(JwtConfig jwt, LoginConfig login, OAuthProvidersConfig oauth, String secret, Long expiration, Long refreshExpiration, Boolean enableFailureTracking, Integer maxFailAttempts, Integer lockDuration, OAuthConfig github, OAuthConfig wechat, OAuthConfig google, Boolean enabled, String clientId, String clientSecret, String redirectUri) {
-        this.jwt = jwt;
-        this.login = login;
-        this.oauth = oauth;
-        this.secret = secret;
-        this.expiration = expiration;
-        this.refreshExpiration = refreshExpiration;
-        this.enableFailureTracking = enableFailureTracking;
-        this.maxFailAttempts = maxFailAttempts;
-        this.lockDuration = lockDuration;
-        this.github = github;
-        this.wechat = wechat;
-        this.google = google;
-        this.enabled = enabled;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.redirectUri = redirectUri;
-    }
+        public Boolean getEnabled() {
+            return enabled;
+        }
 
-    public UpmsSecurityProperties() {
+        public void setEnabled(Boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        public String getClientId() {
+            return clientId;
+        }
+
+        public void setClientId(String clientId) {
+            this.clientId = clientId;
+        }
+
+        public String getClientSecret() {
+            return clientSecret;
+        }
+
+        public void setClientSecret(String clientSecret) {
+            this.clientSecret = clientSecret;
+        }
+
+        public String getRedirectUri() {
+            return redirectUri;
+        }
+
+        public void setRedirectUri(String redirectUri) {
+            this.redirectUri = redirectUri;
+        }
     }
 
     public JwtConfig getJwt() {
-        return this.jwt;
-    }
-
-    public LoginConfig getLogin() {
-        return this.login;
-    }
-
-    public OAuthProvidersConfig getOauth() {
-        return this.oauth;
-    }
-
-    public String getSecret() {
-        return this.secret;
-    }
-
-    public Long getExpiration() {
-        return this.expiration;
-    }
-
-    public Long getRefreshExpiration() {
-        return this.refreshExpiration;
-    }
-
-    public Boolean isEnableFailureTracking() {
-        return this.enableFailureTracking;
-    }
-
-    public Integer getMaxFailAttempts() {
-        return this.maxFailAttempts;
-    }
-
-    public Integer getLockDuration() {
-        return this.lockDuration;
-    }
-
-    public OAuthConfig getGithub() {
-        return this.github;
-    }
-
-    public OAuthConfig getWechat() {
-        return this.wechat;
-    }
-
-    public OAuthConfig getGoogle() {
-        return this.google;
-    }
-
-    public Boolean isEnabled() {
-        return this.enabled;
-    }
-
-    public String getClientId() {
-        return this.clientId;
-    }
-
-    public String getClientSecret() {
-        return this.clientSecret;
-    }
-
-    public String getRedirectUri() {
-        return this.redirectUri;
+        return jwt;
     }
 
     public void setJwt(JwtConfig jwt) {
         this.jwt = jwt;
     }
 
+    public LoginConfig getLogin() {
+        return login;
+    }
+
     public void setLogin(LoginConfig login) {
         this.login = login;
     }
 
+    public OAuthProvidersConfig getOauth() {
+        return oauth;
+    }
+
     public void setOauth(OAuthProvidersConfig oauth) {
         this.oauth = oauth;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
-    }
-
-    public void setExpiration(Long expiration) {
-        this.expiration = expiration;
-    }
-
-    public void setRefreshExpiration(Long refreshExpiration) {
-        this.refreshExpiration = refreshExpiration;
-    }
-
-    public void setEnableFailureTracking(Boolean enableFailureTracking) {
-        this.enableFailureTracking = enableFailureTracking;
-    }
-
-    public void setMaxFailAttempts(Integer maxFailAttempts) {
-        this.maxFailAttempts = maxFailAttempts;
-    }
-
-    public void setLockDuration(Integer lockDuration) {
-        this.lockDuration = lockDuration;
-    }
-
-    public void setGithub(OAuthConfig github) {
-        this.github = github;
-    }
-
-    public void setWechat(OAuthConfig wechat) {
-        this.wechat = wechat;
-    }
-
-    public void setGoogle(OAuthConfig google) {
-        this.google = google;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    public void setClientSecret(String clientSecret) {
-        this.clientSecret = clientSecret;
-    }
-
-    public void setRedirectUri(String redirectUri) {
-        this.redirectUri = redirectUri;
-    }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(jwt, login, oauth, secret, expiration, refreshExpiration, enableFailureTracking, maxFailAttempts, lockDuration, github, wechat, google, enabled, clientId, clientSecret, redirectUri);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UpmsSecurityProperties other = (UpmsSecurityProperties) o;
-        if (!java.util.Objects.equals(jwt, other.jwt)) return false;
-        if (!java.util.Objects.equals(login, other.login)) return false;
-        if (!java.util.Objects.equals(oauth, other.oauth)) return false;
-        if (!java.util.Objects.equals(secret, other.secret)) return false;
-        if (!java.util.Objects.equals(expiration, other.expiration)) return false;
-        if (!java.util.Objects.equals(refreshExpiration, other.refreshExpiration)) return false;
-        if (!java.util.Objects.equals(enableFailureTracking, other.enableFailureTracking)) return false;
-        if (!java.util.Objects.equals(maxFailAttempts, other.maxFailAttempts)) return false;
-        if (!java.util.Objects.equals(lockDuration, other.lockDuration)) return false;
-        if (!java.util.Objects.equals(github, other.github)) return false;
-        if (!java.util.Objects.equals(wechat, other.wechat)) return false;
-        if (!java.util.Objects.equals(google, other.google)) return false;
-        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
-        if (!java.util.Objects.equals(clientId, other.clientId)) return false;
-        if (!java.util.Objects.equals(clientSecret, other.clientSecret)) return false;
-        if (!java.util.Objects.equals(redirectUri, other.redirectUri)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "UpmsSecurityProperties(" + "jwt=" + jwt + ", " + "login=" + login + ", " + "oauth=" + oauth + ", " + "secret=" + secret + ", " + "expiration=" + expiration + ", " + "refreshExpiration=" + refreshExpiration + ", " + "enableFailureTracking=" + enableFailureTracking + ", " + "maxFailAttempts=" + maxFailAttempts + ", " + "lockDuration=" + lockDuration + ", " + "github=" + github + ", " + "wechat=" + wechat + ", " + "google=" + google + ", " + "enabled=" + enabled + ", " + "clientId=" + clientId + ", " + "clientSecret=" + clientSecret + ", " + "redirectUri=" + redirectUri + ")";
     }
 }

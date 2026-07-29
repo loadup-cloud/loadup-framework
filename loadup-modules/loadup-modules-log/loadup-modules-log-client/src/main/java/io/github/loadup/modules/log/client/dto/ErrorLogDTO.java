@@ -22,7 +22,6 @@ package io.github.loadup.modules.log.client.dto;
  * #L%
  */
 
-
 /**
  * Error log DTO.
  */
@@ -44,7 +43,18 @@ public class ErrorLogDTO {
     private String ip;
     private java.time.LocalDateTime errorTime;
 
-    public ErrorLogDTO(String id, String userId, String errorType, String errorCode, String errorMessage, String stackTrace, String requestUrl, String requestMethod, String requestParams, String ip, java.time.LocalDateTime errorTime) {
+    public ErrorLogDTO(
+            String id,
+            String userId,
+            String errorType,
+            String errorCode,
+            String errorMessage,
+            String stackTrace,
+            String requestUrl,
+            String requestMethod,
+            String requestParams,
+            String ip,
+            java.time.LocalDateTime errorTime) {
         this.id = id;
         this.userId = userId;
         this.errorType = errorType;
@@ -58,8 +68,7 @@ public class ErrorLogDTO {
         this.errorTime = errorTime;
     }
 
-    public ErrorLogDTO() {
-    }
+    public ErrorLogDTO() {}
 
     public String getId() {
         return this.id;
@@ -151,7 +160,18 @@ public class ErrorLogDTO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, userId, errorType, errorCode, errorMessage, stackTrace, requestUrl, requestMethod, requestParams, ip, errorTime);
+        return java.util.Objects.hash(
+                id,
+                userId,
+                errorType,
+                errorCode,
+                errorMessage,
+                stackTrace,
+                requestUrl,
+                requestMethod,
+                requestParams,
+                ip,
+                errorTime);
     }
 
     @Override
@@ -175,7 +195,10 @@ public class ErrorLogDTO {
 
     @Override
     public String toString() {
-        return "ErrorLogDTO(" + "id=" + id + ", " + "userId=" + userId + ", " + "errorType=" + errorType + ", " + "errorCode=" + errorCode + ", " + "errorMessage=" + errorMessage + ", " + "stackTrace=" + stackTrace + ", " + "requestUrl=" + requestUrl + ", " + "requestMethod=" + requestMethod + ", " + "requestParams=" + requestParams + ", " + "ip=" + ip + ", " + "errorTime=" + errorTime + ")";
+        return "ErrorLogDTO(" + "id=" + id + ", " + "userId=" + userId + ", " + "errorType=" + errorType + ", "
+                + "errorCode=" + errorCode + ", " + "errorMessage=" + errorMessage + ", " + "stackTrace=" + stackTrace
+                + ", " + "requestUrl=" + requestUrl + ", " + "requestMethod=" + requestMethod + ", " + "requestParams="
+                + requestParams + ", " + "ip=" + ip + ", " + "errorTime=" + errorTime + ")";
     }
 
     public static Builder builder() {
@@ -251,7 +274,18 @@ public class ErrorLogDTO {
         }
 
         public ErrorLogDTO build() {
-            return new ErrorLogDTO(this.id, this.userId, this.errorType, this.errorCode, this.errorMessage, this.stackTrace, this.requestUrl, this.requestMethod, this.requestParams, this.ip, this.errorTime);
+            return new ErrorLogDTO(
+                    this.id,
+                    this.userId,
+                    this.errorType,
+                    this.errorCode,
+                    this.errorMessage,
+                    this.stackTrace,
+                    this.requestUrl,
+                    this.requestMethod,
+                    this.requestParams,
+                    this.ip,
+                    this.errorTime);
         }
     }
 }

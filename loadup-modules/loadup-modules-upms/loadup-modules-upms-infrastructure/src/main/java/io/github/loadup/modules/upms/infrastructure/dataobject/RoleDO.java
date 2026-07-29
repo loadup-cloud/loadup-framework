@@ -47,7 +47,15 @@ public class RoleDO extends BaseDO {
 
     private String remark;
 
-    public RoleDO(String roleName, String roleCode, String parentId, Integer roleLevel, Short dataScope, Integer sortOrder, Short status, String remark) {
+    public RoleDO(
+            String roleName,
+            String roleCode,
+            String parentId,
+            Integer roleLevel,
+            Short dataScope,
+            Integer sortOrder,
+            Short status,
+            String remark) {
         this.roleName = roleName;
         this.roleCode = roleCode;
         this.parentId = parentId;
@@ -58,8 +66,7 @@ public class RoleDO extends BaseDO {
         this.remark = remark;
     }
 
-    public RoleDO() {
-    }
+    public RoleDO() {}
 
     public String getRoleName() {
         return this.roleName;
@@ -127,7 +134,8 @@ public class RoleDO extends BaseDO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(super.hashCode(), roleName, roleCode, parentId, roleLevel, dataScope, sortOrder, status, remark);
+        return java.util.Objects.hash(
+                super.hashCode(), roleName, roleCode, parentId, roleLevel, dataScope, sortOrder, status, remark);
     }
 
     @Override
@@ -149,6 +157,8 @@ public class RoleDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "RoleDO(" + "super=" + super.toString() + ", " + "roleName=" + roleName + ", " + "roleCode=" + roleCode + ", " + "parentId=" + parentId + ", " + "roleLevel=" + roleLevel + ", " + "dataScope=" + dataScope + ", " + "sortOrder=" + sortOrder + ", " + "status=" + status + ", " + "remark=" + remark + ")";
+        return "RoleDO(" + "super=" + super.toString() + ", " + "roleName=" + roleName + ", " + "roleCode=" + roleCode
+                + ", " + "parentId=" + parentId + ", " + "roleLevel=" + roleLevel + ", " + "dataScope=" + dataScope
+                + ", " + "sortOrder=" + sortOrder + ", " + "status=" + status + ", " + "remark=" + remark + ")";
     }
 }

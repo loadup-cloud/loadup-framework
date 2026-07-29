@@ -89,7 +89,18 @@ public class RetryTask implements Serializable {
      */
     private LocalDateTime updatedAt;
 
-    public RetryTask(Long id, String bizType, String bizId, Integer retryCount, Integer maxRetryCount, LocalDateTime nextRetryTime, RetryTaskStatus status, Priority priority, String lastFailureReason, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public RetryTask(
+            Long id,
+            String bizType,
+            String bizId,
+            Integer retryCount,
+            Integer maxRetryCount,
+            LocalDateTime nextRetryTime,
+            RetryTaskStatus status,
+            Priority priority,
+            String lastFailureReason,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.bizType = bizType;
         this.bizId = bizId;
@@ -103,8 +114,7 @@ public class RetryTask implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public RetryTask() {
-    }
+    public RetryTask() {}
 
     public Long getId() {
         return this.id;
@@ -196,7 +206,18 @@ public class RetryTask implements Serializable {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, bizType, bizId, retryCount, maxRetryCount, nextRetryTime, status, priority, lastFailureReason, createdAt, updatedAt);
+        return java.util.Objects.hash(
+                id,
+                bizType,
+                bizId,
+                retryCount,
+                maxRetryCount,
+                nextRetryTime,
+                status,
+                priority,
+                lastFailureReason,
+                createdAt,
+                updatedAt);
     }
 
     @Override
@@ -220,6 +241,9 @@ public class RetryTask implements Serializable {
 
     @Override
     public String toString() {
-        return "RetryTask(" + "id=" + id + ", " + "bizType=" + bizType + ", " + "bizId=" + bizId + ", " + "retryCount=" + retryCount + ", " + "maxRetryCount=" + maxRetryCount + ", " + "nextRetryTime=" + nextRetryTime + ", " + "status=" + status + ", " + "priority=" + priority + ", " + "lastFailureReason=" + lastFailureReason + ", " + "createdAt=" + createdAt + ", " + "updatedAt=" + updatedAt + ")";
+        return "RetryTask(" + "id=" + id + ", " + "bizType=" + bizType + ", " + "bizId=" + bizId + ", " + "retryCount="
+                + retryCount + ", " + "maxRetryCount=" + maxRetryCount + ", " + "nextRetryTime=" + nextRetryTime + ", "
+                + "status=" + status + ", " + "priority=" + priority + ", " + "lastFailureReason=" + lastFailureReason
+                + ", " + "createdAt=" + createdAt + ", " + "updatedAt=" + updatedAt + ")";
     }
 }

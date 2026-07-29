@@ -1,5 +1,27 @@
 package io.github.loadup.gateway.plugins.yaml;
 
+/*-
+ * #%L
+ * Repository YAML Plugin
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import io.github.loadup.gateway.facade.config.GatewayProperties;
 import io.github.loadup.gateway.facade.model.FilterDefinition;
 import io.github.loadup.gateway.facade.model.RouteDefinition;
@@ -8,11 +30,6 @@ import io.github.loadup.gateway.facade.spi.RouteStore;
 import io.github.loadup.gateway.plugins.yaml.event.RouteStoreRefreshedEvent;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
@@ -33,6 +50,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * YAML file route store with file-watcher hot reload.
@@ -68,7 +89,6 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class YamlRouteStore implements RouteStore {
     private static final Logger log = LoggerFactory.getLogger(YamlRouteStore.class);
-
 
     private static final String DEFAULT_CONFIG_FILE = "gateway-routes.yml";
 
@@ -116,9 +136,7 @@ public class YamlRouteStore implements RouteStore {
 
     @Override
     public Optional<RouteDefinition> load(String routeId) {
-        return routes.get().stream()
-            .filter(r -> r.getId().equals(routeId))
-            .findFirst();
+        return routes.get().stream().filter(r -> r.getId().equals(routeId)).findFirst();
     }
 
     @SuppressWarnings("unchecked")
@@ -130,8 +148,8 @@ public class YamlRouteStore implements RouteStore {
                 root = yaml.load(content);
             } else {
                 // Try classpath fallback
-                try (InputStream is = Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream(DEFAULT_CONFIG_FILE)) {
+                try (InputStream is =
+                        Thread.currentThread().getContextClassLoader().getResourceAsStream(DEFAULT_CONFIG_FILE)) {
                     if (is == null) {
                         log.warn("No gateway-routes.yml found on filesystem or classpath");
                         routes.set(List.of());
@@ -226,8 +244,8 @@ public class YamlRouteStore implements RouteStore {
     private Path resolveConfigPath() {
         // Check GatewayProperties for explicit path
         if (gatewayProperties.getStorage() != null
-            && gatewayProperties.getStorage().getFile() != null
-            && gatewayProperties.getStorage().getFile().getBasePath() != null) {
+                && gatewayProperties.getStorage().getFile() != null
+                && gatewayProperties.getStorage().getFile().getBasePath() != null) {
             String basePath = gatewayProperties.getStorage().getFile().getBasePath();
             if (!basePath.startsWith("classpath:")) {
                 return Paths.get(basePath, DEFAULT_CONFIG_FILE);

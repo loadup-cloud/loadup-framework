@@ -51,12 +51,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Authentication Service Handles user login, register, and token management
  *
@@ -66,7 +66,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
     private static final Logger log = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
-
 
     private final UserGateway userGateway;
     private final RoleGateway roleGateway;
@@ -202,23 +201,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         // Create user
-        User user = User.builder()
-                .username(command.getUsername())
-                .password(passwordEncoder.encode(command.getPassword()))
-                .nickname(command.getNickname())
-                .email(command.getEmail())
-                .mobile(command.getMobile())
-                .deptId("1") // Default department
-                .status((short) 1)
-                .accountNonExpired(true)
-                .accountNonLocked(true)
-                .credentialsNonExpired(true)
-                .emailVerified(false)
-                .mobileVerified(false)
-                .deleted(false)
-                .createdBy("0")
-                .createdTime(LocalDateTime.now())
-                .build();
+        User user = new User();
+        user.setUsername(command.getUsername());
+        user.setPassword(passwordEncoder.encode(command.getPassword()));
+        user.setNickname(command.getNickname());
+        user.setEmail(command.getEmail());
+        user.setMobile(command.getMobile());
+        user.setDeptId("1");
+        user.setStatus((short) 1);
+        user.setAccountNonExpired(true);
+        user.setAccountNonLocked(true);
+        user.setCredentialsNonExpired(true);
+        user.setEmailVerified(false);
+        user.setMobileVerified(false);
+        user.setDeleted(false);
+        user.setCreatedBy("0");
+        user.setCreatedTime(LocalDateTime.now());
 
         user = userGateway.save(user);
 
@@ -319,55 +317,52 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private UserDetailDTO buildUserInfo(User user) {
         List<Role> roles = roleGateway.findByUserId(user.getId());
         Set<String> permissions = permissionService.getUserPermissionCodes(user.getId());
-
-        return UserDetailDTO.builder()
-                .id(user.getId())
-                .account(user.getUsername())
-                .nickname(user.getNickname())
-                .realName(user.getRealName())
-                .email(user.getEmail())
-                .mobile(user.getMobile())
-                .avatar(user.getAvatar())
-                .deptId(user.getDeptId())
-                .roles(roles.stream().map(Role::getRoleCode).collect(Collectors.toList()))
-                .permissions(List.copyOf(permissions))
-                .lastLoginTime(user.getLastLoginTime())
-                .build();
+        UserDetailDTO userDetailDTO = new UserDetailDTO();
+        userDetailDTO.setId(user.getId());
+        userDetailDTO.setAccount(user.getUsername());
+        userDetailDTO.setNickname(user.getNickname());
+        userDetailDTO.setRealName(user.getRealName());
+        userDetailDTO.setEmail(user.getEmail());
+        userDetailDTO.setMobile(user.getMobile());
+        userDetailDTO.setAvatar(user.getAvatar());
+        userDetailDTO.setDeptId(user.getDeptId());
+        userDetailDTO.setRoles(roles.stream().map(Role::getRoleCode).collect(Collectors.toList()));
+        userDetailDTO.setPermissions(List.copyOf(permissions));
+        userDetailDTO.setLastLoginTime(user.getLastLoginTime());
+        return userDetailDTO;
     }
 
     /**
      * Record login success
      */
     private void recordLoginSuccess(User user, UserLoginCommand command, String loginType) {
-        LoginLog log = LoginLog.builder()
-                .userId(user.getId())
-                .username(user.getUsername())
-                .loginTime(LocalDateTime.now())
-                .ipAddress(command.getIpAddress())
-                .loginStatus((short) 1)
-                .loginMessage("登录成功")
-                .loginType(loginType)
-                .provider(command.getProvider())
-                .build();
+        LoginLog loginLog = new LoginLog();
+        loginLog.setUserId(user.getId());
+        loginLog.setUsername(user.getUsername());
+        loginLog.setLoginTime(LocalDateTime.now());
+        loginLog.setIpAddress(command.getIpAddress());
+        loginLog.setLoginStatus((short) 1);
+        loginLog.setLoginMessage("登录成功");
+        loginLog.setLoginType(loginType);
+        loginLog.setProvider(command.getProvider());
 
-        loginLogGateway.save(log);
+        loginLogGateway.save(loginLog);
     }
 
     /**
      * Record login failure
      */
     private void recordLoginFailure(UserLoginCommand command, String message, String loginType) {
-        LoginLog log = LoginLog.builder()
-                .username(command.getUsername() != null ? command.getUsername() : command.getMobile())
-                .loginTime(LocalDateTime.now())
-                .ipAddress(command.getIpAddress())
-                .loginStatus((short) 0)
-                .loginMessage(message)
-                .loginType(loginType)
-                .provider(command.getProvider())
-                .build();
+        LoginLog loginLog = new LoginLog();
+        loginLog.setUsername(command.getUsername() != null ? command.getUsername() : command.getMobile());
+        loginLog.setLoginTime(LocalDateTime.now());
+        loginLog.setIpAddress(command.getIpAddress());
+        loginLog.setLoginStatus((short) 0);
+        loginLog.setLoginMessage(message);
+        loginLog.setLoginType(loginType);
+        loginLog.setProvider(command.getProvider());
 
-        loginLogGateway.save(log);
+        loginLogGateway.save(loginLog);
     }
 
     /**
@@ -380,7 +375,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .ifPresent(role -> roleGateway.assignRoleToUser(userId, role.getId(), "0"));
     }
 
-    public AuthenticationServiceImpl(UserGateway userGateway, RoleGateway roleGateway, LoginLogGateway loginLogGateway, UserPermissionService permissionService, PasswordEncoder passwordEncoder, AuthGateway authGateway, UpmsSecurityProperties securityProperties, LoginStrategyManager loginStrategyManager) {
+    public AuthenticationServiceImpl(
+            UserGateway userGateway,
+            RoleGateway roleGateway,
+            LoginLogGateway loginLogGateway,
+            UserPermissionService permissionService,
+            PasswordEncoder passwordEncoder,
+            AuthGateway authGateway,
+            UpmsSecurityProperties securityProperties,
+            LoginStrategyManager loginStrategyManager) {
         this.userGateway = userGateway;
         this.roleGateway = roleGateway;
         this.loginLogGateway = loginLogGateway;

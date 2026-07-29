@@ -22,7 +22,7 @@ package io.github.loadup.retrytask.starter;
  * #L%
  */
 
-import io.github.loadup.components.gotone.api.NotificationService;
+import io.github.loadup.components.gotone.GotoneTemplate;
 import io.github.loadup.retrytask.core.RetryTaskExecutor;
 import io.github.loadup.retrytask.core.RetryTaskProcessor;
 import io.github.loadup.retrytask.core.RetryTaskProcessorRegistry;
@@ -44,6 +44,8 @@ import io.github.loadup.retrytask.strategy.RandomWaitRetryStrategy;
 import io.github.loadup.retrytask.strategy.RetryStrategy;
 import io.github.loadup.retrytask.strategy.RetryStrategyRegistry;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -52,8 +54,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Auto-configuration for the retry task module
  */
@@ -61,7 +61,6 @@ import org.slf4j.LoggerFactory;
 @EnableConfigurationProperties(RetryTaskProperties.class)
 public class RetryTaskAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(RetryTaskAutoConfiguration.class);
-
 
     // ========== Strategy Beans ==========
 
@@ -119,9 +118,9 @@ public class RetryTaskAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "gotoneRetryTaskNotifier")
     @ConditionalOnProperty(prefix = "loadup.retrytask.notifier.gotone", name = "enabled", havingValue = "true")
-    public RetryTaskNotifier gotoneRetryTaskNotifier(NotificationService notificationService) {
+    public RetryTaskNotifier gotoneRetryTaskNotifier(GotoneTemplate gotoneTemplate) {
         log.info(">>> [RETRY-TASK] Initializing GotoneRetryTaskNotifier");
-        return new GotoneRetryTaskNotifier(notificationService);
+        return new GotoneRetryTaskNotifier(gotoneTemplate);
     }
 
     @Bean

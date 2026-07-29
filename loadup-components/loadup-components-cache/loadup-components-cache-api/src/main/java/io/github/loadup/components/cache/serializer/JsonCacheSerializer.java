@@ -33,7 +33,6 @@ public class JsonCacheSerializer implements CacheSerializer {
 
     @Override
     public <T> T deserialize(byte[] bytes, Class<T> type) {
-        return JsonUtil.fromBytes(bytes, new TypeReference<T>() {
-        });
+        return JsonUtil.fromBytes(bytes, new TypeReference<T>() {});
     }
 }

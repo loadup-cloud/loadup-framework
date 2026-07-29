@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.loadup-cloud</groupId>
+        <artifactId>loadup-parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>loadup-components-configcenter</artifactId>
+    <packaging>pom</packaging>
+    <name>Loadup ConfigCenter Component</name>
+    <description>Loadup ConfigCenter — API + local/nacos/apollo binders</description>
+
+    <modules>
+        <module>loadup-components-configcenter-api</module>
+        <module>loadup-components-configcenter-binder-local</module>
+        <module>loadup-components-configcenter-binder-nacos</module>
+        <module>loadup-components-configcenter-binder-apollo</module>
+        <module>loadup-components-configcenter-test</module>
+    </modules>
+</project>

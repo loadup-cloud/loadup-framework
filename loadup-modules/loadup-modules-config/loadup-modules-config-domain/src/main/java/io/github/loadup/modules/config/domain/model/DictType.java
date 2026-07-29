@@ -43,7 +43,18 @@ public class DictType {
     private String updatedBy;
     private LocalDateTime updatedAt;
 
-    public DictType(String id, String dictCode, String dictName, String description, Boolean systemDefined, Integer sortOrder, Boolean enabled, String createdBy, LocalDateTime createdAt, String updatedBy, LocalDateTime updatedAt) {
+    public DictType(
+            String id,
+            String dictCode,
+            String dictName,
+            String description,
+            Boolean systemDefined,
+            Integer sortOrder,
+            Boolean enabled,
+            String createdBy,
+            LocalDateTime createdAt,
+            String updatedBy,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.dictCode = dictCode;
         this.dictName = dictName;
@@ -57,8 +68,7 @@ public class DictType {
         this.updatedAt = updatedAt;
     }
 
-    public DictType() {
-    }
+    public DictType() {}
 
     public String getId() {
         return this.id;
@@ -150,7 +160,18 @@ public class DictType {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, dictCode, dictName, description, systemDefined, sortOrder, enabled, createdBy, createdAt, updatedBy, updatedAt);
+        return java.util.Objects.hash(
+                id,
+                dictCode,
+                dictName,
+                description,
+                systemDefined,
+                sortOrder,
+                enabled,
+                createdBy,
+                createdAt,
+                updatedBy,
+                updatedAt);
     }
 
     @Override
@@ -174,7 +195,10 @@ public class DictType {
 
     @Override
     public String toString() {
-        return "DictType(" + "id=" + id + ", " + "dictCode=" + dictCode + ", " + "dictName=" + dictName + ", " + "description=" + description + ", " + "systemDefined=" + systemDefined + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy=" + createdBy + ", " + "createdAt=" + createdAt + ", " + "updatedBy=" + updatedBy + ", " + "updatedAt=" + updatedAt + ")";
+        return "DictType(" + "id=" + id + ", " + "dictCode=" + dictCode + ", " + "dictName=" + dictName + ", "
+                + "description=" + description + ", " + "systemDefined=" + systemDefined + ", " + "sortOrder="
+                + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy=" + createdBy + ", " + "createdAt="
+                + createdAt + ", " + "updatedBy=" + updatedBy + ", " + "updatedAt=" + updatedAt + ")";
     }
 
     public static Builder builder() {
@@ -250,7 +274,18 @@ public class DictType {
         }
 
         public DictType build() {
-            return new DictType(this.id, this.dictCode, this.dictName, this.description, this.systemDefined, this.sortOrder, this.enabled, this.createdBy, this.createdAt, this.updatedBy, this.updatedAt);
+            return new DictType(
+                    this.id,
+                    this.dictCode,
+                    this.dictName,
+                    this.description,
+                    this.systemDefined,
+                    this.sortOrder,
+                    this.enabled,
+                    this.createdBy,
+                    this.createdAt,
+                    this.updatedBy,
+                    this.updatedAt);
         }
     }
 }

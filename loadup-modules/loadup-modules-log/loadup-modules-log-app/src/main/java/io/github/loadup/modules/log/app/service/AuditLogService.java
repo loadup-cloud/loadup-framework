@@ -30,11 +30,11 @@ import io.github.loadup.modules.log.infrastructure.async.LogAsyncWriter;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Application service for audit log management.
  *
@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class AuditLogService {
     private static final Logger log = LoggerFactory.getLogger(AuditLogService.class);
-
 
     private final AuditLogGateway gateway;
     private final LogAsyncWriter logAsyncWriter;

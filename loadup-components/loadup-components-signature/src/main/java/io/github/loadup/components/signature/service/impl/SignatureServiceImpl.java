@@ -32,10 +32,10 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.util.Base64;
-import org.springframework.stereotype.Service;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 /**
  * 签名服务实现
  *
@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class SignatureServiceImpl implements SignatureService {
     private static final Logger log = LoggerFactory.getLogger(SignatureServiceImpl.class);
-
 
     private final KeyPairService keyPairService;
 
@@ -112,5 +111,13 @@ public class SignatureServiceImpl implements SignatureService {
 
     public SignatureServiceImpl(KeyPairService keyPairService) {
         this.keyPairService = keyPairService;
+    }
+
+    public Logger getLog() {
+        return this.log;
+    }
+
+    public KeyPairService getKeyPairService() {
+        return this.keyPairService;
     }
 }

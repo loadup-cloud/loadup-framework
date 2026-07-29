@@ -50,7 +50,23 @@ public class PermissionDTO {
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;
 
-    public PermissionDTO(String id, String parentId, String permissionName, String permissionCode, Short permissionType, String resourcePath, String httpMethod, String icon, String componentPath, Integer sortOrder, Boolean visible, Short status, List<PermissionDTO> children, String remark, LocalDateTime createdTime, LocalDateTime updatedTime) {
+    public PermissionDTO(
+            String id,
+            String parentId,
+            String permissionName,
+            String permissionCode,
+            Short permissionType,
+            String resourcePath,
+            String httpMethod,
+            String icon,
+            String componentPath,
+            Integer sortOrder,
+            Boolean visible,
+            Short status,
+            List<PermissionDTO> children,
+            String remark,
+            LocalDateTime createdTime,
+            LocalDateTime updatedTime) {
         this.id = id;
         this.parentId = parentId;
         this.permissionName = permissionName;
@@ -69,8 +85,7 @@ public class PermissionDTO {
         this.updatedTime = updatedTime;
     }
 
-    public PermissionDTO() {
-    }
+    public PermissionDTO() {}
 
     public String getId() {
         return this.id;
@@ -202,7 +217,23 @@ public class PermissionDTO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, parentId, permissionName, permissionCode, permissionType, resourcePath, httpMethod, icon, componentPath, sortOrder, visible, status, children, remark, createdTime, updatedTime);
+        return java.util.Objects.hash(
+                id,
+                parentId,
+                permissionName,
+                permissionCode,
+                permissionType,
+                resourcePath,
+                httpMethod,
+                icon,
+                componentPath,
+                sortOrder,
+                visible,
+                status,
+                children,
+                remark,
+                createdTime,
+                updatedTime);
     }
 
     @Override
@@ -231,7 +262,12 @@ public class PermissionDTO {
 
     @Override
     public String toString() {
-        return "PermissionDTO(" + "id=" + id + ", " + "parentId=" + parentId + ", " + "permissionName=" + permissionName + ", " + "permissionCode=" + permissionCode + ", " + "permissionType=" + permissionType + ", " + "resourcePath=" + resourcePath + ", " + "httpMethod=" + httpMethod + ", " + "icon=" + icon + ", " + "componentPath=" + componentPath + ", " + "sortOrder=" + sortOrder + ", " + "visible=" + visible + ", " + "status=" + status + ", " + "children=" + children + ", " + "remark=" + remark + ", " + "createdTime=" + createdTime + ", " + "updatedTime=" + updatedTime + ")";
+        return "PermissionDTO(" + "id=" + id + ", " + "parentId=" + parentId + ", " + "permissionName=" + permissionName
+                + ", " + "permissionCode=" + permissionCode + ", " + "permissionType=" + permissionType + ", "
+                + "resourcePath=" + resourcePath + ", " + "httpMethod=" + httpMethod + ", " + "icon=" + icon + ", "
+                + "componentPath=" + componentPath + ", " + "sortOrder=" + sortOrder + ", " + "visible=" + visible
+                + ", " + "status=" + status + ", " + "children=" + children + ", " + "remark=" + remark + ", "
+                + "createdTime=" + createdTime + ", " + "updatedTime=" + updatedTime + ")";
     }
 
     public static Builder builder() {
@@ -337,7 +373,23 @@ public class PermissionDTO {
         }
 
         public PermissionDTO build() {
-            return new PermissionDTO(this.id, this.parentId, this.permissionName, this.permissionCode, this.permissionType, this.resourcePath, this.httpMethod, this.icon, this.componentPath, this.sortOrder, this.visible, this.status, this.children, this.remark, this.createdTime, this.updatedTime);
+            return new PermissionDTO(
+                    this.id,
+                    this.parentId,
+                    this.permissionName,
+                    this.permissionCode,
+                    this.permissionType,
+                    this.resourcePath,
+                    this.httpMethod,
+                    this.icon,
+                    this.componentPath,
+                    this.sortOrder,
+                    this.visible,
+                    this.status,
+                    this.children,
+                    this.remark,
+                    this.createdTime,
+                    this.updatedTime);
         }
     }
 }

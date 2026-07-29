@@ -45,7 +45,8 @@ public final class PathPattern {
     private final Pattern compiledPattern;
     private final java.util.List<String> variableNames;
 
-    private PathPattern(String rawPattern, boolean isExact, Pattern compiledPattern, java.util.List<String> variableNames) {
+    private PathPattern(
+            String rawPattern, boolean isExact, Pattern compiledPattern, java.util.List<String> variableNames) {
         this.rawPattern = rawPattern;
         this.isExact = isExact;
         this.compiledPattern = compiledPattern;

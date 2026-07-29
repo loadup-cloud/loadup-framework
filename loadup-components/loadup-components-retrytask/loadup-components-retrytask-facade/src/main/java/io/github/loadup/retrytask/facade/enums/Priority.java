@@ -22,7 +22,6 @@ package io.github.loadup.retrytask.facade.enums;
  * #L%
  */
 
-
 /**
  * Represents the priority of a retry task.
  */

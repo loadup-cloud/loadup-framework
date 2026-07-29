@@ -68,7 +68,12 @@ public class RowDiff {
         return new RowDiff(index, "DIFF", message, expectedRow, fieldDiffs);
     }
 
-    public RowDiff(int index, String type, String message, Map<String, Object> expectedRow, Map<String, FieldDiff> fieldDiffs) {
+    public RowDiff(
+            int index,
+            String type,
+            String message,
+            Map<String, Object> expectedRow,
+            Map<String, FieldDiff> fieldDiffs) {
         this.index = index;
         this.type = type;
         this.message = message;
@@ -76,8 +81,7 @@ public class RowDiff {
         this.fieldDiffs = fieldDiffs;
     }
 
-    public RowDiff() {
-    }
+    public RowDiff() {}
 
     public int getIndex() {
         return this.index;
@@ -139,6 +143,7 @@ public class RowDiff {
 
     @Override
     public String toString() {
-        return "RowDiff(" + "index=" + index + ", " + "type=" + type + ", " + "message=" + message + ", " + "expectedRow=" + expectedRow + ", " + "fieldDiffs=" + fieldDiffs + ")";
+        return "RowDiff(" + "index=" + index + ", " + "type=" + type + ", " + "message=" + message + ", "
+                + "expectedRow=" + expectedRow + ", " + "fieldDiffs=" + fieldDiffs + ")";
     }
 }

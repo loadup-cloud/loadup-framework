@@ -37,7 +37,15 @@ public class DictTypeDO extends BaseDO {
     private String createdBy;
     private String updatedBy;
 
-    public DictTypeDO(String dictCode, String dictName, String description, Boolean systemDefined, Integer sortOrder, Boolean enabled, String createdBy, String updatedBy) {
+    public DictTypeDO(
+            String dictCode,
+            String dictName,
+            String description,
+            Boolean systemDefined,
+            Integer sortOrder,
+            Boolean enabled,
+            String createdBy,
+            String updatedBy) {
         this.dictCode = dictCode;
         this.dictName = dictName;
         this.description = description;
@@ -48,8 +56,7 @@ public class DictTypeDO extends BaseDO {
         this.updatedBy = updatedBy;
     }
 
-    public DictTypeDO() {
-    }
+    public DictTypeDO() {}
 
     public String getDictCode() {
         return this.dictCode;
@@ -117,7 +124,16 @@ public class DictTypeDO extends BaseDO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(super.hashCode(), dictCode, dictName, description, systemDefined, sortOrder, enabled, createdBy, updatedBy);
+        return java.util.Objects.hash(
+                super.hashCode(),
+                dictCode,
+                dictName,
+                description,
+                systemDefined,
+                sortOrder,
+                enabled,
+                createdBy,
+                updatedBy);
     }
 
     @Override
@@ -139,6 +155,9 @@ public class DictTypeDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "DictTypeDO(" + "super=" + super.toString() + ", " + "dictCode=" + dictCode + ", " + "dictName=" + dictName + ", " + "description=" + description + ", " + "systemDefined=" + systemDefined + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy=" + createdBy + ", " + "updatedBy=" + updatedBy + ")";
+        return "DictTypeDO(" + "super=" + super.toString() + ", " + "dictCode=" + dictCode + ", " + "dictName="
+                + dictName + ", " + "description=" + description + ", " + "systemDefined=" + systemDefined + ", "
+                + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy=" + createdBy + ", "
+                + "updatedBy=" + updatedBy + ")";
     }
 }

@@ -34,12 +34,12 @@ import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Scheduler for scanning and executing retry tasks
  */
 public class RetryTaskScheduler {
     private static final Logger log = LoggerFactory.getLogger(RetryTaskScheduler.class);
-
 
     private final RetryTaskService retryTaskService;
     private final RetryTaskExecutor retryTaskExecutor;

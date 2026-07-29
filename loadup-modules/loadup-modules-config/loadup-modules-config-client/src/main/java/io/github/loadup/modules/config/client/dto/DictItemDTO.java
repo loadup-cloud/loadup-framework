@@ -22,7 +22,6 @@ package io.github.loadup.modules.config.client.dto;
  * #L%
  */
 
-
 /**
  * Data dictionary item DTO.
  *
@@ -39,7 +38,15 @@ public class DictItemDTO {
     private Integer sortOrder;
     private Boolean enabled;
 
-    public DictItemDTO(String id, String dictCode, String itemLabel, String itemValue, String parentValue, String cssClass, Integer sortOrder, Boolean enabled) {
+    public DictItemDTO(
+            String id,
+            String dictCode,
+            String itemLabel,
+            String itemValue,
+            String parentValue,
+            String cssClass,
+            Integer sortOrder,
+            Boolean enabled) {
         this.id = id;
         this.dictCode = dictCode;
         this.itemLabel = itemLabel;
@@ -50,8 +57,7 @@ public class DictItemDTO {
         this.enabled = enabled;
     }
 
-    public DictItemDTO() {
-    }
+    public DictItemDTO() {}
 
     public String getId() {
         return this.id;
@@ -140,6 +146,8 @@ public class DictItemDTO {
 
     @Override
     public String toString() {
-        return "DictItemDTO(" + "id=" + id + ", " + "dictCode=" + dictCode + ", " + "itemLabel=" + itemLabel + ", " + "itemValue=" + itemValue + ", " + "parentValue=" + parentValue + ", " + "cssClass=" + cssClass + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ")";
+        return "DictItemDTO(" + "id=" + id + ", " + "dictCode=" + dictCode + ", " + "itemLabel=" + itemLabel + ", "
+                + "itemValue=" + itemValue + ", " + "parentValue=" + parentValue + ", " + "cssClass=" + cssClass + ", "
+                + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ")";
     }
 }

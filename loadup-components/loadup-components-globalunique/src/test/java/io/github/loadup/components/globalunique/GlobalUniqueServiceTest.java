@@ -30,13 +30,13 @@ import io.github.loadup.components.testcontainers.annotation.EnableTestContainer
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * GlobalUniqueService 集成测试
  *
@@ -48,7 +48,6 @@ import org.slf4j.LoggerFactory;
 @DisplayName("GlobalUniqueService 集成测试")
 class GlobalUniqueServiceTest {
     private static final Logger log = LoggerFactory.getLogger(GlobalUniqueServiceTest.class);
-
 
     @Autowired
     private GlobalUniqueService globalUniqueService;

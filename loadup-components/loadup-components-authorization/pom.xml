@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
-        <artifactId>loadup-dependencies</artifactId>
+        <artifactId>loadup-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
     </parent>
 
@@ -46,7 +46,7 @@
             <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
 
-                <!-- SLF4J for logging -->
+        <!-- SLF4J for logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

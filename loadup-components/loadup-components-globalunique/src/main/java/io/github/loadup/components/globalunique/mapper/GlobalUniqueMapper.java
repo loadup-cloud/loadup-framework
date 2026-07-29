@@ -22,19 +22,19 @@ package io.github.loadup.components.globalunique.mapper;
  * #L%
  */
 
-import io.github.loadup.components.globalunique.entity.GlobalUniqueEntity;
 import io.github.loadup.commons.enums.DbType;
+import io.github.loadup.components.globalunique.entity.GlobalUniqueEntity;
 import io.github.loadup.components.globalunique.properties.GlobalUniqueProperties;
 import java.time.LocalDateTime;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * GlobalUnique Mapper 基于 JdbcTemplate
  *
@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 @Repository
 public class GlobalUniqueMapper {
     private static final Logger log = LoggerFactory.getLogger(GlobalUniqueMapper.class);
-
 
     private final JdbcTemplate jdbcTemplate;
     private final GlobalUniqueProperties properties;

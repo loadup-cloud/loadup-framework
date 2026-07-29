@@ -38,7 +38,16 @@ public class DictItemDO extends BaseDO {
     private String createdBy;
     private String updatedBy;
 
-    public DictItemDO(String dictCode, String itemLabel, String itemValue, String parentValue, String cssClass, Integer sortOrder, Boolean enabled, String createdBy, String updatedBy) {
+    public DictItemDO(
+            String dictCode,
+            String itemLabel,
+            String itemValue,
+            String parentValue,
+            String cssClass,
+            Integer sortOrder,
+            Boolean enabled,
+            String createdBy,
+            String updatedBy) {
         this.dictCode = dictCode;
         this.itemLabel = itemLabel;
         this.itemValue = itemValue;
@@ -50,8 +59,7 @@ public class DictItemDO extends BaseDO {
         this.updatedBy = updatedBy;
     }
 
-    public DictItemDO() {
-    }
+    public DictItemDO() {}
 
     public String getDictCode() {
         return this.dictCode;
@@ -127,7 +135,17 @@ public class DictItemDO extends BaseDO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(super.hashCode(), dictCode, itemLabel, itemValue, parentValue, cssClass, sortOrder, enabled, createdBy, updatedBy);
+        return java.util.Objects.hash(
+                super.hashCode(),
+                dictCode,
+                itemLabel,
+                itemValue,
+                parentValue,
+                cssClass,
+                sortOrder,
+                enabled,
+                createdBy,
+                updatedBy);
     }
 
     @Override
@@ -150,6 +168,9 @@ public class DictItemDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "DictItemDO(" + "super=" + super.toString() + ", " + "dictCode=" + dictCode + ", " + "itemLabel=" + itemLabel + ", " + "itemValue=" + itemValue + ", " + "parentValue=" + parentValue + ", " + "cssClass=" + cssClass + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy=" + createdBy + ", " + "updatedBy=" + updatedBy + ")";
+        return "DictItemDO(" + "super=" + super.toString() + ", " + "dictCode=" + dictCode + ", " + "itemLabel="
+                + itemLabel + ", " + "itemValue=" + itemValue + ", " + "parentValue=" + parentValue + ", " + "cssClass="
+                + cssClass + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy="
+                + createdBy + ", " + "updatedBy=" + updatedBy + ")";
     }
 }

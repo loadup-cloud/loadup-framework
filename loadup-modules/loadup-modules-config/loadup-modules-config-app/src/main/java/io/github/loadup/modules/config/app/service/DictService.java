@@ -37,12 +37,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Application service for data dictionary management.
  *
@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class DictService {
     private static final Logger log = LoggerFactory.getLogger(DictService.class);
-
 
     private final DictGateway dictGateway;
     private final ConfigLocalCache localCache;
@@ -114,7 +113,7 @@ public class DictService {
         DictType type = dictGateway
                 .findTypeByCode(dictCode)
                 .orElseThrow(() -> new IllegalArgumentException("Dict code not found: " + dictCode));
-        Assert.isTrue(!Boolean.TRUE.equals(type.getSystemDefined()), "Cannot delete system-defined dict: " + dictCode);
+        Assert.isTrue(!Boolean.TRUE.equals(type.isSystemDefined()), "Cannot delete system-defined dict: " + dictCode);
         dictGateway.deleteItemsByCode(dictCode);
         dictGateway.deleteTypeByCode(dictCode);
         log.info("Dict type deleted: code={}", dictCode);
@@ -157,9 +156,9 @@ public class DictService {
         dto.setDictCode(t.getDictCode());
         dto.setDictName(t.getDictName());
         dto.setDescription(t.getDescription());
-        dto.setSystemDefined(t.getSystemDefined());
+        dto.setSystemDefined(t.isSystemDefined());
         dto.setSortOrder(t.getSortOrder());
-        dto.setEnabled(t.getEnabled());
+        dto.setEnabled(t.isEnabled());
         dto.setUpdatedAt(t.getUpdatedAt());
         return dto;
     }
@@ -173,7 +172,7 @@ public class DictService {
         dto.setParentValue(i.getParentValue());
         dto.setCssClass(i.getCssClass());
         dto.setSortOrder(i.getSortOrder());
-        dto.setEnabled(i.getEnabled());
+        dto.setEnabled(i.isEnabled());
         return dto;
     }
 

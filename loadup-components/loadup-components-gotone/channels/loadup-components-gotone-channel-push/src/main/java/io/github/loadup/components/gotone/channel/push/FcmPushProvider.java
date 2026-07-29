@@ -22,16 +22,14 @@ package io.github.loadup.components.gotone.channel.push;
  * #L%
  */
 
-import io.github.loadup.components.gotone.api.NotificationChannelProvider;
-import io.github.loadup.components.gotone.enums.NotificationChannel;
+import io.github.loadup.components.gotone.GotoneProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Value;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Firebase Cloud Messaging (FCM) 推送提供商
  *
@@ -41,17 +39,16 @@ import org.slf4j.LoggerFactory;
  * loadup.gotone.push.fcm.project-id=YOUR_PROJECT_ID
  * </pre>
  */
-public class FcmPushProvider implements NotificationChannelProvider {
+public class FcmPushProvider implements GotoneProvider {
     private static final Logger log = LoggerFactory.getLogger(FcmPushProvider.class);
-
 
     private final String serverKey;
 
     private final String projectId;
 
     @Override
-    public NotificationChannel getChannel() {
-        return NotificationChannel.PUSH;
+    public String getChannelType() {
+        return "PUSH";
     }
 
     @Override
@@ -135,13 +132,13 @@ public class FcmPushProvider implements NotificationChannelProvider {
                 }
             }
 
-            return ChannelSendResponse.builder()
-                    .content(request.getContent())
-                    .successCount(successCount)
-                    .failedCount(failedCount)
-                    .receiverStatus(receiverStatus)
-                    .receiverErrors(receiverErrors)
-                    .build();
+            ChannelSendResponse sendResponse = new ChannelSendResponse();
+            sendResponse.setContent(request.getContent());
+            sendResponse.setSuccessCount(successCount);
+            sendResponse.setFailedCount(failedCount);
+            sendResponse.setReceiverStatus(receiverStatus);
+            sendResponse.setReceiverErrors(receiverErrors);
+            return sendResponse;
 
         } catch (Exception e) {
             log.error(">>> [GOTONE-PUSH-FCM] 发送推送异常", e);
@@ -152,13 +149,13 @@ public class FcmPushProvider implements NotificationChannelProvider {
                 receiverErrors.put(receiver, "系统异常: " + e.getMessage());
             }
 
-            return ChannelSendResponse.builder()
-                    .content(request.getContent())
-                    .successCount(0)
-                    .failedCount(request.getReceivers().size())
-                    .receiverStatus(receiverStatus)
-                    .receiverErrors(receiverErrors)
-                    .build();
+            ChannelSendResponse sendResponse = new ChannelSendResponse();
+            sendResponse.setContent(request.getContent());
+            sendResponse.setSuccessCount(0);
+            sendResponse.setFailedCount(request.getReceivers().size());
+            sendResponse.setReceiverStatus(receiverStatus);
+            sendResponse.setReceiverErrors(receiverErrors);
+            return sendResponse;
         }
     }
 
@@ -252,13 +249,13 @@ public class FcmPushProvider implements NotificationChannelProvider {
 
         log.error(">>> [GOTONE-PUSH-FCM] {}", errorMessage);
 
-        return ChannelSendResponse.builder()
-                .content(null)
-                .successCount(success)
-                .failedCount(total - success)
-                .receiverStatus(receiverStatus)
-                .receiverErrors(receiverErrors)
-                .build();
+        ChannelSendResponse sendResponse = new ChannelSendResponse();
+        sendResponse.setContent(null);
+        sendResponse.setSuccessCount(success);
+        sendResponse.setFailedCount(total - success);
+        sendResponse.setReceiverStatus(receiverStatus);
+        sendResponse.setReceiverErrors(receiverErrors);
+        return sendResponse;
     }
 
     public FcmPushProvider(String serverKey, String projectId) {

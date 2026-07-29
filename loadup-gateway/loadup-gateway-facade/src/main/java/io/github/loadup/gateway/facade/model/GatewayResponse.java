@@ -75,7 +75,16 @@ public class GatewayResponse {
      */
     private Map<String, Object> attributes;
 
-    public GatewayResponse(String requestId, int statusCode, Map<String, String> headers, String body, String contentType, LocalDateTime responseTime, long processingTime, String errorMessage, Map<String, Object> attributes) {
+    public GatewayResponse(
+            String requestId,
+            int statusCode,
+            Map<String, String> headers,
+            String body,
+            String contentType,
+            LocalDateTime responseTime,
+            long processingTime,
+            String errorMessage,
+            Map<String, Object> attributes) {
         this.requestId = requestId;
         this.statusCode = statusCode;
         this.headers = headers;
@@ -87,8 +96,7 @@ public class GatewayResponse {
         this.attributes = attributes;
     }
 
-    public GatewayResponse() {
-    }
+    public GatewayResponse() {}
 
     public String getRequestId() {
         return this.requestId;
@@ -164,7 +172,16 @@ public class GatewayResponse {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(requestId, statusCode, headers, body, contentType, responseTime, processingTime, errorMessage, attributes);
+        return java.util.Objects.hash(
+                requestId,
+                statusCode,
+                headers,
+                body,
+                contentType,
+                responseTime,
+                processingTime,
+                errorMessage,
+                attributes);
     }
 
     @Override
@@ -186,7 +203,10 @@ public class GatewayResponse {
 
     @Override
     public String toString() {
-        return "GatewayResponse(" + "requestId=" + requestId + ", " + "statusCode=" + statusCode + ", " + "headers=" + headers + ", " + "body=" + body + ", " + "contentType=" + contentType + ", " + "responseTime=" + responseTime + ", " + "processingTime=" + processingTime + ", " + "errorMessage=" + errorMessage + ", " + "attributes=" + attributes + ")";
+        return "GatewayResponse(" + "requestId=" + requestId + ", " + "statusCode=" + statusCode + ", " + "headers="
+                + headers + ", " + "body=" + body + ", " + "contentType=" + contentType + ", " + "responseTime="
+                + responseTime + ", " + "processingTime=" + processingTime + ", " + "errorMessage=" + errorMessage
+                + ", " + "attributes=" + attributes + ")";
     }
 
     public static Builder builder() {
@@ -250,7 +270,16 @@ public class GatewayResponse {
         }
 
         public GatewayResponse build() {
-            return new GatewayResponse(this.requestId, this.statusCode, this.headers, this.body, this.contentType, this.responseTime, this.processingTime, this.errorMessage, this.attributes);
+            return new GatewayResponse(
+                    this.requestId,
+                    this.statusCode,
+                    this.headers,
+                    this.body,
+                    this.contentType,
+                    this.responseTime,
+                    this.processingTime,
+                    this.errorMessage,
+                    this.attributes);
         }
     }
 }

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
-        <artifactId>loadup-dependencies</artifactId>
+        <artifactId>loadup-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
     </parent>
     <artifactId>loadup-gateway</artifactId>
@@ -30,24 +29,20 @@
             <email>lslvxy@gmail.com</email>
         </developer>
     </developers>
-    <scm>
-        <connection>scm:git:git://github.com/loadup-cloud/loadup-gateway.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/loadup-cloud/loadup-gateway.git</developerConnection>
-        <url>https://github.com/loadup-cloud/loadup-gateway</url>
-    </scm>
 
     <modules>
         <module>loadup-gateway-core</module>
         <module>loadup-gateway-facade</module>
         <module>loadup-gateway-starter</module>
         <module>loadup-gateway-test</module>
-        <module>plugins/proxy-http-plugin</module>
-        <module>plugins/proxy-rpc-plugin</module>
-        <module>plugins/proxy-springbean-plugin</module>
-        <module>plugins/repository-yaml-plugin</module>
-        <module>plugins/repository-database-plugin</module>
+        <module>plugins</module>
 
     </modules>
+    <scm>
+        <connection>scm:git:git://github.com/loadup-cloud/loadup-gateway.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/loadup-cloud/loadup-gateway.git</developerConnection>
+        <url>https://github.com/loadup-cloud/loadup-gateway</url>
+    </scm>
 
     <properties>
         <java.version>21</java.version>
@@ -78,7 +73,9 @@
         <palantir-java-format.version>2.86.0</palantir-java-format.version>
         <findsecbugs-plugin.version>1.13.0</findsecbugs-plugin.version>
 
-        <!-- Annotation processor versions -->        <mapstruct.version>1.6.3</mapstruct.version>        <mybatis-flex.version>1.11.7</mybatis-flex.version>
+        <!-- Annotation processor versions -->
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <mybatis-flex.version>1.11.7</mybatis-flex.version>
         <spring-boot.version>4.1.0</spring-boot.version>
 
         <!-- Flyway plugin support -->
@@ -113,7 +110,8 @@
                         <compilerArgs>
                             <compilerArg>-Xlint:all</compilerArg>
                         </compilerArgs>
-                        <annotationProcessorPaths>                            <path>
+                        <annotationProcessorPaths>
+                            <path>
                                 <groupId>org.mapstruct</groupId>
                                 <artifactId>mapstruct-processor</artifactId>
                                 <version>${mapstruct.version}</version>
@@ -387,8 +385,7 @@
                         <threshold>Medium</threshold>
                         <failOnError>true</failOnError>
                         <skip>${skip.spotbugs}</skip>
-                        <excludeFilterFile>${maven.multiModuleProjectDirectory}/config/quality/spotbugs-exclude.xml
-                        </excludeFilterFile>
+                        <excludeFilterFile>${maven.multiModuleProjectDirectory}/config/quality/spotbugs-exclude.xml</excludeFilterFile>
                         <plugins>
                             <plugin>
                                 <groupId>com.h3xstream.findsecbugs</groupId>
@@ -448,19 +445,14 @@
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <version>${checkstyle-plugin.version}</version>
                     <configuration>
-                        <configLocation>${maven.multiModuleProjectDirectory}/config/quality/checkstyle.xml
-                        </configLocation>
-                        <suppressionsLocation>
-                            ${maven.multiModuleProjectDirectory}/config/quality/checkstyle-suppressions.xml
-                        </suppressionsLocation>
+                        <configLocation>${maven.multiModuleProjectDirectory}/config/quality/checkstyle.xml</configLocation>
+                        <suppressionsLocation>${maven.multiModuleProjectDirectory}/config/quality/checkstyle-suppressions.xml</suppressionsLocation>
                         <failsOnError>true</failsOnError>
                         <failOnViolation>true</failOnViolation>
                         <violationSeverity>warning</violationSeverity>
                         <skip>${skip.checkstyle}</skip>
                         <includeTestSourceDirectory>false</includeTestSourceDirectory>
-                        <excludes>
-                            **/generated/**,**/target/**,**/framework/api/**,**/commons/result/**,**/commons/request/**,**/commons/dto/**,**/commons/util/**
-                        </excludes>
+                        <excludes>**/generated/**,**/target/**,**/framework/api/**,**/commons/result/**,**/commons/request/**,**/commons/dto/**,**/commons/util/**</excludes>
                     </configuration>
                     <executions>
                         <execution>
@@ -479,8 +471,7 @@
                     <configuration>
                         <skip>${skip.dependency.check}</skip>
                         <failBuildOnCVSS>7</failBuildOnCVSS>
-                        <suppressionFile>${maven.multiModuleProjectDirectory}/config/quality/owasp-suppressions.xml
-                        </suppressionFile>
+                        <suppressionFile>${maven.multiModuleProjectDirectory}/config/quality/owasp-suppressions.xml</suppressionFile>
                         <formats>
                             <format>HTML</format>
                             <format>JSON</format>

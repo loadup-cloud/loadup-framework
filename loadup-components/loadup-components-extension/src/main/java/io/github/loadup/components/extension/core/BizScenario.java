@@ -28,7 +28,6 @@ public record BizScenario(String bizCode, String useCase, String scenario) {
     public static final String DEFAULT_SCENARIO = "#defaultScenario#";
     private static final String DOT_SEPARATOR = ".";
 
-
     public String getUniqueIdentity() {
         return bizCode + DOT_SEPARATOR + useCase + DOT_SEPARATOR + scenario;
     }

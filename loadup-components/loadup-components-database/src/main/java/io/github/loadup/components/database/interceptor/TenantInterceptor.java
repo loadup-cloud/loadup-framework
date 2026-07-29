@@ -28,12 +28,11 @@ import io.github.loadup.components.database.tenant.TenantContextHolder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
-import org.springframework.web.servlet.HandlerInterceptor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.servlet.HandlerInterceptor;
+
 /**
  * Multi-Tenant Interceptor for MyBatis-Flex
  *
@@ -46,9 +45,8 @@ import org.slf4j.LoggerFactory;
 public class TenantInterceptor implements HandlerInterceptor {
     private static final Logger log = LoggerFactory.getLogger(TenantInterceptor.class);
 
-
     private final DatabaseProperties databaseProperties;
-    private final Set<String> ignoreTables ;
+    private final Set<String> ignoreTables;
 
     /**
      * Initialize tenant interceptor

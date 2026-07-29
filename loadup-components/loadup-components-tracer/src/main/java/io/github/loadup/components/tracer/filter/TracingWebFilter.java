@@ -37,15 +37,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Servlet filter that instruments every incoming HTTP request with an OpenTelemetry span.
  *
@@ -65,12 +64,23 @@ import org.slf4j.LoggerFactory;
 public class TracingWebFilter extends OncePerRequestFilter {
     private static final Logger log = LoggerFactory.getLogger(TracingWebFilter.class);
 
-
     private static final TextMapGetter<HttpServletRequest> GETTER = new HttpServletRequestGetter();
 
     private final TracerProperties properties;
     private final OpenTelemetry openTelemetry;
-    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+    private final AntPathMatcher pathMatcher;
+
+    public TracingWebFilter(TracerProperties properties, OpenTelemetry openTelemetry) {
+        this.properties = properties;
+        this.openTelemetry = openTelemetry;
+        this.pathMatcher = new AntPathMatcher();
+    }
+
+    public TracingWebFilter(TracerProperties properties, OpenTelemetry openTelemetry, AntPathMatcher pathMatcher) {
+        this.properties = properties;
+        this.openTelemetry = openTelemetry;
+        this.pathMatcher = pathMatcher;
+    }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -159,7 +169,6 @@ public class TracingWebFilter extends OncePerRequestFilter {
         return "loadup-tracer";
     }
 
-
     /**
      * Adapts {@link HttpServletRequest} to the OTel {@link TextMapGetter} contract.
      */
@@ -173,11 +182,5 @@ public class TracingWebFilter extends OncePerRequestFilter {
         public String get(HttpServletRequest carrier, String key) {
             return carrier == null ? null : carrier.getHeader(key);
         }
-    }
-
-    public TracingWebFilter(TracerProperties properties, OpenTelemetry openTelemetry, AntPathMatcher pathMatcher) {
-        this.properties = properties;
-        this.openTelemetry = openTelemetry;
-        this.pathMatcher = pathMatcher;
     }
 }

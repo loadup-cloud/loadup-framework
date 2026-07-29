@@ -22,27 +22,22 @@ package com.github.loadup.components.scheduler.xxljob.autoconfig;
  * #L%
  */
 
-import com.github.loadup.components.scheduler.xxljob.binder.XxlJobSchedulerBinder;
-import com.github.loadup.components.scheduler.xxljob.cfg.XxlJobSchedulerBinderCfg;
-import io.github.loadup.components.scheduler.binding.DefaultSchedulerBinding;
-import io.github.loadup.components.scheduler.cfg.SchedulerBindingCfg;
-import io.github.loadup.framework.api.manager.BindingMetadata;
+import com.github.loadup.components.scheduler.xxljob.XxlJobSchedulerConfig;
+import com.github.loadup.components.scheduler.xxljob.XxlJobSchedulerProvider;
+import io.github.loadup.components.scheduler.SchedulerProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 @AutoConfiguration
-@ConditionalOnClass(XxlJobSchedulerBinder.class)
+@ConditionalOnProperty(prefix = "loadup.scheduler", name = "binder-type", havingValue = "xxljob")
+@EnableConfigurationProperties(XxlJobSchedulerConfig.class)
 public class XxlJobSchedulerAutoConfiguration {
-
     @Bean
-    public BindingMetadata<?, ?, ?, ?> simpleJobMetadata() {
-        return new BindingMetadata<>(
-                "xxljob",
-                DefaultSchedulerBinding.class,
-                XxlJobSchedulerBinder.class,
-                SchedulerBindingCfg.class,
-                XxlJobSchedulerBinderCfg.class,
-                ctx -> new DefaultSchedulerBinding());
+    @ConditionalOnMissingBean
+    public SchedulerProvider xxlJobSchedulerProvider(XxlJobSchedulerConfig config) {
+        return new XxlJobSchedulerProvider(config);
     }
 }

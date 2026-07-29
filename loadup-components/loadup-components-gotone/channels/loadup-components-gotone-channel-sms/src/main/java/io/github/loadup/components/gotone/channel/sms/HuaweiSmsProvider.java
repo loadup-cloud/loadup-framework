@@ -22,17 +22,15 @@ package io.github.loadup.components.gotone.channel.sms;
  * #L%
  */
 
-import io.github.loadup.components.gotone.api.NotificationChannelProvider;
-import io.github.loadup.components.gotone.enums.NotificationChannel;
+import io.github.loadup.components.gotone.GotoneProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import org.springframework.beans.factory.annotation.Value;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * 华为云短信渠道提供商
  *
@@ -45,9 +43,8 @@ import org.slf4j.LoggerFactory;
  * loadup.gotone.sms.huawei.endpoint=https://smsapi.cn-north-4.myhuaweicloud.com:443
  * </pre>
  */
-public class HuaweiSmsProvider implements NotificationChannelProvider {
+public class HuaweiSmsProvider implements GotoneProvider {
     private static final Logger log = LoggerFactory.getLogger(HuaweiSmsProvider.class);
-
 
     private final String appKey;
 
@@ -60,8 +57,8 @@ public class HuaweiSmsProvider implements NotificationChannelProvider {
     private final String endpoint;
 
     @Override
-    public NotificationChannel getChannel() {
-        return NotificationChannel.SMS;
+    public String getChannelType() {
+        return "SMS";
     }
 
     @Override
@@ -134,13 +131,13 @@ public class HuaweiSmsProvider implements NotificationChannelProvider {
                 }
             }
 
-            return ChannelSendResponse.builder()
-                    .content(request.getContent())
-                    .successCount(successCount)
-                    .failedCount(failedCount)
-                    .receiverStatus(receiverStatus)
-                    .receiverErrors(receiverErrors)
-                    .build();
+            ChannelSendResponse sendResponse = new ChannelSendResponse();
+            sendResponse.setContent(request.getContent());
+            sendResponse.setSuccessCount(successCount);
+            sendResponse.setFailedCount(failedCount);
+            sendResponse.setReceiverStatus(receiverStatus);
+            sendResponse.setReceiverErrors(receiverErrors);
+            return sendResponse;
 
         } catch (Exception e) {
             log.error(">>> [GOTONE-SMS-HUAWEI] 发送短信异常", e);
@@ -151,13 +148,13 @@ public class HuaweiSmsProvider implements NotificationChannelProvider {
                 receiverErrors.put(receiver, "系统异常: " + e.getMessage());
             }
 
-            return ChannelSendResponse.builder()
-                    .content(request.getContent())
-                    .successCount(0)
-                    .failedCount(request.getReceivers().size())
-                    .receiverStatus(receiverStatus)
-                    .receiverErrors(receiverErrors)
-                    .build();
+            ChannelSendResponse sendResponse = new ChannelSendResponse();
+            sendResponse.setContent(request.getContent());
+            sendResponse.setSuccessCount(0);
+            sendResponse.setFailedCount(request.getReceivers().size());
+            sendResponse.setReceiverStatus(receiverStatus);
+            sendResponse.setReceiverErrors(receiverErrors);
+            return sendResponse;
         }
     }
 
@@ -251,13 +248,13 @@ public class HuaweiSmsProvider implements NotificationChannelProvider {
 
         log.error(">>> [GOTONE-SMS-HUAWEI] {}", errorMessage);
 
-        return ChannelSendResponse.builder()
-                .content(null)
-                .successCount(success)
-                .failedCount(total - success)
-                .receiverStatus(receiverStatus)
-                .receiverErrors(receiverErrors)
-                .build();
+        ChannelSendResponse sendResponse = new ChannelSendResponse();
+        sendResponse.setContent(null);
+        sendResponse.setSuccessCount(success);
+        sendResponse.setFailedCount(total - success);
+        sendResponse.setReceiverStatus(receiverStatus);
+        sendResponse.setReceiverErrors(receiverErrors);
+        return sendResponse;
     }
 
     public HuaweiSmsProvider(String appKey, String appSecret, String sender, String signature, String endpoint) {

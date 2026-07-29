@@ -91,7 +91,19 @@ public class GatewayRequest {
      */
     private Map<String, Object> attributes;
 
-    public GatewayRequest(String requestId, String path, String method, Map<String, String> headers, Map<String, List<String>> queryParameters, Map<String, String> pathParameters, String body, String contentType, String clientIp, String userAgent, LocalDateTime requestTime, Map<String, Object> attributes) {
+    public GatewayRequest(
+            String requestId,
+            String path,
+            String method,
+            Map<String, String> headers,
+            Map<String, List<String>> queryParameters,
+            Map<String, String> pathParameters,
+            String body,
+            String contentType,
+            String clientIp,
+            String userAgent,
+            LocalDateTime requestTime,
+            Map<String, Object> attributes) {
         this.requestId = requestId;
         this.path = path;
         this.method = method;
@@ -106,8 +118,7 @@ public class GatewayRequest {
         this.attributes = attributes;
     }
 
-    public GatewayRequest() {
-    }
+    public GatewayRequest() {}
 
     public String getRequestId() {
         return this.requestId;
@@ -207,7 +218,19 @@ public class GatewayRequest {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(requestId, path, method, headers, queryParameters, pathParameters, body, contentType, clientIp, userAgent, requestTime, attributes);
+        return java.util.Objects.hash(
+                requestId,
+                path,
+                method,
+                headers,
+                queryParameters,
+                pathParameters,
+                body,
+                contentType,
+                clientIp,
+                userAgent,
+                requestTime,
+                attributes);
     }
 
     @Override
@@ -232,7 +255,11 @@ public class GatewayRequest {
 
     @Override
     public String toString() {
-        return "GatewayRequest(" + "requestId=" + requestId + ", " + "path=" + path + ", " + "method=" + method + ", " + "headers=" + headers + ", " + "queryParameters=" + queryParameters + ", " + "pathParameters=" + pathParameters + ", " + "body=" + body + ", " + "contentType=" + contentType + ", " + "clientIp=" + clientIp + ", " + "userAgent=" + userAgent + ", " + "requestTime=" + requestTime + ", " + "attributes=" + attributes + ")";
+        return "GatewayRequest(" + "requestId=" + requestId + ", " + "path=" + path + ", " + "method=" + method + ", "
+                + "headers=" + headers + ", " + "queryParameters=" + queryParameters + ", " + "pathParameters="
+                + pathParameters + ", " + "body=" + body + ", " + "contentType=" + contentType + ", " + "clientIp="
+                + clientIp + ", " + "userAgent=" + userAgent + ", " + "requestTime=" + requestTime + ", "
+                + "attributes=" + attributes + ")";
     }
 
     public static Builder builder() {
@@ -314,7 +341,19 @@ public class GatewayRequest {
         }
 
         public GatewayRequest build() {
-            return new GatewayRequest(this.requestId, this.path, this.method, this.headers, this.queryParameters, this.pathParameters, this.body, this.contentType, this.clientIp, this.userAgent, this.requestTime, this.attributes);
+            return new GatewayRequest(
+                    this.requestId,
+                    this.path,
+                    this.method,
+                    this.headers,
+                    this.queryParameters,
+                    this.pathParameters,
+                    this.body,
+                    this.contentType,
+                    this.clientIp,
+                    this.userAgent,
+                    this.requestTime,
+                    this.attributes);
         }
     }
 }

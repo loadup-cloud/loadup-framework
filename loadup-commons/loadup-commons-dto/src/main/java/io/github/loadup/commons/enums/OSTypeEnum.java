@@ -22,7 +22,6 @@ package io.github.loadup.commons.enums;
  * #L%
  */
 
-
 /**
  * @author Lise
  * @since 1.0.0

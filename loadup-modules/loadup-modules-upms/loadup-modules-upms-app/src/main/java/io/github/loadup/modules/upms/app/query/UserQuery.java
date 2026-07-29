@@ -22,7 +22,6 @@ package io.github.loadup.modules.upms.app.query;
  * #L%
  */
 
-
 /**
  * User Query Parameters
  *
@@ -46,7 +45,19 @@ public class UserQuery {
     private String sortBy = "createdTime";
     private String sortOrder = "DESC";
 
-    public UserQuery(String username, String nickname, String realName, String email, String mobile, String deptId, Short status, Boolean deleted, Integer page, Integer size, String sortBy, String sortOrder) {
+    public UserQuery(
+            String username,
+            String nickname,
+            String realName,
+            String email,
+            String mobile,
+            String deptId,
+            Short status,
+            Boolean deleted,
+            Integer page,
+            Integer size,
+            String sortBy,
+            String sortOrder) {
         this.username = username;
         this.nickname = nickname;
         this.realName = realName;
@@ -61,8 +72,7 @@ public class UserQuery {
         this.sortOrder = sortOrder;
     }
 
-    public UserQuery() {
-    }
+    public UserQuery() {}
 
     public String getUsername() {
         return this.username;
@@ -162,7 +172,8 @@ public class UserQuery {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(username, nickname, realName, email, mobile, deptId, status, deleted, page, size, sortBy, sortOrder);
+        return java.util.Objects.hash(
+                username, nickname, realName, email, mobile, deptId, status, deleted, page, size, sortBy, sortOrder);
     }
 
     @Override
@@ -187,7 +198,10 @@ public class UserQuery {
 
     @Override
     public String toString() {
-        return "UserQuery(" + "username=" + username + ", " + "nickname=" + nickname + ", " + "realName=" + realName + ", " + "email=" + email + ", " + "mobile=" + mobile + ", " + "deptId=" + deptId + ", " + "status=" + status + ", " + "deleted=" + deleted + ", " + "page=" + page + ", " + "size=" + size + ", " + "sortBy=" + sortBy + ", " + "sortOrder=" + sortOrder + ")";
+        return "UserQuery(" + "username=" + username + ", " + "nickname=" + nickname + ", " + "realName=" + realName
+                + ", " + "email=" + email + ", " + "mobile=" + mobile + ", " + "deptId=" + deptId + ", " + "status="
+                + status + ", " + "deleted=" + deleted + ", " + "page=" + page + ", " + "size=" + size + ", "
+                + "sortBy=" + sortBy + ", " + "sortOrder=" + sortOrder + ")";
     }
 
     public static Builder builder() {
@@ -269,7 +283,19 @@ public class UserQuery {
         }
 
         public UserQuery build() {
-            return new UserQuery(this.username, this.nickname, this.realName, this.email, this.mobile, this.deptId, this.status, this.deleted, this.page, this.size, this.sortBy, this.sortOrder);
+            return new UserQuery(
+                    this.username,
+                    this.nickname,
+                    this.realName,
+                    this.email,
+                    this.mobile,
+                    this.deptId,
+                    this.status,
+                    this.deleted,
+                    this.page,
+                    this.size,
+                    this.sortBy,
+                    this.sortOrder);
         }
     }
 }

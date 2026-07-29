@@ -1,5 +1,27 @@
 package io.github.loadup.gateway.core.filter;
 
+/*-
+ * #%L
+ * LoadUp Gateway Core
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import io.github.loadup.commons.result.Result;
 import io.github.loadup.commons.result.ResultMeta;
 import io.github.loadup.commons.util.JsonUtil;
@@ -15,6 +37,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Response wrapper filter — wraps backend responses in standard {@code {result, data, meta}} format.
  *
@@ -23,7 +46,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ResponseWrapperFilter implements GatewayFilter {
     private static final Logger log = LoggerFactory.getLogger(ResponseWrapperFilter.class);
-
 
     private final GatewayProperties gatewayProperties;
 
@@ -59,9 +81,7 @@ public class ResponseWrapperFilter implements GatewayFilter {
 
         if (shouldWrap) {
             try {
-                Object data = response.getBody() != null
-                        ? JsonUtil.fromJson(response.getBody(), Object.class)
-                        : null;
+                Object data = response.getBody() != null ? JsonUtil.fromJson(response.getBody(), Object.class) : null;
                 if (data == null) data = response.getBody();
 
                 Map<String, Object> wrapper = new LinkedHashMap<>();
@@ -73,8 +93,8 @@ public class ResponseWrapperFilter implements GatewayFilter {
                 response.setBody(newBody);
                 if (response.getHeaders() == null) response.setHeaders(new HashMap<>());
                 response.getHeaders().put("Content-Type", "application/json");
-                response.getHeaders().put("Content-Length",
-                        String.valueOf(newBody.getBytes(StandardCharsets.UTF_8).length));
+                response.getHeaders()
+                        .put("Content-Length", String.valueOf(newBody.getBytes(StandardCharsets.UTF_8).length));
             } catch (Exception e) {
                 log.error("Failed to wrap response", e);
             }

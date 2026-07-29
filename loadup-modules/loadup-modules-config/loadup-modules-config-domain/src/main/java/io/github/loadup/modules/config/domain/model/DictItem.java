@@ -48,7 +48,19 @@ public class DictItem {
     private String updatedBy;
     private LocalDateTime updatedAt;
 
-    public DictItem(String id, String dictCode, String itemLabel, String itemValue, String parentValue, String cssClass, Integer sortOrder, Boolean enabled, String createdBy, LocalDateTime createdAt, String updatedBy, LocalDateTime updatedAt) {
+    public DictItem(
+            String id,
+            String dictCode,
+            String itemLabel,
+            String itemValue,
+            String parentValue,
+            String cssClass,
+            Integer sortOrder,
+            Boolean enabled,
+            String createdBy,
+            LocalDateTime createdAt,
+            String updatedBy,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.dictCode = dictCode;
         this.itemLabel = itemLabel;
@@ -63,8 +75,7 @@ public class DictItem {
         this.updatedAt = updatedAt;
     }
 
-    public DictItem() {
-    }
+    public DictItem() {}
 
     public String getId() {
         return this.id;
@@ -164,7 +175,19 @@ public class DictItem {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, dictCode, itemLabel, itemValue, parentValue, cssClass, sortOrder, enabled, createdBy, createdAt, updatedBy, updatedAt);
+        return java.util.Objects.hash(
+                id,
+                dictCode,
+                itemLabel,
+                itemValue,
+                parentValue,
+                cssClass,
+                sortOrder,
+                enabled,
+                createdBy,
+                createdAt,
+                updatedBy,
+                updatedAt);
     }
 
     @Override
@@ -189,7 +212,10 @@ public class DictItem {
 
     @Override
     public String toString() {
-        return "DictItem(" + "id=" + id + ", " + "dictCode=" + dictCode + ", " + "itemLabel=" + itemLabel + ", " + "itemValue=" + itemValue + ", " + "parentValue=" + parentValue + ", " + "cssClass=" + cssClass + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy=" + createdBy + ", " + "createdAt=" + createdAt + ", " + "updatedBy=" + updatedBy + ", " + "updatedAt=" + updatedAt + ")";
+        return "DictItem(" + "id=" + id + ", " + "dictCode=" + dictCode + ", " + "itemLabel=" + itemLabel + ", "
+                + "itemValue=" + itemValue + ", " + "parentValue=" + parentValue + ", " + "cssClass=" + cssClass + ", "
+                + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy=" + createdBy + ", "
+                + "createdAt=" + createdAt + ", " + "updatedBy=" + updatedBy + ", " + "updatedAt=" + updatedAt + ")";
     }
 
     public static Builder builder() {
@@ -271,7 +297,19 @@ public class DictItem {
         }
 
         public DictItem build() {
-            return new DictItem(this.id, this.dictCode, this.itemLabel, this.itemValue, this.parentValue, this.cssClass, this.sortOrder, this.enabled, this.createdBy, this.createdAt, this.updatedBy, this.updatedAt);
+            return new DictItem(
+                    this.id,
+                    this.dictCode,
+                    this.itemLabel,
+                    this.itemValue,
+                    this.parentValue,
+                    this.cssClass,
+                    this.sortOrder,
+                    this.enabled,
+                    this.createdBy,
+                    this.createdAt,
+                    this.updatedBy,
+                    this.updatedAt);
         }
     }
 }

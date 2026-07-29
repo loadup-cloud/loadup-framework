@@ -2,9 +2,9 @@ package io.github.loadup.components.gotone.channel.sms.config;
 
 /*-
  * #%L
- * loadup-components-gotone-channel-sms
+ * Loadup Gotone Channel SMS
  * %%
- * Copyright (C) 2026 LoadUp Cloud
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,64 +22,57 @@ package io.github.loadup.components.gotone.channel.sms.config;
  * #L%
  */
 
-import io.github.loadup.components.gotone.api.NotificationChannelProvider;
+import io.github.loadup.components.gotone.GotoneProvider;
+import io.github.loadup.components.gotone.channel.sms.AliyunSmsConfig;
 import io.github.loadup.components.gotone.channel.sms.AliyunSmsProvider;
+import io.github.loadup.components.gotone.channel.sms.HuaweiSmsConfig;
 import io.github.loadup.components.gotone.channel.sms.HuaweiSmsProvider;
+import io.github.loadup.components.gotone.channel.sms.YunpianSmsConfig;
 import io.github.loadup.components.gotone.channel.sms.YunpianSmsProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-/**
- * SMS Channel Auto Configuration.
- *
- * <p>支持多个 SMS 提供商：
- * <ul>
- *   <li>aliyun - 阿里云短信</li>
- *   <li>huawei - 华为云短信</li>
- *   <li>yunpian - 云片短信</li>
- * </ul>
- */
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+
+@AutoConfiguration
+@EnableConfigurationProperties({AliyunSmsConfig.class, HuaweiSmsConfig.class, YunpianSmsConfig.class})
 public class SmsChannelAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(SmsChannelAutoConfiguration.class);
 
-
-    /**
-     * 阿里云短信提供商
-     */
     @Bean
     @ConditionalOnProperty(
-            prefix = "loadup.gotone.sms.aliyun",
+            prefix = "loadup.gotone.binder.sms.aliyun",
             name = "enabled",
             havingValue = "true",
             matchIfMissing = true)
     @ConditionalOnMissingBean(name = "aliyunSmsProvider")
-    public NotificationChannelProvider aliyunSmsProvider() {
+    public GotoneProvider aliyunSmsProvider(AliyunSmsConfig config) {
         log.info(">>> [GOTONE] AliyunSmsProvider initialized");
-        return new AliyunSmsProvider();
+        return new AliyunSmsProvider(
+                config.getAccessKeyId(), config.getAccessKeySecret(), config.getSignName(), config.getRegionId());
     }
 
-    /**
-     * 华为云短信提供商
-     */
     @Bean
-    @ConditionalOnProperty(prefix = "loadup.gotone.sms.huawei", name = "enabled", havingValue = "true")
+    @ConditionalOnProperty(prefix = "loadup.gotone.binder.sms.huawei", name = "enabled", havingValue = "true")
     @ConditionalOnMissingBean(name = "huaweiSmsProvider")
-    public NotificationChannelProvider huaweiSmsProvider() {
+    public GotoneProvider huaweiSmsProvider(HuaweiSmsConfig config) {
         log.info(">>> [GOTONE] HuaweiSmsProvider initialized");
-        return new HuaweiSmsProvider();
+        return new HuaweiSmsProvider(
+                config.getAppKey(),
+                config.getAppSecret(),
+                config.getSender(),
+                config.getSignature(),
+                config.getEndpoint());
     }
 
-    /**
-     * 云片短信提供商
-     */
     @Bean
-    @ConditionalOnProperty(prefix = "loadup.gotone.sms.yunpian", name = "enabled", havingValue = "true")
+    @ConditionalOnProperty(prefix = "loadup.gotone.binder.sms.yunpian", name = "enabled", havingValue = "true")
     @ConditionalOnMissingBean(name = "yunpianSmsProvider")
-    public NotificationChannelProvider yunpianSmsProvider() {
+    public GotoneProvider yunpianSmsProvider(YunpianSmsConfig config) {
         log.info(">>> [GOTONE] YunpianSmsProvider initialized");
-        return new YunpianSmsProvider();
+        return new YunpianSmsProvider(config.getApiKey(), config.getApiUrl());
     }
 }

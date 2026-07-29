@@ -35,16 +35,15 @@ import java.util.Map;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 public class SqlExecutionEngine {
     private static final Logger log = LoggerFactory.getLogger(SqlExecutionEngine.class);
-
 
     private final JdbcTemplate jdbcTemplate;
     private final VariableEngine variableEngine;

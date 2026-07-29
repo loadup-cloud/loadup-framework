@@ -24,8 +24,9 @@ package io.github.loadup.components.gotone.channel.email.config;
 
 import io.github.loadup.components.gotone.GotoneProvider;
 import io.github.loadup.components.gotone.channel.email.SmtpEmailProvider;
-import jakarta.mail.internet.MimeMessage;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -33,13 +34,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "loadup.gotone.binder.email.smtp", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(
+        prefix = "loadup.gotone.binder.email.smtp",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 public class EmailChannelAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(EmailChannelAutoConfiguration.class);
-
 
     @Bean
     @ConditionalOnMissingBean(JavaMailSender.class)

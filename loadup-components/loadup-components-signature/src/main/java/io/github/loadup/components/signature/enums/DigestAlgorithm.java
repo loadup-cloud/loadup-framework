@@ -22,7 +22,6 @@ package io.github.loadup.components.signature.enums;
  * #L%
  */
 
-
 /**
  * 摘要算法枚举
  *
@@ -68,18 +67,18 @@ public enum DigestAlgorithm {
     /**
      * 是否为 HMAC 算法
      */
-    private final boolean isHmac;
+    private final boolean hmac;
 
     DigestAlgorithm(String jcaName, boolean isHmac) {
         this.jcaName = jcaName;
-        this.isHmac = isHmac;
+        this.hmac = isHmac;
     }
 
     public String getJcaName() {
         return this.jcaName;
     }
 
-    public boolean isIsHmac() {
-        return this.isHmac;
+    public boolean isHmac() {
+        return hmac;
     }
 }

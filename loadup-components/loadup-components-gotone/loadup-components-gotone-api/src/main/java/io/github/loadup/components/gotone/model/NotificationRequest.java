@@ -89,7 +89,13 @@ public class NotificationRequest implements Serializable {
      */
     private Boolean async;
 
-    public NotificationRequest(String serviceCode, List<String> receivers, Map<String, Object> templateParams, String requestId, List<String> channels, Boolean async) {
+    public NotificationRequest(
+            String serviceCode,
+            List<String> receivers,
+            Map<String, Object> templateParams,
+            String requestId,
+            List<String> channels,
+            Boolean async) {
         this.serviceCode = serviceCode;
         this.receivers = receivers;
         this.templateParams = templateParams;
@@ -98,8 +104,7 @@ public class NotificationRequest implements Serializable {
         this.async = async;
     }
 
-    public NotificationRequest() {
-    }
+    public NotificationRequest() {}
 
     public String getServiceCode() {
         return this.serviceCode;
@@ -170,7 +175,9 @@ public class NotificationRequest implements Serializable {
 
     @Override
     public String toString() {
-        return "NotificationRequest(" + "serviceCode=" + serviceCode + ", " + "receivers=" + receivers + ", " + "templateParams=" + templateParams + ", " + "requestId=" + requestId + ", " + "channels=" + channels + ", " + "async=" + async + ")";
+        return "NotificationRequest(" + "serviceCode=" + serviceCode + ", " + "receivers=" + receivers + ", "
+                + "templateParams=" + templateParams + ", " + "requestId=" + requestId + ", " + "channels=" + channels
+                + ", " + "async=" + async + ")";
     }
 
     public static Builder builder() {
@@ -216,7 +223,8 @@ public class NotificationRequest implements Serializable {
         }
 
         public NotificationRequest build() {
-            return new NotificationRequest(this.serviceCode, this.receivers, this.templateParams, this.requestId, this.channels, this.async);
+            return new NotificationRequest(
+                    this.serviceCode, this.receivers, this.templateParams, this.requestId, this.channels, this.async);
         }
     }
 }

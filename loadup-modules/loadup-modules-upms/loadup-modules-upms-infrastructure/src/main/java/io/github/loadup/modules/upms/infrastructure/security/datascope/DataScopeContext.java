@@ -110,7 +110,13 @@ public class DataScopeContext {
                 .orElse("");
     }
 
-    public DataScopeContext(String userId, String deptId, DataScopeType dataScopeType, List<String> customDeptIds, List<String> subDeptIds, boolean isSuperAdmin) {
+    public DataScopeContext(
+            String userId,
+            String deptId,
+            DataScopeType dataScopeType,
+            List<String> customDeptIds,
+            List<String> subDeptIds,
+            boolean isSuperAdmin) {
         this.userId = userId;
         this.deptId = deptId;
         this.dataScopeType = dataScopeType;
@@ -119,8 +125,7 @@ public class DataScopeContext {
         this.isSuperAdmin = isSuperAdmin;
     }
 
-    public DataScopeContext() {
-    }
+    public DataScopeContext() {}
 
     public String getUserId() {
         return this.userId;
@@ -191,7 +196,9 @@ public class DataScopeContext {
 
     @Override
     public String toString() {
-        return "DataScopeContext(" + "userId=" + userId + ", " + "deptId=" + deptId + ", " + "dataScopeType=" + dataScopeType + ", " + "customDeptIds=" + customDeptIds + ", " + "subDeptIds=" + subDeptIds + ", " + "isSuperAdmin=" + isSuperAdmin + ")";
+        return "DataScopeContext(" + "userId=" + userId + ", " + "deptId=" + deptId + ", " + "dataScopeType="
+                + dataScopeType + ", " + "customDeptIds=" + customDeptIds + ", " + "subDeptIds=" + subDeptIds + ", "
+                + "isSuperAdmin=" + isSuperAdmin + ")";
     }
 
     public static Builder builder() {
@@ -237,7 +244,13 @@ public class DataScopeContext {
         }
 
         public DataScopeContext build() {
-            return new DataScopeContext(this.userId, this.deptId, this.dataScopeType, this.customDeptIds, this.subDeptIds, this.isSuperAdmin);
+            return new DataScopeContext(
+                    this.userId,
+                    this.deptId,
+                    this.dataScopeType,
+                    this.customDeptIds,
+                    this.subDeptIds,
+                    this.isSuperAdmin);
         }
     }
 }

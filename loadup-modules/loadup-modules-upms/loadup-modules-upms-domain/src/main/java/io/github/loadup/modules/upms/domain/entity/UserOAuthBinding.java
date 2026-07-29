@@ -97,246 +97,107 @@ public class UserOAuthBinding {
      */
     private LocalDateTime updatedAt;
 
-    public UserOAuthBinding(String id, String userId, String provider, String openId, String unionId, String nickname, String avatar, String accessToken, String refreshToken, LocalDateTime expiresAt, LocalDateTime boundAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.userId = userId;
-        this.provider = provider;
-        this.openId = openId;
-        this.unionId = unionId;
-        this.nickname = nickname;
-        this.avatar = avatar;
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
-        this.expiresAt = expiresAt;
-        this.boundAt = boundAt;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
-    public UserOAuthBinding() {
-    }
-
     public String getId() {
-        return this.id;
-    }
-
-    public String getUserId() {
-        return this.userId;
-    }
-
-    public String getProvider() {
-        return this.provider;
-    }
-
-    public String getOpenId() {
-        return this.openId;
-    }
-
-    public String getUnionId() {
-        return this.unionId;
-    }
-
-    public String getNickname() {
-        return this.nickname;
-    }
-
-    public String getAvatar() {
-        return this.avatar;
-    }
-
-    public String getAccessToken() {
-        return this.accessToken;
-    }
-
-    public String getRefreshToken() {
-        return this.refreshToken;
-    }
-
-    public LocalDateTime getExpiresAt() {
-        return this.expiresAt;
-    }
-
-    public LocalDateTime getBoundAt() {
-        return this.boundAt;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return this.updatedAt;
+        return id;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getProvider() {
+        return provider;
     }
 
     public void setProvider(String provider) {
         this.provider = provider;
     }
 
+    public String getOpenId() {
+        return openId;
+    }
+
     public void setOpenId(String openId) {
         this.openId = openId;
+    }
+
+    public String getUnionId() {
+        return unionId;
     }
 
     public void setUnionId(String unionId) {
         this.unionId = unionId;
     }
 
+    public String getNickname() {
+        return nickname;
+    }
+
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public String getAvatar() {
+        return avatar;
     }
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 
+    public String getAccessToken() {
+        return accessToken;
+    }
+
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 
+    public LocalDateTime getExpiresAt() {
+        return expiresAt;
+    }
+
     public void setExpiresAt(LocalDateTime expiresAt) {
         this.expiresAt = expiresAt;
+    }
+
+    public LocalDateTime getBoundAt() {
+        return boundAt;
     }
 
     public void setBoundAt(LocalDateTime boundAt) {
         this.boundAt = boundAt;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(id, userId, provider, openId, unionId, nickname, avatar, accessToken, refreshToken, expiresAt, boundAt, createdAt, updatedAt);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserOAuthBinding other = (UserOAuthBinding) o;
-        if (!java.util.Objects.equals(id, other.id)) return false;
-        if (!java.util.Objects.equals(userId, other.userId)) return false;
-        if (!java.util.Objects.equals(provider, other.provider)) return false;
-        if (!java.util.Objects.equals(openId, other.openId)) return false;
-        if (!java.util.Objects.equals(unionId, other.unionId)) return false;
-        if (!java.util.Objects.equals(nickname, other.nickname)) return false;
-        if (!java.util.Objects.equals(avatar, other.avatar)) return false;
-        if (!java.util.Objects.equals(accessToken, other.accessToken)) return false;
-        if (!java.util.Objects.equals(refreshToken, other.refreshToken)) return false;
-        if (!java.util.Objects.equals(expiresAt, other.expiresAt)) return false;
-        if (!java.util.Objects.equals(boundAt, other.boundAt)) return false;
-        if (!java.util.Objects.equals(createdAt, other.createdAt)) return false;
-        if (!java.util.Objects.equals(updatedAt, other.updatedAt)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "UserOAuthBinding(" + "id=" + id + ", " + "userId=" + userId + ", " + "provider=" + provider + ", " + "openId=" + openId + ", " + "unionId=" + unionId + ", " + "nickname=" + nickname + ", " + "avatar=" + avatar + ", " + "accessToken=" + accessToken + ", " + "refreshToken=" + refreshToken + ", " + "expiresAt=" + expiresAt + ", " + "boundAt=" + boundAt + ", " + "createdAt=" + createdAt + ", " + "updatedAt=" + updatedAt + ")";
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private String id;
-        private String userId;
-        private String provider;
-        private String openId;
-        private String unionId;
-        private String nickname;
-        private String avatar;
-        private String accessToken;
-        private String refreshToken;
-        private LocalDateTime expiresAt;
-        private LocalDateTime boundAt;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
-
-        public Builder id(String id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder userId(String userId) {
-            this.userId = userId;
-            return this;
-        }
-
-        public Builder provider(String provider) {
-            this.provider = provider;
-            return this;
-        }
-
-        public Builder openId(String openId) {
-            this.openId = openId;
-            return this;
-        }
-
-        public Builder unionId(String unionId) {
-            this.unionId = unionId;
-            return this;
-        }
-
-        public Builder nickname(String nickname) {
-            this.nickname = nickname;
-            return this;
-        }
-
-        public Builder avatar(String avatar) {
-            this.avatar = avatar;
-            return this;
-        }
-
-        public Builder accessToken(String accessToken) {
-            this.accessToken = accessToken;
-            return this;
-        }
-
-        public Builder refreshToken(String refreshToken) {
-            this.refreshToken = refreshToken;
-            return this;
-        }
-
-        public Builder expiresAt(LocalDateTime expiresAt) {
-            this.expiresAt = expiresAt;
-            return this;
-        }
-
-        public Builder boundAt(LocalDateTime boundAt) {
-            this.boundAt = boundAt;
-            return this;
-        }
-
-        public Builder createdAt(LocalDateTime createdAt) {
-            this.createdAt = createdAt;
-            return this;
-        }
-
-        public Builder updatedAt(LocalDateTime updatedAt) {
-            this.updatedAt = updatedAt;
-            return this;
-        }
-
-        public UserOAuthBinding build() {
-            return new UserOAuthBinding(this.id, this.userId, this.provider, this.openId, this.unionId, this.nickname, this.avatar, this.accessToken, this.refreshToken, this.expiresAt, this.boundAt, this.createdAt, this.updatedAt);
-        }
     }
 }

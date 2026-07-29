@@ -34,7 +34,14 @@ public class ErrorLogQuery {
     private Integer pageNum;
     private Integer pageSize;
 
-    public ErrorLogQuery(String userId, String errorType, String errorCode, LocalDateTime startTime, LocalDateTime endTime, Integer pageNum, Integer pageSize) {
+    public ErrorLogQuery(
+            String userId,
+            String errorType,
+            String errorCode,
+            LocalDateTime startTime,
+            LocalDateTime endTime,
+            Integer pageNum,
+            Integer pageSize) {
         this.userId = userId;
         this.errorType = errorType;
         this.errorCode = errorCode;
@@ -44,8 +51,7 @@ public class ErrorLogQuery {
         this.pageSize = pageSize;
     }
 
-    public ErrorLogQuery() {
-    }
+    public ErrorLogQuery() {}
 
     public String getUserId() {
         return this.userId;
@@ -125,6 +131,8 @@ public class ErrorLogQuery {
 
     @Override
     public String toString() {
-        return "ErrorLogQuery(" + "userId=" + userId + ", " + "errorType=" + errorType + ", " + "errorCode=" + errorCode + ", " + "startTime=" + startTime + ", " + "endTime=" + endTime + ", " + "pageNum=" + pageNum + ", " + "pageSize=" + pageSize + ")";
+        return "ErrorLogQuery(" + "userId=" + userId + ", " + "errorType=" + errorType + ", " + "errorCode=" + errorCode
+                + ", " + "startTime=" + startTime + ", " + "endTime=" + endTime + ", " + "pageNum=" + pageNum + ", "
+                + "pageSize=" + pageSize + ")";
     }
 }

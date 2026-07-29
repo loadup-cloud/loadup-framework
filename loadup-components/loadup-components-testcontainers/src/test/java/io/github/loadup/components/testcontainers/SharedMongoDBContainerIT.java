@@ -35,12 +35,12 @@ import io.github.loadup.components.testcontainers.database.AbstractMongoDBContai
 import io.github.loadup.components.testcontainers.database.SharedMongoDBContainer;
 import org.bson.Document;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.mongodb.MongoDBContainer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Integration test class for SharedMongoDBContainer.
  *
@@ -48,10 +48,9 @@ import org.slf4j.LoggerFactory;
  * @since 1.0.0
  */
 @SpringBootTest(classes = TestApplication.class)
-@TestPropertySource(properties = {
-    private static final Logger log = LoggerFactory.getLogger(SharedMongoDBContainerIT.class);
-"loadup.testcontainers.enabled=true", "loadup.testcontainers.mongodb.enabled=true"})
+@TestPropertySource(properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.mongodb.enabled=true"})
 class SharedMongoDBContainerIT extends AbstractMongoDBContainerTest {
+    private static final Logger log = LoggerFactory.getLogger(SharedMongoDBContainerIT.class);
 
     @Test
     void testContainerIsRunning() {

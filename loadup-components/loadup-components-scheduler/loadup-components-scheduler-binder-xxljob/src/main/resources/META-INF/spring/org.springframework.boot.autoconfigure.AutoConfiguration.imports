@@ -1,2 +1,1 @@
-io.github.loadup.components.scheduler.xxljob.config.XxlJobSchedulerBinderAutoConfiguration
-
+com.github.loadup.components.scheduler.xxljob.autoconfig.XxlJobSchedulerAutoConfiguration

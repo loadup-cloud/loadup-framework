@@ -38,13 +38,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * OAuth 登录策略
  *
@@ -54,7 +53,6 @@ import org.slf4j.LoggerFactory;
 @Component
 public class OAuthLoginStrategy implements LoginStrategy {
     private static final Logger log = LoggerFactory.getLogger(OAuthLoginStrategy.class);
-
 
     private final Map<String, OAuthProvider> providerMap = new ConcurrentHashMap<>();
     private final UserOAuthBindingGateway bindingGateway;
@@ -168,41 +166,40 @@ public class OAuthLoginStrategy implements LoginStrategy {
             finalUsername = username + "_" + suffix++;
         }
 
-        User user = User.builder()
-                .username(finalUsername)
-                .nickname(oauthUser.getNickname())
-                .avatar(oauthUser.getAvatar())
-                .email(oauthUser.getEmail())
-                .mobile(oauthUser.getMobile())
-                .password(passwordEncoder.encode(UUID.randomUUID().toString())) // 随机密码
-                .deptId("1") // 默认部门
-                .status((short) 1)
-                .accountNonExpired(true)
-                .accountNonLocked(true)
-                .credentialsNonExpired(true)
-                .emailVerified(StringUtils.isNotBlank(oauthUser.getEmail()))
-                .mobileVerified(StringUtils.isNotBlank(oauthUser.getMobile()))
-                .deleted(false)
-                .createdBy("0")
-                .createdTime(LocalDateTime.now())
-                .build();
+        User user = new User();
+        user.setUsername(finalUsername);
+        user.setNickname(oauthUser.getNickname());
+        user.setAvatar(oauthUser.getAvatar());
+        user.setEmail(oauthUser.getEmail());
+        user.setMobile(oauthUser.getMobile());
+        user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString())); // 随机密码;
+        user.setDeptId("1"); // 默认部门;
+        user.setStatus((short) 1);
+        user.setAccountNonExpired(true);
+        user.setAccountNonLocked(true);
+        user.setCredentialsNonExpired(true);
+        user.setEmailVerified(StringUtils.isNotBlank(oauthUser.getEmail()));
+        user.setMobileVerified(StringUtils.isNotBlank(oauthUser.getMobile()));
+        user.setDeleted(false);
+        user.setCreatedBy("0");
+        user.setCreatedTime(LocalDateTime.now());
 
         user = userGateway.save(user);
 
         // 创建绑定关系
-        UserOAuthBinding binding = UserOAuthBinding.builder()
-                .userId(user.getId())
-                .provider(provider)
-                .openId(oauthUser.getOpenId())
-                .unionId(oauthUser.getUnionId())
-                .nickname(oauthUser.getNickname())
-                .avatar(oauthUser.getAvatar())
-                .accessToken(token.getAccessToken()) // TODO: 加密存储
-                .refreshToken(token.getRefreshToken())
-                .expiresAt(token.getExpiresIn() != null ? LocalDateTime.now().plusSeconds(token.getExpiresIn()) : null)
-                .boundAt(LocalDateTime.now())
-                .createdAt(LocalDateTime.now())
-                .build();
+        UserOAuthBinding binding = new UserOAuthBinding();
+        binding.setUserId(user.getId());
+        binding.setProvider(provider);
+        binding.setOpenId(oauthUser.getOpenId());
+        binding.setUnionId(oauthUser.getUnionId());
+        binding.setNickname(oauthUser.getNickname());
+        binding.setAvatar(oauthUser.getAvatar());
+        binding.setAccessToken(token.getAccessToken()); // TODO: 加密存储;
+        binding.setRefreshToken(token.getRefreshToken());
+        binding.setExpiresAt(
+                token.getExpiresIn() != null ? LocalDateTime.now().plusSeconds(token.getExpiresIn()) : null);
+        binding.setBoundAt(LocalDateTime.now());
+        binding.setCreatedAt(LocalDateTime.now());
 
         bindingGateway.save(binding);
 

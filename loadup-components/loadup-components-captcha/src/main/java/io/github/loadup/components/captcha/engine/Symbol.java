@@ -22,7 +22,6 @@ package io.github.loadup.components.captcha.engine;
  * #L%
  */
 
-
 /**
  * 标识符
  *

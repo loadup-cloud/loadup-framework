@@ -80,15 +80,18 @@ public class SignatureProperties {
         return keySize.getOrDefault(algorithm.toLowerCase(Locale.ROOT), 2048);
     }
 
-    public SignatureProperties(boolean enabled, SignatureAlgorithm defaultSignatureAlgorithm, DigestAlgorithm defaultDigestAlgorithm, Map<String, Integer> keySize) {
+    public SignatureProperties(
+            boolean enabled,
+            SignatureAlgorithm defaultSignatureAlgorithm,
+            DigestAlgorithm defaultDigestAlgorithm,
+            Map<String, Integer> keySize) {
         this.enabled = enabled;
         this.defaultSignatureAlgorithm = defaultSignatureAlgorithm;
         this.defaultDigestAlgorithm = defaultDigestAlgorithm;
         this.keySize = keySize;
     }
 
-    public SignatureProperties() {
-    }
+    public SignatureProperties() {}
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -125,6 +128,24 @@ public class SignatureProperties {
 
     @Override
     public String toString() {
-        return "SignatureProperties(" + "enabled=" + enabled + ", " + "defaultSignatureAlgorithm=" + defaultSignatureAlgorithm + ", " + "defaultDigestAlgorithm=" + defaultDigestAlgorithm + ", " + "keySize=" + keySize + ")";
+        return "SignatureProperties(" + "enabled=" + enabled + ", " + "defaultSignatureAlgorithm="
+                + defaultSignatureAlgorithm + ", " + "defaultDigestAlgorithm=" + defaultDigestAlgorithm + ", "
+                + "keySize=" + keySize + ")";
+    }
+
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public SignatureAlgorithm getDefaultSignatureAlgorithm() {
+        return this.defaultSignatureAlgorithm;
+    }
+
+    public DigestAlgorithm getDefaultDigestAlgorithm() {
+        return this.defaultDigestAlgorithm;
+    }
+
+    public Map<String, Integer> getKeySize() {
+        return this.keySize;
     }
 }

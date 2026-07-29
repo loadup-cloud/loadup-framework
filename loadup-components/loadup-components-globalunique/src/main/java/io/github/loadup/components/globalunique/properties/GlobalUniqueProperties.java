@@ -75,8 +75,7 @@ public class GlobalUniqueProperties {
         this.tableName = tableName;
     }
 
-    public GlobalUniqueProperties() {
-    }
+    public GlobalUniqueProperties() {}
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;

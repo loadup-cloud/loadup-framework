@@ -29,7 +29,6 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 
-
 /**
  * @since 1.0.0
  * @author LoadUp Framework
@@ -68,7 +67,20 @@ public class UserUpdateCommand {
     @NotNull(message = "用户ID不能为空")
     private String id;
 
-    public UserUpdateCommand(String updatedBy, String remark, List<String> roleIds, Short status, LocalDate birthday, Short gender, String avatar, String mobile, String email, String deptId, String realName, String nickname, String id) {
+    public UserUpdateCommand(
+            String updatedBy,
+            String remark,
+            List<String> roleIds,
+            Short status,
+            LocalDate birthday,
+            Short gender,
+            String avatar,
+            String mobile,
+            String email,
+            String deptId,
+            String realName,
+            String nickname,
+            String id) {
         this.updatedBy = updatedBy;
         this.remark = remark;
         this.roleIds = roleIds;
@@ -84,8 +96,7 @@ public class UserUpdateCommand {
         this.id = id;
     }
 
-    public UserUpdateCommand() {
-    }
+    public UserUpdateCommand() {}
 
     public String getUpdatedBy() {
         return this.updatedBy;
@@ -193,7 +204,9 @@ public class UserUpdateCommand {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(updatedBy, remark, roleIds, status, birthday, gender, avatar, mobile, email, deptId, realName, nickname, id);
+        return java.util.Objects.hash(
+                updatedBy, remark, roleIds, status, birthday, gender, avatar, mobile, email, deptId, realName, nickname,
+                id);
     }
 
     @Override
@@ -219,6 +232,9 @@ public class UserUpdateCommand {
 
     @Override
     public String toString() {
-        return "UserUpdateCommand(" + "updatedBy=" + updatedBy + ", " + "remark=" + remark + ", " + "roleIds=" + roleIds + ", " + "status=" + status + ", " + "birthday=" + birthday + ", " + "gender=" + gender + ", " + "avatar=" + avatar + ", " + "mobile=" + mobile + ", " + "email=" + email + ", " + "deptId=" + deptId + ", " + "realName=" + realName + ", " + "nickname=" + nickname + ", " + "id=" + id + ")";
+        return "UserUpdateCommand(" + "updatedBy=" + updatedBy + ", " + "remark=" + remark + ", " + "roleIds=" + roleIds
+                + ", " + "status=" + status + ", " + "birthday=" + birthday + ", " + "gender=" + gender + ", "
+                + "avatar=" + avatar + ", " + "mobile=" + mobile + ", " + "email=" + email + ", " + "deptId=" + deptId
+                + ", " + "realName=" + realName + ", " + "nickname=" + nickname + ", " + "id=" + id + ")";
     }
 }

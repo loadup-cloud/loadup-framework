@@ -54,8 +54,7 @@ public class UserPasswordChangeCommand {
         this.confirmPassword = confirmPassword;
     }
 
-    public UserPasswordChangeCommand() {
-    }
+    public UserPasswordChangeCommand() {}
 
     public String getUserId() {
         return this.userId;
@@ -108,6 +107,7 @@ public class UserPasswordChangeCommand {
 
     @Override
     public String toString() {
-        return "UserPasswordChangeCommand(" + "userId=" + userId + ", " + "oldPassword=" + oldPassword + ", " + "newPassword=" + newPassword + ", " + "confirmPassword=" + confirmPassword + ")";
+        return "UserPasswordChangeCommand(" + "userId=" + userId + ", " + "oldPassword=" + oldPassword + ", "
+                + "newPassword=" + newPassword + ", " + "confirmPassword=" + confirmPassword + ")";
     }
 }

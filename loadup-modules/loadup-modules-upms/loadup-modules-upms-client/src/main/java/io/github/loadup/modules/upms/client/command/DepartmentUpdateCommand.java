@@ -59,7 +59,17 @@ public class DepartmentUpdateCommand {
 
     private String updatedBy;
 
-    public DepartmentUpdateCommand(String id, String parentId, String deptName, Integer sortOrder, String leaderUserId, String mobile, String email, Short status, String remark, String updatedBy) {
+    public DepartmentUpdateCommand(
+            String id,
+            String parentId,
+            String deptName,
+            Integer sortOrder,
+            String leaderUserId,
+            String mobile,
+            String email,
+            Short status,
+            String remark,
+            String updatedBy) {
         this.id = id;
         this.parentId = parentId;
         this.deptName = deptName;
@@ -72,8 +82,7 @@ public class DepartmentUpdateCommand {
         this.updatedBy = updatedBy;
     }
 
-    public DepartmentUpdateCommand() {
-    }
+    public DepartmentUpdateCommand() {}
 
     public String getId() {
         return this.id;
@@ -157,7 +166,8 @@ public class DepartmentUpdateCommand {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, parentId, deptName, sortOrder, leaderUserId, mobile, email, status, remark, updatedBy);
+        return java.util.Objects.hash(
+                id, parentId, deptName, sortOrder, leaderUserId, mobile, email, status, remark, updatedBy);
     }
 
     @Override
@@ -180,6 +190,9 @@ public class DepartmentUpdateCommand {
 
     @Override
     public String toString() {
-        return "DepartmentUpdateCommand(" + "id=" + id + ", " + "parentId=" + parentId + ", " + "deptName=" + deptName + ", " + "sortOrder=" + sortOrder + ", " + "leaderUserId=" + leaderUserId + ", " + "mobile=" + mobile + ", " + "email=" + email + ", " + "status=" + status + ", " + "remark=" + remark + ", " + "updatedBy=" + updatedBy + ")";
+        return "DepartmentUpdateCommand(" + "id=" + id + ", " + "parentId=" + parentId + ", " + "deptName=" + deptName
+                + ", " + "sortOrder=" + sortOrder + ", " + "leaderUserId=" + leaderUserId + ", " + "mobile=" + mobile
+                + ", " + "email=" + email + ", " + "status=" + status + ", " + "remark=" + remark + ", " + "updatedBy="
+                + updatedBy + ")";
     }
 }

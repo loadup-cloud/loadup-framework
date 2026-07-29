@@ -48,7 +48,21 @@ public class RoleDTO {
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;
 
-    public RoleDTO(String id, String roleName, String roleCode, String parentId, String parentRoleName, Integer roleLevel, Short dataScope, Integer sortOrder, Short status, List<PermissionDTO> permissions, List<String> departmentIds, String remark, LocalDateTime createdTime, LocalDateTime updatedTime) {
+    public RoleDTO(
+            String id,
+            String roleName,
+            String roleCode,
+            String parentId,
+            String parentRoleName,
+            Integer roleLevel,
+            Short dataScope,
+            Integer sortOrder,
+            Short status,
+            List<PermissionDTO> permissions,
+            List<String> departmentIds,
+            String remark,
+            LocalDateTime createdTime,
+            LocalDateTime updatedTime) {
         this.id = id;
         this.roleName = roleName;
         this.roleCode = roleCode;
@@ -65,8 +79,7 @@ public class RoleDTO {
         this.updatedTime = updatedTime;
     }
 
-    public RoleDTO() {
-    }
+    public RoleDTO() {}
 
     public String getId() {
         return this.id;
@@ -182,7 +195,21 @@ public class RoleDTO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, roleName, roleCode, parentId, parentRoleName, roleLevel, dataScope, sortOrder, status, permissions, departmentIds, remark, createdTime, updatedTime);
+        return java.util.Objects.hash(
+                id,
+                roleName,
+                roleCode,
+                parentId,
+                parentRoleName,
+                roleLevel,
+                dataScope,
+                sortOrder,
+                status,
+                permissions,
+                departmentIds,
+                remark,
+                createdTime,
+                updatedTime);
     }
 
     @Override
@@ -209,7 +236,11 @@ public class RoleDTO {
 
     @Override
     public String toString() {
-        return "RoleDTO(" + "id=" + id + ", " + "roleName=" + roleName + ", " + "roleCode=" + roleCode + ", " + "parentId=" + parentId + ", " + "parentRoleName=" + parentRoleName + ", " + "roleLevel=" + roleLevel + ", " + "dataScope=" + dataScope + ", " + "sortOrder=" + sortOrder + ", " + "status=" + status + ", " + "permissions=" + permissions + ", " + "departmentIds=" + departmentIds + ", " + "remark=" + remark + ", " + "createdTime=" + createdTime + ", " + "updatedTime=" + updatedTime + ")";
+        return "RoleDTO(" + "id=" + id + ", " + "roleName=" + roleName + ", " + "roleCode=" + roleCode + ", "
+                + "parentId=" + parentId + ", " + "parentRoleName=" + parentRoleName + ", " + "roleLevel=" + roleLevel
+                + ", " + "dataScope=" + dataScope + ", " + "sortOrder=" + sortOrder + ", " + "status=" + status + ", "
+                + "permissions=" + permissions + ", " + "departmentIds=" + departmentIds + ", " + "remark=" + remark
+                + ", " + "createdTime=" + createdTime + ", " + "updatedTime=" + updatedTime + ")";
     }
 
     public static Builder builder() {
@@ -303,7 +334,21 @@ public class RoleDTO {
         }
 
         public RoleDTO build() {
-            return new RoleDTO(this.id, this.roleName, this.roleCode, this.parentId, this.parentRoleName, this.roleLevel, this.dataScope, this.sortOrder, this.status, this.permissions, this.departmentIds, this.remark, this.createdTime, this.updatedTime);
+            return new RoleDTO(
+                    this.id,
+                    this.roleName,
+                    this.roleCode,
+                    this.parentId,
+                    this.parentRoleName,
+                    this.roleLevel,
+                    this.dataScope,
+                    this.sortOrder,
+                    this.status,
+                    this.permissions,
+                    this.departmentIds,
+                    this.remark,
+                    this.createdTime,
+                    this.updatedTime);
         }
     }
 }

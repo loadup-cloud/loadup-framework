@@ -32,13 +32,13 @@ import io.github.loadup.components.testcontainers.search.SharedElasticsearchCont
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Unified ApplicationContextInitializer for testcontainer properties injection.
  *
@@ -64,8 +64,7 @@ import org.slf4j.LoggerFactory;
  * &#64;SpringBootTest
  * &#64;EnableTestContainers(ContainerType.MYSQL)
  * class MyTest {
-    private static final Logger log = LoggerFactory.getLogger(MyTest.class);
- }
+ * }
  *
  * // Configuration mode
  * &#64;SpringBootTest
@@ -85,6 +84,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class TestContainersPropertyInitializer
         implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+    private static final Logger log = LoggerFactory.getLogger(TestContainersPropertyInitializer.class);
 
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {

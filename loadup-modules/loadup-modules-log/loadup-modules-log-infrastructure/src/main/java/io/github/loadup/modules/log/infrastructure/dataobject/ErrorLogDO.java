@@ -40,7 +40,17 @@ public class ErrorLogDO extends BaseDO {
     private String ip;
     private LocalDateTime errorTime;
 
-    public ErrorLogDO(String userId, String errorType, String errorCode, String errorMessage, String stackTrace, String requestUrl, String requestMethod, String requestParams, String ip, LocalDateTime errorTime) {
+    public ErrorLogDO(
+            String userId,
+            String errorType,
+            String errorCode,
+            String errorMessage,
+            String stackTrace,
+            String requestUrl,
+            String requestMethod,
+            String requestParams,
+            String ip,
+            LocalDateTime errorTime) {
         this.userId = userId;
         this.errorType = errorType;
         this.errorCode = errorCode;
@@ -53,8 +63,7 @@ public class ErrorLogDO extends BaseDO {
         this.errorTime = errorTime;
     }
 
-    public ErrorLogDO() {
-    }
+    public ErrorLogDO() {}
 
     public String getUserId() {
         return this.userId;
@@ -138,7 +147,18 @@ public class ErrorLogDO extends BaseDO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(super.hashCode(), userId, errorType, errorCode, errorMessage, stackTrace, requestUrl, requestMethod, requestParams, ip, errorTime);
+        return java.util.Objects.hash(
+                super.hashCode(),
+                userId,
+                errorType,
+                errorCode,
+                errorMessage,
+                stackTrace,
+                requestUrl,
+                requestMethod,
+                requestParams,
+                ip,
+                errorTime);
     }
 
     @Override
@@ -162,6 +182,9 @@ public class ErrorLogDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "ErrorLogDO(" + "super=" + super.toString() + ", " + "userId=" + userId + ", " + "errorType=" + errorType + ", " + "errorCode=" + errorCode + ", " + "errorMessage=" + errorMessage + ", " + "stackTrace=" + stackTrace + ", " + "requestUrl=" + requestUrl + ", " + "requestMethod=" + requestMethod + ", " + "requestParams=" + requestParams + ", " + "ip=" + ip + ", " + "errorTime=" + errorTime + ")";
+        return "ErrorLogDO(" + "super=" + super.toString() + ", " + "userId=" + userId + ", " + "errorType=" + errorType
+                + ", " + "errorCode=" + errorCode + ", " + "errorMessage=" + errorMessage + ", " + "stackTrace="
+                + stackTrace + ", " + "requestUrl=" + requestUrl + ", " + "requestMethod=" + requestMethod + ", "
+                + "requestParams=" + requestParams + ", " + "ip=" + ip + ", " + "errorTime=" + errorTime + ")";
     }
 }

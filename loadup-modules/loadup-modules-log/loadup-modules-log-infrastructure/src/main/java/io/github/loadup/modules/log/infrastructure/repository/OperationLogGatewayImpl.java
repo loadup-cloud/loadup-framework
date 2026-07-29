@@ -234,7 +234,7 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
         e.setRequestParams(m.getRequestParams());
         e.setResponseResult(m.getResponseResult());
         e.setDuration(m.getDuration());
-        e.setSuccess(m.getSuccess());
+        e.setSuccess(m.isSuccess());
         e.setErrorMessage(m.getErrorMessage());
         e.setIp(m.getIp());
         e.setUserAgent(m.getUserAgent());
@@ -258,7 +258,7 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
                 .requestParams(e.getRequestParams())
                 .responseResult(e.getResponseResult())
                 .duration(e.getDuration())
-                .success(e.getSuccess())
+                .success(e.isSuccess())
                 .errorMessage(e.getErrorMessage())
                 .ip(e.getIp())
                 .userAgent(e.getUserAgent())

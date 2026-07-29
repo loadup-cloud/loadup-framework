@@ -28,9 +28,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * 测试类 Created by 王帆 on 2018-07-27 上午 10:08.
  */

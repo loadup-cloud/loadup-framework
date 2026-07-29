@@ -22,7 +22,6 @@ package io.github.loadup.commons.enums;
  * #L%
  */
 
-
 /**
  * Supported database type enumeration.
  *
@@ -30,7 +29,6 @@ package io.github.loadup.commons.enums;
  * {@code loadup-components-retrytask-facade}; consolidated here as the single source of truth.
  */
 public enum DbType {
-
     MYSQL("mysql", "MySQL"),
     POSTGRESQL("pgsql", "PostgreSQL"),
     ORACLE("oracle", "Oracle");

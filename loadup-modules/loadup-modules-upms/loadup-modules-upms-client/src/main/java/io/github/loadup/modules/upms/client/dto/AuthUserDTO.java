@@ -55,7 +55,14 @@ public class AuthUserDTO implements Serializable {
         return status == 0;
     }
 
-    public AuthUserDTO(String userId, String username, String password, String nickname, Integer status, Set<String> permissions, Set<String> roles) {
+    public AuthUserDTO(
+            String userId,
+            String username,
+            String password,
+            String nickname,
+            Integer status,
+            Set<String> permissions,
+            Set<String> roles) {
         this.userId = userId;
         this.username = username;
         this.password = password;
@@ -65,8 +72,7 @@ public class AuthUserDTO implements Serializable {
         this.roles = roles;
     }
 
-    public AuthUserDTO() {
-    }
+    public AuthUserDTO() {}
 
     public String getUserId() {
         return this.userId;
@@ -146,6 +152,8 @@ public class AuthUserDTO implements Serializable {
 
     @Override
     public String toString() {
-        return "AuthUserDTO(" + "userId=" + userId + ", " + "username=" + username + ", " + "password=" + password + ", " + "nickname=" + nickname + ", " + "status=" + status + ", " + "permissions=" + permissions + ", " + "roles=" + roles + ")";
+        return "AuthUserDTO(" + "userId=" + userId + ", " + "username=" + username + ", " + "password=" + password
+                + ", " + "nickname=" + nickname + ", " + "status=" + status + ", " + "permissions=" + permissions + ", "
+                + "roles=" + roles + ")";
     }
 }

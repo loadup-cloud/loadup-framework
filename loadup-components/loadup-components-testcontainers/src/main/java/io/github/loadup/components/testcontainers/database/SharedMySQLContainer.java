@@ -25,11 +25,11 @@ package io.github.loadup.components.testcontainers.database;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.mysql.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Shared MySQL TestContainer instance that can be reused across multiple tests.
  *
@@ -42,8 +42,6 @@ import org.slf4j.LoggerFactory;
  * <pre>
  * &#64;SpringBootTest
  * &#64;TestPropertySource(properties = {
-    private static final Logger log = LoggerFactory.getLogger(SharedMySQLContainer.class);
-
  *     "spring.datasource.url=" + SharedMySQLContainer.JDBC_URL,
  *     "spring.datasource.username=" + SharedMySQLContainer.USERNAME,
  *     "spring.datasource.password=" + SharedMySQLContainer.PASSWORD
@@ -57,6 +55,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.0.0
  */
 public final class SharedMySQLContainer {
+    private static final Logger log = LoggerFactory.getLogger(SharedMySQLContainer.class);
 
     /**
      * Default MySQL version to use

@@ -45,7 +45,19 @@ public class ConfigItemDO extends BaseDO {
     private String createdBy;
     private String updatedBy;
 
-    public ConfigItemDO(String configKey, String configValue, String valueType, String category, String description, Boolean editable, Boolean encrypted, Boolean systemDefined, Integer sortOrder, Boolean enabled, String createdBy, String updatedBy) {
+    public ConfigItemDO(
+            String configKey,
+            String configValue,
+            String valueType,
+            String category,
+            String description,
+            Boolean editable,
+            Boolean encrypted,
+            Boolean systemDefined,
+            Integer sortOrder,
+            Boolean enabled,
+            String createdBy,
+            String updatedBy) {
         this.configKey = configKey;
         this.configValue = configValue;
         this.valueType = valueType;
@@ -60,8 +72,7 @@ public class ConfigItemDO extends BaseDO {
         this.updatedBy = updatedBy;
     }
 
-    public ConfigItemDO() {
-    }
+    public ConfigItemDO() {}
 
     public String getConfigKey() {
         return this.configKey;
@@ -161,7 +172,20 @@ public class ConfigItemDO extends BaseDO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(super.hashCode(), configKey, configValue, valueType, category, description, editable, encrypted, systemDefined, sortOrder, enabled, createdBy, updatedBy);
+        return java.util.Objects.hash(
+                super.hashCode(),
+                configKey,
+                configValue,
+                valueType,
+                category,
+                description,
+                editable,
+                encrypted,
+                systemDefined,
+                sortOrder,
+                enabled,
+                createdBy,
+                updatedBy);
     }
 
     @Override
@@ -187,6 +211,10 @@ public class ConfigItemDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "ConfigItemDO(" + "super=" + super.toString() + ", " + "configKey=" + configKey + ", " + "configValue=" + configValue + ", " + "valueType=" + valueType + ", " + "category=" + category + ", " + "description=" + description + ", " + "editable=" + editable + ", " + "encrypted=" + encrypted + ", " + "systemDefined=" + systemDefined + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled + ", " + "createdBy=" + createdBy + ", " + "updatedBy=" + updatedBy + ")";
+        return "ConfigItemDO(" + "super=" + super.toString() + ", " + "configKey=" + configKey + ", " + "configValue="
+                + configValue + ", " + "valueType=" + valueType + ", " + "category=" + category + ", " + "description="
+                + description + ", " + "editable=" + editable + ", " + "encrypted=" + encrypted + ", "
+                + "systemDefined=" + systemDefined + ", " + "sortOrder=" + sortOrder + ", " + "enabled=" + enabled
+                + ", " + "createdBy=" + createdBy + ", " + "updatedBy=" + updatedBy + ")";
     }
 }

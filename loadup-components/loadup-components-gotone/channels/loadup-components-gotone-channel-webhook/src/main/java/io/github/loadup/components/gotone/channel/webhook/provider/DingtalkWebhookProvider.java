@@ -22,8 +22,7 @@ package io.github.loadup.components.gotone.channel.webhook.provider;
  * #L%
  */
 
-import io.github.loadup.components.gotone.api.NotificationChannelProvider;
-import io.github.loadup.components.gotone.enums.NotificationChannel;
+import io.github.loadup.components.gotone.GotoneProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
@@ -31,6 +30,7 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * 钉钉机器人 Webhook 提供商
  *
@@ -48,13 +48,12 @@ import org.slf4j.LoggerFactory;
  *
  * @see <a href="https://open.dingtalk.com/document/robots/custom-robot-access">钉钉自定义机器人</a>
  */
-public class DingtalkWebhookProvider implements NotificationChannelProvider {
+public class DingtalkWebhookProvider implements GotoneProvider {
     private static final Logger log = LoggerFactory.getLogger(DingtalkWebhookProvider.class);
 
-
     @Override
-    public NotificationChannel getChannel() {
-        return NotificationChannel.WEBHOOK;
+    public String getChannelType() {
+        return "WEBHOOK";
     }
 
     @Override
@@ -130,23 +129,25 @@ public class DingtalkWebhookProvider implements NotificationChannelProvider {
 
             if (success) {
                 log.info(">>> [GOTONE-WEBHOOK-DINGTALK] 钉钉消息发送成功");
-                return ChannelSendResponse.builder()
-                        .content(request.getContent())
-                        .successCount(1)
-                        .failedCount(0)
-                        .receiverStatus(receiverStatus)
-                        .receiverErrors(receiverErrors)
-                        .build();
+
+                ChannelSendResponse sendResponse = new ChannelSendResponse();
+                sendResponse.setContent(request.getContent());
+                sendResponse.setSuccessCount(1);
+                sendResponse.setFailedCount(0);
+                sendResponse.setReceiverStatus(receiverStatus);
+                sendResponse.setReceiverErrors(receiverErrors);
+                return sendResponse;
             } else {
                 receiverErrors.put(receiver, "发送失败");
                 log.error(">>> [GOTONE-WEBHOOK-DINGTALK] 钉钉消息发送失败");
-                return ChannelSendResponse.builder()
-                        .content(request.getContent())
-                        .successCount(0)
-                        .failedCount(1)
-                        .receiverStatus(receiverStatus)
-                        .receiverErrors(receiverErrors)
-                        .build();
+
+                ChannelSendResponse sendResponse = new ChannelSendResponse();
+                sendResponse.setContent(request.getContent());
+                sendResponse.setSuccessCount(0);
+                sendResponse.setFailedCount(1);
+                sendResponse.setReceiverStatus(receiverStatus);
+                sendResponse.setReceiverErrors(receiverErrors);
+                return sendResponse;
             }
 
         } catch (Exception e) {
@@ -156,13 +157,13 @@ public class DingtalkWebhookProvider implements NotificationChannelProvider {
             receiverStatus.put(receiver, false);
             receiverErrors.put(receiver, "系统异常: " + e.getMessage());
 
-            return ChannelSendResponse.builder()
-                    .content(request.getContent())
-                    .successCount(0)
-                    .failedCount(1)
-                    .receiverStatus(receiverStatus)
-                    .receiverErrors(receiverErrors)
-                    .build();
+            ChannelSendResponse sendResponse = new ChannelSendResponse();
+            sendResponse.setContent(request.getContent());
+            sendResponse.setSuccessCount(0);
+            sendResponse.setFailedCount(1);
+            sendResponse.setReceiverStatus(receiverStatus);
+            sendResponse.setReceiverErrors(receiverErrors);
+            return sendResponse;
         }
     }
 
@@ -223,12 +224,12 @@ public class DingtalkWebhookProvider implements NotificationChannelProvider {
 
         log.error(">>> [GOTONE-WEBHOOK-DINGTALK] {}", errorMessage);
 
-        return ChannelSendResponse.builder()
-                .content(null)
-                .successCount(success)
-                .failedCount(total - success)
-                .receiverStatus(receiverStatus)
-                .receiverErrors(receiverErrors)
-                .build();
+        ChannelSendResponse sendResponse = new ChannelSendResponse();
+        sendResponse.setContent(null);
+        sendResponse.setSuccessCount(success);
+        sendResponse.setFailedCount(total - success);
+        sendResponse.setReceiverStatus(receiverStatus);
+        sendResponse.setReceiverErrors(receiverErrors);
+        return sendResponse;
     }
 }

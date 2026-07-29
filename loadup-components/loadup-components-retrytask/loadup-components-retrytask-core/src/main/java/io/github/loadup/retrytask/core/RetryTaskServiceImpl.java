@@ -90,12 +90,11 @@ public class RetryTaskServiceImpl implements RetryTaskService, RetryTaskFacade {
         RetryTask savedTask = retryTaskRepository.save(task);
 
         // Immediate Execution Logic
-        boolean executeImmediately = request.getExecuteImmediately() != null
-                ? request.getExecuteImmediately()
-                : config.isExecuteImmediately();
+        boolean executeImmediately =
+                request.isExecuteImmediately() != null ? request.isExecuteImmediately() : config.isExecuteImmediately();
 
         if (executeImmediately) {
-            boolean waitResult = request.getWaitResult() != null ? request.getWaitResult() : config.isWaitResult();
+            boolean waitResult = request.isWaitResult() != null ? request.isWaitResult() : config.isWaitResult();
 
             if (waitResult) {
                 retryTaskExecutor.executeSync(savedTask);

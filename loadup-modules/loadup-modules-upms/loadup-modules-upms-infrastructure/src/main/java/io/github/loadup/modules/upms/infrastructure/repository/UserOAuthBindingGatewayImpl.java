@@ -35,10 +35,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Component;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 /**
  * 用户OAuth绑定 Gateway 实现
  *
@@ -48,7 +48,6 @@ import org.slf4j.LoggerFactory;
 @Component
 public class UserOAuthBindingGatewayImpl implements UserOAuthBindingGateway {
     private static final Logger log = LoggerFactory.getLogger(UserOAuthBindingGatewayImpl.class);
-
 
     private final UserOAuthBindingDOMapper mapper;
     private final UserOAuthBindingConverter converter;

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.loadup-cloud</groupId>
+        <artifactId>loadup-parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>loadup-components-gotone</artifactId>
+    <packaging>pom</packaging>
+    <name>Loadup Gotone Component</name>
+    <description>Loadup Gotone — unified notification engine + channels</description>
+
+    <modules>
+        <module>loadup-components-gotone-api</module>
+        <module>loadup-components-gotone-engine</module>
+        <module>channels</module>
+    </modules>
+</project>

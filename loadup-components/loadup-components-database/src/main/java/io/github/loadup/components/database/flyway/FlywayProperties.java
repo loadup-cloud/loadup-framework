@@ -125,7 +125,22 @@ public class FlywayProperties {
      */
     private boolean migrateAtStart = true;
 
-    public FlywayProperties(boolean enabled, String[] locations, boolean baselineOnMigrate, String baselineVersion, String baselineDescription, boolean validateOnMigrate, boolean cleanDisabled, String encoding, Map<String, String> placeholders, String placeholderPrefix, String placeholderSuffix, boolean placeholderReplacement, String[] initSqls, String target, boolean migrateAtStart) {
+    public FlywayProperties(
+            boolean enabled,
+            String[] locations,
+            boolean baselineOnMigrate,
+            String baselineVersion,
+            String baselineDescription,
+            boolean validateOnMigrate,
+            boolean cleanDisabled,
+            String encoding,
+            Map<String, String> placeholders,
+            String placeholderPrefix,
+            String placeholderSuffix,
+            boolean placeholderReplacement,
+            String[] initSqls,
+            String target,
+            boolean migrateAtStart) {
         this.enabled = enabled;
         this.locations = locations;
         this.baselineOnMigrate = baselineOnMigrate;
@@ -143,8 +158,7 @@ public class FlywayProperties {
         this.migrateAtStart = migrateAtStart;
     }
 
-    public FlywayProperties() {
-    }
+    public FlywayProperties() {}
 
     public boolean isEnabled() {
         return this.enabled;
@@ -268,7 +282,22 @@ public class FlywayProperties {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(enabled, locations, baselineOnMigrate, baselineVersion, baselineDescription, validateOnMigrate, cleanDisabled, encoding, placeholders, placeholderPrefix, placeholderSuffix, placeholderReplacement, initSqls, target, migrateAtStart);
+        return java.util.Objects.hash(
+                enabled,
+                locations,
+                baselineOnMigrate,
+                baselineVersion,
+                baselineDescription,
+                validateOnMigrate,
+                cleanDisabled,
+                encoding,
+                placeholders,
+                placeholderPrefix,
+                placeholderSuffix,
+                placeholderReplacement,
+                initSqls,
+                target,
+                migrateAtStart);
     }
 
     @Override
@@ -296,6 +325,12 @@ public class FlywayProperties {
 
     @Override
     public String toString() {
-        return "FlywayProperties(" + "enabled=" + enabled + ", " + "locations=" + locations + ", " + "baselineOnMigrate=" + baselineOnMigrate + ", " + "baselineVersion=" + baselineVersion + ", " + "baselineDescription=" + baselineDescription + ", " + "validateOnMigrate=" + validateOnMigrate + ", " + "cleanDisabled=" + cleanDisabled + ", " + "encoding=" + encoding + ", " + "placeholders=" + placeholders + ", " + "placeholderPrefix=" + placeholderPrefix + ", " + "placeholderSuffix=" + placeholderSuffix + ", " + "placeholderReplacement=" + placeholderReplacement + ", " + "initSqls=" + initSqls + ", " + "target=" + target + ", " + "migrateAtStart=" + migrateAtStart + ")";
+        return "FlywayProperties(" + "enabled=" + enabled + ", " + "locations=" + locations + ", "
+                + "baselineOnMigrate=" + baselineOnMigrate + ", " + "baselineVersion=" + baselineVersion + ", "
+                + "baselineDescription=" + baselineDescription + ", " + "validateOnMigrate=" + validateOnMigrate + ", "
+                + "cleanDisabled=" + cleanDisabled + ", " + "encoding=" + encoding + ", " + "placeholders="
+                + placeholders + ", " + "placeholderPrefix=" + placeholderPrefix + ", " + "placeholderSuffix="
+                + placeholderSuffix + ", " + "placeholderReplacement=" + placeholderReplacement + ", " + "initSqls="
+                + initSqls + ", " + "target=" + target + ", " + "migrateAtStart=" + migrateAtStart + ")";
     }
 }

@@ -58,7 +58,19 @@ public class PermissionDO extends BaseDO {
 
     private String remark;
 
-    public PermissionDO(String parentId, String permissionName, String permissionCode, Short permissionType, String resourcePath, String httpMethod, String icon, String componentPath, Integer sortOrder, Boolean visible, Short status, String remark) {
+    public PermissionDO(
+            String parentId,
+            String permissionName,
+            String permissionCode,
+            Short permissionType,
+            String resourcePath,
+            String httpMethod,
+            String icon,
+            String componentPath,
+            Integer sortOrder,
+            Boolean visible,
+            Short status,
+            String remark) {
         this.parentId = parentId;
         this.permissionName = permissionName;
         this.permissionCode = permissionCode;
@@ -73,8 +85,7 @@ public class PermissionDO extends BaseDO {
         this.remark = remark;
     }
 
-    public PermissionDO() {
-    }
+    public PermissionDO() {}
 
     public String getParentId() {
         return this.parentId;
@@ -174,7 +185,20 @@ public class PermissionDO extends BaseDO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(super.hashCode(), parentId, permissionName, permissionCode, permissionType, resourcePath, httpMethod, icon, componentPath, sortOrder, visible, status, remark);
+        return java.util.Objects.hash(
+                super.hashCode(),
+                parentId,
+                permissionName,
+                permissionCode,
+                permissionType,
+                resourcePath,
+                httpMethod,
+                icon,
+                componentPath,
+                sortOrder,
+                visible,
+                status,
+                remark);
     }
 
     @Override
@@ -200,6 +224,10 @@ public class PermissionDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "PermissionDO(" + "super=" + super.toString() + ", " + "parentId=" + parentId + ", " + "permissionName=" + permissionName + ", " + "permissionCode=" + permissionCode + ", " + "permissionType=" + permissionType + ", " + "resourcePath=" + resourcePath + ", " + "httpMethod=" + httpMethod + ", " + "icon=" + icon + ", " + "componentPath=" + componentPath + ", " + "sortOrder=" + sortOrder + ", " + "visible=" + visible + ", " + "status=" + status + ", " + "remark=" + remark + ")";
+        return "PermissionDO(" + "super=" + super.toString() + ", " + "parentId=" + parentId + ", " + "permissionName="
+                + permissionName + ", " + "permissionCode=" + permissionCode + ", " + "permissionType=" + permissionType
+                + ", " + "resourcePath=" + resourcePath + ", " + "httpMethod=" + httpMethod + ", " + "icon=" + icon
+                + ", " + "componentPath=" + componentPath + ", " + "sortOrder=" + sortOrder + ", " + "visible="
+                + visible + ", " + "status=" + status + ", " + "remark=" + remark + ")";
     }
 }

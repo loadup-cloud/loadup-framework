@@ -59,8 +59,7 @@ public class Product implements Serializable {
         this.category = category;
     }
 
-    public Product() {
-    }
+    public Product() {}
 
     public String getId() {
         return this.id;
@@ -131,7 +130,8 @@ public class Product implements Serializable {
 
     @Override
     public String toString() {
-        return "Product(" + "id=" + id + ", " + "name=" + name + ", " + "description=" + description + ", " + "price=" + price + ", " + "stock=" + stock + ", " + "category=" + category + ")";
+        return "Product(" + "id=" + id + ", " + "name=" + name + ", " + "description=" + description + ", " + "price="
+                + price + ", " + "stock=" + stock + ", " + "category=" + category + ")";
     }
 
     public static Builder builder() {

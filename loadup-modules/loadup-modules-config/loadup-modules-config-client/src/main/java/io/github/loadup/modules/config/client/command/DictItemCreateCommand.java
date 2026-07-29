@@ -51,7 +51,13 @@ public class DictItemCreateCommand {
 
     private Integer sortOrder = 0;
 
-    public DictItemCreateCommand(String dictCode, String itemLabel, String itemValue, String parentValue, String cssClass, Integer sortOrder) {
+    public DictItemCreateCommand(
+            String dictCode,
+            String itemLabel,
+            String itemValue,
+            String parentValue,
+            String cssClass,
+            Integer sortOrder) {
         this.dictCode = dictCode;
         this.itemLabel = itemLabel;
         this.itemValue = itemValue;
@@ -60,8 +66,7 @@ public class DictItemCreateCommand {
         this.sortOrder = sortOrder;
     }
 
-    public DictItemCreateCommand() {
-    }
+    public DictItemCreateCommand() {}
 
     public String getDictCode() {
         return this.dictCode;
@@ -132,6 +137,8 @@ public class DictItemCreateCommand {
 
     @Override
     public String toString() {
-        return "DictItemCreateCommand(" + "dictCode=" + dictCode + ", " + "itemLabel=" + itemLabel + ", " + "itemValue=" + itemValue + ", " + "parentValue=" + parentValue + ", " + "cssClass=" + cssClass + ", " + "sortOrder=" + sortOrder + ")";
+        return "DictItemCreateCommand(" + "dictCode=" + dictCode + ", " + "itemLabel=" + itemLabel + ", " + "itemValue="
+                + itemValue + ", " + "parentValue=" + parentValue + ", " + "cssClass=" + cssClass + ", " + "sortOrder="
+                + sortOrder + ")";
     }
 }

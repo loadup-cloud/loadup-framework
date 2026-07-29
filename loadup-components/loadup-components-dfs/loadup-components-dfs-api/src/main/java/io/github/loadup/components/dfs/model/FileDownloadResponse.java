@@ -50,8 +50,7 @@ public class FileDownloadResponse {
         this.contentLength = contentLength;
     }
 
-    public FileDownloadResponse() {
-    }
+    public FileDownloadResponse() {}
 
     public FileMetadata getMetadata() {
         return this.metadata;
@@ -95,7 +94,8 @@ public class FileDownloadResponse {
 
     @Override
     public String toString() {
-        return "FileDownloadResponse(" + "metadata=" + metadata + ", " + "inputStream=" + inputStream + ", " + "contentLength=" + contentLength + ")";
+        return "FileDownloadResponse(" + "metadata=" + metadata + ", " + "inputStream=" + inputStream + ", "
+                + "contentLength=" + contentLength + ")";
     }
 
     public static Builder builder() {

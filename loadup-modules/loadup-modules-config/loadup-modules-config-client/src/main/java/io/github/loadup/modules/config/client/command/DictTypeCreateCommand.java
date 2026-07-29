@@ -50,8 +50,7 @@ public class DictTypeCreateCommand {
         this.sortOrder = sortOrder;
     }
 
-    public DictTypeCreateCommand() {
-    }
+    public DictTypeCreateCommand() {}
 
     public String getDictCode() {
         return this.dictCode;
@@ -104,6 +103,7 @@ public class DictTypeCreateCommand {
 
     @Override
     public String toString() {
-        return "DictTypeCreateCommand(" + "dictCode=" + dictCode + ", " + "dictName=" + dictName + ", " + "description=" + description + ", " + "sortOrder=" + sortOrder + ")";
+        return "DictTypeCreateCommand(" + "dictCode=" + dictCode + ", " + "dictName=" + dictName + ", " + "description="
+                + description + ", " + "sortOrder=" + sortOrder + ")";
     }
 }

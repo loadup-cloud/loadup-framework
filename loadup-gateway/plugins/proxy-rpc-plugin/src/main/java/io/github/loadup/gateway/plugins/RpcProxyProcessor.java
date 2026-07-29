@@ -1,5 +1,27 @@
 package io.github.loadup.gateway.plugins;
 
+/*-
+ * #%L
+ * Proxy RPC Plugin
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import io.github.loadup.commons.util.JsonUtil;
 import io.github.loadup.gateway.facade.config.GatewayProperties;
 import io.github.loadup.gateway.facade.constants.GatewayConstants;
@@ -15,12 +37,11 @@ import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.config.RegistryConfig;
 import org.apache.dubbo.rpc.service.GenericService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 public class RpcProxyProcessor implements ProxyProcessor {
     private static final Logger log = LoggerFactory.getLogger(RpcProxyProcessor.class);
-
 
     private final ApplicationConfig applicationConfig;
     private final RegistryConfig registryConfig;
@@ -37,13 +58,38 @@ public class RpcProxyProcessor implements ProxyProcessor {
         log.info("RpcProxyProcessor initialized, registry={}", registryConfig.getAddress());
     }
 
-    @Override public String getName() { return "RpcProxyPlugin"; }
-    @Override public String getType() { return "PROXY"; }
-    @Override public String getVersion() { return "2.0.0"; }
-    @Override public int getPriority() { return 300; }
-    @Override public void initialize() {}
-    @Override public void destroy() { serviceCache.clear(); }
-    @Override public String getSupportedProtocol() { return GatewayConstants.Protocol.RPC; }
+    @Override
+    public String getName() {
+        return "RpcProxyPlugin";
+    }
+
+    @Override
+    public String getType() {
+        return "PROXY";
+    }
+
+    @Override
+    public String getVersion() {
+        return "2.0.0";
+    }
+
+    @Override
+    public int getPriority() {
+        return 300;
+    }
+
+    @Override
+    public void initialize() {}
+
+    @Override
+    public void destroy() {
+        serviceCache.clear();
+    }
+
+    @Override
+    public String getSupportedProtocol() {
+        return GatewayConstants.Protocol.RPC;
+    }
 
     @Override
     public GatewayResponse proxy(GatewayRequest request, RouteConfig route) throws Exception {

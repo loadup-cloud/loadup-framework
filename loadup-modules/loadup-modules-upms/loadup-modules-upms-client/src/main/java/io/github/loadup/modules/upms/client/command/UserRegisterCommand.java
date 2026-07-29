@@ -22,7 +22,6 @@ package io.github.loadup.modules.upms.client.command;
  * #L%
  */
 
-
 /**
  * User Register Command
  *
@@ -47,7 +46,15 @@ public class UserRegisterCommand {
 
     private String smsCode;
 
-    public UserRegisterCommand(String username, String password, String nickname, String email, String mobile, String captchaKey, String captchaCode, String smsCode) {
+    public UserRegisterCommand(
+            String username,
+            String password,
+            String nickname,
+            String email,
+            String mobile,
+            String captchaKey,
+            String captchaCode,
+            String smsCode) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
@@ -58,8 +65,7 @@ public class UserRegisterCommand {
         this.smsCode = smsCode;
     }
 
-    public UserRegisterCommand() {
-    }
+    public UserRegisterCommand() {}
 
     public String getUsername() {
         return this.username;
@@ -148,6 +154,8 @@ public class UserRegisterCommand {
 
     @Override
     public String toString() {
-        return "UserRegisterCommand(" + "username=" + username + ", " + "password=" + password + ", " + "nickname=" + nickname + ", " + "email=" + email + ", " + "mobile=" + mobile + ", " + "captchaKey=" + captchaKey + ", " + "captchaCode=" + captchaCode + ", " + "smsCode=" + smsCode + ")";
+        return "UserRegisterCommand(" + "username=" + username + ", " + "password=" + password + ", " + "nickname="
+                + nickname + ", " + "email=" + email + ", " + "mobile=" + mobile + ", " + "captchaKey=" + captchaKey
+                + ", " + "captchaCode=" + captchaCode + ", " + "smsCode=" + smsCode + ")";
     }
 }

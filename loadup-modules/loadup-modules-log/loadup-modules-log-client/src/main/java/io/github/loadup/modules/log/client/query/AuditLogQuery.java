@@ -35,7 +35,15 @@ public class AuditLogQuery {
     private Integer pageNum;
     private Integer pageSize;
 
-    public AuditLogQuery(String userId, String dataType, String dataId, String action, LocalDateTime startTime, LocalDateTime endTime, Integer pageNum, Integer pageSize) {
+    public AuditLogQuery(
+            String userId,
+            String dataType,
+            String dataId,
+            String action,
+            LocalDateTime startTime,
+            LocalDateTime endTime,
+            Integer pageNum,
+            Integer pageSize) {
         this.userId = userId;
         this.dataType = dataType;
         this.dataId = dataId;
@@ -46,8 +54,7 @@ public class AuditLogQuery {
         this.pageSize = pageSize;
     }
 
-    public AuditLogQuery() {
-    }
+    public AuditLogQuery() {}
 
     public String getUserId() {
         return this.userId;
@@ -136,6 +143,8 @@ public class AuditLogQuery {
 
     @Override
     public String toString() {
-        return "AuditLogQuery(" + "userId=" + userId + ", " + "dataType=" + dataType + ", " + "dataId=" + dataId + ", " + "action=" + action + ", " + "startTime=" + startTime + ", " + "endTime=" + endTime + ", " + "pageNum=" + pageNum + ", " + "pageSize=" + pageSize + ")";
+        return "AuditLogQuery(" + "userId=" + userId + ", " + "dataType=" + dataType + ", " + "dataId=" + dataId + ", "
+                + "action=" + action + ", " + "startTime=" + startTime + ", " + "endTime=" + endTime + ", " + "pageNum="
+                + pageNum + ", " + "pageSize=" + pageSize + ")";
     }
 }

@@ -27,15 +27,14 @@ import java.lang.reflect.Method;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Quartz job that executes a SchedulerTask.
  */
 public class SchedulerTaskJob implements Job {
     private static final Logger log = LoggerFactory.getLogger(SchedulerTaskJob.class);
-
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {

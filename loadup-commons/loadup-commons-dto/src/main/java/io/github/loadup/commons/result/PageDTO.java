@@ -25,6 +25,8 @@ package io.github.loadup.commons.result;
 import io.github.loadup.commons.dto.DTO;
 import java.util.Collection;
 import java.util.List;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class PageDTO<T> extends DTO {
     private Collection<T> data;
@@ -42,8 +44,7 @@ public class PageDTO<T> extends DTO {
         this.pageInfo = pageInfo;
     }
 
-    public PageDTO() {
-    }
+    public PageDTO() {}
 
     public Collection<T> getData() {
         return this.data;
@@ -62,24 +63,8 @@ public class PageDTO<T> extends DTO {
     }
 
     @Override
-    public int hashCode() {
-        return java.util.Objects.hash(super.hashCode(), data, pageInfo);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        PageDTO<?> other = (PageDTO<?>) o;
-        if (!java.util.Objects.equals(data, other.data)) return false;
-        if (!java.util.Objects.equals(pageInfo, other.pageInfo)) return false;
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "PageDTO(" + "super=" + super.toString() + ", " + "data=" + data + ", " + "pageInfo=" + pageInfo + ")";
+        return ToStringBuilder.reflectionToString(ToStringStyle.JSON_STYLE);
     }
 
     public static <T> Builder<T> builder() {

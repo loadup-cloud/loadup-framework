@@ -28,16 +28,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.springframework.util.ReflectionUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ReflectionUtils;
+
 /**
  * Scheduler task model representing a scheduled task configuration.
  */
 public class SchedulerTask {
     private static final Logger log = LoggerFactory.getLogger(SchedulerTask.class);
-
 
     /**
      * Unique name of the task
@@ -175,7 +174,18 @@ public class SchedulerTask {
         }
     }
 
-    public SchedulerTask(String taskName, String taskGroup, String description, String beanName, Method method, Object[] args, String cron, boolean enabled, Object targetBean, long timeoutMillis, int maxRetries) {
+    public SchedulerTask(
+            String taskName,
+            String taskGroup,
+            String description,
+            String beanName,
+            Method method,
+            Object[] args,
+            String cron,
+            boolean enabled,
+            Object targetBean,
+            long timeoutMillis,
+            int maxRetries) {
         this.taskName = taskName;
         this.taskGroup = taskGroup;
         this.description = description;
@@ -189,8 +199,7 @@ public class SchedulerTask {
         this.maxRetries = maxRetries;
     }
 
-    public SchedulerTask() {
-    }
+    public SchedulerTask() {}
 
     public String getTaskName() {
         return this.taskName;
@@ -282,7 +291,18 @@ public class SchedulerTask {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(taskName, taskGroup, description, beanName, method, args, cron, enabled, targetBean, timeoutMillis, maxRetries);
+        return java.util.Objects.hash(
+                taskName,
+                taskGroup,
+                description,
+                beanName,
+                method,
+                args,
+                cron,
+                enabled,
+                targetBean,
+                timeoutMillis,
+                maxRetries);
     }
 
     @Override
@@ -306,7 +326,10 @@ public class SchedulerTask {
 
     @Override
     public String toString() {
-        return "SchedulerTask(" + "taskName=" + taskName + ", " + "taskGroup=" + taskGroup + ", " + "description=" + description + ", " + "beanName=" + beanName + ", " + "method=" + method + ", " + "args=" + args + ", " + "cron=" + cron + ", " + "enabled=" + enabled + ", " + "targetBean=" + targetBean + ", " + "timeoutMillis=" + timeoutMillis + ", " + "maxRetries=" + maxRetries + ")";
+        return "SchedulerTask(" + "taskName=" + taskName + ", " + "taskGroup=" + taskGroup + ", " + "description="
+                + description + ", " + "beanName=" + beanName + ", " + "method=" + method + ", " + "args=" + args + ", "
+                + "cron=" + cron + ", " + "enabled=" + enabled + ", " + "targetBean=" + targetBean + ", "
+                + "timeoutMillis=" + timeoutMillis + ", " + "maxRetries=" + maxRetries + ")";
     }
 
     public static Builder builder() {
@@ -382,7 +405,18 @@ public class SchedulerTask {
         }
 
         public SchedulerTask build() {
-            return new SchedulerTask(this.taskName, this.taskGroup, this.description, this.beanName, this.method, this.args, this.cron, this.enabled, this.targetBean, this.timeoutMillis, this.maxRetries);
+            return new SchedulerTask(
+                    this.taskName,
+                    this.taskGroup,
+                    this.description,
+                    this.beanName,
+                    this.method,
+                    this.args,
+                    this.cron,
+                    this.enabled,
+                    this.targetBean,
+                    this.timeoutMillis,
+                    this.maxRetries);
         }
     }
 }

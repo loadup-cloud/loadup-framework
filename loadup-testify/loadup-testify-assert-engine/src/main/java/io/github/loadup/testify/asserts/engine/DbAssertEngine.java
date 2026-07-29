@@ -38,13 +38,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.springframework.jdbc.core.JdbcTemplate;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.JdbcTemplate;
+
 public class DbAssertEngine implements TestifyAssertEngine {
     private static final Logger log = LoggerFactory.getLogger(DbAssertEngine.class);
-
 
     private final JdbcTemplate jdbcTemplate;
     private final VariableEngine variableEngine;

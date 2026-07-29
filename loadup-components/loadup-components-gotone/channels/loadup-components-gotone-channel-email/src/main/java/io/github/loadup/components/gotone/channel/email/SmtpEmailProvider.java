@@ -22,8 +22,7 @@ package io.github.loadup.components.gotone.channel.email;
  * #L%
  */
 
-import io.github.loadup.components.gotone.api.NotificationChannelProvider;
-import io.github.loadup.components.gotone.enums.NotificationChannel;
+import io.github.loadup.components.gotone.GotoneProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import jakarta.mail.MessagingException;
@@ -33,12 +32,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * SMTP 邮件渠道提供商
  *
@@ -54,19 +52,18 @@ import org.slf4j.LoggerFactory;
  * spring.mail.properties.mail.smtp.starttls.enable=true
  * </pre>
  */
-public class SmtpEmailProvider implements NotificationChannelProvider {
+public class SmtpEmailProvider implements GotoneProvider {
     private static final Logger log = LoggerFactory.getLogger(SmtpEmailProvider.class);
 
+    private JavaMailSender mailSender;
 
-    private final JavaMailSender mailSender;
+    private String fromEmail;
 
-    private final String fromEmail;
-
-    private final String fromName;
+    private String fromName;
 
     @Override
-    public NotificationChannel getChannel() {
-        return NotificationChannel.EMAIL;
+    public String getChannelType() {
+        return "EMAIL";
     }
 
     @Override
@@ -150,13 +147,13 @@ public class SmtpEmailProvider implements NotificationChannelProvider {
                 }
             }
 
-            return ChannelSendResponse.builder()
-                    .content(request.getContent())
-                    .successCount(successCount)
-                    .failedCount(failedCount)
-                    .receiverStatus(receiverStatus)
-                    .receiverErrors(receiverErrors)
-                    .build();
+            ChannelSendResponse sendResponse = new ChannelSendResponse();
+            sendResponse.setContent(request.getContent());
+            sendResponse.setSuccessCount(successCount);
+            sendResponse.setFailedCount(failedCount);
+            sendResponse.setReceiverStatus(receiverStatus);
+            sendResponse.setReceiverErrors(receiverErrors);
+            return sendResponse;
 
         } catch (Exception e) {
             log.error(">>> [GOTONE-EMAIL-SMTP] 发送邮件异常", e);
@@ -167,13 +164,13 @@ public class SmtpEmailProvider implements NotificationChannelProvider {
                 receiverErrors.put(receiver, "系统异常: " + e.getMessage());
             }
 
-            return ChannelSendResponse.builder()
-                    .content(request.getContent())
-                    .successCount(0)
-                    .failedCount(request.getReceivers().size())
-                    .receiverStatus(receiverStatus)
-                    .receiverErrors(receiverErrors)
-                    .build();
+            ChannelSendResponse sendResponse = new ChannelSendResponse();
+            sendResponse.setContent(request.getContent());
+            sendResponse.setSuccessCount(0);
+            sendResponse.setFailedCount(request.getReceivers().size());
+            sendResponse.setReceiverStatus(receiverStatus);
+            sendResponse.setReceiverErrors(receiverErrors);
+            return sendResponse;
         }
     }
 
@@ -379,14 +376,13 @@ public class SmtpEmailProvider implements NotificationChannelProvider {
         Map<String, String> receiverErrors = new HashMap<>();
 
         log.error(">>> [GOTONE-EMAIL-SMTP] {}", errorMessage);
-
-        return ChannelSendResponse.builder()
-                .content(null)
-                .successCount(success)
-                .failedCount(total - success)
-                .receiverStatus(receiverStatus)
-                .receiverErrors(receiverErrors)
-                .build();
+        ChannelSendResponse sendResponse = new ChannelSendResponse();
+        sendResponse.setContent(null);
+        sendResponse.setSuccessCount(success);
+        sendResponse.setFailedCount(total - success);
+        sendResponse.setReceiverStatus(receiverStatus);
+        sendResponse.setReceiverErrors(receiverErrors);
+        return sendResponse;
     }
 
     public SmtpEmailProvider(JavaMailSender mailSender) {

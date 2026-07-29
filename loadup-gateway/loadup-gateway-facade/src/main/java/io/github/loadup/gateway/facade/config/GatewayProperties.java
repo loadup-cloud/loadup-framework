@@ -22,11 +22,10 @@ package io.github.loadup.gateway.facade.config;
  * #L%
  */
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * Gateway configuration properties (corresponds to loadup.gateway in application.yml)
@@ -241,8 +240,7 @@ public class GatewayProperties {
         }
     }
 
-    public static class StorageDatabase {
-    }
+    public static class StorageDatabase {}
 
     // Holder that selects storage type and provides type-specific config groups
     public static class Storage {
@@ -317,10 +315,7 @@ public class GatewayProperties {
         }
     }
 
-
-    public GatewayProperties() {
-    }
-
+    public GatewayProperties() {}
 
     public int getRouteRefreshInterval() {
         return this.routeRefreshInterval;
@@ -346,7 +341,6 @@ public class GatewayProperties {
         return this.security;
     }
 
-
     public ProxyPlugins getProxyPlugins() {
         return this.proxyPlugins;
     }
@@ -362,7 +356,6 @@ public class GatewayProperties {
     public boolean isEnabled() {
         return this.enabled;
     }
-
 
     public void setRouteRefreshInterval(int routeRefreshInterval) {
         this.routeRefreshInterval = routeRefreshInterval;
@@ -388,7 +381,6 @@ public class GatewayProperties {
         this.security = security;
     }
 
-
     public void setProxyPlugins(ProxyPlugins proxyPlugins) {
         this.proxyPlugins = proxyPlugins;
     }
@@ -404,6 +396,4 @@ public class GatewayProperties {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-
-
 }

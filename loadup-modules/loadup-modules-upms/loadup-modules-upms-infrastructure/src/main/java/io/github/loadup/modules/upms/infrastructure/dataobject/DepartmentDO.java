@@ -54,7 +54,17 @@ public class DepartmentDO extends BaseDO {
 
     private String remark;
 
-    public DepartmentDO(String parentId, String deptName, String deptCode, Integer deptLevel, Integer sortOrder, String leaderUserId, String mobile, String email, Short status, String remark) {
+    public DepartmentDO(
+            String parentId,
+            String deptName,
+            String deptCode,
+            Integer deptLevel,
+            Integer sortOrder,
+            String leaderUserId,
+            String mobile,
+            String email,
+            Short status,
+            String remark) {
         this.parentId = parentId;
         this.deptName = deptName;
         this.deptCode = deptCode;
@@ -67,8 +77,7 @@ public class DepartmentDO extends BaseDO {
         this.remark = remark;
     }
 
-    public DepartmentDO() {
-    }
+    public DepartmentDO() {}
 
     public String getParentId() {
         return this.parentId;
@@ -152,7 +161,18 @@ public class DepartmentDO extends BaseDO {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(super.hashCode(), parentId, deptName, deptCode, deptLevel, sortOrder, leaderUserId, mobile, email, status, remark);
+        return java.util.Objects.hash(
+                super.hashCode(),
+                parentId,
+                deptName,
+                deptCode,
+                deptLevel,
+                sortOrder,
+                leaderUserId,
+                mobile,
+                email,
+                status,
+                remark);
     }
 
     @Override
@@ -176,6 +196,9 @@ public class DepartmentDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "DepartmentDO(" + "super=" + super.toString() + ", " + "parentId=" + parentId + ", " + "deptName=" + deptName + ", " + "deptCode=" + deptCode + ", " + "deptLevel=" + deptLevel + ", " + "sortOrder=" + sortOrder + ", " + "leaderUserId=" + leaderUserId + ", " + "mobile=" + mobile + ", " + "email=" + email + ", " + "status=" + status + ", " + "remark=" + remark + ")";
+        return "DepartmentDO(" + "super=" + super.toString() + ", " + "parentId=" + parentId + ", " + "deptName="
+                + deptName + ", " + "deptCode=" + deptCode + ", " + "deptLevel=" + deptLevel + ", " + "sortOrder="
+                + sortOrder + ", " + "leaderUserId=" + leaderUserId + ", " + "mobile=" + mobile + ", " + "email="
+                + email + ", " + "status=" + status + ", " + "remark=" + remark + ")";
     }
 }

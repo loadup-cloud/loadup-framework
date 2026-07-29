@@ -174,7 +174,7 @@ loadup-modules-{mod}/
 | 1  | Java 文件头写 `/*- #%L ... #L% */` License 块 | CI 的 `license-maven-plugin` 自动插入                                     |
 | 2  | 创建 `@RestController` / `@Controller`     | Gateway `bean://serviceName:method` 路由                                   |
 | 3  | 集成测试中用 `@MockBean` 替代 DB                 | `@EnableTestContainers(ContainerType.MYSQL)` 启动真实容器                      |
-| 4  | `@Autowired` 字段注入                        | 构造器注入：`@RequiredArgsConstructor` + `final`                              |
+| 4  | `@Autowired` 字段注入                        | 构造器注入：显式 `public XxxService(XxxGateway gw) { this.gw = gw; }`                               |
 | 5  | 字符串拼接 SQL                                | MyBatis-Flex `QueryWrapper`                                              |
 | 6  | `@Table` 放在 domain 层                     | DO（`XxxDO extends BaseDO`）只放在 `infrastructure.dataobject`                   |
 | 7  | 子模块 `<parent>` 指向模块自身 pom                | 所有子模块 `<parent>` 统一指向根 `loadup-parent`                                    |
@@ -186,6 +186,7 @@ loadup-modules-{mod}/
 | 13 | DO 中重复定义 id/createdAt/updatedAt         | 这些字段在 `BaseDO` 中已定义                                                      |
 | 14 | Mapper 中写额外 SQL 方法                       | 用 `QueryWrapper` 在 GatewayImpl 中操作                                       |
 | 15 | 新增三方依赖不在 BOM 中声明                         | 版本管理集中在 `loadup-dependencies/pom.xml`                                     |
+| 16 | 使用 Lombok（`@Data`/`@Getter`/`@Slf4j`/`@Builder` 等） | 写显式 Java 代码；DTO/Command/Query 优先使用 Java `record`；Logger 用 `LoggerFactory.getLogger` |
 
 ---
 

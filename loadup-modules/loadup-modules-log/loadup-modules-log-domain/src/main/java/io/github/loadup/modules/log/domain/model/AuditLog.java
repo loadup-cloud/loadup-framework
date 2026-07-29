@@ -53,7 +53,20 @@ public class AuditLog {
     private LocalDateTime operationTime;
     private LocalDateTime createdAt;
 
-    public AuditLog(String id, String userId, String username, String dataType, String dataId, String action, String beforeData, String afterData, String diffData, String reason, String ip, LocalDateTime operationTime, LocalDateTime createdAt) {
+    public AuditLog(
+            String id,
+            String userId,
+            String username,
+            String dataType,
+            String dataId,
+            String action,
+            String beforeData,
+            String afterData,
+            String diffData,
+            String reason,
+            String ip,
+            LocalDateTime operationTime,
+            LocalDateTime createdAt) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -69,8 +82,7 @@ public class AuditLog {
         this.createdAt = createdAt;
     }
 
-    public AuditLog() {
-    }
+    public AuditLog() {}
 
     public String getId() {
         return this.id;
@@ -178,7 +190,20 @@ public class AuditLog {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, userId, username, dataType, dataId, action, beforeData, afterData, diffData, reason, ip, operationTime, createdAt);
+        return java.util.Objects.hash(
+                id,
+                userId,
+                username,
+                dataType,
+                dataId,
+                action,
+                beforeData,
+                afterData,
+                diffData,
+                reason,
+                ip,
+                operationTime,
+                createdAt);
     }
 
     @Override
@@ -204,7 +229,10 @@ public class AuditLog {
 
     @Override
     public String toString() {
-        return "AuditLog(" + "id=" + id + ", " + "userId=" + userId + ", " + "username=" + username + ", " + "dataType=" + dataType + ", " + "dataId=" + dataId + ", " + "action=" + action + ", " + "beforeData=" + beforeData + ", " + "afterData=" + afterData + ", " + "diffData=" + diffData + ", " + "reason=" + reason + ", " + "ip=" + ip + ", " + "operationTime=" + operationTime + ", " + "createdAt=" + createdAt + ")";
+        return "AuditLog(" + "id=" + id + ", " + "userId=" + userId + ", " + "username=" + username + ", " + "dataType="
+                + dataType + ", " + "dataId=" + dataId + ", " + "action=" + action + ", " + "beforeData=" + beforeData
+                + ", " + "afterData=" + afterData + ", " + "diffData=" + diffData + ", " + "reason=" + reason + ", "
+                + "ip=" + ip + ", " + "operationTime=" + operationTime + ", " + "createdAt=" + createdAt + ")";
     }
 
     public static Builder builder() {
@@ -292,7 +320,20 @@ public class AuditLog {
         }
 
         public AuditLog build() {
-            return new AuditLog(this.id, this.userId, this.username, this.dataType, this.dataId, this.action, this.beforeData, this.afterData, this.diffData, this.reason, this.ip, this.operationTime, this.createdAt);
+            return new AuditLog(
+                    this.id,
+                    this.userId,
+                    this.username,
+                    this.dataType,
+                    this.dataId,
+                    this.action,
+                    this.beforeData,
+                    this.afterData,
+                    this.diffData,
+                    this.reason,
+                    this.ip,
+                    this.operationTime,
+                    this.createdAt);
         }
     }
 }

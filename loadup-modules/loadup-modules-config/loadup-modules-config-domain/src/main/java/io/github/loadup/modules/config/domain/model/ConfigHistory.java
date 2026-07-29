@@ -41,7 +41,15 @@ public class ConfigHistory {
     private String remark;
     private LocalDateTime createdAt;
 
-    public ConfigHistory(String id, String configKey, String oldValue, String newValue, ChangeType changeType, String operator, String remark, LocalDateTime createdAt) {
+    public ConfigHistory(
+            String id,
+            String configKey,
+            String oldValue,
+            String newValue,
+            ChangeType changeType,
+            String operator,
+            String remark,
+            LocalDateTime createdAt) {
         this.id = id;
         this.configKey = configKey;
         this.oldValue = oldValue;
@@ -52,8 +60,7 @@ public class ConfigHistory {
         this.createdAt = createdAt;
     }
 
-    public ConfigHistory() {
-    }
+    public ConfigHistory() {}
 
     public String getId() {
         return this.id;
@@ -142,7 +149,9 @@ public class ConfigHistory {
 
     @Override
     public String toString() {
-        return "ConfigHistory(" + "id=" + id + ", " + "configKey=" + configKey + ", " + "oldValue=" + oldValue + ", " + "newValue=" + newValue + ", " + "changeType=" + changeType + ", " + "operator=" + operator + ", " + "remark=" + remark + ", " + "createdAt=" + createdAt + ")";
+        return "ConfigHistory(" + "id=" + id + ", " + "configKey=" + configKey + ", " + "oldValue=" + oldValue + ", "
+                + "newValue=" + newValue + ", " + "changeType=" + changeType + ", " + "operator=" + operator + ", "
+                + "remark=" + remark + ", " + "createdAt=" + createdAt + ")";
     }
 
     public static Builder builder() {
@@ -200,7 +209,15 @@ public class ConfigHistory {
         }
 
         public ConfigHistory build() {
-            return new ConfigHistory(this.id, this.configKey, this.oldValue, this.newValue, this.changeType, this.operator, this.remark, this.createdAt);
+            return new ConfigHistory(
+                    this.id,
+                    this.configKey,
+                    this.oldValue,
+                    this.newValue,
+                    this.changeType,
+                    this.operator,
+                    this.remark,
+                    this.createdAt);
         }
     }
 }

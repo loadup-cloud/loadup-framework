@@ -22,7 +22,6 @@ package io.github.loadup.modules.upms.client.dto;
  * #L%
  */
 
-
 /**
  * Login Result DTO - Contains access token and user information
  *
@@ -37,7 +36,8 @@ public class AccessTokenDTO {
     private Long expiresIn;
     private UserDetailDTO userInfo;
 
-    public AccessTokenDTO(String accessToken, String refreshToken, String tokenType, Long expiresIn, UserDetailDTO userInfo) {
+    public AccessTokenDTO(
+            String accessToken, String refreshToken, String tokenType, Long expiresIn, UserDetailDTO userInfo) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.tokenType = tokenType;
@@ -45,8 +45,7 @@ public class AccessTokenDTO {
         this.userInfo = userInfo;
     }
 
-    public AccessTokenDTO() {
-    }
+    public AccessTokenDTO() {}
 
     public String getAccessToken() {
         return this.accessToken;
@@ -108,7 +107,8 @@ public class AccessTokenDTO {
 
     @Override
     public String toString() {
-        return "AccessTokenDTO(" + "accessToken=" + accessToken + ", " + "refreshToken=" + refreshToken + ", " + "tokenType=" + tokenType + ", " + "expiresIn=" + expiresIn + ", " + "userInfo=" + userInfo + ")";
+        return "AccessTokenDTO(" + "accessToken=" + accessToken + ", " + "refreshToken=" + refreshToken + ", "
+                + "tokenType=" + tokenType + ", " + "expiresIn=" + expiresIn + ", " + "userInfo=" + userInfo + ")";
     }
 
     public static Builder builder() {
@@ -148,7 +148,8 @@ public class AccessTokenDTO {
         }
 
         public AccessTokenDTO build() {
-            return new AccessTokenDTO(this.accessToken, this.refreshToken, this.tokenType, this.expiresIn, this.userInfo);
+            return new AccessTokenDTO(
+                    this.accessToken, this.refreshToken, this.tokenType, this.expiresIn, this.userInfo);
         }
     }
 }

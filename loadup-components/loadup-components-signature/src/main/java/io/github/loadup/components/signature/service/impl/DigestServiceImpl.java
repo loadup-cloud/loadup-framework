@@ -29,10 +29,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import org.springframework.stereotype.Service;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 /**
  * 摘要服务实现
  *
@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class DigestServiceImpl implements DigestService {
     private static final Logger log = LoggerFactory.getLogger(DigestServiceImpl.class);
-
 
     @Override
     public String digest(byte[] data, DigestAlgorithm algorithm) {
@@ -103,5 +102,9 @@ public class DigestServiceImpl implements DigestService {
             hexString.append(String.format("%02x", b));
         }
         return hexString.toString();
+    }
+
+    public Logger getLog() {
+        return this.log;
     }
 }

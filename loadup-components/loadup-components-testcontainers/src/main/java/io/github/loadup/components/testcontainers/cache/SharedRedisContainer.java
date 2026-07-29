@@ -25,11 +25,11 @@ package io.github.loadup.components.testcontainers.cache;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Shared Redis TestContainer instance that can be reused across multiple tests.
  *
@@ -42,8 +42,6 @@ import org.slf4j.LoggerFactory;
  * <pre>
  * &#64;SpringBootTest
  * &#64;TestPropertySource(properties = {
-    private static final Logger log = LoggerFactory.getLogger(SharedRedisContainer.class);
-
  *     "spring.redis.host=" + SharedRedisContainer.HOST,
  *     "spring.redis.port=" + SharedRedisContainer.PORT
  * })
@@ -56,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.0.0
  */
 public final class SharedRedisContainer {
+    private static final Logger log = LoggerFactory.getLogger(SharedRedisContainer.class);
 
     /**
      * Default Redis version to use

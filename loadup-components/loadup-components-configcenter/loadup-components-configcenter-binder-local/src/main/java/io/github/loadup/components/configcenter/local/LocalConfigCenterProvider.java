@@ -10,12 +10,12 @@ package io.github.loadup.components.configcenter.local;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -33,7 +33,9 @@ public class LocalConfigCenterProvider implements ConfigCenterProvider {
     private final ConcurrentHashMap<String, List<Consumer<String>>> listeners = new ConcurrentHashMap<>();
 
     @Override
-    public String getConfig(String key) { return configs.get(key); }
+    public String getConfig(String key) {
+        return configs.get(key);
+    }
 
     @Override
     public boolean setConfig(String key, String value) {
@@ -60,8 +62,12 @@ public class LocalConfigCenterProvider implements ConfigCenterProvider {
     }
 
     @Override
-    public void removeListener(String key) { listeners.remove(key); }
+    public void removeListener(String key) {
+        listeners.remove(key);
+    }
 
     @Override
-    public String getBinderType() { return "local"; }
+    public String getBinderType() {
+        return "local";
+    }
 }

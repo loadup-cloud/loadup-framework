@@ -54,10 +54,8 @@ public class GatewayHandlerMapping extends AbstractHandlerMapping {
 
         // Build a minimal GatewayRequest for route resolution
         // (only path and method are needed for matching)
-        GatewayRequest lookupRequest = GatewayRequest.builder()
-                .path(path)
-                .method(method)
-                .build();
+        GatewayRequest lookupRequest =
+                GatewayRequest.builder().path(path).method(method).build();
 
         // Use RouteResolver which handles both exact and pattern matching
         Optional<RouteConfig> route = routeResolver.resolve(lookupRequest);

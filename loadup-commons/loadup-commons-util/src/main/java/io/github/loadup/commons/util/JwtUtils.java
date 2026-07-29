@@ -31,12 +31,12 @@ import java.util.Map;
 import javax.crypto.SecretKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * JWT Utility class for generating and parsing tokens.
  */
 public class JwtUtils {
     private static final Logger log = LoggerFactory.getLogger(JwtUtils.class);
-
 
     /**
      * Create a new JWT Token

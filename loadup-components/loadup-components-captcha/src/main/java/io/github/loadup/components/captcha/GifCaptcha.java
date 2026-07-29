@@ -31,12 +31,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Gif验证码类 Created by 王帆 on 2018-07-27 上午 10:08.
  */
 public class GifCaptcha extends Captcha {
     private static final Logger log = LoggerFactory.getLogger(GifCaptcha.class);
-
 
     public GifCaptcha() {}
 

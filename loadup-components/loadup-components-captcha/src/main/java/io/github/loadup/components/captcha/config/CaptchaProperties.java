@@ -59,8 +59,7 @@ public class CaptchaProperties {
         this.customCharacters = customCharacters;
     }
 
-    public CaptchaProperties() {
-    }
+    public CaptchaProperties() {}
 
     public int getLen() {
         return this.len;
@@ -113,6 +112,7 @@ public class CaptchaProperties {
 
     @Override
     public String toString() {
-        return "CaptchaProperties(" + "len=" + len + ", " + "width=" + width + ", " + "height=" + height + ", " + "customCharacters=" + customCharacters + ")";
+        return "CaptchaProperties(" + "len=" + len + ", " + "width=" + width + ", " + "height=" + height + ", "
+                + "customCharacters=" + customCharacters + ")";
     }
 }

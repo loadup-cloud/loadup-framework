@@ -36,11 +36,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * Application service for operation log management.
  *
@@ -49,7 +49,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class OperationLogService {
     private static final Logger log = LoggerFactory.getLogger(OperationLogService.class);
-
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -68,7 +67,7 @@ public class OperationLogService {
                         query.getUserId(),
                         query.getModule(),
                         query.getOperationType(),
-                        query.getSuccess(),
+                        query.isSuccess(),
                         query.getStartTime(),
                         query.getEndTime(),
                         pageNum,
@@ -87,7 +86,7 @@ public class OperationLogService {
                 query.getUserId(),
                 query.getModule(),
                 query.getOperationType(),
-                query.getSuccess(),
+                query.isSuccess(),
                 query.getStartTime(),
                 query.getEndTime());
     }
@@ -141,27 +140,25 @@ public class OperationLogService {
         Map<String, Long> byDate = gateway.countGroupBy("date", userId, module, opType, null, start, end);
         Map<String, Object> duration = gateway.durationStats(userId, module, opType, start, end);
 
-        return LogStatisticsDTO.builder()
-                .total(total)
-                .successCount(success)
-                .failureCount(failure)
-                .successRate(rate)
-                .avgDuration(
-                        duration.get("avgDuration") == null
-                                ? null
-                                : ((Number) duration.get("avgDuration")).doubleValue())
-                .maxDuration(
-                        duration.get("maxDuration") == null ? null : ((Number) duration.get("maxDuration")).longValue())
-                .byModule(byModule.entrySet().stream()
-                        .map(e -> new StatItem(e.getKey(), e.getValue()))
-                        .toList())
-                .byOperationType(byType.entrySet().stream()
-                        .map(e -> new StatItem(e.getKey(), e.getValue()))
-                        .toList())
-                .byDate(byDate.entrySet().stream()
-                        .map(e -> new StatItem(e.getKey(), e.getValue()))
-                        .toList())
-                .build();
+        LogStatisticsDTO dto = new LogStatisticsDTO();
+        dto.setTotal(total);
+        dto.setSuccessCount(success);
+        dto.setFailureCount(failure);
+        dto.setSuccessRate(rate);
+        dto.setAvgDuration(
+                duration.get("avgDuration") == null ? null : ((Number) duration.get("avgDuration")).doubleValue());
+        dto.setMaxDuration(
+                duration.get("maxDuration") == null ? null : ((Number) duration.get("maxDuration")).longValue());
+        dto.setByModule(byModule.entrySet().stream()
+                .map(e -> new StatItem(e.getKey(), e.getValue()))
+                .toList());
+        dto.setByOperationType(byType.entrySet().stream()
+                .map(e -> new StatItem(e.getKey(), e.getValue()))
+                .toList());
+        dto.setByDate(byDate.entrySet().stream()
+                .map(e -> new StatItem(e.getKey(), e.getValue()))
+                .toList());
+        return dto;
     }
 
     /**
@@ -179,7 +176,7 @@ public class OperationLogService {
                 query.getUserId(),
                 query.getModule(),
                 query.getOperationType(),
-                query.getSuccess(),
+                query.isSuccess(),
                 query.getStartTime(),
                 query.getEndTime());
 
@@ -195,7 +192,7 @@ public class OperationLogService {
                     safe(l.getDescription()),
                     safe(l.getMethod()),
                     l.getDuration() == null ? "" : l.getDuration().toString(),
-                    l.getSuccess() == null ? "" : l.getSuccess().toString(),
+                    l.isSuccess() == null ? "" : l.isSuccess().toString(),
                     safe(l.getIp()),
                     l.getOperationTime() == null ? "" : l.getOperationTime().format(FORMATTER)));
         }
@@ -227,7 +224,7 @@ public class OperationLogService {
         dto.setRequestParams(m.getRequestParams());
         dto.setResponseResult(m.getResponseResult());
         dto.setDuration(m.getDuration());
-        dto.setSuccess(m.getSuccess());
+        dto.setSuccess(m.isSuccess());
         dto.setErrorMessage(m.getErrorMessage());
         dto.setIp(m.getIp());
         dto.setUserAgent(m.getUserAgent());

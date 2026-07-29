@@ -71,7 +71,14 @@ public class RetryTaskRegisterRequest implements Serializable {
      */
     private Boolean waitResult;
 
-    public RetryTaskRegisterRequest(String bizType, String bizId, Priority priority, LocalDateTime nextRetryTime, Map<String, String> args, Boolean executeImmediately, Boolean waitResult) {
+    public RetryTaskRegisterRequest(
+            String bizType,
+            String bizId,
+            Priority priority,
+            LocalDateTime nextRetryTime,
+            Map<String, String> args,
+            Boolean executeImmediately,
+            Boolean waitResult) {
         this.bizType = bizType;
         this.bizId = bizId;
         this.priority = priority;
@@ -81,8 +88,7 @@ public class RetryTaskRegisterRequest implements Serializable {
         this.waitResult = waitResult;
     }
 
-    public RetryTaskRegisterRequest() {
-    }
+    public RetryTaskRegisterRequest() {}
 
     public String getBizType() {
         return this.bizType;
@@ -162,6 +168,8 @@ public class RetryTaskRegisterRequest implements Serializable {
 
     @Override
     public String toString() {
-        return "RetryTaskRegisterRequest(" + "bizType=" + bizType + ", " + "bizId=" + bizId + ", " + "priority=" + priority + ", " + "nextRetryTime=" + nextRetryTime + ", " + "args=" + args + ", " + "executeImmediately=" + executeImmediately + ", " + "waitResult=" + waitResult + ")";
+        return "RetryTaskRegisterRequest(" + "bizType=" + bizType + ", " + "bizId=" + bizId + ", " + "priority="
+                + priority + ", " + "nextRetryTime=" + nextRetryTime + ", " + "args=" + args + ", "
+                + "executeImmediately=" + executeImmediately + ", " + "waitResult=" + waitResult + ")";
     }
 }

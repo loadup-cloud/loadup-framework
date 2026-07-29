@@ -1,6 +1,6 @@
-//package io.github.loadup.gateway.test.unit;
+// package io.github.loadup.gateway.test.unit;
 //
-///*-
+/// *-
 // * #%L
 // * LoadUp Gateway Test
 // * %%
@@ -22,30 +22,30 @@
 // * #L%
 // */
 //
-//import static org.junit.jupiter.api.Assertions.*;
+// import static org.junit.jupiter.api.Assertions.*;
 //
-//import io.github.loadup.gateway.core.action.CircuitBreakerAction;
-//import io.github.loadup.gateway.core.action.RateLimitAction;
-//import io.github.loadup.gateway.core.router.PatternRouteRegistry;
-//import io.github.loadup.gateway.facade.model.GatewayRequest;
-//import io.github.loadup.gateway.facade.model.PathPattern;
-//import io.github.loadup.gateway.facade.model.RouteConfig;
-//import java.time.Clock;
-//import java.time.Instant;
-//import java.time.ZoneId;
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.Map;
-//import java.util.Optional;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Nested;
-//import org.junit.jupiter.api.Test;
+// import io.github.loadup.gateway.core.action.CircuitBreakerAction;
+// import io.github.loadup.gateway.core.action.RateLimitAction;
+// import io.github.loadup.gateway.core.router.PatternRouteRegistry;
+// import io.github.loadup.gateway.facade.model.GatewayRequest;
+// import io.github.loadup.gateway.facade.model.PathPattern;
+// import io.github.loadup.gateway.facade.model.RouteConfig;
+// import java.time.Clock;
+// import java.time.Instant;
+// import java.time.ZoneId;
+// import java.util.ArrayList;
+// import java.util.List;
+// import java.util.Map;
+// import java.util.Optional;
+// import org.junit.jupiter.api.DisplayName;
+// import org.junit.jupiter.api.Nested;
+// import org.junit.jupiter.api.Test;
 //
-///**
+/// **
 // * Unit tests for the three new high-priority features:
 // * route pattern matching, rate limiting, and circuit breaker.
 // */
-//class NewFeaturesTest {
+// class NewFeaturesTest {
 //
 //    @Nested
 //    @DisplayName("PathPattern matching")
@@ -322,4 +322,4 @@
 //            assertTrue(breaker.allowRequest(), "Should still be CLOSED after 4 failures (reset at 3)");
 //        }
 //    }
-//}
+// }

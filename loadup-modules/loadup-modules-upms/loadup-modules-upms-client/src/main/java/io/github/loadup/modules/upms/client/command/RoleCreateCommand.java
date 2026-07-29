@@ -69,7 +69,17 @@ public class RoleCreateCommand {
 
     private String createdBy;
 
-    public RoleCreateCommand(String roleName, String roleCode, String parentId, Short dataScope, Integer sortOrder, Short status, List<String> permissionIds, List<String> departmentIds, String remark, String createdBy) {
+    public RoleCreateCommand(
+            String roleName,
+            String roleCode,
+            String parentId,
+            Short dataScope,
+            Integer sortOrder,
+            Short status,
+            List<String> permissionIds,
+            List<String> departmentIds,
+            String remark,
+            String createdBy) {
         this.roleName = roleName;
         this.roleCode = roleCode;
         this.parentId = parentId;
@@ -82,8 +92,7 @@ public class RoleCreateCommand {
         this.createdBy = createdBy;
     }
 
-    public RoleCreateCommand() {
-    }
+    public RoleCreateCommand() {}
 
     public String getRoleName() {
         return this.roleName;
@@ -167,7 +176,17 @@ public class RoleCreateCommand {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(roleName, roleCode, parentId, dataScope, sortOrder, status, permissionIds, departmentIds, remark, createdBy);
+        return java.util.Objects.hash(
+                roleName,
+                roleCode,
+                parentId,
+                dataScope,
+                sortOrder,
+                status,
+                permissionIds,
+                departmentIds,
+                remark,
+                createdBy);
     }
 
     @Override
@@ -190,6 +209,9 @@ public class RoleCreateCommand {
 
     @Override
     public String toString() {
-        return "RoleCreateCommand(" + "roleName=" + roleName + ", " + "roleCode=" + roleCode + ", " + "parentId=" + parentId + ", " + "dataScope=" + dataScope + ", " + "sortOrder=" + sortOrder + ", " + "status=" + status + ", " + "permissionIds=" + permissionIds + ", " + "departmentIds=" + departmentIds + ", " + "remark=" + remark + ", " + "createdBy=" + createdBy + ")";
+        return "RoleCreateCommand(" + "roleName=" + roleName + ", " + "roleCode=" + roleCode + ", " + "parentId="
+                + parentId + ", " + "dataScope=" + dataScope + ", " + "sortOrder=" + sortOrder + ", " + "status="
+                + status + ", " + "permissionIds=" + permissionIds + ", " + "departmentIds=" + departmentIds + ", "
+                + "remark=" + remark + ", " + "createdBy=" + createdBy + ")";
     }
 }
