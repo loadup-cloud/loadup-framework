@@ -8,9 +8,10 @@
         <version>0.0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>loadup-gateway-starter</artifactId>
-    <name>LoadUp Gateway Starter</name>
-    <description>SpringBoot starter for LoadUp Gateway</description>
+    <artifactId>loadup-gateway-repository-yaml-plugin</artifactId>
+    <name>Repository YAML Plugin</name>
+    <description>YAML file route store with file watcher hot reload</description>
+
     <properties>
         <java.version>21</java.version>
         <project.encoding>UTF-8</project.encoding>
@@ -21,39 +22,20 @@
         <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-gateway-core</artifactId>
+            <artifactId>loadup-gateway-facade</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- YAML route store plugin -->
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-gateway-repository-yaml-plugin</artifactId>
-            <version>${loadup.framework.version}</version>
-        </dependency>
-
-        <!-- Tracer component (optional) -->
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-tracer</artifactId>
-            <optional>true</optional>
-        </dependency>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

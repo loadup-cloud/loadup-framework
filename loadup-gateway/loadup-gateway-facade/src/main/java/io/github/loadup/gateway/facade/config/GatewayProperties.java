@@ -88,6 +88,12 @@ public class GatewayProperties {
          * Token prefix
          */
         private String prefix = "Bearer ";
+
+        /**
+         * HMAC signature app secrets: appId → secretKey.
+         * Configure via: loadup.gateway.security.app-secrets.app-id=secret
+         */
+        private Map<String, String> appSecrets = new HashMap<>();
     }
 
     /**

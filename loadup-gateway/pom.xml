@@ -44,8 +44,9 @@
         <module>plugins/proxy-http-plugin</module>
         <module>plugins/proxy-rpc-plugin</module>
         <module>plugins/proxy-springbean-plugin</module>
+        <module>plugins/repository-yaml-plugin</module>
         <module>plugins/repository-database-plugin</module>
-        <module>plugins/repository-file-plugin</module>
+
     </modules>
 
     <properties>

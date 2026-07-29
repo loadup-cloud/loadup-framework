@@ -1,0 +1,75 @@
+# LoadUp Gateway — Sample Route Configuration
+# Place this file in the application working directory or config/ subdirectory.
+# Hot reload: edit and save — routes update within 5 seconds.
+
+routes:
+  # --- Health check (public, zero filters) ---
+  - id: health
+    path: /api/health
+    method: GET
+    enabled: true
+    backend:
+      protocol: bean
+      beanName: healthService
+      methodName: check
+    filters: []
+    wrapResponse: false
+
+  # --- User API (JWT auth + rate limit + response wrapping) ---
+  - id: user-api
+    path: /api/users
+    method: POST
+    enabled: true
+    backend:
+      protocol: http
+      url: http://localhost:8081/api/users
+    filters:
+      - name: body-parser
+      - name: security
+        props:
+          scopes: [user:read, user:write]
+      - name: rate-limit
+        props:
+          capacity: 100
+          refillRate: 10
+      - name: circuit-breaker
+        props:
+          enabled: true
+          failureThreshold: 5
+    responseFilters:
+      - name: response-wrapper
+    securityCode: default
+
+  # --- Internal RPC call (internal security, no wrapping) ---
+  - id: internal-config
+    path: /api/internal/config
+    method: GET
+    enabled: true
+    backend:
+      protocol: bean
+      beanName: configItemService
+      methodName: listAll
+    filters:
+      - name: body-parser
+      - name: security
+    securityCode: internal
+    wrapResponse: false
+
+  # --- Public API (signature verification, high rate limit) ---
+  - id: public-api
+    path: /api/public/data
+    method: POST
+    enabled: true
+    backend:
+      protocol: http
+      url: http://data-service:8080/api/data
+    filters:
+      - name: body-parser
+      - name: security
+      - name: rate-limit
+        props:
+          capacity: 1000
+          refillRate: 50
+    responseFilters:
+      - name: response-wrapper
+    securityCode: signature

@@ -22,7 +22,6 @@ package io.github.loadup.components.cache.test;
  * #L%
  */
 
-import io.github.loadup.components.cache.binder.CacheTicker;
 import io.github.loadup.components.cache.constants.CacheConstants;
 import io.github.loadup.components.cache.test.common.FakeTicker;
 import org.springframework.boot.SpringApplication;
@@ -45,10 +44,10 @@ public class TestApplication {
     @Configuration
     @EnableAutoConfiguration
     static class TestConfiguration {
-        @Bean(name = CacheConstants.DEFAULT_TICKER)
-        @Primary
-        public CacheTicker fakeTicker() {
-            return new FakeTicker();
-        }
+//        @Bean(name = CacheConstants.DEFAULT_TICKER)
+//        @Primary
+//        public CacheTicker fakeTicker() {
+//            return new FakeTicker();
+//        }
     }
 }

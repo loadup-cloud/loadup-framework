@@ -236,6 +236,11 @@
                 <artifactId>loadup-gateway-repository-file-plugin</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-gateway-repository-yaml-plugin</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
             <!-- ======== loadup-gateway end ======== -->
 
             <!-- ======== loadup-testify start ======== -->

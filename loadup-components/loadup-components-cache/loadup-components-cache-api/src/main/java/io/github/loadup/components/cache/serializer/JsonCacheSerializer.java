@@ -10,28 +10,30 @@ package io.github.loadup.components.cache.serializer;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.loadup.commons.util.JsonUtil;
 
 public class JsonCacheSerializer implements CacheSerializer {
     @Override
     public byte[] serialize(Object obj) {
-        return JsonUtil.toJsonBytes(obj);
+        return JsonUtil.toBytes(obj);
     }
 
     @Override
     public <T> T deserialize(byte[] bytes, Class<T> type) {
-        return JsonUtil.parseObject(bytes, type);
+        return JsonUtil.fromBytes(bytes, new TypeReference<T>() {
+        });
     }
 }

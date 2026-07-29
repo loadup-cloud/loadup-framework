@@ -1,100 +1,48 @@
 package io.github.loadup.gateway.plugins.entity;
 
-/*-
- * #%L
- * Repository Database Plugin
- * %%
- * Copyright (C) 2025 - 2026 LoadUp Cloud
- * %%
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/gpl-3.0.html>.
- * #L%
- */
-
-import io.github.loadup.gateway.facade.dto.RouteStructure;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
-/**
- * Route entity
- */
 @Getter
 @Setter
 @Table("gateway_routes")
-public class RouteEntity extends RouteStructure {
-    // path,method,target,requestTemplate,responseTemplate,enabled,properties
-    /**
-     * id
-     */
+public class RouteEntity {
+
     @Id
-    private String routeId;
+    private String id;
 
-    /**
-     * name
-     */
-    private String routeName;
-
-    /**
-     * request path
-     */
     private String path;
 
-    /**
-     * request method GET, POST, PUT, DELETE, etc.
-     */
     private String method;
 
-    /**
-     * http://..., bean://service:method, rpc://class:method:version
-     */
+    /** Target string: http://..., bean://service:method, rpc://... */
     private String target;
 
-    /**
-     * Security code for authentication/authorization strategy (e.g. "OFF", "default", "signature", "internal")
-     */
+    /** Security code: OFF, default, signature, internal */
     private String securityCode;
 
-    /**
-     * request template
-     */
-    private String requestTemplate;
+    /** Request filter chain names, comma-separated */
+    private String requestFilters;
 
-    /**
-     * response template
-     */
-    private String responseTemplate;
+    /** Response filter chain names, comma-separated */
+    private String responseFilters;
 
-    /**
-     * enabled status
-     */
+    /** Filter properties as JSON: {"filter-name": {"key": "value"}} */
+    private String filterProps;
+
+    /** Whether this route is active */
     private Boolean enabled;
 
-    /**
-     * additional properties
-     */
-    private String properties;
+    /** Route-level timeout in milliseconds */
+    private Long timeout;
 
-    /**
-     * updated at
-     */
-    private LocalDateTime updatedAt;
+    /** Whether to wrap the response */
+    private Boolean wrapResponse;
 
-    /**
-     * created at
-     */
     private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 }

@@ -79,7 +79,7 @@ import lombok.Setter;
 public class LocalDfsBinderCfg extends DfsBinderCfg {
     private String basePath = System.getProperty("user.home") + "/dfs-storage";
 
-    @Override
+//    @Override
     public Object getIdentity() {
         return basePath;
     }
