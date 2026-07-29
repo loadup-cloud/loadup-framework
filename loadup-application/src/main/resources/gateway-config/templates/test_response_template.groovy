@@ -22,7 +22,7 @@
 package templates
 // 测试响应模板 - 处理响应并添加统一格式
 
-import io.github.loadup.gateway.facade.utils.JsonUtils
+import io.github.loadup.commons.util.JsonUtil
 
 // 添加通用响应头
 response.headers.put("X-Gateway-Response-Processed", "true")
@@ -34,7 +34,7 @@ if (response.body != null && response.statusCode == 200) {
     def responseData
 
 
-    responseData = JsonUtils.toMap(response.body)
+    responseData = JsonUtil.toMap(response.body)
     if (responseData == null) {
         // 如果不是JSON，包装成JSON格式
         responseData = response.body
@@ -47,7 +47,7 @@ if (response.body != null && response.statusCode == 200) {
                                     "timestamp"     : System.currentTimeMillis(),
                                     "processingTime": response.processingTime]]
 
-    response.body = JsonUtils.toJson(responseData)
+    response.body = JsonUtil.toJson(responseData)
     response.contentType = "application/json"
 
 }

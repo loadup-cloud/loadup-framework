@@ -22,7 +22,7 @@
 package templates
 // 测试请求模板 - 处理入参并添加通用字段
 
-import io.github.loadup.gateway.facade.utils.JsonUtils
+import io.github.loadup.commons.util.JsonUtil
 
 // 添加通用请求头
 request.headers.put("X-Gateway-Processed", "true")
@@ -31,7 +31,7 @@ request.headers.put("X-Request-Id", request.requestId)
 
 // 如果是POST请求，处理请求体
 if (request.method == "POST" && request.body != null) {
-    def bodyMap = JsonUtils.toMap(request.body)
+    def bodyMap = JsonUtil.toMap(request.body)
 
     // 添加系统字段
     bodyMap.put("_system", [
@@ -46,7 +46,7 @@ if (request.method == "POST" && request.body != null) {
         bodyMap.put("_validation", ["nameLength": "too_long"])
     }
 
-    request.body = JsonUtils.toJson(bodyMap)
+    request.body = JsonUtil.toJson(bodyMap)
 }
 
 // 添加查询参数处理

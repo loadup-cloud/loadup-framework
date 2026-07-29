@@ -162,7 +162,7 @@ Templates are Groovy scripts executed by the template engine. The engine provide
 #### Request Template Example (`templates/login_request.groovy`)
 
 ```groovy
-import io.github.loadup.gateway.facade.utils.JsonUtils
+import io.github.loadup.commons.util.JsonUtil
 
 // Add common headers
 request.headers.put("X-Gateway-Source", "loadup")
@@ -170,7 +170,7 @@ request.headers.put("X-Request-Time", request.requestTime.toString())
 
 // Transform request body
 if (request.body != null) {
-    def bodyMap = JsonUtils.toMap(request.body)
+    def bodyMap = JsonUtil.toMap(request.body)
     bodyMap.put("_gateway_meta", [
         requestId: request.requestId,
         clientIp: request.clientIp,
@@ -180,7 +180,7 @@ if (request.body != null) {
     if (bodyMap.phone) {
         bodyMap.phone = bodyMap.phone.toString().replaceAll("[^0-9]", "")
     }
-    request.body = JsonUtils.toJson(bodyMap)
+    request.body = JsonUtil.toJson(bodyMap)
 }
 
 log.info("Login request processed: {}", request.requestId)
@@ -190,16 +190,16 @@ return request
 #### Response Template Example (`templates/login_response.groovy`)
 
 ```groovy
-import io.github.loadup.gateway.facade.utils.JsonUtils
+import io.github.loadup.commons.util.JsonUtil
 
 response.headers.put("X-Processed-By", "loadup-gateway")
 
 if (response.statusCode == 200 && response.body != null) {
-    def bodyMap = JsonUtils.toMap(response.body)
+    def bodyMap = JsonUtil.toMap(response.body)
     // Remove sensitive fields
     bodyMap.remove("password")
     bodyMap.remove("secretKey")
-    response.body = JsonUtils.toJson(bodyMap)
+    response.body = JsonUtil.toJson(bodyMap)
 }
 
 return response
@@ -413,7 +413,7 @@ Templates have access to the application classpath. Common imports:
 ```groovy
 import io.github.loadup.gateway.facade.model.GatewayRequest
 import io.github.loadup.gateway.facade.model.GatewayResponse
-import io.github.loadup.gateway.facade.utils.JsonUtils
+import io.github.loadup.commons.util.JsonUtil
 ```
 
 ### Template Resolution (File Storage)

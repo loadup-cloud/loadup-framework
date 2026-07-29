@@ -23,7 +23,7 @@ package io.github.loadup.gateway.plugins.mapper;
  */
 
 import io.github.loadup.gateway.facade.model.RouteConfig;
-import io.github.loadup.gateway.facade.utils.JsonUtils;
+import io.github.loadup.commons.util.JsonUtil;
 import io.github.loadup.gateway.plugins.entity.RouteEntity;
 import java.util.Date;
 import org.mapstruct.Mapper;
@@ -31,11 +31,11 @@ import org.mapstruct.Mapping;
 
 @Mapper(
         componentModel = "spring",
-        imports = {JsonUtils.class, Date.class})
+        imports = {JsonUtil.class, Date.class})
 public interface RouteMapper {
 
     @Mapping(target = "routeId", expression = "java(config.getRouteId())")
     @Mapping(target = "routeName", expression = "java(config.getRouteName())")
-    @Mapping(target = "properties", expression = "java(JsonUtils.toJson(config.getProperties()))")
+    @Mapping(target = "properties", expression = "java(JsonUtil.toJson(config.getProperties()))")
     RouteEntity toEntity(RouteConfig config);
 }

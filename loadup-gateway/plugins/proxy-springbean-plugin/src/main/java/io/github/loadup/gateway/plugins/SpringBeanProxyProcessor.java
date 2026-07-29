@@ -28,7 +28,7 @@ import io.github.loadup.gateway.facade.model.GatewayRequest;
 import io.github.loadup.gateway.facade.model.GatewayResponse;
 import io.github.loadup.gateway.facade.model.RouteConfig;
 import io.github.loadup.gateway.facade.spi.ProxyProcessor;
-import io.github.loadup.gateway.facade.utils.JsonUtils;
+import io.github.loadup.commons.util.JsonUtil;
 import jakarta.annotation.Resource;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
@@ -117,7 +117,7 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
                     .requestId(request.getRequestId())
                     .statusCode(GatewayConstants.Status.SUCCESS)
                     .headers(new HashMap<>())
-                    .body(JsonUtils.toJson(result))
+                    .body(JsonUtil.toJson(result))
                     .contentType(GatewayConstants.ContentType.JSON)
                     .responseTime(LocalDateTime.now())
                     .build();
@@ -165,7 +165,7 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
             } else {
                 // TryFromRequest bodyJSONParse
                 try {
-                    args[i] = JsonUtils.fromJson(request.getBody(), paramTypes[i]);
+                    args[i] = JsonUtil.fromJson(request.getBody(), paramTypes[i]);
                 } catch (Exception e) {
                     args[i] = null;
                 }

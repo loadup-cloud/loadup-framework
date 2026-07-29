@@ -21,7 +21,7 @@
  */
 // 测试响应模板 - 处理响应并添加统一格式
 import io.github.loadup.gateway.facade.model.GatewayResponse
-import io.github.loadup.gateway.facade.utils.JsonUtils
+import io.github.loadup.commons.util.JsonUtil
 
 // 添加通用响应头
 response.headers.put("X-Gateway-Response-Processed", "true")
@@ -33,7 +33,7 @@ if (response.body != null && response.statusCode == 200) {
     def responseData
 
     try {
-        responseData = JsonUtils.toMap(response.body)
+        responseData = JsonUtil.toMap(response.body)
     } catch (Exception e) {
         // 如果不是JSON，包装成JSON格式
         responseData = ["data": response.body]
@@ -51,7 +51,7 @@ if (response.body != null && response.statusCode == 200) {
         ]
     ]
 
-    response.body = JsonUtils.toJson(unifiedResponse)
+    response.body = JsonUtil.toJson(unifiedResponse)
     response.contentType = "application/json"
 
 } else if (response.statusCode >= 400) {
@@ -67,7 +67,7 @@ if (response.body != null && response.statusCode == 200) {
         ]
     ]
 
-    response.body = JsonUtils.toJson(errorResponse)
+    response.body = JsonUtil.toJson(errorResponse)
     response.contentType = "application/json"
 }
 

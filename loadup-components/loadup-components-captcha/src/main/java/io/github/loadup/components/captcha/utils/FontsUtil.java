@@ -83,7 +83,7 @@ public class FontsUtil {
      */
     private static synchronized void copyTempFontFile(String fontName, File tempFontFile) {
         try (InputStream is = FontsUtil.class.getResourceAsStream("/" + fontName)) {
-            FileUtil.copyToFile(is, tempFontFile);
+            IOUtils.copyToFile(is, tempFontFile);
         } catch (IOException e) {
             e.printStackTrace();
         }

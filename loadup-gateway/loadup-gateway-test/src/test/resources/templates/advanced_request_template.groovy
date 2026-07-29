@@ -21,7 +21,7 @@
  */
 // 高级请求模板 - 支持数据转换和路由决策
 import io.github.loadup.gateway.facade.model.GatewayRequest
-import io.github.loadup.gateway.facade.utils.JsonUtils
+import io.github.loadup.commons.util.JsonUtil
 
 // 用户认证和权限检查
 def token = request.headers.get("Authorization")
@@ -39,7 +39,7 @@ request.attributes.put("apiVersion", apiVersion)
 // 请求体数据转换
 if (request.body != null && !request.body.trim().isEmpty()) {
     try {
-        def bodyMap = JsonUtils.toMap(request.body)
+        def bodyMap = JsonUtil.toMap(request.body)
 
         // 数据清洗和标准化
         if (bodyMap.containsKey("phone")) {
@@ -61,7 +61,7 @@ if (request.body != null && !request.body.trim().isEmpty()) {
             "version": apiVersion
         ])
 
-        request.body = JsonUtils.toJson(bodyMap)
+        request.body = JsonUtil.toJson(bodyMap)
 
     } catch (Exception e) {
         log.warn("Failed to process request body: {}", e.message)

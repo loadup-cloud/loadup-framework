@@ -1,7 +1,7 @@
 package templates
 // 高级响应模板 - 支持数据包装、缓存和监控
 
-import io.github.loadup.gateway.facade.utils.JsonUtils
+import io.github.loadup.commons.util.JsonUtil
 
 // 添加通用响应头
 response.headers.put("X-Gateway-Version", "1.0.0")
@@ -18,7 +18,7 @@ if (response.statusCode >= 200 && response.statusCode < 300) {
 
     if (response.body != null) {
         try {
-            def responseData = JsonUtils.toMap(response.body)
+            def responseData = JsonUtil.toMap(response.body)
 
             // 统一响应格式
             def wrappedResponse = [
@@ -45,7 +45,7 @@ if (response.statusCode >= 200 && response.statusCode < 300) {
                 ]
             }
 
-            response.body = JsonUtils.toJson(wrappedResponse)
+            response.body = JsonUtil.toJson(wrappedResponse)
 
         } catch (Exception e) {
             log.warn("Failed to wrap response: {}", e.message)
@@ -60,7 +60,7 @@ if (response.statusCode >= 200 && response.statusCode < 300) {
                             "timestamp": System.currentTimeMillis()
                     ]
             ]
-            response.body = JsonUtils.toJson(simpleResponse)
+            response.body = JsonUtil.toJson(simpleResponse)
         }
     }
 
@@ -83,7 +83,7 @@ if (response.statusCode >= 200 && response.statusCode < 300) {
             ]
     ]
 
-    response.body = JsonUtils.toJson(errorResponse)
+    response.body = JsonUtil.toJson(errorResponse)
 }
 
 // 设置内容类型

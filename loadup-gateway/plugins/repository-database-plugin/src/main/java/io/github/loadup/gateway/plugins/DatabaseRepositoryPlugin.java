@@ -27,7 +27,7 @@ import io.github.loadup.gateway.facade.constants.GatewayConstants;
 import io.github.loadup.gateway.facade.dto.RouteStructure;
 import io.github.loadup.gateway.facade.model.RouteConfig;
 import io.github.loadup.gateway.facade.spi.RepositoryPlugin;
-import io.github.loadup.gateway.facade.utils.JsonUtils;
+import io.github.loadup.commons.util.JsonUtil;
 import io.github.loadup.gateway.plugins.entity.RouteEntity;
 import io.github.loadup.gateway.plugins.entity.TemplateEntity;
 import io.github.loadup.gateway.plugins.manager.RouteManager;
@@ -137,7 +137,7 @@ public class DatabaseRepositoryPlugin implements RepositoryPlugin {
 
             // Check if it is JSON Format
             if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
-                properties = JsonUtils.toMap(trimmed);
+                properties = JsonUtil.toMap(trimmed);
             }
             // Parse key-value format：timeout=30000;retryCount=3 (Use semicolon separator)
             String[] pairs = trimmed.split(";");

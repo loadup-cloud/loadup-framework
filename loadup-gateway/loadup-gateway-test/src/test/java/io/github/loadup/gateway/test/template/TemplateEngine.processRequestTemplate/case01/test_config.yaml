@@ -10,10 +10,10 @@ args:
     method: GET
     body: '{"a":"a","b":"b"}'
   - templateScript: '''
-                import io.github.loadup.gateway.facade.utils.JsonUtils
+                import io.github.loadup.commons.util.JsonUtil
                 
                 if (request.body != null) {
-                    def bodyMap = JsonUtils.toMap(request.body)
+                    def bodyMap = JsonUtil.toMap(request.body)
                 
                     // Name lengthVerify
                     if (bodyMap.containsKey("name") && bodyMap.name.length() > 20) {
@@ -30,7 +30,7 @@ args:
                         }
                     }
                 
-                    request.body = JsonUtils.toJson(bodyMap)
+                    request.body = JsonUtil.toJson(bodyMap)
                 }
                 
                 return request

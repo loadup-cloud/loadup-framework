@@ -22,6 +22,7 @@ package io.github.loadup.gateway.facade.utils;
  * #L%
  */
 
+import io.github.loadup.commons.util.JsonUtil;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
@@ -117,7 +118,7 @@ public final class CommonUtils {
 
                 // JSON format
                 if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
-                    properties = JsonUtils.toMap(trimmed);
+                    properties = JsonUtil.toMap(trimmed);
                 } else {
                     // key=value;... format
                     String[] pairs = trimmed.split(";");

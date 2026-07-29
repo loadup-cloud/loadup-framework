@@ -28,7 +28,7 @@ import io.github.loadup.gateway.facade.model.GatewayRequest;
 import io.github.loadup.gateway.facade.model.GatewayResponse;
 import io.github.loadup.gateway.facade.model.RouteConfig;
 import io.github.loadup.gateway.facade.spi.ProxyProcessor;
-import io.github.loadup.gateway.facade.utils.JsonUtils;
+import io.github.loadup.commons.util.JsonUtil;
 import jakarta.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -116,7 +116,7 @@ public class RpcProxyProcessor implements ProxyProcessor {
                     .requestId(request.getRequestId())
                     .statusCode(GatewayConstants.Status.SUCCESS)
                     .headers(new HashMap<>())
-                    .body(JsonUtils.toJson(result))
+                    .body(JsonUtil.toJson(result))
                     .contentType(GatewayConstants.ContentType.JSON)
                     .responseTime(LocalDateTime.now())
                     .build();
@@ -170,10 +170,10 @@ public class RpcProxyProcessor implements ProxyProcessor {
         try {
             // Try parsing as JSON array
             if (request.getBody().trim().startsWith("[")) {
-                return JsonUtils.fromJson(request.getBody(), Object[].class);
+                return JsonUtil.fromJson(request.getBody(), Object[].class);
             } else {
                 // Single argument
-                return new Object[] {JsonUtils.toMap(request.getBody())};
+                return new Object[] {JsonUtil.toMap(request.getBody())};
             }
         } catch (Exception e) {
             log.warn("Failed to parse RPC args from request body", e);

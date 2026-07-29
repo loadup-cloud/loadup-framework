@@ -29,7 +29,7 @@ import io.github.loadup.gateway.facade.config.GatewayProperties;
 import io.github.loadup.gateway.facade.context.GatewayContext;
 import io.github.loadup.gateway.facade.model.GatewayResponse;
 import io.github.loadup.gateway.facade.model.RouteConfig;
-import io.github.loadup.gateway.facade.utils.JsonUtils;
+
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -98,7 +98,7 @@ public class ResponseWrapperAction implements GatewayAction {
                     wrapper.put("meta", meta);
                 }
 
-                String newBody = JsonUtils.toJson(wrapper);
+                String newBody = JsonUtil.toJson(wrapper);
 
                 response.setBody(newBody);
                 if (response.getHeaders() == null) {
