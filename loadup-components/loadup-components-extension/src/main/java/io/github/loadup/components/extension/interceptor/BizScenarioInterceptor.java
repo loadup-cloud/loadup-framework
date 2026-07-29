@@ -25,7 +25,6 @@ package io.github.loadup.components.extension.interceptor;
 import io.github.loadup.components.extension.annotation.BizScenario;
 import io.github.loadup.components.extension.api.BizIdentity;
 import io.github.loadup.components.extension.context.BizContextHolder;
-import io.github.loadup.components.extension.core.BizScenario.BizScenarioBuilder;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.util.StringUtils;
@@ -83,22 +82,15 @@ public class BizScenarioInterceptor implements MethodInterceptor {
 
         // 1. 注解上有固定 bizCode，直接使用
         if (StringUtils.hasText(ann.bizCode())) {
-            return io.github.loadup.components.extension.core.BizScenario.builder()
-                    .bizCode(ann.bizCode())
-                    .useCase(ann.useCase())
-                    .scenario(ann.scenario())
-                    .build();
+            return new io.github.loadup.components.extension.core.BizScenario(ann.bizCode(),ann.useCase(),ann.scenario());
         }
 
         // 2. 从第一个实现了 BizIdentity 的参数中动态读取
         if (args != null) {
             for (Object arg : args) {
                 if (arg instanceof BizIdentity identity) {
-                    BizScenarioBuilder builder = io.github.loadup.components.extension.core.BizScenario.builder()
-                            .bizCode(identity.getBizCode())
-                            .useCase(identity.getUseCase())
-                            .scenario(identity.getScenario());
-                    return builder.build();
+                    return new io.github.loadup.components.extension.core.BizScenario(identity.getBizCode(),identity.getUseCase(),identity.getScenario());
+
                 }
             }
         }

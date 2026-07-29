@@ -24,63 +24,24 @@ package io.github.loadup.components.extension.core;
 
 public record BizScenario(String bizCode, String useCase, String scenario) {
 
-    public static final String DEFAULT_BIZ_CODE = "#defaultBizCode#";
     public static final String DEFAULT_USE_CASE = "#defaultUseCase#";
     public static final String DEFAULT_SCENARIO = "#defaultScenario#";
     private static final String DOT_SEPARATOR = ".";
 
-    public BizScenario {
-        if (bizCode == null) bizCode = DEFAULT_BIZ_CODE;
-        if (useCase == null) useCase = DEFAULT_USE_CASE;
-        if (scenario == null) scenario = DEFAULT_SCENARIO;
-    }
 
     public String getUniqueIdentity() {
         return bizCode + DOT_SEPARATOR + useCase + DOT_SEPARATOR + scenario;
     }
 
     public static BizScenario valueOf(String bizCode) {
-        return BizScenario.builder().bizCode(bizCode).build();
+        return new BizScenario(bizCode, DEFAULT_USE_CASE, DEFAULT_SCENARIO);
     }
 
     public static BizScenario valueOf(String bizCode, String useCase) {
-        return BizScenario.builder().bizCode(bizCode).useCase(useCase).build();
+        return new BizScenario(bizCode, useCase, DEFAULT_SCENARIO);
     }
 
     public static BizScenario valueOf(String bizCode, String useCase, String scenario) {
-        return BizScenario.builder()
-                .bizCode(bizCode)
-                .useCase(useCase)
-                .scenario(scenario)
-                .build();
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private String bizCode = DEFAULT_BIZ_CODE;
-        private String useCase = DEFAULT_USE_CASE;
-        private String scenario = DEFAULT_SCENARIO;
-
-        public Builder bizCode(String bizCode) {
-            this.bizCode = bizCode;
-            return this;
-        }
-
-        public Builder useCase(String useCase) {
-            this.useCase = useCase;
-            return this;
-        }
-
-        public Builder scenario(String scenario) {
-            this.scenario = scenario;
-            return this;
-        }
-
-        public BizScenario build() {
-            return new BizScenario(bizCode, useCase, scenario);
-        }
+        return new BizScenario(bizCode, useCase, scenario);
     }
 }

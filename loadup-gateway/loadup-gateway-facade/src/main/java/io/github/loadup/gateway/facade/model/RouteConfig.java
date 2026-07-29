@@ -22,17 +22,18 @@ package io.github.loadup.gateway.facade.model;
  * #L%
  */
 
-import static java.lang.Boolean.parseBoolean;
-import static java.lang.Integer.parseInt;
-import static java.lang.Long.parseLong;
-
 import io.github.loadup.gateway.facade.constants.GatewayConstants;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import org.apache.commons.lang3.StringUtils;
+
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.Integer.parseInt;
+import static java.lang.Long.parseLong;
 
 /**
  * Route configuration model (immutable)
@@ -42,132 +43,223 @@ public class RouteConfig {
     /**
      * Route ID (auto-generated, based on path + method)
      */
-    private final String routeId;
+    private  String routeId;
 
     /**
      * Route name (auto-generated, based on path)
      */
-    private final String routeName;
+    private  String routeName;
 
     /**
      * Match path
      */
-    private final String path;
+    private  String path;
 
     /**
      * HTTP method
      */
-    private final String method;
+    private  String method;
 
     /**
      * Protocol type (HTTP/RPC/BEAN)
      */
-    private final String protocol;
+    private  String protocol;
 
     /**
      * Unified target configuration (original string)
      */
-    private final String target;
+    private  String target;
 
     /**
      * Target URL (used for HTTP/RPC)
      */
-    private final String targetUrl;
+    private  String targetUrl;
 
     /**
      * Target Bean name (used for BEAN protocol)
      */
-    private final String targetBean;
+    private  String targetBean;
 
     /**
      * Target method name (used for BEAN protocol)
      */
-    private final String targetMethod;
+    private  String targetMethod;
 
     /**
      * Request template script
      */
-    private final String requestTemplate;
+    private  String requestTemplate;
 
     /**
      * Response template script
      */
-    private final String responseTemplate;
+    private  String responseTemplate;
 
     /**
      * Whether enabled
      */
-    private final boolean enabled;
+    private  boolean enabled;
 
     /**
      * Extended configuration (immutable copy)
      */
-    private final Map<String, Object> properties;
+    private  Map<String, Object> properties;
 
     /**
      * Parsed timeout (milliseconds)
      */
-    private final long parsedTimeout;
+    private  long parsedTimeout;
 
     /**
      * Parsed retry count
      */
-    private final int parsedRetryCount;
+    private  int parsedRetryCount;
 
     /**
      * Parsed wrapResponse (null means use global configuration)
      */
-    private final Boolean parsedWrapResponse;
+    private  Boolean parsedWrapResponse;
 
     /**
      * Security code for authentication/signing strategy (e.g. "OFF", "default", "hmac")
      */
-    private final String securityCode;
+    private  String securityCode;
 
-    // Private constructor, called by Builder
-    private RouteConfig(RouteConfigBuilder b) {
-        this.path = Objects.requireNonNull(b.path, "path is required");
-        this.method = b.method != null ? b.method : "POST";
-        this.target = Objects.requireNonNull(b.target, "target is required");
-        this.requestTemplate = b.requestTemplate;
-        this.responseTemplate = b.responseTemplate;
-        this.enabled = b.enabled;
 
-        // properties copy and make immutable
-        if (b.properties == null) {
-            this.properties = Collections.emptyMap();
-        } else {
-            this.properties = Collections.unmodifiableMap(new HashMap<>(b.properties));
-        }
+    public String getRouteId() {
+        return routeId;
+    }
 
-        // Parse target
-        TargetParseResult tpr = parseTarget(this.target);
-        this.protocol = tpr.protocol;
-        this.targetUrl = tpr.targetUrl;
-        this.targetBean = tpr.targetBean;
-        this.targetMethod = tpr.targetMethod;
+    public void setRouteId(String routeId) {
+        this.routeId = routeId;
+    }
 
-        // Parse properties
-        PropertiesParseResult ppr = parseProperties(this.properties);
-        this.parsedTimeout = ppr.timeout;
-        this.parsedRetryCount = ppr.retryCount;
-        this.parsedWrapResponse = ppr.wrapResponse;
+    public String getRouteName() {
+        return routeName;
+    }
 
-        // Parse security code from properties or builder (if we add it to builder)
-        // Check properties first, default to "default" or "OFF"?
-        // Let's assume passed via builder or property.
-        String secCode = b.securityCode;
-        if (secCode == null) {
-            Object propVal = this.properties.get("securityCode");
-            if (propVal != null) {
-                secCode = propVal.toString();
-            }
-        }
-        this.securityCode = StringUtils.defaultIfBlank(secCode, "default");
+    public void setRouteName(String routeName) {
+        this.routeName = routeName;
+    }
 
-        // Generate id/name
-        this.routeId = generateRouteId(this.path, this.method);
-        this.routeName = generateRouteName(this.path, this.method);
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
+    }
+
+    public String getTargetUrl() {
+        return targetUrl;
+    }
+
+    public void setTargetUrl(String targetUrl) {
+        this.targetUrl = targetUrl;
+    }
+
+    public String getTargetBean() {
+        return targetBean;
+    }
+
+    public void setTargetBean(String targetBean) {
+        this.targetBean = targetBean;
+    }
+
+    public String getTargetMethod() {
+        return targetMethod;
+    }
+
+    public void setTargetMethod(String targetMethod) {
+        this.targetMethod = targetMethod;
+    }
+
+    public String getRequestTemplate() {
+        return requestTemplate;
+    }
+
+    public void setRequestTemplate(String requestTemplate) {
+        this.requestTemplate = requestTemplate;
+    }
+
+    public String getResponseTemplate() {
+        return responseTemplate;
+    }
+
+    public void setResponseTemplate(String responseTemplate) {
+        this.responseTemplate = responseTemplate;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+    }
+
+    public long getParsedTimeout() {
+        return parsedTimeout;
+    }
+
+    public void setParsedTimeout(long parsedTimeout) {
+        this.parsedTimeout = parsedTimeout;
+    }
+
+    public int getParsedRetryCount() {
+        return parsedRetryCount;
+    }
+
+    public void setParsedRetryCount(int parsedRetryCount) {
+        this.parsedRetryCount = parsedRetryCount;
+    }
+
+    public Boolean getParsedWrapResponse() {
+        return parsedWrapResponse;
+    }
+
+    public void setParsedWrapResponse(Boolean parsedWrapResponse) {
+        this.parsedWrapResponse = parsedWrapResponse;
+    }
+
+    public String getSecurityCode() {
+        return securityCode;
+    }
+
+    public void setSecurityCode(String securityCode) {
+        this.securityCode = securityCode;
     }
 
     // Public read methods return parsed cached values (regular field getters already generated by
@@ -199,7 +291,7 @@ public class RouteConfig {
         }
 
         if (startsWithIgnoreCase(target, GatewayConstants.Protocol.HTTP + "://")
-                || startsWithIgnoreCase(target, GatewayConstants.Protocol.HTTP + "s://")) {
+            || startsWithIgnoreCase(target, GatewayConstants.Protocol.HTTP + "s://")) {
             r.protocol = GatewayConstants.Protocol.HTTP;
             r.targetUrl = target;
             return r;
@@ -280,9 +372,9 @@ public class RouteConfig {
 
     private static String generateRouteName(String path, String method) {
         String name = path.replaceAll("^/", "")
-                .replaceAll("/", " ")
-                .replaceAll("-", " ")
-                .trim();
+            .replaceAll("/", " ")
+            .replaceAll("-", " ")
+            .trim();
         if (name.isEmpty()) {
             name = "root";
         }
@@ -290,97 +382,5 @@ public class RouteConfig {
         return name + " (" + method + ")";
     }
 
-    /**
-     * Manual Builder (replaces Lombok's auto Builder), completes all parsing and copying at build
-     * time, returns immutable object
-     */
-    public static class RouteConfigBuilder {
-        private String path;
-        private String method;
-        private String target;
-        private String requestTemplate;
-        private String responseTemplate;
-        private boolean enabled = true;
-        private Map<String, Object> properties;
-        private String securityCode;
 
-        public RouteConfigBuilder path(String path) {
-            this.path = path;
-            return this;
-        }
-
-        public RouteConfigBuilder method(String method) {
-            this.method = method;
-            return this;
-        }
-
-        public RouteConfigBuilder target(String target) {
-            this.target = target;
-            return this;
-        }
-
-        public RouteConfigBuilder requestTemplate(String requestTemplate) {
-            this.requestTemplate = requestTemplate;
-            return this;
-        }
-
-        public RouteConfigBuilder responseTemplate(String responseTemplate) {
-            this.responseTemplate = responseTemplate;
-            return this;
-        }
-
-        public RouteConfigBuilder enabled(boolean enabled) {
-            this.enabled = enabled;
-            return this;
-        }
-
-        public RouteConfigBuilder properties(Map<String, Object> properties) {
-            this.properties = properties;
-            return this;
-        }
-
-        public RouteConfigBuilder securityCode(String securityCode) {
-            this.securityCode = securityCode;
-            return this;
-        }
-
-        public RouteConfig build() {
-            if (StringUtils.isBlank(this.path)) {
-                throw new IllegalArgumentException("path is required and cannot be empty");
-            }
-            if (StringUtils.isBlank(this.target)) {
-                throw new IllegalArgumentException("target is required and cannot be empty");
-            }
-
-            return new RouteConfig(this);
-        }
-    }
-
-    /**
-     * Compatibility helper to obtain a new builder (replaces Lombok's builder())
-     */
-    public static RouteConfigBuilder builder() {
-        return new RouteConfigBuilder();
-    }
-
-    /**
-     * Compatibility helper to create a builder pre-populated from an existing instance.
-     */
-    public static RouteConfigBuilder builderFrom(RouteConfig rc) {
-        RouteConfigBuilder b = new RouteConfigBuilder();
-        if (rc == null) {
-            return b;
-        }
-        b.path(rc.getPath());
-        b.method(rc.getMethod());
-        b.target(rc.getTarget());
-        b.securityCode(rc.getSecurityCode());
-        b.requestTemplate(rc.getRequestTemplate());
-        b.responseTemplate(rc.getResponseTemplate());
-        b.enabled(rc.isEnabled());
-        if (rc.getProperties() != null) {
-            b.properties(new HashMap<>(rc.getProperties()));
-        }
-        return b;
-    }
 }

@@ -33,72 +33,72 @@
         <module>loadup-commons/loadup-commons-api</module>
         <module>loadup-commons/loadup-commons-dto</module>
         <module>loadup-commons/loadup-commons-util</module>
-<!--        <module>loadup-components/loadup-components-authorization</module>-->
-<!--        <module>loadup-components/loadup-components-cache/loadup-components-cache-api</module>-->
-<!--        <module>loadup-components/loadup-components-cache/loadup-components-cache-binder-caffeine</module>-->
-<!--        <module>loadup-components/loadup-components-cache/loadup-components-cache-binder-redis</module>-->
-<!--        <module>loadup-components/loadup-components-cache/loadup-components-cache-test</module>-->
+        <!--        <module>loadup-components/loadup-components-authorization</module>-->
+        <!--        <module>loadup-components/loadup-components-cache/loadup-components-cache-api</module>-->
+        <!--        <module>loadup-components/loadup-components-cache/loadup-components-cache-binder-caffeine</module>-->
+        <!--        <module>loadup-components/loadup-components-cache/loadup-components-cache-binder-redis</module>-->
+        <!--        <module>loadup-components/loadup-components-cache/loadup-components-cache-test</module>-->
         <module>loadup-components/loadup-components-captcha</module>
-<!--        <module>loadup-components/loadup-components-configcenter/loadup-components-configcenter-api</module>-->
-<!--        <module>loadup-components/loadup-components-configcenter/loadup-components-configcenter-binder-apollo</module>-->
-<!--        <module>loadup-components/loadup-components-configcenter/loadup-components-configcenter-binder-local</module>-->
-<!--        <module>loadup-components/loadup-components-configcenter/loadup-components-configcenter-binder-nacos</module>-->
-<!--        <module>loadup-components/loadup-components-configcenter/loadup-components-configcenter-test</module>-->
+        <!--        <module>loadup-components/loadup-components-configcenter/loadup-components-configcenter-api</module>-->
+        <!--        <module>loadup-components/loadup-components-configcenter/loadup-components-configcenter-binder-apollo</module>-->
+        <!--        <module>loadup-components/loadup-components-configcenter/loadup-components-configcenter-binder-local</module>-->
+        <!--        <module>loadup-components/loadup-components-configcenter/loadup-components-configcenter-binder-nacos</module>-->
+        <!--        <module>loadup-components/loadup-components-configcenter/loadup-components-configcenter-test</module>-->
         <module>loadup-components/loadup-components-database</module>
-<!--        <module>loadup-components/loadup-components-dfs/loadup-components-dfs-api</module>-->
-<!--        <module>loadup-components/loadup-components-dfs/loadup-components-dfs-binder-database</module>-->
-<!--        <module>loadup-components/loadup-components-dfs/loadup-components-dfs-binder-local</module>-->
-<!--        <module>loadup-components/loadup-components-dfs/loadup-components-dfs-binder-s3</module>-->
-<!--        <module>loadup-components/loadup-components-dfs/loadup-components-dfs-test</module>-->
+        <!--        <module>loadup-components/loadup-components-dfs/loadup-components-dfs-api</module>-->
+        <!--        <module>loadup-components/loadup-components-dfs/loadup-components-dfs-binder-database</module>-->
+        <!--        <module>loadup-components/loadup-components-dfs/loadup-components-dfs-binder-local</module>-->
+        <!--        <module>loadup-components/loadup-components-dfs/loadup-components-dfs-binder-s3</module>-->
+        <!--        <module>loadup-components/loadup-components-dfs/loadup-components-dfs-test</module>-->
         <module>loadup-components/loadup-components-extension</module>
         <module>loadup-components/loadup-components-globalunique</module>
-<!--        <module>loadup-components/loadup-components-gotone/channels/loadup-components-gotone-channel-email</module>-->
-<!--        <module>loadup-components/loadup-components-gotone/channels/loadup-components-gotone-channel-push</module>-->
-<!--        <module>loadup-components/loadup-components-gotone/channels/loadup-components-gotone-channel-sms</module>-->
-<!--        <module>loadup-components/loadup-components-gotone/channels/loadup-components-gotone-channel-webhook</module>-->
-<!--        <module>loadup-components/loadup-components-gotone/loadup-components-gotone-api</module>-->
-<!--        <module>loadup-components/loadup-components-gotone/loadup-components-gotone-engine</module>-->
-<!--        <module>loadup-components/loadup-components-pipeline</module>-->
-<!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-core</module>-->
-<!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-facade</module>-->
-<!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-infra</module>-->
-<!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-notify</module>-->
-<!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-starter</module>-->
-<!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-strategy</module>-->
-<!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-test</module>-->
-<!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-api</module>-->
-<!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-binder-powerjob</module>-->
-<!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-binder-quartz</module>-->
-<!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-binder-simplejob</module>-->
-<!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-binder-xxljob</module>-->
-<!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-test</module>-->
-<!--        <module>loadup-components/loadup-components-signature</module>-->
-<!--        <module>loadup-components/loadup-components-springdoc</module>-->
-<!--        <module>loadup-components/loadup-components-testcontainers</module>-->
-<!--        <module>loadup-components/loadup-components-tracer</module>-->
+        <!--        <module>loadup-components/loadup-components-gotone/channels/loadup-components-gotone-channel-email</module>-->
+        <!--        <module>loadup-components/loadup-components-gotone/channels/loadup-components-gotone-channel-push</module>-->
+        <!--        <module>loadup-components/loadup-components-gotone/channels/loadup-components-gotone-channel-sms</module>-->
+        <!--        <module>loadup-components/loadup-components-gotone/channels/loadup-components-gotone-channel-webhook</module>-->
+        <!--        <module>loadup-components/loadup-components-gotone/loadup-components-gotone-api</module>-->
+        <!--        <module>loadup-components/loadup-components-gotone/loadup-components-gotone-engine</module>-->
+        <!--        <module>loadup-components/loadup-components-pipeline</module>-->
+        <!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-core</module>-->
+        <!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-facade</module>-->
+        <!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-infra</module>-->
+        <!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-notify</module>-->
+        <!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-starter</module>-->
+        <!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-strategy</module>-->
+        <!--        <module>loadup-components/loadup-components-retrytask/loadup-components-retrytask-test</module>-->
+        <!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-api</module>-->
+        <!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-binder-powerjob</module>-->
+        <!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-binder-quartz</module>-->
+        <!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-binder-simplejob</module>-->
+        <!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-binder-xxljob</module>-->
+        <!--        <module>loadup-components/loadup-components-scheduler/loadup-components-scheduler-test</module>-->
+        <!--        <module>loadup-components/loadup-components-signature</module>-->
+        <!--        <module>loadup-components/loadup-components-springdoc</module>-->
+        <!--        <module>loadup-components/loadup-components-testcontainers</module>-->
+        <!--        <module>loadup-components/loadup-components-tracer</module>-->
         <module>loadup-gateway</module>
-<!--        <module>loadup-modules/loadup-modules-config/loadup-modules-config-app</module>-->
-<!--        <module>loadup-modules/loadup-modules-config/loadup-modules-config-client</module>-->
-<!--        <module>loadup-modules/loadup-modules-config/loadup-modules-config-domain</module>-->
-<!--        <module>loadup-modules/loadup-modules-config/loadup-modules-config-infrastructure</module>-->
-<!--        <module>loadup-modules/loadup-modules-config/loadup-modules-config-test</module>-->
-<!--        <module>loadup-modules/loadup-modules-log/loadup-modules-log-app</module>-->
-<!--        <module>loadup-modules/loadup-modules-log/loadup-modules-log-client</module>-->
-<!--        <module>loadup-modules/loadup-modules-log/loadup-modules-log-domain</module>-->
-<!--        <module>loadup-modules/loadup-modules-log/loadup-modules-log-infrastructure</module>-->
-<!--        <module>loadup-modules/loadup-modules-log/loadup-modules-log-test</module>-->
-<!--        <module>loadup-modules/loadup-modules-upms/loadup-modules-upms-app</module>-->
-<!--        <module>loadup-modules/loadup-modules-upms/loadup-modules-upms-client</module>-->
-<!--        <module>loadup-modules/loadup-modules-upms/loadup-modules-upms-domain</module>-->
-<!--        <module>loadup-modules/loadup-modules-upms/loadup-modules-upms-infrastructure</module>-->
-<!--        <module>loadup-modules/loadup-modules-upms/loadup-modules-upms-test</module>-->
-<!--        <module>loadup-testify/loadup-testify-assert-engine</module>-->
-<!--        <module>loadup-testify/loadup-testify-core</module>-->
-<!--        <module>loadup-testify/loadup-testify-data-engine</module>-->
-<!--        <module>loadup-testify/loadup-testify-mock-engine</module>-->
-<!--        <module>loadup-testify/loadup-testify-spring-boot-starter</module>-->
-<!--        <module>loadup-testify/loadup-testify-test</module>-->
-<!--        <module>loadup-application</module>-->
+        <!--        <module>loadup-modules/loadup-modules-config/loadup-modules-config-app</module>-->
+        <!--        <module>loadup-modules/loadup-modules-config/loadup-modules-config-client</module>-->
+        <!--        <module>loadup-modules/loadup-modules-config/loadup-modules-config-domain</module>-->
+        <!--        <module>loadup-modules/loadup-modules-config/loadup-modules-config-infrastructure</module>-->
+        <!--        <module>loadup-modules/loadup-modules-config/loadup-modules-config-test</module>-->
+        <!--        <module>loadup-modules/loadup-modules-log/loadup-modules-log-app</module>-->
+        <!--        <module>loadup-modules/loadup-modules-log/loadup-modules-log-client</module>-->
+        <!--        <module>loadup-modules/loadup-modules-log/loadup-modules-log-domain</module>-->
+        <!--        <module>loadup-modules/loadup-modules-log/loadup-modules-log-infrastructure</module>-->
+        <!--        <module>loadup-modules/loadup-modules-log/loadup-modules-log-test</module>-->
+        <!--        <module>loadup-modules/loadup-modules-upms/loadup-modules-upms-app</module>-->
+        <!--        <module>loadup-modules/loadup-modules-upms/loadup-modules-upms-client</module>-->
+        <!--        <module>loadup-modules/loadup-modules-upms/loadup-modules-upms-domain</module>-->
+        <!--        <module>loadup-modules/loadup-modules-upms/loadup-modules-upms-infrastructure</module>-->
+        <!--        <module>loadup-modules/loadup-modules-upms/loadup-modules-upms-test</module>-->
+        <!--        <module>loadup-testify/loadup-testify-assert-engine</module>-->
+        <!--        <module>loadup-testify/loadup-testify-core</module>-->
+        <!--        <module>loadup-testify/loadup-testify-data-engine</module>-->
+        <!--        <module>loadup-testify/loadup-testify-mock-engine</module>-->
+        <!--        <module>loadup-testify/loadup-testify-spring-boot-starter</module>-->
+        <!--        <module>loadup-testify/loadup-testify-test</module>-->
+        <!--        <module>loadup-application</module>-->
     </modules>
     <scm>
         <connection>scm:git:git://github.com/loadup-cloud/loadup-framework.git</connection>
@@ -135,7 +135,9 @@
         <palantir-java-format.version>2.86.0</palantir-java-format.version>
         <findsecbugs-plugin.version>1.13.0</findsecbugs-plugin.version>
 
-        <!-- Annotation processor versions -->        <mapstruct.version>1.6.3</mapstruct.version>        <mybatis-flex.version>1.11.7</mybatis-flex.version>
+        <!-- Annotation processor versions -->
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <mybatis-flex.version>1.11.7</mybatis-flex.version>
         <spring-boot.version>4.1.0</spring-boot.version>
 
         <!-- Flyway plugin support -->
@@ -182,7 +184,8 @@
                         <compilerArgs>
                             <compilerArg>-Xlint:all</compilerArg>
                         </compilerArgs>
-                        <annotationProcessorPaths>                            <path>
+                        <annotationProcessorPaths>
+                            <path>
                                 <groupId>org.mapstruct</groupId>
                                 <artifactId>mapstruct-processor</artifactId>
                                 <version>${mapstruct.version}</version>

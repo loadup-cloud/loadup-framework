@@ -255,7 +255,7 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
     }
 
     private boolean matchesScenario(Extension extension, BizScenario scenario) {
-        return extension.bizCode().equals(scenario.getBizCode())
+        return extension.bizCode().equals(scenario.bizCode())
                 && extension.useCase().equals(scenario.useCase())
                 && extension.scenario().equals(scenario.scenario());
     }
@@ -271,7 +271,7 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
 
         ScenarioKey(Class<?> extensionType, BizScenario bizScenario) {
             this.extensionType = extensionType;
-            this.bizCode = bizScenario.getBizCode();
+            this.bizCode = bizScenario.bizCode();
             this.useCase = bizScenario.useCase();
             this.scenario = bizScenario.scenario();
         }

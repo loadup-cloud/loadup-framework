@@ -24,14 +24,16 @@ package io.github.loadup.gateway.core.router;
 
 import io.github.loadup.gateway.facade.model.PathPattern;
 import io.github.loadup.gateway.facade.model.RouteConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 /**
  * Pattern-aware route registry that supports Ant-style path variables.
  *
@@ -52,10 +54,14 @@ public class PatternRouteRegistry {
     private static final Logger log = LoggerFactory.getLogger(PatternRouteRegistry.class);
 
 
-    /** Exact-match routes keyed by method:path */
+    /**
+     * Exact-match routes keyed by method:path
+     */
     private final ConcurrentHashMap<String, RouteConfig> exactRoutes = new ConcurrentHashMap<>();
 
-    /** Pattern routes ordered by specificity (fewer variables = more specific = first) */
+    /**
+     * Pattern routes ordered by specificity (fewer variables = more specific = first)
+     */
     private volatile List<PatternEntry> patternRoutes = new ArrayList<>();
 
     /**
@@ -90,9 +96,9 @@ public class PatternRouteRegistry {
         this.patternRoutes = newPatterns;
 
         log.info(
-                "PatternRouteRegistry loaded: {} exact routes, {} pattern routes",
-                newExact.size(),
-                newPatterns.size());
+            "PatternRouteRegistry loaded: {} exact routes, {} pattern routes",
+            newExact.size(),
+            newPatterns.size());
     }
 
     /**
@@ -101,7 +107,7 @@ public class PatternRouteRegistry {
      * <p>First checks exact match (O(1)), then iterates pattern routes in
      * specificity order (O(n) where n = number of pattern routes).
      *
-     * @param method HTTP method
+     * @param method      HTTP method
      * @param requestPath the actual request URI
      * @return matched RouteConfig with path parameters populated, or empty
      */
@@ -142,11 +148,12 @@ public class PatternRouteRegistry {
 
         // Store path params in route properties for downstream access
         java.util.Map<String, Object> enrichedProps =
-                new java.util.HashMap<>(route.getProperties());
+            new java.util.HashMap<>(route.getProperties());
         enrichedProps.put("_pathParams", pathParams);
         enrichedProps.put("_matchedPattern", route.getPath());
 
-        return RouteConfig.builderFrom(route).properties(enrichedProps).build();
+        route.setProperties(enrichedProps);
+        return route;
     }
 
     /**
@@ -174,7 +181,7 @@ public class PatternRouteRegistry {
 
         /**
          * Lower score = more specific = matched first.
-         *
+         * <p>
          * Logic: count the number of literal (non-variable) path segments, minus
          * the number of variable segments. More literal segments = more specific.
          */

@@ -26,14 +26,12 @@ import io.github.loadup.commons.enums.DbType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.validation.annotation.Validated;
 
 /**
  * Global Unique 配置属性
  *
  * @author loadup
  */
-@Validated
 @ConfigurationProperties(prefix = "loadup.components.globalunique")
 public class GlobalUniqueProperties {
 
@@ -96,25 +94,19 @@ public class GlobalUniqueProperties {
         this.tableName = tableName;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(enabled, dbType, tablePrefix, tableName);
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GlobalUniqueProperties other = (GlobalUniqueProperties) o;
-        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
-        if (!java.util.Objects.equals(dbType, other.dbType)) return false;
-        if (!java.util.Objects.equals(tablePrefix, other.tablePrefix)) return false;
-        if (!java.util.Objects.equals(tableName, other.tableName)) return false;
-        return true;
+    public DbType getDbType() {
+        return dbType;
     }
 
-    @Override
-    public String toString() {
-        return "GlobalUniqueProperties(" + "enabled=" + enabled + ", " + "dbType=" + dbType + ", " + "tablePrefix=" + tablePrefix + ", " + "tableName=" + tableName + ")";
+    public String getTablePrefix() {
+        return tablePrefix;
+    }
+
+    public String getTableName() {
+        return tableName;
     }
 }

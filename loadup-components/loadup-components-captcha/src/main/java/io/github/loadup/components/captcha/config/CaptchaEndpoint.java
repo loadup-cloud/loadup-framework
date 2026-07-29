@@ -27,6 +27,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.io.IOException;
+
 /**
  * @author lengleng
  * @date 2020/7/31
@@ -42,7 +44,7 @@ public class CaptchaEndpoint {
      * @param response 响应流
      */
     @GetMapping("${captcha.create.path:/create}")
-    public void create(HttpServletResponse response) {
+    public void create(HttpServletResponse response) throws IOException {
         ArithmeticCaptcha captcha = new ArithmeticCaptcha(properties.getWidth(), properties.getHeight());
         // 设置响应头
         response.setContentType(captcha.getContentType());

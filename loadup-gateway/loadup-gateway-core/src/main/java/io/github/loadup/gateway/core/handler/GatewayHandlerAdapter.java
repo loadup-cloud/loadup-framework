@@ -51,11 +51,11 @@ public class GatewayHandlerAdapter implements HandlerAdapter, Ordered {
     private GatewayContext buildGatewayContext(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         GatewayRequest gatewayRequest = buildGatewayRequest(request);
-        return GatewayContext.builder()
-                .request(gatewayRequest)
-                .originalRequest(request)
-                .originalResponse(response)
-                .build();
+        GatewayContext gatewayContext = new GatewayContext();
+        gatewayContext.setRequest(gatewayRequest);
+        gatewayContext.setOriginalRequest(request);
+        gatewayContext.setOriginalResponse(response);
+        return gatewayContext;
     }
 
     private GatewayRequest buildGatewayRequest(HttpServletRequest request) throws IOException {

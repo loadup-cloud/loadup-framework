@@ -60,6 +60,38 @@ public class DatabaseProperties {
          * Default tenant ID when not in tenant context
          */
         private String defaultTenantId = "default";
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        public String getColumnName() {
+            return columnName;
+        }
+
+        public void setColumnName(String columnName) {
+            this.columnName = columnName;
+        }
+
+        public String getIgnoreTables() {
+            return ignoreTables;
+        }
+
+        public void setIgnoreTables(String ignoreTables) {
+            this.ignoreTables = ignoreTables;
+        }
+
+        public String getDefaultTenantId() {
+            return defaultTenantId;
+        }
+
+        public void setDefaultTenantId(String defaultTenantId) {
+            this.defaultTenantId = defaultTenantId;
+        }
     }
 
     public static class LogicalDelete {
@@ -82,20 +114,40 @@ public class DatabaseProperties {
          * Value representing normal record (default: false)
          */
         private String normalValue = "false";
+
+        public String getNormalValue() {
+            return normalValue;
+        }
+
+        public void setNormalValue(String normalValue) {
+            this.normalValue = normalValue;
+        }
+
+        public String getDeletedValue() {
+            return deletedValue;
+        }
+
+        public void setDeletedValue(String deletedValue) {
+            this.deletedValue = deletedValue;
+        }
+
+        public String getColumnName() {
+            return columnName;
+        }
+
+        public void setColumnName(String columnName) {
+            this.columnName = columnName;
+        }
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
     }
 
-    public DatabaseProperties(MultiTenant multiTenant, LogicalDelete logicalDelete, boolean enabled, String columnName, String ignoreTables, String defaultTenantId, boolean enabled, String columnName, String deletedValue, String normalValue) {
-        this.multiTenant = multiTenant;
-        this.logicalDelete = logicalDelete;
-        this.enabled = enabled;
-        this.columnName = columnName;
-        this.ignoreTables = ignoreTables;
-        this.defaultTenantId = defaultTenantId;
-        this.enabled = enabled;
-        this.columnName = columnName;
-        this.deletedValue = deletedValue;
-        this.normalValue = normalValue;
-    }
 
     public DatabaseProperties() {
     }
@@ -108,103 +160,5 @@ public class DatabaseProperties {
         return this.logicalDelete;
     }
 
-    public boolean isEnabled() {
-        return this.enabled;
-    }
 
-    public String getColumnName() {
-        return this.columnName;
-    }
-
-    public String getIgnoreTables() {
-        return this.ignoreTables;
-    }
-
-    public String getDefaultTenantId() {
-        return this.defaultTenantId;
-    }
-
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    public String getColumnName() {
-        return this.columnName;
-    }
-
-    public String getDeletedValue() {
-        return this.deletedValue;
-    }
-
-    public String getNormalValue() {
-        return this.normalValue;
-    }
-
-    public void setMultiTenant(MultiTenant multiTenant) {
-        this.multiTenant = multiTenant;
-    }
-
-    public void setLogicalDelete(LogicalDelete logicalDelete) {
-        this.logicalDelete = logicalDelete;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public void setColumnName(String columnName) {
-        this.columnName = columnName;
-    }
-
-    public void setIgnoreTables(String ignoreTables) {
-        this.ignoreTables = ignoreTables;
-    }
-
-    public void setDefaultTenantId(String defaultTenantId) {
-        this.defaultTenantId = defaultTenantId;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public void setColumnName(String columnName) {
-        this.columnName = columnName;
-    }
-
-    public void setDeletedValue(String deletedValue) {
-        this.deletedValue = deletedValue;
-    }
-
-    public void setNormalValue(String normalValue) {
-        this.normalValue = normalValue;
-    }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(multiTenant, logicalDelete, enabled, columnName, ignoreTables, defaultTenantId, enabled, columnName, deletedValue, normalValue);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DatabaseProperties other = (DatabaseProperties) o;
-        if (!java.util.Objects.equals(multiTenant, other.multiTenant)) return false;
-        if (!java.util.Objects.equals(logicalDelete, other.logicalDelete)) return false;
-        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
-        if (!java.util.Objects.equals(columnName, other.columnName)) return false;
-        if (!java.util.Objects.equals(ignoreTables, other.ignoreTables)) return false;
-        if (!java.util.Objects.equals(defaultTenantId, other.defaultTenantId)) return false;
-        if (!java.util.Objects.equals(enabled, other.enabled)) return false;
-        if (!java.util.Objects.equals(columnName, other.columnName)) return false;
-        if (!java.util.Objects.equals(deletedValue, other.deletedValue)) return false;
-        if (!java.util.Objects.equals(normalValue, other.normalValue)) return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "DatabaseProperties(" + "multiTenant=" + multiTenant + ", " + "logicalDelete=" + logicalDelete + ", " + "enabled=" + enabled + ", " + "columnName=" + columnName + ", " + "ignoreTables=" + ignoreTables + ", " + "defaultTenantId=" + defaultTenantId + ", " + "enabled=" + enabled + ", " + "columnName=" + columnName + ", " + "deletedValue=" + deletedValue + ", " + "normalValue=" + normalValue + ")";
-    }
 }

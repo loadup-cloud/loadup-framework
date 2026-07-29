@@ -27,6 +27,7 @@ import io.github.loadup.gateway.facade.model.GatewayResponse;
 import io.github.loadup.gateway.facade.model.RouteConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -150,81 +151,31 @@ public class GatewayContext {
         return this.exception;
     }
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(request, originalRequest, response, originalResponse, route, attributes, exception);
+    public void setRequest(GatewayRequest request) {
+        this.request = request;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GatewayContext other = (GatewayContext) o;
-        if (!java.util.Objects.equals(request, other.request)) return false;
-        if (!java.util.Objects.equals(originalRequest, other.originalRequest)) return false;
-        if (!java.util.Objects.equals(response, other.response)) return false;
-        if (!java.util.Objects.equals(originalResponse, other.originalResponse)) return false;
-        if (!java.util.Objects.equals(route, other.route)) return false;
-        if (!java.util.Objects.equals(attributes, other.attributes)) return false;
-        if (!java.util.Objects.equals(exception, other.exception)) return false;
-        return true;
+    public void setOriginalRequest(HttpServletRequest originalRequest) {
+        this.originalRequest = originalRequest;
     }
 
-    @Override
-    public String toString() {
-        return "GatewayContext(" + "request=" + request + ", " + "originalRequest=" + originalRequest + ", " + "response=" + response + ", " + "originalResponse=" + originalResponse + ", " + "route=" + route + ", " + "attributes=" + attributes + ", " + "exception=" + exception + ")";
+    public void setResponse(GatewayResponse response) {
+        this.response = response;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public void setOriginalResponse(HttpServletResponse originalResponse) {
+        this.originalResponse = originalResponse;
     }
 
-    public static class Builder {
-        private GatewayRequest request;
-        private HttpServletRequest originalRequest;
-        private GatewayResponse response;
-        private HttpServletResponse originalResponse;
-        private RouteConfig route;
-        private Map<String, Object> attributes = new ConcurrentHashMap<>();
-        private Throwable exception;
+    public void setRoute(RouteConfig route) {
+        this.route = route;
+    }
 
-        public Builder request(GatewayRequest request) {
-            this.request = request;
-            return this;
-        }
+    public void setAttributes(Map<String, Object> attributes) {
+        this.attributes = attributes;
+    }
 
-        public Builder originalRequest(HttpServletRequest originalRequest) {
-            this.originalRequest = originalRequest;
-            return this;
-        }
-
-        public Builder response(GatewayResponse response) {
-            this.response = response;
-            return this;
-        }
-
-        public Builder originalResponse(HttpServletResponse originalResponse) {
-            this.originalResponse = originalResponse;
-            return this;
-        }
-
-        public Builder route(RouteConfig route) {
-            this.route = route;
-            return this;
-        }
-
-        public Builder attributes(Map<String, Object> attributes) {
-            this.attributes = attributes;
-            return this;
-        }
-
-        public Builder exception(Throwable exception) {
-            this.exception = exception;
-            return this;
-        }
-
-        public GatewayContext build() {
-            return new GatewayContext(this.request, this.originalRequest, this.response, this.originalResponse, this.route, this.attributes, this.exception);
-        }
+    public void setException(Throwable exception) {
+        this.exception = exception;
     }
 }

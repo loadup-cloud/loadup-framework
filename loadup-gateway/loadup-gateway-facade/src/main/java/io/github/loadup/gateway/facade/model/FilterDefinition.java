@@ -58,9 +58,7 @@ public class FilterDefinition {
         return this.name;
     }
 
-    public Map<String, Object> getProps() {
-        return this.props;
-    }
+
 
     public void setName(String name) {
         this.name = name;

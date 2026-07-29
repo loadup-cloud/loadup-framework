@@ -180,7 +180,7 @@ public class ExtensionExecutor {
 
         // 4. 最终降级：查找 useCase 和 scenario 均为 "default" 的通用实现
         if (bestMatch.isEmpty()) {
-            bestMatch = findDefaultMatch(candidates, scenario.getBizCode());
+            bestMatch = findDefaultMatch(candidates, scenario.bizCode());
         }
 
         return (E) bestMatch
@@ -235,7 +235,7 @@ public class ExtensionExecutor {
     }
 
     private boolean match(Extension meta, BizScenario scenario, boolean matchUseCase, boolean matchScenario) {
-        if (!Objects.equals(meta.bizCode(), scenario.getBizCode())) {
+        if (!Objects.equals(meta.bizCode(), scenario.bizCode())) {
             return false;
         }
         if (matchUseCase && !Objects.equals(meta.useCase(), scenario.useCase())) {

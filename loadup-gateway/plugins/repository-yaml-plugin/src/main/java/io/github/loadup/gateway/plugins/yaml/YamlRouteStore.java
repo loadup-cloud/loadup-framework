@@ -5,8 +5,14 @@ import io.github.loadup.gateway.facade.model.FilterDefinition;
 import io.github.loadup.gateway.facade.model.RouteDefinition;
 import io.github.loadup.gateway.facade.model.RouteDefinition.BackendDefinition;
 import io.github.loadup.gateway.facade.spi.RouteStore;
+import io.github.loadup.gateway.plugins.yaml.event.RouteStoreRefreshedEvent;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
+import org.yaml.snakeyaml.Yaml;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
@@ -27,12 +33,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import org.springframework.context.ApplicationEventPublisher;
-import io.github.loadup.gateway.plugins.yaml.event.RouteStoreRefreshedEvent;
-import org.yaml.snakeyaml.Yaml;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * YAML file route store with file-watcher hot reload.
  *
@@ -101,7 +102,10 @@ public class YamlRouteStore implements RouteStore {
             watchExecutor.shutdownNow();
         }
         if (watchService != null) {
-            try { watchService.close(); } catch (IOException ignored) {}
+            try {
+                watchService.close();
+            } catch (IOException ignored) {
+            }
         }
     }
 
@@ -113,8 +117,8 @@ public class YamlRouteStore implements RouteStore {
     @Override
     public Optional<RouteDefinition> load(String routeId) {
         return routes.get().stream()
-                .filter(r -> r.getId().equals(routeId))
-                .findFirst();
+            .filter(r -> r.getId().equals(routeId))
+            .findFirst();
     }
 
     @SuppressWarnings("unchecked")
@@ -127,7 +131,7 @@ public class YamlRouteStore implements RouteStore {
             } else {
                 // Try classpath fallback
                 try (InputStream is = Thread.currentThread().getContextClassLoader()
-                        .getResourceAsStream(DEFAULT_CONFIG_FILE)) {
+                    .getResourceAsStream(DEFAULT_CONFIG_FILE)) {
                     if (is == null) {
                         log.warn("No gateway-routes.yml found on filesystem or classpath");
                         routes.set(List.of());
@@ -167,54 +171,54 @@ public class YamlRouteStore implements RouteStore {
 
     @SuppressWarnings("unchecked")
     private RouteDefinition parseRoute(Map<String, Object> raw) {
-        RouteDefinition.RouteDefinitionBuilder builder = RouteDefinition.builder();
+        RouteDefinition routeDefinition = new RouteDefinition();
 
-        builder.id((String) raw.getOrDefault("id", "auto"));
-        builder.path((String) raw.get("path"));
-        builder.method((String) raw.getOrDefault("method", "POST"));
-        builder.enabled((Boolean) raw.getOrDefault("enabled", true));
-        builder.securityCode((String) raw.get("securityCode"));
+        routeDefinition.setId((String) raw.getOrDefault("id", "auto"));
+        routeDefinition.setPath((String) raw.get("path"));
+        routeDefinition.setMethod((String) raw.getOrDefault("method", "POST"));
+        routeDefinition.setEnabled((Boolean) raw.getOrDefault("enabled", true));
+        routeDefinition.setSecurityCode((String) raw.get("securityCode"));
 
-        if (raw.get("timeout") instanceof Number n) builder.timeout(n.longValue());
-        if (raw.get("wrapResponse") instanceof Boolean b) builder.wrapResponse(b);
+        if (raw.get("timeout") instanceof Number n) routeDefinition.setTimeout(n.longValue());
+        if (raw.get("wrapResponse") instanceof Boolean b) routeDefinition.setWrapResponse(b);
 
         // Parse backend
         Map<String, Object> backendRaw = (Map<String, Object>) raw.get("backend");
         if (backendRaw != null) {
-            builder.backend(BackendDefinition.builder()
-                    .protocol((String) backendRaw.get("protocol"))
-                    .url((String) backendRaw.get("url"))
-                    .beanName((String) backendRaw.get("beanName"))
-                    .methodName((String) backendRaw.get("methodName"))
-                    .build());
+            BackendDefinition backendDefinition = new BackendDefinition();
+            backendDefinition.setProtocol((String) backendRaw.get("protocol"));
+            backendDefinition.setUrl((String) backendRaw.get("url"));
+            backendDefinition.setBeanName((String) backendRaw.get("beanName"));
+            backendDefinition.setMethodName((String) backendRaw.get("methodName"));
+            routeDefinition.setBackend(backendDefinition);
         }
 
         // Parse filters
         List<Map<String, Object>> rawFilters = (List<Map<String, Object>>) raw.get("filters");
         if (rawFilters != null) {
-            builder.filters(parseFilters(rawFilters));
+            routeDefinition.setFilters(parseFilters(rawFilters));
         }
 
         // Parse response filters
         List<Map<String, Object>> rawRespFilters = (List<Map<String, Object>>) raw.get("responseFilters");
         if (rawRespFilters != null) {
-            builder.responseFilters(parseFilters(rawRespFilters));
+            routeDefinition.setResponseFilters(parseFilters(rawRespFilters));
         }
 
-        return builder.build();
+        return routeDefinition;
     }
 
     @SuppressWarnings("unchecked")
     private List<FilterDefinition> parseFilters(List<Map<String, Object>> rawList) {
         List<FilterDefinition> result = new ArrayList<>();
         for (Map<String, Object> raw : rawList) {
-            FilterDefinition.FilterDefinitionBuilder fb = FilterDefinition.builder();
-            fb.name((String) raw.get("name"));
+            FilterDefinition fb = new FilterDefinition();
+            fb.setName((String) raw.get("name"));
             Map<String, Object> props = (Map<String, Object>) raw.get("props");
             if (props != null) {
-                fb.props(new java.util.HashMap<>(props));
+                fb.setProps(new java.util.HashMap<>(props));
             }
-            result.add(fb.build());
+            result.add(fb);
         }
         return result;
     }
@@ -222,8 +226,8 @@ public class YamlRouteStore implements RouteStore {
     private Path resolveConfigPath() {
         // Check GatewayProperties for explicit path
         if (gatewayProperties.getStorage() != null
-                && gatewayProperties.getStorage().getFile() != null
-                && gatewayProperties.getStorage().getFile().getBasePath() != null) {
+            && gatewayProperties.getStorage().getFile() != null
+            && gatewayProperties.getStorage().getFile().getBasePath() != null) {
             String basePath = gatewayProperties.getStorage().getFile().getBasePath();
             if (!basePath.startsWith("classpath:")) {
                 return Paths.get(basePath, DEFAULT_CONFIG_FILE);
@@ -267,7 +271,10 @@ public class YamlRouteStore implements RouteStore {
             if (changed.endsWith(configPath.getFileName().toString())) {
                 log.info("Route config changed: {}, reloading...", changed);
                 // Debounce: wait a moment for file write to complete
-                try { Thread.sleep(200); } catch (InterruptedException ignored) {}
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException ignored) {
+                }
                 reload();
                 eventPublisher.publishEvent(new RouteStoreRefreshedEvent(this));
             }

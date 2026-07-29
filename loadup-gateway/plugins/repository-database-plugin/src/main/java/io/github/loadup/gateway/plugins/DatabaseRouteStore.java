@@ -8,6 +8,9 @@ import io.github.loadup.gateway.facade.spi.RouteStore;
 import io.github.loadup.gateway.plugins.entity.RouteEntity;
 import io.github.loadup.gateway.plugins.manager.RouteManager;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,8 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 /**
  * Database-backed RouteStore using Spring Data JDBC.
  *
@@ -37,9 +39,9 @@ public class DatabaseRouteStore implements RouteStore {
     @Override
     public List<RouteDefinition> loadAll() {
         return StreamSupport.stream(routeManager.findAll().spliterator(), false)
-                .filter(e -> Boolean.TRUE.equals(e.getEnabled()))
-                .map(this::toRouteDefinition)
-                .toList();
+            .filter(e -> Boolean.TRUE.equals(e.isEnabled()))
+            .map(this::toRouteDefinition)
+            .toList();
     }
 
     @Override
@@ -65,19 +67,18 @@ public class DatabaseRouteStore implements RouteStore {
 
     private RouteDefinition toRouteDefinition(RouteEntity e) {
         BackendDefinition backend = parseBackend(e.getTarget());
-
-        return RouteDefinition.builder()
-                .id(e.getId())
-                .path(e.getPath())
-                .method(e.getMethod() != null ? e.getMethod() : "POST")
-                .enabled(Boolean.TRUE.equals(e.getEnabled()))
-                .securityCode(e.getSecurityCode())
-                .backend(backend)
-                .filters(parseFilters(e.getRequestFilters(), e.getFilterProps()))
-                .responseFilters(parseFilters(e.getResponseFilters(), e.getFilterProps()))
-                .timeout(e.getTimeout())
-                .wrapResponse(e.getWrapResponse())
-                .build();
+        RouteDefinition routeDefinition = new RouteDefinition();
+        routeDefinition.setId(e.getId());
+        routeDefinition.setPath(e.getPath());
+        routeDefinition.setMethod(e.getMethod() != null ? e.getMethod() : "POST");
+        routeDefinition.setEnabled(Boolean.TRUE.equals(e.isEnabled()));
+        routeDefinition.setSecurityCode(e.getSecurityCode());
+        routeDefinition.setBackend(backend);
+        routeDefinition.setFilters(parseFilters(e.getRequestFilters(), e.getFilterProps()));
+        routeDefinition.setResponseFilters(parseFilters(e.getResponseFilters(), e.getFilterProps()));
+        routeDefinition.setTimeout(e.getTimeout());
+        routeDefinition.setWrapResponse(e.isWrapResponse());
+        return routeDefinition;
     }
 
     private RouteEntity toEntity(RouteDefinition def) {
@@ -97,24 +98,34 @@ public class DatabaseRouteStore implements RouteStore {
     }
 
     private BackendDefinition parseBackend(String target) {
-        if (target == null || target.isBlank()) return BackendDefinition.builder().build();
+        if (target == null || target.isBlank()) return new BackendDefinition();
         String t = target.trim();
         if (t.startsWith("http://") || t.startsWith("https://")) {
-            return BackendDefinition.builder().protocol("http").url(t).build();
+            BackendDefinition backendDefinition = new BackendDefinition();
+            backendDefinition.setProtocol("http");
+            backendDefinition.setUrl(t);
+            return backendDefinition;
         }
         if (t.startsWith("bean://")) {
             String inner = t.substring(7);
             String[] parts = inner.split(":");
-            return BackendDefinition.builder()
-                    .protocol("bean")
-                    .beanName(parts.length > 0 ? parts[0] : "")
-                    .methodName(parts.length > 1 ? parts[1] : "")
-                    .build();
+            BackendDefinition backendDefinition = new BackendDefinition();
+            backendDefinition.setProtocol("bean");
+            backendDefinition.setBeanName(parts.length > 0 ? parts[0] : "");
+            backendDefinition.setMethodName(parts.length > 1 ? parts[1] : "");
+            return backendDefinition;
         }
         if (t.startsWith("rpc://")) {
-            return BackendDefinition.builder().protocol("rpc").url(t.substring(6)).build();
+
+            BackendDefinition backendDefinition = new BackendDefinition();
+            backendDefinition.setProtocol("rpc");
+            backendDefinition.setUrl(t.substring(6));
+            return backendDefinition;
         }
-        return BackendDefinition.builder().protocol("http").url(t).build();
+        BackendDefinition backendDefinition = new BackendDefinition();
+        backendDefinition.setProtocol("http");
+        backendDefinition.setUrl(t);
+        return backendDefinition;
     }
 
     private String toTargetString(BackendDefinition b) {
@@ -122,7 +133,7 @@ public class DatabaseRouteStore implements RouteStore {
         return switch (b.getProtocol().toLowerCase()) {
             case "http" -> b.getUrl() != null ? b.getUrl() : "";
             case "bean" -> "bean://" + (b.getBeanName() != null ? b.getBeanName() : "")
-                    + ":" + (b.getMethodName() != null ? b.getMethodName() : "");
+                + ":" + (b.getMethodName() != null ? b.getMethodName() : "");
             case "rpc" -> "rpc://" + (b.getUrl() != null ? b.getUrl() : "");
             default -> "";
         };

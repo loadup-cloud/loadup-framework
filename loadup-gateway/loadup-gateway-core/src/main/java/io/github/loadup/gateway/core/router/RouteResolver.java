@@ -123,13 +123,13 @@ public class RouteResolver {
         if (def.getTimeout() != null) props.put("timeout", def.getTimeout());
         if (def.getWrapResponse() != null) props.put("wrapResponse", def.getWrapResponse());
 
-        return RouteConfig.builder()
-                .path(def.getPath())
-                .method(def.getMethod())
-                .target(target)
-                .securityCode(def.getSecurityCode())
-                .enabled(def.isEnabled())
-                .properties(props)
-                .build();
+        RouteConfig routeConfig = new RouteConfig();
+        routeConfig.setPath(def.getPath());
+        routeConfig.setMethod(def.getMethod());
+        routeConfig.setTarget(target);
+        routeConfig.setSecurityCode(def.getSecurityCode());
+        routeConfig.setEnabled(def.isEnabled());
+        routeConfig.setProperties(props);
+        return routeConfig;
     }
 }

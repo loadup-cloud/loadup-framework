@@ -48,7 +48,7 @@ public class TenantInterceptor implements HandlerInterceptor {
 
 
     private final DatabaseProperties databaseProperties;
-    private final Set<String> ignoreTables = new HashSet<>();
+    private final Set<String> ignoreTables ;
 
     /**
      * Initialize tenant interceptor
