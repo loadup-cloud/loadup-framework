@@ -39,3 +39,6 @@ node_modules
 .venv
 site/
 docs/
+.codegraph
+.claude
+.mvn
