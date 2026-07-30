@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -280,7 +279,6 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(
-                this, ToStringStyle.JSON_STYLE);
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }
 }

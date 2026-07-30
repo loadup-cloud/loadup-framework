@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
@@ -45,6 +46,18 @@ public class AssertUtil {
     private static final String TEMPLATE_VALUE_MUST_BE_BETWEEN_AND = "The value must be between {} and {}.";
 
     private AssertUtil() {}
+
+    public static void isTrue(
+            boolean expValue,
+            BiFunction<ResultCode, String, ? extends RuntimeException> exceptionFactory,
+            ResultCode resultCode,
+            Object... objs) {
+        if (!expValue) {
+            String logString = getLogString(objs);
+            String resultMsg = StringUtils.isBlank(logString) ? resultCode.getMessage() : logString;
+            throw exceptionFactory.apply(resultCode, resultMsg);
+        }
+    }
 
     public static void isTrue(boolean expValue, ResultCode resultCode, Object... objs) {
         if (!expValue) {
@@ -105,6 +118,14 @@ public class AssertUtil {
         isTrue(StringUtils.isBlank(str), resultCode, objs);
     }
 
+    public static void notBlank(
+            String str,
+            BiFunction<ResultCode, String, ? extends RuntimeException> exceptionFactory,
+            ResultCode resultCode,
+            Object... objs) {
+        isTrue(StringUtils.isNotBlank(str), exceptionFactory, resultCode, objs);
+    }
+
     public static void notBlank(String str, ResultCode resultCode, Object... objs) {
         isTrue(StringUtils.isNotBlank(str), resultCode, objs);
     }
@@ -113,8 +134,24 @@ public class AssertUtil {
         isTrue(object == null, resultCode, objs);
     }
 
+    public static void notNull(
+            Object object,
+            BiFunction<ResultCode, String, ? extends RuntimeException> exceptionFactory,
+            ResultCode resultCode,
+            Object... objs) {
+        isTrue(object != null, exceptionFactory, resultCode, objs);
+    }
+
     public static void notNull(Object object, ResultCode resultCode, Object... objs) {
         isTrue(object != null, resultCode, objs);
+    }
+
+    public static void notEmpty(
+            Collection<?> collection,
+            BiFunction<ResultCode, String, ? extends RuntimeException> exceptionFactory,
+            ResultCode resultCode,
+            Object... objs) {
+        isTrue(!CollectionUtils.isEmpty(collection), exceptionFactory, resultCode, objs);
     }
 
     public static void notEmpty(Collection<?> collection, ResultCode resultCode, Object... objs) {
@@ -123,6 +160,14 @@ public class AssertUtil {
 
     public static void empty(Collection<?> collection, ResultCode resultCode, Object... objs) {
         isTrue(CollectionUtils.isEmpty(collection), resultCode, objs);
+    }
+
+    public static void notEmpty(
+            Map<?, ?> map,
+            BiFunction<ResultCode, String, ? extends RuntimeException> exceptionFactory,
+            ResultCode resultCode,
+            Object... objs) {
+        isTrue(!MapUtils.isEmpty(map), exceptionFactory, resultCode, objs);
     }
 
     public static void notEmpty(Map<?, ?> map, ResultCode resultCode, Object... objs) {

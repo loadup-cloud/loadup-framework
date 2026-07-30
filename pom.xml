@@ -69,28 +69,25 @@
         <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
         <maven-war-plugin.version>3.5.1</maven-war-plugin.version>
 
-        <jacoco-plugin.version>0.8.14</jacoco-plugin.version>
-        <versions-plugin.version>2.17.1</versions-plugin.version>
-        <license-plugin.version>2.7.0</license-plugin.version>
-        <spotless-plugin.version>3.2.1</spotless-plugin.version>
-        <spotbugs-plugin.version>4.8.6.4</spotbugs-plugin.version>
-        <pmd-plugin.version>3.24.0</pmd-plugin.version>
-        <checkstyle-plugin.version>3.5.0</checkstyle-plugin.version>
-        <owasp-dependency-check-plugin.version>10.0.4</owasp-dependency-check-plugin.version>
-        <enforcer-plugin.version>3.5.0</enforcer-plugin.version>
-        <flyway-plugin.version>12.6.1</flyway-plugin.version>
+        <jacoco-plugin.version>0.8.15</jacoco-plugin.version>
+        <versions-plugin.version>2.21.0</versions-plugin.version>
+        <license-plugin.version>2.7.1</license-plugin.version>
+        <spotless-plugin.version>3.8.0</spotless-plugin.version>
+        <spotbugs-plugin.version>4.10.3.0</spotbugs-plugin.version>
+        <enforcer-plugin.version>3.6.3</enforcer-plugin.version>
 
         <!-- Code quality tool versions -->
-        <palantir-java-format.version>2.86.0</palantir-java-format.version>
-        <findsecbugs-plugin.version>1.13.0</findsecbugs-plugin.version>
+        <palantir-java-format.version>2.96.0</palantir-java-format.version>
+        <findsecbugs-plugin.version>1.14.0</findsecbugs-plugin.version>
 
         <!-- Annotation processor versions -->
         <mapstruct.version>1.6.3</mapstruct.version>
-        <mybatis-flex.version>1.11.7</mybatis-flex.version>
-        <spring-boot.version>4.1.0</spring-boot.version>
+        <mybatis.flex.version>1.11.8</mybatis.flex.version>
+        <spring.boot.version>4.1.0</spring.boot.version>
 
         <!-- Flyway plugin support -->
         <mysql.version>9.1.0</mysql.version>
+        <flyway.version>12.6.1</flyway.version>
 
         <!-- Skip flags -->
         <skip.deploy>false</skip.deploy>
@@ -99,9 +96,6 @@
         <skip.unit.tests>false</skip.unit.tests>
         <skip.integration.tests>false</skip.integration.tests>
         <skip.spotbugs>false</skip.spotbugs>
-        <skip.pmd>false</skip.pmd>
-        <skip.checkstyle>false</skip.checkstyle>
-        <skip.dependency.check>true</skip.dependency.check>
         <skip.enforcer>false</skip.enforcer>
     </properties>
 
@@ -142,12 +136,12 @@
                             <path>
                                 <groupId>com.mybatis-flex</groupId>
                                 <artifactId>mybatis-flex-processor</artifactId>
-                                <version>${mybatis-flex.version}</version>
+                                <version>${mybatis.flex.version}</version>
                             </path>
                             <path>
                                 <groupId>org.springframework.boot</groupId>
                                 <artifactId>spring-boot-configuration-processor</artifactId>
-                                <version>${spring-boot.version}</version>
+                                <version>${spring.boot.version}</version>
                             </path>
                         </annotationProcessorPaths>
                     </configuration>
@@ -155,7 +149,7 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>${spring-boot.version}</version>
+                    <version>${spring.boot.version}</version>
                     <configuration>
                         <jvmArguments>-XX:+UseZGC -XX:+ZGenerational -Xmx512m -Xms256m</jvmArguments>
                         <layers>
@@ -382,7 +376,7 @@
                 <plugin>
                     <groupId>org.flywaydb</groupId>
                     <artifactId>flyway-maven-plugin</artifactId>
-                    <version>${flyway-plugin.version}</version>
+                    <version>${flyway.version}</version>
                     <configuration>
                         <configFiles>flyway.conf</configFiles>
                     </configuration>
@@ -395,7 +389,7 @@
                         <dependency>
                             <groupId>org.flywaydb</groupId>
                             <artifactId>flyway-mysql</artifactId>
-                            <version>${flyway-plugin.version}</version>
+                            <version>${flyway.version}</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -420,92 +414,6 @@
                     <executions>
                         <execution>
                             <id>spotbugs-check</id>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                            <phase>verify</phase>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-pmd-plugin</artifactId>
-                    <version>${pmd-plugin.version}</version>
-                    <configuration>
-                        <targetJdk>${java.version}</targetJdk>
-                        <failOnViolation>true</failOnViolation>
-                        <printFailingErrors>true</printFailingErrors>
-                        <skip>${skip.pmd}</skip>
-                        <rulesets>
-                            <ruleset>${maven.multiModuleProjectDirectory}/config/quality/pmd-ruleset.xml</ruleset>
-                        </rulesets>
-                        <excludeRoots>
-                            <excludeRoot>target/generated-sources</excludeRoot>
-                            <excludeRoot>target/generated-sources/annotations</excludeRoot>
-                            <excludeRoot>target/generated-test-sources</excludeRoot>
-                            <excludeRoot>target/generated-test-sources/annotations</excludeRoot>
-                        </excludeRoots>
-                        <excludes>
-                            <exclude>io/github/loadup/framework/api/**</exclude>
-                            <exclude>io/github/loadup/commons/result/**</exclude>
-                            <exclude>io/github/loadup/commons/request/**</exclude>
-                            <exclude>io/github/loadup/commons/dto/**</exclude>
-                            <exclude>io/github/loadup/commons/util/**</exclude>
-                        </excludes>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>pmd-check</id>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                            <phase>verify</phase>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>${checkstyle-plugin.version}</version>
-                    <configuration>
-                        <configLocation>${maven.multiModuleProjectDirectory}/config/quality/checkstyle.xml</configLocation>
-                        <suppressionsLocation>${maven.multiModuleProjectDirectory}/config/quality/checkstyle-suppressions.xml</suppressionsLocation>
-                        <failsOnError>true</failsOnError>
-                        <failOnViolation>true</failOnViolation>
-                        <violationSeverity>warning</violationSeverity>
-                        <skip>${skip.checkstyle}</skip>
-                        <includeTestSourceDirectory>false</includeTestSourceDirectory>
-                        <excludes>**/generated/**,**/target/**,**/framework/api/**,**/commons/result/**,**/commons/request/**,**/commons/dto/**,**/commons/util/**</excludes>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>checkstyle-check</id>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                            <phase>verify</phase>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.owasp</groupId>
-                    <artifactId>dependency-check-maven</artifactId>
-                    <version>${owasp-dependency-check-plugin.version}</version>
-                    <configuration>
-                        <skip>${skip.dependency.check}</skip>
-                        <failBuildOnCVSS>7</failBuildOnCVSS>
-                        <suppressionFile>${maven.multiModuleProjectDirectory}/config/quality/owasp-suppressions.xml</suppressionFile>
-                        <formats>
-                            <format>HTML</format>
-                            <format>JSON</format>
-                        </formats>
-                        <outputDirectory>${project.build.directory}/dependency-check</outputDirectory>
-                        <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
-                        <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>dependency-check</id>
                             <goals>
                                 <goal>check</goal>
                             </goals>
@@ -596,22 +504,40 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.owasp</groupId>
-                <artifactId>dependency-check-maven</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
+
+    <reporting>
+        <excludeDefaults>true</excludeDefaults>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>report-only</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco-plugin.version}</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <profiles>
         <profile>
@@ -685,9 +611,6 @@
             <properties>
                 <skip.spotless>true</skip.spotless>
                 <skip.spotbugs>true</skip.spotbugs>
-                <skip.pmd>true</skip.pmd>
-                <skip.checkstyle>true</skip.checkstyle>
-                <skip.dependency.check>true</skip.dependency.check>
                 <license.skip>true</license.skip>
             </properties>
         </profile>

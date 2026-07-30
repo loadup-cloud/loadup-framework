@@ -42,29 +42,28 @@
     <properties>        <!-- Spring Framework (FROZEN) -->
         <spring.boot.version>4.1.0</spring.boot.version>
         <spring-cloud.version>2025.1.2</spring-cloud.version>
-        <license.licenseName>gpl_v3</license.licenseName>
 
         <!-- Loadup Framework -->
         <loadup.framework.version>0.0.2-SNAPSHOT</loadup.framework.version>
 
         <!-- ORM and Database -->
-        <mybatis.flex.version>1.11.7</mybatis.flex.version>
+        <mybatis.flex.version>1.11.8</mybatis.flex.version>
         <mysql.version>9.1.0</mysql.version>
         <flyway.version>12.6.1</flyway.version>
 
         <!-- Code Generation -->
-        <org.mapstruct.version>1.6.3</org.mapstruct.version>        <!-- Apache Commons -->
-        <commons-io.version>2.20.0</commons-io.version>
+        <mapstruct.version>1.6.3</mapstruct.version>        <!-- Apache Commons -->
+        <commons-io.version>2.22.0</commons-io.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <commons-collections4.version>4.5.0</commons-collections4.version>
         <commons-text.version>1.15.0</commons-text.version>
-        <commons.csv.version>1.10.0</commons.csv.version>
-        <commons-codec.version>1.21.0</commons-codec.version>
+        <commons.csv.version>1.14.1</commons.csv.version>
+        <commons-codec.version>1.22.0</commons-codec.version>
         <commons-crypto.version>1.2.0</commons-crypto.version>
 
         <!-- Serialization and Utilities -->
         <fastjson.version>2.0.62</fastjson.version>
-        <io.vavr.version>0.10.6</io.vavr.version>
+        <io.vavr.version>1.0.1</io.vavr.version>
         <guava.version>33.6.0-jre</guava.version>
         <opencsv.version>5.12.0</opencsv.version>
         <velocity.version>2.4.1</velocity.version>
@@ -98,24 +97,7 @@
         <javers.version>7.10.0</javers.version>
         <jsonassert.version>1.5.3</jsonassert.version>
         <archunit.version>1.4.2</archunit.version>
-
-        <!-- Code Quality Plugins -->
-        <spotless.version>3.2.1</spotless.version>
-        <google-java-format.version>1.19.2</google-java-format.version>
-        <spotbugs.version>4.9.8</spotbugs.version>
-        <spotbugs.plugin.version>4.8.6.4</spotbugs.plugin.version>
-        <pmd.plugin.version>3.24.0</pmd.plugin.version>
-        <checkstyle.plugin.version>3.5.0</checkstyle.plugin.version>
-        <owasp.dependency.check.version>10.0.4</owasp.dependency.check.version>
-
-        <!-- Skip flags -->
-        <skip.spotless>true</skip.spotless>
-        <skipUTs>false</skipUTs>
-        <skipITs>false</skipITs>
-        <skipTests>false</skipTests>
-        <skip.deploy>false</skip.deploy>
-        <skip.unit.tests>false</skip.unit.tests>
-        <skip.integration.tests>false</skip.integration.tests>
+        <spotbugs.version>4.10.3</spotbugs.version>
 
     </properties>
 
@@ -382,12 +364,12 @@
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
-                <version>${org.mapstruct.version}</version>
+                <version>${mapstruct.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct-processor</artifactId>
-                <version>${org.mapstruct.version}</version>
+                <version>${mapstruct.version}</version>
             </dependency>
 
             <!--test testcontainers-->
