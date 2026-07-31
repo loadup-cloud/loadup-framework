@@ -1,27 +1,5 @@
 package io.github.loadup.gateway.starter;
 
-/*-
- * #%L
- * LoadUp Gateway Starter
- * %%
- * Copyright (C) 2025 - 2026 LoadUp Cloud
- * %%
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/gpl-3.0.html>.
- * #L%
- */
-
 import io.github.loadup.gateway.core.engine.DefaultGatewayEngine;
 import io.github.loadup.gateway.core.engine.GatewayEngine;
 import io.github.loadup.gateway.core.filter.BodyParserFilter;
@@ -30,7 +8,6 @@ import io.github.loadup.gateway.core.filter.ExceptionFilter;
 import io.github.loadup.gateway.core.filter.ProxyFilter;
 import io.github.loadup.gateway.core.filter.RateLimitFilter;
 import io.github.loadup.gateway.core.filter.ResponseWrapperFilter;
-import io.github.loadup.gateway.core.filter.RouteFilter;
 import io.github.loadup.gateway.core.filter.SecurityFilter;
 import io.github.loadup.gateway.core.filter.TracingFilter;
 import io.github.loadup.gateway.core.handler.GatewayHandlerAdapter;
@@ -67,8 +44,6 @@ import org.springframework.context.event.EventListener;
 @EnableConfigurationProperties(GatewayProperties.class)
 public class GatewayAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(GatewayAutoConfiguration.class);
-
-    // --- Store & Router ---
 
     @Bean
     @ConditionalOnMissingBean
@@ -152,7 +127,7 @@ public class GatewayAutoConfiguration {
         return new TracingFilter(t, p);
     }
 
-    // --- Security Strategies (direct instantiation) ---
+    // --- Security Strategies ---
 
     @Bean
     @ConditionalOnMissingBean(name = "defaultSecurityStrategy")
@@ -176,19 +151,12 @@ public class GatewayAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public RouteFilter routeFilter(RouteResolver routeResolver, DefaultGatewayEngine engine) {
-        return new RouteFilter(routeResolver, engine);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
     public DefaultGatewayEngine gatewayEngine(
             List<GatewayFilter> filters,
             RouteResolver routeResolver,
             RouteStore routeStore,
             ExceptionFilter exceptionFilter,
             @Autowired(required = false) TracingFilter tracingFilter,
-            RouteFilter routeFilter,
             ProxyFilter proxyFilter,
             ResponseWrapperFilter responseWrapperFilter) {
         Map<String, GatewayFilter> registry =
@@ -200,7 +168,6 @@ public class GatewayAutoConfiguration {
                 routeStore,
                 exceptionFilter,
                 tracingFilter,
-                routeFilter,
                 proxyFilter,
                 responseWrapperFilter);
     }

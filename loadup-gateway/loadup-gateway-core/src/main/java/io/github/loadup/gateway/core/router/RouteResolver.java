@@ -1,27 +1,5 @@
 package io.github.loadup.gateway.core.router;
 
-/*-
- * #%L
- * LoadUp Gateway Core
- * %%
- * Copyright (C) 2025 - 2026 LoadUp Cloud
- * %%
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/gpl-3.0.html>.
- * #L%
- */
-
 import io.github.loadup.gateway.facade.config.GatewayProperties;
 import io.github.loadup.gateway.facade.model.GatewayRequest;
 import io.github.loadup.gateway.facade.model.RouteConfig;
@@ -59,45 +37,30 @@ public class RouteResolver {
 
     public Optional<RouteConfig> resolve(GatewayRequest request) {
         String routeKey = buildRouteKey(request.getMethod(), request.getPath());
-
-        ConcurrentHashMap<String, RouteConfig> currentCache = exactRouteCache;
-        RouteConfig cachedRoute = currentCache.get(routeKey);
-        if (cachedRoute != null && cachedRoute.isEnabled()) {
-            return Optional.of(cachedRoute);
+        RouteConfig cached = exactRouteCache.get(routeKey);
+        if (cached != null && cached.isEnabled()) {
+            return Optional.of(cached);
         }
-
-        Optional<RouteConfig> patternMatch = patternRegistry.resolve(request.getMethod(), request.getPath());
-        if (patternMatch.isPresent()) {
-            RouteConfig matched = patternMatch.get();
-            populatePathParams(request, matched);
-            return Optional.of(matched);
+        Optional<RouteConfig> pm = patternRegistry.resolve(request.getMethod(), request.getPath());
+        if (pm.isPresent()) {
+            populatePathParams(request, pm.get());
         }
-
-        return Optional.empty();
+        return pm;
     }
 
     public void refreshRoutes() {
         try {
-            List<RouteConfig> allRoutes = routeStore.loadAll().stream()
+            List<RouteConfig> all = routeStore.loadAll().stream()
                     .filter(RouteDefinition::isEnabled)
                     .map(this::toRouteConfig)
                     .toList();
-
-            ConcurrentHashMap<String, RouteConfig> newExactCache = new ConcurrentHashMap<>();
-            for (RouteConfig route : allRoutes) {
-                if (route.isEnabled()) {
-                    String routeKey = buildRouteKey(route.getMethod(), route.getPath());
-                    newExactCache.put(routeKey, route);
-                }
+            ConcurrentHashMap<String, RouteConfig> next = new ConcurrentHashMap<>();
+            for (RouteConfig r : all) {
+                if (r.isEnabled()) next.put(buildRouteKey(r.getMethod(), r.getPath()), r);
             }
-
-            patternRegistry.loadRoutes(allRoutes);
-            this.exactRouteCache = newExactCache;
-
-            log.info(
-                    "Route cache refreshed: {} exact routes, {} total in pattern registry",
-                    newExactCache.size(),
-                    patternRegistry.size());
+            patternRegistry.loadRoutes(all);
+            this.exactRouteCache = next;
+            log.info("Route cache refreshed: {} exact, {} total", next.size(), patternRegistry.size());
         } catch (Exception e) {
             log.error("Failed to refresh route cache", e);
         }
@@ -105,14 +68,11 @@ public class RouteResolver {
 
     @SuppressWarnings("unchecked")
     private void populatePathParams(GatewayRequest request, RouteConfig route) {
-        Object pathParamsObj = route.getProperties().get("_pathParams");
-        if (pathParamsObj instanceof Map) {
-            request.setPathParameters((Map<String, String>) pathParamsObj);
-        }
-        Object matchedPattern = route.getProperties().get("_matchedPattern");
-        if (matchedPattern != null && request.getAttributes() != null) {
-            request.getAttributes().put("_matchedPattern", matchedPattern);
-        }
+        Object pp = route.getProperties().get("_pathParams");
+        if (pp instanceof Map) request.setPathParameters((Map<String, String>) pp);
+        Object mp = route.getProperties().get("_matchedPattern");
+        if (mp != null && request.getAttributes() != null)
+            request.getAttributes().put("_matchedPattern", mp);
     }
 
     private String buildRouteKey(String method, String path) {
@@ -127,34 +87,50 @@ public class RouteResolver {
         return patternRegistry.size();
     }
 
-    /**
-     * Convert RouteDefinition → RouteConfig for runtime.
-     */
     private RouteConfig toRouteConfig(RouteDefinition def) {
         BackendDefinition backend = def.getBackend();
-        String target = "";
-        if (backend != null && backend.getProtocol() != null) {
-            target = switch (backend.getProtocol().toLowerCase()) {
-                case "http" -> backend.getUrl() != null ? backend.getUrl() : "";
-                case "bean" ->
-                    "bean://" + (backend.getBeanName() != null ? backend.getBeanName() : "") + ":"
-                            + (backend.getMethodName() != null ? backend.getMethodName() : "");
-                case "rpc" -> "rpc://" + (backend.getUrl() != null ? backend.getUrl() : "");
-                default -> "";
-            };
-        }
+        RouteConfig rc = new RouteConfig();
+        rc.setRouteId(
+                def.getId() != null && !"auto".equals(def.getId())
+                        ? def.getId()
+                        : "route-" + Integer.toUnsignedString((def.getPath() + ":" + def.getMethod()).hashCode()));
+        rc.setPath(def.getPath());
+        rc.setMethod(def.getMethod() != null ? def.getMethod() : "POST");
+        rc.setSecurityCode(def.getSecurityCode());
+        rc.setEnabled(def.isEnabled());
 
         Map<String, Object> props = new HashMap<>();
         if (def.getTimeout() != null) props.put("timeout", def.getTimeout());
         if (def.getWrapResponse() != null) props.put("wrapResponse", def.getWrapResponse());
+        rc.setProperties(props);
 
-        RouteConfig routeConfig = new RouteConfig();
-        routeConfig.setPath(def.getPath());
-        routeConfig.setMethod(def.getMethod());
-        routeConfig.setTarget(target);
-        routeConfig.setSecurityCode(def.getSecurityCode());
-        routeConfig.setEnabled(def.isEnabled());
-        routeConfig.setProperties(props);
-        return routeConfig;
+        if (backend != null && backend.getProtocol() != null) {
+            String protocol = backend.getProtocol().toUpperCase();
+            rc.setProtocol(protocol);
+            switch (protocol) {
+                case "HTTP" -> {
+                    String url = backend.getUrl();
+                    rc.setTarget(url != null ? url : "");
+                    rc.setTargetUrl(url);
+                }
+                case "BEAN" -> {
+                    String bn = backend.getBeanName() != null ? backend.getBeanName() : "";
+                    String mn = backend.getMethodName() != null ? backend.getMethodName() : "";
+                    rc.setTarget("bean://" + bn + ":" + mn);
+                    rc.setTargetBean(bn);
+                    rc.setTargetMethod(mn);
+                }
+                case "RPC" -> {
+                    String rpcUrl = backend.getUrl();
+                    rc.setTarget(rpcUrl != null ? "rpc://" + rpcUrl : "");
+                    rc.setTargetUrl(rpcUrl);
+                }
+                default -> rc.setTarget("");
+            }
+        } else {
+            rc.setProtocol("");
+            rc.setTarget("");
+        }
+        return rc;
     }
 }

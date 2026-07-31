@@ -24,4 +24,9 @@ package io.github.loadup.commons.request;
 
 import io.github.loadup.commons.dto.DTO;
 
-public class BaseRequest extends DTO {}
+public class BaseRequest implements DTO {
+    @Override
+    public String toString() {
+        return toJsonString();
+    }
+}

@@ -5,12 +5,11 @@ GET http://127.0.0.1:8080/api/test/bean
 ###
 ### POST request to example server
 
-POST http://127.0.0.1:8080/api/test/bean
+POST http://127.0.0.1:8080/api/upms/user/detail
 Content-Type: application/json
 
 {
-  "id": 999,
-  "value": "content"
+  "id": 1
 }
 
 ###

@@ -105,6 +105,6 @@ public class GatewayException extends RuntimeException {
     public String toString() {
         return String.format(
                 "GatewayException{errorCode='%s', errorType=%s, module='%s', message='%s'}",
-                errorCode, errorType, module, getMessage());
+                errorCode, errorType.getDescription(), module, getMessage());
     }
 }

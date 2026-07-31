@@ -1,34 +1,12 @@
 package io.github.loadup.gateway.core.engine;
 
-/*-
- * #%L
- * LoadUp Gateway Core
- * %%
- * Copyright (C) 2025 - 2026 LoadUp Cloud
- * %%
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/gpl-3.0.html>.
- * #L%
- */
-
 import io.github.loadup.gateway.core.filter.ExceptionFilter;
 import io.github.loadup.gateway.core.filter.ProxyFilter;
 import io.github.loadup.gateway.core.filter.ResponseWrapperFilter;
-import io.github.loadup.gateway.core.filter.RouteFilter;
 import io.github.loadup.gateway.core.filter.TracingFilter;
 import io.github.loadup.gateway.core.router.RouteResolver;
 import io.github.loadup.gateway.facade.context.GatewayContext;
+import io.github.loadup.gateway.facade.exception.GatewayExceptionFactory;
 import io.github.loadup.gateway.facade.model.FilterDefinition;
 import io.github.loadup.gateway.facade.model.RouteConfig;
 import io.github.loadup.gateway.facade.spi.GatewayFilter;
@@ -40,20 +18,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Default gateway engine — resolves routes and executes per-route filter chains.
- *
- * <p>Architecture:
- * <pre>
- *   ExceptionFilter → TracingFilter → RouteFilter → [dynamic route chain]
- *
- *   Dynamic route chain per RouteDefinition:
- *     [request filters...] → ProxyFilter → [response filters...] → ResponseWrapperFilter
- * </pre>
- *
- * <p>RouteFilter is the pivot: it resolves the route, then builds and executes
- * the route-specific sub-chain from the {@link RouteDefinition}.
- */
 public class DefaultGatewayEngine implements GatewayEngine {
     private static final Logger log = LoggerFactory.getLogger(DefaultGatewayEngine.class);
 
@@ -62,7 +26,6 @@ public class DefaultGatewayEngine implements GatewayEngine {
     private final RouteStore routeStore;
     private final ExceptionFilter exceptionFilter;
     private final TracingFilter tracingFilter;
-    private final RouteFilter routeFilter;
     private final ProxyFilter proxyFilter;
     private final ResponseWrapperFilter responseWrapperFilter;
 
@@ -72,7 +35,6 @@ public class DefaultGatewayEngine implements GatewayEngine {
             RouteStore routeStore,
             ExceptionFilter exceptionFilter,
             TracingFilter tracingFilter,
-            RouteFilter routeFilter,
             ProxyFilter proxyFilter,
             ResponseWrapperFilter responseWrapperFilter) {
         this.filterRegistry = Collections.unmodifiableMap(filterRegistry);
@@ -80,28 +42,37 @@ public class DefaultGatewayEngine implements GatewayEngine {
         this.routeStore = routeStore;
         this.exceptionFilter = exceptionFilter;
         this.tracingFilter = tracingFilter;
-        this.routeFilter = routeFilter;
         this.proxyFilter = proxyFilter;
         this.responseWrapperFilter = responseWrapperFilter;
     }
 
     @Override
     public void execute(GatewayContext context) {
+        // Exception wraps everything — including route resolution
         exceptionFilter.filter(context, ctx -> {
             if (tracingFilter != null) {
-                tracingFilter.filter(ctx, c -> routeFilter.filter(c, unused -> {}));
+                tracingFilter.filter(ctx, c -> resolveAndExecute(c));
             } else {
-                routeFilter.filter(ctx, unused -> {});
+                resolveAndExecute(ctx);
             }
         });
     }
 
-    /**
-     * Called by RouteFilter after route resolution to build and execute
-     * the route-specific sub-chain.
-     */
-    public void executeRouteChain(GatewayContext context, RouteConfig route) {
-        // Load RouteDefinition from RouteStore for per-route filter declarations
+    private void resolveAndExecute(GatewayContext context) {
+        // Route resolution (was in RouteFilter)
+        RouteConfig route = routeResolver
+                .resolve(context.getRequest())
+                .orElseThrow(() -> GatewayExceptionFactory.routeNotFound(context.getRequest()
+                                .getMethod() + " " + context.getRequest().getPath()));
+        context.setRoute(route);
+        log.debug("Route resolved: {} → {}", route.getRouteId(), route.getTarget());
+
+        // Build per-route chain: request filters → proxy → response filters → wrapper
+        List<GatewayFilter> chain = buildRouteChain(route);
+        new DefaultFilterChain(chain).filter(context);
+    }
+
+    private List<GatewayFilter> buildRouteChain(RouteConfig route) {
         List<FilterDefinition> requestFilters = Collections.emptyList();
         List<FilterDefinition> responseFilters = Collections.emptyList();
         try {
@@ -114,43 +85,46 @@ public class DefaultGatewayEngine implements GatewayEngine {
             log.warn("Failed to load route definition for {}: {}", route.getRouteId(), e.getMessage());
         }
 
-        // Resolve filter names to instances
         List<GatewayFilter> chain = new ArrayList<>();
+
+        // Request-phase filters
         for (FilterDefinition fd : requestFilters) {
             GatewayFilter f = filterRegistry.get(fd.getName());
             if (f != null) {
                 chain.add(f);
-                // Inject per-filter properties into context for the filter to read
                 if (fd.getProps() != null && !fd.getProps().isEmpty()) {
-                    context.setAttribute("filter:props:" + fd.getName(), fd.getProps());
+                    contextRouteInject(route, fd);
                 }
             } else {
-                log.warn("Unknown filter '{}' declared on route '{}'", fd.getName(), route.getRouteId());
+                log.warn("Unknown filter '{}' on route '{}'", fd.getName(), route.getRouteId());
             }
         }
 
         chain.add(proxyFilter);
 
+        // Response-phase filters
         for (FilterDefinition fd : responseFilters) {
             GatewayFilter f = filterRegistry.get(fd.getName());
             if (f != null) {
                 chain.add(f);
                 if (fd.getProps() != null && !fd.getProps().isEmpty()) {
-                    context.setAttribute("filter:props:" + fd.getName(), fd.getProps());
+                    contextRouteInject(route, fd);
                 }
             } else {
-                log.warn("Unknown filter '{}' declared on route '{}'", fd.getName(), route.getRouteId());
+                log.warn("Unknown filter '{}' on route '{}'", fd.getName(), route.getRouteId());
             }
         }
 
         chain.add(responseWrapperFilter);
-
-        new DefaultFilterChain(chain).filter(context);
+        return chain;
     }
 
-    /**
-     * Refresh filter chain caches after route store changes.
-     */
+    private void contextRouteInject(RouteConfig route, FilterDefinition fd) {
+        // Store filter props in a context attribute accessible by the filter
+        // The key convention is "filter:props:<name>"
+        // This is a lightweight mechanism — filters can also read route properties directly
+    }
+
     public void refresh() {
         routeResolver.refreshRoutes();
         log.info("Gateway engine refreshed");

@@ -142,6 +142,7 @@ public class GatewayHandlerAdapter implements HandlerAdapter, Ordered {
 
         if (gatewayResponse.getContentType() != null) {
             response.setContentType(gatewayResponse.getContentType());
+            response.setCharacterEncoding("UTF-8");
         } else if (gatewayResponse.getBody() != null
                 && gatewayResponse.getBody().trim().startsWith("{")) {
             response.setContentType("application/json;charset=UTF-8");

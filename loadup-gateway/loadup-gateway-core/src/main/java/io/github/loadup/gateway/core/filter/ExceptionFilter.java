@@ -89,7 +89,7 @@ public class ExceptionFilter implements GatewayFilter {
             log.error(
                     "Gateway error: requestId={}, errorType={}, code={}, message={}, elapsed={}ms",
                     requestId,
-                    e.getErrorType(),
+                    e.getErrorType().getDescription(),
                     e.getErrorCode(),
                     e.getMessage(),
                     elapsedMs,

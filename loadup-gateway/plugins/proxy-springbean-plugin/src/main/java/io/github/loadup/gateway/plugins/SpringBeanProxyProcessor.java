@@ -1,27 +1,5 @@
 package io.github.loadup.gateway.plugins;
 
-/*-
- * #%L
- * Proxy SpringBean Plugin
- * %%
- * Copyright (C) 2025 - 2026 LoadUp Cloud
- * %%
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/gpl-3.0.html>.
- * #L%
- */
-
 import io.github.loadup.commons.util.JsonUtil;
 import io.github.loadup.gateway.facade.constants.GatewayConstants;
 import io.github.loadup.gateway.facade.exception.GatewayExceptionFactory;
@@ -30,9 +8,11 @@ import io.github.loadup.gateway.facade.model.GatewayResponse;
 import io.github.loadup.gateway.facade.model.RouteConfig;
 import io.github.loadup.gateway.facade.spi.ProxyProcessor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -84,7 +64,6 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
         try {
             String beanName = route.getTargetBean();
             String methodName = route.getTargetMethod();
-
             if (beanName == null || methodName == null) {
                 throw GatewayExceptionFactory.systemError("Invalid bean target: " + route.getTarget());
             }
@@ -122,23 +101,122 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
         return null;
     }
 
+    /**
+     * Resolve method arguments from the request.
+     *
+     * <p>Strategy (in priority order):
+     * <ol>
+     *   <li>If BodyParserFilter has run, use {@code parsedBody} map — match by param name</li>
+     *   <li>Single POJO param (not String/int/long) → deserialize whole body to that type</li>
+     *   <li>Single String param → pass raw body as-is</li>
+     *   <li>Multiple params → match by param name from JSON body if possible</li>
+     * </ol>
+     */
+    @SuppressWarnings("unchecked")
     private Object[] prepareMethodArgs(GatewayRequest request, Method method) {
         Class<?>[] paramTypes = method.getParameterTypes();
+        Parameter[] parameters = method.getParameters();
         Object[] args = new Object[paramTypes.length];
-        for (int i = 0; i < paramTypes.length; i++) {
-            if (paramTypes[i] == GatewayRequest.class) {
-                args[i] = request;
-            } else if (paramTypes[i] == String.class) {
-                args[i] = request.getBody();
-            } else {
-                try {
-                    args[i] = JsonUtil.fromJson(request.getBody(), paramTypes[i]);
-                } catch (Exception e) {
-                    args[i] = null;
+
+        // Check for parsed body from BodyParserFilter
+        Map<String, Object> parsedBody = null;
+        Object parsedAttr = request.getAttributes().get("parsedBody");
+        if (parsedAttr instanceof Map) {
+            parsedBody = (Map<String, Object>) parsedAttr;
+        }
+
+        // Single parameter
+        if (paramTypes.length == 1) {
+            if (paramTypes[0] == GatewayRequest.class) {
+                args[0] = request;
+            } else if (!isSimpleType(paramTypes[0])) {
+                // POJO type: deserialize full body
+                args[0] = deserializeBody(request.getBody(), paramTypes[0]);
+            } else if (parsedBody != null && !parsedBody.isEmpty()) {
+                // Simple type with parsed body: match by param name first, then by single value
+                String paramName = parameters[0].getName();
+                if (parsedBody.containsKey(paramName)) {
+                    args[0] = convertValue(parsedBody.get(paramName), paramTypes[0]);
+                } else if (parsedBody.size() == 1) {
+                    args[0] = convertValue(parsedBody.values().iterator().next(), paramTypes[0]);
+                } else {
+                    args[0] = request.getBody();
                 }
+            } else {
+                args[0] = request.getBody();
+            }
+            return args;
+        }
+
+        // Multiple parameters: match by param name from parsed body or JSON body
+        for (int i = 0; i < paramTypes.length; i++) {
+            String paramName = parameters[i].getName();
+            if (parsedBody != null && parsedBody.containsKey(paramName)) {
+                args[i] = convertValue(parsedBody.get(paramName), paramTypes[i]);
+            } else if (isSimpleType(paramTypes[i])) {
+                // Try to extract from raw JSON body
+                args[i] = extractFromJson(request.getBody(), paramName, paramTypes[i]);
+            } else {
+                args[i] = deserializeBody(request.getBody(), paramTypes[i]);
             }
         }
+
         return args;
+    }
+
+    private Object deserializeBody(String body, Class<?> targetType) {
+        if (body == null || body.isBlank()) return null;
+        try {
+            return JsonUtil.fromJson(body, targetType);
+        } catch (Exception e) {
+            log.debug("Failed to deserialize body to {}: {}", targetType.getSimpleName(), e.getMessage());
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object extractFromJson(String body, String paramName, Class<?> targetType) {
+        if (body == null || body.isBlank()) return null;
+        try {
+            Map<String, Object> map = JsonUtil.toMap(body);
+            return convertValue(map.get(paramName), targetType);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Object convertValue(Object value, Class<?> targetType) {
+        if (value == null) return null;
+        if (targetType.isInstance(value)) return value;
+        if (targetType == String.class) return value.toString();
+        if (targetType == Long.class || targetType == long.class) {
+            if (value instanceof Number) return ((Number) value).longValue();
+            return Long.parseLong(value.toString());
+        }
+        if (targetType == Integer.class || targetType == int.class) {
+            if (value instanceof Number) return ((Number) value).intValue();
+            return Integer.parseInt(value.toString());
+        }
+        if (targetType == Boolean.class || targetType == boolean.class) {
+            if (value instanceof Boolean) return value;
+            return Boolean.parseBoolean(value.toString());
+        }
+        // Fallback: JSON round-trip conversion
+        try {
+            return JsonUtil.fromJson(JsonUtil.toJson(value), targetType);
+        } catch (Exception e) {
+            return value;
+        }
+    }
+
+    private boolean isSimpleType(Class<?> type) {
+        return type == String.class
+                || type == Integer.class
+                || type == int.class
+                || type == Long.class
+                || type == long.class
+                || type == Boolean.class
+                || type == boolean.class;
     }
 
     @SuppressWarnings("unchecked")
@@ -157,8 +235,7 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
             userBuilder.getClass().getMethod("roles", List.class).invoke(userBuilder, roles);
             Object user = userBuilder.getClass().getMethod("build").invoke(userBuilder);
             ucClass.getMethod("set", userClass).invoke(null, user);
-        } catch (ClassNotFoundException e) {
-            // authorization component not on classpath, skip
+        } catch (ClassNotFoundException ignored) {
         } catch (Exception e) {
             log.debug("Failed to setup UserContext", e);
         }

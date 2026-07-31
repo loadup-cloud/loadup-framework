@@ -33,7 +33,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author Lise
  * @since 1.0.0
  */
-public class Result extends DTO implements ResultCode, Serializable {
+public class Result implements DTO, ResultCode, Serializable {
 
     @Serial
     private static final long serialVersionUID = -6017673453793484984L;
@@ -128,5 +128,10 @@ public class Result extends DTO implements ResultCode, Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    @Override
+    public String toString() {
+        return toJsonString();
     }
 }

@@ -22,6 +22,7 @@ package io.github.loadup.modules.upms.app.service;
  * #L%
  */
 
+import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.app.dto.UserDetailDTO;
 import io.github.loadup.modules.upms.app.query.UserQuery;
@@ -206,8 +207,8 @@ public class UserService {
     /**
      * Get user by ID
      */
-    public UserDetailDTO getUserById(String id) {
-        User user = userGateway.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+    public UserDetailDTO getUserById(IdQuery idQuery) {
+        User user = userGateway.findById(idQuery.id()).orElseThrow(() -> new RuntimeException("用户不存在"));
         return convertToDetailDTO(user);
     }
 

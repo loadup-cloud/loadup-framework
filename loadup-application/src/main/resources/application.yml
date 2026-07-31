@@ -4,7 +4,7 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/loadup-boot?useUnicode=true&characterEncoding=utf8}
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:}
+    password: ${DB_PASSWORD:123456}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 # springdoc-openapi / knife4j configuration
@@ -44,7 +44,6 @@ loadup:
       name: GPL-3.0
       url: https://opensource.org/license/gpl-3-0
 
-loadup:
   gateway:
     enabled: true
     route-refresh-interval: 5
@@ -69,14 +68,14 @@ loadup:
       type: FILE
       # When type = FILE, configure the `file` group below
       file:
-        base-path: ${LOADUP_GATEWAY_CONFIG_DIR:classpath:gateway-config}
+        base-path: classpath:gateway-routes.yml
   retrytask:
     scheduler:
       enabled: false
   scheduler:
     type: simplejob
   tracer:
-    enabled: true
+    enabled: false
     enable-web-tracing: true
     exclude-patterns: /actuator/**,/health,/metrics
     exporters:

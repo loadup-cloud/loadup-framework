@@ -25,10 +25,8 @@ package io.github.loadup.commons.result;
 import io.github.loadup.commons.dto.DTO;
 import java.util.Collection;
 import java.util.List;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class PageDTO<T> extends DTO {
+public class PageDTO<T> implements DTO {
     private Collection<T> data;
     private PageInfo pageInfo;
 
@@ -64,7 +62,7 @@ public class PageDTO<T> extends DTO {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(ToStringStyle.JSON_STYLE);
+        return toJsonString();
     }
 
     public static <T> Builder<T> builder() {

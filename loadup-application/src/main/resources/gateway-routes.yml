@@ -1,0 +1,473 @@
+routes:
+  # ========================================
+  # Authentication
+  # ========================================
+  - id: auth-login
+    path: /api/auth/login
+    method: POST
+    backend:
+      protocol: bean
+      beanName: authenticationServiceImpl
+      methodName: login
+    filters:
+      - name: body-parser
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: auth-register
+    path: /api/auth/register
+    method: POST
+    backend:
+      protocol: bean
+      beanName: authenticationServiceImpl
+      methodName: register
+    filters:
+      - name: body-parser
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: auth-refresh
+    path: /api/auth/refresh
+    method: POST
+    backend:
+      protocol: bean
+      beanName: authenticationServiceImpl
+      methodName: refreshToken
+    filters:
+      - name: body-parser
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: auth-logout
+    path: /api/auth/logout
+    method: POST
+    backend:
+      protocol: bean
+      beanName: authenticationServiceImpl
+      methodName: logout
+    filters:
+      - name: body-parser
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  # ========================================
+  # User Management
+  # ========================================
+  - id: user-create
+    path: /api/upms/user/create
+    method: POST
+    backend:
+      protocol: bean
+      beanName: userService
+      methodName: createUser
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: user-update
+    path: /api/upms/user/update
+    method: POST
+    backend:
+      protocol: bean
+      beanName: userService
+      methodName: updateUser
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: user-delete
+    path: /api/upms/user/delete
+    method: POST
+    backend:
+      protocol: bean
+      beanName: userService
+      methodName: deleteUser
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: user-detail
+    path: /api/upms/user/detail
+    method: POST
+    backend:
+      protocol: bean
+      beanName: userService
+      methodName: getUserById
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: internal
+
+  - id: user-list
+    path: /api/upms/user/list
+    method: POST
+    backend:
+      protocol: bean
+      beanName: userService
+      methodName: queryUsers
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: user-change-password
+    path: /api/upms/user/change-password
+    method: POST
+    backend:
+      protocol: bean
+      beanName: userService
+      methodName: changePassword
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: internal
+
+  - id: user-lock
+    path: /api/upms/user/lock
+    method: POST
+    backend:
+      protocol: bean
+      beanName: userService
+      methodName: lockUser
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: user-unlock
+    path: /api/upms/user/unlock
+    method: POST
+    backend:
+      protocol: bean
+      beanName: userService
+      methodName: unlockUser
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  # ========================================
+  # Role Management
+  # ========================================
+  - id: role-create
+    path: /api/upms/role/create
+    method: POST
+    backend:
+      protocol: bean
+      beanName: roleService
+      methodName: createRole
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: role-update
+    path: /api/upms/role/update
+    method: POST
+    backend:
+      protocol: bean
+      beanName: roleService
+      methodName: updateRole
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: role-delete
+    path: /api/upms/role/delete
+    method: POST
+    backend:
+      protocol: bean
+      beanName: roleService
+      methodName: deleteRole
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: role-detail
+    path: /api/upms/role/detail
+    method: POST
+    backend:
+      protocol: bean
+      beanName: roleService
+      methodName: getRoleById
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: role-list
+    path: /api/upms/role/list
+    method: POST
+    backend:
+      protocol: bean
+      beanName: roleService
+      methodName: queryRoles
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: role-tree
+    path: /api/upms/role/tree
+    method: POST
+    backend:
+      protocol: bean
+      beanName: roleService
+      methodName: getRoleTree
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: role-assign-to-user
+    path: /api/upms/role/assign-to-user
+    method: POST
+    backend:
+      protocol: bean
+      beanName: roleService
+      methodName: assignRoleToUser
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: role-remove-from-user
+    path: /api/upms/role/remove-from-user
+    method: POST
+    backend:
+      protocol: bean
+      beanName: roleService
+      methodName: removeRoleFromUser
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: role-assign-permissions
+    path: /api/upms/role/assign-permissions
+    method: POST
+    backend:
+      protocol: bean
+      beanName: roleService
+      methodName: assignPermissionsToRole
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  # ========================================
+  # Permission Management
+  # ========================================
+  - id: permission-create
+    path: /api/upms/permission/create
+    method: POST
+    backend:
+      protocol: bean
+      beanName: permissionService
+      methodName: createPermission
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: permission-update
+    path: /api/upms/permission/update
+    method: POST
+    backend:
+      protocol: bean
+      beanName: permissionService
+      methodName: updatePermission
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: permission-delete
+    path: /api/upms/permission/delete
+    method: POST
+    backend:
+      protocol: bean
+      beanName: permissionService
+      methodName: deletePermission
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: permission-detail
+    path: /api/upms/permission/detail
+    method: POST
+    backend:
+      protocol: bean
+      beanName: permissionService
+      methodName: getPermissionById
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: permission-tree
+    path: /api/upms/permission/tree
+    method: POST
+    backend:
+      protocol: bean
+      beanName: permissionService
+      methodName: getPermissionTree
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: permission-user-menu
+    path: /api/upms/permission/user-menu
+    method: POST
+    backend:
+      protocol: bean
+      beanName: permissionService
+      methodName: getUserMenuTree
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  # ========================================
+  # Department Management
+  # ========================================
+  - id: department-create
+    path: /api/upms/department/create
+    method: POST
+    backend:
+      protocol: bean
+      beanName: departmentService
+      methodName: createDepartment
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: department-update
+    path: /api/upms/department/update
+    method: POST
+    backend:
+      protocol: bean
+      beanName: departmentService
+      methodName: updateDepartment
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: department-delete
+    path: /api/upms/department/delete
+    method: POST
+    backend:
+      protocol: bean
+      beanName: departmentService
+      methodName: deleteDepartment
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: department-detail
+    path: /api/upms/department/detail
+    method: POST
+    backend:
+      protocol: bean
+      beanName: departmentService
+      methodName: getDepartmentById
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: department-tree
+    path: /api/upms/department/tree
+    method: POST
+    backend:
+      protocol: bean
+      beanName: departmentService
+      methodName: getDepartmentTree
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF
+
+  - id: department-move
+    path: /api/upms/department/move
+    method: POST
+    backend:
+      protocol: bean
+      beanName: departmentService
+      methodName: moveDepartment
+    filters:
+      - name: body-parser
+      - name: security
+    responseFilters:
+      - name: response-wrapper
+    securityCode: OFF

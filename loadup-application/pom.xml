@@ -37,21 +37,21 @@
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-upms-app</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-modules-config-app</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-modules-log-app</artifactId>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>io.github.loadup-cloud</groupId>-->
+        <!--            <artifactId>loadup-modules-config-app</artifactId>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>io.github.loadup-cloud</groupId>-->
+        <!--            <artifactId>loadup-modules-log-app</artifactId>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-gateway-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-gateway-repository-file-plugin</artifactId>
+            <artifactId>loadup-gateway-repository-yaml-plugin</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
@@ -102,4 +102,17 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <jvmArguments>--add-opens java.base/java.lang=ALL-UNNAMED
+                        --add-opens java.base/java.util=ALL-UNNAMED
+                        --add-opens java.base/java.lang.reflect=ALL-UNNAMED</jvmArguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
