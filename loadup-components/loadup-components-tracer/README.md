@@ -276,7 +276,7 @@ mvn test -pl components/loadup-components-tracer -Dtest=ConcurrentTracingTest
 
 ## License
 
-GNU General Public License v3.0 — 详见根目录 [LICENSE](../../LICENSE)。
+Apache License 2.0 — 详见根目录 [LICENSE](../../LICENSE)。
 
 LoadUp Tracer 组件基于 OpenTelemetry 为 Spring Boot 3 应用提供便捷的分布式链路追踪能力。
 
@@ -961,7 +961,7 @@ loadup-components-tracer/
 
 ## 许可证
 
-GNU General Public License v3.0 (GPL-3.0)
+Apache License 2.0 (Apache-2.0)
 
 详见 [LICENSE](../../LICENSE) 文件。
 

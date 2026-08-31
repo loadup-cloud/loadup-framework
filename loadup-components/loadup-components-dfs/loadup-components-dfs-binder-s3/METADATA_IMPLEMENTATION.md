@@ -558,11 +558,10 @@ public void cleanupOrphanedMetadata() {
 
 ## 📄 License
 
-Copyright (C) 2026 LoadUp Cloud - GNU General Public License v3.0
+Copyright (C) 2026 LoadUp Cloud - Apache License 2.0
 
 ---
 
 **作者:** LoadUp Framework Team  
 **日期:** 2026-01-06  
 **版本:** 1.0.0
-

@@ -26,7 +26,7 @@ knife4j:
     swagger-model-name: Entity Model
     enable-footer: false
     enable-footer-custom: true
-    footer-custom-content: "LoadUp Framework — GPL-3.0"
+    footer-custom-content: "LoadUp Framework — Apache-2.0"
 
 # LoadUp SpringDoc component properties (loadup-components-springdoc)
 loadup:
@@ -41,8 +41,8 @@ loadup:
       url: https://github.com/loadup-cloud
       email: lslvxy@gmail.com
     license:
-      name: GPL-3.0
-      url: https://opensource.org/license/gpl-3-0
+      name: Apache-2.0
+      url: https://www.apache.org/licenses/LICENSE-2.0.txt
 
   gateway:
     enabled: true

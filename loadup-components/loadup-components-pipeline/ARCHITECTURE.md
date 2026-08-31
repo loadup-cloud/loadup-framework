@@ -276,6 +276,5 @@ loadup-components-pipeline
 |----------------|---------------------------------|--------------|
 | 代码格式           | Spotless (Palantir Java Format) | 全部通过         |
 | 静态分析           | SpotBugs                        | 0 bugs       |
-| License 头      | license-maven-plugin            | GPL-3.0 自动插入 |
+| License 头      | license-maven-plugin            | Apache-2.0 自动插入 |
 | 核心 Service 覆盖率 | JaCoCo                          | ≥ 80%        |
-

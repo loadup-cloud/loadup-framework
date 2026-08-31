@@ -388,7 +388,7 @@ A: AOP 开销极小（~微秒级），ThreadLocal 读写也非常快。相比 Sp
 
 ## 许可证
 
-本项目采用 GPL-3.0 许可证。
+本项目采用 Apache License 2.0 (Apache-2.0) 许可证。
 
 ## 贡献
 

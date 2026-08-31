@@ -439,4 +439,4 @@ gotone.push.send.latency
 
 ## 许可证
 
-GPL-3.0 License
+Apache-2.0 License

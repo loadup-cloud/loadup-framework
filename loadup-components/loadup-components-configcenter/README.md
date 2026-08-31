@@ -136,4 +136,4 @@ mvn test -pl components/loadup-components-configcenter/loadup-components-configc
 
 ## 许可证
 
-GPL-3.0 — 详见项目根目录 [LICENSE](../../LICENSE)。
+Apache-2.0 — 详见项目根目录 [LICENSE](../../LICENSE)。

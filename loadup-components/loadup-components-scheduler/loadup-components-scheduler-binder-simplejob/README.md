@@ -2,7 +2,7 @@
 
 [![Java](https://img.shields.io/badge/java-17%2B-blue)]()
 [![Spring Boot](https://img.shields.io/badge/spring--boot-3.x-green)]()
-[![License](https://img.shields.io/badge/license-GPL--3.0-blue)]()
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)]()
 
 ## 📋 概述
 
@@ -173,7 +173,7 @@ loadup:
 
 ## 📄 许可证
 
-GNU General Public License v3.0 (GPL-3.0)
+Apache License 2.0 (Apache-2.0)
 
 详见 [LICENSE](../../../LICENSE) 文件。
 

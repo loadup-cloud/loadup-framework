@@ -1,7 +1,7 @@
 # LoadUp Gotone - 通知组件
 
 [![Build Status](https://github.com/loadup-cloud/loadup-framework/workflows/Build%20and%20Test/badge.svg)](https://github.com/loadup-cloud/loadup-framework/actions)
-[![License](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Java Version](https://img.shields.io/badge/Java-21%2B-orange.svg)](https://www.oracle.com/java/technologies/javase-jdk21-downloads.html)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
 
@@ -399,7 +399,7 @@ loadup:
 
 ## 📄 许可证
 
-本项目采用 [GPL-3.0](LICENSE) 许可证。
+本项目采用 [Apache License 2.0](LICENSE) 许可证。
 
 ## 🙏 致谢
 

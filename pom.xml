@@ -17,8 +17,8 @@
     </organization>
     <licenses>
         <license>
-            <name>GPL-3.0</name>
-            <url>https://opensource.org/license/gpl-3-0</url>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
     <developers>
@@ -46,7 +46,7 @@
     <properties>
         <java.version>21</java.version>
         <project.encoding>UTF-8</project.encoding>
-        <license.licenseName>gpl_v3</license.licenseName>
+        <license.licenseName>apache_v2</license.licenseName>
         <loadup.framework.version>0.0.2-SNAPSHOT</loadup.framework.version>
 
         <!-- Plugin versions managed here; dependency versions managed in loadup-dependencies BOM -->
@@ -187,6 +187,7 @@
                     <configuration>
                         <organizationName>LoadUp Cloud</organizationName>
                         <licenseName>${license.licenseName}</licenseName>
+                        <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
                         <includes>
                             <include>**/*.java</include>
                         </includes>

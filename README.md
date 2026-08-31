@@ -3,7 +3,7 @@
 [![Java](https://img.shields.io/badge/Java-21-blue.svg)](https://openjdk.org/projects/jdk/21/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-green.svg)](https://spring.io/projects/spring-boot)
 [![MyBatis-Flex](https://img.shields.io/badge/MyBatis--Flex-1.11.7-orange.svg)](https://mybatis-flex.com/)
-[![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 LoadUp Framework 是一个基于 Spring Boot 4.1.0 的**企业级微服务开发框架**，采用 **Monorepo（单仓库）多模块架构**
 ，提供可复用的基础组件和最佳实践，帮助团队快速构建高质量的企业应用。
@@ -1059,23 +1059,22 @@ mvn clean deploy -pl bom
 
 ## 许可证
 
-本项目采用 [GNU General Public License v3.0 (GPL-3.0)](LICENSE) 许可证。
+本项目采用 [Apache License 2.0](LICENSE) 许可证。
 
 ```
-Copyright (C) 2025 LoadUp Framework
+Copyright (C) 2025-2026 LoadUp Cloud
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    http://www.apache.org/licenses/LICENSE-2.0
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
 
 ---

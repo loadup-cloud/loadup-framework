@@ -295,5 +295,5 @@ AND trace_id = 'xxx';
 
 ## License
 
-GPL-3.0 License
+Apache-2.0 License
 

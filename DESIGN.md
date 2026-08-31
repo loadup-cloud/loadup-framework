@@ -110,13 +110,16 @@ XXL-Job 需要调度中心、Quartz 是嵌入式、Nacos 和 Apollo 是不同的
 2. 用 facade 层补充能力（如验证码存储）
 3. 用 binder 适配差异
 
-### 2.10 许可证与商业友好（待决策）
+### 2.10 许可证与商业友好（已定：Apache-2.0）
 
-现状：项目为 **GPL-3.0**。
+现状：项目已从 **GPL-3.0** 切换为 **Apache-2.0**（插件标准默认模板 `apache_v2`），Java 文件头由
+`license-maven-plugin` 自动维护：`mvn license:update-file-header` 更新后执行
+`mvn spotless:apply` 去除模板空行的尾随空格，`verify` 阶段 `check-file-header` + `spotless:check` 双校验。
 
-问题：GPL-3.0 要求衍生作品开源，与"被消费的脚手架 + 商业快速二次开发"目标**直接冲突**。同类脚手架（RuoYi 为 MIT，Pig 为 Apache-2.0）均采用宽松许可证。
+依据：GPL-3.0 要求衍生作品开源，与"被消费的脚手架 + 商业快速二次开发"目标**直接冲突**；
+同类脚手架（RuoYi 为 MIT，Pig 为 Apache-2.0）均采用宽松许可证。
 
-**建议**：切换为 Apache-2.0（或 MIT），需项目所有者决策。底层依赖尽量选 Apache-2.0 / MIT / LGPL，避免引入 GPL 系依赖。
+约定：底层依赖尽量选 Apache-2.0 / MIT / LGPL，避免引入 GPL 系依赖。
 
 ---
 
@@ -294,7 +297,7 @@ loadup-components-{domain}/
 
 - **现状**：`@DistributedScheduler` + SimpleJob / Quartz / XXL-Job / PowerJob binder，符合理念。
 - **目标**：保持 facade；README 明确区分**嵌入式**（SimpleJob / Quartz）与**中心化**（XXL-Job / PowerJob）部署模型。
-- **动作**：能力矩阵；修正 README 中许可证标识不一致（MIT badge vs 项目 GPL）。
+- **动作**：能力矩阵；修正 README 中许可证标识不一致（MIT badge vs 项目 Apache-2.0）。
 
 ### 5.5 gateway — P2
 
@@ -412,7 +415,7 @@ loadup-components-{domain}/
 
 | # | 决策项 | 建议 | 影响 |
 |---|--------|------|------|
-| 1 | 许可证：GPL-3.0 → ? | **Apache-2.0**（或 MIT） | 商业二开可行性 |
+| 1 | 许可证：GPL-3.0 → Apache-2.0 | **Apache-2.0**（已定，license-maven-plugin 自动维护） | 商业二开可行性（已解决） |
 | 2 | Cache facade：Spring Cache vs 自研注解 | **Spring Cache** | cache 组件 P1 改造方向 |
 | 3 | Authorization 后端：Sa-Token vs Spring Security | **Sa-Token**（轻量 + 生态） | authorization / upms 改造 |
 | 4 | RetryTask：自研引擎 vs JobRunr 底座 | **JobRunr**（已落地：binder-jobrunr） | retrytask 路线（已定） |

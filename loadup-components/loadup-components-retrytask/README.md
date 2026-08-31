@@ -105,4 +105,4 @@ jobrunr:                       # JobRunr 官方 starter 属性（BOM 统一版�
 
 ## 许可证
 
-GNU General Public License v3.0 (GPL-3.0)
+Apache License 2.0 (Apache-2.0)

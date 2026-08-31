@@ -174,7 +174,7 @@ loadup-modules-{mod}/
 
 | #  | 禁止行为                                     | 正确做法                                                                |
 |----|------------------------------------------|---------------------------------------------------------------------|
-| 1  | Java 文件头写 `/*- #%L ... #L% */` License 块 | CI 的 `license-maven-plugin` 自动插入                                     |
+| 1  | Java 文件头写 `/*- #%L ... #L% */` License 块 | 标准 Apache-2.0 模板：`mvn license:update-file-header` 后执行 `mvn spotless:apply`（模板空行含尾随空格需对齐），verify 阶段 `check-file-header` + `spotless:check` 双校验 |
 | 2  | 创建 `@RestController` / `@Controller`     | Gateway `bean://serviceName:method` 路由                                   |
 | 3  | 集成测试中用 `@MockBean` 替代 DB                 | `@EnableTestContainers(ContainerType.MYSQL)` 启动真实容器                      |
 | 4  | `@Autowired` 字段注入                        | 构造器注入：显式 `public XxxService(XxxGateway gw) { this.gw = gw; }`                               |
@@ -283,7 +283,7 @@ path,method,target,securityCode,requestTemplate,responseTemplate,enabled,propert
 - MySQL 8.0+ | Caffeine（本地）| Redis/Redisson（分布式）
 - JUnit 5 + `loadup-testify-spring-boot-starter` + Testcontainers
 - knife4j **4.5.0** | Spotless (Palantir Java Format) | Maven 3.6+
-- License: **GPL-3.0**
+- License: **Apache-2.0**（Java 文件头由 license-maven-plugin 自动维护）
 
 ---
 

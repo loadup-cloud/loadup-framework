@@ -33,7 +33,7 @@
 
 - [ ] 将 [DESIGN.md](./DESIGN.md) 第 2、3、4 节要点并入 `AGENTS.md`（设计原则 + 约束执行机制 + facade/binder 铁律 + 能力矩阵要求）
 - [ ] 制定能力矩阵模板，并在 3 个代表组件（cache / scheduler / dfs）README 落地示范
-- [ ] 决策项拍板（DESIGN.md 第 7 节）：许可证、Cache facade、Authorization 后端、ORM（RetryTask 已定 JobRunr）
+- [ ] 决策项拍板（DESIGN.md 第 7 节）：Cache facade、Authorization 后端、ORM（许可证已定 Apache-2.0，RetryTask 已定 JobRunr）
 - [ ] CI 增加文档一致性检查（能力矩阵存在性、README 许可证标识一致性）
 - [ ] 根 pom 引入 `maven-enforcer-plugin` `bannedDependencies`（业务模块禁止依赖 binder / 中间件坐标），binder 模块与集成方工程豁免
 - [ ] `loadup-testify` 增加 ArchUnit 测试基类，在代表模块落地示例并接入 CI
@@ -131,7 +131,7 @@
 
 | 风险 | 等级 | 缓解 |
 |------|------|------|
-| GPL-3.0 许可证阻碍商业采用 | 高 | P0 决策项 #1，切换 Apache-2.0/MIT |
+| GPL-3.0 许可证阻碍商业采用 | 高 | P0 决策项 #1（已解决：切换 Apache-2.0，license-maven-plugin 自动维护） |
 | SCG Server MVC 较新，能力子集 | 中 | P2 前先最小验证 + 能力矩阵对齐 |
 | UPMS 与 authorization 深度耦合 | 中 | P1 同步回归；facade 解耦 |
 | 文档与代码脱节（历史问题） | 中 | 契约表 + CI 检查 |

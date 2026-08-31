@@ -3,7 +3,7 @@
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
 [![Test Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen)]()
 [![Version](https://img.shields.io/badge/version-1.0.0-blue)]()
-[![License](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
 一个灵活、可扩展的分布式文件存储组件，支持多种存储后端（本地文件系统、数据库、S3等）。
 
@@ -405,7 +405,7 @@ mvn clean install -DskipTests
 
 ## 📄 许可证
 
-本项目采用 [GPL-3.0](LICENSE) 许可证。
+本项目采用 [Apache License 2.0](LICENSE) 许可证。
 
 ## 📧 联系方式
 
