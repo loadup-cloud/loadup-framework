@@ -22,7 +22,9 @@ package io.github.loadup.gateway.facade.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -100,6 +102,12 @@ public class RouteDefinition {
      */
     private Boolean wrapResponse;
 
+    /**
+     * Extra route properties consumed by the fixed pipeline (e.g. {@code circuitBreaker.*},
+     * {@code rateLimit.*}). Merged into {@link RouteConfig} at compile time.
+     */
+    private Map<String, Object> properties = new HashMap<>();
+
     public List<FilterDefinition> getFilters() {
         return filters == null ? Collections.emptyList() : Collections.unmodifiableList(filters);
     }
@@ -138,6 +146,14 @@ public class RouteDefinition {
 
     public Boolean getWrapResponse() {
         return wrapResponse;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
     }
 
     /**

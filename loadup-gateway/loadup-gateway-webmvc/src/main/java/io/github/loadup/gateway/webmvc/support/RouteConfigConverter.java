@@ -20,6 +20,7 @@
 package io.github.loadup.gateway.webmvc.support;
 
 import io.github.loadup.gateway.facade.config.GatewayProperties;
+import io.github.loadup.gateway.facade.model.FilterDefinition;
 import io.github.loadup.gateway.facade.model.RouteConfig;
 import io.github.loadup.gateway.facade.model.RouteDefinition;
 import io.github.loadup.gateway.facade.model.RouteDefinition.BackendDefinition;
@@ -47,6 +48,10 @@ public final class RouteConfigConverter {
         rc.setEnabled(def.isEnabled());
 
         Map<String, Object> props = new HashMap<>();
+        if (def.getProperties() != null) {
+            props.putAll(def.getProperties());
+        }
+        mergeFilterProperties(def, props);
         if (def.getTimeout() != null) {
             props.putIfAbsent("timeout", def.getTimeout());
         }
@@ -88,6 +93,28 @@ public final class RouteConfigConverter {
             rc.setTarget("");
         }
         return rc;
+    }
+
+    /**
+     * Maps legacy {@code filters} entries into flat route properties so the fixed pipeline
+     * filters can read them: {@code rate-limit} → {@code rateLimit.*} and
+     * {@code circuit-breaker} → {@code circuitBreaker.*}. Unknown filter names are ignored.
+     */
+    private static void mergeFilterProperties(RouteDefinition def, Map<String, Object> props) {
+        if (def.getFilters() == null) {
+            return;
+        }
+        for (FilterDefinition filter : def.getFilters()) {
+            String prefix =
+                    switch (filter.getName() == null ? "" : filter.getName().toLowerCase()) {
+                        case "rate-limit", "ratelimit" -> "rateLimit.";
+                        case "circuit-breaker", "circuitbreaker" -> "circuitBreaker.";
+                        default -> null;
+                    };
+            if (prefix != null && filter.getProps() != null) {
+                filter.getProps().forEach((key, value) -> props.putIfAbsent(prefix + key, value));
+            }
+        }
     }
 
     private static long parseLong(Object value, long def) {

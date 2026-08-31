@@ -23,7 +23,6 @@ package io.github.loadup.components.tracer.concurrent;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.loadup.components.tracer.TestConfiguration;
-import io.github.loadup.components.tracer.TraceContext;
 import io.github.loadup.components.tracer.TraceUtil;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
@@ -53,7 +52,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 /**
- * 高并发场景测试 - 测试 TraceContext 在多线程环境下的线程安全性
+ * High-concurrency tests verifying TraceContext thread safety.
  */
 @SpringBootTest(classes = TestConfiguration.class)
 @TestPropertySource(properties = {"spring.application.name=concurrent-test-service", "loadup.tracer.enabled=true"})
@@ -67,10 +66,10 @@ class ConcurrentTracingTest {
 
     @BeforeEach
     void setUp() {
-        // 使用固定线程池，模拟高并发场景
+        // Fixed thread pool to simulate high concurrency.
         executorService = Executors.newFixedThreadPool(20);
-        // 清理 trace context
-        TraceUtil.getTraceContext().clear();
+        // Clear the trace context.
+        TraceUtil.clearContext();
     }
 
     @AfterEach
@@ -83,12 +82,12 @@ class ConcurrentTracingTest {
                 Thread.currentThread().interrupt();
             }
         }
-        // 清理 trace context
-        TraceUtil.getTraceContext().clear();
+        // Clear the trace context.
+        TraceUtil.clearContext();
     }
 
     /**
-     * 测试多线程并发创建 Span 的线程安全性
+     * Verifies concurrent Span creation is thread-safe.
      */
     @Test
     void testConcurrentSpanCreation() throws InterruptedException {
@@ -98,30 +97,30 @@ class ConcurrentTracingTest {
         Set<String> traceIds = Collections.synchronizedSet(new HashSet<>());
         AtomicInteger successCount = new AtomicInteger(0);
 
-        // 启动多个线程并发创建 Span
+        // Start multiple threads creating spans concurrently.
         for (int i = 0; i < threadCount; i++) {
             final int threadId = i;
             executorService.submit(() -> {
                 try {
-                    // 等待所有线程就绪
+                    // Wait until all threads are ready.
                     startLatch.await();
 
-                    // 创建 Span
+                    // Create a span.
                     Span span = TraceUtil.createSpan("concurrent-test-" + threadId);
                     assertThat(span).isNotNull();
 
-                    // 获取 traceId
+                    // Read the traceId.
                     String traceId = span.getSpanContext().getTraceId();
                     assertThat(traceId).isNotBlank();
                     traceIds.add(traceId);
 
-                    // 模拟业务处理
+                    // Simulate business work.
                     Thread.sleep(ThreadLocalRandom.current().nextInt(10, 50));
 
-                    // 验证 Span 仍然有效
+                    // Verify the span is still recording.
                     assertThat(span.isRecording()).isTrue();
 
-                    // 结束 Span
+                    // End the span.
                     span.end();
 
                     successCount.incrementAndGet();
@@ -133,58 +132,57 @@ class ConcurrentTracingTest {
             });
         }
 
-        // 启动所有线程
+        // Release all threads.
         startLatch.countDown();
 
-        // 等待所有线程完成
+        // Wait for all threads to finish.
         boolean finished = endLatch.await(30, TimeUnit.SECONDS);
         assertThat(finished).isTrue();
 
-        // 验证结果
+        // Verify the results.
         assertThat(successCount.get()).isEqualTo(threadCount);
-        assertThat(traceIds).hasSize(threadCount); // 每个线程应该有不同的 traceId
+        assertThat(traceIds).hasSize(threadCount); // each thread should have its own traceId
 
         log.info("Successfully created {} spans across {} threads", successCount.get(), threadCount);
     }
 
     /**
-     * 测试 TraceContext 的线程隔离性
+     * Verifies per-thread TraceContext isolation.
      */
     @Test
     void testTraceContextThreadIsolation() throws InterruptedException, ExecutionException, TimeoutException {
         int threadCount = 50;
         List<Future<String>> futures = new ArrayList<>();
 
-        // 每个线程创建自己的 Span 并获取 traceId
+        // Each thread creates its own span and reads its traceId.
         for (int i = 0; i < threadCount; i++) {
             final int threadId = i;
             Future<String> future = executorService.submit(() -> {
-                // 创建 Span
+                // Create a span.
                 Span span = TraceUtil.createSpan("thread-isolation-test-" + threadId);
                 String traceId = span.getSpanContext().getTraceId();
 
-                // 验证 TraceContext 中的 Span
-                TraceContext context = TraceUtil.getTraceContext();
-                Span contextSpan = context.getCurrentSpan();
+                // Verify the span is on the current context.
+                Span contextSpan = TraceUtil.getSpan();
                 assertThat(contextSpan).isEqualTo(span);
 
-                // 模拟业务处理
+                // Simulate business work.
                 Thread.sleep(ThreadLocalRandom.current().nextInt(10, 30));
 
-                // 再次验证 Span 没有被其他线程污染
-                Span currentSpan = context.getCurrentSpan();
+                // Verify the span was not polluted by other threads.
+                Span currentSpan = TraceUtil.getSpan();
                 assertThat(currentSpan).isEqualTo(span);
                 assertThat(currentSpan.getSpanContext().getTraceId()).isEqualTo(traceId);
 
                 span.end();
-                context.clear();
+                TraceUtil.clearContext();
 
                 return traceId;
             });
             futures.add(future);
         }
 
-        // 收集所有 traceId
+        // Collect all traceIds.
         Set<String> traceIds = new HashSet<>();
         for (Future<String> future : futures) {
             String traceId = future.get(10, TimeUnit.SECONDS);
@@ -192,14 +190,14 @@ class ConcurrentTracingTest {
             traceIds.add(traceId);
         }
 
-        // 验证每个线程都有独立的 traceId
+        // Verify each thread has a distinct traceId.
         assertThat(traceIds).hasSize(threadCount);
 
         log.info("Verified thread isolation across {} threads", threadCount);
     }
 
     /**
-     * 测试嵌套 Span 的并发处理
+     * Verifies nested spans under concurrency.
      */
     @Test
     void testConcurrentNestedSpans() throws InterruptedException {
@@ -211,22 +209,22 @@ class ConcurrentTracingTest {
             final int threadId = i;
             executorService.submit(() -> {
                 try {
-                    // 创建父 Span
+                    // Create the parent span.
                     Span parentSpan = TraceUtil.createSpan("parent-" + threadId);
                     String parentTraceId = parentSpan.getSpanContext().getTraceId();
 
-                    // 创建子 Span
+                    // Create a child span.
                     Span childSpan1 = tracer.spanBuilder("child1-" + threadId)
                             .setParent(
                                     io.opentelemetry.context.Context.current().with(parentSpan))
                             .startSpan();
 
-                    // 验证子 Span 继承了父 Span 的 traceId
+                    // Verify the child inherits the parent traceId.
                     assertThat(childSpan1.getSpanContext().getTraceId()).isEqualTo(parentTraceId);
 
                     Thread.sleep(ThreadLocalRandom.current().nextInt(5, 20));
 
-                    // 创建第二个子 Span
+                    // Create a second child span.
                     Span childSpan2 = tracer.spanBuilder("child2-" + threadId)
                             .setParent(
                                     io.opentelemetry.context.Context.current().with(parentSpan))
@@ -234,12 +232,12 @@ class ConcurrentTracingTest {
 
                     assertThat(childSpan2.getSpanContext().getTraceId()).isEqualTo(parentTraceId);
 
-                    // 结束所有 Span
+                    // End all spans.
                     childSpan2.end();
                     childSpan1.end();
                     parentSpan.end();
 
-                    TraceUtil.getTraceContext().clear();
+                    TraceUtil.clearContext();
                     successCount.incrementAndGet();
                 } catch (Exception e) {
                     log.error("Thread {} failed", threadId, e);
@@ -257,7 +255,7 @@ class ConcurrentTracingTest {
     }
 
     /**
-     * 测试高负载下的 Span 创建和销毁
+     * Verifies span creation/destruction under high load.
      */
     @Test
     void testHighLoadSpanCreation() throws InterruptedException {
@@ -268,22 +266,22 @@ class ConcurrentTracingTest {
 
         long startTime = System.currentTimeMillis();
 
-        // 快速创建大量 Span
+        // Create many spans quickly.
         for (int i = 0; i < totalSpans; i++) {
             final int spanId = i;
             executorService.submit(() -> {
                 try {
                     Span span = TraceUtil.createSpan("high-load-" + spanId);
 
-                    // 添加属性
+                    // Add attributes.
                     span.setAttribute("span.id", spanId);
                     span.setAttribute("test.type", "high-load");
 
-                    // 短暂延迟
+                    // Brief delay.
                     Thread.sleep(1);
 
                     span.end();
-                    TraceUtil.getTraceContext().clear();
+                    TraceUtil.clearContext();
                     successCount.incrementAndGet();
                 } catch (Exception e) {
                     errorCount.incrementAndGet();
@@ -310,7 +308,7 @@ class ConcurrentTracingTest {
     }
 
     /**
-     * 测试 TraceContext 清理的线程安全性
+     * Verifies thread-safe context cleanup.
      */
     @Test
     void testConcurrentContextCleanup() throws InterruptedException {
@@ -321,20 +319,18 @@ class ConcurrentTracingTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    TraceContext context = TraceUtil.getTraceContext();
-
-                    // 创建 Span
+                    // Create a span.
                     Span span = TraceUtil.createSpan("cleanup-test");
-                    assertThat(context.isEmpty()).isFalse();
+                    assertThat(TraceUtil.getSpan()).isEqualTo(span);
 
                     Thread.sleep(ThreadLocalRandom.current().nextInt(5, 15));
 
-                    // 清理
+                    // Clean up.
                     span.end();
-                    context.clear();
+                    TraceUtil.clearContext();
 
-                    // 验证已清理
-                    assertThat(context.isEmpty()).isTrue();
+                    // Verify the context is empty.
+                    assertThat(TraceUtil.getSpan()).isNull();
 
                     successCount.incrementAndGet();
                 } catch (Exception e) {
@@ -353,7 +349,7 @@ class ConcurrentTracingTest {
     }
 
     /**
-     * 测试并发获取 TraceId
+     * Verifies concurrent traceId reads.
      */
     @Test
     void testConcurrentGetTraceId() throws InterruptedException {
@@ -367,13 +363,13 @@ class ConcurrentTracingTest {
             final int threadId = i;
             executorService.submit(() -> {
                 try {
-                    // 等待所有线程就绪
+                    // Wait until all threads are ready.
                     startLatch.await();
 
-                    // 创建 Span
+                    // Create a span.
                     Span span = TraceUtil.createSpan("get-traceid-test-" + threadId);
 
-                    // 获取 traceId
+                    // Read the traceId.
                     String traceId = TraceUtil.getTracerId();
                     assertThat(traceId).isNotBlank();
 
@@ -381,12 +377,12 @@ class ConcurrentTracingTest {
 
                     Thread.sleep(10);
 
-                    // 再次获取，应该相同
+                    // A second read must return the same value.
                     String traceId2 = TraceUtil.getTracerId();
                     assertThat(traceId2).isEqualTo(traceId);
 
                     span.end();
-                    TraceUtil.getTraceContext().clear();
+                    TraceUtil.clearContext();
                     successCount.incrementAndGet();
                 } catch (Exception e) {
                     log.error("Thread {} failed", threadId, e);
@@ -396,7 +392,7 @@ class ConcurrentTracingTest {
             });
         }
 
-        // 启动所有线程
+        // Release all threads.
         startLatch.countDown();
 
         boolean finished = latch.await(30, TimeUnit.SECONDS);
@@ -404,7 +400,7 @@ class ConcurrentTracingTest {
         assertThat(successCount.get()).isEqualTo(threadCount);
         assertThat(threadTraceIds).hasSize(threadCount);
 
-        // 验证所有 traceId 都是唯一的
+        // Verify all traceIds are unique.
         Set<String> uniqueTraceIds = new HashSet<>(threadTraceIds.values());
         assertThat(uniqueTraceIds).hasSize(threadCount);
 
@@ -412,7 +408,7 @@ class ConcurrentTracingTest {
     }
 
     /**
-     * 压力测试 - 模拟真实的高并发场景
+     * Stress test simulating a real high-concurrency workload.
      */
     @Test
     void testRealWorldHighConcurrency() throws InterruptedException {
@@ -429,12 +425,12 @@ class ConcurrentTracingTest {
             executorService.submit(() -> {
                 long requestStart = System.nanoTime();
                 try {
-                    // 模拟 HTTP 请求处理
+                    // Simulate an HTTP request.
                     Span requestSpan = TraceUtil.createSpan("http.request." + requestId);
                     requestSpan.setAttribute("http.method", "GET");
                     requestSpan.setAttribute("http.url", "/api/test/" + requestId);
 
-                    // 模拟数据库查询
+                    // Simulate a database query.
                     Span dbSpan = tracer.spanBuilder("db.query")
                             .setParent(
                                     io.opentelemetry.context.Context.current().with(requestSpan))
@@ -442,7 +438,7 @@ class ConcurrentTracingTest {
                     Thread.sleep(ThreadLocalRandom.current().nextInt(5, 15));
                     dbSpan.end();
 
-                    // 模拟缓存操作
+                    // Simulate a cache read.
                     Span cacheSpan = tracer.spanBuilder("cache.get")
                             .setParent(
                                     io.opentelemetry.context.Context.current().with(requestSpan))
@@ -450,13 +446,13 @@ class ConcurrentTracingTest {
                     Thread.sleep(ThreadLocalRandom.current().nextInt(1, 5));
                     cacheSpan.end();
 
-                    // 模拟业务处理
+                    // Simulate business work.
                     Thread.sleep(ThreadLocalRandom.current().nextInt(10, 30));
 
                     requestSpan.setAttribute("http.status", 200);
                     requestSpan.end();
 
-                    TraceUtil.getTraceContext().clear();
+                    TraceUtil.clearContext();
 
                     long requestEnd = System.nanoTime();
                     latencies.add((requestEnd - requestStart) / 1_000_000); // Convert to ms
@@ -478,7 +474,7 @@ class ConcurrentTracingTest {
         assertThat(successCount.get()).isEqualTo(requestCount);
         assertThat(errorCount.get()).isEqualTo(0);
 
-        // 计算统计信息
+        // Compute statistics.
         double avgLatency =
                 latencies.stream().mapToLong(Long::longValue).average().orElse(0);
         long maxLatency = latencies.stream().mapToLong(Long::longValue).max().orElse(0);

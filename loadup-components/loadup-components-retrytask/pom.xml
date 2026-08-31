@@ -15,6 +15,7 @@
     <modules>
         <module>loadup-components-retrytask-facade</module>
         <module>loadup-components-retrytask-binder-jobrunr</module>
+        <module>loadup-components-retrytask-notifier-gotone</module>
         <module>loadup-components-retrytask-test</module>
     </modules>
 </project>

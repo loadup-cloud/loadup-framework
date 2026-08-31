@@ -1,4 +1,4 @@
----
+--
 -- #%L
 -- LoadUp Components Global Unique
 -- %%
@@ -16,7 +16,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 -- #L%
----
+--
 -- MySQL Schema for Global Unique
 -- 规范：所有表必须包含 id(VARCHAR64)/tenant_id/created_at/updated_at/deleted 标准字段
 

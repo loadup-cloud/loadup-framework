@@ -26,20 +26,12 @@ import io.github.loadup.components.signature.enums.DigestAlgorithm;
 import io.github.loadup.components.signature.util.DigestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * DigestUtils 工具类测试
- *
- * @author loadup
- */
-@DisplayName("DigestUtils 工具类测试")
+/** Tests for the {@code DigestUtils} static helpers. */
 class DigestUtilsTest {
-    private static final Logger log = LoggerFactory.getLogger(DigestUtilsTest.class);
 
     @Test
-    @DisplayName("MD5 快速方法")
+    @DisplayName("MD5 quick method")
     void testMD5() {
         // given
         String data = "Hello, MD5!";
@@ -51,12 +43,12 @@ class DigestUtilsTest {
         assertThat(hash).isNotEmpty();
         assertThat(hash).hasSize(32);
 
-        // 与通用方法结果一致
+        // must match the generic digest method
         assertThat(hash).isEqualTo(DigestUtils.digest(data, DigestAlgorithm.MD5));
     }
 
     @Test
-    @DisplayName("SHA-256 快速方法")
+    @DisplayName("SHA-256 quick method")
     void testSHA256() {
         // given
         String data = "Hello, SHA-256!";
@@ -68,12 +60,12 @@ class DigestUtilsTest {
         assertThat(hash).isNotEmpty();
         assertThat(hash).hasSize(64);
 
-        // 与通用方法结果一致
+        // must match the generic digest method
         assertThat(hash).isEqualTo(DigestUtils.digest(data, DigestAlgorithm.SHA256));
     }
 
     @Test
-    @DisplayName("SHA-512 快速方法")
+    @DisplayName("SHA-512 quick method")
     void testSHA512() {
         // given
         String data = "Hello, SHA-512!";
@@ -85,12 +77,12 @@ class DigestUtilsTest {
         assertThat(hash).isNotEmpty();
         assertThat(hash).hasSize(128);
 
-        // 与通用方法结果一致
+        // must match the generic digest method
         assertThat(hash).isEqualTo(DigestUtils.digest(data, DigestAlgorithm.SHA512));
     }
 
     @Test
-    @DisplayName("HMAC-SHA256 快速方法")
+    @DisplayName("HMAC-SHA256 quick method")
     void testHmacSHA256() {
         // given
         String data = "Test HMAC";
@@ -103,12 +95,12 @@ class DigestUtilsTest {
         assertThat(hmac).isNotEmpty();
         assertThat(hmac).hasSize(64);
 
-        // 与通用方法结果一致
+        // must match the generic hmac method
         assertThat(hmac).isEqualTo(DigestUtils.hmac(data, key, DigestAlgorithm.HMAC_SHA256));
     }
 
     @Test
-    @DisplayName("HMAC-SHA512 快速方法")
+    @DisplayName("HMAC-SHA512 quick method")
     void testHmacSHA512() {
         // given
         String data = "Test HMAC 512";
@@ -121,12 +113,12 @@ class DigestUtilsTest {
         assertThat(hmac).isNotEmpty();
         assertThat(hmac).hasSize(128);
 
-        // 与通用方法结果一致
+        // must match the generic hmac method
         assertThat(hmac).isEqualTo(DigestUtils.hmac(data, key, DigestAlgorithm.HMAC_SHA512));
     }
 
     @Test
-    @DisplayName("MD5 已知值测试")
+    @DisplayName("MD5 known value")
     void testMD5KnownValue() {
         // MD5("hello") = 5d41402abc4b2a76b9719d911017c592
         String hash = DigestUtils.md5("hello");
@@ -134,7 +126,7 @@ class DigestUtilsTest {
     }
 
     @Test
-    @DisplayName("SHA-256 已知值测试")
+    @DisplayName("SHA-256 known value")
     void testSHA256KnownValue() {
         // SHA-256("hello") = 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
         String hash = DigestUtils.sha256("hello");
@@ -142,14 +134,10 @@ class DigestUtilsTest {
     }
 
     @Test
-    @DisplayName("空字符串 MD5")
+    @DisplayName("empty string MD5")
     void testEmptyStringMD5() {
         // MD5("") = d41d8cd98f00b204e9800998ecf8427e
         String hash = DigestUtils.md5("");
         assertThat(hash).isEqualTo("d41d8cd98f00b204e9800998ecf8427e");
-    }
-
-    public Logger getLog() {
-        return this.log;
     }
 }

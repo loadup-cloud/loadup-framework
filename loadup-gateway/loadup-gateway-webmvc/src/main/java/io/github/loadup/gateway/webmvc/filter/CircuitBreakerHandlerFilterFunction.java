@@ -1,33 +1,15 @@
-/*-
- * #%L
- * Loadup Gateway WebMVC Engine
- * %%
- * Copyright (C) 2025 - 2026 LoadUp Cloud
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
 package io.github.loadup.gateway.webmvc.filter;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
+import io.github.loadup.components.resilience4j.ResilienceRegistries;
 import io.github.loadup.gateway.facade.model.RouteConfig;
 import io.github.loadup.gateway.webmvc.support.GatewayAttributes;
-import java.time.Clock;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import java.time.Duration;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.server.mvc.common.MvcUtils;
@@ -38,27 +20,24 @@ import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
 
 /**
- * Per-route circuit breaker (CLOSED → OPEN → HALF_OPEN) backed by a bounded Caffeine cache.
+ * Per-route circuit breaker (CLOSED → OPEN → HALF_OPEN) backed by a Resilience4j
+ * {@link CircuitBreakerRegistry}.
+ *
+ * <p>Routes pointing to the same upstream share one breaker instance. Stale instances are
+ * pruned whenever the route snapshot is refreshed.
  */
 public class CircuitBreakerHandlerFilterFunction implements HandlerFilterFunction<ServerResponse, ServerResponse> {
     private static final Logger log = LoggerFactory.getLogger(CircuitBreakerHandlerFilterFunction.class);
 
+    private static final String INSTANCE_PREFIX = "gateway:";
     private static final String SHORT_CIRCUIT_BODY =
             "{\"result\":{\"code\":\"CIRCUIT_OPEN\",\"status\":\"FAIL\",\"message\":\"Circuit breaker open\"},\"data\":null}";
 
-    private final Cache<String, CircuitBreaker> breakers;
-    private final Clock clock;
+    private final CircuitBreakerRegistry registry;
+    private final Set<String> activeKeys = ConcurrentHashMap.newKeySet();
 
-    public CircuitBreakerHandlerFilterFunction() {
-        this(Clock.systemDefaultZone());
-    }
-
-    public CircuitBreakerHandlerFilterFunction(Clock clock) {
-        this.clock = clock;
-        this.breakers = Caffeine.newBuilder()
-                .maximumSize(10_000)
-                .expireAfterAccess(Duration.ofMinutes(30))
-                .build();
+    public CircuitBreakerHandlerFilterFunction(ResilienceRegistries registries) {
+        this.registry = registries.circuitBreakerRegistry();
     }
 
     @Override
@@ -68,184 +47,137 @@ public class CircuitBreakerHandlerFilterFunction implements HandlerFilterFunctio
             return next.handle(request);
         }
 
-        CBConfig config = parseConfig(route);
-        if (!config.enabled) {
+        CBConfig config = CBConfig.parse(route);
+        if (!config.enabled()) {
             return next.handle(request);
         }
 
-        String key = breakerKey(route);
-        CircuitBreaker breaker = breakers.get(key, k -> new CircuitBreaker(config, clock));
-        if (!breaker.allowRequest()) {
+        String key = keyOf(route);
+        CircuitBreaker breaker = registry.circuitBreaker(INSTANCE_PREFIX + key, config.toCircuitBreakerConfig());
+        activeKeys.add(key);
+
+        if (!breaker.tryAcquirePermission()) {
             log.warn("Circuit breaker OPEN, short-circuiting route '{}'", route.getRouteId());
             return ServerResponse.status(503)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(SHORT_CIRCUIT_BODY);
         }
 
+        long startNanos = System.nanoTime();
         try {
             ServerResponse response = next.handle(request);
             if (response.statusCode().value() >= 500) {
-                breaker.recordFailure();
+                breaker.onError(
+                        System.nanoTime() - startNanos,
+                        TimeUnit.NANOSECONDS,
+                        new IllegalStateException(
+                                "HTTP " + response.statusCode().value()));
             } else {
-                breaker.recordSuccess();
+                breaker.onSuccess(System.nanoTime() - startNanos, TimeUnit.NANOSECONDS);
             }
             return response;
         } catch (Exception e) {
-            breaker.recordFailure();
+            breaker.onError(System.nanoTime() - startNanos, TimeUnit.NANOSECONDS, e);
             throw e;
         }
     }
 
-    private String breakerKey(RouteConfig route) {
+    /**
+     * Removes breaker instances whose route key is no longer active.
+     */
+    public void prune(Set<String> activeRouteKeys) {
+        for (String key : activeKeys) {
+            if (!activeRouteKeys.contains(key)) {
+                registry.remove(INSTANCE_PREFIX + key);
+                activeKeys.remove(key);
+            }
+        }
+    }
+
+    public static String keyOf(RouteConfig route) {
         if (route.getTargetUrl() != null && !route.getTargetUrl().isEmpty()) {
             return route.getTargetUrl();
         }
         return route.getTarget();
     }
 
-    private CBConfig parseConfig(RouteConfig route) {
-        CBConfig c = new CBConfig();
-        Object e = route.getProperties().get("circuitBreaker.enabled");
-        c.enabled = e instanceof Boolean b ? b : (e instanceof String s ? Boolean.parseBoolean(s) : false);
-        if (!c.enabled) {
-            return c;
-        }
-        c.failureThreshold = parseInt(route, "circuitBreaker.failureThreshold", 5);
-        c.openTimeoutSeconds = parseInt(route, "circuitBreaker.openTimeout", 30);
-        c.halfOpenMax = parseInt(route, "circuitBreaker.halfOpenMax", 3);
-        c.successThreshold = parseInt(route, "circuitBreaker.successThreshold", 2);
-        return c;
-    }
+    private record CBConfig(
+            boolean enabled,
+            float failureRateThreshold,
+            int slidingWindowSize,
+            int minimumNumberOfCalls,
+            Duration waitDurationInOpenState,
+            int permittedNumberOfCallsInHalfOpenState) {
 
-    private static int parseInt(RouteConfig r, String key, int def) {
-        Object v = r.getProperties().get(key);
-        if (v instanceof Number n) {
-            return n.intValue();
-        }
-        if (v instanceof String s) {
-            try {
-                return Integer.parseInt(s);
-            } catch (NumberFormatException ignored) {
-                // fall through
+        static CBConfig parse(RouteConfig route) {
+            Object enabledValue = route.getProperties().get("circuitBreaker.enabled");
+            boolean enabled = enabledValue instanceof Boolean b
+                    ? b
+                    : (enabledValue instanceof String s ? Boolean.parseBoolean(s) : false);
+            if (!enabled) {
+                return new CBConfig(false, 50, 10, 5, Duration.ofSeconds(30), 3);
             }
-        }
-        return def;
-    }
-
-    /**
-     * Per-route circuit breaker state machine.
-     */
-    public static class CircuitBreaker {
-        public enum State {
-            CLOSED,
-            OPEN,
-            HALF_OPEN
-        }
-
-        private final CBConfig config;
-        private final AtomicReference<State> state = new AtomicReference<>(State.CLOSED);
-        private final AtomicInteger failureCount = new AtomicInteger(0);
-        private final AtomicInteger successCount = new AtomicInteger(0);
-        private final AtomicInteger halfOpenRequests = new AtomicInteger(0);
-        private final AtomicLong openedAtMillis = new AtomicLong(0);
-        private final Clock clock;
-
-        public CircuitBreaker(CBConfig config, Clock clock) {
-            this.config = config;
-            this.clock = clock;
+            float failureRateThreshold = parseFloat(route, "circuitBreaker.failureRateThreshold", 50.0f);
+            int slidingWindowSize = parseInt(route, "circuitBreaker.slidingWindowSize", 10);
+            int minimumNumberOfCalls = parseInt(
+                    route,
+                    "circuitBreaker.minimumNumberOfCalls",
+                    parseInt(route, "circuitBreaker.failureThreshold", 5));
+            Duration waitDurationInOpenState = Duration.ofSeconds(parseInt(
+                    route,
+                    "circuitBreaker.waitDurationInOpenState",
+                    parseInt(route, "circuitBreaker.openTimeout", 30)));
+            int permittedNumberOfCallsInHalfOpenState = parseInt(
+                    route,
+                    "circuitBreaker.permittedNumberOfCallsInHalfOpenState",
+                    parseInt(route, "circuitBreaker.halfOpenMax", 3));
+            return new CBConfig(
+                    true,
+                    failureRateThreshold,
+                    slidingWindowSize,
+                    minimumNumberOfCalls,
+                    waitDurationInOpenState,
+                    permittedNumberOfCallsInHalfOpenState);
         }
 
-        public boolean allowRequest() {
-            State s = state.get();
-            if (s == State.CLOSED) {
-                return true;
+        CircuitBreakerConfig toCircuitBreakerConfig() {
+            return CircuitBreakerConfig.custom()
+                    .failureRateThreshold(failureRateThreshold)
+                    .slidingWindowSize(slidingWindowSize)
+                    .minimumNumberOfCalls(minimumNumberOfCalls)
+                    .waitDurationInOpenState(waitDurationInOpenState)
+                    .permittedNumberOfCallsInHalfOpenState(permittedNumberOfCallsInHalfOpenState)
+                    .build();
+        }
+
+        private static int parseInt(RouteConfig route, String key, int defaultValue) {
+            Object value = route.getProperties().get(key);
+            if (value instanceof Number number) {
+                return number.intValue();
             }
-            if (s == State.OPEN) {
-                if (clock.millis() - openedAtMillis.get() >= config.openTimeoutSeconds * 1000L) {
-                    if (state.compareAndSet(State.OPEN, State.HALF_OPEN)) {
-                        halfOpenRequests.set(0);
-                        successCount.set(0);
-                        log.info("Circuit breaker → HALF_OPEN");
-                    }
-                    return allowRequest();
-                }
-                return false;
-            }
-            return halfOpenRequests.incrementAndGet() <= config.halfOpenMax;
-        }
-
-        public void recordSuccess() {
-            failureCount.set(0);
-            if (state.get() == State.HALF_OPEN && successCount.incrementAndGet() >= config.successThreshold) {
-                if (state.compareAndSet(State.HALF_OPEN, State.CLOSED)) {
-                    halfOpenRequests.set(0);
-                    log.info("Circuit breaker → CLOSED");
+            if (value instanceof String string) {
+                try {
+                    return Integer.parseInt(string);
+                } catch (NumberFormatException ignored) {
+                    // fall through
                 }
             }
+            return defaultValue;
         }
 
-        public void recordFailure() {
-            if (state.get() == State.CLOSED && failureCount.incrementAndGet() >= config.failureThreshold) {
-                if (state.compareAndSet(State.CLOSED, State.OPEN)) {
-                    openedAtMillis.set(clock.millis());
-                    log.warn("Circuit breaker → OPEN after {} failures", failureCount.get());
-                }
-            } else if (state.get() == State.HALF_OPEN) {
-                if (state.compareAndSet(State.HALF_OPEN, State.OPEN)) {
-                    openedAtMillis.set(clock.millis());
-                    failureCount.set(0);
-                    halfOpenRequests.set(0);
-                    log.warn("Circuit breaker → RE-OPENED");
+        private static float parseFloat(RouteConfig route, String key, float defaultValue) {
+            Object value = route.getProperties().get(key);
+            if (value instanceof Number number) {
+                return number.floatValue();
+            }
+            if (value instanceof String string) {
+                try {
+                    return Float.parseFloat(string);
+                } catch (NumberFormatException ignored) {
+                    // fall through
                 }
             }
-        }
-    }
-
-    public static class CBConfig {
-        boolean enabled;
-        int failureThreshold = 5;
-        int openTimeoutSeconds = 30;
-        int halfOpenMax = 3;
-        int successThreshold = 2;
-
-        public boolean isEnabled() {
-            return enabled;
-        }
-
-        public void setEnabled(boolean enabled) {
-            this.enabled = enabled;
-        }
-
-        public int getFailureThreshold() {
-            return failureThreshold;
-        }
-
-        public void setFailureThreshold(int failureThreshold) {
-            this.failureThreshold = failureThreshold;
-        }
-
-        public int getOpenTimeoutSeconds() {
-            return openTimeoutSeconds;
-        }
-
-        public void setOpenTimeoutSeconds(int openTimeoutSeconds) {
-            this.openTimeoutSeconds = openTimeoutSeconds;
-        }
-
-        public int getHalfOpenMax() {
-            return halfOpenMax;
-        }
-
-        public void setHalfOpenMax(int halfOpenMax) {
-            this.halfOpenMax = halfOpenMax;
-        }
-
-        public int getSuccessThreshold() {
-            return successThreshold;
-        }
-
-        public void setSuccessThreshold(int successThreshold) {
-            this.successThreshold = successThreshold;
+            return defaultValue;
         }
     }
 }

@@ -20,20 +20,16 @@ package io.github.loadup.components.signature.enums;
  * #L%
  */
 
-/**
- * 摘要算法枚举
- *
- * @author loadup
- */
+/** Supported digest and HMAC algorithms. */
 public enum DigestAlgorithm {
 
     /**
-     * MD5 (不推荐用于安全场景)
+     * MD5 (not recommended for security-sensitive scenarios).
      */
     MD5("MD5", false),
 
     /**
-     * SHA-1 (不推荐用于安全场景)
+     * SHA-1 (not recommended for security-sensitive scenarios).
      */
     SHA1("SHA-1", false),
 
@@ -57,13 +53,11 @@ public enum DigestAlgorithm {
      */
     HMAC_SHA512("HmacSHA512", true);
 
-    /**
-     * JCA 算法名称
-     */
+    /** The JCA algorithm name. */
     private final String jcaName;
 
     /**
-     * 是否为 HMAC 算法
+     * Whether this is an HMAC algorithm.
      */
     private final boolean hmac;
 

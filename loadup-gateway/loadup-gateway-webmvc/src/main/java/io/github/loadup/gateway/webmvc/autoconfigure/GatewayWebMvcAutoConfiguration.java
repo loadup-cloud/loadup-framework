@@ -19,6 +19,7 @@
  */
 package io.github.loadup.gateway.webmvc.autoconfigure;
 
+import io.github.loadup.components.resilience4j.ResilienceRegistries;
 import io.github.loadup.gateway.facade.config.GatewayProperties;
 import io.github.loadup.gateway.facade.spi.ProxyProcessor;
 import io.github.loadup.gateway.facade.spi.RouteStore;
@@ -42,6 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -60,6 +63,7 @@ import org.springframework.web.servlet.function.RouterFunction;
  * {@link RouteStore} bean (YAML / database plugin).
  */
 @AutoConfiguration
+@AutoConfigureAfter(name = "io.github.loadup.components.resilience4j.core.Resilience4jCoreAutoConfiguration")
 @EnableConfigurationProperties(GatewayProperties.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass({RouterFunction.class, MvcUtils.class})
@@ -125,14 +129,16 @@ public class GatewayWebMvcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public RateLimitHandlerFilterFunction rateLimitHandlerFilterFunction(GatewayProperties properties) {
-        return new RateLimitHandlerFilterFunction(properties);
+    @ConditionalOnBean(ResilienceRegistries.class)
+    public RateLimitHandlerFilterFunction rateLimitHandlerFilterFunction(ResilienceRegistries registries) {
+        return new RateLimitHandlerFilterFunction(registries);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public CircuitBreakerHandlerFilterFunction circuitBreakerHandlerFilterFunction() {
-        return new CircuitBreakerHandlerFilterFunction();
+    @ConditionalOnBean(ResilienceRegistries.class)
+    public CircuitBreakerHandlerFilterFunction circuitBreakerHandlerFilterFunction(ResilienceRegistries registries) {
+        return new CircuitBreakerHandlerFilterFunction(registries);
     }
 
     @Bean
@@ -163,8 +169,8 @@ public class GatewayWebMvcAutoConfiguration {
             GatewayExceptionHandler gatewayExceptionHandler,
             @Autowired(required = false) TracingHandlerFilterFunction tracingHandlerFilterFunction,
             SecurityHandlerFilterFunction securityHandlerFilterFunction,
-            RateLimitHandlerFilterFunction rateLimitHandlerFilterFunction,
-            CircuitBreakerHandlerFilterFunction circuitBreakerHandlerFilterFunction,
+            @Autowired(required = false) RateLimitHandlerFilterFunction rateLimitHandlerFilterFunction,
+            @Autowired(required = false) CircuitBreakerHandlerFilterFunction circuitBreakerHandlerFilterFunction,
             ResponseWrapperHandlerFilterFunction responseWrapperHandlerFilterFunction) {
         return new RouteFunctionRegistry(
                 routeStore,

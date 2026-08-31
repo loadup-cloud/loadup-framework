@@ -51,6 +51,15 @@ public class TraceUtil {
 
     @PostConstruct
     void init() {
+        initialize(tracer, applicationName);
+    }
+
+    /**
+     * Publishes the tracer and application name to the static facade. Only called from the
+     * Spring bean lifecycle; kept static so SpotBugs does not flag static writes from an
+     * instance method.
+     */
+    static void initialize(Tracer tracer, String applicationName) {
         staticTracer = tracer;
         staticAppName = applicationName;
     }
@@ -76,15 +85,6 @@ public class TraceUtil {
     }
 
     /**
-     * Returns the shared {@link TraceContext} for the current thread group.
-     *
-     * @return the trace context
-     */
-    public static TraceContext getTraceContext() {
-        return TRACE_CONTEXT;
-    }
-
-    /**
      * Starts a new span, pushes it onto the {@link TraceContext} stack, and injects
      * {@code traceId} / {@code spanId} into SLF4J MDC for structured log correlation.
      *
@@ -97,7 +97,7 @@ public class TraceUtil {
      */
     public static Span createSpan(String operationName) {
         Span span = staticTracer.spanBuilder(operationName).startSpan();
-        TRACE_CONTEXT.push(span);
+        pushSpan(span);
         injectMdc(span);
         return span;
     }
@@ -109,6 +109,31 @@ public class TraceUtil {
      */
     public static Span getSpan() {
         return TRACE_CONTEXT.getCurrentSpan();
+    }
+
+    /**
+     * Pushes a span onto the thread-local context stack.
+     *
+     * @param span the span to push
+     */
+    public static void pushSpan(Span span) {
+        TRACE_CONTEXT.push(span);
+    }
+
+    /**
+     * Pops the current span from the thread-local context stack.
+     *
+     * @return the popped span, or {@code null} when the stack is empty
+     */
+    public static Span popSpan() {
+        return TRACE_CONTEXT.pop();
+    }
+
+    /**
+     * Clears the thread-local context stack for the current thread.
+     */
+    public static void clearContext() {
+        TRACE_CONTEXT.clear();
     }
 
     /**

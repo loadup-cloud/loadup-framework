@@ -21,6 +21,7 @@ package io.github.loadup.gateway.test.webmvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.loadup.components.resilience4j.ResilienceRegistries;
 import io.github.loadup.gateway.facade.config.GatewayProperties;
 import io.github.loadup.gateway.facade.event.RouteStoreRefreshedEvent;
 import io.github.loadup.gateway.facade.model.GatewayRequest;
@@ -126,10 +127,56 @@ class RouteFunctionRegistryTest {
         assertThat(backend.getBody()).isEqualTo("{\"ok\":true}");
     }
 
+    @Test
+    @DisplayName("opens the Resilience4j circuit breaker after repeated 5xx responses")
+    void opensCircuitBreakerAfterFailures() throws Exception {
+        RouteDefinition definition = beanRoute("failing", "/api/failing", true);
+        definition.getProperties().put("circuitBreaker.enabled", true);
+        definition.getProperties().put("circuitBreaker.minimumNumberOfCalls", 2);
+        definition.getProperties().put("circuitBreaker.failureRateThreshold", 50);
+        definition.getProperties().put("circuitBreaker.slidingWindowSize", 4);
+        definition.getProperties().put("circuitBreaker.waitDurationInOpenState", 5);
+        StaticRouteStore store = new StaticRouteStore(List.of(definition));
+        RouteFunctionRegistry registry = newRegistry(store, new FailingProxyProcessor());
+        registry.refresh();
+
+        ServerRequest request = WebMvcRequests.request("POST", "/api/failing", "{}");
+        Optional<HandlerFunction<ServerResponse>> handler = registry.route(request);
+        assertThat(handler).isPresent();
+        assertThat(handler.get().handle(request).statusCode().value()).isEqualTo(500);
+        assertThat(handler.get().handle(request).statusCode().value()).isEqualTo(500);
+
+        ServerResponse shortCircuited = handler.get().handle(request);
+        assertThat(shortCircuited.statusCode().value()).isEqualTo(503);
+    }
+
+    @Test
+    @DisplayName("rejects requests once the rate limit capacity is exhausted")
+    void rejectsWhenRateLimitExceeded() throws Exception {
+        RouteDefinition definition = beanRoute("limited", "/api/limited", true);
+        definition.getProperties().put("rateLimit.enabled", true);
+        definition.getProperties().put("rateLimit.capacity", 1);
+        definition.getProperties().put("rateLimit.refillRate", 1);
+        StaticRouteStore store = new StaticRouteStore(List.of(definition));
+        RouteFunctionRegistry registry = newRegistry(store);
+        registry.refresh();
+
+        ServerRequest request = WebMvcRequests.request("POST", "/api/limited", "{}");
+        Optional<HandlerFunction<ServerResponse>> handler = registry.route(request);
+        assertThat(handler).isPresent();
+        assertThat(handler.get().handle(request).statusCode().value()).isEqualTo(200);
+
+        assertThat(handler.get().handle(request).statusCode().value()).isEqualTo(429);
+    }
+
     private static RouteFunctionRegistry newRegistry(RouteStore store) {
+        return newRegistry(store, new StubProxyProcessor());
+    }
+
+    private static RouteFunctionRegistry newRegistry(RouteStore store, ProxyProcessor proxyProcessor) {
         GatewayProperties properties = new GatewayProperties();
         ProxyHandlerFunction proxyHandler =
-                new ProxyHandlerFunction(new ProxyProcessorRegistry(List.of(new StubProxyProcessor())));
+                new ProxyHandlerFunction(new ProxyProcessorRegistry(List.of(proxyProcessor)));
         return new RouteFunctionRegistry(
                 store,
                 properties,
@@ -137,9 +184,54 @@ class RouteFunctionRegistryTest {
                 new GatewayExceptionHandler(),
                 null,
                 new SecurityHandlerFilterFunction(new SecurityStrategyManager(List.of(new OffSecurityStrategy()))),
-                new RateLimitHandlerFilterFunction(properties),
-                new CircuitBreakerHandlerFilterFunction(),
+                new RateLimitHandlerFilterFunction(ResilienceRegistries.ofDefaults()),
+                new CircuitBreakerHandlerFilterFunction(ResilienceRegistries.ofDefaults()),
                 new ResponseWrapperHandlerFilterFunction(properties));
+    }
+
+    private static final class FailingProxyProcessor implements ProxyProcessor {
+        @Override
+        public String getName() {
+            return "failing";
+        }
+
+        @Override
+        public String getType() {
+            return "PROXY";
+        }
+
+        @Override
+        public String getVersion() {
+            return "test";
+        }
+
+        @Override
+        public int getPriority() {
+            return 0;
+        }
+
+        @Override
+        public void initialize() {}
+
+        @Override
+        public void destroy() {}
+
+        @Override
+        public String getSupportedProtocol() {
+            return "BEAN";
+        }
+
+        @Override
+        public GatewayResponse proxy(GatewayRequest request, RouteConfig route) {
+            return GatewayResponse.builder()
+                    .requestId(request.getRequestId())
+                    .statusCode(500)
+                    .headers(Map.of())
+                    .body("{\"error\":\"boom\"}")
+                    .contentType("application/json")
+                    .responseTime(LocalDateTime.now())
+                    .build();
+        }
     }
 
     private static RouteDefinition beanRoute(String id, String path, boolean enabled) {

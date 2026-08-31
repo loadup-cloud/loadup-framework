@@ -26,42 +26,27 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Global Unique 配置属性
- *
- * @author loadup
+ * Configuration for the global unique (idempotency) component.
  */
 @ConfigurationProperties(prefix = "loadup.components.globalunique")
 public class GlobalUniqueProperties {
 
-    /**
-     * 是否启用全局唯一性控制组件
-     */
+    /** Whether the component is enabled. */
     private boolean enabled = true;
 
-    /**
-     * 数据库类型
-     */
+    /** Target database dialect. */
     @NotNull
     private DbType dbType = DbType.MYSQL;
 
-    /**
-     * 表名前缀（默认为空，允许空字符串）
-     * <p>例如：设置为 "t_" 则表名为 "t_global_unique"</p>
-     */
+    /** Optional table name prefix, e.g. {@code "t_"} yields {@code t_global_unique}. */
     @NotNull
     private String tablePrefix = "";
 
-    /**
-     * 表名（默认为 "global_unique"）
-     */
+    /** Base table name. */
     @NotBlank
     private String tableName = "global_unique";
 
-    /**
-     * 获取完整表名（带前缀）
-     *
-     * @return 完整表名
-     */
+    /** Returns the prefixed full table name. */
     public String getFullTableName() {
         return tablePrefix + tableName;
     }

@@ -62,9 +62,10 @@ loadup-parent/
 │   ├── loadup-components-dfs/             # 分布式文件存储（API + binder-local/s3/database）
 │   ├── loadup-components-extension/       # AspectJ 扩展机制
 │   ├── loadup-components-globalunique/    # 全局幂等性控制
-│   ├── loadup-components-gotone/          # 统一消息通知（API + email/sms/push/webhook）
+│   ├── loadup-components-gotone/          # 统一消息通知（Mode B：engine + 可选 store-jdbc + binder-email/sms/push/webhook）
 │   ├── loadup-components-pipeline/        # 流水线编排引擎
-│   ├── loadup-components-retrytask/       # 分布式重试（JobRunr 底座：facade + binder-jobrunr）
+│   ├── loadup-components-resilience4j/    # 容错（API + binder-core：熔断/重试/限流/舱壁/超时）
+│   ├── loadup-components-retrytask/       # 分布式重试（JobRunr 底座：facade + binder-jobrunr + notifier-gotone）
 │   ├── loadup-components-scheduler/       # 任务调度（API + simplejob/quartz/xxljob/powerjob）
 │   ├── loadup-components-signature/       # 数字签名
 │   ├── loadup-components-springdoc/       # knife4j / OpenAPI 文档自动配置
@@ -281,6 +282,7 @@ path,method,target,securityCode,requestTemplate,responseTemplate,enabled,propert
 
 - Java **21** | Spring Boot **4.1.0** | MyBatis-Flex **1.11.7**
 - MySQL 8.0+ | Caffeine（本地）| Redis/Redisson（分布式）
+- Resilience4j **2.3.0**（容错；版本由 loadup-dependencies BOM 统一，跟随 Spring Cloud 2025.1.x）
 - JUnit 5 + `loadup-testify-spring-boot-starter` + Testcontainers
 - knife4j **4.5.0** | Spotless (Palantir Java Format) | Maven 3.6+
 - License: **Apache-2.0**（Java 文件头由 license-maven-plugin 自动维护）

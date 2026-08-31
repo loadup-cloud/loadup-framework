@@ -1,10 +1,8 @@
-package io.github.loadup.components.gotone.model;
-
 /*-
  * #%L
- * loadup-components-gotone-api
+ * Loadup Gotone API
  * %%
- * Copyright (C) 2026 LoadUp Cloud
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,96 +17,52 @@ package io.github.loadup.components.gotone.model;
  * limitations under the License.
  * #L%
  */
+package io.github.loadup.components.gotone.model;
 
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 渠道发送响应（内部使用）
+ * Channel-level send response returned by {@link
+ * io.github.loadup.components.gotone.NotificationChannelProvider}.
  */
-public class ChannelSendResponse implements Serializable {
+public record ChannelSendResponse(
+        String content,
+        int successCount,
+        int failedCount,
+        Map<String, Boolean> receiverStatus,
+        Map<String, String> receiverErrors) {
 
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 发送内容
-     */
-    private String content;
-
-    /**
-     * 成功数
-     */
-    private Integer successCount;
+    public ChannelSendResponse {
+        receiverStatus = receiverStatus == null ? Map.of() : Map.copyOf(receiverStatus);
+        receiverErrors = receiverErrors == null ? Map.of() : Map.copyOf(receiverErrors);
+    }
 
     /**
-     * 失败数
-     */
-    private Integer failedCount;
-
-    /**
-     * 每个收件人的成功状态
-     */
-    private Map<String, Boolean> receiverStatus = new HashMap<>();
-
-    /**
-     * 每个收件人的错误信息
-     */
-    private Map<String, String> receiverErrors = new HashMap<>();
-
-    /**
-     * 判断指定收件人是否发送成功
+     * Returns whether the given receiver was sent successfully.
+     *
+     * @param receiver the receiver
+     * @return {@code true} when the receiver succeeded
      */
     public boolean isSuccess(String receiver) {
         return Boolean.TRUE.equals(receiverStatus.get(receiver));
     }
 
     /**
-     * 获取指定收件人的错误信息
+     * Returns the error message for the given receiver, if any.
+     *
+     * @param receiver the receiver
+     * @return the error message, or {@code null}
      */
     public String getErrorMessage(String receiver) {
         return receiverErrors.get(receiver);
     }
 
-    public ChannelSendResponse() {}
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setSuccessCount(Integer successCount) {
-        this.successCount = successCount;
-    }
-
-    public void setFailedCount(Integer failedCount) {
-        this.failedCount = failedCount;
-    }
-
-    public void setReceiverStatus(Map<String, Boolean> receiverStatus) {
-        this.receiverStatus = receiverStatus;
-    }
-
-    public void setReceiverErrors(Map<String, String> receiverErrors) {
-        this.receiverErrors = receiverErrors;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public Integer getSuccessCount() {
-        return successCount;
-    }
-
-    public Integer getFailedCount() {
-        return failedCount;
-    }
-
-    public Map<String, Boolean> getReceiverStatus() {
-        return receiverStatus;
-    }
-
-    public Map<String, String> getReceiverErrors() {
-        return receiverErrors;
+    /**
+     * Returns whether at least one receiver was sent successfully.
+     *
+     * @return {@code true} when any receiver succeeded
+     */
+    public boolean isSuccess() {
+        return successCount > 0;
     }
 }

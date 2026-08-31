@@ -21,17 +21,20 @@ package io.github.loadup.components.signature.config;
  */
 
 import io.github.loadup.components.signature.properties.SignatureProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.github.loadup.components.signature.service.DigestService;
+import io.github.loadup.components.signature.service.KeyPairService;
+import io.github.loadup.components.signature.service.SignatureService;
+import io.github.loadup.components.signature.service.impl.DigestServiceImpl;
+import io.github.loadup.components.signature.service.impl.KeyPairServiceImpl;
+import io.github.loadup.components.signature.service.impl.SignatureServiceImpl;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Bean;
 
 /**
- * Signature 自动配置
- *
- * @author loadup
+ * Auto-configuration that wires the signature services with explicit beans.
  */
 @AutoConfiguration
 @ConditionalOnProperty(
@@ -40,18 +43,23 @@ import org.springframework.context.annotation.ComponentScan;
         havingValue = "true",
         matchIfMissing = true)
 @EnableConfigurationProperties(SignatureProperties.class)
-@ComponentScan(basePackages = "io.github.loadup.components.signature")
 public class SignatureAutoConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(SignatureAutoConfiguration.class);
 
-    public SignatureAutoConfiguration(SignatureProperties properties) {
-        log.info(
-                "LoadUp Signature 组件已启用: defaultSignatureAlgorithm={}, defaultDigestAlgorithm={}",
-                properties.getDefaultSignatureAlgorithm(),
-                properties.getDefaultDigestAlgorithm());
+    @Bean
+    @ConditionalOnMissingBean
+    public KeyPairService keyPairService(SignatureProperties properties) {
+        return new KeyPairServiceImpl(properties);
     }
 
-    public Logger getLog() {
-        return this.log;
+    @Bean
+    @ConditionalOnMissingBean
+    public SignatureService signatureService(KeyPairService keyPairService) {
+        return new SignatureServiceImpl(keyPairService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DigestService digestService() {
+        return new DigestServiceImpl();
     }
 }

@@ -15,6 +15,11 @@
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-gotone-api</artifactId>
         </dependency>
+        <!-- Resilience4j facade + default in-memory binder for per-provider circuit breaker / retry -->
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-resilience4j-binder-core</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
@@ -22,6 +27,11 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

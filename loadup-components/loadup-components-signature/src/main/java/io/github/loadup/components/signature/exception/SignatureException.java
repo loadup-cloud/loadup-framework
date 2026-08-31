@@ -20,11 +20,7 @@ package io.github.loadup.components.signature.exception;
  * #L%
  */
 
-/**
- * 签名异常
- *
- * @author loadup
- */
+/** Unchecked exception thrown by the signature and digest services. */
 public class SignatureException extends RuntimeException {
 
     private final SignatureErrorCode errorCode;
@@ -49,17 +45,15 @@ public class SignatureException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
-    /**
-     * 签名错误码
-     */
+    /** Categorized signature errors. */
     public enum SignatureErrorCode {
-        INVALID_KEY("无效的密钥"),
-        INVALID_ALGORITHM("不支持的算法"),
-        SIGN_FAILED("签名失败"),
-        VERIFY_FAILED("验签失败"),
-        DIGEST_FAILED("摘要计算失败"),
-        KEY_GENERATION_FAILED("密钥生成失败"),
-        ENCODING_FAILED("编码转换失败");
+        INVALID_KEY("Invalid key"),
+        INVALID_ALGORITHM("Unsupported algorithm"),
+        SIGN_FAILED("Sign failed"),
+        VERIFY_FAILED("Verify failed"),
+        DIGEST_FAILED("Digest failed"),
+        KEY_GENERATION_FAILED("Key pair generation failed"),
+        ENCODING_FAILED("Encoding failed");
 
         private final String message;
 

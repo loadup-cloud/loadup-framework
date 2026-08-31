@@ -26,14 +26,10 @@ import io.github.loadup.components.globalunique.service.GlobalUniqueService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.stereotype.Service;
 
 /**
- * 全局唯一性服务实现
- *
- * @author loadup
+ * Default {@link GlobalUniqueService} backed by {@link GlobalUniqueMapper}.
  */
-@Service
 public class GlobalUniqueServiceImpl implements GlobalUniqueService {
     private static final Logger log = LoggerFactory.getLogger(GlobalUniqueServiceImpl.class);
 
@@ -51,6 +47,9 @@ public class GlobalUniqueServiceImpl implements GlobalUniqueService {
 
     @Override
     public boolean insertAndCheck(String uniqueKey, String bizType, String bizId, String requestData) {
+        if (uniqueKey == null || uniqueKey.isBlank()) {
+            throw new IllegalArgumentException("uniqueKey must not be blank");
+        }
         try {
             GlobalUniqueEntity entity = GlobalUniqueEntity.builder()
                     .uniqueKey(uniqueKey)
@@ -62,15 +61,14 @@ public class GlobalUniqueServiceImpl implements GlobalUniqueService {
             int inserted = globalUniqueMapper.insert(entity);
 
             if (inserted > 0) {
-                log.debug("全局唯一性检查通过: uniqueKey={}, bizType={}, bizId={}", uniqueKey, bizType, bizId);
+                log.debug("Unique key claimed: uniqueKey={}, bizType={}, bizId={}", uniqueKey, bizType, bizId);
                 return true;
             }
 
             return false;
 
         } catch (DuplicateKeyException e) {
-            // 唯一键冲突 = 幂等拦截
-            log.debug("幂等拦截: uniqueKey={}, bizType={}, bizId={}", uniqueKey, bizType, bizId);
+            log.debug("Idempotent replay rejected: uniqueKey={}, bizType={}, bizId={}", uniqueKey, bizType, bizId);
             return false;
         }
     }

@@ -22,48 +22,44 @@ package io.github.loadup.components.signature.service;
 
 import io.github.loadup.components.signature.enums.DigestAlgorithm;
 
-/**
- * 摘要服务接口
- *
- * @author loadup
- */
+/** Facade for digest (MD5 / SHA) and HMAC computation. */
 public interface DigestService {
 
     /**
-     * 计算数据的摘要
+     * Computes the digest of the given bytes.
      *
-     * @param data      待计算数据
-     * @param algorithm 摘要算法
-     * @return Hex 编码的摘要结果
+     * @param data the input bytes
+     * @param algorithm the digest algorithm
+     * @return the hex-encoded digest
      */
     String digest(byte[] data, DigestAlgorithm algorithm);
 
     /**
-     * 计算字符串的摘要
+     * Computes the digest of the given string.
      *
-     * @param data      待计算字符串
-     * @param algorithm 摘要算法
-     * @return Hex 编码的摘要结果
+     * @param data the input string
+     * @param algorithm the digest algorithm
+     * @return the hex-encoded digest
      */
     String digest(String data, DigestAlgorithm algorithm);
 
     /**
-     * 计算 HMAC 摘要
+     * Computes the HMAC of the given bytes.
      *
-     * @param data      待计算数据
-     * @param key       密钥
-     * @param algorithm HMAC 算法
-     * @return Hex 编码的 HMAC 结果
+     * @param data the input bytes
+     * @param key the secret key
+     * @param algorithm the HMAC algorithm
+     * @return the hex-encoded MAC
      */
     String hmac(byte[] data, byte[] key, DigestAlgorithm algorithm);
 
     /**
-     * 计算字符串的 HMAC
+     * Computes the HMAC of the given string.
      *
-     * @param data      待计算字符串
-     * @param key       密钥字符串
-     * @param algorithm HMAC 算法
-     * @return Hex 编码的 HMAC 结果
+     * @param data the input string
+     * @param key the secret key
+     * @param algorithm the HMAC algorithm
+     * @return the hex-encoded MAC
      */
     String hmac(String data, String key, DigestAlgorithm algorithm);
 }

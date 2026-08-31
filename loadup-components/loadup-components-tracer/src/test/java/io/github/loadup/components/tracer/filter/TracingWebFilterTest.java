@@ -28,6 +28,7 @@ import io.github.loadup.components.tracer.TestConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,8 +39,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @SpringBootTest(
         classes = {TestConfiguration.class, TracingWebFilterTest.TestController.class},
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-// @AutoConfigureMockMvc
+        webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@AutoConfigureMockMvc
 @TestPropertySource(
         properties = {
             "spring.application.name=web-filter-test",

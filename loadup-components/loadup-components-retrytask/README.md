@@ -19,6 +19,12 @@
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-retrytask-binder-jobrunr</artifactId>
 </dependency>
+
+<!-- 可选：永久失败告警复用 gotone 通知组件 -->
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-components-retrytask-notifier-gotone</artifactId>
+</dependency>
 ```
 
 ## 使用
@@ -83,6 +89,28 @@ jobrunr:                       # JobRunr 官方 starter 属性（BOM 统一版�
 
 底层存储自动使用应用已有的 `DataSource`（JobRunr 自建表与迁移，无需 Flyway 脚本）；也支持
 `jobrunr.database.table-prefix` 等官方属性。
+
+## 失败告警（notify）
+
+binder-jobrunr 内置 `RetryTaskFailureNotifyingFilter`：当任务**重试耗尽进入永久 FAILED** 时，
+把 `RetryTaskFailure`（bizType / bizId / jobId / attempts / errorMessage）分发给所有已注册的
+`RetryTaskNotifier` bean，默认实现 `DefaultRetryTaskNotifier` 只打 WARN 日志。
+
+引入 `loadup-components-retrytask-notifier-gotone` 后，复用 gotone 组件把永久失败发到
+serviceCode 配置的渠道（邮件/短信/webhook 等）：
+
+```yaml
+loadup:
+  retrytask:
+    notify:
+      enabled: true                  # 默认 true
+      service-code: RETRY_TASK_FAILED  # gotone serviceCode，未配置则跳过
+      receivers:
+        - ops@example.com
+```
+
+业务也可直接实现 `RetryTaskNotifier` 并注册为 bean（如钉钉机器人、企业微信），多个 notifier
+并存；单个 notifier 抛异常不会中断 JobRunr 状态机。
 
 ## 能力矩阵（契约）
 

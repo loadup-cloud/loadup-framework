@@ -29,35 +29,23 @@ import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-/**
- * Signature 配置属性
- *
- * @author loadup
- */
+/** Signature component configuration ({@code loadup.components.signature.*}). */
 @Validated
 @ConfigurationProperties(prefix = "loadup.components.signature")
 public class SignatureProperties {
 
-    /**
-     * 是否启用签名组件
-     */
+    /** Whether the signature component is enabled. */
     private boolean enabled = true;
 
-    /**
-     * 默认签名算法
-     */
+    /** The default signature algorithm. */
     @NotNull
     private SignatureAlgorithm defaultSignatureAlgorithm = SignatureAlgorithm.SHA256_WITH_RSA;
 
-    /**
-     * 默认摘要算法
-     */
+    /** The default digest algorithm. */
     @NotNull
     private DigestAlgorithm defaultDigestAlgorithm = DigestAlgorithm.SHA256;
 
-    /**
-     * 密钥长度配置
-     */
+    /** Per-algorithm key sizes in bits. */
     private Map<String, Integer> keySize = createDefaultKeySizeMap();
 
     private static Map<String, Integer> createDefaultKeySizeMap() {
@@ -69,10 +57,10 @@ public class SignatureProperties {
     }
 
     /**
-     * 获取指定算法的密钥长度
+     * Returns the configured key size for the given algorithm.
      *
-     * @param algorithm 算法名称 (rsa/dsa/ec)
-     * @return 密钥长度
+     * @param algorithm the algorithm name (rsa / dsa / ec)
+     * @return the key size in bits
      */
     public int getKeySize(String algorithm) {
         return keySize.getOrDefault(algorithm.toLowerCase(Locale.ROOT), 2048);

@@ -25,45 +25,41 @@ import io.github.loadup.components.signature.model.KeyPairInfo;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-/**
- * 密钥对管理服务接口
- *
- * @author loadup
- */
+/** Facade for key pair generation and Base64 key loading. */
 public interface KeyPairService {
 
     /**
-     * 生成密钥对
+     * Generates a key pair for the given algorithm and size.
      *
-     * @param algorithm 密钥算法
-     * @param keySize   密钥长度
-     * @return 密钥对信息（包含 Base64 编码的公私钥）
+     * @param algorithm the key algorithm
+     * @param keySize the key size in bits
+     * @return the key pair info with Base64-encoded keys
      */
     KeyPairInfo generateKeyPair(KeyAlgorithm algorithm, int keySize);
 
     /**
-     * 生成密钥对（使用默认密钥长度）
+     * Generates a key pair using the configured default key size.
      *
-     * @param algorithm 密钥算法
-     * @return 密钥对信息
+     * @param algorithm the key algorithm
+     * @return the key pair info
      */
     KeyPairInfo generateKeyPair(KeyAlgorithm algorithm);
 
     /**
-     * 从 Base64 字符串加载私钥
+     * Loads a private key from its Base64-encoded PKCS#8 representation.
      *
-     * @param base64PrivateKey Base64 编码的私钥
-     * @param algorithm        密钥算法
-     * @return 私钥对象
+     * @param base64PrivateKey the Base64-encoded private key
+     * @param algorithm the key algorithm
+     * @return the private key
      */
     PrivateKey loadPrivateKey(String base64PrivateKey, KeyAlgorithm algorithm);
 
     /**
-     * 从 Base64 字符串加载公钥
+     * Loads a public key from its Base64-encoded X.509 representation.
      *
-     * @param base64PublicKey Base64 编码的公钥
-     * @param algorithm       密钥算法
-     * @return 公钥对象
+     * @param base64PublicKey the Base64-encoded public key
+     * @param algorithm the key algorithm
+     * @return the public key
      */
     PublicKey loadPublicKey(String base64PublicKey, KeyAlgorithm algorithm);
 }

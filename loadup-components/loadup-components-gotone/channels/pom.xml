@@ -13,9 +13,9 @@
     <description>Loadup Gotone — notification channel binders</description>
 
     <modules>
-        <module>loadup-components-gotone-channel-email</module>
-        <module>loadup-components-gotone-channel-push</module>
-        <module>loadup-components-gotone-channel-sms</module>
-        <module>loadup-components-gotone-channel-webhook</module>
+        <module>loadup-components-gotone-binder-email</module>
+        <module>loadup-components-gotone-binder-push</module>
+        <module>loadup-components-gotone-binder-sms</module>
+        <module>loadup-components-gotone-binder-webhook</module>
     </modules>
 </project>

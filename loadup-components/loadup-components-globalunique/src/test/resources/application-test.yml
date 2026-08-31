@@ -6,6 +6,7 @@ spring:
     locations: classpath:db/migration/mysql
     baseline-on-migrate: true
     validate-on-migrate: false
+    clean-disabled: false
 
 loadup:
   components:
@@ -18,4 +19,3 @@ loadup:
 logging:
   level:
     io.github.loadup.components.globalunique: DEBUG
-

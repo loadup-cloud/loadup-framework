@@ -20,11 +20,7 @@ package io.github.loadup.components.signature.enums;
  * #L%
  */
 
-/**
- * 签名算法枚举
- *
- * @author loadup
- */
+/** Supported asymmetric signature algorithms. */
 public enum SignatureAlgorithm {
 
     /**
@@ -47,13 +43,11 @@ public enum SignatureAlgorithm {
      */
     SHA256_WITH_ECDSA("SHA256withECDSA", "EC");
 
-    /**
-     * JCA 算法名称
-     */
+    /** The JCA algorithm name. */
     private final String jcaName;
 
     /**
-     * 密钥算法
+     * The key algorithm.
      */
     private final String keyAlgorithm;
 

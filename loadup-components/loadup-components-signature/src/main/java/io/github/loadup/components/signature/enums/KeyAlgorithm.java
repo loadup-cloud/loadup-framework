@@ -20,35 +20,31 @@ package io.github.loadup.components.signature.enums;
  * #L%
  */
 
-/**
- * 密钥算法枚举
- *
- * @author loadup
- */
+/** Supported asymmetric key algorithms. */
 public enum KeyAlgorithm {
 
     /**
-     * RSA 算法
+     * RSA.
      */
     RSA("RSA", 2048),
 
     /**
-     * DSA 算法
+     * DSA.
      */
     DSA("DSA", 2048),
 
     /**
-     * ECDSA (椭圆曲线) 算法
+     * ECDSA (elliptic curve).
      */
     EC("EC", 256);
 
     /**
-     * JCA 算法名称
+     * The JCA algorithm name.
      */
     private final String jcaName;
 
     /**
-     * 默认密钥长度
+     * The default key size in bits.
      */
     private final int defaultKeySize;
 

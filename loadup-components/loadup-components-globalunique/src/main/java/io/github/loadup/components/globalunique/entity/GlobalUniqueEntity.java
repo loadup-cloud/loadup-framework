@@ -24,70 +24,68 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 全局唯一性记录实体
- *
- * @author loadup
+ * Idempotency ledger record stored in the {@code global_unique} table.
  */
 public class GlobalUniqueEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 主键
-     */
+    /** Primary key. */
     private String id;
 
-    /**
-     * 唯一键（业务方自定义）
-     */
+    /** Tenant id (optional). */
+    private String tenantId;
+
+    /** Business-defined unique key, e.g. {@code ORDER_CREATE:userId:orderNo}. */
     private String uniqueKey;
 
-    /**
-     * 业务类型
-     */
+    /** Business type used for classification, e.g. {@code ORDER}, {@code PAYMENT}. */
     private String bizType;
 
-    /**
-     * 业务ID（可选）
-     */
+    /** Business id (optional). */
     private String bizId;
 
-    /**
-     * 请求数据快照（可选，JSON格式）
-     */
+    /** Request data snapshot as JSON (optional, for troubleshooting). */
     private String requestData;
 
-    /**
-     * 创建时间
-     */
+    /** Creation time. */
     private LocalDateTime createdAt;
 
-    /**
-     * 更新时间
-     */
+    /** Last update time. */
     private LocalDateTime updatedAt;
+
+    /** Logical delete flag. */
+    private Boolean deleted = false;
 
     public GlobalUniqueEntity(
             String id,
+            String tenantId,
             String uniqueKey,
             String bizType,
             String bizId,
             String requestData,
             LocalDateTime createdAt,
-            LocalDateTime updatedAt) {
+            LocalDateTime updatedAt,
+            Boolean deleted) {
         this.id = id;
+        this.tenantId = tenantId;
         this.uniqueKey = uniqueKey;
         this.bizType = bizType;
         this.bizId = bizId;
         this.requestData = requestData;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.deleted = deleted;
     }
 
     public GlobalUniqueEntity() {}
 
     public String getId() {
         return this.id;
+    }
+
+    public String getTenantId() {
+        return this.tenantId;
     }
 
     public String getUniqueKey() {
@@ -114,8 +112,16 @@ public class GlobalUniqueEntity implements Serializable {
         return this.updatedAt;
     }
 
+    public Boolean isDeleted() {
+        return this.deleted;
+    }
+
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
     }
 
     public void setUniqueKey(String uniqueKey) {
@@ -142,21 +148,32 @@ public class GlobalUniqueEntity implements Serializable {
         this.updatedAt = updatedAt;
     }
 
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
 
     public static class Builder {
         private String id;
+        private String tenantId;
         private String uniqueKey;
         private String bizType;
         private String bizId;
         private String requestData;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
+        private Boolean deleted = false;
 
         public Builder id(String id) {
             this.id = id;
+            return this;
+        }
+
+        public Builder tenantId(String tenantId) {
+            this.tenantId = tenantId;
             return this;
         }
 
@@ -190,15 +207,22 @@ public class GlobalUniqueEntity implements Serializable {
             return this;
         }
 
+        public Builder deleted(Boolean deleted) {
+            this.deleted = deleted;
+            return this;
+        }
+
         public GlobalUniqueEntity build() {
             return new GlobalUniqueEntity(
                     this.id,
+                    this.tenantId,
                     this.uniqueKey,
                     this.bizType,
                     this.bizId,
                     this.requestData,
                     this.createdAt,
-                    this.updatedAt);
+                    this.updatedAt,
+                    this.deleted);
         }
     }
 

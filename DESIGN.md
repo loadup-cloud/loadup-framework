@@ -47,6 +47,7 @@ LoadUp 的目标是成为类似 RuoYi / Pig 的**被消费脚手架**：集成�
 | 任务调度 | JobRunr（周期任务，与 retrytask 共用引擎）/ Quartz |
 | 文件存储 | S3 协议（MinIO / OSS / COS） |
 | 网关 | Spring Cloud Gateway Server MVC |
+| 容错（熔断/重试/限流/舱壁/超时） | Resilience4j |
 | 链路追踪 | OpenTelemetry |
 | 数字签名 | JCA（Java Cryptography Architecture） |
 | 测试容器 | Testcontainers |
@@ -325,19 +326,25 @@ loadup-components-{domain}/
 - **目标**：主推 **S3**（MinIO 兼容）；local 仅开发环境；database binder 标记为过渡实现并逐步弃用。
 - **动作**：能力矩阵；补 S3 签名 URL 与分片上传；容器测试（LocalStack）。
 
-### 5.7 gotone — P1
+### 5.7 gotone — 已完成（Mode B：引擎 + 可选存储 + 渠道 binder）
 
-- **现状**：ServiceCode 驱动设计合理，但 `channels/` 未完成（无可用渠道实现）。
-- **目标 facade**：`NotificationService` + ServiceCode 保留。
-- **channel binder**：`email`（Spring Mail）/ `sms`（sms4j 或厂商 SDK）/ `push`（厂商 SDK）/ `webhook`。
-- **动作**：补齐渠道实现 + 桩/容器测试；能力矩阵。
+- **落地**：按 Mode B 重构。facade = `NotificationService` + `NotificationChannelProvider`
+  SPI；`DefaultNotificationService` 为纯发送引擎（零存储、零 DB），可选存储 SPI
+  （`ServiceConfigProvider` / `ChannelConfigProvider` / `RecordHandler`）由 `-store-jdbc`
+  （MyBatis-Flex，3 张表，Flyway 自动迁移）实现。
+- **渠道 binder**：email（Spring Mail，真实实现）、webhook（JDK HttpClient，真实 HTTP）、
+  sms / push（stub，待接厂商 SDK）；resilience4j 按 `gotone-<channel>-<provider>` 实例名
+  包装每个 provider（熔断 + 重试 + 降级链）。
+- **与 retrytask 复用**：`loadup-components-retrytask-notifier-gotone` 把重试任务永久失败
+  转成 gotone 通知告警（配置 `loadup.retrytask.notify.*`），形成失败处理闭环。
+- **后续**：补 sms / push 厂商 SDK 真实实现；能力矩阵见模块 README / ARCHITECTURE。
 
 ### 5.8 retrytask — 已完成（JobRunr 底座）
 
 - **落地**：以 JobRunr 8.8.2 为底座的 `binder-jobrunr` 已实现并入库；删除自研引擎 / JDBC 存储 / 重试策略 / notifier / 线程池 / 乐观锁 / schema。
 - **目标 facade**（保留）：`RetryTaskFacade` + `RetryTaskProcessor`（bizType 注册，处理器抛异常即触发重试）。
 - **binder**：`binder-jobrunr`（JobRunr 官方 `spring-boot-4-starter`；获得 dashboard、状态机、集群心跳、死任务找回）。
-- **能力**：`bizType + bizId` 幂等（确定性 jobId）、定时执行、`delete` 取消、`reset` 按原参数重跑、状态查询；失败告警通过 `ApplyStateFilter` 追加。
+- **能力**：`bizType + bizId` 幂等（确定性 jobId）、定时执行、`delete` 取消、`reset` 按原参数重跑、状态查询；失败告警通过 `RetryTaskNotifier` SPI + `ApplyStateFilter` 追加（默认日志，可选 gotone 渠道）。
 
 ### 5.9 database — P3
 
@@ -351,24 +358,41 @@ loadup-components-{domain}/
 
 ### 5.11 signature — P4
 
-- **现状**：JCA 薄封装。
-- **目标**：保留；网关 HMAC 签名校验对齐业界标准（如 AWS SigV4 风格）或明确定义防重放语义。
+- **现状**：JCA 薄封装，符合理念；README 已对齐契约（能力矩阵 + 防重放语义约定）。
+- **目标**：保留；网关 HMAC 签名校验对齐业界标准（如 AWS SigV4 风格）或明确定义防重放语义（已约定：`X-App-Id` / `X-Timestamp` / `X-Nonce` / `X-Signature`，时间窗 + nonce 防重放，由 gateway `SignatureSecurityStrategy` 落地）。
 
 ### 5.12 tracer / testcontainers — P3
 
 - **现状**：OpenTelemetry / Testcontainers 薄封装，符合理念。
-- **目标**：保留；补能力矩阵；testcontainers 保持"共享容器 + 可切换实际服务"模式。
+- **目标**：保留；能力矩阵与 README 已落地；testcontainers 保持"共享容器 + 可切换实际服务"模式。
 
 ### 5.13 pipeline / globalunique — P4
 
 - **现状**：pipeline 四阶段 DSL、globalunique 数据库唯一键幂等。
 - **目标**：保留（无标准 OSS 直接对应）；pipeline 定位为**轻量进程内编排**，不宣传为工作流引擎；长流程场景再评估 Flowable / Temporal。
+- **globalunique 落地**：单一 jar；`GlobalUniqueService` 事务内幂等（INSERT + 唯一键）；表结构含标准字段
+  `id / tenant_id / created_at / updated_at / deleted`，MySQL / PostgreSQL / Oracle 三套 Flyway 迁移；
+  能力矩阵见模块 README。
 
 ### 5.14 upms / config / log 模块 — P2/P3
 
 - **现状**：COLA 4.0 业务模块；UPMS 提供 RBAC3 + JWT + 数据权限。
 - **目标**：保留为"框架自带可复用业务能力"；认证后端跟随 authorization 决策（Sa-Token / Spring Security）；OAuth2 三方登录用 Spring Authorization Server 或厂商 SDK 适配。
 - **动作**：UPMS 与 authorization 组件的注解解耦（依赖 facade 而非实现）。
+
+### 5.15 resilience4j — 已完成（标准装配 + 双消费者）
+
+- **现状**：gateway 自研 Caffeine 熔断/令牌桶；gotone 声明了 resilience4j 依赖但零使用；BOM 的
+  `resilience4j.version` 声明失效（Spring Cloud 2025.1.x 的 first-declared-wins 覆盖为 2.3.0）。
+- **落地**：新增 `loadup-components-resilience4j`（`-api` + `-binder-core`）。facade **直接采用
+  Resilience4j 标准 API**（注解 + Registry），不自创平行接口；组件只做装配（registries + aspects +
+  Micrometer 指标）。binder 用 `resilience4j-spring6` + 自写 AutoConfiguration，规避官方
+  `spring-boot3` starter 对 Boot 4 的未支持风险（issue #2371）。
+- **消费者**：gateway 两个手写 filter 替换为 Resilience4j 实现（路由级熔断按上游共享实例、刷新时
+  prune；限流 per route+IP、Caffeine 有界缓存防内存膨胀）；gotone 引擎按
+  `gotone-<channel>-<provider>` 实例名包装每个 provider（熔断包裹重试循环）。
+- **版本**：`resilience4j.version` 对齐 **2.3.0**（与 Spring Cloud 2025.1.x 一致），删除失效声明。
+- **后续**：`binder-redis`（分布式熔断/限流状态）为规划扩展点，业务代码零修改。
 
 ---
 
@@ -425,5 +449,6 @@ loadup-components-{domain}/
 | 3 | Authorization 后端：Sa-Token vs Spring Security | **Sa-Token**（轻量 + 生态） | authorization / upms 改造 |
 | 4 | RetryTask：自研引擎 vs JobRunr 底座 | **JobRunr**（已落地：binder-jobrunr） | retrytask 路线（已定） |
 | 7 | Scheduler：自研多 binder vs JobRunr/Quartz 底座 | **JobRunr（与 retrytask 共用引擎）+ Quartz**（已落地：双 binder） | scheduler 路线（已定） |
+| 8 | 容错：自研实现 vs Resilience4j | **Resilience4j**（已落地：组件 + gateway/gotone 双消费者，版本 2.3.0 对齐 Spring Cloud） | 容错路线（已定） |
 | 5 | Gateway 引擎替换时机 | 先最小验证 SCG Server MVC | gateway P2 排期 |
 | 6 | ORM：MyBatis-Flex vs MyBatis-Plus | 保持 MyBatis-Flex（已投入） | database 组件 |

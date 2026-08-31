@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
+import org.springframework.boot.flyway.autoconfigure.FlywayMigrationInitializer;
 import org.springframework.boot.flyway.autoconfigure.FlywayMigrationStrategy;
 import org.springframework.context.annotation.Bean;
 
@@ -138,6 +139,24 @@ public class LoadUpFlywayAutoConfiguration {
         Flyway flyway = config.load();
         log.info(">>> [FLYWAY] Flyway instance configured successfully");
         return flyway;
+    }
+
+    /**
+     * Registers the migration initializer explicitly.
+     *
+     * <p>On Spring Boot 4 the whole {@code FlywayConfiguration} (including the migration
+     * initializer) is skipped when a custom {@link Flyway} bean already exists. Re-registering the
+     * initializer here restores the Boot 3 behavior so migrations run automatically.
+     *
+     * @param flyway the configured Flyway instance
+     * @param migrationStrategy the LoadUp migration strategy
+     * @return the migration initializer
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public FlywayMigrationInitializer flywayMigrationInitializer(
+            Flyway flyway, FlywayMigrationStrategy migrationStrategy) {
+        return new FlywayMigrationInitializer(flyway, migrationStrategy);
     }
 
     /**

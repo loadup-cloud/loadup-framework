@@ -1,10 +1,8 @@
-package io.github.loadup.components.gotone.model;
-
 /*-
  * #%L
- * loadup-components-gotone-api
+ * Loadup Gotone API
  * %%
- * Copyright (C) 2026 LoadUp Cloud
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,88 +17,32 @@ package io.github.loadup.components.gotone.model;
  * limitations under the License.
  * #L%
  */
+package io.github.loadup.components.gotone.model;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
- * 渠道发送请求（内部使用）
+ * Channel-level send request passed to {@link
+ * io.github.loadup.components.gotone.NotificationChannelProvider}.
  */
-public class ChannelSendRequest implements Serializable {
+public record ChannelSendRequest(
+        List<String> receivers, String content, Map<String, Object> channelConfig, Map<String, Object> templateParams) {
 
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 收件人列表
-     */
-    private List<String> receivers;
-
-    /**
-     * 发送内容
-     */
-    private String content;
-
-    /**
-     * 渠道配置（来自 ServiceChannelDO.channelConfig）
-     */
-    private Map<String, Object> channelConfig;
-
-    /**
-     * 模板参数（用于某些渠道的额外处理）
-     */
-    private Map<String, Object> templateParams;
-
-    public ChannelSendRequest(
-            List<String> receivers,
-            String content,
-            Map<String, Object> channelConfig,
-            Map<String, Object> templateParams) {
-        this.receivers = receivers;
-        this.content = content;
-        this.channelConfig = channelConfig;
-        this.templateParams = templateParams;
-    }
-
-    public ChannelSendRequest() {}
-
-    public List<String> getReceivers() {
-        return this.receivers;
-    }
-
-    public String getContent() {
-        return this.content;
-    }
-
-    public Map<String, Object> getChannelConfig() {
-        return this.channelConfig;
-    }
-
-    public Map<String, Object> getTemplateParams() {
-        return this.templateParams;
-    }
-
-    public void setReceivers(List<String> receivers) {
-        this.receivers = receivers;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setChannelConfig(Map<String, Object> channelConfig) {
-        this.channelConfig = channelConfig;
-    }
-
-    public void setTemplateParams(Map<String, Object> templateParams) {
-        this.templateParams = templateParams;
+    public ChannelSendRequest {
+        receivers = receivers == null ? List.of() : List.copyOf(receivers);
+        channelConfig = channelConfig == null ? Map.of() : Map.copyOf(channelConfig);
+        templateParams = templateParams == null ? Map.of() : Map.copyOf(templateParams);
+        Objects.requireNonNull(content, "content must not be null");
     }
 
     public static Builder builder() {
         return new Builder();
     }
 
-    public static class Builder {
+    /** Fluent builder for {@link ChannelSendRequest}. */
+    public static final class Builder {
         private List<String> receivers;
         private String content;
         private Map<String, Object> channelConfig;
@@ -127,13 +69,7 @@ public class ChannelSendRequest implements Serializable {
         }
 
         public ChannelSendRequest build() {
-            return new ChannelSendRequest(this.receivers, this.content, this.channelConfig, this.templateParams);
+            return new ChannelSendRequest(receivers, content, channelConfig, templateParams);
         }
-    }
-
-    @Override
-    public String toString() {
-        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
-                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

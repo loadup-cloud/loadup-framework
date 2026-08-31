@@ -43,7 +43,7 @@ class TracedAnnotationTest {
 
     @BeforeEach
     void setUp() {
-        TraceUtil.getTraceContext().clear();
+        TraceUtil.clearContext();
     }
 
     @Test

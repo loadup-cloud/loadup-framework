@@ -23,6 +23,7 @@
         <module>loadup-components-globalunique</module>
         <module>loadup-components-gotone</module>
         <module>loadup-components-pipeline</module>
+        <module>loadup-components-resilience4j</module>
         <module>loadup-components-retrytask</module>
         <module>loadup-components-scheduler</module>
         <module>loadup-components-signature</module>

@@ -21,11 +21,13 @@
 package io.github.loadup.retrytask.jobrunr.autoconfig;
 
 import io.github.loadup.retrytask.facade.RetryTaskFacade;
+import io.github.loadup.retrytask.facade.RetryTaskNotifier;
 import io.github.loadup.retrytask.facade.RetryTaskProcessor;
 import io.github.loadup.retrytask.facade.RetryTaskProcessorRegistry;
+import io.github.loadup.retrytask.jobrunr.DefaultRetryTaskNotifier;
 import io.github.loadup.retrytask.jobrunr.DefaultRetryTaskProcessorRegistry;
 import io.github.loadup.retrytask.jobrunr.JobRunrRetryTaskFacade;
-import io.github.loadup.retrytask.jobrunr.RetryTaskFailureLoggingFilter;
+import io.github.loadup.retrytask.jobrunr.RetryTaskFailureNotifyingFilter;
 import io.github.loadup.retrytask.jobrunr.RetryTaskJobRequestHandler;
 import io.github.loadup.retrytask.jobrunr.RetryTaskProperties;
 import java.util.List;
@@ -73,8 +75,14 @@ public class RetryTaskJobRunrAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public RetryTaskFailureLoggingFilter retryTaskFailureLoggingFilter() {
-        return new RetryTaskFailureLoggingFilter();
+    public RetryTaskNotifier defaultRetryTaskNotifier() {
+        return new DefaultRetryTaskNotifier();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RetryTaskFailureNotifyingFilter retryTaskFailureNotifyingFilter(List<RetryTaskNotifier> notifiers) {
+        return new RetryTaskFailureNotifyingFilter(notifiers);
     }
 
     /**
@@ -83,7 +91,7 @@ public class RetryTaskJobRunrAutoConfiguration {
      */
     @Bean
     public BeanPostProcessor retryTaskBackgroundJobServerFilterPostProcessor(
-            ObjectProvider<RetryTaskFailureLoggingFilter> filterProvider) {
+            ObjectProvider<RetryTaskFailureNotifyingFilter> filterProvider) {
         return new BeanPostProcessor() {
             @Override
             public Object postProcessAfterInitialization(Object bean, String beanName) {

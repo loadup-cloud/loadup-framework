@@ -20,18 +20,21 @@ package io.github.loadup.components.globalunique.config;
  * #L%
  */
 
+import io.github.loadup.components.globalunique.mapper.GlobalUniqueMapper;
 import io.github.loadup.components.globalunique.properties.GlobalUniqueProperties;
+import io.github.loadup.components.globalunique.service.GlobalUniqueService;
+import io.github.loadup.components.globalunique.service.impl.GlobalUniqueServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * GlobalUnique 自动配置
- *
- * @author loadup
+ * Auto-configuration that wires the global unique (idempotency) component with explicit beans.
  */
 @AutoConfiguration
 @ConditionalOnProperty(
@@ -40,13 +43,24 @@ import org.springframework.context.annotation.ComponentScan;
         havingValue = "true",
         matchIfMissing = true)
 @EnableConfigurationProperties(GlobalUniqueProperties.class)
-@ComponentScan(basePackages = "io.github.loadup.components.globalunique")
 public class GlobalUniqueAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(GlobalUniqueAutoConfiguration.class);
 
+    @Bean
+    @ConditionalOnMissingBean
+    public GlobalUniqueMapper globalUniqueMapper(JdbcTemplate jdbcTemplate, GlobalUniqueProperties properties) {
+        return new GlobalUniqueMapper(jdbcTemplate, properties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public GlobalUniqueService globalUniqueService(GlobalUniqueMapper globalUniqueMapper) {
+        return new GlobalUniqueServiceImpl(globalUniqueMapper);
+    }
+
     public GlobalUniqueAutoConfiguration(GlobalUniqueProperties properties) {
         log.info(
-                "LoadUp GlobalUnique 组件已启用: dbType={}, tablePrefix={}, tableName={}",
+                "LoadUp GlobalUnique enabled: dbType={}, tablePrefix={}, tableName={}",
                 properties.getDbType(),
                 properties.getTablePrefix(),
                 properties.getTableName());

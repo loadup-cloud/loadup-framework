@@ -55,7 +55,12 @@
 - [ ] **authorization 委托底层**：抽象 `PermissionChecker` SPI；默认适配 Sa-Token；`UserContext` 改 `TransmittableThreadLocal`；补异步上下文测试
 - [x] **retrytask 迁移 JobRunr**：删除自研引擎/JDBC 存储；facade 保留，`binder-jobrunr` 落地（幂等、定时、取消、失败重跑、状态查询、失败告警）；集成测试验证业务代码零修改
 - [x] **scheduler 去自研化**：删除 `@DistributedScheduler` / SimpleJob / Quartz / XXL-Job / PowerJob 旧 binder；facade = `SchedulerTemplate` + `SchedulerProcessor`；`binder-jobrunr`（与 retrytask 共用引擎）+ `binder-quartz` 落地；JobRunr/Quartz 双 binder 集成测试验证切换零代码修改
-- [ ] **gotone 补渠道**：实现 email（Spring Mail）/ sms / push / webhook channel，桩 + 容器测试
+- [x] **resilience4j 落地**：新增 `loadup-components-resilience4j`（api + binder-core，标准 Resilience4j API 为 facade）；gateway 手写熔断/限流 filter 替换为 Resilience4j 实现；gotone 引擎按 provider 接入熔断 + 重试；BOM 版本对齐 Spring Cloud 管理的 2.3.0
+- [x] **gotone 去自研化重构（Mode B）**：`NotificationService` facade + `NotificationChannelProvider`
+  SPI；纯发送引擎（零存储）+ 可选 `store-jdbc`；email（Spring Mail）/ webhook（真实 HTTP）
+  落地，sms / push 为桩；resilience4j 按 provider 接入熔断 + 重试
+- [x] **retrytask 失败告警复用 gotone**：`RetryTaskNotifier` SPI + `notifier-gotone` 模块，
+  永久失败自动走 serviceCode 渠道告警
 
 **验收**：
 
@@ -76,7 +81,7 @@
 - [x] **最小验证**：在 `loadup-application` 引入 `spring-cloud-starter-gateway-server-webmvc`（Spring Cloud 2025.0.x / Gateway 5.x），用一条 YAML 路由跑通 `bean://` 调用，验证 Boot 4.1 兼容性与 RouterFunction 动态注册
 - [x] **路由编译**：YAML / DB 路由 → `RouterFunction` 原子快照；`YamlRouteStore` / `DatabaseRouteStore` 刷新时热替换
 - [x] **后端 HandlerFunction**：`http://` → HTTP proxy 插件；`bean://` → 容器按名取 bean 调用；`rpc://` → Dubbo GenericService
-- [x] **filter 适配**：`securityCode`（JWT/HMAC/internal/OFF）、限流、熔断、响应包装、追踪 → SCG MVC HandlerFilterFunction 固定管线
+- [x] **filter 适配**：`securityCode`（JWT/HMAC/internal/OFF）、限流、熔断（Resilience4j 底座）、响应包装、追踪 → SCG MVC HandlerFilterFunction 固定管线
 - [x] **共存与迁移**：路由统一 `/api/**` 前缀，与现有 `@RestController` 共存；存量 routes 配置已迁移（移除命名 filters，改用固定管线 + securityCode）
 - [ ] **测试**：MockMvc 集成测试已覆盖路由匹配 / bean 调用 / 响应包装 / 404；Testify + Testcontainers 完整集成测试待补
 - [x] **清理**：删除 `loadup-gateway-core` 模块（`DefaultGatewayEngine` / `DefaultFilterChain` / 自研 `HandlerMapping` / `HandlerAdapter` 及旧引擎单测），并清理 facade 中仅旧引擎使用的 `GatewayFilter` / `FilterChain` / `GatewayPlugin` / `PathPattern`
@@ -103,7 +108,9 @@
 - [ ] `loadup-application` 重构为脚手架模板工程：最小业务 + 默认 binder 示例 + 每个 binder 的 profile/配置片段
 - [ ] 编写"选型手册"（本地开发怎么配 / 上生产怎么切 / 高级能力怎么换）
 - [ ] 运行 `/docs-sync` 同步文档站
-- [ ] 修复各组件 README 与代码脱节问题（gotone 等）
+- [x] 修复 gotone / retrytask 组件 README 与代码脱节问题（其余组件继续排查）
+- [x] tracer / signature / globalunique 契约落地：README 能力矩阵 + 代码规范对齐（英文注释、显式
+  Bean 装配、globalunique 表结构补齐标准字段）
 
 **验收**：
 

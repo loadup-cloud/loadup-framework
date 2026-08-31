@@ -18,15 +18,18 @@ loadup-components-retrytask/
 ├── pom.xml                                   # 聚合 POM
 ├── loadup-components-retrytask-facade/       # facade 契约，零 Spring / JobRunr 依赖
 ├── loadup-components-retrytask-binder-jobrunr/ # JobRunr 实现 + AutoConfiguration
+├── loadup-components-retrytask-notifier-gotone/ # 可选：永久失败告警复用 gotone
 └── loadup-components-retrytask-test/         # 集成测试（Testcontainers MySQL）
 ```
 
 - **facade**：`RetryTaskFacade`（register / delete / reset / getStatus）、`RetryTaskProcessor`
   （`bizType()` + `process(RetryTaskContext)`，抛异常即触发重试）、
   `RetryTaskProcessorRegistry`、record 模型（`RetryTaskRequest` / `RetryTaskContext`）
-  与枚举 `RetryTaskStatus`（PENDING / PROCESSING / SUCCEEDED / FAILED / DELETED）。
+  `RetryTaskFailure`、`RetryTaskNotifier` 与枚举 `RetryTaskStatus`（PENDING / PROCESSING /
+  SUCCEEDED / FAILED / DELETED）。
 - **binder-jobrunr**：`JobRunrRetryTaskFacade`、`RetryTaskJobRequest`、
-  `RetryTaskJobRequestHandler`、`RetryTaskProperties`、`RetryTaskFailureLoggingFilter`、
+  `RetryTaskJobRequestHandler`、`RetryTaskProperties`、`RetryTaskFailureNotifyingFilter`、
+  `DefaultRetryTaskNotifier`、
   `RetryTaskJobRunrAutoConfiguration`（`@AutoConfiguration(after = JobRunrAutoConfiguration.class)`）。
 
 ## 核心设计决策
@@ -60,13 +63,17 @@ JobRunr 用 Jackson 序列化 `JobRequest`，需要无参构造 + bean 属性（
 `LinkedHashMap<String, String>` 保持顺序与稳定性。JobRunr 8.8.2 是 multi-release jar，
 Java 17+ 使用 Jackson 3（`tools.jackson`），binder 依赖 `spring-boot-starter-json`。
 
-### 5. 失败告警：ApplyStateFilter
+### 5. 失败告警：RetryTaskNotifier + ApplyStateFilter
 
-`RetryTaskFailureLoggingFilter implements ApplyStateFilter`，仅当 `job.getState() == FAILED`
-且 newState 为 `FailedState`（即重试已耗尽、最终失败）时打 WARN 日志。通过
-`BeanPostProcessor` 把 filter 追加到官方 `BackgroundJobServer` 的 jobFilters 中，
-不替换内置 RetryFilter。集成方需要钉钉/邮件/webhook 告警时，可替换该 bean 为自己实现的
-`ApplyStateFilter`。
+`RetryTaskFailureNotifyingFilter implements ApplyStateFilter`，仅当 `job.getState() == FAILED`
+且 newState 为 `FailedState`（即重试已耗尽、最终失败）时，把 `RetryTaskFailure` 分发给所有
+已注册的 `RetryTaskNotifier` bean。通过 `BeanPostProcessor` 把 filter 追加到官方
+`BackgroundJobServer` 的 jobFilters 中，不替换内置 RetryFilter。
+
+`RetryTaskNotifier` 是 facade 层的通知 SPI（业务侧可自定义），binder 内置
+`DefaultRetryTaskNotifier` 打 WARN 日志。`notifier-gotone` 模块可选复用 gotone 组件把失败
+发到 serviceCode 配置的渠道（配置 `loadup.retrytask.notify.*`），多个 notifier 并存；
+单个 notifier 抛异常不影响 JobRunr 状态机。
 
 ### 6. 配置分层
 
@@ -95,7 +102,7 @@ Java 17+ 使用 Jackson 3（`tools.jackson`），binder 依赖 `spring-boot-star
 | core | 自研 `RetryTaskService` / 线程池 / 手动调度 | JobRunr `BackgroundJobServer` |
 | infra | JDBC 存储、`RetryTaskDO`、schema.sql、Flyway 迁移、乐观锁 | JobRunr SQL `StorageProvider`（自动建表/迁移） |
 | strategy | 自研重试策略/退避 | JobRunr RetryFilter + 官方属性 |
-| notify | notifier 接口与 Logging/Gotone 实现 | `ApplyStateFilter`（默认日志告警，可替换） |
+| notify | 自研 notifier 接口与 Logging/Gotone 实现 | `RetryTaskNotifier` SPI + `RetryTaskFailureNotifyingFilter`（默认日志，gotone 可选） |
 | starter | 自研 AutoConfiguration 与调度器 | `binder-jobrunr` + 官方 starter |
 
 ## 测试策略
@@ -108,5 +115,6 @@ Java 17+ 使用 Jackson 3（`tools.jackson`），binder 依赖 `spring-boot-star
 ## 扩展点
 
 - 新引擎：实现 `RetryTaskFacade`，新增 `binder-{impl}` 模块，业务代码零修改。
-- 新通知渠道：提供自定义 `ApplyStateFilter` bean 覆盖默认日志告警。
+- 新告警渠道：实现 `RetryTaskNotifier` 注册为 bean（或复用 gotone 的
+  `notifier-gotone` 模块），多个 notifier 并存。
 - 新业务类型：实现 `RetryTaskProcessor`，注册为 Spring bean 即可被自动收集。

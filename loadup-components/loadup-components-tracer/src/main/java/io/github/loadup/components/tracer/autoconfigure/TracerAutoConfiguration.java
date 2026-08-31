@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -116,7 +117,7 @@ public class TracerAutoConfiguration {
 
     @Bean
     public TraceUtil traceUtil(OpenTelemetry openTelemetry, Tracer tracer) {
-        return new TraceUtil(openTelemetry, tracer);
+        return new TraceUtil(openTelemetry, tracer, applicationName);
     }
 
     // -------------------------------------------------------------------------
@@ -243,7 +244,7 @@ public class TracerAutoConfiguration {
         return Sampler.traceIdRatioBased(ratio);
     }
 
-    public TracerAutoConfiguration(String applicationName) {
+    public TracerAutoConfiguration(@Value("${spring.application.name:unknown-service}") String applicationName) {
         this.applicationName = applicationName;
     }
 }

@@ -20,7 +20,6 @@ package io.github.loadup.components.tracer.aspect;
  * #L%
  */
 
-import io.github.loadup.components.tracer.TraceContext;
 import io.github.loadup.components.tracer.TraceUtil;
 import io.github.loadup.components.tracer.annotation.Traced;
 import io.opentelemetry.api.common.AttributeKey;
@@ -69,8 +68,7 @@ public class TracingAspect {
         String outerSpanId = org.slf4j.MDC.get(TraceUtil.MDC_SPAN_ID);
 
         Span span = TraceUtil.getTracer().spanBuilder(spanName).startSpan();
-        TraceContext context = TraceUtil.getTraceContext();
-        context.push(span);
+        TraceUtil.pushSpan(span);
         TraceUtil.injectMdc(span);
 
         try (Scope scope = span.makeCurrent()) {
@@ -90,7 +88,7 @@ public class TracingAspect {
             span.recordException(t);
             throw t;
         } finally {
-            context.pop();
+            TraceUtil.popSpan();
             span.end();
             restoreMdc(outerTraceId, outerSpanId);
         }

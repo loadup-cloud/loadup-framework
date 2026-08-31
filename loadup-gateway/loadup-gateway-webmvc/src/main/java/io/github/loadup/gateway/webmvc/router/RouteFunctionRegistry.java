@@ -35,8 +35,10 @@ import io.github.loadup.gateway.webmvc.support.RouteConfigConverter;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -109,6 +111,12 @@ public class RouteFunctionRegistry implements RouterFunction<ServerResponse> {
                     .filter(RouteDefinition::isEnabled)
                     .map(definition -> RouteConfigConverter.convert(definition, properties))
                     .toList();
+            if (circuitBreakerFilter != null) {
+                Set<String> activeKeys = routes.stream()
+                        .map(CircuitBreakerHandlerFilterFunction::keyOf)
+                        .collect(Collectors.toSet());
+                circuitBreakerFilter.prune(activeKeys);
+            }
             RouterFunction<ServerResponse> next = RouteFunctionCompiler.compile(
                     routes,
                     proxyHandler,

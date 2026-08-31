@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: gotone-test
+
+loadup:
+  database:
+    logical-delete:
+      enabled: true
+  flyway:
+    enabled: true
+
+testcontainers:
+  reuse:
+    enable: false
+
+logging:
+  level:
+    root: WARN
+    io.github.loadup.components.gotone: INFO

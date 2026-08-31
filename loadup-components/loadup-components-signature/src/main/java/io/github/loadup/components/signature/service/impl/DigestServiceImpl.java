@@ -29,14 +29,10 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 /**
- * 摘要服务实现
- *
- * @author loadup
+ * JCA-backed {@link DigestService} implementation.
  */
-@Service
 public class DigestServiceImpl implements DigestService {
     private static final Logger log = LoggerFactory.getLogger(DigestServiceImpl.class);
 
@@ -44,7 +40,8 @@ public class DigestServiceImpl implements DigestService {
     public String digest(byte[] data, DigestAlgorithm algorithm) {
         if (algorithm.isHmac()) {
             throw new SignatureException(
-                    SignatureException.SignatureErrorCode.INVALID_ALGORITHM, "HMAC 算法需要使用 hmac() 方法");
+                    SignatureException.SignatureErrorCode.INVALID_ALGORITHM,
+                    "HMAC algorithms must use the hmac() method");
         }
 
         try {
@@ -52,9 +49,9 @@ public class DigestServiceImpl implements DigestService {
             byte[] hashBytes = messageDigest.digest(data);
             return bytesToHex(hashBytes);
         } catch (Exception e) {
-            log.error("摘要计算失败: algorithm={}, error={}", algorithm, e.getMessage(), e);
+            log.error("Digest failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
             throw new SignatureException(
-                    SignatureException.SignatureErrorCode.DIGEST_FAILED, "摘要计算失败: " + e.getMessage(), e);
+                    SignatureException.SignatureErrorCode.DIGEST_FAILED, "Digest failed: " + e.getMessage(), e);
         }
     }
 
@@ -68,7 +65,8 @@ public class DigestServiceImpl implements DigestService {
     public String hmac(byte[] data, byte[] key, DigestAlgorithm algorithm) {
         if (!algorithm.isHmac()) {
             throw new SignatureException(
-                    SignatureException.SignatureErrorCode.INVALID_ALGORITHM, "非 HMAC 算法需要使用 digest() 方法");
+                    SignatureException.SignatureErrorCode.INVALID_ALGORITHM,
+                    "Non-HMAC algorithms must use the digest() method");
         }
 
         try {
@@ -78,9 +76,9 @@ public class DigestServiceImpl implements DigestService {
             byte[] hashBytes = mac.doFinal(data);
             return bytesToHex(hashBytes);
         } catch (Exception e) {
-            log.error("HMAC 计算失���: algorithm={}, error={}", algorithm, e.getMessage(), e);
+            log.error("HMAC failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
             throw new SignatureException(
-                    SignatureException.SignatureErrorCode.DIGEST_FAILED, "HMAC 计算失败: " + e.getMessage(), e);
+                    SignatureException.SignatureErrorCode.DIGEST_FAILED, "HMAC failed: " + e.getMessage(), e);
         }
     }
 
@@ -91,18 +89,12 @@ public class DigestServiceImpl implements DigestService {
         return hmac(dataBytes, keyBytes, algorithm);
     }
 
-    /**
-     * 字节数组转 Hex 字符串
-     */
+    /** Converts a byte array into a lowercase hex string. */
     private String bytesToHex(byte[] bytes) {
         StringBuilder hexString = new StringBuilder();
         for (byte b : bytes) {
             hexString.append(String.format("%02x", b));
         }
         return hexString.toString();
-    }
-
-    public Logger getLog() {
-        return this.log;
     }
 }

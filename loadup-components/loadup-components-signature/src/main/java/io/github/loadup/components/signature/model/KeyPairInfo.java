@@ -22,33 +22,21 @@ package io.github.loadup.components.signature.model;
 
 import java.io.Serializable;
 
-/**
- * 密钥对信息
- *
- * @author loadup
- */
+/** Immutable key pair container with Base64-encoded keys. */
 public class KeyPairInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Base64 编码的公钥
-     */
+    /** The Base64-encoded public key. */
     private String publicKey;
 
-    /**
-     * Base64 编码的私钥
-     */
+    /** The Base64-encoded private key. */
     private String privateKey;
 
-    /**
-     * 密钥算法
-     */
+    /** The key algorithm. */
     private String algorithm;
 
-    /**
-     * 密钥长度
-     */
+    /** The key size in bits. */
     private Integer keySize;
 
     public KeyPairInfo(String publicKey, String privateKey, String algorithm, Integer keySize) {

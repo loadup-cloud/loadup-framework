@@ -14,11 +14,14 @@ LoadUp Components 提供了一系列可复用的组件，用于简化企业级�
 | **loadup-components-database**       | 数据库增强（MyBatis-Flex）      | -                                                    |
 | **loadup-components-dfs**            | 分布式文件存储                  | -                                                    |
 | **loadup-components-extension**      | 扩展点框架                    | -                                                    |
-| **loadup-components-gotone**         | 通知服务（邮件/短信/推送）           | [README](loadup-components-gotone/README.md)         |
+| **loadup-components-gotone**         | 统一通知（ServiceCode 路由，邮件/webhook/短信/推送） | [README](loadup-components-gotone/README.md)         |
+| **loadup-components-resilience4j**   | 容错（熔断/重试/限流/舱壁/超时，Resilience4j 底座） | [README](loadup-components-resilience4j/README.md) |
+| **loadup-components-signature**      | 数字签名（JCA 薄封装：RSA/DSA/ECDSA + 摘要/HMAC） | [README](loadup-components-signature/README.md)    |
+| **loadup-components-globalunique**   | 全局幂等控制（数据库唯一键，事务内幂等）            | [README](loadup-components-globalunique/README.md) |
 | **loadup-components-liquibase**      | 数据库迁移                    | [README](loadup-components-liquibase/README.md)      |
 | **loadup-components-scheduler**      | 定时任务（支持 XXL-Job）         | -                                                    |
 | **loadup-components-testcontainers** | 测试容器支持                   | [README](loadup-components-testcontainers/README.md) |
-| **loadup-components-tracer**         | 链路追踪                     | -                                                    |
+| **loadup-components-tracer**         | 链路追踪（OpenTelemetry 薄集成）  | [README](loadup-components-tracer/README.md)      |
 | **loadup-components-web**            | Web 增强                   | -                                                    |
 
 ## 核心组件详解
@@ -81,30 +84,24 @@ public class UserService {
 
 **特性**:
 
-- ✅ 统一通知服务抽象
-- ✅ 支持邮件、短信、推送
-- ✅ 模板引擎集成
-- ✅ 异步发送
+- ✅ ServiceCode 驱动的 `NotificationService` 门面（业务零渠道 SDK 感知）
+- ✅ email（Spring Mail）/ webhook（真实 HTTP）渠道 binder；sms / push 为桩
+- ✅ 渠道内 provider 降级链 + resilience4j 熔断/重试
+- ✅ 可选 `store-jdbc` 存储（MyBatis-Flex + Flyway），引擎零存储零 DB
+- ✅ 与 retrytask 集成：永久失败自动走 gotone 告警
 
 **快速开始**:
 
 ```java
-@Service
-public class NotificationService {
-    
-    @Autowired
-    private GotOneTemplate gotOneTemplate;
-    
-    public void sendEmail(String to, String subject, String content) {
-        EmailMessage message = EmailMessage.builder()
-            .to(to)
-            .subject(subject)
-            .content(content)
-            .build();
-        gotOneTemplate.send(message);
-    }
-}
+notificationService.send(NotificationRequest.builder()
+        .serviceCode("ORDER_CONFIRM")
+        .receivers(List.of("ops@example.com"))
+        .templateParams(Map.of("orderId", "123"))
+        .build());
 ```
+
+引入 `-api` + `-engine` + 需要的 `-binder-*`（+ 可选 `-store-jdbc`）即可，详见
+[gotone README](loadup-components-gotone/README.md)。
 
 ## 使用指南
 
@@ -147,10 +144,16 @@ loadup:
       port: 6379
   
   gotone:
-    email:
+    resilience:
       enabled: true
-      host: smtp.example.com
-      port: 465
+    binder:
+      email:
+        smtp:
+          enabled: true
+spring:
+  mail:
+    host: smtp.example.com   # email 渠道复用标准 spring.mail.*
+    port: 465
 ```
 
 ## 架构原则

@@ -36,14 +36,10 @@ import java.util.Base64;
 import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 /**
- * 密钥对管理服务实现
- *
- * @author loadup
+ * JCA-backed {@link KeyPairService} implementation.
  */
-@Service
 public class KeyPairServiceImpl implements KeyPairService {
     private static final Logger log = LoggerFactory.getLogger(KeyPairServiceImpl.class);
 
@@ -68,9 +64,16 @@ public class KeyPairServiceImpl implements KeyPairService {
                     .keySize(keySize)
                     .build();
         } catch (Exception e) {
-            log.error("密钥对生成失败: algorithm={}, keySize={}, error={}", algorithm, keySize, e.getMessage(), e);
+            log.error(
+                    "Key pair generation failed: algorithm={}, keySize={}, error={}",
+                    algorithm,
+                    keySize,
+                    e.getMessage(),
+                    e);
             throw new SignatureException(
-                    SignatureException.SignatureErrorCode.KEY_GENERATION_FAILED, "密钥对生成失败: " + e.getMessage(), e);
+                    SignatureException.SignatureErrorCode.KEY_GENERATION_FAILED,
+                    "Key pair generation failed: " + e.getMessage(),
+                    e);
         }
     }
 
@@ -88,9 +91,11 @@ public class KeyPairServiceImpl implements KeyPairService {
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getJcaName());
             return keyFactory.generatePrivate(keySpec);
         } catch (Exception e) {
-            log.error("私钥加载失败: algorithm={}, error={}", algorithm, e.getMessage(), e);
+            log.error("Private key loading failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
             throw new SignatureException(
-                    SignatureException.SignatureErrorCode.INVALID_KEY, "私钥加载失败: " + e.getMessage(), e);
+                    SignatureException.SignatureErrorCode.INVALID_KEY,
+                    "Private key loading failed: " + e.getMessage(),
+                    e);
         }
     }
 
@@ -102,21 +107,15 @@ public class KeyPairServiceImpl implements KeyPairService {
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getJcaName());
             return keyFactory.generatePublic(keySpec);
         } catch (Exception e) {
-            log.error("公钥加载失败: algorithm={}, error={}", algorithm, e.getMessage(), e);
+            log.error("Public key loading failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
             throw new SignatureException(
-                    SignatureException.SignatureErrorCode.INVALID_KEY, "公钥加载失败: " + e.getMessage(), e);
+                    SignatureException.SignatureErrorCode.INVALID_KEY,
+                    "Public key loading failed: " + e.getMessage(),
+                    e);
         }
     }
 
     public KeyPairServiceImpl(SignatureProperties properties) {
         this.properties = properties;
-    }
-
-    public Logger getLog() {
-        return this.log;
-    }
-
-    public SignatureProperties getProperties() {
-        return this.properties;
     }
 }

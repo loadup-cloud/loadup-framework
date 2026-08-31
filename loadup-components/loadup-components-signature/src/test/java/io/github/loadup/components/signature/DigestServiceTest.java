@@ -28,26 +28,18 @@ import io.github.loadup.components.signature.exception.SignatureException;
 import io.github.loadup.components.signature.service.DigestService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-/**
- * DigestService 测试
- *
- * @author loadup
- */
+/** Tests for the {@code DigestService} facade. */
 @SpringBootTest
-@DisplayName("DigestService 测试")
 class DigestServiceTest {
-    private static final Logger log = LoggerFactory.getLogger(DigestServiceTest.class);
 
     @Autowired
     private DigestService digestService;
 
     @Test
-    @DisplayName("MD5 摘要计算")
+    @DisplayName("MD5 digest")
     void testMD5() {
         // given
         String data = "Hello, LoadUp!";
@@ -59,15 +51,13 @@ class DigestServiceTest {
         assertThat(hash).isNotEmpty();
         assertThat(hash).hasSize(32); // MD5 = 128 bit = 32 Hex
 
-        // MD5 应该是确定性的
+        // digest must be deterministic
         String hash2 = digestService.digest(data, DigestAlgorithm.MD5);
         assertThat(hash).isEqualTo(hash2);
-
-        log.info("MD5: {}", hash);
     }
 
     @Test
-    @DisplayName("SHA-1 摘要计算")
+    @DisplayName("SHA-1 digest")
     void testSHA1() {
         // given
         String data = "Test SHA-1";
@@ -81,7 +71,7 @@ class DigestServiceTest {
     }
 
     @Test
-    @DisplayName("SHA-256 摘要计算")
+    @DisplayName("SHA-256 digest")
     void testSHA256() {
         // given
         String data = "Test SHA-256";
@@ -95,7 +85,7 @@ class DigestServiceTest {
     }
 
     @Test
-    @DisplayName("SHA-512 摘要计算")
+    @DisplayName("SHA-512 digest")
     void testSHA512() {
         // given
         String data = "Test SHA-512";
@@ -109,7 +99,7 @@ class DigestServiceTest {
     }
 
     @Test
-    @DisplayName("HMAC-SHA256 计算")
+    @DisplayName("HMAC-SHA256")
     void testHmacSHA256() {
         // given
         String data = "Test HMAC";
@@ -122,13 +112,13 @@ class DigestServiceTest {
         assertThat(hmac).isNotEmpty();
         assertThat(hmac).hasSize(64);
 
-        // 同样的数据和密钥应该产生相同的 HMAC
+        // same data and key must produce the same MAC
         String hmac2 = digestService.hmac(data, key, DigestAlgorithm.HMAC_SHA256);
         assertThat(hmac).isEqualTo(hmac2);
     }
 
     @Test
-    @DisplayName("HMAC-SHA512 计算")
+    @DisplayName("HMAC-SHA512")
     void testHmacSHA512() {
         // given
         String data = "Test HMAC 512";
@@ -143,7 +133,7 @@ class DigestServiceTest {
     }
 
     @Test
-    @DisplayName("不同密钥产生不同的 HMAC")
+    @DisplayName("different keys produce different MACs")
     void testHmacWithDifferentKeys() {
         // given
         String data = "Same data";
@@ -159,25 +149,25 @@ class DigestServiceTest {
     }
 
     @Test
-    @DisplayName("使用 HMAC 算法调用 digest() 应抛出异常")
+    @DisplayName("digest() rejects HMAC algorithms")
     void testDigestWithHmacAlgorithmShouldThrowException() {
         // when & then
         assertThatThrownBy(() -> digestService.digest("data", DigestAlgorithm.HMAC_SHA256))
                 .isInstanceOf(SignatureException.class)
-                .hasMessageContaining("HMAC 算法需要使用 hmac() 方法");
+                .hasMessageContaining("must use the hmac() method");
     }
 
     @Test
-    @DisplayName("使用非 HMAC 算法调用 hmac() 应抛出异常")
+    @DisplayName("hmac() rejects non-HMAC algorithms")
     void testHmacWithNonHmacAlgorithmShouldThrowException() {
         // when & then
         assertThatThrownBy(() -> digestService.hmac("data".getBytes(), "key".getBytes(), DigestAlgorithm.SHA256))
                 .isInstanceOf(SignatureException.class)
-                .hasMessageContaining("非 HMAC 算法需要使用 digest() 方法");
+                .hasMessageContaining("must use the digest() method");
     }
 
     @Test
-    @DisplayName("空字符串摘要计算")
+    @DisplayName("empty string digest")
     void testEmptyStringDigest() {
         // given
         String emptyData = "";
@@ -187,15 +177,7 @@ class DigestServiceTest {
 
         // then
         assertThat(hash).isNotEmpty();
-        // 空字符串的 SHA-256 是固定值
+        // SHA-256 of the empty string is a fixed value
         assertThat(hash).isEqualTo("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
-    }
-
-    public Logger getLog() {
-        return this.log;
-    }
-
-    public DigestService getDigestService() {
-        return this.digestService;
     }
 }

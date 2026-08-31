@@ -20,33 +20,62 @@ package io.github.loadup.components.gotone.engine;
  * #L%
  */
 
-import io.github.loadup.components.gotone.GotoneProvider;
-import io.github.loadup.components.gotone.GotoneTemplate;
+import io.github.loadup.components.gotone.NotificationChannelProvider;
+import io.github.loadup.components.gotone.NotificationService;
 import io.github.loadup.components.gotone.config.ChannelConfigProvider;
 import io.github.loadup.components.gotone.record.RecordHandler;
 import io.github.loadup.components.gotone.template.TemplateRenderer;
+import io.github.loadup.components.resilience4j.ResilienceRegistries;
+import io.github.loadup.components.resilience4j.core.Resilience4jCoreAutoConfiguration;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.task.TaskExecutor;
 
-@AutoConfiguration
+@AutoConfiguration(after = Resilience4jCoreAutoConfiguration.class)
+@EnableConfigurationProperties(GotoneResilienceProperties.class)
 public class GotoneEngineAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public NotificationChannelManager notificationChannelManager(List<GotoneProvider> providers) {
-        return new NotificationChannelManager(providers);
+    public NotificationChannelManager notificationChannelManager(
+            List<NotificationChannelProvider> providers,
+            ObjectProvider<ResilienceRegistries> registries,
+            GotoneResilienceProperties properties) {
+        ResilienceRegistries resilience = registries.getIfAvailable();
+        List<NotificationChannelProvider> effective = providers;
+        if (properties.isEnabled() && resilience != null) {
+            effective = providers.stream()
+                    .map(provider -> (NotificationChannelProvider)
+                            ResilientNotificationChannelProvider.wrap(provider, resilience))
+                    .toList();
+        }
+        return new NotificationChannelManager(effective);
     }
 
     @Bean
-    @ConditionalOnMissingBean(GotoneTemplate.class)
-    public GotoneTemplate gotoneTemplate(
+    @ConditionalOnMissingBean
+    public TemplateRenderer simpleTemplateRenderer() {
+        return new SimpleTemplateRenderer();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(NotificationService.class)
+    public NotificationService notificationService(
             NotificationChannelManager channelManager,
             Optional<ChannelConfigProvider> channelConfigProvider,
             Optional<TemplateRenderer> templateRenderer,
-            Optional<RecordHandler> recordHandler) {
-        return new DefaultGotoneTemplate(channelManager, channelConfigProvider, templateRenderer, recordHandler);
+            Optional<RecordHandler> recordHandler,
+            ObjectProvider<TaskExecutor> taskExecutor) {
+        return new DefaultNotificationService(
+                channelManager,
+                channelConfigProvider,
+                templateRenderer,
+                recordHandler,
+                Optional.ofNullable(taskExecutor.getIfAvailable()));
     }
 }

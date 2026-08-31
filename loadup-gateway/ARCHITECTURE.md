@@ -21,8 +21,8 @@ HTTP Request
           GatewayExceptionHandler
             → TracingHandlerFilterFunction     (OpenTelemetry, optional)
               → SecurityHandlerFilterFunction  (JWT / HMAC / internal / OFF)
-                → RateLimitHandlerFilterFunction
-                  → CircuitBreakerHandlerFilterFunction
+                → RateLimitHandlerFilterFunction    (Resilience4j RateLimiter)
+                  → CircuitBreakerHandlerFilterFunction  (Resilience4j CircuitBreaker)
                     → ResponseWrapperHandlerFilterFunction  ({result, data, meta})
                       → ProxyHandlerFunction   (HTTP / BEAN / RPC dispatch)
 ```
@@ -84,8 +84,8 @@ through `RouteConfig` attributes rather than per-route filter lists:
 | Errors | `GatewayExceptionHandler` | always |
 | Tracing | `TracingHandlerFilterFunction` | `loadup.tracer.enabled`, OTel `Tracer` bean |
 | Security | `SecurityHandlerFilterFunction` | `securityCode` (`OFF` / `default` / `signature` / `internal`) |
-| Rate limit | `RateLimitHandlerFilterFunction` | route properties (token bucket per route + IP) |
-| Circuit breaker | `CircuitBreakerHandlerFilterFunction` | route properties |
+| Rate limit | `RateLimitHandlerFilterFunction` | route properties (Resilience4j `RateLimiter`, per route + IP, bounded Caffeine cache) |
+| Circuit breaker | `CircuitBreakerHandlerFilterFunction` | route properties (Resilience4j `CircuitBreakerRegistry`, per upstream, pruned on route refresh) |
 | Response wrapping | `ResponseWrapperHandlerFilterFunction` | route `wrapResponse` or `loadup.gateway.response.wrap` |
 | Proxy | `ProxyHandlerFunction` | `backend.protocol` → `ProxyProcessor` |
 

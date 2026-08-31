@@ -21,39 +21,42 @@ package io.github.loadup.components.globalunique.service;
  */
 
 /**
- * 全局唯一性服务接口
+ * Idempotency facade backed by a database unique-key constraint.
  *
- * @author loadup
+ * <p>Call inside the business transaction: a successful insert claims the key, a duplicate
+ * insert is treated as an idempotent replay. When the surrounding transaction rolls back, the
+ * claim is rolled back too and the request can be retried.
  */
 public interface GlobalUniqueService {
 
     /**
-     * 插入并检查唯一性（核心方法）
+     * Claims the unique key, returning {@code true} on first insert.
      *
-     * @param uniqueKey 唯一键（业务方自行拼接，如: "ORDER_CREATE:userId:orderId"）
-     * @param bizType   业务类型（用于分类统计，如: "ORDER", "PAYMENT"）
-     * @return true=首次插入成功(可执行业务), false=已存在(幂等拦截)
+     * @param uniqueKey business-defined unique key, e.g. {@code "ORDER_CREATE:userId:orderId"}
+     * @param bizType business type for classification, e.g. {@code "ORDER"}, {@code "PAYMENT"}
+     * @return {@code true} when the key was claimed (proceed with business logic),
+     *     {@code false} when the key already exists (idempotent replay)
      */
     boolean insertAndCheck(String uniqueKey, String bizType);
 
     /**
-     * 插入并检查（带业务ID）
+     * Claims the unique key with an optional business id.
      *
-     * @param uniqueKey 唯一键
-     * @param bizType   业务类型
-     * @param bizId     业务ID（可选，方便后续查询）
-     * @return true=首次插入成功(可执行业务), false=已存在(幂等拦截)
+     * @param uniqueKey business-defined unique key
+     * @param bizType business type
+     * @param bizId optional business id for later lookup
+     * @return {@code true} when the key was claimed, {@code false} on duplicate
      */
     boolean insertAndCheck(String uniqueKey, String bizType, String bizId);
 
     /**
-     * 插入并检查（带请求数据快照）
+     * Claims the unique key with an optional business id and request snapshot.
      *
-     * @param uniqueKey   唯一键
-     * @param bizType     业务类型
-     * @param bizId       业务ID（可选）
-     * @param requestData 请求数据JSON（可选，用于问题排查）
-     * @return true=首次插入成功(可执行业务), false=已存在(幂等拦截)
+     * @param uniqueKey business-defined unique key
+     * @param bizType business type
+     * @param bizId optional business id
+     * @param requestData optional JSON request snapshot for troubleshooting
+     * @return {@code true} when the key was claimed, {@code false} on duplicate
      */
     boolean insertAndCheck(String uniqueKey, String bizType, String bizId, String requestData);
 }

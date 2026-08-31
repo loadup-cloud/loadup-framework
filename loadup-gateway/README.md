@@ -85,6 +85,12 @@ routes:
       url: http://payment-service:8080
     securityCode: signature
     wrapResponse: false
+    properties:
+      circuitBreaker.enabled: true
+      circuitBreaker.failureRateThreshold: 50
+      rateLimit.enabled: true
+      rateLimit.capacity: 100
+      rateLimit.refillRate: 10
 ```
 
 | Field | Description |
@@ -97,8 +103,23 @@ routes:
 | `backend.beanName` / `methodName` | Bean target (bean protocol) |
 | `securityCode` | `OFF`, `default` (JWT), `signature` (HMAC), `internal` — unquoted `OFF` works |
 | `timeout` | Route-level timeout in ms |
+| `circuitBreaker.enabled` | Enable the per-upstream Resilience4j circuit breaker |
+| `circuitBreaker.failureRateThreshold` | Open threshold in percent (default `50`) |
+| `circuitBreaker.slidingWindowSize` | Sliding window size (default `10`) |
+| `circuitBreaker.minimumNumberOfCalls` | Minimum calls before the breaker evaluates (default `5`; legacy `circuitBreaker.failureThreshold` accepted) |
+| `circuitBreaker.waitDurationInOpenState` | Open duration in seconds (default `30`; legacy `circuitBreaker.openTimeout` accepted) |
+| `circuitBreaker.permittedNumberOfCallsInHalfOpenState` | Half-open probe calls (default `3`; legacy `circuitBreaker.halfOpenMax` accepted) |
+| `rateLimit.enabled` | Enable per-(route, IP) Resilience4j rate limiting |
+| `rateLimit.capacity` | Burst capacity (default `100`) |
+| `rateLimit.refillRate` | Refill tokens per second (default `10`) |
+| `rateLimit.keySource` | `IP`, `ROUTE`, or `COMBINED` (default) |
 | `wrapResponse` | Override global `{result, data, meta}` wrapping |
 | `enabled` | Set to `false` to disable a route without deleting it |
+
+The rate limiter and circuit breaker filters are backed by the
+[LoadUp Resilience4j component](../components/loadup-components-resilience4j/README.md);
+the `loadup-gateway-starter` pulls the in-memory binder automatically. Breaker metrics
+(`resilience4j.circuitbreaker.*`) are exposed through Micrometer when Actuator is present.
 
 ## Notes
 

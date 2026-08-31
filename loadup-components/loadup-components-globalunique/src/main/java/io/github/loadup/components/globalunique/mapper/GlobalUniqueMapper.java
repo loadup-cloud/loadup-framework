@@ -30,78 +30,63 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 
 /**
- * GlobalUnique Mapper 基于 JdbcTemplate
- *
- * @author loadup
+ * JDBC-backed persistence for the {@code global_unique} idempotency ledger.
  */
-@Repository
 public class GlobalUniqueMapper {
     private static final Logger log = LoggerFactory.getLogger(GlobalUniqueMapper.class);
 
     private final JdbcTemplate jdbcTemplate;
     private final GlobalUniqueProperties properties;
 
-    /**
-     * SQL 语句映射
-     */
+    /** Insert statements per database dialect; the table name is filled in at runtime. */
     private static final Map<DbType, String> INSERT_SQL_MAP = new EnumMap<>(DbType.class);
 
     static {
-        // MySQL
-        INSERT_SQL_MAP.put(
-                DbType.MYSQL,
-                "INSERT INTO %s (id, unique_key, biz_type, biz_id, request_data, created_at, updated_at) "
-                        + "VALUES (?, ?, ?, ?, ?, ?, ?)");
-
-        // PostgreSQL
-        INSERT_SQL_MAP.put(
-                DbType.POSTGRESQL,
-                "INSERT INTO %s (id, unique_key, biz_type, biz_id, request_data, created_at, updated_at) "
-                        + "VALUES (?, ?, ?, ?, ?, ?, ?)");
-
-        // Oracle
-        INSERT_SQL_MAP.put(
-                DbType.ORACLE,
-                "INSERT INTO %s (id, unique_key, biz_type, biz_id, request_data, created_at, updated_at) "
-                        + "VALUES (?, ?, ?, ?, ?, ?, ?)");
+        String columns = "id, tenant_id, unique_key, biz_type, biz_id, request_data, created_at, updated_at, deleted";
+        String placeholders = "?, ?, ?, ?, ?, ?, ?, ?, ?";
+        INSERT_SQL_MAP.put(DbType.MYSQL, "INSERT INTO %s (" + columns + ") VALUES (" + placeholders + ")");
+        INSERT_SQL_MAP.put(DbType.POSTGRESQL, "INSERT INTO %s (" + columns + ") VALUES (" + placeholders + ")");
+        INSERT_SQL_MAP.put(DbType.ORACLE, "INSERT INTO %s (" + columns + ") VALUES (" + placeholders + ")");
     }
 
     /**
-     * 插入记录
+     * Inserts the entity, generating the id and timestamps when absent.
      *
-     * @param entity 实体对象
-     * @return 插入成功返回 1，失败返回 0
-     * @throws DuplicateKeyException 唯一键冲突时抛出
+     * @param entity the entity to insert
+     * @return {@code 1} when the row was inserted
+     * @throws DuplicateKeyException when the unique key already exists
      */
     public int insert(GlobalUniqueEntity entity) {
         String sql = getInsertSql();
         LocalDateTime now = LocalDateTime.now();
 
-        // 如果 ID 为空，自动生成
         if (entity.getId() == null || entity.getId().isEmpty()) {
             entity.setId(generateId());
         }
-
-        // 设置时间戳
         entity.setCreatedAt(now);
         entity.setUpdatedAt(now);
+        if (entity.isDeleted() == null) {
+            entity.setDeleted(false);
+        }
 
         try {
             return jdbcTemplate.update(
                     sql,
                     entity.getId(),
+                    entity.getTenantId(),
                     entity.getUniqueKey(),
                     entity.getBizType(),
                     entity.getBizId(),
                     entity.getRequestData(),
                     entity.getCreatedAt(),
-                    entity.getUpdatedAt());
+                    entity.getUpdatedAt(),
+                    entity.isDeleted() ? 1 : 0);
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            // 转换为 DuplicateKeyException
+            // Normalize any dialect-specific unique-key violation into DuplicateKeyException.
             if (e.getMessage() != null && e.getMessage().contains("unique_key")) {
                 throw new DuplicateKeyException("Duplicate unique_key: " + entity.getUniqueKey(), e);
             }
@@ -110,14 +95,15 @@ public class GlobalUniqueMapper {
     }
 
     /**
-     * 根据唯一键查询
+     * Finds the record by unique key.
      *
-     * @param uniqueKey 唯一键
-     * @return 实体对象，不存在返回 null
+     * @param uniqueKey the unique key
+     * @return the entity, or {@code null} when not found
      */
     public GlobalUniqueEntity findByUniqueKey(String uniqueKey) {
         String sql = String.format(
-                "SELECT id, unique_key, biz_type, biz_id, request_data, created_at, updated_at FROM %s WHERE unique_key = ?",
+                "SELECT id, tenant_id, unique_key, biz_type, biz_id, request_data, created_at, updated_at, deleted "
+                        + "FROM %s WHERE unique_key = ?",
                 getTableName());
 
         try {
@@ -125,21 +111,23 @@ public class GlobalUniqueMapper {
                     sql,
                     (rs, rowNum) -> GlobalUniqueEntity.builder()
                             .id(rs.getString("id"))
+                            .tenantId(rs.getString("tenant_id"))
                             .uniqueKey(rs.getString("unique_key"))
                             .bizType(rs.getString("biz_type"))
                             .bizId(rs.getString("biz_id"))
                             .requestData(rs.getString("request_data"))
                             .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
                             .updatedAt(rs.getTimestamp("updated_at").toLocalDateTime())
+                            .deleted(rs.getInt("deleted") == 1)
                             .build(),
                     uniqueKey);
-        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return null;
         }
     }
 
     /**
-     * 获取插入 SQL
+     * Resolves the insert SQL for the configured database dialect.
      */
     private String getInsertSql() {
         String sqlTemplate = INSERT_SQL_MAP.get(properties.getDbType());
@@ -150,7 +138,7 @@ public class GlobalUniqueMapper {
     }
 
     /**
-     * 获取表名（带前缀），并验证表名合法性（防止 SQL 注入）。
+     * Returns the prefixed table name after validating it against SQL injection.
      */
     private String getTableName() {
         String tableName = properties.getFullTableName();
@@ -161,7 +149,7 @@ public class GlobalUniqueMapper {
     }
 
     /**
-     * 生成 ID（UUID 去掉横线）
+     * Generates a compact UUID without dashes.
      */
     private String generateId() {
         return UUID.randomUUID().toString().replace("-", "");

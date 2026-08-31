@@ -33,20 +33,12 @@ import io.github.loadup.components.signature.util.DigestUtils;
 import io.github.loadup.components.signature.util.SignatureUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-/**
- * Signature Component 综合测试
- *
- * @author loadup
- */
+/** End-to-end tests for the signature component (service + static utils). */
 @SpringBootTest
-@DisplayName("Signature 组件综合测试")
 class SignatureComponentTest {
-    private static final Logger log = LoggerFactory.getLogger(SignatureComponentTest.class);
 
     @Autowired
     private SignatureService signatureService;
@@ -58,27 +50,25 @@ class SignatureComponentTest {
     private KeyPairService keyPairService;
 
     @Test
-    @DisplayName("RSA 签名验签 - Service 方式")
+    @DisplayName("RSA sign/verify via service")
     void testRSASignatureWithService() {
         // given
         String data = "Hello, LoadUp Signature!";
         KeyPairInfo keyPair = keyPairService.generateKeyPair(KeyAlgorithm.RSA, 2048);
 
-        // when - 签名
+        // when - sign
         String signature = signatureService.sign(data, keyPair.getPrivateKey(), SignatureAlgorithm.SHA256_WITH_RSA);
 
-        // then - 验签
+        // then - verify
         boolean valid =
                 signatureService.verify(data, signature, keyPair.getPublicKey(), SignatureAlgorithm.SHA256_WITH_RSA);
 
         assertThat(signature).isNotEmpty();
         assertThat(valid).isTrue();
-
-        log.info("RSA 签名: {}", signature);
     }
 
     @Test
-    @DisplayName("RSA 签名验签 - Utils 静态方法")
+    @DisplayName("RSA sign/verify via static utils")
     void testRSASignatureWithUtils() {
         // given
         String data = "Test data for RSA";
@@ -94,7 +84,7 @@ class SignatureComponentTest {
     }
 
     @Test
-    @DisplayName("DSA 签名验签")
+    @DisplayName("DSA sign/verify")
     void testDSASignature() {
         // given
         String data = "Test DSA signature";
@@ -111,7 +101,7 @@ class SignatureComponentTest {
     }
 
     @Test
-    @DisplayName("ECDSA 签名验签")
+    @DisplayName("ECDSA sign/verify")
     void testECDSASignature() {
         // given
         String data = "Test ECDSA signature";
@@ -128,7 +118,7 @@ class SignatureComponentTest {
     }
 
     @Test
-    @DisplayName("MD5 摘要 - Service 方式")
+    @DisplayName("MD5 digest via service")
     void testMD5DigestWithService() {
         // given
         String data = "Hello, MD5!";
@@ -138,13 +128,11 @@ class SignatureComponentTest {
 
         // then
         assertThat(hash).isNotEmpty();
-        assertThat(hash).hasSize(32); // MD5 长度为 32 个 Hex 字符
-
-        log.info("MD5: {}", hash);
+        assertThat(hash).hasSize(32); // MD5 = 32 hex chars
     }
 
     @Test
-    @DisplayName("MD5 摘要 - Utils 静态方法")
+    @DisplayName("MD5 digest via static utils")
     void testMD5DigestWithUtils() {
         // given
         String data = "Hello, MD5!";
@@ -158,7 +146,7 @@ class SignatureComponentTest {
     }
 
     @Test
-    @DisplayName("SHA-256 摘要")
+    @DisplayName("SHA-256 digest")
     void testSHA256Digest() {
         // given
         String data = "Hello, SHA-256!";
@@ -169,8 +157,8 @@ class SignatureComponentTest {
 
         // then
         assertThat(hash1).isNotEmpty();
-        assertThat(hash1).hasSize(64); // SHA-256 长度为 64 个 Hex 字符
-        assertThat(hash1).isEqualTo(hash2); // Service 和 Utils 结果应一致
+        assertThat(hash1).hasSize(64); // SHA-256 = 64 hex chars
+        assertThat(hash1).isEqualTo(hash2); // service and utils must agree
     }
 
     @Test
@@ -187,14 +175,12 @@ class SignatureComponentTest {
         // then
         assertThat(hmac1).isNotEmpty();
         assertThat(hmac1).isEqualTo(hmac2);
-
-        log.info("HMAC-SHA256: {}", hmac1);
     }
 
     @Test
-    @DisplayName("密钥对生成")
+    @DisplayName("key pair generation")
     void testKeyPairGeneration() {
-        // when - 生成 RSA 密钥对
+        // when - generate an RSA key pair
         KeyPairInfo rsaKeyPair = keyPairService.generateKeyPair(KeyAlgorithm.RSA, 2048);
 
         // then
@@ -203,23 +189,21 @@ class SignatureComponentTest {
         assertThat(rsaKeyPair.getPrivateKey()).isNotEmpty();
         assertThat(rsaKeyPair.getAlgorithm()).isEqualTo("RSA");
         assertThat(rsaKeyPair.getKeySize()).isEqualTo(2048);
-
-        log.info("RSA Public Key: {}", rsaKeyPair.getPublicKey());
     }
 
     @Test
-    @DisplayName("签名篡改检测")
+    @DisplayName("signature tamper detection")
     void testSignatureTamperDetection() {
         // given
         String originalData = "Original data";
         String tamperedData = "Tampered data";
         KeyPairInfo keyPair = keyPairService.generateKeyPair(KeyAlgorithm.RSA);
 
-        // when - 对原始数据签名
+        // when - sign the original data
         String signature =
                 signatureService.sign(originalData, keyPair.getPrivateKey(), SignatureAlgorithm.SHA256_WITH_RSA);
 
-        // then - 使用篡改后的数据验签应失败
+        // then - verifying with tampered data must fail
         boolean validWithTamperedData = signatureService.verify(
                 tamperedData, signature, keyPair.getPublicKey(), SignatureAlgorithm.SHA256_WITH_RSA);
 
@@ -227,34 +211,18 @@ class SignatureComponentTest {
     }
 
     @Test
-    @DisplayName("摘要一致性测试")
+    @DisplayName("digest consistency")
     void testDigestConsistency() {
         // given
         String data = "Consistency test";
 
-        // when - 多次计算同一数据的摘要
+        // when - compute the digest multiple times
         String hash1 = digestService.digest(data, DigestAlgorithm.SHA256);
         String hash2 = digestService.digest(data, DigestAlgorithm.SHA256);
         String hash3 = DigestUtils.sha256(data);
 
-        // then - 结果应完全一致
+        // then - all results must match
         assertThat(hash1).isEqualTo(hash2);
         assertThat(hash1).isEqualTo(hash3);
-    }
-
-    public Logger getLog() {
-        return this.log;
-    }
-
-    public SignatureService getSignatureService() {
-        return this.signatureService;
-    }
-
-    public DigestService getDigestService() {
-        return this.digestService;
-    }
-
-    public KeyPairService getKeyPairService() {
-        return this.keyPairService;
     }
 }

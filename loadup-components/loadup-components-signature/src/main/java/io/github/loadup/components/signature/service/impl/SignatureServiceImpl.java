@@ -32,14 +32,10 @@ import java.security.Signature;
 import java.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 /**
- * 签名服务实现
- *
- * @author loadup
+ * JCA-backed {@link SignatureService} implementation.
  */
-@Service
 public class SignatureServiceImpl implements SignatureService {
     private static final Logger log = LoggerFactory.getLogger(SignatureServiceImpl.class);
 
@@ -54,9 +50,9 @@ public class SignatureServiceImpl implements SignatureService {
             byte[] signatureBytes = signature.sign();
             return Base64.getEncoder().encodeToString(signatureBytes);
         } catch (Exception e) {
-            log.error("签名失败: algorithm={}, error={}", algorithm, e.getMessage(), e);
+            log.error("Sign failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
             throw new SignatureException(
-                    SignatureException.SignatureErrorCode.SIGN_FAILED, "签名失败: " + e.getMessage(), e);
+                    SignatureException.SignatureErrorCode.SIGN_FAILED, "Sign failed: " + e.getMessage(), e);
         }
     }
 
@@ -70,9 +66,9 @@ public class SignatureServiceImpl implements SignatureService {
         } catch (SignatureException e) {
             throw e;
         } catch (Exception e) {
-            log.error("签名失败: algorithm={}, error={}", algorithm, e.getMessage(), e);
+            log.error("Sign failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
             throw new SignatureException(
-                    SignatureException.SignatureErrorCode.SIGN_FAILED, "签名失败: " + e.getMessage(), e);
+                    SignatureException.SignatureErrorCode.SIGN_FAILED, "Sign failed: " + e.getMessage(), e);
         }
     }
 
@@ -85,9 +81,9 @@ public class SignatureServiceImpl implements SignatureService {
             byte[] signatureBytes = Base64.getDecoder().decode(signatureBase64);
             return signature.verify(signatureBytes);
         } catch (Exception e) {
-            log.error("验签失败: algorithm={}, error={}", algorithm, e.getMessage(), e);
+            log.error("Verify failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
             throw new SignatureException(
-                    SignatureException.SignatureErrorCode.VERIFY_FAILED, "验签失败: " + e.getMessage(), e);
+                    SignatureException.SignatureErrorCode.VERIFY_FAILED, "Verify failed: " + e.getMessage(), e);
         }
     }
 
@@ -101,21 +97,13 @@ public class SignatureServiceImpl implements SignatureService {
         } catch (SignatureException e) {
             throw e;
         } catch (Exception e) {
-            log.error("验签失败: algorithm={}, error={}", algorithm, e.getMessage(), e);
+            log.error("Verify failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
             throw new SignatureException(
-                    SignatureException.SignatureErrorCode.VERIFY_FAILED, "验签失败: " + e.getMessage(), e);
+                    SignatureException.SignatureErrorCode.VERIFY_FAILED, "Verify failed: " + e.getMessage(), e);
         }
     }
 
     public SignatureServiceImpl(KeyPairService keyPairService) {
         this.keyPairService = keyPairService;
-    }
-
-    public Logger getLog() {
-        return this.log;
-    }
-
-    public KeyPairService getKeyPairService() {
-        return this.keyPairService;
     }
 }

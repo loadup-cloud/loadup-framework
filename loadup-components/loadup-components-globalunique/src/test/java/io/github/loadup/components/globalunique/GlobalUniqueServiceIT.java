@@ -35,15 +35,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
-/**
- * GlobalUniqueService 集成测试
- *
- * @author loadup
- */
 @SpringBootTest
 @ActiveProfiles("test")
 @EnableTestContainers(ContainerType.MYSQL)
-@DisplayName("GlobalUniqueService 集成测试")
+@DisplayName("GlobalUniqueService integration tests")
 class GlobalUniqueServiceIT {
     private static final Logger log = LoggerFactory.getLogger(GlobalUniqueServiceIT.class);
 
@@ -61,7 +56,7 @@ class GlobalUniqueServiceIT {
     }
 
     @Test
-    @DisplayName("First insert should return true")
+    @DisplayName("First insert claims the unique key")
     void insertAndCheck_shouldReturnTrue_whenFirstTime() {
         // given
         String uniqueKey = "TEST_ORDER_CREATE:user123:order456";
@@ -80,7 +75,7 @@ class GlobalUniqueServiceIT {
     }
 
     @Test
-    @DisplayName("Duplicate insert should return false (idempotency guard)")
+    @DisplayName("Duplicate insert is rejected as idempotent replay")
     void insertAndCheck_shouldReturnFalse_whenDuplicate() {
         // given
         String uniqueKey = "TEST_ORDER_CREATE:user123:order789";
@@ -103,7 +98,7 @@ class GlobalUniqueServiceIT {
     }
 
     @Test
-    @DisplayName("Insert with bizId should succeed")
+    @DisplayName("Insert with bizId persists the business id")
     void insertAndCheck_shouldSucceed_withBizId() {
         // given
         String uniqueKey = "TEST_PAYMENT:user456:payment123";
@@ -123,7 +118,7 @@ class GlobalUniqueServiceIT {
     }
 
     @Test
-    @DisplayName("Insert with request data should succeed")
+    @DisplayName("Insert with request data persists the snapshot")
     void insertAndCheck_shouldSucceed_withRequestData() {
         // given
         String uniqueKey = "TEST_REFUND:user789:refund456";
@@ -144,7 +139,7 @@ class GlobalUniqueServiceIT {
     }
 
     @Test
-    @DisplayName("Concurrent insert of same unique key should only succeed once")
+    @DisplayName("Concurrent inserts of the same unique key succeed only once")
     void insertAndCheck_shouldOnlyOneSucceed_whenConcurrent() throws InterruptedException {
         // given
         String uniqueKey = "TEST_CONCURRENT:user999:order999";
@@ -186,7 +181,7 @@ class GlobalUniqueServiceIT {
     }
 
     @Test
-    @DisplayName("Different bizType can use same unique key prefix")
+    @DisplayName("Different unique keys coexist regardless of bizType")
     void insertAndCheck_shouldAllowSameUniqueKey_forDifferentBizType() {
         // given
         String uniqueKey1 = "TEST_COMMON_KEY:user111";
@@ -206,5 +201,26 @@ class GlobalUniqueServiceIT {
         Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM global_unique WHERE unique_key LIKE 'TEST_COMMON_KEY%'", Integer.class);
         assertThat(count).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("Inserted rows carry the standard tenant/deleted columns")
+    void insert_shouldPersistStandardColumns() {
+        // given
+        String uniqueKey = "TEST_STANDARD_COLUMNS:user123:order456";
+
+        // when
+        boolean result = globalUniqueService.insertAndCheck(uniqueKey, "ORDER");
+
+        // then
+        assertThat(result).isTrue();
+        Integer deleted = jdbcTemplate.queryForObject(
+                "SELECT deleted FROM global_unique WHERE unique_key = ?", Integer.class, uniqueKey);
+        assertThat(deleted).isZero();
+        Integer tenantCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM global_unique WHERE unique_key = ? AND tenant_id IS NULL",
+                Integer.class,
+                uniqueKey);
+        assertThat(tenantCount).isEqualTo(1);
     }
 }

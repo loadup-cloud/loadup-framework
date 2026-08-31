@@ -20,7 +20,7 @@ package io.github.loadup.components.gotone.engine;
  * #L%
  */
 
-import io.github.loadup.components.gotone.GotoneProvider;
+import io.github.loadup.components.gotone.NotificationChannelProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.ArrayList;
@@ -37,11 +37,11 @@ import org.slf4j.LoggerFactory;
 public class NotificationChannelManager {
     private static final Logger log = LoggerFactory.getLogger(NotificationChannelManager.class);
 
-    private final Map<String, Map<String, GotoneProvider>> providerMap = new ConcurrentHashMap<>();
+    private final Map<String, Map<String, NotificationChannelProvider>> providerMap = new ConcurrentHashMap<>();
 
-    public NotificationChannelManager(List<GotoneProvider> providers) {
+    public NotificationChannelManager(List<NotificationChannelProvider> providers) {
         if (providers != null) {
-            for (GotoneProvider p : providers) {
+            for (NotificationChannelProvider p : providers) {
                 providerMap
                         .computeIfAbsent(p.getChannelType(), k -> new ConcurrentHashMap<>())
                         .put(p.getProviderName(), p);
@@ -52,13 +52,13 @@ public class NotificationChannelManager {
 
     public SendResult sendWithFallback(
             String channelType, String primaryProvider, List<String> fallbackChain, ChannelSendRequest request) {
-        List<GotoneProvider> chain = buildProviderChain(channelType, primaryProvider, fallbackChain);
+        List<NotificationChannelProvider> chain = buildProviderChain(channelType, primaryProvider, fallbackChain);
         List<Attempt> attempts = new ArrayList<>();
 
-        for (GotoneProvider provider : chain) {
+        for (NotificationChannelProvider provider : chain) {
             try {
                 ChannelSendResponse response = provider.send(request);
-                boolean success = response.getSuccessCount() != null && response.getSuccessCount() > 0;
+                boolean success = response.isSuccess();
                 attempts.add(new Attempt(provider.getProviderName(), success, null));
                 if (success) {
                     log.info("Provider {} succeeded after {} attempt(s)", provider.getProviderName(), attempts.size());
@@ -72,8 +72,9 @@ public class NotificationChannelManager {
         return new SendResult(null, attempts, false);
     }
 
-    private List<GotoneProvider> buildProviderChain(String channelType, String primary, List<String> fallbackChain) {
-        Map<String, GotoneProvider> providers = providerMap.get(channelType);
+    private List<NotificationChannelProvider> buildProviderChain(
+            String channelType, String primary, List<String> fallbackChain) {
+        Map<String, NotificationChannelProvider> providers = providerMap.get(channelType);
         if (providers == null || providers.isEmpty()) return List.of();
 
         Set<String> ordered = new LinkedHashSet<>();
@@ -85,7 +86,11 @@ public class NotificationChannelManager {
         }
         providers.keySet().stream().filter(n -> !ordered.contains(n)).forEach(ordered::add);
 
-        return ordered.stream().map(providers::get).filter(Objects::nonNull).collect(Collectors.toList());
+        return ordered.stream()
+                .map(providers::get)
+                .filter(Objects::nonNull)
+                .filter(NotificationChannelProvider::isAvailable)
+                .collect(Collectors.toList());
     }
 
     public record SendResult(ChannelSendResponse response, List<Attempt> attempts, boolean success) {

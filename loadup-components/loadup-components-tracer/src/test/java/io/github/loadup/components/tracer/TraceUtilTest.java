@@ -41,13 +41,13 @@ class TraceUtilTest {
     @BeforeEach
     void setUp() {
         // Clean up any existing trace context before each test
-        TraceUtil.getTraceContext().clear();
+        TraceUtil.clearContext();
     }
 
     @AfterEach
     void tearDown() {
         // Clean up trace context after each test to avoid interference
-        TraceUtil.getTraceContext().clear();
+        TraceUtil.clearContext();
     }
 
     @Test
@@ -89,32 +89,23 @@ class TraceUtilTest {
 
     @Test
     void testTraceContext() {
-        // Get the trace context and ensure it's clean
-        TraceContext context = TraceUtil.getTraceContext();
-        assertThat(context).isNotNull();
-
         // Verify context is empty at the start (should be cleaned by setUp)
-        assertThat(context.isEmpty()).isTrue();
-        assertThat(context.getThreadLocalSpanSize()).isEqualTo(0);
+        assertThat(TraceUtil.getSpan()).isNull();
 
         // Create a span and verify it's stored in context
         Span span = TraceUtil.createSpan("context-test");
         assertThat(span).isNotNull();
-        assertThat(context.isEmpty()).isFalse();
-        assertThat(context.getThreadLocalSpanSize()).isEqualTo(1);
+        assertThat(TraceUtil.getSpan()).isEqualTo(span);
 
         // Retrieve and verify the span from context
-        Span retrievedSpan = context.getCurrentSpan();
-        assertThat(retrievedSpan).isNotNull();
-        assertThat(retrievedSpan).isEqualTo(span);
+        assertThat(TraceUtil.getSpan()).isEqualTo(span);
 
         // End span before clearing context
         span.end();
 
         // Clear context and verify it's empty
-        context.clear();
-        assertThat(context.isEmpty()).isTrue();
-        assertThat(context.getThreadLocalSpanSize()).isEqualTo(0);
+        TraceUtil.clearContext();
+        assertThat(TraceUtil.getSpan()).isNull();
     }
 
     @Test

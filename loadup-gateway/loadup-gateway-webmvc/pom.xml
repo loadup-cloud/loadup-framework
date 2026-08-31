@@ -25,6 +25,11 @@
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-dto</artifactId>
         </dependency>
+        <!-- Resilience4j facade: registries for the circuit breaker / rate limiter filters -->
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-resilience4j-api</artifactId>
+        </dependency>
 
         <!-- Spring Cloud Gateway Server MVC: routing / filter engine (MVC only, no WebFlux) -->
         <dependency>

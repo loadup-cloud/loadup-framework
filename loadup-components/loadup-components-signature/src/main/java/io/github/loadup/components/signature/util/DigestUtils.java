@@ -30,33 +30,72 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Digest utility wrapping commons with signature-specific enum support.
+ * Static digest helpers backed by JCA {@code MessageDigest} / {@code Mac}.
  */
 public final class DigestUtils {
     private static final Logger log = LoggerFactory.getLogger(DigestUtils.class);
 
     private DigestUtils() {}
 
+    /**
+     * Computes the MD5 digest of the given string.
+     *
+     * @param data the input string
+     * @return the hex-encoded digest
+     */
     public static String md5(String data) {
-        return DigestUtils.md5(data);
+        return digest(data, DigestAlgorithm.MD5);
     }
 
+    /**
+     * Computes the SHA-256 digest of the given string.
+     *
+     * @param data the input string
+     * @return the hex-encoded digest
+     */
     public static String sha256(String data) {
-        return DigestUtils.sha256(data);
+        return digest(data, DigestAlgorithm.SHA256);
     }
 
+    /**
+     * Computes the SHA-512 digest of the given string.
+     *
+     * @param data the input string
+     * @return the hex-encoded digest
+     */
     public static String sha512(String data) {
-        return DigestUtils.sha512(data);
+        return digest(data, DigestAlgorithm.SHA512);
     }
 
+    /**
+     * Computes the HMAC-SHA256 of the given string with the given key.
+     *
+     * @param data the input string
+     * @param key the secret key
+     * @return the hex-encoded MAC
+     */
     public static String hmacSha256(String data, String key) {
-        return DigestUtils.hmacSha256(data, key);
+        return hmac(data, key, DigestAlgorithm.HMAC_SHA256);
     }
 
+    /**
+     * Computes the HMAC-SHA512 of the given string with the given key.
+     *
+     * @param data the input string
+     * @param key the secret key
+     * @return the hex-encoded MAC
+     */
     public static String hmacSha512(String data, String key) {
-        return DigestUtils.hmacSha512(data, key);
+        return hmac(data, key, DigestAlgorithm.HMAC_SHA512);
     }
 
+    /**
+     * Computes the digest of the given string using the given algorithm.
+     *
+     * @param data the input string
+     * @param algorithm the non-HMAC digest algorithm
+     * @return the hex-encoded digest
+     */
     public static String digest(String data, DigestAlgorithm algorithm) {
         if (algorithm.isHmac()) {
             throw new SignatureException(
@@ -98,9 +137,5 @@ public final class DigestUtils {
             sb.append(String.format("%02x", b));
         }
         return sb.toString();
-    }
-
-    public Logger getLog() {
-        return this.log;
     }
 }

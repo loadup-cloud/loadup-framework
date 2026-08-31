@@ -24,52 +24,48 @@ import io.github.loadup.components.signature.enums.SignatureAlgorithm;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-/**
- * 签名服务接口
- *
- * @author loadup
- */
+/** Facade for asymmetric (RSA / DSA / ECDSA) sign and verify operations. */
 public interface SignatureService {
 
     /**
-     * 使用私钥对数据进行签名
+     * Signs the given data with the private key.
      *
-     * @param data       待签名数据
-     * @param privateKey 私钥
-     * @param algorithm  签名算法
-     * @return Base64 编码的签名结果
+     * @param data the data to sign
+     * @param privateKey the private key
+     * @param algorithm the signature algorithm
+     * @return the Base64-encoded signature
      */
     String sign(byte[] data, PrivateKey privateKey, SignatureAlgorithm algorithm);
 
     /**
-     * 使用私钥对字符串进行签名
+     * Signs the given string with a Base64-encoded private key.
      *
-     * @param data             待签名字符串
-     * @param privateKeyBase64 Base64 编码的私钥
-     * @param algorithm        签名算法
-     * @return Base64 编码的签名结果
+     * @param data the data to sign
+     * @param privateKeyBase64 the Base64-encoded private key
+     * @param algorithm the signature algorithm
+     * @return the Base64-encoded signature
      */
     String sign(String data, String privateKeyBase64, SignatureAlgorithm algorithm);
 
     /**
-     * 使用公钥验证签名
+     * Verifies the signature with the public key.
      *
-     * @param data            原始数据
-     * @param signatureBase64 Base64 编码的签名
-     * @param publicKey       公钥
-     * @param algorithm       签名算法
-     * @return true=验证通过, false=验证失败
+     * @param data the original data
+     * @param signatureBase64 the Base64-encoded signature
+     * @param publicKey the public key
+     * @param algorithm the signature algorithm
+     * @return {@code true} when the signature is valid
      */
     boolean verify(byte[] data, String signatureBase64, PublicKey publicKey, SignatureAlgorithm algorithm);
 
     /**
-     * 使用公钥验证签名（字符串形式）
+     * Verifies the signature with a Base64-encoded public key.
      *
-     * @param data            原始字符串
-     * @param signatureBase64 Base64 编码的签名
-     * @param publicKeyBase64 Base64 编码的公钥
-     * @param algorithm       签名算法
-     * @return true=验证通过, false=验证失败
+     * @param data the original string
+     * @param signatureBase64 the Base64-encoded signature
+     * @param publicKeyBase64 the Base64-encoded public key
+     * @param algorithm the signature algorithm
+     * @return {@code true} when the signature is valid
      */
     boolean verify(String data, String signatureBase64, String publicKeyBase64, SignatureAlgorithm algorithm);
 }

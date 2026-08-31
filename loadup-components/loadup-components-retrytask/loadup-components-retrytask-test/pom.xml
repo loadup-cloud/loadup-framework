@@ -33,6 +33,10 @@
             <artifactId>loadup-components-retrytask-binder-jobrunr</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-retrytask-notifier-gotone</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>

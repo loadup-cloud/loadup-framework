@@ -78,7 +78,7 @@
         <dubbo.version>3.3.6</dubbo.version>
         <okhttp.version>5.3.2</okhttp.version>
         <aws.sdk.version>2.41.0</aws.sdk.version>
-        <resilience4j.version>2.4.0</resilience4j.version>
+        <resilience4j.version>2.3.0</resilience4j.version>
 
         <!-- Observability (FROZEN: must stay at 1.57.0 to avoid OTel 1.43.0 regression) -->
         <opentelemetry.version>1.62.0</opentelemetry.version>
@@ -596,25 +596,35 @@
                 <artifactId>loadup-components-gotone-api</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-gotone-engine</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-gotone-channel-email</artifactId>
+                <artifactId>loadup-components-gotone-binder-email</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-gotone-channel-push</artifactId>
+                <artifactId>loadup-components-gotone-binder-push</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-gotone-channel-sms</artifactId>
+                <artifactId>loadup-components-gotone-binder-sms</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-gotone-channel-webhook</artifactId>
+                <artifactId>loadup-components-gotone-binder-webhook</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-gotone-store-jdbc</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
@@ -703,7 +713,28 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-retrytask-notifier-gotone</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-retrytask-test</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-resilience4j</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-resilience4j-api</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-resilience4j-binder-core</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <!-- ========== loadup-components-configcenter start ==========-->
