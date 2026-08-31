@@ -22,12 +22,6 @@ package io.github.loadup.gateway.facade.model;
  * #L%
  */
 
-import static java.lang.Boolean.parseBoolean;
-import static java.lang.Integer.parseInt;
-import static java.lang.Long.parseLong;
-
-import io.github.loadup.gateway.facade.constants.GatewayConstants;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -79,16 +73,6 @@ public class RouteConfig {
      * Target method name (used for BEAN protocol)
      */
     private String targetMethod;
-
-    /**
-     * Request template script
-     */
-    private String requestTemplate;
-
-    /**
-     * Response template script
-     */
-    private String responseTemplate;
 
     /**
      * Whether enabled
@@ -192,22 +176,6 @@ public class RouteConfig {
         this.targetMethod = targetMethod;
     }
 
-    public String getRequestTemplate() {
-        return requestTemplate;
-    }
-
-    public void setRequestTemplate(String requestTemplate) {
-        this.requestTemplate = requestTemplate;
-    }
-
-    public String getResponseTemplate() {
-        return responseTemplate;
-    }
-
-    public void setResponseTemplate(String responseTemplate) {
-        this.responseTemplate = responseTemplate;
-    }
-
     public boolean isEnabled() {
         return enabled;
     }
@@ -268,111 +236,5 @@ public class RouteConfig {
 
     public Boolean getWrapResponse() {
         return this.parsedWrapResponse;
-    }
-
-    // Internal static helper class and methods
-    private static class TargetParseResult {
-        private String protocol;
-        private String targetUrl;
-        private String targetBean;
-        private String targetMethod;
-    }
-
-    private static TargetParseResult parseTarget(String target) {
-        TargetParseResult r = new TargetParseResult();
-        if (target == null || target.trim().isEmpty()) {
-            return r;
-        }
-
-        if (startsWithIgnoreCase(target, GatewayConstants.Protocol.HTTP + "://")
-                || startsWithIgnoreCase(target, GatewayConstants.Protocol.HTTP + "s://")) {
-            r.protocol = GatewayConstants.Protocol.HTTP;
-            r.targetUrl = target;
-            return r;
-        }
-
-        if (startsWithIgnoreCase(target, GatewayConstants.Protocol.BEAN + "://")) {
-            r.protocol = GatewayConstants.Protocol.BEAN;
-            String beanTarget = target.substring(7); // remove "bean://"
-            String[] parts = beanTarget.split(":");
-            if (parts.length >= 1) {
-                r.targetBean = parts[0];
-            }
-            if (parts.length >= 2) {
-                r.targetMethod = parts[1];
-            }
-            return r;
-        }
-
-        if (startsWithIgnoreCase(target, GatewayConstants.Protocol.RPC + "://")) {
-            r.protocol = GatewayConstants.Protocol.RPC;
-            r.targetUrl = target.substring(6);
-            return r;
-        }
-
-        return r;
-    }
-
-    private static class PropertiesParseResult {
-        private long timeout = 30000L;
-        private int retryCount = 3;
-        private Boolean wrapResponse = null;
-    }
-
-    private static PropertiesParseResult parseProperties(Map<String, Object> properties) {
-        PropertiesParseResult r = new PropertiesParseResult();
-        if (properties == null || properties.isEmpty()) {
-            return r;
-        }
-
-        Object timeout = properties.get(GatewayConstants.PropertyKeys.TIMEOUT);
-        if (timeout instanceof Number) {
-            r.timeout = ((Number) timeout).longValue();
-        } else if (timeout instanceof String) {
-            try {
-                r.timeout = parseLong((String) timeout);
-            } catch (NumberFormatException ignored) {
-            }
-        }
-
-        Object retry = properties.get(GatewayConstants.PropertyKeys.RETRY_COUNT);
-        if (retry instanceof Number) {
-            r.retryCount = ((Number) retry).intValue();
-        } else if (retry instanceof String) {
-            try {
-                r.retryCount = parseInt((String) retry);
-            } catch (NumberFormatException ignored) {
-            }
-        }
-
-        Object wrap = properties.get(GatewayConstants.PropertyKeys.WRAP_RESPONSE);
-        if (wrap instanceof Boolean) {
-            r.wrapResponse = (Boolean) wrap;
-        } else if (wrap instanceof String) {
-            r.wrapResponse = parseBoolean((String) wrap);
-        }
-
-        return r;
-    }
-
-    private static boolean startsWithIgnoreCase(String str, String prefix) {
-        return str != null && str.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT));
-    }
-
-    private static String generateRouteId(String path, String method) {
-        String combined = path + ":" + method;
-        return "route-" + Math.abs(combined.hashCode());
-    }
-
-    private static String generateRouteName(String path, String method) {
-        String name = path.replaceAll("^/", "")
-                .replaceAll("/", " ")
-                .replaceAll("-", " ")
-                .trim();
-        if (name.isEmpty()) {
-            name = "root";
-        }
-        name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
-        return name + " (" + method + ")";
     }
 }

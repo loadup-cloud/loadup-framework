@@ -207,7 +207,7 @@ jobs:
       - name: Run Integration Tests
         run: |
           mvn verify -B -P github \
-              -DskipUTs=true \
+              -Dskip.unit.tests=true \
               -Dspring.profiles.active=ci \
               -Dlogging.level.root=warn \
               -Dtestcontainers.reuse.enable=false \
@@ -255,9 +255,13 @@ jobs:
           cache: 'maven'
 
       - name: Generate Coverage Report
-        # Run full verify to produce JaCoCo .exec files, then aggregate across modules.
-        # -DskipTests is intentionally NOT set — jacoco:prepare-agent must instrument the JVM.
-        run: mvn verify -B -P github jacoco:report jacoco:merge -DskipITs=true
+        # Run verify to collect both Surefire (*Test) and Failsafe (*IT) coverage,
+        # then merge via jacoco:merge bound to verify phase.
+        run: mvn verify -B -P github -Dspring.profiles.active=ci
+        env:
+          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          TESTCONTAINERS_RYUK_DISABLED: false
         env:
           GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
           GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}

@@ -1,0 +1,18 @@
+routes:
+  - id: demo-echo
+    path: /api/demo/echo
+    method: POST
+    backend:
+      protocol: bean
+      beanName: demoEchoService
+      methodName: echo
+    securityCode: OFF
+  - id: demo-echo-disabled
+    path: /api/demo/disabled
+    method: POST
+    enabled: false
+    backend:
+      protocol: bean
+      beanName: demoEchoService
+      methodName: echo
+    securityCode: OFF

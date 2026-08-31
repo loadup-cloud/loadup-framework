@@ -25,6 +25,7 @@ package io.github.loadup.gateway.plugins;
 import io.github.loadup.commons.util.JsonUtil;
 import io.github.loadup.gateway.facade.config.GatewayProperties;
 import io.github.loadup.gateway.facade.constants.GatewayConstants;
+import io.github.loadup.gateway.facade.exception.GatewayExceptionFactory;
 import io.github.loadup.gateway.facade.model.GatewayRequest;
 import io.github.loadup.gateway.facade.model.GatewayResponse;
 import io.github.loadup.gateway.facade.model.RouteConfig;
@@ -113,10 +114,29 @@ public class RpcProxyProcessor implements ProxyProcessor {
                 .requestId(request.getRequestId())
                 .statusCode(GatewayConstants.Status.SUCCESS)
                 .headers(new HashMap<>())
-                .body(JsonUtil.toJson(result))
+                .body(serializeBody(result))
                 .contentType(GatewayConstants.ContentType.JSON)
                 .responseTime(LocalDateTime.now())
                 .build();
+    }
+
+    /**
+     * Serializes a backend result into a valid JSON document.
+     *
+     * <p>{@link JsonUtil#toJson(Object)} returns {@code String} values as-is, which would
+     * produce an invalid JSON body (e.g. a bare {@code hello} instead of {@code "hello"}).
+     * Serializing through the underlying {@link com.fasterxml.jackson.databind.ObjectMapper}
+     * keeps the gateway body contract: it is always a JSON document.
+     */
+    private static String serializeBody(Object result) throws Exception {
+        if (result == null) {
+            return null;
+        }
+        try {
+            return JsonUtil.getObjectMapper().writeValueAsString(result);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            throw GatewayExceptionFactory.systemError("Failed to serialize RPC result: " + e.getMessage());
+        }
     }
 
     private GenericService getGenericService(String interfaceName, String version) {

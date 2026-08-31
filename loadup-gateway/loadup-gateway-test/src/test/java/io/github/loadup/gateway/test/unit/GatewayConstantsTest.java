@@ -27,7 +27,7 @@ class GatewayConstantsTest {
     @Test
     @DisplayName("ContentType constants")
     void contentTypeConstants() {
-        assertThat(GatewayConstants.ContentType.JSON).isEqualTo("application/json");
+        assertThat(GatewayConstants.ContentType.JSON).isEqualTo("application/json;charset=UTF-8");
         assertThat(GatewayConstants.ContentType.FORM).isEqualTo("application/x-www-form-urlencoded");
         assertThat(GatewayConstants.ContentType.XML).isEqualTo("application/xml");
     }

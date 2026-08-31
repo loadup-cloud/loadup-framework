@@ -48,6 +48,42 @@
     </Match>
 
     <!--
+      Testify VariableEngine 按设计解析 YAML/用例文件中的 SpEL 表达式，
+      YAML 是受信任的测试配置而非外部用户输入，SPEL_INJECTION 为误报。
+    -->
+    <Match>
+        <Class name="~io\.github\.loadup\.testify\.data\.engine\..*"/>
+        <Bug pattern="SPEL_INJECTION"/>
+    </Match>
+
+    <!--
+      Testify CommonFunction 是测试数据生成器（随机姓名/字符串等），
+      用例数据不需要加密级随机源，PREDICTABLE_RANDOM 可接受。
+    -->
+    <Match>
+        <Class name="~io\.github\.loadup\.testify\.data\.engine\.function\.CommonFunction"/>
+        <Bug pattern="PREDICTABLE_RANDOM"/>
+    </Match>
+
+    <!--
+      Testify 拼接的 SQL 表名/列名均经过白名单校验，值全部使用参数绑定，
+      且 SQL 来源是受信任的测试配置（YAML/测试代码），SQL_INJECTION_SPRING_JDBC 为误报。
+    -->
+    <Match>
+        <Class name="~io\.github\.loadup\.testify\..*"/>
+        <Bug pattern="SQL_INJECTION_SPRING_JDBC"/>
+    </Match>
+
+    <!--
+      YamlRouteStore 的 base-path 来自 loadup.gateway.storage.file.base-path 配置，
+      属于管理员可信配置（等价于 spring.config.location），PATH_TRAVERSAL_IN 为误报。
+    -->
+    <Match>
+        <Class name="~io\.github\.loadup\.gateway\.plugins\.yaml\.YamlRouteStore"/>
+        <Bug pattern="PATH_TRAVERSAL_IN"/>
+    </Match>
+
+    <!--
       Spring @ConfigurationProperties 对象由容器统一管理生命周期，
       在构造器中存储其引用是合理的框架用法，防御性复制无意义。
       适用于所有 BindingManager / AutoConfiguration 中注入的配置对象。
@@ -82,11 +118,11 @@
     </Match>
 
     <!--
-      RedisCacheBinder.calculateRandomDuration 使用 ThreadLocalRandom 做缓存过期时间抖动（防止缓存雪崩），
+      RandomExpiration 使用 ThreadLocalRandom 做缓存过期时间抖动（防止缓存雪崩），
       这不是安全敏感场景，PREDICTABLE_RANDOM 属于误报。
     -->
     <Match>
-        <Class name="io.github.loadup.components.cache.redis.binder.RedisCacheBinder"/>
+        <Class name="io.github.loadup.components.cache.RandomExpiration"/>
         <Bug pattern="PREDICTABLE_RANDOM"/>
     </Match>
 
@@ -239,4 +275,3 @@
     </Match>
 
 </FindBugsFilter>
-

@@ -69,9 +69,6 @@ loadup:
       # When type = FILE, configure the `file` group below
       file:
         base-path: classpath:gateway-routes.yml
-  retrytask:
-    scheduler:
-      enabled: false
   scheduler:
     type: simplejob
   tracer:

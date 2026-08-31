@@ -31,9 +31,9 @@
     </developers>
 
     <modules>
-        <module>loadup-gateway-core</module>
         <module>loadup-gateway-facade</module>
         <module>loadup-gateway-starter</module>
+        <module>loadup-gateway-webmvc</module>
         <module>loadup-gateway-test</module>
         <module>plugins</module>
 

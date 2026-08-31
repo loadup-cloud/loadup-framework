@@ -128,8 +128,7 @@ public class GatewayProperties {
      * Storage related configuration
      */
 
-    // Replace the generic map with a strongly-typed Plugins holder so IDEs can provide YAML
-    // autocompletion
+    // Strongly-typed plugin config holder so IDEs can provide YAML autocompletion
     @NestedConfigurationProperty
     private ProxyPlugins proxyPlugins = new ProxyPlugins();
 
@@ -139,39 +138,11 @@ public class GatewayProperties {
 
     private ResponseProperties response = new ResponseProperties();
 
-    public static class PluginProperties {
-        private boolean enabled = true;
-        private int priority = 100;
-        private Map<String, Object> properties = new HashMap<>();
-    }
-
-    // New strongly-typed holder for known plugins. Field names use camelCase and will map to
-    // kebab-case in YAML
+    // Strongly-typed holder for proxy plugin config. Field names use camelCase and map to
+    // kebab-case in YAML.
     public static class ProxyPlugins {
         @NestedConfigurationProperty
-        private Bean bean = new Bean();
-
-        @NestedConfigurationProperty
-        private Http http = new Http();
-
-        @NestedConfigurationProperty
         private Rpc rpc = new Rpc();
-
-        public Bean getBean() {
-            return bean;
-        }
-
-        public void setBean(Bean bean) {
-            this.bean = bean;
-        }
-
-        public Http getHttp() {
-            return http;
-        }
-
-        public void setHttp(Http http) {
-            this.http = http;
-        }
 
         public Rpc getRpc() {
             return rpc;
@@ -182,21 +153,20 @@ public class GatewayProperties {
         }
     }
 
-    public static class Bean extends PluginProperties {
-        // add plugin-specific properties here if needed in future
-    }
-
-    public static class Http extends PluginProperties {
+    public static class Rpc {
         /**
-         * Maximum number of connections for the HTTP proxy plugin
+         * Dubbo registry address for the RPC proxy plugin
          */
-        private int maxConnections = 100;
-    }
-
-    public static class Rpc extends PluginProperties {
-        // RPC-specific configuration
         private String registryAddress;
+
+        /**
+         * Dubbo invocation timeout in milliseconds
+         */
         private Long timeout;
+
+        /**
+         * Dubbo retry count
+         */
         private Long retries;
 
         public String getRegistryAddress() {

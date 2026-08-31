@@ -18,8 +18,6 @@
         <project.build.encoding>${project.encoding}</project.build.encoding>
         <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
-
-        <commons.csv.version>1.10.0</commons.csv.version>
     </properties>
     <dependencies>
 
@@ -30,15 +28,6 @@
         <dependency>
             <groupId>net.datafaker</groupId>
             <artifactId>datafaker</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-text</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-            <version>1.10.0</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -55,10 +44,6 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-testify-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
         </dependency>
     </dependencies>
 </project>

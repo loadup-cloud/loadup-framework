@@ -218,17 +218,16 @@ LoadUp Framework 采用清晰的 **6 层分层架构**，共 19 个模块：
 │    ├── starter/    (自动配置)
 │    └── test/       (测试)
 └── loadup-testify/  - 测试框架
-     ├── assert-engine/  (断言引擎)
-     ├── data-engine/    (数据引擎)
-     ├── mock-engine/    (Mock 引擎)
-     ├── core/           (核心)
-     ├── starter/        (自动配置)
-     └── test/           (测试)
+     ├── loadup-testify-core/               (核心工具：JSON 工具)
+     ├── loadup-testify-data-engine/        (变量引擎：SpEL、Faker 变量解析)
+     ├── loadup-testify-assert-engine/      (断言引擎：响应/数据库/异常断言、操作符)
+     ├── loadup-testify-spring-boot-starter/ (自动配置：TestScenario、ScenarioAssert、CaseFiles)
+     └── loadup-testify-test/               (集成测试 Demo)
 ```
 
 **Gateway 功能**: 动态路由、认证鉴权、签名验签、请求响应包装、链路追踪
 
-**Testify 功能**: 数据驱动测试、Mock 引擎、断言引擎、TestContainers 集成
+**Testify 功能**: 数据准备/清理、声明式断言（操作符）、批量用例（YAML/JSON）、TestContainers 集成
 
 ### 6️⃣ 应用层 (1 个应用)
 

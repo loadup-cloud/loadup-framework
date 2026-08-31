@@ -10,15 +10,11 @@
     <artifactId>loadup-components-retrytask</artifactId>
     <packaging>pom</packaging>
     <name>Loadup RetryTask Component</name>
-    <description>Loadup RetryTask — distributed retry task framework</description>
+    <description>Loadup RetryTask — JobRunr based distributed retry facade + binder</description>
 
     <modules>
-        <module>loadup-components-retrytask-core</module>
         <module>loadup-components-retrytask-facade</module>
-        <module>loadup-components-retrytask-infra</module>
-        <module>loadup-components-retrytask-notify</module>
-        <module>loadup-components-retrytask-starter</module>
-        <module>loadup-components-retrytask-strategy</module>
+        <module>loadup-components-retrytask-binder-jobrunr</module>
         <module>loadup-components-retrytask-test</module>
     </modules>
 </project>

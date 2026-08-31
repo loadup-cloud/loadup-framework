@@ -41,12 +41,7 @@ public class ExceptionAssertEngine implements TestifyAssertEngine {
     }
 
     @Override
-    public String supportKey() {
-        return "exception";
-    }
-
-    @Override
-    public void compare(JsonNode expectEx, Object actual, Map<String, Object> context, List<String> reportList) {
+    public void compare(JsonNode expectEx, Object actual, Map<String, Object> context) {
         if (expectEx == null) {
             return;
         }

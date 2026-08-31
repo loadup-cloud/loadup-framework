@@ -28,6 +28,10 @@
 
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-cache-api</artifactId>
 

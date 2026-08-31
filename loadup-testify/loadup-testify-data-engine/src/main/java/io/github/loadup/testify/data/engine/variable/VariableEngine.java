@@ -63,7 +63,7 @@ public class VariableEngine {
     }
 
     // --- 1. Entry Points (入口方法) ---
-    public Map<String, Object> resolveVariables(Map<String, String> rawVariables) {
+    public Map<String, Object> resolveVariables(Map<String, Object> rawVariables) {
         Map<String, Object> context = new LinkedHashMap<>();
         if (rawVariables == null) {
             return context;
@@ -72,13 +72,14 @@ public class VariableEngine {
         int limit = 10;
         while (limit-- > 0) {
             boolean changed = false;
-            for (Map.Entry<String, String> entry : rawVariables.entrySet()) {
+            for (Map.Entry<String, Object> entry : rawVariables.entrySet()) {
                 String key = entry.getKey();
                 if (context.containsKey(key)) {
                     continue;
                 }
 
-                Object evaluated = evaluate(entry.getValue(), context);
+                Object raw = entry.getValue();
+                Object evaluated = raw instanceof String s ? evaluate(s, context) : raw;
                 // 只有解析结果不再是字符串，或者字符串中不含占位符，才算真正解析完成
                 if (!(evaluated instanceof String s) || !s.contains("${")) {
                     context.put(key, evaluated);
@@ -100,7 +101,6 @@ public class VariableEngine {
             return text;
         }
 
-        StandardEvaluationContext spelContext = buildSpelContext(context);
         String trimmed = text.trim();
 
         // 场景 A: 纯占位符 "${faker.name()}"
@@ -146,7 +146,7 @@ public class VariableEngine {
             Object resolved = resolveSinglePlaceholder(placeholder, context);
 
             // 将解析结果拼接到结果中
-            sb.append(resolved != null ? resolved.toString() : placeholder);
+            sb.append(resolved);
 
             lastCursor = matcher.end();
         }

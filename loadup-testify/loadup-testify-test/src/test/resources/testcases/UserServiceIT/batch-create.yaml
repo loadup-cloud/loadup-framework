@@ -1,0 +1,56 @@
+cases:
+  - name: "create user with regex email and approx time"
+    variables:
+      userId: "${fn.uuid()}"
+      userName: "Ada Lovelace"
+      email: "ada.lovelace@example.com"
+      nowTime: "${time.now()}"
+    input:
+      userId: "${userId}"
+      userName: "${userName}"
+      email: "${email}"
+    expect:
+      userId: "${userId}"
+      userName: "Ada Lovelace"
+      email:
+        op: regex
+        val: "^[a-zA-Z0-9._%+-]+@example\\.com$"
+      createdAt:
+        op: approx
+        val: "${nowTime}"
+      order:
+        orderId: "${userId}"
+        orderName: "Ada Lovelace"
+
+  - name: "contains and nested equality"
+    variables:
+      userId: "${fn.uuid()}"
+      userName: "Grace Hopper"
+      email: "grace.hopper@example.com"
+    input:
+      userId: "${userId}"
+      userName: "${userName}"
+      email: "${email}"
+    expect:
+      userId: "${userId}"
+      userName:
+        op: contains
+        val: "Hopper"
+      email:
+        op: regex
+        val: ".+@example\\.com"
+      order:
+        orderName: "Grace Hopper"
+
+  - name: "jsonpath assertion on nested order"
+    variables:
+      userId: "${fn.uuid()}"
+      userName: "Alan Turing"
+      email: "alan@example.com"
+    input:
+      userId: "${userId}"
+      userName: "${userName}"
+      email: "${email}"
+    expect:
+      userId: "${userId}"
+      "$.order.orderName": "Alan Turing"

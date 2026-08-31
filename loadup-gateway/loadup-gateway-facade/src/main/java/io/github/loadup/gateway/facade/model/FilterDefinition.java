@@ -30,8 +30,8 @@ import java.util.Map;
  * YAML-friendly filter definition.
  *
  * <p>Each entry in a route's {@code filters} list maps to one of these.
- * The {@code name} field matches {@link io.github.loadup.gateway.facade.spi.GatewayFilter#name()}.
- * {@code props} are filter-specific key-value parameters.
+ * The {@code name} field is the filter identifier and {@code props} are
+ * filter-specific key-value parameters.
  *
  * <p>YAML example:
  * <pre>
@@ -45,7 +45,7 @@ import java.util.Map;
  */
 public class FilterDefinition {
 
-    /** Filter name matching a registered GatewayFilter bean. */
+    /** Filter identifier. */
     private String name;
 
     /** Filter-specific properties. */

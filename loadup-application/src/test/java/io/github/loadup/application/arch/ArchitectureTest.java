@@ -30,6 +30,7 @@ import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.sli
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.core.importer.Location;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -216,6 +217,29 @@ class ArchitectureTest {
     }
 
     // ── Security 规则 ─────────────────────────────────────────────────────────
+
+    // ── Test class naming conventions ─────────────────────────────────────────
+
+    @Test
+    @DisplayName("Test classes annotated with @EnableTestContainers must be named *IT")
+    void integrationTestNamingConvention() {
+        JavaClasses testClasses = new ClassFileImporter()
+                .withImportOption(new ImportOption() {
+                    @Override
+                    public boolean includes(Location location) {
+                        return location.contains("/test-classes/");
+                    }
+                })
+                .importPackages("io.github.loadup");
+
+        classes()
+                .that()
+                .areAnnotatedWith("io.github.loadup.components.testcontainers.annotation.EnableTestContainers")
+                .should()
+                .haveSimpleNameEndingWith("IT")
+                .because("Test classes needing database containers must be named *IT.java so Failsafe runs them")
+                .check(testClasses);
+    }
 
     @Test
     @DisplayName("不允许直接使用 System.out / System.err（必须使用 Slf4j）")

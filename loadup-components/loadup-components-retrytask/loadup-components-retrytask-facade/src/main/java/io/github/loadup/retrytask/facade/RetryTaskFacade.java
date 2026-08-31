@@ -1,5 +1,3 @@
-package io.github.loadup.retrytask.facade;
-
 /*-
  * #%L
  * Loadup Components Retrytask Facade
@@ -22,34 +20,55 @@ package io.github.loadup.retrytask.facade;
  * #L%
  */
 
-import io.github.loadup.retrytask.facade.request.RetryTaskRegisterRequest;
+package io.github.loadup.retrytask.facade;
+
+import io.github.loadup.retrytask.facade.model.RetryTaskRequest;
+import io.github.loadup.retrytask.facade.model.RetryTaskStatus;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
- * The facade for the retry task module.
+ * Business facade for the retry task component.
+ *
+ * <p>Registration is idempotent per {@code bizType + bizId}: while a job is still pending or
+ * processing, registering the same pair is a no-op and returns the existing job id; once a job has
+ * reached a terminal state (succeeded / failed / deleted), registering again replaces it with a
+ * fresh job.
  */
 public interface RetryTaskFacade {
 
     /**
-     * Registers a new retry task.
+     * Registers a retry task. Executes immediately unless {@link RetryTaskRequest#scheduleAt()} is
+     * set.
      *
-     * @param request The request to register a new retry task.
-     * @return The unique identifier of the registered task.
+     * @param request the task to register
+     * @return the id of the registered job
      */
-    Long register(RetryTaskRegisterRequest request);
+    UUID register(RetryTaskRequest request);
 
     /**
-     * Deletes a retry task.
+     * Deletes the task identified by {@code bizType + bizId}. Deleting an unknown task is a no-op.
      *
-     * @param bizType The business type of the task.
-     * @param bizId   The business identifier of the task.
+     * @param bizType the business type
+     * @param bizId the business identifier
      */
     void delete(String bizType, String bizId);
 
     /**
-     * Resets a retry task.
+     * Deletes the task identified by {@code bizType + bizId} and re-enqueues it immediately with
+     * its original payload. Unknown tasks are re-enqueued as fresh jobs.
      *
-     * @param bizType The business type of the task.
-     * @param bizId   The business identifier of the task.
+     * @param bizType the business type
+     * @param bizId the business identifier
      */
     void reset(String bizType, String bizId);
+
+    /**
+     * Returns the current status of the task identified by {@code bizType + bizId}.
+     *
+     * @param bizType the business type
+     * @param bizId the business identifier
+     * @return the status, or empty when no job is known for the pair
+     */
+    Optional<RetryTaskStatus> getStatus(String bizType, String bizId);
 }

@@ -2,225 +2,130 @@
 
 ## Overview
 
-LoadUp Gateway is an **embedded, multi-protocol API gateway** distributed as a Spring Boot library. It intercepts HTTP requests via Spring MVC `HandlerMapping` / `HandlerAdapter`, resolves routes from YAML (or database) configuration, executes per-route named filter chains, and proxies to backend services via HTTP, Dubbo RPC, or in-process Spring Bean invocation.
+LoadUp Gateway is an **embedded multi-protocol API gateway** for Spring Boot MVC
+applications. Instead of a self-built servlet engine, it is a **thin adapter over
+Spring Cloud Gateway Server MVC (SCG Server MVC)**: route definitions (YAML or JDBC)
+are compiled into a Spring MVC `RouterFunction`, and each route runs through a fixed
+pipeline of `HandlerFilterFunction`s before reaching the proxy handler.
 
-**Core design principle**: every route declares its own filter pipeline. No hardcoded global chain.
+Because the engine is a standard Spring MVC `RouterFunction` bean, gateway routes and
+user-written `@RestController`s coexist in the same application. The project explicitly
+does **not** use WebFlux.
 
 ```
 HTTP Request
-  → GatewayHandlerMapping  (Spring HandlerMapping, highest precedence)
-  → GatewayHandlerAdapter  (builds GatewayContext from HttpServletRequest)
-  → GatewayEngine          (orchestrator)
-      → ExceptionFilter    (outermost try/catch)
-        → TracingFilter    (OpenTelemetry, optional)
-          → RouteFilter    (resolve route → build per-route sub-chain)
-            → [route.filters...]     (YAML-declared: body-parser, rate-limit, security, ...)
-            → ProxyFilter            (HTTP / RPC / Bean dispatch)
-            → [route.responseFilters...]
-            → ResponseWrapperFilter
+  → RouterFunctionMapping (Spring MVC, auto-registered)
+    → RouteFunctionRegistry.route(request)   (atomic RouterFunction snapshot)
+      → compiled route: method + path predicate → sets ROUTE_CONFIG attribute
+      → filter pipeline (outermost first):
+          GatewayExceptionHandler
+            → TracingHandlerFilterFunction     (OpenTelemetry, optional)
+              → SecurityHandlerFilterFunction  (JWT / HMAC / internal / OFF)
+                → RateLimitHandlerFilterFunction
+                  → CircuitBreakerHandlerFilterFunction
+                    → ResponseWrapperHandlerFilterFunction  ({result, data, meta})
+                      → ProxyHandlerFunction   (HTTP / BEAN / RPC dispatch)
 ```
 
----
-
-## Module Architecture
+## Module Layout
 
 ```
 loadup-gateway/
-├── loadup-gateway-facade/          SPI + models + config (zero internal deps)
-│   ├── spi/GatewayFilter.java      Named filter interface
-│   ├── spi/FilterChain.java        Chain cursor
-│   ├── spi/RouteStore.java         Route definition storage SPI
-│   ├── spi/ProxyProcessor.java     Backend protocol SPI
-│   ├── spi/SecurityStrategy.java   Auth strategy SPI
-│   ├── model/RouteDefinition.java  YAML-friendly route config
-│   ├── model/FilterDefinition.java YAML-friendly filter config
-│   ├── model/RouteConfig.java      Compiled runtime route (immutable)
-│   ├── model/GatewayRequest.java   Inbound request
-│   ├── model/GatewayResponse.java  Outbound response
-│   ├── context/GatewayContext.java Per-request state bucket
+├── loadup-gateway-facade/            SPI + models + config (zero internal deps)
+│   ├── spi/RouteStore.java           Route definition storage SPI
+│   ├── spi/ProxyProcessor.java       Backend protocol SPI
+│   ├── spi/SecurityStrategy.java     Auth strategy SPI
+│   ├── model/RouteDefinition.java    YAML-friendly route config
+│   ├── model/RouteConfig.java        Compiled runtime route
+│   ├── model/GatewayRequest.java     Inbound request model
+│   ├── model/GatewayResponse.java    Outbound response model (body = JSON document)
+│   ├── event/RouteStoreRefreshedEvent.java
 │   └── config/GatewayProperties.java
-├── loadup-gateway-core/            Processing engine
-│   ├── engine/DefaultGatewayEngine.java  Orchestrator
-│   ├── engine/DefaultFilterChain.java    Array-based cursor chain
-│   ├── filter/*.java                     Exception, Route, Proxy, Security,
-│   │                                     RateLimit, CircuitBreaker, BodyParser,
-│   │                                     ResponseWrapper, Tracing
-│   ├── router/RouteResolver.java         Route cache + pattern matching
-│   ├── security/*.java                   JWT, HMAC signature, internal IP
-│   └── handler/*.java                    Spring MVC integration
-├── loadup-gateway-starter/          Auto-configuration
-│   └── GatewayAutoConfiguration.java
+├── loadup-gateway-webmvc/            SCG Server MVC adapter (the engine)
+│   ├── router/RouteFunctionRegistry.java   Atomic RouterFunction snapshot, hot reload
+│   ├── router/RouteFunctionCompiler.java   RouteConfig list → RouterFunction
+│   ├── filter/*HandlerFilterFunction.java  Fixed pipeline filters
+│   ├── proxy/ProxyHandlerFunction.java     Terminal handler → ProxyProcessor
+│   ├── security/*.java                     JWT / HMAC / internal / OFF strategies
+│   ├── support/GatewayRequestFactory.java  ServerRequest → GatewayRequest
+│   └── autoconfigure/GatewayWebMvcAutoConfiguration.java
+├── loadup-gateway-starter/           Auto-configuration (default YamlRouteStore)
 └── plugins/
-    ├── proxy-http-plugin/           HTTP proxy (RestClient)
-    ├── proxy-rpc-plugin/            Dubbo RPC (GenericService)
-    ├── proxy-springbean-plugin/     Spring Bean invocation
-    ├── repository-yaml-plugin/      YAML file store + WatchService hot reload
-    └── repository-database-plugin/  JDBC store (Spring Data, admin CRUD)
+    ├── proxy-http-plugin/            HTTP proxy
+    ├── proxy-rpc-plugin/             Dubbo RPC (GenericService)
+    ├── proxy-springbean-plugin/      Spring Bean invocation
+    ├── repository-yaml-plugin/       YAML file store + WatchService hot reload
+    └── repository-database-plugin/   JDBC store
 ```
 
-**Dependency direction**: `facade` ← `core` ← `plugins` ← `starter`
+## Engine Design
 
----
+### Route lifecycle
 
-## Request Processing Pipeline
+1. `RouteStore.loadAll()` returns `RouteDefinition`s (YAML file / JDBC table).
+2. `RouteFunctionRegistry.refresh()` filters disabled routes, converts each definition
+   with `RouteConfigConverter`, and compiles them into an immutable `RouterFunction`
+   via `RouteFunctionCompiler`.
+3. The compiled function is published atomically through an `AtomicReference`
+   snapshot; in-flight requests keep the previous snapshot.
+4. Refresh is triggered at startup (`@PostConstruct`) and on every
+   `RouteStoreRefreshedEvent` (YAML file watcher, DB admin updates).
 
-### Entry Points
+An empty route table is compiled to `request -> Optional.empty()` — a zero-route
+`RouterFunctions.route().build()` throws in Spring 7, so the registry never uses it.
 
-1. **GatewayHandlerMapping** (`extends AbstractHandlerMapping`, `Ordered.HIGHEST_PRECEDENCE`)
-   - Spring calls `getHandlerInternal(request)` for every request
-   - Uses `RouteResolver.resolve()` for exact + pattern matching
-   - Returns `GatewayHandler` with pre-resolved `RouteConfig`, or `null` to fall through to normal controllers
+### Filter pipeline
 
-2. **GatewayHandlerAdapter** (`implements HandlerAdapter`)
-   - `supports(handler)` → returns `true` for `GatewayHandler`
-   - `handle()`: builds `GatewayContext`, calls `engine.execute(context)`, writes HTTP response
-   - Extracts real client IP from `X-Forwarded-For` / `X-Real-IP` headers
+The pipeline is fixed per route (order above). Per-route behavior is expressed
+through `RouteConfig` attributes rather than per-route filter lists:
 
-### Engine Execution
+| Concern | Filter | Route / global switch |
+|---------|--------|----------------------|
+| Errors | `GatewayExceptionHandler` | always |
+| Tracing | `TracingHandlerFilterFunction` | `loadup.tracer.enabled`, OTel `Tracer` bean |
+| Security | `SecurityHandlerFilterFunction` | `securityCode` (`OFF` / `default` / `signature` / `internal`) |
+| Rate limit | `RateLimitHandlerFilterFunction` | route properties (token bucket per route + IP) |
+| Circuit breaker | `CircuitBreakerHandlerFilterFunction` | route properties |
+| Response wrapping | `ResponseWrapperHandlerFilterFunction` | route `wrapResponse` or `loadup.gateway.response.wrap` |
+| Proxy | `ProxyHandlerFunction` | `backend.protocol` → `ProxyProcessor` |
 
-`DefaultGatewayEngine.execute(context)`:
+### Proxy protocols
 
-```
-ExceptionFilter.filter(context, chain)
-  → TracingFilter.filter(context, chain)          [optional]
-    → RouteFilter.filter(context, chain)
-      1. resolve RouteConfig via RouteResolver
-      2. context.setRoute(route)
-      3. build per-route sub-chain from RouteDefinition:
-         [request filters by name] → ProxyFilter → [response filters by name] → ResponseWrapperFilter
-      4. new DefaultFilterChain(subFilters).filter(context)
-```
+`ProxyProcessor` is the facade SPI; each protocol plugin registers one:
 
-### Filter Chain
+| Protocol | Processor | Target |
+|----------|-----------|--------|
+| `HTTP` | `HttpProxyProcessor` | `backend.url`, forwarded with hop-by-hop headers stripped |
+| `BEAN` | `SpringBeanProxyProcessor` | `backend.beanName` + `backend.methodName`, args resolved from JSON body |
+| `RPC` | `RpcProxyProcessor` | `backend.url` = `interface:method:version`, Dubbo `GenericService` |
 
-`DefaultFilterChain` is an array-based cursor:
+The terminal `ProxyHandlerFunction` stores the `GatewayResponse` in the
+`GatewayAttributes.PROXY_RESPONSE` request attribute so post filters (response
+wrapper) can rewrite the body, then converts it to a `ServerResponse`.
 
-```java
-public void filter(GatewayContext context) {
-    if (cursor >= filters.size()) return;
-    filters.get(cursor++).filter(context, this);  // passes itself as 'chain'
-}
-```
+## Response Contract
 
-Each filter calls `chain.filter(context)` to advance. A filter that does not call `chain.filter()` terminates the pipeline (used by ExceptionFilter on error, CircuitBreakerFilter on OPEN).
+- Successful backend results are wrapped in `{"result": {...}, "data": <body>,
+  "meta": {"requestId", "timestamp"}}` when wrapping is enabled.
+- `GatewayResponse.body` is always a **JSON document**. Bean and RPC processors
+  serialize through Jackson's `ObjectMapper` (not `JsonUtil.toJson`), so String
+  results are quoted — a bare `hello` would not be valid JSON.
+- Responses with HTTP status >= 400 are left untouched: the exception handler
+  produces the unified error envelope.
+- Hop-by-hop headers (`connection`, `transfer-encoding`, `content-length`, ...)
+  are stripped when converting the backend response.
 
----
+## Hot Reload
 
-## Route Configuration (YAML)
+`YamlRouteStore` watches the config file with `WatchService` and publishes
+`RouteStoreRefreshedEvent`; `DatabaseRouteStore` publishes the same event from its
+admin CRUD. `RouteFunctionRegistry` listens and recompiles atomically. The route
+store is selected by `@ConditionalOnMissingBean(RouteStore.class)` — adding a
+`DatabaseRouteStore` bean overrides the default YAML store.
 
-Routes are declared in `gateway-routes.yml`:
+## YAML Parsing Note
 
-```yaml
-routes:
-  - id: user-api
-    path: /api/users
-    method: POST
-    backend:
-      protocol: http
-      url: http://user-service:8080/users
-    filters:
-      - name: body-parser
-      - name: rate-limit
-        props:
-          capacity: 100
-          refillRate: 10
-      - name: security
-    responseFilters:
-      - name: response-wrapper
-    securityCode: default
-    timeout: 5000
-    wrapResponse: true
-```
-
-**Hot reload**: `YamlRouteStore` uses Java `WatchService` to monitor the YAML file. Changes are detected within 5 seconds, routes re-parsed, and the `RouteResolver` cache refreshed atomically.
-
----
-
-## Key Components
-
-### RouteStore (SPI)
-
-```java
-public interface RouteStore {
-    List<RouteDefinition> loadAll();
-    Optional<RouteDefinition> load(String routeId);
-    RouteDefinition save(RouteDefinition def);   // admin API
-    void delete(String routeId);                  // admin API
-}
-```
-
-Implementations:
-- `YamlRouteStore` — file-based, default, hot reload via WatchService
-- `DatabaseRouteStore` — Spring Data JDBC, full CRUD
-
-Switched via `loadup.gateway.storage.type=FILE|DATABASE`.
-
-### GatewayFilter (SPI)
-
-```java
-public interface GatewayFilter {
-    String name();   // matches YAML filter name (e.g. "rate-limit")
-    void filter(GatewayContext context, FilterChain chain);
-}
-```
-
-Built-in filters:
-
-| Name | Class | Phase | Description |
-|------|-------|-------|-------------|
-| `exception` | ExceptionFilter | global pre | Outermost try/catch, unified `{result,data,meta}` error JSON |
-| `tracing` | TracingFilter | global pre | OpenTelemetry span (optional, `@ConditionalOnClass`) |
-| `route` | RouteFilter | global pre | Route resolution pivot, builds per-route sub-chain |
-| `body-parser` | BodyParserFilter | request | Parses JSON/form body → `request.attributes["parsedBody"]` |
-| `rate-limit` | RateLimitFilter | request | Token-bucket, Caffeine eviction, per-route config |
-| `security` | SecurityFilter | request | Delegates to SecurityStrategy by route.securityCode |
-| `circuit-breaker` | CircuitBreakerFilter | request | CLOSED→OPEN→HALF_OPEN lifecycle, Caffeine eviction |
-| `proxy` | ProxyFilter | terminal | Dispatches to ProxyProcessor by protocol |
-| `response-wrapper` | ResponseWrapperFilter | response | Wraps in `{result, data, meta}`, respects wrapResponse config |
-
-### RouteResolver
-
-- Exact-match cache: `ConcurrentHashMap<String, RouteConfig>`, key `METHOD:PATH`
-- Pattern registry: `PatternRouteRegistry` for Ant-style paths (`/api/user/{id}`)
-- Double-buffered atomic reference swap on refresh
-- Converts `RouteDefinition → RouteConfig` internally
-
-### Security Strategies
-
-| Code | Strategy | Config |
-|------|----------|--------|
-| `OFF` | No-op | — |
-| `default` | JWT Bearer token | `loadup.gateway.security.secret` |
-| `signature` | HMAC-SHA256 | `loadup.gateway.security.app-secrets.{appId}` |
-| `internal` | IP whitelist | Hardcoded private ranges |
-
-All instantiated via direct constructor (no reflection). App secrets loaded from GatewayProperties.
-
----
-
-## Thread Safety
-
-| Component | Shared State | Strategy |
-|-----------|-------------|----------|
-| RouteResolver | `volatile ConcurrentHashMap` | Atomic reference swap |
-| RateLimitFilter | `Caffeine Cache` | Built-in concurrency |
-| CircuitBreakerFilter | `Caffeine Cache` | Built-in concurrency |
-| TemplateEngine | `ConcurrentHashMap` | computeIfAbsent |
-| DefaultGatewayEngine | `Map<String, GatewayFilter>` | Write-once, read-only |
-| GatewayContext | Per-request instance | No sharing |
-
----
-
-## Design Decisions
-
-1. **Per-route filter chains**: Each route declares its own pipeline in YAML, rather than passing through a fixed global chain. This avoids coupling — a public health-check route has zero filters, a payment route has 5.
-
-2. **RouteFilter as pivot**: Route resolution happens inside the chain (not before it), so route-not-found errors are caught by the ExceptionFilter and produce structured 404 responses.
-
-3. **Caffeine for bounded maps**: All formerly unbounded `ConcurrentHashMap` instances (rate limit buckets, circuit breakers) now use Caffeine with `maximumSize` + `expireAfterAccess`.
-
-4. **Direct constructor injection**: No `@Resource`, no `Class.forName()` reflection in auto-configuration. All beans are constructed with explicit constructor arguments.
-
-5. **Unified error format**: Single `ExceptionFilter` produces `{result: {code, status, message}, data: null, meta: {requestId, timestamp}}`. No more dual-format inconsistency.
-
-6. **Real client IP extraction**: GatewayHandlerAdapter extracts from `X-Forwarded-For` → `X-Real-IP` → `Proxy-Client-IP` → `getRemoteAddr()`.
+SnakeYAML follows YAML 1.1 and would parse unquoted `OFF` / `ON` as booleans,
+corrupting `securityCode: OFF`. `YamlRouteStore` uses a `StrictBooleanResolver`
+that only treats `true` / `false` as booleans, so the route DSL accepts unquoted
+`OFF`.

@@ -63,6 +63,8 @@
 
         <!-- Serialization and Utilities -->
         <fastjson.version>2.0.62</fastjson.version>
+        <jetcache.version>2.8.0.RC</jetcache.version>
+        <jobrunr.version>8.8.2</jobrunr.version>
         <io.vavr.version>1.0.1</io.vavr.version>
         <guava.version>33.6.0-jre</guava.version>
         <opencsv.version>5.12.0</opencsv.version>
@@ -91,7 +93,6 @@
 
         <!-- Testing -->
         <testcontainers.version>2.0.5</testcontainers.version>
-        <testng.version>7.11.0</testng.version>
         <datafaker.version>2.5.4</datafaker.version>
         <mockito.version>5.23.0</mockito.version>
         <javers.version>7.10.0</javers.version>
@@ -171,12 +172,12 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-gateway-core</artifactId>
+                <artifactId>loadup-gateway-starter</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-gateway-starter</artifactId>
+                <artifactId>loadup-gateway-webmvc</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
 
@@ -209,11 +210,6 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-gateway-repository-file-plugin</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-gateway-repository-yaml-plugin</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
@@ -242,11 +238,6 @@
                 <artifactId>loadup-testify-data-engine</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-testify-mock-engine</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
@@ -255,12 +246,6 @@
             </dependency>
 
             <!-- ======== loadup-testify end ======== -->
-
-            <dependency>
-                <groupId>org.testng</groupId>
-                <artifactId>testng</artifactId>
-                <version>${testng.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>net.datafaker</groupId>
@@ -307,6 +292,22 @@
                 <groupId>com.alibaba.fastjson2</groupId>
                 <artifactId>fastjson2</artifactId>
                 <version>${fastjson.version}</version>
+            </dependency>
+            <!-- JetCache (multi-level cache backend; 2.8.0.RC is the first line built for Spring Boot 4 / Spring Data Redis 4) -->
+            <dependency>
+                <groupId>com.alicp.jetcache</groupId>
+                <artifactId>jetcache-anno</artifactId>
+                <version>${jetcache.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alicp.jetcache</groupId>
+                <artifactId>jetcache-redis-springdata</artifactId>
+                <version>${jetcache.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jobrunr</groupId>
+                <artifactId>jobrunr-spring-boot-4-starter</artifactId>
+                <version>${jobrunr.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.vavr</groupId>
@@ -552,6 +553,11 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-cache-binder-jetcache</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-cache-test</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
@@ -702,37 +708,7 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-retrytask-core</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-retrytask-infra</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-retrytask-launcher</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-retrytask-notify</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-retrytask-scheduler</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-retrytask-starter</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-retrytask-strategy</artifactId>
+                <artifactId>loadup-components-retrytask-binder-jobrunr</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>

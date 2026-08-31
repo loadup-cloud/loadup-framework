@@ -77,7 +77,7 @@
 
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-retrytask-starter</artifactId>
+            <artifactId>loadup-components-retrytask-binder-jobrunr</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

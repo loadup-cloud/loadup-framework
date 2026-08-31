@@ -55,7 +55,7 @@ loadup-parent/
 │   └── loadup-commons-util/    # 工具类：JsonUtil、StringUtils、DateUtils
 ├── components/                 # 可复用技术组件（框架级中间件）
 │   ├── loadup-components-authorization/   # 方法级授权 @RequirePermission
-│   ├── loadup-components-cache/           # 缓存（API + binder-caffeine + binder-redis）
+│   ├── loadup-components-cache/           # 缓存（Spring Cache 门面 + binder-caffeine/redis/jetcache）
 │   ├── loadup-components-captcha/         # 验证码生成
 │   ├── loadup-components-configcenter/    # 配置中心（API + binder-local/nacos/apollo）
 │   ├── loadup-components-database/        # MyBatis-Flex 配置、多租户、审计、Flyway 迁移
@@ -102,6 +102,9 @@ middleware/loadup-testify  → 仅 test scope，深度依赖框架内部类型
 ---
 
 ## 组件设计规范
+
+> **设计总纲与组件契约见 [DESIGN.md](./DESIGN.md)（设计理念、facade/binder 铁律、能力矩阵、组件目标设计）与 [ROADMAP.md](./ROADMAP.md)（分期改造计划）。**
+> 核心原则：底层 OSS + 薄集成；业务侧 API 尽量采用业界标准接口（Spring Cache、S3、OpenTelemetry、SCG Server MVC 等）；自创接口仅限标准表达不了的语义；每个组件 README 必须维护能力矩阵契约表。
 
 ### 单后端选择模式（Mode A）
 

@@ -30,12 +30,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class JsonUtil {
-    private static final Logger log = LoggerFactory.getLogger(JsonUtil.class);
-
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     static {
@@ -65,6 +61,21 @@ public class JsonUtil {
 
     public static JsonNode valueToTree(Object obj) {
         return MAPPER.valueToTree(obj);
+    }
+
+    /**
+     * Parse a JSON string into a {@link JsonNode}.
+     *
+     * @param json JSON source text
+     * @return parsed tree
+     * @throws RuntimeException if the text is not valid JSON
+     */
+    public static JsonNode readTree(String json) {
+        try {
+            return MAPPER.readTree(json);
+        } catch (Exception e) {
+            throw new RuntimeException("JSON parse failed", e);
+        }
     }
 
     public static <T> T convertValue(JsonNode exp, TypeReference<T> typeReference) {

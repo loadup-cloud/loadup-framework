@@ -43,12 +43,7 @@ public class ResponseAssertEngine implements TestifyAssertEngine {
     }
 
     @Override
-    public String supportKey() {
-        return "response";
-    }
-
-    @Override
-    public void compare(JsonNode expectRes, Object actualRes, Map<String, Object> context, List<String> reportList) {
+    public void compare(JsonNode expectRes, Object actualRes, Map<String, Object> context) {
         JsonNode actualNode = JsonUtil.valueToTree(actualRes);
         List<FieldDiff> diffs = new ArrayList<>();
 
@@ -137,6 +132,9 @@ public class ResponseAssertEngine implements TestifyAssertEngine {
         }
         if (node.isBoolean()) {
             return node.booleanValue();
+        }
+        if (node.isArray()) {
+            return JsonUtil.convertValue(node, new TypeReference<List<Object>>() {});
         }
         return node.asText();
     }

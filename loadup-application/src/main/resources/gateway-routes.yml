@@ -11,10 +11,6 @@ routes:
       protocol: bean
       beanName: authenticationServiceImpl
       methodName: login
-    filters:
-      - name: body-parser
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: auth-register
@@ -24,10 +20,6 @@ routes:
       protocol: bean
       beanName: authenticationServiceImpl
       methodName: register
-    filters:
-      - name: body-parser
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: auth-refresh
@@ -37,10 +29,6 @@ routes:
       protocol: bean
       beanName: authenticationServiceImpl
       methodName: refreshToken
-    filters:
-      - name: body-parser
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: auth-logout
@@ -50,10 +38,6 @@ routes:
       protocol: bean
       beanName: authenticationServiceImpl
       methodName: logout
-    filters:
-      - name: body-parser
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   # ========================================
@@ -66,11 +50,6 @@ routes:
       protocol: bean
       beanName: userService
       methodName: createUser
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: user-update
@@ -80,11 +59,6 @@ routes:
       protocol: bean
       beanName: userService
       methodName: updateUser
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: user-delete
@@ -94,11 +68,6 @@ routes:
       protocol: bean
       beanName: userService
       methodName: deleteUser
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: user-detail
@@ -108,11 +77,6 @@ routes:
       protocol: bean
       beanName: userService
       methodName: getUserById
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: internal
 
   - id: user-list
@@ -122,11 +86,6 @@ routes:
       protocol: bean
       beanName: userService
       methodName: queryUsers
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: user-change-password
@@ -136,11 +95,6 @@ routes:
       protocol: bean
       beanName: userService
       methodName: changePassword
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: internal
 
   - id: user-lock
@@ -150,11 +104,6 @@ routes:
       protocol: bean
       beanName: userService
       methodName: lockUser
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: user-unlock
@@ -164,11 +113,6 @@ routes:
       protocol: bean
       beanName: userService
       methodName: unlockUser
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   # ========================================
@@ -181,11 +125,6 @@ routes:
       protocol: bean
       beanName: roleService
       methodName: createRole
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: role-update
@@ -195,11 +134,6 @@ routes:
       protocol: bean
       beanName: roleService
       methodName: updateRole
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: role-delete
@@ -209,11 +143,6 @@ routes:
       protocol: bean
       beanName: roleService
       methodName: deleteRole
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: role-detail
@@ -223,11 +152,6 @@ routes:
       protocol: bean
       beanName: roleService
       methodName: getRoleById
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: role-list
@@ -237,11 +161,6 @@ routes:
       protocol: bean
       beanName: roleService
       methodName: queryRoles
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: role-tree
@@ -251,11 +170,6 @@ routes:
       protocol: bean
       beanName: roleService
       methodName: getRoleTree
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: role-assign-to-user
@@ -265,11 +179,6 @@ routes:
       protocol: bean
       beanName: roleService
       methodName: assignRoleToUser
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: role-remove-from-user
@@ -279,11 +188,6 @@ routes:
       protocol: bean
       beanName: roleService
       methodName: removeRoleFromUser
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: role-assign-permissions
@@ -293,11 +197,6 @@ routes:
       protocol: bean
       beanName: roleService
       methodName: assignPermissionsToRole
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   # ========================================
@@ -310,11 +209,6 @@ routes:
       protocol: bean
       beanName: permissionService
       methodName: createPermission
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: permission-update
@@ -324,11 +218,6 @@ routes:
       protocol: bean
       beanName: permissionService
       methodName: updatePermission
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: permission-delete
@@ -338,11 +227,6 @@ routes:
       protocol: bean
       beanName: permissionService
       methodName: deletePermission
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: permission-detail
@@ -352,11 +236,6 @@ routes:
       protocol: bean
       beanName: permissionService
       methodName: getPermissionById
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: permission-tree
@@ -366,11 +245,6 @@ routes:
       protocol: bean
       beanName: permissionService
       methodName: getPermissionTree
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: permission-user-menu
@@ -380,11 +254,6 @@ routes:
       protocol: bean
       beanName: permissionService
       methodName: getUserMenuTree
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   # ========================================
@@ -397,11 +266,6 @@ routes:
       protocol: bean
       beanName: departmentService
       methodName: createDepartment
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: department-update
@@ -411,11 +275,6 @@ routes:
       protocol: bean
       beanName: departmentService
       methodName: updateDepartment
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: department-delete
@@ -425,11 +284,6 @@ routes:
       protocol: bean
       beanName: departmentService
       methodName: deleteDepartment
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: department-detail
@@ -439,11 +293,6 @@ routes:
       protocol: bean
       beanName: departmentService
       methodName: getDepartmentById
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: department-tree
@@ -453,11 +302,6 @@ routes:
       protocol: bean
       beanName: departmentService
       methodName: getDepartmentTree
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF
 
   - id: department-move
@@ -467,9 +311,4 @@ routes:
       protocol: bean
       beanName: departmentService
       methodName: moveDepartment
-    filters:
-      - name: body-parser
-      - name: security
-    responseFilters:
-      - name: response-wrapper
     securityCode: OFF

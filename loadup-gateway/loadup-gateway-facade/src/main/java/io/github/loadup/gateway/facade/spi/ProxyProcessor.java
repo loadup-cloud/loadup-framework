@@ -27,9 +27,42 @@ import io.github.loadup.gateway.facade.model.GatewayResponse;
 import io.github.loadup.gateway.facade.model.RouteConfig;
 
 /**
- * Proxy plugin SPI interface
+ * Proxy plugin SPI interface.
+ *
+ * <p>Each protocol backend (HTTP / BEAN / RPC) registers one implementation; the
+ * gateway engine looks it up by {@link #getSupportedProtocol()}.
  */
-public interface ProxyProcessor extends GatewayPlugin {
+public interface ProxyProcessor {
+
+    /**
+     * Plugin name
+     */
+    String getName();
+
+    /**
+     * Plugin type
+     */
+    String getType();
+
+    /**
+     * Plugin version
+     */
+    String getVersion();
+
+    /**
+     * Plugin priority
+     */
+    int getPriority();
+
+    /**
+     * Initialize the plugin
+     */
+    void initialize();
+
+    /**
+     * Destroy the plugin
+     */
+    void destroy();
 
     /**
      * Proxy request to target service

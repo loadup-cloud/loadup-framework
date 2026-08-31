@@ -1,10 +1,18 @@
 # LoadUp Gateway
 
-Embedded multi-protocol API gateway for Spring Boot — distributed as a library, not a server.
+Embedded multi-protocol API gateway for Spring Boot, built on **Spring Cloud Gateway Server MVC** — distributed as a library, not a server. Routes are declared in YAML / DB and dispatched through a `RouterFunction`, so gateway routes and regular `@RestController`s coexist in one MVC application.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)
 [![Spring Boot 4.1](https://img.shields.io/badge/Spring_Boot-4.1.0-green.svg)](https://spring.io/projects/spring-boot)
+
+## What it does
+
+- Embeds an API gateway in your Spring Boot MVC app — no separate process
+- Declarative routes (YAML default, JDBC optional) without any `@RestController`
+- Backend protocols: `http://` forward, `bean://` in-process Spring bean call, `rpc://` Dubbo GenericService
+- Fixed pipeline per route: exception → tracing → security → rate limit → circuit breaker → response wrapper → proxy
+- Hot reload: route stores publish `RouteStoreRefreshedEvent`, the compiled `RouterFunction` snapshot swaps atomically
 
 ## Quick Start
 
@@ -16,7 +24,7 @@ Embedded multi-protocol API gateway for Spring Boot — distributed as a library
 </dependency>
 ```
 
-Create `gateway-routes.yml` in your project root:
+Create `gateway-routes.yml`:
 
 ```yaml
 routes:
@@ -27,113 +35,76 @@ routes:
       protocol: bean
       beanName: helloService
       methodName: sayHello
-    filters: []
+    securityCode: OFF
 ```
 
-Start your Spring Boot app — `GET /api/hello` is now proxied to `helloService.sayHello()`.
-
-## Features
-
-- **Embedded**: Drop the starter dependency into any Spring Boot app, no separate process
-- **Multi-protocol**: HTTP, Dubbo RPC, Spring Bean invocation — per-route
-- **Named filter chains**: Each route declares its own filter pipeline in YAML
-- **Hot reload**: Edit `gateway-routes.yml`, routes update in seconds, no restart
-- **Dual storage**: YAML file (default) or JDBC database (admin CRUD)
-- **Built-in filters**: rate limiting, circuit breaker, JWT auth, HMAC signature, body parsing, response wrapping, OpenTelemetry tracing
-- **Bounded caches**: Caffeine with size + TTL eviction — no memory leaks
-
-## Route Configuration
-
-```yaml
-routes:
-  - id: payment-api
-    path: /api/payment/**
-    method: POST
-    backend:
-      protocol: http
-      url: http://payment-service:8080
-    filters:
-      - name: body-parser
-      - name: rate-limit
-        props: { capacity: 100, refillRate: 10 }
-      - name: security
-      - name: circuit-breaker
-        props: { failureThreshold: 3 }
-    responseFilters:
-      - name: response-wrapper
-    securityCode: default
-    timeout: 5000
-
-  - id: health-check
-    path: /api/health
-    method: GET
-    backend:
-      protocol: bean
-      beanName: healthService
-      methodName: check
-    filters: []
-    wrapResponse: false
-```
-
-| Field | Description |
-|-------|-------------|
-| `id` | Unique route identifier |
-| `path` | URL pattern (supports Ant-style: `/api/user/{id}`, `/api/**`) |
-| `method` | HTTP method |
-| `backend.protocol` | `http`, `bean`, or `rpc` |
-| `backend.url` | Target URL (http/rpc) |
-| `backend.beanName` / `methodName` | Bean target (bean protocol) |
-| `filters` | Ordered request-phase filter names |
-| `responseFilters` | Ordered response-phase filter names |
-| `securityCode` | `OFF`, `default` (JWT), `signature` (HMAC), `internal` |
-| `timeout` | Route-level timeout in ms |
-| `wrapResponse` | Override global `{result, data, meta}` wrapping |
-
-## Available Filters
-
-| Name | Phase | Description |
-|------|-------|-------------|
-| `body-parser` | request | Parse JSON / form body into `parsedBody` attribute |
-| `rate-limit` | request | Token-bucket per (route, IP); config: `capacity`, `refillRate` |
-| `security` | request | JWT / HMAC signature / internal IP; reads `securityCode` |
-| `circuit-breaker` | request | CLOSED → OPEN → HALF_OPEN; config: `failureThreshold`, `openTimeout` |
-| `response-wrapper` | response | Wrap in `{result, data, meta}`; respects per-route `wrapResponse` |
-
-## Configuration Properties
+Configure it in `application.yml`:
 
 ```yaml
 loadup:
   gateway:
     enabled: true
     storage:
-      type: FILE              # FILE (YAML) or DATABASE (JDBC)
+      file:
+        base-path: classpath:gateway-routes.yml
+    response:
+      wrap: true        # wrap backend results in {result, data, meta}
     security:
       secret: "<your-jwt-secret>"
       header: Authorization
       prefix: "Bearer "
-      app-secrets:            # HMAC signature keys
+      app-secrets:
         my-app: "my-secret"
-    response:
-      wrap: true
 ```
 
-## Protocol Backends
+## Route Configuration
 
-| Protocol | Target format | Example |
-|----------|--------------|---------|
-| HTTP | `http://host:port/path` | `http://user-service:8080/api/users` |
-| Bean | `bean://beanName:methodName` | `bean://userService:findById` |
-| RPC | `rpc://interface:method:version` | `rpc://com.example.OrderApi:create:1.0.0` |
+### Maven coordinates
 
-## Architecture
+- Starter: `loadup-gateway-starter` (engine + default YAML store)
+- Protocol plugins (optional): `loadup-gateway-proxy-http-plugin`, `loadup-gateway-proxy-springbean-plugin`, `loadup-gateway-proxy-rpc-plugin`
+- Storage plugins (optional): `loadup-gateway-repository-database-plugin`
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for full details. Key points:
+```yaml
+routes:
+  - id: user-detail
+    path: /api/users/{id}
+    method: GET
+    backend:
+      protocol: bean
+      beanName: userService
+      methodName: findById
+    securityCode: default
+    wrapResponse: false
+    timeout: 5000
+  - id: payment-api
+    path: /api/payment/**
+    method: POST
+    backend:
+      protocol: http
+      url: http://payment-service:8080
+    securityCode: signature
+    wrapResponse: false
+```
 
-- **GatewayFilter** — named, per-route, replaces hardcoded GatewayAction chain
-- **RouteStore** — SPI for YAML / JDBC storage, replaces RepositoryPlugin
-- **Caffeine** — all bounded maps use size + TTL eviction
-- **Direct constructor injection** — no `@Resource`, no `Class.forName()` reflection
-- **Unified error format** — single ExceptionFilter, single `{result, data, meta}` JSON
+| Field | Description |
+|-------|-------------|
+| `id` | Unique route identifier |
+| `path` | URL pattern (Spring `PathPattern`, e.g. `/api/users/{id}`, `/api/**`) |
+| `method` | HTTP method |
+| `backend.protocol` | `http`, `bean`, or `rpc` |
+| `backend.url` | Target URL (http/rpc) |
+| `backend.beanName` / `methodName` | Bean target (bean protocol) |
+| `securityCode` | `OFF`, `default` (JWT), `signature` (HMAC), `internal` — unquoted `OFF` works |
+| `timeout` | Route-level timeout in ms |
+| `wrapResponse` | Override global `{result, data, meta}` wrapping |
+| `enabled` | Set to `false` to disable a route without deleting it |
+
+## Notes
+
+- Gateway responses are wrapped into `{result, data, meta}`; responses with HTTP status >= 400 are left untouched (formatted by the exception handler)
+- `GatewayResponse.body` is a JSON document — bean/RPC backends serialize results through Jackson, strings are quoted correctly
+- See [ARCHITECTURE.md](ARCHITECTURE.md) for the engine design (SCG Server MVC, atomic `RouterFunction` snapshots, filter order)
 
 ## License
 

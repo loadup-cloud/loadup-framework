@@ -10,12 +10,13 @@
     <artifactId>loadup-components-cache</artifactId>
     <packaging>pom</packaging>
     <name>Loadup Cache Component</name>
-    <description>Loadup Cache — API + caffeine/redis binders</description>
+    <description>Loadup Cache — Spring Cache facade + caffeine/redis/jetcache binders</description>
 
     <modules>
         <module>loadup-components-cache-api</module>
         <module>loadup-components-cache-binder-caffeine</module>
         <module>loadup-components-cache-binder-redis</module>
+        <module>loadup-components-cache-binder-jetcache</module>
         <module>loadup-components-cache-test</module>
     </modules>
 </project>

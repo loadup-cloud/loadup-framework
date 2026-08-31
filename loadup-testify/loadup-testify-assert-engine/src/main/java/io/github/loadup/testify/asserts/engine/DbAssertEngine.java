@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
@@ -44,6 +45,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 public class DbAssertEngine implements TestifyAssertEngine {
     private static final Logger log = LoggerFactory.getLogger(DbAssertEngine.class);
+    private static final Pattern IDENTIFIER = Pattern.compile("[A-Za-z0-9_]+");
 
     private final JdbcTemplate jdbcTemplate;
     private final VariableEngine variableEngine;
@@ -51,12 +53,7 @@ public class DbAssertEngine implements TestifyAssertEngine {
     private String columnNamingStrategy = "caseInsensitive";
 
     @Override
-    public String supportKey() {
-        return "database";
-    }
-
-    @Override
-    public void compare(JsonNode expectNode, Object actualEx, Map<String, Object> context, List<String> reportList) {
+    public void compare(JsonNode expectNode, Object actualEx, Map<String, Object> context) {
         if (expectNode == null) {
             return;
         }
@@ -73,7 +70,7 @@ public class DbAssertEngine implements TestifyAssertEngine {
     }
 
     private void processTableAssertion(JsonNode tableNode, Map<String, Object> context) {
-        String tableName = tableNode.get("table").asText();
+        String tableName = identifier(tableNode.get("table").asText());
         String mode = tableNode.has("mode") ? tableNode.get("mode").asText() : "lenient";
         JsonNode rowsNode = tableNode.get("rows");
 
@@ -118,14 +115,15 @@ public class DbAssertEngine implements TestifyAssertEngine {
                 .map(row -> ColumnNormalizer.normalizeMap(row, columnNamingStrategy))
                 .collect(Collectors.toList());
 
-        // 1. 严格模式下的行数总量校验（仅当不含自定义 _count 时有效，否则以 _count 为准）
-        if ("strict".equalsIgnoreCase(mode) && normalizedActuals.size() != expectedRows.size()) {
-            // 注意：如果配置了 _count，strict 模式的逻辑可能需要调整，这里保持基础总量对比
-            log.warn(
-                    "Strict mode: Table [{}] total row count mismatch. Expected: {}, Actual: {}",
-                    tableName,
-                    expectedRows.size(),
-                    normalizedActuals.size());
+        // 1. Strict mode enforces the total row count, unless any expected row uses _count
+        boolean hasCountCriteria = expectedRows.stream().anyMatch(row -> row.containsKey("_count"));
+        if ("strict".equalsIgnoreCase(mode) && !hasCountCriteria && normalizedActuals.size() != expectedRows.size()) {
+            Map<String, FieldDiff> countDiffs = new HashMap<>();
+            countDiffs.put(
+                    "_count",
+                    new FieldDiff(
+                            "_count", expectedRows.size(), normalizedActuals.size(), "Strict mode row count mismatch"));
+            diffs.add(RowDiff.diff(-1, "Row count mismatch", Map.of("_count", expectedRows.size()), countDiffs));
         }
 
         // 2. 逐行比对逻辑
@@ -258,7 +256,7 @@ public class DbAssertEngine implements TestifyAssertEngine {
                 criteria.forEach((k, v) -> {
                     // 只处理基础类型条件的拼装，复杂算子交由内存过滤
                     if (!(v instanceof Map)) {
-                        sql.append(" AND ").append(k).append(" = ?");
+                        sql.append(" AND ").append(identifier(k)).append(" = ?");
                         params.add(v);
                     }
                 });
@@ -272,9 +270,16 @@ public class DbAssertEngine implements TestifyAssertEngine {
                         || expectedRows.stream()
                                 .anyMatch(r ->
                                         !r.getOrDefault("_count", 1).toString().equals("0")))) {
-            return jdbcTemplate.queryForList("SELECT * FROM " + tableName + " LIMIT 100");
+            return jdbcTemplate.queryForList("SELECT * FROM " + identifier(tableName) + " LIMIT 100");
         }
         return results;
+    }
+
+    private String identifier(String value) {
+        if (!IDENTIFIER.matcher(value).matches()) {
+            throw new IllegalArgumentException("Invalid SQL identifier: " + value);
+        }
+        return value;
     }
 
     public DbAssertEngine(JdbcTemplate jdbcTemplate, VariableEngine variableEngine) {

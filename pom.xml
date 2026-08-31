@@ -315,16 +315,51 @@
                     <version>${jacoco-plugin.version}</version>
                     <executions>
                         <execution>
+                            <id>prepare-agent</id>
                             <goals>
                                 <goal>prepare-agent</goal>
                             </goals>
+                            <configuration>
+                                <destFile>${project.build.directory}/jacoco-unit.exec</destFile>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>prepare-agent-integration</id>
+                            <goals>
+                                <goal>prepare-agent-integration</goal>
+                            </goals>
+                            <configuration>
+                                <destFile>${project.build.directory}/jacoco-it.exec</destFile>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>merge</id>
+                            <goals>
+                                <goal>merge</goal>
+                            </goals>
+                            <phase>verify</phase>
+                            <configuration>
+                                <fileSets>
+                                    <fileSet>
+                                        <directory>${project.build.directory}</directory>
+                                        <includes>
+                                            <include>jacoco-unit.exec</include>
+                                            <include>jacoco-it.exec</include>
+                                        </includes>
+                                    </fileSet>
+                                </fileSets>
+                                <destFile>${project.build.directory}/jacoco-merged.exec</destFile>
+                            </configuration>
                         </execution>
                         <execution>
                             <id>report</id>
                             <goals>
                                 <goal>report</goal>
                             </goals>
-                            <phase>test</phase>
+                            <phase>verify</phase>
+                            <configuration>
+                                <dataFile>${project.build.directory}/jacoco-merged.exec</dataFile>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>

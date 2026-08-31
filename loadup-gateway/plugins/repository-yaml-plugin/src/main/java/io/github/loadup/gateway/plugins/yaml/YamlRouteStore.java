@@ -1,11 +1,11 @@
 package io.github.loadup.gateway.plugins.yaml;
 
 import io.github.loadup.gateway.facade.config.GatewayProperties;
+import io.github.loadup.gateway.facade.event.RouteStoreRefreshedEvent;
 import io.github.loadup.gateway.facade.model.FilterDefinition;
 import io.github.loadup.gateway.facade.model.RouteDefinition;
 import io.github.loadup.gateway.facade.model.RouteDefinition.BackendDefinition;
 import io.github.loadup.gateway.facade.spi.RouteStore;
-import io.github.loadup.gateway.plugins.yaml.event.RouteStoreRefreshedEvent;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import java.io.IOException;
@@ -32,7 +32,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
+import org.yaml.snakeyaml.representer.Representer;
 
 public class YamlRouteStore implements RouteStore {
     private static final Logger log = LoggerFactory.getLogger(YamlRouteStore.class);
@@ -40,7 +44,12 @@ public class YamlRouteStore implements RouteStore {
 
     private final GatewayProperties gatewayProperties;
     private final ApplicationEventPublisher eventPublisher;
-    private final Yaml yaml = new Yaml();
+    private final Yaml yaml = new Yaml(
+            new SafeConstructor(new LoaderOptions()),
+            new Representer(new DumperOptions()),
+            new DumperOptions(),
+            new LoaderOptions(),
+            new StrictBooleanResolver());
     private final AtomicReference<List<RouteDefinition>> routes = new AtomicReference<>(List.of());
 
     private String classpathResource;
@@ -175,7 +184,7 @@ public class YamlRouteStore implements RouteStore {
         def.setPath((String) raw.get("path"));
         def.setMethod((String) raw.getOrDefault("method", "POST"));
         def.setEnabled((Boolean) raw.getOrDefault("enabled", true));
-        def.setSecurityCode((String) raw.get("securityCode"));
+        def.setSecurityCode(toStringOrNull(raw.get("securityCode")));
         if (raw.get("timeout") instanceof Number n) {
             def.setTimeout(n.longValue());
         }
@@ -203,6 +212,15 @@ public class YamlRouteStore implements RouteStore {
         }
 
         return def;
+    }
+
+    /**
+     * Converts a raw YAML value to its string form. SnakeYAML parses YAML 1.1 boolean
+     * literals ({@code ON/OFF/YES/NO}) into {@link Boolean}, so {@code securityCode: OFF}
+     * must be handled explicitly instead of a plain cast.
+     */
+    private static String toStringOrNull(Object value) {
+        return value == null ? null : String.valueOf(value);
     }
 
     @SuppressWarnings("unchecked")
@@ -252,9 +270,14 @@ public class YamlRouteStore implements RouteStore {
         if (key == null) {
             return;
         }
+        Path configFileName = configPath.getFileName();
+        if (configFileName == null) {
+            key.reset();
+            return;
+        }
         for (WatchEvent<?> event : key.pollEvents()) {
             Path changed = (Path) event.context();
-            if (changed.endsWith(configPath.getFileName().toString())) {
+            if (changed.endsWith(configFileName)) {
                 log.info("Route config changed: {}, reloading...", changed);
                 try {
                     Thread.sleep(200);
