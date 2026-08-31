@@ -64,7 +64,7 @@ loadup-parent/
 │   ├── loadup-components-globalunique/    # 全局幂等性控制
 │   ├── loadup-components-gotone/          # 统一消息通知（API + email/sms/push/webhook）
 │   ├── loadup-components-pipeline/        # 流水线编排引擎
-│   ├── loadup-components-retrytask/       # 分布式重试任务框架
+│   ├── loadup-components-retrytask/       # 分布式重试（JobRunr 底座：facade + binder-jobrunr）
 │   ├── loadup-components-scheduler/       # 任务调度（API + simplejob/quartz/xxljob/powerjob）
 │   ├── loadup-components-signature/       # 数字签名
 │   ├── loadup-components-springdoc/       # knife4j / OpenAPI 文档自动配置

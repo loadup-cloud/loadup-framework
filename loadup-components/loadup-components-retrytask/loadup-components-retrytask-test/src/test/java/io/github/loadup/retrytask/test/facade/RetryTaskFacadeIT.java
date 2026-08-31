@@ -37,6 +37,7 @@ import io.github.loadup.retrytask.facade.model.RetryTaskRequest;
 import io.github.loadup.retrytask.facade.model.RetryTaskStatus;
 import io.github.loadup.retrytask.test.TestRetryTaskApplication;
 import io.github.loadup.retrytask.test.TestRetryTaskProcessors;
+import io.github.loadup.retrytask.test.TestRetryTaskProcessors.ControlledProcessor;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
@@ -65,104 +66,110 @@ class RetryTaskFacadeIT {
 
     @Test
     void registerRunsImmediatelyAndSucceeds() {
+        String bizType = TestRetryTaskProcessors.IMMEDIATE;
         String bizId = runId + "-order-1";
-        facade.register(RetryTaskRequest.of(
-                TestRetryTaskProcessors.RECORDING, bizId, Map.of("orderId", "1")));
+        ControlledProcessor processor = processors.processor(bizType);
+        facade.register(RetryTaskRequest.of(bizType, bizId, Map.of("orderId", "1")));
 
-        await().atMost(ofSeconds(15)).until(() -> facade.getStatus(
-                        TestRetryTaskProcessors.RECORDING, bizId)
-                .orElse(null) == SUCCEEDED);
-        assertThat(processors.recordingCalls()).isEqualTo(1);
-        assertThat(processors.recordingContexts())
+        await().atMost(ofSeconds(15))
+                .until(() -> facade.getStatus(bizType, bizId).orElse(null) == SUCCEEDED);
+        assertThat(processor.calls()).isEqualTo(1);
+        assertThat(processor.contexts())
                 .anySatisfy(context -> assertThat(context.args()).containsEntry("orderId", "1"));
     }
 
     @Test
     void registerIsIdempotentWhileTaskIsActive() {
+        String bizType = TestRetryTaskProcessors.BLOCKING;
         String bizId = runId + "-blocked-1";
-        UUID first = facade.register(RetryTaskRequest.of(TestRetryTaskProcessors.BLOCKING, bizId));
+        ControlledProcessor processor = processors.processor(bizType);
+        UUID first = facade.register(RetryTaskRequest.of(bizType, bizId));
 
-        await().atMost(ofSeconds(10)).until(() -> processors.blockingCalls() == 1);
+        await().atMost(ofSeconds(10)).until(() -> processor.calls() == 1);
 
-        UUID second = facade.register(RetryTaskRequest.of(TestRetryTaskProcessors.BLOCKING, bizId));
+        UUID second = facade.register(RetryTaskRequest.of(bizType, bizId));
 
         assertThat(second).isEqualTo(first);
-        processors.releaseBlocking();
+        processor.releaseGate();
         await().atMost(ofSeconds(10))
-                .until(() -> facade.getStatus(TestRetryTaskProcessors.BLOCKING, bizId).orElse(null) == SUCCEEDED);
-        assertThat(processors.blockingCalls()).isEqualTo(1);
+                .until(() -> facade.getStatus(bizType, bizId).orElse(null) == SUCCEEDED);
+        assertThat(processor.calls()).isEqualTo(1);
     }
 
     @Test
     void registerWithScheduleAtRunsLater() {
+        String bizType = TestRetryTaskProcessors.SCHEDULED;
         String bizId = runId + "-later-1";
-        facade.register(RetryTaskRequest.schedule(
-                TestRetryTaskProcessors.RECORDING, bizId, Instant.now().plusSeconds(3)));
+        ControlledProcessor processor = processors.processor(bizType);
+        facade.register(RetryTaskRequest.schedule(bizType, bizId, Instant.now().plusSeconds(3)));
 
-        assertThat(facade.getStatus(TestRetryTaskProcessors.RECORDING, bizId)).contains(PENDING);
+        assertThat(facade.getStatus(bizType, bizId)).contains(PENDING);
 
         await().atMost(ofSeconds(15))
-                .until(() -> facade.getStatus(TestRetryTaskProcessors.RECORDING, bizId).orElse(null) == SUCCEEDED);
-        assertThat(processors.recordingCalls()).isEqualTo(1);
+                .until(() -> facade.getStatus(bizType, bizId).orElse(null) == SUCCEEDED);
+        assertThat(processor.calls()).isEqualTo(1);
     }
 
     @Test
     void failedTaskIsRetriedUntilMaxRetriesExhausted() {
+        String bizType = TestRetryTaskProcessors.FAILING;
         String bizId = runId + "-exhausted-1";
-        facade.register(RetryTaskRequest.of(TestRetryTaskProcessors.FAILING, bizId));
+        ControlledProcessor processor = processors.processor(bizType);
+        facade.register(RetryTaskRequest.of(bizType, bizId));
 
         await().atMost(ofSeconds(30))
-                .until(() -> facade.getStatus(TestRetryTaskProcessors.FAILING, bizId).orElse(null) == FAILED);
-        assertThat(processors.failingCalls()).isEqualTo(2);
+                .until(() -> facade.getStatus(bizType, bizId).orElse(null) == FAILED);
+        assertThat(processor.calls()).isEqualTo(2);
     }
 
     @Test
     void registerAfterFailureStartsFreshRun() {
+        String bizType = TestRetryTaskProcessors.RETRY_AGAIN;
         String bizId = runId + "-retry-again-1";
-        facade.register(RetryTaskRequest.of(TestRetryTaskProcessors.FAILING, bizId));
+        ControlledProcessor processor = processors.processor(bizType);
+        facade.register(RetryTaskRequest.of(bizType, bizId));
         await().atMost(ofSeconds(30))
-                .until(() -> facade.getStatus(TestRetryTaskProcessors.FAILING, bizId).orElse(null) == FAILED);
+                .until(() -> facade.getStatus(bizType, bizId).orElse(null) == FAILED);
 
-        processors.setFailFailing(false);
-        facade.register(RetryTaskRequest.of(TestRetryTaskProcessors.FAILING, bizId));
+        processor.setFailOnCall(false);
+        facade.register(RetryTaskRequest.of(bizType, bizId));
 
-        await().atMost(ofSeconds(15))
-                .until(() -> facade.getStatus(TestRetryTaskProcessors.FAILING, bizId).orElse(null) == SUCCEEDED);
-        assertThat(processors.failingCalls()).isEqualTo(3);
+        await().atMost(ofSeconds(20))
+                .until(() -> facade.getStatus(bizType, bizId).orElse(null) == SUCCEEDED);
+        assertThat(processor.calls()).isEqualTo(3);
     }
 
     @Test
     void resetReenqueuesTaskWithOriginalPayload() {
+        String bizType = TestRetryTaskProcessors.RESET;
         String bizId = runId + "-reset-1";
-        facade.register(RetryTaskRequest.of(
-                TestRetryTaskProcessors.FAILING, bizId, Map.of("payloadKey", "payloadValue")));
+        ControlledProcessor processor = processors.processor(bizType);
+        facade.register(RetryTaskRequest.of(bizType, bizId, Map.of("payloadKey", "payloadValue")));
         await().atMost(ofSeconds(30))
-                .until(() -> facade.getStatus(TestRetryTaskProcessors.FAILING, bizId).orElse(null) == FAILED);
+                .until(() -> facade.getStatus(bizType, bizId).orElse(null) == FAILED);
 
-        processors.setFailFailing(false);
-        facade.reset(TestRetryTaskProcessors.FAILING, bizId);
+        processor.setFailOnCall(false);
+        facade.reset(bizType, bizId);
 
         await().atMost(ofSeconds(20))
-                .until(() -> facade.getStatus(TestRetryTaskProcessors.FAILING, bizId).orElse(null) == SUCCEEDED);
-        assertThat(processors.failingCalls()).isEqualTo(3);
-        assertThat(processors.failingContexts())
+                .until(() -> facade.getStatus(bizType, bizId).orElse(null) == SUCCEEDED);
+        assertThat(processor.calls()).isEqualTo(3);
+        assertThat(processor.contexts())
                 .anySatisfy(context -> assertThat(context.args()).containsEntry("payloadKey", "payloadValue"));
     }
 
     @Test
     void deleteStopsScheduledTask() {
+        String bizType = TestRetryTaskProcessors.CANCELLED;
         String bizId = runId + "-cancelled-1";
-        facade.register(RetryTaskRequest.schedule(
-                TestRetryTaskProcessors.RECORDING, bizId, Instant.now().plusSeconds(4)));
+        ControlledProcessor processor = processors.processor(bizType);
+        facade.register(RetryTaskRequest.schedule(bizType, bizId, Instant.now().plusSeconds(4)));
 
-        facade.delete(TestRetryTaskProcessors.RECORDING, bizId);
+        facade.delete(bizType, bizId);
 
-        assertThat(facade.getStatus(TestRetryTaskProcessors.RECORDING, bizId)).contains(DELETED);
-        await().atMost(ofSeconds(8))
-                .until(() -> processors.recordingCalls() == 0);
-        await().atMost(ofSeconds(7)).pollDelay(ofSeconds(5)).until(() -> processors.recordingCalls() == 0);
-        assertThat(processors.recordingCalls()).isZero();
-        assertThat(facade.getStatus(TestRetryTaskProcessors.RECORDING, bizId)).contains(DELETED);
+        assertThat(facade.getStatus(bizType, bizId)).contains(DELETED);
+        await().atMost(ofSeconds(7)).pollDelay(ofSeconds(6)).until(() -> processor.calls() == 0);
+        assertThat(facade.getStatus(bizType, bizId)).contains(DELETED);
     }
 
     @Test

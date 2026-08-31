@@ -18,8 +18,10 @@ loadup:
     biz-types:
       failing:
         max-retries: 1
-      recording:
-        max-retries: 2
+      retry-again:
+        max-retries: 1
+      reset:
+        max-retries: 1
 
 logging:
   level:

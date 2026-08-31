@@ -39,9 +39,7 @@ public class DefaultRetryTaskProcessorRegistry implements RetryTaskProcessorRegi
     public DefaultRetryTaskProcessorRegistry(List<RetryTaskProcessor> processors) {
         this.processors = processors.stream()
                 .collect(Collectors.toUnmodifiableMap(
-                        RetryTaskProcessor::bizType,
-                        Function.identity(),
-                        (first, duplicate) -> {
+                        RetryTaskProcessor::bizType, Function.identity(), (first, duplicate) -> {
                             throw new IllegalStateException(
                                     "Duplicate RetryTaskProcessor for bizType '" + duplicate.bizType() + "'");
                         }));

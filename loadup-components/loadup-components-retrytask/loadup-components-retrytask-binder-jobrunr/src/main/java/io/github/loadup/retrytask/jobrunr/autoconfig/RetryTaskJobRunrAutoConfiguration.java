@@ -90,7 +90,8 @@ public class RetryTaskJobRunrAutoConfiguration {
             @Override
             public Object postProcessAfterInitialization(Object bean, String beanName) {
                 if (bean instanceof BackgroundJobServer backgroundJobServer) {
-                    filterProvider.ifAvailable(filter -> backgroundJobServer.getJobFilters().addAll(List.of(filter)));
+                    filterProvider.ifAvailable(
+                            filter -> backgroundJobServer.getJobFilters().addAll(List.of(filter)));
                 }
                 return bean;
             }

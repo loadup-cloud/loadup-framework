@@ -24,7 +24,9 @@ package io.github.loadup.retrytask.test;
 
 import io.github.loadup.retrytask.facade.RetryTaskProcessor;
 import io.github.loadup.retrytask.facade.model.RetryTaskContext;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,108 +34,123 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/** Test processors that record invocations and can be switched between success and failure. */
+/**
+ * One isolated processor per test scenario. Each processor owns its counters and failure switch, so
+ * jobs left running by one test never affect another.
+ */
 @Configuration
 public class TestRetryTaskProcessors {
 
-    public static final String RECORDING = "recording";
+    public static final String IMMEDIATE = "immediate";
+    public static final String SCHEDULED = "scheduled";
+    public static final String CANCELLED = "cancelled";
     public static final String FAILING = "failing";
+    public static final String RETRY_AGAIN = "retry-again";
+    public static final String RESET = "reset";
     public static final String BLOCKING = "blocking";
 
-    private final AtomicInteger recordingCalls = new AtomicInteger();
-    private final CopyOnWriteArrayList<RetryTaskContext> recordingContexts = new CopyOnWriteArrayList<>();
-    private final AtomicBoolean failRecording = new AtomicBoolean();
-
-    private final AtomicInteger failingCalls = new AtomicInteger();
-    private final AtomicBoolean failFailing = new AtomicBoolean(true);
-    private final CopyOnWriteArrayList<RetryTaskContext> failingContexts = new CopyOnWriteArrayList<>();
-
-    private final AtomicInteger blockingCalls = new AtomicInteger();
-    private final CountDownLatch blockingGate = new CountDownLatch(1);
+    private final Map<String, ControlledProcessor> processors = new HashMap<>();
 
     @Bean
-    public RetryTaskProcessor recordingRetryTaskProcessor() {
-        return new RetryTaskProcessor() {
-            @Override
-            public String bizType() {
-                return RECORDING;
-            }
-
-            @Override
-            public void process(RetryTaskContext context) throws Exception {
-                recordingCalls.incrementAndGet();
-                recordingContexts.add(context);
-                if (failRecording.get()) {
-                    throw new IllegalStateException("forced recording failure");
-                }
-            }
-        };
+    public RetryTaskProcessor immediateProcessor() {
+        return register(new ControlledProcessor(IMMEDIATE));
     }
 
     @Bean
-    public RetryTaskProcessor failingRetryTaskProcessor() {
-        return new RetryTaskProcessor() {
-            @Override
-            public String bizType() {
-                return FAILING;
-            }
-
-            @Override
-            public void process(RetryTaskContext context) throws Exception {
-                failingCalls.incrementAndGet();
-                failingContexts.add(context);
-                if (failFailing.get()) {
-                    throw new IllegalStateException("forced failing failure");
-                }
-            }
-        };
+    public RetryTaskProcessor scheduledProcessor() {
+        return register(new ControlledProcessor(SCHEDULED));
     }
 
     @Bean
-    public RetryTaskProcessor blockingRetryTaskProcessor() {
-        return new RetryTaskProcessor() {
-            @Override
-            public String bizType() {
-                return BLOCKING;
+    public RetryTaskProcessor cancelledProcessor() {
+        return register(new ControlledProcessor(CANCELLED));
+    }
+
+    @Bean
+    public RetryTaskProcessor failingProcessor() {
+        return register(new ControlledProcessor(FAILING, true));
+    }
+
+    @Bean
+    public RetryTaskProcessor retryAgainProcessor() {
+        return register(new ControlledProcessor(RETRY_AGAIN, true));
+    }
+
+    @Bean
+    public RetryTaskProcessor resetProcessor() {
+        return register(new ControlledProcessor(RESET, true));
+    }
+
+    @Bean
+    public RetryTaskProcessor blockingProcessor() {
+        return register(new ControlledProcessor(BLOCKING).withGate(new CountDownLatch(1)));
+    }
+
+    public ControlledProcessor processor(String bizType) {
+        return processors.get(bizType);
+    }
+
+    private ControlledProcessor register(ControlledProcessor processor) {
+        processors.put(processor.bizType(), processor);
+        return processor;
+    }
+
+    /** Recorded, controllable {@link RetryTaskProcessor} used only by tests. */
+    public static class ControlledProcessor implements RetryTaskProcessor {
+
+        private final String bizType;
+        private final AtomicInteger calls = new AtomicInteger();
+        private final AtomicBoolean failOnCall;
+        private final CopyOnWriteArrayList<RetryTaskContext> contexts = new CopyOnWriteArrayList<>();
+        private CountDownLatch gate;
+
+        private ControlledProcessor(String bizType) {
+            this(bizType, false);
+        }
+
+        private ControlledProcessor(String bizType, boolean failOnCall) {
+            this.bizType = bizType;
+            this.failOnCall = new AtomicBoolean(failOnCall);
+        }
+
+        private ControlledProcessor withGate(CountDownLatch gate) {
+            this.gate = gate;
+            return this;
+        }
+
+        @Override
+        public String bizType() {
+            return bizType;
+        }
+
+        @Override
+        public void process(RetryTaskContext context) throws Exception {
+            calls.incrementAndGet();
+            contexts.add(context);
+            if (gate != null) {
+                gate.await();
             }
-
-            @Override
-            public void process(RetryTaskContext context) throws Exception {
-                blockingCalls.incrementAndGet();
-                blockingGate.await();
+            if (failOnCall.get()) {
+                throw new IllegalStateException("forced failure for " + bizType);
             }
-        };
-    }
+        }
 
-    public int recordingCalls() {
-        return recordingCalls.get();
-    }
+        public int calls() {
+            return calls.get();
+        }
 
-    public List<RetryTaskContext> recordingContexts() {
-        return List.copyOf(recordingContexts);
-    }
+        public List<RetryTaskContext> contexts() {
+            return List.copyOf(contexts);
+        }
 
-    public void setFailRecording(boolean fail) {
-        failRecording.set(fail);
-    }
+        public void setFailOnCall(boolean fail) {
+            failOnCall.set(fail);
+        }
 
-    public int failingCalls() {
-        return failingCalls.get();
-    }
-
-    public List<RetryTaskContext> failingContexts() {
-        return List.copyOf(failingContexts);
-    }
-
-    public void setFailFailing(boolean fail) {
-        failFailing.set(fail);
-    }
-
-    public int blockingCalls() {
-        return blockingCalls.get();
-    }
-
-    public void releaseBlocking() {
-        blockingGate.countDown();
+        public void releaseGate() {
+            if (gate != null) {
+                gate.countDown();
+            }
+        }
     }
 }

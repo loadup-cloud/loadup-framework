@@ -132,7 +132,7 @@ XXL-Job 需要调度中心、Quartz 是嵌入式、Nacos 和 Apollo 是不同的
 
 - 业务模块（`*-client` / `*-domain` / `*-app`）**只允许声明 facade**（`*-api` / `*-starter`）
 - binder 依赖**只允许出现在 binder 模块自身与集成方根工程**（`loadup-application`）
-- **starter 不得传递 binder**：starter 只依赖 facade/api；infra 等实现拆为 `engine` / `binder` 模块，由集成方显式选型（如 retrytask-starter 当前直接依赖 infra，需拆分）
+- **starter 不得传递 binder**：starter 只依赖 facade/api；实现拆为 `binder` 模块，由集成方显式选型（如 retrytask 已拆为 facade + binder-jobrunr）
 
 根 pom 引入 `maven-enforcer-plugin` 的 `bannedDependencies`，CI 必跑：
 
@@ -180,7 +180,7 @@ class ArchitectureTest {
                 "com.alicp.jetcache..",
                 "org.springframework.data.redis..",
                 "com.alibaba.nacos..",
-                "io.github.loadup.retrytask.infra..");
+                "io.github.loadup.retrytask.jobrunr..");
 }
 ```
 
@@ -324,12 +324,12 @@ loadup-components-{domain}/
 - **channel binder**：`email`（Spring Mail）/ `sms`（sms4j 或厂商 SDK）/ `push`（厂商 SDK）/ `webhook`。
 - **动作**：补齐渠道实现 + 桩/容器测试；能力矩阵。
 
-### 5.8 retrytask — P1
+### 5.8 retrytask — 已完成（JobRunr 底座）
 
-- **现状**：自研引擎 + JDBC；表结构两份 schema 不一致、线程池配置未接线、未配置 bizType 任务被漏扫、README 与代码脱节。
-- **目标 facade**（保留）：`RetryTaskFacade` + `RetryTaskProcessor` + `RetryStrategy`。
-- **binder**：`engine-jdbc`（默认，修复问题）/ `engine-jobrunr`（可选，获得 dashboard、状态机、集群心跳）。
-- **动作**：修复主键（统一 `VARCHAR(64)` UUID 规范）、线程池接线、未配置 bizType 兜底扫描、README 同步；评估 JobRunr binder 可行性。
+- **落地**：以 JobRunr 8.8.2 为底座的 `binder-jobrunr` 已实现并入库；删除自研引擎 / JDBC 存储 / 重试策略 / notifier / 线程池 / 乐观锁 / schema。
+- **目标 facade**（保留）：`RetryTaskFacade` + `RetryTaskProcessor`（bizType 注册，处理器抛异常即触发重试）。
+- **binder**：`binder-jobrunr`（JobRunr 官方 `spring-boot-4-starter`；获得 dashboard、状态机、集群心跳、死任务找回）。
+- **能力**：`bizType + bizId` 幂等（确定性 jobId）、定时执行、`delete` 取消、`reset` 按原参数重跑、状态查询；失败告警通过 `ApplyStateFilter` 追加。
 
 ### 5.9 database — P3
 
@@ -415,6 +415,6 @@ loadup-components-{domain}/
 | 1 | 许可证：GPL-3.0 → ? | **Apache-2.0**（或 MIT） | 商业二开可行性 |
 | 2 | Cache facade：Spring Cache vs 自研注解 | **Spring Cache** | cache 组件 P1 改造方向 |
 | 3 | Authorization 后端：Sa-Token vs Spring Security | **Sa-Token**（轻量 + 生态） | authorization / upms 改造 |
-| 4 | RetryTask：修复自研 vs JobRunr binder | 先修复自研，JobRunr 做评估 | retrytask 路线 |
+| 4 | RetryTask：自研引擎 vs JobRunr 底座 | **JobRunr**（已落地：binder-jobrunr） | retrytask 路线（已定） |
 | 5 | Gateway 引擎替换时机 | 先最小验证 SCG Server MVC | gateway P2 排期 |
 | 6 | ORM：MyBatis-Flex vs MyBatis-Plus | 保持 MyBatis-Flex（已投入） | database 组件 |

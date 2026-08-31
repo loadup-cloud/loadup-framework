@@ -65,8 +65,7 @@ class DefaultRetryTaskProcessorRegistryTest {
 
     @Test
     void duplicateBizTypeIsRejected() {
-        assertThatThrownBy(() -> new DefaultRetryTaskProcessorRegistry(
-                        List.of(processor("a"), processor("a"))))
+        assertThatThrownBy(() -> new DefaultRetryTaskProcessorRegistry(List.of(processor("a"), processor("a"))))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Duplicate");
     }

@@ -21,6 +21,6 @@
         <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
     </properties>
-    <dependencies />
+    <dependencies/>
 
 </project>
