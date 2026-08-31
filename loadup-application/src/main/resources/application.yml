@@ -69,8 +69,6 @@ loadup:
       # When type = FILE, configure the `file` group below
       file:
         base-path: classpath:gateway-routes.yml
-  scheduler:
-    type: simplejob
   tracer:
     enabled: false
     enable-web-tracing: true

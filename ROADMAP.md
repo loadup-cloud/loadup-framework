@@ -32,7 +32,7 @@
 任务：
 
 - [ ] 将 [DESIGN.md](./DESIGN.md) 第 2、3、4 节要点并入 `AGENTS.md`（设计原则 + 约束执行机制 + facade/binder 铁律 + 能力矩阵要求）
-- [ ] 制定能力矩阵模板，并在 3 个代表组件（cache / scheduler / dfs）README 落地示范
+- [x] 制定能力矩阵模板，并在 3 个代表组件（cache / scheduler / dfs）README 落地示范（cache / scheduler 已完成，dfs 待补）
 - [ ] 决策项拍板（DESIGN.md 第 7 节）：Cache facade、Authorization 后端、ORM（许可证已定 Apache-2.0，RetryTask 已定 JobRunr）
 - [ ] CI 增加文档一致性检查（能力矩阵存在性、README 许可证标识一致性）
 - [ ] 根 pom 引入 `maven-enforcer-plugin` `bannedDependencies`（业务模块禁止依赖 binder / 中间件坐标），binder 模块与集成方工程豁免
@@ -54,6 +54,7 @@
 - [x] **cache 迁移 Spring Cache**：删除自研 `CacheBinding` / `CacheTemplate` / `CacheProvider` 体系；facade = Spring Cache 注解 + `loadup.cache.*` 增量配置（按 cache name 的 TTL / 空值 / 随机过期）；caffeine / redis / jetcache 三 binder 重写；容器测试证明切换零代码修改
 - [ ] **authorization 委托底层**：抽象 `PermissionChecker` SPI；默认适配 Sa-Token；`UserContext` 改 `TransmittableThreadLocal`；补异步上下文测试
 - [x] **retrytask 迁移 JobRunr**：删除自研引擎/JDBC 存储；facade 保留，`binder-jobrunr` 落地（幂等、定时、取消、失败重跑、状态查询、失败告警）；集成测试验证业务代码零修改
+- [x] **scheduler 去自研化**：删除 `@DistributedScheduler` / SimpleJob / Quartz / XXL-Job / PowerJob 旧 binder；facade = `SchedulerTemplate` + `SchedulerProcessor`；`binder-jobrunr`（与 retrytask 共用引擎）+ `binder-quartz` 落地；JobRunr/Quartz 双 binder 集成测试验证切换零代码修改
 - [ ] **gotone 补渠道**：实现 email（Spring Mail）/ sms / push / webhook channel，桩 + 容器测试
 
 **验收**：
@@ -102,7 +103,7 @@
 - [ ] `loadup-application` 重构为脚手架模板工程：最小业务 + 默认 binder 示例 + 每个 binder 的 profile/配置片段
 - [ ] 编写"选型手册"（本地开发怎么配 / 上生产怎么切 / 高级能力怎么换）
 - [ ] 运行 `/docs-sync` 同步文档站
-- [ ] 修复各组件 README 与代码脱节问题（gotone、scheduler 许可证标识等）
+- [ ] 修复各组件 README 与代码脱节问题（gotone 等）
 
 **验收**：
 

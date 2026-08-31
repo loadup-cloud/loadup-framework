@@ -1,13 +1,20 @@
-loadup:
-  scheduler:
-    default-binder: simplejob
-    enabled-binders: [ simplejob ,quartz ]
-    bindings: # 可选
-      simplejob-biz-type:
-        binder-type: simplejob
-      quartz-biz-type:
-        binder-type: quartz
+spring:
+  application:
+    name: scheduler-test
+  quartz:
+    job-store-type: memory
+    properties:
+      org.quartz.threadPool.threadCount: 2
 
-    binders:
-      simplejob:
-        database: ${spring.data.redis.database:0}
+jobrunr:
+  background-job-server:
+    enabled: true
+    poll-interval-in-seconds: 5
+    worker-count: 2
+  dashboard:
+    enabled: false
+
+logging:
+  level:
+    io.github.loadup.components.scheduler: DEBUG
+    org.jobrunr: INFO

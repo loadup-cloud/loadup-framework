@@ -1,1 +1,1 @@
-io.github.loadup.components.scheduler.quartz.autoconfig.QuartzJobSchedulerAutoConfiguration
+io.github.loadup.components.scheduler.quartz.autoconfig.QuartzSchedulerAutoConfiguration

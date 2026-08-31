@@ -10,14 +10,12 @@
     <artifactId>loadup-components-scheduler</artifactId>
     <packaging>pom</packaging>
     <name>Loadup Scheduler Component</name>
-    <description>Loadup Scheduler — API + quartz/xxljob/powerjob/simplejob binders</description>
+    <description>Loadup Scheduler — API + binder-jobrunr/binder-quartz</description>
 
     <modules>
         <module>loadup-components-scheduler-api</module>
+        <module>loadup-components-scheduler-binder-jobrunr</module>
         <module>loadup-components-scheduler-binder-quartz</module>
-        <module>loadup-components-scheduler-binder-xxljob</module>
-        <module>loadup-components-scheduler-binder-powerjob</module>
-        <module>loadup-components-scheduler-binder-simplejob</module>
         <module>loadup-components-scheduler-test</module>
     </modules>
 </project>

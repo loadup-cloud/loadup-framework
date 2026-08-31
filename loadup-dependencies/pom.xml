@@ -671,17 +671,7 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-scheduler-binder-simplejob</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-scheduler-binder-powerjob</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-scheduler-binder-xxljob</artifactId>
+                <artifactId>loadup-components-scheduler-binder-jobrunr</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>

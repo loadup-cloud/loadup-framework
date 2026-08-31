@@ -44,7 +44,7 @@ LoadUp 的目标是成为类似 RuoYi / Pig 的**被消费脚手架**：集成�
 | 缓存 | Spring Cache 注解（`@Cacheable` 等）+ `CacheManager` |
 | 认证授权 | Sa-Token / Spring Security（作为后端，LoadUp 注解为薄门面） |
 | 配置中心 | Nacos / Apollo（SDK 差异由 binder 屏蔽） |
-| 任务调度 | Quartz / XXL-Job / PowerJob |
+| 任务调度 | JobRunr（周期任务，与 retrytask 共用引擎）/ Quartz |
 | 文件存储 | S3 协议（MinIO / OSS / COS） |
 | 网关 | Spring Cloud Gateway Server MVC |
 | 链路追踪 | OpenTelemetry |
@@ -54,7 +54,6 @@ LoadUp 的目标是成为类似 RuoYi / Pig 的**被消费脚手架**：集成�
 
 自创接口**只允许**出现在标准接口表达不了的语义上：
 
-- `@DistributedScheduler`（跨调度框架的统一语义）
 - Gateway 路由模型（`RouteDefinition` + `securityCode` + filter 声明）
 - `RetryTaskFacade` 的 `bizType + bizId` 幂等语义
 - `ServiceCode` 驱动的通知路由
@@ -74,14 +73,14 @@ facade 必须是底层 binder **能力的并集**，而不是交集。
 | 类型 | 例子 | 定位 |
 |------|------|------|
 | 开发/生产切换 | Caffeine ↔ Redis；DFS local ↔ S3；config local ↔ Nacos | facade 的核心价值，常态操作 |
-| 架构级切换 | Redis ↔ JetCache；Quartz ↔ XXL-Job | 可切换，但属于架构决策而非配置项 |
-| API 统一 | Nacos ↔ Apollo；XXL-Job ↔ PowerJob | 实际不会换，facade 的价值在屏蔽 SDK 差异 |
+| 架构级切换 | Redis ↔ JetCache；JobRunr ↔ Quartz | 可切换，但属于架构决策而非配置项 |
+| API 统一 | Nacos ↔ Apollo | 实际不会换，facade 的价值在屏蔽 SDK 差异 |
 
 **禁止把"可切换"宣传成运行时动态切换**。binder 选型在构建/部署时确定，facade 保证业务代码不变即可。
 
 ### 2.5 部署拓扑差异只文档化，不抹平
 
-XXL-Job 需要调度中心、Quartz 是嵌入式、Nacos 和 Apollo 是不同的运维体系。facade 统一的是 **API**，不是**运维模型**。每个 binder 的 README 必须标注部署拓扑要求。
+JobRunr 自带服务端与 Dashboard、Quartz 是嵌入式、Nacos 和 Apollo 是不同的运维体系。facade 统一的是 **API**，不是**运维模型**。每个 binder 的 README 必须标注部署拓扑要求。
 
 ### 2.6 薄集成的边界
 
@@ -293,11 +292,17 @@ loadup-components-{domain}/
 - **目标**：保持 facade；补能力矩阵；明确与 Spring `Environment` + `@RefreshScope` 的集成边界（`@EnableConfigAutoRefresh` 保留）。
 - **动作**：文档化 Nacos ↔ Apollo 的"API 统一"定位与部署拓扑差异。
 
-### 5.4 scheduler — P3
+### 5.4 scheduler — 已完成（JobRunr / Quartz 双 binder）
 
-- **现状**：`@DistributedScheduler` + SimpleJob / Quartz / XXL-Job / PowerJob binder，符合理念。
-- **目标**：保持 facade；README 明确区分**嵌入式**（SimpleJob / Quartz）与**中心化**（XXL-Job / PowerJob）部署模型。
-- **动作**：能力矩阵；修正 README 中许可证标识不一致（MIT badge vs 项目 Apache-2.0）。
+- **现状**：旧 `@DistributedScheduler` 注解 + SimpleJob / Quartz / XXL-Job / PowerJob 自研 binder
+  已全部删除（含 PowerJob / XXL-Job / SimpleJob binder、SchedulerTask 模型与旧自动配置）。
+- **落地**：`SchedulerTemplate` + `SchedulerProcessor` facade（任务名分派、按 `taskName` 幂等），
+  binder 采用 `binder-jobrunr`（与 retrytask 共用 JobRunr 引擎，官方 starter 管理存储/集群/Dashboard）
+  与 `binder-quartz`（Spring Boot starter-quartz，内嵌调度）双实现。
+- **语义**：`register` / `delete` / `trigger` / `updateCron` / `getStatus`；cron 更新与删除会清理
+  JobRunr 待执行实例，避免旧计划阻塞新计划或删除后残留孤儿执行。
+- **集成测试**：JobRunr binder 用 MySQL TestContainer、Quartz binder 用内存 JobStore，同一套
+  facade 用例跑两个 binder，证明切换零代码修改。
 
 ### 5.5 gateway — P2
 
@@ -389,7 +394,7 @@ loadup-components-{domain}/
 
 <!-- 中间件 binder：自由选型，不影响业务代码 -->
 <dependency>...loadup-components-cache-binder-redis...</dependency>
-<dependency>...loadup-components-scheduler-binder-xxljob...</dependency>
+<dependency>...loadup-components-scheduler-binder-jobrunr...</dependency>
 <dependency>...loadup-components-configcenter-binder-nacos...</dependency>
 ```
 
@@ -397,7 +402,7 @@ loadup-components-{domain}/
 
 每个组件 README 的能力矩阵 + 部署拓扑说明组成"选型手册"，回答三类问题：
 
-1. 我要本地开发怎么配？（默认 binder：caffeine / local / simplejob）
+1. 我要本地开发怎么配？（默认 binder：caffeine / local / quartz-memory）
 2. 我上生产怎么切？（redis / nacos / xxl-job / s3，业务代码零修改）
 3. 我要更高级的能力怎么办？（换 binder，如 jetcache / jobrunr，或提 PR 增强 facade）
 

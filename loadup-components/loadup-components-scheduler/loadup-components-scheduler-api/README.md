@@ -1,153 +1,34 @@
 # LoadUp Scheduler API
 
-[![Java](https://img.shields.io/badge/java-17%2B-blue)]()
-[![Spring Boot](https://img.shields.io/badge/spring--boot-3.x-green)]()
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue)]()
+定时任务组件的 **facade 模块**：业务代码只依赖本模块的 `SchedulerTemplate`、`SchedulerProcessor`
+及模型类，零 Spring 注解、零引擎依赖，切换底层引擎（JobRunr / Quartz）无需修改业务代码。
 
-## 📋 概述
-
-Scheduler 组件的核心 API 模块，定义了统一的调度任务接口和模型，是整个 Scheduler 组件的基础。
-
-## 🎯 主要功能
-
-- **统一接口定义**: 定义了 `SchedulerBinder` 和 `SchedulerBinding` 接口
-- **任务模型**: 提供完整的 `SchedulerTask` 任务描述模型
-- **注解支持**: 提供 `@DistributedScheduler` 注解用于声明式任务定义
-- **任务注册表**: 内置 `SchedulerTaskRegistry` 管理所有定时任务
-- **自动配置**: 基于 Spring Boot 4.x 的自动配置机制
-
-## 🏗️ 核心组件
-
-### 1. SchedulerBinder（调度器绑定器接口）
-
-定义统一的调度操作接口：
-
-```java
-public interface SchedulerBinder {
-    String getName();
-    boolean registerTask(SchedulerTask task);
-    boolean unregisterTask(String taskName);
-    boolean pauseTask(String taskName);
-    boolean resumeTask(String taskName);
-    boolean triggerTask(String taskName);
-    boolean updateTaskCron(String taskName, String newCron);
-    boolean taskExists(String taskName);
-}
-```
-
-### 2. SchedulerBinding（调度器绑定接口）
-
-业务层统一 API，委托给具体的 Binder 实现。
-
-### 3. SchedulerTask（调度任务模型）
-
-完整的任务描述模型，包含以下属性：
-
-- `taskName` - 任务名称（唯一标识）
-- `cron` - Cron 表达式
-- `description` - 任务描述
-- `taskGroup` - 任务分组
-- `method` - 执行方法
-- `targetBean` - 目标 Bean
-- `enabled` - 是否启用
-- `priority` - 优先级
-- `timeoutMillis` - 超时时间
-- `maxRetries` - 最大重试次数
-- `parameters` - 扩展参数
-
-### 4. @DistributedScheduler（分布式调度注解）
-
-用于声明式定义定时任务：
-
-```java
-@Component
-public class MyTasks {
-    @DistributedScheduler(name = "dailyReport", cron = "0 0 9 * * ?")
-    public void generateDailyReport() {
-        // 任务逻辑
-    }
-}
-```
-
-### 5. SchedulerTaskRegistry（任务注册表）
-
-负责扫描和管理所有定时任务：
-
-- 扫描 `@DistributedScheduler` 注解
-- 维护任务注册表（ConcurrentHashMap）
-- 在 `ContextRefreshedEvent` 时延迟注册任务
-- 使用 beanName 确保任务名唯一性
-
-## 📦 依赖
+## 引入
 
 ```xml
 <dependency>
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-scheduler-api</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
-## 🔧 使用示例
+## API 概览
 
-### 定义任务
+| 类型 | 职责 |
+|------|------|
+| `SchedulerTemplate` | 业务门面：`register` / `delete` / `trigger` / `updateCron` / `getStatus` |
+| `SchedulerProcessor` | SPI：业务实现 `taskName()` + `process(SchedulerContext)`，按任务名分派 |
+| `SchedulerProcessorRegistry` | 按 `taskName` 解析处理器，binder 共用，保证解析契约一致 |
+| `ScheduleRequest` | 注册入参：`taskName`、`cron`、`args`、`zoneId` |
+| `SchedulerContext` | 单次执行的负载：`taskName` + `args` |
+| `SchedulerStatus` | 生命周期状态：`SCHEDULED` / `PAUSED` |
 
-```java
-@Component
-public class ScheduledTasks {
+## 约束与语义
 
-    @DistributedScheduler(name = "cleanupTask", cron = "0 0 1 * * ?")
-    public void cleanup() {
-        // 每天凌晨1点执行
-    }
+- `taskName` 全局唯一；重复 `register` 按 `taskName` 幂等（更新 cron 与参数，不产生重复任务）。
+- `SchedulerProcessor.process` 抛异常视为本次执行失败，由底层引擎的重试策略处理。
+- 一次性/可重试任务请使用 retrytask 组件，本组件只管理周期性（cron）任务。
 
-    @DistributedScheduler(
-        name = "dataSync",
-        cron = "0 */10 * * * ?",
-        description = "数据同步任务",
-        priority = 5
-    )
-    public void syncData() {
-        // 每10分钟执行
-    }
-}
-```
-
-### 动态管理任务
-
-```java
-@Service
-public class TaskService {
-
-    @Autowired
-    private SchedulerBinding schedulerBinding;
-
-    public void registerNewTask() {
-        SchedulerTask task = SchedulerTask.builder()
-            .taskName("dynamicTask")
-            .cron("0 */5 * * * ?")
-            .description("动态创建的任务")
-            .enabled(true)
-            .build();
-
-        schedulerBinding.registerTask(task);
-    }
-}
-```
-
-## 📚 相关文档
-
-- [主 README](../README.md) - Scheduler 组件完整文档
-- [快速开始](../README.md#快速开始)
-- [配置说明](../README.md#配置说明)
-- [使用示例](../README.md#使用示例)
-
-## 📄 许可证
+## 许可证
 
 Apache License 2.0 (Apache-2.0)
-
-详见 [LICENSE](../../../LICENSE) 文件。
-
----
-
-**最后更新**: 2025-12-30

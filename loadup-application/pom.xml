@@ -81,7 +81,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-scheduler-binder-simplejob</artifactId>
+            <artifactId>loadup-components-scheduler-binder-jobrunr</artifactId>
         </dependency>
 
         <!-- 架构约束测试 -->
