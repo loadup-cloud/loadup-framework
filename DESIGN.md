@@ -424,5 +424,6 @@ loadup-components-{domain}/
 | 2 | Cache facade：Spring Cache vs 自研注解 | **Spring Cache** | cache 组件 P1 改造方向 |
 | 3 | Authorization 后端：Sa-Token vs Spring Security | **Sa-Token**（轻量 + 生态） | authorization / upms 改造 |
 | 4 | RetryTask：自研引擎 vs JobRunr 底座 | **JobRunr**（已落地：binder-jobrunr） | retrytask 路线（已定） |
+| 7 | Scheduler：自研多 binder vs JobRunr/Quartz 底座 | **JobRunr（与 retrytask 共用引擎）+ Quartz**（已落地：双 binder） | scheduler 路线（已定） |
 | 5 | Gateway 引擎替换时机 | 先最小验证 SCG Server MVC | gateway P2 排期 |
 | 6 | ORM：MyBatis-Flex vs MyBatis-Plus | 保持 MyBatis-Flex（已投入） | database 组件 |
