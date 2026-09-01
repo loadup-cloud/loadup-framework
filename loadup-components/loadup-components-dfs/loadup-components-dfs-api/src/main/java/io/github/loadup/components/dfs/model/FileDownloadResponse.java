@@ -1,10 +1,8 @@
-package io.github.loadup.components.dfs.model;
-
 /*-
  * #%L
- * loadup-components-dfs-api
+ * Loadup Dfs Components Api
  * %%
- * Copyright (C) 2026 LoadUp Cloud
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,93 +17,26 @@ package io.github.loadup.components.dfs.model;
  * limitations under the License.
  * #L%
  */
+package io.github.loadup.components.dfs.model;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
-/**
- * 文件下载响应
- */
-public class FileDownloadResponse {
+/** Download response whose content stream must be closed by the caller. */
+public record FileDownloadResponse(FileMetadata metadata, InputStream content, long contentLength)
+        implements AutoCloseable {
 
-    /**
-     * 文件元数据
-     */
-    private FileMetadata metadata;
-
-    /**
-     * 文件输入流
-     */
-    private InputStream inputStream;
-
-    /**
-     * 内容长度
-     */
-    private Long contentLength;
-
-    public FileDownloadResponse(FileMetadata metadata, InputStream inputStream, Long contentLength) {
-        this.metadata = metadata;
-        this.inputStream = inputStream;
-        this.contentLength = contentLength;
-    }
-
-    public FileDownloadResponse() {}
-
-    public FileMetadata getMetadata() {
-        return this.metadata;
-    }
-
-    public InputStream getInputStream() {
-        return this.inputStream;
-    }
-
-    public Long getContentLength() {
-        return this.contentLength;
-    }
-
-    public void setMetadata(FileMetadata metadata) {
-        this.metadata = metadata;
-    }
-
-    public void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
-    }
-
-    public void setContentLength(Long contentLength) {
-        this.contentLength = contentLength;
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private FileMetadata metadata;
-        private InputStream inputStream;
-        private Long contentLength;
-
-        public Builder metadata(FileMetadata metadata) {
-            this.metadata = metadata;
-            return this;
-        }
-
-        public Builder inputStream(InputStream inputStream) {
-            this.inputStream = inputStream;
-            return this;
-        }
-
-        public Builder contentLength(Long contentLength) {
-            this.contentLength = contentLength;
-            return this;
-        }
-
-        public FileDownloadResponse build() {
-            return new FileDownloadResponse(this.metadata, this.inputStream, this.contentLength);
+    public FileDownloadResponse {
+        Objects.requireNonNull(metadata, "metadata must not be null");
+        Objects.requireNonNull(content, "content must not be null");
+        if (contentLength < 0) {
+            throw new IllegalArgumentException("contentLength must not be negative");
         }
     }
 
     @Override
-    public String toString() {
-        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
-                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
+    public void close() throws IOException {
+        content.close();
     }
 }

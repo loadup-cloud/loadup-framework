@@ -1,5 +1,3 @@
-package io.github.loadup.components.dfs.s3;
-
 /*-
  * #%L
  * Loadup Dfs Binder S3
@@ -19,16 +17,21 @@ package io.github.loadup.components.dfs.s3;
  * limitations under the License.
  * #L%
  */
+package io.github.loadup.components.dfs.s3;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/** AWS S3 and S3-compatible binder settings. */
 @ConfigurationProperties(prefix = "loadup.dfs.binder.s3")
-public class S3DfsConfig {
-    private String endpoint = "https://s3.amazonaws.com";
+public class S3DfsProperties {
+    private String endpoint;
     private String region = "us-east-1";
-    private String bucket = "loadup-files";
+    private String bucket;
     private String accessKey;
     private String secretKey;
+    private String keyPrefix = "";
+    private boolean pathStyleAccessEnabled;
+    private boolean createBucket;
 
     public String getEndpoint() {
         return endpoint;
@@ -68,5 +71,29 @@ public class S3DfsConfig {
 
     public void setSecretKey(String secretKey) {
         this.secretKey = secretKey;
+    }
+
+    public String getKeyPrefix() {
+        return keyPrefix;
+    }
+
+    public void setKeyPrefix(String keyPrefix) {
+        this.keyPrefix = keyPrefix;
+    }
+
+    public boolean isPathStyleAccessEnabled() {
+        return pathStyleAccessEnabled;
+    }
+
+    public void setPathStyleAccessEnabled(boolean pathStyleAccessEnabled) {
+        this.pathStyleAccessEnabled = pathStyleAccessEnabled;
+    }
+
+    public boolean isCreateBucket() {
+        return createBucket;
+    }
+
+    public void setCreateBucket(boolean createBucket) {
+        this.createBucket = createBucket;
     }
 }

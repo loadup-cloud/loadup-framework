@@ -17,23 +17,13 @@
  * limitations under the License.
  * #L%
  */
-package io.github.loadup.components.dfs.model;
+package io.github.loadup.components.dfs;
 
-import java.time.Instant;
-import java.util.Map;
+/** Raised when a requested file identifier does not exist. */
+public class DfsObjectNotFoundException extends DfsStorageException {
+    private static final long serialVersionUID = 1L;
 
-/** Immutable metadata returned by every DFS binder. */
-public record FileMetadata(
-        String fileId,
-        String filename,
-        long size,
-        String contentType,
-        String provider,
-        String path,
-        Map<String, String> metadata,
-        Instant uploadedAt) {
-
-    public FileMetadata {
-        metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
+    public DfsObjectNotFoundException(String fileId) {
+        super("DFS object not found: " + fileId);
     }
 }

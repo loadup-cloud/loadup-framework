@@ -1,10 +1,8 @@
-package io.github.loadup.components.dfs;
-
 /*-
  * #%L
  * Loadup Dfs Components Api
  * %%
- * Copyright (C) 2025 - 2026 loadup_cloud
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +17,26 @@ package io.github.loadup.components.dfs;
  * limitations under the License.
  * #L%
  */
+package io.github.loadup.components.dfs;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/** Shared DFS backend selection settings. */
 @ConfigurationProperties(prefix = "loadup.dfs")
 public class DfsProperties {
-    private String binderType = "local";
+    private BinderType binderType = BinderType.LOCAL;
 
-    public String getBinderType() {
+    public enum BinderType {
+        LOCAL,
+        S3,
+        DATABASE
+    }
+
+    public BinderType getBinderType() {
         return binderType;
     }
 
-    public void setBinderType(String binderType) {
+    public void setBinderType(BinderType binderType) {
         this.binderType = binderType;
     }
 }

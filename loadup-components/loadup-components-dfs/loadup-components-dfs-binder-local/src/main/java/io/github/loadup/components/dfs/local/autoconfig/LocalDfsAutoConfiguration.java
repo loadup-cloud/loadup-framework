@@ -1,10 +1,8 @@
-package io.github.loadup.components.dfs.local.autoconfig;
-
 /*-
  * #%L
  * Loadup Dfs Binder Local
  * %%
- * Copyright (C) 2025 - 2026 loadup_cloud
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +17,11 @@ package io.github.loadup.components.dfs.local.autoconfig;
  * limitations under the License.
  * #L%
  */
+package io.github.loadup.components.dfs.local.autoconfig;
 
 import io.github.loadup.components.dfs.DfsProvider;
-import io.github.loadup.components.dfs.local.LocalDfsConfig;
+import io.github.loadup.components.dfs.autoconfig.DfsAutoConfiguration;
+import io.github.loadup.components.dfs.local.LocalDfsProperties;
 import io.github.loadup.components.dfs.local.LocalDfsProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,13 +29,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-@AutoConfiguration
+/** Auto-configuration for the local filesystem binder. */
+@AutoConfiguration(before = DfsAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "local", matchIfMissing = true)
-@EnableConfigurationProperties(LocalDfsConfig.class)
+@EnableConfigurationProperties(LocalDfsProperties.class)
 public class LocalDfsAutoConfiguration {
+
     @Bean
-    @ConditionalOnMissingBean
-    public DfsProvider localDfsProvider(LocalDfsConfig config) {
-        return new LocalDfsProvider(config);
+    @ConditionalOnMissingBean(DfsProvider.class)
+    public DfsProvider localDfsProvider(LocalDfsProperties properties) {
+        return new LocalDfsProvider(properties);
     }
 }

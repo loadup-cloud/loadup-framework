@@ -175,7 +175,7 @@
       loadup-components-dfs-api 的模型类（FileMetadata、FileUploadRequest、FileDownloadResponse）
       是 DFS 组件 API 层的数据传输对象，包含 Map<String,String> metadata 字段，
       对传输对象做防御性复制是过度工程，EI_EXPOSE_REP / EI_EXPOSE_REP2 属于误报。
-      同样适用于 dfs-binder-database 的实体类（FileStorageEntity）：
+      同样适用于 dfs-binder-database 的数据对象类（FileStorageDO）：
       byte[] content 是数据库二进制存储字段，ORM 框架直接操作，防御性复制会浪费内存。
     -->
     <Match>

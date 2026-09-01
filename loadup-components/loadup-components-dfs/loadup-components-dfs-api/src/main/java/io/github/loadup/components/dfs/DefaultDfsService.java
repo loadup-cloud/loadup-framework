@@ -1,10 +1,8 @@
-package io.github.loadup.components.dfs;
-
 /*-
  * #%L
  * Loadup Dfs Components Api
  * %%
- * Copyright (C) 2025 - 2026 loadup_cloud
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +17,24 @@ package io.github.loadup.components.dfs;
  * limitations under the License.
  * #L%
  */
+package io.github.loadup.components.dfs;
 
 import io.github.loadup.components.dfs.model.FileDownloadResponse;
 import io.github.loadup.components.dfs.model.FileMetadata;
 import io.github.loadup.components.dfs.model.FileUploadRequest;
+import io.github.loadup.components.dfs.model.MultipartPart;
+import io.github.loadup.components.dfs.model.MultipartUpload;
+import io.github.loadup.components.dfs.model.MultipartUploadRequest;
+import java.io.InputStream;
+import java.net.URI;
+import java.time.Duration;
+import java.util.List;
 
-public class DefaultDfsTemplate implements DfsTemplate {
+/** Default thin facade that delegates to the single configured {@link DfsProvider}. */
+public final class DefaultDfsService implements DfsService {
     private final DfsProvider provider;
 
-    public DefaultDfsTemplate(DfsProvider provider) {
+    public DefaultDfsService(DfsProvider provider) {
         this.provider = provider;
     }
 
@@ -57,12 +64,28 @@ public class DefaultDfsTemplate implements DfsTemplate {
     }
 
     @Override
-    public String generatePresignedUrl(String fileId, long expirationSeconds) {
-        return provider.generatePresignedUrl(fileId, expirationSeconds);
+    public URI generatePresignedDownloadUrl(String fileId, Duration expiration) {
+        return provider.generatePresignedDownloadUrl(fileId, expiration);
     }
 
     @Override
-    public FileMetadata copy(String sourceFileId, String targetPath) {
-        return provider.copy(sourceFileId, targetPath);
+    public MultipartUpload initiateMultipartUpload(MultipartUploadRequest request) {
+        return provider.initiateMultipartUpload(request);
+    }
+
+    @Override
+    public MultipartPart uploadPart(
+            String fileId, String uploadId, int partNumber, InputStream content, long contentLength) {
+        return provider.uploadPart(fileId, uploadId, partNumber, content, contentLength);
+    }
+
+    @Override
+    public FileMetadata completeMultipartUpload(String fileId, String uploadId, List<MultipartPart> parts) {
+        return provider.completeMultipartUpload(fileId, uploadId, parts);
+    }
+
+    @Override
+    public void abortMultipartUpload(String fileId, String uploadId) {
+        provider.abortMultipartUpload(fileId, uploadId);
     }
 }

@@ -1,10 +1,8 @@
-package io.github.loadup.components.dfs;
-
 /*-
  * #%L
  * Loadup Dfs Components Api
  * %%
- * Copyright (C) 2025 - 2026 loadup_cloud
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +17,22 @@ package io.github.loadup.components.dfs;
  * limitations under the License.
  * #L%
  */
+package io.github.loadup.components.dfs;
 
 import io.github.loadup.components.dfs.model.FileDownloadResponse;
 import io.github.loadup.components.dfs.model.FileMetadata;
 import io.github.loadup.components.dfs.model.FileUploadRequest;
+import io.github.loadup.components.dfs.model.MultipartPart;
+import io.github.loadup.components.dfs.model.MultipartUpload;
+import io.github.loadup.components.dfs.model.MultipartUploadRequest;
+import java.io.InputStream;
+import java.net.URI;
+import java.time.Duration;
+import java.util.List;
 
-public interface DfsTemplate {
+/** Business-facing facade for the selected file storage binder. */
+public interface DfsService {
+
     FileMetadata upload(FileUploadRequest request);
 
     FileDownloadResponse download(String fileId);
@@ -35,11 +43,13 @@ public interface DfsTemplate {
 
     FileMetadata getMetadata(String fileId);
 
-    default String generatePresignedUrl(String fileId, long expirationSeconds) {
-        throw new UnsupportedOperationException();
-    }
+    URI generatePresignedDownloadUrl(String fileId, Duration expiration);
 
-    default FileMetadata copy(String sourceFileId, String targetPath) {
-        throw new UnsupportedOperationException();
-    }
+    MultipartUpload initiateMultipartUpload(MultipartUploadRequest request);
+
+    MultipartPart uploadPart(String fileId, String uploadId, int partNumber, InputStream content, long contentLength);
+
+    FileMetadata completeMultipartUpload(String fileId, String uploadId, List<MultipartPart> parts);
+
+    void abortMultipartUpload(String fileId, String uploadId);
 }

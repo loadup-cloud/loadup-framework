@@ -19,21 +19,12 @@
  */
 package io.github.loadup.components.dfs.model;
 
-import java.time.Instant;
-import java.util.Map;
+/** ETag returned for one uploaded multipart part. */
+public record MultipartPart(int partNumber, String eTag) {
 
-/** Immutable metadata returned by every DFS binder. */
-public record FileMetadata(
-        String fileId,
-        String filename,
-        long size,
-        String contentType,
-        String provider,
-        String path,
-        Map<String, String> metadata,
-        Instant uploadedAt) {
-
-    public FileMetadata {
-        metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
+    public MultipartPart {
+        if (partNumber < 1 || partNumber > 10_000) {
+            throw new IllegalArgumentException("partNumber must be between 1 and 10000");
+        }
     }
 }

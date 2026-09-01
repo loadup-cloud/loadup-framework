@@ -1,126 +1,58 @@
-/*-
- * #%L
- * Loadup Dfs Components Api
- * %%
- * Copyright (C) 2025 - 2026 loadup_cloud
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
 {
-  "groups": [
-    {
-      "name": "loadup.dfs.binders.local",
-      "type": "io.github.loadup.components.dfs.properties.LocalBinderConfig",
-      "sourceType": "io.github.loadup.components.dfs.properties.LocalBinderConfig",
-      "sourceMethod": "getBinders()[local]"
-    },
-    {
-      "name": "loadup.dfs.binders.s3",
-      "type": "io.github.loadup.components.dfs.properties.S3BinderConfig",
-      "sourceType": "io.github.loadup.components.dfs.properties.S3BinderConfig",
-      "sourceMethod": "getBinders()[s3]"
-    },
-    {
-      "name": "loadup.dfs.binders.database",
-      "type": "io.github.loadup.components.dfs.properties.DatabaseBinderConfig",
-      "sourceType": "io.github.loadup.components.dfs.properties.DatabaseBinderConfig",
-      "sourceMethod": "getBinders()[database]"
-    }
-  ],
   "properties": [
     {
-      "name": "loadup.dfs.binder",
-      "type": "io.github.loadup.components.dfs.properties.BinderType",
-      "description": "绑定的存储类型.",
-      "sourceType": "io.github.loadup.components.dfs.properties.DfsGroupProperties",
+      "name": "loadup.dfs.binder-type",
+      "type": "io.github.loadup.components.dfs.DfsProperties$BinderType",
+      "description": "Selected DFS binder.",
       "defaultValue": "local"
     },
     {
-      "name": "loadup.dfs.enabled-binders",
-      "type": "java.util.List<io.github.loadup.components.dfs.properties.BinderType>",
-      "description": "启用的绑定器列表.",
-      "sourceType": "io.github.loadup.components.dfs.properties.DfsGroupProperties"
-    },
-    {
-      "name": "loadup.dfs.binders",
-      "type": "java.util.Map<io.github.loadup.components.dfs.properties.BinderType, io.github.loadup.components.dfs.properties.BinderConfig>",
-      "description": "各种存储类型的配置.",
-      "sourceType": "io.github.loadup.components.dfs.properties.DfsGroupProperties"
-    },
-    {
-      "name": "loadup.dfs.binders.local.base-path",
+      "name": "loadup.dfs.binder.local.base-path",
       "type": "java.lang.String",
-      "description": "本地存储基础路径.",
-      "sourceType": "io.github.loadup.components.dfs.properties.LocalBinderConfig",
-      "defaultValue": "/tmp/storage"
+      "description": "Root directory for the local filesystem binder."
     },
     {
-      "name": "loadup.dfs.binders.s3.access-key",
+      "name": "loadup.dfs.binder.s3.endpoint",
       "type": "java.lang.String",
-      "description": "S3访问密钥.",
-      "sourceType": "io.github.loadup.components.dfs.properties.S3BinderConfig"
+      "description": "Optional endpoint for AWS S3-compatible services."
     },
     {
-      "name": "loadup.dfs.binders.s3.secret-key",
+      "name": "loadup.dfs.binder.s3.region",
       "type": "java.lang.String",
-      "description": "S3密钥.",
-      "sourceType": "io.github.loadup.components.dfs.properties.S3BinderConfig"
-    },
-    {
-      "name": "loadup.dfs.binders.s3.region",
-      "type": "java.lang.String",
-      "description": "S3区域.",
-      "sourceType": "io.github.loadup.components.dfs.properties.S3BinderConfig",
+      "description": "AWS region.",
       "defaultValue": "us-east-1"
     },
     {
-      "name": "loadup.dfs.binders.s3.bucket",
+      "name": "loadup.dfs.binder.s3.bucket",
       "type": "java.lang.String",
-      "description": "S3存储桶名称.",
-      "sourceType": "io.github.loadup.components.dfs.properties.S3BinderConfig"
+      "description": "S3 bucket name."
     },
     {
-      "name": "loadup.dfs.binders.s3.endpoint",
+      "name": "loadup.dfs.binder.s3.access-key",
       "type": "java.lang.String",
-      "description": "S3端点URL.",
-      "sourceType": "io.github.loadup.components.dfs.properties.S3BinderConfig"
+      "description": "Optional static S3 access key."
     },
     {
-      "name": "loadup.dfs.binders.database.table-name",
+      "name": "loadup.dfs.binder.s3.secret-key",
       "type": "java.lang.String",
-      "description": "数据库表名.",
-      "sourceType": "io.github.loadup.components.dfs.properties.DatabaseBinderConfig",
-      "defaultValue": "dfs_files"
-    }
-  ],
-  "hints": [
+      "description": "Optional static S3 secret key."
+    },
     {
-      "name": "loadup.dfs.binder",
-      "values": [
-        {
-          "value": "local",
-          "description": "本地存储."
-        },
-        {
-          "value": "s3",
-          "description": "S3对象存储."
-        },
-        {
-          "value": "database",
-          "description": "数据库存储."
-        }
-      ]
+      "name": "loadup.dfs.binder.s3.key-prefix",
+      "type": "java.lang.String",
+      "description": "Prefix applied to generated S3 object keys."
+    },
+    {
+      "name": "loadup.dfs.binder.s3.path-style-access-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Use path-style addressing for MinIO and LocalStack.",
+      "defaultValue": false
+    },
+    {
+      "name": "loadup.dfs.binder.s3.create-bucket",
+      "type": "java.lang.Boolean",
+      "description": "Create the bucket during startup when it does not exist.",
+      "defaultValue": false
     }
   ]
 }

@@ -1,5 +1,3 @@
-package io.github.loadup.components.dfs.database;
-
 /*-
  * #%L
  * Loadup Dfs Binder Database
@@ -19,96 +17,115 @@ package io.github.loadup.components.dfs.database;
  * limitations under the License.
  * #L%
  */
+package io.github.loadup.components.dfs.database;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mybatisflex.core.query.QueryWrapper;
-import io.github.loadup.commons.util.IdUtils;
+import io.github.loadup.components.dfs.DfsObjectNotFoundException;
 import io.github.loadup.components.dfs.DfsProvider;
-import io.github.loadup.components.dfs.database.dataobject.FileStorageEntity;
+import io.github.loadup.components.dfs.DfsStorageException;
+import io.github.loadup.components.dfs.database.dataobject.FileStorageDO;
 import io.github.loadup.components.dfs.database.mapper.FileStorageMapper;
 import io.github.loadup.components.dfs.model.FileDownloadResponse;
 import io.github.loadup.components.dfs.model.FileMetadata;
 import io.github.loadup.components.dfs.model.FileUploadRequest;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Map;
+import java.util.UUID;
 
+/** Transitional database binder for small files. S3 is the recommended production binder. */
 public class DatabaseDfsProvider implements DfsProvider {
     private final FileStorageMapper mapper;
+    private final ObjectMapper objectMapper;
 
-    public DatabaseDfsProvider(FileStorageMapper mapper) {
+    public DatabaseDfsProvider(FileStorageMapper mapper, ObjectMapper objectMapper) {
         this.mapper = mapper;
+        this.objectMapper = objectMapper;
     }
 
     @Override
     public FileMetadata upload(FileUploadRequest request) {
-        String fileId = IdUtils.uuid2();
+        String fileId = UUID.randomUUID().toString().replace("-", "");
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            request.getInputStream().transferTo(baos);
-            byte[] bytes = baos.toByteArray();
-
-            FileStorageEntity entity = new FileStorageEntity();
-            entity.setId(fileId);
-            entity.setFilename(request.getFilename());
-            entity.setFileSize((long) bytes.length);
-            entity.setContentType(request.getContentType());
-            entity.setContent(bytes);
-            entity.setBizType(request.getBizType());
-            entity.setBizId(request.getBizId());
-            mapper.insert(entity);
-
-            FileMetadata fileMetadata = new FileMetadata();
-            fileMetadata.setFileId(fileId);
-            fileMetadata.setFilename(request.getFilename());
-            fileMetadata.setSize((long) bytes.length);
-            fileMetadata.setContentType(request.getContentType());
-            return fileMetadata;
+            byte[] content = request.content().readAllBytes();
+            if (content.length != request.contentLength()) {
+                throw new DfsStorageException("Uploaded content length mismatch: expected=" + request.contentLength()
+                        + ", actual=" + content.length);
+            }
+            LocalDateTime uploadedAt = LocalDateTime.now(ZoneOffset.UTC);
+            FileStorageDO file = new FileStorageDO();
+            file.setId(fileId);
+            file.setFilename(request.filename());
+            file.setFileSize((long) content.length);
+            file.setContentType(request.contentType());
+            file.setContent(content);
+            file.setMetadataJson(objectMapper.writeValueAsString(request.metadata()));
+            file.setCreatedAt(uploadedAt);
+            file.setUpdatedAt(uploadedAt);
+            file.setDeleted(false);
+            mapper.insert(file);
+            return toMetadata(file);
         } catch (IOException e) {
-            throw new RuntimeException("Database upload failed", e);
+            throw new DfsStorageException("Database DFS upload failed for " + fileId, e);
         }
     }
 
     @Override
     public FileDownloadResponse download(String fileId) {
-        FileStorageEntity entity = mapper.selectOneByQuery(QueryWrapper.create().eq("id", fileId));
-        if (entity == null) return null;
-        FileDownloadResponse fileDownloadResponse = new FileDownloadResponse();
-        fileDownloadResponse.setInputStream(new ByteArrayInputStream(entity.getContent()));
-
-        FileMetadata fileMetadata = new FileMetadata();
-        fileMetadata.setFileId(fileId);
-        fileMetadata.setFilename(entity.getFilename());
-        fileMetadata.setSize(entity.getFileSize());
-        fileMetadata.setContentType(entity.getContentType());
-        fileDownloadResponse.setMetadata(fileMetadata);
-        return fileDownloadResponse;
+        FileStorageDO file = find(fileId);
+        return new FileDownloadResponse(
+                toMetadata(file), new ByteArrayInputStream(file.getContent()), file.getFileSize());
     }
 
     @Override
     public boolean delete(String fileId) {
-        return mapper.deleteByQuery(QueryWrapper.create().eq("id", fileId)) > 0;
+        return mapper.deleteById(fileId) > 0;
     }
 
     @Override
     public boolean exists(String fileId) {
-        return mapper.selectCountByQuery(QueryWrapper.create().eq("id", fileId)) > 0;
+        return mapper.selectOneById(fileId) != null;
     }
 
     @Override
     public FileMetadata getMetadata(String fileId) {
-        FileStorageEntity entity = mapper.selectOneByQuery(QueryWrapper.create().eq("id", fileId));
-        if (entity == null) return null;
-
-        FileMetadata fileMetadata = new FileMetadata();
-        fileMetadata.setFileId(fileId);
-        fileMetadata.setFilename(entity.getFilename());
-        fileMetadata.setSize(entity.getFileSize());
-        fileMetadata.setContentType(entity.getContentType());
-        return fileMetadata;
+        return toMetadata(find(fileId));
     }
 
     @Override
     public String getBinderType() {
         return "database";
+    }
+
+    private FileStorageDO find(String fileId) {
+        FileStorageDO file = mapper.selectOneByQuery(QueryWrapper.create().eq("id", fileId));
+        if (file == null) {
+            throw new DfsObjectNotFoundException(fileId);
+        }
+        return file;
+    }
+
+    private FileMetadata toMetadata(FileStorageDO file) {
+        Map<String, String> metadata;
+        try {
+            metadata = file.getMetadataJson() == null
+                    ? Map.of()
+                    : objectMapper.readValue(file.getMetadataJson(), new TypeReference<>() {});
+        } catch (IOException e) {
+            throw new DfsStorageException("Failed to parse database DFS metadata for " + file.getId(), e);
+        }
+        return new FileMetadata(
+                file.getId(),
+                file.getFilename(),
+                file.getFileSize(),
+                file.getContentType(),
+                getBinderType(),
+                file.getId(),
+                metadata,
+                file.getCreatedAt().toInstant(ZoneOffset.UTC));
     }
 }

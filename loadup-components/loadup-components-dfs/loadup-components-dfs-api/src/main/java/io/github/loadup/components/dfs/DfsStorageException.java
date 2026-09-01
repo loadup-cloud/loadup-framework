@@ -1,10 +1,8 @@
-package io.github.loadup.components.dfs.local;
-
 /*-
  * #%L
- * Loadup Dfs Binder Local
+ * Loadup Dfs Components Api
  * %%
- * Copyright (C) 2025 - 2026 loadup_cloud
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +17,17 @@ package io.github.loadup.components.dfs.local;
  * limitations under the License.
  * #L%
  */
+package io.github.loadup.components.dfs;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+/** Raised when the selected storage backend cannot complete an operation. */
+public class DfsStorageException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
-@ConfigurationProperties(prefix = "loadup.dfs.binder.local")
-public class LocalDfsConfig {
-    private String uploadDir = "/tmp/dfs";
-
-    public String getUploadDir() {
-        return uploadDir;
+    public DfsStorageException(String message) {
+        super(message);
     }
 
-    public void setUploadDir(String uploadDir) {
-        this.uploadDir = uploadDir;
+    public DfsStorageException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

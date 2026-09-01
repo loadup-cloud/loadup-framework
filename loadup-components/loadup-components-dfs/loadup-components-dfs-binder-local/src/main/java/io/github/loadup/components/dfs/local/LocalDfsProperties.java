@@ -1,8 +1,6 @@
-package io.github.loadup.components.dfs.database;
-
 /*-
  * #%L
- * Loadup Dfs Binder Database
+ * Loadup Dfs Binder Local
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,18 +17,20 @@ package io.github.loadup.components.dfs.database;
  * limitations under the License.
  * #L%
  */
+package io.github.loadup.components.dfs.local;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "loadup.dfs.binder.database")
-public class DatabaseDfsConfig {
-    private String tableName = "file_storage";
+/** Local filesystem binder settings. */
+@ConfigurationProperties(prefix = "loadup.dfs.binder.local")
+public class LocalDfsProperties {
+    private String basePath = System.getProperty("java.io.tmpdir") + "/loadup-dfs";
 
-    public String getTableName() {
-        return tableName;
+    public String getBasePath() {
+        return basePath;
     }
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
     }
 }
