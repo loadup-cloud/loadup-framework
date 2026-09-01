@@ -21,6 +21,7 @@ package io.github.loadup.common.tracer.async;
  */
 
 import io.opentelemetry.context.Context;
+import io.opentelemetry.context.Scope;
 import java.util.Map;
 import org.slf4j.MDC;
 import org.springframework.core.task.TaskDecorator;
@@ -46,7 +47,8 @@ public class TracingTaskDecorator implements TaskDecorator {
 
         return () -> {
             // Restore caller context in the worker thread.
-            try (io.opentelemetry.context.Scope ignored = callerContext.makeCurrent()) {
+            Scope scope = callerContext.makeCurrent();
+            try {
                 if (callerMdc != null) {
                     MDC.setContextMap(callerMdc);
                 } else {
@@ -54,6 +56,7 @@ public class TracingTaskDecorator implements TaskDecorator {
                 }
                 runnable.run();
             } finally {
+                scope.close();
                 MDC.clear();
             }
         };

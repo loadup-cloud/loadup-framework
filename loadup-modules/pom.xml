@@ -13,8 +13,6 @@
     <description>Loadup Modules — reusable business modules</description>
 
     <modules>
-        <module>loadup-modules-config</module>
-        <module>loadup-modules-log</module>
         <module>loadup-modules-upms</module>
     </modules>
 </project>

@@ -32,6 +32,7 @@ import java.time.Duration;
  *
  * <p>Default endpoint: {@code http://localhost:9411/api/v2/spans}.
  */
+@SuppressWarnings("deprecation")
 public class ZipkinSpanExporterProvider implements SpanExporterProvider {
 
     @Override

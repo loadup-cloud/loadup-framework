@@ -19,7 +19,6 @@
  */
 package io.github.loadup.commons.log;
 
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,9 +86,10 @@ public final class LogUtil {
     }
 
     private static Logger callerLogger() {
-        Optional<Class<?>> caller = CALLER_WALKER.walk(frames -> frames.map(StackWalker.StackFrame::getDeclaringClass)
-                .filter(type -> type != LogUtil.class)
-                .findFirst());
-        return caller.map(LoggerFactory::getLogger).orElse(FALLBACK_LOGGER);
+        String callerName = CALLER_WALKER.walk(frames -> frames.map(StackWalker.StackFrame::getClassName)
+                .filter(name -> !LogUtil.class.getName().equals(name))
+                .findFirst()
+                .orElse(null));
+        return callerName == null ? FALLBACK_LOGGER : LoggerFactory.getLogger(callerName);
     }
 }

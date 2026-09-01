@@ -109,7 +109,8 @@ public class TracingWebFilter extends OncePerRequestFilter {
         String traceparent = buildTraceparent(span);
         response.setHeader("traceparent", traceparent);
 
-        try (Scope scope = span.makeCurrent()) {
+        Scope scope = span.makeCurrent();
+        try {
             filterChain.doFilter(request, response);
             int status = response.getStatus();
             span.setAttribute(AttributeKey.longKey("http.response.status_code"), status);
@@ -121,6 +122,7 @@ public class TracingWebFilter extends OncePerRequestFilter {
             span.recordException(e);
             throw e;
         } finally {
+            scope.close();
             span.end();
             TraceUtil.clearMdc();
         }

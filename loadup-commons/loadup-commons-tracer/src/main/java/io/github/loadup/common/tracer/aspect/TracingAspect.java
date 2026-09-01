@@ -71,7 +71,8 @@ public class TracingAspect {
         TraceUtil.pushSpan(span);
         TraceUtil.injectMdc(span);
 
-        try (Scope scope = span.makeCurrent()) {
+        Scope scope = span.makeCurrent();
+        try {
             if (traced != null && traced.includeParameters() && pjp.getArgs() != null) {
                 span.setAttribute(AttributeKey.stringKey("method.parameters"), Arrays.toString(pjp.getArgs()));
             }
@@ -88,6 +89,7 @@ public class TracingAspect {
             span.recordException(t);
             throw t;
         } finally {
+            scope.close();
             TraceUtil.popSpan();
             span.end();
             restoreMdc(outerTraceId, outerSpanId);
