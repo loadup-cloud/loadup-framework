@@ -48,13 +48,13 @@ public class ConfigHistoryGatewayImpl implements ConfigHistoryGateway {
 
     @Override
     public List<ConfigHistory> findByKey(String configKey) {
-        return mapper
-                .selectListByQuery(QueryWrapper.create()
-                        .where(CONFIG_HISTORY_DO.CONFIG_KEY.eq(configKey))
-                        .orderBy(CONFIG_HISTORY_DO.CREATED_AT.desc()))
-                .stream()
-                .map(this::toModel)
-                .toList();
+        List<ConfigHistoryDO> entities = mapper.selectListByQuery(QueryWrapper.create()
+                .where(CONFIG_HISTORY_DO.CONFIG_KEY.eq(configKey))
+                .orderBy(CONFIG_HISTORY_DO.CREATED_AT.desc()));
+        if (entities == null) {
+            return List.of();
+        }
+        return entities.stream().map(this::toModel).toList();
     }
 
     private ConfigHistoryDO toEntity(ConfigHistory h) {

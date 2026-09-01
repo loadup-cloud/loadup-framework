@@ -165,7 +165,7 @@ LoadUp Framework 采用清晰的 **6 层分层架构**，共 19 个模块：
 ```
 🔧 components/
 ├── 🛡️ 安全组件 (2)
-│   ├── loadup-components-authorization   - 权限校验、RBAC
+│   ├── loadup-components-authorization   - 方法级授权 (Spring Security @PreAuthorize)
 │   └── loadup-components-captcha         - 验证码生成与校验
 ├── 💾 核心组件 (3)
 │   ├── loadup-components-database        - 数据库访问 (MyBatis-Flex)
@@ -254,7 +254,7 @@ LoadUp Framework 采用清晰的 **6 层分层架构**，共 19 个模块：
 | 服务治理   | Dubbo                            | 3.3.6  | RPC 框架       |
 | 链路追踪   | OpenTelemetry                    | 1.62.0 | 分布式追踪        |
 | 任务调度   | Quartz/XXL-Job/PowerJob          | -      | 定时任务         |
-| 认证授权   | JWT                              | -      | 无状态认证        |
+| 认证授权   | Spring Security + JWT            | -      | 标准方法级授权（@PreAuthorize） |
 | API 文档 | OpenAPI (Swagger)                | v3     | 接口文档         |
 | 测试框架   | JUnit 5, Mockito, Testcontainers | -      | 单元/集成测试      |
 | 构建工具   | Maven                            | 3.6+   | 项目构建         |
@@ -680,6 +680,7 @@ updated_at      DATETIME     COMMENT '更新时间'
 - **认证方式**: JWT Token
 - **Token 存储**: Header: `Authorization: Bearer {token}`
 - **权限控制**: 基于 RBAC（角色 + 权限）
+- **方法级授权**: `@PreAuthorize` / `@Secured`（Spring Security 标准 API，`UserContext` 薄适配）
 - **数据权限**: 支持多级数据范围（全部/部门/本人）
 
 #### 敏感信息保护

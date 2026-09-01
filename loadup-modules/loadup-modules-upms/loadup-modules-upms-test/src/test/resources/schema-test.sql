@@ -70,9 +70,9 @@ CREATE TABLE upms_user
     dept_id                 VARCHAR(64)  NOT NULL COMMENT '所属部门ID',
     email                   VARCHAR(100) COMMENT '邮箱',
     email_verified          TINYINT      NOT NULL DEFAULT 0 COMMENT '邮箱是否验证',
-    phone                   VARCHAR(20) COMMENT '手机号',
-    phone_verified          TINYINT      NOT NULL DEFAULT 0 COMMENT '手机是否验证',
-    avatar_url              VARCHAR(500) COMMENT '头像地址',
+    mobile                  VARCHAR(20) COMMENT '手机号',
+    mobile_verified         TINYINT      NOT NULL DEFAULT 0 COMMENT '手机是否验证',
+    avatar                  VARCHAR(500) COMMENT '头像地址',
     gender                  TINYINT               DEFAULT 0 COMMENT '性别：0-未知 1-男 2-女',
     birthday                DATE COMMENT '生日',
     status                  TINYINT      NOT NULL DEFAULT 1 COMMENT '状态：1-正常 0-停用 2-锁定',
@@ -93,7 +93,7 @@ CREATE TABLE upms_user
     PRIMARY KEY (id),
     UNIQUE KEY uk_username (username),
     UNIQUE KEY uk_email (email),
-    UNIQUE KEY uk_phone (phone),
+    UNIQUE KEY uk_mobile (mobile),
     INDEX idx_user_dept_id (dept_id),
     INDEX idx_user_tenant_id (tenant_id)
 ) ENGINE = InnoDB

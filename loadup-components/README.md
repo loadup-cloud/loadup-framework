@@ -8,9 +8,9 @@ LoadUp Components 提供了一系列可复用的组件，用于简化企业级�
 
 | 组件                                   | 说明                       | 文档                                                   |
 |--------------------------------------|--------------------------|------------------------------------------------------|
-| **loadup-components-authorization**  | 轻量级授权框架（基于 AOP）          | [README](loadup-components-authorization/README.md)  |
+| **loadup-components-authorization**  | 方法级授权（Spring Security 标准 API） | [README](loadup-components-authorization/README.md)  |
 | **loadup-components-cache**          | 缓存抽象层（支持 Redis、Caffeine） | [README](loadup-components-cache/README.md)          |
-| **loadup-components-captcha**        | 验证码组件                    | -                                                    |
+| **loadup-components-captcha**        | 验证码组件（tianai 行为 / nanocaptcha 图像，binder 可插拔） | -                          |
 | **loadup-components-database**       | 数据库增强（MyBatis-Flex）      | -                                                    |
 | **loadup-components-dfs**            | 分布式文件存储                  | -                                                    |
 | **loadup-components-extension**      | 扩展点框架                    | -                                                    |
@@ -30,10 +30,9 @@ LoadUp Components 提供了一系列可复用的组件，用于简化企业级�
 
 **特性**:
 
-- ✅ 轻量级（~50KB，无 Spring Security 依赖）
-- ✅ 基于 AOP 的方法级权限控制
+- ✅ 基于 Spring Security 标准 API 的方法级权限控制
 - ✅ 支持角色和权限两种模式
-- ✅ ThreadLocal 用户上下文
+- ✅ `SecurityContextHolder` 薄适配（`UserContext`）
 
 **快速开始**:
 
@@ -41,12 +40,12 @@ LoadUp Components 提供了一系列可复用的组件，用于简化企业级�
 @Service
 public class UserService {
     
-    @RequireRole("ADMIN")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(String userId) {
         // 只有 ADMIN 可以删除
     }
     
-    @RequirePermission("user:delete")
+    @PreAuthorize("hasAuthority('user:delete')")
     public void delete(String userId) {
         // 检查权限
     }

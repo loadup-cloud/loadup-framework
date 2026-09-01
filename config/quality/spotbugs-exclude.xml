@@ -186,14 +186,10 @@
     </Match>
 
     <!--
-      CaptchaEndpoint、TenantInterceptor、BaseEntityListener 等 Spring 组件通过构造器注入
-      @ConfigurationProperties 对象（如 CaptchaProperties、DatabaseProperties），
+      TenantInterceptor、BaseEntityListener 等 Spring 组件通过构造器注入
+      @ConfigurationProperties 对象（如 DatabaseProperties），
       这是标准的 Spring DI 模式，防御性复制无意义，EI_EXPOSE_REP2 属于误报。
     -->
-    <Match>
-        <Bug pattern="EI_EXPOSE_REP2"/>
-        <Class name="io.github.loadup.components.captcha.config.CaptchaEndpoint"/>
-    </Match>
     <Match>
         <Bug pattern="EI_EXPOSE_REP2"/>
         <Class name="~.*Interceptor$"/>

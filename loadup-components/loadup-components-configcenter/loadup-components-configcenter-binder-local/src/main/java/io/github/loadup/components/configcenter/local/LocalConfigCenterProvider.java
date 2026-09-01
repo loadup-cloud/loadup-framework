@@ -46,6 +46,8 @@ public class LocalConfigCenterProvider implements ConfigCenterProvider {
     @Override
     public boolean removeConfig(String key) {
         configs.remove(key);
+        List<Consumer<String>> ls = listeners.get(key);
+        if (ls != null) ls.forEach(l -> l.accept(null));
         return true;
     }
 

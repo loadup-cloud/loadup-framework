@@ -54,7 +54,7 @@ loadup-parent/
 │   ├── loadup-commons-dto/     # 通用 DTO：Result<T>、PageDTO、BaseDO
 │   └── loadup-commons-util/    # 工具类：JsonUtil、StringUtils、DateUtils
 ├── components/                 # 可复用技术组件（框架级中间件）
-│   ├── loadup-components-authorization/   # 方法级授权 @RequirePermission
+│   ├── loadup-components-authorization/   # Spring Security 方法级授权 @PreAuthorize
 │   ├── loadup-components-cache/           # 缓存（API + binder-caffeine + binder-redis）
 │   ├── loadup-components-captcha/         # 验证码生成
 │   ├── loadup-components-configcenter/    # 配置中心（API + binder-local/nacos/apollo）

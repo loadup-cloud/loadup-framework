@@ -104,6 +104,10 @@ public class DataScope {
         this.description = description;
     }
 
+    public String getDescription() {
+        return this.description;
+    }
+
     @Override
     public String toString() {
         return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(

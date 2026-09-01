@@ -1,110 +1,111 @@
-// package io.github.loadup.components.configcenter.test;
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-//
-// import static org.assertj.core.api.Assertions.assertThat;
-//
-// import io.github.loadup.components.configcenter.model.ConfigChangeEvent;
-// import java.nio.file.Path;
-// import java.util.Optional;
-// import java.util.concurrent.CountDownLatch;
-// import java.util.concurrent.TimeUnit;
-// import java.util.concurrent.atomic.AtomicReference;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.junit.jupiter.api.io.TempDir;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.context.SpringBootTest;
-// import org.springframework.test.context.TestPropertySource;
-//
-/// **
-// * ConfigCenter 集成测试 — Local binder。
-// *
-// * <p>使用 JUnit 5 @TempDir 创建隔离的文件目录，
-// * 验证 getConfig / publishConfig / removeConfig / addListener 完整链路。
-// */
-// @SpringBootTest(classes = ConfigCenterTestApplication.class)
-// @TestPropertySource(properties = "loadup.configcenter.binders.local.base-path=${java.io.tmpdir}/configcenter-it")
-// class ConfigCenterLocalBindingIT {
-//
-//    @Autowired
-//    private ConfigCenterBindingManager manager;
-//
-//    @TempDir
-//    Path tempDir;
-//
-//    private ConfigCenterBinding binding;
-//
-//    @BeforeEach
-//    void setUp() {
-//        binding = manager.getBinding();
-//    }
-//
-//    @Test
-//    void publishConfig_thenGetConfig_shouldReturnPublishedValue() {
-//        binding.publishConfig("feature.enabled", "DEFAULT_GROUP", "true");
-//
-//        Optional<String> result = binding.getConfig("feature.enabled", "DEFAULT_GROUP");
-//
-//        assertThat(result).contains("true");
-//    }
-//
-//    @Test
-//    void getConfig_whenNotExists_shouldReturnEmpty() {
-//        Optional<String> result = binding.getConfig("nonexistent.key.xyz");
-//
-//        assertThat(result).isEmpty();
-//    }
-//
-//    @Test
-//    void removeConfig_afterPublish_shouldReturnEmpty() {
-//        binding.publishConfig("temp.key", "DEFAULT_GROUP", "some-value");
-//        assertThat(binding.getConfig("temp.key", "DEFAULT_GROUP")).isPresent();
-//
-//        boolean removed = binding.removeConfig("temp.key", "DEFAULT_GROUP");
-//
-//        assertThat(removed).isTrue();
-//        assertThat(binding.getConfig("temp.key", "DEFAULT_GROUP")).isEmpty();
-//    }
-//
-//    @Test
-//    void addListener_shouldReceiveChange_whenFileIsModified() throws Exception {
-//        CountDownLatch latch = new CountDownLatch(1);
-//        AtomicReference<ConfigChangeEvent> receivedEvent = new AtomicReference<>();
-//
-//        binding.addListener("watch.key", "DEFAULT_GROUP", event -> {
-//            receivedEvent.set(event);
-//            latch.countDown();
-//        });
-//
-//        // Trigger a change by publishing
-//        binding.publishConfig("watch.key", "DEFAULT_GROUP", "new-value");
-//
-//        // Wait for listener (polling interval is 1s in test profile)
-//        boolean triggered = latch.await(5, TimeUnit.SECONDS);
-//        assertThat(triggered).isTrue();
-//        assertThat(receivedEvent.get()).isNotNull();
-//        assertThat(receivedEvent.get().getDataId()).isEqualTo("watch.key");
-//        assertThat(receivedEvent.get().getNewContent()).isEqualTo("new-value");
-//    }
-//
-//    @Test
-//    void publishConfig_multipleKeys_shouldBeReadableIndependently() {
-//        binding.publishConfig("key.a", "DEFAULT_GROUP", "value-a");
-//        binding.publishConfig("key.b", "DEFAULT_GROUP", "value-b");
-//
-//        assertThat(binding.getConfig("key.a", "DEFAULT_GROUP")).contains("value-a");
-//        assertThat(binding.getConfig("key.b", "DEFAULT_GROUP")).contains("value-b");
-//    }
-// }
+package io.github.loadup.components.configcenter.test;
+
+/*-
+ * #%L
+ * LoadUp ConfigCenter Test
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import io.github.loadup.components.configcenter.ConfigCenterTemplate;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+/**
+ * Integration test for the local binder.
+ *
+ * <p>Verifies the full {@link ConfigCenterTemplate} contract: read / write / remove / list /
+ * listener. The same contract is exercised by other binders so that switching the backend does
+ * not change business code.
+ */
+@SpringBootTest(classes = ConfigCenterTestApplication.class)
+class ConfigCenterLocalBindingIT {
+
+    @Autowired
+    private ConfigCenterTemplate template;
+
+    @Test
+    void getConfig_withDefaultValue_returnsDefaultWhenMissing() {
+        assertThat(template.getConfig("missing.key", "fallback")).isEqualTo("fallback");
+    }
+
+    @Test
+    void setConfig_thenGetConfig_roundTrips() {
+        template.setConfig("feature.enabled", "true");
+
+        assertThat(template.getConfig("feature.enabled")).isEqualTo("true");
+    }
+
+    @Test
+    void removeConfig_afterSet_returnsNull() {
+        template.setConfig("temp.key", "some-value");
+        assertThat(template.getConfig("temp.key")).isEqualTo("some-value");
+
+        boolean removed = template.removeConfig("temp.key");
+
+        assertThat(removed).isTrue();
+        assertThat(template.getConfig("temp.key")).isNull();
+    }
+
+    @Test
+    void listKeys_filtersByPrefix() {
+        template.setConfig("list.a", "1");
+        template.setConfig("list.b", "2");
+        template.setConfig("other.c", "3");
+
+        List<String> keys = template.listKeys("list.");
+
+        assertThat(keys).containsExactlyInAnyOrder("list.a", "list.b");
+    }
+
+    @Test
+    void addListener_receivesChange() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicReference<String> received = new AtomicReference<>();
+        template.addListener("watch.key", value -> {
+            received.set(value);
+            latch.countDown();
+        });
+
+        template.setConfig("watch.key", "new-value");
+
+        assertThat(latch.await(5, TimeUnit.SECONDS)).isTrue();
+        assertThat(received.get()).isEqualTo("new-value");
+    }
+
+    @Test
+    void addListener_receivesRemovalAsNull() throws Exception {
+        template.setConfig("watch.remove", "value");
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicReference<String> received = new AtomicReference<>("sentinel");
+        template.addListener("watch.remove", value -> {
+            received.set(value);
+            latch.countDown();
+        });
+
+        template.removeConfig("watch.remove");
+
+        assertThat(latch.await(5, TimeUnit.SECONDS)).isTrue();
+        assertThat(received.get()).isNull();
+    }
+}

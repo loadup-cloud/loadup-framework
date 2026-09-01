@@ -248,27 +248,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         AuthUserDTO authUserDTO = authGateway.getAuthUserByUserId(userId);
-        if (authUserDTO == null
-                || authUserDTO.getStatus()
-                        != 1) { // Assuming 1 is active, 0 is inactive/locked in AuthUserDTO logic or as per your domain
-            // The original code used status != 0 check, I will assume != 1 for active based on register logic
-            // (status=1)
-            // Let's check logic: Register sets status = 1. So 1 is active.
-            // Original: authUserDTO.getStatus() != 0 -> throw Locked. So 0 was active? No, wait.
-            // If status 1 is normal, and 0 is disabled.
-            // Original code: if (status != 0) throw locked. This implies 0 is the ONLY valid status.
-            // But register sets status=1.
-            // Let's assume 1 is Active based on register method.
-            // So if status != 1, throw locked.
-
-            // Wait, let's look at Register:
-            // .status((short) 1) -> 1 is Normal.
-            // So if (status != 1) throw locked.
-            // Original code logic might have been reversed or using different constants.
-            // I will use 1 as active.
-            if (authUserDTO.getStatus() != 1) {
-                throw new CommonException(UpmsResultCode.USER_LOCKED);
-            }
+        if (authUserDTO == null) {
+            throw new CommonException(UpmsResultCode.UNAUTHORIZED);
+        }
+        if (authUserDTO.getStatus() != 1) {
+            throw new CommonException(UpmsResultCode.USER_LOCKED);
         }
 
         User user = userGateway.findById(userId).orElseThrow(() -> new CommonException(UpmsResultCode.USER_NOT_FOUND));

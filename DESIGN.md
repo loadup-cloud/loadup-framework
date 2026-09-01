@@ -42,7 +42,7 @@ LoadUp 的目标是成为类似 RuoYi / Pig 的**被消费脚手架**：集成�
 | 领域 | 标准 API / 底层 OSS |
 |------|-------------------|
 | 缓存 | Spring Cache 注解（`@Cacheable` 等）+ `CacheManager` |
-| 认证授权 | Sa-Token / Spring Security（作为后端，LoadUp 注解为薄门面） |
+| 认证授权 | Spring Security（`@EnableMethodSecurity` / `@PreAuthorize` / `SecurityContextHolder`） |
 | 配置中心 | Nacos / Apollo（SDK 差异由 binder 屏蔽） |
 | 任务调度 | JobRunr（周期任务，与 retrytask 共用引擎）/ Quartz |
 | 文件存储 | S3 协议（MinIO / OSS / COS） |
@@ -59,7 +59,6 @@ LoadUp 的目标是成为类似 RuoYi / Pig 的**被消费脚手架**：集成�
 - `RetryTaskFacade` 的 `bizType + bizId` 幂等语义
 - `ServiceCode` 驱动的通知路由
 - Pipeline 四阶段 DSL（业务编排语义）
-- `@RequireRole` / `@RequirePermission`（若保留自研注解）
 
 ### 2.3 能力并集，不做最小公分母
 
@@ -104,7 +103,7 @@ JobRunr 自带服务端与 Dashboard、Quartz 是嵌入式、Nacos 和 Apollo �
 
 ### 2.9 不 fork 上游
 
-禁止把上游 OSS 代码复制进仓库（captcha 当前是 EasyCaptcha 的 fork，必须去 fork 化，直接依赖 upstream 坐标）。需要增强时优先：
+禁止把上游 OSS 代码复制进仓库（captcha 已去 fork 化，直接依赖 tianai-captcha / nanocaptcha upstream 坐标）。需要增强时优先：
 
 1. 向 upstream 提 PR
 2. 用 facade 层补充能力（如验证码存储）
@@ -282,10 +281,14 @@ loadup-components-{domain}/
 
 ### 5.2 authorization — P1
 
-- **现状**：自研 `@RequireRole` / `@RequirePermission` AOP + ThreadLocal `UserContext`；异步上下文需手动传递，有泄漏风险。
-- **目标 facade**：自研注解保留（UPMS 已深度使用），但**判定逻辑委托底层**；`UserContext` 改 `TransmittableThreadLocal` 或委托 `SecurityContext`。
-- **binder**：`sa-token`（推荐，轻量 + 生态）/ `spring-security`（标准）。通过 `PermissionChecker` SPI 适配。
-- **动作**：抽象 `PermissionChecker` SPI；默认委托 Sa-Token；异步上下文传递；安全相关代码不做自研实现。
+- **现状**：已删除自研 `@RequireRole` / `@RequirePermission` AOP 与 ThreadLocal `UserContext`。
+- **落地**：facade = **Spring Security 标准 API**——`@EnableMethodSecurity` + `@PreAuthorize` / `@Secured`；
+  `UserContext` 是 `SecurityContextHolder` 的薄适配器（写入 `UsernamePasswordAuthenticationToken`，
+  roles → `ROLE_x` 前缀，permissions 原样保存）；`LoadUpUser` 仅承载业务属性。
+- **配置**：`loadup.authorization.enabled`（默认 true，关闭后不启用方法安全）、
+  `loadup.authorization.default-security-filter-chain`（默认 true，无其他 Security 配置时提供最小过滤链）。
+- **边界**：未认证访问受保护方法抛 `AuthenticationCredentialsNotFoundException`
+  （继承 `AuthenticationException`）；已认证但权限不足抛 `AccessDeniedException`，由全局异常处理统一映射。
 
 ### 5.3 configcenter — P3
 
@@ -353,8 +356,13 @@ loadup-components-{domain}/
 
 ### 5.10 captcha — P1
 
-- **现状**：EasyCaptcha 的 fork。
-- **目标**：去 fork，直接依赖 `com.pig4cloud.plugin:easy-captcha`；LoadUp 只做验证码存储（Redis / 本地）+ 接口封装；行为验证可选 AJ-Captcha。
+- **现状**：已删除 EasyCaptcha fork 源码（原 fork 与 AJ-Captcha 均长期停更，不再采用）。
+- **落地**：facade = `CaptchaTemplate`（generate / verify / getBinderType），binder 可插拔：
+  `binder-tianai`（tianai-captcha 1.5.5，行为验证码：滑块 / 旋转 / 拼图 / 点选，默认）+
+  `binder-nanocaptcha`（nanocaptcha 2.1，传统图像验证码：数字 / 字母 / 中文）。
+- **存储**：答案与过期由各引擎侧缓存负责（tianai 本地 `LocalCacheStore`，nanocaptcha 进程内 Map TTL），
+  LoadUp 不重复造存储；图像统一返回 base64 data URI。
+- **接口暴露**：通过 Gateway `bean://captchaTemplate:generate` 路由，组件不提供 Controller。
 
 ### 5.11 signature — P4
 
@@ -377,7 +385,7 @@ loadup-components-{domain}/
 ### 5.14 upms / config / log 模块 — P2/P3
 
 - **现状**：COLA 4.0 业务模块；UPMS 提供 RBAC3 + JWT + 数据权限。
-- **目标**：保留为"框架自带可复用业务能力"；认证后端跟随 authorization 决策（Sa-Token / Spring Security）；OAuth2 三方登录用 Spring Authorization Server 或厂商 SDK 适配。
+- **目标**：保留为"框架自带可复用业务能力"；认证后端跟随 authorization 决策（Spring Security 标准实现）；OAuth2 三方登录用 Spring Authorization Server 或厂商 SDK 适配。
 - **动作**：UPMS 与 authorization 组件的注解解耦（依赖 facade 而非实现）。
 
 ### 5.15 resilience4j — 已完成（标准装配 + 双消费者）
@@ -446,7 +454,7 @@ loadup-components-{domain}/
 |---|--------|------|------|
 | 1 | 许可证：GPL-3.0 → Apache-2.0 | **Apache-2.0**（已定，license-maven-plugin 自动维护） | 商业二开可行性（已解决） |
 | 2 | Cache facade：Spring Cache vs 自研注解 | **Spring Cache** | cache 组件 P1 改造方向 |
-| 3 | Authorization 后端：Sa-Token vs Spring Security | **Sa-Token**（轻量 + 生态） | authorization / upms 改造 |
+| 3 | Authorization 后端：Sa-Token vs Spring Security | **Spring Security**（已定，标准 API 为 facade） | authorization 已重构落地 |
 | 4 | RetryTask：自研引擎 vs JobRunr 底座 | **JobRunr**（已落地：binder-jobrunr） | retrytask 路线（已定） |
 | 7 | Scheduler：自研多 binder vs JobRunr/Quartz 底座 | **JobRunr（与 retrytask 共用引擎）+ Quartz**（已落地：双 binder） | scheduler 路线（已定） |
 | 8 | 容错：自研实现 vs Resilience4j | **Resilience4j**（已落地：组件 + gateway/gotone 双消费者，版本 2.3.0 对齐 Spring Cloud） | 容错路线（已定） |

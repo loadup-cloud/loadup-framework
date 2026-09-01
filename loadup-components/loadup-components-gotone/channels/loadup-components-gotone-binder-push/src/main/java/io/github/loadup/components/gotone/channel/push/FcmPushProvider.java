@@ -60,8 +60,6 @@ public class FcmPushProvider implements NotificationChannelProvider {
 
     @Override
     public ChannelSendResponse send(ChannelSendRequest request) {
-        String title = configValue(request.channelConfig(), "title", "Notification");
-        String sound = configValue(request.channelConfig(), "sound", "default");
         Map<String, Object> extras = configMap(request.channelConfig(), "extras");
 
         Map<String, Boolean> receiverStatus = new HashMap<>();

@@ -28,8 +28,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * Apollo-backed {@link ConfigCenterProvider}.
+ *
+ * <p>Apollo is a read-optimized config server: writes must go through the Apollo Portal Open
+ * API, so {@link #setConfig} and {@link #removeConfig} always return {@code false} and only log a
+ * warning. Reads, key listing and change listeners use the Apollo client directly.
+ */
 public class ApolloConfigCenterProvider implements ConfigCenterProvider {
+    private static final Logger log = LoggerFactory.getLogger(ApolloConfigCenterProvider.class);
+
     private final Config apolloConfig;
     private final ConcurrentHashMap<String, List<Consumer<String>>> listeners = new ConcurrentHashMap<>();
 
@@ -37,7 +48,7 @@ public class ApolloConfigCenterProvider implements ConfigCenterProvider {
         System.setProperty("app.id", config.getAppId());
         if (config.getMeta() != null) System.setProperty("apollo.meta", config.getMeta());
         if (config.getEnv() != null) System.setProperty("env", config.getEnv());
-        if (config.getCluster() != null) System.setProperty("idc", config.getCluster());
+        if (config.getCluster() != null) System.setProperty("apollo.cluster", config.getCluster());
         this.apolloConfig = ConfigService.getConfig(config.getNamespace());
 
         this.apolloConfig.addChangeListener(changeEvent -> {
@@ -59,17 +70,22 @@ public class ApolloConfigCenterProvider implements ConfigCenterProvider {
 
     @Override
     public boolean setConfig(String key, String value) {
+        log.warn("Apollo does not support client-side writes; use Apollo Portal Open API to set key {}", key);
         return false;
     }
 
     @Override
     public boolean removeConfig(String key) {
+        log.warn("Apollo does not support client-side removes; use Apollo Portal Open API to remove key {}", key);
         return false;
     }
 
     @Override
     public List<String> listKeys(String prefix) {
-        return Collections.emptyList();
+        return apolloConfig.getPropertyNames().stream()
+                .filter(key -> key.startsWith(prefix))
+                .sorted()
+                .toList();
     }
 
     @Override

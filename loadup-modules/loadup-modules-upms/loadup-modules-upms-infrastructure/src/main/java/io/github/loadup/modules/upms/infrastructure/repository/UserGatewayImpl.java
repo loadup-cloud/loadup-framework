@@ -24,6 +24,8 @@ import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tabl
 
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import io.github.loadup.commons.dto.PageQuery;
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.infrastructure.converter.UserConverter;
@@ -32,8 +34,6 @@ import io.github.loadup.modules.upms.infrastructure.mapper.UserDOMapper;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -114,31 +114,30 @@ public class UserGatewayImpl implements UserGateway {
     }
 
     @Override
-    public org.springframework.data.domain.Page<User> findAll(Pageable pageable) {
-        Page<UserDO> page = userDOMapper.paginate(
-                Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), QueryWrapper.create());
+    public PageDTO<User> findAll(PageQuery query) {
+        Page<UserDO> page = userDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), QueryWrapper.create());
 
         List<User> users =
                 page.getRecords().stream().map(userConverter::toEntity).collect(Collectors.toList());
 
-        return new PageImpl<>(users, pageable, page.getTotalRow());
+        return PageDTO.of(users, page.getTotalRow(), query.pageNum(), query.pageSize());
     }
 
     @Override
-    public org.springframework.data.domain.Page<User> search(String keyword, Pageable pageable) {
-        QueryWrapper query = QueryWrapper.create()
+    public PageDTO<User> search(String keyword, PageQuery query) {
+        QueryWrapper search = QueryWrapper.create()
                 .where(
                         "username LIKE ? OR nickname LIKE ? OR real_name LIKE ?",
                         "%" + keyword + "%",
                         "%" + keyword + "%",
                         "%" + keyword + "%");
 
-        Page<UserDO> page = userDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+        Page<UserDO> page = userDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), search);
 
         List<User> users =
                 page.getRecords().stream().map(userConverter::toEntity).collect(Collectors.toList());
 
-        return new PageImpl<>(users, pageable, page.getTotalRow());
+        return PageDTO.of(users, page.getTotalRow(), query.pageNum(), query.pageSize());
     }
 
     @Override

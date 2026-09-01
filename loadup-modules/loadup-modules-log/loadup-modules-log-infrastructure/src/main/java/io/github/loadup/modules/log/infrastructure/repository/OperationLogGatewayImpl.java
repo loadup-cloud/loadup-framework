@@ -23,8 +23,10 @@ package io.github.loadup.modules.log.infrastructure.repository;
 import static io.github.loadup.modules.log.infrastructure.dataobject.table.Tables.OPERATION_LOG_DO;
 
 import com.mybatisflex.core.query.QueryWrapper;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.loadup.modules.log.domain.gateway.OperationLogGateway;
 import io.github.loadup.modules.log.domain.model.OperationLog;
+import io.github.loadup.modules.log.infrastructure.dataobject.OperationLogDO;
 import io.github.loadup.modules.log.infrastructure.mapper.OperationLogDOMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -68,7 +70,11 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
         QueryWrapper qw = buildQuery(userId, module, operationType, success, startTime, endTime);
         qw.orderBy(OPERATION_LOG_DO.OPERATION_TIME.desc());
         qw.limit((long) (pageNum - 1) * pageSize, pageSize);
-        return mapper.selectListByQuery(qw).stream().map(this::toModel).toList();
+        List<OperationLogDO> entities = mapper.selectListByQuery(qw);
+        if (entities == null) {
+            return List.of();
+        }
+        return entities.stream().map(this::toModel).toList();
     }
 
     @Override
@@ -93,10 +99,18 @@ public class OperationLogGatewayImpl implements OperationLogGateway {
         QueryWrapper qw = buildQuery(userId, module, operationType, success, startTime, endTime);
         qw.orderBy(OPERATION_LOG_DO.OPERATION_TIME.desc());
         qw.limit(EXPORT_MAX);
-        return mapper.selectListByQuery(qw).stream().map(this::toModel).toList();
+        List<OperationLogDO> entities = mapper.selectListByQuery(qw);
+        if (entities == null) {
+            return List.of();
+        }
+        return entities.stream().map(this::toModel).toList();
     }
 
     @Override
+    @SuppressFBWarnings(
+            value = "SQL_INJECTION_SPRING_JDBC",
+            justification = "Dynamic SQL uses only bound '?' parameters and a whitelisted column name from"
+                    + " resolveGroupColumnName; no user input is concatenated into the statement.")
     public Map<String, Long> countGroupBy(
             String groupField,
             String userId,

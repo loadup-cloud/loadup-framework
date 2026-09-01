@@ -53,6 +53,9 @@ public class JdbcChannelConfigProvider implements ChannelConfigProvider {
                 .eq(true)
                 .orderBy(ServiceChannelDO::getPriority)
                 .asc());
+        if (entities == null) {
+            return List.of();
+        }
         return entities.stream().map(this::toConfig).toList();
     }
 

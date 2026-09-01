@@ -126,7 +126,7 @@ public class ConfigItemService {
                 .editable(Boolean.TRUE.equals(cmd.isEditable()))
                 .encrypted(Boolean.TRUE.equals(cmd.isEncrypted()))
                 .systemDefined(false)
-                .sortOrder(cmd.getSortOrder() == null ? 0 : cmd.getSortOrder())
+                .sortOrder(cmd.getSortOrder() == null ? Integer.valueOf(0) : cmd.getSortOrder())
                 .enabled(true)
                 .createdAt(now)
                 .updatedAt(now)

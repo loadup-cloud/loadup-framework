@@ -28,10 +28,6 @@
             <artifactId>loadup-components-configcenter-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-commons-util</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.ctrip.framework.apollo</groupId>
             <artifactId>apollo-client</artifactId>
         </dependency>

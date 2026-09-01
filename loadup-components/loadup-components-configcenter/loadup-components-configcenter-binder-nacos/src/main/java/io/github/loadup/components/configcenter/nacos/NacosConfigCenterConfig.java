@@ -29,6 +29,9 @@ public class NacosConfigCenterConfig {
     private String username;
     private String password;
     private long timeout = 3000;
+    private String dataId = "loadup-config";
+    private String group = "DEFAULT_GROUP";
+    private String fileExtension = "properties";
 
     public String getServerAddr() {
         return serverAddr;
@@ -68,5 +71,29 @@ public class NacosConfigCenterConfig {
 
     public void setTimeout(long timeout) {
         this.timeout = timeout;
+    }
+
+    public String getDataId() {
+        return dataId;
+    }
+
+    public void setDataId(String dataId) {
+        this.dataId = dataId;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    public String getFileExtension() {
+        return fileExtension;
+    }
+
+    public void setFileExtension(String fileExtension) {
+        this.fileExtension = fileExtension;
     }
 }

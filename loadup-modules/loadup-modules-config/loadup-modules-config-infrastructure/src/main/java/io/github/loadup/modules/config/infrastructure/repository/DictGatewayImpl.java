@@ -30,6 +30,7 @@ import io.github.loadup.modules.config.domain.model.DictType;
 import io.github.loadup.modules.config.infrastructure.cache.ConfigLocalCache;
 import io.github.loadup.modules.config.infrastructure.converter.DictConverter;
 import io.github.loadup.modules.config.infrastructure.dataobject.DictItemDO;
+import io.github.loadup.modules.config.infrastructure.dataobject.DictTypeDO;
 import io.github.loadup.modules.config.infrastructure.mapper.DictItemDOMapper;
 import io.github.loadup.modules.config.infrastructure.mapper.DictTypeDOMapper;
 import java.util.List;
@@ -52,9 +53,12 @@ public class DictGatewayImpl implements DictGateway {
 
     @Override
     public List<DictType> findAllTypes() {
-        return typeMapper.selectListByQuery(QueryWrapper.create().orderBy(DICT_TYPE_DO.SORT_ORDER.asc())).stream()
-                .map(converter::toModel)
-                .collect(Collectors.toList());
+        List<DictTypeDO> entities =
+                typeMapper.selectListByQuery(QueryWrapper.create().orderBy(DICT_TYPE_DO.SORT_ORDER.asc()));
+        if (entities == null) {
+            return List.of();
+        }
+        return entities.stream().map(converter::toModel).collect(Collectors.toList());
     }
 
     @Override
@@ -91,14 +95,13 @@ public class DictGatewayImpl implements DictGateway {
     @Override
     public List<DictItem> findItemsByCode(String dictCode) {
         return localCache.getDictItems(dictCode).orElseGet(() -> {
-            List<DictItem> items = itemMapper
-                    .selectListByQuery(QueryWrapper.create()
-                            .where(DICT_ITEM_DO.DICT_CODE.eq(dictCode))
-                            .and(DICT_ITEM_DO.ENABLED.eq(true))
-                            .orderBy(DICT_ITEM_DO.SORT_ORDER.asc()))
-                    .stream()
-                    .map(converter::toModel)
-                    .collect(Collectors.toList());
+            List<DictItemDO> entities = itemMapper.selectListByQuery(QueryWrapper.create()
+                    .where(DICT_ITEM_DO.DICT_CODE.eq(dictCode))
+                    .and(DICT_ITEM_DO.ENABLED.eq(true))
+                    .orderBy(DICT_ITEM_DO.SORT_ORDER.asc()));
+            List<DictItem> items = entities == null
+                    ? List.of()
+                    : entities.stream().map(converter::toModel).collect(Collectors.toList());
             localCache.putDictItems(dictCode, items);
             return items;
         });
@@ -106,15 +109,15 @@ public class DictGatewayImpl implements DictGateway {
 
     @Override
     public List<DictItem> findItemsByCodeAndParent(String dictCode, String parentValue) {
-        return itemMapper
-                .selectListByQuery(QueryWrapper.create()
-                        .where(DICT_ITEM_DO.DICT_CODE.eq(dictCode))
-                        .and(DICT_ITEM_DO.PARENT_VALUE.eq(parentValue))
-                        .and(DICT_ITEM_DO.ENABLED.eq(true))
-                        .orderBy(DICT_ITEM_DO.SORT_ORDER.asc()))
-                .stream()
-                .map(converter::toModel)
-                .collect(Collectors.toList());
+        List<DictItemDO> entities = itemMapper.selectListByQuery(QueryWrapper.create()
+                .where(DICT_ITEM_DO.DICT_CODE.eq(dictCode))
+                .and(DICT_ITEM_DO.PARENT_VALUE.eq(parentValue))
+                .and(DICT_ITEM_DO.ENABLED.eq(true))
+                .orderBy(DICT_ITEM_DO.SORT_ORDER.asc()));
+        if (entities == null) {
+            return List.of();
+        }
+        return entities.stream().map(converter::toModel).collect(Collectors.toList());
     }
 
     @Override

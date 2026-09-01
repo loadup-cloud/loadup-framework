@@ -35,6 +35,13 @@
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-gateway-webmvc</artifactId>
         </dependency>
+        <!-- Tracer is optional in the starter; add it to the test classpath so the WebMVC
+             tracing filter participates in integration tests like an opted-in application. -->
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-tracer</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

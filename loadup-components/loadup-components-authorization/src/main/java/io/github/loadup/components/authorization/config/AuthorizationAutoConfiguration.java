@@ -20,26 +20,56 @@ package io.github.loadup.components.authorization.config;
  * #L%
  */
 
-import io.github.loadup.components.authorization.aspect.AuthorizationAspect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.github.loadup.components.authorization.AuthorizationProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Auto-configuration for LoadUp Authorization Component.
+ * Auto-configuration for LoadUp Authorization.
  *
- * <p>Automatically configures the authorization aspect for method-level access control.</p>
+ * <p>The component is a thin integration on top of Spring Security: it enables method-level
+ * security ({@code @PreAuthorize} / {@code @Secured}) and registers a permissive, stateless
+ * default filter chain. Enforcement happens at the business method level (the Gateway invokes
+ * beans directly, so there is no controller layer to protect). Applications that need
+ * request-level rules can define their own {@link SecurityFilterChain}.
  */
 @AutoConfiguration
-@EnableAspectJAutoProxy
+@ConditionalOnProperty(prefix = "loadup.authorization", name = "enabled", havingValue = "true", matchIfMissing = true)
+@EnableMethodSecurity
+@EnableConfigurationProperties(AuthorizationProperties.class)
+@SuppressFBWarnings(
+        value = "SPRING_CSRF_PROTECTION_DISABLED",
+        justification = "Stateless API facade: enforcement happens via @PreAuthorize on business methods, the Gateway"
+                + " routes bean calls directly and no controller/session layer exists, so CSRF protection is not"
+                + " applicable.")
 public class AuthorizationAutoConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(AuthorizationAutoConfiguration.class);
 
+    /**
+     * Default stateless and permissive filter chain.
+     *
+     * <p>Authorization is expressed with {@code @PreAuthorize} on business methods; this chain
+     * only disables CSRF and sessions so the component behaves as a pure API facade.
+     */
     @Bean
-    public AuthorizationAspect authorizationAspect() {
-        log.info("Initializing LoadUp Authorization Component");
-        return new AuthorizationAspect();
+    @ConditionalOnWebApplication(type = Type.SERVLET)
+    @ConditionalOnProperty(
+            prefix = "loadup.authorization",
+            name = "default-security-filter-chain",
+            havingValue = "true",
+            matchIfMissing = true)
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
+        return http.build();
     }
 }

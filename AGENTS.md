@@ -54,9 +54,9 @@ loadup-parent/
 │   ├── loadup-commons-dto/     # 通用 DTO：Result<T>、PageDTO、BaseDO
 │   └── loadup-commons-util/    # 工具类：JsonUtil、StringUtils、DateUtils
 ├── components/                 # 可复用技术组件（框架级中间件）
-│   ├── loadup-components-authorization/   # 方法级授权 @RequirePermission
+│   ├── loadup-components-authorization/   # Spring Security 方法级授权 @PreAuthorize
 │   ├── loadup-components-cache/           # 缓存（Spring Cache 门面 + binder-caffeine/redis/jetcache）
-│   ├── loadup-components-captcha/         # 验证码生成
+│   ├── loadup-components-captcha/         # 验证码（API + binder-tianai/nanocaptcha）
 │   ├── loadup-components-configcenter/    # 配置中心（API + binder-local/nacos/apollo）
 │   ├── loadup-components-database/        # MyBatis-Flex 配置、多租户、审计、Flyway 迁移
 │   ├── loadup-components-dfs/             # 分布式文件存储（API + binder-local/s3/database）

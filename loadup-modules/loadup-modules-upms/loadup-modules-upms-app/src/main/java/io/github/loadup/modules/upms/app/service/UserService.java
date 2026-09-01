@@ -20,6 +20,7 @@ package io.github.loadup.modules.upms.app.service;
  * #L%
  */
 
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.app.dto.UserDetailDTO;
@@ -39,10 +40,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,6 +98,7 @@ public class UserService {
         user.setEmailVerified(false);
         user.setMobileVerified(false);
         user.setDeleted(false);
+        user.setLoginFailCount(0);
         user.setRemark(command.getRemark());
         user.setCreatedBy(command.getCreatedBy());
         user.setCreatedTime(LocalDateTime.now());
@@ -214,10 +212,9 @@ public class UserService {
      * Query users with pagination
      */
     public PageDTO<UserDetailDTO> queryUsers(UserQuery query) {
-        Sort sort = Sort.by(Sort.Direction.fromString(query.getSortOrder()), query.getSortBy());
-        Pageable pageable = PageRequest.of(query.getPage() - 1, query.getSize(), sort);
+        PageQuery pageQuery = PageQuery.of(query.getPage(), query.getSize());
 
-        Page<User> userPage;
+        PageDTO<User> userPage;
         if (query.getUsername() != null || query.getEmail() != null || query.getMobile() != null) {
             String keyword = query.getUsername();
             if (keyword == null) {
@@ -226,15 +223,15 @@ public class UserService {
             if (keyword == null) {
                 keyword = query.getMobile();
             }
-            userPage = userGateway.search(keyword, pageable);
+            userPage = userGateway.search(keyword, pageQuery);
         } else {
-            userPage = userGateway.findAll(pageable);
+            userPage = userGateway.findAll(pageQuery);
         }
 
         List<UserDetailDTO> dtoList =
-                userPage.getContent().stream().map(this::convertToDetailDTO).collect(Collectors.toList());
+                userPage.getData().stream().map(this::convertToDetailDTO).collect(Collectors.toList());
 
-        return PageDTO.of(dtoList, userPage.getTotalElements(), query.getPage(), query.getSize());
+        return PageDTO.of(dtoList, userPage.getPageInfo().totalCount(), query.getPage(), query.getSize());
     }
 
     /**

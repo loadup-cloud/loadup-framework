@@ -20,11 +20,11 @@ package io.github.loadup.modules.upms.domain.gateway;
  * #L%
  */
 
+import io.github.loadup.commons.dto.PageQuery;
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.domain.entity.User;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 /**
  * User Repository Interface
@@ -82,12 +82,12 @@ public interface UserGateway {
     /**
      * Find all users (with pagination)
      */
-    Page<User> findAll(Pageable pageable);
+    PageDTO<User> findAll(PageQuery query);
 
     /**
      * Search users by keyword
      */
-    Page<User> search(String keyword, Pageable pageable);
+    PageDTO<User> search(String keyword, PageQuery query);
 
     /**
      * Check if username exists

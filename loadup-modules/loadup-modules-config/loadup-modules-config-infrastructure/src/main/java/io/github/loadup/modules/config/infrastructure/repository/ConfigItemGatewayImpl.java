@@ -64,23 +64,23 @@ public class ConfigItemGatewayImpl implements ConfigItemGateway {
 
     @Override
     public List<ConfigItem> findByCategory(String category) {
-        return mapper
-                .selectListByQuery(QueryWrapper.create()
-                        .where(CONFIG_ITEM_DO.CATEGORY.eq(category))
-                        .orderBy(CONFIG_ITEM_DO.SORT_ORDER.asc()))
-                .stream()
-                .map(converter::toModel)
-                .collect(Collectors.toList());
+        List<ConfigItemDO> entities = mapper.selectListByQuery(QueryWrapper.create()
+                .where(CONFIG_ITEM_DO.CATEGORY.eq(category))
+                .orderBy(CONFIG_ITEM_DO.SORT_ORDER.asc()));
+        if (entities == null) {
+            return List.of();
+        }
+        return entities.stream().map(converter::toModel).collect(Collectors.toList());
     }
 
     @Override
     public List<ConfigItem> findAll() {
-        return mapper
-                .selectListByQuery(
-                        QueryWrapper.create().orderBy(CONFIG_ITEM_DO.CATEGORY.asc(), CONFIG_ITEM_DO.SORT_ORDER.asc()))
-                .stream()
-                .map(converter::toModel)
-                .collect(Collectors.toList());
+        List<ConfigItemDO> entities = mapper.selectListByQuery(
+                QueryWrapper.create().orderBy(CONFIG_ITEM_DO.CATEGORY.asc(), CONFIG_ITEM_DO.SORT_ORDER.asc()));
+        if (entities == null) {
+            return List.of();
+        }
+        return entities.stream().map(converter::toModel).collect(Collectors.toList());
     }
 
     @Override

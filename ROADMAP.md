@@ -33,7 +33,7 @@
 
 - [ ] 将 [DESIGN.md](./DESIGN.md) 第 2、3、4 节要点并入 `AGENTS.md`（设计原则 + 约束执行机制 + facade/binder 铁律 + 能力矩阵要求）
 - [x] 制定能力矩阵模板，并在 3 个代表组件（cache / scheduler / dfs）README 落地示范（cache / scheduler 已完成，dfs 待补）
-- [ ] 决策项拍板（DESIGN.md 第 7 节）：Cache facade、Authorization 后端、ORM（许可证已定 Apache-2.0，RetryTask 已定 JobRunr）
+- [ ] 决策项拍板（DESIGN.md 第 7 节）：ORM（Cache facade 已定 Spring Cache，Authorization 已定 Spring Security，许可证已定 Apache-2.0，RetryTask 已定 JobRunr）
 - [ ] CI 增加文档一致性检查（能力矩阵存在性、README 许可证标识一致性）
 - [ ] 根 pom 引入 `maven-enforcer-plugin` `bannedDependencies`（业务模块禁止依赖 binder / 中间件坐标），binder 模块与集成方工程豁免
 - [ ] `loadup-testify` 增加 ArchUnit 测试基类，在代表模块落地示例并接入 CI
@@ -50,9 +50,9 @@
 
 任务：
 
-- [ ] **captcha 去 fork**：删除 fork 代码，依赖 `com.pig4cloud.plugin:easy-captcha`；LoadUp 只保留验证码存储（Redis/本地）与接口封装
+- [x] **captcha 去 fork**：删除 EasyCaptcha fork 代码；facade = `CaptchaTemplate`（generate / verify）；`binder-tianai`（行为验证码，默认）+ `binder-nanocaptcha`（传统图像）落地，容器测试验证引擎切换零代码修改
 - [x] **cache 迁移 Spring Cache**：删除自研 `CacheBinding` / `CacheTemplate` / `CacheProvider` 体系；facade = Spring Cache 注解 + `loadup.cache.*` 增量配置（按 cache name 的 TTL / 空值 / 随机过期）；caffeine / redis / jetcache 三 binder 重写；容器测试证明切换零代码修改
-- [ ] **authorization 委托底层**：抽象 `PermissionChecker` SPI；默认适配 Sa-Token；`UserContext` 改 `TransmittableThreadLocal`；补异步上下文测试
+- [x] **authorization 迁移 Spring Security**：删除自研 `@RequireRole` / `@RequirePermission` AOP；facade = Spring Security 标准 API（`@EnableMethodSecurity` + `@PreAuthorize`）；`UserContext` 委托 `SecurityContextHolder`；补方法安全测试
 - [x] **retrytask 迁移 JobRunr**：删除自研引擎/JDBC 存储；facade 保留，`binder-jobrunr` 落地（幂等、定时、取消、失败重跑、状态查询、失败告警）；集成测试验证业务代码零修改
 - [x] **scheduler 去自研化**：删除 `@DistributedScheduler` / SimpleJob / Quartz / XXL-Job / PowerJob 旧 binder；facade = `SchedulerTemplate` + `SchedulerProcessor`；`binder-jobrunr`（与 retrytask 共用引擎）+ `binder-quartz` 落地；JobRunr/Quartz 双 binder 集成测试验证切换零代码修改
 - [x] **resilience4j 落地**：新增 `loadup-components-resilience4j`（api + binder-core，标准 Resilience4j API 为 facade）；gateway 手写熔断/限流 filter 替换为 Resilience4j 实现；gotone 引擎按 provider 接入熔断 + 重试；BOM 版本对齐 Spring Cloud 管理的 2.3.0
@@ -125,7 +125,7 @@
 
 任务：
 
-- [ ] 可选 binder 落地：cache-binder-jetcache（多级 + 异步刷新）、authorization-binder-spring-security
+- [ ] 可选 binder 落地：cache-binder-jetcache（多级 + 异步刷新）、configcenter-binder-apollo 增强（实时推送写回）
 - [ ] Micrometer 指标统一暴露（cache 命中率、gateway 路由、retry 次数等）
 - [ ] 代码生成器（可选）：基于模板工程生成业务模块骨架
 - [ ] 评估独立网关部署单元（仅当真实网关场景出现，MVC 组件不受影响）

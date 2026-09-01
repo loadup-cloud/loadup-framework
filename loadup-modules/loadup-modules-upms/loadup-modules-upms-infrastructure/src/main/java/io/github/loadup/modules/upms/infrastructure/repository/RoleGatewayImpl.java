@@ -24,6 +24,8 @@ import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tabl
 
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import io.github.loadup.commons.dto.PageQuery;
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.domain.entity.Role;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.infrastructure.converter.RoleConverter;
@@ -33,8 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -164,14 +164,13 @@ public class RoleGatewayImpl implements RoleGateway {
     }
 
     @Override
-    public org.springframework.data.domain.Page<Role> findAll(Pageable pageable) {
-        Page<RoleDO> page = roleDOMapper.paginate(
-                Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), QueryWrapper.create());
+    public PageDTO<Role> findAll(PageQuery query) {
+        Page<RoleDO> page = roleDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), QueryWrapper.create());
 
         List<Role> roles =
                 page.getRecords().stream().map(roleConverter::toEntity).collect(Collectors.toList());
 
-        return new PageImpl<>(roles, pageable, page.getTotalRow());
+        return PageDTO.of(roles, page.getTotalRow(), query.pageNum(), query.pageSize());
     }
 
     @Override

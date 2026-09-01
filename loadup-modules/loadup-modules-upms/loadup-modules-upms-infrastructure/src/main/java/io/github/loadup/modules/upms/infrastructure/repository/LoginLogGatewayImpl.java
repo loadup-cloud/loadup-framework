@@ -24,6 +24,8 @@ import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tabl
 
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import io.github.loadup.commons.dto.PageQuery;
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.domain.entity.LoginLog;
 import io.github.loadup.modules.upms.domain.gateway.LoginLogGateway;
 import io.github.loadup.modules.upms.infrastructure.converter.LoginLogConverter;
@@ -33,8 +35,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -64,64 +64,58 @@ public class LoginLogGatewayImpl implements LoginLogGateway {
     }
 
     @Override
-    public org.springframework.data.domain.Page<LoginLog> findByUserId(String userId, Pageable pageable) {
-        QueryWrapper query =
+    public PageDTO<LoginLog> findByUserId(String userId, PageQuery query) {
+        QueryWrapper wrapper =
                 QueryWrapper.create().where(LOGIN_LOG_DO.USER_ID.eq(userId)).orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
-        Page<LoginLogDO> page =
-                loginLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+        Page<LoginLogDO> page = loginLogDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), wrapper);
 
         List<LoginLog> logs =
                 page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
 
-        return new PageImpl<>(logs, pageable, page.getTotalRow());
+        return PageDTO.of(logs, page.getTotalRow(), query.pageNum(), query.pageSize());
     }
 
     @Override
-    public org.springframework.data.domain.Page<LoginLog> findByUsername(String username, Pageable pageable) {
-        QueryWrapper query =
+    public PageDTO<LoginLog> findByUsername(String username, PageQuery query) {
+        QueryWrapper wrapper =
                 QueryWrapper.create().where(LOGIN_LOG_DO.USERNAME.eq(username)).orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
-        Page<LoginLogDO> page =
-                loginLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+        Page<LoginLogDO> page = loginLogDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), wrapper);
 
         List<LoginLog> logs =
                 page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
 
-        return new PageImpl<>(logs, pageable, page.getTotalRow());
+        return PageDTO.of(logs, page.getTotalRow(), query.pageNum(), query.pageSize());
     }
 
     @Override
-    public org.springframework.data.domain.Page<LoginLog> findByDateRange(
-            LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
-        QueryWrapper query = QueryWrapper.create()
+    public PageDTO<LoginLog> findByDateRange(LocalDateTime startTime, LocalDateTime endTime, PageQuery query) {
+        QueryWrapper wrapper = QueryWrapper.create()
                 .where(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime))
                 .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
-        Page<LoginLogDO> page =
-                loginLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+        Page<LoginLogDO> page = loginLogDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), wrapper);
 
         List<LoginLog> logs =
                 page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
 
-        return new PageImpl<>(logs, pageable, page.getTotalRow());
+        return PageDTO.of(logs, page.getTotalRow(), query.pageNum(), query.pageSize());
     }
 
     @Override
-    public org.springframework.data.domain.Page<LoginLog> findFailedLogins(
-            LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
-        QueryWrapper query = QueryWrapper.create()
+    public PageDTO<LoginLog> findFailedLogins(LocalDateTime startTime, LocalDateTime endTime, PageQuery query) {
+        QueryWrapper wrapper = QueryWrapper.create()
                 .where(LOGIN_LOG_DO.LOGIN_STATUS.eq((short) 0))
                 .and(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime))
                 .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
-        Page<LoginLogDO> page =
-                loginLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+        Page<LoginLogDO> page = loginLogDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), wrapper);
 
         List<LoginLog> logs =
                 page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
 
-        return new PageImpl<>(logs, pageable, page.getTotalRow());
+        return PageDTO.of(logs, page.getTotalRow(), query.pageNum(), query.pageSize());
     }
 
     @Override
@@ -139,16 +133,15 @@ public class LoginLogGatewayImpl implements LoginLogGateway {
     }
 
     @Override
-    public org.springframework.data.domain.Page<LoginLog> findAll(Pageable pageable) {
-        QueryWrapper query = QueryWrapper.create().orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
+    public PageDTO<LoginLog> findAll(PageQuery query) {
+        QueryWrapper wrapper = QueryWrapper.create().orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
 
-        Page<LoginLogDO> page =
-                loginLogDOMapper.paginate(Page.of(pageable.getPageNumber() + 1, pageable.getPageSize()), query);
+        Page<LoginLogDO> page = loginLogDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), wrapper);
 
         List<LoginLog> logs =
                 page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
 
-        return new PageImpl<>(logs, pageable, page.getTotalRow());
+        return PageDTO.of(logs, page.getTotalRow(), query.pageNum(), query.pageSize());
     }
 
     @Override

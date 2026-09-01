@@ -22,6 +22,7 @@ package io.github.loadup.commons.result;
 
 import io.github.loadup.commons.dto.DTO;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.framework.api.result.ResultCode;
 import java.io.Serial;
 import java.io.Serializable;

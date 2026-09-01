@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS config_history
     change_type VARCHAR(20)  NOT NULL COMMENT '变更类型',
     operator    VARCHAR(64)  NOT NULL DEFAULT 'system' COMMENT '操作人',
     remark      VARCHAR(500) COMMENT '备注',
-    created_at  DATETIME     NOT NULL  COMMENT '创建时间',
+    created_at  DATETIME(3)  NOT NULL  COMMENT '创建时间',
     updated_at  DATETIME     NOT NULL COMMENT '更新时间',
     deleted     TINYINT      NOT NULL DEFAULT 0 COMMENT '删除标记',
     PRIMARY KEY (id),
@@ -127,23 +127,23 @@ CREATE TABLE IF NOT EXISTS config_history
 -- Initial seed data
 -- ============================================================
 
-INSERT IGNORE INTO dict_type (id, dict_code, dict_name, system_defined, sort_order, enabled)
-VALUES ('01', 'user_status', '用户状态', TRUE, 1, TRUE),
-       ('02', 'gender', '性别', TRUE, 2, TRUE),
-       ('03', 'yes_no', '是否', TRUE, 3, TRUE);
+INSERT IGNORE INTO dict_type (id, dict_code, dict_name, system_defined, sort_order, enabled, created_at, updated_at)
+VALUES ('01', 'user_status', '用户状态', TRUE, 1, TRUE, NOW(), NOW()),
+       ('02', 'gender', '性别', TRUE, 2, TRUE, NOW(), NOW()),
+       ('03', 'yes_no', '是否', TRUE, 3, TRUE, NOW(), NOW());
 
-INSERT IGNORE INTO dict_item (id, dict_code, item_label, item_value, sort_order, enabled)
-VALUES ('001', 'user_status', '正常', '1', 1, TRUE),
-       ('002', 'user_status', '停用', '0', 2, TRUE),
-       ('003', 'user_status', '锁定', '2', 3, TRUE),
-       ('004', 'gender', '男', '1', 1, TRUE),
-       ('005', 'gender', '女', '2', 2, TRUE),
-       ('006', 'gender', '未知', '0', 3, TRUE),
-       ('007', 'yes_no', '是', '1', 1, TRUE),
-       ('008', 'yes_no', '否', '0', 2, TRUE);
+INSERT IGNORE INTO dict_item (id, dict_code, item_label, item_value, sort_order, enabled, created_at, updated_at)
+VALUES ('001', 'user_status', '正常', '1', 1, TRUE, NOW(), NOW()),
+       ('002', 'user_status', '停用', '0', 2, TRUE, NOW(), NOW()),
+       ('003', 'user_status', '锁定', '2', 3, TRUE, NOW(), NOW()),
+       ('004', 'gender', '男', '1', 1, TRUE, NOW(), NOW()),
+       ('005', 'gender', '女', '2', 2, TRUE, NOW(), NOW()),
+       ('006', 'gender', '未知', '0', 3, TRUE, NOW(), NOW()),
+       ('007', 'yes_no', '是', '1', 1, TRUE, NOW(), NOW()),
+       ('008', 'yes_no', '否', '0', 2, TRUE, NOW(), NOW());
 
 INSERT IGNORE INTO config_item
-(id, config_key, config_value, value_type, category, description, editable, system_defined, enabled)
-VALUES ('c01', 'system.name', 'LoadUp Framework', 'STRING', 'system', '系统名称', FALSE, TRUE, TRUE),
-       ('c02', 'upload.max-file-size', '10485760', 'LONG', 'upload', '文件上传大小限制(字节)', TRUE, FALSE, TRUE),
-       ('c03', 'security.password-expire-days', '90', 'INTEGER', 'security', '密码过期天数', TRUE, FALSE, TRUE);
+(id, config_key, config_value, value_type, category, description, editable, system_defined, enabled, created_at, updated_at)
+VALUES ('c01', 'system.name', 'LoadUp Framework', 'STRING', 'system', '系统名称', FALSE, TRUE, TRUE, NOW(), NOW()),
+       ('c02', 'upload.max-file-size', '10485760', 'LONG', 'upload', '文件上传大小限制(字节)', TRUE, FALSE, TRUE, NOW(), NOW()),
+       ('c03', 'security.password-expire-days', '90', 'INTEGER', 'security', '密码过期天数', TRUE, FALSE, TRUE, NOW(), NOW());

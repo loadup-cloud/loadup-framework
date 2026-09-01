@@ -20,6 +20,7 @@ package io.github.loadup.components.database.flyway;
  * #L%
  */
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.Connection;
 import java.sql.Statement;
 import org.flywaydb.core.api.callback.Callback;
@@ -54,6 +55,11 @@ public class StatementInitCallback implements Callback {
     }
 
     @Override
+    @SuppressFBWarnings(
+            value = "SQL_INJECTION_JDBC",
+            justification =
+                    "SQL comes from operator-configured FlywayProperties.initSqls at startup, not runtime input;"
+                            + " this is the Flyway initSql replacement API.")
     public void handle(Event event, Context context) {
         try (Connection connection = context.getConnection();
                 Statement statement = connection.createStatement()) {

@@ -51,9 +51,9 @@ CREATE TABLE IF NOT EXISTS upms_user
     dept_id                 VARCHAR(64)  NOT NULL COMMENT '所属部门ID',
     email                   VARCHAR(100) COMMENT '邮箱',
     email_verified          TINYINT      NOT NULL DEFAULT 0 COMMENT '邮箱是否验证',
-    phone                   VARCHAR(20) COMMENT '手机号',
-    phone_verified          TINYINT      NOT NULL DEFAULT 0 COMMENT '手机是否验证',
-    avatar_url              VARCHAR(500) COMMENT '头像地址',
+    mobile                  VARCHAR(20) COMMENT '手机号',
+    mobile_verified         TINYINT      NOT NULL DEFAULT 0 COMMENT '手机是否验证',
+    avatar                  VARCHAR(500) COMMENT '头像地址',
     gender                  TINYINT               DEFAULT 0 COMMENT '性别：0-未知 1-男 2-女',
     birthday                DATE COMMENT '生日',
     status                  TINYINT      NOT NULL DEFAULT 1 COMMENT '状态：1-正常 0-停用 2-锁定',
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS upms_user
     PRIMARY KEY (id),
     UNIQUE KEY uk_username (username),
     UNIQUE KEY uk_email (email),
-    UNIQUE KEY uk_phone (phone),
+    UNIQUE KEY uk_mobile (mobile),
     INDEX idx_user_dept_id (dept_id),
     INDEX idx_user_tenant_id (tenant_id),
     INDEX idx_user_status (status)
@@ -361,7 +361,7 @@ INSERT IGNORE INTO upms_role (id, role_name, role_code, role_level, data_scope, 
                               created_at,updated_at)
 VALUES ('1', '超级管理员', 'ROLE_SUPER_ADMIN', 1, 1, 0, 1, '1', NOW(),now());
 
-INSERT IGNORE INTO upms_user (id, username, password, nickname, real_name, dept_id, email, phone, status, created_by,
+INSERT IGNORE INTO upms_user (id, username, password, nickname, real_name, dept_id, email, mobile, status, created_by,
                               created_at,updated_at)
 VALUES ('1', 'admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iYS5TuIG',
         '超级管理员', 'Admin', '1', 'admin@loadup.com', '13800138000', 1, '1', NOW(),now());

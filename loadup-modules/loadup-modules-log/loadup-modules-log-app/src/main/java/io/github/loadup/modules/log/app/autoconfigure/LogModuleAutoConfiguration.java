@@ -27,6 +27,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -60,6 +62,8 @@ public class LogModuleAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    @ConditionalOnClass(name = "com.fasterxml.jackson.databind.ObjectMapper")
+    @ConditionalOnBean(ObjectMapper.class)
     public OperationLogAspect operationLogAspect(LogAsyncWriter logAsyncWriter, ObjectMapper objectMapper) {
         return new OperationLogAspect(logAsyncWriter, objectMapper);
     }

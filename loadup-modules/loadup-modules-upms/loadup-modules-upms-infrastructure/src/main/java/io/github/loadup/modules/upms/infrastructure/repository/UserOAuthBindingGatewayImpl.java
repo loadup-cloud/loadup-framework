@@ -72,9 +72,12 @@ public class UserOAuthBindingGatewayImpl implements UserOAuthBindingGateway {
 
     @Override
     public List<UserOAuthBinding> findByUserId(String userId) {
-        return mapper.selectListByQuery(QueryWrapper.create().where(USER_OAUTH_BINDING_DO.USER_ID.eq(userId))).stream()
-                .map(converter::toEntity)
-                .collect(Collectors.toList());
+        List<UserOAuthBindingDO> entities =
+                mapper.selectListByQuery(QueryWrapper.create().where(USER_OAUTH_BINDING_DO.USER_ID.eq(userId)));
+        if (entities == null) {
+            return List.of();
+        }
+        return entities.stream().map(converter::toEntity).collect(Collectors.toList());
     }
 
     @Override

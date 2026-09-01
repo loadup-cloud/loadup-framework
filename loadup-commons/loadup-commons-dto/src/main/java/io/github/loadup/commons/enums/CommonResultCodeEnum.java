@@ -20,7 +20,6 @@ package io.github.loadup.commons.enums;
  * #L%
  */
 
-import io.github.loadup.commons.result.ResultStatusEnum;
 import io.github.loadup.framework.api.result.ResultCode;
 import java.util.Arrays;
 import org.apache.commons.lang3.Strings;

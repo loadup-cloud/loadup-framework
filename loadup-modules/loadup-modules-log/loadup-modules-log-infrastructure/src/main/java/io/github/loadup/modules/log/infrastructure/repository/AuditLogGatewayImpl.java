@@ -25,6 +25,7 @@ import static io.github.loadup.modules.log.infrastructure.dataobject.table.Table
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.modules.log.domain.gateway.AuditLogGateway;
 import io.github.loadup.modules.log.domain.model.AuditLog;
+import io.github.loadup.modules.log.infrastructure.dataobject.AuditLogDO;
 import io.github.loadup.modules.log.infrastructure.mapper.AuditLogDOMapper;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -61,7 +62,11 @@ public class AuditLogGatewayImpl implements AuditLogGateway {
         QueryWrapper qw = buildQuery(userId, dataType, dataId, action, startTime, endTime);
         qw.orderBy(AUDIT_LOG_DO.OPERATION_TIME.desc());
         qw.limit((long) (pageNum - 1) * pageSize, pageSize);
-        return mapper.selectListByQuery(qw).stream().map(this::toModel).toList();
+        List<AuditLogDO> entities = mapper.selectListByQuery(qw);
+        if (entities == null) {
+            return List.of();
+        }
+        return entities.stream().map(this::toModel).toList();
     }
 
     @Override

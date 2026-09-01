@@ -52,5 +52,10 @@
             <version>0.0.2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <!-- SpotBugs annotations for justified suppressions -->
+        <dependency>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
+        </dependency>
     </dependencies>
 </project>

@@ -297,7 +297,7 @@ public class RoleService {
     /**
      * Build role tree recursively
      */
-    private List<RoleDTO> buildRoleTree(List<Role> allRoles, Long parentId) {
+    private List<RoleDTO> buildRoleTree(List<Role> allRoles, String parentId) {
         List<RoleDTO> tree = new ArrayList<>();
         for (Role role : allRoles) {
             if (parentId == null && role.getParentId() == null

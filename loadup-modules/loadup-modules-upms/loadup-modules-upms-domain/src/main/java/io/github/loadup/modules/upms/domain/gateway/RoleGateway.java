@@ -20,11 +20,11 @@ package io.github.loadup.modules.upms.domain.gateway;
  * #L%
  */
 
+import io.github.loadup.commons.dto.PageQuery;
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.domain.entity.Role;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 /**
  * Role Repository Interface
@@ -124,7 +124,7 @@ public interface RoleGateway {
      */
     List<String> findDepartmentIdsByRoleId(String roleId);
 
-    Page<Role> findAll(Pageable pageable);
+    PageDTO<Role> findAll(PageQuery query);
 
     /**
      * Count users by role ID

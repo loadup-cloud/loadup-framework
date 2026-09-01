@@ -20,6 +20,7 @@ package io.github.loadup.modules.log.infrastructure.repository;
  * #L%
  */
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.loadup.modules.log.domain.gateway.ErrorLogGateway;
 import io.github.loadup.modules.log.domain.model.ErrorLog;
 import java.time.LocalDateTime;
@@ -76,6 +77,10 @@ public class ErrorLogGatewayImpl implements ErrorLogGateway {
     }
 
     @Override
+    @SuppressFBWarnings(
+            value = "SQL_INJECTION_SPRING_JDBC",
+            justification = "Dynamic WHERE uses only bound '?' parameters; no user input is concatenated into the"
+                    + " statement.")
     public List<ErrorLog> findByCondition(
             String userId,
             String errorType,
@@ -95,6 +100,10 @@ public class ErrorLogGatewayImpl implements ErrorLogGateway {
     }
 
     @Override
+    @SuppressFBWarnings(
+            value = "SQL_INJECTION_SPRING_JDBC",
+            justification = "Dynamic WHERE uses only bound '?' parameters; no user input is concatenated into the"
+                    + " statement.")
     public long countByCondition(
             String userId, String errorType, String errorCode, LocalDateTime startTime, LocalDateTime endTime) {
         List<Object> params = new ArrayList<>();

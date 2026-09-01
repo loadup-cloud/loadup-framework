@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: loadup-captcha-test
+
+loadup:
+  captcha:
+    binder-type: tianai
+
+logging:
+  level:
+    root: WARN
+    io.github.loadup: INFO

@@ -4,11 +4,7 @@ spring:
 
 loadup:
   configcenter:
-    default-binder: local
-    binders:
-      local:
-        base-path: target/configcenter-test
-        refresh-interval: 5s
+    binder-type: local
 
 logging:
   level:

@@ -206,7 +206,7 @@ public class LoadUpUser implements Serializable {
 
     @Override
     public String toString() {
-        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
-                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
+        return "LoadUpUser{userId='" + userId + "', username='" + username + "', roles=" + roles + ", permissions="
+                + permissions + ", attributes=" + attributes + '}';
     }
 }

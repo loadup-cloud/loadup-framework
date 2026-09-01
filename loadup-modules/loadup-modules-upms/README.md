@@ -58,7 +58,7 @@ loadup-modules-upms/
 #### 5. 认证授权
 
 - ✅ JWT Token 认证
-- ✅ 基于注解的权限控制 (`@RequireRole`, `@RequirePermission`)
+- ✅ Spring Security 方法级权限控制 (`@PreAuthorize`)
 - ✅ 数据权限过滤 (`@DataScope`)
 
 ### 快速开始
@@ -97,7 +97,7 @@ public class UserController {
     private UserService userService;
     
     // 只有 ADMIN 可以删除用户
-    @RequireRole("ADMIN")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{userId}")
     public Result<Void> deleteUser(@PathVariable String userId) {
         userService.deleteUser(userId);

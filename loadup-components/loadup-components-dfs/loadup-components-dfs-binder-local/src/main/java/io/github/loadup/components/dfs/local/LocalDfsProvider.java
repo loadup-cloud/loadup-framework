@@ -20,6 +20,7 @@ package io.github.loadup.components.dfs.local;
  * #L%
  */
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.loadup.components.dfs.DfsProvider;
 import io.github.loadup.components.dfs.model.FileDownloadResponse;
 import io.github.loadup.components.dfs.model.FileMetadata;
@@ -28,26 +29,44 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LocalDfsProvider implements DfsProvider {
+    private static final Logger log = LoggerFactory.getLogger(LocalDfsProvider.class);
+
     private final Path storagePath;
     private final Map<String, FileMetadata> metadataIndex = new ConcurrentHashMap<>();
 
+    @SuppressFBWarnings(
+            value = "CT_CONSTRUCTOR_THROW",
+            justification = "Fail-fast construction: throwing when the configured storage directory cannot be created"
+                    + " is intentional and the class has no finalizer.")
     public LocalDfsProvider(LocalDfsConfig config) {
         this.storagePath = Path.of(config.getUploadDir());
-        this.storagePath.toFile().mkdirs();
+        if (!this.storagePath.toFile().mkdirs() && !this.storagePath.toFile().isDirectory()) {
+            throw new IllegalStateException("Failed to create storage directory: " + storagePath);
+        }
     }
 
     @Override
     public FileMetadata upload(FileUploadRequest request) {
         String fileId = UUID.randomUUID().toString().replace("-", "");
-        File target = storagePath.resolve(fileId + "_" + request.getFilename()).toFile();
+        Path filenamePath = Path.of(request.getFilename());
+        Path fileNamePath = filenamePath.getFileName();
+        String safeName = fileNamePath != null ? fileNamePath.toString() : filenamePath.toString();
+        File target = resolveFile(fileId + "_" + safeName);
+        InputStream inputStream = request.getInputStream();
+        if (inputStream == null) {
+            throw new IllegalArgumentException("Upload input stream is required");
+        }
         try (FileOutputStream fos = new FileOutputStream(target)) {
-            request.getInputStream().transferTo(fos);
+            inputStream.transferTo(fos);
         } catch (IOException e) {
             throw new RuntimeException("Upload failed", e);
         }
@@ -55,6 +74,7 @@ public class LocalDfsProvider implements DfsProvider {
         FileMetadata fileMetadata = new FileMetadata();
         fileMetadata.setFileId(fileId);
         fileMetadata.setFilename(request.getFilename());
+        fileMetadata.setPath(fileId + "_" + safeName);
         fileMetadata.setSize(target.length());
         fileMetadata.setContentType(request.getContentType());
 
@@ -63,13 +83,18 @@ public class LocalDfsProvider implements DfsProvider {
     }
 
     @Override
+    @SuppressFBWarnings(
+            value = "OBL_UNSATISFIED_OBLIGATION",
+            justification = "InputStream ownership transfers to the caller through FileDownloadResponse; the caller"
+                    + " is responsible for closing it.")
     public FileDownloadResponse download(String fileId) {
         FileMetadata meta = metadataIndex.get(fileId);
         if (meta == null) return null;
+        File file = resolveFile(meta.getPath());
         try {
-            File file = new File(meta.getPath());
+            FileInputStream inputStream = new FileInputStream(file);
             return FileDownloadResponse.builder()
-                    .inputStream(new FileInputStream(file))
+                    .inputStream(inputStream)
                     .metadata(meta)
                     .build();
         } catch (IOException e) {
@@ -80,8 +105,20 @@ public class LocalDfsProvider implements DfsProvider {
     @Override
     public boolean delete(String fileId) {
         FileMetadata meta = metadataIndex.remove(fileId);
-        if (meta != null) new File(meta.getPath()).delete();
+        if (meta == null) return false;
+        boolean deleted = resolveFile(meta.getPath()).delete();
+        if (!deleted) {
+            log.warn("Physical file delete failed for fileId={}, path={}", fileId, meta.getPath());
+        }
         return meta != null;
+    }
+
+    private File resolveFile(String relativePath) {
+        Path resolved = storagePath.resolve(relativePath).normalize();
+        if (!resolved.startsWith(storagePath)) {
+            throw new IllegalArgumentException("Invalid storage path: " + relativePath);
+        }
+        return resolved.toFile();
     }
 
     @Override

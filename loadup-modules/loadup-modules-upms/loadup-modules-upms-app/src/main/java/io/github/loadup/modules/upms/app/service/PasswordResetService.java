@@ -49,7 +49,7 @@ public class PasswordResetService {
      */
     public void sendEmailVerificationCode(String email) {
         // Validate email exists
-        User user = userGateway.findByEmail(email).orElseThrow(() -> new RuntimeException("该邮箱未注册"));
+        userGateway.findByEmail(email).orElseThrow(() -> new RuntimeException("该邮箱未注册"));
 
         // Check rate limiting
         if (!verificationCodeService.canSendCode(email, "EMAIL")) {
@@ -68,7 +68,7 @@ public class PasswordResetService {
      */
     public void sendSmsVerificationCode(String mobile) {
         // Validate mobile exists
-        User user = userGateway.findByMobile(mobile).orElseThrow(() -> new RuntimeException("该手机号未注册"));
+        userGateway.findByMobile(mobile).orElseThrow(() -> new RuntimeException("该手机号未注册"));
 
         // Check rate limiting
         if (!verificationCodeService.canSendCode(mobile, "SMS")) {
