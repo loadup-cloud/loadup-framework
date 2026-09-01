@@ -406,10 +406,13 @@ Gateway 作为标准 **OAuth2 资源服务器**（Servlet 过滤器链），认�
 - **现状**：JCA 薄封装，符合理念；README 已对齐契约（能力矩阵 + 防重放语义约定）。
 - **目标**：保留；网关 HMAC 签名校验对齐业界标准（如 AWS SigV4 风格）或明确定义防重放语义（已约定：`X-App-Id` / `X-Timestamp` / `X-Nonce` / `X-Signature`，时间窗 + nonce 防重放，由 gateway `SignatureSecurityStrategy` 落地）。
 
-### 5.12 tracer / testcontainers — P3
+### 5.12 common-log / common-tracer / testcontainers — P3
 
-- **现状**：OpenTelemetry / Testcontainers 薄封装，符合理念。
-- **目标**：保留；能力矩阵与 README 已落地；testcontainers 保持"共享容器 + 可切换实际服务"模式。
+- **现状**：`loadup-commons-log` 统一 Spring Boot console 日志默认格式，约定 `traceId` / `spanId` /
+  `requestId` MDC 键；`loadup-commons-tracer` 基于 OpenTelemetry 做薄集成，并将 Span 上下文写入 common-log。
+- **目标**：common-log 不绑定具体日志实现、不创建 Span；common-tracer 负责 HTTP / AOP / async 追踪，二者按
+  `common-log ← common-tracer` 单向依赖组合。能力矩阵与 README 已落地；testcontainers 保持"共享容器 +
+  可切换实际服务"模式。
 
 ### 5.13 pipeline / globalunique — P4
 

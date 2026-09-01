@@ -56,7 +56,7 @@
         <!-- Tracer component (optional) -->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-tracer</artifactId>
+            <artifactId>loadup-commons-tracer</artifactId>
             <optional>true</optional>
         </dependency>
     </dependencies>

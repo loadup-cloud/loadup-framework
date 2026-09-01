@@ -16,5 +16,7 @@
         <module>loadup-commons-api</module>
         <module>loadup-commons-dto</module>
         <module>loadup-commons-util</module>
+        <module>loadup-commons-log</module>
+        <module>loadup-commons-tracer</module>
     </modules>
 </project>

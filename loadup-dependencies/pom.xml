@@ -646,7 +646,12 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-tracer</artifactId>
+                <artifactId>loadup-commons-log</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-commons-tracer</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>

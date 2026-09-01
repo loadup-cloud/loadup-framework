@@ -21,7 +21,6 @@ LoadUp Components 提供了一系列可复用的组件，用于简化企业级�
 | **loadup-components-liquibase**      | 数据库迁移                    | [README](loadup-components-liquibase/README.md)      |
 | **loadup-components-scheduler**      | 定时任务（支持 XXL-Job）         | -                                                    |
 | **loadup-components-testcontainers** | 测试容器支持                   | [README](loadup-components-testcontainers/README.md) |
-| **loadup-components-tracer**         | 链路追踪（OpenTelemetry 薄集成）  | [README](loadup-components-tracer/README.md)      |
 | **loadup-components-web**            | Web 增强                   | -                                                    |
 
 ## 核心组件详解

@@ -52,7 +52,9 @@ loadup-parent/
 ├── commons/                    # 最底层通用基础
 │   ├── loadup-commons-api/     # 通用接口、SPI 抽象基类
 │   ├── loadup-commons-dto/     # 通用 DTO：Result<T>、PageDTO、BaseDO
-│   └── loadup-commons-util/    # 工具类：JsonUtil、StringUtils、DateUtils
+│   ├── loadup-commons-util/    # 工具类：JsonUtil、StringUtils、DateUtils
+│   ├── loadup-commons-log/     # 统一日志格式与 trace MDC 约定
+│   └── loadup-commons-tracer/  # OpenTelemetry 链路追踪
 ├── components/                 # 可复用技术组件（框架级中间件）
 │   ├── loadup-components-authorization/   # Spring Security 方法级授权 @PreAuthorize
 │   ├── loadup-components-cache/           # 缓存（Spring Cache 门面 + binder-caffeine/redis/jetcache）
@@ -69,8 +71,7 @@ loadup-parent/
 │   ├── loadup-components-scheduler/       # 任务调度（API + simplejob/quartz/xxljob/powerjob）
 │   ├── loadup-components-signature/       # 数字签名
 │   ├── loadup-components-springdoc/       # knife4j / OpenAPI 文档自动配置
-│   ├── loadup-components-testcontainers/  # 测试容器封装
-│   └── loadup-components-tracer/          # OpenTelemetry 链路追踪
+│   └── loadup-components-testcontainers/  # 测试容器封装
 ├── middleware/
 │   ├── loadup-gateway/         # 嵌入式 API 网关（facade + core + starter + plugins）
 │   └── loadup-testify/         # 集成测试框架

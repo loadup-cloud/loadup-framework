@@ -39,7 +39,7 @@
              tracing filter participates in integration tests like an opted-in application. -->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-tracer</artifactId>
+            <artifactId>loadup-commons-tracer</artifactId>
             <scope>test</scope>
         </dependency>
 

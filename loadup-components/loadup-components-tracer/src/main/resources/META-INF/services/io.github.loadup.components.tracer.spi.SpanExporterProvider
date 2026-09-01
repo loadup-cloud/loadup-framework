@@ -1,4 +1,0 @@
-io.github.loadup.components.tracer.provider.LoggingSpanExporterProvider
-io.github.loadup.components.tracer.provider.NoOpSpanExporterProvider
-io.github.loadup.components.tracer.provider.OtlpSpanExporterProvider
-io.github.loadup.components.tracer.provider.ZipkinSpanExporterProvider

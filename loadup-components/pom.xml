@@ -30,6 +30,5 @@
         <module>loadup-components-signature</module>
         <module>loadup-components-springdoc</module>
         <module>loadup-components-testcontainers</module>
-        <module>loadup-components-tracer</module>
     </modules>
 </project>

@@ -1,0 +1,17 @@
+# Test configuration
+spring:
+  application:
+    name: test-service
+
+loadup:
+  tracer:
+    enabled: true
+    enable-web-tracing: false
+    enable-async-tracing: false
+    exporters:
+      - type: logging
+
+logging:
+  level:
+    io.github.loadup.common.tracer: DEBUG
+    io.opentelemetry: INFO

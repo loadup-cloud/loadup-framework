@@ -101,7 +101,9 @@ LoadUp Framework 是一个基于 Spring Boot 4.1.0 的**企业级微服务开发
         │  commons/                                                    │
         │    ├── loadup-commons-api/   (通用接口、异常、枚举)         │
         │    ├── loadup-commons-dto/   (通用 DTO、BaseDO、Result)     │
-        │    └── loadup-commons-util/  (工具类：JSON、日期、加密等)   │
+        │    ├── loadup-commons-util/  (工具类：JSON、日期、加密等)   │
+        │    ├── loadup-commons-log/   (统一日志格式与 trace MDC)    │
+        │    └── loadup-commons-tracer/(OpenTelemetry 链路追踪)      │
         └────────────────────┬────────────────────────────────────────┘
                              │ 依赖
                              ▼
@@ -149,13 +151,15 @@ LoadUp Framework 采用清晰的 **6 层分层架构**，共 19 个模块：
 
 **职责**: 统一管理所有第三方依赖版本，确保版本一致性
 
-### 2️⃣ 基础设施层 (3 个模块)
+### 2️⃣ 基础设施层 (5 个模块)
 
 ```
 🧱 commons/
 ├── loadup-commons-api/   - 通用接口、异常、枚举
 ├── loadup-commons-dto/   - 通用 DTO、BaseDO、Result
-└── loadup-commons-util/  - 工具类集合 (JSON、日期、加密等)
+├── loadup-commons-util/  - 工具类集合 (JSON、日期、加密等)
+├── loadup-commons-log/   - 统一日志格式与 trace MDC
+└── loadup-commons-tracer - OpenTelemetry 链路追踪
 ```
 
 **特点**: 零业务逻辑，纯基础能力
@@ -187,7 +191,8 @@ LoadUp Framework 采用清晰的 **6 层分层架构**，共 19 个模块：
 ├── ⏰ 调度组件 (1)
 │   └── loadup-components-scheduler       - 任务调度 (Quartz/XXL-Job/PowerJob)
 ├── 📊 观测组件 (1)
-│   └── loadup-components-tracer          - 链路追踪 (OpenTelemetry/SkyWalking)
+│   ├── loadup-commons-log                - 统一日志格式与 trace MDC
+│   └── loadup-commons-tracer             - 链路追踪 (OpenTelemetry)
 └── 🧪 测试组件 (1)
     └── loadup-components-testcontainers  - 测试容器集成
 ```
@@ -377,7 +382,8 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 |-------------------------------|----------------------------|
 | `loadup-components-extension` | 扩展点机制                      |
 | `loadup-components-captcha`   | 验证码生成与验证                   |
-| `loadup-components-tracer`    | 分布式链路追踪 (基于 OpenTelemetry) |
+| `loadup-commons-log`          | 统一日志格式与 trace MDC 关联 |
+| `loadup-commons-tracer`       | 分布式链路追踪 (基于 OpenTelemetry) |
 
 ---
 
@@ -464,7 +470,11 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
     <!-- 分布式追踪 -->
     <dependency>
         <groupId>io.github.loadup-cloud</groupId>
-        <artifactId>loadup-components-tracer</artifactId>
+        <artifactId>loadup-commons-log</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>io.github.loadup-cloud</groupId>
+        <artifactId>loadup-commons-tracer</artifactId>
     </dependency>
 
     <!-- 扩展点机制 -->

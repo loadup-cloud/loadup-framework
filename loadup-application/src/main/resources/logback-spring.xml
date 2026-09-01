@@ -26,11 +26,11 @@
 
     <!--
         Standard console format (default profile).
-        Includes [traceId, spanId] from MDC populated by loadup-components-tracer.
+        Includes [traceId, spanId] from MDC populated by loadup-commons-tracer.
     -->
     <springProfile name="!json">
         <property name="LOADUP_CONSOLE_PATTERN"
-                  value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} [%X{traceId:-},%X{spanId:-}] %m%n%wEx"/>
+                  value="${CONSOLE_LOG_PATTERN:-%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n%wEx}"/>
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
                 <pattern>${LOADUP_CONSOLE_PATTERN}</pattern>
