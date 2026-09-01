@@ -99,7 +99,8 @@ public class GatewayExceptionHandler implements HandlerFilterFunction<ServerResp
         return switch (e.getErrorType()) {
             case ROUTING -> 404;
             case VALIDATION -> 400;
-            case SECURITY, AUTHORIZATION -> 401;
+            case SECURITY -> 401;
+            case AUTHORIZATION -> 403;
             case RATE_LIMIT -> 429;
             case SYSTEM, NETWORK -> 500;
             default -> 500;

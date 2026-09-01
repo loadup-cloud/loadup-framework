@@ -21,7 +21,6 @@ package io.github.loadup.modules.upms.app.service;
  */
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.util.JwtUtils;
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
 import io.github.loadup.modules.upms.app.strategy.LoginStrategyManager;
 import io.github.loadup.modules.upms.client.command.UserLoginCommand;
@@ -73,6 +72,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthGateway authGateway;
     private final UpmsSecurityProperties securityProperties;
     private final LoginStrategyManager loginStrategyManager;
+    private final TokenService tokenService;
 
     /**
      * User login
@@ -149,18 +149,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private AccessTokenDTO generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", user.getUsername());
+        claims.put("roles", roleCodes(user.getId()));
+        claims.put("permissions", permissionService.getUserPermissionCodes(user.getId()));
 
-        long ttl = securityProperties.getJwt().getExpiration();
-        String token = JwtUtils.createToken(
-                user.getId(), claims, securityProperties.getJwt().getSecret(), ttl);
+        String accessToken = tokenService.issueAccessToken(user.getId(), claims);
+        String refreshToken = tokenService.issueRefreshToken(user.getId(), claims);
 
         UserDetailDTO userInfo = buildUserInfo(user);
 
         return AccessTokenDTO.builder()
-                .accessToken(token)
-                .refreshToken(null) // TODO: Implement refresh token
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .tokenType("Bearer")
-                .expiresIn(securityProperties.getJwt().getExpiration().longValue() / 1000)
+                .expiresIn(securityProperties.getJwt().getExpiration() / 1000)
                 .userInfo(userInfo)
                 .build();
     }
@@ -229,24 +230,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public AccessTokenDTO refreshToken(String refreshToken) {
-        // 1. Validate Token (Using JwtUtils)
-        io.jsonwebtoken.Claims claims = null;
-        try {
-            claims = JwtUtils.parseToken(
-                    refreshToken, securityProperties.getJwt().getSecret());
-            if (JwtUtils.isExpired(claims)) {
-                throw new CommonException(UpmsResultCode.UNAUTHORIZED); // Token expired
-            }
-        } catch (Exception e) {
-            throw new CommonException(UpmsResultCode.UNAUTHORIZED); // Token invalid
-        }
-
-        // 2. Extract UserId and check user
-        String userId = claims.getSubject();
+        // 1. Validate refresh token with the standard Nimbus decoder
+        String userId = tokenService.parseRefreshToken(refreshToken);
         if (null == userId) {
             throw new CommonException(UpmsResultCode.UNAUTHORIZED);
         }
 
+        // 2. Extract UserId and check user
         AuthUserDTO authUserDTO = authGateway.getAuthUserByUserId(userId);
         if (authUserDTO == null) {
             throw new CommonException(UpmsResultCode.UNAUTHORIZED);
@@ -260,27 +250,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new CommonException(UpmsResultCode.USER_LOCKED);
         }
 
-        // 3. Generate new Access Token
         Map<String, Object> newClaims = new HashMap<>();
         newClaims.put("username", user.getUsername());
+        newClaims.put("roles", roleCodes(user.getId()));
+        newClaims.put("permissions", permissionService.getUserPermissionCodes(user.getId()));
 
-        long ttl = securityProperties.getJwt().getExpiration();
-        String newAccessToken = JwtUtils.createToken(
-                String.valueOf(user.getId()),
-                newClaims,
-                securityProperties.getJwt().getSecret(),
-                ttl);
+        // 3. Generate new Access Token
+        String newAccessToken = tokenService.issueAccessToken(user.getId(), newClaims);
 
-        // 4. Generate new Refresh Token (optional rolling)
-        long refreshTtl = securityProperties.getJwt().getRefreshExpiration() != null
-                ? securityProperties.getJwt().getRefreshExpiration()
-                : ttl * 7;
-
-        String newRefreshToken = JwtUtils.createToken(
-                String.valueOf(user.getId()),
-                newClaims,
-                securityProperties.getJwt().getSecret(),
-                refreshTtl);
+        // 4. Generate new Refresh Token (rolling)
+        String newRefreshToken = tokenService.issueRefreshToken(user.getId(), newClaims);
 
         UserDetailDTO userInfo = buildUserInfo(user);
 
@@ -288,9 +267,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
                 .tokenType("Bearer")
-                .expiresIn(securityProperties.getJwt().getExpiration().longValue() / 1000)
+                .expiresIn(securityProperties.getJwt().getExpiration() / 1000)
                 .userInfo(userInfo)
                 .build();
+    }
+
+    private List<String> roleCodes(String userId) {
+        return roleGateway.findByUserId(userId).stream()
+                .map(Role::getRoleCode)
+                .filter(StringUtils::isNotBlank)
+                .toList();
     }
 
     /**
@@ -365,7 +351,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             PasswordEncoder passwordEncoder,
             AuthGateway authGateway,
             UpmsSecurityProperties securityProperties,
-            LoginStrategyManager loginStrategyManager) {
+            LoginStrategyManager loginStrategyManager,
+            TokenService tokenService) {
         this.userGateway = userGateway;
         this.roleGateway = roleGateway;
         this.loginLogGateway = loginLogGateway;
@@ -374,5 +361,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.authGateway = authGateway;
         this.securityProperties = securityProperties;
         this.loginStrategyManager = loginStrategyManager;
+        this.tokenService = tokenService;
     }
 }

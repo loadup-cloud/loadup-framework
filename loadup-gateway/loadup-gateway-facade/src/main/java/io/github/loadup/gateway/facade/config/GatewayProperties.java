@@ -69,25 +69,42 @@ public class GatewayProperties {
 
     public static class SecurityConfig {
         /**
+         * Whether to enable the standard OAuth2 resource server auto-configuration
+         * (Nimbus JwtDecoder + BearerTokenAuthenticationFilter).
+         */
+        private boolean enabled = true;
+
+        /**
          * JWT secret key (must be consistent with auth server)
          */
         private String secret = "loadup-gateway-secret-key-must-be-long-enough-32bytes";
 
         /**
-         * Token header name
+         * OIDC issuer URI used to fetch the JWK set via discovery. When set together with
+         * {@code jwk-set-uri}, takes precedence over the shared secret.
          */
-        private String header = "Authorization";
+        private String issuerUri;
 
         /**
-         * Token prefix
+         * JWK set URI used for token verification (e.g. Keycloak's
+         * {@code /protocol/openid-connect/certs}). Takes precedence over {@code issuer-uri}
+         * and the shared secret.
          */
-        private String prefix = "Bearer ";
+        private String jwkSetUri;
 
         /**
          * HMAC signature app secrets: appId → secretKey.
          * Configure via: loadup.gateway.security.app-secrets.app-id=secret
          */
         private Map<String, String> appSecrets = new HashMap<>();
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
 
         public String getSecret() {
             return secret;
@@ -97,20 +114,20 @@ public class GatewayProperties {
             this.secret = secret;
         }
 
-        public String getHeader() {
-            return header;
+        public String getIssuerUri() {
+            return issuerUri;
         }
 
-        public void setHeader(String header) {
-            this.header = header;
+        public void setIssuerUri(String issuerUri) {
+            this.issuerUri = issuerUri;
         }
 
-        public String getPrefix() {
-            return prefix;
+        public String getJwkSetUri() {
+            return jwkSetUri;
         }
 
-        public void setPrefix(String prefix) {
-            this.prefix = prefix;
+        public void setJwkSetUri(String jwkSetUri) {
+            this.jwkSetUri = jwkSetUri;
         }
 
         public Map<String, String> getAppSecrets() {

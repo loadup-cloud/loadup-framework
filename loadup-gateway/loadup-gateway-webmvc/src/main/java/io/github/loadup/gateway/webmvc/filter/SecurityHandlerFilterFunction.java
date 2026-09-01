@@ -22,6 +22,7 @@ package io.github.loadup.gateway.webmvc.filter;
 import io.github.loadup.gateway.facade.exception.GatewayExceptionFactory;
 import io.github.loadup.gateway.facade.model.RouteConfig;
 import io.github.loadup.gateway.facade.spi.SecurityStrategy;
+import io.github.loadup.gateway.webmvc.security.RouteAuthorizationManager;
 import io.github.loadup.gateway.webmvc.security.SecurityStrategyManager;
 import io.github.loadup.gateway.webmvc.support.GatewayAttributes;
 import io.github.loadup.gateway.webmvc.support.GatewayContextFactory;
@@ -41,9 +42,12 @@ public class SecurityHandlerFilterFunction implements HandlerFilterFunction<Serv
     private static final Logger log = LoggerFactory.getLogger(SecurityHandlerFilterFunction.class);
 
     private final SecurityStrategyManager strategyManager;
+    private final RouteAuthorizationManager routeAuthorizationManager;
 
-    public SecurityHandlerFilterFunction(SecurityStrategyManager strategyManager) {
+    public SecurityHandlerFilterFunction(
+            SecurityStrategyManager strategyManager, RouteAuthorizationManager routeAuthorizationManager) {
         this.strategyManager = strategyManager;
+        this.routeAuthorizationManager = routeAuthorizationManager;
     }
 
     @Override
@@ -65,6 +69,7 @@ public class SecurityHandlerFilterFunction implements HandlerFilterFunction<Serv
         }
 
         strategy.process(GatewayContextFactory.from(request, route));
+        routeAuthorizationManager.authorize(route, request);
         return next.handle(request);
     }
 }

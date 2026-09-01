@@ -1,3 +1,5 @@
+package io.github.loadup.gateway.webmvc.security;
+
 /*-
  * #%L
  * Loadup Gateway WebMVC Engine
@@ -17,33 +19,24 @@
  * limitations under the License.
  * #L%
  */
-package io.github.loadup.gateway.webmvc.security;
 
-import io.github.loadup.commons.util.JwtUtils;
-import io.github.loadup.gateway.facade.config.GatewayProperties;
+import io.github.loadup.components.authorization.model.LoadUpUser;
 import io.github.loadup.gateway.facade.context.GatewayContext;
 import io.github.loadup.gateway.facade.exception.GatewayExceptionFactory;
 import io.github.loadup.gateway.facade.model.GatewayRequest;
 import io.github.loadup.gateway.facade.spi.SecurityStrategy;
-import io.jsonwebtoken.Claims;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * JWT Bearer token security strategy (security code {@code default}).
+ * Bearer token security strategy (security code {@code default}).
+ *
+ * <p>Token verification and claims mapping are performed by the standard OAuth2 resource server
+ * filter chain ({@code BearerTokenAuthenticationFilter} + Nimbus {@code JwtDecoder}); this
+ * strategy only enforces that a {@link LoadUpUser} principal is present in the Spring Security
+ * context and exposes the authenticated user to downstream gateway processing.
  */
 public class DefaultSecurityStrategy implements SecurityStrategy {
-    private static final Logger log = LoggerFactory.getLogger(DefaultSecurityStrategy.class);
-
-    private final GatewayProperties gatewayProperties;
-
-    public DefaultSecurityStrategy(GatewayProperties gatewayProperties) {
-        this.gatewayProperties = gatewayProperties;
-    }
 
     @Override
     public String getCode() {
@@ -52,65 +45,30 @@ public class DefaultSecurityStrategy implements SecurityStrategy {
 
     @Override
     public void process(GatewayContext context) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || !(authentication.getPrincipal() instanceof LoadUpUser user)) {
+            throw GatewayExceptionFactory.unauthorized("Missing or invalid access token");
+        }
+
         GatewayRequest request = context.getRequest();
-        GatewayProperties.SecurityConfig securityConfig = gatewayProperties.getSecurity();
-
-        String authHeader = getHeader(request, securityConfig.getHeader());
-        if (StringUtils.isBlank(authHeader)) {
-            throw GatewayExceptionFactory.unauthorized("Missing authorization header");
+        if (user.getUserId() != null) {
+            request.getHeaders().put("X-User-Id", user.getUserId());
         }
-        if (!authHeader.startsWith(securityConfig.getPrefix())) {
-            throw GatewayExceptionFactory.unauthorized("Invalid authorization header format");
+        if (user.getUsername() != null) {
+            request.getHeaders().put("X-User-Name", user.getUsername());
+        }
+        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+            request.getHeaders().put("X-User-Roles", String.join(",", user.getRoles()));
+        }
+        if (user.getPermissions() != null && !user.getPermissions().isEmpty()) {
+            request.getHeaders().put("X-User-Permissions", String.join(",", user.getPermissions()));
         }
 
-        String token = authHeader.substring(securityConfig.getPrefix().length()).trim();
-        try {
-            Claims claims = JwtUtils.parseToken(token, securityConfig.getSecret());
-            if (JwtUtils.isExpired(claims)) {
-                throw GatewayExceptionFactory.unauthorized("Token expired");
-            }
-
-            String userId = claims.getSubject();
-            String username = claims.get("username", String.class);
-            Object rolesObj = claims.get("roles");
-
-            List<String> roles = Collections.emptyList();
-            if (rolesObj instanceof String s) {
-                roles = Arrays.asList(s.split(","));
-            } else if (rolesObj instanceof List<?> list) {
-                roles = list.stream().map(String::valueOf).toList();
-            }
-
-            request.getHeaders().put("X-User-Id", userId);
-            if (username != null) {
-                request.getHeaders().put("X-User-Name", username);
-            }
-            if (!roles.isEmpty()) {
-                request.getHeaders().put("X-User-Roles", String.join(",", roles));
-            }
-
-            request.getAttributes().put("userId", userId);
-            request.getAttributes().put("username", username);
-            request.getAttributes().put("roles", roles);
-            request.getAttributes().put("claims", claims);
-        } catch (io.jsonwebtoken.JwtException e) {
-            log.warn("JWT validation failed", e);
-            throw GatewayExceptionFactory.unauthorized("Invalid token: " + e.getMessage());
-        } catch (Exception e) {
-            log.error("Unexpected error during JWT authentication", e);
-            throw GatewayExceptionFactory.systemError("Authentication failed");
-        }
-    }
-
-    private String getHeader(GatewayRequest request, String name) {
-        String value = request.getHeaders().get(name);
-        if (value == null) {
-            value = request.getHeaders().entrySet().stream()
-                    .filter(e -> e.getKey().equalsIgnoreCase(name))
-                    .map(java.util.Map.Entry::getValue)
-                    .findFirst()
-                    .orElse(null);
-        }
-        return value;
+        request.getAttributes().put("userId", user.getUserId());
+        request.getAttributes().put("username", user.getUsername());
+        request.getAttributes().put("roles", user.getRoles());
+        request.getAttributes().put("permissions", user.getPermissions());
     }
 }

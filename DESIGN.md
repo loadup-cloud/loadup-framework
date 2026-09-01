@@ -322,6 +322,43 @@ loadup-components-{domain}/
 - **动作**：引入 SCG Server MVC 做最小验证 → 路由编译与热刷新 → filter 适配 → 删除自研引擎 → 集成测试。
 - **明确排除**：WebFlux 路线（整个项目为 MVC 模式）。
 
+#### 安全设计（定案）
+
+Gateway 作为标准 **OAuth2 资源服务器**（Servlet 过滤器链），认证与授权分层，`SecurityStrategy`
+退化为"路由策略编排"，不再是认证实现：
+
+```
+请求 → Spring Security 过滤器链
+         BearerTokenAuthenticationFilter + Nimbus JwtDecoder → 标准 SecurityContext
+       → gateway SecurityHandlerFilterFunction（securityCode → SecurityStrategy）
+         OFF       → 匿名放行 + 清理上下文
+         default   → 要求已认证 + 路由级 authorize（SpEL / 权限列表简写，P3）
+         signature → 复用 loadup-components-signature 验签（不产生用户身份）
+         internal  → IP / 内网头白名单
+       → bean 路由（方法级 @PreAuthorize，同一 SecurityContext）
+```
+
+- **JWT 统一 Nimbus**：签发与验签全部走 `spring-security-oauth2-jose` 标准 API
+  （签发 `NimbusJwtEncoder` + `JwtClaimsSet`，验签 `NimbusJwtDecoder`，HMAC-SHA256）；
+  gateway 验签密钥取自 `loadup.gateway.security.secret`，UPMS 签发密钥取自
+  `loadup.upms.security.jwt.secret`；自研 `JwtUtils`（jjwt）项目级移除。
+- **claims 契约（自包含、无状态）**：`sub`(userId) / `username` / `roles`(数组) / `permissions`(数组)；
+  `JwtAuthenticationConverter` 映射 roles → `ROLE_x` + 原始值、permissions → 原始值，principal =
+  `LoadUpUser`；权限变更需重新签发（短 TTL + 刷新）。
+- **claims 作为 `default` SecurityStrategy**：认证事实由 Spring Security 过滤器链产生，路由策略只做
+  强制与判定，不再自己解析 token；`SpringBeanProxyProcessor` 的反射桥接删除。
+- **签名与认证分离**：`signature` 只证明请求来源/内容可信，不写入 SecurityContext；手写 HmacSHA256
+  替换为复用 `loadup-components-signature`（JCA 薄封装）。
+- **资源服务器选择 SPI（已落地）**：`ResourceServerBinder` 扩展点，默认 `nimbus`
+  （`loadup.gateway.security.jwk-set-uri` > `issuer-uri` > `secret` 三级选择），后续可加
+  Sa-Token 等其他认证后端。
+- **路由级授权（已落地）**：`RouteConfig.authorize` 支持完整 SpEL 或逗号分隔权限列表简写
+  （编译为 `hasAnyAuthority`），用 Spring Security `WebExpressionAuthorizationManager` 执行；
+  401（`SECURITY`）/ 403（`AUTHORIZATION`）统一 JSON。
+- **与 authserver 共嵌**：gateway 安全链固定 `@Order(SecurityFilterProperties.DEFAULT_FILTER_ORDER)`，
+  SAS 的 `/oauth2/**` 链 order 更低且带 matcher，二者可同进程共存；应用自定义链时可通过
+  `loadup.gateway.security.enabled=false` 整体关闭 gateway 默认链。
+
 ### 5.6 dfs — P3
 
 - **现状**：Local / DB / S3 binder。
@@ -402,6 +439,31 @@ loadup-components-{domain}/
 - **版本**：`resilience4j.version` 对齐 **2.3.0**（与 Spring Cloud 2025.1.x 一致），删除失效声明。
 - **后续**：`binder-redis`（分布式熔断/限流状态）为规划扩展点，业务代码零修改。
 
+### 5.16 authserver（授权服务器）— P4
+
+- **定位**：授权服务器独立成组件（Mode A 单后端选择），负责**签发**带 claims 的 JWT；签发与校验解耦
+  （gateway 只做校验，不依赖 authserver）。
+- **结构**：
+  ```
+  loadup-components-authserver/
+  ├── authserver-api/                  # LoadUpAuthServerProperties + LoadUpJwtTokenCustomizer（标准 OAuth2TokenCustomizer 实现）
+  ├── authserver-binder-sas/           # 内嵌 Spring Authorization Server（默认）：RegisteredClientRepository / AuthorizationServerSettings / JWKSource / claims customizer
+  ├── authserver-binder-keycloak/      # 外部 IdP issuer-only 对接：issuer / jwk-set-uri → NimbusJwtDecoder
+  └── authserver-test/
+  ```
+- **binder 语义**：`loadup.components.authserver.binder-type: sas | keycloak`（sas 默认）。
+  SAS 是内嵌授权服务器（yml 注册 `clients[]`，启动即暴露标准 OAuth2 端点）；Keycloak 只作为
+  issuer 对接（配置层，不做 admin API / 客户端管理）；两者共用同一套 claims 契约。
+- **claims 定制（已落地）**：`LoadUpJwtTokenCustomizer`（标准 `OAuth2TokenCustomizer<JwtEncodingContext>`）
+  把 principal 的 roles（`ROLE_` 前缀剥离）与 permissions 写入 JWT；`/oauth2/token` 端到端
+  集成测试通过（client_credentials 签发 + JWK 验签）。
+- **依赖方向**：UPMS（认证业务）→ authserver；gateway → 只依赖资源服务器标准装配。
+- **UPMS 现状（已标准化）**：登录/刷新通过 UPMS app 层 `TokenService` 用标准 Nimbus
+  `JwtEncoder`/`JwtDecoder` 签发（HS256，claims 契约 sub/username/roles/permissions 自包含），
+  jjwt 与 `JwtUtils` 已全量移除；接入 SAS 签发（OAuth2TokenGenerator）作为后续演进项，
+  接口对集成方不变。
+- **切换影响**：SAS ↔ Keycloak 是"内嵌 vs 外部 IdP"的部署决策，业务侧只感知标准 JWT。
+
 ---
 
 ## 6. 脚手架体验设计
@@ -460,3 +522,8 @@ loadup-components-{domain}/
 | 8 | 容错：自研实现 vs Resilience4j | **Resilience4j**（已落地：组件 + gateway/gotone 双消费者，版本 2.3.0 对齐 Spring Cloud） | 容错路线（已定） |
 | 5 | Gateway 引擎替换时机 | 先最小验证 SCG Server MVC | gateway P2 排期 |
 | 6 | ORM：MyBatis-Flex vs MyBatis-Plus | 保持 MyBatis-Flex（已投入） | database 组件 |
+| 9 | Gateway 认证：自研 JWT vs OAuth2 资源服务器 | **OAuth2 资源服务器 + Nimbus**（已定） | gateway 安全 P1 已实施 |
+| 10 | 授权服务器：内嵌 SAS vs 外部 Keycloak | **authserver 组件（Mode A）**：binder-sas 内嵌（默认）/ binder-keycloak issuer-only | authserver P4 已实施（含 /oauth2/token 端到端测试） |
+| 11 | JWT claims 契约 | **自包含**：sub/username/roles/permissions 写进 JWT，无状态校验 | claims 契约（已定） |
+| 12 | 路由级授权格式 | **Spring Security SpEL 标准** + 逗号分隔权限列表简写（编译为 hasAnyAuthority） | gateway 安全 P3 已实施 |
+| 13 | 资源服务器后端选择 | **ResourceServerBinder SPI**（默认 nimbus，预留 Sa-Token 等） | gateway 安全 P5 已实施 |

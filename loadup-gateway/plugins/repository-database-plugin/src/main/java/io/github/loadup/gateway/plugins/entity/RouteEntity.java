@@ -40,6 +40,9 @@ public class RouteEntity {
     /** Security code: OFF, default, signature, internal */
     private String securityCode;
 
+    /** Route-level authorization expression (SpEL or comma-separated authorities) */
+    private String authorize;
+
     /** Request filter chain names, comma-separated */
     private String requestFilters;
 
@@ -80,6 +83,10 @@ public class RouteEntity {
 
     public String getSecurityCode() {
         return this.securityCode;
+    }
+
+    public String getAuthorize() {
+        return this.authorize;
     }
 
     public String getRequestFilters() {
@@ -132,6 +139,10 @@ public class RouteEntity {
 
     public void setSecurityCode(String securityCode) {
         this.securityCode = securityCode;
+    }
+
+    public void setAuthorize(String authorize) {
+        this.authorize = authorize;
     }
 
     public void setRequestFilters(String requestFilters) {

@@ -23,6 +23,7 @@ package io.github.loadup.components.authorization.config;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.loadup.components.authorization.AuthorizationProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -61,6 +62,7 @@ public class AuthorizationAutoConfiguration {
      */
     @Bean
     @ConditionalOnWebApplication(type = Type.SERVLET)
+    @ConditionalOnMissingBean(SecurityFilterChain.class)
     @ConditionalOnProperty(
             prefix = "loadup.authorization",
             name = "default-security-filter-chain",

@@ -30,7 +30,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,38 +78,29 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
 
     @Override
     public GatewayResponse proxy(GatewayRequest request, RouteConfig route) throws Exception {
-        setupUserContext(request);
-        try {
-            String beanName = route.getTargetBean();
-            String methodName = route.getTargetMethod();
-            if (beanName == null || methodName == null) {
-                throw GatewayExceptionFactory.systemError("Invalid bean target: " + route.getTarget());
-            }
-
-            Object bean = applicationContext.getBean(beanName);
-            Method method = findMethod(bean.getClass(), methodName);
-            if (method == null) {
-                throw GatewayExceptionFactory.systemError("Method not found: " + beanName + "." + methodName);
-            }
-
-            Object[] args = prepareMethodArgs(request, method);
-            Object result = method.invoke(bean, args);
-
-            return GatewayResponse.builder()
-                    .requestId(request.getRequestId())
-                    .statusCode(GatewayConstants.Status.SUCCESS)
-                    .headers(new HashMap<>())
-                    .body(serializeBody(result))
-                    .contentType(GatewayConstants.ContentType.JSON)
-                    .responseTime(LocalDateTime.now())
-                    .build();
-        } catch (java.lang.reflect.InvocationTargetException e) {
-            Throwable cause = e.getCause() != null ? e.getCause() : e;
-            throw GatewayExceptionFactory.systemError("Bean invocation failed: " + route.getTargetBean() + "."
-                    + route.getTargetMethod() + " — " + cause.getMessage());
-        } finally {
-            clearUserContext();
+        String beanName = route.getTargetBean();
+        String methodName = route.getTargetMethod();
+        if (beanName == null || methodName == null) {
+            throw GatewayExceptionFactory.systemError("Invalid bean target: " + route.getTarget());
         }
+
+        Object bean = applicationContext.getBean(beanName);
+        Method method = findMethod(bean.getClass(), methodName);
+        if (method == null) {
+            throw GatewayExceptionFactory.systemError("Method not found: " + beanName + "." + methodName);
+        }
+
+        Object[] args = prepareMethodArgs(request, method);
+        Object result = method.invoke(bean, args);
+
+        return GatewayResponse.builder()
+                .requestId(request.getRequestId())
+                .statusCode(GatewayConstants.Status.SUCCESS)
+                .headers(new HashMap<>())
+                .body(serializeBody(result))
+                .contentType(GatewayConstants.ContentType.JSON)
+                .responseTime(LocalDateTime.now())
+                .build();
     }
 
     /**
@@ -255,35 +245,5 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
                 || type == long.class
                 || type == Boolean.class
                 || type == boolean.class;
-    }
-
-    @SuppressWarnings("unchecked")
-    private void setupUserContext(GatewayRequest request) {
-        try {
-            String userId = (String) request.getAttributes().get("userId");
-            if (userId == null) return;
-            String username = (String) request.getAttributes().get("username");
-            List<String> roles = (List<String>) request.getAttributes().get("roles");
-
-            Class<?> ucClass = Class.forName("io.github.loadup.components.authorization.context.UserContext");
-            Class<?> userClass = Class.forName("io.github.loadup.components.authorization.model.LoadUpUser");
-            Object userBuilder = userClass.getMethod("builder").invoke(null);
-            userBuilder.getClass().getMethod("userId", String.class).invoke(userBuilder, userId);
-            userBuilder.getClass().getMethod("username", String.class).invoke(userBuilder, username);
-            userBuilder.getClass().getMethod("roles", List.class).invoke(userBuilder, roles);
-            Object user = userBuilder.getClass().getMethod("build").invoke(userBuilder);
-            ucClass.getMethod("set", userClass).invoke(null, user);
-        } catch (ClassNotFoundException ignored) {
-        } catch (Exception e) {
-            log.debug("Failed to setup UserContext", e);
-        }
-    }
-
-    private void clearUserContext() {
-        try {
-            Class<?> ucClass = Class.forName("io.github.loadup.components.authorization.context.UserContext");
-            ucClass.getMethod("clear").invoke(null);
-        } catch (Exception ignored) {
-        }
     }
 }

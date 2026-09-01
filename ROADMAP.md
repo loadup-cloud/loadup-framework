@@ -131,7 +131,72 @@
 - [ ] 评估独立网关部署单元（仅当真实网关场景出现，MVC 组件不受影响）
 - [ ] 社区反馈迭代，发布 v1.0
 
+---
+
+## Phase 5：Gateway 安全标准化（OAuth2 资源服务器 + authserver）
+
+**目标**：gateway 从自研 JWT 校验升级为标准 Spring Security OAuth2 资源服务器（Nimbus），
+认证/授权分层；授权服务器独立成组件（SAS 内嵌 / Keycloak issuer-only）。
+
+任务：
+
+- [x] **方案定案**：Nimbus 统一 JWT、claims 自包含（sub/username/roles/permissions）、
+  claims 作为 gateway `default` SecurityStrategy、签名复用 signature 组件（决策已记录于 DESIGN.md）
+- [x] **P1 资源服务器化**：gateway-webmvc 引入 `spring-boot-starter-security` +
+  `spring-security-oauth2-resource-server`（+ `-jose` 显式声明）；`GatewaySecurityAutoConfiguration`
+  （无状态链 + `NimbusJwtDecoder` HMAC + `LoadUpJwtAuthenticationConverter`，claims →
+  `LoadUpUser` principal + `ROLE_x`/permission authorities）；`DefaultSecurityStrategy` 改为基于
+  SecurityContext 强制认证；删除 `SpringBeanProxyProcessor` 反射桥接；authorization 默认链
+  `@ConditionalOnMissingBean(SecurityFilterChain)`；修复 SCG body 缓存被消费后二次读取为空的问题；
+  集成测试覆盖无 token 401 / 有效 token bean 路由 / 方法级 `@PreAuthorize` 权限放行
+- [x] **P2 签名整合**：`SignatureSecurityStrategy` 改调 `loadup-components-signature`
+  （`DigestService.hmac`，协议不变），删除手写 HmacSHA256，签名与认证职责分离
+- [x] **P3 路由级授权**：`RouteConfig.authorize`（YAML/DB 两 store 均支持）——
+  完整 SpEL（`hasRole('ADMIN')`）或逗号权限列表简写 → `hasAnyAuthority`，用 Spring Security
+  标准 `WebExpressionAuthorizationManager` 执行；`forbidden` → 403（`AUTHORIZATION`），
+  `unauthorized` → 401（`SECURITY`），统一 JSON
+- [x] **P4 authserver 组件**：`loadup-components-authserver`（api + binder-sas + binder-keycloak + test）；
+  binder-sas 内嵌 Spring Authorization Server（`/oauth2/token` 实测通过），yml 注册客户端 +
+  `LoadUpJwtTokenCustomizer` 写入 roles/permissions/username；UPMS 登录/刷新已按 claims 契约
+  签发（roles + permissions 自包含）；BOM 注册全部坐标
+- [x] **P5 Keycloak issuer-only + SPI**：binder-keycloak 只装配 `issuer` / `jwk-set-uri` 的
+  `NimbusJwtDecoder`；gateway 新增 `ResourceServerBinder` SPI（默认 nimbus，预留 Sa-Token），
+  `loadup.gateway.security.issuer-uri / jwk-set-uri / secret` 三级选择
+
+**验收**：
+
+- 带有效 JWT 的 bean 路由正常调用，SecurityContext 含 roles + permissions，方法级 `@PreAuthorize`
+  的 `hasAuthority` 生效
+- 无 token / 过期 token / 坏 token 在 protected 路由返回 401；OFF 路由匿名放行
+- 路由级 `authorize`：无 token → 401，权限不足 → 403，权限满足 → 200（SpEL 与简写双写法覆盖）
+- signature / internal 策略行为与改造前一致
+- `SasAuthServerIntegrationTest`：`/oauth2/token`（client_credentials）签发 JWT 且可用
+  authserver JWK 验签通过，issuer/claims 契约正确
+- `JwtUtils`（jjwt）项目级移除，UPMS 签发统一 Nimbus 标准 API（TokenService）
+
 **验收**：v1.0 发布，含完整契约文档、模板工程、至少一个"高级 binder"示例。
+
+---
+
+## Phase 6：UPMS 签发标准化（Nimbus）
+
+**目标**：UPMS 登录/刷新从 jjwt 自研签发迁移到标准 Nimbus JOSE API，与 gateway 验签、
+authserver claims 契约完全对齐，删除 jjwt 全部残留。
+
+任务：
+
+- [x] **P1 TokenService**：UPMS app 层新增 `TokenService`（`NimbusJwtEncoder` +
+  `NimbusJwtDecoder`，HS256，密钥 `loadup.upms.security.jwt.secret`），
+  `issueAccessToken` / `issueRefreshToken` / `parseRefreshToken`（签名 + 过期校验）
+- [x] **P2 认证服务迁移**：`AuthenticationServiceImpl` 登录/刷新全部走 `TokenService`；
+  登录同时签发 access + refresh token（补齐原 TODO）；claims 契约
+  （sub/username/roles/permissions）保持不变
+- [x] **P3 清理**：删除 `JwtUtils`（commons-util）与 jjwt 依赖（BOM / commons-util /
+  upms-infrastructure）
+- [x] **P4 测试**：`TokenServiceTest` 覆盖签发契约、刷新校验、过期/篡改拒绝、弱密钥拒绝
+
+**验收**：UPMS 签发/校验 100% 基于 `spring-security-oauth2-jose`，项目内无 jjwt 引用；
+TokenService 单测通过；`mvn clean install -DskipTests` 全量编译通过。
 
 ---
 

@@ -91,6 +91,7 @@ public class DatabaseRouteStore implements RouteStore {
         routeDefinition.setMethod(e.getMethod() != null ? e.getMethod() : "POST");
         routeDefinition.setEnabled(Boolean.TRUE.equals(e.isEnabled()));
         routeDefinition.setSecurityCode(e.getSecurityCode());
+        routeDefinition.setAuthorize(e.getAuthorize());
         routeDefinition.setBackend(backend);
         routeDefinition.setFilters(parseFilters(e.getRequestFilters(), e.getFilterProps()));
         routeDefinition.setResponseFilters(parseFilters(e.getResponseFilters(), e.getFilterProps()));
@@ -106,6 +107,7 @@ public class DatabaseRouteStore implements RouteStore {
         e.setMethod(def.getMethod());
         e.setTarget(toTargetString(def.getBackend()));
         e.setSecurityCode(def.getSecurityCode());
+        e.setAuthorize(def.getAuthorize());
         e.setEnabled(def.isEnabled());
         e.setTimeout(def.getTimeout());
         e.setWrapResponse(def.getWrapResponse());

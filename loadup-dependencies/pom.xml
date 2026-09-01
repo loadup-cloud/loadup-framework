@@ -87,7 +87,7 @@
         <opentelemetry-semconv.version>1.41.1</opentelemetry-semconv.version>
 
         <!-- Security and Auth -->
-        <jjwt.version>0.13.0</jjwt.version>
+        <spring-security-oauth2-authorization-server.version>7.1.0</spring-security-oauth2-authorization-server.version>
 
         <!-- API Documentation -->
         <swagger-annotations-jakarta.version>2.2.50</swagger-annotations-jakarta.version>
@@ -535,6 +535,31 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-authserver</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-authserver-api</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-authserver-binder-sas</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-authserver-binder-keycloak</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-authserver-test</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-cache</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
@@ -598,6 +623,11 @@
                 <groupId>net.logicsquad</groupId>
                 <artifactId>nanocaptcha</artifactId>
                 <version>${nanocaptcha.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-oauth2-authorization-server</artifactId>
+                <version>${spring-security-oauth2-authorization-server.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
@@ -694,6 +724,12 @@
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-dfs-test</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-signature</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
 
@@ -946,21 +982,6 @@
                 <version>${opencsv.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt-api</artifactId>
-                <version>${jjwt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt-impl</artifactId>
-                <version>${jjwt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt-jackson</artifactId>
-                <version>${jjwt.version}</version>
-            </dependency>
             <!-- ========== Code Quality Tools start ==========-->
             <dependency>
                 <groupId>com.tngtech.archunit</groupId>

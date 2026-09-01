@@ -204,6 +204,7 @@ public class YamlRouteStore implements RouteStore {
         def.setMethod((String) raw.getOrDefault("method", "POST"));
         def.setEnabled((Boolean) raw.getOrDefault("enabled", true));
         def.setSecurityCode(toStringOrNull(raw.get("securityCode")));
+        def.setAuthorize(toStringOrNull(raw.get("authorize")));
         if (raw.get("timeout") instanceof Number n) {
             def.setTimeout(n.longValue());
         }

@@ -19,25 +19,27 @@
  */
 package io.github.loadup.gateway.webmvc.security;
 
+import io.github.loadup.components.signature.enums.DigestAlgorithm;
+import io.github.loadup.components.signature.service.DigestService;
 import io.github.loadup.gateway.facade.config.GatewayProperties;
 import io.github.loadup.gateway.facade.context.GatewayContext;
 import io.github.loadup.gateway.facade.exception.GatewayExceptionFactory;
 import io.github.loadup.gateway.facade.model.GatewayRequest;
 import io.github.loadup.gateway.facade.spi.SecurityStrategy;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * HMAC-SHA256 signature security strategy (security code {@code signature}).
+ *
+ * <p>Only verifies the request signature and establishes an app identity; it never produces a
+ * user principal. The HMAC computation is delegated to the shared
+ * {@code loadup-components-signature} {@link DigestService} so protocol details stay in one place.
  */
 public class SignatureSecurityStrategy implements SecurityStrategy {
     private static final Logger log = LoggerFactory.getLogger(SignatureSecurityStrategy.class);
@@ -49,9 +51,11 @@ public class SignatureSecurityStrategy implements SecurityStrategy {
     private static final long TIMESTAMP_TOLERANCE_SECONDS = 300;
 
     private final Map<String, String> appSecrets;
+    private final DigestService digestService;
 
-    public SignatureSecurityStrategy(GatewayProperties gatewayProperties) {
+    public SignatureSecurityStrategy(GatewayProperties gatewayProperties, DigestService digestService) {
         this.appSecrets = loadSecrets(gatewayProperties);
+        this.digestService = digestService;
     }
 
     private static Map<String, String> loadSecrets(GatewayProperties props) {
@@ -140,9 +144,7 @@ public class SignatureSecurityStrategy implements SecurityStrategy {
             }
             sb.append("timestamp=").append(timestamp).append("&nonce=").append(nonce);
 
-            Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-            return HexFormat.of().formatHex(mac.doFinal(sb.toString().getBytes(StandardCharsets.UTF_8)));
+            return digestService.hmac(sb.toString(), secret, DigestAlgorithm.HMAC_SHA256);
         } catch (Exception e) {
             log.error("Signature calculation failed", e);
             throw GatewayExceptionFactory.systemError("Signature calculation failed");

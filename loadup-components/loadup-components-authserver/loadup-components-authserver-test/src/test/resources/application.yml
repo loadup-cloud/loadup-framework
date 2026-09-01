@@ -1,0 +1,12 @@
+loadup:
+  components:
+    authserver:
+      issuer: http://localhost:8080
+      clients:
+        - client-id: loadup-app
+          client-secret: change-me
+          scopes:
+            - openid
+          grant-types:
+            - client_credentials
+            - refresh_token

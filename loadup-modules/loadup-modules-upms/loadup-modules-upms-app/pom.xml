@@ -70,6 +70,11 @@
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-util</artifactId>
         </dependency>
+        <!-- Standard Nimbus JOSE API for JWT signing/validation (shared with gateway) -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

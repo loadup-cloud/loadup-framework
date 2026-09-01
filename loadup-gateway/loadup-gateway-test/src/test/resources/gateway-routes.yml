@@ -7,6 +7,40 @@ routes:
       beanName: demoEchoService
       methodName: echo
     securityCode: OFF
+  - id: demo-secure
+    path: /api/demo/secure
+    method: POST
+    backend:
+      protocol: bean
+      beanName: demoEchoService
+      methodName: echo
+    securityCode: default
+  - id: demo-protected
+    path: /api/demo/protected
+    method: POST
+    backend:
+      protocol: bean
+      beanName: demoProtectedService
+      methodName: secureEcho
+    securityCode: default
+  - id: demo-authorized
+    path: /api/demo/authorized
+    method: POST
+    backend:
+      protocol: bean
+      beanName: demoEchoService
+      methodName: echo
+    securityCode: default
+    authorize: user:write
+  - id: demo-authorized-role
+    path: /api/demo/authorized-role
+    method: POST
+    backend:
+      protocol: bean
+      beanName: demoEchoService
+      methodName: echo
+    securityCode: default
+    authorize: hasRole('ADMIN')
   - id: demo-echo-disabled
     path: /api/demo/disabled
     method: POST

@@ -20,6 +20,7 @@
 package io.github.loadup.gateway.webmvc.autoconfigure;
 
 import io.github.loadup.components.resilience4j.ResilienceRegistries;
+import io.github.loadup.components.signature.service.DigestService;
 import io.github.loadup.gateway.facade.config.GatewayProperties;
 import io.github.loadup.gateway.facade.spi.ProxyProcessor;
 import io.github.loadup.gateway.facade.spi.RouteStore;
@@ -35,6 +36,7 @@ import io.github.loadup.gateway.webmvc.proxy.ProxyProcessorRegistry;
 import io.github.loadup.gateway.webmvc.router.RouteFunctionRegistry;
 import io.github.loadup.gateway.webmvc.security.DefaultSecurityStrategy;
 import io.github.loadup.gateway.webmvc.security.InternalSecurityStrategy;
+import io.github.loadup.gateway.webmvc.security.RouteAuthorizationManager;
 import io.github.loadup.gateway.webmvc.security.SecurityStrategyManager;
 import io.github.loadup.gateway.webmvc.security.SignatureSecurityStrategy;
 import io.opentelemetry.api.trace.Tracer;
@@ -75,8 +77,8 @@ public class GatewayWebMvcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "defaultSecurityStrategy")
-    public SecurityStrategy defaultSecurityStrategy(GatewayProperties properties) {
-        return new DefaultSecurityStrategy(properties);
+    public SecurityStrategy defaultSecurityStrategy() {
+        return new DefaultSecurityStrategy();
     }
 
     @Bean
@@ -87,8 +89,8 @@ public class GatewayWebMvcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "signatureSecurityStrategy")
-    public SecurityStrategy signatureSecurityStrategy(GatewayProperties properties) {
-        return new SignatureSecurityStrategy(properties);
+    public SecurityStrategy signatureSecurityStrategy(GatewayProperties properties, DigestService digestService) {
+        return new SignatureSecurityStrategy(properties, digestService);
     }
 
     @Bean
@@ -123,8 +125,15 @@ public class GatewayWebMvcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SecurityHandlerFilterFunction securityHandlerFilterFunction(SecurityStrategyManager strategyManager) {
-        return new SecurityHandlerFilterFunction(strategyManager);
+    public SecurityHandlerFilterFunction securityHandlerFilterFunction(
+            SecurityStrategyManager strategyManager, RouteAuthorizationManager routeAuthorizationManager) {
+        return new SecurityHandlerFilterFunction(strategyManager, routeAuthorizationManager);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RouteAuthorizationManager routeAuthorizationManager() {
+        return new RouteAuthorizationManager();
     }
 
     @Bean

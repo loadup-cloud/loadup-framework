@@ -30,6 +30,30 @@
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-resilience4j-api</artifactId>
         </dependency>
+        <!-- Authorization facade: LoadUpUser principal + UserContext (SecurityContextHolder adapter) -->
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-authorization</artifactId>
+        </dependency>
+        <!-- Signature facade: HMAC / digest services for API request signature verification -->
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-signature</artifactId>
+        </dependency>
+
+        <!-- Standard OAuth2 resource server: Nimbus JwtDecoder + BearerTokenAuthenticationFilter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-resource-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+        </dependency>
 
         <!-- Spring Cloud Gateway Server MVC: routing / filter engine (MVC only, no WebFlux) -->
         <dependency>

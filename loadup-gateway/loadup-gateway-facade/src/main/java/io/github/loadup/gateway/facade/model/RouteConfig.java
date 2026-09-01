@@ -102,6 +102,13 @@ public class RouteConfig {
      */
     private String securityCode;
 
+    /**
+     * Route-level authorization expression (Spring Security SpEL or comma-separated
+     * authority/permission list, e.g. "hasRole('ADMIN')" or "user:list,user:delete").
+     * Evaluated after the security strategy when present.
+     */
+    private String authorize;
+
     public String getRouteId() {
         return routeId;
     }
@@ -216,6 +223,14 @@ public class RouteConfig {
 
     public String getSecurityCode() {
         return securityCode;
+    }
+
+    public String getAuthorize() {
+        return authorize;
+    }
+
+    public void setAuthorize(String authorize) {
+        this.authorize = authorize;
     }
 
     public void setSecurityCode(String securityCode) {

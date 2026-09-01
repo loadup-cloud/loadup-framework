@@ -1,1 +1,2 @@
 io.github.loadup.gateway.webmvc.autoconfigure.GatewayWebMvcAutoConfiguration
+io.github.loadup.gateway.webmvc.security.GatewaySecurityAutoConfiguration

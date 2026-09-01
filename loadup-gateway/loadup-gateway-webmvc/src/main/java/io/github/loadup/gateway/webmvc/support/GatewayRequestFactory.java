@@ -106,7 +106,11 @@ public final class GatewayRequestFactory {
             if (cached == null) {
                 return "";
             }
-            return new String(cached.readAllBytes(), StandardCharsets.UTF_8);
+            byte[] bytes = cached.readAllBytes();
+            // The cached stream is consumed by readAllBytes(); restore a fresh stream so the
+            // next consumer of the body cache sees the full payload.
+            MvcUtils.putAttribute(request, MvcUtils.CACHED_REQUEST_BODY_ATTR, new ByteArrayInputStream(bytes));
+            return new String(bytes, StandardCharsets.UTF_8);
         } catch (Exception e) {
             return "";
         }

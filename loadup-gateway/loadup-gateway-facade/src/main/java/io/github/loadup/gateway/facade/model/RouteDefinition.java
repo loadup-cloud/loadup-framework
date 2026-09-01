@@ -93,6 +93,12 @@ public class RouteDefinition {
     private String securityCode;
 
     /**
+     * Route-level authorization: Spring Security SpEL expression or comma-separated
+     * authority/permission list. Compiled into the runtime {@link RouteConfig}.
+     */
+    private String authorize;
+
+    /**
      * Route-level timeout in milliseconds. Overrides global default.
      */
     private Long timeout;
@@ -138,6 +144,10 @@ public class RouteDefinition {
 
     public String getSecurityCode() {
         return securityCode;
+    }
+
+    public String getAuthorize() {
+        return authorize;
     }
 
     public Long getTimeout() {
@@ -246,6 +256,10 @@ public class RouteDefinition {
 
     public void setSecurityCode(String securityCode) {
         this.securityCode = securityCode;
+    }
+
+    public void setAuthorize(String authorize) {
+        this.authorize = authorize;
     }
 
     public void setTimeout(Long timeout) {

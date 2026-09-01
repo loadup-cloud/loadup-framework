@@ -94,7 +94,7 @@ class GatewayExceptionTest {
         @DisplayName("forbidden creates correct exception")
         void forbidden() {
             GatewayException ex = GatewayExceptionFactory.forbidden("No permission");
-            assertThat(ex.getErrorType()).isEqualTo(ErrorType.SECURITY);
+            assertThat(ex.getErrorType()).isEqualTo(ErrorType.AUTHORIZATION);
             assertThat(ex.getMessage()).contains("No permission");
         }
 

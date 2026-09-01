@@ -20,8 +20,10 @@ package io.github.loadup.modules.upms.app.autoconfigure;
  * #L%
  */
 
+import io.github.loadup.modules.upms.app.service.TokenService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -46,5 +48,11 @@ public class UpmsAutoConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TokenService tokenService(UpmsSecurityProperties securityProperties) {
+        return TokenService.create(securityProperties);
     }
 }

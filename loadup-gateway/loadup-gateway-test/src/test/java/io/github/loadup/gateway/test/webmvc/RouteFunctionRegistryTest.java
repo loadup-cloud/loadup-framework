@@ -40,6 +40,7 @@ import io.github.loadup.gateway.webmvc.proxy.ProxyHandlerFunction;
 import io.github.loadup.gateway.webmvc.proxy.ProxyProcessorRegistry;
 import io.github.loadup.gateway.webmvc.router.RouteFunctionRegistry;
 import io.github.loadup.gateway.webmvc.security.OffSecurityStrategy;
+import io.github.loadup.gateway.webmvc.security.RouteAuthorizationManager;
 import io.github.loadup.gateway.webmvc.security.SecurityStrategyManager;
 import io.github.loadup.gateway.webmvc.support.GatewayAttributes;
 import java.time.LocalDateTime;
@@ -183,7 +184,9 @@ class RouteFunctionRegistryTest {
                 proxyHandler,
                 new GatewayExceptionHandler(),
                 null,
-                new SecurityHandlerFilterFunction(new SecurityStrategyManager(List.of(new OffSecurityStrategy()))),
+                new SecurityHandlerFilterFunction(
+                        new SecurityStrategyManager(List.of(new OffSecurityStrategy())),
+                        new RouteAuthorizationManager()),
                 new RateLimitHandlerFilterFunction(ResilienceRegistries.ofDefaults()),
                 new CircuitBreakerHandlerFilterFunction(ResilienceRegistries.ofDefaults()),
                 new ResponseWrapperHandlerFilterFunction(properties));

@@ -174,7 +174,7 @@ public final class GatewayExceptionFactory {
 
     public static GatewayException forbidden(String message) {
         return new GatewayException(
-                ErrorCode.SECURITY_FORBIDDEN.getCode(), ErrorType.SECURITY, "SECURITY", message, null);
+                ErrorCode.SECURITY_FORBIDDEN.getCode(), ErrorType.AUTHORIZATION, "SECURITY", message, null);
     }
 
     public static GatewayException systemError(String message) {

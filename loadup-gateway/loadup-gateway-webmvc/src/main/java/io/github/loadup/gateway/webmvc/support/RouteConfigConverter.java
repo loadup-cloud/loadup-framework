@@ -59,6 +59,8 @@ public final class RouteConfigConverter {
             props.putIfAbsent("wrapResponse", def.getWrapResponse());
         }
         rc.setProperties(props);
+        Object authorize = def.getAuthorize() != null ? def.getAuthorize() : props.get("authorize");
+        rc.setAuthorize(authorize != null ? String.valueOf(authorize) : null);
 
         rc.setParsedTimeout(parseLong(props.get("timeout"), properties.getDefaultTimeout()));
         rc.setParsedRetryCount(parseInt(props.get("retryCount"), properties.getDefaultRetryCount()));
