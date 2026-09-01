@@ -66,7 +66,7 @@ public class DatabaseDfsProvider implements DfsProvider {
             file.setMetadataJson(objectMapper.writeValueAsString(request.metadata()));
             file.setCreatedAt(uploadedAt);
             file.setUpdatedAt(uploadedAt);
-            file.setDeleted(false);
+            file.setDeleted(0);
             mapper.insert(file);
             return toMetadata(file);
         } catch (IOException e) {

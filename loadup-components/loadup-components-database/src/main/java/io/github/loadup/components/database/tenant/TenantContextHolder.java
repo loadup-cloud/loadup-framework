@@ -1,8 +1,3 @@
-package io.github.loadup.components.database.tenant;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /*-
  * #%L
  * loadup-components-database
@@ -23,71 +18,41 @@ import org.slf4j.LoggerFactory;
  * #L%
  */
 
-/**
- * Tenant Context Holder
- *
- * <p>Thread-local storage for current tenant ID. Used by multi-tenant feature to automatically
- * filter queries and set tenant_id on insert/update operations.
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
-public final class TenantContextHolder {
-    private static final Logger log = LoggerFactory.getLogger(TenantContextHolder.class);
+package io.github.loadup.components.database.tenant;
 
-    private static final ThreadLocal<String> TENANT_ID = new InheritableThreadLocal<>();
+/** Holds the tenant ID for the current execution. */
+public final class TenantContextHolder {
+    private static final ThreadLocal<String> TENANT_ID = new ThreadLocal<>();
 
     private TenantContextHolder() {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    /**
-     * Set current tenant ID
-     *
-     * @param tenantId tenant ID
-     */
     public static void setTenantId(String tenantId) {
         if (tenantId == null) {
-            log.warn("Attempting to set null tenant ID, clearing context instead");
             clear();
             return;
         }
-        TENANT_ID.set(tenantId);
-        log.debug("Set tenant context: {}", tenantId);
+        String value = tenantId.trim();
+        if (value.isEmpty()) {
+            clear();
+            return;
+        }
+        TENANT_ID.set(value);
     }
 
-    /**
-     * Get current tenant ID
-     *
-     * @return tenant ID, or null if not set
-     */
     public static String getTenantId() {
         return TENANT_ID.get();
     }
 
-    /**
-     * Check if tenant context is set
-     *
-     * @return true if tenant context exists
-     */
     public static boolean hasTenantId() {
         return TENANT_ID.get() != null;
     }
 
-    /**
-     * Clear tenant context
-     */
     public static void clear() {
         TENANT_ID.remove();
-        log.debug("Cleared tenant context");
     }
 
-    /**
-     * Execute code with specific tenant context
-     *
-     * @param tenantId tenant ID
-     * @param runnable code to execute
-     */
     public static void runWithTenant(String tenantId, Runnable runnable) {
         String previousTenantId = getTenantId();
         try {

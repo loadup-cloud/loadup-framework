@@ -1,5 +1,3 @@
-package io.github.loadup.components.database.listener;
-
 /*-
  * #%L
  * loadup-components-database
@@ -20,35 +18,23 @@ package io.github.loadup.components.database.listener;
  * #L%
  */
 
+package io.github.loadup.components.database.listener;
+
 import com.mybatisflex.annotation.InsertListener;
 import com.mybatisflex.annotation.UpdateListener;
 import io.github.loadup.commons.dataobject.BaseDO;
 import io.github.loadup.components.database.config.DatabaseProperties;
+import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.components.database.tenant.TenantContextHolder;
-import io.micrometer.common.util.StringUtils;
+import java.time.Clock;
 import java.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
-/**
- * Base Entity Listener
- *
- * <p>Automatically fills common fields for entities extending BaseDO:
- *
- * <ul>
- *   <li>tenantId: Set from TenantContextHolder on insert
- *   <li>createdAt: Set current time on insert
- *   <li>updatedAt: Set current time on insert and update
- *   <li>deleted: Initialize to false on insert
- * </ul>
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
+/** Populates common fields before MyBatis-Flex insert and update operations. */
 public class BaseEntityListener implements InsertListener, UpdateListener {
-    private static final Logger log = LoggerFactory.getLogger(BaseEntityListener.class);
-
     private final DatabaseProperties databaseProperties;
+    private final IdGenerator idGenerator;
+    private final Clock clock;
 
     @Override
     public void onInsert(Object entity) {
@@ -56,32 +42,39 @@ public class BaseEntityListener implements InsertListener, UpdateListener {
             return;
         }
 
-        LocalDateTime now = LocalDateTime.now();
+        DatabaseProperties.Audit audit = databaseProperties.getAudit();
+        DatabaseProperties.IdGenerator idProperties = databaseProperties.getIdGenerator();
+        LocalDateTime now = LocalDateTime.now(clock);
 
-        // Set tenant ID if multi-tenant is enabled
-        String tenantId = TenantContextHolder.getTenantId();
-        if (StringUtils.isBlank(tenantId)) {
-            if (databaseProperties.getMultiTenant().isEnabled()) {
-                throw new RuntimeException("multi-tenant is enabled but tenantId not found!");
+        if (idProperties.isEnabled() && !StringUtils.hasText(baseDO.getId())) {
+            baseDO.setId(idGenerator.generate());
+        }
+
+        if (audit.isEnabled()) {
+            if (baseDO.getCreatedAt() == null) {
+                baseDO.setCreatedAt(now);
             }
-            tenantId = databaseProperties.getMultiTenant().getDefaultTenantId();
-        }
-        baseDO.setTenantId(tenantId);
-        log.debug(
-                "Auto-filled tenantId={} for entity {}",
-                tenantId,
-                entity.getClass().getSimpleName());
-
-        // Set timestamps
-        if (baseDO.getCreatedAt() == null) {
-            baseDO.setCreatedAt(now);
-        }
-        if (baseDO.getUpdatedAt() == null) {
             baseDO.setUpdatedAt(now);
         }
 
-        // Initialize deleted flag if logical delete is enabled
-        baseDO.setDeleted(false);
+        DatabaseProperties.MultiTenant tenant = databaseProperties.getMultiTenant();
+        if (tenant.isEnabled()) {
+            String tenantId = TenantContextHolder.getTenantId();
+            if (!StringUtils.hasText(tenantId)) {
+                tenantId = tenant.getDefaultTenantId();
+            }
+            if (!StringUtils.hasText(tenantId) && tenant.isRequired()) {
+                throw new TenantContextMissingException(entity.getClass());
+            }
+            if (StringUtils.hasText(tenantId)) {
+                baseDO.setTenantId(tenantId);
+            }
+        }
+
+        DatabaseProperties.LogicalDelete logicalDelete = databaseProperties.getLogicalDelete();
+        if (logicalDelete.isEnabled() && baseDO.getDeleted() == null) {
+            baseDO.setDeleted(logicalDelete.getNormalValue());
+        }
     }
 
     @Override
@@ -90,11 +83,14 @@ public class BaseEntityListener implements InsertListener, UpdateListener {
             return;
         }
 
-        // Update timestamp
-        baseDO.setUpdatedAt(LocalDateTime.now());
+        if (databaseProperties.getAudit().isEnabled()) {
+            baseDO.setUpdatedAt(LocalDateTime.now(clock));
+        }
     }
 
-    public BaseEntityListener(DatabaseProperties databaseProperties) {
+    public BaseEntityListener(DatabaseProperties databaseProperties, IdGenerator idGenerator, Clock clock) {
         this.databaseProperties = databaseProperties;
+        this.idGenerator = idGenerator;
+        this.clock = clock;
     }
 }

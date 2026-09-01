@@ -1,5 +1,3 @@
-package io.github.loadup.components.database.config;
-
 /*-
  * #%L
  * loadup-components-database
@@ -20,44 +18,95 @@ package io.github.loadup.components.database.config;
  * #L%
  */
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+package io.github.loadup.components.database.config;
 
-/**
- * Configuration properties for database component.
- */
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
+
+/** Configuration properties for the LoadUp database component. */
 @ConfigurationProperties(prefix = "loadup.database")
+@Validated
 public class DatabaseProperties {
 
-    /**
-     * Multi-tenant configuration
-     */
+    @Valid
+    private Audit audit = new Audit();
+
+    @Valid
+    private IdGenerator idGenerator = new IdGenerator();
+
+    @Valid
     private MultiTenant multiTenant = new MultiTenant();
 
-    /**
-     * Logical delete configuration
-     */
+    @Valid
     private LogicalDelete logicalDelete = new LogicalDelete();
 
-    public static class MultiTenant {
-        /**
-         * Enable multi-tenant feature (default: false)
-         */
-        private boolean enabled = false;
+    public Audit getAudit() {
+        return audit;
+    }
 
-        /**
-         * Column name for tenant ID (default: tenant_id)
-         */
-        private String columnName = "tenant_id";
+    public void setAudit(Audit audit) {
+        this.audit = audit;
+    }
 
-        /**
-         * Ignore tenant filter for these tables (comma separated)
-         */
-        private String ignoreTables = "sys_tenant,sys_user,sys_role,sys_permission";
+    public IdGenerator getIdGenerator() {
+        return idGenerator;
+    }
 
-        /**
-         * Default tenant ID when not in tenant context
-         */
-        private String defaultTenantId = "default";
+    public void setIdGenerator(IdGenerator idGenerator) {
+        this.idGenerator = idGenerator;
+    }
+
+    public MultiTenant getMultiTenant() {
+        return multiTenant;
+    }
+
+    public void setMultiTenant(MultiTenant multiTenant) {
+        this.multiTenant = multiTenant;
+    }
+
+    public LogicalDelete getLogicalDelete() {
+        return logicalDelete;
+    }
+
+    public void setLogicalDelete(LogicalDelete logicalDelete) {
+        this.logicalDelete = logicalDelete;
+    }
+
+    public static class Audit {
+        private boolean enabled = true;
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+    }
+
+    public static class IdGenerator {
+        private boolean enabled = true;
+        private Strategy strategy = Strategy.RANDOM;
+
+        @Min(1)
+        @Max(64)
+        private int randomLength = 20;
+
+        private boolean uuidWithHyphens;
+
+        @Min(0)
+        @Max(31)
+        private long snowflakeWorkerId;
+
+        @Min(0)
+        @Max(31)
+        private long snowflakeDatacenterId;
 
         public boolean isEnabled() {
             return enabled;
@@ -67,20 +116,87 @@ public class DatabaseProperties {
             this.enabled = enabled;
         }
 
+        public Strategy getStrategy() {
+            return strategy;
+        }
+
+        public void setStrategy(Strategy strategy) {
+            this.strategy = strategy;
+        }
+
+        public int getRandomLength() {
+            return randomLength;
+        }
+
+        public void setRandomLength(int randomLength) {
+            this.randomLength = randomLength;
+        }
+
+        public boolean isUuidWithHyphens() {
+            return uuidWithHyphens;
+        }
+
+        public void setUuidWithHyphens(boolean uuidWithHyphens) {
+            this.uuidWithHyphens = uuidWithHyphens;
+        }
+
+        public long getSnowflakeWorkerId() {
+            return snowflakeWorkerId;
+        }
+
+        public void setSnowflakeWorkerId(long snowflakeWorkerId) {
+            this.snowflakeWorkerId = snowflakeWorkerId;
+        }
+
+        public long getSnowflakeDatacenterId() {
+            return snowflakeDatacenterId;
+        }
+
+        public void setSnowflakeDatacenterId(long snowflakeDatacenterId) {
+            this.snowflakeDatacenterId = snowflakeDatacenterId;
+        }
+    }
+
+    public enum Strategy {
+        RANDOM,
+        UUID_V4,
+        UUID_V7,
+        SNOWFLAKE
+    }
+
+    public static class MultiTenant {
+        private boolean enabled = false;
+        private boolean required = true;
+
+        @NotBlank
+        private String columnName = "tenant_id";
+
+        private String defaultTenantId;
+        private List<String> ignoreTables = new ArrayList<>();
+        private Request request = new Request();
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        public boolean isRequired() {
+            return required;
+        }
+
+        public void setRequired(boolean required) {
+            this.required = required;
+        }
+
         public String getColumnName() {
             return columnName;
         }
 
         public void setColumnName(String columnName) {
             this.columnName = columnName;
-        }
-
-        public String getIgnoreTables() {
-            return ignoreTables;
-        }
-
-        public void setIgnoreTables(String ignoreTables) {
-            this.ignoreTables = ignoreTables;
         }
 
         public String getDefaultTenantId() {
@@ -90,43 +206,78 @@ public class DatabaseProperties {
         public void setDefaultTenantId(String defaultTenantId) {
             this.defaultTenantId = defaultTenantId;
         }
+
+        public List<String> getIgnoreTables() {
+            return ignoreTables;
+        }
+
+        public void setIgnoreTables(List<String> ignoreTables) {
+            this.ignoreTables = ignoreTables;
+        }
+
+        public Request getRequest() {
+            return request;
+        }
+
+        public void setRequest(Request request) {
+            this.request = request;
+        }
+    }
+
+    public static class Request {
+        private String headerName = "X-Tenant-Id";
+        private String parameterName;
+        private boolean subdomainEnabled;
+        private List<String> excludedSubdomains = new ArrayList<>(List.of("www", "api"));
+
+        public String getHeaderName() {
+            return headerName;
+        }
+
+        public void setHeaderName(String headerName) {
+            this.headerName = headerName;
+        }
+
+        public String getParameterName() {
+            return parameterName;
+        }
+
+        public void setParameterName(String parameterName) {
+            this.parameterName = parameterName;
+        }
+
+        public boolean isSubdomainEnabled() {
+            return subdomainEnabled;
+        }
+
+        public void setSubdomainEnabled(boolean subdomainEnabled) {
+            this.subdomainEnabled = subdomainEnabled;
+        }
+
+        public List<String> getExcludedSubdomains() {
+            return excludedSubdomains;
+        }
+
+        public void setExcludedSubdomains(List<String> excludedSubdomains) {
+            this.excludedSubdomains = excludedSubdomains;
+        }
     }
 
     public static class LogicalDelete {
-        /**
-         * Enable logical delete feature (default: false)
-         */
-        private boolean enabled = false;
+        private boolean enabled;
 
-        /**
-         * Column name for logical delete flag (default: deleted)
-         */
+        @NotBlank
         private String columnName = "deleted";
 
-        /**
-         * Value representing deleted record (default: true)
-         */
-        private String deletedValue = "true";
+        private int normalValue;
+        private int deletedValue = 1;
 
-        /**
-         * Value representing normal record (default: false)
-         */
-        private String normalValue = "false";
-
-        public String getNormalValue() {
-            return normalValue;
+        public boolean isEnabled() {
+            return enabled;
         }
 
-        public void setNormalValue(String normalValue) {
-            this.normalValue = normalValue;
-        }
-
-        public String getDeletedValue() {
-            return deletedValue;
-        }
-
-        public void setDeletedValue(String deletedValue) {
-            this.deletedValue = deletedValue;
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
         }
 
         public String getColumnName() {
@@ -137,22 +288,20 @@ public class DatabaseProperties {
             this.columnName = columnName;
         }
 
-        public boolean isEnabled() {
-            return enabled;
+        public int getNormalValue() {
+            return normalValue;
         }
 
-        public void setEnabled(boolean enabled) {
-            this.enabled = enabled;
+        public void setNormalValue(int normalValue) {
+            this.normalValue = normalValue;
         }
-    }
 
-    public DatabaseProperties() {}
+        public int getDeletedValue() {
+            return deletedValue;
+        }
 
-    public MultiTenant getMultiTenant() {
-        return this.multiTenant;
-    }
-
-    public LogicalDelete getLogicalDelete() {
-        return this.logicalDelete;
+        public void setDeletedValue(int deletedValue) {
+            this.deletedValue = deletedValue;
+        }
     }
 }

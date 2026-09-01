@@ -1,5 +1,3 @@
-package io.github.loadup.commons.dataobject;
-
 /*-
  * #%L
  * loadup-commons-util
@@ -20,57 +18,29 @@ package io.github.loadup.commons.dataobject;
  * #L%
  */
 
+package io.github.loadup.commons.dataobject;
+
 import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-/**
- * Base Data Object for MyBatis-Flex
- *
- * <p>所有实体类的基类，提供通用字段。
- *
- * <p>子类需要添加 MyBatis-Flex 注解：@Table, @Id, @Column 等
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
+/** Common persistent fields for MyBatis-Flex data objects. */
 public abstract class BaseDO implements Serializable {
-    // @Id(keyType = KeyType.Generator, value = KeyGenerators.flexId)
-    @Id
+    private static final long serialVersionUID = 1L;
+
+    @Id(keyType = KeyType.None)
     private String id;
 
-    /**
-     * 创建时间（自动填充）
-     */
-    // @Column(onInsertValue = "now()")
     private LocalDateTime createdAt;
 
-    /**
-     * 更新时间（自动填充）
-     */
-    // @Column(onUpdateValue = "now()", onInsertValue = "now()")
     private LocalDateTime updatedAt;
 
-    /**
-     * Tenant ID (optional, controlled by loadup.database.multi-tenant.enabled)
-     *
-     * <p>When multi-tenant is enabled in database configuration, this field will be used for tenant
-     * isolation. Queries will automatically filter by tenant_id, and inserts/updates will
-     * automatically set tenant_id from TenantContextHolder.
-     */
-    // @Column(tenantId = true)
     private String tenantId;
 
-    /**
-     * Logical delete flag (optional, controlled by loadup.database.logical-delete.enabled)
-     *
-     * <p>When logical delete is enabled in database configuration, this field will be used to mark
-     * deleted records. Default value is false (not deleted).
-     */
-    // @Column(isLogicDelete = true)
-    private Boolean deleted = false;
+    private Integer deleted = 0;
 
     @Override
     public String toString() {
@@ -93,8 +63,12 @@ public abstract class BaseDO implements Serializable {
         return this.tenantId;
     }
 
-    public Boolean isDeleted() {
+    public Integer getDeleted() {
         return this.deleted;
+    }
+
+    public boolean isDeleted() {
+        return deleted != null && deleted != 0;
     }
 
     public void setId(String id) {
@@ -113,7 +87,7 @@ public abstract class BaseDO implements Serializable {
         this.tenantId = tenantId;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(Integer deleted) {
         this.deleted = deleted;
     }
 }

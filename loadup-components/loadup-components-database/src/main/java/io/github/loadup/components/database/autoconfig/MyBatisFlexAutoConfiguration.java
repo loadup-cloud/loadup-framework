@@ -1,5 +1,3 @@
-package io.github.loadup.components.database.autoconfig;
-
 /*-
  * #%L
  * loadup-components-database
@@ -20,32 +18,33 @@ package io.github.loadup.components.database.autoconfig;
  * #L%
  */
 
+package io.github.loadup.components.database.autoconfig;
+
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.core.FlexGlobalConfig;
-import com.mybatisflex.core.audit.AuditManager;
-import com.mybatisflex.core.audit.ConsoleMessageCollector;
-import com.mybatisflex.core.audit.MessageCollector;
-import com.mybatisflex.core.keygen.KeyGenerators;
+import com.mybatisflex.core.keygen.KeyGeneratorFactory;
 import com.mybatisflex.core.logicdelete.LogicDeleteManager;
-import com.mybatisflex.core.logicdelete.impl.BooleanLogicDeleteProcessor;
+import com.mybatisflex.core.logicdelete.impl.DefaultLogicDeleteProcessor;
+import com.mybatisflex.core.tenant.TenantManager;
 import com.mybatisflex.spring.boot.MyBatisFlexCustomizer;
 import io.github.loadup.commons.dataobject.BaseDO;
 import io.github.loadup.components.database.config.DatabaseProperties;
+import io.github.loadup.components.database.id.DatabaseIdGenerator;
+import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.components.database.listener.BaseEntityListener;
+import io.github.loadup.components.database.listener.TenantContextMissingException;
+import io.github.loadup.components.database.tenant.TenantContextHolder;
+import java.time.Clock;
+import java.util.Locale;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-/**
- * MyBatis-Flex Auto Configuration
- *
- * <p>MyBatis-Flex 基础配置，包含多租户、逻辑删除、实体监听器等功能
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
+/** Configures MyBatis-Flex with LoadUp persistence conventions. */
 @AutoConfiguration
 @EnableConfigurationProperties(DatabaseProperties.class)
 public class MyBatisFlexAutoConfiguration {
@@ -53,53 +52,99 @@ public class MyBatisFlexAutoConfiguration {
 
     private final DatabaseProperties databaseProperties;
 
-    /**
-     * Configure MyBatis-Flex global settings
-     *
-     * @return MyBatisFlexCustomizer
-     */
     @Bean
-    public MyBatisFlexCustomizer myBatisFlexCustomizer() {
+    @ConditionalOnMissingBean
+    public Clock databaseClock() {
+        return Clock.systemUTC();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public IdGenerator databaseIdGenerator(DatabaseProperties properties) {
+        return new DatabaseIdGenerator(properties.getIdGenerator());
+    }
+
+    @Bean
+    public MyBatisFlexCustomizer myBatisFlexCustomizer(IdGenerator idGenerator, Clock clock) {
         return globalConfig -> {
-            FlexGlobalConfig.KeyConfig keyConfig = new FlexGlobalConfig.KeyConfig();
-            keyConfig.setKeyType(KeyType.Generator);
-            keyConfig.setValue(KeyGenerators.flexId);
-            keyConfig.setBefore(true);
-            globalConfig.setKeyConfig(keyConfig);
+            configureIdGeneration(globalConfig);
+            configureLogicalDelete(globalConfig);
+            configureMultiTenant(globalConfig);
 
-            // Register entity listener
-            globalConfig.registerInsertListener(new BaseEntityListener(databaseProperties), BaseDO.class);
-            globalConfig.registerUpdateListener(new BaseEntityListener(databaseProperties), BaseDO.class);
-            log.info("Registered BaseEntityListener for automatic field population");
-
-            if (databaseProperties.getLogicalDelete().isEnabled()) {
-                // Configure logical delete
-                globalConfig.setLogicDeleteColumn("deleted");
-                LogicDeleteManager.setProcessor(new BooleanLogicDeleteProcessor());
-            }
-            // Enable SQL audit in development mode (optional)
-            enableSqlAuditIfNeeded();
+            BaseEntityListener listener = new BaseEntityListener(databaseProperties, idGenerator, clock);
+            globalConfig.registerInsertListener(listener, BaseDO.class);
+            globalConfig.registerUpdateListener(listener, BaseDO.class);
+            log.info("Configured MyBatis-Flex persistence conventions");
         };
     }
 
-    /**
-     * Enable SQL audit for debugging (logs all SQL statements)
-     *
-     * <p>This is useful for development and debugging. In production, consider using more
-     * sophisticated monitoring tools.
-     */
-    private void enableSqlAuditIfNeeded() {
-        // Enable audit in non-production environments
-        String env = System.getProperty("spring.profiles.active", "");
-        if (env.contains("dev") || env.contains("local")) {
-            MessageCollector collector = new ConsoleMessageCollector();
-            AuditManager.setMessageCollector(collector);
-            AuditManager.setAuditEnable(true);
-            log.info("Enabled SQL audit with ConsoleMessageCollector (dev mode)");
+    private void configureIdGeneration(FlexGlobalConfig globalConfig) {
+        DatabaseProperties.IdGenerator properties = databaseProperties.getIdGenerator();
+        if (properties.isEnabled()) {
+            FlexGlobalConfig.KeyConfig keyConfig = new FlexGlobalConfig.KeyConfig();
+            keyConfig.setKeyType(KeyType.Generator);
+            keyConfig.setValue(DatabaseIdGenerator.KEY);
+            keyConfig.setBefore(true);
+            globalConfig.setKeyConfig(keyConfig);
+            KeyGeneratorFactory.register(DatabaseIdGenerator.KEY, new DatabaseIdGenerator(properties));
+        } else {
+            globalConfig.setKeyConfig(null);
         }
     }
 
-    // MyBatis-Flex 会自动扫描 Mapper 接口并配置
+    private void configureLogicalDelete(FlexGlobalConfig globalConfig) {
+        DatabaseProperties.LogicalDelete properties = databaseProperties.getLogicalDelete();
+        if (properties.isEnabled()) {
+            globalConfig.setLogicDeleteColumn(properties.getColumnName());
+            globalConfig.setNormalValueOfLogicDelete(properties.getNormalValue());
+            globalConfig.setDeletedValueOfLogicDelete(properties.getDeletedValue());
+            LogicDeleteManager.setProcessor(new DefaultLogicDeleteProcessor());
+        } else {
+            globalConfig.setLogicDeleteColumn(null);
+        }
+    }
+
+    private void configureMultiTenant(FlexGlobalConfig globalConfig) {
+        DatabaseProperties.MultiTenant properties = databaseProperties.getMultiTenant();
+        if (!properties.isEnabled()) {
+            globalConfig.setTenantColumn(null);
+            TenantManager.setTenantFactory(null);
+            return;
+        }
+
+        Set<String> ignoredTables = properties.getIgnoreTables().stream()
+                .filter(table -> table != null && !table.isBlank())
+                .map(table -> table.trim().toLowerCase(Locale.ROOT))
+                .collect(java.util.stream.Collectors.toUnmodifiableSet());
+        globalConfig.setTenantColumn(properties.getColumnName());
+        TenantManager.setTenantFactory(new com.mybatisflex.core.tenant.TenantFactory() {
+            @Override
+            @SuppressWarnings("deprecation")
+            public Object[] getTenantIds() {
+                return getTenantIds(null);
+            }
+
+            @Override
+            public Object[] getTenantIds(String tableName) {
+                if (tableName != null && ignoredTables.contains(tableName.toLowerCase(Locale.ROOT))) {
+                    return null;
+                }
+                String tenantId = TenantContextHolder.getTenantId();
+                if (!org.springframework.util.StringUtils.hasText(tenantId)) {
+                    tenantId = properties.getDefaultTenantId();
+                }
+                if (!org.springframework.util.StringUtils.hasText(tenantId)) {
+                    if (properties.isRequired()) {
+                        throw new TenantContextMissingException(tableName);
+                    }
+                    return null;
+                }
+                return new Object[] {tenantId};
+            }
+        });
+    }
+
+    // MyBatis-Flex scans mapper interfaces through its starter.
 
     public MyBatisFlexAutoConfiguration(DatabaseProperties databaseProperties) {
         this.databaseProperties = databaseProperties;

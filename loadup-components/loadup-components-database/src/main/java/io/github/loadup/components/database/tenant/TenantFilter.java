@@ -1,10 +1,8 @@
-package io.github.loadup.components.database.tenant;
-
 /*-
  * #%L
  * loadup-components-database
  * %%
- * Copyright (C) 2022 - 2026 loadup_cloud
+ * Copyright (C) 2022 - 2026 LoadUp Cloud
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,91 +18,74 @@ package io.github.loadup.components.database.tenant;
  * #L%
  */
 
+package io.github.loadup.components.database.tenant;
+
+import io.github.loadup.components.database.config.DatabaseProperties;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.lang.NonNull;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-/**
- * Tenant Filter
- *
- * <p>Extracts tenant ID from HTTP request and sets it in TenantContextHolder. Tenant ID can be
- * provided via:
- *
- * <ul>
- *   <li>Header: X-Tenant-Id
- *   <li>Query parameter: tenantId
- *   <li>Subdomain: {tenant}.example.com
- * </ul>
- *
- * <p>Also validates if the tenant exists in database.
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
+/** Binds the configured request tenant to {@link TenantContextHolder}. */
 public class TenantFilter extends OncePerRequestFilter {
-    private static final Logger log = LoggerFactory.getLogger(TenantFilter.class);
-
-    private static final String HEADER_TENANT_ID = "X-Tenant-Id";
-    private static final String PARAM_TENANT_ID = "tenantId";
+    private final DatabaseProperties.Request requestProperties;
 
     @Override
-    protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
+        String previousTenantId = TenantContextHolder.getTenantId();
+        String tenantId = resolveTenantId(request);
         try {
-            String tenantId = extractTenantId(request);
-
             if (tenantId != null) {
                 TenantContextHolder.setTenantId(tenantId);
-                log.debug("Set tenant context from request: {}", tenantId);
             }
-
             filterChain.doFilter(request, response);
-
         } finally {
-            TenantContextHolder.clear();
+            if (previousTenantId == null) {
+                TenantContextHolder.clear();
+            } else {
+                TenantContextHolder.setTenantId(previousTenantId);
+            }
         }
     }
 
-    /**
-     * Extract tenant ID from request
-     *
-     * <p>Priority: Header > Query Parameter > Subdomain
-     *
-     * @param request HTTP request
-     * @return tenant ID or null
-     */
-    private String extractTenantId(HttpServletRequest request) {
-        // 1. Try header
-        String tenantId = request.getHeader(HEADER_TENANT_ID);
-        if (tenantId != null && !tenantId.isBlank()) {
-            return tenantId.trim();
+    private String resolveTenantId(HttpServletRequest request) {
+        String tenantId = StringUtils.hasText(requestProperties.getHeaderName())
+                ? readValue(request.getHeader(requestProperties.getHeaderName()))
+                : null;
+        if (tenantId != null) {
+            return tenantId;
         }
-
-        // 2. Try query parameter
-        tenantId = request.getParameter(PARAM_TENANT_ID);
-        if (tenantId != null && !tenantId.isBlank()) {
-            return tenantId.trim();
-        }
-
-        // 3. Try subdomain (e.g., tenant1.example.com -> tenant1)
-        String serverName = request.getServerName();
-        if (serverName != null && serverName.contains(".")) {
-            String subdomain = serverName.substring(0, serverName.indexOf('.'));
-            if (!"www".equals(subdomain) && !"api".equals(subdomain)) {
-                return subdomain;
+        if (StringUtils.hasText(requestProperties.getParameterName())) {
+            tenantId = readValue(request.getParameter(requestProperties.getParameterName()));
+            if (tenantId != null) {
+                return tenantId;
             }
         }
+        if (!requestProperties.isSubdomainEnabled()) {
+            return null;
+        }
+        String serverName = request.getServerName();
+        if (!StringUtils.hasText(serverName) || !serverName.contains(".")) {
+            return null;
+        }
+        String subdomain = serverName.substring(0, serverName.indexOf('.'));
+        boolean excluded =
+                requestProperties.getExcludedSubdomains().stream().anyMatch(value -> value.equalsIgnoreCase(subdomain));
+        return excluded ? null : readValue(subdomain);
+    }
 
-        return null;
+    private String readValue(String value) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+        return value.trim();
+    }
+
+    public TenantFilter(DatabaseProperties.Request requestProperties) {
+        this.requestProperties = requestProperties;
     }
 }

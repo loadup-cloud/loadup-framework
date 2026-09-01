@@ -1,5 +1,3 @@
-package io.github.loadup.components.database.autoconfig;
-
 /*-
  * #%L
  * loadup-components-database
@@ -20,11 +18,14 @@ package io.github.loadup.components.database.autoconfig;
  * #L%
  */
 
+package io.github.loadup.components.database.autoconfig;
+
 import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.database.tenant.TenantFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -32,25 +33,19 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 
-/**
- * Multi-Tenant Auto Configuration
- *
- * <p>Registers TenantFilter for web applications when multi-tenant is enabled
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
+/** Registers request tenant propagation for web applications. */
 @AutoConfiguration
 @EnableConfigurationProperties(DatabaseProperties.class)
+@ConditionalOnClass(name = "org.springframework.boot.web.servlet.FilterRegistrationBean")
 @ConditionalOnProperty(prefix = "loadup.database.multi-tenant", name = "enabled", havingValue = "true")
 public class MultiTenantAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(MultiTenantAutoConfiguration.class);
 
     @Bean
     @ConditionalOnWebApplication
-    public FilterRegistrationBean<TenantFilter> tenantFilterRegistration() {
+    public FilterRegistrationBean<TenantFilter> tenantFilterRegistration(DatabaseProperties properties) {
         FilterRegistrationBean<TenantFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new TenantFilter());
+        registration.setFilter(new TenantFilter(properties.getMultiTenant().getRequest()));
         registration.addUrlPatterns("/*");
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
         registration.setName("tenantFilter");
