@@ -253,15 +253,6 @@
         <Class name="~io\.github\.loadup\..*"/>
     </Match>
     <!--
-      GlobalUniqueMapper 在 getTableName() 中已通过正则验证表名，
-      FindSecBugs taint 分析不追踪此验证，SQL_INJECTION_SPRING_JDBC 是误报。
-    -->
-    <Match>
-        <Class name="io.github.loadup.components.globalunique.mapper.GlobalUniqueMapper"/>
-        <Bug pattern="SQL_INJECTION_SPRING_JDBC"/>
-    </Match>
-
-    <!--
       SMS Provider 中的 ThreadLocalRandom 用于模拟成功率（测试/模拟场景），
       不是安全敏感用途，PREDICTABLE_RANDOM 是误报。
     -->

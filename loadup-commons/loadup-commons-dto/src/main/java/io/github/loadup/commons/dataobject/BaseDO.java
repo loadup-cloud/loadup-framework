@@ -67,10 +67,6 @@ public abstract class BaseDO implements Serializable {
         return this.deleted;
     }
 
-    public boolean isDeleted() {
-        return deleted != null && deleted != 0;
-    }
-
     public void setId(String id) {
         this.id = id;
     }

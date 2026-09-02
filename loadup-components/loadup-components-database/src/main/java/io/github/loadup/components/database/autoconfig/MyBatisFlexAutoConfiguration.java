@@ -67,7 +67,7 @@ public class MyBatisFlexAutoConfiguration {
     @Bean
     public MyBatisFlexCustomizer myBatisFlexCustomizer(IdGenerator idGenerator, Clock clock) {
         return globalConfig -> {
-            configureIdGeneration(globalConfig);
+            configureIdGeneration(globalConfig, idGenerator);
             configureLogicalDelete(globalConfig);
             configureMultiTenant(globalConfig);
 
@@ -78,7 +78,7 @@ public class MyBatisFlexAutoConfiguration {
         };
     }
 
-    private void configureIdGeneration(FlexGlobalConfig globalConfig) {
+    private void configureIdGeneration(FlexGlobalConfig globalConfig, IdGenerator idGenerator) {
         DatabaseProperties.IdGenerator properties = databaseProperties.getIdGenerator();
         if (properties.isEnabled()) {
             FlexGlobalConfig.KeyConfig keyConfig = new FlexGlobalConfig.KeyConfig();
@@ -86,7 +86,7 @@ public class MyBatisFlexAutoConfiguration {
             keyConfig.setValue(DatabaseIdGenerator.KEY);
             keyConfig.setBefore(true);
             globalConfig.setKeyConfig(keyConfig);
-            KeyGeneratorFactory.register(DatabaseIdGenerator.KEY, new DatabaseIdGenerator(properties));
+            KeyGeneratorFactory.register(DatabaseIdGenerator.KEY, (entity, keyColumn) -> idGenerator.generate());
         } else {
             globalConfig.setKeyConfig(null);
         }

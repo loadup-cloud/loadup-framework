@@ -18,12 +18,17 @@
  * #L%
  */
 
-package io.github.loadup.components.globalunique.mapper;
+package io.github.loadup.components.globalunique.model;
 
-import com.mybatisflex.core.BaseMapper;
-import io.github.loadup.components.globalunique.dataobject.GlobalUniqueDO;
-import org.apache.ibatis.annotations.Mapper;
+import java.time.LocalDateTime;
 
-/** MyBatis-Flex mapper for global unique claims. */
-@Mapper
-public interface GlobalUniqueMapper extends BaseMapper<GlobalUniqueDO> {}
+/** Read-only view of a claimed business key. */
+public record GlobalUniqueRecord(
+        String id,
+        String tenantId,
+        String bizType,
+        String uniqueKey,
+        String bizId,
+        String requestData,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt) {}

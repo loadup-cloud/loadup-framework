@@ -414,13 +414,15 @@ Gateway 作为标准 **OAuth2 资源服务器**（Servlet 过滤器链），认�
   `common-log ← common-tracer` 单向依赖组合。能力矩阵与 README 已落地；testcontainers 保持"共享容器 +
   可切换实际服务"模式。
 
-### 5.13 pipeline / globalunique — P4
+### 5.13 pipeline — P4 / globalunique — 已完成
 
-- **现状**：pipeline 四阶段 DSL、globalunique 数据库唯一键幂等。
-- **目标**：保留（无标准 OSS 直接对应）；pipeline 定位为**轻量进程内编排**，不宣传为工作流引擎；长流程场景再评估 Flowable / Temporal。
-- **globalunique 落地**：单一 jar；`GlobalUniqueService` 事务内幂等（INSERT + 唯一键）；表结构含标准字段
-  `id / tenant_id / created_at / updated_at / deleted`，MySQL / PostgreSQL / Oracle 三套 Flyway 迁移；
-  能力矩阵见模块 README。
+- **pipeline 目标**：保留四阶段 DSL，定位为**轻量进程内编排**，不宣传为工作流引擎；长流程场景再评估 Flowable / Temporal。
+- **globalunique facade**：单一 jar，业务侧只依赖 `GlobalUniqueTemplate`；`claim` 表达事务内声明，
+  `find` 返回只读记录，不保留旧 `GlobalUniqueService.insertAndCheck` API。
+- **globalunique 存储**：`GlobalUniqueDO extends BaseDO` + MyBatis-Flex `BaseMapper`，查询使用 APT 生成的
+  TableDef；ID、创建/更新时间、租户与逻辑删除全部复用 database 组件，不再手写 JDBC、方言 SQL 或解析异常消息。
+- **唯一语义**：MySQL 8 唯一索引 `(tenant_id, biz_type, unique_key)` 保证租户内并发安全；业务写入与
+  声明处于同一 Spring 事务时，回滚后可重试。迁移表包含五个标准字段，能力矩阵见模块 README。
 
 ### 5.14 upms / config / log 模块 — P2/P3
 

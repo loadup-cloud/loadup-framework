@@ -18,12 +18,20 @@
  * #L%
  */
 
-package io.github.loadup.components.globalunique.mapper;
+package io.github.loadup.components.globalunique;
 
-import com.mybatisflex.core.BaseMapper;
-import io.github.loadup.components.globalunique.dataobject.GlobalUniqueDO;
-import org.apache.ibatis.annotations.Mapper;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/** MyBatis-Flex mapper for global unique claims. */
-@Mapper
-public interface GlobalUniqueMapper extends BaseMapper<GlobalUniqueDO> {}
+/** Global unique component configuration. */
+@ConfigurationProperties(prefix = "loadup.global-unique")
+public class GlobalUniqueProperties {
+    private boolean enabled = true;
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+}

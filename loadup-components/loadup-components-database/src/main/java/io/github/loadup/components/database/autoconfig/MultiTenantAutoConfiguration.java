@@ -36,13 +36,13 @@ import org.springframework.core.Ordered;
 /** Registers request tenant propagation for web applications. */
 @AutoConfiguration
 @EnableConfigurationProperties(DatabaseProperties.class)
-@ConditionalOnClass(name = "org.springframework.boot.web.servlet.FilterRegistrationBean")
+@ConditionalOnClass(name = {"jakarta.servlet.Filter", "org.springframework.boot.web.servlet.FilterRegistrationBean"})
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(prefix = "loadup.database.multi-tenant", name = "enabled", havingValue = "true")
 public class MultiTenantAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(MultiTenantAutoConfiguration.class);
 
     @Bean
-    @ConditionalOnWebApplication
     public FilterRegistrationBean<TenantFilter> tenantFilterRegistration(DatabaseProperties properties) {
         FilterRegistrationBean<TenantFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(new TenantFilter(properties.getMultiTenant().getRequest()));

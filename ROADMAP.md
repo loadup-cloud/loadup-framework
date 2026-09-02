@@ -109,8 +109,10 @@
 - [ ] 编写"选型手册"（本地开发怎么配 / 上生产怎么切 / 高级能力怎么换）
 - [ ] 运行 `/docs-sync` 同步文档站
 - [x] 修复 gotone / retrytask 组件 README 与代码脱节问题（其余组件继续排查）
-- [x] tracer / signature / globalunique 契约落地：README 能力矩阵 + 代码规范对齐（英文注释、显式
-  Bean 装配、globalunique 表结构补齐标准字段）
+- [x] tracer / signature 契约落地：README 能力矩阵 + 代码规范对齐（英文注释、显式 Bean 装配）
+- [x] globalunique 重构：切换 `GlobalUniqueTemplate` + MyBatis-Flex，复用 database 的 ID / 审计 /
+  逻辑删除 / 多租户；唯一维度统一为 `tenant_id + biz_type + unique_key`，删除 JDBC 方言和动态表名代码，
+  由 MySQL Testcontainers 验证并发、事务回滚与租户隔离
 
 **验收**：
 

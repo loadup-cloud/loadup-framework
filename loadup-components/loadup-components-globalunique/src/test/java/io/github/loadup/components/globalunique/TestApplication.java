@@ -1,5 +1,3 @@
-package io.github.loadup.components.globalunique;
-
 /*-
  * #%L
  * LoadUp Components :: Global Unique
@@ -19,6 +17,8 @@ package io.github.loadup.components.globalunique;
  * limitations under the License.
  * #L%
  */
+
+package io.github.loadup.components.globalunique;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
