@@ -219,6 +219,10 @@ public class YamlRouteStore implements RouteStore {
             backend.setUrl((String) backendRaw.get("url"));
             backend.setBeanName((String) backendRaw.get("beanName"));
             backend.setMethodName((String) backendRaw.get("methodName"));
+            Object paramTypes = backendRaw.get("paramTypes");
+            if (paramTypes instanceof List<?> values) {
+                backend.setParamTypes(values.stream().map(String::valueOf).toList());
+            }
             def.setBackend(backend);
         }
 

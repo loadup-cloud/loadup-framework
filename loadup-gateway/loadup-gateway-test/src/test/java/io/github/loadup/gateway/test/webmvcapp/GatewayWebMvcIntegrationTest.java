@@ -177,7 +177,7 @@ class GatewayWebMvcIntegrationTest {
     }
 
     private static String signedToken(List<String> permissions, List<String> roles) {
-        String secret = "loadup-gateway-secret-key-must-be-long-enough-32bytes";
+        String secret = "loadup-test-only-gateway-key-0123456789abcdef";
         SecretKeySpec key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
         NimbusJwtEncoder encoder = new NimbusJwtEncoder(new ImmutableSecret<>(key));
         JwtClaimsSet claims = JwtClaimsSet.builder()

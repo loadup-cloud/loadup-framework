@@ -23,7 +23,8 @@ package io.github.loadup.modules.upms.infrastructure.converter;
 import io.github.loadup.modules.upms.domain.entity.LoginLog;
 import io.github.loadup.modules.upms.infrastructure.dataobject.LoginLogDO;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 /**
  * LoginLog Converter - MapStruct converter between Domain Entity and DataObject
@@ -31,10 +32,11 @@ import org.mapstruct.factory.Mappers;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Mapper(componentModel = "spring")
+@Mapper(
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.ERROR,
+        unmappedSourcePolicy = ReportingPolicy.WARN)
 public interface LoginLogConverter {
-
-    LoginLogConverter INSTANCE = Mappers.getMapper(LoginLogConverter.class);
 
     /**
      * Convert Domain Entity to DataObject
@@ -42,6 +44,10 @@ public interface LoginLogConverter {
      * @param loginLog domain entity
      * @return data object
      */
+    @Mapping(target = "tenantId", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     LoginLogDO toDataObject(LoginLog loginLog);
 
     /**

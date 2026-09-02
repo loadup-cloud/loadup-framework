@@ -98,7 +98,7 @@ public class RouteFunctionRegistry implements RouterFunction<ServerResponse> {
 
     @PostConstruct
     public void init() {
-        refresh();
+        refresh(true);
     }
 
     /**
@@ -106,8 +106,14 @@ public class RouteFunctionRegistry implements RouterFunction<ServerResponse> {
      * snapshot. On failure the previous snapshot is kept.
      */
     public void refresh() {
+        refresh(false);
+    }
+
+    private void refresh(boolean failFast) {
         try {
-            List<RouteConfig> routes = routeStore.loadAll().stream()
+            List<RouteDefinition> definitions = routeStore.loadAll();
+            RouteDefinitionValidator.validate(definitions, proxyHandler::supportsProtocol);
+            List<RouteConfig> routes = definitions.stream()
                     .filter(RouteDefinition::isEnabled)
                     .map(definition -> RouteConfigConverter.convert(definition, properties))
                     .toList();
@@ -130,6 +136,9 @@ public class RouteFunctionRegistry implements RouterFunction<ServerResponse> {
             long current = revision.incrementAndGet();
             log.info("Gateway routes refreshed: revision={}, enabled={}", current, routes.size());
         } catch (Exception e) {
+            if (failFast) {
+                throw new IllegalStateException("Failed to initialize gateway routes", e);
+            }
             log.error("Failed to refresh gateway routes, keeping previous snapshot", e);
         }
     }

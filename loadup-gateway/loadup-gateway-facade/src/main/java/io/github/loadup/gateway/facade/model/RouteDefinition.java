@@ -191,6 +191,12 @@ public class RouteDefinition {
          */
         private String methodName;
 
+        /**
+         * Parameter type names used to select an overloaded bean method. Each value may be a
+         * fully qualified or simple class name.
+         */
+        private List<String> paramTypes = new ArrayList<>();
+
         public String getProtocol() {
             return protocol;
         }
@@ -221,6 +227,14 @@ public class RouteDefinition {
 
         public void setMethodName(String methodName) {
             this.methodName = methodName;
+        }
+
+        public List<String> getParamTypes() {
+            return paramTypes == null ? Collections.emptyList() : Collections.unmodifiableList(paramTypes);
+        }
+
+        public void setParamTypes(List<String> paramTypes) {
+            this.paramTypes = paramTypes;
         }
     }
 

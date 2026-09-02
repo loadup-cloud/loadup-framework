@@ -41,14 +41,14 @@ loadup-modules-upms/
 
 - ✅ 角色定义（CRUD）
 - ✅ 角色权限分配
-- ✅ 数据权限范围（全部/部门/部门及子部门/仅本人/自定义）
+- ✅ 角色数据范围字段（过滤策略由业务侧实现）
 
 #### 3. 权限管理
 
 - ✅ 菜单权限
 - ✅ 按钮权限
 - ✅ API 权限
-- ✅ 数据权限
+- ✅ 角色与权限管理
 
 #### 4. 部门管理
 
@@ -59,7 +59,6 @@ loadup-modules-upms/
 
 - ✅ JWT Token 认证
 - ✅ Spring Security 方法级权限控制 (`@PreAuthorize`)
-- ✅ 数据权限过滤 (`@DataScope`)
 
 ### 快速开始
 
@@ -79,7 +78,7 @@ loadup:
   upms:
     security:
       jwt:
-        secret: your-secret-key
+        secret: ${JWT_SECRET}  # 使用 openssl rand -base64 48 生成
         expiration: 86400000  # 24 hours
       login:
         max-fail-attempts: 5
@@ -104,38 +103,6 @@ public class UserController {
         return Result.success();
     }
     
-    // 数据权限过滤
-    @DataScope(deptAlias = "d", userAlias = "u")
-    @GetMapping
-    public PageResult<UserDTO> listUsers(PageQuery query) {
-        return userService.listUsers(query);
-    }
-}
-```
-
-### 数据权限
-
-支持五种数据权限范围：
-
-| 范围               | 说明      | 示例          |
-|------------------|---------|-------------|
-| **ALL**          | 全部数据    | 超级管理员       |
-| **DEPT**         | 本部门数据   | 部门经理看本部门    |
-| **DEPT_AND_SUB** | 本部门及子部门 | 分公司经理看所有子公司 |
-| **SELF**         | 仅本人数据   | 普通员工只看自己    |
-| **CUSTOM**       | 自定义部门   | 跨部门协作       |
-
-**使用方式**:
-
-```java
-@Service
-public class UserService {
-    
-    @DataScope(deptAlias = "dept", userAlias = "user")
-    public List<UserDTO> listUsers(UserQuery query) {
-        // 框架会自动根据当前用户的数据权限添加 WHERE 条件
-        return userMapper.selectList(query);
-    }
 }
 ```
 
@@ -247,7 +214,7 @@ CREATE TABLE t_department (
 
 - [UPMS 详细文档](../docs/modules/upms.md)
 - [UPMS 架构说明](loadup-modules-upms/ARCHITECTURE.md)
-- [数据权限设计](loadup-modules-upms/DATA_SCOPE.md)
+- 角色 `data_scope` 仅保存策略编码，数据过滤由业务侧通过类型化查询条件实现。
 
 ## 扩展开发
 

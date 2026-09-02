@@ -61,7 +61,7 @@ public class Permission {
      */
     private Short status;
 
-    private boolean deleted;
+    private Boolean deleted;
 
     private String remark;
 
@@ -279,13 +279,5 @@ public class Permission {
 
     public void setVisible(boolean visible) {
         this.visible = visible;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 }

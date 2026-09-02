@@ -3,8 +3,8 @@ spring:
     name: loadup-launcher
   datasource:
     url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/loadup-boot?useUnicode=true&characterEncoding=utf8}
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:123456}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 # springdoc-openapi / knife4j configuration
@@ -46,6 +46,8 @@ loadup:
 
   gateway:
     enabled: true
+    security:
+      secret: ${JWT_SECRET}
     route-refresh-interval: 5
     template-cache-size: 100
     response:
@@ -61,6 +63,11 @@ loadup:
       http:
         enabled: true
         max-connections: 200
+
+  upms:
+    security:
+      jwt:
+        secret: ${JWT_SECRET}
 
     # Storage plugin: choose 'type' and then configure the matching group
     storage:

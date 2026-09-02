@@ -75,6 +75,10 @@ public class UserDO extends BaseDO {
 
     private String remark;
 
+    private String createdBy;
+
+    private String updatedBy;
+
     public UserDO(
             String username,
             String password,
@@ -298,5 +302,21 @@ public class UserDO extends BaseDO {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
     }
 }

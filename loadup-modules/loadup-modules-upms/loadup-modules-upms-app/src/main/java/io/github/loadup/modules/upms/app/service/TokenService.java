@@ -21,13 +21,12 @@ package io.github.loadup.modules.upms.app.service;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.commons.util.security.JwtSecretValidator;
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
 import io.github.loadup.modules.upms.client.constant.UpmsResultCode;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Map;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -60,7 +59,9 @@ public class TokenService {
      */
     public static TokenService create(UpmsSecurityProperties securityProperties) {
         UpmsSecurityProperties.JwtConfig config = securityProperties.getJwt();
-        return new TokenService(config, secretKey(config.getSecret()));
+        return new TokenService(
+                config,
+                JwtSecretValidator.requireStrong("loadup.upms.security.jwt.secret", config.getSecret()));
     }
 
     private TokenService(UpmsSecurityProperties.JwtConfig jwtConfig, SecretKey secretKey) {
@@ -119,11 +120,4 @@ public class TokenService {
                 .getTokenValue();
     }
 
-    private static SecretKey secretKey(String secret) {
-        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
-            throw new IllegalStateException(
-                    "loadup.upms.security.jwt.secret must be at least 32 bytes for HS256 JWT signing");
-        }
-        return new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-    }
 }

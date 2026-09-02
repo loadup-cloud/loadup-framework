@@ -426,7 +426,7 @@ Gateway 作为标准 **OAuth2 资源服务器**（Servlet 过滤器链），认�
 
 ### 5.14 upms / config / log 模块 — P2/P3
 
-- **现状**：COLA 4.0 业务模块；UPMS 提供 RBAC3 + JWT + 数据权限。
+- **现状**：COLA 4.0 业务模块；UPMS 提供 RBAC3 + JWT + 角色数据范围字段。数据过滤策略由业务侧以类型化查询条件实现。
 - **目标**：保留为"框架自带可复用业务能力"；认证后端跟随 authorization 决策（Spring Security 标准实现）；OAuth2 三方登录用 Spring Authorization Server 或厂商 SDK 适配。
 - **动作**：UPMS 与 authorization 组件的注解解耦（依赖 facade 而非实现）。
 

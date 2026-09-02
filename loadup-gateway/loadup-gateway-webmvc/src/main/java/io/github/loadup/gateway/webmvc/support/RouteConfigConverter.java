@@ -82,6 +82,7 @@ public final class RouteConfigConverter {
                     rc.setTarget("bean://" + bn + ":" + mn);
                     rc.setTargetBean(bn);
                     rc.setTargetMethod(mn);
+                    rc.setTargetParamTypes(backend.getParamTypes());
                 }
                 case "RPC" -> {
                     String rpcUrl = backend.getUrl();

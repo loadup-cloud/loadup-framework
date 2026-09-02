@@ -77,7 +77,7 @@ public class GatewayProperties {
         /**
          * JWT secret key (must be consistent with auth server)
          */
-        private String secret = "loadup-gateway-secret-key-must-be-long-enough-32bytes";
+        private String secret;
 
         /**
          * OIDC issuer URI used to fetch the JWK set via discovery. When set together with

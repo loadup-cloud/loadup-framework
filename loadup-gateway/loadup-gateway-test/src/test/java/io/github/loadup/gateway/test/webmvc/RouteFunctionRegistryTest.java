@@ -20,6 +20,7 @@
 package io.github.loadup.gateway.test.webmvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.components.resilience4j.ResilienceRegistries;
 import io.github.loadup.gateway.facade.config.GatewayProperties;
@@ -107,6 +108,34 @@ class RouteFunctionRegistryTest {
         assertThat(registry.route(WebMvcRequests.request("POST", "/api/first", null)))
                 .isEmpty();
         assertThat(registry.route(WebMvcRequests.request("POST", "/api/second", null)))
+                .isPresent();
+    }
+
+    @Test
+    @DisplayName("fails startup when route definitions are invalid")
+    void failsStartupForInvalidRoutes() {
+        RouteDefinition invalid = beanRoute("invalid", "missing-leading-slash", true);
+        RouteFunctionRegistry registry = newRegistry(new StaticRouteStore(List.of(invalid)));
+
+        assertThatThrownBy(registry::init)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Failed to initialize gateway routes")
+                .hasRootCauseMessage("Invalid gateway routes:\n - invalid: path must start with '/'");
+    }
+
+    @Test
+    @DisplayName("keeps the previous snapshot when a runtime refresh is invalid")
+    void keepsPreviousSnapshotForInvalidRuntimeRefresh() {
+        List<RouteDefinition> routes = new ArrayList<>(List.of(beanRoute("valid", "/api/valid", true)));
+        StaticRouteStore store = new StaticRouteStore(routes);
+        RouteFunctionRegistry registry = newRegistry(store);
+        registry.init();
+
+        routes.clear();
+        routes.add(beanRoute("invalid", "missing-leading-slash", true));
+        registry.refresh();
+
+        assertThat(registry.route(WebMvcRequests.request("POST", "/api/valid", null)))
                 .isPresent();
     }
 

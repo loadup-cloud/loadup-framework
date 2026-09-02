@@ -46,11 +46,16 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 @DisplayName("TokenService")
 class TokenServiceTest {
 
-    private static final String SECRET = "loadup-secret-key-change-in-production";
+    private static final String SECRET = "loadup-test-only-hs256-key-0123456789abcdef";
 
     private final UpmsSecurityProperties properties = new UpmsSecurityProperties();
 
-    private final TokenService tokenService = TokenService.create(properties);
+    private final TokenService tokenService;
+
+    TokenServiceTest() {
+        properties.getJwt().setSecret(SECRET);
+        tokenService = TokenService.create(properties);
+    }
 
     @Test
     @DisplayName("issues an access token carrying the LoadUp claims contract")
@@ -112,6 +117,18 @@ class TokenServiceTest {
         assertThatThrownBy(() -> TokenService.create(shortSecret))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("at least 32 bytes");
+    }
+
+    @Test
+    @DisplayName("rejects the historical default secret")
+    void rejectsHistoricalDefaultSecret() {
+        UpmsSecurityProperties weakSecret = new UpmsSecurityProperties();
+        weakSecret.getJwt().setSecret("loadup-secret-key-change-in-production");
+
+        assertThatThrownBy(() -> TokenService.create(weakSecret))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("known weak value")
+                .hasMessageNotContaining("loadup-secret-key-change-in-production");
     }
 
     private Jwt decode(String token) {

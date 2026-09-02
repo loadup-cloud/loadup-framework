@@ -28,6 +28,7 @@ public final class LogContext {
     public static final String TRACE_ID = "traceId";
     public static final String SPAN_ID = "spanId";
     public static final String REQUEST_ID = "requestId";
+    public static final String TENANT_ID = "tenantId";
     public static final String DEFAULT_CONSOLE_PATTERN =
             "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n%wEx";
     public static final String DEFAULT_CONSOLE_PATTERN_WITHOUT_TRACE =

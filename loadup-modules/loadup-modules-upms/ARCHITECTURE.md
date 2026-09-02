@@ -361,19 +361,14 @@ public List<Permission> getAllInheritedPermissions(Role role) {
 }
 ```
 
-### 3.2 数据权限控制
+### 3.2 数据范围字段
 
-```java
-public enum DataScope {
-    ALL(1, "全部数据权限"),
-    CUSTOM(2, "自定义数据权限"),
-    DEPT(3, "本部门数据权限"),
-    DEPT_AND_CHILDREN(4, "本部门及子部门数据权限"),
-    SELF_ONLY(5, "仅本人数据权限");
-}
-```
+The role table stores a data scope code for consumers that implement a policy. UPMS does not
+inject SQL conditions or expose an AOP data-scope filter. Repository implementations must build
+typed MyBatis-Flex conditions and must never concatenate user-controlled values into SQL.
 
-**SQL过滤示例**：
+<!--
+**Historical SQL example (not executable framework behavior):**
 
 ```sql
 -- 根据用户角色的 data_scope 动态添加 WHERE 条件
@@ -389,6 +384,7 @@ WHERE
         WHEN :dataScope = 5 THEN u.id = :userId  -- 仅本人
     END
 ```
+-->
 
 ## 4. 安全架构
 
@@ -555,7 +551,7 @@ public class AbacPermissionEvaluator implements PermissionEvaluator {
 - ✅ Spring Data JDBC Repository实现
 - ✅ Spring Security配置
 - ✅ JWT认证过滤器
-- ✅ 数据权限AOP (@DataScope注解)
+- ✅ 角色数据范围字段（过滤策略由业务侧实现）
 - ✅ 软删除支持
 
 #### Application层

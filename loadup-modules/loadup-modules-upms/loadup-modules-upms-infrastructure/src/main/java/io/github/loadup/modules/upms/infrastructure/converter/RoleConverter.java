@@ -23,7 +23,8 @@ package io.github.loadup.modules.upms.infrastructure.converter;
 import io.github.loadup.modules.upms.domain.entity.Role;
 import io.github.loadup.modules.upms.infrastructure.dataobject.RoleDO;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 /**
  * Role Converter
@@ -31,12 +32,23 @@ import org.mapstruct.factory.Mappers;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Mapper(componentModel = "spring")
+@Mapper(
+        componentModel = "spring",
+        uses = AuditMappingSupport.class,
+        unmappedTargetPolicy = ReportingPolicy.ERROR,
+        unmappedSourcePolicy = ReportingPolicy.WARN)
 public interface RoleConverter {
-
-    RoleConverter INSTANCE = Mappers.getMapper(RoleConverter.class);
-
+    @Mapping(source = "createdTime", target = "createdAt")
+    @Mapping(source = "updatedTime", target = "updatedAt")
+    @Mapping(target = "tenantId", ignore = true)
     RoleDO toDataObject(Role role);
 
+    @Mapping(source = "createdAt", target = "createdTime")
+    @Mapping(source = "updatedAt", target = "updatedTime")
+    @Mapping(target = "parentRole", ignore = true)
+    @Mapping(target = "childRoles", ignore = true)
+    @Mapping(target = "permissions", ignore = true)
+    @Mapping(target = "departments", ignore = true)
+    @Mapping(target = "allInheritedPermissions", ignore = true)
     Role toEntity(RoleDO roleDO);
 }

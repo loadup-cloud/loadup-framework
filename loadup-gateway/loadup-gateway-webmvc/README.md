@@ -13,7 +13,7 @@ loadup:
       # 三选一（优先级从高到低）：
       jwk-set-uri: https://sso.example.com/realms/loadup/protocol/openid-connect/certs
       issuer-uri: https://sso.example.com/realms/loadup
-      secret: loadup-gateway-secret-key-must-be-long-enough-32bytes   # HS256（默认）
+      secret: ${JWT_SECRET}   # 至少 32 UTF-8 字节，且不能使用已知默认值
       app-secrets:
         my-app: my-signing-secret     # signature 策略的 appId → secret
 ```

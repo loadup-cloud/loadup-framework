@@ -1053,7 +1053,7 @@ mvn clean deploy
 ### 仅发布 BOM
 
 ```bash
-mvn clean deploy -pl bom
+mvn clean deploy -pl loadup-dependencies
 ```
 
 ---

@@ -29,10 +29,13 @@ import io.github.loadup.gateway.facade.spi.ProxyProcessor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.context.ApplicationContext;
 
 public class SpringBeanProxyProcessor implements ProxyProcessor {
@@ -85,10 +88,7 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
         }
 
         Object bean = applicationContext.getBean(beanName);
-        Method method = findMethod(bean.getClass(), methodName);
-        if (method == null) {
-            throw GatewayExceptionFactory.systemError("Method not found: " + beanName + "." + methodName);
-        }
+        Method method = findMethod(bean, methodName, route.getTargetParamTypes());
 
         Object[] args = prepareMethodArgs(request, method);
         Object result = method.invoke(bean, args);
@@ -122,11 +122,49 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
         }
     }
 
-    private Method findMethod(Class<?> clazz, String methodName) {
-        for (Method m : clazz.getDeclaredMethods()) {
-            if (m.getName().equals(methodName)) return m;
+    private Method findMethod(Object bean, String methodName, List<String> configuredParamTypes) {
+        Class<?> targetClass = AopUtils.getTargetClass(bean);
+        List<Method> candidates = Arrays.stream(targetClass.getMethods())
+                .filter(method -> method.getName().equals(methodName))
+                .filter(method -> matches(method, configuredParamTypes))
+                .toList();
+
+        if (candidates.isEmpty()) {
+            throw GatewayExceptionFactory.configurationError(
+                    "Method not found: " + targetClass.getName() + "." + methodName + signature(configuredParamTypes));
         }
-        return null;
+        if (candidates.size() > 1) {
+            throw GatewayExceptionFactory.configurationError("Ambiguous bean method: "
+                    + targetClass.getName()
+                    + "."
+                    + methodName
+                    + "; configure backend.paramTypes");
+        }
+        return AopUtils.selectInvocableMethod(candidates.getFirst(), bean.getClass());
+    }
+
+    private static boolean matches(Method method, List<String> configuredParamTypes) {
+        if (configuredParamTypes == null || configuredParamTypes.isEmpty()) {
+            return true;
+        }
+        Class<?>[] actualTypes = method.getParameterTypes();
+        if (actualTypes.length != configuredParamTypes.size()) {
+            return false;
+        }
+        for (int index = 0; index < actualTypes.length; index++) {
+            String configured = configuredParamTypes.get(index);
+            Class<?> actual = actualTypes[index];
+            if (!actual.getName().equals(configured)
+                    && !actual.getTypeName().equals(configured)
+                    && !actual.getSimpleName().equals(configured)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static String signature(List<String> paramTypes) {
+        return paramTypes == null || paramTypes.isEmpty() ? "" : "(" + String.join(",", paramTypes) + ")";
     }
 
     /**

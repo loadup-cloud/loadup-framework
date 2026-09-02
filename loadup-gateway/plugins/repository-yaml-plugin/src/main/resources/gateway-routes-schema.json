@@ -73,6 +73,11 @@
         "methodName": {
           "type": "string",
           "description": "Method name on the bean (for bean protocol)."
+        },
+        "paramTypes": {
+          "type": "array",
+          "description": "Simple or fully qualified parameter type names used for overloaded bean methods.",
+          "items": { "type": "string" }
         }
       },
       "required": ["protocol"]

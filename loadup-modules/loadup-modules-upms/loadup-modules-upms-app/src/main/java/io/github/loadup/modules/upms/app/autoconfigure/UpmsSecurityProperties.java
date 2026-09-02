@@ -36,7 +36,7 @@ public class UpmsSecurityProperties {
         /**
          * JWT secret key
          */
-        private String secret = "loadup-secret-key-change-in-production";
+        private String secret;
 
         /**
          * Token expiration time in milliseconds (default: 24 hours)

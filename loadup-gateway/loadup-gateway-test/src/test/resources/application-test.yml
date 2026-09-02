@@ -13,6 +13,8 @@ spring:
 loadup:
   gateway:
     enabled: true
+    security:
+      secret: loadup-test-only-gateway-key-0123456789abcdef
     route-refresh-interval: 5
     template-cache-size: 100
     default-timeout: 10000

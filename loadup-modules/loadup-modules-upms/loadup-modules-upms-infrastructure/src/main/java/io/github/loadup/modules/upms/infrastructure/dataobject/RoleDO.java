@@ -45,6 +45,10 @@ public class RoleDO extends BaseDO {
 
     private String remark;
 
+    private String createdBy;
+
+    private String updatedBy;
+
     public RoleDO(
             String roleName,
             String roleCode,
@@ -128,5 +132,21 @@ public class RoleDO extends BaseDO {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
     }
 }

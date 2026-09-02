@@ -20,6 +20,7 @@ package io.github.loadup.gateway.facade.model;
  * #L%
  */
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -71,6 +72,9 @@ public class RouteConfig {
      * Target method name (used for BEAN protocol)
      */
     private String targetMethod;
+
+    /** Parameter type names used to disambiguate overloaded bean methods. */
+    private List<String> targetParamTypes;
 
     /**
      * Whether enabled
@@ -179,6 +183,14 @@ public class RouteConfig {
 
     public void setTargetMethod(String targetMethod) {
         this.targetMethod = targetMethod;
+    }
+
+    public List<String> getTargetParamTypes() {
+        return targetParamTypes == null ? List.of() : List.copyOf(targetParamTypes);
+    }
+
+    public void setTargetParamTypes(List<String> targetParamTypes) {
+        this.targetParamTypes = targetParamTypes;
     }
 
     public boolean isEnabled() {

@@ -23,7 +23,8 @@ package io.github.loadup.modules.upms.infrastructure.converter;
 import io.github.loadup.modules.upms.domain.entity.Permission;
 import io.github.loadup.modules.upms.infrastructure.dataobject.PermissionDO;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 /**
  * Permission Converter
@@ -31,12 +32,20 @@ import org.mapstruct.factory.Mappers;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Mapper(componentModel = "spring")
+@Mapper(
+        componentModel = "spring",
+        uses = AuditMappingSupport.class,
+        unmappedTargetPolicy = ReportingPolicy.ERROR,
+        unmappedSourcePolicy = ReportingPolicy.WARN)
 public interface PermissionConverter {
-
-    PermissionConverter INSTANCE = Mappers.getMapper(PermissionConverter.class);
-
+    @Mapping(source = "createdTime", target = "createdAt")
+    @Mapping(source = "updatedTime", target = "updatedAt")
+    @Mapping(target = "tenantId", ignore = true)
     PermissionDO toDataObject(Permission permission);
 
+    @Mapping(source = "createdAt", target = "createdTime")
+    @Mapping(source = "updatedAt", target = "updatedTime")
+    @Mapping(target = "parent", ignore = true)
+    @Mapping(target = "children", ignore = true)
     Permission toEntity(PermissionDO permissionDO);
 }

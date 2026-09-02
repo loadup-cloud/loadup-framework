@@ -32,9 +32,10 @@ import org.junit.jupiter.api.Test;
 class NimbusResourceServerBinderTest {
 
     @Test
-    @DisplayName("uses the shared HS256 secret by default")
-    void defaultsToSharedSecret() {
+    @DisplayName("uses an explicitly configured shared HS256 secret")
+    void usesConfiguredSharedSecret() {
         GatewayProperties properties = new GatewayProperties();
+        properties.getSecurity().setSecret("loadup-test-only-gateway-key-0123456789abcdef");
         NimbusResourceServerBinder binder = new NimbusResourceServerBinder(properties);
 
         assertThat(binder.getType()).isEqualTo("nimbus");
@@ -50,6 +51,18 @@ class NimbusResourceServerBinderTest {
         assertThatThrownBy(() -> new NimbusResourceServerBinder(properties))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("at least 32 bytes");
+    }
+
+    @Test
+    @DisplayName("rejects the historical default secret")
+    void rejectsHistoricalDefaultSecret() {
+        GatewayProperties properties = new GatewayProperties();
+        properties.getSecurity().setSecret("loadup-gateway-secret-key-must-be-long-enough-32bytes");
+
+        assertThatThrownBy(() -> new NimbusResourceServerBinder(properties))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("known weak value")
+                .hasMessageNotContaining("loadup-gateway-secret-key-must-be-long-enough-32bytes");
     }
 
     @Test

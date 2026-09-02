@@ -20,6 +20,7 @@ package io.github.loadup.commons.util;
  * #L%
  */
 
+import io.github.loadup.commons.log.LogContext;
 import org.slf4j.MDC;
 
 /**
@@ -27,11 +28,11 @@ import org.slf4j.MDC;
  */
 public class MDCUtils {
 
-    public static final String MDC_TRACE_ID = "TraceId";
+    public static final String MDC_TRACE_ID = LogContext.TRACE_ID;
 
-    public static final String MDC_SPAN_ID = "SpanId";
+    public static final String MDC_SPAN_ID = LogContext.SPAN_ID;
 
-    public static final String MDC_TENANT_ID = "TenantId";
+    public static final String MDC_TENANT_ID = LogContext.TENANT_ID;
 
     public static void logStoppedSpan() {
         MDC.remove(MDC_TRACE_ID);

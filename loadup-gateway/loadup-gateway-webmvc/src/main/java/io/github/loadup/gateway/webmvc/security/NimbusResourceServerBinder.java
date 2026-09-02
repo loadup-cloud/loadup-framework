@@ -20,9 +20,8 @@ package io.github.loadup.gateway.webmvc.security;
  * #L%
  */
 
+import io.github.loadup.commons.util.security.JwtSecretValidator;
 import io.github.loadup.gateway.facade.config.GatewayProperties;
-import java.nio.charset.StandardCharsets;
-import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -66,12 +65,8 @@ public final class NimbusResourceServerBinder implements ResourceServerBinder {
             return NimbusJwtDecoder.withIssuerLocation(security.getIssuerUri()).build();
         }
 
-        String secret = security.getSecret();
-        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
-            throw new IllegalStateException(
-                    "loadup.gateway.security.secret must be at least 32 bytes for HS256 JWT verification");
-        }
-        javax.crypto.SecretKey key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+        javax.crypto.SecretKey key =
+                JwtSecretValidator.requireStrong("loadup.gateway.security.secret", security.getSecret());
         return NimbusJwtDecoder.withSecretKey(key)
                 .macAlgorithm(MacAlgorithm.HS256)
                 .build();

@@ -23,7 +23,8 @@ package io.github.loadup.modules.upms.infrastructure.converter;
 import io.github.loadup.modules.upms.domain.entity.Department;
 import io.github.loadup.modules.upms.infrastructure.dataobject.DepartmentDO;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 /**
  * Department Converter
@@ -31,12 +32,21 @@ import org.mapstruct.factory.Mappers;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Mapper(componentModel = "spring")
+@Mapper(
+        componentModel = "spring",
+        uses = AuditMappingSupport.class,
+        unmappedTargetPolicy = ReportingPolicy.ERROR,
+        unmappedSourcePolicy = ReportingPolicy.WARN)
 public interface DepartmentConverter {
-
-    DepartmentConverter INSTANCE = Mappers.getMapper(DepartmentConverter.class);
-
+    @Mapping(source = "createdTime", target = "createdAt")
+    @Mapping(source = "updatedTime", target = "updatedAt")
+    @Mapping(target = "tenantId", ignore = true)
     DepartmentDO toDataObject(Department department);
 
+    @Mapping(source = "createdAt", target = "createdTime")
+    @Mapping(source = "updatedAt", target = "updatedTime")
+    @Mapping(target = "parent", ignore = true)
+    @Mapping(target = "children", ignore = true)
+    @Mapping(target = "leader", ignore = true)
     Department toEntity(DepartmentDO departmentDO);
 }

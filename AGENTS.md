@@ -36,10 +36,10 @@ mvn spotless:apply
 mvn spotless:check
 
 # 单模块构建（含依赖）
-mvn clean verify -pl modules/loadup-modules-config/loadup-modules-config-app -am
+mvn clean verify -pl loadup-modules/loadup-modules-upms/loadup-modules-upms-app -am
 
 # 单模块测试
-mvn test -pl modules/loadup-modules-config/loadup-modules-config-test
+mvn test -pl loadup-modules/loadup-modules-upms/loadup-modules-upms-test
 ```
 
 ---

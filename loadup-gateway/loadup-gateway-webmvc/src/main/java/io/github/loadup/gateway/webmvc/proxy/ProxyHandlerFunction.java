@@ -64,6 +64,10 @@ public class ProxyHandlerFunction implements HandlerFunction<ServerResponse> {
         this.processorRegistry = processorRegistry;
     }
 
+    public boolean supportsProtocol(String protocol) {
+        return processorRegistry.get(protocol) != null;
+    }
+
     @Override
     public ServerResponse handle(ServerRequest request) throws Exception {
         RouteConfig route = MvcUtils.getAttribute(request, GatewayAttributes.ROUTE_CONFIG);
