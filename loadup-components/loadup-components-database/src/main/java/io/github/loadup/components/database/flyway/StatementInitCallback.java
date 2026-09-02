@@ -1,5 +1,3 @@
-package io.github.loadup.components.database.flyway;
-
 /*-
  * #%L
  * Loadup Components Flyway
@@ -19,6 +17,8 @@ package io.github.loadup.components.database.flyway;
  * limitations under the License.
  * #L%
  */
+
+package io.github.loadup.components.database.flyway;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.Connection;
@@ -61,8 +61,8 @@ public class StatementInitCallback implements Callback {
                     "SQL comes from operator-configured FlywayProperties.initSqls at startup, not runtime input;"
                             + " this is the Flyway initSql replacement API.")
     public void handle(Event event, Context context) {
-        try (Connection connection = context.getConnection();
-                Statement statement = connection.createStatement()) {
+        Connection connection = context.getConnection();
+        try (Statement statement = connection.createStatement()) {
             statement.execute(sql);
         } catch (Exception e) {
             throw new RuntimeException("Failed to execute init SQL: " + sql, e);

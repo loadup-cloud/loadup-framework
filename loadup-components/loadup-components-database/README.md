@@ -13,19 +13,7 @@ MyBatis-Flex integration for common persistent fields, audit timestamps, configu
 
 The application supplies its JDBC driver and datasource; this module does not select a database vendor.
 
-## Entity and mapper
-
-```java
-@Table("app_user")
-public class UserDO extends BaseDO {
-    private String username;
-}
-
-@Mapper
-public interface UserDOMapper extends BaseMapper<UserDO> {}
-```
-
-`BaseDO` supplies `id`, `createdAt`, `updatedAt`, `tenantId`, and integer `deleted` (`0` normal, `1` deleted). TableDef and mapper sources are generated from the root `mybatis-flex.config`.
+Define each data object as `@Table(...) class XxxDO extends BaseDO` and its mapper as `@Mapper interface XxxDOMapper extends BaseMapper<XxxDO>`. `BaseDO` supplies `id`, `createdAt`, `updatedAt`, `tenantId`, and integer `deleted` (`0` normal, `1` deleted). TableDef and mapper sources are generated from the root `mybatis-flex.config`.
 
 ## Configuration
 

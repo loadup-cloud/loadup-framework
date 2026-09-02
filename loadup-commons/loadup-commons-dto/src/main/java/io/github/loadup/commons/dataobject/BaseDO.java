@@ -1,8 +1,8 @@
 /*-
  * #%L
- * loadup-commons-util
+ * loadup-commons-dto
  * %%
- * Copyright (C) 2022 - 2024 loadup_cloud
+ * Copyright (C) 2022 - 2026 loadup_cloud
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public abstract class BaseDO implements Serializable {
 
     private String tenantId;
 
-    private Integer deleted = 0;
+    private Integer deleted;
 
     @Override
     public String toString() {

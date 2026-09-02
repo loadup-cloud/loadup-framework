@@ -20,12 +20,13 @@
 
 package io.github.loadup.components.database.id;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.security.SecureRandom;
 
 /** Generates compact random identifiers. */
 public final class RandomIdGenerator implements IdGenerator {
     private static final char[] ALPHABET =
             "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     private final int length;
 
@@ -39,9 +40,8 @@ public final class RandomIdGenerator implements IdGenerator {
     @Override
     public String generate() {
         char[] result = new char[length];
-        ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int index = 0; index < result.length; index++) {
-            result[index] = ALPHABET[random.nextInt(ALPHABET.length)];
+            result[index] = ALPHABET[RANDOM.nextInt(ALPHABET.length)];
         }
         return new String(result);
     }

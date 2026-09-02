@@ -1,5 +1,3 @@
-package io.github.loadup.components.database.flyway;
-
 /*-
  * #%L
  * Loadup Components Flyway
@@ -19,6 +17,8 @@ package io.github.loadup.components.database.flyway;
  * limitations under the License.
  * #L%
  */
+
+package io.github.loadup.components.database.flyway;
 
 import java.util.HashMap;
 import java.util.Map;

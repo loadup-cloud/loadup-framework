@@ -46,6 +46,7 @@ class BaseEntityListenerTest {
         DatabaseProperties properties = new DatabaseProperties();
         properties.getMultiTenant().setEnabled(true);
         properties.getLogicalDelete().setEnabled(true);
+        properties.getLogicalDelete().setNormalValue(2);
         TenantContextHolder.setTenantId("tenant-a");
         IdGenerator idGenerator = () -> "generated-id";
         BaseEntityListener listener = new BaseEntityListener(properties, idGenerator, Clock.fixed(NOW, ZoneOffset.UTC));
@@ -57,7 +58,7 @@ class BaseEntityListenerTest {
         assertThat(entity.getCreatedAt()).isEqualTo(NOW.atZone(ZoneOffset.UTC).toLocalDateTime());
         assertThat(entity.getUpdatedAt()).isEqualTo(entity.getCreatedAt());
         assertThat(entity.getTenantId()).isEqualTo("tenant-a");
-        assertThat(entity.getDeleted()).isZero();
+        assertThat(entity.getDeleted()).isEqualTo(2);
     }
 
     @Test

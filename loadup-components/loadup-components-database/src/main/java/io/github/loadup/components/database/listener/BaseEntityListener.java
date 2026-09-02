@@ -72,8 +72,10 @@ public class BaseEntityListener implements InsertListener, UpdateListener {
         }
 
         DatabaseProperties.LogicalDelete logicalDelete = databaseProperties.getLogicalDelete();
-        if (logicalDelete.isEnabled() && baseDO.getDeleted() == null) {
+        if (logicalDelete.isEnabled()) {
             baseDO.setDeleted(logicalDelete.getNormalValue());
+        } else if (baseDO.getDeleted() == null) {
+            baseDO.setDeleted(0);
         }
     }
 
