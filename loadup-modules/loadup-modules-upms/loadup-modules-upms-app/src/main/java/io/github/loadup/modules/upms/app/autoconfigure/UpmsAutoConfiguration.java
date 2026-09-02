@@ -21,6 +21,9 @@ package io.github.loadup.modules.upms.app.autoconfigure;
  */
 
 import io.github.loadup.modules.upms.app.service.TokenService;
+import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
+import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
+import io.github.loadup.modules.upms.domain.service.UserPermissionService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -54,5 +57,12 @@ public class UpmsAutoConfiguration {
     @ConditionalOnMissingBean
     public TokenService tokenService(UpmsSecurityProperties securityProperties) {
         return TokenService.create(securityProperties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public UserPermissionService userPermissionService(
+            RoleGateway roleGateway, PermissionGateway permissionGateway) {
+        return new UserPermissionService(roleGateway, permissionGateway);
     }
 }

@@ -21,7 +21,7 @@ package io.github.loadup.modules.upms.domain.gateway;
  */
 
 import io.github.loadup.commons.dto.PageQuery;
-import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.upms.domain.entity.User;
 import java.util.List;
 import java.util.Optional;
@@ -82,12 +82,12 @@ public interface UserGateway {
     /**
      * Find all users (with pagination)
      */
-    PageDTO<User> findAll(PageQuery query);
+    PageResult<User> findAll(PageQuery query);
 
     /**
      * Search users by keyword
      */
-    PageDTO<User> search(String keyword, PageQuery query);
+    PageResult<User> search(String keyword, PageQuery query);
 
     /**
      * Check if username exists

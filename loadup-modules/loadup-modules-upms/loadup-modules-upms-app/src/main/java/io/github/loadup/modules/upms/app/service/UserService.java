@@ -20,6 +20,7 @@ package io.github.loadup.modules.upms.app.service;
  * #L%
  */
 
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.PageDTO;
@@ -214,7 +215,7 @@ public class UserService {
     public PageDTO<UserDetailDTO> queryUsers(UserQuery query) {
         PageQuery pageQuery = PageQuery.of(query.getPage(), query.getSize());
 
-        PageDTO<User> userPage;
+        PageResult<User> userPage;
         if (query.getUsername() != null || query.getEmail() != null || query.getMobile() != null) {
             String keyword = query.getUsername();
             if (keyword == null) {
@@ -228,10 +229,11 @@ public class UserService {
             userPage = userGateway.findAll(pageQuery);
         }
 
-        List<UserDetailDTO> dtoList =
-                userPage.getData().stream().map(this::convertToDetailDTO).collect(Collectors.toList());
+        List<UserDetailDTO> dtoList = userPage.records().stream()
+                .map(this::convertToDetailDTO)
+                .collect(Collectors.toList());
 
-        return PageDTO.of(dtoList, userPage.getPageInfo().totalCount(), query.getPage(), query.getSize());
+        return PageDTO.of(dtoList, userPage.total(), userPage.page(), userPage.size());
     }
 
     /**

@@ -20,6 +20,7 @@ package io.github.loadup.modules.upms.domain.entity;
  * #L%
  */
 
+import io.github.loadup.commons.domain.BaseEntity;
 import java.time.LocalDateTime;
 
 /**
@@ -28,9 +29,7 @@ import java.time.LocalDateTime;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-public class LoginLog {
-
-    private String id;
+public class LoginLog extends BaseEntity {
 
     private String userId;
 
@@ -83,7 +82,7 @@ public class LoginLog {
             String loginMessage,
             String loginType,
             String provider) {
-        this.id = id;
+        setId(id);
         this.userId = userId;
         this.username = username;
         this.loginTime = loginTime;
@@ -99,10 +98,6 @@ public class LoginLog {
     }
 
     public LoginLog() {}
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public void setUserId(String userId) {
         this.userId = userId;
@@ -150,10 +145,6 @@ public class LoginLog {
 
     public void setProvider(String provider) {
         this.provider = provider;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getUserId() {

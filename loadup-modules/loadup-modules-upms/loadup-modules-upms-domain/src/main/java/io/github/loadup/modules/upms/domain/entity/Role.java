@@ -20,6 +20,7 @@ package io.github.loadup.modules.upms.domain.entity;
  * #L%
  */
 
+import io.github.loadup.commons.domain.BaseEntity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +31,7 @@ import java.util.List;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-public class Role {
-
-    private String id;
+public class Role extends BaseEntity {
 
     private String roleName;
 
@@ -107,14 +106,6 @@ public class Role {
         }
 
         return allPermissions;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getRoleName() {

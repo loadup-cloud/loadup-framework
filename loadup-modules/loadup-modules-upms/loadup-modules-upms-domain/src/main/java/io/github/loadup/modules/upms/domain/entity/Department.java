@@ -20,6 +20,7 @@ package io.github.loadup.modules.upms.domain.entity;
  * #L%
  */
 
+import io.github.loadup.commons.domain.BaseEntity;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,9 +30,7 @@ import java.util.List;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-public class Department {
-
-    private String id;
+public class Department extends BaseEntity {
 
     private String parentId;
 
@@ -95,14 +94,6 @@ public class Department {
             return deptName;
         }
         return parent.getFullPath() + " / " + deptName;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getParentId() {

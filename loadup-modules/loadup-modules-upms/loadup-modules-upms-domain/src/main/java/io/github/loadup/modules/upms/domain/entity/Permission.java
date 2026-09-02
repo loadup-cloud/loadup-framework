@@ -20,6 +20,7 @@ package io.github.loadup.modules.upms.domain.entity;
  * #L%
  */
 
+import io.github.loadup.commons.domain.BaseEntity;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,9 +30,7 @@ import java.util.List;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-public class Permission {
-
-    private String id;
+public class Permission extends BaseEntity {
 
     private String parentId;
 
@@ -111,14 +110,6 @@ public class Permission {
      */
     public boolean isApi() {
         return permissionType != null && permissionType == 3;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getParentId() {

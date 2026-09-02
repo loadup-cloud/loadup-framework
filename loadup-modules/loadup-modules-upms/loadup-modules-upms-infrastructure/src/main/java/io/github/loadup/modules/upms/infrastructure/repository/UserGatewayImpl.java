@@ -25,7 +25,7 @@ import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tabl
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.dto.PageQuery;
-import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.infrastructure.converter.UserConverter;
@@ -114,17 +114,17 @@ public class UserGatewayImpl implements UserGateway {
     }
 
     @Override
-    public PageDTO<User> findAll(PageQuery query) {
+    public PageResult<User> findAll(PageQuery query) {
         Page<UserDO> page = userDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), QueryWrapper.create());
 
         List<User> users =
                 page.getRecords().stream().map(userConverter::toEntity).collect(Collectors.toList());
 
-        return PageDTO.of(users, page.getTotalRow(), query.pageNum(), query.pageSize());
+        return PageResult.of(users, page.getTotalRow(), query.pageNum(), query.pageSize());
     }
 
     @Override
-    public PageDTO<User> search(String keyword, PageQuery query) {
+    public PageResult<User> search(String keyword, PageQuery query) {
         QueryWrapper search = QueryWrapper.create()
                 .where(
                         "username LIKE ? OR nickname LIKE ? OR real_name LIKE ?",
@@ -137,7 +137,7 @@ public class UserGatewayImpl implements UserGateway {
         List<User> users =
                 page.getRecords().stream().map(userConverter::toEntity).collect(Collectors.toList());
 
-        return PageDTO.of(users, page.getTotalRow(), query.pageNum(), query.pageSize());
+        return PageResult.of(users, page.getTotalRow(), query.pageNum(), query.pageSize());
     }
 
     @Override

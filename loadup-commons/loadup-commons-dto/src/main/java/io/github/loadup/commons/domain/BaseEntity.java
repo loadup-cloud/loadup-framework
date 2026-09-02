@@ -1,10 +1,8 @@
-package io.github.loadup.commons.request;
-
 /*-
  * #%L
- * loadup-commons-dto
+ * Loadup Common DTO
  * %%
- * Copyright (C) 2022 - 2024 loadup_cloud
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +18,18 @@ package io.github.loadup.commons.request;
  * #L%
  */
 
-import io.github.loadup.commons.dto.DTO;
+package io.github.loadup.commons.domain;
 
-public class BaseRequest implements DTO {
-    @Override
-    public String toString() {
-        return toJsonString();
+/** Base type for domain entities with a stable identity. */
+public abstract class BaseEntity {
+
+    private String id;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

@@ -20,6 +20,7 @@ package io.github.loadup.modules.upms.domain.entity;
  * #L%
  */
 
+import io.github.loadup.commons.domain.BaseEntity;
 import java.time.LocalDateTime;
 
 /**
@@ -28,12 +29,7 @@ import java.time.LocalDateTime;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-public class UserOAuthBinding {
-
-    /**
-     * 主键ID
-     */
-    private String id;
+public class UserOAuthBinding extends BaseEntity {
 
     /**
      * 本地用户ID
@@ -94,14 +90,6 @@ public class UserOAuthBinding {
      * 更新时间
      */
     private LocalDateTime updatedAt;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getUserId() {
         return userId;

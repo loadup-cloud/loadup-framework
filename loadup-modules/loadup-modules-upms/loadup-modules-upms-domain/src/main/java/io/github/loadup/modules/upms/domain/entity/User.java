@@ -20,6 +20,7 @@ package io.github.loadup.modules.upms.domain.entity;
  * #L%
  */
 
+import io.github.loadup.commons.domain.BaseEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,9 +31,7 @@ import java.util.List;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-public class User {
-
-    private String id;
+public class User extends BaseEntity {
 
     private String username;
 
@@ -160,14 +159,6 @@ public class User {
         this.lastLoginTime = LocalDateTime.now();
         this.lastLoginIp = ip;
         this.resetLoginFailCount();
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getUsername() {

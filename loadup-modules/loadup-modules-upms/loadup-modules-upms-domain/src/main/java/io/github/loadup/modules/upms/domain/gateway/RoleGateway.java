@@ -21,7 +21,7 @@ package io.github.loadup.modules.upms.domain.gateway;
  */
 
 import io.github.loadup.commons.dto.PageQuery;
-import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.upms.domain.entity.Role;
 import java.util.List;
 import java.util.Optional;
@@ -124,7 +124,7 @@ public interface RoleGateway {
      */
     List<String> findDepartmentIdsByRoleId(String roleId);
 
-    PageDTO<Role> findAll(PageQuery query);
+    PageResult<Role> findAll(PageQuery query);
 
     /**
      * Count users by role ID

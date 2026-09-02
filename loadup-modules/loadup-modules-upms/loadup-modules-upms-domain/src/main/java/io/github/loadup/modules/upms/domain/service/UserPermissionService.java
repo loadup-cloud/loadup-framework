@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Service;
 
 /**
  * User Permission Domain Service Handles complex permission calculation logic including role
@@ -38,7 +37,6 @@ import org.springframework.stereotype.Service;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Service
 public class UserPermissionService {
 
     private final RoleGateway roleGateway;

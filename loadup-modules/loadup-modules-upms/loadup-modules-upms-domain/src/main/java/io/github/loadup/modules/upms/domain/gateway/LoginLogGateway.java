@@ -21,7 +21,7 @@ package io.github.loadup.modules.upms.domain.gateway;
  */
 
 import io.github.loadup.commons.dto.PageQuery;
-import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.upms.domain.entity.LoginLog;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,22 +48,22 @@ public interface LoginLogGateway {
     /**
      * Find logs by user ID
      */
-    PageDTO<LoginLog> findByUserId(String userId, PageQuery query);
+    PageResult<LoginLog> findByUserId(String userId, PageQuery query);
 
     /**
      * Find logs by username
      */
-    PageDTO<LoginLog> findByUsername(String username, PageQuery query);
+    PageResult<LoginLog> findByUsername(String username, PageQuery query);
 
     /**
      * Find logs by date range
      */
-    PageDTO<LoginLog> findByDateRange(LocalDateTime startTime, LocalDateTime endTime, PageQuery query);
+    PageResult<LoginLog> findByDateRange(LocalDateTime startTime, LocalDateTime endTime, PageQuery query);
 
     /**
      * Find failed login attempts
      */
-    PageDTO<LoginLog> findFailedLogins(LocalDateTime startTime, LocalDateTime endTime, PageQuery query);
+    PageResult<LoginLog> findFailedLogins(LocalDateTime startTime, LocalDateTime endTime, PageQuery query);
 
     /**
      * Delete logs before specified date
@@ -72,7 +72,7 @@ public interface LoginLogGateway {
 
     List<LoginLog> findByLoginTimeBetween(LocalDateTime startTime, LocalDateTime endTime);
 
-    PageDTO<LoginLog> findAll(PageQuery query);
+    PageResult<LoginLog> findAll(PageQuery query);
 
     /**
      * Count login attempts by user and time range

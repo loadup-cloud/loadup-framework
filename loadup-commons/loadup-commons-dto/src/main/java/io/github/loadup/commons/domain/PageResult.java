@@ -1,6 +1,6 @@
 /*-
  * #%L
- * Loadup Modules UPMS Infrastructure Layer
+ * Loadup Common DTO
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -18,17 +18,21 @@
  * #L%
  */
 
-package io.github.loadup.modules.upms.infrastructure.converter;
+package io.github.loadup.commons.domain;
 
-/** Converts domain audit values to the database representation. */
-public final class AuditMappingSupport {
-    private AuditMappingSupport() {}
+import java.util.List;
 
-    public static Integer toDeletedFlag(Boolean deleted) {
-        return deleted == null ? null : (deleted ? 1 : 0);
+/** Framework-neutral page result for domain and application contracts. */
+public record PageResult<T>(List<T> records, long total, int page, int size) {
+
+    public PageResult {
+        records = records == null ? List.of() : List.copyOf(records);
+        page = Math.max(page, 1);
+        size = Math.max(size, 1);
+        total = Math.max(total, 0);
     }
 
-    public static Boolean toDeleted(Integer deleted) {
-        return deleted != null && deleted != 0;
+    public static <T> PageResult<T> of(List<T> records, long total, int page, int size) {
+        return new PageResult<>(records, total, page, size);
     }
 }

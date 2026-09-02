@@ -25,7 +25,7 @@ import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tabl
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.dto.PageQuery;
-import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.upms.domain.entity.Role;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.infrastructure.converter.RoleConverter;
@@ -164,13 +164,13 @@ public class RoleGatewayImpl implements RoleGateway {
     }
 
     @Override
-    public PageDTO<Role> findAll(PageQuery query) {
+    public PageResult<Role> findAll(PageQuery query) {
         Page<RoleDO> page = roleDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), QueryWrapper.create());
 
         List<Role> roles =
                 page.getRecords().stream().map(roleConverter::toEntity).collect(Collectors.toList());
 
-        return PageDTO.of(roles, page.getTotalRow(), query.pageNum(), query.pageSize());
+        return PageResult.of(roles, page.getTotalRow(), query.pageNum(), query.pageSize());
     }
 
     @Override
