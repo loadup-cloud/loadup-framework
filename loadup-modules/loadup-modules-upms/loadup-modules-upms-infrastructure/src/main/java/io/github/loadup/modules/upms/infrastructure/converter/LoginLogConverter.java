@@ -20,11 +20,11 @@ package io.github.loadup.modules.upms.infrastructure.converter;
  * #L%
  */
 
+import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
 import io.github.loadup.modules.upms.domain.entity.LoginLog;
 import io.github.loadup.modules.upms.infrastructure.dataobject.LoginLogDO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
 
 /**
  * LoginLog Converter - MapStruct converter between Domain Entity and DataObject
@@ -32,10 +32,7 @@ import org.mapstruct.ReportingPolicy;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Mapper(
-        componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.ERROR,
-        unmappedSourcePolicy = ReportingPolicy.WARN)
+@Mapper(config = LoadUpMapStructConfig.class)
 public interface LoginLogConverter {
 
     /**

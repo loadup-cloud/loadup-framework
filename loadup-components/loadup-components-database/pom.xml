@@ -41,6 +41,10 @@
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-dto</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-commons-util</artifactId>
+        </dependency>
 
         <!-- Flyway (integrated — migration support for database module) -->
         <dependency>

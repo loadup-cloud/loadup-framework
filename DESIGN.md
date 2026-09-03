@@ -86,7 +86,7 @@ JobRunr 自带服务端与 Dashboard、Quartz 是嵌入式、Nacos 和 Apollo �
 
 - facade 只表达"能做什么"，**策略归配置与 binder**
 - facade 不得包含业务能力（模板渲染、渠道选择、路由规则等一律下沉）
-- facade 模块零框架依赖（仅 `loadup-commons-api`），保证被任何 binder 复用
+- facade 模块零组件依赖（仅允许依赖 `commons/*` 基础类型），保证被任何 binder 复用
 
 ### 2.7 binder 独立模块 + BOM 版本管理
 

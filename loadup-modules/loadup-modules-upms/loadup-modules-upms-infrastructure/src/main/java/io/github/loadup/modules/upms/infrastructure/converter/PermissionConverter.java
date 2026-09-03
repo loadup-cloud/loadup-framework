@@ -20,11 +20,11 @@ package io.github.loadup.modules.upms.infrastructure.converter;
  * #L%
  */
 
+import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
 import io.github.loadup.modules.upms.domain.entity.Permission;
 import io.github.loadup.modules.upms.infrastructure.dataobject.PermissionDO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
 
 /**
  * Permission Converter
@@ -32,11 +32,7 @@ import org.mapstruct.ReportingPolicy;
  * @author LoadUp Framework
  * @since 1.0.0
  */
-@Mapper(
-        componentModel = "spring",
-        uses = AuditMappingSupport.class,
-        unmappedTargetPolicy = ReportingPolicy.ERROR,
-        unmappedSourcePolicy = ReportingPolicy.WARN)
+@Mapper(config = LoadUpMapStructConfig.class, uses = AuditMappingSupport.class)
 public interface PermissionConverter {
     @Mapping(source = "createdTime", target = "createdAt")
     @Mapping(source = "updatedTime", target = "updatedAt")

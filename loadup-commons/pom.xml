@@ -13,7 +13,6 @@
     <description>Loadup Commons — shared base modules</description>
 
     <modules>
-        <module>loadup-commons-api</module>
         <module>loadup-commons-dto</module>
         <module>loadup-commons-util</module>
         <module>loadup-commons-log</module>

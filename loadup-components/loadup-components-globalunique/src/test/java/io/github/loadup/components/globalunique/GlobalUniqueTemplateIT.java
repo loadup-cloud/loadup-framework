@@ -23,7 +23,7 @@ package io.github.loadup.components.globalunique;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.loadup.components.database.tenant.TenantContextHolder;
+import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.globalunique.model.GlobalUniqueClaim;
 import io.github.loadup.components.globalunique.model.GlobalUniqueRecord;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
@@ -155,15 +155,15 @@ class GlobalUniqueTemplateIT {
     }
 
     private static <T> T withTenant(String tenantId, Supplier<T> action) {
-        String previousTenantId = TenantContextHolder.getTenantId();
+        String previousTenantId = TenantUtil.getTenantId();
         try {
-            TenantContextHolder.setTenantId(tenantId);
+            TenantUtil.setTenantId(tenantId);
             return action.get();
         } finally {
             if (previousTenantId == null) {
-                TenantContextHolder.clear();
+                TenantUtil.clear();
             } else {
-                TenantContextHolder.setTenantId(previousTenantId);
+                TenantUtil.setTenantId(previousTenantId);
             }
         }
     }

@@ -1,4 +1,4 @@
-package io.github.loadup.framework.api.result;
+package io.github.loadup.commons.result;
 
 /*-
  * #%L
@@ -23,6 +23,7 @@ package io.github.loadup.framework.api.result;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+/** Contract for result codes carried by {@link Result} and result enums. */
 public interface ResultCode {
     @NotBlank
     @Size(max = 64)

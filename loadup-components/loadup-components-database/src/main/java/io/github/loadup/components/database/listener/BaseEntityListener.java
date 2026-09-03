@@ -23,9 +23,9 @@ package io.github.loadup.components.database.listener;
 import com.mybatisflex.annotation.InsertListener;
 import com.mybatisflex.annotation.UpdateListener;
 import io.github.loadup.commons.dataobject.BaseDO;
+import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.database.id.IdGenerator;
-import io.github.loadup.components.database.tenant.TenantContextHolder;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import org.springframework.util.StringUtils;
@@ -59,7 +59,7 @@ public class BaseEntityListener implements InsertListener, UpdateListener {
 
         DatabaseProperties.MultiTenant tenant = databaseProperties.getMultiTenant();
         if (tenant.isEnabled()) {
-            String tenantId = TenantContextHolder.getTenantId();
+            String tenantId = TenantUtil.getTenantId();
             if (!StringUtils.hasText(tenantId)) {
                 tenantId = tenant.getDefaultTenantId();
             }

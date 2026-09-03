@@ -28,12 +28,12 @@ import com.mybatisflex.core.logicdelete.impl.DefaultLogicDeleteProcessor;
 import com.mybatisflex.core.tenant.TenantManager;
 import com.mybatisflex.spring.boot.MyBatisFlexCustomizer;
 import io.github.loadup.commons.dataobject.BaseDO;
+import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.database.id.DatabaseIdGenerator;
 import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.components.database.listener.BaseEntityListener;
 import io.github.loadup.components.database.listener.TenantContextMissingException;
-import io.github.loadup.components.database.tenant.TenantContextHolder;
 import java.time.Clock;
 import java.util.Locale;
 import java.util.Set;
@@ -129,7 +129,7 @@ public class MyBatisFlexAutoConfiguration {
                 if (tableName != null && ignoredTables.contains(tableName.toLowerCase(Locale.ROOT))) {
                     return null;
                 }
-                String tenantId = TenantContextHolder.getTenantId();
+                String tenantId = TenantUtil.getTenantId();
                 if (!org.springframework.util.StringUtils.hasText(tenantId)) {
                     tenantId = properties.getDefaultTenantId();
                 }

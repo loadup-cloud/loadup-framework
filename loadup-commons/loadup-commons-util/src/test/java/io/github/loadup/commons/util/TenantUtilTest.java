@@ -1,8 +1,10 @@
+package io.github.loadup.commons.util;
+
 /*-
  * #%L
- * loadup-components-database
+ * loadup-commons-util
  * %%
- * Copyright (C) 2022 - 2026 LoadUp Cloud
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,36 +20,34 @@
  * #L%
  */
 
-package io.github.loadup.components.database.tenant;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-class TenantContextHolderTest {
+class TenantUtilTest {
     @AfterEach
     void clearContext() {
-        TenantContextHolder.clear();
+        TenantUtil.clear();
     }
 
     @Test
     void restoresNestedTenantContext() {
-        TenantContextHolder.setTenantId("outer");
+        TenantUtil.setTenantId("outer");
 
-        TenantContextHolder.runWithTenant(
-                "inner", () -> assertThat(TenantContextHolder.getTenantId()).isEqualTo("inner"));
+        TenantUtil.runWithTenant(
+                "inner", () -> assertThat(TenantUtil.getTenantId()).isEqualTo("inner"));
 
-        assertThat(TenantContextHolder.getTenantId()).isEqualTo("outer");
+        assertThat(TenantUtil.getTenantId()).isEqualTo("outer");
     }
 
     @Test
     void clearsContextAfterCallbackFailure() {
-        org.assertj.core.api.Assertions.assertThatThrownBy(() -> TenantContextHolder.runWithTenant("tenant", () -> {
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> TenantUtil.runWithTenant("tenant", () -> {
                     throw new IllegalStateException("failed");
                 }))
                 .isInstanceOf(IllegalStateException.class);
 
-        assertThat(TenantContextHolder.hasTenantId()).isFalse();
+        assertThat(TenantUtil.hasTenantId()).isFalse();
     }
 }

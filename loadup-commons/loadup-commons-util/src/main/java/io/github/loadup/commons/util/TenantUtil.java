@@ -2,9 +2,9 @@ package io.github.loadup.commons.util;
 
 /*-
  * #%L
- * loadup-commons-api
+ * loadup-commons-util
  * %%
- * Copyright (C) 2025 LoadUp Cloud
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,61 +20,72 @@ package io.github.loadup.commons.util;
  * #L%
  */
 
-import io.github.loadup.framework.api.context.LoadUpContext;
-import io.github.loadup.framework.api.context.Tenant;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+/** Holds the current tenant ID for the execution context. */
+public final class TenantUtil {
+    private static final ThreadLocal<String> TENANT_ID = new ThreadLocal<>();
 
-public class TenantUtil {
-    public static final String TENANT = "tenant";
-    public static final String TENANT_ID = "tenantId";
-
-    public static Tenant getTenant() {
-        return null;
+    private TenantUtil() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
-    public static void setTenant(Tenant tenant) {
-        LoadUpContext antfinContext = LoadUpContext.get();
-        antfinContext.getAttributes().put(TENANT, (tenant));
-        MDCUtils.logTenantId(tenant.getTenantId());
-    }
-
-    public static String getTenantId() {
-        Tenant tenant = getTenant();
-        if (Objects.isNull(tenant)) {
-            return null;
-        }
-        return tenant.getTenantId();
-    }
-
+    /**
+     * Binds the tenant ID to the current thread. A blank value clears the context.
+     *
+     * @param tenantId tenant ID, may be null or blank
+     */
     public static void setTenantId(String tenantId) {
-        Tenant tenant = getTenant();
-        if (Objects.isNull(tenant)) {
-            tenant = new Tenant();
+        if (tenantId == null) {
+            clear();
+            return;
         }
-        tenant.setTenantId(tenantId);
-    }
-
-    public static void putTenantAttribute(String key, String value) {
-        Tenant tenant = getTenant();
-        if (tenant == null) {
-            tenant = new Tenant();
+        String value = tenantId.trim();
+        if (value.isEmpty()) {
+            clear();
+            return;
         }
-        tenant.getAttributes().put(key, value);
-        LoadUpContext antfinContext = LoadUpContext.get();
-        antfinContext.getAttributes().put(TENANT, (tenant));
+        TENANT_ID.set(value);
     }
 
-    public static List<Tenant> getAllTenants() {
-        return Collections.unmodifiableList(LoadUpContext.getTenantList());
+    /**
+     * Return the tenant ID bound to the current thread.
+     *
+     * @return tenant ID or null when no tenant is bound
+     */
+    public static String getTenantId() {
+        return TENANT_ID.get();
     }
 
-    public static String getCurrentTenantId() {
-        return null;
+    /**
+     * Whether a tenant ID is bound to the current thread.
+     *
+     * @return true when a tenant ID is present
+     */
+    public static boolean hasTenantId() {
+        return TENANT_ID.get() != null;
     }
 
-    public static String getClientIdByTenantId(String tenantId) {
-        return null;
+    /** Remove the tenant binding from the current thread. */
+    public static void clear() {
+        TENANT_ID.remove();
+    }
+
+    /**
+     * Run the callback under a temporary tenant context and restore the previous binding.
+     *
+     * @param tenantId temporary tenant ID
+     * @param runnable callback
+     */
+    public static void runWithTenant(String tenantId, Runnable runnable) {
+        String previousTenantId = getTenantId();
+        try {
+            setTenantId(tenantId);
+            runnable.run();
+        } finally {
+            if (previousTenantId != null) {
+                setTenantId(previousTenantId);
+            } else {
+                clear();
+            }
+        }
     }
 }

@@ -99,7 +99,6 @@ LoadUp Framework 是一个基于 Spring Boot 4.1.0 的**企业级微服务开发
         │         (最底层的通用基础能力)                              │
         │                                                              │
         │  commons/                                                    │
-        │    ├── loadup-commons-api/   (通用接口、异常、枚举)         │
         │    ├── loadup-commons-dto/   (通用 DTO、BaseDO、Result)     │
         │    ├── loadup-commons-util/  (工具类：JSON、日期、加密等)   │
         │    ├── loadup-commons-log/   (统一日志格式与 trace MDC)    │
@@ -151,11 +150,10 @@ LoadUp Framework 采用清晰的 **6 层分层架构**，共 19 个模块：
 
 **职责**: 统一管理所有第三方依赖版本，确保版本一致性
 
-### 2️⃣ 基础设施层 (5 个模块)
+### 2️⃣ 基础设施层 (4 个模块)
 
 ```
 🧱 commons/
-├── loadup-commons-api/   - 通用接口、异常、枚举
 ├── loadup-commons-dto/   - 通用 DTO、BaseDO、Result
 ├── loadup-commons-util/  - 工具类集合 (JSON、日期、加密等)
 ├── loadup-commons-log/   - 统一日志格式与 trace MDC
@@ -314,7 +312,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
     <!-- Commons 组件 -->
     <dependency>
         <groupId>io.github.loadup-cloud</groupId>
-        <artifactId>loadup-commons-api</artifactId>
+        <artifactId>loadup-commons-dto</artifactId>
     </dependency>
 
     <!-- 数据库组件 -->
@@ -349,7 +347,6 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 
 | artifactId            | 说明                |
 |-----------------------|-------------------|
-| `loadup-commons-api`  | API 公共组件，包含通用接口定义 |
 | `loadup-commons-dto`  | DTO 公共组件，包含数据传输对象 |
 | `loadup-commons-util` | 通用工具类组件           |
 
@@ -393,10 +390,10 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 
 ```xml
 <dependencies>
-    <!-- 基础 API -->
+    <!-- 通用 DTO（Result、BaseDO） -->
     <dependency>
         <groupId>io.github.loadup-cloud</groupId>
-        <artifactId>loadup-commons-api</artifactId>
+        <artifactId>loadup-commons-dto</artifactId>
     </dependency>
 
     <!-- 数据库访问 -->
@@ -448,10 +445,6 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 ```xml
 <dependencies>
     <!-- 完整的 Commons 支持 -->
-    <dependency>
-        <groupId>io.github.loadup-cloud</groupId>
-        <artifactId>loadup-commons-api</artifactId>
-    </dependency>
     <dependency>
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-commons-dto</artifactId>
@@ -521,7 +514,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-commons-api</artifactId>
+            <artifactId>loadup-commons-dto</artifactId>
         </dependency>
 
         <dependency>

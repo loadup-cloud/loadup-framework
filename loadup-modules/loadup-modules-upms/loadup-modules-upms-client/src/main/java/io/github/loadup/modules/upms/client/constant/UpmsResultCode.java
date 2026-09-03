@@ -21,7 +21,7 @@ package io.github.loadup.modules.upms.client.constant;
  */
 
 import io.github.loadup.commons.enums.ResultStatusEnum;
-import io.github.loadup.framework.api.result.ResultCode;
+import io.github.loadup.commons.result.ResultCode;
 import java.util.Arrays;
 import org.apache.commons.lang3.Strings;
 

@@ -50,7 +50,6 @@ mvn test -pl loadup-modules/loadup-modules-upms/loadup-modules-upms-test
 loadup-parent/
 ├── loadup-dependencies/        # BOM，统一依赖版本
 ├── commons/                    # 最底层通用基础
-│   ├── loadup-commons-api/     # 通用接口、SPI 抽象基类
 │   ├── loadup-commons-dto/     # 通用 DTO：Result<T>、PageDTO、BaseDO
 │   ├── loadup-commons-util/    # 工具类：JsonUtil、StringUtils、DateUtils
 │   ├── loadup-commons-log/     # 统一日志格式与 trace MDC 约定
@@ -249,6 +248,19 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 | app AutoConfig    | `.app.autoconfigure`         |
 
 ---
+
+## MapStruct 规范
+
+所有对象映射统一使用 MapStruct，且只允许 Spring 组件模式，不允许 `default`/instance 模式
+（`Mappers.getMapper(...)`、手动 `new XxxConverterImpl()`）。
+
+- 共享配置统一使用 `loadup-commons-dto` 的 `LoadUpMapStructConfig`
+  （`io.github.loadup.commons.mapping`），固定配置：
+  `componentModel = "spring"`、`unmappedTargetPolicy = ERROR`、`unmappedSourcePolicy = WARN`
+- converter 声明一律为 `@Mapper(config = LoadUpMapStructConfig.class)`，
+  不在 `@Mapper` 上重复写 componentModel/policy
+- 需要模块内静态映射方法时用 `uses = XxxSupport.class`（如 `AuditMappingSupport`）
+- converter 通过构造器注入使用方，禁止字段注入
 
 ## API 暴露方式
 

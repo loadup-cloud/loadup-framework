@@ -23,8 +23,8 @@ package io.github.loadup.components.globalunique;
 import static io.github.loadup.components.globalunique.dataobject.table.Tables.GLOBAL_UNIQUE_DO;
 
 import com.mybatisflex.core.query.QueryWrapper;
+import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.database.config.DatabaseProperties;
-import io.github.loadup.components.database.tenant.TenantContextHolder;
 import io.github.loadup.components.globalunique.dataobject.GlobalUniqueDO;
 import io.github.loadup.components.globalunique.mapper.GlobalUniqueMapper;
 import io.github.loadup.components.globalunique.model.GlobalUniqueClaim;
@@ -95,7 +95,7 @@ public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {
             return GLOBAL_TENANT;
         }
 
-        String tenantId = TenantContextHolder.getTenantId();
+        String tenantId = TenantUtil.getTenantId();
         if (StringUtils.hasText(tenantId)) {
             return tenantId;
         }

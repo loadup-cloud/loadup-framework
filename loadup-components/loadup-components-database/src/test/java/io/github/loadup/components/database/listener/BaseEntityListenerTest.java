@@ -24,9 +24,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 import io.github.loadup.commons.dataobject.BaseDO;
+import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.database.id.IdGenerator;
-import io.github.loadup.components.database.tenant.TenantContextHolder;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -38,7 +38,7 @@ class BaseEntityListenerTest {
 
     @AfterEach
     void clearTenant() {
-        TenantContextHolder.clear();
+        TenantUtil.clear();
     }
 
     @Test
@@ -47,7 +47,7 @@ class BaseEntityListenerTest {
         properties.getMultiTenant().setEnabled(true);
         properties.getLogicalDelete().setEnabled(true);
         properties.getLogicalDelete().setNormalValue(2);
-        TenantContextHolder.setTenantId("tenant-a");
+        TenantUtil.setTenantId("tenant-a");
         IdGenerator idGenerator = () -> "generated-id";
         BaseEntityListener listener = new BaseEntityListener(properties, idGenerator, Clock.fixed(NOW, ZoneOffset.UTC));
         TestEntity entity = new TestEntity();

@@ -49,8 +49,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-commons-api</artifactId>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.mybatis-flex</groupId>
