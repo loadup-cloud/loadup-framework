@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(
         afterName = "io.github.loadup.components.gotone.engine.GotoneEngineAutoConfiguration",
-        beforeName = "io.github.loadup.retrytask.jobrunr.autoconfig.RetryTaskJobRunrAutoConfiguration")
+        beforeName = "io.github.loadup.retrytask.jobrunr.autoconfig.JobRunrRetryTaskAutoConfiguration")
 @ConditionalOnClass({RetryTaskNotifier.class, NotificationService.class})
 @ConditionalOnBean(NotificationService.class)
 @EnableConfigurationProperties(RetryTaskNotifyProperties.class)

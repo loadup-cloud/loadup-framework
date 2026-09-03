@@ -40,7 +40,7 @@ public class JetCacheSpringCacheManager extends AbstractCacheManager {
 
     private final com.alicp.jetcache.CacheManager jetCacheManager;
     private final LoadupCacheProperties properties;
-    private final JetCacheCacheBinderProperties binderProperties;
+    private final JetCacheCacheProperties binderProperties;
     private final Function<Object, Object> keyConvertor;
     private final Function<Object, byte[]> valueEncoder;
     private final Function<byte[], Object> valueDecoder;
@@ -50,7 +50,7 @@ public class JetCacheSpringCacheManager extends AbstractCacheManager {
     public JetCacheSpringCacheManager(
             com.alicp.jetcache.CacheManager jetCacheManager,
             LoadupCacheProperties properties,
-            JetCacheCacheBinderProperties binderProperties,
+            JetCacheCacheProperties binderProperties,
             Function<Object, Object> keyConvertor,
             Function<Object, byte[]> valueEncoder,
             Function<byte[], Object> valueDecoder,

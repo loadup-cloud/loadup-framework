@@ -31,7 +31,7 @@ import io.github.loadup.components.cache.CacheBackendType;
 import io.github.loadup.components.cache.LoadupCacheProperties;
 import io.github.loadup.components.cache.autoconfig.LoadupCacheAutoConfiguration;
 import io.github.loadup.components.cache.codec.CacheJsonCodec;
-import io.github.loadup.components.cache.jetcache.JetCacheCacheBinderProperties;
+import io.github.loadup.components.cache.jetcache.JetCacheCacheProperties;
 import io.github.loadup.components.cache.jetcache.JetCacheSpringCacheManager;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,13 +57,13 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 @AutoConfiguration(after = LoadupCacheAutoConfiguration.class, before = CacheAutoConfiguration.class)
 @ConditionalOnClass({SimpleCacheManager.class, CacheBuilderTemplate.class})
 @ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = CacheBackendType.JETCACHE)
-@EnableConfigurationProperties(JetCacheCacheBinderProperties.class)
+@EnableConfigurationProperties(JetCacheCacheProperties.class)
 public class JetCacheCacheAutoConfiguration {
 
     @Bean(destroyMethod = "close")
     @ConditionalOnMissingBean(com.alicp.jetcache.CacheManager.class)
     public com.alicp.jetcache.CacheManager jetCacheBackend(
-            JetCacheCacheBinderProperties binderProperties,
+            JetCacheCacheProperties binderProperties,
             ObjectProvider<RedisConnectionFactory> connectionFactoryProvider) {
         Map<String, CacheBuilder> localBuilders = new HashMap<>();
         localBuilders.put(
@@ -90,7 +90,7 @@ public class JetCacheCacheAutoConfiguration {
     public CacheManager cacheManager(
             com.alicp.jetcache.CacheManager jetCacheBackend,
             LoadupCacheProperties properties,
-            JetCacheCacheBinderProperties binderProperties,
+            JetCacheCacheProperties binderProperties,
             ObjectProvider<RedisConnectionFactory> connectionFactoryProvider,
             ObjectProvider<ObjectMapper> objectMapperProvider,
             ObjectProvider<CacheManagerCustomizer<?>> customizers) {

@@ -52,7 +52,7 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(after = JobRunrAutoConfiguration.class)
 @ConditionalOnClass({JobRequestScheduler.class, JobRequest.class})
 @EnableConfigurationProperties(RetryTaskProperties.class)
-public class RetryTaskJobRunrAutoConfiguration {
+public class JobRunrRetryTaskAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean

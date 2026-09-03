@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(after = JobRunrAutoConfiguration.class)
 @ConditionalOnClass({JobRequestScheduler.class, JobRequest.class})
-public class SchedulerJobRunrAutoConfiguration {
+public class JobRunrSchedulerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean

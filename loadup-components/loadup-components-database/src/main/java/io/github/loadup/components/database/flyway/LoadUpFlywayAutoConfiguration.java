@@ -89,6 +89,12 @@ public class LoadUpFlywayAutoConfiguration {
             log.debug(">>> [FLYWAY] Migration locations: {}", (Object) properties.getLocations());
         }
 
+        // Schema history table: isolates independent version sequences sharing one database
+        if (properties.getTable() != null && !properties.getTable().isBlank()) {
+            config.table(properties.getTable());
+            log.info(">>> [FLYWAY] Schema history table: {}", properties.getTable());
+        }
+
         // Baseline configuration
         config.baselineOnMigrate(properties.isBaselineOnMigrate());
         if (properties.getBaselineVersion() != null) {

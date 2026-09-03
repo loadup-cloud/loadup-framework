@@ -44,7 +44,7 @@ public class ApolloConfigCenterProvider implements ConfigCenterProvider {
     private final Config apolloConfig;
     private final ConcurrentHashMap<String, List<Consumer<String>>> listeners = new ConcurrentHashMap<>();
 
-    public ApolloConfigCenterProvider(ApolloConfigCenterConfig config) {
+    public ApolloConfigCenterProvider(ApolloConfigCenterProperties config) {
         System.setProperty("app.id", config.getAppId());
         if (config.getMeta() != null) System.setProperty("apollo.meta", config.getMeta());
         if (config.getEnv() != null) System.setProperty("env", config.getEnv());

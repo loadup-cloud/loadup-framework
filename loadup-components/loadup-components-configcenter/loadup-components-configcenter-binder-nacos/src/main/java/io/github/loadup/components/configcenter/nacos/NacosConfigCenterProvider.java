@@ -49,12 +49,12 @@ import java.util.function.Consumer;
         justification = "ConfigService creation and initial load must fail fast at startup")
 public class NacosConfigCenterProvider implements ConfigCenterProvider {
     private final ConfigService configService;
-    private final NacosConfigCenterConfig config;
+    private final NacosConfigCenterProperties config;
     private final ConcurrentHashMap<String, List<Consumer<String>>> listeners = new ConcurrentHashMap<>();
     private final AtomicBoolean nacosListenerRegistered = new AtomicBoolean();
     private volatile Map<String, String> snapshot = Collections.emptyMap();
 
-    public NacosConfigCenterProvider(NacosConfigCenterConfig config) {
+    public NacosConfigCenterProvider(NacosConfigCenterProperties config) {
         this.config = config;
         Properties props = new Properties();
         props.setProperty("serverAddr", config.getServerAddr());

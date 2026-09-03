@@ -30,7 +30,7 @@ loadup-components-retrytask/
 - **binder-jobrunr**：`JobRunrRetryTaskFacade`、`RetryTaskJobRequest`、
   `RetryTaskJobRequestHandler`、`RetryTaskProperties`、`RetryTaskFailureNotifyingFilter`、
   `DefaultRetryTaskNotifier`、
-  `RetryTaskJobRunrAutoConfiguration`（`@AutoConfiguration(after = JobRunrAutoConfiguration.class)`）。
+  `JobRunrRetryTaskAutoConfiguration`（`@AutoConfiguration(after = JobRunrAutoConfiguration.class)`）。
 
 ## 核心设计决策
 

@@ -25,7 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
         properties = "spring.autoconfigure.exclude="
                 + "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration,"
                 + "org.jobrunr.spring.autoconfigure.JobRunrAutoConfiguration,"
-                + "io.github.loadup.components.scheduler.jobrunr.autoconfig.SchedulerJobRunrAutoConfiguration")
+                + "io.github.loadup.components.scheduler.jobrunr.autoconfig.JobRunrSchedulerAutoConfiguration")
 @ActiveProfiles("test")
 class QuartzSchedulerTemplateIT {
 

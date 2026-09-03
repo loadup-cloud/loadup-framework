@@ -23,7 +23,7 @@ package io.github.loadup.components.configcenter.apollo;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "loadup.configcenter.binder.apollo")
-public class ApolloConfigCenterConfig {
+public class ApolloConfigCenterProperties {
     private String meta;
     private String appId;
     private String env = "DEV";

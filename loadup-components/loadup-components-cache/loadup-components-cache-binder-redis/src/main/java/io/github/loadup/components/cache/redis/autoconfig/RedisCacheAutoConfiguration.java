@@ -28,7 +28,7 @@ import io.github.loadup.components.cache.LoadupCacheProperties;
 import io.github.loadup.components.cache.autoconfig.LoadupCacheAutoConfiguration;
 import io.github.loadup.components.cache.codec.CacheJsonCodec;
 import io.github.loadup.components.cache.redis.RandomTtlFunction;
-import io.github.loadup.components.cache.redis.RedisCacheBinderProperties;
+import io.github.loadup.components.cache.redis.RedisCacheProperties;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.beans.factory.ObjectProvider;
@@ -58,7 +58,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @AutoConfiguration(after = LoadupCacheAutoConfiguration.class, before = CacheAutoConfiguration.class)
 @ConditionalOnClass({RedisCacheManager.class, RedisConnectionFactory.class})
 @ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = CacheBackendType.REDIS)
-@EnableConfigurationProperties(RedisCacheBinderProperties.class)
+@EnableConfigurationProperties(RedisCacheProperties.class)
 public class RedisCacheAutoConfiguration {
 
     @Bean
@@ -66,7 +66,7 @@ public class RedisCacheAutoConfiguration {
     public CacheManager cacheManager(
             RedisConnectionFactory connectionFactory,
             LoadupCacheProperties properties,
-            RedisCacheBinderProperties binderProperties,
+            RedisCacheProperties binderProperties,
             ObjectProvider<ObjectMapper> objectMapperProvider,
             ObjectProvider<CacheManagerCustomizer<?>> customizers) {
         ObjectMapper objectMapper =

@@ -33,6 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *   flyway:
  *     enabled: true
  *     locations: classpath:db/migration
+ *     table: flyway_schema_history
  *     baseline-on-migrate: true
  *     validate-on-migrate: true
  *     clean-disabled: true
@@ -54,6 +55,15 @@ public class FlywayProperties {
      * Can use Spring resource locations (e.g., classpath:db/migration).
      */
     private String[] locations = {"classpath:db/migration"};
+
+    /**
+     * Name of the schema history table used to track applied migrations.
+     *
+     * <p>Defaults to Flyway's {@code flyway_schema_history}. When several independent
+     * migration sets share one database (for example, multiple LoadUp components),
+     * give each set its own table so their version sequences never collide.
+     */
+    private String table;
 
     /**
      * Whether to automatically call baseline when migrate is executed against
@@ -126,6 +136,7 @@ public class FlywayProperties {
     public FlywayProperties(
             boolean enabled,
             String[] locations,
+            String table,
             boolean baselineOnMigrate,
             String baselineVersion,
             String baselineDescription,
@@ -141,6 +152,7 @@ public class FlywayProperties {
             boolean migrateAtStart) {
         this.enabled = enabled;
         this.locations = locations;
+        this.table = table;
         this.baselineOnMigrate = baselineOnMigrate;
         this.baselineVersion = baselineVersion;
         this.baselineDescription = baselineDescription;
@@ -164,6 +176,10 @@ public class FlywayProperties {
 
     public String[] getLocations() {
         return this.locations;
+    }
+
+    public String getTable() {
+        return this.table;
     }
 
     public boolean isBaselineOnMigrate() {
@@ -224,6 +240,10 @@ public class FlywayProperties {
 
     public void setLocations(String[] locations) {
         this.locations = locations;
+    }
+
+    public void setTable(String table) {
+        this.table = table;
     }
 
     public void setBaselineOnMigrate(boolean baselineOnMigrate) {

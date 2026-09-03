@@ -23,7 +23,7 @@ package io.github.loadup.components.configcenter.nacos;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "loadup.configcenter.binder.nacos")
-public class NacosConfigCenterConfig {
+public class NacosConfigCenterProperties {
     private String serverAddr = "127.0.0.1:8848";
     private String namespace = "public";
     private String username;

@@ -33,7 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * common settings (TTL, null values, random expiration) stay under {@code loadup.cache.*}.
  */
 @ConfigurationProperties(prefix = "loadup.cache.binder.jetcache")
-public class JetCacheCacheBinderProperties {
+public class JetCacheCacheProperties {
 
     /** Default layout for caches without a per-name setting: LOCAL, REMOTE or BOTH. */
     private String defaultCacheType = CacheType.LOCAL.name();
