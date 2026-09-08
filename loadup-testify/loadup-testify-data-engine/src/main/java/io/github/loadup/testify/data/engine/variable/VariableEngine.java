@@ -20,7 +20,6 @@ package io.github.loadup.testify.data.engine.variable;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.github.loadup.testify.core.util.JsonUtil;
 import io.github.loadup.testify.data.engine.function.TestifyFunction;
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Variable resolution engine supporting: - Datafaker expressions: ${faker.name.firstName} - Time
@@ -190,8 +190,8 @@ public class VariableEngine {
 
         // 1. 处理 JsonNode (来自 Jackson 解析的原始结构)
         if (value instanceof JsonNode node) {
-            if (node.isTextual()) {
-                return evaluate(node.asText(), context);
+            if (node.isString()) {
+                return evaluate(node.asString(), context);
             }
             if (node.isNumber()) {
                 return node.numberValue(); // 保持数字类型
@@ -204,7 +204,7 @@ public class VariableEngine {
             }
             if (node.isObject()) {
                 Map<String, Object> resolvedMap = new LinkedHashMap<>();
-                node.fields().forEachRemaining(entry -> {
+                node.properties().forEach(entry -> {
                     Object resolved = resolveValue(entry.getValue(), context);
                     if (resolved != null) {
                         resolvedMap.put(entry.getKey(), resolved);

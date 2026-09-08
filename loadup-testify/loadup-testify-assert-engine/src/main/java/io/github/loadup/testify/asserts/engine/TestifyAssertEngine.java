@@ -20,8 +20,8 @@ package io.github.loadup.testify.asserts.engine;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Map;
+import tools.jackson.databind.JsonNode;
 
 public interface TestifyAssertEngine {
     /**

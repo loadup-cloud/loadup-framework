@@ -20,8 +20,6 @@ package io.github.loadup.testify.asserts.engine;
  * #L%
  */
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.jsonpath.JsonPath;
 import io.github.loadup.testify.asserts.diff.DiffReportBuilder;
 import io.github.loadup.testify.asserts.model.FieldDiff;
@@ -32,6 +30,8 @@ import io.github.loadup.testify.data.engine.variable.VariableEngine;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
 
 public class ResponseAssertEngine implements TestifyAssertEngine {
     private final VariableEngine variableEngine;
@@ -92,7 +92,7 @@ public class ResponseAssertEngine implements TestifyAssertEngine {
 
         // 情况 B: 期望节点是普通的 JSON 对象(递归)
         if (exp.isObject()) {
-            exp.fields().forEachRemaining(entry -> {
+            exp.properties().forEach(entry -> {
                 String key = entry.getKey();
                 recursiveCheck(path + "." + key, entry.getValue(), act.path(key), diffs);
             });
@@ -134,6 +134,6 @@ public class ResponseAssertEngine implements TestifyAssertEngine {
         if (node.isArray()) {
             return JsonUtil.convertValue(node, new TypeReference<List<Object>>() {});
         }
-        return node.asText();
+        return node.asString();
     }
 }

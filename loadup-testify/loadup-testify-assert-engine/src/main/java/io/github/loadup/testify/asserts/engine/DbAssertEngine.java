@@ -20,8 +20,6 @@ package io.github.loadup.testify.asserts.engine;
  * #L%
  */
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.github.loadup.testify.asserts.diff.DiffReportBuilder;
 import io.github.loadup.testify.asserts.model.FieldDiff;
 import io.github.loadup.testify.asserts.model.MatchResult;
@@ -40,6 +38,8 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
 
 public class DbAssertEngine implements TestifyAssertEngine {
     private static final Logger log = LoggerFactory.getLogger(DbAssertEngine.class);
@@ -68,8 +68,8 @@ public class DbAssertEngine implements TestifyAssertEngine {
     }
 
     private void processTableAssertion(JsonNode tableNode, Map<String, Object> context) {
-        String tableName = identifier(tableNode.get("table").asText());
-        String mode = tableNode.has("mode") ? tableNode.get("mode").asText() : "lenient";
+        String tableName = identifier(tableNode.get("table").asString());
+        String mode = tableNode.has("mode") ? tableNode.get("mode").asString() : "lenient";
         JsonNode rowsNode = tableNode.get("rows");
 
         List<Map<String, Object>> expectedRows = JsonUtil.convertValue(rowsNode, new TypeReference<>() {});

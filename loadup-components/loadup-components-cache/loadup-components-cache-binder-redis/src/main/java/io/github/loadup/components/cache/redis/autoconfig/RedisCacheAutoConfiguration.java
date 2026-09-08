@@ -20,8 +20,6 @@ package io.github.loadup.components.cache.redis.autoconfig;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.github.loadup.components.cache.CacheBackendType;
 import io.github.loadup.components.cache.CacheNameSettings;
 import io.github.loadup.components.cache.LoadupCacheProperties;
@@ -46,9 +44,10 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Redis binder: provides the Spring {@link CacheManager} backed by Spring Data Redis when
@@ -69,10 +68,9 @@ public class RedisCacheAutoConfiguration {
             RedisCacheProperties binderProperties,
             ObjectProvider<ObjectMapper> objectMapperProvider,
             ObjectProvider<CacheManagerCustomizer<?>> customizers) {
-        ObjectMapper objectMapper =
-                objectMapperProvider.getIfAvailable(() -> new ObjectMapper().registerModule(new JavaTimeModule()));
-        GenericJackson2JsonRedisSerializer valueSerializer =
-                new GenericJackson2JsonRedisSerializer(new CacheJsonCodec(objectMapper).objectMapper());
+        ObjectMapper objectMapper = objectMapperProvider.getIfAvailable(ObjectMapper::new);
+        GenericJacksonJsonRedisSerializer valueSerializer =
+                new GenericJacksonJsonRedisSerializer(new CacheJsonCodec(objectMapper).objectMapper());
 
         RedisCacheConfiguration defaults = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(

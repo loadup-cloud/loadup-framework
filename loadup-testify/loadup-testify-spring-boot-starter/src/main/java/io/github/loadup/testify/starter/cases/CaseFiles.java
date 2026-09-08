@@ -19,10 +19,6 @@
  */
 package io.github.loadup.testify.starter.cases;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -30,6 +26,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.core.io.ClassPathResource;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.dataformat.yaml.YAMLFactory;
 
 /**
  * Loads batch test cases from YAML or JSON files. Three layouts are supported:
@@ -52,7 +53,7 @@ public final class CaseFiles {
     public static List<TestifyCase> loadYaml(String classpathPath) {
         try (InputStream in = new ClassPathResource(classpathPath).getInputStream()) {
             return parse(YAML_MAPPER.readTree(in));
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             throw new IllegalStateException("Failed to load testify cases from " + classpathPath, e);
         }
     }
@@ -60,7 +61,7 @@ public final class CaseFiles {
     public static List<TestifyCase> loadJson(String classpathPath) {
         try (InputStream in = new ClassPathResource(classpathPath).getInputStream()) {
             return parse(JSON_MAPPER.readTree(in));
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             throw new IllegalStateException("Failed to load testify cases from " + classpathPath, e);
         }
     }
@@ -81,9 +82,9 @@ public final class CaseFiles {
     }
 
     private static TestifyCase toCase(JsonNode node) {
-        String name = node.path("name").asText();
+        String name = node.path("name").asString();
         if (name.isBlank()) {
-            name = node.path("id").asText();
+            name = node.path("id").asString();
         }
         if (name.isBlank()) {
             name = "case";

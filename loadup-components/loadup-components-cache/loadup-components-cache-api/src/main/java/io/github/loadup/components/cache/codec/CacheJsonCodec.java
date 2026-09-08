@@ -20,16 +20,17 @@ package io.github.loadup.components.cache.codec;
  * #L%
  */
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import org.springframework.cache.support.NullValue;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.DefaultTyping;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import tools.jackson.databind.jsontype.PolymorphicTypeValidator;
+import tools.jackson.databind.jsontype.TypeSerializer;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.ser.std.StdSerializer;
 
 /**
  * Single JSON value codec shared by every remote-capable binder (redis and jetcache).
@@ -47,6 +48,9 @@ import org.springframework.cache.support.NullValue;
  */
 public final class CacheJsonCodec {
 
+    private static final PolymorphicTypeValidator CACHE_TYPE_VALIDATOR =
+            BasicPolymorphicTypeValidator.builder().allowIfSubType(Object.class).build();
+
     private final ObjectMapper mapper;
 
     public CacheJsonCodec(ObjectMapper source) {
@@ -57,8 +61,8 @@ public final class CacheJsonCodec {
     public byte[] serialize(Object value) {
         try {
             return mapper.writeValueAsBytes(value);
-        } catch (JsonProcessingException ex) {
-            throw new UncheckedIOException("Cache value serialization failed", ex);
+        } catch (JacksonException ex) {
+            throw new IllegalStateException("Cache value serialization failed", ex);
         }
     }
 
@@ -66,8 +70,8 @@ public final class CacheJsonCodec {
     public Object deserialize(byte[] bytes) {
         try {
             return mapper.readValue(bytes, Object.class);
-        } catch (IOException ex) {
-            throw new UncheckedIOException("Cache value deserialization failed", ex);
+        } catch (JacksonException ex) {
+            throw new IllegalStateException("Cache value deserialization failed", ex);
         }
     }
 
@@ -77,11 +81,10 @@ public final class CacheJsonCodec {
     }
 
     private static ObjectMapper typedCopy(ObjectMapper source) {
-        ObjectMapper copy = source.copy();
-        copy.activateDefaultTypingAsProperty(
-                copy.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.EVERYTHING, "@class");
-        copy.registerModule(new SimpleModule().addSerializer(NullValue.class, new NullValueSerializer()));
-        return copy;
+        return source.rebuild()
+                .activateDefaultTypingAsProperty(CACHE_TYPE_VALIDATOR, DefaultTyping.NON_FINAL_AND_RECORDS, "@class")
+                .addModule(new SimpleModule().addSerializer(NullValue.class, new NullValueSerializer()))
+                .build();
     }
 
     private static final class NullValueSerializer extends StdSerializer<NullValue> {
@@ -91,18 +94,19 @@ public final class CacheJsonCodec {
         }
 
         @Override
-        public void serialize(NullValue value, JsonGenerator generator, SerializerProvider provider)
-                throws IOException {
+        public void serialize(NullValue value, JsonGenerator generator, SerializationContext context)
+                throws JacksonException {
             generator.writeStartObject();
-            generator.writeStringField("@class", NullValue.class.getName());
+            generator.writeName("@class");
+            generator.writeString(NullValue.class.getName());
             generator.writeEndObject();
         }
 
         @Override
         public void serializeWithType(
-                NullValue value, JsonGenerator generator, SerializerProvider provider, TypeSerializer typeSerializer)
-                throws IOException {
-            serialize(value, generator, provider);
+                NullValue value, JsonGenerator generator, SerializationContext context, TypeSerializer typeSerializer)
+                throws JacksonException {
+            serialize(value, generator, context);
         }
     }
 }

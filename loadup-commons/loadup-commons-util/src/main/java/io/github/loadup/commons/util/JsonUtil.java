@@ -21,25 +21,9 @@ package io.github.loadup.commons.util;
  */
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.github.loadup.commons.constant.CommonConstants;
 import io.github.loadup.commons.util.json.MultiDateDeserializer;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -53,6 +37,22 @@ import java.util.Map;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.ext.javatime.deser.LocalDateDeserializer;
+import tools.jackson.databind.ext.javatime.deser.LocalDateTimeDeserializer;
+import tools.jackson.databind.ext.javatime.ser.LocalDateSerializer;
+import tools.jackson.databind.ext.javatime.ser.LocalDateTimeSerializer;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * JSON工具类，基于Jackson实现JSON与Java对象之间的转换
@@ -97,29 +97,14 @@ public class JsonUtil {
      *   <li>日期不转换为时间戳：WRITE_DATES_AS_TIMESTAMPS = false
      *   <li>包含所有字段：ALWAYS
      *   <li>日期格式：yyyy-MM-dd HH:mm:ss
-     *   <li>注册JavaTimeModule处理Java 8时间类型
+     *   <li>Register custom serializers for Java time types
      *   <li>注册MultiDateDeserializer支持多种日期格式
      * </ul>
      *
      * @return 配置好的ObjectMapper实例
      */
     private static ObjectMapper initObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        // 忽略 在json字符串中存在，但是在java对象中不存在对应属性的情况。防止错误
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        // 忽略空Bean转json的错误
-        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        // 取消默认转换timestamps形式
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        // 对象的所有字段全部列入
-        mapper.setSerializationInclusion(Include.ALWAYS);
-        // 所有的日期格式都统一为以下的样式，即yyyy-MM-dd HH:mm:ss
-        mapper.setDateFormat(new SimpleDateFormat(CommonConstants.DEFAULT_DATE_FORMAT));
-        // mapper.activateDefaultTypingAsProperty(mapper.getPolymorphicTypeValidator(),
-        // ObjectMapper.DefaultTyping.NON_FINAL, "@type");
-
-        // 注册 JavaTimeModule 处理 java.time 包的类
-        JavaTimeModule javaTimeModule = new JavaTimeModule();
+        SimpleModule javaTimeModule = new SimpleModule();
         javaTimeModule.addSerializer(
                 LocalDate.class,
                 new LocalDateSerializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_FORMAT)));
@@ -132,12 +117,19 @@ public class JsonUtil {
         javaTimeModule.addDeserializer(
                 LocalDateTime.class,
                 new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(CommonConstants.DEFAULT_DATE_TIME_FORMAT)));
-        mapper.registerModule(javaTimeModule);
 
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Date.class, new MultiDateDeserializer());
-        mapper.registerModule(module);
-        return mapper;
+        return JsonMapper.builder()
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+                .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .changeDefaultPropertyInclusion(ignored ->
+                        com.fasterxml.jackson.annotation.JsonInclude.Value.construct(Include.ALWAYS, Include.ALWAYS))
+                .defaultDateFormat(new SimpleDateFormat(CommonConstants.DEFAULT_DATE_FORMAT))
+                .addModule(javaTimeModule)
+                .addModule(module)
+                .build();
     }
 
     /**
@@ -169,7 +161,7 @@ public class JsonUtil {
         }
         try {
             return objectMapper.writeValueAsString(object);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error(
                     "Failed to convert object to JSON string, object type: {}",
                     object.getClass().getName(),
@@ -195,7 +187,7 @@ public class JsonUtil {
         }
         try {
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error(
                     "Failed to convert object to pretty JSON string, object type: {}",
                     obj.getClass().getName(),
@@ -225,7 +217,7 @@ public class JsonUtil {
         }
         try {
             return objectMapper.readValue(jsonString, valueType);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.error(
                     "Failed to parse JSON string to object of type: {}, json: {}", valueType.getName(), jsonString, e);
             return null;
@@ -255,7 +247,7 @@ public class JsonUtil {
                 return (T) str;
             }
             return objectMapper.readValue(str, typeReference);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.error("Failed to parse JSON string to object with TypeReference: {}", typeReference.getType(), e);
             return null;
         }
@@ -288,7 +280,7 @@ public class JsonUtil {
 
         try {
             return objectMapper.readValue(str, javaType);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.error(
                     "Failed to parse JSON string to parametric type: {}, json: {}", collectionClass.getName(), str, e);
             return null;
@@ -314,7 +306,7 @@ public class JsonUtil {
         }
         try {
             return objectMapper.readValue(inputStream, valueType);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.error("Failed to parse InputStream to type: {}", valueType.getName(), e);
             return null;
         }
@@ -399,7 +391,7 @@ public class JsonUtil {
         }
         try {
             return objectMapper.readValue(jsonString, javaType);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error("Failed to parse map to object with JavaType: {}", javaType, e);
             return null;
         }
@@ -417,7 +409,7 @@ public class JsonUtil {
         }
         try {
             return objectMapper.readValue(jsonString, new TypeReference<>() {});
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.error("Failed to parse JSON string to Map<String, Object>", e);
             return new HashMap<>();
         }
@@ -435,7 +427,7 @@ public class JsonUtil {
         }
         try {
             return objectMapper.readValue(jsonString, new TypeReference<>() {});
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.error("Failed to parse JSON string to Map<String, String>", e);
             return new HashMap<>();
         }
@@ -468,7 +460,7 @@ public class JsonUtil {
         }
         try {
             return objectMapper.readValue(file, valueType);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.error("Failed to parse JSON file: {}", file.getAbsolutePath(), e);
             throw new RuntimeException("Failed to parse JSON file: " + file.getAbsolutePath(), e);
         }
@@ -498,7 +490,7 @@ public class JsonUtil {
         }
         try {
             objectMapper.writeValue(file, object);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.error("Failed to write object to JSON file: {}", file.getAbsolutePath(), e);
             throw new RuntimeException("Failed to write object to JSON file: " + file.getAbsolutePath(), e);
         }
@@ -525,7 +517,7 @@ public class JsonUtil {
         try {
             JsonNode rootNode = objectMapper.readTree(jsonString);
             return rootNode.at(path);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error("Failed to get sub node from JSON string at path: {}", path, e);
             return null;
         }
@@ -544,7 +536,7 @@ public class JsonUtil {
         }
         try {
             return objectMapper.readTree(jsonString);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error("Failed to parse JSON string to JsonNode tree, json: {}", jsonString, e);
             return null;
         }
@@ -633,7 +625,7 @@ public class JsonUtil {
     public static byte[] toBytes(Object value) {
         try {
             return objectMapper.writeValueAsBytes(value);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             return new byte[0];
         }
     }
@@ -641,7 +633,7 @@ public class JsonUtil {
     public static <T> T fromBytes(byte[] bytes, TypeReference<T> typeRef) {
         try {
             return objectMapper.readValue(bytes, typeRef);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             return null;
         }
     }
@@ -651,7 +643,7 @@ public class JsonUtil {
             // readTree 会自动处理字节流并检测编码（UTF-8, UTF-16 等）
             objectMapper.readTree(bytes);
             return true;
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             return false;
         }
     }
@@ -660,7 +652,7 @@ public class JsonUtil {
         try {
             objectMapper.readTree(jsonString);
             return true;
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             return false;
         }
     }

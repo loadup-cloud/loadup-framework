@@ -24,11 +24,11 @@ import cloud.tianai.captcha.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.loadup.components.captcha.CaptchaProvider;
 import io.github.loadup.components.captcha.CaptchaResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * tianai-captcha backed {@link CaptchaProvider}.

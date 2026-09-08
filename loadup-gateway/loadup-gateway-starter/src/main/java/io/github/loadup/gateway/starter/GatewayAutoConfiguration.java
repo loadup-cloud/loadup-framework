@@ -19,7 +19,6 @@
  */
 package io.github.loadup.gateway.starter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.loadup.commons.dto.DTO;
 import io.github.loadup.gateway.facade.config.GatewayProperties;
 import io.github.loadup.gateway.facade.spi.RouteStore;
@@ -34,6 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Starter-level auto-configuration for LoadUp Gateway.
@@ -63,7 +63,7 @@ public class GatewayAutoConfiguration {
             DTO.setObjectMapper(mapper);
             log.info("DTO ObjectMapper configured from Spring context");
         } else {
-            log.info("No Jackson 2 ObjectMapper bean found, DTO keeps its default mapper");
+            log.info("No Jackson 3 ObjectMapper bean found, DTO keeps its default mapper");
         }
     }
 }

@@ -19,9 +19,9 @@
  */
 package io.github.loadup.commons.dto;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicReference;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Marker interface for DTOs providing standard Jackson JSON serialization for {@link #toString()}.

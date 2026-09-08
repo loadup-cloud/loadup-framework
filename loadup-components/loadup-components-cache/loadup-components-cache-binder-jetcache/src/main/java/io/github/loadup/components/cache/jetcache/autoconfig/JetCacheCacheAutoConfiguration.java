@@ -25,8 +25,6 @@ import com.alicp.jetcache.SimpleCacheManager;
 import com.alicp.jetcache.embedded.CaffeineCacheBuilder;
 import com.alicp.jetcache.redis.springdata.RedisSpringDataCacheBuilder;
 import com.alicp.jetcache.template.CacheBuilderTemplate;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.github.loadup.components.cache.CacheBackendType;
 import io.github.loadup.components.cache.LoadupCacheProperties;
 import io.github.loadup.components.cache.autoconfig.LoadupCacheAutoConfiguration;
@@ -47,6 +45,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * JetCache binder: adapts the Spring Cache facade to JetCache when
@@ -94,8 +93,7 @@ public class JetCacheCacheAutoConfiguration {
             ObjectProvider<RedisConnectionFactory> connectionFactoryProvider,
             ObjectProvider<ObjectMapper> objectMapperProvider,
             ObjectProvider<CacheManagerCustomizer<?>> customizers) {
-        ObjectMapper objectMapper =
-                objectMapperProvider.getIfAvailable(() -> new ObjectMapper().registerModule(new JavaTimeModule()));
+        ObjectMapper objectMapper = objectMapperProvider.getIfAvailable(ObjectMapper::new);
         CacheJsonCodec codec = new CacheJsonCodec(objectMapper);
 
         JetCacheSpringCacheManager manager = new JetCacheSpringCacheManager(

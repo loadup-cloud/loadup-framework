@@ -19,7 +19,6 @@
  */
 package io.github.loadup.components.dfs.database.autoconfig;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.loadup.components.database.autoconfig.MyBatisFlexAutoConfiguration;
 import io.github.loadup.components.dfs.DfsProvider;
 import io.github.loadup.components.dfs.autoconfig.DfsAutoConfiguration;
@@ -32,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import tools.jackson.databind.ObjectMapper;
 
 /** Auto-configuration for the transitional database DFS binder. */
 @AutoConfiguration(after = MyBatisFlexAutoConfiguration.class, before = DfsAutoConfiguration.class)

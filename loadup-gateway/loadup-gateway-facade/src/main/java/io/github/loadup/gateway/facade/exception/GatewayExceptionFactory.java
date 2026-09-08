@@ -204,7 +204,7 @@ public final class GatewayExceptionFactory {
         if (cause instanceof java.io.IOException) {
             return ErrorCode.NETWORK_UNREACHABLE;
         }
-        if (cause instanceof com.fasterxml.jackson.core.JsonProcessingException) {
+        if (cause instanceof tools.jackson.core.JacksonException) {
             return ErrorCode.JSON_PARSE_ERROR;
         }
         // Default return internal error
@@ -221,7 +221,7 @@ public final class GatewayExceptionFactory {
                 || cause instanceof java.io.IOException) {
             return ErrorType.NETWORK;
         }
-        if (cause instanceof com.fasterxml.jackson.core.JsonProcessingException) {
+        if (cause instanceof tools.jackson.core.JacksonException) {
             return ErrorType.SERIALIZATION;
         }
         if (cause instanceof UnsupportedOperationException) {

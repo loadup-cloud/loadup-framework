@@ -20,7 +20,6 @@ package io.github.loadup.testify.asserts.engine;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.github.loadup.testify.asserts.diff.DiffReportBuilder;
 import io.github.loadup.testify.asserts.model.FieldDiff;
 import io.github.loadup.testify.asserts.model.MatchResult;
@@ -30,6 +29,7 @@ import io.github.loadup.testify.data.engine.variable.VariableEngine;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import tools.jackson.databind.JsonNode;
 
 public class ExceptionAssertEngine implements TestifyAssertEngine {
     private final VariableEngine variableEngine;
@@ -45,7 +45,7 @@ public class ExceptionAssertEngine implements TestifyAssertEngine {
         }
         List<FieldDiff> diffs = new ArrayList<>();
         if (actual == null) {
-            String expectType = expectEx.get("type").asText();
+            String expectType = expectEx.get("type").asString();
             diffs.add(new FieldDiff("exception", expectType, "Null", "Expected exception but none"));
             throw new AssertionError(DiffReportBuilder.build("Exception Assertion", diffs));
         }
@@ -57,7 +57,7 @@ public class ExceptionAssertEngine implements TestifyAssertEngine {
 
         // 1. 校验异常类型 (支持简写)
         if (expectEx.has("type")) {
-            String expectType = expectEx.get("type").asText();
+            String expectType = expectEx.get("type").asString();
             if (!isTypeMatch(expectType, rootCause)) {
                 diffs.add(new FieldDiff(
                         "exception.type", expectType, rootCause.getClass().getSimpleName(), "Exception type mismatch"));
@@ -69,7 +69,7 @@ public class ExceptionAssertEngine implements TestifyAssertEngine {
             JsonNode messageNode = expectEx.get("message");
             String actualMsg = rootCause.getMessage();
             Object resolved = variableEngine.resolveValue(messageNode, context);
-            String expectedMsg = JsonUtil.valueToTree(resolved).asText();
+            String expectedMsg = JsonUtil.valueToTree(resolved).asString();
 
             MatchResult result = OperatorProcessor.process(actualMsg, expectedMsg);
 

@@ -19,8 +19,8 @@
  */
 package io.github.loadup.testify.starter.cases;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Map;
+import tools.jackson.databind.JsonNode;
 
 /**
  * One data-driven test case loaded from a case file.

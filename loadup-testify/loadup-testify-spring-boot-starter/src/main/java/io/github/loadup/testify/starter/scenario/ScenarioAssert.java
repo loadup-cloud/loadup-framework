@@ -19,7 +19,6 @@
  */
 package io.github.loadup.testify.starter.scenario;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.github.loadup.testify.asserts.engine.DbAssertEngine;
 import io.github.loadup.testify.asserts.engine.ExceptionAssertEngine;
 import io.github.loadup.testify.asserts.engine.ResponseAssertEngine;
@@ -27,6 +26,7 @@ import io.github.loadup.testify.asserts.model.MatchResult;
 import io.github.loadup.testify.asserts.operator.OperatorProcessor;
 import io.github.loadup.testify.core.util.JsonUtil;
 import java.util.Map;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Declarative assertion helper for integration tests. Compares an actual result against an expected
@@ -136,6 +136,6 @@ public class ScenarioAssert {
         if (node.isBoolean()) {
             return node.booleanValue();
         }
-        return node.asText();
+        return node.asString();
     }
 }

@@ -19,8 +19,6 @@
  */
 package io.github.loadup.components.dfs.database;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.components.dfs.DfsObjectNotFoundException;
 import io.github.loadup.components.dfs.DfsProvider;
@@ -36,6 +34,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.UUID;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 /** Transitional database binder for small files. S3 is the recommended production binder. */
 public class DatabaseDfsProvider implements DfsProvider {
@@ -69,7 +70,7 @@ public class DatabaseDfsProvider implements DfsProvider {
             file.setDeleted(0);
             mapper.insert(file);
             return toMetadata(file);
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             throw new DfsStorageException("Database DFS upload failed for " + fileId, e);
         }
     }
@@ -115,7 +116,7 @@ public class DatabaseDfsProvider implements DfsProvider {
             metadata = file.getMetadataJson() == null
                     ? Map.of()
                     : objectMapper.readValue(file.getMetadataJson(), new TypeReference<>() {});
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new DfsStorageException("Failed to parse database DFS metadata for " + file.getId(), e);
         }
         return new FileMetadata(

@@ -20,7 +20,7 @@ Spring Cache 抽象（CacheManager / Cache 接口）          ← 标准门面
 loadup-components-cache-api（LoadupCacheProperties + CacheJsonCodec + 防雪崩语义）
         │                        │
         ├── binder-caffeine ─────┤  LoadupCaffeineCacheManager（Caffeine Expiry 实现 TTL/抖动）
-        ├── binder-redis ────────┤  RedisCacheManager + GenericJackson2JsonRedisSerializer
+        ├── binder-redis ────────┤  RedisCacheManager + GenericJacksonJsonRedisSerializer
         └── binder-jetcache ─────┘  JetCacheSpringCacheManager（本地 Caffeine + 可选 Redis 远程）
 ```
 
@@ -38,12 +38,13 @@ loadup-components-cache-api（LoadupCacheProperties + CacheJsonCodec + 防雪崩
 - JDK 序列化的缺陷：要求所有缓存对象实现 `Serializable`；本项目 DTO 强制使用 Java `record`
   （不可序列化）；载荷大（含类元数据）；反序列化是安全攻击面。
 - JSON 方案：业务类型保持普通 record/POJO；写值时用应用 `ObjectMapper` 的副本（不改全局
-  mapper）并启用 `activateDefaultTypingAsProperty(EVERYTHING, "@class")`，读回时恢复具体类型
-  （final record 也能往返）。
+  mapper）并启用 `activateDefaultTypingAsProperty(NON_FINAL_AND_RECORDS, "@class")`，读回时恢复具体类型
+  （final record 也能往返）。由于缓存 API 必须支持集成方任意业务类型，codec 使用允许所有子类型的
+  显式校验器；因此缓存数据必须来自可信存储，不能将不可信 JSON 直接交给该 codec 反序列化。
 - Spring Cache 的 null 值标记 `NullValue` 是空 bean，Jackson 默认无法序列化；codec 内注册
   专用 `NullValueSerializer`，写出 `{"@class":"..."}`、读回仍是 `NullValue`，与 Spring Data
-  Redis 的 `GenericJackson2JsonRedisSerializer.registerNullValueSerializer` 行为一致。
-- Redis binder 直接复用 codec 的 typed mapper 构造 `GenericJackson2JsonRedisSerializer`
+  Redis 的 `GenericJacksonJsonRedisSerializer` null-value 行为一致。
+- Redis binder 直接复用 codec 的 typed mapper 构造 `GenericJacksonJsonRedisSerializer`
   （注意：必须传带类型标记的 mapper，否则 `@class` 不生效、具体类型退化为 Map）。
 
 ### 3.2 Redis binder：同步写保证 Spring Cache 契约

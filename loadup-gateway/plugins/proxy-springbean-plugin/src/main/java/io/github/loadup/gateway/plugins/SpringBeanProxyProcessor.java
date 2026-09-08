@@ -108,7 +108,7 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
      *
      * <p>{@link JsonUtil#toJson(Object)} returns {@code String} values as-is, which would
      * produce an invalid JSON body (e.g. a bare {@code hello} instead of {@code "hello"}).
-     * Serializing through the underlying {@link com.fasterxml.jackson.databind.ObjectMapper}
+     * Serializing through the underlying {@link tools.jackson.databind.ObjectMapper}
      * keeps the gateway body contract: it is always a JSON document.
      */
     private static String serializeBody(Object result) throws Exception {
@@ -117,7 +117,7 @@ public class SpringBeanProxyProcessor implements ProxyProcessor {
         }
         try {
             return JsonUtil.getObjectMapper().writeValueAsString(result);
-        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+        } catch (tools.jackson.core.JacksonException e) {
             throw GatewayExceptionFactory.systemError("Failed to serialize bean result: " + e.getMessage());
         }
     }

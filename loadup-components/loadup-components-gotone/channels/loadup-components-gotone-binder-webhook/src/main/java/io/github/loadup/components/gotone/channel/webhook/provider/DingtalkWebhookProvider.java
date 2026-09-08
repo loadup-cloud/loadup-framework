@@ -23,7 +23,6 @@ import static io.github.loadup.components.gotone.channel.webhook.provider.Webhoo
 import static io.github.loadup.components.gotone.channel.webhook.provider.WebhookSupport.maskUrl;
 import static io.github.loadup.components.gotone.channel.webhook.provider.WebhookSupport.postJson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.loadup.components.gotone.NotificationChannelProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
@@ -31,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * DingTalk group robot webhook provider.

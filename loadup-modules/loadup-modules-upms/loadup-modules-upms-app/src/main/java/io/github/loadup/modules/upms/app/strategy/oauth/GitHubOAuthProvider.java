@@ -20,8 +20,6 @@ package io.github.loadup.modules.upms.app.strategy.oauth;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
 import io.github.loadup.modules.upms.client.constant.OAuthProvider;
 import io.github.loadup.modules.upms.client.dto.OAuthToken;
@@ -40,6 +38,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * GitHub OAuth Provider
@@ -103,8 +103,8 @@ public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.st
             JsonNode jsonNode = objectMapper.readTree(response.getBody());
 
             return OAuthToken.builder()
-                    .accessToken(jsonNode.get("access_token").asText())
-                    .scope(jsonNode.has("scope") ? jsonNode.get("scope").asText() : null)
+                    .accessToken(jsonNode.get("access_token").asString())
+                    .scope(jsonNode.has("scope") ? jsonNode.get("scope").asString() : null)
                     .build();
 
         } catch (Exception e) {
@@ -131,16 +131,16 @@ public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.st
             JsonNode jsonNode = objectMapper.readTree(response.getBody());
 
             return OAuthUserInfo.builder()
-                    .openId(jsonNode.get("id").asText())
+                    .openId(jsonNode.get("id").asString())
                     .nickname(
                             jsonNode.has("name")
-                                    ? jsonNode.get("name").asText()
-                                    : jsonNode.get("login").asText())
+                                    ? jsonNode.get("name").asString()
+                                    : jsonNode.get("login").asString())
                     .avatar(
                             jsonNode.has("avatar_url")
-                                    ? jsonNode.get("avatar_url").asText()
+                                    ? jsonNode.get("avatar_url").asString()
                                     : null)
-                    .email(jsonNode.has("email") ? jsonNode.get("email").asText() : null)
+                    .email(jsonNode.has("email") ? jsonNode.get("email").asString() : null)
                     .build();
 
         } catch (Exception e) {

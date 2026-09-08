@@ -20,7 +20,6 @@ package io.github.loadup.components.configcenter.nacos;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.loadup.commons.util.JsonUtil;
 import java.io.StringReader;
 import java.util.Collection;
@@ -28,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import org.yaml.snakeyaml.Yaml;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Parses and renders Nacos file content (properties / yaml) for the key-value facade.

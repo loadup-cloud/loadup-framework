@@ -20,14 +20,14 @@ package io.github.loadup.commons.util.json;
  * #L%
  */
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.github.loadup.commons.constant.CommonConstants;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
 public class MultiDateDeserializer extends StdDeserializer<Date> {
     private static final SimpleDateFormat[] DATE_FORMATS = {
@@ -41,8 +41,8 @@ public class MultiDateDeserializer extends StdDeserializer<Date> {
     }
 
     @Override
-    public Date deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        String dateStr = p.getText().trim();
+    public Date deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
+        String dateStr = p.getString().trim();
         for (SimpleDateFormat dateFormat : DATE_FORMATS) {
             try {
                 return dateFormat.parse(dateStr);
@@ -50,6 +50,6 @@ public class MultiDateDeserializer extends StdDeserializer<Date> {
                 // 尝试下一个格式
             }
         }
-        throw new IOException("Unable to parse date: " + dateStr);
+        throw ctxt.weirdStringException(dateStr, Date.class, "Unsupported date format");
     }
 }
