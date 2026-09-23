@@ -13,7 +13,7 @@
     <description>YAML file route store with file watcher hot reload</description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>

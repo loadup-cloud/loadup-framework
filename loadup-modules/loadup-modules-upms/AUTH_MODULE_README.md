@@ -218,8 +218,8 @@ ALTER TABLE upms_login_log
 
 ## 技术栈
 
-- Java 21
-- Spring Boot 4.1.0
+- Java 25
+- Spring Boot 4.1.1
 - MyBatis-Flex 3.5.4.1
 - Spring Security (轻量集成)
 - JWT

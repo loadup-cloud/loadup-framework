@@ -2,7 +2,7 @@
 
 ## Build
 
-Use Java 21 and Maven 3.6 or newer.
+Use Java 25 and Maven 3.6 or newer.
 
 ```bash
 mvn clean verify

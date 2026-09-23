@@ -13,7 +13,7 @@
     <description>knife4j / springdoc-openapi 3 auto-configuration component for LoadUp modules</description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>

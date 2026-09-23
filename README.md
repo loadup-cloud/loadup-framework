@@ -1,11 +1,11 @@
 # LoadUp Framework
 
-[![Java](https://img.shields.io/badge/Java-21-blue.svg)](https://openjdk.org/projects/jdk/21/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-green.svg)](https://spring.io/projects/spring-boot)
-[![MyBatis-Flex](https://img.shields.io/badge/MyBatis--Flex-1.11.7-orange.svg)](https://mybatis-flex.com/)
+[![Java](https://img.shields.io/badge/Java-25-blue.svg)](https://openjdk.org/projects/jdk/25/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.1-green.svg)](https://spring.io/projects/spring-boot)
+[![MyBatis-Flex](https://img.shields.io/badge/MyBatis--Flex-1.11.8-orange.svg)](https://mybatis-flex.com/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-LoadUp Framework 是一个基于 Spring Boot 4.1.0 的**企业级微服务开发框架**，采用 **Monorepo（单仓库）多模块架构**
+LoadUp Framework 是一个基于 Spring Boot 4.1.1 的**企业级微服务开发框架**，采用 **Monorepo（单仓库）多模块架构**
 ，提供可复用的基础组件和最佳实践，帮助团队快速构建高质量的企业应用。
 
 ## 📚 目录
@@ -248,9 +248,9 @@ LoadUp Framework 采用清晰的 **6 层分层架构**，共 19 个模块：
 
 | 技术领域   | 技术选型                             | 版本     | 说明           |
 |--------|----------------------------------|--------|--------------|
-| 编程语言   | Java                             | 21     | LTS 长期支持版本   |
-| 应用框架   | Spring Boot                      | 4.1.0  | 企业级应用框架      |
-| 持久层框架  | MyBatis-Flex                     | 1.11.7 | 类型安全的 ORM 框架 |
+| 编程语言   | Java                             | 25     | LTS 长期支持版本   |
+| 应用框架   | Spring Boot                      | 4.1.1  | 企业级应用框架      |
+| 持久层框架  | MyBatis-Flex                     | 1.11.8 | 类型安全的 ORM 框架 |
 | 数据库    | MySQL                            | 8.0+   | 关系型数据库       |
 | 缓存     | Redis (Redisson)                 | -      | 分布式缓存        |
 | 本地缓存   | Caffeine                         | -      | 高性能本地缓存      |
@@ -737,7 +737,7 @@ Request → 本地缓存 (Caffeine) → 分布式缓存 (Redis) → 数据库
 #### 链路追踪
 
 - **框架**: OpenTelemetry
-- **集成**: Jaeger/Zipkin
+- **集成**: OTLP/HTTP（Collector；可对接 Jaeger/Zipkin 等后端）
 - **采样率**: 可配置
 
 #### 指标监控

@@ -26,7 +26,7 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
 /**
  * SPI for plugging in custom OpenTelemetry {@link SpanExporter} implementations.
  *
- * <p>Built-in types: {@code logging}, {@code otlp}, {@code zipkin}, {@code noop}.
+ * <p>Built-in types: {@code logging}, {@code otlp}, {@code noop}.
  * Additional types can be registered by placing a
  * {@code META-INF/services/io.github.loadup.common.tracer.spi.SpanExporterProvider}
  * file in any JAR on the classpath.

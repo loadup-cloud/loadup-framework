@@ -631,7 +631,7 @@ public class AbacPermissionEvaluator implements PermissionEvaluator {
 
 ### 9.3 技术栈
 
-- **框架**: Spring Boot 4.1.0
+- **框架**: Spring Boot 4.1.1
 - **语言**: Java 17
 - **ORM**: Spring Data JDBC
 - **安全**: Spring Security + JWT

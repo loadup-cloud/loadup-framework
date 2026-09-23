@@ -84,15 +84,14 @@ public class TracerProperties {
     public static class ExporterConfig {
 
         /**
-         * Exporter type: otlp | zipkin | logging | noop.
+         * Exporter type: otlp | logging | noop.
          * Additional types can be registered via ServiceLoader SPI.
          */
         private String type = "logging";
 
         /**
          * Exporter endpoint.
-         * otlp:   e.g. http://localhost:4317
-         * zipkin: e.g. http://localhost:9411/api/v2/spans
+         * otlp: e.g. http://localhost:4318/v1/traces
          */
         private String endpoint;
 

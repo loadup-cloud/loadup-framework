@@ -48,5 +48,5 @@ spans or require a tracer SDK.
 - `LogUtil.getLogger(MyService.class)` for a reusable logger field;
 - direct `LogUtil.info(...)` / `debug(...)` / `warn(...)` / `error(...)` calls for development diagnostics.
 
-Both styles delegate to SLF4J parameterized logging. Direct calls resolve the calling class with Java 21
+Both styles delegate to SLF4J parameterized logging. Direct calls resolve the calling class with the JDK
 `StackWalker`, so the emitted logger name remains useful for filtering and searching.

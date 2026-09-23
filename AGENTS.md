@@ -293,7 +293,7 @@ path,method,target,securityCode,requestTemplate,responseTemplate,enabled,propert
 
 ## 技术栈速查
 
-- Java **21** | Spring Boot **4.1.0** | MyBatis-Flex **1.11.7**
+- Java **25** | Spring Boot **4.1.1** | MyBatis-Flex **1.11.8**
 - MySQL 8.0+ | Caffeine（本地）| Redis/Redisson（分布式）
 - Resilience4j **2.3.0**（容错；版本由 loadup-dependencies BOM 统一，跟随 Spring Cloud 2025.1.x）
 - JUnit 5 + `loadup-testify-spring-boot-starter` + Testcontainers

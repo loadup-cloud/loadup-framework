@@ -84,7 +84,7 @@
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring.boot.version}</version>
                     <configuration>
-                        <jvmArguments>-XX:+UseZGC -XX:+ZGenerational -Xmx512m -Xms256m</jvmArguments>
+                        <jvmArguments>-XX:+UseZGC -Xmx512m -Xms256m</jvmArguments>
                         <layers>
                             <enabled>true</enabled>
                         </layers>

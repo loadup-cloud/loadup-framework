@@ -1,4 +1,3 @@
 io.github.loadup.common.tracer.provider.LoggingSpanExporterProvider
 io.github.loadup.common.tracer.provider.NoOpSpanExporterProvider
 io.github.loadup.common.tracer.provider.OtlpSpanExporterProvider
-io.github.loadup.common.tracer.provider.ZipkinSpanExporterProvider

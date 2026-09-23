@@ -1,5 +1,5 @@
-# Build stage: compile and package with Maven + JDK 21
-FROM maven:3.9-eclipse-temurin-21 AS builder
+# Build stage: compile and package with Maven + JDK 25
+FROM maven:3.9-eclipse-temurin-25 AS builder
 WORKDIR /app
 
 # Copy all POM files first for dependency caching (layer reuse when only sources change)
@@ -34,8 +34,8 @@ COPY loadup-application /app/loadup-application/
 # Build only the application module (pulls in all dependencies transitively)
 RUN mvn clean package -pl loadup-application -am -B -q -DskipTests
 
-# Runtime stage: minimal JRE 21 image
-FROM eclipse-temurin:21-jre-alpine
+# Runtime stage: minimal JRE 25 image
+FROM eclipse-temurin:25-jre-alpine
 
 RUN addgroup -S loadup && adduser -S loadup -G loadup
 
@@ -49,7 +49,6 @@ HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
 
 ENTRYPOINT ["java", \
     "-XX:+UseZGC", \
-    "-XX:+ZGenerational", \
     "-Xmx512m", \
     "-Xms256m", \
     "-jar", "/app/app.jar"]

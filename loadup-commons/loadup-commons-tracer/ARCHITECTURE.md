@@ -36,10 +36,10 @@
           │  (BatchSpanProcessor + W3C)   │
           └───────────────┬───────────────┘
                           │  SpanExporter.composite()
-          ┌───────────────┼───────────────┐
-          ▼               ▼               ▼
-     OtlpHttp         Zipkin          Logging / Noop
-   (Collector)      (Zipkin UI)       (fallback)
+          ┌───────────────┴───────────────┐
+          ▼                               ▼
+       OtlpHttp                     Logging / Noop
+      (Collector)                     (fallback)
 ```
 
 ---
@@ -66,8 +66,7 @@ loadup-commons-tracer/src/main/java/.../tracer/
 ├── provider/
 │   ├── LoggingSpanExporterProvider.java
 │   ├── NoOpSpanExporterProvider.java
-│   ├── OtlpSpanExporterProvider.java   ← OTLP/HTTP
-│   └── ZipkinSpanExporterProvider.java
+│   └── OtlpSpanExporterProvider.java   ← OTLP/HTTP
 ├── TraceContext.java                   ← ThreadLocal<Deque<Span>>, 纯 POJO
 └── TraceUtil.java                      ← 静态门面 (Spring bean 初始化一次)
 ```
@@ -177,7 +176,7 @@ Runnable decorate(Runnable runnable)
 ```
 ServiceLoader.load(SpanExporterProvider.class)
     ↓ classpath 扫描 META-INF/services/...
-    ↓ 内置：logging, noop, otlp, zipkin
+    ↓ 内置：logging, noop, otlp
     ↓ 外部 JAR 可追加任意 type
 
 TracerAutoConfiguration.resolveExporter()
@@ -270,7 +269,6 @@ loadup-commons-tracer
     ├── io.opentelemetry:opentelemetry-sdk-trace
     ├── io.opentelemetry:opentelemetry-exporter-otlp     (OTLP/HTTP)
     ├── io.opentelemetry:opentelemetry-exporter-logging
-    ├── io.opentelemetry:opentelemetry-exporter-zipkin
     ├── spring-boot-starter-aop                          (AOP 切面)
     ├── spring-boot-starter-web                          (optional, 提供 OncePerRequestFilter)
     └── spring-boot-configuration-processor              (optional, 配置元数据)

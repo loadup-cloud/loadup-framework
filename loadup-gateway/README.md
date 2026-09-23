@@ -3,8 +3,8 @@
 Embedded multi-protocol API gateway for Spring Boot, built on **Spring Cloud Gateway Server MVC** — distributed as a library, not a server. Routes are declared in YAML / DB and dispatched through a `RouterFunction`, so gateway routes and regular `@RestController`s coexist in one MVC application.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)
-[![Spring Boot 4.1](https://img.shields.io/badge/Spring_Boot-4.1.0-green.svg)](https://spring.io/projects/spring-boot)
+[![Java 25](https://img.shields.io/badge/Java-25-orange.svg)](https://openjdk.org/projects/jdk/25/)
+[![Spring Boot 4.1](https://img.shields.io/badge/Spring_Boot-4.1.1-green.svg)](https://spring.io/projects/spring-boot)
 
 ## What it does
 
