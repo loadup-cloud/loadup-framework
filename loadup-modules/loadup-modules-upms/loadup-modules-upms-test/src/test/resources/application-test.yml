@@ -45,5 +45,10 @@ logging:
     org.springframework.transaction: DEBUG
 
 loadup:
+  upms:
+    security:
+      jwt:
+        # Test-only signing key. Production deployments must supply their own strong secret.
+        secret: loadup-test-only-hs256-key-0123456789abcdef
   tracer:
     enabled: false

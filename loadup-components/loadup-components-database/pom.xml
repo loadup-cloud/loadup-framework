@@ -27,6 +27,18 @@
             <groupId>com.mybatis-flex</groupId>
             <artifactId>mybatis-flex-spring-boot4-starter</artifactId>
         </dependency>
+        <!--
+          MyBatis-Flex declares spring-boot-jdbc and the connection pools as optional, so the
+          starter alone provides no DataSourceAutoConfiguration. Without it MybatisFlexAutoConfiguration
+          is skipped while mapper interfaces are still registered, and every mapper bean fails with
+          "Property 'sqlSessionFactory' or 'sqlSessionTemplate' are required".
+          The integration still chooses its own driver, pool and datasource properties;
+          DataSourceAutoConfiguration backs off as soon as the application defines a DataSource.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>

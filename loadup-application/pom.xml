@@ -37,6 +37,12 @@
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-upms-app</artifactId>
         </dependency>
+        <!-- JDBC driver backing the local MySQL datasource declared in application.yml -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
         <!--        <dependency>-->
         <!--            <groupId>io.github.loadup-cloud</groupId>-->
         <!--            <artifactId>loadup-modules-config-app</artifactId>-->

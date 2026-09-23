@@ -11,7 +11,9 @@ MyBatis-Flex integration for common persistent fields, audit timestamps, configu
 </dependency>
 ```
 
-The application supplies its JDBC driver and datasource; this module does not select a database vendor.
+This module brings the JDBC stack (`spring-boot-starter-jdbc`, so `DataSourceAutoConfiguration` and a
+default Hikari pool); the application still supplies the JDBC driver and the `spring.datasource.*`
+properties. This module does not select a database vendor.
 
 Define each data object as `@Table(...) class XxxDO extends BaseDO` and its mapper as `@Mapper interface XxxDOMapper extends BaseMapper<XxxDO>`. `BaseDO` supplies `id`, `createdAt`, `updatedAt`, `tenantId`, and integer `deleted` (`0` normal, `1` deleted). TableDef and mapper sources are generated from the root `mybatis-flex.config`.
 
