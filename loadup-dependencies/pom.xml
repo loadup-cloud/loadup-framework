@@ -86,7 +86,7 @@
         <!-- Observability: stay on Spring Boot's managed opentelemetry-bom version (Spring Boot
              4.1.x -> 1.62.0) so the whole OTel line (api / sdk / exporters) stays consistent with
              the SDK that Spring Boot compiles against. Do not bump independently of Spring Boot. -->
-        <opentelemetry.version>1.62.0</opentelemetry.version>
+        <opentelemetry.version>1.66.0</opentelemetry.version>
         <opentelemetry-semconv.version>1.44.0</opentelemetry-semconv.version>
 
         <!-- Security and Auth -->
