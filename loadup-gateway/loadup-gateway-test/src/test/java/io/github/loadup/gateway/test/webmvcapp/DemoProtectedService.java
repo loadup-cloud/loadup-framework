@@ -20,20 +20,23 @@ package io.github.loadup.gateway.test.webmvcapp;
  * #L%
  */
 
+import io.github.loadup.gateway.api.GatewayExpose;
 import java.util.Map;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * Backend bean protected with method-level Spring Security authorization, targeted by the
- * {@code bean://} route used to prove that gateway authentication flows into
+ * Service route used to prove that gateway authentication flows into
  * {@code @PreAuthorize} on business methods.
  */
 @Service("demoProtectedService")
 public class DemoProtectedService {
 
     @PreAuthorize("hasAuthority('user:write')")
-    public String secureEcho(Map<String, Object> body) {
+    @GatewayExpose
+    public String secureEcho(@RequestBody Map<String, Object> body) {
         Object name = body == null ? null : body.get("name");
         return "secure:" + (name == null ? "null" : name);
     }

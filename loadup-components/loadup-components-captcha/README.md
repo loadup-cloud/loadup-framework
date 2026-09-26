@@ -55,6 +55,7 @@ public class LoginService {
         this.captcha = captcha;
     }
 
+    @GatewayExpose
     public CaptchaResponse newCaptcha() {
         return captcha.generate();               // 或 captcha.generate(CaptchaType.SLIDER)
     }
@@ -65,7 +66,7 @@ public class LoginService {
 }
 ```
 
-接口通过 Gateway `bean://captchaTemplate:generate` 路由暴露，组件不提供 Controller。
+在路由配置中将 `service` 目标指向集成方的 `loginService:newCaptcha`；仅标记 `@GatewayExpose` 的方法可对外调用，组件不提供 Controller。
 
 ## 能力矩阵
 

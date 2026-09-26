@@ -72,7 +72,7 @@ loadup-parent/
 │   ├── loadup-components-springdoc/       # knife4j / OpenAPI 文档自动配置
 │   └── loadup-components-testcontainers/  # 测试容器封装
 ├── middleware/
-│   ├── loadup-gateway/         # 嵌入式 API 网关（facade + core + starter + plugins）
+│   ├── loadup-gateway/         # 嵌入式 API 网关（api + SCG MVC + starter + 可选来源/策略）
 │   └── loadup-testify/         # 集成测试框架
 ├── modules/                    # 通用业务能力（可复用业务模块）
 │   ├── loadup-modules-upms/    # 用户权限管理 RBAC3 + OAuth2 三方登录
@@ -99,6 +99,8 @@ loadup-application
 middleware/loadup-gateway  → 可依赖 commons、components
 middleware/loadup-testify  → 仅 test scope，深度依赖框架内部类型
 ```
+
+需要直接暴露业务方法的 `modules/*-app` 可依赖轻量的 `loadup-gateway-api`（仅注解与路由 SPI），不得依赖 gateway-webmvc 或 starter。
 
 ---
 
@@ -176,7 +178,7 @@ loadup-modules-{mod}/
 | #  | 禁止行为                                     | 正确做法                                                                |
 |----|------------------------------------------|---------------------------------------------------------------------|
 | 1  | Java 文件头写 `/*- #%L ... #L% */` License 块 | 标准 Apache-2.0 模板：`mvn license:update-file-header` 后执行 `mvn spotless:apply`（模板空行含尾随空格需对齐），verify 阶段 `check-file-header` + `spotless:check` 双校验 |
-| 2  | 创建 `@RestController` / `@Controller`     | Gateway `bean://serviceName:method` 路由                                   |
+| 2  | 创建 `@RestController` / `@Controller`     | Service 方法加 `@GatewayExpose`，由版本化 Gateway 路由映射 |
 | 3  | 集成测试中用 `@MockBean` 替代 DB                 | `@EnableTestContainers(ContainerType.MYSQL)` 启动真实容器                      |
 | 4  | `@Autowired` 字段注入                        | 构造器注入：显式 `public XxxService(XxxGateway gw) { this.gw = gw; }`                               |
 | 5  | 字符串拼接 SQL                                | MyBatis-Flex `QueryWrapper`                                              |
@@ -264,21 +266,20 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 
 ## API 暴露方式
 
-路由通过 **CSV 文件** 或 **数据库** 管理，无 Controller 层。
+Service 方法通过 `loadup-gateway-api` 的 `@GatewayExpose` 显式列入可调用白名单，路径与访问策略由**版本化路由文档**管理。默认读取 classpath YAML；配置 jar 外文件、配置中心或自定义 `RouteSource` 后，修改路由不需要重新打包，无 Controller 层。
 
-```csv
-# resources/gateway-config/routes.csv
-path,method,target,securityCode,requestTemplate,responseTemplate,enabled,properties
-/api/v1/config/list,POST,bean://configItemService:listAll,default,,,true,
-/api/v1/config/value,POST,bean://configItemService:getValue,OFF,,,true,
+```yaml
+schemaVersion: 1
+routes:
+  - id: config-list
+    order: 100
+    path: /api/v1/config/list
+    methods: [POST]
+    target: { type: service, bean: configItemService, method: listAll }
+    access: { type: authenticated }
 ```
 
-| securityCode | 含义               |
-|-------------|------------------|
-| `OFF`       | 无校验（公开接口）        |
-| `default`   | JWT Bearer Token  |
-| `signature` | HMAC-SHA256 签名验签 |
-| `internal`  | 内部调用白名单          |
+`access.type` 当前支持 `public`、`authenticated`、`authority`；`access.signature: true` 可叠加 HMAC 签名校验。远程 HTTP 路由使用 `target.type: http`，转发由 SCG MVC 原生 handler 执行。具体契约和当前限制见 `loadup-gateway/README.md`、`loadup-gateway/ARCHITECTURE.md`。
 
 ---
 

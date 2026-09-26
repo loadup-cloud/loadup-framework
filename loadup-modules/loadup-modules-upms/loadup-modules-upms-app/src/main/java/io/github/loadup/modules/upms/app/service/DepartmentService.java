@@ -1,25 +1,6 @@
 package io.github.loadup.modules.upms.app.service;
 
-/*-
- * #%L
- * Loadup Modules UPMS App Layer
- * %%
- * Copyright (C) 2025 - 2026 LoadUp Cloud
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
+import io.github.loadup.gateway.api.GatewayExpose;
 import io.github.loadup.modules.upms.client.command.DepartmentCreateCommand;
 import io.github.loadup.modules.upms.client.command.DepartmentUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.DepartmentDTO;
@@ -34,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Department Management Service
@@ -52,7 +35,8 @@ public class DepartmentService {
      * Create department
      */
     @Transactional
-    public DepartmentDTO createDepartment(DepartmentCreateCommand command) {
+    @GatewayExpose
+    public DepartmentDTO createDepartment(@RequestBody DepartmentCreateCommand command) {
         // Validate department code uniqueness
         if (departmentGateway.existsByDeptCode(command.getDeptCode())) {
             throw new RuntimeException("部门编码已存在");
@@ -95,7 +79,8 @@ public class DepartmentService {
      * Update department
      */
     @Transactional
-    public DepartmentDTO updateDepartment(DepartmentUpdateCommand command) {
+    @GatewayExpose
+    public DepartmentDTO updateDepartment(@RequestBody DepartmentUpdateCommand command) {
         Department department =
                 departmentGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("部门不存在"));
 
@@ -153,7 +138,8 @@ public class DepartmentService {
      * Delete department
      */
     @Transactional
-    public void deleteDepartment(String id) {
+    @GatewayExpose
+    public void deleteDepartment(@RequestBody String id) {
         departmentGateway.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
 
         // Check if department has children
@@ -172,7 +158,8 @@ public class DepartmentService {
     /**
      * Get department by ID
      */
-    public DepartmentDTO getDepartmentById(String id) {
+    @GatewayExpose
+    public DepartmentDTO getDepartmentById(@RequestBody String id) {
         Department department = departmentGateway.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
         return convertToDTO(department);
     }
@@ -180,6 +167,7 @@ public class DepartmentService {
     /**
      * Get all departments as tree
      */
+    @GatewayExpose
     public List<DepartmentDTO> getDepartmentTree() {
         List<Department> allDepartments = departmentGateway.findAll();
         return buildDepartmentTree(allDepartments, null);
@@ -204,7 +192,8 @@ public class DepartmentService {
      * Move department to another parent
      */
     @Transactional
-    public void moveDepartment(String deptId, String newParentId) {
+    @GatewayExpose
+    public void moveDepartment(@RequestParam String deptId, @RequestParam String newParentId) {
         Department department = departmentGateway.findById(deptId).orElseThrow(() -> new RuntimeException("部门不存在"));
 
         // Validate new parent exists

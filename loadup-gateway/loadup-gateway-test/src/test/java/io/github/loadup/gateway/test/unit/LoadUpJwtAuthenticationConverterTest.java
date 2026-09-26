@@ -23,7 +23,7 @@ package io.github.loadup.gateway.test.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.loadup.components.authorization.model.LoadUpUser;
-import io.github.loadup.gateway.webmvc.security.LoadUpJwtAuthenticationConverter;
+import io.github.loadup.gateway.security.jwt.LoadUpJwtAuthenticationConverter;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;

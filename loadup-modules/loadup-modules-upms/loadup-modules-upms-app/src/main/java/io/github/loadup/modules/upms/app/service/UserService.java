@@ -1,29 +1,10 @@
 package io.github.loadup.modules.upms.app.service;
 
-/*-
- * #%L
- * Loadup Modules UPMS App Layer
- * %%
- * Copyright (C) 2025 - 2026 LoadUp Cloud
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.gateway.api.GatewayExpose;
 import io.github.loadup.modules.upms.app.dto.UserDetailDTO;
 import io.github.loadup.modules.upms.app.query.UserQuery;
 import io.github.loadup.modules.upms.client.command.UserCreateCommand;
@@ -44,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * User Management Service
@@ -64,7 +46,8 @@ public class UserService {
      * Create user
      */
     @Transactional
-    public UserDetailDTO createUser(UserCreateCommand command) {
+    @GatewayExpose
+    public UserDetailDTO createUser(@RequestBody UserCreateCommand command) {
         // Validate username uniqueness
         if (userGateway.existsByUsername(command.getUsername())) {
             throw new RuntimeException("用户名已存在");
@@ -120,7 +103,8 @@ public class UserService {
      * Update user
      */
     @Transactional
-    public UserDetailDTO updateUser(UserUpdateCommand command) {
+    @GatewayExpose
+    public UserDetailDTO updateUser(@RequestBody UserUpdateCommand command) {
         User user = userGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("用户不存在"));
 
         // Validate email uniqueness (if changed)
@@ -196,7 +180,8 @@ public class UserService {
      * Delete user
      */
     @Transactional
-    public void deleteUser(String id) {
+    @GatewayExpose
+    public void deleteUser(@RequestBody String id) {
         userGateway.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
         userGateway.deleteById(id);
     }
@@ -204,7 +189,8 @@ public class UserService {
     /**
      * Get user by ID
      */
-    public UserDetailDTO getUserById(IdQuery idQuery) {
+    @GatewayExpose
+    public UserDetailDTO getUserById(@RequestBody IdQuery idQuery) {
         User user = userGateway.findById(idQuery.id()).orElseThrow(() -> new RuntimeException("用户不存在"));
         return convertToDetailDTO(user);
     }
@@ -212,7 +198,8 @@ public class UserService {
     /**
      * Query users with pagination
      */
-    public PageDTO<UserDetailDTO> queryUsers(UserQuery query) {
+    @GatewayExpose
+    public PageDTO<UserDetailDTO> queryUsers(@RequestBody UserQuery query) {
         PageQuery pageQuery = PageQuery.of(query.getPage(), query.getSize());
 
         PageResult<User> userPage;
@@ -229,9 +216,8 @@ public class UserService {
             userPage = userGateway.findAll(pageQuery);
         }
 
-        List<UserDetailDTO> dtoList = userPage.records().stream()
-                .map(this::convertToDetailDTO)
-                .collect(Collectors.toList());
+        List<UserDetailDTO> dtoList =
+                userPage.records().stream().map(this::convertToDetailDTO).collect(Collectors.toList());
 
         return PageDTO.of(dtoList, userPage.total(), userPage.page(), userPage.size());
     }
@@ -240,7 +226,8 @@ public class UserService {
      * Change user password
      */
     @Transactional
-    public void changePassword(UserPasswordChangeCommand command) {
+    @GatewayExpose
+    public void changePassword(@RequestBody UserPasswordChangeCommand command) {
         User user = userGateway.findById(command.getUserId()).orElseThrow(() -> new RuntimeException("用户不存在"));
 
         // Verify old password
@@ -265,7 +252,8 @@ public class UserService {
      * Lock user account
      */
     @Transactional
-    public void lockUser(String id) {
+    @GatewayExpose
+    public void lockUser(@RequestBody String id) {
         User user = userGateway.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
         user.setAccountNonLocked(false);
         user.setLockedTime(LocalDateTime.now());
@@ -276,7 +264,8 @@ public class UserService {
      * Unlock user account
      */
     @Transactional
-    public void unlockUser(String id) {
+    @GatewayExpose
+    public void unlockUser(@RequestBody String id) {
         User user = userGateway.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
         user.setAccountNonLocked(true);
         user.setLoginFailCount(0);

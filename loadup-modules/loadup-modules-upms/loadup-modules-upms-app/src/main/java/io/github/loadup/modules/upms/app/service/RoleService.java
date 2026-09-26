@@ -1,26 +1,7 @@
 package io.github.loadup.modules.upms.app.service;
 
-/*-
- * #%L
- * Loadup Modules UPMS App Layer
- * %%
- * Copyright (C) 2025 - 2026 LoadUp Cloud
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.gateway.api.GatewayExpose;
 import io.github.loadup.modules.upms.app.query.RoleQuery;
 import io.github.loadup.modules.upms.client.command.RoleCreateCommand;
 import io.github.loadup.modules.upms.client.command.RoleUpdateCommand;
@@ -38,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Role Management Service
@@ -56,7 +39,8 @@ public class RoleService {
      * Create role
      */
     @Transactional
-    public RoleDTO createRole(RoleCreateCommand command) {
+    @GatewayExpose
+    public RoleDTO createRole(@RequestBody RoleCreateCommand command) {
         // Validate role code uniqueness
         if (roleGateway.existsByRoleCode(command.getRoleCode())) {
             throw new RuntimeException("角色编码已存在");
@@ -101,7 +85,8 @@ public class RoleService {
      * Update role
      */
     @Transactional
-    public RoleDTO updateRole(RoleUpdateCommand command) {
+    @GatewayExpose
+    public RoleDTO updateRole(@RequestBody RoleUpdateCommand command) {
         Role role = roleGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("角色不存在"));
 
         // Validate parent role (prevent circular reference)
@@ -170,7 +155,8 @@ public class RoleService {
      * Delete role
      */
     @Transactional
-    public void deleteRole(String id) {
+    @GatewayExpose
+    public void deleteRole(@RequestBody String id) {
         roleGateway.findById(id).orElseThrow(() -> new RuntimeException("角色不存在"));
 
         // Check if role has child roles
@@ -191,7 +177,8 @@ public class RoleService {
     /**
      * Get role by ID
      */
-    public RoleDTO getRoleById(String id) {
+    @GatewayExpose
+    public RoleDTO getRoleById(@RequestBody String id) {
         Role role = roleGateway.findById(id).orElseThrow(() -> new RuntimeException("角色不存在"));
         return convertToDTO(role);
     }
@@ -199,7 +186,8 @@ public class RoleService {
     /**
      * Query roles with pagination
      */
-    public PageDTO<RoleDTO> queryRoles(RoleQuery query) {
+    @GatewayExpose
+    public PageDTO<RoleDTO> queryRoles(@RequestBody RoleQuery query) {
         // Sort sort = Sort.by(Sort.Direction.fromString(query.getSortOrder()), query.getSortBy());
         // Pageable pageable = PageRequest.of(query.getPage() - 1, query.getSize(), sort);
 
@@ -215,6 +203,7 @@ public class RoleService {
     /**
      * Get role tree (hierarchy)
      */
+    @GatewayExpose
     public List<RoleDTO> getRoleTree() {
         List<Role> allRoles = roleGateway.findAll();
         return buildRoleTree(allRoles, null);
@@ -224,7 +213,8 @@ public class RoleService {
      * Assign role to user
      */
     @Transactional
-    public void assignRoleToUser(String roleId, String userId) {
+    @GatewayExpose
+    public void assignRoleToUser(@RequestParam String roleId, @RequestParam String userId) {
         roleGateway.findById(roleId).orElseThrow(() -> new RuntimeException("角色不存在"));
         roleGateway.assignRoleToUser(userId, roleId, "0");
     }
@@ -233,7 +223,8 @@ public class RoleService {
      * Remove role from user
      */
     @Transactional
-    public void removeRoleFromUser(String roleId, String userId) {
+    @GatewayExpose
+    public void removeRoleFromUser(@RequestParam String roleId, @RequestParam String userId) {
         roleGateway.removeRoleFromUser(userId, roleId);
     }
 
@@ -241,7 +232,8 @@ public class RoleService {
      * Assign permissions to role
      */
     @Transactional
-    public void assignPermissionsToRole(String roleId, List<String> permissionIds) {
+    @GatewayExpose
+    public void assignPermissionsToRole(@RequestParam String roleId, @RequestBody List<String> permissionIds) {
         roleGateway.findById(roleId).orElseThrow(() -> new RuntimeException("角色不存在"));
 
         for (String permissionId : permissionIds) {

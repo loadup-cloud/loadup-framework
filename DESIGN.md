@@ -55,7 +55,7 @@ LoadUp 的目标是成为类似 RuoYi / Pig 的**被消费脚手架**：集成�
 
 自创接口**只允许**出现在标准接口表达不了的语义上：
 
-- Gateway 路由模型（`RouteDefinition` + `securityCode` + filter 声明）
+- Gateway 的版本化路由文档、Service 方法白名单与 `RouteSource` 来源 SPI
 - `RetryTaskFacade` 的 `bizType + bizId` 幂等语义
 - `ServiceCode` 驱动的通知路由
 - Pipeline 四阶段 DSL（业务编排语义）
@@ -308,56 +308,15 @@ loadup-components-{domain}/
 - **集成测试**：JobRunr binder 用 MySQL TestContainer、Quartz binder 用内存 JobStore，同一套
   facade 用例跑两个 binder，证明切换零代码修改。
 
-### 5.5 gateway — P2
+### 5.5 gateway — SCG MVC 托管路由（实施中）
 
-- **现状**：自研 MVC 引擎（`HandlerMapping` / `HandlerAdapter` / `DefaultGatewayEngine` / `DefaultFilterChain`）+ HTTP(RestClient) / RPC / bean 三种代理。阻塞、不转发入站 header、限流/熔断为 JVM 本地级。
-- **目标 facade**（保留）：`RouteDefinition` + `ProxyProcessor` SPI + `SecurityStrategy` + `GatewayProperties`（已退役 `GatewayFilter` / `FilterChain` 命名 filter 契约）。
-- **目标 binder**：`gateway-engine-webmvc` = **Spring Cloud Gateway Server MVC**（`spring-cloud-starter-gateway-server-webmvc`，Spring Cloud 2025.0.x / Gateway 5.x，对应 Boot 4.1）。
-  - 路由编译：YAML / DB 路由 → `RouterFunction`，原子快照热刷新
-  - `http://` 后端 → `HandlerFunctions.http()` + `uri()` filter
-  - `bean://` 后端 → 自定义 `HandlerFunction`（ApplicationContext 按名取 bean 调用）
-  - `rpc://` 后端 → 自定义 `HandlerFunction`（Dubbo GenericService）
-  - `securityCode` / 限流 / 熔断 / 响应包装 / 追踪 → before / after `HandlerFilterFunction`（复用现有 filter 业务逻辑）
-  - 与 `@RestController` 共存：路由统一 `/api/**` 前缀 + `RouterFunctionMapping` order 控制
-- **动作**：引入 SCG Server MVC 做最小验证 → 路由编译与热刷新 → filter 适配 → 删除自研引擎 → 集成测试。
-- **明确排除**：WebFlux 路线（整个项目为 MVC 模式）。
-
-#### 安全设计（定案）
-
-Gateway 作为标准 **OAuth2 资源服务器**（Servlet 过滤器链），认证与授权分层，`SecurityStrategy`
-退化为"路由策略编排"，不再是认证实现：
-
-```
-请求 → Spring Security 过滤器链
-         BearerTokenAuthenticationFilter + Nimbus JwtDecoder → 标准 SecurityContext
-       → gateway SecurityHandlerFilterFunction（securityCode → SecurityStrategy）
-         OFF       → 匿名放行 + 清理上下文
-         default   → 要求已认证 + 路由级 authorize（SpEL / 权限列表简写，P3）
-         signature → 复用 loadup-components-signature 验签（不产生用户身份）
-         internal  → IP / 内网头白名单
-       → bean 路由（方法级 @PreAuthorize，同一 SecurityContext）
-```
-
-- **JWT 统一 Nimbus**：签发与验签全部走 `spring-security-oauth2-jose` 标准 API
-  （签发 `NimbusJwtEncoder` + `JwtClaimsSet`，验签 `NimbusJwtDecoder`，HMAC-SHA256）；
-  gateway 验签密钥取自 `loadup.gateway.security.secret`，UPMS 签发密钥取自
-  `loadup.upms.security.jwt.secret`；自研 `JwtUtils`（jjwt）项目级移除。
-- **claims 契约（自包含、无状态）**：`sub`(userId) / `username` / `roles`(数组) / `permissions`(数组)；
-  `JwtAuthenticationConverter` 映射 roles → `ROLE_x` + 原始值、permissions → 原始值，principal =
-  `LoadUpUser`；权限变更需重新签发（短 TTL + 刷新）。
-- **claims 作为 `default` SecurityStrategy**：认证事实由 Spring Security 过滤器链产生，路由策略只做
-  强制与判定，不再自己解析 token；`SpringBeanProxyProcessor` 的反射桥接删除。
-- **签名与认证分离**：`signature` 只证明请求来源/内容可信，不写入 SecurityContext；手写 HmacSHA256
-  替换为复用 `loadup-components-signature`（JCA 薄封装）。
-- **资源服务器选择 SPI（已落地）**：`ResourceServerBinder` 扩展点，默认 `nimbus`
-  （`loadup.gateway.security.jwk-set-uri` > `issuer-uri` > `secret` 三级选择），后续可加
-  Sa-Token 等其他认证后端。
-- **路由级授权（已落地）**：`RouteConfig.authorize` 支持完整 SpEL 或逗号分隔权限列表简写
-  （编译为 `hasAnyAuthority`），用 Spring Security `WebExpressionAuthorizationManager` 执行；
-  401（`SECURITY`）/ 403（`AUTHORIZATION`）统一 JSON。
-- **与 authserver 共嵌**：gateway 安全链固定 `@Order(SecurityFilterProperties.DEFAULT_FILTER_ORDER)`，
-  SAS 的 `/oauth2/**` 链 order 更低且带 matcher，二者可同进程共存；应用自定义链时可通过
-  `loadup.gateway.security.enabled=false` 整体关闭 gateway 默认链。
+- **定位**：嵌入式网关。单应用以显式暴露的 Service 方法替代 Controller；分布式应用以 SCG MVC 原生 `HandlerFunctions.http()` 转发。HTTP 是一种目标 handler，而非组件核心。
+- **API**：`loadup-gateway-api` 提供 `@GatewayExpose`、不可变的版本化路由文档和 `RouteSource` SPI。业务模块只依赖该轻量 API，不依赖 webmvc/starter。路由配置不能调用未暴露的 Spring 方法。
+- **执行**：`ManagedRouteRegistry` 校验完整候选版本，用 SCG MVC `GatewayRouterFunctions` 编译，并原子发布 RouterFunction 与元数据。Service 经 Spring 代理调用，保留事务与 `@PreAuthorize`；HTTP 使用官方 handler，不通过自研 RestClient 代理。
+- **来源**：默认 classpath YAML；配置 jar 外文件后用 WatchService 与周期读取热更新；可选 ConfigCenter 来源或集成方自己的 `RouteSource`。读取、校验或编译失败保留上一有效快照。DB 是可选来源，不是核心依赖。
+- **安全**：托管路由必须显式声明 `public`、`authenticated` 或 `authority`；`signature: true` 显式叠加 HMAC 请求签名与 nonce 防重放。JWT 资源服务器由可选 `loadup-gateway-security-jwt` 装配且仅匹配 `/api/**`，方法级授权与路由级授权同时生效。
+- **当前限制**：RPC、统一超时、共享限流/nonce 存储的现成绑定、更多动态 SCG 过滤器及正式 JDBC 来源仍待交付；旧 facade/proxy/store 已移出聚合与 BOM。能力矩阵以 [loadup-gateway/README.md](loadup-gateway/README.md) 与 [loadup-gateway/ARCHITECTURE.md](loadup-gateway/ARCHITECTURE.md) 为准。
+- **不采用**：WebFlux 或独立生产网关服务。
 
 ### 5.6 dfs — P3
 
@@ -399,12 +358,12 @@ Gateway 作为标准 **OAuth2 资源服务器**（Servlet 过滤器链），认�
   `binder-nanocaptcha`（nanocaptcha 2.1，传统图像验证码：数字 / 字母 / 中文）。
 - **存储**：答案与过期由各引擎侧缓存负责（tianai 本地 `LocalCacheStore`，nanocaptcha 进程内 Map TTL），
   LoadUp 不重复造存储；图像统一返回 base64 data URI。
-- **接口暴露**：通过 Gateway `bean://captchaTemplate:generate` 路由，组件不提供 Controller。
+- **接口暴露**：集成方在调用 `CaptchaTemplate` 的 Service 方法上标记 `@GatewayExpose`，再配置 `service` 目标路由；组件不提供 Controller。
 
 ### 5.11 signature — P4
 
 - **现状**：JCA 薄封装，符合理念；README 已对齐契约（能力矩阵 + 防重放语义约定）。
-- **目标**：保留；网关 HMAC 签名校验对齐业界标准（如 AWS SigV4 风格）或明确定义防重放语义（已约定：`X-App-Id` / `X-Timestamp` / `X-Nonce` / `X-Signature`，时间窗 + nonce 防重放，由 gateway `SignatureSecurityStrategy` 落地）。
+- **目标**：保留 JCA 薄封装。Gateway 托管路由已明确 `X-App-Id` / `X-Timestamp` / `X-Nonce` / `X-Signature` 协议、正文摘要、五分钟时间窗和可替换 nonce 存储，详见 gateway `ARCHITECTURE.md`。
 
 ### 5.12 common-log / common-tracer / testcontainers — P3
 

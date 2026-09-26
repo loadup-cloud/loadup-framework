@@ -10,13 +10,9 @@
     <artifactId>plugins</artifactId>
     <packaging>pom</packaging>
     <name>Loadup Gateway Plugins</name>
-    <description>Loadup Gateway — proxy/repository plugins</description>
+    <description>LoadUp Gateway route source adapters</description>
 
     <modules>
-        <module>proxy-http-plugin</module>
-        <module>proxy-rpc-plugin</module>
-        <module>proxy-springbean-plugin</module>
-        <module>repository-database-plugin</module>
         <module>repository-yaml-plugin</module>
     </modules>
 </project>

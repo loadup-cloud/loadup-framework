@@ -23,8 +23,8 @@ package io.github.loadup.gateway.test.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.loadup.gateway.facade.config.GatewayProperties;
-import io.github.loadup.gateway.webmvc.security.NimbusResourceServerBinder;
+import io.github.loadup.gateway.security.jwt.NimbusResourceServerBinder;
+import io.github.loadup.gateway.webmvc.config.GatewayProperties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

@@ -19,16 +19,19 @@
  */
 package io.github.loadup.gateway.test.webmvcapp;
 
+import io.github.loadup.gateway.api.GatewayExpose;
 import java.util.Map;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
- * Backend bean targeted by the {@code bean://} route used in integration tests.
+ * Service bean targeted by managed routes in integration tests.
  */
 @Service("demoEchoService")
 public class DemoEchoService {
 
-    public String echo(Map<String, Object> body) {
+    @GatewayExpose
+    public String echo(@RequestBody Map<String, Object> body) {
         Object name = body == null ? null : body.get("name");
         return "echo:" + (name == null ? "null" : name);
     }

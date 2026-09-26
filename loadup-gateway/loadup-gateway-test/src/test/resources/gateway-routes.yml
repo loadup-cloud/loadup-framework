@@ -1,52 +1,62 @@
+schemaVersion: 1
 routes:
   - id: demo-echo
+    order: 10
     path: /api/demo/echo
-    method: POST
-    backend:
-      protocol: bean
-      beanName: demoEchoService
-      methodName: echo
-    securityCode: OFF
+    methods: [POST]
+    target: { type: service, bean: demoEchoService, method: echo }
+    access: { type: public }
   - id: demo-secure
+    order: 20
     path: /api/demo/secure
-    method: POST
-    backend:
-      protocol: bean
-      beanName: demoEchoService
-      methodName: echo
-    securityCode: default
+    methods: [POST]
+    target: { type: service, bean: demoEchoService, method: echo }
+    access: { type: authenticated }
   - id: demo-protected
+    order: 30
     path: /api/demo/protected
-    method: POST
-    backend:
-      protocol: bean
-      beanName: demoProtectedService
-      methodName: secureEcho
-    securityCode: default
+    methods: [POST]
+    target: { type: service, bean: demoProtectedService, method: secureEcho }
+    access: { type: authenticated }
   - id: demo-authorized
+    order: 40
     path: /api/demo/authorized
-    method: POST
-    backend:
-      protocol: bean
-      beanName: demoEchoService
-      methodName: echo
-    securityCode: default
-    authorize: user:write
-  - id: demo-authorized-role
-    path: /api/demo/authorized-role
-    method: POST
-    backend:
-      protocol: bean
-      beanName: demoEchoService
-      methodName: echo
-    securityCode: default
-    authorize: hasRole('ADMIN')
-  - id: demo-echo-disabled
-    path: /api/demo/disabled
-    method: POST
-    enabled: false
-    backend:
-      protocol: bean
-      beanName: demoEchoService
-      methodName: echo
-    securityCode: OFF
+    methods: [POST]
+    target: { type: service, bean: demoEchoService, method: echo }
+    access: { type: authority, anyOf: ["user:write"] }
+  - id: demo-http
+    order: 50
+    path: /api/demo/http/**
+    methods: [GET, POST]
+    target: { type: http, uri: "https://example.org" }
+    access: { type: public }
+    filters:
+      - name: StripPrefix
+        args: { parts: 3 }
+  - id: demo-contract
+    order: 60
+    path: /api/demo/contract/{id}
+    methods: [GET]
+    target: { type: service, bean: demoContractService, method: reply }
+    access: { type: public }
+  - id: demo-limited
+    order: 70
+    path: /api/demo/limited/{id}
+    methods: [GET]
+    target: { type: service, bean: demoContractService, method: reply }
+    access: { type: public }
+    filters:
+      - name: RateLimit
+        args: { capacity: 1, periodSeconds: 60, key: ip }
+  - id: demo-signed
+    order: 80
+    path: /api/demo/signed
+    methods: [POST]
+    target: { type: service, bean: demoEchoService, method: echo }
+    access: { type: public, signature: true }
+  - id: demo-signed-auth
+    order: 90
+    path: /api/demo/signed-auth
+    methods: [POST]
+    target: { type: service, bean: demoEchoService, method: echo }
+    access: { type: authenticated, signature: true }

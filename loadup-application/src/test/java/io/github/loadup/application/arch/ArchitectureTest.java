@@ -106,7 +106,7 @@ class ArchitectureTest {
     // ── 禁止创建 REST Controller ─────────────────────────────────────────────
 
     @Test
-    @DisplayName("不允许创建 @RestController / @Controller（通过 Gateway bean:// 协议替代）")
+    @DisplayName("不允许创建 @RestController / @Controller（通过 Gateway Service 路由替代）")
     void noRestControllerAllowed() {
         noClasses()
                 .should()

@@ -1,26 +1,7 @@
 package io.github.loadup.modules.upms.app.service;
 
-/*-
- * #%L
- * Loadup Modules UPMS App Layer
- * %%
- * Copyright (C) 2025 - 2026 LoadUp Cloud
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.gateway.api.GatewayExpose;
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
 import io.github.loadup.modules.upms.app.strategy.LoginStrategyManager;
 import io.github.loadup.modules.upms.client.command.UserLoginCommand;
@@ -53,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * Authentication Service Handles user login, register, and token management
@@ -79,7 +61,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Transactional
     @Override
-    public AccessTokenDTO login(UserLoginCommand command) {
+    @GatewayExpose
+    public AccessTokenDTO login(@RequestBody UserLoginCommand command) {
         try {
             // 1. 构建登录凭证
             LoginCredentials credentials = buildLoginCredentials(command);
@@ -167,6 +150,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    @GatewayExpose
     public void logout() {
         // 对于无状态 JWT 架构，通常由前端销毁 Token
         // 如果需要主动失效，可在此处将当前 Token 加入 Redis 黑名单
@@ -183,7 +167,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Transactional
     @Override
-    public UserDetailDTO register(UserRegisterCommand command) {
+    @GatewayExpose
+    public UserDetailDTO register(@RequestBody UserRegisterCommand command) {
         // Check if username exists
         if (userGateway.existsByUsername(command.getUsername())) {
             throw new RuntimeException("用户名已存在");
@@ -229,7 +214,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * Refresh access token
      */
     @Override
-    public AccessTokenDTO refreshToken(String refreshToken) {
+    @GatewayExpose
+    public AccessTokenDTO refreshToken(@RequestBody String refreshToken) {
         // 1. Validate refresh token with the standard Nimbus decoder
         String userId = tokenService.parseRefreshToken(refreshToken);
         if (null == userId) {

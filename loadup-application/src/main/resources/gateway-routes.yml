@@ -1,314 +1,370 @@
-# yaml-language-server: $schema=../loadup-gateway/plugins/repository-yaml-plugin/src/main/resources/gateway-routes-schema.json
-
+---
+schemaVersion: 1
 routes:
-  # ========================================
-  # Authentication
-  # ========================================
-  - id: auth-login
-    path: /api/auth/login
-    method: POST
-    backend:
-      protocol: bean
-      beanName: authenticationServiceImpl
-      methodName: login
-    securityCode: OFF
-
-  - id: auth-register
-    path: /api/auth/register
-    method: POST
-    backend:
-      protocol: bean
-      beanName: authenticationServiceImpl
-      methodName: register
-    securityCode: OFF
-
-  - id: auth-refresh
-    path: /api/auth/refresh
-    method: POST
-    backend:
-      protocol: bean
-      beanName: authenticationServiceImpl
-      methodName: refreshToken
-    securityCode: OFF
-
-  - id: auth-logout
-    path: /api/auth/logout
-    method: POST
-    backend:
-      protocol: bean
-      beanName: authenticationServiceImpl
-      methodName: logout
-    securityCode: OFF
-
-  # ========================================
-  # User Management
-  # ========================================
-  - id: user-create
-    path: /api/upms/user/create
-    method: POST
-    backend:
-      protocol: bean
-      beanName: userService
-      methodName: createUser
-    securityCode: OFF
-
-  - id: user-update
-    path: /api/upms/user/update
-    method: POST
-    backend:
-      protocol: bean
-      beanName: userService
-      methodName: updateUser
-    securityCode: OFF
-
-  - id: user-delete
-    path: /api/upms/user/delete
-    method: POST
-    backend:
-      protocol: bean
-      beanName: userService
-      methodName: deleteUser
-    securityCode: OFF
-
-  - id: user-detail
-    path: /api/upms/user/detail
-    method: POST
-    backend:
-      protocol: bean
-      beanName: userService
-      methodName: getUserById
-    securityCode: internal
-
-  - id: user-list
-    path: /api/upms/user/list
-    method: POST
-    backend:
-      protocol: bean
-      beanName: userService
-      methodName: queryUsers
-    securityCode: OFF
-
-  - id: user-change-password
-    path: /api/upms/user/change-password
-    method: POST
-    backend:
-      protocol: bean
-      beanName: userService
-      methodName: changePassword
-    securityCode: internal
-
-  - id: user-lock
-    path: /api/upms/user/lock
-    method: POST
-    backend:
-      protocol: bean
-      beanName: userService
-      methodName: lockUser
-    securityCode: OFF
-
-  - id: user-unlock
-    path: /api/upms/user/unlock
-    method: POST
-    backend:
-      protocol: bean
-      beanName: userService
-      methodName: unlockUser
-    securityCode: OFF
-
-  # ========================================
-  # Role Management
-  # ========================================
-  - id: role-create
-    path: /api/upms/role/create
-    method: POST
-    backend:
-      protocol: bean
-      beanName: roleService
-      methodName: createRole
-    securityCode: OFF
-
-  - id: role-update
-    path: /api/upms/role/update
-    method: POST
-    backend:
-      protocol: bean
-      beanName: roleService
-      methodName: updateRole
-    securityCode: OFF
-
-  - id: role-delete
-    path: /api/upms/role/delete
-    method: POST
-    backend:
-      protocol: bean
-      beanName: roleService
-      methodName: deleteRole
-    securityCode: OFF
-
-  - id: role-detail
-    path: /api/upms/role/detail
-    method: POST
-    backend:
-      protocol: bean
-      beanName: roleService
-      methodName: getRoleById
-    securityCode: OFF
-
-  - id: role-list
-    path: /api/upms/role/list
-    method: POST
-    backend:
-      protocol: bean
-      beanName: roleService
-      methodName: queryRoles
-    securityCode: OFF
-
-  - id: role-tree
-    path: /api/upms/role/tree
-    method: POST
-    backend:
-      protocol: bean
-      beanName: roleService
-      methodName: getRoleTree
-    securityCode: OFF
-
-  - id: role-assign-to-user
-    path: /api/upms/role/assign-to-user
-    method: POST
-    backend:
-      protocol: bean
-      beanName: roleService
-      methodName: assignRoleToUser
-    securityCode: OFF
-
-  - id: role-remove-from-user
-    path: /api/upms/role/remove-from-user
-    method: POST
-    backend:
-      protocol: bean
-      beanName: roleService
-      methodName: removeRoleFromUser
-    securityCode: OFF
-
-  - id: role-assign-permissions
-    path: /api/upms/role/assign-permissions
-    method: POST
-    backend:
-      protocol: bean
-      beanName: roleService
-      methodName: assignPermissionsToRole
-    securityCode: OFF
-
-  # ========================================
-  # Permission Management
-  # ========================================
-  - id: permission-create
-    path: /api/upms/permission/create
-    method: POST
-    backend:
-      protocol: bean
-      beanName: permissionService
-      methodName: createPermission
-    securityCode: OFF
-
-  - id: permission-update
-    path: /api/upms/permission/update
-    method: POST
-    backend:
-      protocol: bean
-      beanName: permissionService
-      methodName: updatePermission
-    securityCode: OFF
-
-  - id: permission-delete
-    path: /api/upms/permission/delete
-    method: POST
-    backend:
-      protocol: bean
-      beanName: permissionService
-      methodName: deletePermission
-    securityCode: OFF
-
-  - id: permission-detail
-    path: /api/upms/permission/detail
-    method: POST
-    backend:
-      protocol: bean
-      beanName: permissionService
-      methodName: getPermissionById
-    securityCode: OFF
-
-  - id: permission-tree
-    path: /api/upms/permission/tree
-    method: POST
-    backend:
-      protocol: bean
-      beanName: permissionService
-      methodName: getPermissionTree
-    securityCode: OFF
-
-  - id: permission-user-menu
-    path: /api/upms/permission/user-menu
-    method: POST
-    backend:
-      protocol: bean
-      beanName: permissionService
-      methodName: getUserMenuTree
-    securityCode: OFF
-
-  # ========================================
-  # Department Management
-  # ========================================
-  - id: department-create
-    path: /api/upms/department/create
-    method: POST
-    backend:
-      protocol: bean
-      beanName: departmentService
-      methodName: createDepartment
-    securityCode: OFF
-
-  - id: department-update
-    path: /api/upms/department/update
-    method: POST
-    backend:
-      protocol: bean
-      beanName: departmentService
-      methodName: updateDepartment
-    securityCode: OFF
-
-  - id: department-delete
-    path: /api/upms/department/delete
-    method: POST
-    backend:
-      protocol: bean
-      beanName: departmentService
-      methodName: deleteDepartment
-    securityCode: OFF
-
-  - id: department-detail
-    path: /api/upms/department/detail
-    method: POST
-    backend:
-      protocol: bean
-      beanName: departmentService
-      methodName: getDepartmentById
-    securityCode: OFF
-
-  - id: department-tree
-    path: /api/upms/department/tree
-    method: POST
-    backend:
-      protocol: bean
-      beanName: departmentService
-      methodName: getDepartmentTree
-    securityCode: OFF
-
-  - id: department-move
-    path: /api/upms/department/move
-    method: POST
-    backend:
-      protocol: bean
-      beanName: departmentService
-      methodName: moveDepartment
-    securityCode: OFF
+- id: auth-login
+  order: 10
+  path: "/api/auth/login"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: authenticationServiceImpl
+    method: login
+  access:
+    type: public
+- id: auth-register
+  order: 20
+  path: "/api/auth/register"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: authenticationServiceImpl
+    method: register
+  access:
+    type: public
+- id: auth-refresh
+  order: 30
+  path: "/api/auth/refresh"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: authenticationServiceImpl
+    method: refreshToken
+  access:
+    type: public
+- id: auth-logout
+  order: 40
+  path: "/api/auth/logout"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: authenticationServiceImpl
+    method: logout
+  access:
+    type: authenticated
+- id: user-create
+  order: 50
+  path: "/api/upms/user/create"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: userService
+    method: createUser
+  access:
+    type: authenticated
+- id: user-update
+  order: 60
+  path: "/api/upms/user/update"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: userService
+    method: updateUser
+  access:
+    type: authenticated
+- id: user-delete
+  order: 70
+  path: "/api/upms/user/delete"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: userService
+    method: deleteUser
+  access:
+    type: authenticated
+- id: user-detail
+  order: 80
+  path: "/api/upms/user/detail"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: userService
+    method: getUserById
+  access:
+    type: authority
+    anyOf:
+    - internal
+- id: user-list
+  order: 90
+  path: "/api/upms/user/list"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: userService
+    method: queryUsers
+  access:
+    type: authenticated
+- id: user-change-password
+  order: 100
+  path: "/api/upms/user/change-password"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: userService
+    method: changePassword
+  access:
+    type: authority
+    anyOf:
+    - internal
+- id: user-lock
+  order: 110
+  path: "/api/upms/user/lock"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: userService
+    method: lockUser
+  access:
+    type: authenticated
+- id: user-unlock
+  order: 120
+  path: "/api/upms/user/unlock"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: userService
+    method: unlockUser
+  access:
+    type: authenticated
+- id: role-create
+  order: 130
+  path: "/api/upms/role/create"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: roleService
+    method: createRole
+  access:
+    type: authenticated
+- id: role-update
+  order: 140
+  path: "/api/upms/role/update"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: roleService
+    method: updateRole
+  access:
+    type: authenticated
+- id: role-delete
+  order: 150
+  path: "/api/upms/role/delete"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: roleService
+    method: deleteRole
+  access:
+    type: authenticated
+- id: role-detail
+  order: 160
+  path: "/api/upms/role/detail"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: roleService
+    method: getRoleById
+  access:
+    type: authenticated
+- id: role-list
+  order: 170
+  path: "/api/upms/role/list"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: roleService
+    method: queryRoles
+  access:
+    type: authenticated
+- id: role-tree
+  order: 180
+  path: "/api/upms/role/tree"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: roleService
+    method: getRoleTree
+  access:
+    type: authenticated
+- id: role-assign-to-user
+  order: 190
+  path: "/api/upms/role/assign-to-user"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: roleService
+    method: assignRoleToUser
+  access:
+    type: authenticated
+- id: role-remove-from-user
+  order: 200
+  path: "/api/upms/role/remove-from-user"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: roleService
+    method: removeRoleFromUser
+  access:
+    type: authenticated
+- id: role-assign-permissions
+  order: 210
+  path: "/api/upms/role/assign-permissions"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: roleService
+    method: assignPermissionsToRole
+  access:
+    type: authenticated
+- id: permission-create
+  order: 220
+  path: "/api/upms/permission/create"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: permissionService
+    method: createPermission
+  access:
+    type: authenticated
+- id: permission-update
+  order: 230
+  path: "/api/upms/permission/update"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: permissionService
+    method: updatePermission
+  access:
+    type: authenticated
+- id: permission-delete
+  order: 240
+  path: "/api/upms/permission/delete"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: permissionService
+    method: deletePermission
+  access:
+    type: authenticated
+- id: permission-detail
+  order: 250
+  path: "/api/upms/permission/detail"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: permissionService
+    method: getPermissionById
+  access:
+    type: authenticated
+- id: permission-tree
+  order: 260
+  path: "/api/upms/permission/tree"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: permissionService
+    method: getPermissionTree
+  access:
+    type: authenticated
+- id: permission-user-menu
+  order: 270
+  path: "/api/upms/permission/user-menu"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: permissionService
+    method: getUserMenuTree
+  access:
+    type: authenticated
+- id: department-create
+  order: 280
+  path: "/api/upms/department/create"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: departmentService
+    method: createDepartment
+  access:
+    type: authenticated
+- id: department-update
+  order: 290
+  path: "/api/upms/department/update"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: departmentService
+    method: updateDepartment
+  access:
+    type: authenticated
+- id: department-delete
+  order: 300
+  path: "/api/upms/department/delete"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: departmentService
+    method: deleteDepartment
+  access:
+    type: authenticated
+- id: department-detail
+  order: 310
+  path: "/api/upms/department/detail"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: departmentService
+    method: getDepartmentById
+  access:
+    type: authenticated
+- id: department-tree
+  order: 320
+  path: "/api/upms/department/tree"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: departmentService
+    method: getDepartmentTree
+  access:
+    type: authenticated
+- id: department-move
+  order: 330
+  path: "/api/upms/department/move"
+  methods:
+  - POST
+  target:
+    type: service
+    bean: departmentService
+    method: moveDepartment
+  access:
+    type: authenticated

@@ -228,7 +228,7 @@ LoadUp Framework 采用清晰的 **6 层分层架构**，共 19 个模块：
      └── loadup-testify-test/               (集成测试 Demo)
 ```
 
-**Gateway 功能**: 动态路由、认证鉴权、签名验签、请求响应包装、链路追踪
+**Gateway 功能**: 基于 SCG MVC 的 Service 方法路由与原生 HTTP 转发、版本化动态路由、入口认证授权与 HMAC 签名、指标与诊断；统一超时和共享治理存储仍在后续阶段
 
 **Testify 功能**: 数据准备/清理、声明式断言（操作符）、批量用例（YAML/JSON）、TestContainers 集成
 

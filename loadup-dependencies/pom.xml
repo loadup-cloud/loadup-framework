@@ -82,6 +82,7 @@
         <okhttp.version>5.5.0</okhttp.version>
         <aws.sdk.version>2.55.3</aws.sdk.version>
         <resilience4j.version>2.3.0</resilience4j.version>
+        <bucket4j.version>8.15.0</bucket4j.version>
 
         <!-- Observability: stay on Spring Boot's managed opentelemetry-bom version (Spring Boot
              4.1.x -> 1.62.0) so the whole OTel line (api / sdk / exporters) stays consistent with
@@ -142,6 +143,16 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>com.bucket4j</groupId>
+                <artifactId>bucket4j_jdk17-core</artifactId>
+                <version>${bucket4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bucket4j</groupId>
+                <artifactId>bucket4j_jdk17-caffeine</artifactId>
+                <version>${bucket4j.version}</version>
+            </dependency>
 
             <!-- Loadup commons -->
             <dependency>
@@ -162,12 +173,27 @@
             <!-- ======== loadup-gateway start ======== -->
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-gateway</artifactId>
+                <artifactId>loadup-gateway-api</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-gateway-facade</artifactId>
+                <artifactId>loadup-gateway-source-configcenter</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-gateway-filter-bucket4j</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-gateway-security-jwt</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-gateway</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
@@ -187,27 +213,6 @@
                 <version>${loadup.framework.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-gateway-proxy-rpc-plugin</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-gateway-proxy-http-plugin</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-gateway-proxy-springbean-plugin</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-gateway-repository-database-plugin</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-gateway-repository-yaml-plugin</artifactId>

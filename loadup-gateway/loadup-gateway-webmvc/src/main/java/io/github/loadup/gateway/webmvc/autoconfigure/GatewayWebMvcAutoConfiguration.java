@@ -1,195 +1,133 @@
-/*-
- * #%L
- * Loadup Gateway WebMVC Engine
- * %%
- * Copyright (C) 2025 - 2026 LoadUp Cloud
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
 package io.github.loadup.gateway.webmvc.autoconfigure;
 
-import io.github.loadup.components.resilience4j.ResilienceRegistries;
-import io.github.loadup.components.signature.service.DigestService;
-import io.github.loadup.gateway.facade.config.GatewayProperties;
-import io.github.loadup.gateway.facade.spi.ProxyProcessor;
-import io.github.loadup.gateway.facade.spi.RouteStore;
-import io.github.loadup.gateway.facade.spi.SecurityStrategy;
-import io.github.loadup.gateway.webmvc.exception.GatewayExceptionHandler;
-import io.github.loadup.gateway.webmvc.filter.CircuitBreakerHandlerFilterFunction;
-import io.github.loadup.gateway.webmvc.filter.RateLimitHandlerFilterFunction;
-import io.github.loadup.gateway.webmvc.filter.ResponseWrapperHandlerFilterFunction;
-import io.github.loadup.gateway.webmvc.filter.SecurityHandlerFilterFunction;
-import io.github.loadup.gateway.webmvc.filter.TracingHandlerFilterFunction;
-import io.github.loadup.gateway.webmvc.proxy.ProxyHandlerFunction;
-import io.github.loadup.gateway.webmvc.proxy.ProxyProcessorRegistry;
-import io.github.loadup.gateway.webmvc.router.RouteFunctionRegistry;
-import io.github.loadup.gateway.webmvc.security.DefaultSecurityStrategy;
-import io.github.loadup.gateway.webmvc.security.InternalSecurityStrategy;
-import io.github.loadup.gateway.webmvc.security.RouteAuthorizationManager;
-import io.github.loadup.gateway.webmvc.security.SecurityStrategyManager;
-import io.github.loadup.gateway.webmvc.security.SignatureSecurityStrategy;
-import io.opentelemetry.api.trace.Tracer;
+import io.github.loadup.gateway.api.spi.RouteSource;
+import io.github.loadup.gateway.webmvc.config.GatewayProperties;
+import io.github.loadup.gateway.webmvc.managed.CircuitBreakerFilterAdapter;
+import io.github.loadup.gateway.webmvc.managed.HttpTargetAdapter;
+import io.github.loadup.gateway.webmvc.managed.ManagedFilterAdapter;
+import io.github.loadup.gateway.webmvc.managed.ManagedRouteRegistry;
+import io.github.loadup.gateway.webmvc.managed.RewritePathFilterAdapter;
+import io.github.loadup.gateway.webmvc.managed.ServiceMethodCatalog;
+import io.github.loadup.gateway.webmvc.managed.ServiceTargetAdapter;
+import io.github.loadup.gateway.webmvc.managed.SetRequestHeaderFilterAdapter;
+import io.github.loadup.gateway.webmvc.managed.StripPrefixFilterAdapter;
+import io.github.loadup.gateway.webmvc.managed.TargetHandlerAdapter;
+import io.github.loadup.gateway.webmvc.security.LocalSignatureNonceStore;
+import io.github.loadup.gateway.webmvc.security.RequestSignatureVerifier;
+import io.github.loadup.gateway.webmvc.security.SignatureNonceStore;
+import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.validation.Validator;
+import java.util.HashSet;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Set;
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.gateway.server.mvc.common.MvcUtils;
+import org.springframework.cloud.gateway.server.mvc.config.GatewayMvcProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.function.RouterFunction;
+import tools.jackson.databind.ObjectMapper;
 
-/**
- * Spring Boot auto-configuration for the LoadUp gateway MVC engine.
- *
- * <p>Exposes the gateway as a {@link RouterFunction} bean that Spring MVC's
- * {@code RouterFunctionMapping} picks up automatically, so gateway routes coexist with
- * regular {@code @RestController} mappings. Route definitions come from an existing
- * {@link RouteStore} bean (YAML / database plugin).
- */
+/** Registers the managed SCG MVC router and exposed service method catalog. */
 @AutoConfiguration
-@AutoConfigureAfter(name = "io.github.loadup.components.resilience4j.core.Resilience4jCoreAutoConfiguration")
-@EnableConfigurationProperties(GatewayProperties.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass({RouterFunction.class, MvcUtils.class})
 @ConditionalOnProperty(prefix = "loadup.gateway", name = "enabled", havingValue = "true", matchIfMissing = true)
+@EnableConfigurationProperties(GatewayProperties.class)
 public class GatewayWebMvcAutoConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(GatewayWebMvcAutoConfiguration.class);
-
-    // --- Security strategies ---
-
     @Bean
-    @ConditionalOnMissingBean(name = "defaultSecurityStrategy")
-    public SecurityStrategy defaultSecurityStrategy() {
-        return new DefaultSecurityStrategy();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "internalSecurityStrategy")
-    public SecurityStrategy internalSecurityStrategy() {
-        return new InternalSecurityStrategy();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "signatureSecurityStrategy")
-    public SecurityStrategy signatureSecurityStrategy(GatewayProperties properties, DigestService digestService) {
-        return new SignatureSecurityStrategy(properties, digestService);
+    @ConditionalOnMissingBean
+    public ServiceMethodCatalog serviceMethodCatalog(
+            ListableBeanFactory beans,
+            Validator validator,
+            ObjectMapper mapper,
+            @Value("${loadup.gateway.limits.service-body-bytes:1048576}") int maxBodyBytes) {
+        return new ServiceMethodCatalog(beans, validator, mapper, maxBodyBytes);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public SecurityStrategyManager securityStrategyManager(
-            @Autowired(required = false) List<SecurityStrategy> strategies) {
-        return new SecurityStrategyManager(strategies);
-    }
-
-    // --- Proxy ---
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ProxyProcessorRegistry proxyProcessorRegistry(
-            @Autowired(required = false) List<ProxyProcessor> proxyProcessors) {
-        return new ProxyProcessorRegistry(proxyProcessors);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ProxyHandlerFunction proxyHandlerFunction(ProxyProcessorRegistry proxyProcessorRegistry) {
-        return new ProxyHandlerFunction(proxyProcessorRegistry);
-    }
-
-    // --- Filters ---
-
-    @Bean
-    @ConditionalOnMissingBean
-    public GatewayExceptionHandler gatewayExceptionHandler() {
-        return new GatewayExceptionHandler();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public SecurityHandlerFilterFunction securityHandlerFilterFunction(
-            SecurityStrategyManager strategyManager, RouteAuthorizationManager routeAuthorizationManager) {
-        return new SecurityHandlerFilterFunction(strategyManager, routeAuthorizationManager);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public RouteAuthorizationManager routeAuthorizationManager() {
-        return new RouteAuthorizationManager();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnBean(ResilienceRegistries.class)
-    public RateLimitHandlerFilterFunction rateLimitHandlerFilterFunction(ResilienceRegistries registries) {
-        return new RateLimitHandlerFilterFunction(registries);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnBean(ResilienceRegistries.class)
-    public CircuitBreakerHandlerFilterFunction circuitBreakerHandlerFilterFunction(ResilienceRegistries registries) {
-        return new CircuitBreakerHandlerFilterFunction(registries);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ResponseWrapperHandlerFilterFunction responseWrapperHandlerFilterFunction(GatewayProperties properties) {
-        return new ResponseWrapperHandlerFilterFunction(properties);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnClass(Tracer.class)
-    public TracingHandlerFilterFunction tracingHandlerFilterFunction(@Autowired(required = false) Tracer tracer) {
-        if (tracer == null) {
-            log.info("OpenTelemetry Tracer not present, gateway tracing disabled");
-            return null;
+    public ManagedRouteRegistry gatewayRouterFunction(
+            RouteSource routeSource,
+            List<TargetHandlerAdapter> targets,
+            List<ManagedFilterAdapter> filters,
+            ObjectProvider<MeterRegistry> meters,
+            RequestSignatureVerifier signatures,
+            ObjectProvider<GatewayMvcProperties> scgProperties) {
+        Set<String> reservedIds = new HashSet<>();
+        GatewayMvcProperties staticRoutes = scgProperties.getIfAvailable();
+        if (staticRoutes != null) {
+            staticRoutes.getRoutes().forEach(route -> {
+                if (route.getId() != null) {
+                    reservedIds.add(route.getId());
+                }
+            });
+            staticRoutes.getRoutesMap().forEach((key, route) -> {
+                reservedIds.add(key);
+                if (route.getId() != null) {
+                    reservedIds.add(route.getId());
+                }
+            });
         }
-        return new TracingHandlerFilterFunction(tracer);
+        return new ManagedRouteRegistry(
+                routeSource, targets, filters, meters.getIfAvailable(), signatures, reservedIds);
     }
-
-    // --- Engine entry point ---
 
     @Bean
     @ConditionalOnMissingBean
-    public RouteFunctionRegistry gatewayRouterFunction(
-            RouteStore routeStore,
-            GatewayProperties properties,
-            ProxyHandlerFunction proxyHandlerFunction,
-            GatewayExceptionHandler gatewayExceptionHandler,
-            @Autowired(required = false) TracingHandlerFilterFunction tracingHandlerFilterFunction,
-            SecurityHandlerFilterFunction securityHandlerFilterFunction,
-            @Autowired(required = false) RateLimitHandlerFilterFunction rateLimitHandlerFilterFunction,
-            @Autowired(required = false) CircuitBreakerHandlerFilterFunction circuitBreakerHandlerFilterFunction,
-            ResponseWrapperHandlerFilterFunction responseWrapperHandlerFilterFunction) {
-        return new RouteFunctionRegistry(
-                routeStore,
-                properties,
-                proxyHandlerFunction,
-                gatewayExceptionHandler,
-                tracingHandlerFilterFunction,
-                securityHandlerFilterFunction,
-                rateLimitHandlerFilterFunction,
-                circuitBreakerHandlerFilterFunction,
-                responseWrapperHandlerFilterFunction);
+    public RequestSignatureVerifier requestSignatureVerifier(GatewayProperties properties, SignatureNonceStore nonces) {
+        return new RequestSignatureVerifier(properties, nonces);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SignatureNonceStore.class)
+    public SignatureNonceStore signatureNonceStore() {
+        return new LocalSignatureNonceStore();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ServiceTargetAdapter serviceTargetAdapter(ServiceMethodCatalog catalog) {
+        return new ServiceTargetAdapter(catalog);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public HttpTargetAdapter httpTargetAdapter(ObjectProvider<LoadBalancerClient> loadBalancer) {
+        return new HttpTargetAdapter(loadBalancer.getIfAvailable() != null);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public StripPrefixFilterAdapter stripPrefixFilterAdapter() {
+        return new StripPrefixFilterAdapter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RewritePathFilterAdapter rewritePathFilterAdapter() {
+        return new RewritePathFilterAdapter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SetRequestHeaderFilterAdapter setRequestHeaderFilterAdapter() {
+        return new SetRequestHeaderFilterAdapter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public CircuitBreakerFilterAdapter circuitBreakerFilterAdapter(
+            ObjectProvider<CircuitBreakerFactory<?, ?>> factories) {
+        return new CircuitBreakerFilterAdapter(factories.getIfAvailable() != null);
     }
 }

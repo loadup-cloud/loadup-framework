@@ -31,7 +31,10 @@
     </developers>
 
     <modules>
-        <module>loadup-gateway-facade</module>
+        <module>loadup-gateway-api</module>
+        <module>loadup-gateway-source-configcenter</module>
+        <module>loadup-gateway-filter-bucket4j</module>
+        <module>loadup-gateway-security-jwt</module>
         <module>loadup-gateway-starter</module>
         <module>loadup-gateway-webmvc</module>
         <module>loadup-gateway-test</module>

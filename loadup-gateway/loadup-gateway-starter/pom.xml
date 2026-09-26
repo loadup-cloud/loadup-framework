@@ -47,13 +47,6 @@
             <version>${loadup.framework.version}</version>
         </dependency>
 
-        <!-- Default in-memory Resilience4j binder backing the gateway filters -->
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-resilience4j-binder-core</artifactId>
-            <optional>true</optional>
-        </dependency>
-
         <!-- Tracer component (optional) -->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

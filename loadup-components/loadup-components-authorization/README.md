@@ -44,7 +44,7 @@ public class OrderService {
 }
 ```
 
-Gateway `bean://` 路由调用前通过 `UserContext.set(LoadUpUser)` 写入上下文，业务代码用
+Gateway 的 `service` 目标调用前由 Spring Security 建立身份上下文，业务代码用
 `UserContext.getUserId()` / `getUsername()` 读取当前用户。
 
 ## 能力矩阵

@@ -46,23 +46,13 @@ loadup:
 
   gateway:
     enabled: true
+    source:
+      file:
+        path: ${GATEWAY_ROUTES_PATH:classpath:gateway-routes.yml}
     security:
+      enabled: true
       secret: +orcpp0Zkc6bH5yLVrztTO0bjJCODvdvTbwScKyzORijPSua5hjAviUtmxCwsexo
     route-refresh-interval: 5
-    template-cache-size: 100
-    response:
-      wrap: true
-    default-timeout: 10000
-    default-retry-count: 1
-    # Proxy plugin configuration (kebab-case maps to camelCase fields in GatewayProperties)
-    proxy-plugins:
-      bean:
-        enabled: true
-      rpc:
-        enabled: true
-      http:
-        enabled: true
-        max-connections: 200
 
   upms:
     security:
