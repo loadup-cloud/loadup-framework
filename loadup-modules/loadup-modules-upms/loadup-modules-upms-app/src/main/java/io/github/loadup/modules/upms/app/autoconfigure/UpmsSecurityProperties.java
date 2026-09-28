@@ -28,50 +28,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.upms.security")
 public class UpmsSecurityProperties {
 
-    private JwtConfig jwt = new JwtConfig();
     private LoginConfig login = new LoginConfig();
     private OAuthProvidersConfig oauth = new OAuthProvidersConfig();
-
-    public static class JwtConfig {
-        /**
-         * JWT secret key
-         */
-        private String secret;
-
-        /**
-         * Token expiration time in milliseconds (default: 24 hours)
-         */
-        private Long expiration = 86400000L;
-
-        /**
-         * Refresh token expiration time in milliseconds (default: 7 days)
-         */
-        private Long refreshExpiration = 604800000L;
-
-        public String getSecret() {
-            return secret;
-        }
-
-        public void setSecret(String secret) {
-            this.secret = secret;
-        }
-
-        public Long getExpiration() {
-            return expiration;
-        }
-
-        public void setExpiration(Long expiration) {
-            this.expiration = expiration;
-        }
-
-        public Long getRefreshExpiration() {
-            return refreshExpiration;
-        }
-
-        public void setRefreshExpiration(Long refreshExpiration) {
-            this.refreshExpiration = refreshExpiration;
-        }
-    }
 
     public static class LoginConfig {
         /**
@@ -196,14 +154,6 @@ public class UpmsSecurityProperties {
         public void setRedirectUri(String redirectUri) {
             this.redirectUri = redirectUri;
         }
-    }
-
-    public JwtConfig getJwt() {
-        return jwt;
-    }
-
-    public void setJwt(JwtConfig jwt) {
-        this.jwt = jwt;
     }
 
     public LoginConfig getLogin() {

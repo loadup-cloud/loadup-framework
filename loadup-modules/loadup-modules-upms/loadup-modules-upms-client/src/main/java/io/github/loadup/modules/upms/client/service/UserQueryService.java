@@ -31,10 +31,10 @@ public interface UserQueryService {
     /**
      * 获取用户基本信息
      */
-    UserDetailDTO getUserById(Long userId);
+    UserDetailDTO getUserById(String userId);
 
     /**
      * 批量获取用户信息
      */
-    List<UserDetailDTO> listUsersByIds(List<Long> userIds);
+    List<UserDetailDTO> listUsersByIds(List<String> userIds);
 }

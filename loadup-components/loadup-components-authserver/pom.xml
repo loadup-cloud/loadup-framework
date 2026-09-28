@@ -16,7 +16,6 @@
     <modules>
         <module>loadup-components-authserver-api</module>
         <module>loadup-components-authserver-binder-sas</module>
-        <module>loadup-components-authserver-binder-keycloak</module>
         <module>loadup-components-authserver-test</module>
     </modules>
 </project>

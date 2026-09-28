@@ -14,6 +14,8 @@
 
     <modules>
         <module>loadup-modules-upms-app</module>
+        <module>loadup-modules-upms-authserver</module>
+        <module>loadup-modules-upms-web</module>
         <module>loadup-modules-upms-client</module>
         <module>loadup-modules-upms-domain</module>
         <module>loadup-modules-upms-infrastructure</module>

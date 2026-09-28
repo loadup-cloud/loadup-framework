@@ -55,7 +55,6 @@ public class LoginService {
         this.captcha = captcha;
     }
 
-    @GatewayExpose
     public CaptchaResponse newCaptcha() {
         return captcha.generate();               // 或 captcha.generate(CaptchaType.SLIDER)
     }
@@ -66,7 +65,7 @@ public class LoginService {
 }
 ```
 
-在路由配置中将 `service` 目标指向集成方的 `loginService:newCaptcha`；仅标记 `@GatewayExpose` 的方法可对外调用，组件不提供 Controller。
+需要 HTTP 接口时，在集成方的 Controller 中调用 `LoginService.newCaptcha()`；验证码组件不绑定 HTTP 框架。
 
 ## 能力矩阵
 

@@ -43,6 +43,7 @@ class SasAuthServerAutoConfigurationTest {
         contextRunner
                 .withPropertyValues(
                         "loadup.components.authserver.issuer=http://localhost:8080",
+                        "loadup.components.authserver.audience=loadup-api",
                         "loadup.components.authserver.clients[0].client-id=loadup-app",
                         "loadup.components.authserver.clients[0].client-secret=change-me",
                         "loadup.components.authserver.clients[0].scopes[0]=openid",

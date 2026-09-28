@@ -2,6 +2,7 @@ loadup:
   components:
     authserver:
       issuer: http://localhost:8080
+      audience: loadup-api
       clients:
         - client-id: loadup-app
           client-secret: change-me

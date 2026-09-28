@@ -46,9 +46,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
@@ -68,11 +68,6 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
  * endpoints ({@code /oauth2/authorize}, {@code /oauth2/token}, {@code /oauth2/jwks}, ...).
  */
 @AutoConfiguration
-@ConditionalOnProperty(
-        prefix = "loadup.components.authserver",
-        name = "binder-type",
-        havingValue = "sas",
-        matchIfMissing = true)
 @EnableConfigurationProperties(LoadUpAuthServerProperties.class)
 public class SasAuthServerAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(SasAuthServerAutoConfiguration.class);
@@ -103,8 +98,11 @@ public class SasAuthServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(OAuth2TokenCustomizer.class)
-    public OAuth2TokenCustomizer<JwtEncodingContext> loadUpJwtTokenCustomizer() {
-        return new LoadUpJwtTokenCustomizer();
+    public OAuth2TokenCustomizer<JwtEncodingContext> loadUpJwtTokenCustomizer(LoadUpAuthServerProperties properties) {
+        if (StringUtils.isBlank(properties.getAudience())) {
+            throw new IllegalArgumentException("loadup.components.authserver.audience is required");
+        }
+        return new LoadUpJwtTokenCustomizer(properties.getAudience());
     }
 
     private static RegisteredClient toRegisteredClient(Client client) {
@@ -114,7 +112,7 @@ public class SasAuthServerAutoConfiguration {
         RegisteredClient.Builder builder = RegisteredClient.withId(
                         UUID.randomUUID().toString())
                 .clientId(client.getClientId())
-                .clientSecret("{noop}" + (client.getClientSecret() == null ? "" : client.getClientSecret()))
+                .clientSecret(encodeClientSecret(client.getClientSecret()))
                 .clientSettings(ClientSettings.builder()
                         .requireAuthorizationConsent(client.isRequireAuthorizationConsent())
                         .build())
@@ -162,5 +160,12 @@ public class SasAuthServerAutoConfiguration {
         } catch (Exception e) {
             throw new IllegalStateException("Failed to build the authorization server JWK", e);
         }
+    }
+
+    private static String encodeClientSecret(String secret) {
+        if (StringUtils.isBlank(secret)) {
+            throw new IllegalArgumentException("loadup.components.authserver.clients[].client-secret is required");
+        }
+        return "{bcrypt}" + new BCryptPasswordEncoder().encode(secret);
     }
 }

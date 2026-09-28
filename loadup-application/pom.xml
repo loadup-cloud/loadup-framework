@@ -35,7 +35,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-modules-upms-app</artifactId>
+            <artifactId>loadup-modules-upms-web</artifactId>
         </dependency>
         <!-- JDBC driver backing the local MySQL datasource declared in application.yml -->
         <dependency>
@@ -53,11 +53,15 @@
         <!--        </dependency>-->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-gateway-starter</artifactId>
+            <artifactId>loadup-components-resource-server</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-gateway-security-jwt</artifactId>
+            <artifactId>loadup-components-authserver-binder-sas</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-modules-upms-authserver</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

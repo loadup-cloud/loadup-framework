@@ -31,12 +31,6 @@ public class AuthorizationProperties {
     /** Master switch for the authorization auto-configuration. */
     private boolean enabled = true;
 
-    /**
-     * Whether to register the default permissive, stateless {@code SecurityFilterChain}.
-     *
-     * <p>Set to {@code false} when the application defines its own filter chain.
-     */
-    private boolean defaultSecurityFilterChain = true;
 
     public boolean isEnabled() {
         return enabled;
@@ -46,11 +40,4 @@ public class AuthorizationProperties {
         this.enabled = enabled;
     }
 
-    public boolean isDefaultSecurityFilterChain() {
-        return defaultSecurityFilterChain;
-    }
-
-    public void setDefaultSecurityFilterChain(boolean defaultSecurityFilterChain) {
-        this.defaultSecurityFilterChain = defaultSecurityFilterChain;
-    }
 }

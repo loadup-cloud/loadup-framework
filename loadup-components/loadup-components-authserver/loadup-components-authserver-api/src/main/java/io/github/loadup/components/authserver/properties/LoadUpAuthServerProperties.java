@@ -28,32 +28,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * Auth server configuration (prefix {@code loadup.components.authserver}).
  *
- * <p>Selects the binder with {@code binder-type}:
- * <ul>
- *   <li>{@code sas} — embedded Spring Authorization Server endpoints
- *       ({@code /oauth2/token}, {@code /oauth2/authorize}, {@code /oauth2/jwks});</li>
- *   <li>{@code keycloak} — Keycloak is used only as an external issuer; the component
- *       assembles a standard {@code NimbusJwtDecoder} from {@code issuer}/{@code jwk-set-uri}.</li>
- * </ul>
+ * <p>Configures embedded Spring Authorization Server endpoints.
  */
 @ConfigurationProperties(prefix = "loadup.components.authserver")
 public class LoadUpAuthServerProperties {
-
-    /**
-     * Auth server backend: {@code sas} (default) or {@code keycloak}.
-     */
-    private BinderType binderType = BinderType.SAS;
 
     /**
      * Issuer identifier of this authorization server (e.g. {@code http://localhost:8080}).
      */
     private String issuer = "http://localhost:8080";
 
-    /**
-     * JWK set URI used by the keycloak binder to fetch verification keys.
-     * When empty, the issuer's discovery document is used.
-     */
-    private String jwkSetUri;
+    private String audience;
 
     /**
      * Signing JWK configuration used by the SAS binder.
@@ -65,19 +50,6 @@ public class LoadUpAuthServerProperties {
      */
     private List<Client> clients = new ArrayList<>();
 
-    public enum BinderType {
-        SAS,
-        KEYCLOAK
-    }
-
-    public BinderType getBinderType() {
-        return binderType;
-    }
-
-    public void setBinderType(BinderType binderType) {
-        this.binderType = binderType;
-    }
-
     public String getIssuer() {
         return issuer;
     }
@@ -86,12 +58,12 @@ public class LoadUpAuthServerProperties {
         this.issuer = issuer;
     }
 
-    public String getJwkSetUri() {
-        return jwkSetUri;
+    public String getAudience() {
+        return audience;
     }
 
-    public void setJwkSetUri(String jwkSetUri) {
-        this.jwkSetUri = jwkSetUri;
+    public void setAudience(String audience) {
+        this.audience = audience;
     }
 
     public Jwk getJwk() {

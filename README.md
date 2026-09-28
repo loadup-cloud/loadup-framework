@@ -5,8 +5,10 @@
 [![MyBatis-Flex](https://img.shields.io/badge/MyBatis--Flex-1.11.8-orange.svg)](https://mybatis-flex.com/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-LoadUp Framework 是一个基于 Spring Boot 4.1.1 的**企业级微服务开发框架**，采用 **Monorepo（单仓库）多模块架构**
+LoadUp Framework 是一个基于 Spring Boot 4.1.1 的**模块化应用框架**，采用 **Monorepo（单仓库）多模块架构**
 ，提供可复用的基础组件和最佳实践，帮助团队快速构建高质量的企业应用。
+
+安全能力按需组合：UPMS 管理用户与 RBAC，`loadup-components-authserver-binder-sas` 签发 OAuth2 令牌，`loadup-components-resource-server` 为 Controller API 验签，`loadup-components-authorization` 执行方法级授权。UPMS 与 SAS 通过可选 `loadup-modules-upms-authserver` 对接；各模块用法以模块 README 为准。
 
 ## 📚 目录
 
@@ -74,7 +76,6 @@ LoadUp Framework 是一个基于 Spring Boot 4.1.1 的**企业级微服务开发
         │      (独立服务，提供横切关注点)                            │
         │                                                           │
         │  middleware/                                              │
-        │    ├── loadup-gateway/     (API 网关)                     │
         │    └── loadup-testify/     (测试框架)                     │
         └────────────────────┬────────────────────────────────────┘
                              │ 可以依赖
@@ -211,15 +212,10 @@ LoadUp Framework 采用清晰的 **6 层分层架构**，共 19 个模块：
 
 **功能**: 用户管理、角色管理、权限管理、部门管理、菜单管理
 
-### 5️⃣ 中间件层 (2 个中间件)
+### 5️⃣ 测试框架
 
 ```
 🌐 middleware/
-├── loadup-gateway/   - API 网关
-│    ├── core/       (核心引擎、Action 机制)
-│    ├── facade/     (路由管理、RouteConfig)
-│    ├── starter/    (自动配置)
-│    └── test/       (测试)
 └── loadup-testify/  - 测试框架
      ├── loadup-testify-core/               (核心工具：JSON 工具)
      ├── loadup-testify-data-engine/        (变量引擎：SpEL、Faker 变量解析)
@@ -227,8 +223,6 @@ LoadUp Framework 采用清晰的 **6 层分层架构**，共 19 个模块：
      ├── loadup-testify-spring-boot-starter/ (自动配置：TestScenario、ScenarioAssert、CaseFiles)
      └── loadup-testify-test/               (集成测试 Demo)
 ```
-
-**Gateway 功能**: 基于 SCG MVC 的 Service 方法路由与原生 HTTP 转发、版本化动态路由、入口认证授权与 HMAC 签名、指标与诊断；统一超时和共享治理存储仍在后续阶段
 
 **Testify 功能**: 数据准备/清理、声明式断言（操作符）、批量用例（YAML/JSON）、TestContainers 集成
 
@@ -590,7 +584,7 @@ LoadUp Framework 提供了 BOM (Bill of Materials) 来统一管理所有组件�
 
 #### 4. 代理模式 (Proxy Pattern)
 
-- **应用场景**: Gateway 路由代理、AOP 拦截、Testify Mock
+- **应用场景**: AOP 拦截、Testify Mock
 - **优势**: 透明的功能增强
 
 #### 5. 工厂模式 (Factory Pattern)
@@ -879,7 +873,7 @@ spec:
 - **通用模块**: `loadup-commons-*`
 - **组件模块**: `loadup-components-*`
 - **业务模块**: `loadup-modules-*`
-- **中间件模块**: `loadup-gateway-*`, `loadup-testify-*`
+- **测试框架模块**: `loadup-testify-*`
 
 ### 版本号规范
 
@@ -993,7 +987,7 @@ Closes #123
 |---------|---------|------------------|----------------------------|
 | **组件**  | 可复用技术能力 | 零业务逻辑、自动配置、支持多实现 | database, cache, gotone    |
 | **模块**  | 业务功能实现  | 包含业务逻辑、DDD架构     | upms (用户权限)                |
-| **中间件** | 独立横切服务  | 提供基础设施能力         | gateway (网关), testify (测试) |
+| **测试框架** | 测试辅助能力 | 场景驱动验证 | testify |
 
 ### Q: 如何扩展新的组件？
 

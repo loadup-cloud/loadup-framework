@@ -20,7 +20,6 @@ package io.github.loadup.modules.upms.app.autoconfigure;
  * #L%
  */
 
-import io.github.loadup.modules.upms.app.service.TokenService;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.service.UserPermissionService;
@@ -31,6 +30,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -44,25 +45,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @MapperScan("io.github.loadup.modules.upms.infrastructure.mapper")
 @ComponentScan(
         basePackages = {
-            "io.github.loadup.modules.upms",
+            "io.github.loadup.modules.upms.app",
+            "io.github.loadup.modules.upms.infrastructure",
         })
 public class UpmsAutoConfiguration {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        DelegatingPasswordEncoder encoder =
+                (DelegatingPasswordEncoder) PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        encoder.setDefaultPasswordEncoderForMatches(new BCryptPasswordEncoder());
+        return encoder;
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public TokenService tokenService(UpmsSecurityProperties securityProperties) {
-        return TokenService.create(securityProperties);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public UserPermissionService userPermissionService(
-            RoleGateway roleGateway, PermissionGateway permissionGateway) {
+    public UserPermissionService userPermissionService(RoleGateway roleGateway, PermissionGateway permissionGateway) {
         return new UserPermissionService(roleGateway, permissionGateway);
     }
 }

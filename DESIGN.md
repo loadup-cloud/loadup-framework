@@ -46,7 +46,7 @@ LoadUp 的目标是成为类似 RuoYi / Pig 的**被消费脚手架**：集成�
 | 配置中心 | Nacos / Apollo（SDK 差异由 binder 屏蔽） |
 | 任务调度 | JobRunr（周期任务，与 retrytask 共用引擎）/ Quartz |
 | 文件存储 | S3 协议（MinIO / OSS / COS） |
-| 网关 | Spring Cloud Gateway Server MVC |
+| 出站 HTTP 调用（规划） | Spring RestClient + JDK HttpClient |
 | 容错（熔断/重试/限流/舱壁/超时） | Resilience4j |
 | 链路追踪 | OpenTelemetry |
 | 数字签名 | JCA（Java Cryptography Architecture） |
@@ -55,7 +55,6 @@ LoadUp 的目标是成为类似 RuoYi / Pig 的**被消费脚手架**：集成�
 
 自创接口**只允许**出现在标准接口表达不了的语义上：
 
-- Gateway 的版本化路由文档、Service 方法白名单与 `RouteSource` 来源 SPI
 - `RetryTaskFacade` 的 `bizType + bizId` 幂等语义
 - `ServiceCode` 驱动的通知路由
 - Pipeline 四阶段 DSL（业务编排语义）
@@ -308,15 +307,13 @@ loadup-components-{domain}/
 - **集成测试**：JobRunr binder 用 MySQL TestContainer、Quartz binder 用内存 JobStore，同一套
   facade 用例跑两个 binder，证明切换零代码修改。
 
-### 5.5 gateway — SCG MVC 托管路由（实施中）
+### 5.5 出站 HTTP 客户端 — 规划中
 
-- **定位**：嵌入式网关。单应用以显式暴露的 Service 方法替代 Controller；分布式应用以 SCG MVC 原生 `HandlerFunctions.http()` 转发。HTTP 是一种目标 handler，而非组件核心。
-- **API**：`loadup-gateway-api` 提供 `@GatewayExpose`、不可变的版本化路由文档和 `RouteSource` SPI。业务模块只依赖该轻量 API，不依赖 webmvc/starter。路由配置不能调用未暴露的 Spring 方法。
-- **执行**：`ManagedRouteRegistry` 校验完整候选版本，用 SCG MVC `GatewayRouterFunctions` 编译，并原子发布 RouterFunction 与元数据。Service 经 Spring 代理调用，保留事务与 `@PreAuthorize`；HTTP 使用官方 handler，不通过自研 RestClient 代理。
-- **来源**：默认 classpath YAML；配置 jar 外文件后用 WatchService 与周期读取热更新；可选 ConfigCenter 来源或集成方自己的 `RouteSource`。读取、校验或编译失败保留上一有效快照。DB 是可选来源，不是核心依赖。
-- **安全**：托管路由必须显式声明 `public`、`authenticated` 或 `authority`；`signature: true` 显式叠加 HMAC 请求签名与 nonce 防重放。JWT 资源服务器由可选 `loadup-gateway-security-jwt` 装配且仅匹配 `/api/**`，方法级授权与路由级授权同时生效。
-- **当前限制**：RPC、统一超时、共享限流/nonce 存储的现成绑定、更多动态 SCG 过滤器及正式 JDBC 来源仍待交付；旧 facade/proxy/store 已移出聚合与 BOM。能力矩阵以 [loadup-gateway/README.md](loadup-gateway/README.md) 与 [loadup-gateway/ARCHITECTURE.md](loadup-gateway/ARCHITECTURE.md) 为准。
-- **不采用**：WebFlux 或独立生产网关服务。
+- **定位**：服务端业务代码主动调用外部 API，不处理入站请求或代理路由。业务接口继续由 Spring MVC Controller 承载。
+- **技术栈**：优先复用 Spring `RestClient`，显式选择 JDK `HttpClient` 作为传输层；不额外引入 OkHttp 或 Apache HttpClient。只有连接池、代理或协议需求得到实际验证后再评估更换传输层。
+- **配置边界**：按名称定义外部服务（base URL、超时、认证引用、默认请求头）与操作（HTTP 方法、相对路径、可覆盖参数）。业务方按操作名调用，地址和凭据可通过外部配置改变。请求数据与响应类型仍由业务代码显式定义，避免形成通用脚本引擎。
+- **约束**：仅允许配置预先声明的目标服务；密钥引用环境或配置中心，不写入日志；区分连接/响应超时；重试只对明确幂等的操作启用。配置热更新、签名和复杂映射待真实场景验证后再纳入。
+- **交付状态**：本阶段仅移除 Gateway 并记录方案，HTTP 客户端模块尚未实现。
 
 ### 5.6 dfs — P3
 
@@ -358,12 +355,12 @@ loadup-components-{domain}/
   `binder-nanocaptcha`（nanocaptcha 2.1，传统图像验证码：数字 / 字母 / 中文）。
 - **存储**：答案与过期由各引擎侧缓存负责（tianai 本地 `LocalCacheStore`，nanocaptcha 进程内 Map TTL），
   LoadUp 不重复造存储；图像统一返回 base64 data URI。
-- **接口暴露**：集成方在调用 `CaptchaTemplate` 的 Service 方法上标记 `@GatewayExpose`，再配置 `service` 目标路由；组件不提供 Controller。
+- **接口暴露**：集成方按需编写 Controller 调用 `CaptchaTemplate`；验证码组件只提供业务 API，不绑定 Gateway。
 
 ### 5.11 signature — P4
 
 - **现状**：JCA 薄封装，符合理念；README 已对齐契约（能力矩阵 + 防重放语义约定）。
-- **目标**：保留 JCA 薄封装。Gateway 托管路由已明确 `X-App-Id` / `X-Timestamp` / `X-Nonce` / `X-Signature` 协议、正文摘要、五分钟时间窗和可替换 nonce 存储，详见 gateway `ARCHITECTURE.md`。
+- **目标**：保留 JCA 薄封装。入站签名校验及 nonce 防重放由应用按需在 Spring Security 过滤器中实现；当前组件不提供该过滤器。
 
 ### 5.12 common-log / common-tracer / testcontainers — P3
 
@@ -389,44 +386,25 @@ loadup-components-{domain}/
 - **目标**：保留为"框架自带可复用业务能力"；认证后端跟随 authorization 决策（Spring Security 标准实现）；OAuth2 三方登录用 Spring Authorization Server 或厂商 SDK 适配。
 - **动作**：UPMS 与 authorization 组件的注解解耦（依赖 facade 而非实现）。
 
-### 5.15 resilience4j — 已完成（标准装配 + 双消费者）
+### 5.15 resilience4j — 独立容错组件
 
-- **现状**：gateway 自研 Caffeine 熔断/令牌桶；gotone 声明了 resilience4j 依赖但零使用；BOM 的
+- **背景**：原 gateway 自研 Caffeine 熔断/令牌桶已随组件移除；BOM 的
   `resilience4j.version` 声明失效（Spring Cloud 2025.1.x 的 first-declared-wins 覆盖为 2.3.0）。
 - **落地**：新增 `loadup-components-resilience4j`（`-api` + `-binder-core`）。facade **直接采用
   Resilience4j 标准 API**（注解 + Registry），不自创平行接口；组件只做装配（registries + aspects +
   Micrometer 指标）。binder 用 `resilience4j-spring6` + 自写 AutoConfiguration，规避官方
   `spring-boot3` starter 对 Boot 4 的未支持风险（issue #2371）。
-- **消费者**：gateway 两个手写 filter 替换为 Resilience4j 实现（路由级熔断按上游共享实例、刷新时
-  prune；限流 per route+IP、Caffeine 有界缓存防内存膨胀）；gotone 引擎按
-  `gotone-<channel>-<provider>` 实例名包装每个 provider（熔断包裹重试循环）。
+- **消费者**：gotone 引擎按 `gotone-<channel>-<provider>` 实例名包装每个 provider（熔断包裹重试循环）；未来出站 HTTP 客户端按操作幂等性决定是否接入重试与熔断。
 - **版本**：`resilience4j.version` 对齐 **2.3.0**（与 Spring Cloud 2025.1.x 一致），删除失效声明。
 - **后续**：`binder-redis`（分布式熔断/限流状态）为规划扩展点，业务代码零修改。
 
-### 5.16 authserver（授权服务器）— P4
+### 5.16 身份与授权模块边界
 
-- **定位**：授权服务器独立成组件（Mode A 单后端选择），负责**签发**带 claims 的 JWT；签发与校验解耦
-  （gateway 只做校验，不依赖 authserver）。
-- **结构**：
-  ```
-  loadup-components-authserver/
-  ├── authserver-api/                  # LoadUpAuthServerProperties + LoadUpJwtTokenCustomizer（标准 OAuth2TokenCustomizer 实现）
-  ├── authserver-binder-sas/           # 内嵌 Spring Authorization Server（默认）：RegisteredClientRepository / AuthorizationServerSettings / JWKSource / claims customizer
-  ├── authserver-binder-keycloak/      # 外部 IdP issuer-only 对接：issuer / jwk-set-uri → NimbusJwtDecoder
-  └── authserver-test/
-  ```
-- **binder 语义**：`loadup.components.authserver.binder-type: sas | keycloak`（sas 默认）。
-  SAS 是内嵌授权服务器（yml 注册 `clients[]`，启动即暴露标准 OAuth2 端点）；Keycloak 只作为
-  issuer 对接（配置层，不做 admin API / 客户端管理）；两者共用同一套 claims 契约。
-- **claims 定制（已落地）**：`LoadUpJwtTokenCustomizer`（标准 `OAuth2TokenCustomizer<JwtEncodingContext>`）
-  把 principal 的 roles（`ROLE_` 前缀剥离）与 permissions 写入 JWT；`/oauth2/token` 端到端
-  集成测试通过（client_credentials 签发 + JWK 验签）。
-- **依赖方向**：UPMS（认证业务）→ authserver；gateway → 只依赖资源服务器标准装配。
-- **UPMS 现状（已标准化）**：登录/刷新通过 UPMS app 层 `TokenService` 用标准 Nimbus
-  `JwtEncoder`/`JwtDecoder` 签发（HS256，claims 契约 sub/username/roles/permissions 自包含），
-  jjwt 与 `JwtUtils` 已全量移除；接入 SAS 签发（OAuth2TokenGenerator）作为后续演进项，
-  接口对集成方不变。
-- **切换影响**：SAS ↔ Keycloak 是"内嵌 vs 外部 IdP"的部署决策，业务侧只感知标准 JWT。
+- **UPMS**：用户、凭证验证、登录策略与 RBAC 数据；不签发或刷新令牌。`loadup-modules-upms-authserver` 将 UPMS 密码校验和角色权限接入 SAS。
+- **AuthServer**：内嵌 SAS，统一管理 OAuth2 客户端、授权码、访问令牌和刷新令牌。访问令牌携带 `token_use=access`、`aud`、用户 ID、角色和权限。外部 IdP 直接由 Resource Server 验证，不属于 AuthServer binder。
+- **Resource Server**：独立组件 `loadup-components-resource-server`，服务于 Controller 应用，验证签名、issuer、audience、token_use 并建立 Spring Security 身份上下文。
+- **Authorization**：仅启用方法级授权与当前用户上下文适配，不注册默认放行链。
+
 
 ---
 
@@ -483,11 +461,11 @@ loadup-components-{domain}/
 | 3 | Authorization 后端：Sa-Token vs Spring Security | **Spring Security**（已定，标准 API 为 facade） | authorization 已重构落地 |
 | 4 | RetryTask：自研引擎 vs JobRunr 底座 | **JobRunr**（已落地：binder-jobrunr） | retrytask 路线（已定） |
 | 7 | Scheduler：自研多 binder vs JobRunr/Quartz 底座 | **JobRunr（与 retrytask 共用引擎）+ Quartz**（已落地：双 binder） | scheduler 路线（已定） |
-| 8 | 容错：自研实现 vs Resilience4j | **Resilience4j**（已落地：组件 + gateway/gotone 双消费者，版本 2.3.0 对齐 Spring Cloud） | 容错路线（已定） |
-| 5 | Gateway 引擎替换时机 | 先最小验证 SCG Server MVC | gateway P2 排期 |
+| 8 | 容错：自研实现 vs Resilience4j | **Resilience4j**（已落地：独立组件，版本 2.3.0 对齐 Spring Cloud） | 容错路线（已定） |
+| 5 | Gateway 组件 | **移除**；单体应用保留 Controller | 入站链路简化 |
 | 6 | ORM：MyBatis-Flex vs MyBatis-Plus | 保持 MyBatis-Flex（已投入） | database 组件 |
-| 9 | Gateway 认证：自研 JWT vs OAuth2 资源服务器 | **OAuth2 资源服务器 + Nimbus**（已定） | gateway 安全 P1 已实施 |
-| 10 | 授权服务器：内嵌 SAS vs 外部 Keycloak | **authserver 组件（Mode A）**：binder-sas 内嵌（默认）/ binder-keycloak issuer-only | authserver P4 已实施（含 /oauth2/token 端到端测试） |
-| 11 | JWT claims 契约 | **自包含**：sub/username/roles/permissions 写进 JWT，无状态校验 | claims 契约（已定） |
-| 12 | 路由级授权格式 | **Spring Security SpEL 标准** + 逗号分隔权限列表简写（编译为 hasAnyAuthority） | gateway 安全 P3 已实施 |
-| 13 | 资源服务器后端选择 | **ResourceServerBinder SPI**（默认 nimbus，预留 Sa-Token 等） | gateway 安全 P5 已实施 |
+| 9 | 入口认证 | **OAuth2 Resource Server + Nimbus** | 独立组件负责 Bearer 验签 |
+| 10 | 授权服务器：内嵌 SAS vs 外部 IdP | **SAS 内嵌签发；外部 IdP 直接对接通用 Resource Server** | AuthServer 只负责签发，不再包含 issuer-only binder |
+| 11 | JWT claims 契约 | **自包含**：sub/username/roles/permissions/aud/token_use 写进访问令牌 | Resource Server 统一校验 |
+| 12 | 方法级授权 | **Spring Security `@PreAuthorize`** | Controller 调用业务服务 |
+| 13 | 资源服务器装配 | **独立 Resource Server 组件**，默认 Nimbus/JWKS | 不依赖 Gateway |

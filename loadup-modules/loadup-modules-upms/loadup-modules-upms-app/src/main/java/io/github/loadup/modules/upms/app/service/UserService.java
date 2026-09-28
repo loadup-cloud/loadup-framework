@@ -4,7 +4,6 @@ import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.PageDTO;
-import io.github.loadup.gateway.api.GatewayExpose;
 import io.github.loadup.modules.upms.app.dto.UserDetailDTO;
 import io.github.loadup.modules.upms.app.query.UserQuery;
 import io.github.loadup.modules.upms.client.command.UserCreateCommand;
@@ -25,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * User Management Service
@@ -46,8 +44,7 @@ public class UserService {
      * Create user
      */
     @Transactional
-    @GatewayExpose
-    public UserDetailDTO createUser(@RequestBody UserCreateCommand command) {
+    public UserDetailDTO createUser(UserCreateCommand command) {
         // Validate username uniqueness
         if (userGateway.existsByUsername(command.getUsername())) {
             throw new RuntimeException("用户名已存在");
@@ -103,8 +100,7 @@ public class UserService {
      * Update user
      */
     @Transactional
-    @GatewayExpose
-    public UserDetailDTO updateUser(@RequestBody UserUpdateCommand command) {
+    public UserDetailDTO updateUser(UserUpdateCommand command) {
         User user = userGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("用户不存在"));
 
         // Validate email uniqueness (if changed)
@@ -180,8 +176,7 @@ public class UserService {
      * Delete user
      */
     @Transactional
-    @GatewayExpose
-    public void deleteUser(@RequestBody String id) {
+    public void deleteUser(String id) {
         userGateway.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
         userGateway.deleteById(id);
     }
@@ -189,8 +184,7 @@ public class UserService {
     /**
      * Get user by ID
      */
-    @GatewayExpose
-    public UserDetailDTO getUserById(@RequestBody IdQuery idQuery) {
+    public UserDetailDTO getUserById(IdQuery idQuery) {
         User user = userGateway.findById(idQuery.id()).orElseThrow(() -> new RuntimeException("用户不存在"));
         return convertToDetailDTO(user);
     }
@@ -198,8 +192,7 @@ public class UserService {
     /**
      * Query users with pagination
      */
-    @GatewayExpose
-    public PageDTO<UserDetailDTO> queryUsers(@RequestBody UserQuery query) {
+    public PageDTO<UserDetailDTO> queryUsers(UserQuery query) {
         PageQuery pageQuery = PageQuery.of(query.getPage(), query.getSize());
 
         PageResult<User> userPage;
@@ -226,8 +219,7 @@ public class UserService {
      * Change user password
      */
     @Transactional
-    @GatewayExpose
-    public void changePassword(@RequestBody UserPasswordChangeCommand command) {
+    public void changePassword(UserPasswordChangeCommand command) {
         User user = userGateway.findById(command.getUserId()).orElseThrow(() -> new RuntimeException("用户不存在"));
 
         // Verify old password
@@ -252,8 +244,7 @@ public class UserService {
      * Lock user account
      */
     @Transactional
-    @GatewayExpose
-    public void lockUser(@RequestBody String id) {
+    public void lockUser(String id) {
         User user = userGateway.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
         user.setAccountNonLocked(false);
         user.setLockedTime(LocalDateTime.now());
@@ -264,8 +255,7 @@ public class UserService {
      * Unlock user account
      */
     @Transactional
-    @GatewayExpose
-    public void unlockUser(@RequestBody String id) {
+    public void unlockUser(String id) {
         User user = userGateway.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
         user.setAccountNonLocked(true);
         user.setLoginFailCount(0);

@@ -39,9 +39,6 @@ import org.springframework.stereotype.Repository;
 /**
  * User Repository Implementation using MyBatis-Flex.
  *
- * <p>{@link AuthGateway} is implemented separately in {@link AuthGatewayImpl}
- * to respect the Interface Segregation Principle.
- *
  * @author LoadUp Framework
  * @since 1.0.0
  */

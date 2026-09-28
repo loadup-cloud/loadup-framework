@@ -22,7 +22,7 @@ package io.github.loadup.modules.upms.client.service;
 
 import io.github.loadup.modules.upms.client.command.UserLoginCommand;
 import io.github.loadup.modules.upms.client.command.UserRegisterCommand;
-import io.github.loadup.modules.upms.client.dto.AccessTokenDTO;
+import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
 
 /**
@@ -36,16 +36,10 @@ public interface AuthenticationService {
      * 用户登录
      *
      * @param command 登录参数
-     * @return 访问令牌对象
+     * @return 已认证的用户身份
      */
-    AccessTokenDTO login(UserLoginCommand command);
-
-    /**
-     * 退出登录
-     */
-    void logout();
+    AuthenticatedUser login(UserLoginCommand command);
 
     UserDetailDTO register(UserRegisterCommand command);
 
-    AccessTokenDTO refreshToken(String refreshToken);
 }

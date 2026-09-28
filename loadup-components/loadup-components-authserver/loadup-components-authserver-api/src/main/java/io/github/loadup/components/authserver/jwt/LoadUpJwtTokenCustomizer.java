@@ -20,11 +20,13 @@ package io.github.loadup.components.authserver.jwt;
  * #L%
  */
 
+import java.security.Principal;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 
@@ -41,10 +43,32 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
  * gateway) can derive authorities without an introspection call.
  */
 public class LoadUpJwtTokenCustomizer implements OAuth2TokenCustomizer<JwtEncodingContext> {
+    private final String audience;
+
+    public LoadUpJwtTokenCustomizer() {
+        this(null);
+    }
+
+    public LoadUpJwtTokenCustomizer(String audience) {
+        this.audience = audience;
+    }
 
     @Override
     public void customize(JwtEncodingContext context) {
+        if (!OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())) {
+            return;
+        }
+        context.getClaims().claim("token_use", "access");
+        if (audience != null && !audience.isBlank()) {
+            context.getClaims().audience(java.util.List.of(audience));
+        }
         Authentication principal = context.getPrincipal();
+        if (context.getAuthorization() != null) {
+            Authentication authorizedUser = context.getAuthorization().getAttribute(Principal.class.getName());
+            if (authorizedUser != null) {
+                principal = authorizedUser;
+            }
+        }
         if (principal == null) {
             return;
         }
@@ -73,6 +97,9 @@ public class LoadUpJwtTokenCustomizer implements OAuth2TokenCustomizer<JwtEncodi
         String username = resolveUsername(principal);
         if (username != null) {
             context.getClaims().claim("username", username);
+        }
+        if (principal.getPrincipal() instanceof LoadUpSubject subject) {
+            context.getClaims().subject(subject.subjectId());
         }
     }
 

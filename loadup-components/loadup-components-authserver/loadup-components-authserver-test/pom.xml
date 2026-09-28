@@ -22,10 +22,6 @@
             <artifactId>loadup-components-authserver-binder-sas</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-authserver-binder-keycloak</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>

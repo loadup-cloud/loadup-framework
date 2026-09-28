@@ -32,7 +32,6 @@
         <module>loadup-dependencies</module>
         <module>loadup-commons</module>
         <module>loadup-components</module>
-        <module>loadup-gateway</module>
         <module>loadup-modules</module>
         <module>loadup-testify</module>
         <module>loadup-application</module>

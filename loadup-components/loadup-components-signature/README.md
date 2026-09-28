@@ -56,11 +56,11 @@ loadup:
 | Base64 公私钥加载（PKCS#8 / X.509） | ✓ |
 | 密钥对生成（可配置长度） | ✓ |
 | 密钥存储 / 托管 | ✗（业务方负责，建议 KMS / Vault） |
-| 防重放（时间戳 + nonce） | 由网关 `SignatureSecurityStrategy` 提供（见下） |
+| 防重放（时间戳 + nonce） | ✗（业务侧需独立实现） |
 
 ## API 签名规范（防重放语义）
 
-组件本身只做密码学原语；**接口签名与防重放**由网关 `signature` 安全策略落地，约定如下：
+组件本身只做密码学原语；如果应用需要接口签名与防重放，可按以下协议在 Spring Security 过滤器中实现：
 
 1. 请求头：`X-App-Id`（应用 ID）、`X-Timestamp`（Unix 秒）、`X-Nonce`（一次性随机串）、
    `X-Signature`（签名值）。
@@ -70,8 +70,7 @@ loadup:
 3. 防重放：服务端校验 `|now - timestamp| <= 300s`（过期拒绝）；`nonce` 需在服务端
    短暂缓存防止同一请求重放。
 
-网关侧校验实现在 `loadup-gateway-webmvc` 的 `SignatureSecurityStrategy`；客户端可用
-`DigestUtils.hmacSha256` 生成同格式签名。
+当前没有预置的请求签名校验过滤器；客户端可用 `DigestUtils.hmacSha256` 生成同格式签名。
 
 ## 许可证
 

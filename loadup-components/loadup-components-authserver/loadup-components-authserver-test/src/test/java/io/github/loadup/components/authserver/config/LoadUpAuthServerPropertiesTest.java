@@ -23,7 +23,6 @@ package io.github.loadup.components.authserver.config;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties;
-import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties.BinderType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -36,19 +35,16 @@ class LoadUpAuthServerPropertiesTest {
             new ApplicationContextRunner().withUserConfiguration(PropertiesConfiguration.class);
 
     @Test
-    @DisplayName("binds keycloak binder and issuer/jwk-set-uri")
-    void bindsKeycloakBinder() {
+    @DisplayName("binds issuer and audience")
+    void bindsIssuerAndAudience() {
         contextRunner
                 .withPropertyValues(
-                        "loadup.components.authserver.binder-type=keycloak",
                         "loadup.components.authserver.issuer=https://sso.example.com/realms/loadup",
-                        "loadup.components.authserver.jwk-set-uri=https://sso.example.com/realms/loadup/protocol/openid-connect/certs")
+                        "loadup.components.authserver.audience=loadup-api")
                 .run(context -> {
                     LoadUpAuthServerProperties properties = context.getBean(LoadUpAuthServerProperties.class);
-                    assertThat(properties.getBinderType()).isEqualTo(BinderType.KEYCLOAK);
                     assertThat(properties.getIssuer()).isEqualTo("https://sso.example.com/realms/loadup");
-                    assertThat(properties.getJwkSetUri())
-                            .isEqualTo("https://sso.example.com/realms/loadup/protocol/openid-connect/certs");
+                    assertThat(properties.getAudience()).isEqualTo("loadup-api");
                 });
     }
 
@@ -57,7 +53,6 @@ class LoadUpAuthServerPropertiesTest {
     void bindsSasDefaults() {
         contextRunner.run(context -> {
             LoadUpAuthServerProperties properties = context.getBean(LoadUpAuthServerProperties.class);
-            assertThat(properties.getBinderType()).isEqualTo(BinderType.SAS);
             assertThat(properties.getIssuer()).isEqualTo("http://localhost:8080");
             assertThat(properties.getJwk().getKid()).isEqualTo("loadup");
         });

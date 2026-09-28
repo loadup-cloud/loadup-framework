@@ -1,19 +1,12 @@
 package io.github.loadup.modules.upms.app.service;
 
-import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.gateway.api.GatewayExpose;
-import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
 import io.github.loadup.modules.upms.app.strategy.LoginStrategyManager;
 import io.github.loadup.modules.upms.client.command.UserLoginCommand;
 import io.github.loadup.modules.upms.client.command.UserRegisterCommand;
 import io.github.loadup.modules.upms.client.constant.LoginType;
-import io.github.loadup.modules.upms.client.constant.UpmsResultCode;
-import io.github.loadup.modules.upms.client.dto.AccessTokenDTO;
-import io.github.loadup.modules.upms.client.dto.AuthUserDTO;
 import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
 import io.github.loadup.modules.upms.client.dto.LoginCredentials;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
-import io.github.loadup.modules.upms.client.gateway.AuthGateway;
 import io.github.loadup.modules.upms.client.service.AuthenticationService;
 import io.github.loadup.modules.upms.domain.entity.LoginLog;
 import io.github.loadup.modules.upms.domain.entity.Role;
@@ -23,9 +16,7 @@ import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.service.UserPermissionService;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * Authentication Service Handles user login, register, and token management
@@ -49,20 +39,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserGateway userGateway;
     private final RoleGateway roleGateway;
     private final LoginLogGateway loginLogGateway;
-    private final UserPermissionService permissionService;
     private final PasswordEncoder passwordEncoder;
-    private final AuthGateway authGateway;
-    private final UpmsSecurityProperties securityProperties;
     private final LoginStrategyManager loginStrategyManager;
-    private final TokenService tokenService;
+    private final UserPermissionService permissionService;
 
     /**
      * User login
      */
-    @Transactional
     @Override
-    @GatewayExpose
-    public AccessTokenDTO login(@RequestBody UserLoginCommand command) {
+    public AuthenticatedUser login(UserLoginCommand command) {
         try {
             // 1. 构建登录凭证
             LoginCredentials credentials = buildLoginCredentials(command);
@@ -85,13 +70,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .findById(authenticatedUser.getUserId())
                     .orElseThrow(() -> new RuntimeException("用户不存在"));
 
-            // 5. 生成 Token
-            AccessTokenDTO token = generateToken(user);
-
-            // 6. 记录登录成功日志
+            // 5. 记录登录成功日志
             recordLoginSuccess(user, command, loginType);
 
-            return token;
+            return authenticatedUser;
 
         } catch (Exception e) {
             // 记录登录失败
@@ -127,48 +109,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     /**
-     * 生成 Token
-     */
-    private AccessTokenDTO generateToken(User user) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("username", user.getUsername());
-        claims.put("roles", roleCodes(user.getId()));
-        claims.put("permissions", permissionService.getUserPermissionCodes(user.getId()));
-
-        String accessToken = tokenService.issueAccessToken(user.getId(), claims);
-        String refreshToken = tokenService.issueRefreshToken(user.getId(), claims);
-
-        UserDetailDTO userInfo = buildUserInfo(user);
-
-        return AccessTokenDTO.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .tokenType("Bearer")
-                .expiresIn(securityProperties.getJwt().getExpiration() / 1000)
-                .userInfo(userInfo)
-                .build();
-    }
-
-    @Override
-    @GatewayExpose
-    public void logout() {
-        // 对于无状态 JWT 架构，通常由前端销毁 Token
-        // 如果需要主动失效，可在此处将当前 Token 加入 Redis 黑名单
-        String currentUserId = io.github.loadup.modules.upms.app.util.SecurityContextHelper.getUserId();
-        if (currentUserId != null) {
-            log.info("用户 {} 退出登录", currentUserId);
-            // TODO: 可选实现 - 将 Token 加入黑名单
-            // redisTemplate.opsForValue().set("blacklist:" + token, "1", expiration, TimeUnit.MILLISECONDS);
-        }
-    }
-
-    /**
      * User register
      */
     @Transactional
     @Override
-    @GatewayExpose
-    public UserDetailDTO register(@RequestBody UserRegisterCommand command) {
+    public UserDetailDTO register(UserRegisterCommand command) {
         // Check if username exists
         if (userGateway.existsByUsername(command.getUsername())) {
             throw new RuntimeException("用户名已存在");
@@ -208,61 +153,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         assignDefaultRole(user.getId());
 
         return buildUserInfo(user);
-    }
-
-    /**
-     * Refresh access token
-     */
-    @Override
-    @GatewayExpose
-    public AccessTokenDTO refreshToken(@RequestBody String refreshToken) {
-        // 1. Validate refresh token with the standard Nimbus decoder
-        String userId = tokenService.parseRefreshToken(refreshToken);
-        if (null == userId) {
-            throw new CommonException(UpmsResultCode.UNAUTHORIZED);
-        }
-
-        // 2. Extract UserId and check user
-        AuthUserDTO authUserDTO = authGateway.getAuthUserByUserId(userId);
-        if (authUserDTO == null) {
-            throw new CommonException(UpmsResultCode.UNAUTHORIZED);
-        }
-        if (authUserDTO.getStatus() != 1) {
-            throw new CommonException(UpmsResultCode.USER_LOCKED);
-        }
-
-        User user = userGateway.findById(userId).orElseThrow(() -> new CommonException(UpmsResultCode.USER_NOT_FOUND));
-        if (!user.isActive()) {
-            throw new CommonException(UpmsResultCode.USER_LOCKED);
-        }
-
-        Map<String, Object> newClaims = new HashMap<>();
-        newClaims.put("username", user.getUsername());
-        newClaims.put("roles", roleCodes(user.getId()));
-        newClaims.put("permissions", permissionService.getUserPermissionCodes(user.getId()));
-
-        // 3. Generate new Access Token
-        String newAccessToken = tokenService.issueAccessToken(user.getId(), newClaims);
-
-        // 4. Generate new Refresh Token (rolling)
-        String newRefreshToken = tokenService.issueRefreshToken(user.getId(), newClaims);
-
-        UserDetailDTO userInfo = buildUserInfo(user);
-
-        return AccessTokenDTO.builder()
-                .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
-                .tokenType("Bearer")
-                .expiresIn(securityProperties.getJwt().getExpiration() / 1000)
-                .userInfo(userInfo)
-                .build();
-    }
-
-    private List<String> roleCodes(String userId) {
-        return roleGateway.findByUserId(userId).stream()
-                .map(Role::getRoleCode)
-                .filter(StringUtils::isNotBlank)
-                .toList();
     }
 
     /**
@@ -333,20 +223,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             UserGateway userGateway,
             RoleGateway roleGateway,
             LoginLogGateway loginLogGateway,
-            UserPermissionService permissionService,
             PasswordEncoder passwordEncoder,
-            AuthGateway authGateway,
-            UpmsSecurityProperties securityProperties,
             LoginStrategyManager loginStrategyManager,
-            TokenService tokenService) {
+            UserPermissionService permissionService) {
         this.userGateway = userGateway;
         this.roleGateway = roleGateway;
         this.loginLogGateway = loginLogGateway;
-        this.permissionService = permissionService;
         this.passwordEncoder = passwordEncoder;
-        this.authGateway = authGateway;
-        this.securityProperties = securityProperties;
         this.loginStrategyManager = loginStrategyManager;
-        this.tokenService = tokenService;
+        this.permissionService = permissionService;
     }
 }

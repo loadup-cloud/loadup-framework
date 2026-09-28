@@ -1,5 +1,7 @@
 # LoadUp Framework 优化方案
 
+> 历史方案存档：本文中的 Gateway 模块、路由和命令已随单体架构调整移除，不作为当前实施指南。现行设计见 [DESIGN.md](./DESIGN.md) 与 [ROADMAP.md](./ROADMAP.md)。
+
 ## Context
 
 基于 commit `bbe897e` (main) 的一次只读评审，在 sessionId `fafa7bd4-f40b-4481-86b9-d4012e51feed` 中输出了两份报告（P0/P1/P2 问题 + 架构 A1–A8）。本轮会话对所有结论做了二次代码核实，并发现 4 条**超出原报告的加重事实**：

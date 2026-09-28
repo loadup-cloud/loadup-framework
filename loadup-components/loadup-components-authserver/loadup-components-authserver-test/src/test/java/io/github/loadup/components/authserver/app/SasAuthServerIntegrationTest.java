@@ -77,6 +77,8 @@ class SasAuthServerIntegrationTest {
         Jwt jwt = jwtDecoder.decode(accessToken);
         assertThat(jwt.getClaimAsString("iss")).isEqualTo("http://localhost:8080");
         assertThat(jwt.getSubject()).isEqualTo("loadup-app");
+        assertThat(jwt.getAudience()).contains("loadup-api");
+        assertThat(jwt.getClaimAsString("token_use")).isEqualTo("access");
         assertThat(jwt.getClaimAsStringList("scope")).contains("openid");
     }
 }

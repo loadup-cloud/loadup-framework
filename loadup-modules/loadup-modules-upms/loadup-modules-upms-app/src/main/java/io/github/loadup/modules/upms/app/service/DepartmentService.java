@@ -1,6 +1,5 @@
 package io.github.loadup.modules.upms.app.service;
 
-import io.github.loadup.gateway.api.GatewayExpose;
 import io.github.loadup.modules.upms.client.command.DepartmentCreateCommand;
 import io.github.loadup.modules.upms.client.command.DepartmentUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.DepartmentDTO;
@@ -15,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Department Management Service
@@ -35,8 +32,7 @@ public class DepartmentService {
      * Create department
      */
     @Transactional
-    @GatewayExpose
-    public DepartmentDTO createDepartment(@RequestBody DepartmentCreateCommand command) {
+    public DepartmentDTO createDepartment(DepartmentCreateCommand command) {
         // Validate department code uniqueness
         if (departmentGateway.existsByDeptCode(command.getDeptCode())) {
             throw new RuntimeException("部门编码已存在");
@@ -79,8 +75,7 @@ public class DepartmentService {
      * Update department
      */
     @Transactional
-    @GatewayExpose
-    public DepartmentDTO updateDepartment(@RequestBody DepartmentUpdateCommand command) {
+    public DepartmentDTO updateDepartment(DepartmentUpdateCommand command) {
         Department department =
                 departmentGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("部门不存在"));
 
@@ -138,8 +133,7 @@ public class DepartmentService {
      * Delete department
      */
     @Transactional
-    @GatewayExpose
-    public void deleteDepartment(@RequestBody String id) {
+    public void deleteDepartment(String id) {
         departmentGateway.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
 
         // Check if department has children
@@ -158,8 +152,7 @@ public class DepartmentService {
     /**
      * Get department by ID
      */
-    @GatewayExpose
-    public DepartmentDTO getDepartmentById(@RequestBody String id) {
+    public DepartmentDTO getDepartmentById(String id) {
         Department department = departmentGateway.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
         return convertToDTO(department);
     }
@@ -167,7 +160,6 @@ public class DepartmentService {
     /**
      * Get all departments as tree
      */
-    @GatewayExpose
     public List<DepartmentDTO> getDepartmentTree() {
         List<Department> allDepartments = departmentGateway.findAll();
         return buildDepartmentTree(allDepartments, null);
@@ -192,8 +184,7 @@ public class DepartmentService {
      * Move department to another parent
      */
     @Transactional
-    @GatewayExpose
-    public void moveDepartment(@RequestParam String deptId, @RequestParam String newParentId) {
+    public void moveDepartment(String deptId, String newParentId) {
         Department department = departmentGateway.findById(deptId).orElseThrow(() -> new RuntimeException("部门不存在"));
 
         // Validate new parent exists

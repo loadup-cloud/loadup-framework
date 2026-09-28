@@ -22,6 +22,7 @@ package io.github.loadup.components.authserver.jwt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.security.Principal;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
@@ -38,7 +40,7 @@ import org.springframework.security.oauth2.server.authorization.token.JwtEncodin
 @DisplayName("LoadUpJwtTokenCustomizer")
 class LoadUpJwtTokenCustomizerTest {
 
-    private final LoadUpJwtTokenCustomizer customizer = new LoadUpJwtTokenCustomizer();
+    private final LoadUpJwtTokenCustomizer customizer = new LoadUpJwtTokenCustomizer("loadup-api");
 
     @Test
     @DisplayName("writes roles, permissions and username claims from the principal authorities")
@@ -65,6 +67,8 @@ class LoadUpJwtTokenCustomizerTest {
         assertThat(result.getClaimAsString("username")).isEqualTo("admin");
         assertThat(result.getClaimAsStringList("roles")).containsExactly("ADMIN");
         assertThat(result.getClaimAsStringList("permissions")).containsExactly("user:write", "user:list");
+        assertThat(result.getClaimAsStringList("aud")).containsExactly("loadup-api");
+        assertThat(result.getClaimAsString("token_use")).isEqualTo("access");
     }
 
     @Test
@@ -86,6 +90,32 @@ class LoadUpJwtTokenCustomizerTest {
         assertThat(result.getClaimAsString("username")).isEqualTo("svc");
         assertThat(result.getClaims()).doesNotContainKey("roles");
         assertThat(result.getClaims()).doesNotContainKey("permissions");
+    }
+
+    @Test
+    void refreshUsesAuthorizedUserRatherThanClientIdentity() {
+        var user = new UsernamePasswordAuthenticationToken(
+                "ada", "n/a", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+        var client = new UsernamePasswordAuthenticationToken("client", "n/a", List.of());
+        RegisteredClient registeredClient = testClient();
+        OAuth2Authorization authorization = OAuth2Authorization.withRegisteredClient(registeredClient)
+                .principalName("ada")
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .attribute(Principal.class.getName(), user)
+                .build();
+        JwtClaimsSet.Builder claims = JwtClaimsSet.builder();
+        JwtEncodingContext context = JwtEncodingContext.with(JwsHeader.with(MacAlgorithm.HS256), claims)
+                .registeredClient(registeredClient)
+                .authorization(authorization)
+                .principal(client)
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .tokenType(OAuth2TokenType.ACCESS_TOKEN)
+                .build();
+
+        customizer.customize(context);
+
+        assertThat(claims.build().getClaimAsString("username")).isEqualTo("ada");
+        assertThat(claims.build().getClaimAsStringList("roles")).containsExactly("ADMIN");
     }
 
     private static RegisteredClient testClient() {

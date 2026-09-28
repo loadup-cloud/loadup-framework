@@ -1,6 +1,5 @@
 package io.github.loadup.modules.upms.app.service;
 
-import io.github.loadup.gateway.api.GatewayExpose;
 import io.github.loadup.modules.upms.client.command.PermissionCreateCommand;
 import io.github.loadup.modules.upms.client.command.PermissionUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.PermissionDTO;
@@ -14,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * Permission Management Service
@@ -29,8 +27,7 @@ public class PermissionService {
     private final PermissionGateway permissionGateway;
 
     @Transactional
-    @GatewayExpose
-    public PermissionDTO createPermission(@RequestBody PermissionCreateCommand command) {
+    public PermissionDTO createPermission(PermissionCreateCommand command) {
         if (permissionGateway.existsByPermissionCode(command.getPermissionCode())) {
             throw new RuntimeException("权限编码已存在");
         }
@@ -61,8 +58,7 @@ public class PermissionService {
     }
 
     @Transactional
-    @GatewayExpose
-    public PermissionDTO updatePermission(@RequestBody PermissionUpdateCommand command) {
+    public PermissionDTO updatePermission(PermissionUpdateCommand command) {
         Permission permission =
                 permissionGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("权限不存在"));
 
@@ -115,8 +111,7 @@ public class PermissionService {
     }
 
     @Transactional
-    @GatewayExpose
-    public void deletePermission(@RequestBody String id) {
+    public void deletePermission(String id) {
         permissionGateway.findById(id).orElseThrow(() -> new RuntimeException("权限不存在"));
 
         List<Permission> children = permissionGateway.findByParentId(id);
@@ -127,13 +122,11 @@ public class PermissionService {
         permissionGateway.deleteById(id);
     }
 
-    @GatewayExpose
-    public PermissionDTO getPermissionById(@RequestBody String id) {
+    public PermissionDTO getPermissionById(String id) {
         Permission permission = permissionGateway.findById(id).orElseThrow(() -> new RuntimeException("权限不存在"));
         return convertToDTO(permission);
     }
 
-    @GatewayExpose
     public List<PermissionDTO> getPermissionTree() {
         List<Permission> allPermissions = permissionGateway.findAll();
         return buildPermissionTree(allPermissions, null);
@@ -149,8 +142,7 @@ public class PermissionService {
         return permissions.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    @GatewayExpose
-    public List<PermissionDTO> getUserMenuTree(@RequestBody String userId) {
+    public List<PermissionDTO> getUserMenuTree(String userId) {
         List<Permission> menuPermissions = permissionGateway.findByUserId(userId).stream()
                 .filter(p -> p.getPermissionType() == 1 && Boolean.TRUE.equals(p.isVisible()))
                 .collect(Collectors.toList());

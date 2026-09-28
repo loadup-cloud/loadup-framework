@@ -16,7 +16,7 @@ LoadUp 是一个**被消费的框架/SDK**，通过 `loadup-dependencies` BOM �
 
 - `loadup-application` 仅为集成测试验证器和本地开发启动器，**不是生产部署单元**
 - `modules/` 下的 UPMS/Config/Log 是**框架自带的可复用通用业务能力**，不是测试代码
-- Gateway 是**嵌入式组件**（类比 Spring Cloud Gateway），不是独立网关服务
+- 单体应用通过 Spring MVC Controller 暴露接口；外部 API 调用规划为独立 HTTP 客户端组件
 
 ---
 
@@ -56,6 +56,8 @@ loadup-parent/
 │   └── loadup-commons-tracer/  # OpenTelemetry 链路追踪
 ├── components/                 # 可复用技术组件（框架级中间件）
 │   ├── loadup-components-authorization/   # Spring Security 方法级授权 @PreAuthorize
+│   ├── loadup-components-authserver/        # SAS 令牌签发与 OAuth2 客户端管理
+│   ├── loadup-components-resource-server/  # Controller 入口 JWT 验证
 │   ├── loadup-components-cache/           # 缓存（Spring Cache 门面 + binder-caffeine/redis/jetcache）
 │   ├── loadup-components-captcha/         # 验证码（API + binder-tianai/nanocaptcha）
 │   ├── loadup-components-configcenter/    # 配置中心（API + binder-local/nacos/apollo）
@@ -72,10 +74,9 @@ loadup-parent/
 │   ├── loadup-components-springdoc/       # knife4j / OpenAPI 文档自动配置
 │   └── loadup-components-testcontainers/  # 测试容器封装
 ├── middleware/
-│   ├── loadup-gateway/         # 嵌入式 API 网关（api + SCG MVC + starter + 可选来源/策略）
 │   └── loadup-testify/         # 集成测试框架
 ├── modules/                    # 通用业务能力（可复用业务模块）
-│   ├── loadup-modules-upms/    # 用户权限管理 RBAC3 + OAuth2 三方登录
+│   ├── loadup-modules-upms/    # 用户权限管理 RBAC3 + OAuth2 三方登录；可选 SAS 认证适配
 │   ├── loadup-modules-config/  # 系统参数 + 数据字典 + 热刷新
 │   └── loadup-modules-log/     # 操作日志 + 审计日志 + 错误日志
 └── loadup-application/         # 集成测试启动器（非生产部署单元）
@@ -96,18 +97,17 @@ loadup-dependencies (BOM)
         ↑
 loadup-application
 
-middleware/loadup-gateway  → 可依赖 commons、components
 middleware/loadup-testify  → 仅 test scope，深度依赖框架内部类型
 ```
 
-需要直接暴露业务方法的 `modules/*-app` 可依赖轻量的 `loadup-gateway-api`（仅注解与路由 SPI），不得依赖 gateway-webmvc 或 starter。
+业务模块通过可选 `*-web` 适配模块提供 Spring MVC Controller；业务服务不依赖 HTTP 客户端实现。
 
 ---
 
 ## 组件设计规范
 
 > **设计总纲与组件契约见 [DESIGN.md](./DESIGN.md)（设计理念、facade/binder 铁律、能力矩阵、组件目标设计）与 [ROADMAP.md](./ROADMAP.md)（分期改造计划）。**
-> 核心原则：底层 OSS + 薄集成；业务侧 API 尽量采用业界标准接口（Spring Cache、S3、OpenTelemetry、SCG Server MVC 等）；自创接口仅限标准表达不了的语义；每个组件 README 必须维护能力矩阵契约表。
+> 核心原则：底层 OSS + 薄集成；业务侧 API 尽量采用业界标准接口（Spring Cache、S3、OpenTelemetry、Spring MVC 等）；自创接口仅限标准表达不了的语义；每个组件 README 必须维护能力矩阵契约表。
 
 ### 单后端选择模式（Mode A）
 
@@ -178,7 +178,7 @@ loadup-modules-{mod}/
 | #  | 禁止行为                                     | 正确做法                                                                |
 |----|------------------------------------------|---------------------------------------------------------------------|
 | 1  | Java 文件头写 `/*- #%L ... #L% */` License 块 | 标准 Apache-2.0 模板：`mvn license:update-file-header` 后执行 `mvn spotless:apply`（模板空行含尾随空格需对齐），verify 阶段 `check-file-header` + `spotless:check` 双校验 |
-| 2  | 创建 `@RestController` / `@Controller`     | Service 方法加 `@GatewayExpose`，由版本化 Gateway 路由映射 |
+| 2  | 将 HTTP 映射直接写在业务 Service 中 | 在可选 Web 适配模块中使用 Spring MVC Controller 调用 Service |
 | 3  | 集成测试中用 `@MockBean` 替代 DB                 | `@EnableTestContainers(ContainerType.MYSQL)` 启动真实容器                      |
 | 4  | `@Autowired` 字段注入                        | 构造器注入：显式 `public XxxService(XxxGateway gw) { this.gw = gw; }`                               |
 | 5  | 字符串拼接 SQL                                | MyBatis-Flex `QueryWrapper`                                              |
@@ -266,20 +266,7 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 
 ## API 暴露方式
 
-Service 方法通过 `loadup-gateway-api` 的 `@GatewayExpose` 显式列入可调用白名单，路径与访问策略由**版本化路由文档**管理。默认读取 classpath YAML；配置 jar 外文件、配置中心或自定义 `RouteSource` 后，修改路由不需要重新打包，无 Controller 层。
-
-```yaml
-schemaVersion: 1
-routes:
-  - id: config-list
-    order: 100
-    path: /api/v1/config/list
-    methods: [POST]
-    target: { type: service, bean: configItemService, method: listAll }
-    access: { type: authenticated }
-```
-
-`access.type` 当前支持 `public`、`authenticated`、`authority`；`access.signature: true` 可叠加 HMAC 签名校验。远程 HTTP 路由使用 `target.type: http`，转发由 SCG MVC 原生 handler 执行。具体契约和当前限制见 `loadup-gateway/README.md`、`loadup-gateway/ARCHITECTURE.md`。
+本地业务接口使用 Spring MVC Controller。资源端令牌校验由 `loadup-components-resource-server` 装配，方法授权由 `loadup-components-authorization` 提供；UPMS 不签发令牌，SAS 可通过 `loadup-modules-upms-authserver` 对接 UPMS 凭证校验。调用外部 API 的可配置 HTTP 客户端组件属于后续规划，不承载入站路由。
 
 ---
 
@@ -331,7 +318,7 @@ routes:
 
 3. **模块 README.md 是集成方入口。** 每个被外部集成的模块应有一个 README.md，控制在 50 行以内，回答三个问题：做什么、怎么引入（Maven 坐标）、怎么配置（关键 properties）。
 
-4. **ARCHITECTURE.md 按需编写。** 只在设计复杂的模块（database、cache、gateway、upms、pipeline 等）中提供，含架构图和扩展点说明。不需要每个模块都写。
+4. **ARCHITECTURE.md 按需编写。** 只在设计复杂的模块（database、cache、upms、pipeline 等）中提供，含架构图和扩展点说明。不需要每个模块都写。
 
 5. **文档与代码同步。** 修改代码导致接口/配置/行为变化时，必须同步更新对应的 README.md 或 ARCHITECTURE.md。运行 `/docs-sync` 将变更推送到文档站。
 
