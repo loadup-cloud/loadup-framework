@@ -159,7 +159,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setMobileVerified(false);
         user.setDeleted(false);
         user.setCreatedBy("0");
-        user.setCreatedTime(LocalDateTime.now());
+        user.setCreatedAt(LocalDateTime.now());
 
         user = userGateway.save(user);
 

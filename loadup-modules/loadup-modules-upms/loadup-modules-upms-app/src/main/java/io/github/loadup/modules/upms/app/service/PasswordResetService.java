@@ -121,7 +121,7 @@ public class PasswordResetService {
         // Reset password
         user.setPassword(passwordEncoder.encode(command.getNewPassword()));
         user.setPasswordUpdateTime(LocalDateTime.now());
-        user.setUpdatedTime(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
 
         userGateway.update(user);
         log.info("Password reset successful for user: {}", user.getUsername());

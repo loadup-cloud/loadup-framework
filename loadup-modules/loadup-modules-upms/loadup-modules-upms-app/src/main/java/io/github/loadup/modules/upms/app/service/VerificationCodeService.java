@@ -60,7 +60,7 @@ public class VerificationCodeService {
         verificationCode.setTarget(target);
         verificationCode.setType(type);
         verificationCode.setAttempts(0);
-        verificationCode.setCreatedTime(LocalDateTime.now());
+        verificationCode.setCreatedAt(LocalDateTime.now());
         verificationCode.setExpiryTime(LocalDateTime.now().plusMinutes(CODE_EXPIRY_MINUTES));
 
         codeStorage.put(key, verificationCode);
@@ -121,7 +121,7 @@ public class VerificationCodeService {
 
         // Check if previous code is still valid (prevent spamming)
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime minResendTime = existingCode.getCreatedTime().plusMinutes(1);
+        LocalDateTime minResendTime = existingCode.getCreatedAt().plusMinutes(1);
 
         if (now.isBefore(minResendTime)) {
             log.warn("Too soon to resend code for: {}", target);

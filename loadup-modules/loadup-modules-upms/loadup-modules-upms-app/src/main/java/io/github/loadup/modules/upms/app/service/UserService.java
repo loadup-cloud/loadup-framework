@@ -103,7 +103,7 @@ public class UserService {
         user.setLoginFailCount(0);
         user.setRemark(command.getRemark());
         user.setCreatedBy(command.getCreatedBy());
-        user.setCreatedTime(LocalDateTime.now());
+        user.setCreatedAt(LocalDateTime.now());
 
         user = userGateway.save(user);
 
@@ -174,7 +174,7 @@ public class UserService {
         }
 
         user.setUpdatedBy(command.getUpdatedBy());
-        user.setUpdatedTime(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
 
         user = userGateway.update(user);
 
@@ -280,7 +280,7 @@ public class UserService {
         // Update password
         user.setPassword(passwordEncoder.encode(command.getNewPassword()));
         user.setPasswordUpdateTime(LocalDateTime.now());
-        user.setUpdatedTime(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
 
         userGateway.update(user);
     }
@@ -337,8 +337,8 @@ public class UserService {
                 .lastLoginIp(user.getLastLoginIp())
                 .roles(roles.stream().map(this::convertRoleToDTO).collect(Collectors.toList()))
                 .remark(user.getRemark())
-                .createdTime(user.getCreatedTime())
-                .updatedTime(user.getUpdatedTime())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 

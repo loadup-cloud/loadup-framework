@@ -83,7 +83,7 @@ public class DepartmentService {
         department.setDeleted(false);
         department.setRemark(command.getRemark());
         department.setCreatedBy(command.getCreatedBy());
-        department.setCreatedTime(LocalDateTime.now());
+        department.setCreatedAt(LocalDateTime.now());
 
         department = departmentGateway.save(department);
 
@@ -141,7 +141,7 @@ public class DepartmentService {
         }
 
         department.setUpdatedBy(command.getUpdatedBy());
-        department.setUpdatedTime(LocalDateTime.now());
+        department.setUpdatedAt(LocalDateTime.now());
 
         department = departmentGateway.update(department);
 
@@ -226,7 +226,7 @@ public class DepartmentService {
             department.setDeptLevel(1);
         }
 
-        department.setUpdatedTime(LocalDateTime.now());
+        department.setUpdatedAt(LocalDateTime.now());
         departmentGateway.update(department);
     }
 
@@ -269,8 +269,8 @@ public class DepartmentService {
                 .email(department.getEmail())
                 .status(department.getStatus())
                 .remark(department.getRemark())
-                .createdTime(department.getCreatedTime())
-                .updatedTime(department.getUpdatedTime())
+                .createdAt(department.getCreatedAt())
+                .updatedAt(department.getUpdatedAt())
                 .build();
     }
 

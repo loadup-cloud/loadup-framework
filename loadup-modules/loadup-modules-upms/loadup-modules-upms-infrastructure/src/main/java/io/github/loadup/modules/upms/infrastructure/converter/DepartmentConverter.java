@@ -34,13 +34,9 @@ import org.mapstruct.Mapping;
  */
 @Mapper(config = LoadUpMapStructConfig.class, uses = AuditMappingSupport.class)
 public interface DepartmentConverter {
-    @Mapping(source = "createdTime", target = "createdAt")
-    @Mapping(source = "updatedTime", target = "updatedAt")
     @Mapping(target = "tenantId", ignore = true)
     DepartmentDO toDataObject(Department department);
 
-    @Mapping(source = "createdAt", target = "createdTime")
-    @Mapping(source = "updatedAt", target = "updatedTime")
     @Mapping(target = "parent", ignore = true)
     @Mapping(target = "children", ignore = true)
     @Mapping(target = "leader", ignore = true)

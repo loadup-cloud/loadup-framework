@@ -45,8 +45,8 @@ public class PermissionDTO {
     private Short status;
     private List<PermissionDTO> children;
     private String remark;
-    private LocalDateTime createdTime;
-    private LocalDateTime updatedTime;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public PermissionDTO(
             String id,
@@ -63,8 +63,8 @@ public class PermissionDTO {
             Short status,
             List<PermissionDTO> children,
             String remark,
-            LocalDateTime createdTime,
-            LocalDateTime updatedTime) {
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.parentId = parentId;
         this.permissionName = permissionName;
@@ -79,8 +79,8 @@ public class PermissionDTO {
         this.status = status;
         this.children = children;
         this.remark = remark;
-        this.createdTime = createdTime;
-        this.updatedTime = updatedTime;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public PermissionDTO() {}
@@ -141,12 +141,12 @@ public class PermissionDTO {
         return this.remark;
     }
 
-    public LocalDateTime getCreatedTime() {
-        return this.createdTime;
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
     }
 
-    public LocalDateTime getUpdatedTime() {
-        return this.updatedTime;
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
     }
 
     public void setId(String id) {
@@ -205,12 +205,12 @@ public class PermissionDTO {
         this.remark = remark;
     }
 
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public void setUpdatedTime(LocalDateTime updatedTime) {
-        this.updatedTime = updatedTime;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public static Builder builder() {
@@ -232,8 +232,8 @@ public class PermissionDTO {
         private Short status;
         private List<PermissionDTO> children;
         private String remark;
-        private LocalDateTime createdTime;
-        private LocalDateTime updatedTime;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
 
         public Builder id(String id) {
             this.id = id;
@@ -305,13 +305,13 @@ public class PermissionDTO {
             return this;
         }
 
-        public Builder createdTime(LocalDateTime createdTime) {
-            this.createdTime = createdTime;
+        public Builder createdAt(LocalDateTime createdAt) {
+            this.createdAt = createdAt;
             return this;
         }
 
-        public Builder updatedTime(LocalDateTime updatedTime) {
-            this.updatedTime = updatedTime;
+        public Builder updatedAt(LocalDateTime updatedAt) {
+            this.updatedAt = updatedAt;
             return this;
         }
 
@@ -331,8 +331,8 @@ public class PermissionDTO {
                     this.status,
                     this.children,
                     this.remark,
-                    this.createdTime,
-                    this.updatedTime);
+                    this.createdAt,
+                    this.updatedAt);
         }
     }
 

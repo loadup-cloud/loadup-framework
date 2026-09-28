@@ -34,12 +34,8 @@ import org.mapstruct.Mapping;
  */
 @Mapper(config = LoadUpMapStructConfig.class, uses = AuditMappingSupport.class)
 public interface PermissionConverter {
-    @Mapping(source = "createdTime", target = "createdAt")
-    @Mapping(source = "updatedTime", target = "updatedAt")
     @Mapping(target = "tenantId", ignore = true)
     PermissionDO toDataObject(Permission permission);
 
-    @Mapping(source = "createdAt", target = "createdTime")
-    @Mapping(source = "updatedAt", target = "updatedTime")
     Permission toEntity(PermissionDO permissionDO);
 }

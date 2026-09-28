@@ -34,12 +34,8 @@ import org.mapstruct.Mapping;
  */
 @Mapper(config = LoadUpMapStructConfig.class, uses = AuditMappingSupport.class)
 public interface RoleConverter {
-    @Mapping(source = "createdTime", target = "createdAt")
-    @Mapping(source = "updatedTime", target = "updatedAt")
     @Mapping(target = "tenantId", ignore = true)
     RoleDO toDataObject(Role role);
 
-    @Mapping(source = "createdAt", target = "createdTime")
-    @Mapping(source = "updatedAt", target = "updatedTime")
     Role toEntity(RoleDO roleDO);
 }

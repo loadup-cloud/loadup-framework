@@ -41,8 +41,6 @@ public interface UserConverter {
      * @param user domain entity
      * @return data object
      */
-    @Mapping(source = "createdTime", target = "createdAt")
-    @Mapping(source = "updatedTime", target = "updatedAt")
     @Mapping(target = "tenantId", ignore = true)
     UserDO toDataObject(User user);
 
@@ -52,8 +50,6 @@ public interface UserConverter {
      * @param userDO data object
      * @return domain entity
      */
-    @Mapping(source = "createdAt", target = "createdTime")
-    @Mapping(source = "updatedAt", target = "updatedTime")
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "department", ignore = true)
     User toEntity(UserDO userDO);

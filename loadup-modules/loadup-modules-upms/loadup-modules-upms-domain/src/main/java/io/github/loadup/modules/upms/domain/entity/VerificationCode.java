@@ -36,7 +36,7 @@ public class VerificationCode {
     private String target;
     private String type;
     private int attempts;
-    private LocalDateTime createdTime;
+    private LocalDateTime createdAt;
 
     public ChronoLocalDateTime<?> getExpiryTime() {
         return expiryTime;
@@ -78,11 +78,11 @@ public class VerificationCode {
         return attempts;
     }
 
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public LocalDateTime getCreatedTime() {
-        return createdTime;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 }

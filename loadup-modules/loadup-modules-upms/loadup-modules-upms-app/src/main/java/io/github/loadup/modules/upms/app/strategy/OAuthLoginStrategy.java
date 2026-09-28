@@ -178,7 +178,7 @@ public class OAuthLoginStrategy implements LoginStrategy {
         user.setMobileVerified(StringUtils.isNotBlank(oauthUser.getMobile()));
         user.setDeleted(false);
         user.setCreatedBy("0");
-        user.setCreatedTime(LocalDateTime.now());
+        user.setCreatedAt(LocalDateTime.now());
 
         user = userGateway.save(user);
 

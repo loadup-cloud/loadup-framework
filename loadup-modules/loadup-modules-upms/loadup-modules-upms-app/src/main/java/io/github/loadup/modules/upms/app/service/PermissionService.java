@@ -72,7 +72,7 @@ public class PermissionService {
         permission.setDeleted(false);
         permission.setRemark(command.getRemark());
         permission.setCreatedBy(command.getCreatedBy());
-        permission.setCreatedTime(LocalDateTime.now());
+        permission.setCreatedAt(LocalDateTime.now());
 
         permission = permissionGateway.save(permission);
         return convertToDTO(permission);
@@ -120,7 +120,7 @@ public class PermissionService {
         }
 
         permission.setUpdatedBy(command.getUpdatedBy());
-        permission.setUpdatedTime(LocalDateTime.now());
+        permission.setUpdatedAt(LocalDateTime.now());
 
         permission = permissionGateway.update(permission);
         return convertToDTO(permission);
@@ -180,8 +180,8 @@ public class PermissionService {
                 .visible(permission.isVisible())
                 .status(permission.getStatus())
                 .remark(permission.getRemark())
-                .createdTime(permission.getCreatedTime())
-                .updatedTime(permission.getUpdatedTime())
+                .createdAt(permission.getCreatedAt())
+                .updatedAt(permission.getUpdatedAt())
                 .build();
     }
 

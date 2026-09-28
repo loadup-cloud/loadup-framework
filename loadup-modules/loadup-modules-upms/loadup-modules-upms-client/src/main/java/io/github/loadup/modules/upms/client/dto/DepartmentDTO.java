@@ -44,8 +44,8 @@ public class DepartmentDTO {
     private Short status;
     private List<DepartmentDTO> children;
     private String remark;
-    private LocalDateTime createdTime;
-    private LocalDateTime updatedTime;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public DepartmentDTO(
             String id,
@@ -61,8 +61,8 @@ public class DepartmentDTO {
             Short status,
             List<DepartmentDTO> children,
             String remark,
-            LocalDateTime createdTime,
-            LocalDateTime updatedTime) {
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.parentId = parentId;
         this.deptName = deptName;
@@ -76,8 +76,8 @@ public class DepartmentDTO {
         this.status = status;
         this.children = children;
         this.remark = remark;
-        this.createdTime = createdTime;
-        this.updatedTime = updatedTime;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public DepartmentDTO() {}
@@ -134,12 +134,12 @@ public class DepartmentDTO {
         return this.remark;
     }
 
-    public LocalDateTime getCreatedTime() {
-        return this.createdTime;
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
     }
 
-    public LocalDateTime getUpdatedTime() {
-        return this.updatedTime;
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
     }
 
     public void setId(String id) {
@@ -194,12 +194,12 @@ public class DepartmentDTO {
         this.remark = remark;
     }
 
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public void setUpdatedTime(LocalDateTime updatedTime) {
-        this.updatedTime = updatedTime;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public static Builder builder() {
@@ -220,8 +220,8 @@ public class DepartmentDTO {
         private Short status;
         private List<DepartmentDTO> children;
         private String remark;
-        private LocalDateTime createdTime;
-        private LocalDateTime updatedTime;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
 
         public Builder id(String id) {
             this.id = id;
@@ -288,13 +288,13 @@ public class DepartmentDTO {
             return this;
         }
 
-        public Builder createdTime(LocalDateTime createdTime) {
-            this.createdTime = createdTime;
+        public Builder createdAt(LocalDateTime createdAt) {
+            this.createdAt = createdAt;
             return this;
         }
 
-        public Builder updatedTime(LocalDateTime updatedTime) {
-            this.updatedTime = updatedTime;
+        public Builder updatedAt(LocalDateTime updatedAt) {
+            this.updatedAt = updatedAt;
             return this;
         }
 
@@ -313,8 +313,8 @@ public class DepartmentDTO {
                     this.status,
                     this.children,
                     this.remark,
-                    this.createdTime,
-                    this.updatedTime);
+                    this.createdAt,
+                    this.updatedAt);
         }
     }
 

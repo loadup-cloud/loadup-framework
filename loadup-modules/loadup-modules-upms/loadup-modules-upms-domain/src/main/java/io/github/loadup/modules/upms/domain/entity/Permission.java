@@ -65,11 +65,11 @@ public class Permission extends BaseEntity {
 
     private String createdBy;
 
-    private LocalDateTime createdTime;
+    private LocalDateTime createdAt;
 
     private String updatedBy;
 
-    private LocalDateTime updatedTime;
+    private LocalDateTime updatedAt;
 
     /**
      * Check if permission is enabled
@@ -218,12 +218,12 @@ public class Permission extends BaseEntity {
         this.createdBy = createdBy;
     }
 
-    public LocalDateTime getCreatedTime() {
-        return createdTime;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getUpdatedBy() {
@@ -234,12 +234,12 @@ public class Permission extends BaseEntity {
         this.updatedBy = updatedBy;
     }
 
-    public LocalDateTime getUpdatedTime() {
-        return updatedTime;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdatedTime(LocalDateTime updatedTime) {
-        this.updatedTime = updatedTime;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public boolean isVisible() {

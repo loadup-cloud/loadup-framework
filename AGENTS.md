@@ -199,6 +199,8 @@ loadup-modules-{mod}/
 
 ## 数据库表规范
 
+创建与更新时间统一命名：Java 属性和 JSON 字段使用 `createdAt`、`updatedAt`，数据库列使用 `created_at`、`updated_at`。领域对象、DTO 和查询排序字段遵循同一命名，不使用 `createdTime`、`updatedTime`。
+
 每张表必须包含 5 个标准字段：
 
 ```sql

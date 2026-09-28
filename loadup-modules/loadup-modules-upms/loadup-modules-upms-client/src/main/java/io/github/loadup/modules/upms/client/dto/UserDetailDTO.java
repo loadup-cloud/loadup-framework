@@ -50,8 +50,8 @@ public class UserDetailDTO {
     private String lastLoginIp;
     private List<RoleDTO> roles;
     private String remark;
-    private LocalDateTime createdTime;
-    private LocalDateTime updatedTime;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public UserDetailDTO(
             String id,
@@ -72,8 +72,8 @@ public class UserDetailDTO {
             String lastLoginIp,
             List<RoleDTO> roles,
             String remark,
-            LocalDateTime createdTime,
-            LocalDateTime updatedTime) {
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.username = username;
         this.nickname = nickname;
@@ -92,8 +92,8 @@ public class UserDetailDTO {
         this.lastLoginIp = lastLoginIp;
         this.roles = roles;
         this.remark = remark;
-        this.createdTime = createdTime;
-        this.updatedTime = updatedTime;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public UserDetailDTO() {}
@@ -170,12 +170,12 @@ public class UserDetailDTO {
         return this.remark;
     }
 
-    public LocalDateTime getCreatedTime() {
-        return this.createdTime;
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
     }
 
-    public LocalDateTime getUpdatedTime() {
-        return this.updatedTime;
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
     }
 
     public void setId(String id) {
@@ -250,12 +250,12 @@ public class UserDetailDTO {
         this.remark = remark;
     }
 
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public void setUpdatedTime(LocalDateTime updatedTime) {
-        this.updatedTime = updatedTime;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public static Builder builder() {
@@ -281,8 +281,8 @@ public class UserDetailDTO {
         private String lastLoginIp;
         private List<RoleDTO> roles;
         private String remark;
-        private LocalDateTime createdTime;
-        private LocalDateTime updatedTime;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
 
         public Builder id(String id) {
             this.id = id;
@@ -374,13 +374,13 @@ public class UserDetailDTO {
             return this;
         }
 
-        public Builder createdTime(LocalDateTime createdTime) {
-            this.createdTime = createdTime;
+        public Builder createdAt(LocalDateTime createdAt) {
+            this.createdAt = createdAt;
             return this;
         }
 
-        public Builder updatedTime(LocalDateTime updatedTime) {
-            this.updatedTime = updatedTime;
+        public Builder updatedAt(LocalDateTime updatedAt) {
+            this.updatedAt = updatedAt;
             return this;
         }
 
@@ -404,8 +404,8 @@ public class UserDetailDTO {
                     this.lastLoginIp,
                     this.roles,
                     this.remark,
-                    this.createdTime,
-                    this.updatedTime);
+                    this.createdAt,
+                    this.updatedAt);
         }
     }
 

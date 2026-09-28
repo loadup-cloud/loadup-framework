@@ -44,8 +44,8 @@ public class RoleDTO {
     private List<String> departmentIds;
     private List<RoleDTO> children;
     private String remark;
-    private LocalDateTime createdTime;
-    private LocalDateTime updatedTime;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public RoleDTO(
             String id,
@@ -60,8 +60,8 @@ public class RoleDTO {
             List<PermissionDTO> permissions,
             List<String> departmentIds,
             String remark,
-            LocalDateTime createdTime,
-            LocalDateTime updatedTime) {
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.roleName = roleName;
         this.roleCode = roleCode;
@@ -74,8 +74,8 @@ public class RoleDTO {
         this.permissions = permissions;
         this.departmentIds = departmentIds;
         this.remark = remark;
-        this.createdTime = createdTime;
-        this.updatedTime = updatedTime;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public RoleDTO() {}
@@ -132,12 +132,12 @@ public class RoleDTO {
         return this.remark;
     }
 
-    public LocalDateTime getCreatedTime() {
-        return this.createdTime;
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
     }
 
-    public LocalDateTime getUpdatedTime() {
-        return this.updatedTime;
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
     }
 
     public void setId(String id) {
@@ -192,12 +192,12 @@ public class RoleDTO {
         this.remark = remark;
     }
 
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public void setUpdatedTime(LocalDateTime updatedTime) {
-        this.updatedTime = updatedTime;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public static Builder builder() {
@@ -217,8 +217,8 @@ public class RoleDTO {
         private List<PermissionDTO> permissions;
         private List<String> departmentIds;
         private String remark;
-        private LocalDateTime createdTime;
-        private LocalDateTime updatedTime;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
 
         public Builder id(String id) {
             this.id = id;
@@ -280,13 +280,13 @@ public class RoleDTO {
             return this;
         }
 
-        public Builder createdTime(LocalDateTime createdTime) {
-            this.createdTime = createdTime;
+        public Builder createdAt(LocalDateTime createdAt) {
+            this.createdAt = createdAt;
             return this;
         }
 
-        public Builder updatedTime(LocalDateTime updatedTime) {
-            this.updatedTime = updatedTime;
+        public Builder updatedAt(LocalDateTime updatedAt) {
+            this.updatedAt = updatedAt;
             return this;
         }
 
@@ -304,8 +304,8 @@ public class RoleDTO {
                     this.permissions,
                     this.departmentIds,
                     this.remark,
-                    this.createdTime,
-                    this.updatedTime);
+                    this.createdAt,
+                    this.updatedAt);
         }
     }
 

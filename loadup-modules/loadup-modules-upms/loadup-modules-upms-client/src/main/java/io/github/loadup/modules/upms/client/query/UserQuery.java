@@ -40,7 +40,7 @@ public class UserQuery {
     // Pagination
     private Integer page = 1;
     private Integer size = 20;
-    private String sortBy = "createdTime";
+    private String sortBy = "createdAt";
     private String sortOrder = "DESC";
 
     public UserQuery(
@@ -183,7 +183,7 @@ public class UserQuery {
         private Boolean deleted;
         private Integer page = 1;
         private Integer size = 20;
-        private String sortBy = "createdTime";
+        private String sortBy = "createdAt";
         private String sortOrder = "DESC";
 
         public Builder username(String username) {

@@ -86,7 +86,7 @@ public class RoleService {
         role.setDeleted(false);
         role.setRemark(command.getRemark());
         role.setCreatedBy(command.getCreatedBy());
-        role.setCreatedTime(LocalDateTime.now());
+        role.setCreatedAt(LocalDateTime.now());
 
         role = roleGateway.save(role);
 
@@ -141,7 +141,7 @@ public class RoleService {
         }
 
         role.setUpdatedBy(command.getUpdatedBy());
-        role.setUpdatedTime(LocalDateTime.now());
+        role.setUpdatedAt(LocalDateTime.now());
 
         role = roleGateway.update(role);
         if (parentChanged) updateDescendantLevels(role, new HashSet<>());
@@ -320,8 +320,8 @@ public class RoleService {
                         permissions.stream().map(this::convertPermissionToDTO).collect(Collectors.toList()))
                 .departmentIds(departmentIds)
                 .remark(role.getRemark())
-                .createdTime(role.getCreatedTime())
-                .updatedTime(role.getUpdatedTime())
+                .createdAt(role.getCreatedAt())
+                .updatedAt(role.getUpdatedAt())
                 .build();
     }
 
