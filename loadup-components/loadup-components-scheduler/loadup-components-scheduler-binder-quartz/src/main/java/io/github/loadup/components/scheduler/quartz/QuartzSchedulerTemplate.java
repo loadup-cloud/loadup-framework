@@ -21,13 +21,6 @@ import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Quartz backed {@link SchedulerTemplate}.
- *
- * <p>Each recurring task is registered as a durable {@link JobDetail} plus a {@link CronTrigger},
- * both keyed by the {@code taskName}. Registration is idempotent: an existing job is replaced with
- * the new schedule and payload. Clustering is provided by Quartz itself via a JDBC job store.
- */
 public class QuartzSchedulerTemplate implements SchedulerTemplate {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QuartzSchedulerTemplate.class);

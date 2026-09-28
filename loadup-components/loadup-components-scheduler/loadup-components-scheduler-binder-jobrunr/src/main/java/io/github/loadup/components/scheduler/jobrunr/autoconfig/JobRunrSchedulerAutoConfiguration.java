@@ -16,12 +16,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Wires the JobRunr binder on top of the official {@code jobrunr-spring-boot-4-starter}
- * auto-configuration: facade implementation, processor registry and the JobRequest handler that
- * dispatches recurring runs to business processors. Shares the same JobRunr engine (storage,
- * background job server, dashboard) as the retry task binder.
- */
 @AutoConfiguration(after = JobRunrAutoConfiguration.class)
 @ConditionalOnClass({JobRequestScheduler.class, JobRequest.class})
 public class JobRunrSchedulerAutoConfiguration {

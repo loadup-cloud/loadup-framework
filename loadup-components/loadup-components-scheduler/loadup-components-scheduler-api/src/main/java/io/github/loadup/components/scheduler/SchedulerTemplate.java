@@ -4,13 +4,6 @@ import io.github.loadup.components.scheduler.model.ScheduleRequest;
 import io.github.loadup.components.scheduler.model.SchedulerStatus;
 import java.util.Optional;
 
-/**
- * Business facade for the scheduler component (recurring / cron tasks).
- *
- * <p>Registration is idempotent per {@code taskName}: registering an existing task updates its
- * cron expression and payload instead of creating a duplicate. One-shot or retried executions are
- * owned by the retry task component (JobRunr); this facade only manages recurring schedules.
- */
 public interface SchedulerTemplate {
 
     /**

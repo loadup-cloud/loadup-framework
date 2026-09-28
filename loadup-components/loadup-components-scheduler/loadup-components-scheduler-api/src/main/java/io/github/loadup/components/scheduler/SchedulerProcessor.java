@@ -2,12 +2,6 @@ package io.github.loadup.components.scheduler;
 
 import io.github.loadup.components.scheduler.model.SchedulerContext;
 
-/**
- * SPI implemented by business code to process one recurring task.
- *
- * <p>Any exception thrown from {@link #process(SchedulerContext)} marks the run as failed and
- * triggers the underlying engine retry policy (same semantics as the retry task component).
- */
 public interface SchedulerProcessor {
 
     /**

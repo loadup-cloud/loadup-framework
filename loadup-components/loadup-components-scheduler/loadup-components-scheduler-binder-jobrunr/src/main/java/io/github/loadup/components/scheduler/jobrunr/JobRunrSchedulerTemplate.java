@@ -19,14 +19,6 @@ import org.jobrunr.storage.navigation.OffsetBasedPageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * JobRunr backed {@link SchedulerTemplate}.
- *
- * <p>Recurring jobs are registered under their {@code taskName} as the recurring job id, which
- * makes registration idempotent: JobRunr updates an existing recurring job instead of creating a
- * duplicate. The recurring job runs through the same {@code BackgroundJobServer}, storage and
- * dashboard as the retry task component.
- */
 public class JobRunrSchedulerTemplate implements SchedulerTemplate {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JobRunrSchedulerTemplate.class);

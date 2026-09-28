@@ -19,10 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-/**
- * End-to-end contract of the scheduler facade on the JobRunr binder: registration, idempotency,
- * cron updates, manual trigger and delete, all backed by a real MySQL container.
- */
 @SpringBootTest(
         classes = TestSchedulerApplication.class,
         properties = "spring.autoconfigure.exclude="

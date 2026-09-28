@@ -40,6 +40,11 @@
     </scm>
 
     <properties>        <!-- Spring Framework (FROZEN) -->
+        <!-- This POM-only BOM has no source headers; direct license goals still require a license name. -->
+        <license.licenseName>apache_v2</license.licenseName>
+        <license.skipRemoveLicense>true</license.skipRemoveLicense>
+        <license.skipUpdateLicense>true</license.skipUpdateLicense>
+        <license.skipCheckLicense>true</license.skipCheckLicense>
         <spring.boot.version>4.1.1</spring.boot.version>
         <spring-cloud.version>2025.1.3</spring-cloud.version>
 
@@ -104,6 +109,7 @@
         <jsonassert.version>1.5.3</jsonassert.version>
         <archunit.version>1.5.0</archunit.version>
         <spotbugs.version>4.10.4</spotbugs.version>
+        <spotless.version>3.10.3</spotless.version>
 
     </properties>
 

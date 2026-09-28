@@ -1,40 +1,19 @@
 package io.github.loadup.components.resourceserver;
 
-/*-
- * #%L
- * LoadUp Cloud
- * %%
- * Copyright (C) 2025 - 2026 LoadUp Cloud
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.result.FailureResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import tools.jackson.databind.ObjectMapper;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -48,6 +27,7 @@ import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.util.StringUtils;
+import tools.jackson.databind.ObjectMapper;
 
 /** JWT resource-server integration shared by Controller applications and managed gateways. */
 @AutoConfiguration
@@ -137,15 +117,15 @@ public class ResourceServerAutoConfiguration {
                                 writeError(response, objectMapper, CommonResultCodeEnum.UNAUTHENTICATED))
                         .accessDeniedHandler((request, response, exception) ->
                                 writeError(response, objectMapper, CommonResultCodeEnum.ACCESS_DENIED)))
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(
-                        jwt -> jwt.decoder(validatedDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter))
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
+                                jwt.decoder(validatedDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter))
                         .authenticationEntryPoint((request, response, exception) ->
                                 writeError(response, objectMapper, CommonResultCodeEnum.UNAUTHENTICATED)));
         return http.build();
     }
 
-    private static void writeError(
-            HttpServletResponse response, ObjectMapper objectMapper, CommonResultCodeEnum code) throws IOException {
+    private static void writeError(HttpServletResponse response, ObjectMapper objectMapper, CommonResultCodeEnum code)
+            throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");

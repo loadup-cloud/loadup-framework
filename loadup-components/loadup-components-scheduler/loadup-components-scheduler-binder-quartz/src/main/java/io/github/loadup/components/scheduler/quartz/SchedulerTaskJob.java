@@ -10,11 +10,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
-/**
- * Quartz job that dispatches a run to the {@link SchedulerProcessor} registered for the task name
- * stored in the job data map. The registry is resolved from the application context, which Spring's
- * {@code SpringBeanJobFactory} injects into any job implementing {@link ApplicationContextAware}.
- */
 public class SchedulerTaskJob extends QuartzJobBean implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;

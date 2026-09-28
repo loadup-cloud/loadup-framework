@@ -1,8 +1,5 @@
 package io.github.loadup.components.scheduler;
 
-/**
- * Resolves a {@link SchedulerProcessor} by its task name.
- */
 public interface SchedulerProcessorRegistry {
 
     /**

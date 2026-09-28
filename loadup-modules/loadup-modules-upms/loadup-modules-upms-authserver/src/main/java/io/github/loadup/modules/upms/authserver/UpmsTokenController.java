@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2025 - 2026 LoadUp Cloud
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.github.loadup.modules.upms.authserver;
 
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
@@ -57,8 +42,11 @@ public class UpmsTokenController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public IResponse<TokenData> login(@RequestBody LoginRequest request) {
-        if (request == null || request.username() == null || request.username().isBlank()
-                || request.password() == null || request.password().isBlank()) {
+        if (request == null
+                || request.username() == null
+                || request.username().isBlank()
+                || request.password() == null
+                || request.password().isBlank()) {
             return FailureResponse.of(CommonResultCodeEnum.PARAM_ILLEGAL);
         }
         try {
@@ -89,7 +77,8 @@ public class UpmsTokenController {
                     .claim("permissions", permissions)
                     .build();
             String token = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-            return SuccessResponse.of(new TokenData(token, "Bearer", properties.getUserAccessTokenTtl().toSeconds()));
+            return SuccessResponse.of(new TokenData(
+                    token, "Bearer", properties.getUserAccessTokenTtl().toSeconds()));
         } catch (AuthenticationException ex) {
             return FailureResponse.of(CommonResultCodeEnum.UNAUTHENTICATED);
         }

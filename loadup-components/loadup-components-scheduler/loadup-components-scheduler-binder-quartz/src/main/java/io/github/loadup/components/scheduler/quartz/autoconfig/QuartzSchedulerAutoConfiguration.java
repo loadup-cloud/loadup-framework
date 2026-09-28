@@ -14,11 +14,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.quartz.autoconfigure.QuartzAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Wires the Quartz binder on top of Spring Boot's {@code spring-boot-starter-quartz}
- * auto-configuration: facade implementation and processor registry. Quartz provides the embedded
- * or JDBC-backed clustered scheduler; business code only sees the scheduler facade.
- */
 @AutoConfiguration(after = QuartzAutoConfiguration.class)
 @ConditionalOnClass({Scheduler.class, JobDetail.class})
 public class QuartzSchedulerAutoConfiguration {

@@ -3,14 +3,6 @@ package io.github.loadup.components.scheduler.model;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Registration payload of a recurring task.
- *
- * @param taskName the unique task name, must match a registered {@code SchedulerProcessor}
- * @param cron the cron expression (or any engine-specific schedule expression) defining when to run
- * @param args optional string payload handed to the processor
- * @param zoneId optional timezone of the schedule; {@code null} falls back to the engine default
- */
 public record ScheduleRequest(String taskName, String cron, Map<String, String> args, String zoneId) {
 
     public ScheduleRequest {

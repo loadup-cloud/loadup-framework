@@ -9,18 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-/**
- * Thin adapter over {@link SecurityContextHolder} for the current user.
- *
- * <p>This is the LoadUp facade for accessing the authenticated user. It never stores state
- * itself: {@link #set(LoadUpUser)} writes an {@link Authentication} into the Spring Security
- * context and {@link #get()} reads it back. Method-level authorization is enforced by Spring
- * Security ({@code @PreAuthorize}, {@code @EnableMethodSecurity}) using the authorities derived
- * from the user's roles and permissions.
- *
- * <p>Context propagation (thread pools, async) follows the {@code SecurityContextHolder}
- * strategy configured by the application; no additional manual propagation is required.
- */
 public final class UserContext {
 
     private UserContext() {

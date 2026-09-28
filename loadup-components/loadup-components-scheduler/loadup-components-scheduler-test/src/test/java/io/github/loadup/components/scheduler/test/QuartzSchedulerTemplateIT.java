@@ -16,10 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-/**
- * End-to-end contract of the scheduler facade on the Quartz binder with the in-memory job store:
- * registration, cron updates, manual trigger and delete.
- */
 @SpringBootTest(
         classes = TestSchedulerApplication.class,
         properties = "spring.autoconfigure.exclude="

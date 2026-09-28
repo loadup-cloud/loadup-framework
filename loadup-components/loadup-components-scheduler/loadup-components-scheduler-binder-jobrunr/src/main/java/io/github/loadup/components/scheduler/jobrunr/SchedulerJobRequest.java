@@ -5,10 +5,6 @@ import java.util.Map;
 import org.jobrunr.jobs.lambdas.JobRequest;
 import org.jobrunr.jobs.lambdas.JobRequestHandler;
 
-/**
- * JobRunr job payload of one scheduled run. Implemented as a mutable POJO because JobRunr
- * serializes the request with Jackson and needs a no-arg constructor plus bean properties.
- */
 public class SchedulerJobRequest implements JobRequest {
 
     private String taskName;

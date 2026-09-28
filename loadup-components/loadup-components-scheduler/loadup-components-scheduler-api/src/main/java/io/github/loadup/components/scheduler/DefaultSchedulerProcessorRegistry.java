@@ -5,10 +5,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * Collects all {@link SchedulerProcessor} beans and resolves them by task name. Shared by every
- * binder, so the resolution contract is identical regardless of the underlying engine.
- */
 public class DefaultSchedulerProcessorRegistry implements SchedulerProcessorRegistry {
 
     private final Map<String, SchedulerProcessor> processors;

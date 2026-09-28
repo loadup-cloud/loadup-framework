@@ -11,10 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * One isolated processor per test scenario. Each processor owns its counters and optional gate, so
- * recurring runs left behind by one test never affect another.
- */
 @Configuration
 public class TestSchedulerProcessors {
 
