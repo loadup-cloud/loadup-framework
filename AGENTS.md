@@ -58,6 +58,7 @@ loadup-parent/
 │   ├── loadup-components-authorization/   # Spring Security 方法级授权 @PreAuthorize
 │   ├── loadup-components-authserver/        # SAS 令牌签发与 OAuth2 客户端管理
 │   ├── loadup-components-resource-server/  # Controller 入口 JWT 验证
+│   ├── loadup-components-webmvc/          # 全局 API 报文、错误处理与 Jackson 约定
 │   ├── loadup-components-cache/           # 缓存（Spring Cache 门面 + binder-caffeine/redis/jetcache）
 │   ├── loadup-components-captcha/         # 验证码（API + binder-tianai/nanocaptcha）
 │   ├── loadup-components-configcenter/    # 配置中心（API + binder-local/nacos/apollo）
@@ -266,7 +267,7 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 
 ## API 暴露方式
 
-本地业务接口使用 Spring MVC Controller。资源端令牌校验由 `loadup-components-resource-server` 装配，方法授权由 `loadup-components-authorization` 提供；UPMS 不签发令牌，SAS 可通过 `loadup-modules-upms-authserver` 对接 UPMS 凭证校验。调用外部 API 的可配置 HTTP 客户端组件属于后续规划，不承载入站路由。
+本地业务接口使用 Spring MVC Controller。`loadup-components-webmvc` 对 `/api/**` 统一封装 `result`、`data` 并处理错误及 Jackson 规则；`commons-dto` 只定义报文类型。资源端令牌校验由 `loadup-components-resource-server` 装配，方法授权由 `loadup-components-authorization` 提供；UPMS 凭证校验和令牌签发由 `loadup-modules-upms-authserver` 对接。调用外部 API 的可配置 HTTP 客户端组件属于后续规划，不承载入站路由。
 
 ---
 

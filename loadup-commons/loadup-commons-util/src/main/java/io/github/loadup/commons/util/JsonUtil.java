@@ -84,7 +84,12 @@ public class JsonUtil {
 
     private static final Logger log = LoggerFactory.getLogger(JsonUtil.class);
 
-    private static final ObjectMapper objectMapper = initObjectMapper();
+    private static volatile ObjectMapper objectMapper = initObjectMapper();
+
+    /** Use the application mapper when Spring configures one. */
+    public static void setObjectMapper(ObjectMapper mapper) {
+        objectMapper = java.util.Objects.requireNonNull(mapper);
+    }
 
     /**
      * 初始化ObjectMapper实例
@@ -104,6 +109,11 @@ public class JsonUtil {
      * @return 配置好的ObjectMapper实例
      */
     private static ObjectMapper initObjectMapper() {
+        return customize(JsonMapper.builder()).build();
+    }
+
+    /** Apply the framework JSON conventions to a Jackson 3 mapper builder. */
+    public static JsonMapper.Builder customize(JsonMapper.Builder builder) {
         SimpleModule javaTimeModule = new SimpleModule();
         javaTimeModule.addSerializer(
                 LocalDate.class,
@@ -120,16 +130,16 @@ public class JsonUtil {
 
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Date.class, new MultiDateDeserializer());
-        return JsonMapper.builder()
+        return builder
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .disable(DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS)
                 .changeDefaultPropertyInclusion(ignored ->
                         com.fasterxml.jackson.annotation.JsonInclude.Value.construct(Include.ALWAYS, Include.ALWAYS))
-                .defaultDateFormat(new SimpleDateFormat(CommonConstants.DEFAULT_DATE_FORMAT))
+                .defaultDateFormat(new SimpleDateFormat(CommonConstants.DEFAULT_DATE_TIME_FORMAT))
                 .addModule(javaTimeModule)
-                .addModule(module)
-                .build();
+                .addModule(module);
     }
 
     /**

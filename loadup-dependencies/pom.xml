@@ -169,6 +169,11 @@
                 <artifactId>loadup-components-resource-server</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-webmvc</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
 
             <!-- ======== loadup-testify start ======== -->
 
