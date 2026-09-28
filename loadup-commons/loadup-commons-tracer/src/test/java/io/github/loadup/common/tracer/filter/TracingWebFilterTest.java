@@ -1,5 +1,7 @@
 package io.github.loadup.common.tracer.filter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,7 +38,20 @@ class TracingWebFilterTest {
 
     @Test
     void testWebRequestIsTraced() throws Exception {
-        mockMvc.perform(get("/test/hello")).andExpect(status().isOk()).andExpect(header().exists("traceparent"));
+        var response = mockMvc.perform(get("/test/hello"))
+                .andExpect(status().isOk())
+                .andExpect(header().exists("traceparent"))
+                .andExpect(header().exists("traceId"))
+                .andReturn()
+                .getResponse();
+        String traceId = response.getHeader("traceId");
+        assertTrue(traceId.matches("[0-9a-f]{32}"));
+        assertEquals(traceId, response.getHeader("traceparent").split("-")[1]);
+    }
+
+    @Test
+    void testMissingEndpointHasTraceId() throws Exception {
+        mockMvc.perform(get("/missing")).andExpect(status().isNotFound()).andExpect(header().exists("traceId"));
     }
 
     @Test

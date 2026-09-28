@@ -61,9 +61,8 @@ loadup:
         - /api/auth/login
 
   tracer:
-    enabled: false
+    enabled: true
     enable-web-tracing: true
-    exclude-patterns: /actuator/**,/health,/metrics
     exporters:
       - type: logging
 

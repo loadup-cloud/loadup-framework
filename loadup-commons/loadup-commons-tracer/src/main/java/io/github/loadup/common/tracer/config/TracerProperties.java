@@ -37,7 +37,7 @@ public class TracerProperties {
     /**
      * Comma-separated URL patterns to exclude from tracing.
      */
-    private String excludePatterns = "/actuator/**,/health,/metrics";
+    private String excludePatterns = "";
 
     /**
      * Sampling ratio: 1.0 = always on, 0.0 = always off, value between = ratio-based.

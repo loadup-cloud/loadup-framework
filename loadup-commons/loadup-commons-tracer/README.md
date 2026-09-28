@@ -25,6 +25,7 @@ try { ... } finally { span.end(); }
 ```
 
 日志通过 `loadup-commons-log` 自动关联 `traceId` / `spanId`（MDC），无需额外配置。
+HTTP 响应头同时返回 `traceId` 和 `traceparent`，便于客户端把错误与服务端日志关联。默认追踪所有 Servlet 请求；通过 `loadup.tracer.exclude-patterns` 显式排除的路径不会生成追踪头。
 
 Java 包名已迁移为 `io.github.loadup.common.tracer`，Maven 坐标为 `loadup-commons-tracer`。
 
@@ -59,6 +60,7 @@ loadup:
 | `@Traced` 方法级追踪（AOP） | ✓ |
 | `TraceUtil` 编程式 Span | ✓ |
 | HTTP 请求追踪（Servlet Filter，W3C 传播） | ✓ |
+| 响应头 `traceId` / `traceparent` | ✓ |
 | 异步线程 Context + MDC 传播 | ✓ |
 | MDC `traceId` / `spanId` 自动注入 | ✓ |
 | 导出器 SPI 扩展（logging / noop / otlp） | ✓ |

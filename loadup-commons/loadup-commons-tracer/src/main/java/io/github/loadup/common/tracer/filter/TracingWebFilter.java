@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -31,7 +33,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  *   <li>Extract W3C {@code traceparent} / {@code tracestate} from the request headers.</li>
  *   <li>Create a SERVER span and make it the active OTel context.</li>
  *   <li>Inject {@code traceId} and {@code spanId} into SLF4J MDC for structured logs.</li>
- *   <li>Set the {@code traceparent} header on the response.</li>
+ *   <li>Set the {@code traceId} and {@code traceparent} headers on the response.</li>
  *   <li>Record HTTP status and mark error spans on 5xx responses.</li>
  *   <li>End the span and clear MDC in a {@code finally} block – guaranteed even on exceptions.</li>
  *   <li>Skip excluded URL patterns (see {@link TracerProperties#getExcludePatterns()}).</li>
@@ -39,6 +41,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  *
  * <p>Fallback: if span creation fails for any reason the request proceeds normally.
  */
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class TracingWebFilter extends OncePerRequestFilter {
     private static final Logger log = LoggerFactory.getLogger(TracingWebFilter.class);
 
@@ -88,6 +91,7 @@ public class TracingWebFilter extends OncePerRequestFilter {
         // Propagate traceparent back to the caller so that upstream systems can correlate.
         String traceparent = buildTraceparent(span);
         response.setHeader("traceparent", traceparent);
+        response.setHeader("traceId", span.getSpanContext().getTraceId());
 
         Scope scope = span.makeCurrent();
         try {
