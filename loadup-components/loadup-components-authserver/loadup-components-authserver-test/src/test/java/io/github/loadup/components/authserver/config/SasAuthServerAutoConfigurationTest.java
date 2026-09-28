@@ -42,13 +42,13 @@ class SasAuthServerAutoConfigurationTest {
     void registersStandardBeans() {
         contextRunner
                 .withPropertyValues(
-                        "loadup.components.authserver.issuer=http://localhost:8080",
-                        "loadup.components.authserver.audience=loadup-api",
-                        "loadup.components.authserver.clients[0].client-id=loadup-app",
-                        "loadup.components.authserver.clients[0].client-secret=change-me",
-                        "loadup.components.authserver.clients[0].scopes[0]=openid",
-                        "loadup.components.authserver.clients[0].grant-types[0]=client_credentials",
-                        "loadup.components.authserver.clients[0].grant-types[1]=refresh_token")
+                        "loadup.security.auth-server.issuer=http://localhost:8080",
+                        "loadup.security.auth-server.audience=loadup-api",
+                        "loadup.security.auth-server.clients[0].client-id=loadup-app",
+                        "loadup.security.auth-server.clients[0].client-secret=change-me",
+                        "loadup.security.auth-server.clients[0].scopes[0]=openid",
+                        "loadup.security.auth-server.clients[0].grant-types[0]=client_credentials",
+                        "loadup.security.auth-server.clients[0].grant-types[1]=refresh_token")
                 .run(context -> {
                     assertThat(context).hasSingleBean(RegisteredClientRepository.class);
                     assertThat(context).hasSingleBean(AuthorizationServerSettings.class);

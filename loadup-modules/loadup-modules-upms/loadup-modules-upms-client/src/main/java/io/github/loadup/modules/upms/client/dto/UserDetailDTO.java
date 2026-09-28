@@ -2,7 +2,7 @@ package io.github.loadup.modules.upms.client.dto;
 
 /*-
  * #%L
- * Loadup Modules UPMS Client Layer
+ * Loadup Modules UPMS App Layer
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -20,87 +20,80 @@ package io.github.loadup.modules.upms.client.dto;
  * #L%
  */
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Schema(description = "用户详情返回对象")
-public class UserDetailDTO implements Serializable {
+/**
+ * User Detail DTO
+ *
+ * @author LoadUp Framework
+ * @since 1.0.0
+ */
+public class UserDetailDTO {
 
-    @Schema(description = "用户ID")
     private String id;
-
-    @Schema(description = "账号")
-    private String account;
-
-    @Schema(description = "昵称")
+    private String username;
     private String nickname;
-
-    @Schema(description = "真实姓名")
     private String realName;
-
-    @Schema(description = "头像地址")
-    private String avatar;
-
-    @Schema(description = "手机号")
-    private String mobile;
-
-    @Schema(description = "邮箱")
-    private String email;
-
-    @Schema(description = "性别：0-未知，1-男，2-女")
-    private Integer gender;
-
-    @Schema(description = "状态：0-正常，1-停用")
-    private Integer status;
-
-    @Schema(description = "所属部门ID")
     private String deptId;
-
-    @Schema(description = "所属部门名称")
     private String deptName;
-
-    @Schema(description = "最后登录时间")
+    private String email;
+    private Boolean emailVerified;
+    private String mobile;
+    private Boolean mobileVerified;
+    private String avatar;
+    private Short gender;
+    private LocalDate birthday;
+    private Short status;
     private LocalDateTime lastLoginTime;
-
-    @Schema(description = "创建时间")
-    private LocalDateTime createdAt;
-
-    private List<String> roles;
-    private List<String> permissions;
+    private String lastLoginIp;
+    private List<RoleDTO> roles;
+    private String remark;
+    private LocalDateTime createdTime;
+    private LocalDateTime updatedTime;
 
     public UserDetailDTO(
             String id,
-            String account,
+            String username,
             String nickname,
             String realName,
-            String avatar,
-            String mobile,
-            String email,
-            Integer gender,
-            Integer status,
             String deptId,
             String deptName,
+            String email,
+            Boolean emailVerified,
+            String mobile,
+            Boolean mobileVerified,
+            String avatar,
+            Short gender,
+            LocalDate birthday,
+            Short status,
             LocalDateTime lastLoginTime,
-            LocalDateTime createdAt,
-            List<String> roles,
-            List<String> permissions) {
+            String lastLoginIp,
+            List<RoleDTO> roles,
+            String remark,
+            LocalDateTime createdTime,
+            LocalDateTime updatedTime) {
         this.id = id;
-        this.account = account;
+        this.username = username;
         this.nickname = nickname;
         this.realName = realName;
-        this.avatar = avatar;
-        this.mobile = mobile;
-        this.email = email;
-        this.gender = gender;
-        this.status = status;
         this.deptId = deptId;
         this.deptName = deptName;
+        this.email = email;
+        this.emailVerified = emailVerified;
+        this.mobile = mobile;
+        this.mobileVerified = mobileVerified;
+        this.avatar = avatar;
+        this.gender = gender;
+        this.birthday = birthday;
+        this.status = status;
         this.lastLoginTime = lastLoginTime;
-        this.createdAt = createdAt;
+        this.lastLoginIp = lastLoginIp;
         this.roles = roles;
-        this.permissions = permissions;
+        this.remark = remark;
+        this.createdTime = createdTime;
+        this.updatedTime = updatedTime;
     }
 
     public UserDetailDTO() {}
@@ -109,8 +102,8 @@ public class UserDetailDTO implements Serializable {
         return this.id;
     }
 
-    public String getAccount() {
-        return this.account;
+    public String getUsername() {
+        return this.username;
     }
 
     public String getNickname() {
@@ -121,26 +114,6 @@ public class UserDetailDTO implements Serializable {
         return this.realName;
     }
 
-    public String getAvatar() {
-        return this.avatar;
-    }
-
-    public String getMobile() {
-        return this.mobile;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public Integer getGender() {
-        return this.gender;
-    }
-
-    public Integer getStatus() {
-        return this.status;
-    }
-
     public String getDeptId() {
         return this.deptId;
     }
@@ -149,28 +122,68 @@ public class UserDetailDTO implements Serializable {
         return this.deptName;
     }
 
+    public String getEmail() {
+        return this.email;
+    }
+
+    public Boolean isEmailVerified() {
+        return this.emailVerified;
+    }
+
+    public String getMobile() {
+        return this.mobile;
+    }
+
+    public Boolean isMobileVerified() {
+        return this.mobileVerified;
+    }
+
+    public String getAvatar() {
+        return this.avatar;
+    }
+
+    public Short getGender() {
+        return this.gender;
+    }
+
+    public LocalDate getBirthday() {
+        return this.birthday;
+    }
+
+    public Short getStatus() {
+        return this.status;
+    }
+
     public LocalDateTime getLastLoginTime() {
         return this.lastLoginTime;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
+    public String getLastLoginIp() {
+        return this.lastLoginIp;
     }
 
-    public List<String> getRoles() {
+    public List<RoleDTO> getRoles() {
         return this.roles;
     }
 
-    public List<String> getPermissions() {
-        return this.permissions;
+    public String getRemark() {
+        return this.remark;
+    }
+
+    public LocalDateTime getCreatedTime() {
+        return this.createdTime;
+    }
+
+    public LocalDateTime getUpdatedTime() {
+        return this.updatedTime;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
-    public void setAccount(String account) {
-        this.account = account;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setNickname(String nickname) {
@@ -181,26 +194,6 @@ public class UserDetailDTO implements Serializable {
         this.realName = realName;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setGender(Integer gender) {
-        this.gender = gender;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
     public void setDeptId(String deptId) {
         this.deptId = deptId;
     }
@@ -209,19 +202,216 @@ public class UserDetailDTO implements Serializable {
         this.deptName = deptName;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public void setMobileVerified(Boolean mobileVerified) {
+        this.mobileVerified = mobileVerified;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public void setGender(Short gender) {
+        this.gender = gender;
+    }
+
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
+    }
+
+    public void setStatus(Short status) {
+        this.status = status;
+    }
+
     public void setLastLoginTime(LocalDateTime lastLoginTime) {
         this.lastLoginTime = lastLoginTime;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setLastLoginIp(String lastLoginIp) {
+        this.lastLoginIp = lastLoginIp;
     }
 
-    public void setRoles(List<String> roles) {
+    public void setRoles(List<RoleDTO> roles) {
         this.roles = roles;
     }
 
-    public void setPermissions(List<String> permissions) {
-        this.permissions = permissions;
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public void setCreatedTime(LocalDateTime createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public void setUpdatedTime(LocalDateTime updatedTime) {
+        this.updatedTime = updatedTime;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String id;
+        private String username;
+        private String nickname;
+        private String realName;
+        private String deptId;
+        private String deptName;
+        private String email;
+        private Boolean emailVerified;
+        private String mobile;
+        private Boolean mobileVerified;
+        private String avatar;
+        private Short gender;
+        private LocalDate birthday;
+        private Short status;
+        private LocalDateTime lastLoginTime;
+        private String lastLoginIp;
+        private List<RoleDTO> roles;
+        private String remark;
+        private LocalDateTime createdTime;
+        private LocalDateTime updatedTime;
+
+        public Builder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder username(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public Builder nickname(String nickname) {
+            this.nickname = nickname;
+            return this;
+        }
+
+        public Builder realName(String realName) {
+            this.realName = realName;
+            return this;
+        }
+
+        public Builder deptId(String deptId) {
+            this.deptId = deptId;
+            return this;
+        }
+
+        public Builder deptName(String deptName) {
+            this.deptName = deptName;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder emailVerified(Boolean emailVerified) {
+            this.emailVerified = emailVerified;
+            return this;
+        }
+
+        public Builder mobile(String mobile) {
+            this.mobile = mobile;
+            return this;
+        }
+
+        public Builder mobileVerified(Boolean mobileVerified) {
+            this.mobileVerified = mobileVerified;
+            return this;
+        }
+
+        public Builder avatar(String avatar) {
+            this.avatar = avatar;
+            return this;
+        }
+
+        public Builder gender(Short gender) {
+            this.gender = gender;
+            return this;
+        }
+
+        public Builder birthday(LocalDate birthday) {
+            this.birthday = birthday;
+            return this;
+        }
+
+        public Builder status(Short status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder lastLoginTime(LocalDateTime lastLoginTime) {
+            this.lastLoginTime = lastLoginTime;
+            return this;
+        }
+
+        public Builder lastLoginIp(String lastLoginIp) {
+            this.lastLoginIp = lastLoginIp;
+            return this;
+        }
+
+        public Builder roles(List<RoleDTO> roles) {
+            this.roles = roles;
+            return this;
+        }
+
+        public Builder remark(String remark) {
+            this.remark = remark;
+            return this;
+        }
+
+        public Builder createdTime(LocalDateTime createdTime) {
+            this.createdTime = createdTime;
+            return this;
+        }
+
+        public Builder updatedTime(LocalDateTime updatedTime) {
+            this.updatedTime = updatedTime;
+            return this;
+        }
+
+        public UserDetailDTO build() {
+            return new UserDetailDTO(
+                    this.id,
+                    this.username,
+                    this.nickname,
+                    this.realName,
+                    this.deptId,
+                    this.deptName,
+                    this.email,
+                    this.emailVerified,
+                    this.mobile,
+                    this.mobileVerified,
+                    this.avatar,
+                    this.gender,
+                    this.birthday,
+                    this.status,
+                    this.lastLoginTime,
+                    this.lastLoginIp,
+                    this.roles,
+                    this.remark,
+                    this.createdTime,
+                    this.updatedTime);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
+                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
     }
 }

@@ -20,6 +20,7 @@ package io.github.loadup.modules.upms.infrastructure.dataobject;
  * #L%
  */
 
+import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 
@@ -33,6 +34,7 @@ public class RoleDO extends BaseDO {
 
     private String roleCode;
 
+    @Column("parent_role_id")
     private String parentId;
 
     private Integer roleLevel;

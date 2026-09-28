@@ -20,6 +20,7 @@ package io.github.loadup.modules.upms.infrastructure.dataobject;
  * #L%
  */
 
+import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 
@@ -44,6 +45,7 @@ public class DepartmentDO extends BaseDO {
 
     private String leaderUserId;
 
+    @Column("phone")
     private String mobile;
 
     private String email;

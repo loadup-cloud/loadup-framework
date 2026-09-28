@@ -11,7 +11,7 @@
 </dependency>
 ```
 
-模块自动引入 UPMS app 和方法授权组件，并注册 `/api/auth/register`、`/api/upms/**` 接口。认证链由应用或 `loadup-components-resource-server` 配置；仅 `/api/auth/register` 应按需公开，其余接口默认需要认证。
+模块自动引入 UPMS app 和方法授权组件。Controller 只声明 `/auth/register`、`/upms/**`，Web 适配器统一添加 `/api` 前缀。所有 UPMS 响应均使用 HTTP 200 JSON，包含 `result` 与 `data`；分页另有 `pageInfo`。异常、无匹配路径和认证拒绝由对应 Web、Resource Server 层转为业务错误码。用户名密码登录由 `loadup-modules-upms-authserver` 提供 `/api/auth/login`；在 `loadup.security.resource-server.permit-all` 中放行登录与注册。
 
 ## 配置
 

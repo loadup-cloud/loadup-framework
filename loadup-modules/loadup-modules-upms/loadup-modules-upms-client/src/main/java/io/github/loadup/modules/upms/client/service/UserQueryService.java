@@ -21,7 +21,6 @@ package io.github.loadup.modules.upms.client.service;
  */
 
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
-import java.util.List;
 
 /**
  * UPMS 外部调用接口
@@ -32,9 +31,4 @@ public interface UserQueryService {
      * 获取用户基本信息
      */
     UserDetailDTO getUserById(String userId);
-
-    /**
-     * 批量获取用户信息
-     */
-    List<UserDetailDTO> listUsersByIds(List<String> userIds);
 }

@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
  *   <li>domain 层不得引入 Spring / ORM 框架注解</li>
  *   <li>模块之间无横向依赖</li>
  *   <li>不允许使用字段级 @Autowired（必须构造器注入）</li>
- *   <li>不允许创建 @RestController / @Controller</li>
+ *   <li>HTTP controllers belong to Web or authentication adapters</li>
  *   <li>无包内循环依赖</li>
  * </ul>
  */
@@ -103,17 +103,19 @@ class ArchitectureTest {
                 .check(MODULE_CLASSES);
     }
 
-    // ── 禁止创建 REST Controller ─────────────────────────────────────────────
+    // ── HTTP adapter ownership ──────────────────────────────────────────────
 
     @Test
-    @DisplayName("不允许创建 @RestController / @Controller（通过 Gateway Service 路由替代）")
-    void noRestControllerAllowed() {
+    @DisplayName("Controllers belong to Web or authentication adapters")
+    void controllersBelongToAdapters() {
         noClasses()
+                .that()
+                .resideOutsideOfPackages("..web..", "..authserver..")
                 .should()
                 .beAnnotatedWith("org.springframework.web.bind.annotation.RestController")
                 .orShould()
                 .beAnnotatedWith("org.springframework.stereotype.Controller")
-                .because("所有 API 端点通过 LoadUp Gateway 路由配置暴露，禁止创建 HTTP Controller")
+                .because("business layers must not own HTTP adapters")
                 .check(ALL_CLASSES);
     }
 

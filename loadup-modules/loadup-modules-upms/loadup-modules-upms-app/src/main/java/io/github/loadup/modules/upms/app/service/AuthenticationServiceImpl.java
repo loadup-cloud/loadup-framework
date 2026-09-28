@@ -1,24 +1,39 @@
+/*-
+ * #%L
+ * Loadup Modules UPMS App Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.app.service;
 
+import io.github.loadup.modules.upms.app.strategy.LoginCredentials;
 import io.github.loadup.modules.upms.app.strategy.LoginStrategyManager;
+import io.github.loadup.modules.upms.app.strategy.LoginType;
 import io.github.loadup.modules.upms.client.command.UserLoginCommand;
 import io.github.loadup.modules.upms.client.command.UserRegisterCommand;
-import io.github.loadup.modules.upms.client.constant.LoginType;
 import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
-import io.github.loadup.modules.upms.client.dto.LoginCredentials;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
 import io.github.loadup.modules.upms.client.service.AuthenticationService;
+import io.github.loadup.modules.upms.client.service.UserQueryService;
 import io.github.loadup.modules.upms.domain.entity.LoginLog;
-import io.github.loadup.modules.upms.domain.entity.Role;
 import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.LoginLogGateway;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
-import io.github.loadup.modules.upms.domain.service.UserPermissionService;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +56,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final LoginLogGateway loginLogGateway;
     private final PasswordEncoder passwordEncoder;
     private final LoginStrategyManager loginStrategyManager;
-    private final UserPermissionService permissionService;
+    private final UserQueryService userQueryService;
 
     /**
      * User login
@@ -136,7 +151,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setNickname(command.getNickname());
         user.setEmail(command.getEmail());
         user.setMobile(command.getMobile());
-        user.setDeptId("1");
         user.setStatus((short) 1);
         user.setAccountNonExpired(true);
         user.setAccountNonLocked(true);
@@ -152,28 +166,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // Assign default role (if exists)
         assignDefaultRole(user.getId());
 
-        return buildUserInfo(user);
-    }
-
-    /**
-     * Build user info DTO
-     */
-    private UserDetailDTO buildUserInfo(User user) {
-        List<Role> roles = roleGateway.findByUserId(user.getId());
-        Set<String> permissions = permissionService.getUserPermissionCodes(user.getId());
-        UserDetailDTO userDetailDTO = new UserDetailDTO();
-        userDetailDTO.setId(user.getId());
-        userDetailDTO.setAccount(user.getUsername());
-        userDetailDTO.setNickname(user.getNickname());
-        userDetailDTO.setRealName(user.getRealName());
-        userDetailDTO.setEmail(user.getEmail());
-        userDetailDTO.setMobile(user.getMobile());
-        userDetailDTO.setAvatar(user.getAvatar());
-        userDetailDTO.setDeptId(user.getDeptId());
-        userDetailDTO.setRoles(roles.stream().map(Role::getRoleCode).collect(Collectors.toList()));
-        userDetailDTO.setPermissions(List.copyOf(permissions));
-        userDetailDTO.setLastLoginTime(user.getLastLoginTime());
-        return userDetailDTO;
+        return userQueryService.getUserById(user.getId());
     }
 
     /**
@@ -198,7 +191,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     private void recordLoginFailure(UserLoginCommand command, String message, String loginType) {
         LoginLog loginLog = new LoginLog();
-        loginLog.setUsername(command.getUsername() != null ? command.getUsername() : command.getMobile());
+        String loginIdentity = command.getUsername() != null ? command.getUsername() : command.getMobile();
+        if (loginIdentity == null) loginIdentity = command.getEmail();
+        loginLog.setUsername(loginIdentity != null ? loginIdentity : "unknown");
         loginLog.setLoginTime(LocalDateTime.now());
         loginLog.setIpAddress(command.getIpAddress());
         loginLog.setLoginStatus((short) 0);
@@ -216,6 +211,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // Try to assign "ROLE_USER" if it exists
         roleGateway
                 .findByRoleCode("ROLE_USER")
+                .filter(role -> role.isEnabled())
                 .ifPresent(role -> roleGateway.assignRoleToUser(userId, role.getId(), "0"));
     }
 
@@ -225,12 +221,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             LoginLogGateway loginLogGateway,
             PasswordEncoder passwordEncoder,
             LoginStrategyManager loginStrategyManager,
-            UserPermissionService permissionService) {
+            UserQueryService userQueryService) {
         this.userGateway = userGateway;
         this.roleGateway = roleGateway;
         this.loginLogGateway = loginLogGateway;
         this.passwordEncoder = passwordEncoder;
         this.loginStrategyManager = loginStrategyManager;
-        this.permissionService = permissionService;
+        this.userQueryService = userQueryService;
     }
 }

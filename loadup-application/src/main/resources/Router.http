@@ -1,16 +1,243 @@
-### GET request to example server
+@baseUrl = http://127.0.0.1:8080
+@username = admin
+@password = REPLACE_WITH_ADMIN_PASSWORD
 
-GET http://127.0.0.1:8080/api/test/bean
+# Run the requests in order. Create requests save IDs as HTTP Client global variables.
+# Change the fixed username, roleCode, deptCode, and permissionCode before rerunning creates.
+# Management endpoints require a user access token carrying ROLE_SUPER_ADMIN.
+# Endpoints accepting @RequestBody String use text/plain with an unquoted ID.
+# API responses use HTTP 200 with result and data; check result.status for failures.
 
-###
-### POST request to example server
-
-POST http://127.0.0.1:8080/api/auth/login
+### Register a public UPMS user (optional; change username on each run)
+POST {{baseUrl}}/api/auth/register
 Content-Type: application/json
 
-{
-  "username": "admin",
-  "password": "123456"
-}
+{"username": "upms_http_register", "password": "ChangeMe123!", "nickname": "HTTP Register"}
 
-###
+### Obtain a user access token with username and password
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{"username": "{{username}}", "password": "{{password}}"}
+
+> {%
+  client.global.set("upmsAccessToken", response.body.data.accessToken);
+%}
+
+### List users
+POST {{baseUrl}}/api/upms/user/list
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"page": 1, "size": 20}
+
+### Read the department tree
+POST {{baseUrl}}/api/upms/department/tree
+Authorization: Bearer {{upmsAccessToken}}
+
+### Read the permission tree
+POST {{baseUrl}}/api/upms/permission/tree
+Authorization: Bearer {{upmsAccessToken}}
+
+### Read the role tree
+POST {{baseUrl}}/api/upms/role/tree
+Authorization: Bearer {{upmsAccessToken}}
+
+### Create a permission
+POST {{baseUrl}}/api/upms/permission/create
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"permissionName": "HTTP Test Menu", "permissionCode": "upms:http:test", "permissionType": 1, "resourcePath": "/upms/http-test", "visible": true, "status": 1}
+
+> {%
+  client.global.set("upmsPermissionId", response.body.data.id);
+%}
+
+### Inspect the created permission
+POST {{baseUrl}}/api/upms/permission/detail
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: text/plain
+
+{{upmsPermissionId}}
+
+### Update the permission
+POST {{baseUrl}}/api/upms/permission/update
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{upmsPermissionId}}", "permissionName": "HTTP Test Menu Updated"}
+
+### Create a department under the seeded root department
+POST {{baseUrl}}/api/upms/department/create
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"parentId": "1", "deptName": "HTTP Test Department", "deptCode": "UPMS_HTTP_TEST", "sortOrder": 100, "status": 1}
+
+> {%
+  client.global.set("upmsDepartmentId", response.body.data.id);
+%}
+
+### Inspect the created department
+POST {{baseUrl}}/api/upms/department/detail
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: text/plain
+
+{{upmsDepartmentId}}
+
+### Update the department
+POST {{baseUrl}}/api/upms/department/update
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{upmsDepartmentId}}", "deptName": "HTTP Test Department Updated"}
+
+### Create a child department for the move test
+POST {{baseUrl}}/api/upms/department/create
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"parentId": "{{upmsDepartmentId}}", "deptName": "HTTP Test Child", "deptCode": "UPMS_HTTP_CHILD", "status": 1}
+
+> {%
+  client.global.set("upmsChildDepartmentId", response.body.data.id);
+%}
+
+### Move the child department to the seeded root department
+POST {{baseUrl}}/api/upms/department/move?deptId={{upmsChildDepartmentId}}&newParentId=1
+Authorization: Bearer {{upmsAccessToken}}
+
+### Create a role with a permission and a custom department data scope
+POST {{baseUrl}}/api/upms/role/create
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"roleName": "HTTP Test Role", "roleCode": "UPMS_HTTP_TEST", "dataScope": 2, "departmentIds": ["{{upmsDepartmentId}}"], "permissionIds": ["{{upmsPermissionId}}"], "status": 1}
+
+> {%
+  client.global.set("upmsRoleId", response.body.data.id);
+%}
+
+### Inspect role permissions and departments
+POST {{baseUrl}}/api/upms/role/detail
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: text/plain
+
+{{upmsRoleId}}
+
+### List roles with filtering and pagination
+POST {{baseUrl}}/api/upms/role/list
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"roleCode": "UPMS_HTTP_TEST", "page": 1, "size": 20}
+
+### Update the role
+POST {{baseUrl}}/api/upms/role/update
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{upmsRoleId}}", "roleName": "HTTP Test Role Updated"}
+
+### Assign the permission explicitly (safe to repeat)
+POST {{baseUrl}}/api/upms/role/assign-permissions?roleId={{upmsRoleId}}
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+["{{upmsPermissionId}}"]
+
+### Create a user in the new department
+POST {{baseUrl}}/api/upms/user/create
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"username": "upms_http_user", "password": "ChangeMe123!", "nickname": "HTTP Test User", "deptId": "{{upmsDepartmentId}}", "status": 1}
+
+> {%
+  client.global.set("upmsUserId", response.body.data.id);
+%}
+
+### Assign the new role to the user
+POST {{baseUrl}}/api/upms/role/assign-to-user?roleId={{upmsRoleId}}&userId={{upmsUserId}}
+Authorization: Bearer {{upmsAccessToken}}
+
+### Inspect the user's roles
+POST {{baseUrl}}/api/upms/user/detail
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{upmsUserId}}"}
+
+### Update the user
+POST {{baseUrl}}/api/upms/user/update
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{upmsUserId}}", "nickname": "HTTP Test User Updated"}
+
+### Current authenticated user's menu (uses the token subject, not upmsUserId)
+POST {{baseUrl}}/api/upms/permission/user-menu
+Authorization: Bearer {{upmsAccessToken}}
+
+### Lock the test user
+POST {{baseUrl}}/api/upms/user/lock
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: text/plain
+
+{{upmsUserId}}
+
+### Unlock the test user
+POST {{baseUrl}}/api/upms/user/unlock
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: text/plain
+
+{{upmsUserId}}
+
+### Change the test user's password
+POST {{baseUrl}}/api/upms/user/change-password
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"userId": "{{upmsUserId}}", "oldPassword": "ChangeMe123!", "newPassword": "ChangedMe123!", "confirmPassword": "ChangedMe123!"}
+
+### Remove the role from the test user
+POST {{baseUrl}}/api/upms/role/remove-from-user?roleId={{upmsRoleId}}&userId={{upmsUserId}}
+Authorization: Bearer {{upmsAccessToken}}
+
+### Delete the test user
+POST {{baseUrl}}/api/upms/user/delete
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: text/plain
+
+{{upmsUserId}}
+
+### Delete the test role
+POST {{baseUrl}}/api/upms/role/delete
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: text/plain
+
+{{upmsRoleId}}
+
+### Delete the test permission
+POST {{baseUrl}}/api/upms/permission/delete
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: text/plain
+
+{{upmsPermissionId}}
+
+### Delete the moved child department
+POST {{baseUrl}}/api/upms/department/delete
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: text/plain
+
+{{upmsChildDepartmentId}}
+
+### Delete the test department
+POST {{baseUrl}}/api/upms/department/delete
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: text/plain
+
+{{upmsDepartmentId}}
+
+# Resource-level ABAC has no HTTP endpoint; call AccessCheckService from trusted application code.

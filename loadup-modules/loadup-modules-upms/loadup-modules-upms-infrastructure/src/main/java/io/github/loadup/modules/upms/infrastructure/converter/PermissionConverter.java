@@ -41,7 +41,5 @@ public interface PermissionConverter {
 
     @Mapping(source = "createdAt", target = "createdTime")
     @Mapping(source = "updatedAt", target = "updatedTime")
-    @Mapping(target = "parent", ignore = true)
-    @Mapping(target = "children", ignore = true)
     Permission toEntity(PermissionDO permissionDO);
 }

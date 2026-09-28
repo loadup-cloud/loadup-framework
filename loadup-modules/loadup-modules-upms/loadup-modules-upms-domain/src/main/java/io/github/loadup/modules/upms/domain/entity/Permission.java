@@ -22,7 +22,6 @@ package io.github.loadup.modules.upms.domain.entity;
 
 import io.github.loadup.commons.domain.BaseEntity;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * Permission Entity - Resource permission definition
@@ -71,11 +70,6 @@ public class Permission extends BaseEntity {
     private String updatedBy;
 
     private LocalDateTime updatedTime;
-
-    // Transient fields
-    private Permission parent;
-
-    private List<Permission> children;
 
     /**
      * Check if permission is enabled
@@ -246,22 +240,6 @@ public class Permission extends BaseEntity {
 
     public void setUpdatedTime(LocalDateTime updatedTime) {
         this.updatedTime = updatedTime;
-    }
-
-    public Permission getParent() {
-        return parent;
-    }
-
-    public void setParent(Permission parent) {
-        this.parent = parent;
-    }
-
-    public List<Permission> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<Permission> children) {
-        this.children = children;
     }
 
     public boolean isVisible() {

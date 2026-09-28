@@ -21,9 +21,7 @@ package io.github.loadup.modules.upms.app.strategy.oauth;
  */
 
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
-import io.github.loadup.modules.upms.client.constant.OAuthProvider;
-import io.github.loadup.modules.upms.client.dto.OAuthToken;
-import io.github.loadup.modules.upms.client.dto.OAuthUserInfo;
+import io.github.loadup.modules.upms.app.strategy.OAuthProviderCode;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
@@ -62,7 +60,7 @@ public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.st
 
     @Override
     public String getProviderName() {
-        return OAuthProvider.GITHUB;
+        return OAuthProviderCode.GITHUB;
     }
 
     @Override

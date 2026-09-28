@@ -41,10 +41,5 @@ public interface RoleConverter {
 
     @Mapping(source = "createdAt", target = "createdTime")
     @Mapping(source = "updatedAt", target = "updatedTime")
-    @Mapping(target = "parentRole", ignore = true)
-    @Mapping(target = "childRoles", ignore = true)
-    @Mapping(target = "permissions", ignore = true)
-    @Mapping(target = "departments", ignore = true)
-    @Mapping(target = "allInheritedPermissions", ignore = true)
     Role toEntity(RoleDO roleDO);
 }

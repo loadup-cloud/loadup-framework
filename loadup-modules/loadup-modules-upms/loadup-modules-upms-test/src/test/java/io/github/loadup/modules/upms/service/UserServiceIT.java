@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import io.github.loadup.modules.upms.TestApplication;
-import io.github.loadup.modules.upms.app.dto.UserDetailDTO;
+import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
 import io.github.loadup.modules.upms.app.service.UserService;
 import io.github.loadup.modules.upms.client.command.UserCreateCommand;
 import io.github.loadup.testify.starter.scenario.TestScenario;

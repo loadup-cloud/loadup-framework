@@ -20,13 +20,20 @@ package io.github.loadup.components.resourceserver;
  * #L%
  */
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.result.FailureResponse;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
+import tools.jackson.databind.ObjectMapper;
+import org.springframework.http.MediaType;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -97,7 +104,8 @@ public class ResourceServerAutoConfiguration {
             HttpSecurity http,
             JwtDecoder jwtDecoder,
             LoadUpJwtAuthenticationConverter jwtAuthenticationConverter,
-            ResourceServerProperties properties)
+            ResourceServerProperties properties,
+            ObjectProvider<ObjectMapper> objectMapperProvider)
             throws Exception {
         if (!StringUtils.hasText(properties.getIssuerUri()) || !StringUtils.hasText(properties.getAudience())) {
             throw new IllegalArgumentException("Resource server requires issuer-uri and audience");
@@ -112,6 +120,7 @@ public class ResourceServerAutoConfiguration {
             return jwt;
         };
         List<String> publicPaths = properties.getPermitAll();
+        ObjectMapper objectMapper = objectMapperProvider.getIfAvailable(ObjectMapper::new);
         http.securityMatcher("/api/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -123,8 +132,23 @@ public class ResourceServerAutoConfiguration {
                     }
                     authorize.anyRequest().authenticated();
                 })
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, exception) ->
+                                writeError(response, objectMapper, CommonResultCodeEnum.UNAUTHENTICATED))
+                        .accessDeniedHandler((request, response, exception) ->
+                                writeError(response, objectMapper, CommonResultCodeEnum.ACCESS_DENIED)))
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(
-                        jwt -> jwt.decoder(validatedDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter)));
+                        jwt -> jwt.decoder(validatedDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter))
+                        .authenticationEntryPoint((request, response, exception) ->
+                                writeError(response, objectMapper, CommonResultCodeEnum.UNAUTHENTICATED)));
         return http.build();
+    }
+
+    private static void writeError(
+            HttpServletResponse response, ObjectMapper objectMapper, CommonResultCodeEnum code) throws IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        response.getOutputStream().write(objectMapper.writeValueAsBytes(FailureResponse.of(code)));
     }
 }

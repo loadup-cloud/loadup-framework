@@ -42,6 +42,7 @@ public class RoleDTO {
     private Short status;
     private List<PermissionDTO> permissions;
     private List<String> departmentIds;
+    private List<RoleDTO> children;
     private String remark;
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;
@@ -123,6 +124,10 @@ public class RoleDTO {
         return this.departmentIds;
     }
 
+    public List<RoleDTO> getChildren() {
+        return this.children;
+    }
+
     public String getRemark() {
         return this.remark;
     }
@@ -177,6 +182,10 @@ public class RoleDTO {
 
     public void setDepartmentIds(List<String> departmentIds) {
         this.departmentIds = departmentIds;
+    }
+
+    public void setChildren(List<RoleDTO> children) {
+        this.children = children;
     }
 
     public void setRemark(String remark) {

@@ -45,27 +45,20 @@ loadup:
       url: https://www.apache.org/licenses/LICENSE-2.0.txt
 
   security:
+    auth-server:
+      issuer: ${AUTH_ISSUER:http://localhost:8080}
+      audience: loadup-api
+      protocol-endpoints-enabled: false
+      user-access-token-ttl: 30m
+      jwk:
+        rsa-private-key-base64: ${AUTH_RSA_PRIVATE_KEY_BASE64:}
     resource-server:
       enabled: true
       issuer-uri: ${AUTH_ISSUER:http://localhost:8080}
-      jwk-set-uri: ${AUTH_JWK_SET_URI:http://localhost:8080/oauth2/jwks}
       audience: loadup-api
       permit-all:
         - /api/auth/register
         - /api/auth/login
-
-  components:
-    authserver:
-      issuer: ${AUTH_ISSUER:http://localhost:8080}
-      audience: loadup-api
-      jwk:
-        rsa-private-key-base64: ${AUTH_RSA_PRIVATE_KEY_BASE64:}
-      clients:
-        - client-id: ${AUTH_CLIENT_ID:loadup-app}
-          client-secret: ${AUTH_CLIENT_SECRET:change-me}
-          grant-types: [authorization_code, refresh_token]
-          redirect-uris: ["http://127.0.0.1:8080/login/oauth2/code/loadup"]
-          scopes: [openid, profile]
 
   tracer:
     enabled: false

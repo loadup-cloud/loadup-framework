@@ -1,4 +1,4 @@
-package io.github.loadup.modules.upms.client.dto;
+package io.github.loadup.modules.upms.app.strategy.oauth;
 
 /*-
  * #%L

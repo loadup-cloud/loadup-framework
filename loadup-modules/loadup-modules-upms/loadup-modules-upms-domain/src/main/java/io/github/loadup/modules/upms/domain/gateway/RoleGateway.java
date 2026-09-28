@@ -20,8 +20,8 @@ package io.github.loadup.modules.upms.domain.gateway;
  * #L%
  */
 
-import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.domain.PageResult;
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.modules.upms.domain.entity.Role;
 import java.util.List;
 import java.util.Optional;

@@ -41,5 +41,4 @@ public interface AuthenticationService {
     AuthenticatedUser login(UserLoginCommand command);
 
     UserDetailDTO register(UserRegisterCommand command);
-
 }

@@ -26,7 +26,9 @@ import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,54 +44,22 @@ public class UserPermissionService {
     private final RoleGateway roleGateway;
     private final PermissionGateway permissionGateway;
 
-    /**
-     * Get all permissions for a user (including inherited from parent roles) Implements RBAC3 role
-     * hierarchy
-     */
     public List<Permission> getUserPermissions(String userId) {
-        // Get user's direct roles
-        List<Role> userRoles = roleGateway.findByUserId(userId);
-
-        // Collect all permissions including inherited
-        Set<Permission> allPermissions = new HashSet<>();
-
-        for (Role role : userRoles) {
-            if (role.isEnabled()) {
-                // Add role's direct permissions
-                List<Permission> rolePermissions = permissionGateway.findByRoleId(role.getId());
-                allPermissions.addAll(
-                        rolePermissions.stream().filter(Permission::isEnabled).collect(Collectors.toList()));
-
-                // Add inherited permissions from parent roles
-                allPermissions.addAll(getInheritedPermissions(role));
+        Map<String, Permission> granted = new LinkedHashMap<>();
+        for (Role assigned : roleGateway.findByUserId(userId)) {
+            Set<String> visited = new HashSet<>();
+            Role role = assigned;
+            while (role != null && role.getId() != null && visited.add(role.getId())) {
+                if (!role.isEnabled()) break;
+                for (Permission permission : permissionGateway.findByRoleId(role.getId())) {
+                    if (permission.isEnabled()) granted.put(permission.getId(), permission);
+                }
+                role = role.getParentId() == null
+                        ? null
+                        : roleGateway.findById(role.getParentId()).orElse(null);
             }
         }
-
-        return new ArrayList<>(allPermissions);
-    }
-
-    /**
-     * Get inherited permissions from parent roles recursively
-     */
-    private Set<Permission> getInheritedPermissions(Role role) {
-        Set<Permission> inherited = new HashSet<>();
-
-        if (role.getParentId() != null) {
-            roleGateway.findById(role.getParentId()).ifPresent(parentRole -> {
-                if (parentRole.isEnabled()) {
-                    // Add parent's permissions
-                    List<Permission> parentPermissions = permissionGateway.findByRoleId(parentRole.getId());
-                    inherited.addAll(parentPermissions.stream()
-                            .filter(Permission::isEnabled)
-                            .collect(Collectors.toList()));
-
-                    // Recursively add grandparent permissions
-                    inherited.addAll(getInheritedPermissions(parentRole));
-                }
-            });
-        }
-
-        return inherited;
+        return new ArrayList<>(granted.values());
     }
 
     /**
@@ -145,34 +115,6 @@ public class UserPermissionService {
                     int order1 = p1.getSortOrder() != null ? p1.getSortOrder() : 0;
                     int order2 = p2.getSortOrder() != null ? p2.getSortOrder() : 0;
                     return Integer.compare(order1, order2);
-                })
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Build permission tree for user
-     */
-    public List<Permission> buildUserPermissionTree(String userId) {
-        List<Permission> allPermissions = getUserPermissions(userId);
-        return buildTree(allPermissions, "0");
-    }
-
-    /**
-     * Recursively build permission tree
-     */
-    private List<Permission> buildTree(List<Permission> permissions, String parentId) {
-        return permissions.stream()
-                .filter(p -> {
-                    if ("0".equals(parentId)) {
-                        return p.getParentId() == null || "0".equals(p.getParentId());
-                    }
-                    return parentId.equals(p.getParentId());
-                })
-                .peek(p -> {
-                    List<Permission> children = buildTree(permissions, p.getId());
-                    if (!children.isEmpty()) {
-                        p.setChildren(children);
-                    }
                 })
                 .collect(Collectors.toList());
     }

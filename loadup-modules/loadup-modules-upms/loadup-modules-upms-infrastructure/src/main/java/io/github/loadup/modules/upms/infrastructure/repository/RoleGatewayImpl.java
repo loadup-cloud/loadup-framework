@@ -20,20 +20,30 @@ package io.github.loadup.modules.upms.infrastructure.repository;
  * #L%
  */
 
+import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.ROLE_DEPARTMENT_DO;
 import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.ROLE_DO;
+import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.ROLE_PERMISSION_DO;
+import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.USER_ROLE_DO;
 
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
-import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.domain.PageResult;
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.modules.upms.domain.entity.Role;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.infrastructure.converter.RoleConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.RoleDO;
+import io.github.loadup.modules.upms.infrastructure.dataobject.RoleDepartmentDO;
+import io.github.loadup.modules.upms.infrastructure.dataobject.RolePermissionDO;
+import io.github.loadup.modules.upms.infrastructure.dataobject.UserRoleDO;
 import io.github.loadup.modules.upms.infrastructure.mapper.RoleDOMapper;
-import java.util.ArrayList;
+import io.github.loadup.modules.upms.infrastructure.mapper.RoleDepartmentDOMapper;
+import io.github.loadup.modules.upms.infrastructure.mapper.RolePermissionDOMapper;
+import io.github.loadup.modules.upms.infrastructure.mapper.UserRoleDOMapper;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
@@ -48,10 +58,17 @@ public class RoleGatewayImpl implements RoleGateway {
 
     private final RoleDOMapper roleDOMapper;
     private final RoleConverter roleConverter;
+    private final UserRoleDOMapper userRoleMapper;
+    private final RolePermissionDOMapper rolePermissionMapper;
+    private final RoleDepartmentDOMapper roleDepartmentMapper;
 
     @Override
     public Role save(Role role) {
+        if (role.getId() == null) role.setId(UUID.randomUUID().toString());
         RoleDO roleDO = roleConverter.toDataObject(role);
+        if (roleDO.getId() == null) roleDO.setId(UUID.randomUUID().toString());
+        if (roleDO.getCreatedAt() == null) roleDO.setCreatedAt(LocalDateTime.now());
+        if (roleDO.getUpdatedAt() == null) roleDO.setUpdatedAt(roleDO.getCreatedAt());
         roleDOMapper.insert(roleDO);
         role = roleConverter.toEntity(roleDO);
         return role;
@@ -67,6 +84,8 @@ public class RoleGatewayImpl implements RoleGateway {
 
     @Override
     public void deleteById(String id) {
+        rolePermissionMapper.deleteByQuery(QueryWrapper.create().where(ROLE_PERMISSION_DO.ROLE_ID.eq(id)));
+        roleDepartmentMapper.deleteByQuery(QueryWrapper.create().where(ROLE_DEPARTMENT_DO.ROLE_ID.eq(id)));
         roleDOMapper.deleteById(id);
     }
 
@@ -85,8 +104,11 @@ public class RoleGatewayImpl implements RoleGateway {
 
     @Override
     public List<Role> findByUserId(String userId) {
-        // TODO: 实现根据用户ID查询角色（需要关联 user_role 表）
-        return new ArrayList<>();
+        List<String> roleIds = getUserRoleIds(userId);
+        if (roleIds.isEmpty()) return List.of();
+        return roleDOMapper.selectListByIds(roleIds).stream()
+                .map(roleConverter::toEntity)
+                .toList();
     }
 
     @Override
@@ -117,50 +139,91 @@ public class RoleGatewayImpl implements RoleGateway {
 
     @Override
     public void assignRoleToUser(String userId, String roleId, String operatorId) {
-        // TODO: 实现分配角色给用户（需要操作 user_role 表）
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (userRoleMapper.selectCountByQuery(QueryWrapper.create()
+                        .where(USER_ROLE_DO.USER_ID.eq(userId))
+                        .and(USER_ROLE_DO.ROLE_ID.eq(roleId)))
+                > 0) return;
+        UserRoleDO relation = new UserRoleDO();
+        initialize(relation);
+        relation.setUserId(userId);
+        relation.setRoleId(roleId);
+        relation.setCreatedBy(operatorId);
+        userRoleMapper.insert(relation);
     }
 
     @Override
     public void removeRoleFromUser(String userId, String roleId) {
-        // TODO: 实现移除用户角色���需要操作 user_role 表）
-        throw new UnsupportedOperationException("Not implemented yet");
+        userRoleMapper.deleteByQuery(
+                QueryWrapper.create().where(USER_ROLE_DO.USER_ID.eq(userId)).and(USER_ROLE_DO.ROLE_ID.eq(roleId)));
     }
 
     @Override
     public List<String> getUserRoleIds(String userId) {
-        // TODO: 实现获取用户角色ID列表（需要查询 user_role 表）
-        throw new UnsupportedOperationException("Not implemented yet");
+        return userRoleMapper.selectListByQuery(QueryWrapper.create().where(USER_ROLE_DO.USER_ID.eq(userId))).stream()
+                .map(UserRoleDO::getRoleId)
+                .toList();
     }
 
     @Override
     public void assignPermissionsToRole(String roleId, List<String> permissionIds) {
-        // TODO: 实现分配权限给角色（需要操作 role_permission 表）
-        throw new UnsupportedOperationException("Not implemented yet");
+        for (String permissionId : permissionIds) {
+            if (rolePermissionMapper.selectCountByQuery(QueryWrapper.create()
+                            .where(ROLE_PERMISSION_DO.ROLE_ID.eq(roleId))
+                            .and(ROLE_PERMISSION_DO.PERMISSION_ID.eq(permissionId)))
+                    > 0) continue;
+            RolePermissionDO relation = new RolePermissionDO();
+            initialize(relation);
+            relation.setRoleId(roleId);
+            relation.setPermissionId(permissionId);
+            rolePermissionMapper.insert(relation);
+        }
     }
 
     @Override
     public void removePermissionsFromRole(String roleId, List<String> permissionIds) {
-        // TODO: 实现移除角色权限（需要操作 role_permission 表）
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (permissionIds.isEmpty()) return;
+        rolePermissionMapper.deleteByQuery(QueryWrapper.create()
+                .where(ROLE_PERMISSION_DO.ROLE_ID.eq(roleId))
+                .and(ROLE_PERMISSION_DO.PERMISSION_ID.in(permissionIds)));
     }
 
     @Override
     public void assignDepartmentsToRole(String roleId, List<String> departmentIds) {
-        // TODO: 实现分配部门给角色（需要操作 role_department 表）
-        throw new UnsupportedOperationException("Not implemented yet");
+        for (String deptId : departmentIds) {
+            if (roleDepartmentMapper.selectCountByQuery(QueryWrapper.create()
+                            .where(ROLE_DEPARTMENT_DO.ROLE_ID.eq(roleId))
+                            .and(ROLE_DEPARTMENT_DO.DEPT_ID.eq(deptId)))
+                    > 0) continue;
+            RoleDepartmentDO relation = new RoleDepartmentDO();
+            initialize(relation);
+            relation.setRoleId(roleId);
+            relation.setDeptId(deptId);
+            roleDepartmentMapper.insert(relation);
+        }
     }
 
     @Override
     public void removeDepartmentsFromRole(String roleId, List<String> departmentIds) {
-        // TODO: 实现移除角色部门（需要操作 role_department 表）
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (departmentIds.isEmpty()) return;
+        roleDepartmentMapper.deleteByQuery(QueryWrapper.create()
+                .where(ROLE_DEPARTMENT_DO.ROLE_ID.eq(roleId))
+                .and(ROLE_DEPARTMENT_DO.DEPT_ID.in(departmentIds)));
     }
 
     @Override
     public List<String> findDepartmentIdsByRoleId(String roleId) {
-        // TODO: 实现根据角色ID获取部门ID列表（需要查询 role_department 表）
-        throw new UnsupportedOperationException("Not implemented yet");
+        return roleDepartmentMapper
+                .selectListByQuery(QueryWrapper.create().where(ROLE_DEPARTMENT_DO.ROLE_ID.eq(roleId)))
+                .stream()
+                .map(RoleDepartmentDO::getDeptId)
+                .toList();
+    }
+
+    private static void initialize(io.github.loadup.commons.dataobject.BaseDO relation) {
+        relation.setId(UUID.randomUUID().toString());
+        relation.setCreatedAt(LocalDateTime.now());
+        relation.setUpdatedAt(relation.getCreatedAt());
+        relation.setDeleted(0);
     }
 
     @Override
@@ -175,12 +238,19 @@ public class RoleGatewayImpl implements RoleGateway {
 
     @Override
     public long countUsersByRoleId(String roleId) {
-        // TODO: 实现统计角色的用户数（需要查询 user_role 表）
-        throw new UnsupportedOperationException("Not implemented yet");
+        return userRoleMapper.selectCountByQuery(QueryWrapper.create().where(USER_ROLE_DO.ROLE_ID.eq(roleId)));
     }
 
-    public RoleGatewayImpl(RoleDOMapper roleDOMapper, RoleConverter roleConverter) {
+    public RoleGatewayImpl(
+            RoleDOMapper roleDOMapper,
+            RoleConverter roleConverter,
+            UserRoleDOMapper userRoleMapper,
+            RolePermissionDOMapper rolePermissionMapper,
+            RoleDepartmentDOMapper roleDepartmentMapper) {
         this.roleDOMapper = roleDOMapper;
         this.roleConverter = roleConverter;
+        this.userRoleMapper = userRoleMapper;
+        this.rolePermissionMapper = rolePermissionMapper;
+        this.roleDepartmentMapper = roleDepartmentMapper;
     }
 }

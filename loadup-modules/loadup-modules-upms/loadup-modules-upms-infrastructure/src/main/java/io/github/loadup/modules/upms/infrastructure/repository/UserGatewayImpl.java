@@ -24,15 +24,17 @@ import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tabl
 
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
-import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.domain.PageResult;
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.infrastructure.converter.UserConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.UserDO;
 import io.github.loadup.modules.upms.infrastructure.mapper.UserDOMapper;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
@@ -51,6 +53,9 @@ public class UserGatewayImpl implements UserGateway {
     @Override
     public User save(User user) {
         UserDO userDO = userConverter.toDataObject(user);
+        if (userDO.getId() == null) userDO.setId(UUID.randomUUID().toString());
+        if (userDO.getCreatedAt() == null) userDO.setCreatedAt(LocalDateTime.now());
+        if (userDO.getUpdatedAt() == null) userDO.setUpdatedAt(userDO.getCreatedAt());
         userDOMapper.insert(userDO);
         user = userConverter.toEntity(userDO);
         return user;
@@ -101,13 +106,6 @@ public class UserGatewayImpl implements UserGateway {
         QueryWrapper query = QueryWrapper.create().where(USER_DO.DEPT_ID.eq(deptId));
         List<UserDO> userDOs = userDOMapper.selectListByQuery(query);
         return userDOs.stream().map(userConverter::toEntity).collect(Collectors.toList());
-    }
-
-    @Override
-    @Deprecated
-    public List<User> findByRoleId(String roleId) {
-        // TODO: Implement role-based user lookup (requires user_role table join)
-        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override

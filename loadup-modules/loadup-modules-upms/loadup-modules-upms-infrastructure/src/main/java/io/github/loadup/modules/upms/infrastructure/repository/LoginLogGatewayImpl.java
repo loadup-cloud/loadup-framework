@@ -24,8 +24,8 @@ import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tabl
 
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
-import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.domain.PageResult;
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.modules.upms.domain.entity.LoginLog;
 import io.github.loadup.modules.upms.domain.gateway.LoginLogGateway;
 import io.github.loadup.modules.upms.infrastructure.converter.LoginLogConverter;
@@ -34,6 +34,7 @@ import io.github.loadup.modules.upms.infrastructure.mapper.LoginLogDOMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
@@ -52,6 +53,9 @@ public class LoginLogGatewayImpl implements LoginLogGateway {
     @Override
     public LoginLog save(LoginLog entity) {
         LoginLogDO loginLogDO = loginLogConverter.toDataObject(entity);
+        if (loginLogDO.getId() == null) loginLogDO.setId(UUID.randomUUID().toString());
+        if (loginLogDO.getCreatedAt() == null) loginLogDO.setCreatedAt(LocalDateTime.now());
+        if (loginLogDO.getUpdatedAt() == null) loginLogDO.setUpdatedAt(loginLogDO.getCreatedAt());
         loginLogDOMapper.insert(loginLogDO);
         entity = loginLogConverter.toEntity(loginLogDO);
         return entity;

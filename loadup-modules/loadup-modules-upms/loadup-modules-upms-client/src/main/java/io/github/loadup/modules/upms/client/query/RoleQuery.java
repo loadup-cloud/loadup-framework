@@ -1,4 +1,4 @@
-package io.github.loadup.modules.upms.app.query;
+package io.github.loadup.modules.upms.client.query;
 
 /*-
  * #%L

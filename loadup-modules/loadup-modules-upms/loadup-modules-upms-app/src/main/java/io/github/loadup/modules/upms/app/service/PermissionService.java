@@ -1,3 +1,22 @@
+/*-
+ * #%L
+ * Loadup Modules UPMS App Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.app.service;
 
 import io.github.loadup.modules.upms.client.command.PermissionCreateCommand;
@@ -5,9 +24,12 @@ import io.github.loadup.modules.upms.client.command.PermissionUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.PermissionDTO;
 import io.github.loadup.modules.upms.domain.entity.Permission;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
+import io.github.loadup.modules.upms.domain.service.UserPermissionService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +47,7 @@ public class PermissionService {
     private static final Logger log = LoggerFactory.getLogger(PermissionService.class);
 
     private final PermissionGateway permissionGateway;
+    private final UserPermissionService userPermissionService;
 
     @Transactional
     public PermissionDTO createPermission(PermissionCreateCommand command) {
@@ -32,9 +55,7 @@ public class PermissionService {
             throw new RuntimeException("权限编码已存在");
         }
 
-        if (command.getParentId() != null && !"0".equals(command.getParentId())) {
-            permissionGateway.findById(command.getParentId()).orElseThrow(() -> new RuntimeException("父权限不存在"));
-        }
+        validateParent(null, command.getParentId());
 
         Permission permission = new Permission();
         permission.setParentId(command.getParentId());
@@ -62,12 +83,7 @@ public class PermissionService {
         Permission permission =
                 permissionGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("权限不存在"));
 
-        if (command.getParentId() != null && !"0".equals(command.getParentId())) {
-            if (command.getParentId().equals(command.getId())) {
-                throw new RuntimeException("父权限不能是自己");
-            }
-            permissionGateway.findById(command.getParentId()).orElseThrow(() -> new RuntimeException("父权限不存在"));
-        }
+        if (command.getParentId() != null) validateParent(command.getId(), command.getParentId());
 
         if (command.getParentId() != null) {
             permission.setParentId(command.getParentId());
@@ -138,12 +154,12 @@ public class PermissionService {
     }
 
     public List<PermissionDTO> getUserPermissions(String userId) {
-        List<Permission> permissions = permissionGateway.findByUserId(userId);
+        List<Permission> permissions = userPermissionService.getUserPermissions(userId);
         return permissions.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     public List<PermissionDTO> getUserMenuTree(String userId) {
-        List<Permission> menuPermissions = permissionGateway.findByUserId(userId).stream()
+        List<Permission> menuPermissions = userPermissionService.getUserPermissions(userId).stream()
                 .filter(p -> p.getPermissionType() == 1 && Boolean.TRUE.equals(p.isVisible()))
                 .collect(Collectors.toList());
         return buildPermissionTree(menuPermissions, null);
@@ -187,7 +203,24 @@ public class PermissionService {
         return tree;
     }
 
-    public PermissionService(PermissionGateway permissionGateway) {
+    public PermissionService(PermissionGateway permissionGateway, UserPermissionService userPermissionService) {
         this.permissionGateway = permissionGateway;
+        this.userPermissionService = userPermissionService;
+    }
+
+    private void validateParent(String permissionId, String parentId) {
+        Set<String> visited = new HashSet<>();
+        String current = parentId;
+        while (current != null && !"0".equals(current)) {
+            if (current.equals(permissionId) || !visited.add(current)) {
+                throw new IllegalArgumentException("Permission hierarchy contains a cycle");
+            }
+            String parentPermissionId = current;
+            Permission parent = permissionGateway
+                    .findById(parentPermissionId)
+                    .orElseThrow(() ->
+                            new IllegalArgumentException("Parent permission does not exist: " + parentPermissionId));
+            current = parent.getParentId();
+        }
     }
 }

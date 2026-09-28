@@ -21,7 +21,10 @@ package io.github.loadup.modules.upms.web;
 
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @AutoConfiguration(after = UpmsAutoConfiguration.class)
 @Import({
@@ -29,6 +32,21 @@ import org.springframework.context.annotation.Import;
     UserController.class,
     RoleController.class,
     PermissionController.class,
-    DepartmentController.class
+    DepartmentController.class,
+    UpmsResponseAdvice.class,
+    UpmsApiErrorController.class
 })
-public class UpmsWebAutoConfiguration {}
+public class UpmsWebAutoConfiguration {
+    @Bean
+    public WebMvcConfigurer upmsApiPathPrefix() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void configurePathMatch(PathMatchConfigurer configurer) {
+                configurer.addPathPrefix(
+                        "/api",
+                        type -> type.getPackageName().startsWith("io.github.loadup.modules.upms.web")
+                                && type != UpmsApiErrorController.class);
+            }
+        };
+    }
+}

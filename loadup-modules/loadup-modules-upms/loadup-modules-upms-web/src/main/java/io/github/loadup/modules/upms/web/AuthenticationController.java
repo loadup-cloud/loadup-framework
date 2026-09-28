@@ -19,12 +19,9 @@
  */
 package io.github.loadup.modules.upms.web;
 
-import io.github.loadup.modules.upms.client.command.UserLoginCommand;
 import io.github.loadup.modules.upms.client.command.UserRegisterCommand;
-import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
 import io.github.loadup.modules.upms.client.service.AuthenticationService;
-import io.github.loadup.modules.upms.client.service.UserQueryService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,22 +30,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
-    private final UserQueryService userQueryService;
-
-    public AuthenticationController(AuthenticationService authenticationService, UserQueryService userQueryService) {
+    public AuthenticationController(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
-        this.userQueryService = userQueryService;
     }
 
-    @PostMapping("/api/auth/register")
+    @PostMapping("/auth/register")
     public UserDetailDTO register(@RequestBody UserRegisterCommand command) {
         return authenticationService.register(command);
-    }
-
-    @PostMapping("/api/auth/login")
-    public UserDetailDTO login(@RequestBody UserLoginCommand command) {
-        AuthenticatedUser login = authenticationService.login(command);
-        UserDetailDTO userById = userQueryService.getUserById(Long.valueOf(login.getUserId()));
-        return userById;
     }
 }

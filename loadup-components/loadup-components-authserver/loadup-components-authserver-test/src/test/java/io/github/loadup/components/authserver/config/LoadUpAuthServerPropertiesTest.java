@@ -39,8 +39,8 @@ class LoadUpAuthServerPropertiesTest {
     void bindsIssuerAndAudience() {
         contextRunner
                 .withPropertyValues(
-                        "loadup.components.authserver.issuer=https://sso.example.com/realms/loadup",
-                        "loadup.components.authserver.audience=loadup-api")
+                        "loadup.security.auth-server.issuer=https://sso.example.com/realms/loadup",
+                        "loadup.security.auth-server.audience=loadup-api")
                 .run(context -> {
                     LoadUpAuthServerProperties properties = context.getBean(LoadUpAuthServerProperties.class);
                     assertThat(properties.getIssuer()).isEqualTo("https://sso.example.com/realms/loadup");

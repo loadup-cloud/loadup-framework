@@ -20,9 +20,6 @@ package io.github.loadup.modules.upms.app.strategy.oauth;
  * #L%
  */
 
-import io.github.loadup.modules.upms.client.dto.OAuthToken;
-import io.github.loadup.modules.upms.client.dto.OAuthUserInfo;
-
 /**
  * OAuth Provider 接口
  * 每个第三方 OAuth 提供商实现此接口

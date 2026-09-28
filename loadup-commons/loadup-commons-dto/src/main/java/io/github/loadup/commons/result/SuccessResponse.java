@@ -33,7 +33,7 @@ public record SuccessResponse<T>(
         @Schema(description = "结果元数据") @JsonProperty("result")
         Result result,
 
-        @Schema(description = "业务数据") @JsonProperty("data") T data,
+        @Schema(description = "业务数据") @JsonProperty("data") @JsonInclude(JsonInclude.Include.ALWAYS) T data,
 
         @Schema(description = "分页信息") @JsonProperty("pageInfo")
         PageInfo pageInfo)

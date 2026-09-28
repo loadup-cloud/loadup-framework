@@ -34,7 +34,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
  * resource-server or application-owned security chain.
  */
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "loadup.authorization", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "loadup.security.method-security", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableMethodSecurity
 @EnableConfigurationProperties(AuthorizationProperties.class)
 public class AuthorizationAutoConfiguration {}

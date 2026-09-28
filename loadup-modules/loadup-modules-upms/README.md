@@ -1,6 +1,6 @@
 # UPMS
 
-用户、角色、权限和部门业务模块。UPMS 校验用户凭证、记录登录状态并提供 RBAC 数据；令牌签发由 AuthServer 完成。
+用户、角色、权限和部门业务模块。UPMS 校验凭证，提供角色继承的 RBAC 授权及基于资源所属人、部门的数据范围判定；令牌签发由 AuthServer 完成。
 
 ## 引入
 
@@ -11,7 +11,7 @@
 </dependency>
 ```
 
-使用内嵌 SAS 授权码登录时，再引入 `loadup-modules-upms-authserver` 与 `loadup-components-authserver-binder-sas`。后者管理 OAuth2 客户端、访问令牌和刷新令牌。
+前后端分离的用户名密码登录需引入 `loadup-modules-upms-authserver` 与 `loadup-components-authserver-binder-sas`，通过 `POST /api/auth/login` 获取 JWT。可设置 `loadup.security.auth-server.protocol-endpoints-enabled: false` 关闭 OAuth2 协议端点。
 
 ## 配置
 
@@ -25,12 +25,15 @@ loadup:
         lock-duration: 30
 ```
 
-`AuthenticationService.login` 是内部身份校验接口，不作为 HTTP 登录或令牌签发接口。需要预置用户注册与 RBAC HTTP 接口时，再引入 `loadup-modules-upms-web`；也可以直接在应用 Controller 中调用 UPMS 服务。核心业务模块不依赖 Gateway。
+`AuthenticationService.login` 是内部身份校验接口；HTTP 登录由 authserver 适配器完成。需要预置用户注册与 RBAC HTTP 接口时，再引入 `loadup-modules-upms-web`；也可以直接在应用 Controller 中调用 UPMS 服务。核心业务模块不依赖 Gateway。
+
+业务代码注入 `AccessCheckService`，调用 `check(new AccessCheckCommand(userId, permissionCode, ownerUserId, departmentId))`。结果默认拒绝；仅当有效角色授予该权限，且该角色的数据范围匹配资源属性时放行。`@PreAuthorize` 可校验静态权限，资源级 ABAC 判定须显式调用此 API。
 
 | 能力 | 所属模块 |
 |------|----------|
 | 用户凭证校验与登录策略 | `loadup-modules-upms-app` |
 | 角色与权限数据 | `loadup-modules-upms-domain`、`-infrastructure` |
+| RBAC + 资源属性判定 API | `loadup-modules-upms-client`、`-app` |
 | 可选 HTTP Controller | `loadup-modules-upms-web` |
 | SAS 用户认证适配 | `loadup-modules-upms-authserver` |
 | 令牌签发与刷新 | `loadup-components-authserver-binder-sas` |

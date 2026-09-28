@@ -1,4 +1,4 @@
-package io.github.loadup.modules.upms.client.constant;
+package io.github.loadup.modules.upms.app.strategy;
 
 /*-
  * #%L

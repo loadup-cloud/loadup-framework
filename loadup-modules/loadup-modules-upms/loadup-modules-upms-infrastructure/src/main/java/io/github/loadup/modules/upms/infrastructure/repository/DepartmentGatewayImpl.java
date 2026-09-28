@@ -30,8 +30,10 @@ import io.github.loadup.modules.upms.infrastructure.converter.DepartmentConverte
 import io.github.loadup.modules.upms.infrastructure.dataobject.DepartmentDO;
 import io.github.loadup.modules.upms.infrastructure.mapper.DepartmentDOMapper;
 import io.github.loadup.modules.upms.infrastructure.mapper.UserDOMapper;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
@@ -51,6 +53,9 @@ public class DepartmentGatewayImpl implements DepartmentGateway {
     @Override
     public Department save(Department department) {
         DepartmentDO departmentDO = departmentConverter.toDataObject(department);
+        if (departmentDO.getId() == null) departmentDO.setId(UUID.randomUUID().toString());
+        if (departmentDO.getCreatedAt() == null) departmentDO.setCreatedAt(LocalDateTime.now());
+        if (departmentDO.getUpdatedAt() == null) departmentDO.setUpdatedAt(departmentDO.getCreatedAt());
         departmentDOMapper.insert(departmentDO);
         department = departmentConverter.toEntity(departmentDO);
         return department;

@@ -1,8 +1,6 @@
-package io.github.loadup.modules.upms.client.constant;
-
 /*-
  * #%L
- * Loadup Modules UPMS Client Layer
+ * Loadup Modules UPMS Domain Layer
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,31 +17,14 @@ package io.github.loadup.modules.upms.client.constant;
  * limitations under the License.
  * #L%
  */
+package io.github.loadup.modules.upms.domain.valueobject;
 
-/**
- * OAuth 提供商常量
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
-public final class OAuthProvider {
-
-    private OAuthProvider() {
-        throw new UnsupportedOperationException("Utility class");
+public record AccessDecision(boolean allowed, String reason, String grantingRoleCode) {
+    public static AccessDecision deny(String reason) {
+        return new AccessDecision(false, reason, null);
     }
 
-    /**
-     * GitHub
-     */
-    public static final String GITHUB = "github";
-
-    /**
-     * 微信
-     */
-    public static final String WECHAT = "wechat";
-
-    /**
-     * Google
-     */
-    public static final String GOOGLE = "google";
+    public static AccessDecision permit(String roleCode) {
+        return new AccessDecision(true, "GRANTED", roleCode);
+    }
 }

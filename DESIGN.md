@@ -284,8 +284,8 @@ loadup-components-{domain}/
 - **落地**：facade = **Spring Security 标准 API**——`@EnableMethodSecurity` + `@PreAuthorize` / `@Secured`；
   `UserContext` 是 `SecurityContextHolder` 的薄适配器（写入 `UsernamePasswordAuthenticationToken`，
   roles → `ROLE_x` 前缀，permissions 原样保存）；`LoadUpUser` 仅承载业务属性。
-- **配置**：`loadup.authorization.enabled`（默认 true，关闭后不启用方法安全）、
-  `loadup.authorization.default-security-filter-chain`（默认 true，无其他 Security 配置时提供最小过滤链）。
+- **配置**：`loadup.security.method-security.enabled`（默认 true，关闭后不启用方法安全）。
+  AuthServer 使用 `loadup.security.auth-server.*`，Resource Server 使用 `loadup.security.resource-server.*`；各模块独立装配，不使用总开关。
 - **边界**：未认证访问受保护方法抛 `AuthenticationCredentialsNotFoundException`
   （继承 `AuthenticationException`）；已认证但权限不足抛 `AccessDeniedException`，由全局异常处理统一映射。
 

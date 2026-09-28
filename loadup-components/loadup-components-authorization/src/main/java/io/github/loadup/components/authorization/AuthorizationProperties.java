@@ -23,9 +23,9 @@ package io.github.loadup.components.authorization;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * LoadUp authorization facade configuration ({@code loadup.authorization.*}).
+ * LoadUp method security configuration ({@code loadup.security.method-security.*}).
  */
-@ConfigurationProperties(prefix = "loadup.authorization")
+@ConfigurationProperties(prefix = "loadup.security.method-security")
 public class AuthorizationProperties {
 
     /** Master switch for the authorization auto-configuration. */

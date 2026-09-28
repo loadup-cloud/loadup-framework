@@ -21,15 +21,20 @@ package io.github.loadup.modules.upms.infrastructure.repository;
  */
 
 import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.PERMISSION_DO;
+import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.ROLE_PERMISSION_DO;
 
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.modules.upms.domain.entity.Permission;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
 import io.github.loadup.modules.upms.infrastructure.converter.PermissionConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.PermissionDO;
+import io.github.loadup.modules.upms.infrastructure.dataobject.RolePermissionDO;
 import io.github.loadup.modules.upms.infrastructure.mapper.PermissionDOMapper;
+import io.github.loadup.modules.upms.infrastructure.mapper.RolePermissionDOMapper;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
@@ -44,10 +49,15 @@ public class PermissionGatewayImpl implements PermissionGateway {
 
     private final PermissionDOMapper permissionDOMapper;
     private final PermissionConverter permissionConverter;
+    private final RolePermissionDOMapper rolePermissionMapper;
 
     @Override
     public Permission save(Permission permission) {
+        if (permission.getId() == null) permission.setId(UUID.randomUUID().toString());
         PermissionDO permissionDO = permissionConverter.toDataObject(permission);
+        if (permissionDO.getId() == null) permissionDO.setId(UUID.randomUUID().toString());
+        if (permissionDO.getCreatedAt() == null) permissionDO.setCreatedAt(LocalDateTime.now());
+        if (permissionDO.getUpdatedAt() == null) permissionDO.setUpdatedAt(permissionDO.getCreatedAt());
         permissionDOMapper.insert(permissionDO);
         permission = permissionConverter.toEntity(permissionDO);
         return permission;
@@ -63,6 +73,7 @@ public class PermissionGatewayImpl implements PermissionGateway {
 
     @Override
     public void deleteById(String id) {
+        rolePermissionMapper.deleteByQuery(QueryWrapper.create().where(ROLE_PERMISSION_DO.PERMISSION_ID.eq(id)));
         permissionDOMapper.deleteById(id);
     }
 
@@ -80,15 +91,17 @@ public class PermissionGatewayImpl implements PermissionGateway {
     }
 
     @Override
-    public List<Permission> findByUserId(String userId) {
-        // TODO: 实现根据用户ID查询权限（需要关联 user_role 和 role_permission 表）
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    @Override
     public List<Permission> findByRoleId(String roleId) {
-        // TODO: 实现根据角色ID查询权限（需要关联 role_permission 表）
-        throw new UnsupportedOperationException("Not implemented yet");
+        List<String> permissionIds =
+                rolePermissionMapper
+                        .selectListByQuery(QueryWrapper.create().where(ROLE_PERMISSION_DO.ROLE_ID.eq(roleId)))
+                        .stream()
+                        .map(RolePermissionDO::getPermissionId)
+                        .toList();
+        if (permissionIds.isEmpty()) return List.of();
+        return permissionDOMapper.selectListByIds(permissionIds).stream()
+                .map(permissionConverter::toEntity)
+                .toList();
     }
 
     @Override
@@ -134,38 +147,12 @@ public class PermissionGatewayImpl implements PermissionGateway {
         return permissionDOMapper.selectCountByQuery(query) > 0;
     }
 
-    @Override
-    public void assignPermissionToRole(String roleId, String permissionId, String operatorId) {
-        // TODO: 实现分配权限给角色（需要操作 role_permission 表）
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    @Override
-    public void removePermissionFromRole(String roleId, String permissionId) {
-        // TODO: 实现移除角色权限（需要操作 role_permission 表）
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    @Override
-    public void batchAssignPermissionsToRole(String roleId, List<String> permissionIds, String operatorId) {
-        // TODO: 实现批量分配权限给角色（需要操作 role_permission 表）
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    @Override
-    public void removeAllPermissionsFromRole(String roleId) {
-        // TODO: 实现移除角色所有权限（需要操作 role_permission 表）
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    @Override
-    public List<String> getRolePermissionIds(String roleId) {
-        // TODO: 实现获取角色的权限ID列表（需要查询 role_permission 表）
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    public PermissionGatewayImpl(PermissionDOMapper permissionDOMapper, PermissionConverter permissionConverter) {
+    public PermissionGatewayImpl(
+            PermissionDOMapper permissionDOMapper,
+            PermissionConverter permissionConverter,
+            RolePermissionDOMapper rolePermissionMapper) {
         this.permissionDOMapper = permissionDOMapper;
         this.permissionConverter = permissionConverter;
+        this.rolePermissionMapper = rolePermissionMapper;
     }
 }

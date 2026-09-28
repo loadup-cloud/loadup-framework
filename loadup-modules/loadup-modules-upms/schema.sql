@@ -223,7 +223,7 @@ CREATE TABLE IF NOT EXISTS upms_login_log
 (
     id             VARCHAR(64) NOT NULL COMMENT 'ID',
     tenant_id      VARCHAR(64) COMMENT '租户ID',
-    user_id        VARCHAR(64) NOT NULL COMMENT '用户ID',
+    user_id        VARCHAR(64) NULL COMMENT '用户ID，认证失败时可为空',
     username       VARCHAR(50) NOT NULL COMMENT '用户名',
     login_time     DATETIME    NOT NULL COMMENT '登录时间',
     logout_time    DATETIME    NULL COMMENT '登出时间',

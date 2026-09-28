@@ -22,8 +22,6 @@ package io.github.loadup.modules.upms.domain.entity;
 
 import io.github.loadup.commons.domain.BaseEntity;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Role Entity - RBAC3 Role with hierarchy support
@@ -68,15 +66,6 @@ public class Role extends BaseEntity {
 
     private LocalDateTime updatedTime;
 
-    // Transient fields
-    private Role parentRole;
-
-    private List<Role> childRoles;
-
-    private List<Permission> permissions;
-
-    private List<Department> departments;
-
     /**
      * Check if role is enabled
      */
@@ -89,23 +78,6 @@ public class Role extends BaseEntity {
      */
     public boolean isRoot() {
         return parentId == null;
-    }
-
-    /**
-     * Get all inherited permissions (including parent roles)
-     */
-    public List<Permission> getAllInheritedPermissions() {
-        List<Permission> allPermissions = new ArrayList<>();
-        if (permissions != null) {
-            allPermissions.addAll(permissions);
-        }
-
-        // Recursively add parent role permissions
-        if (parentRole != null && parentRole.isEnabled()) {
-            allPermissions.addAll(parentRole.getAllInheritedPermissions());
-        }
-
-        return allPermissions;
     }
 
     public String getRoleName() {
@@ -210,37 +182,5 @@ public class Role extends BaseEntity {
 
     public void setUpdatedTime(LocalDateTime updatedTime) {
         this.updatedTime = updatedTime;
-    }
-
-    public Role getParentRole() {
-        return parentRole;
-    }
-
-    public void setParentRole(Role parentRole) {
-        this.parentRole = parentRole;
-    }
-
-    public List<Role> getChildRoles() {
-        return childRoles;
-    }
-
-    public void setChildRoles(List<Role> childRoles) {
-        this.childRoles = childRoles;
-    }
-
-    public List<Permission> getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(List<Permission> permissions) {
-        this.permissions = permissions;
-    }
-
-    public List<Department> getDepartments() {
-        return departments;
-    }
-
-    public void setDepartments(List<Department> departments) {
-        this.departments = departments;
     }
 }

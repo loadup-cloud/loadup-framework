@@ -1,5 +1,3 @@
-package io.github.loadup.modules.upms.client.constant;
-
 /*-
  * #%L
  * Loadup Modules UPMS Client Layer
@@ -19,20 +17,7 @@ package io.github.loadup.modules.upms.client.constant;
  * limitations under the License.
  * #L%
  */
+package io.github.loadup.modules.upms.client.command;
 
-public interface UpmsConstants {
-    /**
-     * 超级管理员角色标识
-     */
-    String ROLE_ADMIN = "ROLE_ADMIN";
-
-    /**
-     * 权限标识前缀
-     */
-    String AUTHORITY_PREFIX = "PERMISSION_";
-
-    /**
-     * 缓存前缀
-     */
-    String AUTH_CACHE_PREFIX = "upms:auth:";
-}
+public record AccessCheckCommand(
+        String userId, String permissionCode, String resourceOwnerUserId, String resourceDepartmentId) {}

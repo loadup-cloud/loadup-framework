@@ -40,15 +40,27 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.MediaType;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
@@ -58,22 +70,46 @@ import org.springframework.security.oauth2.server.authorization.settings.ClientS
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
 /**
  * Embedded Spring Authorization Server binder (default).
  *
- * <p>Provides the standard beans required by the Spring Boot authorization server
- * auto-configuration (RegisteredClientRepository, AuthorizationServerSettings, JWKSource) plus
- * the LoadUp claims customizer. Spring Authorization Server then exposes the standard OAuth2
- * endpoints ({@code /oauth2/authorize}, {@code /oauth2/token}, {@code /oauth2/jwks}, ...).
+ * <p>Provides the standard authorization server beans and a dedicated filter chain for the
+ * protocol endpoints. The chain remains active alongside application-defined security chains.
  */
-@AutoConfiguration
+@AutoConfiguration(
+        beforeName = {
+            "org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet.OAuth2AuthorizationServerAutoConfiguration",
+            "io.github.loadup.components.resourceserver.ResourceServerAutoConfiguration"
+        })
 @EnableConfigurationProperties(LoadUpAuthServerProperties.class)
 public class SasAuthServerAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(SasAuthServerAutoConfiguration.class);
 
     @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+    @ConditionalOnProperty(prefix = "loadup.security.auth-server", name = "protocol-endpoints-enabled", havingValue = "true", matchIfMissing = true)
+    public SecurityFilterChain loadUpAuthorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.oauth2AuthorizationServer(authorizationServer -> {
+            http.securityMatcher(authorizationServer.getEndpointsMatcher());
+            authorizationServer.oidc(Customizer.withDefaults());
+        });
+        MediaTypeRequestMatcher htmlRequests = new MediaTypeRequestMatcher(MediaType.TEXT_HTML);
+        htmlRequests.setIgnoredMediaTypes(Set.of(MediaType.ALL));
+        http.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+                .oauth2ResourceServer(resourceServer -> resourceServer.jwt(Customizer.withDefaults()))
+                .exceptionHandling(exceptions -> exceptions.defaultAuthenticationEntryPointFor(
+                        new LoginUrlAuthenticationEntryPoint("/login"), htmlRequests));
+        return http.build();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(RegisteredClientRepository.class)
+    @ConditionalOnProperty(prefix = "loadup.security.auth-server", name = "protocol-endpoints-enabled", havingValue = "true", matchIfMissing = true)
     public RegisteredClientRepository registeredClientRepository(LoadUpAuthServerProperties properties) {
         List<RegisteredClient> clients = properties.getClients().stream()
                 .map(SasAuthServerAutoConfiguration::toRegisteredClient)
@@ -91,23 +127,41 @@ public class SasAuthServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(JWKSource.class)
-    public JWKSource<SecurityContext> jwkSource(LoadUpAuthServerProperties properties) {
-        RSAKey rsaKey = buildRsaKey(properties);
+    public JWKSource<SecurityContext> jwkSource(RSAKey rsaKey) {
         return new ImmutableJWKSet<>(new JWKSet(rsaKey));
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(RSAKey.class)
+    public RSAKey loadUpSigningKey(LoadUpAuthServerProperties properties) {
+        return buildRsaKey(properties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(JwtEncoder.class)
+    public JwtEncoder loadUpJwtEncoder(JWKSource<SecurityContext> jwkSource) {
+        return new NimbusJwtEncoder(jwkSource);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(JwtDecoder.class)
+    @ConditionalOnProperty(prefix = "loadup.security.auth-server", name = "protocol-endpoints-enabled", havingValue = "false")
+    public JwtDecoder loadUpLocalJwtDecoder(RSAKey rsaKey) throws com.nimbusds.jose.JOSEException {
+        return NimbusJwtDecoder.withPublicKey(rsaKey.toRSAPublicKey()).build();
     }
 
     @Bean
     @ConditionalOnMissingBean(OAuth2TokenCustomizer.class)
     public OAuth2TokenCustomizer<JwtEncodingContext> loadUpJwtTokenCustomizer(LoadUpAuthServerProperties properties) {
         if (StringUtils.isBlank(properties.getAudience())) {
-            throw new IllegalArgumentException("loadup.components.authserver.audience is required");
+            throw new IllegalArgumentException("loadup.security.auth-server.audience is required");
         }
         return new LoadUpJwtTokenCustomizer(properties.getAudience());
     }
 
     private static RegisteredClient toRegisteredClient(Client client) {
         if (StringUtils.isBlank(client.getClientId())) {
-            throw new IllegalArgumentException("loadup.components.authserver.clients[].client-id is required");
+            throw new IllegalArgumentException("loadup.security.auth-server.clients[].client-id is required");
         }
         RegisteredClient.Builder builder = RegisteredClient.withId(
                         UUID.randomUUID().toString())
@@ -142,7 +196,7 @@ public class SasAuthServerAutoConfiguration {
                                 new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKeyBase64)));
                 privateKey = (RSAPrivateCrtKey) decoded;
             } else {
-                log.warn("loadup.components.authserver.jwk.rsa-private-key is not configured; "
+                log.warn("loadup.security.auth-server.jwk.rsa-private-key-base64 is not configured; "
                         + "an ephemeral RSA key will be generated. Tokens become invalid after restart.");
                 KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
                 generator.initialize(2048);
@@ -164,7 +218,7 @@ public class SasAuthServerAutoConfiguration {
 
     private static String encodeClientSecret(String secret) {
         if (StringUtils.isBlank(secret)) {
-            throw new IllegalArgumentException("loadup.components.authserver.clients[].client-secret is required");
+            throw new IllegalArgumentException("loadup.security.auth-server.clients[].client-secret is required");
         }
         return "{bcrypt}" + new BCryptPasswordEncoder().encode(secret);
     }

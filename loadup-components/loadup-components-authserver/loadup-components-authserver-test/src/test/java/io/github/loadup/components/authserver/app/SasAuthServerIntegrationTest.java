@@ -21,8 +21,10 @@ package io.github.loadup.components.authserver.app;
  */
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.jayway.jsonpath.JsonPath;
@@ -52,6 +54,19 @@ class SasAuthServerIntegrationTest {
 
     @Autowired
     private JwtDecoder jwtDecoder;
+
+    @Test
+    @DisplayName("authorization endpoint redirects browser requests to login when an API chain also exists")
+    void authorizationEndpointRedirectsToLogin() throws Exception {
+        mockMvc.perform(get("/oauth2/authorize?response_type=code&client_id=loadup-app"
+                                + "&redirect_uri=http://127.0.0.1:8080/login/oauth2/code/loadup"
+                                + "&scope=openid&state=upms-http"
+                                + "&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM"
+                                + "&code_challenge_method=S256")
+                        .accept(MediaType.TEXT_HTML))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"));
+    }
 
     @Test
     @DisplayName("/oauth2/token issues a verifiable access token for client credentials")

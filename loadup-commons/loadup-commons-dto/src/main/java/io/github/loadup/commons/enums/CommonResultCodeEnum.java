@@ -30,6 +30,7 @@ public enum CommonResultCodeEnum implements ResultCode {
     PARAM_ILLEGAL(ResultStatusEnum.FAIL, "Parameter illegal."),
     PROCESS_FAIL(ResultStatusEnum.FAIL, "Process fail."),
     ACCESS_DENIED(ResultStatusEnum.FAIL, "Access denied."),
+    UNAUTHENTICATED(ResultStatusEnum.FAIL, "Authentication required or invalid token."),
     INVALID_CLIENT(ResultStatusEnum.FAIL, "Invalid client."),
     NOT_FOUND(ResultStatusEnum.FAIL, "Key is not found."),
     SYS_ERROR(ResultStatusEnum.FAIL, "System error."),

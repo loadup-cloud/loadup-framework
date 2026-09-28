@@ -11,8 +11,9 @@
 
 ```yaml
 loadup:
-  authorization:
-    enabled: true
+  security:
+    method-security:
+      enabled: true
 ```
 
 ```java

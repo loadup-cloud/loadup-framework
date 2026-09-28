@@ -1,6 +1,6 @@
 loadup:
-  components:
-    authserver:
+  security:
+    auth-server:
       issuer: http://localhost:8080
       audience: loadup-api
       clients:
@@ -8,6 +8,9 @@ loadup:
           client-secret: change-me
           scopes:
             - openid
+          redirect-uris:
+            - http://127.0.0.1:8080/login/oauth2/code/loadup
           grant-types:
+            - authorization_code
             - client_credentials
             - refresh_token

@@ -20,8 +20,8 @@ package io.github.loadup.modules.upms.domain.gateway;
  * #L%
  */
 
-import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.domain.PageResult;
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.modules.upms.domain.entity.User;
 import java.util.List;
 import java.util.Optional;
@@ -73,11 +73,6 @@ public interface UserGateway {
      * Find users by department ID
      */
     List<User> findByDeptId(String deptId);
-
-    /**
-     * Find users by role ID
-     */
-    List<User> findByRoleId(String roleId);
 
     /**
      * Find all users (with pagination)

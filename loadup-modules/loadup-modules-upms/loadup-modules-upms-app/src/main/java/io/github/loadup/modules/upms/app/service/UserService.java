@@ -1,15 +1,34 @@
+/*-
+ * #%L
+ * Loadup Modules UPMS App Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.app.service;
 
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.PageDTO;
-import io.github.loadup.modules.upms.app.dto.UserDetailDTO;
-import io.github.loadup.modules.upms.app.query.UserQuery;
 import io.github.loadup.modules.upms.client.command.UserCreateCommand;
 import io.github.loadup.modules.upms.client.command.UserPasswordChangeCommand;
 import io.github.loadup.modules.upms.client.command.UserUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.RoleDTO;
+import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
+import io.github.loadup.modules.upms.client.query.UserQuery;
 import io.github.loadup.modules.upms.domain.entity.Department;
 import io.github.loadup.modules.upms.domain.entity.Role;
 import io.github.loadup.modules.upms.domain.entity.User;
@@ -59,6 +78,8 @@ public class UserService {
         if (command.getMobile() != null && userGateway.existsByMobile(command.getMobile())) {
             throw new RuntimeException("手机号已被注册");
         }
+        validateDepartment(command.getDeptId());
+        validateRoles(command.getRoleIds());
 
         // Create user entity
         User user = new User();
@@ -125,6 +146,7 @@ public class UserService {
             user.setRealName(command.getRealName());
         }
         if (command.getDeptId() != null) {
+            validateDepartment(command.getDeptId());
             user.setDeptId(command.getDeptId());
         }
         if (command.getEmail() != null) {
@@ -158,6 +180,7 @@ public class UserService {
 
         // Update roles
         if (command.getRoleIds() != null) {
+            validateRoles(command.getRoleIds());
             // Remove old roles
             List<Role> currentRoles = roleGateway.findByUserId(user.getId());
             for (Role role : currentRoles) {
@@ -178,7 +201,29 @@ public class UserService {
     @Transactional
     public void deleteUser(String id) {
         userGateway.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+        for (Role role : roleGateway.findByUserId(id)) {
+            roleGateway.removeRoleFromUser(id, role.getId());
+        }
         userGateway.deleteById(id);
+    }
+
+    private void validateDepartment(String deptId) {
+        if (deptId != null
+                && departmentGateway
+                        .findById(deptId)
+                        .filter(Department::isEnabled)
+                        .isEmpty()) {
+            throw new IllegalArgumentException("Department does not exist or is disabled: " + deptId);
+        }
+    }
+
+    private void validateRoles(List<String> roleIds) {
+        if (roleIds == null) return;
+        for (String roleId : roleIds) {
+            if (roleGateway.findById(roleId).filter(Role::isEnabled).isEmpty()) {
+                throw new IllegalArgumentException("Role does not exist or is disabled: " + roleId);
+            }
+        }
     }
 
     /**

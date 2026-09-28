@@ -21,11 +21,9 @@ package io.github.loadup.modules.upms.app.strategy;
  */
 
 import io.github.loadup.modules.upms.app.strategy.oauth.OAuthProvider;
-import io.github.loadup.modules.upms.client.constant.LoginType;
+import io.github.loadup.modules.upms.app.strategy.oauth.OAuthToken;
+import io.github.loadup.modules.upms.app.strategy.oauth.OAuthUserInfo;
 import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
-import io.github.loadup.modules.upms.client.dto.LoginCredentials;
-import io.github.loadup.modules.upms.client.dto.OAuthToken;
-import io.github.loadup.modules.upms.client.dto.OAuthUserInfo;
 import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.entity.UserOAuthBinding;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;

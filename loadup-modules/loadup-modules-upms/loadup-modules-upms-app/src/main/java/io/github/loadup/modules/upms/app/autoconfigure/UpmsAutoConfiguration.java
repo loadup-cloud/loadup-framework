@@ -20,8 +20,11 @@ package io.github.loadup.modules.upms.app.autoconfigure;
  * #L%
  */
 
+import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
+import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import io.github.loadup.modules.upms.domain.service.AccessDecisionService;
 import io.github.loadup.modules.upms.domain.service.UserPermissionService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -62,5 +65,15 @@ public class UpmsAutoConfiguration {
     @ConditionalOnMissingBean
     public UserPermissionService userPermissionService(RoleGateway roleGateway, PermissionGateway permissionGateway) {
         return new UserPermissionService(roleGateway, permissionGateway);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AccessDecisionService accessDecisionService(
+            UserGateway userGateway,
+            RoleGateway roleGateway,
+            PermissionGateway permissionGateway,
+            DepartmentGateway departmentGateway) {
+        return new AccessDecisionService(userGateway, roleGateway, permissionGateway, departmentGateway);
     }
 }

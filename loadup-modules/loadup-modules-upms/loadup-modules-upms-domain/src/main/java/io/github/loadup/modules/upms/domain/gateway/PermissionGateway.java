@@ -58,11 +58,6 @@ public interface PermissionGateway {
     Optional<Permission> findByPermissionCode(String permissionCode);
 
     /**
-     * Find permissions by user ID
-     */
-    List<Permission> findByUserId(String userId);
-
-    /**
      * Find permissions by role ID
      */
     List<Permission> findByRoleId(String roleId);
@@ -96,29 +91,4 @@ public interface PermissionGateway {
      * Check if permission code exists
      */
     boolean existsByPermissionCode(String permissionCode);
-
-    /**
-     * Assign permission to role
-     */
-    void assignPermissionToRole(String roleId, String permissionId, String operatorId);
-
-    /**
-     * Remove permission from role
-     */
-    void removePermissionFromRole(String roleId, String permissionId);
-
-    /**
-     * Batch assign permissions to role
-     */
-    void batchAssignPermissionsToRole(String roleId, List<String> permissionIds, String operatorId);
-
-    /**
-     * Remove all permissions from role
-     */
-    void removeAllPermissionsFromRole(String roleId);
-
-    /**
-     * Get role's permission IDs
-     */
-    List<String> getRolePermissionIds(String roleId);
 }

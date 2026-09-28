@@ -26,11 +26,11 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Auth server configuration (prefix {@code loadup.components.authserver}).
+ * Auth server configuration (prefix {@code loadup.security.auth-server}).
  *
  * <p>Configures embedded Spring Authorization Server endpoints.
  */
-@ConfigurationProperties(prefix = "loadup.components.authserver")
+@ConfigurationProperties(prefix = "loadup.security.auth-server")
 public class LoadUpAuthServerProperties {
 
     /**
@@ -39,6 +39,26 @@ public class LoadUpAuthServerProperties {
     private String issuer = "http://localhost:8080";
 
     private String audience;
+
+    private boolean protocolEndpointsEnabled = true;
+
+    private Duration userAccessTokenTtl = Duration.ofMinutes(30);
+
+    public boolean isProtocolEndpointsEnabled() {
+        return protocolEndpointsEnabled;
+    }
+
+    public void setProtocolEndpointsEnabled(boolean protocolEndpointsEnabled) {
+        this.protocolEndpointsEnabled = protocolEndpointsEnabled;
+    }
+
+    public Duration getUserAccessTokenTtl() {
+        return userAccessTokenTtl;
+    }
+
+    public void setUserAccessTokenTtl(Duration userAccessTokenTtl) {
+        this.userAccessTokenTtl = userAccessTokenTtl;
+    }
 
     /**
      * Signing JWK configuration used by the SAS binder.
