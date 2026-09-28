@@ -1,6 +1,6 @@
 @baseUrl = http://127.0.0.1:8080
 @username = admin
-@password = REPLACE_WITH_ADMIN_PASSWORD
+@password = 123456
 
 # Run the requests in order. Create requests save IDs as HTTP Client global variables.
 # Change the fixed username, roleCode, deptCode, and permissionCode before rerunning creates.

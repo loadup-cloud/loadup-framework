@@ -28,9 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
 /** Ensures errors outside a mapped controller still use the JSON response contract. */
 @RestController
 public class UpmsApiErrorController implements ErrorController {
-    @RequestMapping(path = "/error", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(path = "/error")
     public FailureResponse<Void> error(HttpServletRequest request, HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         if (status instanceof Integer code) {
             if (code == 404) return FailureResponse.of(CommonResultCodeEnum.NOT_FOUND);

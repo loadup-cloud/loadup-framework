@@ -83,6 +83,7 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 @AutoConfiguration(
         beforeName = {
             "org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet.OAuth2AuthorizationServerAutoConfiguration",
+            "org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet.OAuth2AuthorizationServerJwtAutoConfiguration",
             "io.github.loadup.components.resourceserver.ResourceServerAutoConfiguration"
         })
 @EnableConfigurationProperties(LoadUpAuthServerProperties.class)
