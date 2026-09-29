@@ -1,0 +1,16 @@
+# Loadup Commons
+
+通用基础能力的聚合模块，不承载业务流程。
+
+## 子模块
+
+- [`loadup-commons-dto`](loadup-commons-dto/README.md)
+- [`loadup-commons-util`](loadup-commons-util/README.md)
+- [`loadup-commons-log`](loadup-commons-log/README.md)
+- [`loadup-commons-tracer`](loadup-commons-tracer/README.md)
+
+此 POM 用于 Maven 聚合；在消费工程中选择需要的具体 jar 坐标。
+
+## 设计
+
+内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。

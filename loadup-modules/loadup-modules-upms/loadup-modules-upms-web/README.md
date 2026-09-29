@@ -1,6 +1,6 @@
 # UPMS Web 适配
 
-提供用户注册、用户、角色、权限和部门的 Spring MVC Controller。业务服务仍由 `loadup-modules-upms-app` 提供；无需 Gateway。
+提供用户注册、用户、角色、权限和部门的 Spring MVC Controller。业务服务仍由 `loadup-modules-upms-app` 提供。
 
 ## 引入
 

@@ -1,3 +1,21 @@
-# loadup-dependencies
+# LoadUp BOM
 
-Loadup Base Dependencies Management
+`loadup-dependencies` 统一管理 LoadUp 发布坐标和第三方依赖版本，是纯 POM 模块，不提供运行时代码。
+
+## 引入
+
+```xml
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>io.github.loadup-cloud</groupId>
+      <artifactId>loadup-dependencies</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
+```
+
+然后在消费工程中按需声明具体组件或业务模块，不需要为受 BOM 管理的坐标重复写版本。版本调整及依赖边界见 [ARCHITECTURE.md](./ARCHITECTURE.md)。

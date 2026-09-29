@@ -1,0 +1,11 @@
+# 本地集成启动器
+
+`loadup-application` 组合框架组件和 UPMS，用于本地运行与验证。它不是供消费工程引入的生产模块；集成方应通过 BOM 按需选择各组件坐标。
+
+## 使用
+
+在本地准备 `application.yml` 所需的外部服务与环境变量，再运行应用主类。示例接口请求位于 `src/main/resources/Router.http`。修改依赖组合或配置后，应按需运行该模块的验证；数据库与认证配置由本应用的资源文件管理。
+
+## 设计
+
+依赖组合和源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。

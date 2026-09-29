@@ -35,7 +35,7 @@ The post processor uses a low-precedence property source, so normal application 
 direction is therefore one-way:
 
 ```
-loadup-commons-log  <-  loadup-commons-tracer  <-  gateway / application
+loadup-commons-log  <-  loadup-commons-tracer  <-  MVC application
 ```
 
 The log module only reads `Span.current()` when explicitly asked through `syncTraceContext()`; it does not create

@@ -25,7 +25,7 @@ loadup:
         lock-duration: 30
 ```
 
-`AuthenticationService.login` 是内部身份校验接口；HTTP 登录由 authserver 适配器完成。需要预置用户注册与 RBAC HTTP 接口时，再引入 `loadup-modules-upms-web`；也可以直接在应用 Controller 中调用 UPMS 服务。核心业务模块不依赖 Gateway。
+`AuthenticationService.login` 是内部身份校验接口；HTTP 登录由 authserver 适配器完成。需要预置用户注册与 RBAC HTTP 接口时，再引入 `loadup-modules-upms-web`；也可以直接在应用 Controller 中调用 UPMS 服务。
 
 业务代码注入 `AccessCheckService`，调用 `check(new AccessCheckCommand(userId, permissionCode, ownerUserId, departmentId))`。结果默认拒绝；仅当有效角色授予该权限，且该角色的数据范围匹配资源属性时放行。`@PreAuthorize` 可校验静态权限，资源级 ABAC 判定须显式调用此 API。
 

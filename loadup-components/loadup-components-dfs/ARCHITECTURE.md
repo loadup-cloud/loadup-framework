@@ -1,6 +1,6 @@
 # DFS architecture
 
-DFS follows the Mode A contract from `DESIGN.md`:
+DFS uses a single-provider API/binder structure:
 
 ```text
 Business code -> DfsService -> DfsProvider -> one selected binder -> storage system

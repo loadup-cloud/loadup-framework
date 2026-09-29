@@ -1,6 +1,6 @@
 # LoadUp Components Pipeline
 
-基于 Spring Boot 3 的**流程编排组件**，将业务逻辑拆分为`验参 → 准备 → 处理 → 组装`四个固定阶段，通过类型安全的 Fluent DSL
+基于 Spring Boot 4 的**流程编排组件**，将业务逻辑拆分为`验参 → 准备 → 处理 → 组装`四个固定阶段，通过类型安全的 Fluent DSL
 声明式地定义和执行流程。
 
 ## 核心特性
@@ -224,4 +224,3 @@ public class CalculatePriceStage implements IBizProcessStage {
     }
 }
 ```
-

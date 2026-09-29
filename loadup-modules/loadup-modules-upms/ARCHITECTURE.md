@@ -21,7 +21,7 @@ UPMS 的 `AuthenticationService.login` 选择登录策略、校验账号凭证�
 
 UPMS 领域对象、对外 DTO 和持久化对象的审计时间统一为 `createdAt`、`updatedAt`；数据库列为 `created_at`、`updated_at`，与框架 `BaseDO` 一致。
 
-- UPMS 核心模块依赖 commons/components，不依赖 Gateway 或 SAS 实现；可选 `upms-web` 提供 Controller。
+- UPMS 核心模块依赖 commons/components，不依赖 SAS 实现；可选 `upms-web` 提供 Controller。
 - `loadup-modules-upms-authserver` 依赖 UPMS app 与 AuthServer API，允许应用按需引入。
 - 资源服务器认证和业务授权直接作用于 Controller；外部 API 调用由未来独立的 HTTP 客户端组件承担。
 - `loadup-components-authorization` 提供 `@PreAuthorize` 方法安全和 `UserContext`，不注册 HTTP 放行链。

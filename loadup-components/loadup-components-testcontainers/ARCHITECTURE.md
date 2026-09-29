@@ -305,9 +305,7 @@ loadup:
 **属性注入：**
 
 ```
-spring.redis.host, spring.redis.port
 spring.data.redis.host, spring.data.redis.port
-loadup.cache.redis.host, loadup.cache.redis.port
 ```
 
 ---
@@ -752,4 +750,3 @@ boolean running = container.isRunning();
 **版本：** 2.0.0  
 **更新日期：** 2026-01-08  
 **作者：** LoadUp Framework Team
-

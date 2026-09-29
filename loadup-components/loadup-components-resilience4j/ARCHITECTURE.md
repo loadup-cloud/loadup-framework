@@ -53,14 +53,13 @@ resilience4j:
 
 | 消费者 | 用法 | 实例命名 |
 |--------|------|---------|
-| gateway-webmvc | 路由级熔断 filter、限流 filter | `gateway:<upstream key>` |
 | gotone-engine | provider 级熔断 + 重试装饰器 | `gotone-<channelType>-<providerName>` |
 
 ## 扩展点：Redis binder（规划）
 
 - CircuitBreaker 的分布式状态：Resilience4j 无官方 Redis 状态后端，需自定义 Registry/状态存储或引入社区适配；
-- RateLimiter 的分布式限流：与 Spring Cloud Gateway `RequestRateLimiter` + RedisRateLimiter 对齐，或在 binder-redis 中实现；
-- 验收标准：gateway / gotone 的消费代码不变，仅换依赖 + `loadup.resilience4j.binder-type=redis`。
+- RateLimiter 的分布式限流需要独立验证状态存储与一致性语义；
+- 验收标准：已接入的消费者不变，仅换依赖 + `loadup.resilience4j.binder-type=redis`。
 
 ## 版本与兼容性
 

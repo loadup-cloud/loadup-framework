@@ -195,7 +195,7 @@ TracerAutoConfiguration.resolveExporter()
 ### 5.1 HTTP 请求链路
 
 ```
-Client                   Gateway              Service Method
+Client                   Controller           Service Method
   │                         │                      │
   │── POST /api/v1/xxx ──►  │                      │
   │                         │                      │
@@ -203,13 +203,14 @@ Client                   Gateway              Service Method
   │                  ├─ extract W3C parent          │
   │                  ├─ create SERVER span          │
   │                  ├─ inject MDC                  │
-  │                  └─ set traceparent header      │
+  │                  └─ set traceId/traceparent     │
   │                         │                      │
   │                   @Traced AOP           ────────┤
   │                         │     create INTERNAL span
   │                         │     log: [traceId=xxx]
   │                         │                      │
   │◄── 200 OK ──────────── │                      │
+  │  traceId: xxx           │                      │
   │  traceparent: 00-xxx    │                      │
 ```
 

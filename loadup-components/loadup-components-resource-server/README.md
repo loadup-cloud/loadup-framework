@@ -1,6 +1,6 @@
 # LoadUp Resource Server
 
-通用 JWT 资源服务器组件。Controller 应用和嵌入式 Gateway 共用验签、claims 转换与 Spring Security 身份；不依赖 Gateway，也不签发令牌。
+通用 JWT 资源服务器组件。Spring MVC Controller 应用使用它完成验签、claims 转换与 Spring Security 身份装配；本组件不签发令牌。
 
 ```xml
 <dependency>
