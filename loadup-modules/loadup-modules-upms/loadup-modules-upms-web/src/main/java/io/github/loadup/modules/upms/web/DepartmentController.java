@@ -62,5 +62,6 @@ public class DepartmentController {
         return SuccessResponse.success();
     }
 
-    public record MoveRequest(@NotBlank String deptId, @NotBlank String newParentId) {}
+    public record MoveRequest(
+            @NotBlank String deptId, @NotBlank String newParentId) {}
 }

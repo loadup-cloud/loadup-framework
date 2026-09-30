@@ -85,7 +85,9 @@ public class RoleController {
         return SuccessResponse.success();
     }
 
-    public record RoleUserRequest(@NotBlank String roleId, @NotBlank String userId) {}
+    public record RoleUserRequest(
+            @NotBlank String roleId, @NotBlank String userId) {}
 
-    public record RolePermissionsRequest(@NotBlank String roleId, @NotNull List<String> permissionIds) {}
+    public record RolePermissionsRequest(
+            @NotBlank String roleId, @NotNull List<String> permissionIds) {}
 }

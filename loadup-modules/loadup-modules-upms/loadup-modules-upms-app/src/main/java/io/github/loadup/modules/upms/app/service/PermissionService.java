@@ -76,8 +76,7 @@ public class PermissionService {
             permission.setPermissionType(command.getPermissionType());
         }
         if (command.getResourcePath() != null) {
-            permission.setResourcePath(
-                    command.getResourcePath().isBlank() ? null : command.getResourcePath());
+            permission.setResourcePath(command.getResourcePath().isBlank() ? null : command.getResourcePath());
         }
         if (command.getHttpMethod() != null) {
             permission.setHttpMethod(command.getHttpMethod().isBlank() ? null : command.getHttpMethod());
@@ -86,8 +85,7 @@ public class PermissionService {
             permission.setIcon(command.getIcon().isBlank() ? null : command.getIcon());
         }
         if (command.getComponentPath() != null) {
-            permission.setComponentPath(
-                    command.getComponentPath().isBlank() ? null : command.getComponentPath());
+            permission.setComponentPath(command.getComponentPath().isBlank() ? null : command.getComponentPath());
         }
         if (command.getSortOrder() != null) {
             permission.setSortOrder(command.getSortOrder());
