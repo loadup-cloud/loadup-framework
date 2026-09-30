@@ -107,6 +107,7 @@ public class UserService {
 
         // Validate email uniqueness (if changed)
         if (command.getEmail() != null
+                && !command.getEmail().isBlank()
                 && !command.getEmail().equals(user.getEmail())
                 && userGateway.existsByEmail(command.getEmail())) {
             throw new RuntimeException("邮箱已被注册");
@@ -114,6 +115,7 @@ public class UserService {
 
         // Validate phone uniqueness (if changed)
         if (command.getMobile() != null
+                && !command.getMobile().isBlank()
                 && !command.getMobile().equals(user.getMobile())
                 && userGateway.existsByMobile(command.getMobile())) {
             throw new RuntimeException("手机号已被注册");
@@ -127,15 +129,15 @@ public class UserService {
             user.setRealName(command.getRealName());
         }
         if (command.getDeptId() != null) {
-            validateDepartment(command.getDeptId());
-            user.setDeptId(command.getDeptId());
+            if (!command.getDeptId().isBlank()) validateDepartment(command.getDeptId());
+            user.setDeptId(command.getDeptId().isBlank() ? null : command.getDeptId());
         }
         if (command.getEmail() != null) {
-            user.setEmail(command.getEmail());
+            user.setEmail(command.getEmail().isBlank() ? null : command.getEmail());
             user.setEmailVerified(false);
         }
         if (command.getMobile() != null) {
-            user.setMobile(command.getMobile());
+            user.setMobile(command.getMobile().isBlank() ? null : command.getMobile());
             user.setMobileVerified(false);
         }
         if (command.getAvatar() != null) {

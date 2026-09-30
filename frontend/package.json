@@ -1,0 +1,73 @@
+{
+  "name": "vue-element-plus-admin",
+  "version": "3.1.0",
+  "description": "一套基于vue3、element-plus、typesScript、vite4的后台集成方案。",
+  "author": "Archer <502431556@qq.com>",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "i": "pnpm install",
+    "dev:admin": "pnpm --filter @vea/admin dev",
+    "build:admin": "pnpm --filter @vea/admin build",
+    "build:admin:dev": "pnpm --filter @vea/admin build:dev",
+    "build:admin:test": "pnpm --filter @vea/admin build:test",
+    "preview:admin": "pnpm --filter @vea/admin preview",
+    "typecheck:admin": "pnpm --filter @vea/admin ts:check",
+    "typecheck": "pnpm typecheck:admin && pnpm --filter @vea/components typecheck && pnpm --filter @vea/hooks typecheck && pnpm --filter @vea/request typecheck",
+    "clean:admin": "pnpm --filter @vea/admin clean",
+    "dev:docs": "pnpm --filter @vea/docs dev",
+    "build:docs": "pnpm --filter @vea/docs build",
+    "preview:docs": "pnpm --filter @vea/docs preview",
+    "npm:check": "pnpx npm-check-updates -u",
+    "clean": "rimraf node_modules",
+    "clean:cache": "rimraf node_modules/.cache",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint . --fix",
+    "format:check": "prettier --check --ignore-unknown .",
+    "lint:format": "prettier --write --ignore-unknown --log-level warn .",
+    "style:check": "stylelint \"**/*.{vue,less,postcss,css,scss}\" --cache --cache-location node_modules/.cache/stylelint/",
+    "lint:style": "stylelint --fix \"**/*.{vue,less,postcss,css,scss}\" --cache --cache-location node_modules/.cache/stylelint/"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
+    "autoprefixer": "^10.5.4",
+    "esno": "^4.8.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
+    "oxlint": "^1.78.0",
+    "postcss": "^8.5.26",
+    "postcss-html": "^2.0.0",
+    "postcss-less": "^6.0.0",
+    "prettier": "^3.9.6",
+    "rimraf": "catalog:",
+    "stylelint": "^17.14.1",
+    "stylelint-config-html": "^2.0.0",
+    "stylelint-config-recommended": "^18.0.0",
+    "stylelint-config-standard": "^40.0.0",
+    "typescript": "catalog:",
+    "wrangler": "4.127.1"
+  },
+  "packageManager": "pnpm@9.15.3",
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "eslint",
+        "search-insights"
+      ]
+    }
+  },
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24.0.0",
+    "pnpm": ">=9.5.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kailong321200875/vue-element-plus-admin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kailong321200875/vue-element-plus-admin/issues"
+  },
+  "homepage": "https://github.com/kailong321200875/vue-element-plus-admin"
+}

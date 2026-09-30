@@ -1,0 +1,7 @@
+**/node_modules/**
+**/dist/**
+**/dist-*/**
+**/.vitepress/cache/**
+**/public/**
+/CHANGELOG.md
+/pnpm-lock.yaml

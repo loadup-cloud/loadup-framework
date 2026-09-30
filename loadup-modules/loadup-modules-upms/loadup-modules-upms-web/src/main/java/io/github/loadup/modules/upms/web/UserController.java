@@ -9,6 +9,7 @@ import io.github.loadup.modules.upms.client.command.UserPasswordChangeCommand;
 import io.github.loadup.modules.upms.client.command.UserUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
 import io.github.loadup.modules.upms.client.query.UserQuery;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,53 +27,53 @@ public class UserController {
 
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public UserDetailDTO create(@RequestBody UserCreateCommand command) {
+    public UserDetailDTO create(@Valid @RequestBody UserCreateCommand command) {
         return service.createUser(command);
     }
 
     @PostMapping("/update")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public UserDetailDTO update(@RequestBody UserUpdateCommand command) {
+    public UserDetailDTO update(@Valid @RequestBody UserUpdateCommand command) {
         return service.updateUser(command);
     }
 
     @PostMapping("/delete")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<Void> delete(@RequestBody String id) {
-        service.deleteUser(id);
+    public SuccessResponse<Void> delete(@Valid @RequestBody IdQuery query) {
+        service.deleteUser(query.id());
         return SuccessResponse.success();
     }
 
     @PostMapping("/detail")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public UserDetailDTO detail(@RequestBody IdQuery query) {
+    public UserDetailDTO detail(@Valid @RequestBody IdQuery query) {
         return service.getUserById(query);
     }
 
     @PostMapping("/list")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public PageDTO<UserDetailDTO> list(@RequestBody UserQuery query) {
+    public PageDTO<UserDetailDTO> list(@Valid @RequestBody UserQuery query) {
         return service.queryUsers(query);
     }
 
     @PostMapping("/change-password")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<Void> changePassword(@RequestBody UserPasswordChangeCommand command) {
+    public SuccessResponse<Void> changePassword(@Valid @RequestBody UserPasswordChangeCommand command) {
         service.changePassword(command);
         return SuccessResponse.success();
     }
 
     @PostMapping("/lock")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<Void> lock(@RequestBody String id) {
-        service.lockUser(id);
+    public SuccessResponse<Void> lock(@Valid @RequestBody IdQuery query) {
+        service.lockUser(query.id());
         return SuccessResponse.success();
     }
 
     @PostMapping("/unlock")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<Void> unlock(@RequestBody String id) {
-        service.unlockUser(id);
+    public SuccessResponse<Void> unlock(@Valid @RequestBody IdQuery query) {
+        service.unlockUser(query.id());
         return SuccessResponse.success();
     }
 }

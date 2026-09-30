@@ -109,10 +109,10 @@ public class DepartmentService {
             department.setLeaderUserId(command.getLeaderUserId());
         }
         if (command.getMobile() != null) {
-            department.setMobile(command.getMobile());
+            department.setMobile(command.getMobile().isBlank() ? null : command.getMobile());
         }
         if (command.getEmail() != null) {
-            department.setEmail(command.getEmail());
+            department.setEmail(command.getEmail().isBlank() ? null : command.getEmail());
         }
         if (command.getStatus() != null) {
             department.setStatus(command.getStatus());
