@@ -23,4 +23,31 @@ UPMS 持久化对象、Mapper 和网关实现。
 
 ## 实现入口
 
-该模块没有 `src/main/java` 入口；依赖与资源声明以 `pom.xml` 为准。
+主要源码入口：
+
+- [`UserGatewayImpl`](src/main/java/io/github/loadup/modules/upms/infrastructure/repository/UserGatewayImpl.java)
+- [`AuditMappingSupport`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/AuditMappingSupport.java)
+- [`DepartmentConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/DepartmentConverter.java)
+- [`LoginLogConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/LoginLogConverter.java)
+
+## 分层与调用路径
+
+Web → App → Domain Gateway → Infrastructure；认证适配连接 UPMS 凭证校验与通用 AuthServer。
+
+```text
+领域 Gateway → GatewayImpl → Mapper/DO → 数据库
+```
+
+## 扩展契约
+
+- [`DepartmentConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/DepartmentConverter.java)：由实现方或调用方按接口定义对接。
+- [`LoginLogConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/LoginLogConverter.java)：由实现方或调用方按接口定义对接。
+- [`PermissionConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/PermissionConverter.java)：由实现方或调用方按接口定义对接。
+- [`UserConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/UserConverter.java)：由实现方或调用方按接口定义对接。
+- [`RoleConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/RoleConverter.java)：由实现方或调用方按接口定义对接。
+
+## 设计取舍
+
+保持组件职责独立：业务调用依赖公开契约，自动配置处理框架装配，基础设施细节留在实现层。
+
+集成方式与配置示例见 [README.md](./README.md)。

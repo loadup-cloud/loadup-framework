@@ -30,3 +30,30 @@ UPMS 应用服务与业务编排。
 - [`UserService`](src/main/java/io/github/loadup/modules/upms/app/service/UserService.java)
 - [`VerificationCodeService`](src/main/java/io/github/loadup/modules/upms/app/service/VerificationCodeService.java)
 - [`GitHubOAuthProvider`](src/main/java/io/github/loadup/modules/upms/app/strategy/oauth/GitHubOAuthProvider.java)
+
+## 分层与调用路径
+
+Web → App → Domain Gateway → Infrastructure；认证适配连接 UPMS 凭证校验与通用 AuthServer。
+
+```text
+Client Service → 应用服务编排 → 领域服务/Gateway → 基础设施实现
+```
+
+## 装配规则
+
+- [`UpmsAutoConfiguration`](src/main/java/io/github/loadup/modules/upms/app/autoconfigure/UpmsAutoConfiguration.java) 是自动配置入口。
+
+## 扩展契约
+
+- [`LoginStrategy`](src/main/java/io/github/loadup/modules/upms/app/strategy/LoginStrategy.java)：由实现方或调用方按接口定义对接。
+- [`OAuthProvider`](src/main/java/io/github/loadup/modules/upms/app/strategy/oauth/OAuthProvider.java)：由实现方或调用方按接口定义对接。
+
+## 配置归属
+
+- [`UpmsSecurityProperties`](src/main/java/io/github/loadup/modules/upms/app/autoconfigure/UpmsSecurityProperties.java) 绑定 `loadup.upms.security`。
+
+## 设计取舍
+
+保持组件职责独立：业务调用依赖公开契约，自动配置处理框架装配，基础设施细节留在实现层。
+
+集成方式与配置示例见 [README.md](./README.md)。

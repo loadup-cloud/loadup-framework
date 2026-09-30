@@ -7,3 +7,26 @@ Cache 组件的 facade 模块：启用 Spring Cache 注解（`@EnableCaching`）
 本模块**不提供手写缓存 CRUD 门面**——业务代码直接使用 Spring Cache 标准注解，底层实现由
 `-binder-{caffeine|redis|jetcache}` 提供。Maven 坐标与用法见上层
 [loadup-components-cache](../README.md)。
+
+## 接入步骤
+
+在引入 `loadup-dependencies` BOM 的应用中添加：
+
+```xml
+<dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-cache-api</artifactId></dependency>
+```
+
+通过 `loadup.cache.type` 选择 Caffeine、Redis 或 JetCache；业务层使用 Spring Cache 注解与 CacheManager。
+运行时还需在应用侧引入一种对应 binder；仅有接口 jar 不会创建实际后端能力。
+
+## 配置入口
+
+| 前缀 | 配置类 |
+|---|---|
+| `loadup.cache` | [`LoadupCacheProperties`](src/main/java/io/github/loadup/components/cache/LoadupCacheProperties.java) |
+
+## 自动装配
+
+- [`LoadupCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/autoconfig/LoadupCacheAutoConfiguration.java)
+
+设计边界与装配路径见 [ARCHITECTURE.md](./ARCHITECTURE.md)。

@@ -21,3 +21,24 @@ UPMS 对外 DTO、Command 与 Query 契约。
 - [`AccessCheckService`](src/main/java/io/github/loadup/modules/upms/client/service/AccessCheckService.java)
 - [`AuthenticationService`](src/main/java/io/github/loadup/modules/upms/client/service/AuthenticationService.java)
 - [`UserQueryService`](src/main/java/io/github/loadup/modules/upms/client/service/UserQueryService.java)
+
+## 分层与调用路径
+
+Web → App → Domain Gateway → Infrastructure；认证适配连接 UPMS 凭证校验与通用 AuthServer。
+
+```text
+业务调用 → AuthenticationService → SPI/领域契约 → 运行时实现
+```
+接口模块固定业务侧依赖方向；实现与基础设施通过独立模块接入。
+
+## 扩展契约
+
+- [`AccessCheckService`](src/main/java/io/github/loadup/modules/upms/client/service/AccessCheckService.java)：由实现方或调用方按接口定义对接。
+- [`AuthenticationService`](src/main/java/io/github/loadup/modules/upms/client/service/AuthenticationService.java)：由实现方或调用方按接口定义对接。
+- [`UserQueryService`](src/main/java/io/github/loadup/modules/upms/client/service/UserQueryService.java)：由实现方或调用方按接口定义对接。
+
+## 设计取舍
+
+`AuthenticationService` 作为稳定入口；技术选择在运行应用完成，避免 API 层反向依赖具体后端。
+
+集成方式与配置示例见 [README.md](./README.md)。

@@ -20,3 +20,29 @@
 ## 设计
 
 内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 接入步骤
+
+通过 `loadup.cache.type` 选择 Caffeine、Redis 或 JetCache；业务层使用 Spring Cache 注解与 CacheManager。
+此 jar 负责接入具体技术实现；业务模块继续面向 API/facade 编程。
+
+## 最小配置
+
+```yaml
+loadup:
+  cache:
+    type: jetcache
+```
+
+同一应用只启用与该值对应的 binder；其他可选项见下方配置类及父模块 README。
+
+## 配置入口
+
+| 前缀 | 配置类 |
+|---|---|
+| `loadup.cache.binder.jetcache` | [`JetCacheCacheProperties`](src/main/java/io/github/loadup/components/cache/jetcache/JetCacheCacheProperties.java) |
+
+## 自动装配
+
+- [`JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfig/JetCacheCacheAutoConfiguration.java)
+  - 启用条件：`@ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = CacheBackendType.JETCACHE)`。

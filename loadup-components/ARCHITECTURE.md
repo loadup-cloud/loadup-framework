@@ -15,3 +15,30 @@ LoadUp 采用 `commons → components → modules → 消费工程` 的单向依
 ## 文档边界
 
 每个 Maven 模块在本目录保留 `README.md`（用途、坐标和配置）与 `ARCHITECTURE.md`（职责、依赖和内部扩展点）。未完成的跨模块工作统一记录在根目录 `ROADMAP.md`。
+
+## 分层与调用路径
+
+```text
+loadup-components
+  └─ loadup-components-authorization
+  └─ loadup-components-authserver
+  └─ loadup-components-cache
+  └─ loadup-components-captcha
+  └─ loadup-components-configcenter
+  └─ loadup-components-database
+  └─ loadup-components-dfs
+  └─ loadup-components-extension
+  └─ loadup-components-globalunique
+  └─ loadup-components-gotone
+  └─ loadup-components-pipeline
+  └─ loadup-components-resilience4j
+  └─ loadup-components-resource-server
+  └─ loadup-components-retrytask
+  └─ loadup-components-scheduler
+  └─ loadup-components-signature
+  └─ loadup-components-springdoc
+  └─ loadup-components-testcontainers
+  └─ loadup-components-webmvc
+```
+
+聚合 POM 组织模块与版本，运行时依赖由子模块决定。

@@ -13,3 +13,24 @@ The S3 binder uses AWS SDK `S3Client` and `S3Presigner`, persists user metadata 
 The local binder stores objects and sidecar metadata below the configured root. The database binder stores small objects and JSON metadata in `dfs_file`, using MyBatis-Flex and the standard LoadUp audit columns. Database storage is retained as a transitional implementation and is not the production default.
 
 Download responses implement `AutoCloseable`; callers must close them after consuming the stream. Binders own their clients and never expose SDK types through the facade.
+
+## 分层与调用路径
+
+`DefaultDfsService` 把对象操作委派给唯一的 `DfsProvider`；预签名与分片操作取决于 provider 能力。
+
+```text
+loadup-components-dfs
+  └─ loadup-components-dfs-api
+  └─ loadup-components-dfs-binder-database
+  └─ loadup-components-dfs-binder-local
+  └─ loadup-components-dfs-binder-s3
+  └─ loadup-components-dfs-test
+```
+
+聚合 POM 组织模块与版本，运行时依赖由子模块决定。
+
+## 设计取舍
+
+聚合层只表达模块组合和依赖方向，实际能力由选定的子模块提供。
+
+集成方式与配置示例见 [README.md](./README.md)。

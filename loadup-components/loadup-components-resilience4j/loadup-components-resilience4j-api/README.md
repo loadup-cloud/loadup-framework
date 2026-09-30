@@ -14,3 +14,14 @@
 ## 设计
 
 内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 接入步骤
+
+业务层依赖 API；集成方引入 binder-core，并配置 `loadup.resilience4j` 与所需 `resilience4j.*` 实例。
+运行应用还需引入 binder-core，才能创建 Resilience4j 注册表。
+
+## 配置入口
+
+| 前缀 | 配置类 |
+|---|---|
+| `loadup.resilience4j` | [`Resilience4jProperties`](src/main/java/io/github/loadup/components/resilience4j/Resilience4jProperties.java) |

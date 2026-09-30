@@ -18,3 +18,23 @@
 
 - [`ExtensionAutoConfiguration`](src/main/java/io/github/loadup/components/extension/config/ExtensionAutoConfiguration.java)
 - [`ExtensionProvider`](src/main/java/io/github/loadup/components/extension/spi/ExtensionProvider.java)
+
+## 分层与调用路径
+
+```text
+业务身份与场景 → ExtensionExecutor → ExtensionRegistry → 匹配的扩展实现
+```
+
+## 装配规则
+
+- [`ExtensionAutoConfiguration`](src/main/java/io/github/loadup/components/extension/config/ExtensionAutoConfiguration.java) 是自动配置入口。
+  - `@ConditionalOnClass({ExtensionExecutor.class, ExtensionRegistry.class})`
+  - `@ConditionalOnMissingBean(BizScenarioInterceptor.class)`
+
+## 扩展契约
+
+- [`ExtensionProvider`](src/main/java/io/github/loadup/components/extension/spi/ExtensionProvider.java)：由实现方或调用方按接口定义对接。
+- [`BizIdentity`](src/main/java/io/github/loadup/components/extension/api/BizIdentity.java)：由实现方或调用方按接口定义对接。
+- [`IExtensionPoint`](src/main/java/io/github/loadup/components/extension/api/IExtensionPoint.java)：由实现方或调用方按接口定义对接。
+
+集成方式与配置示例见 [README.md](./README.md)。

@@ -12,3 +12,27 @@
 - [`NotificationService`](src/main/java/io/github/loadup/components/gotone/NotificationService.java)
 - [`ChannelConfigProvider`](src/main/java/io/github/loadup/components/gotone/config/ChannelConfigProvider.java)
 - [`ServiceConfigProvider`](src/main/java/io/github/loadup/components/gotone/config/ServiceConfigProvider.java)
+
+## 分层与调用路径
+
+`NotificationService` 根据消息配置路由到多个 `NotificationChannelProvider`；JDBC store 只提供配置与记录持久化。
+
+```text
+业务调用 → NotificationService → SPI/领域契约 → 运行时实现
+```
+接口模块固定业务侧依赖方向；实现与基础设施通过独立模块接入。
+
+## 扩展契约
+
+- [`NotificationChannelProvider`](src/main/java/io/github/loadup/components/gotone/NotificationChannelProvider.java)：由实现方或调用方按接口定义对接。
+- [`NotificationService`](src/main/java/io/github/loadup/components/gotone/NotificationService.java)：由实现方或调用方按接口定义对接。
+- [`RecordHandler`](src/main/java/io/github/loadup/components/gotone/record/RecordHandler.java)：由实现方或调用方按接口定义对接。
+- [`ServiceConfigProvider`](src/main/java/io/github/loadup/components/gotone/config/ServiceConfigProvider.java)：由实现方或调用方按接口定义对接。
+- [`ChannelConfigProvider`](src/main/java/io/github/loadup/components/gotone/config/ChannelConfigProvider.java)：由实现方或调用方按接口定义对接。
+- [`TemplateRenderer`](src/main/java/io/github/loadup/components/gotone/template/TemplateRenderer.java)：由实现方或调用方按接口定义对接。
+
+## 设计取舍
+
+`NotificationService` 作为稳定入口；技术选择在运行应用完成，避免 API 层反向依赖具体后端。
+
+集成方式与配置示例见 [README.md](./README.md)。

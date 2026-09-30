@@ -12,3 +12,23 @@ channels的聚合模块，负责组织下列子模块。
 - [`loadup-components-gotone-binder-push`](loadup-components-gotone-binder-push/ARCHITECTURE.md)
 - [`loadup-components-gotone-binder-sms`](loadup-components-gotone-binder-sms/ARCHITECTURE.md)
 - [`loadup-components-gotone-binder-webhook`](loadup-components-gotone-binder-webhook/ARCHITECTURE.md)
+
+## 分层与调用路径
+
+`NotificationService` 根据消息配置路由到多个 `NotificationChannelProvider`；JDBC store 只提供配置与记录持久化。
+
+```text
+channels
+  └─ loadup-components-gotone-binder-email
+  └─ loadup-components-gotone-binder-push
+  └─ loadup-components-gotone-binder-sms
+  └─ loadup-components-gotone-binder-webhook
+```
+
+聚合 POM 组织模块与版本，运行时依赖由子模块决定。
+
+## 设计取舍
+
+聚合层只表达模块组合和依赖方向，实际能力由选定的子模块提供。
+
+集成方式与配置示例见 [README.md](./README.md)。

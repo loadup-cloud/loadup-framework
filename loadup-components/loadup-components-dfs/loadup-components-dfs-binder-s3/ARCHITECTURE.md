@@ -22,3 +22,29 @@
 
 - [`S3DfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/s3/autoconfig/S3DfsAutoConfiguration.java)
 - [`S3DfsProvider`](src/main/java/io/github/loadup/components/dfs/s3/S3DfsProvider.java)
+
+## 分层与调用路径
+
+`DefaultDfsService` 把对象操作委派给唯一的 `DfsProvider`；预签名与分片操作取决于 provider 能力。
+
+```text
+业务代码 → API/facade → 当前 binder → 第三方引擎或基础设施
+```
+binder 实现框架契约，把实现库及其配置隔离在业务 API 之外。
+
+## 装配规则
+
+- [`S3DfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/s3/autoconfig/S3DfsAutoConfiguration.java) 是自动配置入口。
+  - `@ConditionalOnClass(S3Client.class)`
+  - `@ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "s3")`
+  - `@ConditionalOnMissingBean(DfsProvider.class)`
+
+## 配置归属
+
+- [`S3DfsProperties`](src/main/java/io/github/loadup/components/dfs/s3/S3DfsProperties.java) 绑定 `loadup.dfs.binder.s3`。
+
+## 设计取舍
+
+选择独立 binder，使文件存储实现的依赖留在集成应用；替换底层实现时，业务侧仍使用 `DfsService` 契约。
+
+集成方式与配置示例见 [README.md](./README.md)。

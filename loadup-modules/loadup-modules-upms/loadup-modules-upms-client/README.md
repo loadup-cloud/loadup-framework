@@ -14,3 +14,14 @@ UPMS 对外 DTO、Command 与 Query 契约。
 ## 设计
 
 内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 接入步骤
+
+接入 Spring MVC 时引入 web 与所需 app/infra；需要登录签发时增加 upms-authserver。
+运行应用需要按需组合 app、infrastructure 与 web 适配模块。
+
+## 对外契约
+
+- [`AccessCheckService`](src/main/java/io/github/loadup/modules/upms/client/service/AccessCheckService.java)
+- [`AuthenticationService`](src/main/java/io/github/loadup/modules/upms/client/service/AuthenticationService.java)
+- [`UserQueryService`](src/main/java/io/github/loadup/modules/upms/client/service/UserQueryService.java)

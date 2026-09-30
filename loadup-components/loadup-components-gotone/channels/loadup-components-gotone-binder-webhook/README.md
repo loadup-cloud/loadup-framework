@@ -20,3 +20,14 @@
 ## 设计
 
 内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 接入步骤
+
+引入 engine 和需要的渠道 binder；渠道可同时存在，存储模块按需引入。
+此 jar 负责接入具体技术实现；业务模块继续面向 API/facade 编程。
+
+## 自动装配
+
+- [`WebhookChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/webhook/config/WebhookChannelAutoConfiguration.java)
+  - 启用条件：`@ConditionalOnProperty( prefix = "loadup.gotone.binder.webhook.dingtalk", name = "enabled", havingValue = "true", matchIfMissing = true)`。
+  - 启用条件：`@ConditionalOnProperty( prefix = "loadup.gotone.binder.webhook.wechat", name = "enabled", havingValue = "true", matchIfMissing = true)`。

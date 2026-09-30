@@ -12,3 +12,23 @@
 - [`loadup-components-captcha-binder-tianai`](loadup-components-captcha-binder-tianai/ARCHITECTURE.md)
 - [`loadup-components-captcha-binder-nanocaptcha`](loadup-components-captcha-binder-nanocaptcha/ARCHITECTURE.md)
 - [`loadup-components-captcha-test`](loadup-components-captcha-test/ARCHITECTURE.md)
+
+## 分层与调用路径
+
+`CaptchaTemplate` 统一生成与校验入口，单个 `CaptchaProvider` 负责算法及存储细节。
+
+```text
+loadup-components-captcha
+  └─ loadup-components-captcha-api
+  └─ loadup-components-captcha-binder-nanocaptcha
+  └─ loadup-components-captcha-binder-tianai
+  └─ loadup-components-captcha-test
+```
+
+聚合 POM 组织模块与版本，运行时依赖由子模块决定。
+
+## 设计取舍
+
+聚合层只表达模块组合和依赖方向，实际能力由选定的子模块提供。
+
+集成方式与配置示例见 [README.md](./README.md)。

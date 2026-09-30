@@ -24,3 +24,19 @@ MyBatis / 渠道 SDK）。业务代码只依赖本模块。
 ```
 
 仅引入 api 不会产生任何 bean；装配由 `-engine`、`-store-jdbc` 与 `-binder-*` 负责。
+
+## 接入步骤
+
+引入 engine 和需要的渠道 binder；渠道可同时存在，存储模块按需引入。
+运行应用至少需要 engine 与一个渠道 binder；JDBC store 为可选依赖。
+
+## 对外契约
+
+- [`NotificationChannelProvider`](src/main/java/io/github/loadup/components/gotone/NotificationChannelProvider.java)
+- [`NotificationService`](src/main/java/io/github/loadup/components/gotone/NotificationService.java)
+- [`RecordHandler`](src/main/java/io/github/loadup/components/gotone/record/RecordHandler.java)
+- [`ServiceConfigProvider`](src/main/java/io/github/loadup/components/gotone/config/ServiceConfigProvider.java)
+- [`ChannelConfigProvider`](src/main/java/io/github/loadup/components/gotone/config/ChannelConfigProvider.java)
+- [`TemplateRenderer`](src/main/java/io/github/loadup/components/gotone/template/TemplateRenderer.java)
+
+设计边界与装配路径见 [ARCHITECTURE.md](./ARCHITECTURE.md)。

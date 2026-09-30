@@ -20,3 +20,22 @@ UPMS 应用服务与业务编排。
 ## 设计
 
 内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 接入步骤
+
+接入 Spring MVC 时引入 web 与所需 app/infra；需要登录签发时增加 upms-authserver。
+
+## 配置入口
+
+| 前缀 | 配置类 |
+|---|---|
+| `loadup.upms.security` | [`UpmsSecurityProperties`](src/main/java/io/github/loadup/modules/upms/app/autoconfigure/UpmsSecurityProperties.java) |
+
+## 对外契约
+
+- [`LoginStrategy`](src/main/java/io/github/loadup/modules/upms/app/strategy/LoginStrategy.java)
+- [`OAuthProvider`](src/main/java/io/github/loadup/modules/upms/app/strategy/oauth/OAuthProvider.java)
+
+## 自动装配
+
+- [`UpmsAutoConfiguration`](src/main/java/io/github/loadup/modules/upms/app/autoconfigure/UpmsAutoConfiguration.java)

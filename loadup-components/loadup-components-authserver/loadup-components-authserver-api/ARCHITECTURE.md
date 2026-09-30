@@ -15,4 +15,31 @@ OAuth2 授权服务器与令牌签发的业务契约与接口模块；实现由�
 
 ## 实现入口
 
-该模块没有 `src/main/java` 入口；依赖与资源声明以 `pom.xml` 为准。
+主要源码入口：
+
+- [`LoadUpJwtTokenCustomizer`](src/main/java/io/github/loadup/components/authserver/jwt/LoadUpJwtTokenCustomizer.java)
+- [`LoadUpSubject`](src/main/java/io/github/loadup/components/authserver/jwt/LoadUpSubject.java)
+- [`LoadUpAuthServerProperties`](src/main/java/io/github/loadup/components/authserver/properties/LoadUpAuthServerProperties.java)
+
+## 分层与调用路径
+
+API 定义主体与认证契约；SAS binder 配置令牌签发、JWK 和可选 OAuth2 协议端点。
+
+```text
+认证后的 Principal（LoadUpSubject）→ JwtTokenCustomizer → sub/roles/permissions Claims
+```
+接口模块固定业务侧依赖方向；实现与基础设施通过独立模块接入。
+
+## 扩展契约
+
+- [`LoadUpSubject`](src/main/java/io/github/loadup/components/authserver/jwt/LoadUpSubject.java)：由实现方或调用方按接口定义对接。
+
+## 配置归属
+
+- [`LoadUpAuthServerProperties`](src/main/java/io/github/loadup/components/authserver/properties/LoadUpAuthServerProperties.java) 绑定 `loadup.security.auth-server`。
+
+## 设计取舍
+
+`LoadUpSubject` 只规定主体 ID；用户存储由业务模块提供，令牌定制器只消费该契约。
+
+集成方式与配置示例见 [README.md](./README.md)。

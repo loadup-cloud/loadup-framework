@@ -20,3 +20,17 @@
 ## 设计
 
 内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 接入步骤
+
+引入 engine 和需要的渠道 binder；渠道可同时存在，存储模块按需引入。
+
+## 配置入口
+
+| 前缀 | 配置类 |
+|---|---|
+| `loadup.gotone.resilience` | [`GotoneResilienceProperties`](src/main/java/io/github/loadup/components/gotone/engine/GotoneResilienceProperties.java) |
+
+## 自动装配
+
+- [`GotoneEngineAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/engine/GotoneEngineAutoConfiguration.java)

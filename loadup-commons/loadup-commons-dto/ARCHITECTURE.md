@@ -15,4 +15,26 @@
 
 ## 实现入口
 
-该模块没有 `src/main/java` 入口；依赖与资源声明以 `pom.xml` 为准。
+主要源码入口：
+
+- [`BaseDO`](src/main/java/io/github/loadup/commons/dataobject/BaseDO.java)
+- [`DTO`](src/main/java/io/github/loadup/commons/dto/DTO.java)
+- [`CommonConstants`](src/main/java/io/github/loadup/commons/constant/CommonConstants.java)
+- [`BaseEntity`](src/main/java/io/github/loadup/commons/domain/BaseEntity.java)
+
+## 分层与调用路径
+
+```text
+业务模型 → Result/PageDTO/BaseDO 与对象映射约定 → 上层组件
+```
+
+## 扩展契约
+
+- [`DTO`](src/main/java/io/github/loadup/commons/dto/DTO.java)：由实现方或调用方按接口定义对接。
+- [`LoadUpMapStructConfig`](src/main/java/io/github/loadup/commons/mapping/LoadUpMapStructConfig.java)：由实现方或调用方按接口定义对接。
+- [`ResultCode`](src/main/java/io/github/loadup/commons/result/ResultCode.java)：由实现方或调用方按接口定义对接。
+- [`IEnum`](src/main/java/io/github/loadup/commons/enums/IEnum.java)：由实现方或调用方按接口定义对接。
+- [`CommonConstants`](src/main/java/io/github/loadup/commons/constant/CommonConstants.java)：由实现方或调用方按接口定义对接。
+- [`AssertionCallback`](src/main/java/io/github/loadup/commons/error/AssertionCallback.java)：由实现方或调用方按接口定义对接。
+
+集成方式与配置示例见 [README.md](./README.md)。

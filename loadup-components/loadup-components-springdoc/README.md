@@ -20,3 +20,17 @@
 ## 设计
 
 内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 接入步骤
+
+
+## 配置入口
+
+| 前缀 | 配置类 |
+|---|---|
+| `loadup.springdoc` | [`SpringDocProperties`](src/main/java/io/github/loadup/components/springdoc/properties/SpringDocProperties.java) |
+
+## 自动装配
+
+- [`SpringDocAutoConfiguration`](src/main/java/io/github/loadup/components/springdoc/autoconfigure/SpringDocAutoConfiguration.java)
+  - 启用条件：`@ConditionalOnProperty(prefix = "loadup.springdoc", name = "enabled", havingValue = "true", matchIfMissing = true)`。

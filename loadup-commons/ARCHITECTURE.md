@@ -8,3 +8,15 @@ Commons 位于依赖链底部，供技术组件和业务模块复用，不依赖
 - [Tracer](loadup-commons-tracer/README.md)：OpenTelemetry span、Servlet 请求追踪与上下文传播，复用 Log 的 MDC 约定。
 
 数据库审计字段在 Java/JSON 中统一为 `createdAt`、`updatedAt`，列名为 `created_at`、`updated_at`。通用类型不承载业务授权、HTTP 路由或具体存储决策。
+
+## 分层与调用路径
+
+```text
+loadup-commons
+  └─ loadup-commons-dto
+  └─ loadup-commons-log
+  └─ loadup-commons-tracer
+  └─ loadup-commons-util
+```
+
+聚合 POM 组织模块与版本，运行时依赖由子模块决定。

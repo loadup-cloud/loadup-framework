@@ -18,3 +18,12 @@ UPMS Web 适配模块已经传递引入此组件。其他 Controller 应用可�
 ## JSON 约定
 
 业务 API 前缀固定为 `/api`。组件使用 Spring Boot 4 的 `JsonMapperBuilderCustomizer`，保留 Boot 的 Java Time/JDK8 模块发现机制，并沿用 `JsonUtil` 的日期规则：`LocalDate` 为 `yyyy-MM-dd`，`LocalDateTime` 和传统 `Date` 为 `yyyy-MM-dd HH:mm:ss`；同时注册对应反序列化模块，日期与时长不写为时间戳。Boot 创建的 `ObjectMapper`、MVC、`JsonUtil` 和 DTO 日志序列化共用该配置。应用可用更高顺序的 `JsonMapperBuilderCustomizer` 覆盖规则。
+
+## 接入步骤
+
+
+## 自动装配
+
+- [`LoadUpWebMvcAutoConfiguration`](src/main/java/io/github/loadup/components/webmvc/LoadUpWebMvcAutoConfiguration.java)
+
+设计边界与装配路径见 [ARCHITECTURE.md](./ARCHITECTURE.md)。

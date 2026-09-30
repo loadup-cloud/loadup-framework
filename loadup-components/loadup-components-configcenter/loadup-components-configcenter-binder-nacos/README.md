@@ -20,3 +20,29 @@
 ## 设计
 
 内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 接入步骤
+
+通过 `loadup.configcenter.binder-type` 选择 local、nacos 或 apollo；业务层注入 `ConfigCenterTemplate`。
+此 jar 负责接入具体技术实现；业务模块继续面向 API/facade 编程。
+
+## 最小配置
+
+```yaml
+loadup:
+  configcenter:
+    binder-type: nacos
+```
+
+同一应用只启用与该值对应的 binder；其他可选项见下方配置类及父模块 README。
+
+## 配置入口
+
+| 前缀 | 配置类 |
+|---|---|
+| `loadup.configcenter.binder.nacos` | [`NacosConfigCenterProperties`](src/main/java/io/github/loadup/components/configcenter/nacos/NacosConfigCenterProperties.java) |
+
+## 自动装配
+
+- [`NacosConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/nacos/autoconfig/NacosConfigCenterAutoConfiguration.java)
+  - 启用条件：`@ConditionalOnProperty(prefix = "loadup.configcenter", name = "binder-type", havingValue = "nacos")`。

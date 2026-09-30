@@ -20,3 +20,12 @@ UPMS 与授权服务器之间的可选认证适配模块。
 ## 设计
 
 内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 接入步骤
+
+接入 Spring MVC 时引入 web 与所需 app/infra；需要登录签发时增加 upms-authserver。
+
+## 自动装配
+
+- [`UpmsAuthServerAutoConfiguration`](src/main/java/io/github/loadup/modules/upms/authserver/UpmsAuthServerAutoConfiguration.java)
+  - 启用条件：`@ConditionalOnProperty( prefix = "loadup.security.auth-server", name = "protocol-endpoints-enabled", havingValue = "true", matchIfMissing = true)`。

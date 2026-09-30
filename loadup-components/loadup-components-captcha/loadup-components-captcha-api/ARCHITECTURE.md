@@ -20,3 +20,33 @@
 - [`CaptchaProvider`](src/main/java/io/github/loadup/components/captcha/CaptchaProvider.java)
 - [`CaptchaTemplate`](src/main/java/io/github/loadup/components/captcha/CaptchaTemplate.java)
 - [`DefaultCaptchaTemplate`](src/main/java/io/github/loadup/components/captcha/DefaultCaptchaTemplate.java)
+
+## 分层与调用路径
+
+`CaptchaTemplate` 统一生成与校验入口，单个 `CaptchaProvider` 负责算法及存储细节。
+
+```text
+业务调用 → CaptchaTemplate → SPI/领域契约 → 运行时实现
+```
+接口模块固定业务侧依赖方向；实现与基础设施通过独立模块接入。
+
+## 装配规则
+
+- [`CaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/autoconfig/CaptchaAutoConfiguration.java) 是自动配置入口。
+  - `@ConditionalOnSingleCandidate(CaptchaProvider.class)`
+  - `@ConditionalOnMissingBean(CaptchaTemplate.class)`
+
+## 扩展契约
+
+- [`CaptchaProvider`](src/main/java/io/github/loadup/components/captcha/CaptchaProvider.java)：由实现方或调用方按接口定义对接。
+- [`CaptchaTemplate`](src/main/java/io/github/loadup/components/captcha/CaptchaTemplate.java)：由实现方或调用方按接口定义对接。
+
+## 配置归属
+
+- [`CaptchaProperties`](src/main/java/io/github/loadup/components/captcha/CaptchaProperties.java) 绑定 `loadup.captcha`。
+
+## 设计取舍
+
+`CaptchaTemplate` 作为稳定入口；技术选择在运行应用完成，避免 API 层反向依赖具体后端。
+
+集成方式与配置示例见 [README.md](./README.md)。

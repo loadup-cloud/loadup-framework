@@ -20,3 +20,13 @@ OAuth2 授权服务器与令牌签发的具体后端适配模块；由集成方�
 ## 设计
 
 内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 接入步骤
+
+需要 SAS 协议与 JWT 签发时引入 binder-sas；用户密码校验由业务认证适配提供。
+此 jar 负责接入具体技术实现；业务模块继续面向 API/facade 编程。
+
+## 自动装配
+
+- [`SasAuthServerAutoConfiguration`](src/main/java/io/github/loadup/components/authserver/sas/SasAuthServerAutoConfiguration.java)
+  - 启用条件：`@ConditionalOnProperty( prefix = "loadup.security.auth-server", name = "protocol-endpoints-enabled", havingValue = "true", matchIfMissing = true)`。

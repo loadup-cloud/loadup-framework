@@ -32,3 +32,16 @@
 ## 许可证
 
 Apache License 2.0 (Apache-2.0)
+
+## 接入步骤
+
+业务层依赖 API；集成方选择 JobRunr 或 Quartz binder。
+运行时还需在应用侧引入一种对应 binder；仅有接口 jar 不会创建实际后端能力。
+
+## 对外契约
+
+- [`SchedulerProcessor`](src/main/java/io/github/loadup/components/scheduler/SchedulerProcessor.java)
+- [`SchedulerProcessorRegistry`](src/main/java/io/github/loadup/components/scheduler/SchedulerProcessorRegistry.java)
+- [`SchedulerTemplate`](src/main/java/io/github/loadup/components/scheduler/SchedulerTemplate.java)
+
+设计边界与装配路径见 [ARCHITECTURE.md](./ARCHITECTURE.md)。

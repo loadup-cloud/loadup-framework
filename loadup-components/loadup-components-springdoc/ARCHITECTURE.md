@@ -18,3 +18,21 @@
 主要入口文件：
 
 - [`SpringDocAutoConfiguration`](src/main/java/io/github/loadup/components/springdoc/autoconfigure/SpringDocAutoConfiguration.java)
+
+## 分层与调用路径
+
+```text
+Spring MVC Controller / 注解 → OpenAPI 模型 → SpringDoc / Knife4j 页面
+```
+
+## 装配规则
+
+- [`SpringDocAutoConfiguration`](src/main/java/io/github/loadup/components/springdoc/autoconfigure/SpringDocAutoConfiguration.java) 是自动配置入口。
+  - `@ConditionalOnClass(name = "com.github.xiaoymin.knife4j.spring.extension.OpenApiExtensionResolver")`
+  - `@ConditionalOnProperty(prefix = "loadup.springdoc", name = "enabled", havingValue = "true", matchIfMissing = true)`
+
+## 配置归属
+
+- [`SpringDocProperties`](src/main/java/io/github/loadup/components/springdoc/properties/SpringDocProperties.java) 绑定 `loadup.springdoc`。
+
+集成方式与配置示例见 [README.md](./README.md)。

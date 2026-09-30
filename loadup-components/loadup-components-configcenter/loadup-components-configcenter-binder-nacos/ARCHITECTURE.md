@@ -24,3 +24,28 @@
 
 - [`NacosConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/nacos/autoconfig/NacosConfigCenterAutoConfiguration.java)
 - [`NacosConfigCenterProvider`](src/main/java/io/github/loadup/components/configcenter/nacos/NacosConfigCenterProvider.java)
+
+## 分层与调用路径
+
+`ConfigCenterTemplate` 把配置读取与监听委派给唯一的 `ConfigCenterProvider`。
+
+```text
+业务代码 → API/facade → 当前 binder → 第三方引擎或基础设施
+```
+binder 实现框架契约，把实现库及其配置隔离在业务 API 之外。
+
+## 装配规则
+
+- [`NacosConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/nacos/autoconfig/NacosConfigCenterAutoConfiguration.java) 是自动配置入口。
+  - `@ConditionalOnClass(NacosFactory.class)`
+  - `@ConditionalOnProperty(prefix = "loadup.configcenter", name = "binder-type", havingValue = "nacos")`
+
+## 配置归属
+
+- [`NacosConfigCenterProperties`](src/main/java/io/github/loadup/components/configcenter/nacos/NacosConfigCenterProperties.java) 绑定 `loadup.configcenter.binder.nacos`。
+
+## 设计取舍
+
+选择独立 binder，使配置中心实现的依赖留在集成应用；替换底层实现时，业务侧仍使用 `ConfigCenterTemplate` 契约。
+
+集成方式与配置示例见 [README.md](./README.md)。

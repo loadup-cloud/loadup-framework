@@ -20,3 +20,10 @@ mvn test -pl loadup-testify/loadup-testify-test
 - `UserServiceBatchIT`：`CaseFiles` 从 YAML 批量加载入参/出参用例，
   `@ParameterizedTest` 逐条执行，`ScenarioAssert` 按操作符（regex / approx / contains / JsonPath）断言。
 - `ScenarioAssertTest`：声明式断言操作符的单元测试。
+
+## 接入步骤
+
+此模块用于验证组件契约，通常只在本项目的测试构建中使用；应用接入请选同级 API 与实现模块。
+需要单独执行时，可在仓库根目录使用 `mvn clean test -pl loadup-testify/loadup-testify-test -am`；外部服务和容器要求以测试类及测试配置为准。
+
+设计边界与装配路径见 [ARCHITECTURE.md](./ARCHITECTURE.md)。

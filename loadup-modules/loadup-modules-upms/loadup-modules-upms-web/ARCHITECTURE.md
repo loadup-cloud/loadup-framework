@@ -27,3 +27,21 @@ UPMS 的可选 Spring MVC Controller 适配模块。
 - [`PermissionController`](src/main/java/io/github/loadup/modules/upms/web/PermissionController.java)
 - [`RoleController`](src/main/java/io/github/loadup/modules/upms/web/RoleController.java)
 - [`UserController`](src/main/java/io/github/loadup/modules/upms/web/UserController.java)
+
+## 分层与调用路径
+
+Web → App → Domain Gateway → Infrastructure；认证适配连接 UPMS 凭证校验与通用 AuthServer。
+
+```text
+HTTP /api/** → Controller → App Service → Client DTO 响应
+```
+
+## 装配规则
+
+- [`UpmsWebAutoConfiguration`](src/main/java/io/github/loadup/modules/upms/web/UpmsWebAutoConfiguration.java) 是自动配置入口。
+
+## 设计取舍
+
+保持组件职责独立：业务调用依赖公开契约，自动配置处理框架装配，基础设施细节留在实现层。
+
+集成方式与配置示例见 [README.md](./README.md)。

@@ -26,3 +26,28 @@
 - [`GotoneStoreJdbcAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/store/config/GotoneStoreJdbcAutoConfiguration.java)
 - [`JdbcChannelConfigProvider`](src/main/java/io/github/loadup/components/gotone/store/config/JdbcChannelConfigProvider.java)
 - [`JdbcServiceConfigProvider`](src/main/java/io/github/loadup/components/gotone/store/config/JdbcServiceConfigProvider.java)
+
+## 分层与调用路径
+
+`NotificationService` 根据消息配置路由到多个 `NotificationChannelProvider`；JDBC store 只提供配置与记录持久化。
+
+```text
+通知引擎 → 配置/记录 SPI → MyBatis-Flex Gateway → 数据库
+```
+
+## 装配规则
+
+- [`GotoneStoreJdbcAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/store/config/GotoneStoreJdbcAutoConfiguration.java) 是自动配置入口。
+  - `@ConditionalOnClass({ChannelConfigProvider.class, MyBatisFlexAutoConfiguration.class})`
+
+## 扩展契约
+
+- [`ServiceChannelDOMapper`](src/main/java/io/github/loadup/components/gotone/store/mapper/ServiceChannelDOMapper.java)：由实现方或调用方按接口定义对接。
+- [`NotificationServiceDOMapper`](src/main/java/io/github/loadup/components/gotone/store/mapper/NotificationServiceDOMapper.java)：由实现方或调用方按接口定义对接。
+- [`NotificationRecordDOMapper`](src/main/java/io/github/loadup/components/gotone/store/mapper/NotificationRecordDOMapper.java)：由实现方或调用方按接口定义对接。
+
+## 设计取舍
+
+保持组件职责独立：业务调用依赖公开契约，自动配置处理框架装配，基础设施细节留在实现层。
+
+集成方式与配置示例见 [README.md](./README.md)。

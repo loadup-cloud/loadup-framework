@@ -20,3 +20,24 @@
 ## 设计
 
 内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 接入步骤
+
+通过 `loadup.captcha.binder-type` 选择 tianai 或 nanocaptcha；业务层注入 `CaptchaTemplate`。
+运行时还需在应用侧引入一种对应 binder；仅有接口 jar 不会创建实际后端能力。
+
+## 配置入口
+
+| 前缀 | 配置类 |
+|---|---|
+| `loadup.captcha` | [`CaptchaProperties`](src/main/java/io/github/loadup/components/captcha/CaptchaProperties.java) |
+
+## 对外契约
+
+- [`CaptchaProvider`](src/main/java/io/github/loadup/components/captcha/CaptchaProvider.java)
+- [`CaptchaTemplate`](src/main/java/io/github/loadup/components/captcha/CaptchaTemplate.java)
+
+## 自动装配
+
+- [`CaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/autoconfig/CaptchaAutoConfiguration.java)
+  - 启用条件：`@ConditionalOnSingleCandidate(CaptchaProvider.class)`。

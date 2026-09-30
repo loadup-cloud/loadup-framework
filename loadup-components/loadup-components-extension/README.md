@@ -20,3 +20,16 @@
 ## 设计
 
 内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 接入步骤
+
+
+## 对外契约
+
+- [`ExtensionProvider`](src/main/java/io/github/loadup/components/extension/spi/ExtensionProvider.java)
+- [`BizIdentity`](src/main/java/io/github/loadup/components/extension/api/BizIdentity.java)
+- [`IExtensionPoint`](src/main/java/io/github/loadup/components/extension/api/IExtensionPoint.java)
+
+## 自动装配
+
+- [`ExtensionAutoConfiguration`](src/main/java/io/github/loadup/components/extension/config/ExtensionAutoConfiguration.java)

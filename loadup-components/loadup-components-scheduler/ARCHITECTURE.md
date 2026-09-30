@@ -12,3 +12,23 @@
 - [`loadup-components-scheduler-binder-jobrunr`](loadup-components-scheduler-binder-jobrunr/ARCHITECTURE.md)
 - [`loadup-components-scheduler-binder-quartz`](loadup-components-scheduler-binder-quartz/ARCHITECTURE.md)
 - [`loadup-components-scheduler-test`](loadup-components-scheduler-test/ARCHITECTURE.md)
+
+## 分层与调用路径
+
+`SchedulerTemplate` 接收注册与管理命令，binder 适配到调度引擎，再由 `SchedulerProcessor` 执行业务。
+
+```text
+loadup-components-scheduler
+  └─ loadup-components-scheduler-api
+  └─ loadup-components-scheduler-binder-jobrunr
+  └─ loadup-components-scheduler-binder-quartz
+  └─ loadup-components-scheduler-test
+```
+
+聚合 POM 组织模块与版本，运行时依赖由子模块决定。
+
+## 设计取舍
+
+聚合层只表达模块组合和依赖方向，实际能力由选定的子模块提供。
+
+集成方式与配置示例见 [README.md](./README.md)。

@@ -20,3 +20,23 @@
 
 - [`QuartzSchedulerAutoConfiguration`](src/main/java/io/github/loadup/components/scheduler/quartz/autoconfig/QuartzSchedulerAutoConfiguration.java)
 - [`QuartzSchedulerTemplate`](src/main/java/io/github/loadup/components/scheduler/quartz/QuartzSchedulerTemplate.java)
+
+## 分层与调用路径
+
+`SchedulerTemplate` 接收注册与管理命令，binder 适配到调度引擎，再由 `SchedulerProcessor` 执行业务。
+
+```text
+业务代码 → API/facade → 当前 binder → 第三方引擎或基础设施
+```
+binder 实现框架契约，把实现库及其配置隔离在业务 API 之外。
+
+## 装配规则
+
+- [`QuartzSchedulerAutoConfiguration`](src/main/java/io/github/loadup/components/scheduler/quartz/autoconfig/QuartzSchedulerAutoConfiguration.java) 是自动配置入口。
+  - `@ConditionalOnClass({Scheduler.class, JobDetail.class})`
+
+## 设计取舍
+
+选择独立 binder，使周期任务实现的依赖留在集成应用；替换底层实现时，业务侧仍使用 `SchedulerTemplate` 契约。
+
+集成方式与配置示例见 [README.md](./README.md)。

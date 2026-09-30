@@ -30,3 +30,11 @@
 主要入口文件：
 
 - [`DemoService`](src/main/java/io/github/loadup/framework/service/DemoService.java)
+
+## 分层与调用路径
+
+```text
+Application → 自动配置 → Web/API、UPMS 与可选技术组件
+```
+
+集成方式与配置示例见 [README.md](./README.md)。

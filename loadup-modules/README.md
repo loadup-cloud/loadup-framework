@@ -11,3 +11,9 @@
 ## 设计
 
 内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 接入步骤
+
+此目录是 Maven 聚合模块，不作为业务运行依赖。按用途选择子模块：
+
+- [`loadup-modules-upms`](./loadup-modules-upms/README.md)：运行实现。

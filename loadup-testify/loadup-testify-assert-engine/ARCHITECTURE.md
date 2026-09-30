@@ -21,4 +21,28 @@ Testify 测试框架的执行引擎模块。
 
 ## 实现入口
 
-该模块没有 `src/main/java` 入口；依赖与资源声明以 `pom.xml` 为准。
+主要源码入口：
+
+- [`DiffReportBuilder`](src/main/java/io/github/loadup/testify/asserts/diff/DiffReportBuilder.java)
+- [`DbAssertEngine`](src/main/java/io/github/loadup/testify/asserts/engine/DbAssertEngine.java)
+- [`ExceptionAssertEngine`](src/main/java/io/github/loadup/testify/asserts/engine/ExceptionAssertEngine.java)
+- [`ResponseAssertEngine`](src/main/java/io/github/loadup/testify/asserts/engine/ResponseAssertEngine.java)
+
+## 分层与调用路径
+
+Starter 装配测试环境；数据引擎准备和清理样本；断言引擎验证结果。
+
+```text
+测试断言定义 → Assert Engine → 实际结果比较
+```
+
+## 扩展契约
+
+- [`TestifyAssertEngine`](src/main/java/io/github/loadup/testify/asserts/engine/TestifyAssertEngine.java)：由实现方或调用方按接口定义对接。
+- [`OperatorMatcher`](src/main/java/io/github/loadup/testify/asserts/operator/OperatorMatcher.java)：由实现方或调用方按接口定义对接。
+
+## 设计取舍
+
+保持组件职责独立：业务调用依赖公开契约，自动配置处理框架装配，基础设施细节留在实现层。
+
+集成方式与配置示例见 [README.md](./README.md)。

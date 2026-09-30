@@ -22,3 +22,28 @@ RetryTask 与 Gotone 通知组件之间的可选告警适配模块。
 主要入口文件：
 
 - [`RetryTaskGotoneNotifierAutoConfiguration`](src/main/java/io/github/loadup/retrytask/notifier/gotone/RetryTaskGotoneNotifierAutoConfiguration.java)
+
+## 分层与调用路径
+
+业务提交进入 facade，经 JobRunr binder 持久化与执行；通知桥接模块独立订阅失败事件。
+
+```text
+RetryTask 失败事件 → RetryTaskNotifier → Gotone NotificationService → 通知渠道
+```
+
+## 装配规则
+
+- [`RetryTaskGotoneNotifierAutoConfiguration`](src/main/java/io/github/loadup/retrytask/notifier/gotone/RetryTaskGotoneNotifierAutoConfiguration.java) 是自动配置入口。
+  - `@ConditionalOnClass({RetryTaskNotifier.class, NotificationService.class})`
+  - `@ConditionalOnBean(NotificationService.class)`
+  - `@ConditionalOnMissingBean(name = "gotoneRetryTaskNotifier")`
+
+## 配置归属
+
+- [`RetryTaskNotifyProperties`](src/main/java/io/github/loadup/retrytask/notifier/gotone/RetryTaskNotifyProperties.java) 绑定 `loadup.retrytask.notify`。
+
+## 设计取舍
+
+保持组件职责独立：业务调用依赖公开契约，自动配置处理框架装配，基础设施细节留在实现层。
+
+集成方式与配置示例见 [README.md](./README.md)。

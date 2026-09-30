@@ -23,3 +23,36 @@
 主要入口文件：
 
 - [`ResourceServerAutoConfiguration`](src/main/java/io/github/loadup/components/resourceserver/ResourceServerAutoConfiguration.java)
+
+## 分层与调用路径
+
+```text
+Bearer Token → /api/** SecurityFilterChain → JwtDecoder → token_use/aud/issuer 校验
+             → LoadUpJwtAuthenticationConverter → SecurityContext → Controller
+认证或授权失败 → FailureResponse(result, data) / HTTP 200
+```
+
+`ResourceServerAutoConfiguration` 仅在 Servlet 应用且 `loadup.security.resource-server.enabled=true`
+时生效。默认安全链的顺序为 100，只匹配 `/api/**`；`permit-all` 仅开放显式列出的路径。
+应用可以关闭默认安全链并自行提供 `SecurityFilterChain`，组件仍可提供解码器与权限转换器。
+
+## 校验责任
+
+默认 `JwtDecoder` 要求 `issuer-uri` 与 `audience`，有 `jwk-set-uri` 时直接读取该 JWK 集；
+否则基于 issuer 元数据发现 JWK 地址。默认校验签名、issuer、时效、audience 和访问令牌用途。
+自定义 `JwtDecoder` 会覆盖默认解码器，但默认安全链仍加一层用途、issuer 与 audience 校验；
+自定义解码器必须自行保证签名可信。授权逻辑由 Spring Security 与 Authorization 组件承担。
+
+## 装配规则
+
+- [`ResourceServerAutoConfiguration`](src/main/java/io/github/loadup/components/resourceserver/ResourceServerAutoConfiguration.java) 是自动配置入口。
+  - `@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)`
+  - `@ConditionalOnProperty(prefix = "loadup.security.resource-server", name = "enabled", havingValue = "true")`
+  - `@ConditionalOnMissingBean(JwtDecoder.class)`
+  - `@ConditionalOnProperty( prefix = "loadup.security.resource-server", name = "default-security-filter-chain", havingValue = "true", matchIfMissing = true)`
+
+## 配置归属
+
+- [`ResourceServerProperties`](src/main/java/io/github/loadup/components/resourceserver/ResourceServerProperties.java) 绑定 `loadup.security.resource-server`。
+
+集成方式与配置示例见 [README.md](./README.md)。

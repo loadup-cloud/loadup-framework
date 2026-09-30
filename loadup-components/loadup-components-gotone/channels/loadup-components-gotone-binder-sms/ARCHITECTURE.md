@@ -23,3 +23,32 @@
 - [`AliyunSmsProvider`](src/main/java/io/github/loadup/components/gotone/channel/sms/AliyunSmsProvider.java)
 - [`HuaweiSmsProvider`](src/main/java/io/github/loadup/components/gotone/channel/sms/HuaweiSmsProvider.java)
 - [`YunpianSmsProvider`](src/main/java/io/github/loadup/components/gotone/channel/sms/YunpianSmsProvider.java)
+
+## 分层与调用路径
+
+`NotificationService` 根据消息配置路由到多个 `NotificationChannelProvider`；JDBC store 只提供配置与记录持久化。
+
+```text
+业务代码 → API/facade → 当前 binder → 第三方引擎或基础设施
+```
+binder 实现框架契约，把实现库及其配置隔离在业务 API 之外。
+
+## 装配规则
+
+- [`SmsChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/sms/config/SmsChannelAutoConfiguration.java) 是自动配置入口。
+  - `@ConditionalOnProperty( prefix = "loadup.gotone.binder.sms.aliyun", name = "enabled", havingValue = "true", matchIfMissing = true)`
+  - `@ConditionalOnMissingBean(name = "aliyunSmsProvider")`
+  - `@ConditionalOnProperty( prefix = "loadup.gotone.binder.sms.huawei", name = "enabled", havingValue = "true", matchIfMissing = true)`
+  - `@ConditionalOnMissingBean(name = "huaweiSmsProvider")`
+
+## 配置归属
+
+- [`AliyunSmsConfig`](src/main/java/io/github/loadup/components/gotone/channel/sms/AliyunSmsConfig.java) 绑定 `loadup.gotone.binder.sms.aliyun`。
+- [`YunpianSmsConfig`](src/main/java/io/github/loadup/components/gotone/channel/sms/YunpianSmsConfig.java) 绑定 `loadup.gotone.binder.sms.yunpian`。
+- [`HuaweiSmsConfig`](src/main/java/io/github/loadup/components/gotone/channel/sms/HuaweiSmsConfig.java) 绑定 `loadup.gotone.binder.sms.huawei`。
+
+## 设计取舍
+
+选择独立 binder，使通知发送实现的依赖留在集成应用；替换底层实现时，业务侧仍使用 `NotificationService` 契约。
+
+集成方式与配置示例见 [README.md](./README.md)。

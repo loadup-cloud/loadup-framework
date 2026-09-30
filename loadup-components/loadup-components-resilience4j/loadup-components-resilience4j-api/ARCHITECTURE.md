@@ -20,4 +20,26 @@
 
 ## 实现入口
 
-该模块没有 `src/main/java` 入口；依赖与资源声明以 `pom.xml` 为准。
+主要源码入口：
+
+- [`ResilienceRegistries`](src/main/java/io/github/loadup/components/resilience4j/ResilienceRegistries.java)
+- [`Resilience4jProperties`](src/main/java/io/github/loadup/components/resilience4j/Resilience4jProperties.java)
+
+## 分层与调用路径
+
+API 承载调用契约；binder-core 创建 Resilience4j 注册表并按实例配置熔断、重试、限流等策略。
+
+```text
+业务注解/配置 → ResilienceRegistries → binder-core 注册表 → Resilience4j 实例
+```
+接口模块固定业务侧依赖方向；实现与基础设施通过独立模块接入。
+
+## 配置归属
+
+- [`Resilience4jProperties`](src/main/java/io/github/loadup/components/resilience4j/Resilience4jProperties.java) 绑定 `loadup.resilience4j`。
+
+## 设计取舍
+
+`ResilienceRegistries` 作为稳定入口；技术选择在运行应用完成，避免 API 层反向依赖具体后端。
+
+集成方式与配置示例见 [README.md](./README.md)。

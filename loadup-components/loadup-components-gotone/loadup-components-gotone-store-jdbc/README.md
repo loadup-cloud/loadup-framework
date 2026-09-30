@@ -20,3 +20,17 @@
 ## 设计
 
 内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 接入步骤
+
+引入 engine 和需要的渠道 binder；渠道可同时存在，存储模块按需引入。
+
+## 对外契约
+
+- [`ServiceChannelDOMapper`](src/main/java/io/github/loadup/components/gotone/store/mapper/ServiceChannelDOMapper.java)
+- [`NotificationServiceDOMapper`](src/main/java/io/github/loadup/components/gotone/store/mapper/NotificationServiceDOMapper.java)
+- [`NotificationRecordDOMapper`](src/main/java/io/github/loadup/components/gotone/store/mapper/NotificationRecordDOMapper.java)
+
+## 自动装配
+
+- [`GotoneStoreJdbcAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/store/config/GotoneStoreJdbcAutoConfiguration.java)

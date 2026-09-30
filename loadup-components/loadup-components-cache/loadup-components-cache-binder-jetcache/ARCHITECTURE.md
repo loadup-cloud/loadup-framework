@@ -24,3 +24,30 @@
 主要入口文件：
 
 - [`JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfig/JetCacheCacheAutoConfiguration.java)
+
+## 分层与调用路径
+
+Spring Cache 调用进入当前 `CacheManager`，由选中的 binder 处理缓存读写；切换后端不改变业务调用。
+
+```text
+业务代码 → API/facade → 当前 binder → 第三方引擎或基础设施
+```
+binder 实现框架契约，把实现库及其配置隔离在业务 API 之外。
+
+## 装配规则
+
+- [`JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfig/JetCacheCacheAutoConfiguration.java) 是自动配置入口。
+  - `@ConditionalOnClass({SimpleCacheManager.class, CacheBuilderTemplate.class})`
+  - `@ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = CacheBackendType.JETCACHE)`
+  - `@ConditionalOnMissingBean(com.alicp.jetcache.CacheManager.class)`
+  - `@ConditionalOnMissingBean(CacheManager.class)`
+
+## 配置归属
+
+- [`JetCacheCacheProperties`](src/main/java/io/github/loadup/components/cache/jetcache/JetCacheCacheProperties.java) 绑定 `loadup.cache.binder.jetcache`。
+
+## 设计取舍
+
+选择独立 binder，使 Spring Cache 的实现依赖留在集成应用；替换底层实现时，业务侧仍使用 `CacheManager` 契约。
+
+集成方式与配置示例见 [README.md](./README.md)。

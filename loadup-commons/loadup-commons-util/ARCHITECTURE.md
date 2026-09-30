@@ -29,4 +29,17 @@
 
 ## 实现入口
 
-该模块没有 `src/main/java` 入口；依赖与资源声明以 `pom.xml` 为准。
+主要源码入口：
+
+- [`JsonUtil`](src/main/java/io/github/loadup/commons/util/JsonUtil.java)
+- [`StringUtils`](src/main/java/io/github/loadup/commons/util/StringUtils.java)
+- [`AnnotationUtils`](src/main/java/io/github/loadup/commons/util/AnnotationUtils.java)
+- [`AssertUtil`](src/main/java/io/github/loadup/commons/util/AssertUtil.java)
+
+## 分层与调用路径
+
+```text
+业务与组件调用 → JsonUtil / 日期字符串工具 → 标准 Java 与 Jackson 能力
+```
+
+集成方式与配置示例见 [README.md](./README.md)。

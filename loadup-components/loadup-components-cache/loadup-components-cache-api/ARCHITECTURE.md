@@ -18,3 +18,27 @@
 主要入口文件：
 
 - [`LoadupCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/autoconfig/LoadupCacheAutoConfiguration.java)
+
+## 分层与调用路径
+
+Spring Cache 调用进入当前 `CacheManager`，由选中的 binder 处理缓存读写；切换后端不改变业务调用。
+
+```text
+业务调用 → CacheManager → SPI/领域契约 → 运行时实现
+```
+接口模块固定业务侧依赖方向；实现与基础设施通过独立模块接入。
+
+## 装配规则
+
+- [`LoadupCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/autoconfig/LoadupCacheAutoConfiguration.java) 是自动配置入口。
+  - `@ConditionalOnClass(CacheManager.class)`
+
+## 配置归属
+
+- [`LoadupCacheProperties`](src/main/java/io/github/loadup/components/cache/LoadupCacheProperties.java) 绑定 `loadup.cache`。
+
+## 设计取舍
+
+`CacheManager` 作为稳定入口；技术选择在运行应用完成，避免 API 层反向依赖具体后端。
+
+集成方式与配置示例见 [README.md](./README.md)。

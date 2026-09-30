@@ -12,4 +12,20 @@ Testify 测试框架的核心契约与执行基础。
 
 ## 实现入口
 
-该模块没有 `src/main/java` 入口；依赖与资源声明以 `pom.xml` 为准。
+主要源码入口：
+
+- [`JsonUtil`](src/main/java/io/github/loadup/testify/core/util/JsonUtil.java)
+
+## 分层与调用路径
+
+Starter 装配测试环境；数据引擎准备和清理样本；断言引擎验证结果。
+
+```text
+测试场景描述 → Testify 核心契约 → 数据与断言扩展
+```
+
+## 设计取舍
+
+保持组件职责独立：业务调用依赖公开契约，自动配置处理框架装配，基础设施细节留在实现层。
+
+集成方式与配置示例见 [README.md](./README.md)。

@@ -16,3 +16,13 @@
 ## 配置
 
 本模块没有专属配置键。UPMS 登录策略使用 `loadup.upms.security.login`；公开路径使用 `loadup.security.resource-server.permit-all`。
+
+## 接入步骤
+
+接入 Spring MVC 时引入 web 与所需 app/infra；需要登录签发时增加 upms-authserver。
+
+## 自动装配
+
+- [`UpmsWebAutoConfiguration`](src/main/java/io/github/loadup/modules/upms/web/UpmsWebAutoConfiguration.java)
+
+设计边界与装配路径见 [ARCHITECTURE.md](./ARCHITECTURE.md)。

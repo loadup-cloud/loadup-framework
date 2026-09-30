@@ -19,3 +19,20 @@
 主要入口文件：
 
 - [`AuthorizationAutoConfiguration`](src/main/java/io/github/loadup/components/authorization/config/AuthorizationAutoConfiguration.java)
+
+## 分层与调用路径
+
+```text
+SecurityContext → Spring 方法安全拦截器 → @PreAuthorize / @Secured → 业务方法
+```
+
+## 装配规则
+
+- [`AuthorizationAutoConfiguration`](src/main/java/io/github/loadup/components/authorization/config/AuthorizationAutoConfiguration.java) 是自动配置入口。
+  - `@ConditionalOnProperty( prefix = "loadup.security.method-security", name = "enabled", havingValue = "true", matchIfMissing = true)`
+
+## 配置归属
+
+- [`AuthorizationProperties`](src/main/java/io/github/loadup/components/authorization/AuthorizationProperties.java) 绑定 `loadup.security.method-security`。
+
+集成方式与配置示例见 [README.md](./README.md)。

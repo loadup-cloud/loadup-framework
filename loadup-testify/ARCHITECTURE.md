@@ -9,3 +9,24 @@ Testify 是测试期能力，由 core、data-engine、assert-engine、Spring Boo
 - [test](loadup-testify-test/ARCHITECTURE.md) 验证框架行为。
 
 有数据库交互的集成测试使用 Testcontainers 连接真实数据库；单元测试只验证不依赖数据库的逻辑。
+
+## 分层与调用路径
+
+Starter 装配测试环境；数据引擎准备和清理样本；断言引擎验证结果。
+
+```text
+loadup-testify
+  └─ loadup-testify-assert-engine
+  └─ loadup-testify-core
+  └─ loadup-testify-data-engine
+  └─ loadup-testify-spring-boot-starter
+  └─ loadup-testify-test
+```
+
+聚合 POM 组织模块与版本，运行时依赖由子模块决定。
+
+## 设计取舍
+
+聚合层只表达模块组合和依赖方向，实际能力由选定的子模块提供。
+
+集成方式与配置示例见 [README.md](./README.md)。

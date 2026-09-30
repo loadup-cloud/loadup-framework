@@ -20,3 +20,29 @@
 ## 设计
 
 内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 接入步骤
+
+通过 `loadup.captcha.binder-type` 选择 tianai 或 nanocaptcha；业务层注入 `CaptchaTemplate`。
+此 jar 负责接入具体技术实现；业务模块继续面向 API/facade 编程。
+
+## 最小配置
+
+```yaml
+loadup:
+  captcha:
+    binder-type: nanocaptcha
+```
+
+同一应用只启用与该值对应的 binder；其他可选项见下方配置类及父模块 README。
+
+## 配置入口
+
+| 前缀 | 配置类 |
+|---|---|
+| `loadup.captcha.binder.nanocaptcha` | [`NanocaptchaProperties`](src/main/java/io/github/loadup/components/captcha/nanocaptcha/NanocaptchaProperties.java) |
+
+## 自动装配
+
+- [`NanocaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/nanocaptcha/autoconfig/NanocaptchaAutoConfiguration.java)
+  - 启用条件：`@ConditionalOnProperty(prefix = "loadup.captcha", name = "binder-type", havingValue = "nanocaptcha")`。

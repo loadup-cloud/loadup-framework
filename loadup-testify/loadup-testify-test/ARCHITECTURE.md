@@ -18,3 +18,18 @@ Testify 测试框架的测试模块，承载模块行为和集成验证；不作
 
 - [`OrderService`](src/main/java/io/github/loadup/testify/test/service/OrderService.java)
 - [`UserService`](src/main/java/io/github/loadup/testify/test/service/UserService.java)
+
+## 分层与调用路径
+
+Starter 装配测试环境；数据引擎准备和清理样本；断言引擎验证结果。
+
+```text
+测试用例 → 测试配置/容器 → 被测 API 与实现 → 契约断言
+```
+测试模块处于依赖链末端，用真实装配验证调用路径；不向业务代码暴露新契约。
+
+## 设计取舍
+
+以公开契约验证组件接入；环境相关的启动与数据准备留在测试模块。
+
+集成方式与配置示例见 [README.md](./README.md)。

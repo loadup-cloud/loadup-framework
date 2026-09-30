@@ -23,3 +23,26 @@
 - [`GotoneEngineAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/engine/GotoneEngineAutoConfiguration.java)
 - [`DefaultNotificationService`](src/main/java/io/github/loadup/components/gotone/engine/DefaultNotificationService.java)
 - [`ResilientNotificationChannelProvider`](src/main/java/io/github/loadup/components/gotone/engine/ResilientNotificationChannelProvider.java)
+
+## 分层与调用路径
+
+`NotificationService` 根据消息配置路由到多个 `NotificationChannelProvider`；JDBC store 只提供配置与记录持久化。
+
+```text
+业务请求 → NotificationService → serviceCode 路由 → 渠道 Provider → 发送结果
+```
+
+## 装配规则
+
+- [`GotoneEngineAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/engine/GotoneEngineAutoConfiguration.java) 是自动配置入口。
+  - `@ConditionalOnMissingBean(NotificationService.class)`
+
+## 配置归属
+
+- [`GotoneResilienceProperties`](src/main/java/io/github/loadup/components/gotone/engine/GotoneResilienceProperties.java) 绑定 `loadup.gotone.resilience`。
+
+## 设计取舍
+
+保持组件职责独立：业务调用依赖公开契约，自动配置处理框架装配，基础设施细节留在实现层。
+
+集成方式与配置示例见 [README.md](./README.md)。
