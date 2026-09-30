@@ -28,7 +28,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!-- API documentation: knife4j / OpenAPI 3 (encapsulated component) -->
+        <!-- API documentation: SpringDoc OpenAPI 3 and Scalar UI -->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-springdoc</artifactId>

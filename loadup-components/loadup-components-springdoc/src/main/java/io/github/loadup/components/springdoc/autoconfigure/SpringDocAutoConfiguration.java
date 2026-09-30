@@ -18,9 +18,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 
 /**
- * Auto-configuration for LoadUp SpringDoc / knife4j component.
+ * Auto-configuration for the LoadUp SpringDoc component.
  *
- * <p>Activates when {@code knife4j-openapi3-jakarta-spring-boot-starter} is on the classpath
+ * <p>Activates when SpringDoc's OpenAPI model is on the classpath
  * and {@code loadup.springdoc.enabled} is {@code true} (default).
  *
  * <p>Registers an {@link OpenAPI} bean with project metadata and an optional global
@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Bean;
  * takes precedence ({@link ConditionalOnMissingBean}).
  */
 @AutoConfiguration
-@ConditionalOnClass(name = "com.github.xiaoymin.knife4j.spring.extension.OpenApiExtensionResolver")
+@ConditionalOnClass(OpenAPI.class)
 @ConditionalOnProperty(prefix = "loadup.springdoc", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(SpringDocProperties.class)
 public class SpringDocAutoConfiguration {
@@ -43,7 +43,7 @@ public class SpringDocAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public OpenAPI loadupOpenAPI(SpringDocProperties props) {
-        log.info("Initializing LoadUp SpringDoc component (knife4j + OpenAPI 3)");
+        log.info("Initializing LoadUp SpringDoc component (OpenAPI 3 + Scalar)");
 
         OpenAPI openAPI = new OpenAPI().info(buildInfo(props));
 

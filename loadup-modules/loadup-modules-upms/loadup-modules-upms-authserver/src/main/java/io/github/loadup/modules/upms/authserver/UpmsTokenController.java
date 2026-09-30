@@ -5,6 +5,10 @@ import io.github.loadup.commons.result.FailureResponse;
 import io.github.loadup.commons.result.IResponse;
 import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -23,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** First-party JSON login for frontend applications. */
 @RestController
+@Tag(name = "UPMS Authentication", description = "First-party JSON login")
 public class UpmsTokenController {
     private final UpmsAuthenticationProvider authenticationProvider;
     private final JwtEncoder jwtEncoder;
@@ -41,6 +46,8 @@ public class UpmsTokenController {
             path = "/api/auth/login",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Log in with username and password", description = "Returns a Bearer access token in data.")
+    @SecurityRequirements
     public IResponse<TokenData> login(@RequestBody LoginRequest request) {
         if (request == null
                 || request.username() == null
@@ -84,7 +91,12 @@ public class UpmsTokenController {
         }
     }
 
-    public record LoginRequest(String username, String password) {}
+    public record LoginRequest(
+            @Schema(description = "Login name", example = "admin") String username,
+            @Schema(description = "Password", format = "password") String password) {}
 
-    public record TokenData(String accessToken, String tokenType, long expiresIn) {}
+    public record TokenData(
+            @Schema(description = "JWT access token") String accessToken,
+            @Schema(description = "Authorization scheme", example = "Bearer") String tokenType,
+            @Schema(description = "Token lifetime in seconds", example = "1800") long expiresIn) {}
 }

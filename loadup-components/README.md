@@ -21,7 +21,7 @@ LoadUp 组件提供可独立引入的技术能力。应用通过 `loadup-depende
 | 重试任务 | [retrytask](loadup-components-retrytask/README.md) |
 | 调度 | [scheduler](loadup-components-scheduler/README.md) |
 | 签名 | [signature](loadup-components-signature/README.md) |
-| OpenAPI | [springdoc](loadup-components-springdoc/README.md) |
+| OpenAPI 与 Scalar 页面 | [springdoc](loadup-components-springdoc/README.md) |
 | 测试容器 | [testcontainers](loadup-components-testcontainers/README.md) |
 
 依赖方向与组件设计约束见 [ARCHITECTURE.md](./ARCHITECTURE.md)。

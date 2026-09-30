@@ -3,7 +3,7 @@ package io.github.loadup.components.springdoc.properties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for the LoadUp SpringDoc / knife4j component.
+ * Configuration properties for the LoadUp SpringDoc component.
  *
  * <p>All properties are prefixed with {@code loadup.springdoc}. Example:
  *
@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SpringDocProperties {
 
     /**
-     * Whether the SpringDoc / knife4j auto-configuration is enabled.
+     * Whether LoadUp's OpenAPI metadata auto-configuration is enabled.
      */
     private boolean enabled = true;
 

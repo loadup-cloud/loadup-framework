@@ -10,7 +10,7 @@
 
     <artifactId>loadup-components-springdoc</artifactId>
     <name>LoadUp Components SpringDoc</name>
-    <description>knife4j / springdoc-openapi 3 auto-configuration component for LoadUp modules</description>
+    <description>SpringDoc OpenAPI 3 and Scalar UI integration for LoadUp modules</description>
 
     <properties>
         <java.version>25</java.version>
@@ -24,10 +24,10 @@
     </properties>
 
     <dependencies>
-        <!-- knife4j OpenAPI 3 UI — brings springdoc-openapi and swagger-annotations transitively -->
+        <!-- SpringDoc OpenAPI 3 and Scalar UI -->
         <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-scalar</artifactId>
         </dependency>
 
         <!-- Spring Boot AutoConfiguration support -->

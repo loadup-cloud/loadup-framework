@@ -99,7 +99,7 @@
 
         <!-- API Documentation -->
         <swagger-annotations-jakarta.version>2.2.55</swagger-annotations-jakarta.version>
-        <knife4j.version>4.5.0</knife4j.version>
+        <springdoc.version>3.1.1</springdoc.version>
 
         <!-- Testing -->
         <testcontainers.version>2.0.5</testcontainers.version>
@@ -866,11 +866,11 @@
                 <artifactId>swagger-annotations-jakarta</artifactId>
                 <version>${swagger-annotations-jakarta.version}</version>
             </dependency>
-            <!-- knife4j OpenAPI 3 UI (includes springdoc-openapi) -->
+            <!-- SpringDoc OpenAPI and Scalar UI for Spring MVC -->
             <dependency>
-                <groupId>com.github.xiaoymin</groupId>
-                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-                <version>${knife4j.version}</version>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-scalar</artifactId>
+                <version>${springdoc.version}</version>
             </dependency>
 
             <dependency>

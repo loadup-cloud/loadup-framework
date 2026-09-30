@@ -7,26 +7,18 @@ spring:
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-# springdoc-openapi / knife4j configuration
+# OpenAPI document generation
 springdoc:
   api-docs:
     enabled: true
     path: /v3/api-docs
-  swagger-ui:
-    enabled: true
-    path: /swagger-ui.html
   packages-to-scan: io.github.loadup
   paths-to-exclude: /actuator/**
 
-# knife4j enhanced UI settings (available at /doc.html)
-knife4j:
-  enable: true
-  setting:
-    language: en
-    swagger-model-name: Entity Model
-    enable-footer: false
-    enable-footer-custom: true
-    footer-custom-content: "LoadUp Framework — Apache-2.0"
+# Scalar API reference UI
+scalar:
+  enabled: true
+  path: /scalar
 
 # LoadUp SpringDoc component properties (loadup-components-springdoc)
 loadup:
