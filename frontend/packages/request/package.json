@@ -20,7 +20,7 @@
     "test": "pnpm --workspace-root exec esno packages/request/test/request.test.ts"
   },
   "dependencies": {
-    "axios": "^1.19.0"
+    "axios": "^1.20.0"
   },
   "devDependencies": {
     "typescript": "catalog:"
