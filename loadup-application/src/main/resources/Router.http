@@ -31,6 +31,51 @@ Content-Type: application/json
 
 {"page": 1, "size": 20}
 
+### Create a dictionary type (change code before rerunning)
+POST {{baseUrl}}/api/dictionaries/types
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"code": "http_demo_status", "name": "HTTP Demo Status", "description": "Example business options", "enabled": true}
+
+> {%
+  client.global.set("dictionaryTypeId", response.body.data.id);
+%}
+
+### Create a dictionary item
+POST {{baseUrl}}/api/dictionaries/types/http_demo_status/items
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"value": "open", "label": "Open", "sortOrder": 10, "enabled": true}
+
+> {%
+  client.global.set("dictionaryItemId", response.body.data.id);
+%}
+
+### Read effective options
+GET {{baseUrl}}/api/dictionaries/http_demo_status/options
+Authorization: Bearer {{upmsAccessToken}}
+
+### Disable the dictionary item
+PUT {{baseUrl}}/api/dictionaries/items/{{dictionaryItemId}}
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"label": "Open", "sortOrder": 10, "enabled": false}
+
+### Verify the disabled item is absent
+GET {{baseUrl}}/api/dictionaries/http_demo_status/options
+Authorization: Bearer {{upmsAccessToken}}
+
+### Remove the dictionary item
+DELETE {{baseUrl}}/api/dictionaries/items/{{dictionaryItemId}}
+Authorization: Bearer {{upmsAccessToken}}
+
+### Remove the empty dictionary type
+DELETE {{baseUrl}}/api/dictionaries/types/{{dictionaryTypeId}}
+Authorization: Bearer {{upmsAccessToken}}
+
 ### Read the department tree
 POST {{baseUrl}}/api/upms/department/tree
 Authorization: Bearer {{upmsAccessToken}}
@@ -241,3 +286,50 @@ Content-Type: text/plain
 {{upmsDepartmentId}}
 
 # Resource-level ABAC has no HTTP endpoint; call AccessCheckService from trusted application code.
+
+### Query recent audit events (requires ROLE_SUPER_ADMIN)
+POST {{baseUrl}}/api/audit/events/query
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"page": 1, "size": 20}
+
+### Upload a file (business references are managed by application code)
+POST {{baseUrl}}/api/files
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="sample.txt"
+Content-Type: text/plain
+
+Hello LoadUp
+--boundary--
+
+> {%
+  client.global.set("fileResourceId", response.body.data.id);
+%}
+
+### List my files
+GET {{baseUrl}}/api/files?page=1&size=20
+Authorization: Bearer {{upmsAccessToken}}
+
+### Read file metadata
+GET {{baseUrl}}/api/files/{{fileResourceId}}
+Authorization: Bearer {{upmsAccessToken}}
+
+### Download file content (binary response)
+GET {{baseUrl}}/api/files/{{fileResourceId}}/content
+Authorization: Bearer {{upmsAccessToken}}
+
+### Read file references
+GET {{baseUrl}}/api/files/{{fileResourceId}}/references
+Authorization: Bearer {{upmsAccessToken}}
+
+### Delete unreferenced file
+DELETE {{baseUrl}}/api/files/{{fileResourceId}}
+Authorization: Bearer {{upmsAccessToken}}
+
+### Retry pending file deletions (requires ROLE_SUPER_ADMIN)
+POST {{baseUrl}}/api/files/cleanup?limit=100
+Authorization: Bearer {{upmsAccessToken}}

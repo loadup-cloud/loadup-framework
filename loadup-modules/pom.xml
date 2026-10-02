@@ -14,5 +14,11 @@
 
     <modules>
         <module>loadup-modules-upms</module>
+        <module>loadup-modules-audit</module>
+        <module>loadup-modules-audit-web</module>
+        <module>loadup-modules-dictionary</module>
+        <module>loadup-modules-dictionary-web</module>
+        <module>loadup-modules-file</module>
+        <module>loadup-modules-file-web</module>
     </modules>
 </project>

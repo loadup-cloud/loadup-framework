@@ -5,6 +5,12 @@
 ## 子模块
 
 - [`loadup-modules-upms`](loadup-modules-upms/README.md)
+- [`loadup-modules-audit`](loadup-modules-audit/README.md)：操作审计存储与查询服务。
+- [`loadup-modules-audit-web`](loadup-modules-audit-web/README.md)：可选 MVC 采集和管理员查询接口。
+- [`loadup-modules-dictionary`](loadup-modules-dictionary/README.md)：业务字典类型与条目。
+- [`loadup-modules-dictionary-web`](loadup-modules-dictionary-web/README.md)：可选字典管理与选项接口。
+- [`loadup-modules-file`](loadup-modules-file/README.md)：文件元数据、业务引用与清理生命周期。
+- [`loadup-modules-file-web`](loadup-modules-file-web/README.md)：可选上传、下载与文件管理接口。
 
 此 POM 用于 Maven 聚合；在消费工程中选择需要的具体 jar 坐标。
 
@@ -17,3 +23,9 @@
 此目录是 Maven 聚合模块，不作为业务运行依赖。按用途选择子模块：
 
 - [`loadup-modules-upms`](./loadup-modules-upms/README.md)：运行实现。
+- [`loadup-modules-audit`](./loadup-modules-audit/README.md)：程序化审计记录。
+- [`loadup-modules-audit-web`](./loadup-modules-audit-web/README.md)：HTTP 适配。
+- [`loadup-modules-dictionary`](./loadup-modules-dictionary/README.md)：程序化字典查询与管理。
+- [`loadup-modules-dictionary-web`](./loadup-modules-dictionary-web/README.md)：HTTP 适配。
+- [`loadup-modules-file`](./loadup-modules-file/README.md)：程序化文件资源管理。
+- [`loadup-modules-file-web`](./loadup-modules-file-web/README.md)：HTTP 适配。

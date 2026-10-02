@@ -1,6 +1,10 @@
 spring:
   application:
     name: loadup-launcher
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
   datasource:
     url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/loadup-boot?useUnicode=true&characterEncoding=utf8}
     username: root
@@ -20,8 +24,34 @@ scalar:
   enabled: true
   path: /scalar
 
-# LoadUp SpringDoc component properties (loadup-components-springdoc)
+# LoadUp component and module properties
 loadup:
+  audit:
+    web:
+      include-paths:
+        - /api/upms/*/create
+        - /api/upms/*/update
+        - /api/upms/*/delete
+        - /api/upms/*/change-password
+        - /api/upms/*/lock
+        - /api/upms/*/unlock
+        - /api/upms/*/move
+        - /api/upms/*/assign-*
+        - /api/upms/*/remove-*
+        - /api/auth/login
+        - /api/auth/register
+        - /api/dictionaries/types
+        - /api/dictionaries/types/*
+        - /api/dictionaries/types/*/items
+        - /api/dictionaries/items/*
+        - /api/files
+        - /api/files/*
+        - /api/files/cleanup
+  dfs:
+    binder-type: local
+    binder:
+      local:
+        base-path: ${LOADUP_FILE_STORAGE_PATH:./data/files}
   springdoc:
     enabled: true
     title: LoadUp API
