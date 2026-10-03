@@ -30,6 +30,39 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
     ]
   },
   {
+    path: '/workspace',
+    component: Layout,
+    redirect: '/workspace/notifications',
+    name: 'Workspace',
+    meta: { title: '工作台', icon: 'mdi:briefcase-outline' },
+    children: [
+      {
+        path: 'notifications',
+        component: () => import('@/views/Modules/Notifications.vue'),
+        name: 'Notifications',
+        meta: { title: '站内通知', icon: 'mdi:bell-outline', noCache: true }
+      },
+      {
+        path: 'files',
+        component: () => import('@/views/Modules/Files.vue'),
+        name: 'Files',
+        meta: { title: '文件资源', icon: 'mdi:folder-outline', noCache: true }
+      },
+      {
+        path: 'transfers',
+        component: () => import('@/views/Modules/Transfers.vue'),
+        name: 'Transfers',
+        meta: { title: '导入导出', icon: 'mdi:swap-horizontal', noCache: true }
+      },
+      {
+        path: 'security',
+        component: () => import('@/views/Modules/AccountSecurity.vue'),
+        name: 'AccountSecurity',
+        meta: { title: '账号安全', icon: 'mdi:shield-account-outline', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/redirect',
     component: Layout,
     name: 'RedirectWrap',

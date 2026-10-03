@@ -27,6 +27,7 @@ UPMS 的可选 Spring MVC Controller 适配模块。
 - [`PermissionController`](src/main/java/io/github/loadup/modules/upms/web/PermissionController.java)
 - [`RoleController`](src/main/java/io/github/loadup/modules/upms/web/RoleController.java)
 - [`UserController`](src/main/java/io/github/loadup/modules/upms/web/UserController.java)
+- [`AccountSecurityController`](src/main/java/io/github/loadup/modules/upms/web/AccountSecurityController.java)
 
 ## 分层与调用路径
 
@@ -35,6 +36,8 @@ Web → App → Domain Gateway → Infrastructure；认证适配连接 UPMS 凭�
 ```text
 HTTP /api/** → Controller → App Service → Client DTO 响应
 ```
+
+账号安全 Controller 只接受旧密码、新密码和确认值，用户 ID 取自 Resource Server 验证后的 `LoadUpUser`。登录记录查询按该 ID 过滤；管理员用户管理 API 与本人安全 API 分开授权。
 
 ## 装配规则
 

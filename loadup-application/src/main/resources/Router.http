@@ -32,7 +32,7 @@ Content-Type: application/json
 {"page": 1, "size": 20}
 
 ### Create a dictionary type (change code before rerunning)
-POST {{baseUrl}}/api/dictionaries/types
+POST {{baseUrl}}/api/dictionaries/types/create
 Authorization: Bearer {{upmsAccessToken}}
 Content-Type: application/json
 
@@ -43,38 +43,50 @@ Content-Type: application/json
 %}
 
 ### Create a dictionary item
-POST {{baseUrl}}/api/dictionaries/types/http_demo_status/items
+POST {{baseUrl}}/api/dictionaries/items/create
 Authorization: Bearer {{upmsAccessToken}}
 Content-Type: application/json
 
-{"value": "open", "label": "Open", "sortOrder": 10, "enabled": true}
+{"typeCode": "http_demo_status", "command": {"value": "open", "label": "Open", "sortOrder": 10, "enabled": true}}
 
 > {%
   client.global.set("dictionaryItemId", response.body.data.id);
 %}
 
 ### Read effective options
-GET {{baseUrl}}/api/dictionaries/http_demo_status/options
-Authorization: Bearer {{upmsAccessToken}}
-
-### Disable the dictionary item
-PUT {{baseUrl}}/api/dictionaries/items/{{dictionaryItemId}}
+POST {{baseUrl}}/api/dictionaries/options
 Authorization: Bearer {{upmsAccessToken}}
 Content-Type: application/json
 
-{"label": "Open", "sortOrder": 10, "enabled": false}
+{"typeCode": "http_demo_status"}
+
+### Disable the dictionary item
+POST {{baseUrl}}/api/dictionaries/items/update
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{dictionaryItemId}}", "command": {"label": "Open", "sortOrder": 10, "enabled": false}}
 
 ### Verify the disabled item is absent
-GET {{baseUrl}}/api/dictionaries/http_demo_status/options
+POST {{baseUrl}}/api/dictionaries/options
 Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"typeCode": "http_demo_status"}
 
 ### Remove the dictionary item
-DELETE {{baseUrl}}/api/dictionaries/items/{{dictionaryItemId}}
+POST {{baseUrl}}/api/dictionaries/items/delete
 Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{dictionaryItemId}}"}
 
 ### Remove the empty dictionary type
-DELETE {{baseUrl}}/api/dictionaries/types/{{dictionaryTypeId}}
+POST {{baseUrl}}/api/dictionaries/types/delete
 Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{dictionaryTypeId}}"}
 
 ### Read the department tree
 POST {{baseUrl}}/api/upms/department/tree
@@ -203,9 +215,75 @@ Content-Type: application/json
   client.global.set("upmsUserId", response.body.data.id);
 %}
 
-### Assign the new role to the user
-POST {{baseUrl}}/api/upms/role/assign-to-user?roleId={{upmsRoleId}}&userId={{upmsUserId}}
+### Publish an in-app notification to the test user (requires ROLE_SUPER_ADMIN)
+POST {{baseUrl}}/api/notifications/publish
 Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"recipients": ["{{upmsUserId}}"], "category": "SYSTEM", "title": "Welcome", "body": "Your account is ready", "actionUrl": "/account", "requestKey": "welcome-{{upmsUserId}}"}
+
+### Log in as the notified user
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{"username": "upms_http_user", "password": "ChangeMe123!"}
+
+> {%
+  client.global.set("inboxAccessToken", response.body.data.accessToken);
+%}
+
+### Query the test user's account security overview
+POST {{baseUrl}}/api/account/security/overview
+Authorization: Bearer {{inboxAccessToken}}
+Content-Type: application/json
+
+{}
+
+### Query the test user's login history
+POST {{baseUrl}}/api/account/security/logins
+Authorization: Bearer {{inboxAccessToken}}
+Content-Type: application/json
+
+{"page": 1, "size": 20}
+
+### Count unread notifications
+POST {{baseUrl}}/api/notifications/unread-count
+Authorization: Bearer {{inboxAccessToken}}
+Content-Type: application/json
+
+{}
+
+### Read the test user's inbox
+POST {{baseUrl}}/api/notifications/list
+Authorization: Bearer {{inboxAccessToken}}
+Content-Type: application/json
+
+{"unreadOnly": true, "page": 1, "size": 20}
+
+> {%
+  client.global.set("notificationId", response.body.data[0].id);
+%}
+
+### Mark the notification as read
+POST {{baseUrl}}/api/notifications/read
+Authorization: Bearer {{inboxAccessToken}}
+Content-Type: application/json
+
+{"id": "{{notificationId}}"}
+
+### Archive the notification
+POST {{baseUrl}}/api/notifications/archive
+Authorization: Bearer {{inboxAccessToken}}
+Content-Type: application/json
+
+{"id": "{{notificationId}}"}
+
+### Assign the new role to the user
+POST {{baseUrl}}/api/upms/role/assign-to-user
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"roleId": "{{upmsRoleId}}", "userId": "{{upmsUserId}}"}
 
 ### Inspect the user's roles
 POST {{baseUrl}}/api/upms/user/detail
@@ -246,9 +324,29 @@ Content-Type: application/json
 
 {"userId": "{{upmsUserId}}", "oldPassword": "ChangeMe123!", "newPassword": "ChangedMe123!", "confirmPassword": "ChangedMe123!"}
 
+### Log in with the updated password for self-service security management
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{"username": "upms_http_user", "password": "ChangedMe123!"}
+
+> {%
+  client.global.set("inboxAccessToken", response.body.data.accessToken);
+%}
+
+### Change my own password (the user ID comes from the token)
+POST {{baseUrl}}/api/account/security/password
+Authorization: Bearer {{inboxAccessToken}}
+Content-Type: application/json
+
+{"oldPassword": "ChangedMe123!", "newPassword": "NewestMe123!", "confirmPassword": "NewestMe123!"}
+
 ### Remove the role from the test user
-POST {{baseUrl}}/api/upms/role/remove-from-user?roleId={{upmsRoleId}}&userId={{upmsUserId}}
+POST {{baseUrl}}/api/upms/role/remove-from-user
 Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"roleId": "{{upmsRoleId}}", "userId": "{{upmsUserId}}"}
 
 ### Delete the test user
 POST {{baseUrl}}/api/upms/user/delete
@@ -311,25 +409,115 @@ Hello LoadUp
 %}
 
 ### List my files
-GET {{baseUrl}}/api/files?page=1&size=20
+POST {{baseUrl}}/api/files/list
 Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"page": 1, "size": 20}
 
 ### Read file metadata
-GET {{baseUrl}}/api/files/{{fileResourceId}}
+POST {{baseUrl}}/api/files/detail
 Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{fileResourceId}}"}
 
 ### Download file content (binary response)
 GET {{baseUrl}}/api/files/{{fileResourceId}}/content
 Authorization: Bearer {{upmsAccessToken}}
 
 ### Read file references
-GET {{baseUrl}}/api/files/{{fileResourceId}}/references
+POST {{baseUrl}}/api/files/references
 Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{fileResourceId}}"}
 
 ### Delete unreferenced file
-DELETE {{baseUrl}}/api/files/{{fileResourceId}}
+POST {{baseUrl}}/api/files/delete
 Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{fileResourceId}}"}
 
 ### Retry pending file deletions (requires ROLE_SUPER_ADMIN)
-POST {{baseUrl}}/api/files/cleanup?limit=100
+POST {{baseUrl}}/api/files/cleanup
 Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"limit": 100}
+
+### Upload a sample CSV for an asynchronous import
+POST {{baseUrl}}/api/files
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: multipart/form-data; boundary=transfer-boundary
+
+--transfer-boundary
+Content-Disposition: form-data; name="file"; filename="values.csv"
+Content-Type: text/csv
+
+value,label
+alpha,Alpha
+beta,Beta
+--transfer-boundary--
+
+> {%
+  client.global.set("importSourceFileId", response.body.data.id);
+%}
+
+### Submit an import (demo handler validates rows and writes a report)
+POST {{baseUrl}}/api/transfer-tasks/imports
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"handlerKey": "demo-csv-import", "sourceFileId": "{{importSourceFileId}}", "options": {}}
+
+> {%
+  client.global.set("importTaskId", response.body.data.id);
+%}
+
+### Check import progress; repeat until status is SUCCEEDED
+POST {{baseUrl}}/api/transfer-tasks/detail
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{importTaskId}}"}
+
+### Get the import report file ID after success
+POST {{baseUrl}}/api/transfer-tasks/result
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{importTaskId}}"}
+
+### Submit a sample export
+POST {{baseUrl}}/api/transfer-tasks/exports
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"handlerKey": "demo-csv-export", "options": {"rows": "5"}}
+
+> {%
+  client.global.set("exportTaskId", response.body.data.id);
+%}
+
+### List my import/export tasks
+POST {{baseUrl}}/api/transfer-tasks/list
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"page": 1, "size": 20}
+
+### Check export progress; repeat until status is SUCCEEDED
+POST {{baseUrl}}/api/transfer-tasks/detail
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{exportTaskId}}"}
+
+### Get the export result file ID after success; then use /api/files/{id}/content
+POST {{baseUrl}}/api/transfer-tasks/result
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{exportTaskId}}"}

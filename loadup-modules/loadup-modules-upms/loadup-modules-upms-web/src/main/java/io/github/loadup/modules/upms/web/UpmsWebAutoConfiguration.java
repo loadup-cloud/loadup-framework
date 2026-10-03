@@ -11,6 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @AutoConfiguration(after = UpmsAutoConfiguration.class)
 @Import({
     AuthenticationController.class,
+    AccountSecurityController.class,
     UserController.class,
     RoleController.class,
     PermissionController.class,

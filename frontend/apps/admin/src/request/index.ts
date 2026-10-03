@@ -58,6 +58,13 @@ const client = createRequest({
 
 export default {
   post: <Data = unknown>(config: RequestConfig) => client.post<ApiResponse<Data>>(config),
+  upload: <Data = unknown>(config: RequestConfig<FormData>) =>
+    client.post<ApiResponse<Data>, FormData>({
+      ...config,
+      headers: { ...config.headers, 'Content-Type': undefined }
+    }),
+  download: (config: RequestConfig) =>
+    client.get<AxiosResponse<Blob>>({ ...config, responseType: 'blob' }),
   cancelRequest: (url: string | string[]) => {
     const keys = (Array.isArray(url) ? url : [url]).map(normalizeRequestKey)
     client.cancelRequest(keys)

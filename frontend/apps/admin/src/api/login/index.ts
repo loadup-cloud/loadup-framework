@@ -6,7 +6,9 @@ const upmsPages: Record<string, string> = {
   '/system/user': 'views/System/User',
   '/system/role': 'views/System/Role',
   '/system/dept': 'views/System/Department',
-  '/system/perm': 'views/System/Permission'
+  '/system/perm': 'views/System/Permission',
+  '/system/audit': 'views/Modules/Audit',
+  '/system/dictionary': 'views/Modules/Dictionary'
 }
 
 export const loginApi = async (credentials: LoginParams) => {

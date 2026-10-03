@@ -175,6 +175,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String loginIdentity = command.getUsername() != null ? command.getUsername() : command.getMobile();
         if (loginIdentity == null) loginIdentity = command.getEmail();
         loginLog.setUsername(loginIdentity != null ? loginIdentity : "unknown");
+        if (command.getUsername() != null) {
+            userGateway.findByUsername(command.getUsername()).ifPresent(user -> loginLog.setUserId(user.getId()));
+        }
         loginLog.setLoginTime(LocalDateTime.now());
         loginLog.setIpAddress(command.getIpAddress());
         loginLog.setLoginStatus((short) 0);

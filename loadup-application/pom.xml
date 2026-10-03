@@ -51,6 +51,18 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-modules-notification-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-modules-transfer-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-gotone-engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-dfs-binder-local</artifactId>
         </dependency>
         <!-- JDBC driver backing the local MySQL datasource declared in application.yml -->

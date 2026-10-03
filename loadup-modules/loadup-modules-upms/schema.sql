@@ -379,7 +379,9 @@ VALUES ('1', '0', '系统管理', 'system', 1, '/system', 1, 1, '1', NOW(),now()
        ('6', '2', '用户删除', 'system:user:delete', 2, NULL, 4, 1, '1', NOW(),now()),
        ('7', '1', '角色管理', 'system:role', 1, '/system/role', 2, 1, '1', NOW(),now()),
        ('8', '1', '部门管理', 'system:dept', 1, '/system/dept', 3, 1, '1', NOW(),now()),
-       ('9', '1', '权限管理', 'system:permission', 1, '/system/perm', 4, 1, '1', NOW(),now());
+       ('9', '1', '权限管理', 'system:permission', 1, '/system/perm', 4, 1, '1', NOW(),now()),
+       ('10', '1', '审计中心', 'system:audit', 1, '/system/audit', 5, 1, '1', NOW(),now()),
+       ('11', '1', '数据字典', 'system:dictionary', 1, '/system/dictionary', 6, 1, '1', NOW(),now());
 
 INSERT IGNORE INTO upms_role_permission (id, role_id, permission_id, created_by, created_at,updated_at)
 VALUES ('1', '1', '1', '1', NOW(),now()),
@@ -390,4 +392,6 @@ VALUES ('1', '1', '1', '1', NOW(),now()),
        ('6', '1', '6', '1', NOW(),now()),
        ('7', '1', '7', '1', NOW(),now()),
        ('8', '1', '8', '1', NOW(),now()),
-       ('9', '1', '9', '1', NOW(),now());
+       ('9', '1', '9', '1', NOW(),now()),
+       ('10', '1', '10', '1', NOW(),now()),
+       ('11', '1', '11', '1', NOW(),now());

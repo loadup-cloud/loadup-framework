@@ -19,10 +19,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,31 +48,30 @@ public class FileResourceController {
         }
     }
 
-    @GetMapping
+    @PostMapping("/list")
     @Operation(summary = "List my files; administrators may select an owner")
     @PreAuthorize("isAuthenticated()")
-    public PageDTO<FileResourceView> list(@RequestParam(required = false) String ownerId,
-            @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size,
-            Authentication authentication) {
+    public PageDTO<FileResourceView> list(@RequestBody ListRequest request, Authentication authentication) {
         var result = service.list(TenantUtil.getTenantId(), actor(authentication), admin(authentication),
-                ownerId, page, size);
+                request.ownerId(), request.page() == null ? 1 : request.page(),
+                request.size() == null ? 20 : request.size());
         return PageDTO.of(result.records().stream().map(FileResourceView::of).toList(),
                 result.total(), result.page(), result.size());
     }
 
-    @GetMapping("/{id}")
+    @PostMapping("/detail")
     @Operation(summary = "Read file metadata")
     @PreAuthorize("isAuthenticated()")
-    public FileResourceView get(@PathVariable String id, Authentication authentication) {
-        return FileResourceView.of(service.get(TenantUtil.getTenantId(), id,
+    public FileResourceView get(@RequestBody IdRequest request, Authentication authentication) {
+        return FileResourceView.of(service.get(TenantUtil.getTenantId(), request.id(),
                 actor(authentication), admin(authentication)));
     }
 
-    @GetMapping("/{id}/references")
+    @PostMapping("/references")
     @Operation(summary = "List business references that protect a file from deletion")
     @PreAuthorize("isAuthenticated()")
-    public List<FileReference> references(@PathVariable String id, Authentication authentication) {
-        return service.references(TenantUtil.getTenantId(), id, actor(authentication), admin(authentication));
+    public List<FileReference> references(@RequestBody IdRequest request, Authentication authentication) {
+        return service.references(TenantUtil.getTenantId(), request.id(), actor(authentication), admin(authentication));
     }
 
     @GetMapping("/{id}/content")
@@ -97,21 +96,21 @@ public class FileResourceController {
                 .body(body);
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/delete")
     @Operation(summary = "Delete an unreferenced file; storage failures remain retryable")
     @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<Void> delete(@PathVariable String id, Authentication authentication) {
+    public SuccessResponse<Void> delete(@RequestBody IdRequest request, Authentication authentication) {
         String tenant = TenantUtil.getTenantId();
-        service.requestDeletion(tenant, id, actor(authentication), admin(authentication));
-        service.cleanup(tenant, id);
+        service.requestDeletion(tenant, request.id(), actor(authentication), admin(authentication));
+        service.cleanup(tenant, request.id());
         return SuccessResponse.success();
     }
 
     @PostMapping("/cleanup")
     @Operation(summary = "Retry pending DFS deletions")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public int cleanup(@RequestParam(defaultValue = "100") int limit) {
-        return service.cleanupPending(limit);
+    public int cleanup(@RequestBody CleanupRequest request) {
+        return service.cleanupPending(request.limit() == null ? 100 : request.limit());
     }
 
     private static String actor(Authentication authentication) {
@@ -136,4 +135,7 @@ public class FileResourceController {
                     file.size(), file.provider(), file.createdAt(), file.updatedAt());
         }
     }
+    public record IdRequest(String id) {}
+    public record ListRequest(String ownerId, Integer page, Integer size) {}
+    public record CleanupRequest(Integer limit) {}
 }

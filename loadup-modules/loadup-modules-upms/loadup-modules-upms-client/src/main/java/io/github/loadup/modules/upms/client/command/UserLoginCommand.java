@@ -241,7 +241,6 @@ public class UserLoginCommand {
 
     @Override
     public String toString() {
-        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
-                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
+        return "UserLoginCommand{username='" + username + "', credentials=[REDACTED]}";
     }
 }

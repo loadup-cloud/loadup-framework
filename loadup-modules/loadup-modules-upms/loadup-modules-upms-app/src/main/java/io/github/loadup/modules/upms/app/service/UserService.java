@@ -248,7 +248,15 @@ public class UserService {
      */
     @Transactional
     public void changePassword(UserPasswordChangeCommand command) {
+        if (command == null || command.getOldPassword() == null || command.getOldPassword().isBlank()
+                || command.getNewPassword() == null || command.getNewPassword().length() < 8
+                || command.getNewPassword().getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72
+                || command.getConfirmPassword() == null) {
+            throw new IllegalArgumentException("invalid password change request");
+        }
         User user = userGateway.findById(command.getUserId()).orElseThrow(() -> new RuntimeException("用户不存在"));
+
+        if (!user.isActive()) throw new IllegalStateException("account is not active");
 
         // Verify old password
         if (!passwordEncoder.matches(command.getOldPassword(), user.getPassword())) {
@@ -258,6 +266,9 @@ public class UserService {
         // Check new password confirmation
         if (!command.getNewPassword().equals(command.getConfirmPassword())) {
             throw new RuntimeException("两次输入的密码不一致");
+        }
+        if (passwordEncoder.matches(command.getNewPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("new password must differ from old password");
         }
 
         // Update password

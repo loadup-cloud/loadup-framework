@@ -36,21 +36,19 @@ public class PasswordLoginStrategy implements LoginStrategy {
                 .findByUsername(credentials.getUsername())
                 .orElseThrow(() -> new RuntimeException("用户名或密码错误"));
 
+        // Resolve an expired temporary lock before evaluating account activity.
+        if (isAccountLocked(user)) {
+            throw new RuntimeException("账号已被锁定，请稍后再试");
+        }
+        if (!user.isActive()) {
+            throw new RuntimeException("账号已被锁定或停用");
+        }
+
         // 2. 验证密码
         if (!passwordEncoder.matches(credentials.getPassword(), user.getPassword())) {
             // 增加失败次数
             handleLoginFailure(user);
             throw new RuntimeException("用户名或密码错误");
-        }
-
-        // 3. 检查账号状态
-        if (!user.isActive()) {
-            throw new RuntimeException("账号已被锁定或停用");
-        }
-
-        // 4. 检查是否因失败次数过多而锁定
-        if (isAccountLocked(user)) {
-            throw new RuntimeException("账号已被锁定，请稍后再试");
         }
 
         // 5. 更新登录信息
@@ -75,7 +73,7 @@ public class PasswordLoginStrategy implements LoginStrategy {
      */
     private boolean isAccountLocked(User user) {
         if (!Boolean.TRUE.equals(user.getAccountNonLocked())) {
-            if (user.getLockedTime() != null) {
+            if (Short.valueOf((short) 2).equals(user.getStatus()) && user.getLockedTime() != null) {
                 LocalDateTime unlockTime = user.getLockedTime()
                         .plusMinutes(securityProperties.getLogin().getLockDuration());
                 if (LocalDateTime.now().isBefore(unlockTime)) {

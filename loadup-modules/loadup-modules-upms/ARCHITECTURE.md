@@ -1,5 +1,7 @@
 # UPMS 架构
 
+账号安全自助读写由 `AccountSecurityController → AccountSecurityService → UserGateway/LoginLogGateway` 完成。密码修改复用 `UserService.changePassword` 的旧密码校验、编码与持久化；登录记录通过既有 `LoginLogGateway` 按本人 ID 分页读取。HTTP 层只从已验证 JWT 的 `LoadUpUser.userId` 取当前用户，不从请求读取用户 ID。`UpmsTokenController` 将服务端远端 IP 传入认证服务，成功及已知用户名的失败尝试写入登录日志。临时锁定到期后允许在认证时解锁；管理员手动锁定必须手动解除。
+
 ## 边界
 
 ```mermaid

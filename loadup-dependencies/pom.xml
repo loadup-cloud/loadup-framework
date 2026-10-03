@@ -410,6 +410,26 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-modules-notification</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-modules-notification-web</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-modules-transfer</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-modules-transfer-web</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-modules</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>

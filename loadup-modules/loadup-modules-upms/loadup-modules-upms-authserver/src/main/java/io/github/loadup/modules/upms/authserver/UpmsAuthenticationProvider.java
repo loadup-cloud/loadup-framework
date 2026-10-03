@@ -31,9 +31,15 @@ public final class UpmsAuthenticationProvider implements AuthenticationProvider 
 
     @Override
     public Authentication authenticate(Authentication authentication) {
+        return authenticate(authentication, null);
+    }
+
+    /** Authenticate a first-party HTTP login with its server-observed client address. */
+    public Authentication authenticate(Authentication authentication, String ipAddress) {
         UserLoginCommand command = new UserLoginCommand();
         command.setUsername(authentication.getName());
         command.setPassword(String.valueOf(authentication.getCredentials()));
+        command.setIpAddress(ipAddress);
         AuthenticatedUser user;
         try {
             user = authenticationService.login(command);

@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -48,7 +49,7 @@ public class UpmsTokenController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Log in with username and password", description = "Returns a Bearer access token in data.")
     @SecurityRequirements
-    public IResponse<TokenData> login(@RequestBody LoginRequest request) {
+    public IResponse<TokenData> login(@RequestBody LoginRequest request, HttpServletRequest httpRequest) {
         if (request == null
                 || request.username() == null
                 || request.username().isBlank()
@@ -58,7 +59,8 @@ public class UpmsTokenController {
         }
         try {
             Authentication authentication = authenticationProvider.authenticate(
-                    UsernamePasswordAuthenticationToken.unauthenticated(request.username(), request.password()));
+                    UsernamePasswordAuthenticationToken.unauthenticated(request.username(), request.password()),
+                    httpRequest.getRemoteAddr());
             UpmsPrincipal principal = (UpmsPrincipal) authentication.getPrincipal();
             Set<String> roles = new LinkedHashSet<>();
             Set<String> permissions = new LinkedHashSet<>();

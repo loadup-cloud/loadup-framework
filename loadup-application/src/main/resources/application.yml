@@ -40,13 +40,20 @@ loadup:
         - /api/upms/*/remove-*
         - /api/auth/login
         - /api/auth/register
-        - /api/dictionaries/types
         - /api/dictionaries/types/*
-        - /api/dictionaries/types/*/items
         - /api/dictionaries/items/*
         - /api/files
         - /api/files/*
         - /api/files/cleanup
+        - /api/notifications
+        - /api/notifications/*
+        - /api/account/security/password
+        - /api/transfer-tasks/imports
+        - /api/transfer-tasks/exports
+        - /api/transfer-tasks/retry
+  transfer:
+    max-input-bytes: 20971520
+    max-output-bytes: 104857600
   dfs:
     binder-type: local
     binder:
