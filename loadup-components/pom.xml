@@ -16,6 +16,7 @@
         <module>loadup-components-authorization</module>
         <module>loadup-components-resource-server</module>
         <module>loadup-components-webmvc</module>
+        <module>loadup-components-observability</module>
         <module>loadup-components-authserver</module>
         <module>loadup-components-cache</module>
         <module>loadup-components-captcha</module>

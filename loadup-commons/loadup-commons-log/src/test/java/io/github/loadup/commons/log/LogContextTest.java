@@ -2,12 +2,9 @@ package io.github.loadup.commons.log;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.SpanContext;
-import io.opentelemetry.api.trace.TraceFlags;
-import io.opentelemetry.api.trace.TraceState;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.MDC;
 
 class LogContextTest {
 
@@ -18,16 +15,9 @@ class LogContextTest {
     }
 
     @Test
-    void syncTraceContextCopiesCurrentSpanIdsToMdc() {
-        Span span = Span.wrap(SpanContext.create(
-                "0123456789abcdef0123456789abcdef",
-                "0123456789abcdef",
-                TraceFlags.getSampled(),
-                TraceState.getDefault()));
-
-        try (var ignored = span.makeCurrent()) {
-            LogContext.syncTraceContext();
-        }
+    void readsTraceIdsFromMicrometerMdc() {
+        MDC.put(LogContext.TRACE_ID, "0123456789abcdef0123456789abcdef");
+        MDC.put(LogContext.SPAN_ID, "0123456789abcdef");
 
         assertThat(LogContext.getTraceId()).isEqualTo("0123456789abcdef0123456789abcdef");
         assertThat(LogContext.getSpanId()).isEqualTo("0123456789abcdef");

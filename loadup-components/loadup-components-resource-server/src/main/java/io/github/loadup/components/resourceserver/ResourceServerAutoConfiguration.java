@@ -2,6 +2,7 @@ package io.github.loadup.components.resourceserver;
 
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.result.FailureResponse;
+import io.github.loadup.components.observability.ApiResultMetrics;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
@@ -85,7 +86,8 @@ public class ResourceServerAutoConfiguration {
             JwtDecoder jwtDecoder,
             LoadUpJwtAuthenticationConverter jwtAuthenticationConverter,
             ResourceServerProperties properties,
-            ObjectProvider<ObjectMapper> objectMapperProvider)
+            ObjectProvider<ObjectMapper> objectMapperProvider,
+            ApiResultMetrics resultMetrics)
             throws Exception {
         if (!StringUtils.hasText(properties.getIssuerUri()) || !StringUtils.hasText(properties.getAudience())) {
             throw new IllegalArgumentException("Resource server requires issuer-uri and audience");
@@ -114,21 +116,26 @@ public class ResourceServerAutoConfiguration {
                 })
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, exception) ->
-                                writeError(response, objectMapper, CommonResultCodeEnum.UNAUTHENTICATED))
+                                writeError(response, objectMapper, resultMetrics, CommonResultCodeEnum.UNAUTHENTICATED))
                         .accessDeniedHandler((request, response, exception) ->
-                                writeError(response, objectMapper, CommonResultCodeEnum.ACCESS_DENIED)))
+                                writeError(response, objectMapper, resultMetrics, CommonResultCodeEnum.ACCESS_DENIED)))
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
                                 jwt.decoder(validatedDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter))
                         .authenticationEntryPoint((request, response, exception) ->
-                                writeError(response, objectMapper, CommonResultCodeEnum.UNAUTHENTICATED)));
+                                writeError(response, objectMapper, resultMetrics, CommonResultCodeEnum.UNAUTHENTICATED)));
         return http.build();
     }
 
-    private static void writeError(HttpServletResponse response, ObjectMapper objectMapper, CommonResultCodeEnum code)
+    private static void writeError(
+            HttpServletResponse response,
+            ObjectMapper objectMapper,
+            ApiResultMetrics resultMetrics,
+            CommonResultCodeEnum code)
             throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         response.getOutputStream().write(objectMapper.writeValueAsBytes(FailureResponse.of(code)));
+        resultMetrics.record(false);
     }
 }

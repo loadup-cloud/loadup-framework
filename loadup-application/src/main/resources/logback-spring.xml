@@ -26,7 +26,7 @@
 
     <!--
         Standard console format (default profile).
-        Includes [traceId, spanId] from MDC populated by loadup-commons-tracer.
+        Includes [traceId, spanId] from MDC populated by Micrometer Tracing.
     -->
     <springProfile name="!json">
         <property name="LOADUP_CONSOLE_PATTERN"

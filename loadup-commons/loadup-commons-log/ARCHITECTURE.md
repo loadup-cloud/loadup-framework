@@ -31,15 +31,14 @@ The post processor uses a low-precedence property source, so normal application 
 
 ## 3. Trace integration
 
-`loadup-commons-tracer` depends on this module and delegates trace MDC writes to `LogContext`. The dependency
-direction is therefore one-way:
+`loadup-components-observability` uses Spring Boot's Micrometer Tracing integration, which populates the
+standard `traceId` and `spanId` MDC keys. The log module only defines their names and output patterns:
 
 ```
-loadup-commons-log  <-  loadup-commons-tracer  <-  MVC application
+loadup-commons-log  <-  MVC application  ->  loadup-components-observability
 ```
 
-The log module only reads `Span.current()` when explicitly asked through `syncTraceContext()`; it does not create
-spans or require a tracer SDK.
+The log module neither creates spans nor depends on a tracer SDK.
 
 ## 4. LogUtil
 

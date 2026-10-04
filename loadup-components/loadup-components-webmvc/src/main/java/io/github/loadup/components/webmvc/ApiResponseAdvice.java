@@ -1,8 +1,10 @@
 package io.github.loadup.components.webmvc;
 
+import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.IResponse;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.commons.result.SuccessResponse;
+import io.github.loadup.components.observability.ApiResultMetrics;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,10 +22,12 @@ import tools.jackson.databind.ObjectMapper;
 public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
     private final ApiPathMatcher pathMatcher;
     private final ObjectMapper objectMapper;
+    private final ApiResultMetrics resultMetrics;
 
-    public ApiResponseAdvice(ApiPathMatcher pathMatcher, ObjectMapper objectMapper) {
+    public ApiResponseAdvice(ApiPathMatcher pathMatcher, ObjectMapper objectMapper, ApiResultMetrics resultMetrics) {
         this.pathMatcher = pathMatcher;
         this.objectMapper = objectMapper;
+        this.resultMetrics = resultMetrics;
     }
 
     @Override
@@ -50,8 +54,12 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
             return body;
         }
         response.setStatusCode(HttpStatus.OK);
+        IResponse<?> envelope = body instanceof IResponse<?> existing
+                ? existing
+                : body instanceof PageDTO<?> page ? SuccessResponse.ofPage(page) : SuccessResponse.of(body);
+        resultMetrics.record(envelope.getResult() != null
+                && ResultStatusEnum.SUCCESS.getCode().equals(envelope.getResult().getStatus()));
         if (body instanceof IResponse<?>) return body;
-        Object envelope = body instanceof PageDTO<?> page ? SuccessResponse.ofPage(page) : SuccessResponse.of(body);
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
         if (StringHttpMessageConverter.class.isAssignableFrom(selectedConverterType)) {
             return objectMapper.writeValueAsString(envelope);

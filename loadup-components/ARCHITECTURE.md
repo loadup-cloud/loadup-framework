@@ -29,6 +29,7 @@ loadup-components
   └─ loadup-components-dfs
   └─ loadup-components-extension
   └─ loadup-components-globalunique
+  └─ loadup-components-observability
   └─ loadup-components-gotone
   └─ loadup-components-pipeline
   └─ loadup-components-resilience4j

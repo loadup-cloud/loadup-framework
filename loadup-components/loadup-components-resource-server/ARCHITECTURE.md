@@ -10,6 +10,7 @@
 
 - `loadup-commons-dto`
 - `loadup-components-authorization`
+- `loadup-components-observability`
 
 直接依赖的外部坐标（不含测试与 provided scope）：
 
@@ -29,7 +30,7 @@
 ```text
 Bearer Token → /api/** SecurityFilterChain → JwtDecoder → token_use/aud/issuer 校验
              → LoadUpJwtAuthenticationConverter → SecurityContext → Controller
-认证或授权失败 → FailureResponse(result, data) / HTTP 200
+认证或授权失败 → FailureResponse(result, data) / HTTP 200 → 业务失败计数
 ```
 
 `ResourceServerAutoConfiguration` 仅在 Servlet 应用且 `loadup.security.resource-server.enabled=true`

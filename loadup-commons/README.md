@@ -7,7 +7,6 @@
 - [`loadup-commons-dto`](loadup-commons-dto/README.md)
 - [`loadup-commons-util`](loadup-commons-util/README.md)
 - [`loadup-commons-log`](loadup-commons-log/README.md)
-- [`loadup-commons-tracer`](loadup-commons-tracer/README.md)
 
 此 POM 用于 Maven 聚合；在消费工程中选择需要的具体 jar 坐标。
 
@@ -21,5 +20,4 @@
 
 - [`loadup-commons-dto`](./loadup-commons-dto/README.md)：运行实现。
 - [`loadup-commons-log`](./loadup-commons-log/README.md)：运行实现。
-- [`loadup-commons-tracer`](./loadup-commons-tracer/README.md)：运行实现。
 - [`loadup-commons-util`](./loadup-commons-util/README.md)：运行实现。

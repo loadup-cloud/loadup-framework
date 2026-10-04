@@ -14,7 +14,7 @@
 - `loadup-components-authserver-binder-sas`
 - `loadup-modules-upms-authserver`
 - `loadup-commons-log`
-- `loadup-commons-tracer`
+- `loadup-components-observability`
 - `loadup-components-retrytask-binder-jobrunr`
 - `loadup-components-scheduler-binder-jobrunr`
 

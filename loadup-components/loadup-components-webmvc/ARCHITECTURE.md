@@ -10,7 +10,7 @@
 
 - `loadup-commons-dto`
 - `loadup-commons-util`
-- `loadup-commons-tracer`
+- `loadup-components-observability`
 
 直接依赖的外部坐标（不含测试与 provided scope）：
 
@@ -28,6 +28,7 @@
 ```text
 Servlet 请求 → Spring MVC Controller → ApiResponseAdvice → result/data JSON
              ↘ /error 转发       → ApiErrorController → result/data JSON
+Boot HTTP Observation → traceId 响应头；ApiResponseAdvice → 业务结果计数
 Boot ObjectMapper ← JsonMapperBuilderCustomizer ← JsonUtil 日期规则
 DTO / JsonUtil   ← SmartInitializingSingleton   ← Boot ObjectMapper
 ```

@@ -39,12 +39,12 @@ loadup-cloud/
 │   ├── loadup-commons-dto/     # 通用响应、DTO 与 BaseDO
 │   ├── loadup-commons-util/    # 工具类：JsonUtil、StringUtils、DateUtils
 │   ├── loadup-commons-log/     # 统一日志格式与 trace MDC 约定
-│   └── loadup-commons-tracer/  # OpenTelemetry 链路追踪
 ├── loadup-components/          # 可复用技术组件（框架级中间件）
 │   ├── loadup-components-authorization/   # Spring Security 方法级授权 @PreAuthorize
 │   ├── loadup-components-authserver/        # SAS 令牌签发与 OAuth2 客户端管理
 │   ├── loadup-components-resource-server/  # Controller 入口 JWT 验证
 │   ├── loadup-components-webmvc/          # 全局 API 报文、错误处理与 Jackson 约定
+│   ├── loadup-components-observability/   # Micrometer 指标与 OpenTelemetry 追踪接入
 │   ├── loadup-components-cache/           # 缓存（Spring Cache 门面 + binder-caffeine/redis/jetcache）
 │   ├── loadup-components-captcha/         # 验证码（API + binder-tianai/nanocaptcha）
 │   ├── loadup-components-configcenter/    # 配置中心（API + binder-local/nacos/apollo）

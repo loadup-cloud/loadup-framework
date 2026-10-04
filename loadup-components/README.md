@@ -8,6 +8,7 @@ LoadUp 组件提供可独立引入的技术能力。应用通过 `loadup-depende
 | OAuth2 授权服务器 | [authserver](loadup-components-authserver/README.md) |
 | JWT 资源服务器 | [resource-server](loadup-components-resource-server/README.md) |
 | MVC 响应约定 | [webmvc](loadup-components-webmvc/README.md) |
+| 指标与追踪 | [observability](loadup-components-observability/README.md) |
 | 缓存 | [cache](loadup-components-cache/README.md) |
 | 验证码 | [captcha](loadup-components-captcha/README.md) |
 | 配置中心 | [configcenter](loadup-components-configcenter/README.md) |

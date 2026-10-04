@@ -2,6 +2,7 @@ package io.github.loadup.components.webmvc;
 
 import io.github.loadup.commons.dto.DTO;
 import io.github.loadup.commons.util.JsonUtil;
+import io.github.loadup.components.observability.ApiResultMetrics;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -37,8 +38,9 @@ public class LoadUpWebMvcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ApiResponseAdvice.class)
-    public ApiResponseAdvice loadUpApiResponseAdvice(ApiPathMatcher pathMatcher, ObjectMapper objectMapper) {
-        return new ApiResponseAdvice(pathMatcher, objectMapper);
+    public ApiResponseAdvice loadUpApiResponseAdvice(
+            ApiPathMatcher pathMatcher, ObjectMapper objectMapper, ApiResultMetrics resultMetrics) {
+        return new ApiResponseAdvice(pathMatcher, objectMapper, resultMetrics);
     }
 
     @Bean

@@ -18,8 +18,8 @@ LoadUp 是供其他应用消费的 SDK。`loadup-application` 用于本地集成
 | 目录 | 内容 |
 | --- | --- |
 | [`loadup-dependencies`](loadup-dependencies/README.md) | 统一依赖版本的 BOM |
-| [`loadup-commons`](loadup-commons/README.md) | DTO、工具、日志和链路追踪 |
-| [`loadup-components`](loadup-components/README.md) | Web MVC、认证授权、缓存、数据库、文件存储、通知、调度等技术组件 |
+| [`loadup-commons`](loadup-commons/README.md) | DTO、工具和日志基础能力 |
+| [`loadup-components`](loadup-components/README.md) | Web MVC、认证授权、指标追踪、缓存、数据库、文件存储、通知、调度等技术组件 |
 | [`loadup-modules`](loadup-modules/README.md) | 可复用业务模块，包含 UPMS、审计中心、数据字典、文件资源、站内通知与导入导出任务 |
 | [`loadup-testify`](loadup-testify/README.md) | 集成测试辅助能力 |
 | [`loadup-application`](loadup-application/README.md) | 本地集成验证启动器 |

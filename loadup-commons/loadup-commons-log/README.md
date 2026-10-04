@@ -1,6 +1,6 @@
 # LoadUp Common Log
 
-统一日志输出默认格式，并提供日志与 OpenTelemetry trace 的 MDC 关联约定。
+统一日志输出默认格式，并约定 Micrometer Tracing 使用的 MDC 键。
 
 ## 引入
 
@@ -24,7 +24,7 @@ loadup:
 模块通过 Spring Boot `EnvironmentPostProcessor` 设置 `logging.pattern.console` 默认值；集成方显式配置的
 `logging.pattern.console` 具有更高优先级。`LogContext` 统一使用 `traceId`、`spanId` 和 `requestId` MDC 键。
 
-引入 `loadup-commons-tracer` 后，当前 OTel Span 会自动写入 `traceId` / `spanId`，异步任务由 tracer 负责传播。
+引入 `loadup-components-observability` 后，Spring Boot 的 Micrometer Tracing 将当前 Span 的 `traceId` / `spanId` 写入 MDC，并负责上下文传播。
 
 ## LogUtil
 
@@ -44,7 +44,7 @@ private static final Logger log = LogUtil.getLogger(OrderService.class);
 |------|------|
 | 统一 console 日志格式默认值 | ✓ |
 | 应用配置覆盖默认 pattern | ✓ |
-| OTel traceId / spanId MDC 约定 | ✓ |
+| traceId / spanId MDC 约定 | ✓ |
 | requestId MDC 辅助 API | ✓ |
 | JSON 编码器绑定 | ✗（由集成方日志后端配置） |
 

@@ -1,6 +1,5 @@
 package io.github.loadup.commons.log;
 
-import io.opentelemetry.api.trace.Span;
 import org.slf4j.MDC;
 
 /** Shared MDC contract used by logging and tracing integrations. */
@@ -16,19 +15,6 @@ public final class LogContext {
             "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%wEx";
 
     private LogContext() {}
-
-    public static void putTraceContext(Span span) {
-        if (span != null && span.getSpanContext().isValid()) {
-            MDC.put(TRACE_ID, span.getSpanContext().getTraceId());
-            MDC.put(SPAN_ID, span.getSpanContext().getSpanId());
-        } else {
-            clearTraceContext();
-        }
-    }
-
-    public static void syncTraceContext() {
-        putTraceContext(Span.current());
-    }
 
     public static void clearTraceContext() {
         MDC.remove(TRACE_ID);
