@@ -146,10 +146,10 @@ class OutboxIT {
                 })))
                 .isInstanceOf(IllegalStateException.class);
         AtomicInteger work = new AtomicInteger();
-        assertThat(transactions.execute(status -> inbox.consume("consumer", event, work::incrementAndGet)))
-                .isTrue();
-        assertThat(transactions.execute(status -> inbox.consume("consumer", event, work::incrementAndGet)))
-                .isFalse();
+        Boolean consumed = transactions.execute(status -> inbox.consume("consumer", event, work::incrementAndGet));
+        assertThat(consumed).isTrue();
+        Boolean duplicate = transactions.execute(status -> inbox.consume("consumer", event, work::incrementAndGet));
+        assertThat(duplicate).isFalse();
         assertThat(work).hasValue(1);
     }
 

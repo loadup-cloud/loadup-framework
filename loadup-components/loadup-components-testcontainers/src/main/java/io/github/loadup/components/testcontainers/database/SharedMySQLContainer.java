@@ -1,10 +1,9 @@
 package io.github.loadup.components.testcontainers.database;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.mysql.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -33,7 +32,6 @@ import org.testcontainers.utility.DockerImageName;
  * @since 1.0.0
  */
 public final class SharedMySQLContainer {
-    private static final Logger log = LoggerFactory.getLogger(SharedMySQLContainer.class);
 
     /**
      * Default MySQL version to use
@@ -107,7 +105,7 @@ public final class SharedMySQLContainer {
             String imageName =
                     (effectiveConfig.getImage() != null) ? effectiveConfig.getImage() : DEFAULT_MYSQL_VERSION;
 
-            log.info("🚀 Starting Shared MySQL TestContainer: {}", imageName);
+            LogUtil.info(SharedMySQLContainer.class, "🚀 Starting Shared MySQL TestContainer: {}", imageName);
 
             mysqlContainer = new MySQLContainer(DockerImageName.parse(imageName))
                     .withDatabaseName(getValue(effectiveConfig.getDatabase(), DEFAULT_DATABASE_NAME))
@@ -123,16 +121,18 @@ public final class SharedMySQLContainer {
             password = mysqlContainer.getPassword();
             databaseName = mysqlContainer.getDatabaseName();
 
-            log.info("✅ MySQL Container started at: {}", mysqlContainer.getJdbcUrl());
+            LogUtil.info(SharedMySQLContainer.class, "✅ MySQL Container started at: {}", mysqlContainer.getJdbcUrl());
 
             // Register shutdown hook if reuse is disabled
             if (effectiveConfig.isReusable()) {
-                log.info("♻️ Reuse is enabled. Container will persist after JVM exits.");
+                LogUtil.info(
+                        SharedMySQLContainer.class, "♻️ Reuse is enabled. Container will persist after JVM exits.");
             } else {
-                log.info("Reuse is disabled. Registering shutdown hook to stop container.");
+                LogUtil.info(
+                        SharedMySQLContainer.class, "Reuse is disabled. Registering shutdown hook to stop container.");
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     if (mysqlContainer != null) {
-                        log.info("🛑 Stopping MySQL TestContainer...");
+                        LogUtil.info(SharedMySQLContainer.class, "🛑 Stopping MySQL TestContainer...");
                         mysqlContainer.stop();
                     }
                 }));

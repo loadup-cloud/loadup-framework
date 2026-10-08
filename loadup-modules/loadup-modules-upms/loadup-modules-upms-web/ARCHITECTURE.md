@@ -48,3 +48,7 @@ HTTP /api/** → Controller → App Service → Client DTO 响应
 保持组件职责独立：业务调用依赖公开契约，自动配置处理框架装配，基础设施细节留在实现层。
 
 集成方式与配置示例见 [README.md](./README.md)。
+
+## 可选审计桥接
+
+`UserSensitiveController` 使用方法权限和认证主体调用 app；`SensitiveReadAuditConfiguration` 在可选 AuditService 存在时装配默认 recorder。自动配置顺序在 UPMS app 和审计模块之后。默认 recorder 的独立事务先提交审计元数据，异常不吞掉；无 audit 依赖时不装配默认 recorder，app 对明文访问默认拒绝。

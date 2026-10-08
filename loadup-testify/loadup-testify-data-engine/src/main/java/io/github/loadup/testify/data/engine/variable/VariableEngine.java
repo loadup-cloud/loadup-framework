@@ -12,8 +12,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.datafaker.Faker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.ParserContext;
@@ -27,7 +25,6 @@ import tools.jackson.databind.JsonNode;
  * ${fn.random(1, 100)} - Variable cross-references with dependency resolution
  */
 public class VariableEngine {
-    private static final Logger log = LoggerFactory.getLogger(VariableEngine.class);
 
     private final ExpressionParser spelParser = new SpelExpressionParser();
     private final Map<String, TestifyFunction> functionRegistry = new HashMap<>();

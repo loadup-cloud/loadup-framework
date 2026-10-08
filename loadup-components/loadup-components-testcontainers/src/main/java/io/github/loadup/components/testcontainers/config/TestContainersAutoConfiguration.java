@@ -1,7 +1,5 @@
 package io.github.loadup.components.testcontainers.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
@@ -18,7 +16,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties(TestContainersProperties.class)
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class TestContainersAutoConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(TestContainersAutoConfiguration.class);
 
     // This is intentionally empty.
     // TestExecutionListener is registered via spring.factories

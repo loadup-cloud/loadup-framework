@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import io.github.loadup.components.testcontainers.cache.SharedRedisContainer;
@@ -13,8 +14,6 @@ import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.containers.GenericContainer;
 
@@ -27,7 +26,6 @@ import org.testcontainers.containers.GenericContainer;
 @SpringBootTest(classes = TestApplication.class)
 @EnableTestContainers(ContainerType.REDIS)
 public class SharedRedisContainerIT {
-    private static final Logger log = LoggerFactory.getLogger(SharedRedisContainerIT.class);
 
     @Test
     void testContainerIsRunning() {
@@ -43,9 +41,9 @@ public class SharedRedisContainerIT {
         assertNotNull(SharedRedisContainer.getUrl(), "Redis URL should not be null");
         assertNotNull(SharedRedisContainer.getMappedPort(), "Mapped port should not be null");
 
-        log.info("Host: {}", SharedRedisContainer.getHost());
-        log.info("Port: {}", SharedRedisContainer.getPort());
-        log.info("Redis URL: {}", SharedRedisContainer.getUrl());
+        LogUtil.info(SharedRedisContainerIT.class, "Host: {}", SharedRedisContainer.getHost());
+        LogUtil.info(SharedRedisContainerIT.class, "Port: {}", SharedRedisContainer.getPort());
+        LogUtil.info(SharedRedisContainerIT.class, "Redis URL: {}", SharedRedisContainer.getUrl());
     }
 
     @Test
@@ -60,7 +58,7 @@ public class SharedRedisContainerIT {
             String pingResponse = commands.ping();
             assertEquals("PONG", pingResponse, "Ping response should be PONG");
 
-            log.info("Successfully connected to Redis");
+            LogUtil.info(SharedRedisContainerIT.class, "Successfully connected to Redis");
         } finally {
             redisClient.shutdown();
         }

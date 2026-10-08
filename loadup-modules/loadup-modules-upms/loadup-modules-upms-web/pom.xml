@@ -8,7 +8,16 @@
     </parent>
     <artifactId>loadup-modules-upms-web</artifactId>
     <name>LoadUp UPMS Web Adapter</name>
+    <properties>
+        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
+    </properties>
     <dependencies>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-modules-audit</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-dto</artifactId>

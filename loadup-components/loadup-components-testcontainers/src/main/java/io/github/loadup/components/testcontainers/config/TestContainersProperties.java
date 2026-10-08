@@ -1,7 +1,5 @@
 package io.github.loadup.components.testcontainers.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -29,7 +27,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.testcontainers")
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class TestContainersProperties {
-    private static final Logger log = LoggerFactory.getLogger(TestContainersProperties.class);
 
     /**
      * Global switch to enable/disable all TestContainers (default: true)

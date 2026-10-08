@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.database.AbstractMySQLContainerTest;
 import io.github.loadup.components.testcontainers.database.SharedMySQLContainer;
 import java.sql.Connection;
@@ -13,8 +14,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.mysql.MySQLContainer;
@@ -28,7 +27,6 @@ import org.testcontainers.mysql.MySQLContainer;
 @SpringBootTest(classes = TestApplication.class)
 @TestPropertySource(properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.mysql.enabled=true"})
 class SharedMySQLContainerIT extends AbstractMySQLContainerTest {
-    private static final Logger log = LoggerFactory.getLogger(SharedMySQLContainerIT.class);
 
     @Test
     void testContainerIsRunning() {
@@ -45,11 +43,11 @@ class SharedMySQLContainerIT extends AbstractMySQLContainerTest {
         assertNotNull(SharedMySQLContainer.getHost(), "Host should not be null");
         assertNotNull(SharedMySQLContainer.getMappedPort(), "Mapped port should not be null");
 
-        log.info("JDBC URL: {}", SharedMySQLContainer.getJdbcUrl());
-        log.info("Username: {}", SharedMySQLContainer.getUsername());
-        log.info("Database: {}", SharedMySQLContainer.getDatabaseName());
-        log.info("Host: {}", SharedMySQLContainer.getHost());
-        log.info("Port: {}", SharedMySQLContainer.getMappedPort());
+        LogUtil.info(SharedMySQLContainerIT.class, "JDBC URL: {}", SharedMySQLContainer.getJdbcUrl());
+        LogUtil.info(SharedMySQLContainerIT.class, "Username: {}", SharedMySQLContainer.getUsername());
+        LogUtil.info(SharedMySQLContainerIT.class, "Database: {}", SharedMySQLContainer.getDatabaseName());
+        LogUtil.info(SharedMySQLContainerIT.class, "Host: {}", SharedMySQLContainer.getHost());
+        LogUtil.info(SharedMySQLContainerIT.class, "Port: {}", SharedMySQLContainer.getMappedPort());
     }
 
     @Test

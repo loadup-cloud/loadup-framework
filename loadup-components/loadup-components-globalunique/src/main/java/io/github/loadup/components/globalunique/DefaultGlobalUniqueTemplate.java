@@ -3,6 +3,7 @@ package io.github.loadup.components.globalunique;
 import static io.github.loadup.components.globalunique.dataobject.table.Tables.GLOBAL_UNIQUE_DO;
 
 import com.mybatisflex.core.query.QueryWrapper;
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.globalunique.dataobject.GlobalUniqueDO;
@@ -11,14 +12,12 @@ import io.github.loadup.components.globalunique.model.GlobalUniqueClaim;
 import io.github.loadup.components.globalunique.model.GlobalUniqueRecord;
 import java.util.Objects;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.util.StringUtils;
 
 /** Default MyBatis-Flex implementation of {@link GlobalUniqueTemplate}. */
 public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {
-    private static final Logger log = LoggerFactory.getLogger(DefaultGlobalUniqueTemplate.class);
+
     private static final String GLOBAL_TENANT = "__loadup_global__";
 
     private final GlobalUniqueMapper mapper;
@@ -50,7 +49,8 @@ public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {
             if (find(claim.bizType(), claim.uniqueKey()).isEmpty()) {
                 throw exception;
             }
-            log.debug(
+            LogUtil.debug(
+                    DefaultGlobalUniqueTemplate.class,
                     "Global unique claim already exists: tenantId={}, bizType={}, uniqueKey={}",
                     dataObject.getTenantId(),
                     claim.bizType(),

@@ -24,6 +24,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-commons-log</artifactId>
+        </dependency>
+
         <!-- SpringDoc OpenAPI 3 and Scalar UI -->
         <dependency>
             <groupId>org.springdoc</groupId>

@@ -12,6 +12,7 @@
     <name>Loadup Modules UPMS Client Layer</name>
     <description>Client utilities and SDK for interacting with the UPMS module</description>
     <properties>
+        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
         <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -23,13 +24,16 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-commons-masking</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-util</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

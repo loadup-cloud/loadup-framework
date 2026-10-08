@@ -46,3 +46,20 @@ management:
 | Prometheus 或 OTLP 指标导出 | 应用选择相应 Micrometer Registry |
 
 内部边界见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 统一观测契约
+
+组件传递引入 `loadup-commons-log`。追踪关联统一为 Micrometer 的 `traceId` / `spanId`，日志输出使用 `LogUtil`；不创建第二套追踪或指标注册表。
+
+EnvironmentPostProcessor 通过标准 `management.metrics.tags.application` 提供 `${spring.application.name:application}` 默认值，适用于 Boot 管理的全部指标。消费工程的显式 `management.metrics.tags.application` 具有更高优先级；优先设置稳定的 `spring.application.name`。
+
+| 观测 | 名称与维度 |
+|---|---|
+| HTTP/JVM 基础指标 | Boot/Micrometer 原生名称，保留标准维度 |
+| JSON API 结果 | `loadup.api.responses`，`outcome=success/failure` |
+| 命名出站调用（含 KMS） | `loadup.http.calls`，配置中的 client、operation 与 `outcome=success/failure` |
+| Outbox 投递与状态 | `loadup.outbox.delivery` 的 success/failure；pending、failed、oldest.age 状态量 |
+| Outbox handler Trace | `loadup.outbox.handle` Observation |
+| Resilience4j | 官方 Micrometer binder 的标准名称和配置实例维度 |
+
+HTTP 非 2xx 与传输失败均计为 failure；标准 HTTP 客户端观测仍保留协议状态分类。组件从容器注入共享 `MeterRegistry` / `ObservationRegistry`，未启用观测的独立消费工程可不提供可选 Registry。禁止使用全局静态 Metrics、另建生产 Registry、用户/租户/订单/traceId/完整 URI 等高基数标签；新的业务耗时与 Trace 优先使用标准 Observation。

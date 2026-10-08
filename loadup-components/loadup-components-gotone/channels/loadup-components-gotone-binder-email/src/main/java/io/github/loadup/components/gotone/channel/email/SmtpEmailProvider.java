@@ -1,13 +1,12 @@
 package io.github.loadup.components.gotone.channel.email;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.gotone.NotificationChannelProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import jakarta.mail.internet.MimeMessage;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
@@ -18,8 +17,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
  * configuration keys: {@code subject}, {@code from}, {@code html}.
  */
 public class SmtpEmailProvider implements NotificationChannelProvider {
-
-    private static final Logger log = LoggerFactory.getLogger(SmtpEmailProvider.class);
 
     private final JavaMailSender mailSender;
     private final String defaultFrom;
@@ -63,7 +60,7 @@ public class SmtpEmailProvider implements NotificationChannelProvider {
             } catch (Exception e) {
                 receiverStatus.put(receiver, false);
                 receiverErrors.put(receiver, e.getMessage());
-                log.warn("Email send failed for receiver={}", maskEmail(receiver), e);
+                LogUtil.warn(SmtpEmailProvider.class, "Email send failed for receiver={}", maskEmail(receiver), e);
             }
         }
 

@@ -27,3 +27,11 @@ Servlet 请求
 - `spring-web` 与 Servlet API 仅供可选 Servlet 适配编译；应用按需添加 Prometheus 或 OTLP 指标 Registry。
 - 采样、导出端点、资源属性和指标标签统一使用 Spring Boot 的 `management.*` 配置，不另设 `loadup.tracer.*` 或 `loadup.metrics.*`。
 - 异步上下文传播使用 Boot 的 `spring.task.execution.propagate-context`；自定义执行器由应用设置 `ContextPropagatingTaskDecorator`，不修改其他模块的线程池 Bean。
+
+## 默认配置与组件集成
+
+`ObservabilityEnvironmentPostProcessor` 以最低优先级属性源补充 `management.metrics.tags.application`，不替换消费工程的显式设置；由 Boot 自己将该标签装配到 Registry。输出日志默认值由传递引入的 commons-log 管理。
+
+HTTP、KMS、Outbox 和 Resilience4j 使用容器中的共享 Micrometer 实例，导出由 Boot 统一负责。HTTP/KMS 的命名操作计时、Outbox 的投递计时与状态量只采用有界配置/结果维度；自定义 outcome 统一 success/failure，官方原生指标保留标准名称和标签。不创建静态全局 Registry 或新的导出 API。
+
+配置优先级用例位于 `ObservabilityDefaultsTest`；源码测试不能替代消费工程中的导出、Trace/MDC 和异步传播验收。

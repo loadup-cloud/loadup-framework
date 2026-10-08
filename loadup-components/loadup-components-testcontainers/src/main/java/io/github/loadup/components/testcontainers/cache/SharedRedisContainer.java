@@ -1,10 +1,9 @@
 package io.github.loadup.components.testcontainers.cache;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -32,7 +31,6 @@ import org.testcontainers.utility.DockerImageName;
  * @since 1.0.0
  */
 public final class SharedRedisContainer {
-    private static final Logger log = LoggerFactory.getLogger(SharedRedisContainer.class);
 
     /**
      * Default Redis version to use
@@ -85,12 +83,14 @@ public final class SharedRedisContainer {
             url = "redis://" + host + ":" + port;
 
             if (config.isReusable()) {
-                log.info("♻️ Reuse is enabled. Container will persist after JVM exits.");
+                LogUtil.info(
+                        SharedRedisContainer.class, "♻️ Reuse is enabled. Container will persist after JVM exits.");
             } else {
-                log.info("Reuse is disabled. Registering shutdown hook to stop container.");
+                LogUtil.info(
+                        SharedRedisContainer.class, "Reuse is disabled. Registering shutdown hook to stop container.");
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     if (redisContainer != null) {
-                        log.info("🛑 Stopping Redis TestContainer...");
+                        LogUtil.info(SharedRedisContainer.class, "🛑 Stopping Redis TestContainer...");
                         redisContainer.stop();
                     }
                 }));

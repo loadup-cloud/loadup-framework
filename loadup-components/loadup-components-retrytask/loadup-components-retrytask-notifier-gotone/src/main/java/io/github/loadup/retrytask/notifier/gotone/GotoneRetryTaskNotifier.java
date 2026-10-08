@@ -1,5 +1,6 @@
 package io.github.loadup.retrytask.notifier.gotone;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.gotone.NotificationService;
 import io.github.loadup.components.gotone.model.NotificationRequest;
 import io.github.loadup.retrytask.facade.RetryTaskNotifier;
@@ -7,8 +8,6 @@ import io.github.loadup.retrytask.facade.model.RetryTaskFailure;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link RetryTaskNotifier} that reuses the gotone notification component to alert on permanent
@@ -21,8 +20,6 @@ import org.slf4j.LoggerFactory;
  */
 public class GotoneRetryTaskNotifier implements RetryTaskNotifier {
 
-    private static final Logger log = LoggerFactory.getLogger(GotoneRetryTaskNotifier.class);
-
     private final NotificationService notificationService;
     private final RetryTaskNotifyProperties properties;
 
@@ -34,16 +31,18 @@ public class GotoneRetryTaskNotifier implements RetryTaskNotifier {
     @Override
     public void notifyFailed(RetryTaskFailure failure) {
         if (!properties.isEnabled()) {
-            log.debug("Gotone retry notifier skipped: disabled");
+            LogUtil.debug(GotoneRetryTaskNotifier.class, "Gotone retry notifier skipped: disabled");
             return;
         }
         if (properties.getServiceCode() == null || properties.getServiceCode().isBlank()) {
-            log.debug("Gotone retry notifier skipped: loadup.retrytask.notify.service-code is not configured");
+            LogUtil.debug(
+                    GotoneRetryTaskNotifier.class,
+                    "Gotone retry notifier skipped: loadup.retrytask.notify.service-code is not configured");
             return;
         }
         List<String> receivers = properties.getReceivers();
         if (receivers == null || receivers.isEmpty()) {
-            log.debug("Gotone retry notifier skipped: no receivers configured");
+            LogUtil.debug(GotoneRetryTaskNotifier.class, "Gotone retry notifier skipped: no receivers configured");
             return;
         }
 
@@ -63,7 +62,8 @@ public class GotoneRetryTaskNotifier implements RetryTaskNotifier {
         try {
             notificationService.send(request);
         } catch (Exception e) {
-            log.warn(
+            LogUtil.warn(
+                    GotoneRetryTaskNotifier.class,
                     "Gotone failure notification send failed for bizType={} bizId={}",
                     failure.bizType(),
                     failure.bizId(),

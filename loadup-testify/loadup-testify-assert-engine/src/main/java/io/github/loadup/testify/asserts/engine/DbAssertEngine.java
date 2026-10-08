@@ -15,14 +15,12 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JsonNode;
 
 public class DbAssertEngine implements TestifyAssertEngine {
-    private static final Logger log = LoggerFactory.getLogger(DbAssertEngine.class);
+
     private static final Pattern IDENTIFIER = Pattern.compile("[A-Za-z0-9_]+");
 
     private final JdbcTemplate jdbcTemplate;

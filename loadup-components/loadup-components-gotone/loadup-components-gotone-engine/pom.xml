@@ -13,6 +13,11 @@
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-commons-log</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-gotone-api</artifactId>
         </dependency>
         <!-- Resilience4j facade + default in-memory binder for per-provider circuit breaker / retry -->

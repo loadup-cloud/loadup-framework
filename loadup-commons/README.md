@@ -21,3 +21,7 @@
 - [`loadup-commons-dto`](./loadup-commons-dto/README.md)：运行实现。
 - [`loadup-commons-log`](./loadup-commons-log/README.md)：运行实现。
 - [`loadup-commons-util`](./loadup-commons-util/README.md)：运行实现。
+
+## 展示脱敏
+
+- [`loadup-commons-masking`](./loadup-commons-masking/README.md)：纯 Java 展示规则与 `@Masked` 输出元数据，可供 WebMVC、显式日志与导出使用。

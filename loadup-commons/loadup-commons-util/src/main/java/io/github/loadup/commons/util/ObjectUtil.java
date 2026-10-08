@@ -1,9 +1,8 @@
 package io.github.loadup.commons.util;
 
+import io.github.loadup.commons.log.LogUtil;
 import java.util.Objects;
 import java.util.function.Supplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 对象工具类
@@ -22,8 +21,6 @@ import org.slf4j.LoggerFactory;
  * @since 1.0.0
  */
 public class ObjectUtil {
-
-    private static final Logger log = LoggerFactory.getLogger(ObjectUtil.class);
 
     /**
      * 检查对象是否为null
@@ -178,7 +175,7 @@ public class ObjectUtil {
         if (targetClass.isInstance(obj)) {
             return (T) obj;
         }
-        log.warn("Cannot cast {} to {}", obj.getClass().getName(), targetClass.getName());
+        LogUtil.warn(ObjectUtil.class, "Cannot cast {} to {}", obj.getClass().getName(), targetClass.getName());
         return null;
     }
 }

@@ -1,10 +1,9 @@
 package io.github.loadup.components.testcontainers.cloud;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.localstack.LocalStackContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -33,7 +32,6 @@ import org.testcontainers.utility.DockerImageName;
  * @since 1.0.0
  */
 public final class SharedLocalStackContainer {
-    private static final Logger log = LoggerFactory.getLogger(SharedLocalStackContainer.class);
 
     /**
      * Default LocalStack version to use
@@ -81,7 +79,9 @@ public final class SharedLocalStackContainer {
         ENABLED = globalEnabled && localstackEnabled;
 
         if (!ENABLED) {
-            log.info("LocalStack TestContainer is DISABLED. Using real AWS S3 from configuration.");
+            LogUtil.info(
+                    SharedLocalStackContainer.class,
+                    "LocalStack TestContainer is DISABLED. Using real AWS S3 from configuration.");
         }
     }
 
@@ -172,17 +172,21 @@ public final class SharedLocalStackContainer {
             secretKey = localstackContainer.getSecretKey();
             region = localstackContainer.getRegion();
 
-            log.info("S3 Endpoint: {}", s3Endpoint);
-            log.info("Access Key: {}", accessKey);
-            log.info("Secret Key: {}", secretKey);
-            log.info("Region: {}", region);
+            LogUtil.info(SharedLocalStackContainer.class, "S3 Endpoint: {}", s3Endpoint);
+            LogUtil.info(SharedLocalStackContainer.class, "Access Key: {}", accessKey);
+            LogUtil.info(SharedLocalStackContainer.class, "Secret Key: {}", secretKey);
+            LogUtil.info(SharedLocalStackContainer.class, "Region: {}", region);
             if (config.isReusable()) {
-                log.info("♻️ Reuse is enabled. Container will persist after JVM exits.");
+                LogUtil.info(
+                        SharedLocalStackContainer.class,
+                        "♻️ Reuse is enabled. Container will persist after JVM exits.");
             } else {
-                log.info("Reuse is disabled. Registering shutdown hook to stop container.");
+                LogUtil.info(
+                        SharedLocalStackContainer.class,
+                        "Reuse is disabled. Registering shutdown hook to stop container.");
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     if (localstackContainer != null) {
-                        log.info("🛑 Stopping LocalStack TestContainer...");
+                        LogUtil.info(SharedLocalStackContainer.class, "🛑 Stopping LocalStack TestContainer...");
                         localstackContainer.stop();
                     }
                 }));

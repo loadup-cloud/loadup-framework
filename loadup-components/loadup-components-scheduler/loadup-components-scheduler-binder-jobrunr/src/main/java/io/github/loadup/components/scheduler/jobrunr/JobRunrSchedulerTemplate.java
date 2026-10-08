@@ -1,5 +1,6 @@
 package io.github.loadup.components.scheduler.jobrunr;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.scheduler.SchedulerTemplate;
 import io.github.loadup.components.scheduler.model.ScheduleRequest;
 import io.github.loadup.components.scheduler.model.SchedulerStatus;
@@ -16,12 +17,8 @@ import org.jobrunr.scheduling.JobRequestScheduler;
 import org.jobrunr.storage.Page;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.navigation.OffsetBasedPageRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class JobRunrSchedulerTemplate implements SchedulerTemplate {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JobRunrSchedulerTemplate.class);
 
     private final JobRequestScheduler scheduler;
     private final StorageProvider storageProvider;
@@ -36,7 +33,8 @@ public class JobRunrSchedulerTemplate implements SchedulerTemplate {
         deletePendingRuns(request.taskName());
         SchedulerJobRequest payload = new SchedulerJobRequest(request.taskName(), request.args());
         scheduler.scheduleRecurrently(request.taskName(), request.cron(), resolveZoneId(request.zoneId()), payload);
-        LOGGER.debug(
+        LogUtil.debug(
+                JobRunrSchedulerTemplate.class,
                 "Registered recurring task taskName={} cron={} zoneId={}",
                 request.taskName(),
                 request.cron(),
@@ -46,36 +44,37 @@ public class JobRunrSchedulerTemplate implements SchedulerTemplate {
     @Override
     public void delete(String taskName) {
         if (getStatus(taskName).isEmpty()) {
-            LOGGER.debug("No recurring task to delete for taskName={}", taskName);
+            LogUtil.debug(JobRunrSchedulerTemplate.class, "No recurring task to delete for taskName={}", taskName);
             return;
         }
         deletePendingRuns(taskName);
         scheduler.deleteRecurringJob(taskName);
-        LOGGER.debug("Deleted recurring task taskName={}", taskName);
+        LogUtil.debug(JobRunrSchedulerTemplate.class, "Deleted recurring task taskName={}", taskName);
     }
 
     @Override
     public void trigger(String taskName) {
         SchedulerJobRequest payload = readPayload(taskName);
         if (payload == null) {
-            LOGGER.debug("No recurring task to trigger for taskName={}", taskName);
+            LogUtil.debug(JobRunrSchedulerTemplate.class, "No recurring task to trigger for taskName={}", taskName);
             return;
         }
         scheduler.enqueue(payload);
-        LOGGER.debug("Triggered one run of recurring task taskName={}", taskName);
+        LogUtil.debug(JobRunrSchedulerTemplate.class, "Triggered one run of recurring task taskName={}", taskName);
     }
 
     @Override
     public void updateCron(String taskName, String cron) {
         Optional<RecurringJob> recurring = findRecurringJob(taskName);
         if (recurring.isEmpty()) {
-            LOGGER.debug("No recurring task to update for taskName={}", taskName);
+            LogUtil.debug(JobRunrSchedulerTemplate.class, "No recurring task to update for taskName={}", taskName);
             return;
         }
         SchedulerJobRequest payload = readPayload(taskName);
         deletePendingRuns(taskName);
         scheduler.scheduleRecurrently(taskName, cron, ZoneId.of(recurring.get().getZoneId()), payload);
-        LOGGER.debug("Updated cron of recurring task taskName={} cron={}", taskName, cron);
+        LogUtil.debug(
+                JobRunrSchedulerTemplate.class, "Updated cron of recurring task taskName={} cron={}", taskName, cron);
     }
 
     @Override

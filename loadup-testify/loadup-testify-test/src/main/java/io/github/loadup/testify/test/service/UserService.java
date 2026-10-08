@@ -1,5 +1,6 @@
 package io.github.loadup.testify.test.service;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.testify.test.model.Order;
 import io.github.loadup.testify.test.model.User;
 import java.time.LocalDateTime;
@@ -35,7 +36,7 @@ public class UserService {
         String sql = "INSERT INTO users (user_id, user_name, email, status, created_at) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, user.getUserId(), user.getUserName(), user.getEmail(), "ACTIVE", createdAt);
 
-        System.out.println(">>> [EXEC] OrderService instance: " + System.identityHashCode(orderService));
+        LogUtil.debug(UserService.class, "OrderService instance: {}", System.identityHashCode(orderService));
         Order order = orderService.createOrder(user.getUserId(), user.getUserName());
         user.setOrder(order);
         user.setCreatedAt(LocalDateTime.now());

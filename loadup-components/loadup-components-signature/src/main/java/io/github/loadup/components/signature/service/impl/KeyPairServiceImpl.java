@@ -1,5 +1,25 @@
+/*
+ * #%L
+ * LoadUp Components Signature
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.components.signature.service.impl;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.signature.enums.KeyAlgorithm;
 import io.github.loadup.components.signature.exception.SignatureException;
 import io.github.loadup.components.signature.model.KeyPairInfo;
@@ -14,14 +34,11 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Locale;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * JCA-backed {@link KeyPairService} implementation.
  */
 public class KeyPairServiceImpl implements KeyPairService {
-    private static final Logger log = LoggerFactory.getLogger(KeyPairServiceImpl.class);
 
     private final SignatureProperties properties;
 
@@ -44,7 +61,8 @@ public class KeyPairServiceImpl implements KeyPairService {
                     .keySize(keySize)
                     .build();
         } catch (Exception e) {
-            log.error(
+            LogUtil.error(
+                    KeyPairServiceImpl.class,
                     "Key pair generation failed: algorithm={}, keySize={}, error={}",
                     algorithm,
                     keySize,
@@ -71,7 +89,12 @@ public class KeyPairServiceImpl implements KeyPairService {
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getJcaName());
             return keyFactory.generatePrivate(keySpec);
         } catch (Exception e) {
-            log.error("Private key loading failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
+            LogUtil.error(
+                    KeyPairServiceImpl.class,
+                    "Private key loading failed: algorithm={}, error={}",
+                    algorithm,
+                    e.getMessage(),
+                    e);
             throw new SignatureException(
                     SignatureException.SignatureErrorCode.INVALID_KEY,
                     "Private key loading failed: " + e.getMessage(),
@@ -87,7 +110,12 @@ public class KeyPairServiceImpl implements KeyPairService {
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getJcaName());
             return keyFactory.generatePublic(keySpec);
         } catch (Exception e) {
-            log.error("Public key loading failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
+            LogUtil.error(
+                    KeyPairServiceImpl.class,
+                    "Public key loading failed: algorithm={}, error={}",
+                    algorithm,
+                    e.getMessage(),
+                    e);
             throw new SignatureException(
                     SignatureException.SignatureErrorCode.INVALID_KEY,
                     "Public key loading failed: " + e.getMessage(),

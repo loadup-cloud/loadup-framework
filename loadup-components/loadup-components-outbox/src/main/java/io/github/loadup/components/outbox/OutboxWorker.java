@@ -19,16 +19,15 @@
  */
 package io.github.loadup.components.outbox;
 
+import io.github.loadup.commons.log.LogUtil;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
 
 /** A dedicated single-thread poller; no global scheduling configuration is installed. */
 public class OutboxWorker implements SmartLifecycle {
-    private static final Logger log = LoggerFactory.getLogger(OutboxWorker.class);
+
     private final OutboxDispatcher dispatcher;
     private final OutboxProperties properties;
     private volatile ScheduledExecutorService executor;
@@ -51,7 +50,8 @@ public class OutboxWorker implements SmartLifecycle {
                     try {
                         dispatcher.dispatchBatch();
                     } catch (RuntimeException failure) {
-                        log.error(
+                        LogUtil.error(
+                                OutboxWorker.class,
                                 "Outbox poll failed errorType={}",
                                 failure.getClass().getSimpleName());
                     }

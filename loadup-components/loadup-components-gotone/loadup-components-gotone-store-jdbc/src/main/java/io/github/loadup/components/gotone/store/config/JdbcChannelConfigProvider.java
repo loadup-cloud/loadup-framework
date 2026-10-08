@@ -1,13 +1,12 @@
 package io.github.loadup.components.gotone.store.config;
 
 import com.mybatisflex.core.query.QueryWrapper;
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.gotone.config.ChannelConfigProvider;
 import io.github.loadup.components.gotone.store.dataobject.ServiceChannelDO;
 import io.github.loadup.components.gotone.store.mapper.ServiceChannelDOMapper;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
@@ -15,8 +14,6 @@ import tools.jackson.databind.ObjectMapper;
  * JDBC-backed {@link ChannelConfigProvider} backed by {@code gotone_service_channel}.
  */
 public class JdbcChannelConfigProvider implements ChannelConfigProvider {
-
-    private static final Logger log = LoggerFactory.getLogger(JdbcChannelConfigProvider.class);
 
     private final ServiceChannelDOMapper mapper;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -57,7 +54,7 @@ public class JdbcChannelConfigProvider implements ChannelConfigProvider {
             return objectMapper.readValue(
                     json, objectMapper.getTypeFactory().constructMapType(Map.class, String.class, Object.class));
         } catch (JacksonException e) {
-            log.warn("Failed to parse channelConfig JSON, using empty config", e);
+            LogUtil.warn(JdbcChannelConfigProvider.class, "Failed to parse channelConfig JSON, using empty config", e);
             return Map.of();
         }
     }
@@ -70,7 +67,8 @@ public class JdbcChannelConfigProvider implements ChannelConfigProvider {
             return objectMapper.readValue(
                     json, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
         } catch (JacksonException e) {
-            log.warn("Failed to parse fallbackProviders JSON, using empty list", e);
+            LogUtil.warn(
+                    JdbcChannelConfigProvider.class, "Failed to parse fallbackProviders JSON, using empty list", e);
             return List.of();
         }
     }

@@ -17,13 +17,33 @@ UPMS Web 适配模块已经传递引入此组件。其他 Controller 应用可�
 
 ## JSON 约定
 
-业务 API 前缀固定为 `/api`。组件使用 Spring Boot 4 的 `JsonMapperBuilderCustomizer`，保留 Boot 的 Java Time/JDK8 模块发现机制，并沿用 `JsonUtil` 的日期规则：`LocalDate` 为 `yyyy-MM-dd`，`LocalDateTime` 和传统 `Date` 为 `yyyy-MM-dd HH:mm:ss`；同时注册对应反序列化模块，日期与时长不写为时间戳。Boot 创建的 `ObjectMapper`、MVC、`JsonUtil` 和 DTO 日志序列化共用该配置。应用可用更高顺序的 `JsonMapperBuilderCustomizer` 覆盖规则。
-
-## 接入步骤
-
+业务 API 前缀固定为 `/api`。组件使用 Spring Boot 4 的 `JsonMapperBuilderCustomizer`，保留 Boot 的 Java Time/JDK8 模块发现机制，并沿用 `JsonUtil` 的日期规则：`LocalDate` 为 `yyyy-MM-dd`，`LocalDateTime` 和传统 `Date` 为 `yyyy-MM-dd HH:mm:ss`；同时注册对应反序列化模块，日期与时长不写为时间戳。Boot 创建的 `ObjectMapper`、`JsonUtil` 和 DTO 序列化共用该日期配置；MVC 使用从它复制的响应专用 Mapper，另加展示脱敏规则。应用可用更高顺序的 `JsonMapperBuilderCustomizer` 覆盖规则。
 
 ## 自动装配
 
 - [`LoadUpWebMvcAutoConfiguration`](src/main/java/io/github/loadup/components/webmvc/LoadUpWebMvcAutoConfiguration.java)
 
 设计边界与装配路径见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 响应字段脱敏
+
+组件传递引入 `loadup-commons-masking`。在输出 DTO 的 String 属性标注：
+
+```java
+public record ContactDTO(@Masked(MaskType.PHONE) String mobile) {}
+```
+
+HTTP JSON 输出中的 `13812345678` 变为 `138****5678`。注解支持字段、getter 和 record，嵌套 `result/data`、分页及集合均通过 Jackson 序列化生效。参见 [完整规则](../../loadup-commons/loadup-commons-masking/README.md)。
+
+| 能力 | 行为 |
+|---|---|
+| JSON 字段脱敏 | MVC 服务端转换器使用响应专用 Jackson 3 Mapper |
+| JSON 输入 | 反序列化不脱敏，原始输入保持原值 |
+| JsonView、日期、其他模块 | 从 Boot Mapper 复制，保留既有序列化规则 |
+| 全局 JSON、出站 HTTP、缓存 | 不安装 masking module，保持原值 |
+| 明文查看 | 业务独立 DTO 与授权接口，组件没有权限豁免开关 |
+| 日志、CSV/Excel、下载流 | 使用 `Masking` 显式处理；不会自动脱敏 |
+
+不注册全局 `JacksonModule` 或替换全局 ObjectMapper，也不让权限改变普通接口的展示规则。`@Masked` 仅用于输出 DTO，不能替代数据库加密。避免先用全局 Mapper 将 DTO 变成字符串/Map 再返回，这会丢失注解信息。
+
+装配通过顺序 100 的 `ServerHttpMessageConvertersCustomizer` 安装服务端 JSON 转换器。若集成方在更高顺序重新替换该转换器或使用其他响应方式，须保留脱敏适配并验证其行为。

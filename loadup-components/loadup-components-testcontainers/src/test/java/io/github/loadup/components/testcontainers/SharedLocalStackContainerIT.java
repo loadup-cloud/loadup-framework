@@ -5,12 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.cloud.AbstractLocalStackContainerTest;
 import io.github.loadup.components.testcontainers.cloud.SharedLocalStackContainer;
 import java.net.URI;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.localstack.LocalStackContainer;
@@ -36,7 +35,6 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 @TestPropertySource(
         properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.localstack.enabled=true"})
 class SharedLocalStackContainerIT extends AbstractLocalStackContainerTest {
-    private static final Logger log = LoggerFactory.getLogger(SharedLocalStackContainerIT.class);
 
     @Test
     void testContainerIsRunning() {
@@ -52,9 +50,9 @@ class SharedLocalStackContainerIT extends AbstractLocalStackContainerTest {
         assertNotNull(SharedLocalStackContainer.getSecretKey(), "Secret key should not be null");
         assertNotNull(SharedLocalStackContainer.getRegion(), "Region should not be null");
 
-        log.info("S3 Endpoint: {}", SharedLocalStackContainer.getS3Endpoint());
-        log.info("Access Key: {}", SharedLocalStackContainer.getAccessKey());
-        log.info("Region: {}", SharedLocalStackContainer.getRegion());
+        LogUtil.info(SharedLocalStackContainerIT.class, "S3 Endpoint: {}", SharedLocalStackContainer.getS3Endpoint());
+        LogUtil.info(SharedLocalStackContainerIT.class, "Access Key: {}", SharedLocalStackContainer.getAccessKey());
+        LogUtil.info(SharedLocalStackContainerIT.class, "Region: {}", SharedLocalStackContainer.getRegion());
     }
 
     @Test
@@ -64,7 +62,7 @@ class SharedLocalStackContainerIT extends AbstractLocalStackContainerTest {
             ListBucketsResponse listBucketsResponse = s3Client.listBuckets();
             assertNotNull(listBucketsResponse, "List buckets response should not be null");
 
-            log.info("Successfully connected to LocalStack S3");
+            LogUtil.info(SharedLocalStackContainerIT.class, "Successfully connected to LocalStack S3");
         }
     }
 
@@ -77,13 +75,13 @@ class SharedLocalStackContainerIT extends AbstractLocalStackContainerTest {
             CreateBucketRequest createBucketRequest =
                     CreateBucketRequest.builder().bucket(bucketName).build();
             s3Client.createBucket(createBucketRequest);
-            log.info("Created bucket: {}", bucketName);
+            LogUtil.info(SharedLocalStackContainerIT.class, "Created bucket: {}", bucketName);
 
             // Verify bucket exists
             HeadBucketRequest headBucketRequest =
                     HeadBucketRequest.builder().bucket(bucketName).build();
             s3Client.headBucket(headBucketRequest);
-            log.info("Verified bucket exists: {}", bucketName);
+            LogUtil.info(SharedLocalStackContainerIT.class, "Verified bucket exists: {}", bucketName);
 
             // List buckets
             ListBucketsResponse listBucketsResponse = s3Client.listBuckets();
@@ -95,7 +93,7 @@ class SharedLocalStackContainerIT extends AbstractLocalStackContainerTest {
             DeleteBucketRequest deleteBucketRequest =
                     DeleteBucketRequest.builder().bucket(bucketName).build();
             s3Client.deleteBucket(deleteBucketRequest);
-            log.info("Deleted bucket: {}", bucketName);
+            LogUtil.info(SharedLocalStackContainerIT.class, "Deleted bucket: {}", bucketName);
         }
     }
 
@@ -114,7 +112,7 @@ class SharedLocalStackContainerIT extends AbstractLocalStackContainerTest {
             PutObjectRequest putObjectRequest =
                     PutObjectRequest.builder().bucket(bucketName).key(objectKey).build();
             s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromString(content));
-            log.info("Uploaded object: {}", objectKey);
+            LogUtil.info(SharedLocalStackContainerIT.class, "Uploaded object: {}", objectKey);
 
             // Get the object
             GetObjectRequest getObjectRequest =
@@ -122,7 +120,7 @@ class SharedLocalStackContainerIT extends AbstractLocalStackContainerTest {
             String retrievedContent =
                     s3Client.getObjectAsBytes(getObjectRequest).asUtf8String();
             assertEquals(content, retrievedContent, "Retrieved content should match uploaded content");
-            log.info("Retrieved object content: {}", retrievedContent);
+            LogUtil.info(SharedLocalStackContainerIT.class, "Retrieved object content: {}", retrievedContent);
 
             // Delete the object
             DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
@@ -130,7 +128,7 @@ class SharedLocalStackContainerIT extends AbstractLocalStackContainerTest {
                     .key(objectKey)
                     .build();
             s3Client.deleteObject(deleteObjectRequest);
-            log.info("Deleted object: {}", objectKey);
+            LogUtil.info(SharedLocalStackContainerIT.class, "Deleted object: {}", objectKey);
 
             // Delete bucket
             s3Client.deleteBucket(

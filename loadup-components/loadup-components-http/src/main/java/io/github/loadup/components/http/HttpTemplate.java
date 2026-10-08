@@ -187,7 +187,7 @@ public class HttpTemplate implements AutoCloseable {
                         HttpHeaders.readOnlyHttpHeaders(response.getHeaders()),
                         response.getStatusCode());
             });
-            outcome = result.getStatusCode().is2xxSuccessful() ? "success" : "http_error";
+            outcome = result.getStatusCode().is2xxSuccessful() ? "success" : "failure";
             return result;
         } catch (ResourceAccessException failure) {
             throw classify(failure);

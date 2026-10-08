@@ -1,11 +1,10 @@
 package io.github.loadup.modules.upms.app.service;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.modules.upms.client.command.UserPasswordResetCommand;
 import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import java.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class PasswordResetService {
-    private static final Logger log = LoggerFactory.getLogger(PasswordResetService.class);
 
     private final UserGateway userGateway;
     private final VerificationCodeService verificationCodeService;
@@ -40,7 +38,7 @@ public class PasswordResetService {
         String code = verificationCodeService.generateCode(email, "EMAIL");
 
         // TODO: Send email using loadup-components-gotone
-        log.info("Sending email verification code to {}: {}", email, code);
+        LogUtil.info(PasswordResetService.class, "Sending email verification code to {}: {}", email, code);
     }
 
     /**
@@ -59,7 +57,7 @@ public class PasswordResetService {
         String code = verificationCodeService.generateCode(mobile, "SMS");
 
         // TODO: Send SMS using loadup-components-gotone
-        log.info("Sending SMS verification code to {}: {}", mobile, code);
+        LogUtil.info(PasswordResetService.class, "Sending SMS verification code to {}: {}", mobile, code);
     }
 
     /**
@@ -104,7 +102,7 @@ public class PasswordResetService {
         user.setUpdatedAt(LocalDateTime.now());
 
         userGateway.update(user);
-        log.info("Password reset successful for user: {}", user.getUsername());
+        LogUtil.info(PasswordResetService.class, "Password reset successful for user: {}", user.getUsername());
     }
 
     public PasswordResetService(

@@ -1,10 +1,9 @@
 package io.github.loadup.components.testcontainers.database;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.mongodb.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -18,7 +17,6 @@ import org.testcontainers.utility.DockerImageName;
  * @since 1.0.0
  */
 public final class SharedMongoDBContainer {
-    private static final Logger log = LoggerFactory.getLogger(SharedMongoDBContainer.class);
 
     /**
      * Default MongoDB version to use
@@ -69,7 +67,7 @@ public final class SharedMongoDBContainer {
 
             String imageName = (config.getImage() != null) ? config.getImage() : DEFAULT_MONGODB_VERSION;
 
-            log.info("🚀 Starting Shared MongoDB TestContainer: {}", imageName);
+            LogUtil.info(SharedMongoDBContainer.class, "🚀 Starting Shared MongoDB TestContainer: {}", imageName);
 
             mongodbContainer = new MongoDBContainer(DockerImageName.parse(imageName)).withReuse(config.isReusable());
 
@@ -81,16 +79,22 @@ public final class SharedMongoDBContainer {
             port = mongodbContainer.getFirstMappedPort();
             replicaSetUrl = mongodbContainer.getReplicaSetUrl();
 
-            log.info("✅ MongoDB Container started at: {}", mongodbContainer.getReplicaSetUrl());
+            LogUtil.info(
+                    SharedMongoDBContainer.class,
+                    "✅ MongoDB Container started at: {}",
+                    mongodbContainer.getReplicaSetUrl());
 
             // Register shutdown hook if reuse is disabled
             if (config.isReusable()) {
-                log.info("♻️ Reuse is enabled. Container will persist after JVM exits.");
+                LogUtil.info(
+                        SharedMongoDBContainer.class, "♻️ Reuse is enabled. Container will persist after JVM exits.");
             } else {
-                log.info("Reuse is disabled. Registering shutdown hook to stop container.");
+                LogUtil.info(
+                        SharedMongoDBContainer.class,
+                        "Reuse is disabled. Registering shutdown hook to stop container.");
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     if (mongodbContainer != null) {
-                        log.info("🛑 Stopping MongoDB TestContainer...");
+                        LogUtil.info(SharedMongoDBContainer.class, "🛑 Stopping MongoDB TestContainer...");
                         mongodbContainer.stop();
                     }
                 }));

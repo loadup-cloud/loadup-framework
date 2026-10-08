@@ -52,3 +52,19 @@ DTO / JsonUtil   ← SmartInitializingSingleton   ← Boot ObjectMapper
   - `@ConditionalOnMissingBean(ErrorController.class)`
 
 集成方式与配置示例见 [README.md](./README.md)。
+
+## Jackson 3 响应脱敏
+
+```text
+Boot JsonMapper ──rebuild + private module──> ApiMaskingJson
+                                               ↓
+ServerHttpMessageConvertersCustomizer(order=100) → MVC JacksonJsonHttpMessageConverter
+Controller → ApiResponseAdvice(result/data) → @Masked property serializer → JSON
+全局 JsonUtil / DTO / RestClient / 缓存 → 原 Boot Mapper
+```
+
+`ApiMaskingJson` 是普通包装 Bean，内部 Mapper 与 SimpleModule 均不作为 Bean 注册；否则 Boot 会把模块装配到全局 JSON 和出站调用。服务端转换器也不注册为全局 Bean，而由服务器专用 customizer 安装。Jackson 3 `ValueSerializerModifier` 为带注解的 String 属性安装 serializer；不通过 JSON tree 重写数据，因此保留 JsonView 与其他 MVC 序列化提示。
+
+MVC 输入使用同一转换器，但模块只修改 serializer，反序列化不变。String converter 的报文包装使用响应专用 Mapper。二进制、手工拼接 JSON 和 Map 内无注解的值不在自动处理范围。没有 KMS RPC、权限 ThreadLocal 或原对象突变。
+
+错误注解直接使序列化失败；不得捕获后返回原 DTO 明文。`ApiMaskingJsonTest`、`ApiMaskingMvcTest` 覆盖隔离、嵌套与已包装响应、输入原值、JsonView 和错误声明。

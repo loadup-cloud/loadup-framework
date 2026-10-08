@@ -1,9 +1,8 @@
 package io.github.loadup.retrytask.jobrunr;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.retrytask.facade.RetryTaskNotifier;
 import io.github.loadup.retrytask.facade.model.RetryTaskFailure;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Default {@link RetryTaskNotifier} that logs permanent failures.
@@ -13,11 +12,10 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultRetryTaskNotifier implements RetryTaskNotifier {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultRetryTaskNotifier.class);
-
     @Override
     public void notifyFailed(RetryTaskFailure failure) {
-        LOGGER.warn(
+        LogUtil.warn(
+                DefaultRetryTaskNotifier.class,
                 "Retry task permanently failed: bizType={} bizId={} jobId={} attempts={} reason={}",
                 failure.bizType(),
                 failure.bizId(),

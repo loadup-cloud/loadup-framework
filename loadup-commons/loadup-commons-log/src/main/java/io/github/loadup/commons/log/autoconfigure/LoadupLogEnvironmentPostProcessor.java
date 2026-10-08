@@ -28,7 +28,13 @@ public class LoadupLogEnvironmentPostProcessor implements EnvironmentPostProcess
         String pattern = environment.getProperty(PATTERN_PROPERTY, defaultPattern);
         environment
                 .getPropertySources()
-                .addLast(new MapPropertySource(PROPERTY_SOURCE_NAME, Map.of("logging.pattern.console", pattern)));
+                .addLast(new MapPropertySource(
+                        PROPERTY_SOURCE_NAME,
+                        Map.of(
+                                "logging.pattern.console",
+                                pattern,
+                                "logging.pattern.file",
+                                environment.getProperty("loadup.log.file-pattern", pattern))));
     }
 
     @Override

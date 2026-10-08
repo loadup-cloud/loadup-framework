@@ -25,6 +25,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-commons-log</artifactId>
+        </dependency>
+
         <!-- TestContainers Core -->
         <dependency>
             <groupId>org.testcontainers</groupId>

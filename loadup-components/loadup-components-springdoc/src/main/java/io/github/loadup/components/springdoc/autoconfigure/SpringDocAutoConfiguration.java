@@ -1,5 +1,6 @@
 package io.github.loadup.components.springdoc.autoconfigure;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.springdoc.properties.SpringDocProperties;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -8,8 +9,6 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -32,7 +31,6 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnProperty(prefix = "loadup.springdoc", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(SpringDocProperties.class)
 public class SpringDocAutoConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(SpringDocAutoConfiguration.class);
 
     /**
      * Builds the global {@link OpenAPI} descriptor from {@link SpringDocProperties}.
@@ -43,7 +41,7 @@ public class SpringDocAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public OpenAPI loadupOpenAPI(SpringDocProperties props) {
-        log.info("Initializing LoadUp SpringDoc component (OpenAPI 3 + Scalar)");
+        LogUtil.info(SpringDocAutoConfiguration.class, "Initializing LoadUp SpringDoc component (OpenAPI 3 + Scalar)");
 
         OpenAPI openAPI = new OpenAPI().info(buildInfo(props));
 

@@ -19,6 +19,7 @@
  */
 package io.github.loadup.components.outbox;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.commons.util.TenantUtil;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.Observation;
@@ -26,13 +27,11 @@ import io.micrometer.observation.ObservationRegistry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 /** Runs handlers outside claim transactions and restores all per-thread context. */
 public class OutboxDispatcher {
-    private static final Logger log = LoggerFactory.getLogger(OutboxDispatcher.class);
+
     private final JdbcOutboxRepository repository;
     private final OutboxProperties properties;
     private final Map<String, OutboxHandler> handlers;
@@ -98,7 +97,8 @@ public class OutboxDispatcher {
                 observation.error(new IllegalStateException(
                         "Outbox handler failed: " + failure.getClass().getSimpleName()));
                 repository.fail(claim, failure);
-                log.warn(
+                LogUtil.warn(
+                        OutboxDispatcher.class,
                         "Outbox delivery failed eventId={} attempt={} errorType={}",
                         claim.event().id(),
                         claim.attempt(),

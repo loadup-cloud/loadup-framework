@@ -1,2 +1,3 @@
 io.github.loadup.components.signature.config.SignatureAutoConfiguration
 
+io.github.loadup.components.signature.request.RequestSignatureAutoConfiguration

@@ -661,6 +661,16 @@
                 <artifactId>loadup-components-outbox</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-redis</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-commons-masking</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
             <!-- Version inherited from Spring Boot; keep the HTTP transport in the public BOM. -->
             <dependency>
                 <groupId>org.apache.httpcomponents.client5</groupId>
@@ -670,6 +680,11 @@
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-http</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-kms</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>

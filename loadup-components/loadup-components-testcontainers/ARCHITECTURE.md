@@ -180,7 +180,6 @@ Spring 测试启动
 
 ```java
 
-@Slf4j
 public class MySQLContainerInitializer
         implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
@@ -191,7 +190,7 @@ public class MySQLContainerInitializer
 
         if (Boolean.parseBoolean(enabled)) {
             // TestContainers 模式
-            log.info("Using MySQL TestContainer for tests");
+            LogUtil.info(MySQLContainerInitializer.class, "Using MySQL TestContainer for tests");
             TestPropertyValues.of(
                     "spring.datasource.url=" + SharedMySQLContainer.getJdbcUrl(),
                     "spring.datasource.username=" + SharedMySQLContainer.getUsername(),
@@ -199,7 +198,7 @@ public class MySQLContainerInitializer
             ).applyTo(context.getEnvironment());
         } else {
             // 实际服务模式
-            log.info("Using real MySQL database from application configuration");
+            LogUtil.info(MySQLContainerInitializer.class, "Using real MySQL database from application configuration");
             // 不注入任何属性，使用配置文件中的配置
         }
     }

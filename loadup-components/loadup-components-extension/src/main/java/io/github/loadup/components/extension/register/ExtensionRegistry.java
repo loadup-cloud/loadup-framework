@@ -1,5 +1,6 @@
 package io.github.loadup.components.extension.register;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.extension.annotation.Extension;
 import io.github.loadup.components.extension.api.IExtensionPoint;
 import io.github.loadup.components.extension.core.BizScenario;
@@ -15,8 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -25,7 +24,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
  * 扩展点注册中心 支持基于注解的扩展点注册和 SPI 机制的扩展点加载
  */
 public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEvent> {
-    private static final Logger log = LoggerFactory.getLogger(ExtensionRegistry.class);
 
     // 内部存储结构，Key是扩展点接口类，Value是该接口的所有实现
     private final Map<Class<?>, List<ExtensionCoordinate>> extensionRegister = new ConcurrentHashMap<>();
@@ -45,7 +43,7 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
         ApplicationContext applicationContext = event.getApplicationContext();
         // 避免在父子容器环境中重复注册
         if (applicationContext.getParent() == null) {
-            log.info("Starting to register all extensions...");
+            LogUtil.info(ExtensionRegistry.class, "Starting to register all extensions...");
 
             // 1. 注册基于注解的扩展点
             Map<String, Object> beans = applicationContext.getBeansWithAnnotation(Extension.class);
@@ -60,7 +58,8 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
 
             initialized = true;
 
-            log.info(
+            LogUtil.info(
+                    ExtensionRegistry.class,
                     "Extension registration completed. Total {} extension point types loaded with {} implementations.",
                     extensionRegister.size(),
                     extensionRegister.values().stream().mapToInt(List::size).sum());
@@ -80,7 +79,8 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
             if (IExtensionPoint.class.isAssignableFrom(intf)) {
                 ExtensionCoordinate coordinate = new ExtensionCoordinate(bean, extensionAnn);
                 registerCoordinate(intf, coordinate);
-                log.debug(
+                LogUtil.debug(
+                        ExtensionRegistry.class,
                         "Registered extension [{} | bizCode:{}, useCase:{}, scenario:{}] for interface [{}].",
                         bean.getClass().getSimpleName(),
                         extensionAnn.bizCode(),
@@ -126,7 +126,8 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
         ExtensionCoordinate coordinate = new ExtensionCoordinate(instance, virtualExtension);
         registerCoordinate(extensionType, coordinate);
 
-        log.debug(
+        LogUtil.debug(
+                ExtensionRegistry.class,
                 "Registered SPI extension [{} | bizCode:{}, useCase:{}, scenario:{}] for interface [{}].",
                 instance.getClass().getSimpleName(),
                 provider.getBizCode(),
@@ -189,7 +190,7 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
      * 预热缓存 - 为常见场景构建缓存映射
      */
     private void prewarmCache() {
-        log.debug("Prewarming extension cache...");
+        LogUtil.debug(ExtensionRegistry.class, "Prewarming extension cache...");
         int cacheEntries = 0;
 
         // 使用Set避免重复计算相同的场景
@@ -215,7 +216,7 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
             }
         }
 
-        log.debug("Extension cache prewarmed with {} entries", cacheEntries);
+        LogUtil.debug(ExtensionRegistry.class, "Extension cache prewarmed with {} entries", cacheEntries);
     }
 
     /**

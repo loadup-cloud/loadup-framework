@@ -1,9 +1,8 @@
 package io.github.loadup.components.testcontainers.messaging;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -17,7 +16,6 @@ import org.testcontainers.utility.DockerImageName;
  * @since 1.0.0
  */
 public final class SharedKafkaContainer {
-    private static final Logger log = LoggerFactory.getLogger(SharedKafkaContainer.class);
 
     /**
      * Default Kafka version to use
@@ -48,7 +46,7 @@ public final class SharedKafkaContainer {
 
             String imageName = (config.getImage() != null) ? config.getImage() : DEFAULT_KAFKA_VERSION;
 
-            log.info("🚀 Starting Shared Kafka TestContainer: {}", imageName);
+            LogUtil.info(SharedKafkaContainer.class, "🚀 Starting Shared Kafka TestContainer: {}", imageName);
 
             kafkaContainer = new KafkaContainer(DockerImageName.parse(imageName)).withReuse(config.isReusable());
 
@@ -57,16 +55,21 @@ public final class SharedKafkaContainer {
 
             bootstrapServers = kafkaContainer.getBootstrapServers();
 
-            log.info("✅ Kafka Container started at: {}", kafkaContainer.getBootstrapServers());
+            LogUtil.info(
+                    SharedKafkaContainer.class,
+                    "✅ Kafka Container started at: {}",
+                    kafkaContainer.getBootstrapServers());
 
             // Register shutdown hook if reuse is disabled
             if (config.isReusable()) {
-                log.info("♻️ Reuse is enabled. Container will persist after JVM exits.");
+                LogUtil.info(
+                        SharedKafkaContainer.class, "♻️ Reuse is enabled. Container will persist after JVM exits.");
             } else {
-                log.info("Reuse is disabled. Registering shutdown hook to stop container.");
+                LogUtil.info(
+                        SharedKafkaContainer.class, "Reuse is disabled. Registering shutdown hook to stop container.");
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     if (kafkaContainer != null) {
-                        log.info("🛑 Stopping Kafka TestContainer...");
+                        LogUtil.info(SharedKafkaContainer.class, "🛑 Stopping Kafka TestContainer...");
                         kafkaContainer.stop();
                     }
                 }));

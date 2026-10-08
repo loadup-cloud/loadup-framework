@@ -18,3 +18,7 @@ loadup-commons
 ```
 
 聚合 POM 组织模块与版本，运行时依赖由子模块决定。
+
+## 脱敏边界
+
+`loadup-commons-masking` 无 Spring/Jackson 运行依赖；只表达展示规则。响应适配由 WebMVC 承担，业务权限与明文查询由业务模块控制。

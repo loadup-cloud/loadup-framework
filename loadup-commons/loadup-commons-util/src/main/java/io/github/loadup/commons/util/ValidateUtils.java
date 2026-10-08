@@ -1,5 +1,6 @@
 package io.github.loadup.commons.util;
 
+import io.github.loadup.commons.log.LogUtil;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidationException;
@@ -7,8 +8,6 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Jakarta Bean Validation 工具类
@@ -26,8 +25,6 @@ import org.slf4j.LoggerFactory;
  * @since 1.0.0
  */
 public class ValidateUtils {
-
-    private static final Logger log = LoggerFactory.getLogger(ValidateUtils.class);
 
     private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
@@ -47,7 +44,11 @@ public class ValidateUtils {
 
         if (!violations.isEmpty()) {
             String errorMsg = formatViolations(violations);
-            log.warn("Validation failed for {}: {}", obj.getClass().getSimpleName(), errorMsg);
+            LogUtil.warn(
+                    ValidateUtils.class,
+                    "Validation failed for {}: {}",
+                    obj.getClass().getSimpleName(),
+                    errorMsg);
             throw new ValidationException(errorMsg);
         }
     }
@@ -60,7 +61,7 @@ public class ValidateUtils {
      */
     public static boolean isValid(Object obj) {
         if (obj == null) {
-            log.debug("Object to validate is null, returning false");
+            LogUtil.debug(ValidateUtils.class, "Object to validate is null, returning false");
             return false;
         }
 
@@ -69,7 +70,11 @@ public class ValidateUtils {
             Set<ConstraintViolation<Object>> violations = validator.validate(obj);
             return violations.isEmpty();
         } catch (Exception e) {
-            log.error("Validation error for {}", obj.getClass().getSimpleName(), e);
+            LogUtil.error(
+                    ValidateUtils.class,
+                    "Validation error for {}",
+                    obj.getClass().getSimpleName(),
+                    e);
             return false;
         }
     }
@@ -83,7 +88,7 @@ public class ValidateUtils {
      */
     public static <T> Set<ConstraintViolation<T>> getViolations(T obj) {
         if (obj == null) {
-            log.debug("Object to validate is null, returning empty set");
+            LogUtil.debug(ValidateUtils.class, "Object to validate is null, returning empty set");
             return Set.of();
         }
 

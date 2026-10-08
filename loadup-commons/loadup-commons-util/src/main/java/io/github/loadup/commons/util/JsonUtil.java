@@ -2,6 +2,7 @@ package io.github.loadup.commons.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.github.loadup.commons.constant.CommonConstants;
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.commons.util.json.MultiDateDeserializer;
 import java.io.File;
 import java.io.InputStream;
@@ -15,8 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.collections4.MapUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.DeserializationFeature;
@@ -61,8 +60,6 @@ import tools.jackson.databind.node.ObjectNode;
  * @since 1.0.0
  */
 public class JsonUtil {
-
-    private static final Logger log = LoggerFactory.getLogger(JsonUtil.class);
 
     private static volatile ObjectMapper objectMapper = initObjectMapper();
 
@@ -142,7 +139,7 @@ public class JsonUtil {
      */
     public static String toJson(Object object) {
         if (object == null) {
-            log.debug("Object is null, returning null");
+            LogUtil.debug(JsonUtil.class, "Object is null, returning null");
             return null;
         }
         if (object instanceof String) {
@@ -151,7 +148,8 @@ public class JsonUtil {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (JacksonException e) {
-            log.error(
+            LogUtil.error(
+                    JsonUtil.class,
                     "Failed to convert object to JSON string, object type: {}",
                     object.getClass().getName(),
                     e);
@@ -168,7 +166,7 @@ public class JsonUtil {
      */
     public static <T> String toJsonStringPretty(T obj) {
         if (obj == null) {
-            log.debug("Object is null, returning null");
+            LogUtil.debug(JsonUtil.class, "Object is null, returning null");
             return null;
         }
         if (obj instanceof String) {
@@ -177,7 +175,8 @@ public class JsonUtil {
         try {
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
         } catch (JacksonException e) {
-            log.error(
+            LogUtil.error(
+                    JsonUtil.class,
                     "Failed to convert object to pretty JSON string, object type: {}",
                     obj.getClass().getName(),
                     e);
@@ -197,18 +196,22 @@ public class JsonUtil {
      */
     public static <T> T fromJson(String jsonString, Class<T> valueType) {
         if (StringUtils.isEmpty(jsonString)) {
-            log.debug("JSON string is null or empty, returning null");
+            LogUtil.debug(JsonUtil.class, "JSON string is null or empty, returning null");
             return null;
         }
         if (valueType == null) {
-            log.warn("Value type is null, returning null");
+            LogUtil.warn(JsonUtil.class, "Value type is null, returning null");
             return null;
         }
         try {
             return objectMapper.readValue(jsonString, valueType);
         } catch (JacksonException e) {
-            log.error(
-                    "Failed to parse JSON string to object of type: {}, json: {}", valueType.getName(), jsonString, e);
+            LogUtil.error(
+                    JsonUtil.class,
+                    "Failed to parse JSON string to object of type: {}, json: {}",
+                    valueType.getName(),
+                    jsonString,
+                    e);
             return null;
         }
     }
@@ -223,11 +226,11 @@ public class JsonUtil {
      */
     public static <T> T fromJson(String str, TypeReference<T> typeReference) {
         if (StringUtils.isEmpty(str)) {
-            log.debug("JSON string is null or empty, returning null");
+            LogUtil.debug(JsonUtil.class, "JSON string is null or empty, returning null");
             return null;
         }
         if (typeReference == null) {
-            log.warn("TypeReference is null, returning null");
+            LogUtil.warn(JsonUtil.class, "TypeReference is null, returning null");
             return null;
         }
 
@@ -237,7 +240,11 @@ public class JsonUtil {
             }
             return objectMapper.readValue(str, typeReference);
         } catch (JacksonException e) {
-            log.error("Failed to parse JSON string to object with TypeReference: {}", typeReference.getType(), e);
+            LogUtil.error(
+                    JsonUtil.class,
+                    "Failed to parse JSON string to object with TypeReference: {}",
+                    typeReference.getType(),
+                    e);
             return null;
         }
     }
@@ -253,15 +260,15 @@ public class JsonUtil {
      */
     public static <T> T fromJson(String str, Class<?> collectionClass, Class<?>... elementClasses) {
         if (StringUtils.isEmpty(str)) {
-            log.debug("JSON string is null or empty, returning null");
+            LogUtil.debug(JsonUtil.class, "JSON string is null or empty, returning null");
             return null;
         }
         if (collectionClass == null) {
-            log.warn("Collection class is null, returning null");
+            LogUtil.warn(JsonUtil.class, "Collection class is null, returning null");
             return null;
         }
         if (elementClasses == null || elementClasses.length == 0) {
-            log.warn("Element classes is null or empty, returning null");
+            LogUtil.warn(JsonUtil.class, "Element classes is null or empty, returning null");
             return null;
         }
 
@@ -270,8 +277,12 @@ public class JsonUtil {
         try {
             return objectMapper.readValue(str, javaType);
         } catch (JacksonException e) {
-            log.error(
-                    "Failed to parse JSON string to parametric type: {}, json: {}", collectionClass.getName(), str, e);
+            LogUtil.error(
+                    JsonUtil.class,
+                    "Failed to parse JSON string to parametric type: {}, json: {}",
+                    collectionClass.getName(),
+                    str,
+                    e);
             return null;
         }
     }
@@ -286,17 +297,17 @@ public class JsonUtil {
      */
     public static <T> T fromJson(InputStream inputStream, Class<T> valueType) {
         if (inputStream == null) {
-            log.warn("InputStream is null, returning null");
+            LogUtil.warn(JsonUtil.class, "InputStream is null, returning null");
             return null;
         }
         if (valueType == null) {
-            log.warn("Value type is null, returning null");
+            LogUtil.warn(JsonUtil.class, "Value type is null, returning null");
             return null;
         }
         try {
             return objectMapper.readValue(inputStream, valueType);
         } catch (JacksonException e) {
-            log.error("Failed to parse InputStream to type: {}", valueType.getName(), e);
+            LogUtil.error(JsonUtil.class, "Failed to parse InputStream to type: {}", valueType.getName(), e);
             return null;
         }
     }
@@ -323,12 +334,12 @@ public class JsonUtil {
      */
     public static <T> T mapToObject(Map<String, ?> map, Class<T> valueType) {
         if (MapUtils.isEmpty(map) || valueType == null) {
-            log.warn("Map or valueType is null/empty, returning null");
+            LogUtil.warn(JsonUtil.class, "Map or valueType is null/empty, returning null");
             return null;
         }
         String jsonString = toJson(map);
         if (jsonString == null) {
-            log.warn("Failed to convert map to JSON string");
+            LogUtil.warn(JsonUtil.class, "Failed to convert map to JSON string");
             return null;
         }
         return fromJson(jsonString, valueType);
@@ -345,16 +356,16 @@ public class JsonUtil {
      */
     public static <T> T mapToObject(Map<String, ?> map, Class<?> collectionClass, Class<?>... elementClasses) {
         if (MapUtils.isEmpty(map) || collectionClass == null) {
-            log.warn("Map or collectionClass is null/empty, returning null");
+            LogUtil.warn(JsonUtil.class, "Map or collectionClass is null/empty, returning null");
             return null;
         }
         if (elementClasses == null || elementClasses.length == 0) {
-            log.warn("Element classes is null or empty, returning null");
+            LogUtil.warn(JsonUtil.class, "Element classes is null or empty, returning null");
             return null;
         }
         String jsonString = toJson(map);
         if (jsonString == null) {
-            log.warn("Failed to convert map to JSON string");
+            LogUtil.warn(JsonUtil.class, "Failed to convert map to JSON string");
             return null;
         }
         return fromJson(jsonString, collectionClass, elementClasses);
@@ -370,18 +381,18 @@ public class JsonUtil {
      */
     public static <T> T mapToObject(Map<String, ?> map, JavaType javaType) {
         if (MapUtils.isEmpty(map) || javaType == null) {
-            log.warn("Map or javaType is null/empty, returning null");
+            LogUtil.warn(JsonUtil.class, "Map or javaType is null/empty, returning null");
             return null;
         }
         String jsonString = toJson(map);
         if (jsonString == null) {
-            log.warn("Failed to convert map to JSON string");
+            LogUtil.warn(JsonUtil.class, "Failed to convert map to JSON string");
             return null;
         }
         try {
             return objectMapper.readValue(jsonString, javaType);
         } catch (JacksonException e) {
-            log.error("Failed to parse map to object with JavaType: {}", javaType, e);
+            LogUtil.error(JsonUtil.class, "Failed to parse map to object with JavaType: {}", javaType, e);
             return null;
         }
     }
@@ -399,7 +410,7 @@ public class JsonUtil {
         try {
             return objectMapper.readValue(jsonString, new TypeReference<>() {});
         } catch (JacksonException e) {
-            log.error("Failed to parse JSON string to Map<String, Object>", e);
+            LogUtil.error(JsonUtil.class, "Failed to parse JSON string to Map<String, Object>", e);
             return new HashMap<>();
         }
     }
@@ -417,7 +428,7 @@ public class JsonUtil {
         try {
             return objectMapper.readValue(jsonString, new TypeReference<>() {});
         } catch (JacksonException e) {
-            log.error("Failed to parse JSON string to Map<String, String>", e);
+            LogUtil.error(JsonUtil.class, "Failed to parse JSON string to Map<String, String>", e);
             return new HashMap<>();
         }
     }
@@ -450,7 +461,7 @@ public class JsonUtil {
         try {
             return objectMapper.readValue(file, valueType);
         } catch (JacksonException e) {
-            log.error("Failed to parse JSON file: {}", file.getAbsolutePath(), e);
+            LogUtil.error(JsonUtil.class, "Failed to parse JSON file: {}", file.getAbsolutePath(), e);
             throw new RuntimeException("Failed to parse JSON file: " + file.getAbsolutePath(), e);
         }
     }
@@ -480,7 +491,7 @@ public class JsonUtil {
         try {
             objectMapper.writeValue(file, object);
         } catch (JacksonException e) {
-            log.error("Failed to write object to JSON file: {}", file.getAbsolutePath(), e);
+            LogUtil.error(JsonUtil.class, "Failed to write object to JSON file: {}", file.getAbsolutePath(), e);
             throw new RuntimeException("Failed to write object to JSON file: " + file.getAbsolutePath(), e);
         }
     }
@@ -496,18 +507,18 @@ public class JsonUtil {
      */
     public static JsonNode getSubNode(String jsonString, String path) {
         if (StringUtils.isEmpty(jsonString)) {
-            log.debug("JSON string is null or empty, returning null");
+            LogUtil.debug(JsonUtil.class, "JSON string is null or empty, returning null");
             return null;
         }
         if (StringUtils.isEmpty(path)) {
-            log.warn("Path is null or empty, returning null");
+            LogUtil.warn(JsonUtil.class, "Path is null or empty, returning null");
             return null;
         }
         try {
             JsonNode rootNode = objectMapper.readTree(jsonString);
             return rootNode.at(path);
         } catch (JacksonException e) {
-            log.error("Failed to get sub node from JSON string at path: {}", path, e);
+            LogUtil.error(JsonUtil.class, "Failed to get sub node from JSON string at path: {}", path, e);
             return null;
         }
     }
@@ -520,13 +531,13 @@ public class JsonUtil {
      */
     public static JsonNode toJsonNodeTree(String jsonString) {
         if (StringUtils.isEmpty(jsonString)) {
-            log.debug("JSON string is null or empty, returning null");
+            LogUtil.debug(JsonUtil.class, "JSON string is null or empty, returning null");
             return null;
         }
         try {
             return objectMapper.readTree(jsonString);
         } catch (JacksonException e) {
-            log.error("Failed to parse JSON string to JsonNode tree, json: {}", jsonString, e);
+            LogUtil.error(JsonUtil.class, "Failed to parse JSON string to JsonNode tree, json: {}", jsonString, e);
             return null;
         }
     }
@@ -561,14 +572,15 @@ public class JsonUtil {
             throw new IllegalArgumentException("ArrayNode cannot be null");
         }
         if (element == null) {
-            log.debug("Element is null, skipping add operation");
+            LogUtil.debug(JsonUtil.class, "Element is null, skipping add operation");
             return;
         }
         try {
             JsonNode jsonNode = objectMapper.valueToTree(element);
             arrayNode.add(jsonNode);
         } catch (IllegalArgumentException e) {
-            log.error(
+            LogUtil.error(
+                    JsonUtil.class,
                     "Failed to add element to JSON array, element type: {}",
                     element.getClass().getName(),
                     e);
@@ -586,11 +598,11 @@ public class JsonUtil {
     public static <T> List<T> fromJson(ArrayNode arrayNode, Class<T> valueType) {
         List<T> objectList = new ArrayList<>();
         if (arrayNode == null) {
-            log.debug("ArrayNode is null, returning empty list");
+            LogUtil.debug(JsonUtil.class, "ArrayNode is null, returning empty list");
             return objectList;
         }
         if (valueType == null) {
-            log.warn("Value type is null, returning empty list");
+            LogUtil.warn(JsonUtil.class, "Value type is null, returning empty list");
             return objectList;
         }
 

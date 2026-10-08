@@ -8,6 +8,7 @@ import com.mybatisflex.core.logicdelete.impl.DefaultLogicDeleteProcessor;
 import com.mybatisflex.core.tenant.TenantManager;
 import com.mybatisflex.spring.boot.MyBatisFlexCustomizer;
 import io.github.loadup.commons.dataobject.BaseDO;
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.database.id.DatabaseIdGenerator;
@@ -17,8 +18,6 @@ import io.github.loadup.components.database.listener.TenantContextMissingExcepti
 import java.time.Clock;
 import java.util.Locale;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -28,7 +27,6 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 @EnableConfigurationProperties(DatabaseProperties.class)
 public class MyBatisFlexAutoConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(MyBatisFlexAutoConfiguration.class);
 
     private final DatabaseProperties databaseProperties;
 
@@ -54,7 +52,7 @@ public class MyBatisFlexAutoConfiguration {
             BaseEntityListener listener = new BaseEntityListener(databaseProperties, idGenerator, clock);
             globalConfig.registerInsertListener(listener, BaseDO.class);
             globalConfig.registerUpdateListener(listener, BaseDO.class);
-            log.info("Configured MyBatis-Flex persistence conventions");
+            LogUtil.info(MyBatisFlexAutoConfiguration.class, "Configured MyBatis-Flex persistence conventions");
         };
     }
 

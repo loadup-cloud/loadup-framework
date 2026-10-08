@@ -5,8 +5,6 @@ import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
 import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class MobileLoginStrategy implements LoginStrategy {
-    private static final Logger log = LoggerFactory.getLogger(MobileLoginStrategy.class);
 
     private final UserGateway userGateway;
     private final VerificationCodeService verificationCodeService;

@@ -530,3 +530,12 @@ Authorization: Bearer {{upmsAccessToken}}
 Content-Type: application/json
 
 {"id": "{{exportTaskId}}"}
+
+### Read plaintext personal data (requires sensitive-read permission, scope and durable audit)
+# Ordinary user/detail and user/list responses mask realName, email and mobile.
+# Grant upms:user:sensitive:read explicitly and obtain a fresh token before using this request.
+POST {{baseUrl}}/api/upms/user/sensitive
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id": "{{upmsUserId}}", "purpose": "CUSTOMER_SUPPORT"}

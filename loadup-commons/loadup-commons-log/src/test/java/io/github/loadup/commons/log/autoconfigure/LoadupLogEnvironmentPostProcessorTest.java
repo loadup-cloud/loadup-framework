@@ -18,6 +18,7 @@ class LoadupLogEnvironmentPostProcessorTest {
         processor.postProcessEnvironment(environment, new SpringApplication());
 
         assertThat(environment.getProperty("logging.pattern.console")).isEqualTo(LogContext.DEFAULT_CONSOLE_PATTERN);
+        assertThat(environment.getProperty("logging.pattern.file")).isEqualTo(LogContext.DEFAULT_CONSOLE_PATTERN);
     }
 
     @Test
@@ -37,6 +38,18 @@ class LoadupLogEnvironmentPostProcessorTest {
 
         assertThat(environment.getProperty("logging.pattern.console"))
                 .isEqualTo(LogContext.DEFAULT_CONSOLE_PATTERN_WITHOUT_TRACE);
+    }
+
+    @Test
+    void filePatternCanBeConfiguredAndBootSettingsWin() {
+        var environment = new MockEnvironment()
+                .withProperty("loadup.log.file-pattern", "file-default")
+                .withProperty("logging.pattern.console", "console-override");
+        processor.postProcessEnvironment(environment, new SpringApplication());
+        assertThat(environment.getProperty("logging.pattern.file")).isEqualTo("file-default");
+        assertThat(environment.getProperty("logging.pattern.console")).isEqualTo("console-override");
+        environment.setProperty("logging.pattern.file", "file-override");
+        assertThat(environment.getProperty("logging.pattern.file")).isEqualTo("file-override");
     }
 
     @Test

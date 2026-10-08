@@ -1,11 +1,10 @@
 package io.github.loadup.modules.upms.app.strategy.oauth;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
 import io.github.loadup.modules.upms.app.strategy.OAuthProviderCode;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,7 +27,6 @@ import tools.jackson.databind.ObjectMapper;
 @Component
 @ConditionalOnProperty(prefix = "loadup.upms.security.oauth.github", name = "enabled", havingValue = "true")
 public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.strategy.oauth.OAuthProvider {
-    private static final Logger log = LoggerFactory.getLogger(GitHubOAuthProvider.class);
 
     private final UpmsSecurityProperties securityProperties;
     private final RestTemplate restTemplate = new RestTemplate();
@@ -86,7 +84,7 @@ public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.st
                     .build();
 
         } catch (Exception e) {
-            log.error("Failed to exchange GitHub token", e);
+            LogUtil.error(GitHubOAuthProvider.class, "Failed to exchange GitHub token", e);
             throw new RuntimeException("GitHub 授权失败: " + e.getMessage());
         }
     }
@@ -122,7 +120,7 @@ public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.st
                     .build();
 
         } catch (Exception e) {
-            log.error("Failed to get GitHub user info", e);
+            LogUtil.error(GitHubOAuthProvider.class, "Failed to get GitHub user info", e);
             throw new RuntimeException("获取 GitHub 用户信息失败: " + e.getMessage());
         }
     }

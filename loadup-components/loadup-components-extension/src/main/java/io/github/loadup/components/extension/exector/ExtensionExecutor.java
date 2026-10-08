@@ -1,5 +1,6 @@
 package io.github.loadup.components.extension.exector;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.extension.annotation.Extension;
 import io.github.loadup.components.extension.api.IExtensionPoint;
 import io.github.loadup.components.extension.context.BizContextHolder;
@@ -14,15 +15,12 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 /**
  * 扩展点执行器
  */
 public class ExtensionExecutor {
-    private static final Logger log = LoggerFactory.getLogger(ExtensionExecutor.class);
 
     private final ExtensionRegistry extensionRegistry;
 
@@ -36,7 +34,8 @@ public class ExtensionExecutor {
     public <E extends IExtensionPoint, R> R execute(
             Class<E> extensionPointClass, BizScenario scenario, Function<E, R> action) {
         E extension = findBestMatch(extensionPointClass, scenario);
-        log.debug(
+        LogUtil.debug(
+                ExtensionExecutor.class,
                 "Executing extension {} for scenario {}",
                 extension.getClass().getSimpleName(),
                 scenario.getUniqueIdentity());
@@ -60,8 +59,11 @@ public class ExtensionExecutor {
     public <E extends IExtensionPoint> void run(
             Class<E> extensionPointClass, BizScenario scenario, Consumer<E> action) {
         E extension = findBestMatch(extensionPointClass, scenario);
-        log.debug(
-                "Run extension {} for scenario {}", extension.getClass().getSimpleName(), scenario.getUniqueIdentity());
+        LogUtil.debug(
+                ExtensionExecutor.class,
+                "Run extension {} for scenario {}",
+                extension.getClass().getSimpleName(),
+                scenario.getUniqueIdentity());
         action.accept(extension);
     }
 
@@ -79,10 +81,14 @@ public class ExtensionExecutor {
             Class<E> extensionPointClass, BizScenario scenario, Consumer<E> action) {
         List<E> extensions = findAllByScenario(extensionPointClass, scenario);
         if (extensions.isEmpty()) {
-            log.warn("No extensions found for scenario: {}", scenario.getUniqueIdentity());
+            LogUtil.warn(ExtensionExecutor.class, "No extensions found for scenario: {}", scenario.getUniqueIdentity());
             return;
         }
-        log.debug("Executing {} extensions for scenario {}", extensions.size(), scenario.getUniqueIdentity());
+        LogUtil.debug(
+                ExtensionExecutor.class,
+                "Executing {} extensions for scenario {}",
+                extensions.size(),
+                scenario.getUniqueIdentity());
         extensions.forEach(action);
     }
 
@@ -93,10 +99,10 @@ public class ExtensionExecutor {
             Class<E> extensionPointClass, String bizCode, Consumer<E> action) {
         List<E> extensions = findAllByBizCode(extensionPointClass, bizCode);
         if (extensions.isEmpty()) {
-            log.warn("No extensions found for bizCode: {}", bizCode);
+            LogUtil.warn(ExtensionExecutor.class, "No extensions found for bizCode: {}", bizCode);
             return;
         }
-        log.debug("Executing {} extensions for bizCode {}", extensions.size(), bizCode);
+        LogUtil.debug(ExtensionExecutor.class, "Executing {} extensions for bizCode {}", extensions.size(), bizCode);
         extensions.forEach(action);
     }
 
@@ -107,10 +113,11 @@ public class ExtensionExecutor {
             Class<E> extensionPointClass, BizScenario scenario, Function<E, R> action) {
         List<E> extensions = findAllByScenario(extensionPointClass, scenario);
         if (extensions.isEmpty()) {
-            log.warn("No extensions found for scenario: {}", scenario.getUniqueIdentity());
+            LogUtil.warn(ExtensionExecutor.class, "No extensions found for scenario: {}", scenario.getUniqueIdentity());
             return Collections.emptyList();
         }
-        log.debug(
+        LogUtil.debug(
+                ExtensionExecutor.class,
                 "Collecting results from {} extensions for scenario {}",
                 extensions.size(),
                 scenario.getUniqueIdentity());
@@ -124,10 +131,14 @@ public class ExtensionExecutor {
             Class<E> extensionPointClass, String bizCode, Function<E, R> action) {
         List<E> extensions = findAllByBizCode(extensionPointClass, bizCode);
         if (extensions.isEmpty()) {
-            log.warn("No extensions found for bizCode: {}", bizCode);
+            LogUtil.warn(ExtensionExecutor.class, "No extensions found for bizCode: {}", bizCode);
             return Collections.emptyList();
         }
-        log.debug("Collecting results from {} extensions for bizCode {}", extensions.size(), bizCode);
+        LogUtil.debug(
+                ExtensionExecutor.class,
+                "Collecting results from {} extensions for bizCode {}",
+                extensions.size(),
+                bizCode);
         return extensions.stream().map(action).collect(Collectors.toList());
     }
 

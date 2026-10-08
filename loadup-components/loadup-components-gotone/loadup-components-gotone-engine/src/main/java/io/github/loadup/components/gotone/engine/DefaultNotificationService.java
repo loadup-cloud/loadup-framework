@@ -1,5 +1,6 @@
 package io.github.loadup.components.gotone.engine;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.gotone.NotificationService;
 import io.github.loadup.components.gotone.config.ChannelConfigProvider;
 import io.github.loadup.components.gotone.config.ChannelConfigProvider.ChannelConfig;
@@ -14,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.task.TaskExecutor;
 
 /**
@@ -29,7 +28,6 @@ import org.springframework.core.task.TaskExecutor;
  * directly to the channels listed in {@link NotificationRequest#channels()}.
  */
 public class DefaultNotificationService implements NotificationService {
-    private static final Logger log = LoggerFactory.getLogger(DefaultNotificationService.class);
 
     private final NotificationChannelManager channelManager;
     private final Optional<ChannelConfigProvider> channelConfigProvider;
@@ -55,7 +53,8 @@ public class DefaultNotificationService implements NotificationService {
         String traceId = UUID.randomUUID().toString();
         List<ChannelConfig> channels = resolveChannels(request);
         if (channels.isEmpty()) {
-            log.warn(
+            LogUtil.warn(
+                    DefaultNotificationService.class,
                     "No channel configuration resolved for serviceCode={} channels={}",
                     request.serviceCode(),
                     request.channels());
@@ -78,7 +77,9 @@ public class DefaultNotificationService implements NotificationService {
         if (taskExecutor.isPresent()) {
             taskExecutor.get().execute(() -> send(request));
         } else {
-            log.warn("No TaskExecutor bean available, falling back to a synchronous send");
+            LogUtil.warn(
+                    DefaultNotificationService.class,
+                    "No TaskExecutor bean available, falling back to a synchronous send");
             send(request);
         }
     }
@@ -100,7 +101,7 @@ public class DefaultNotificationService implements NotificationService {
                 try {
                     recordHandler.get().onResult(request, config, toAttemptResult(sendResult));
                 } catch (Exception e) {
-                    log.warn("RecordHandler failed while send succeeded", e);
+                    LogUtil.warn(DefaultNotificationService.class, "RecordHandler failed while send succeeded", e);
                 }
             }
 
@@ -113,7 +114,7 @@ public class DefaultNotificationService implements NotificationService {
                     sendResult.success(),
                     sendResult.success() ? null : "provider chain failed");
         } catch (Exception e) {
-            log.warn("Channel {} send failed", config.channel(), e);
+            LogUtil.warn(DefaultNotificationService.class, "Channel {} send failed", config.channel(), e);
             return new NotificationResponse.ChannelSendResult(
                     config.channel(), null, request.receivers().size(), 0, 0, false, e.getMessage());
         }

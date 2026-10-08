@@ -1,10 +1,9 @@
 package io.github.loadup.components.testcontainers;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
@@ -13,7 +12,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 
 public abstract class BaseContainerInitializer
         implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-    private static final Logger log = LoggerFactory.getLogger(BaseContainerInitializer.class);
 
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -29,12 +27,12 @@ public abstract class BaseContainerInitializer
 
         // 3. 检查开关
         if (properties.isEnabled() && config.isEnabled()) {
-            log.info("🚀 Initializing TestContainer for: {}", getContainerName());
+            LogUtil.info(BaseContainerInitializer.class, "🚀 Initializing TestContainer for: {}", getContainerName());
 
             // 启动并注入属性
             startAndApplyProperties(config, env);
         } else {
-            log.info("⏭️ TestContainer for {} is disabled.", getContainerName());
+            LogUtil.info(BaseContainerInitializer.class, "⏭️ TestContainer for {} is disabled.", getContainerName());
         }
     }
 

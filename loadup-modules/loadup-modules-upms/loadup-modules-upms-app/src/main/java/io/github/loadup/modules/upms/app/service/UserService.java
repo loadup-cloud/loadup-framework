@@ -1,3 +1,22 @@
+/*
+ * #%L
+ * Loadup Modules UPMS App Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.app.service;
 
 import io.github.loadup.commons.domain.PageResult;
@@ -19,8 +38,6 @@ import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +50,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class UserService {
-    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserGateway userGateway;
     private final RoleGateway roleGateway;
@@ -45,6 +61,7 @@ public class UserService {
      */
     @Transactional
     public UserDetailDTO createUser(UserCreateCommand command) {
+        rejectMaskedValues(command.getRealName(), command.getEmail(), command.getMobile());
         // Validate username uniqueness
         if (userGateway.existsByUsername(command.getUsername())) {
             throw new RuntimeException("用户名已存在");
@@ -103,6 +120,7 @@ public class UserService {
      */
     @Transactional
     public UserDetailDTO updateUser(UserUpdateCommand command) {
+        rejectMaskedValues(command.getRealName(), command.getEmail(), command.getMobile());
         User user = userGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("用户不存在"));
 
         // Validate email uniqueness (if changed)
@@ -190,6 +208,13 @@ public class UserService {
         userGateway.deleteById(id);
     }
 
+    private static void rejectMaskedValues(String... values) {
+        for (String value : values) {
+            if (value != null && value.contains("*"))
+                throw new IllegalArgumentException("Masked values cannot be saved");
+        }
+    }
+
     private void validateDepartment(String deptId) {
         if (deptId != null
                 && departmentGateway
@@ -248,8 +273,11 @@ public class UserService {
      */
     @Transactional
     public void changePassword(UserPasswordChangeCommand command) {
-        if (command == null || command.getOldPassword() == null || command.getOldPassword().isBlank()
-                || command.getNewPassword() == null || command.getNewPassword().length() < 8
+        if (command == null
+                || command.getOldPassword() == null
+                || command.getOldPassword().isBlank()
+                || command.getNewPassword() == null
+                || command.getNewPassword().length() < 8
                 || command.getNewPassword().getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72
                 || command.getConfirmPassword() == null) {
             throw new IllegalArgumentException("invalid password change request");

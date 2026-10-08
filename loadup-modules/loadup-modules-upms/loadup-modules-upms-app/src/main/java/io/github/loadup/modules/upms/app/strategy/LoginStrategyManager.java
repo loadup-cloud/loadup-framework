@@ -1,11 +1,10 @@
 package io.github.loadup.modules.upms.app.strategy;
 
+import io.github.loadup.commons.log.LogUtil;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class LoginStrategyManager {
-    private static final Logger log = LoggerFactory.getLogger(LoginStrategyManager.class);
 
     private final Map<String, LoginStrategy> strategyMap = new ConcurrentHashMap<>();
 
@@ -32,17 +30,25 @@ public class LoginStrategyManager {
                     .forEach(strategy -> {
                         String loginType = strategy.getLoginType();
                         if (strategyMap.containsKey(loginType)) {
-                            log.warn("Duplicate login strategy for type: {}, using higher priority one", loginType);
+                            LogUtil.warn(
+                                    LoginStrategyManager.class,
+                                    "Duplicate login strategy for type: {}, using higher priority one",
+                                    loginType);
                         } else {
                             strategyMap.put(loginType, strategy);
-                            log.info(
+                            LogUtil.info(
+                                    LoginStrategyManager.class,
                                     "Registered login strategy: {} -> {}",
                                     loginType,
                                     strategy.getClass().getSimpleName());
                         }
                     });
         }
-        log.info("LoginStrategyManager initialized with {} strategies: {}", strategyMap.size(), strategyMap.keySet());
+        LogUtil.info(
+                LoginStrategyManager.class,
+                "LoginStrategyManager initialized with {} strategies: {}",
+                strategyMap.size(),
+                strategyMap.keySet());
     }
 
     /**

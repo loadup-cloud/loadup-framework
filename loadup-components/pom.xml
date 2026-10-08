@@ -27,6 +27,7 @@
         <module>loadup-components-globalunique</module>
         <module>loadup-components-outbox</module>
         <module>loadup-components-http</module>
+        <module>loadup-components-kms</module>
         <module>loadup-components-gotone</module>
         <module>loadup-components-pipeline</module>
         <module>loadup-components-resilience4j</module>

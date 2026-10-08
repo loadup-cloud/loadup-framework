@@ -183,7 +183,7 @@ loadup-modules-{mod}/
 | 13 | DO 中重复定义 id/createdAt/updatedAt/tenantId/deleted | 这些字段在 `BaseDO` 中已定义                                              |
 | 14 | Mapper 中写额外 SQL 方法                       | 用 `QueryWrapper` 在 GatewayImpl 中操作                                       |
 | 15 | 新增三方依赖不在 BOM 中声明                         | 版本管理集中在 `loadup-dependencies/pom.xml`                                     |
-| 16 | 使用 Lombok（`@Data`/`@Getter`/`@Slf4j`/`@Builder` 等） | 写显式 Java 代码；DTO/Command/Query 优先使用 Java `record`；Logger 用 `LoggerFactory.getLogger` |
+| 16 | 使用 Lombok（`@Data`/`@Getter`/`@Slf4j`/`@Builder` 等） | 写显式 Java 代码；DTO/Command/Query 优先使用 Java `record`；日志打印使用 `LogUtil.info/warn/error(Source.class, ...)`；仅第三方日志适配需要 Logger 时使用 `LogUtil.getLogger` |
 
 ---
 
@@ -321,3 +321,9 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 5. **文档与代码同步。** 修改代码导致接口、配置或行为变化时，同步更新对应的 README.md 或 ARCHITECTURE.md；使用根目录的 `doc-sync-agent.py` 同步到文档站。首页由文档站单独维护，不由同步脚本生成。
 
 6. **根 README.md 是项目门面。** 面向首次接触者，含项目简介、快速开始、BOM 引入方式、模块目录概览，不深入单个模块细节。
+
+## 日志、观测与任务收尾
+
+- 框架日志打印统一使用 `loadup-commons-log` 的 `LogUtil`，生产代码显式传入来源类；第三方要求 SLF4J Logger 时通过 `LogUtil.getLogger` 获取。保留参数化占位符，异常作为最后参数，敏感字段显式脱敏。
+- 指标和追踪使用 Spring Boot 管理的 `MeterRegistry`、`ObservationRegistry` 和 Micrometer Tracing；组件注入共享实例，基础 HTTP/JVM 观测由 Boot 提供。自定义指标以 `loadup.<domain>.*` 命名，仅使用低基数标签，配置使用标准 `management.*`。
+- 每完成一项任务立即更新根 `ROADMAP.md`：移除已完成的实现项，把未执行的测试或部署验收单独保留为待办；源码或测试已编写不等于运行验证通过。

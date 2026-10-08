@@ -1,5 +1,6 @@
 package io.github.loadup.components.gotone.engine;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.gotone.NotificationChannelProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
@@ -11,11 +12,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class NotificationChannelManager {
-    private static final Logger log = LoggerFactory.getLogger(NotificationChannelManager.class);
 
     private final Map<String, Map<String, NotificationChannelProvider>> providerMap = new ConcurrentHashMap<>();
 
@@ -25,7 +23,11 @@ public class NotificationChannelManager {
                 providerMap
                         .computeIfAbsent(p.getChannelType(), k -> new ConcurrentHashMap<>())
                         .put(p.getProviderName(), p);
-                log.info("Registered provider: {} for channel: {}", p.getProviderName(), p.getChannelType());
+                LogUtil.info(
+                        NotificationChannelManager.class,
+                        "Registered provider: {} for channel: {}",
+                        p.getProviderName(),
+                        p.getChannelType());
             }
         }
     }
@@ -41,12 +43,20 @@ public class NotificationChannelManager {
                 boolean success = response.isSuccess();
                 attempts.add(new Attempt(provider.getProviderName(), success, null));
                 if (success) {
-                    log.info("Provider {} succeeded after {} attempt(s)", provider.getProviderName(), attempts.size());
+                    LogUtil.info(
+                            NotificationChannelManager.class,
+                            "Provider {} succeeded after {} attempt(s)",
+                            provider.getProviderName(),
+                            attempts.size());
                     return new SendResult(response, attempts, true);
                 }
             } catch (Exception e) {
                 attempts.add(new Attempt(provider.getProviderName(), false, e.getMessage()));
-                log.warn("Provider {} failed ({}), trying next", provider.getProviderName(), e.getMessage());
+                LogUtil.warn(
+                        NotificationChannelManager.class,
+                        "Provider {} failed ({}), trying next",
+                        provider.getProviderName(),
+                        e.getMessage());
             }
         }
         return new SendResult(null, attempts, false);

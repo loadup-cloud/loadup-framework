@@ -7,6 +7,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.authserver.jwt.LoadUpJwtTokenCustomizer;
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties;
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties.Client;
@@ -23,8 +24,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -68,7 +67,6 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
         })
 @EnableConfigurationProperties(LoadUpAuthServerProperties.class)
 public class SasAuthServerAutoConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(SasAuthServerAutoConfiguration.class);
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -188,8 +186,10 @@ public class SasAuthServerAutoConfiguration {
                                 new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKeyBase64)));
                 privateKey = (RSAPrivateCrtKey) decoded;
             } else {
-                log.warn("loadup.security.auth-server.jwk.rsa-private-key-base64 is not configured; "
-                        + "an ephemeral RSA key will be generated. Tokens become invalid after restart.");
+                LogUtil.warn(
+                        SasAuthServerAutoConfiguration.class,
+                        "loadup.security.auth-server.jwk.rsa-private-key-base64 is not configured; "
+                                + "an ephemeral RSA key will be generated. Tokens become invalid after restart.");
                 KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
                 generator.initialize(2048);
                 KeyPair keyPair = generator.generateKeyPair();

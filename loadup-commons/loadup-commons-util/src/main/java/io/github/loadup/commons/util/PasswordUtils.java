@@ -1,10 +1,9 @@
 package io.github.loadup.commons.util;
 
+import io.github.loadup.commons.log.LogUtil;
 import java.security.SecureRandom;
 import java.util.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.encrypt.Encryptors;
 
 /**
@@ -26,8 +25,6 @@ import org.springframework.security.crypto.encrypt.Encryptors;
  */
 public class PasswordUtils {
 
-    private static final Logger log = LoggerFactory.getLogger(PasswordUtils.class);
-
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     /**
@@ -45,7 +42,7 @@ public class PasswordUtils {
     public static String getRandomSalt() {
         Long randomLong = SECURE_RANDOM.nextLong(10000000L, 100000000L);
         String salt = String.valueOf(randomLong);
-        log.debug("Generated random salt: {}", salt);
+        LogUtil.debug(PasswordUtils.class, "Generated random salt: {}", salt);
         return salt;
     }
 
@@ -68,10 +65,10 @@ public class PasswordUtils {
         try {
             byte[] encryptedByte = Encryptors.stronger(password, salt).encrypt(plainText.getBytes());
             String encrypted = Base64.getEncoder().encodeToString(encryptedByte);
-            log.debug("Successfully encrypted text with length: {}", plainText.length());
+            LogUtil.debug(PasswordUtils.class, "Successfully encrypted text with length: {}", plainText.length());
             return encrypted;
         } catch (Exception e) {
-            log.error("Failed to encrypt text", e);
+            LogUtil.error(PasswordUtils.class, "Failed to encrypt text", e);
             throw new RuntimeException("Encryption failed", e);
         }
     }
@@ -96,10 +93,10 @@ public class PasswordUtils {
             byte[] decodedByte = Base64.getDecoder().decode(encryptedStr);
             byte[] decrypted = Encryptors.stronger(password, salt).decrypt(decodedByte);
             String decryptedText = new String(decrypted);
-            log.debug("Successfully decrypted text with length: {}", decryptedText.length());
+            LogUtil.debug(PasswordUtils.class, "Successfully decrypted text with length: {}", decryptedText.length());
             return decryptedText;
         } catch (Exception e) {
-            log.error("Failed to decrypt text: {}", e.getMessage());
+            LogUtil.error(PasswordUtils.class, "Failed to decrypt text: {}", e.getMessage());
             return null;
         }
     }

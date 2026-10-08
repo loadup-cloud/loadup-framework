@@ -16,5 +16,6 @@
         <module>loadup-commons-dto</module>
         <module>loadup-commons-util</module>
         <module>loadup-commons-log</module>
+        <module>loadup-commons-masking</module>
     </modules>
 </project>

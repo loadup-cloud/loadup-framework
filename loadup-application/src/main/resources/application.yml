@@ -113,9 +113,6 @@ management:
       show-details: when-authorized
       probes:
         enabled: true
-  metrics:
-    tags:
-      application: ${spring.application.name}
   otlp:
     metrics:
       export:

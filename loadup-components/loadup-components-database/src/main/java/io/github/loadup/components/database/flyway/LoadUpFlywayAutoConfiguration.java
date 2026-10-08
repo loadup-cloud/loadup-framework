@@ -1,11 +1,10 @@
 package io.github.loadup.components.database.flyway;
 
+import io.github.loadup.commons.log.LogUtil;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -44,7 +43,6 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnProperty(prefix = "loadup.flyway", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(FlywayProperties.class)
 public class LoadUpFlywayAutoConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(LoadUpFlywayAutoConfiguration.class);
 
     /**
      * Create the Flyway bean with LoadUp-specific configuration.
@@ -59,20 +57,24 @@ public class LoadUpFlywayAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public Flyway flyway(DataSource dataSource, FlywayProperties properties) {
-        log.info(">>> [FLYWAY] Configuring Flyway with LoadUp properties");
+        LogUtil.info(LoadUpFlywayAutoConfiguration.class, ">>> [FLYWAY] Configuring Flyway with LoadUp properties");
 
         FluentConfiguration config = Flyway.configure().dataSource(dataSource);
 
         // Migration locations
         if (properties.getLocations() != null && properties.getLocations().length > 0) {
             config.locations(properties.getLocations());
-            log.debug(">>> [FLYWAY] Migration locations: {}", (Object) properties.getLocations());
+            LogUtil.debug(LoadUpFlywayAutoConfiguration.class, ">>> [FLYWAY] Migration locations: {}", (Object)
+                    properties.getLocations());
         }
 
         // Schema history table: isolates independent version sequences sharing one database
         if (properties.getTable() != null && !properties.getTable().isBlank()) {
             config.table(properties.getTable());
-            log.info(">>> [FLYWAY] Schema history table: {}", properties.getTable());
+            LogUtil.info(
+                    LoadUpFlywayAutoConfiguration.class,
+                    ">>> [FLYWAY] Schema history table: {}",
+                    properties.getTable());
         }
 
         // Baseline configuration
@@ -123,7 +125,7 @@ public class LoadUpFlywayAutoConfiguration {
         }
 
         Flyway flyway = config.load();
-        log.info(">>> [FLYWAY] Flyway instance configured successfully");
+        LogUtil.info(LoadUpFlywayAutoConfiguration.class, ">>> [FLYWAY] Flyway instance configured successfully");
         return flyway;
     }
 
@@ -160,11 +162,18 @@ public class LoadUpFlywayAutoConfiguration {
     public FlywayMigrationStrategy loadupFlywayMigrationStrategy(FlywayProperties properties) {
         return flyway -> {
             if (properties.isMigrateAtStart()) {
-                log.info(">>> [FLYWAY] Starting migration (migrate-at-start: true)");
+                LogUtil.info(
+                        LoadUpFlywayAutoConfiguration.class,
+                        ">>> [FLYWAY] Starting migration (migrate-at-start: true)");
                 int applied = flyway.migrate().migrationsExecuted;
-                log.info(">>> [FLYWAY] Migration completed. {} migrations executed", applied);
+                LogUtil.info(
+                        LoadUpFlywayAutoConfiguration.class,
+                        ">>> [FLYWAY] Migration completed. {} migrations executed",
+                        applied);
             } else {
-                log.info(">>> [FLYWAY] migrate-at-start is disabled — skipping automatic migration");
+                LogUtil.info(
+                        LoadUpFlywayAutoConfiguration.class,
+                        ">>> [FLYWAY] migrate-at-start is disabled — skipping automatic migration");
             }
         };
     }

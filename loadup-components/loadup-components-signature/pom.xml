@@ -9,9 +9,26 @@
 
     <artifactId>loadup-components-signature</artifactId>
     <name>LoadUp Components Signature</name>
-    <description>Digital signature and digest service component (RSA, DSA, ECDSA, MD5, SHA, HMAC)</description>
+    <description>KMS-backed request signatures, replay protection and JCA cryptographic primitives</description>
 
+    <properties>
+        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
+    </properties>
     <dependencies>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-commons-log</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-kms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>

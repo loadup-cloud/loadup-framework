@@ -4,13 +4,12 @@ import static io.github.loadup.components.gotone.channel.webhook.provider.Webhoo
 import static io.github.loadup.components.gotone.channel.webhook.provider.WebhookSupport.maskUrl;
 import static io.github.loadup.components.gotone.channel.webhook.provider.WebhookSupport.postJson;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.gotone.NotificationChannelProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tools.jackson.databind.ObjectMapper;
 
 /**
@@ -20,7 +19,6 @@ import tools.jackson.databind.ObjectMapper;
  */
 public class FeishuWebhookProvider implements NotificationChannelProvider {
 
-    private static final Logger log = LoggerFactory.getLogger(FeishuWebhookProvider.class);
     private static final ObjectMapper JSON = new ObjectMapper();
 
     @Override
@@ -51,10 +49,10 @@ public class FeishuWebhookProvider implements NotificationChannelProvider {
             if (!success) {
                 return failure(request, "webhook endpoint returned a non-2xx status");
             }
-            log.info("Feishu webhook sent to {}", maskUrl(webhookUrl));
+            LogUtil.info(FeishuWebhookProvider.class, "Feishu webhook sent to {}", maskUrl(webhookUrl));
             return success(request);
         } catch (Exception e) {
-            log.warn("Feishu webhook failed for {}", maskUrl(webhookUrl), e);
+            LogUtil.warn(FeishuWebhookProvider.class, "Feishu webhook failed for {}", maskUrl(webhookUrl), e);
             return failure(request, e.getMessage());
         }
     }

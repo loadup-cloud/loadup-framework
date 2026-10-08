@@ -1,12 +1,11 @@
 package io.github.loadup.modules.upms.app.strategy;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
 import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
 import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import java.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PasswordLoginStrategy implements LoginStrategy {
-    private static final Logger log = LoggerFactory.getLogger(PasswordLoginStrategy.class);
 
     private final UserGateway userGateway;
     private final PasswordEncoder passwordEncoder;
@@ -99,7 +97,7 @@ public class PasswordLoginStrategy implements LoginStrategy {
 
             if (user.getLoginFailCount() >= securityProperties.getLogin().getMaxFailAttempts()) {
                 user.lockAccount();
-                log.warn("用户 {} 因失败次数过多被锁定", user.getUsername());
+                LogUtil.warn(PasswordLoginStrategy.class, "用户 {} 因失败次数过多被锁定", user.getUsername());
             }
 
             userGateway.update(user);

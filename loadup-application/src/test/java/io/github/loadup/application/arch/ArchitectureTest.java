@@ -222,7 +222,7 @@ class ArchitectureTest {
     }
 
     @Test
-    @DisplayName("不允许直接使用 System.out / System.err（必须使用 Slf4j）")
+    @DisplayName("Do not print to System.out / System.err; use LogUtil")
     void noSystemOutPrintln() {
         noClasses()
                 .that()
@@ -230,7 +230,20 @@ class ArchitectureTest {
                 .should()
                 .dependOnClassesThat()
                 .haveFullyQualifiedName("java.io.PrintStream")
-                .because("禁止使用 System.out/err，所有日志必须通过 @Slf4j")
-                .check(MODULE_CLASSES);
+                .because("Framework logs must use LogUtil")
+                .check(ALL_CLASSES);
+    }
+
+    @Test
+    @DisplayName("Only LogUtil may create SLF4J loggers")
+    void loggerFactoryIsOwnedByLogUtil() {
+        noClasses()
+                .that()
+                .doNotHaveFullyQualifiedName("io.github.loadup.commons.log.LogUtil")
+                .should()
+                .dependOnClassesThat()
+                .haveFullyQualifiedName("org.slf4j.LoggerFactory")
+                .because("Framework logging must use the shared LogUtil facade")
+                .check(ALL_CLASSES);
     }
 }

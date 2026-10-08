@@ -28,10 +28,10 @@ export const updateUser = (id: string, form: UserForm) =>
   post<User>('user/update', {
     id,
     nickname: form.nickname,
-    realName: form.realName,
+    realName: form.realName || undefined,
     deptId: form.deptId,
-    email: form.email,
-    mobile: form.mobile,
+    email: form.email || undefined,
+    mobile: form.mobile || undefined,
     status: form.status,
     roleIds: form.roleIds,
     remark: form.remark

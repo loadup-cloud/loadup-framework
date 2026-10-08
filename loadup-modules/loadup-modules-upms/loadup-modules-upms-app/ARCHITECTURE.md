@@ -57,3 +57,7 @@ Client Service → 应用服务编排 → 领域服务/Gateway → 基础设施�
 保持组件职责独立：业务调用依赖公开契约，自动配置处理框架装配，基础设施细节留在实现层。
 
 集成方式与配置示例见 [README.md](./README.md)。
+
+## 可靠敏感访问
+
+`UserSensitiveReadService` 不依赖具体审计实现，通过 `ObjectProvider<SensitiveReadAudit>` 支持普通 UPMS 无审计部署；明文操作必须有 recorder。顺序为参数校验 → 租户范围内目标查询 → 最新角色及资源数据范围判定 → 可靠审计 → MapStruct 输出映射。任一步失败不返回原值。禁止超级管理员短路或根据请求参数关闭审计。

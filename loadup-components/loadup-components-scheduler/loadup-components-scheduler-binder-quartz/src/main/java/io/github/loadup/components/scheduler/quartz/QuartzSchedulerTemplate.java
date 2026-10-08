@@ -1,5 +1,6 @@
 package io.github.loadup.components.scheduler.quartz;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.scheduler.SchedulerTemplate;
 import io.github.loadup.components.scheduler.model.ScheduleRequest;
 import io.github.loadup.components.scheduler.model.SchedulerStatus;
@@ -18,12 +19,8 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class QuartzSchedulerTemplate implements SchedulerTemplate {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(QuartzSchedulerTemplate.class);
 
     private final Scheduler scheduler;
 
@@ -52,7 +49,8 @@ public class QuartzSchedulerTemplate implements SchedulerTemplate {
                             .inTimeZone(TimeZone.getTimeZone(resolveZoneId(request.zoneId()))))
                     .build();
             scheduler.scheduleJob(detail, trigger);
-            LOGGER.debug(
+            LogUtil.debug(
+                    QuartzSchedulerTemplate.class,
                     "Registered recurring task taskName={} cron={} zoneId={}",
                     request.taskName(),
                     request.cron(),
@@ -66,7 +64,8 @@ public class QuartzSchedulerTemplate implements SchedulerTemplate {
     public void delete(String taskName) {
         try {
             boolean removed = scheduler.deleteJob(jobKey(taskName));
-            LOGGER.debug("Deleted recurring task taskName={} removed={}", taskName, removed);
+            LogUtil.debug(
+                    QuartzSchedulerTemplate.class, "Deleted recurring task taskName={} removed={}", taskName, removed);
         } catch (SchedulerException e) {
             throw new IllegalStateException("Failed to delete recurring task '" + taskName + "'", e);
         }
@@ -76,11 +75,11 @@ public class QuartzSchedulerTemplate implements SchedulerTemplate {
     public void trigger(String taskName) {
         try {
             if (!scheduler.checkExists(jobKey(taskName))) {
-                LOGGER.debug("No recurring task to trigger for taskName={}", taskName);
+                LogUtil.debug(QuartzSchedulerTemplate.class, "No recurring task to trigger for taskName={}", taskName);
                 return;
             }
             scheduler.triggerJob(jobKey(taskName));
-            LOGGER.debug("Triggered one run of recurring task taskName={}", taskName);
+            LogUtil.debug(QuartzSchedulerTemplate.class, "Triggered one run of recurring task taskName={}", taskName);
         } catch (SchedulerException e) {
             throw new IllegalStateException("Failed to trigger recurring task '" + taskName + "'", e);
         }
@@ -91,7 +90,7 @@ public class QuartzSchedulerTemplate implements SchedulerTemplate {
         try {
             TriggerKey triggerKey = triggerKey(taskName);
             if (!scheduler.checkExists(jobKey(taskName))) {
-                LOGGER.debug("No recurring task to update for taskName={}", taskName);
+                LogUtil.debug(QuartzSchedulerTemplate.class, "No recurring task to update for taskName={}", taskName);
                 return;
             }
             CronTrigger trigger = TriggerBuilder.newTrigger()
@@ -99,7 +98,11 @@ public class QuartzSchedulerTemplate implements SchedulerTemplate {
                     .withSchedule(CronScheduleBuilder.cronSchedule(cron))
                     .build();
             scheduler.rescheduleJob(triggerKey, trigger);
-            LOGGER.debug("Updated cron of recurring task taskName={} cron={}", taskName, cron);
+            LogUtil.debug(
+                    QuartzSchedulerTemplate.class,
+                    "Updated cron of recurring task taskName={} cron={}",
+                    taskName,
+                    cron);
         } catch (SchedulerException e) {
             throw new IllegalStateException("Failed to update recurring task '" + taskName + "'", e);
         }

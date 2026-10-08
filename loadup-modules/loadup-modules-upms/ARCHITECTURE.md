@@ -42,3 +42,11 @@ UPMS 领域对象、对外 DTO 和持久化对象的审计时间统一为 `creat
 UPMS 应用密码编码器支持新写入的 `{bcrypt}` 和已有的 BCrypt 哈希。SAS 客户端密钥经 BCrypt 编码。生产环境需配置持久 RSA 私钥；不配置时的临时私钥仅适于本地开发。资源端应使用固定 issuer、audience 和可信 JWK，公开 API 路径由 `permit-all` 明确声明。
 
 当前刷新令牌沿用授权时保存的用户主体，角色和权限是签发时快照；需要撤销后立即生效的部署，应缩短访问令牌有效期，并在上线前实现刷新阶段的 UPMS 重新校验及授权撤销存储。
+
+## 敏感字段与明文访问边界
+
+`upms-client` 输出 `UserDetailDTO` 声明 `@Masked`；domain/DO/Command 不声明展示规则。`upms-app` 的 `UserSensitiveReadService` 校验调用者和请求、读取租户范围内目标、执行 `AccessDecisionService`、调用 `SensitiveReadAudit`，最后才经 Spring MapStruct `UserSensitiveConverter` 构造不带脱敏注解的 `UserSensitiveDTO`。
+
+`upms-web` 的独立 Controller 从认证主体取得 actor，不接受客户端指定调用者；静态方法授权与 app 中最新角色/资源范围校验同时存在。purpose 为枚举，audit SPI 不接受任何敏感原文。审计模块是 web 的 optional 依赖，app/domain 无 audit 横向依赖；默认桥接仅在 AuditService 存在时装配，并以 REQUIRES_NEW 事务确保成功提交后才能返回。缺少 recorder 时普通查询继续可用，明文请求失败。
+
+普通输出不因角色权限变成明文；明文 DTO 的 toString 只输出 ID，且响应不可缓存。调用方仍须避免记录 HTTP body、DTO JSON 或敏感字段异常。首版未提供通用明文导出，导出处理器须显式执行展示脱敏。

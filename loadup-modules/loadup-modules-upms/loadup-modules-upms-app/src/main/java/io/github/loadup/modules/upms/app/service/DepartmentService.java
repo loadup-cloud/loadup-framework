@@ -10,8 +10,6 @@ import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class DepartmentService {
-    private static final Logger log = LoggerFactory.getLogger(DepartmentService.class);
 
     private final DepartmentGateway departmentGateway;
     private final UserGateway userGateway;

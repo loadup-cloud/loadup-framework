@@ -1,13 +1,12 @@
 package io.github.loadup.components.gotone.channel.push;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.gotone.NotificationChannelProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Firebase Cloud Messaging push provider.
@@ -18,7 +17,6 @@ import org.slf4j.LoggerFactory;
  */
 public class FcmPushProvider implements NotificationChannelProvider {
 
-    private static final Logger log = LoggerFactory.getLogger(FcmPushProvider.class);
     private static final Pattern DEVICE_TOKEN = Pattern.compile("^[A-Za-z0-9_\\-]{20,}$");
 
     private final String serverKey;
@@ -51,18 +49,18 @@ public class FcmPushProvider implements NotificationChannelProvider {
             if (!DEVICE_TOKEN.matcher(token).matches()) {
                 receiverStatus.put(token, false);
                 receiverErrors.put(token, "invalid device token format");
-                log.warn("Invalid device token={}", maskToken(token));
+                LogUtil.warn(FcmPushProvider.class, "Invalid device token={}", maskToken(token));
                 continue;
             }
             try {
                 sendMessage(token, request.content(), extras);
                 receiverStatus.put(token, true);
                 successCount++;
-                log.info("Push sent to token={}", maskToken(token));
+                LogUtil.info(FcmPushProvider.class, "Push sent to token={}", maskToken(token));
             } catch (Exception e) {
                 receiverStatus.put(token, false);
                 receiverErrors.put(token, e.getMessage());
-                log.warn("Push failed for token={}", maskToken(token), e);
+                LogUtil.warn(FcmPushProvider.class, "Push failed for token={}", maskToken(token), e);
             }
         }
 
@@ -89,7 +87,12 @@ public class FcmPushProvider implements NotificationChannelProvider {
         if (serverKey == null || serverKey.isBlank()) {
             throw new IllegalStateException("FCM server key is not configured");
         }
-        log.debug("FCM send placeholder: projectId={} contentLength={} extras={}", projectId, content.length(), extras);
+        LogUtil.debug(
+                FcmPushProvider.class,
+                "FCM send placeholder: projectId={} contentLength={} extras={}",
+                projectId,
+                content.length(),
+                extras);
     }
 
     @Override

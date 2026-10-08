@@ -1,11 +1,10 @@
 package io.github.loadup.components.webmvc;
 
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.commons.result.FailureResponse;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.webmvc.error.ErrorAttributes;
 import org.springframework.boot.webmvc.error.ErrorController;
@@ -18,7 +17,6 @@ import org.springframework.web.context.request.ServletWebRequest;
 /** Handles API errors while preserving ordinary HTTP status codes outside the API prefix. */
 @RestController
 public class ApiErrorController implements ErrorController {
-    private static final Logger log = LoggerFactory.getLogger(ApiErrorController.class);
 
     private final ApiPathMatcher pathMatcher;
     private final ErrorAttributes errorAttributes;
@@ -39,7 +37,11 @@ public class ApiErrorController implements ErrorController {
                             new ServletWebRequest(request), ErrorAttributeOptions.defaults()));
         }
         if (status >= 500) {
-            log.error("API request failed: {}", originalUri, errorAttributes.getError(new ServletWebRequest(request)));
+            LogUtil.error(
+                    ApiErrorController.class,
+                    "API request failed: {}",
+                    originalUri,
+                    errorAttributes.getError(new ServletWebRequest(request)));
         }
         CommonResultCodeEnum code =
                 switch (status) {

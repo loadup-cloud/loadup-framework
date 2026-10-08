@@ -4,10 +4,9 @@ import cloud.tianai.captcha.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.captcha.CaptchaProvider;
 import io.github.loadup.components.captcha.CaptchaResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tools.jackson.databind.ObjectMapper;
 
 /**
@@ -22,8 +21,6 @@ import tools.jackson.databind.ObjectMapper;
  * </ul>
  */
 public class TianaiCaptchaProvider implements CaptchaProvider {
-
-    private static final Logger log = LoggerFactory.getLogger(TianaiCaptchaProvider.class);
 
     private final ImageCaptchaApplication application;
     private final String defaultType;
@@ -80,7 +77,7 @@ public class TianaiCaptchaProvider implements CaptchaProvider {
             }
             return false;
         } catch (Exception e) {
-            log.debug("Captcha verification failed for id={}", captchaId, e);
+            LogUtil.debug(TianaiCaptchaProvider.class, "Captcha verification failed for id={}", captchaId, e);
             return false;
         }
     }

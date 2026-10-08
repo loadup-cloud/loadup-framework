@@ -1,12 +1,11 @@
 package io.github.loadup.components.gotone.channel.sms;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.gotone.NotificationChannelProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Aliyun SMS provider.
@@ -16,8 +15,6 @@ import org.slf4j.LoggerFactory;
  * SMS SDK when credentials are provisioned.
  */
 public class AliyunSmsProvider implements NotificationChannelProvider {
-
-    private static final Logger log = LoggerFactory.getLogger(AliyunSmsProvider.class);
 
     private final String accessKeyId;
     private final String accessKeySecret;
@@ -54,7 +51,7 @@ public class AliyunSmsProvider implements NotificationChannelProvider {
             if (!isPhoneNumber(receiver)) {
                 receiverStatus.put(receiver, false);
                 receiverErrors.put(receiver, "invalid phone number");
-                log.warn("Invalid phone number={}", maskPhone(receiver));
+                LogUtil.warn(AliyunSmsProvider.class, "Invalid phone number={}", maskPhone(receiver));
                 continue;
             }
             try {
@@ -64,7 +61,7 @@ public class AliyunSmsProvider implements NotificationChannelProvider {
             } catch (Exception e) {
                 receiverStatus.put(receiver, false);
                 receiverErrors.put(receiver, e.getMessage());
-                log.warn("SMS send failed for receiver={}", maskPhone(receiver), e);
+                LogUtil.warn(AliyunSmsProvider.class, "SMS send failed for receiver={}", maskPhone(receiver), e);
             }
         }
 
@@ -91,7 +88,8 @@ public class AliyunSmsProvider implements NotificationChannelProvider {
         if (accessKeyId == null || accessKeyId.isBlank() || accessKeySecret == null || accessKeySecret.isBlank()) {
             throw new IllegalStateException("Aliyun SMS credentials are not configured");
         }
-        log.debug(
+        LogUtil.debug(
+                AliyunSmsProvider.class,
                 "Aliyun SMS placeholder: regionId={} templateId={} signName={} contentLength={}",
                 regionId,
                 templateId,

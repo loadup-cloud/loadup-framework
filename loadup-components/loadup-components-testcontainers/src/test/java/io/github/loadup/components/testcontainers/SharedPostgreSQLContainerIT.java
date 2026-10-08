@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.database.AbstractPostgreSQLContainerTest;
 import io.github.loadup.components.testcontainers.database.SharedPostgreSQLContainer;
 import java.sql.Connection;
@@ -13,8 +14,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.postgresql.PostgreSQLContainer;
@@ -29,7 +28,6 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 @TestPropertySource(
         properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.postgresql.enabled=true"})
 class SharedPostgreSQLContainerIT extends AbstractPostgreSQLContainerTest {
-    private static final Logger log = LoggerFactory.getLogger(SharedPostgreSQLContainerIT.class);
 
     @Test
     void testContainerIsRunning() {
@@ -48,11 +46,11 @@ class SharedPostgreSQLContainerIT extends AbstractPostgreSQLContainerTest {
         assertNotNull(SharedPostgreSQLContainer.getHost(), "Host should not be null");
         assertNotNull(SharedPostgreSQLContainer.getMappedPort(), "Mapped port should not be null");
 
-        log.info("JDBC URL: {}", SharedPostgreSQLContainer.getJdbcUrl());
-        log.info("Username: {}", SharedPostgreSQLContainer.getUsername());
-        log.info("Database: {}", SharedPostgreSQLContainer.getDatabaseName());
-        log.info("Host: {}", SharedPostgreSQLContainer.getHost());
-        log.info("Port: {}", SharedPostgreSQLContainer.getMappedPort());
+        LogUtil.info(SharedPostgreSQLContainerIT.class, "JDBC URL: {}", SharedPostgreSQLContainer.getJdbcUrl());
+        LogUtil.info(SharedPostgreSQLContainerIT.class, "Username: {}", SharedPostgreSQLContainer.getUsername());
+        LogUtil.info(SharedPostgreSQLContainerIT.class, "Database: {}", SharedPostgreSQLContainer.getDatabaseName());
+        LogUtil.info(SharedPostgreSQLContainerIT.class, "Host: {}", SharedPostgreSQLContainer.getHost());
+        LogUtil.info(SharedPostgreSQLContainerIT.class, "Port: {}", SharedPostgreSQLContainer.getMappedPort());
     }
 
     @Test

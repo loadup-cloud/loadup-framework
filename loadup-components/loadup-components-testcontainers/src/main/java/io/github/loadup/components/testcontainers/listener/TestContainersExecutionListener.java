@@ -1,5 +1,6 @@
 package io.github.loadup.components.testcontainers.listener;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import io.github.loadup.components.testcontainers.cache.SharedRedisContainer;
@@ -12,8 +13,6 @@ import io.github.loadup.components.testcontainers.messaging.SharedKafkaContainer
 import io.github.loadup.components.testcontainers.search.SharedElasticsearchContainer;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.test.context.TestContext;
@@ -43,7 +42,6 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  */
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class TestContainersExecutionListener extends AbstractTestExecutionListener {
-    private static final Logger log = LoggerFactory.getLogger(TestContainersExecutionListener.class);
 
     /**
      * Thread-local to store container properties before ApplicationContext is created.
@@ -67,19 +65,29 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
 
         // Check if already processed to avoid duplicate initialization
         if (PROCESSED_TEST_CLASS.get() == testClass) {
-            log.debug(">>> [TESTCONTAINERS] Test class {} already processed, skipping", testClass.getSimpleName());
+            LogUtil.debug(
+                    TestContainersExecutionListener.class,
+                    ">>> [TESTCONTAINERS] Test class {} already processed, skipping",
+                    testClass.getSimpleName());
             return;
         }
 
-        log.info(">>> [TESTCONTAINERS] ========== TestExecutionListener Started ==========");
-        log.info(">>> [TESTCONTAINERS] Processing test class: {}", testClass.getName());
+        LogUtil.info(
+                TestContainersExecutionListener.class,
+                ">>> [TESTCONTAINERS] ========== TestExecutionListener Started ==========");
+        LogUtil.info(
+                TestContainersExecutionListener.class,
+                ">>> [TESTCONTAINERS] Processing test class: {}",
+                testClass.getName());
 
         // Find @EnableTestContainers annotation
         EnableTestContainers annotation = AnnotationUtils.findAnnotation(testClass, EnableTestContainers.class);
 
         if (annotation == null) {
-            log.debug(
-                    ">>> [TESTCONTAINERS] No @EnableTestContainers annotation found on {}", testClass.getSimpleName());
+            LogUtil.debug(
+                    TestContainersExecutionListener.class,
+                    ">>> [TESTCONTAINERS] No @EnableTestContainers annotation found on {}",
+                    testClass.getSimpleName());
             return;
         }
 
@@ -87,12 +95,17 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
         boolean reuse = annotation.reuse();
 
         if (containerTypes == null || containerTypes.length == 0) {
-            log.warn(">>> [TESTCONTAINERS] @EnableTestContainers annotation found but no containers specified");
+            LogUtil.warn(
+                    TestContainersExecutionListener.class,
+                    ">>> [TESTCONTAINERS] @EnableTestContainers annotation found but no containers specified");
             return;
         }
 
-        log.info(">>> [TESTCONTAINERS] Found @EnableTestContainers with containers: {}", (Object) containerTypes);
-        log.info(">>> [TESTCONTAINERS] Container reuse enabled: {}", reuse);
+        LogUtil.info(
+                TestContainersExecutionListener.class,
+                ">>> [TESTCONTAINERS] Found @EnableTestContainers with containers: {}",
+                (Object) containerTypes);
+        LogUtil.info(TestContainersExecutionListener.class, ">>> [TESTCONTAINERS] Container reuse enabled: {}", reuse);
 
         // Start containers and collect properties (but don't inject yet - ApplicationContext not ready)
         Map<String, String> allProperties = new HashMap<>();
@@ -102,17 +115,26 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
                 Map<String, String> containerProperties = startContainer(type, reuse);
 
                 if (containerProperties.isEmpty()) {
-                    log.warn(">>> [TESTCONTAINERS] Container {} started but no properties collected", type);
+                    LogUtil.warn(
+                            TestContainersExecutionListener.class,
+                            ">>> [TESTCONTAINERS] Container {} started but no properties collected",
+                            type);
                 } else {
                     allProperties.putAll(containerProperties);
-                    log.info(
+                    LogUtil.info(
+                            TestContainersExecutionListener.class,
                             ">>> [TESTCONTAINERS] Successfully started {} container, collected {} properties",
                             type,
                             containerProperties.size());
                 }
 
             } catch (Exception e) {
-                log.error(">>> [TESTCONTAINERS] Failed to start {} container: {}", type, e.getMessage(), e);
+                LogUtil.error(
+                        TestContainersExecutionListener.class,
+                        ">>> [TESTCONTAINERS] Failed to start {} container: {}",
+                        type,
+                        e.getMessage(),
+                        e);
                 throw new RuntimeException(
                         "Failed to start " + type + " container for test class " + testClass.getName(), e);
             }
@@ -121,13 +143,18 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
         // Store properties in ThreadLocal for later injection in prepareTestInstance
         if (!allProperties.isEmpty()) {
             CONTAINER_PROPERTIES.set(allProperties);
-            log.info(">>> [TESTCONTAINERS] Stored {} properties for later injection", allProperties.size());
+            LogUtil.info(
+                    TestContainersExecutionListener.class,
+                    ">>> [TESTCONTAINERS] Stored {} properties for later injection",
+                    allProperties.size());
         }
 
         // Mark as processed
         PROCESSED_TEST_CLASS.set(testClass);
 
-        log.info(">>> [TESTCONTAINERS] ========== Container Startup Complete ==========");
+        LogUtil.info(
+                TestContainersExecutionListener.class,
+                ">>> [TESTCONTAINERS] ========== Container Startup Complete ==========");
     }
 
     /**
@@ -160,37 +187,42 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
 
         return switch (type) {
             case MYSQL -> {
-                log.info(">>> [TESTCONTAINERS] Starting MySQL container...");
+                LogUtil.info(TestContainersExecutionListener.class, ">>> [TESTCONTAINERS] Starting MySQL container...");
                 SharedMySQLContainer.startContainer(config);
                 yield SharedMySQLContainer.getProperties();
             }
             case POSTGRESQL -> {
-                log.info(">>> [TESTCONTAINERS] Starting PostgreSQL container...");
+                LogUtil.info(
+                        TestContainersExecutionListener.class, ">>> [TESTCONTAINERS] Starting PostgreSQL container...");
                 SharedPostgreSQLContainer.startContainer(config);
                 yield SharedPostgreSQLContainer.getProperties();
             }
             case MONGODB -> {
-                log.info(">>> [TESTCONTAINERS] Starting MongoDB container...");
+                LogUtil.info(
+                        TestContainersExecutionListener.class, ">>> [TESTCONTAINERS] Starting MongoDB container...");
                 SharedMongoDBContainer.startContainer(config);
                 yield SharedMongoDBContainer.getProperties();
             }
             case REDIS -> {
-                log.info(">>> [TESTCONTAINERS] Starting Redis container...");
+                LogUtil.info(TestContainersExecutionListener.class, ">>> [TESTCONTAINERS] Starting Redis container...");
                 SharedRedisContainer.startContainer(config);
                 yield SharedRedisContainer.getProperties();
             }
             case KAFKA -> {
-                log.info(">>> [TESTCONTAINERS] Starting Kafka container...");
+                LogUtil.info(TestContainersExecutionListener.class, ">>> [TESTCONTAINERS] Starting Kafka container...");
                 SharedKafkaContainer.startContainer(config);
                 yield SharedKafkaContainer.getProperties();
             }
             case ELASTICSEARCH -> {
-                log.info(">>> [TESTCONTAINERS] Starting Elasticsearch container...");
+                LogUtil.info(
+                        TestContainersExecutionListener.class,
+                        ">>> [TESTCONTAINERS] Starting Elasticsearch container...");
                 SharedElasticsearchContainer.startContainer(config);
                 yield SharedElasticsearchContainer.getProperties();
             }
             case LOCALSTACK -> {
-                log.info(">>> [TESTCONTAINERS] Starting LocalStack container...");
+                LogUtil.info(
+                        TestContainersExecutionListener.class, ">>> [TESTCONTAINERS] Starting LocalStack container...");
                 SharedLocalStackContainer.startContainer(config);
                 yield SharedLocalStackContainer.getProperties();
             }

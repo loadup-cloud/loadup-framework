@@ -1,5 +1,6 @@
 package io.github.loadup.modules.upms.app.strategy;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.modules.upms.app.strategy.oauth.OAuthProvider;
 import io.github.loadup.modules.upms.app.strategy.oauth.OAuthToken;
 import io.github.loadup.modules.upms.app.strategy.oauth.OAuthUserInfo;
@@ -15,8 +16,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +27,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class OAuthLoginStrategy implements LoginStrategy {
-    private static final Logger log = LoggerFactory.getLogger(OAuthLoginStrategy.class);
 
     private final Map<String, OAuthProvider> providerMap = new ConcurrentHashMap<>();
     private final UserOAuthBindingGateway bindingGateway;
@@ -50,7 +48,7 @@ public class OAuthLoginStrategy implements LoginStrategy {
         if (providers != null && !providers.isEmpty()) {
             providers.forEach(provider -> {
                 providerMap.put(provider.getProviderName(), provider);
-                log.info("Registered OAuth provider: {}", provider.getProviderName());
+                LogUtil.info(OAuthLoginStrategy.class, "Registered OAuth provider: {}", provider.getProviderName());
             });
         }
     }
@@ -179,7 +177,11 @@ public class OAuthLoginStrategy implements LoginStrategy {
 
         bindingGateway.save(binding);
 
-        log.info("Auto registered new user via OAuth: username={}, provider={}", user.getUsername(), provider);
+        LogUtil.info(
+                OAuthLoginStrategy.class,
+                "Auto registered new user via OAuth: username={}, provider={}",
+                user.getUsername(),
+                provider);
 
         return user;
     }

@@ -38,3 +38,7 @@ Application → 自动配置 → Web/API、UPMS 与可选技术组件
 ```
 
 集成方式与配置示例见 [README.md](./README.md)。
+
+## 观测配置归属
+
+启动器通过标准 `management.*` 配置导出与采样；公共 application 指标标签默认值归 Observability，console/file 文本格式归 commons-log。`application-json.yml` 仅选择 Boot ECS 编码器，不定义新的日志后端或追踪实例。

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.messaging.AbstractKafkaContainerTest;
 import io.github.loadup.components.testcontainers.messaging.SharedKafkaContainer;
 import java.time.Duration;
@@ -22,8 +23,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.kafka.KafkaContainer;
@@ -37,7 +36,6 @@ import org.testcontainers.kafka.KafkaContainer;
 @SpringBootTest(classes = TestApplication.class)
 @TestPropertySource(properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.kafka.enabled=true"})
 class SharedKafkaContainerIT extends AbstractKafkaContainerTest {
-    private static final Logger log = LoggerFactory.getLogger(SharedKafkaContainerIT.class);
 
     @Test
     void testContainerIsRunning() {
@@ -50,7 +48,7 @@ class SharedKafkaContainerIT extends AbstractKafkaContainerTest {
     void testContainerProperties() {
         assertNotNull(SharedKafkaContainer.getBootstrapServers(), "Bootstrap servers should not be null");
 
-        log.info("Bootstrap Servers: {}", SharedKafkaContainer.getBootstrapServers());
+        LogUtil.info(SharedKafkaContainerIT.class, "Bootstrap Servers: {}", SharedKafkaContainer.getBootstrapServers());
     }
 
     @Test
@@ -69,7 +67,7 @@ class SharedKafkaContainerIT extends AbstractKafkaContainerTest {
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(producerProps)) {
             ProducerRecord<String, String> record = new ProducerRecord<>(topicName, "key", testMessage);
             producer.send(record).get();
-            log.info("Message sent to topic: {}", topicName);
+            LogUtil.info(SharedKafkaContainerIT.class, "Message sent to topic: {}", topicName);
         }
 
         // Consumer configuration
@@ -89,7 +87,7 @@ class SharedKafkaContainerIT extends AbstractKafkaContainerTest {
 
             ConsumerRecord<String, String> record = records.iterator().next();
             assertEquals(testMessage, record.value(), "Message value should match");
-            log.info("Message received: {}", record.value());
+            LogUtil.info(SharedKafkaContainerIT.class, "Message received: {}", record.value());
         }
     }
 

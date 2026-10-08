@@ -113,10 +113,10 @@
         username: data.username,
         password: '',
         nickname: data.nickname,
-        realName: data.realName ?? '',
+        realName: '',
         deptId: data.deptId ?? '',
-        email: data.email ?? '',
-        mobile: data.mobile ?? '',
+        email: '',
+        mobile: '',
         status: data.status,
         roleIds: data.roles?.map((role) => role.id) ?? [],
         remark: data.remark ?? ''
@@ -237,7 +237,9 @@
             autocomplete="new-password"
         /></ElFormItem>
         <ElFormItem label="昵称" prop="nickname"><ElInput v-model="form.nickname" /></ElFormItem>
-        <ElFormItem label="姓名"><ElInput v-model="form.realName" /></ElFormItem>
+        <ElFormItem label="姓名"
+          ><ElInput v-model="form.realName" :placeholder="editingId ? '留空保持不变' : ''"
+        /></ElFormItem>
         <ElFormItem label="部门">
           <ElTreeSelect
             v-model="form.deptId"
@@ -259,8 +261,12 @@
             />
           </ElSelect>
         </ElFormItem>
-        <ElFormItem label="邮箱"><ElInput v-model="form.email" /></ElFormItem>
-        <ElFormItem label="手机号"><ElInput v-model="form.mobile" /></ElFormItem>
+        <ElFormItem label="邮箱"
+          ><ElInput v-model="form.email" :placeholder="editingId ? '留空保持不变' : ''"
+        /></ElFormItem>
+        <ElFormItem label="手机号"
+          ><ElInput v-model="form.mobile" :placeholder="editingId ? '留空保持不变' : ''"
+        /></ElFormItem>
         <ElFormItem label="状态"
           ><ElSelect v-model="form.status" class="w-full"
             ><ElOption label="正常" :value="1" /><ElOption label="停用" :value="0" /></ElSelect

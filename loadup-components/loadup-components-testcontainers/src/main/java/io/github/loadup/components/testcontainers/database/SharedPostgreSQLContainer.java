@@ -1,9 +1,8 @@
 package io.github.loadup.components.testcontainers.database;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -26,7 +25,6 @@ import org.testcontainers.utility.DockerImageName;
  * @since 1.0.0
  */
 public final class SharedPostgreSQLContainer {
-    private static final Logger log = LoggerFactory.getLogger(SharedPostgreSQLContainer.class);
 
     /**
      * Default PostgreSQL version to use
@@ -105,7 +103,7 @@ public final class SharedPostgreSQLContainer {
 
             String imageName = (config.getImage() != null) ? config.getImage() : DEFAULT_POSTGRES_VERSION;
 
-            log.info("🚀 Starting Shared PostgreSQL TestContainer: {}", imageName);
+            LogUtil.info(SharedPostgreSQLContainer.class, "🚀 Starting Shared PostgreSQL TestContainer: {}", imageName);
 
             postgresContainer = new PostgreSQLContainer(DockerImageName.parse(imageName))
                     .withDatabaseName(getValue(config.getDatabase(), DEFAULT_DATABASE_NAME))
@@ -122,16 +120,23 @@ public final class SharedPostgreSQLContainer {
             databaseName = postgresContainer.getDatabaseName();
             host = postgresContainer.getHost();
             port = postgresContainer.getFirstMappedPort();
-            log.info("✅ PostgreSQL Container started at: {}", postgresContainer.getJdbcUrl());
+            LogUtil.info(
+                    SharedPostgreSQLContainer.class,
+                    "✅ PostgreSQL Container started at: {}",
+                    postgresContainer.getJdbcUrl());
 
             // Register shutdown hook if reuse is disabled
             if (config.isReusable()) {
-                log.info("♻️ Reuse is enabled. Container will persist after JVM exits.");
+                LogUtil.info(
+                        SharedPostgreSQLContainer.class,
+                        "♻️ Reuse is enabled. Container will persist after JVM exits.");
             } else {
-                log.info("Reuse is disabled. Registering shutdown hook to stop container.");
+                LogUtil.info(
+                        SharedPostgreSQLContainer.class,
+                        "Reuse is disabled. Registering shutdown hook to stop container.");
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     if (postgresContainer != null) {
-                        log.info("🛑 Stopping PostgreSQL TestContainer...");
+                        LogUtil.info(SharedPostgreSQLContainer.class, "🛑 Stopping PostgreSQL TestContainer...");
                         postgresContainer.stop();
                     }
                 }));

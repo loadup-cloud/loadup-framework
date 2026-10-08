@@ -1,5 +1,6 @@
 package io.github.loadup.modules.upms.app.service;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.modules.upms.app.strategy.LoginCredentials;
 import io.github.loadup.modules.upms.app.strategy.LoginStrategyManager;
 import io.github.loadup.modules.upms.app.strategy.LoginType;
@@ -16,8 +17,6 @@ import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import java.time.LocalDateTime;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
-    private static final Logger log = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
     private final UserGateway userGateway;
     private final RoleGateway roleGateway;
@@ -53,7 +51,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     StringUtils.isNotBlank(command.getLoginType()) ? command.getLoginType() : LoginType.PASSWORD;
 
             // 3. 执行认证
-            log.info(
+            LogUtil.info(
+                    AuthenticationServiceImpl.class,
                     "用户 {} 尝试使用 {} 方式登录",
                     credentials.getUsername() != null ? credentials.getUsername() : credentials.getMobile(),
                     loginType);

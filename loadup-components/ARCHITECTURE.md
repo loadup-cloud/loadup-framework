@@ -29,6 +29,9 @@ loadup-components
   └─ loadup-components-dfs
   └─ loadup-components-extension
   └─ loadup-components-globalunique
+  └─ loadup-components-http
+  └─ loadup-components-kms
+  └─ loadup-components-outbox
   └─ loadup-components-observability
   └─ loadup-components-gotone
   └─ loadup-components-pipeline

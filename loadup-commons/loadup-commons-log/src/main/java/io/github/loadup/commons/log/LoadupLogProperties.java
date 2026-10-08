@@ -11,6 +11,16 @@ public class LoadupLogProperties {
 
     private String consolePattern = LogContext.DEFAULT_CONSOLE_PATTERN;
 
+    private String filePattern = LogContext.DEFAULT_CONSOLE_PATTERN;
+
+    public String getFilePattern() {
+        return filePattern;
+    }
+
+    public void setFilePattern(String filePattern) {
+        this.filePattern = filePattern;
+    }
+
     public boolean isEnabled() {
         return enabled;
     }

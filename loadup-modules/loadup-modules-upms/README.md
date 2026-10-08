@@ -43,3 +43,17 @@ loadup:
 | 令牌签发与刷新 | `loadup-components-authserver-binder-sas` |
 | Bearer 验签 | `loadup-components-resource-server` |
 | 方法级授权 | `loadup-components-authorization` |
+
+## 敏感数据展示与明文读取
+
+普通 `UserDetailDTO` 的姓名、邮箱、手机号在 WebMVC JSON 输出中固定脱敏；内部对象与数据库保留原值。管理员也遵循同一展示规则。用户修改时省略敏感字段表示不变，显式空字符串表示清空；包含 `*` 的姓名、邮箱或手机号不能写入，避免把掩码保存为原数据。管理端编辑界面将这些字段留空，填写新值才更新。
+
+`POST /api/upms/user/sensitive` 是独立明文读取入口，要求 JWT 静态 authority `upms:user:sensitive:read`，并重新执行有效角色权限与目标用户数据范围的 RBAC/ABAC 校验。请求示例：
+
+```json
+{"id":"target-user-id","purpose":"CUSTOMER_SUPPORT"}
+```
+
+purpose 只允许 `PROFILE_CORRECTION`、`CUSTOMER_SUPPORT`、`SECURITY_REVIEW`。接口没有超级管理员绕过规则；需要显式配置权限及相应角色数据范围，不自动授予现有账号。返回 `result/data`，data 只含 id、realName、email、mobile；响应为 `Cache-Control: no-store`。
+
+明文返回前必须有 `SensitiveReadAudit` 同步持久化访问记录。消费工程显式引入 `loadup-modules-audit` 后，Web 适配器提供默认桥接，以独立事务记录 actor、目标 ID、用途、tenant 与 traceId，不记录字段原文。缺失审计组件或写入/提交失败则拒绝明文；也可提供自己的可靠 recorder。

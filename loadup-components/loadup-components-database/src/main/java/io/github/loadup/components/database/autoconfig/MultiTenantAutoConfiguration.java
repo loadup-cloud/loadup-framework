@@ -1,9 +1,8 @@
 package io.github.loadup.components.database.autoconfig;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.database.tenant.TenantFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -20,7 +19,6 @@ import org.springframework.core.Ordered;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(prefix = "loadup.database.multi-tenant", name = "enabled", havingValue = "true")
 public class MultiTenantAutoConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(MultiTenantAutoConfiguration.class);
 
     @Bean
     public FilterRegistrationBean<TenantFilter> tenantFilterRegistration(DatabaseProperties properties) {
@@ -30,7 +28,7 @@ public class MultiTenantAutoConfiguration {
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
         registration.setName("tenantFilter");
 
-        log.info("Registered TenantFilter for multi-tenant support");
+        LogUtil.info(MultiTenantAutoConfiguration.class, "Registered TenantFilter for multi-tenant support");
         return registration;
     }
 }

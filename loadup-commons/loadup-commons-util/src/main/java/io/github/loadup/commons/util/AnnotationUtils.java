@@ -1,12 +1,11 @@
 package io.github.loadup.commons.util;
 
+import io.github.loadup.commons.log.LogUtil;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 注解工具类
@@ -24,8 +23,6 @@ import org.slf4j.LoggerFactory;
  * @since 1.0.0
  */
 public class AnnotationUtils {
-
-    private static final Logger log = LoggerFactory.getLogger(AnnotationUtils.class);
 
     /**
      * 查找类中所有带指定注解的方法
@@ -48,7 +45,8 @@ public class AnnotationUtils {
             }
         }
 
-        log.debug(
+        LogUtil.debug(
+                AnnotationUtils.class,
                 "Found {} methods with annotation {} in class {}",
                 result.size(),
                 annotationClass.getSimpleName(),
@@ -77,7 +75,8 @@ public class AnnotationUtils {
             }
         }
 
-        log.debug(
+        LogUtil.debug(
+                AnnotationUtils.class,
                 "Found {} fields with annotation {} in class {}",
                 result.size(),
                 annotationClass.getSimpleName(),

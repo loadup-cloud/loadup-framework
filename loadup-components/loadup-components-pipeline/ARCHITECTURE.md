@@ -262,7 +262,7 @@ io.github.loadup.components.pipeline
 loadup-components-pipeline
 ├── spring-boot-starter          ← ApplicationContext、AutoConfiguration
 ├── spring-tx                    ← PlatformTransactionManager、TransactionTemplate
-└── lombok                       ← @Slf4j、@RequiredArgsConstructor
+└── loadup-commons-log           ← LogUtil 日志入口
 
 可选协作（不强依赖）：
 └── loadup-components-extension  ← 在 Stage 实现中注入 ExtensionExecutor

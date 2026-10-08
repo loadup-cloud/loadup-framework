@@ -41,3 +41,7 @@ UPMS 应用服务与业务编排。
 ## 自动装配
 
 - [`UpmsAutoConfiguration`](src/main/java/io/github/loadup/modules/upms/app/autoconfigure/UpmsAutoConfiguration.java)
+
+## 受控明文读取
+
+`UserSensitiveReadService.read(actorId, query)` 要求可信 actor、有效 RBAC/ABAC 和可用的可靠 `SensitiveReadAudit`。recorder 必须同步持久化且传播失败；缺失 recorder 时拒绝明文。输出 DTO 在审计成功后由 Spring MapStruct converter 构造。HTTP 入口由 web 适配提供；配置与授权示例见 [UPMS README](../README.md)。

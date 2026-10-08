@@ -1,5 +1,6 @@
 package io.github.loadup.components.pipeline.engine;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.pipeline.api.IBizProcessStage;
 import io.github.loadup.components.pipeline.api.IControlStage;
 import io.github.loadup.components.pipeline.api.IDataPrepareStage;
@@ -24,8 +25,6 @@ import io.github.loadup.components.pipeline.tx.ITxInitializer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -52,7 +51,6 @@ import org.springframework.transaction.support.TransactionTemplate;
  * {@link IPipelineDefinition#exceptions()}.
  */
 public class PipelineExecutor {
-    private static final Logger log = LoggerFactory.getLogger(PipelineExecutor.class);
 
     private final ApplicationContext applicationContext;
 
@@ -134,7 +132,8 @@ public class PipelineExecutor {
                 try {
                     fs.doFinally(ctx);
                 } catch (Exception e) {
-                    log.warn(
+                    LogUtil.warn(
+                            PipelineExecutor.class,
                             "[Pipeline] FinallyStage {} threw exception (swallowed)",
                             fs.getClass().getSimpleName(),
                             e);
@@ -231,7 +230,8 @@ public class PipelineExecutor {
 
         } else if (stage instanceof IFinallyStage) {
             // Should not reach here — finally stages are collected before dispatch
-            log.warn(
+            LogUtil.warn(
+                    PipelineExecutor.class,
                     "[Pipeline] IFinallyStage {} reached dispatchStage — possible misconfiguration",
                     stage.getClass().getSimpleName());
         }
@@ -243,7 +243,8 @@ public class PipelineExecutor {
         // 1. Check overflow — rethrow as-is
         for (Class<? extends Throwable> overflowClass : bus.getOverflowExceptions()) {
             if (overflowClass.isInstance(t)) {
-                log.debug(
+                LogUtil.debug(
+                        PipelineExecutor.class,
                         "[Pipeline] Overflow exception {}, rethrowing",
                         t.getClass().getSimpleName());
                 sneakyThrow(t);
@@ -278,7 +279,8 @@ public class PipelineExecutor {
         }
 
         if (handlerClass == null) {
-            log.error("[Pipeline] No exception handler configured and no bottom handler set", t);
+            LogUtil.error(
+                    PipelineExecutor.class, "[Pipeline] No exception handler configured and no bottom handler set", t);
             sneakyThrow(t);
         }
 

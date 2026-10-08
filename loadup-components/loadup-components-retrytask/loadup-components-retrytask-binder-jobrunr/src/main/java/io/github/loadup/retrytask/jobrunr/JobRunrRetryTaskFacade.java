@@ -9,6 +9,7 @@ import static org.jobrunr.jobs.states.StateName.PROCESSING;
 import static org.jobrunr.jobs.states.StateName.SCHEDULED;
 import static org.jobrunr.jobs.states.StateName.SUCCEEDED;
 
+import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.retrytask.facade.RetryTaskFacade;
 import io.github.loadup.retrytask.facade.model.RetryTaskRequest;
 import io.github.loadup.retrytask.facade.model.RetryTaskStatus;
@@ -26,8 +27,6 @@ import org.jobrunr.scheduling.JobBuilder;
 import org.jobrunr.scheduling.JobRequestScheduler;
 import org.jobrunr.storage.JobNotFoundException;
 import org.jobrunr.storage.StorageProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * JobRunr backed {@link RetryTaskFacade}.
@@ -37,8 +36,6 @@ import org.slf4j.LoggerFactory;
  * (succeeded / failed / deleted) are replaced by a new registration.
  */
 public class JobRunrRetryTaskFacade implements RetryTaskFacade {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JobRunrRetryTaskFacade.class);
 
     private final JobRequestScheduler scheduler;
     private final StorageProvider storageProvider;
@@ -72,7 +69,8 @@ public class JobRunrRetryTaskFacade implements RetryTaskFacade {
             builder.scheduleAt(request.scheduleAt());
         }
         scheduler.create(builder);
-        LOGGER.debug(
+        LogUtil.debug(
+                JobRunrRetryTaskFacade.class,
                 "Registered retry task bizType={} bizId={} jobId={} scheduledAt={}",
                 request.bizType(),
                 request.bizId(),
@@ -85,7 +83,8 @@ public class JobRunrRetryTaskFacade implements RetryTaskFacade {
     public void delete(String bizType, String bizId) {
         UUID jobId = deterministicJobId(bizType, bizId);
         deleteInternal(jobId, "Deleted via RetryTaskFacade");
-        LOGGER.debug("Deleted retry task bizType={} bizId={} jobId={}", bizType, bizId, jobId);
+        LogUtil.debug(
+                JobRunrRetryTaskFacade.class, "Deleted retry task bizType={} bizId={} jobId={}", bizType, bizId, jobId);
     }
 
     @Override
@@ -134,7 +133,7 @@ public class JobRunrRetryTaskFacade implements RetryTaskFacade {
             }
             scheduler.delete(jobId, reason);
         } catch (JobNotFoundException e) {
-            LOGGER.debug("No retry task to delete for jobId={}", jobId);
+            LogUtil.debug(JobRunrRetryTaskFacade.class, "No retry task to delete for jobId={}", jobId);
         }
     }
 

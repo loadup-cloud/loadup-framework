@@ -45,3 +45,11 @@ Controller 接口使用 POST + JSON body。路径如下：
 - [`UpmsWebAutoConfiguration`](src/main/java/io/github/loadup/modules/upms/web/UpmsWebAutoConfiguration.java)
 
 设计边界与装配路径见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+## 明文查看
+
+`POST /api/upms/user/sensitive`：JSON `{ "id": "target-user-id", "purpose": "CUSTOMER_SUPPORT" }`，返回原始姓名、邮箱和手机号。必须有 `upms:user:sensitive:read` authority 及角色数据范围授权；静态管理员角色本身不足以放行。请求不得缺少用途。
+
+消费工程按需引入 `loadup-modules-audit`，默认装配可靠审计桥接；也可自行提供 `SensitiveReadAudit`。审计缺失或失败拒绝返回原值。默认桥接以独立事务提交，记录元数据而非原文。HTTP body、网关/代理日志和浏览器缓存需要由集成方避免采集敏感原文；响应附带 `Cache-Control: no-store`。
+
+普通用户输出仍固定脱敏。编辑时省略敏感属性保持原值，不得回写掩码。完整约定见 [UPMS README](../README.md)。
