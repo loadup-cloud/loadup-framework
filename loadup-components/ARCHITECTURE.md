@@ -16,7 +16,7 @@ commons → components → modules → 消费工程
 | `web` | Web 接入 | webmvc：JSON 报文和错误处理；springdoc：OpenAPI 与 Scalar |
 | `data` | 数据与存储 | cache：缓存；database：数据库集成；dfs：文件存储 |
 | `integration` | 外部集成 | http：出站 HTTP；gotone：多渠道通知 |
-| `reliability` | 可靠性 | outbox：可靠事务事件；globalunique：幂等控制；resilience4j：熔断、重试、限流 |
+| `reliability` | 可靠性 | lock：同步分布式互斥；outbox：可靠事务事件；globalunique：幂等控制；resilience4j：熔断、重试、限流 |
 | `execution` | 任务与执行 | scheduler：调度；retrytask：持久重试任务；pipeline：流水线编排 |
 | `platform` | 平台基础 | configcenter：配置中心；extension：扩展机制；observability：Micrometer 指标与追踪；testcontainers：测试容器 |
 

@@ -116,3 +116,9 @@
 
 - [ ] 用户执行 JDK 25 ScopedValue commons-context/ServiceTemplate、TenantUtil、Database/WebMVC Filter 与 Boot/Micrometer 装饰器组合的定向测试，验证 init/clean 异常语义、真实请求、线程池/虚拟线程和异步分派无上下文串数据。
 - [ ] 在实际消费工程梳理非 HTTP 执行入口，确保后台任务、消息消费与自定义线程池使用回调作用域/业务装饰器，并显式保存持久任务需要的元数据；验证自定义 Executor 装饰器组合及所绑定值的不可变性。
+
+## 分布式锁后续验收
+
+- [ ] 用户执行 LockTemplate 单测与真实 Redis IT，验证 Boot 装配、平台/虚拟线程、独立客户端竞争、重入及 watchdog 续期；源码已提供，未执行编译/测试。
+- [ ] 在消费工程验证原生 Redisson TLS/认证、Redis 拓扑与故障转移、断网、长暂停及固定租期失效；确认旧执行者写入由数据库状态条件/唯一约束或资源 fencing 拒绝。
+- [ ] 验证锁先于真实事务获取、提交/回滚后才释放，排查事务代理自调用、异步/流式回调越界；按实际负载配置客户端超时、并发限制及告警。

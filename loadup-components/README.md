@@ -10,7 +10,7 @@ LoadUp 组件通过功能分类目录组织源码。消费工程引入 `loadup-d
 | `web/` | Web 接入 | [webmvc](web/loadup-components-webmvc/README.md)、[springdoc](web/loadup-components-springdoc/README.md) |
 | `data/` | 数据与存储 | [cache](data/loadup-components-cache/README.md)、[database](data/loadup-components-database/README.md)、[dfs](data/loadup-components-dfs/README.md) |
 | `integration/` | 外部集成 | [http](integration/loadup-components-http/README.md)、[gotone](integration/loadup-components-gotone/README.md) |
-| `reliability/` | 可靠性 | [outbox](reliability/loadup-components-outbox/README.md)、[globalunique](reliability/loadup-components-globalunique/README.md)、[resilience4j](reliability/loadup-components-resilience4j/README.md) |
+| `reliability/` | 可靠性 | [lock](reliability/loadup-components-lock/README.md)、[outbox](reliability/loadup-components-outbox/README.md)、[globalunique](reliability/loadup-components-globalunique/README.md)、[resilience4j](reliability/loadup-components-resilience4j/README.md) |
 | `execution/` | 任务与执行 | [scheduler](execution/loadup-components-scheduler/README.md)、[retrytask](execution/loadup-components-retrytask/README.md)、[pipeline](execution/loadup-components-pipeline/README.md) |
 | `platform/` | 平台基础 | [configcenter](platform/loadup-components-configcenter/README.md)、[extension](platform/loadup-components-extension/README.md)、[observability](platform/loadup-components-observability/README.md)、[testcontainers](platform/loadup-components-testcontainers/README.md) |
 
@@ -22,7 +22,7 @@ loadup-components/
 ├── web/            webmvc, springdoc
 ├── data/           cache, database, dfs
 ├── integration/    http, gotone
-├── reliability/    outbox, globalunique, resilience4j
+├── reliability/    lock, outbox, globalunique, resilience4j
 ├── execution/      scheduler, retrytask, pipeline
 └── platform/       configcenter, extension, observability, testcontainers
 ```

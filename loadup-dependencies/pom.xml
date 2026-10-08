@@ -80,6 +80,7 @@
         <groovy.version>5.0.8</groovy.version>
 
         <!-- Cloud, Messaging and Resilience -->
+        <redisson.version>4.8.0</redisson.version>
         <nacos.version>2.4.3</nacos.version>
         <apollo.version>2.5.0</apollo.version>
         <tianai-captcha.version>1.5.5</tianai-captcha.version>
@@ -121,6 +122,16 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-lock</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>

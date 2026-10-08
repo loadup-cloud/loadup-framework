@@ -45,7 +45,7 @@ loadup-cloud/
 │   ├── web/            # webmvc, springdoc
 │   ├── data/           # cache, database, dfs
 │   ├── integration/    # http, gotone
-│   ├── reliability/    # outbox, globalunique, resilience4j
+│   ├── reliability/    # lock, outbox, globalunique, resilience4j
 │   ├── execution/      # scheduler, retrytask, pipeline
 │   └── platform/       # configcenter, extension, observability, testcontainers
 ├── loadup-modules/             # 通用业务能力及可选 *-web 适配模块
