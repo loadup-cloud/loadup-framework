@@ -111,3 +111,8 @@
 ## 组件目录迁移后续验收
 
 - [ ] 本地重新导入 Maven，并按需刷新 IDE/CodeGraph 索引；由用户执行选定消费模块的定向构建与运行验证。组件目录及坐标契约见 components README。
+
+## 执行链上下文后续验收
+
+- [ ] 用户执行 JDK 25 ScopedValue commons-context/ServiceTemplate、TenantUtil、Database/WebMVC Filter 与 Boot/Micrometer 装饰器组合的定向测试，验证 init/clean 异常语义、真实请求、线程池/虚拟线程和异步分派无上下文串数据。
+- [ ] 在实际消费工程梳理非 HTTP 执行入口，确保后台任务、消息消费与自定义线程池使用回调作用域/业务装饰器，并显式保存持久任务需要的元数据；验证自定义 Executor 装饰器组合及所绑定值的不可变性。

@@ -12,6 +12,14 @@
     <description>Spring Boot metrics and OpenTelemetry tracing integration</description>
     <dependencies>
         <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>context-propagation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-commons-context</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-log</artifactId>
         </dependency>

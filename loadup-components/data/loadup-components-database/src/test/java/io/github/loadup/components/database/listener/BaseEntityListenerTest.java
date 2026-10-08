@@ -10,16 +10,10 @@ import io.github.loadup.components.database.id.IdGenerator;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 class BaseEntityListenerTest {
     private static final Instant NOW = Instant.parse("2026-01-02T03:04:05Z");
-
-    @AfterEach
-    void clearTenant() {
-        TenantUtil.clear();
-    }
 
     @Test
     void fillsIdAuditTenantAndLogicalDeleteFields() {
@@ -27,12 +21,11 @@ class BaseEntityListenerTest {
         properties.getMultiTenant().setEnabled(true);
         properties.getLogicalDelete().setEnabled(true);
         properties.getLogicalDelete().setNormalValue(2);
-        TenantUtil.setTenantId("tenant-a");
         IdGenerator idGenerator = () -> "generated-id";
         BaseEntityListener listener = new BaseEntityListener(properties, idGenerator, Clock.fixed(NOW, ZoneOffset.UTC));
         TestEntity entity = new TestEntity();
 
-        listener.onInsert(entity);
+        TenantUtil.runWithTenant("tenant-a", () -> listener.onInsert(entity));
 
         assertThat(entity.getId()).isEqualTo("generated-id");
         assertThat(entity.getCreatedAt()).isEqualTo(NOW.atZone(ZoneOffset.UTC).toLocalDateTime());

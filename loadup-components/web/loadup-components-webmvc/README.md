@@ -47,3 +47,9 @@ HTTP JSON 输出中的 `13812345678` 变为 `138****5678`。注解支持字段�
 不注册全局 `JacksonModule` 或替换全局 ObjectMapper，也不让权限改变普通接口的展示规则。`@Masked` 仅用于输出 DTO，不能替代数据库加密。避免先用全局 Mapper 将 DTO 变成字符串/Map 再返回，这会丢失注解信息。
 
 装配通过顺序 100 的 `ServerHttpMessageConvertersCustomizer` 安装服务端 JSON 转换器。若集成方在更高顺序重新替换该转换器或使用其他响应方式，须保留脱敏适配并验证其行为。
+
+## 请求共享上下文
+
+传递引入 [commons-context](../../../loadup-commons/loadup-commons-context/README.md)，使用 JDK 25 ScopedValue。`ExecutionContextFilter` 以最高优先级通过 ServiceTemplate 在每次分派的 FilterChain 执行期间绑定不可变上下文，返回/异常后自动恢复。REQUEST/ASYNC/ERROR 从请求属性 `ExecutionContext.class.getName()` 获取显式元数据，默认空 context；下游临时覆盖不会写回父请求。
+
+应用的可信租户适配器应在此后确定元数据、写入同名请求属性，并通过 ContextHolder.callWith/runWith 包裹自己的 FilterChain。本组件不从外部请求自动绑定租户/用户。异步任务使用 Observability 的业务 TaskDecorator 或显式 wrap；只有标准 Micrometer snapshot 不会传播 ScopedValue。

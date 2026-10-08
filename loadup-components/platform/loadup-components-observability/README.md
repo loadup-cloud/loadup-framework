@@ -63,3 +63,18 @@ EnvironmentPostProcessor 通过标准 `management.metrics.tags.application` 提�
 | Resilience4j | 官方 Micrometer binder 的标准名称和配置实例维度 |
 
 HTTP 非 2xx 与传输失败均计为 failure；标准 HTTP 客户端观测仍保留协议状态分类。组件从容器注入共享 `MeterRegistry` / `ObservationRegistry`，未启用观测的独立消费工程可不提供可选 Registry。禁止使用全局静态 Metrics、另建生产 Registry、用户/租户/订单/traceId/完整 URI 等高基数标签；新的业务耗时与 Trace 优先使用标准 Observation。
+
+## 业务上下文传播
+
+传递引入 [commons-context](../../../loadup-commons/loadup-commons-context/README.md)，要求 JDK 25+。自动提供 `LoadUpContextTaskDecorator` Bean，在包装时捕获不可变业务上下文，并通过 ScopedValue 包裹整个任务。Boot 4.1 的执行器会组合多个 TaskDecorator，已有自定义装饰器不会使该装饰器被跳过；显式提供同类型 Bean 可替换默认实现。
+
+开启 `spring.task.execution.propagate-context=true` 后，Boot 的标准 Micrometer 装饰器负责 Observation/Trace，LoadUp 装饰器负责业务元数据。只开启虚拟线程不会自动传播。自定义执行器显式组合：
+
+```java
+executor.setTaskDecorator(new CompositeTaskDecorator(List.of(
+    new LoadUpContextTaskDecorator(),
+    new ContextPropagatingTaskDecorator()
+)));
+```
+
+多个自定义装饰器应合并配置，不要连续 setTaskDecorator 覆盖前一个。业务数据不进入 Micrometer ThreadLocalAccessor：ScopedValue 需要动态作用域，不能采用 set/reset 适配。任意 Micrometer snapshot 或第三方线程池不会自动捕获业务上下文，须安装本装饰器或显式 ContextHolder.wrap。空 context 也绑定，退出后恢复调用前状态；值对象保持轻量不可变，身份继续使用 Spring Security 标准传播。

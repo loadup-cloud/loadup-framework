@@ -1,6 +1,5 @@
 package io.github.loadup.components.globalunique;
 
-import static io.github.loadup.components.globalunique.dataobject.table.Tables.GLOBAL_UNIQUE_DO;
 
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.log.LogUtil;
@@ -14,6 +13,8 @@ import java.util.Objects;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.util.StringUtils;
+
+import static io.github.loadup.components.globalunique.dataobject.table.GlobalUniqueDOTableDef.GLOBAL_UNIQUE_DO;
 
 /** Default MyBatis-Flex implementation of {@link GlobalUniqueTemplate}. */
 public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {

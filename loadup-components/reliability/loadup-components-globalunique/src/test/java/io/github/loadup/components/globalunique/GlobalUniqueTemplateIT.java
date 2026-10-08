@@ -135,16 +135,6 @@ class GlobalUniqueTemplateIT {
     }
 
     private static <T> T withTenant(String tenantId, Supplier<T> action) {
-        String previousTenantId = TenantUtil.getTenantId();
-        try {
-            TenantUtil.setTenantId(tenantId);
-            return action.get();
-        } finally {
-            if (previousTenantId == null) {
-                TenantUtil.clear();
-            } else {
-                TenantUtil.setTenantId(previousTenantId);
-            }
-        }
+        return TenantUtil.callWithTenant(tenantId, action::get);
     }
 }

@@ -13,6 +13,7 @@
     <description>Loadup Commons — shared base modules</description>
 
     <modules>
+        <module>loadup-commons-context</module>
         <module>loadup-commons-dto</module>
         <module>loadup-commons-util</module>
         <module>loadup-commons-log</module>

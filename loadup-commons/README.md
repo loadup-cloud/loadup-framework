@@ -25,3 +25,7 @@
 ## 展示脱敏
 
 - [`loadup-commons-masking`](loadup-commons-masking/README.md)：纯 Java 展示规则与 `@Masked` 输出元数据，可供 WebMVC、显式日志与导出使用。
+
+## 执行链上下文
+
+[`loadup-commons-context`](loadup-commons-context/README.md) 提供 JDK 25 ScopedValue 类型化只读 `ContextHolder`、不可变 ExecutionContext 与可选 ServiceTemplate。租户数据复用该存储，登录身份和 Trace 仍采用各自标准上下文。

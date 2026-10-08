@@ -35,3 +35,9 @@ Servlet 请求
 HTTP、KMS、Outbox 和 Resilience4j 使用容器中的共享 Micrometer 实例，导出由 Boot 统一负责。HTTP/KMS 的命名操作计时、Outbox 的投递计时与状态量只采用有界配置/结果维度；自定义 outcome 统一 success/failure，官方原生指标保留标准名称和标签。不创建静态全局 Registry 或新的导出 API。
 
 配置优先级用例位于 `ObservabilityDefaultsTest`；源码测试不能替代消费工程中的导出、Trace/MDC 和异步传播验收。
+
+## ScopedValue 上下文组合
+
+业务上下文由 commons-context 的私有 ScopedValue 管理，`LoadUpContextTaskDecorator` 捕获不可变 ExecutionContext 并包裹任务动态执行。自动配置提供同类型缺失时的默认 Bean，Boot 4.1 原生收集并组合多个 TaskDecorator；不会因用户已有其他装饰器跳过业务传播。标准 `spring.task.execution.propagate-context` 控制 Boot Micrometer 装饰器，独立负责 Observation/Trace/MDC，框架不重复捕获它们。
+
+移除旧 ThreadLocalAccessor/ServiceLoader 注册：set/reset 协议不能安全安装 ScopedValue 动态作用域。自定义执行器要显式配置组合；第三方直接调用 Micrometer snapshot 不会传播 LoadUp 业务数据。身份和 Trace 权威来源不变。测试覆盖异常恢复、空绑定、虚拟线程和 Boot 原生装饰器组合，未执行运行验证。

@@ -36,6 +36,7 @@ LoadUp 是一个**被消费的框架/SDK**，通过 `loadup-dependencies` BOM �
 loadup-cloud/
 ├── loadup-dependencies/        # BOM，统一依赖版本
 ├── loadup-commons/             # 最底层通用基础
+│   ├── loadup-commons-context/ # JDK 25 ScopedValue 只读执行链上下文
 │   ├── loadup-commons-dto/     # 通用响应、DTO 与 BaseDO
 │   ├── loadup-commons-util/    # 工具类：JsonUtil、StringUtils、DateUtils
 │   ├── loadup-commons-log/     # 统一日志格式与 trace MDC 约定
@@ -314,3 +315,8 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 - 框架日志打印统一使用 `loadup-commons-log` 的 `LogUtil`，生产代码显式传入来源类；第三方要求 SLF4J Logger 时通过 `LogUtil.getLogger` 获取。保留参数化占位符，异常作为最后参数，敏感字段显式脱敏。
 - 指标和追踪使用 Spring Boot 管理的 `MeterRegistry`、`ObservationRegistry` 和 Micrometer Tracing；组件注入共享实例，基础 HTTP/JVM 观测由 Boot 提供。自定义指标以 `loadup.<domain>.*` 命名，仅使用低基数标签，配置使用标准 `management.*`。
 - 每完成一项任务立即更新根 `ROADMAP.md`：移除已完成的实现项，把未执行的测试或部署验收单独保留为待办；源码或测试已编写不等于运行验证通过。
+
+## 执行链共享数据
+
+- 业务元数据使用 `commons-context` 的不可变 ExecutionContext 与 ScopedValue ContextHolder；入口用 runWith/callWith，下游只读，临时覆盖派生新对象进入嵌套回调。ServiceTemplate 的 init/clean 按入口及资源需求使用，普通 Service 可直接调用。
+- 跨线程业务上下文用 Observability 的 LoadUpContextTaskDecorator 或纯 Java wrap；Boot 标准 Micrometer 装饰器负责 Trace，任意 Micrometer snapshot 不会自动捕获 ScopedValue。只绑定轻量不可变值；用户身份由 SecurityContextHolder 管理，traceId/spanId 由 Micrometer/MDC 管理。

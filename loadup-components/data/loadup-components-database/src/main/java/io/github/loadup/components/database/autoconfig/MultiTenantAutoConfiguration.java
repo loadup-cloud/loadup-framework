@@ -3,6 +3,7 @@ package io.github.loadup.components.database.autoconfig;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.database.tenant.TenantFilter;
+import jakarta.servlet.DispatcherType;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -27,6 +28,8 @@ public class MultiTenantAutoConfiguration {
         registration.addUrlPatterns("/*");
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
         registration.setName("tenantFilter");
+        registration.setAsyncSupported(true);
+        registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);
 
         LogUtil.info(MultiTenantAutoConfiguration.class, "Registered TenantFilter for multi-tenant support");
         return registration;

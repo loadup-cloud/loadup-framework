@@ -76,7 +76,6 @@ class OutboxIT {
         jdbc.update("DELETE FROM loadup_outbox_inbox");
         jdbc.update("DELETE FROM loadup_outbox_replay");
         jdbc.update("DELETE FROM loadup_outbox_event");
-        TenantUtil.clear();
     }
 
     @Test
@@ -210,8 +209,7 @@ class OutboxIT {
                     if (calls.get() == 1) throw new IllegalStateException("Simulated response loss after acceptance");
                 }
             };
-            TenantUtil.setTenantId("previous");
-            try {
+            TenantUtil.runWithTenant("previous", () -> {
                 var dispatcher = new OutboxDispatcher(repository, properties, List.of(handler), null);
                 assertThat(dispatcher.dispatchBatch()).isEqualTo(1);
                 jdbc.update("UPDATE loadup_outbox_event SET available_at = UTC_TIMESTAMP(6) WHERE id = ?", id);
@@ -221,9 +219,7 @@ class OutboxIT {
                 assertThat(accepted).containsExactly(id);
                 assertThat(repository.find("tenant", id).orElseThrow().status()).isEqualTo("SUCCEEDED");
                 assertThat(TenantUtil.getTenantId()).isEqualTo("previous");
-            } finally {
-                TenantUtil.clear();
-            }
+            });
         } finally {
             server.stop(0);
         }

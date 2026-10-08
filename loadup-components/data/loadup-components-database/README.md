@@ -38,7 +38,7 @@ loadup:
       request: {header-name: X-Tenant-Id, parameter-name: tenantId}
 ```
 
-Use `TenantContextHolder.setTenantId(...)` for non-HTTP jobs. `runWithTenant` scopes nested work and restores the previous context.
+Use `TenantUtil.runWithTenant(...)` or `callWithTenant(...)` for non-HTTP jobs. Tenant bindings are read-only within a JDK 25 ScopedValue scope; there is no set/clear API. The request filter saves immutable metadata under `ExecutionContext.class.getName()` and binds it around REQUEST/ASYNC/ERROR dispatch. Header/parameter/subdomain extraction remains a configurable convenience; authenticated tenant authorization must be enforced by the integrating application.
 
 ## Capability matrix
 
