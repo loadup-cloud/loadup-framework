@@ -91,14 +91,23 @@ Content-Type: application/json
 ### Read the department tree
 POST {{baseUrl}}/api/upms/department/tree
 Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{}
 
 ### Read the permission tree
 POST {{baseUrl}}/api/upms/permission/tree
 Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{}
 
 ### Read the role tree
 POST {{baseUrl}}/api/upms/role/tree
 Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{}
 
 ### Create a permission
 POST {{baseUrl}}/api/upms/permission/create

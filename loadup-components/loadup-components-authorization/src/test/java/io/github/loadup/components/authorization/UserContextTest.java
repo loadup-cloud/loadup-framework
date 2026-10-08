@@ -55,6 +55,7 @@ class UserContextTest {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         assertThat(authentication).isNotNull();
         assertThat(authentication.getPrincipal()).isSameAs(user);
+        assertThat(authentication.getName()).isEqualTo("u-1");
         assertThat(authentication.getAuthorities())
                 .extracting(GrantedAuthority::getAuthority)
                 .containsExactlyInAnyOrder("ROLE_ADMIN", "ADMIN", "ROLE_AUDITOR", "user:read", "user:delete");

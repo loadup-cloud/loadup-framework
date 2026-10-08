@@ -2,6 +2,7 @@ package io.github.loadup.components.authorization.model;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
  *
  * <p>This is a lightweight user model without Spring Security dependencies.</p>
  */
-public class LoadUpUser implements Serializable {
+public class LoadUpUser implements Serializable, Principal {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -104,6 +105,12 @@ public class LoadUpUser implements Serializable {
     public LoadUpUser() {}
 
     public String getUserId() {
+        return this.userId;
+    }
+
+    /** Returns the stable user ID used by authentication and audit records. */
+    @Override
+    public String getName() {
         return this.userId;
     }
 
