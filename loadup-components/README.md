@@ -16,6 +16,8 @@ LoadUp 组件提供可独立引入的技术能力。应用通过 `loadup-depende
 | 文件存储 | [dfs](loadup-components-dfs/README.md) |
 | 扩展机制 | [extension](loadup-components-extension/README.md) |
 | 幂等控制 | [globalunique](loadup-components-globalunique/README.md) |
+| 可靠事务事件 | [outbox](loadup-components-outbox/README.md) |
+| 出站 HTTP | [http](loadup-components-http/README.md) |
 | 通知 | [gotone](loadup-components-gotone/README.md) |
 | 流水线 | [pipeline](loadup-components-pipeline/README.md) |
 | 容错 | [resilience4j](loadup-components-resilience4j/README.md) |

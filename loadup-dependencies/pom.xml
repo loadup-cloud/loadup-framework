@@ -658,6 +658,22 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-outbox</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <!-- Version inherited from Spring Boot; keep the HTTP transport in the public BOM. -->
+            <dependency>
+                <groupId>org.apache.httpcomponents.client5</groupId>
+                <artifactId>httpclient5</artifactId>
+                <version>${httpclient5.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-http</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-observability</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>

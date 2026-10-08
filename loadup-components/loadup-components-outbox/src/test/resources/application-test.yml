@@ -1,0 +1,9 @@
+spring:
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+loadup:
+  outbox:
+    worker-enabled: false
+    max-attempts: 2
+    retry-delay: 5s
