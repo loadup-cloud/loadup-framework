@@ -29,4 +29,4 @@ loadup-testify
 
 聚合层只表达模块组合和依赖方向，实际能力由选定的子模块提供。
 
-集成方式与配置示例见 [README.md](./README.md)。
+集成方式与配置示例见 [README.md](README.md)。

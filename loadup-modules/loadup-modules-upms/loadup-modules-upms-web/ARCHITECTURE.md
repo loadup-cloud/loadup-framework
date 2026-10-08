@@ -47,7 +47,7 @@ HTTP /api/** → Controller → App Service → Client DTO 响应
 
 保持组件职责独立：业务调用依赖公开契约，自动配置处理框架装配，基础设施细节留在实现层。
 
-集成方式与配置示例见 [README.md](./README.md)。
+集成方式与配置示例见 [README.md](README.md)。
 
 ## 可选审计桥接
 

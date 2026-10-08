@@ -28,4 +28,4 @@ Web → App → Domain Gateway → Infrastructure；认证适配连接 UPMS 凭�
 
 以公开契约验证组件接入；环境相关的启动与数据准备留在测试模块。
 
-集成方式与配置示例见 [README.md](./README.md)。
+集成方式与配置示例见 [README.md](README.md)。

@@ -13,28 +13,35 @@
     <description>Loadup Components — reusable technical components</description>
 
     <modules>
-        <module>loadup-components-authorization</module>
-        <module>loadup-components-resource-server</module>
-        <module>loadup-components-webmvc</module>
-        <module>loadup-components-observability</module>
-        <module>loadup-components-authserver</module>
-        <module>loadup-components-cache</module>
-        <module>loadup-components-captcha</module>
-        <module>loadup-components-configcenter</module>
-        <module>loadup-components-database</module>
-        <module>loadup-components-dfs</module>
-        <module>loadup-components-extension</module>
-        <module>loadup-components-globalunique</module>
-        <module>loadup-components-outbox</module>
-        <module>loadup-components-http</module>
-        <module>loadup-components-kms</module>
-        <module>loadup-components-gotone</module>
-        <module>loadup-components-pipeline</module>
-        <module>loadup-components-resilience4j</module>
-        <module>loadup-components-retrytask</module>
-        <module>loadup-components-scheduler</module>
-        <module>loadup-components-signature</module>
-        <module>loadup-components-springdoc</module>
-        <module>loadup-components-testcontainers</module>
+        <!-- security -->
+        <module>security/loadup-components-authorization</module>
+        <module>security/loadup-components-authserver</module>
+        <module>security/loadup-components-resource-server</module>
+        <module>security/loadup-components-captcha</module>
+        <module>security/loadup-components-kms</module>
+        <module>security/loadup-components-signature</module>
+        <!-- web -->
+        <module>web/loadup-components-webmvc</module>
+        <module>web/loadup-components-springdoc</module>
+        <!-- data -->
+        <module>data/loadup-components-cache</module>
+        <module>data/loadup-components-database</module>
+        <module>data/loadup-components-dfs</module>
+        <!-- integration -->
+        <module>integration/loadup-components-http</module>
+        <module>integration/loadup-components-gotone</module>
+        <!-- reliability -->
+        <module>reliability/loadup-components-outbox</module>
+        <module>reliability/loadup-components-globalunique</module>
+        <module>reliability/loadup-components-resilience4j</module>
+        <!-- execution -->
+        <module>execution/loadup-components-scheduler</module>
+        <module>execution/loadup-components-retrytask</module>
+        <module>execution/loadup-components-pipeline</module>
+        <!-- platform -->
+        <module>platform/loadup-components-configcenter</module>
+        <module>platform/loadup-components-extension</module>
+        <module>platform/loadup-components-observability</module>
+        <module>platform/loadup-components-testcontainers</module>
     </modules>
 </project>

@@ -18,4 +18,4 @@
 </dependencyManagement>
 ```
 
-然后在消费工程中按需声明具体组件或业务模块，不需要为受 BOM 管理的坐标重复写版本。版本调整及依赖边界见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+然后在消费工程中按需声明具体组件或业务模块，不需要为受 BOM 管理的坐标重复写版本。版本调整及依赖边界见 [ARCHITECTURE.md](ARCHITECTURE.md)。

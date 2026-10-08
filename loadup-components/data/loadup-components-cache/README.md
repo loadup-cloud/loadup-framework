@@ -1,0 +1,83 @@
+# LoadUp Cache Component
+
+以 **Spring Cache 标准门面**（`@Cacheable` / `@CacheEvict` / `@CachePut`）提供缓存能力，
+底层中间件（Caffeine / Redis / JetCache）通过 binder 热插拔。业务代码只写 Spring Cache 注解，
+**不依赖任何 LoadUp 缓存类**；切换底层实现时业务代码零修改。
+
+## 引入
+
+先引入 `loadup-dependencies` BOM（版本由 BOM 统一管理），业务模块依赖 api，集成方工程按需加 binder：
+
+```xml
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-components-cache-api</artifactId>
+</dependency>
+<!-- 三选一，与 loadup.cache.type 对应 -->
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-components-cache-binder-caffeine</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-components-cache-binder-redis</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-components-cache-binder-jetcache</artifactId>
+</dependency>
+```
+
+## 使用
+
+```java
+@Cacheable(cacheNames = "product", key = "#id")
+public Product getProduct(Long id) { ... }
+
+@CachePut(cacheNames = "product", key = "#id")
+public Product updateProduct(Long id, String name) { ... }
+
+@CacheEvict(cacheNames = "product", key = "#id")
+public void deleteProduct(Long id) { ... }
+```
+
+## 配置
+
+```yaml
+loadup:
+  cache:
+    type: redis                     # caffeine（默认）/ redis / jetcache / none
+    default-ttl: 30m                # 默认过期；不配置 = 永不过期
+    caches:
+      product:
+        ttl: 5m
+        random-expiration-range: 30s  # 随机过期防雪崩
+        allow-null-values: false      # 默认 true
+# binder 特有配置
+# redis:   loadup.cache.binder.redis.key-prefix
+# caffeine: loadup.cache.binder.caffeine.maximum-size
+# jetcache: loadup.cache.binder.jetcache.default-cache-type (LOCAL/REMOTE/BOTH)
+#           loadup.cache.binder.jetcache.sync-local / penetration-protect / remote-key-prefix
+```
+
+## 能力矩阵（契约）
+
+| 能力 | Spring Cache 注解 | caffeine | redis | jetcache |
+|------|------------------|----------|-------|----------|
+| 读/写/更新 | `@Cacheable` `@CachePut` | ✓ | ✓ | ✓ |
+| 失效 | `@CacheEvict`（单键/全清） | ✓ | ✓ | ✓ |
+| 空值缓存 | `allow-null-values` | ✓ | ✓ | ✓ |
+| 按 cache 名 TTL | `loadup.cache.caches.*.ttl` | ✓ | ✓ | ✓ |
+| 随机过期防雪崩 | `random-expiration-range` | ✓ | ✓ | ✓ |
+| 本地/分布式/多级 | `type` | 本地 | 分布式 | 多级（可选同步） |
+| 防击穿/防穿透 | JetCache 特有 | ✗ | ✗ | `penetration-protect` |
+
+> 集成方只承诺 ✓ 的能力；切换 binder 零代码修改的前提是业务只用契约内能力。
+
+## 实现与决策
+
+设计决策、内部结构、序列化选择见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+
+## 许可证
+
+Apache License 2.0 (Apache-2.0)

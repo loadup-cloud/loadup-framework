@@ -13,4 +13,4 @@
 
 JSON 响应复用 WebMVC 的 `{result, data}` 契约。收件人从认证主体获取，不接受客户端指定读取用户 ID。发布请求包含 `recipients`、`category`、`title`、`body`，可选 `actionUrl` 与 `requestKey`。
 
-设计见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。

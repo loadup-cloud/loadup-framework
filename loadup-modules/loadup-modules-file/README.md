@@ -21,4 +21,4 @@
 
 `requestDeletion` 将无引用文件置为 `PENDING_DELETE`，事务提交后调用 `cleanup` 删除 DFS 对象并标记 `DELETED`。DFS 清理失败时可调用 `cleanupPending(limit)` 重试。需要自动清理的应用可用已有调度组件定期调用它。没有租户上下文时使用 `__default__`。
 
-Web API 与配置见 [Web 适配说明](../loadup-modules-file-web/README.md)，设计见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+Web API 与配置见 [Web 适配说明](../loadup-modules-file-web/README.md)，设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。

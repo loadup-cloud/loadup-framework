@@ -15,4 +15,4 @@
 
 查询接口使用 `@PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")`，仍须由接入方的 Resource Server 保护 `/api/**`。审计写入发生在 MVC 处理后，失败不会更改业务结果。SecurityFilterChain 在请求进入 MVC 前拒绝时不触发拦截器；首版不覆盖该类事件，也不承诺与业务事务原子提交。
 
-配置示例见 [README.md](./README.md)。
+配置示例见 [README.md](README.md)。

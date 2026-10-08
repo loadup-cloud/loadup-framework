@@ -13,4 +13,4 @@
 
 导入前先通过 `/api/files` 上传源文件。结果下载继续使用 `/api/files/{resultFileId}/content`，遵循文件资源模块的权限和二进制响应。任务 JSON 响应使用全局 `{result, data}` 包装；任务失败详情不暴露处理器异常栈。
 
-设计见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。

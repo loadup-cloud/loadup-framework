@@ -62,3 +62,7 @@ LoadUp 是供其他应用消费的 SDK。`loadup-application` 用于本地集成
 ## 许可证
 
 本项目采用 [Apache License 2.0](LICENSE)。
+
+## 技术组件目录
+
+组件源码按 `security`、`web`、`data`、`integration`、`reliability`、`execution`、`platform` 七类组织；分类目录不改变 Maven 坐标，仍可按需独立引入。完整索引见 [技术组件](loadup-components/README.md)。

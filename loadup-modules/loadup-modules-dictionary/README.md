@@ -19,4 +19,4 @@
 
 类型支持创建、更新、分页查询、空类型删除；条目支持创建、更新、分页查询、删除。删除类型前必须先删除其条目。页大小为 1–100。没有租户上下文时使用保留租户 `__default__`。设置 `loadup.dictionary.enabled: false` 可关闭服务自动装配。
 
-设计与持久化边界见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+设计与持久化边界见 [ARCHITECTURE.md](ARCHITECTURE.md)。

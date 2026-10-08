@@ -19,4 +19,4 @@
 
 服务显式接收租户 ID；为空时映射到保留租户 `__default__`。Repository 的每个读写操作均限定租户。Web 层从 `TenantUtil` 获取租户，不接受客户端在请求体中指定租户。多租户应用仍需保证其租户上下文绑定可信。首版 MySQL DDL 与 Flyway 迁移随模块提供。
 
-接入方式见 [README.md](./README.md)。
+接入方式见 [README.md](README.md)。

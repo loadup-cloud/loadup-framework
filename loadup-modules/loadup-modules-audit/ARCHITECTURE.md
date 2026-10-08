@@ -19,4 +19,4 @@ AuditQuery → AuditService → JdbcAuditRepository → AuditPage
 
 审计表只追加事件。自动采集在 MVC 请求结束后写入；写入失败会记录服务器日志，不改变已经完成的业务响应。因此首版适合后台操作追踪，尚不提供与业务事务原子提交的合规级审计保证。认证过滤器在进入 MVC 前拒绝的请求不会被该 MVC 适配器采集。可靠写入、保留/归档与该类拒绝事件列于 ROADMAP。
 
-接入方式见 [README.md](./README.md)。
+接入方式见 [README.md](README.md)。

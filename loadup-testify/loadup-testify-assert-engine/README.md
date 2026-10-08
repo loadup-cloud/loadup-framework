@@ -13,7 +13,7 @@ Testify 测试框架的执行引擎模块。
 
 ## 设计
 
-内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+内部边界、依赖与源码入口见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
 ## 接入步骤
 

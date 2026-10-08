@@ -14,4 +14,4 @@ loadup-dependencies
 
 聚合 POM 组织模块与版本，运行时依赖由子模块决定。
 
-集成方式与配置示例见 [README.md](./README.md)。
+集成方式与配置示例见 [README.md](README.md)。

@@ -22,7 +22,7 @@
 
 ## 设计
 
-依赖组合和源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+依赖组合和源码入口见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
 ## 脱敏示例
 

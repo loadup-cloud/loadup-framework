@@ -12,7 +12,7 @@
 mvn clean test -pl loadup-modules/loadup-modules-upms/loadup-modules-upms-test -am
 ```
 
-测试模块不作为生产运行时依赖。分层与用例边界见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+测试模块不作为生产运行时依赖。分层与用例边界见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
 ## 接入步骤
 

@@ -45,4 +45,4 @@ Web → App → Domain Gateway → Infrastructure；认证适配连接 UPMS 凭�
 
 领域层定义权限判定规则与持久化 Gateway 契约，不包含 Web、Spring 或 ORM 装配。
 
-集成方式与配置示例见 [README.md](./README.md)。
+集成方式与配置示例见 [README.md](README.md)。

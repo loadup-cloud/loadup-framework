@@ -10,7 +10,7 @@
 [![CI](https://github.com/kailong321200875/vue-element-plus-admin/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/kailong321200875/vue-element-plus-admin/actions/workflows/ci.yml) [![license](https://img.shields.io/github/license/kailong321200875/vue-element-plus-admin.svg)](./LICENSE) [![last commit](https://img.shields.io/github/last-commit/kailong321200875/vue-element-plus-admin.svg)](https://github.com/kailong321200875/vue-element-plus-admin/commits/master) [![stars](https://img.shields.io/github/stars/kailong321200875/vue-element-plus-admin.svg)](https://github.com/kailong321200875/vue-element-plus-admin/stargazers)
 </div>
 
-[English](./README.md) | **中文**
+[English](README.md) | **中文**
 
 ## 关于 v3
 
@@ -121,13 +121,13 @@ pnpm dev:docs
 
 默认地址为 `http://localhost:4002/`。
 
-- [快速开始](./apps/docs/guide/getting-started.md)
-- [目录与架构](./apps/docs/guide/architecture.md)
-- [动态路由与权限](./apps/docs/core/dynamic-routing.md)
-- [Request 请求管理](./apps/docs/core/request.md)
-- [CRUD](./apps/docs/capabilities/crud.md)
-- [表单](./apps/docs/capabilities/form.md)
-- [构建与部署](./apps/docs/development/build-deploy.md)
+- [快速开始](apps/docs/guide/getting-started.md)
+- [目录与架构](apps/docs/guide/architecture.md)
+- [动态路由与权限](apps/docs/core/dynamic-routing.md)
+- [Request 请求管理](apps/docs/core/request.md)
+- [CRUD](apps/docs/capabilities/crud.md)
+- [表单](apps/docs/capabilities/form.md)
+- [构建与部署](apps/docs/development/build-deploy.md)
 
 [element-plus-admin-doc.cn](https://element-plus-admin-doc.cn/) 对应旧版架构。新项目请以 v3 文档和当前分支代码为准。
 
@@ -169,7 +169,7 @@ refactor: simplify request client
 3. 使用 Conventional Commit 信息提交修改。
 4. 推送分支，并向 `master` 发起 Pull Request。
 
-项目历史请查看[更新日志](./CHANGELOG.md)。
+项目历史请查看[更新日志](CHANGELOG.md)。
 
 ## 浏览器支持
 
@@ -185,4 +185,4 @@ refactor: simplify request client
 
 ## 许可证
 
-[MIT](./LICENSE)
+[MIT](LICENSE)

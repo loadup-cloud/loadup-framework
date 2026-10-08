@@ -10,7 +10,7 @@
 
 ## P0 · Outbox 首版后续验证与运行完善
 
-首版代码、自动装配、BOM、迁移、README 和 ARCHITECTURE 已提供：同事务发布、MySQL 多实例领取、租约恢复、有限退避重试、失败查询、人工重放、Inbox 去重及观测。接入契约以 [Outbox README](loadup-components/loadup-components-outbox/README.md) 为准。
+首版代码、自动装配、BOM、迁移、README 和 ARCHITECTURE 已提供：同事务发布、MySQL 多实例领取、租约恢复、有限退避重试、失败查询、人工重放、Inbox 去重及观测。接入契约以 [Outbox README](loadup-components/reliability/loadup-components-outbox/README.md) 为准。
 
 - [ ] 在真实消费工程执行 `OutboxIT` 并记录结果；现有用例已覆盖事务回滚、并发争抢、旧领取者确认、租约恢复、Inbox 回滚和失败重放，尚未执行。
 - [ ] 补充并执行多进程退出/重启故障演练，验证真实业务提交后的事件恢复；验证多节点时钟、长处理器超过租约以及实际下游幂等行为。
@@ -19,7 +19,7 @@
 
 ## P0 · HTTP 首版后续验证与集成
 
-首版采用 Spring RestClient + Apache HttpClient 5，提供命名客户端/操作、URI 编码、JSON/原始报文、受限下载、凭证引用、SSL Bundle、连接池、代理、地址限制及显式原子配置刷新。自动重试和重定向关闭；业务通过幂等契约及现有任务能力选择重试。接入见 [HTTP README](loadup-components/loadup-components-http/README.md)。
+首版采用 Spring RestClient + Apache HttpClient 5，提供命名客户端/操作、URI 编码、JSON/原始报文、受限下载、凭证引用、SSL Bundle、连接池、代理、地址限制及显式原子配置刷新。自动重试和重定向关闭；业务通过幂等契约及现有任务能力选择重试。接入见 [HTTP README](loadup-components/integration/loadup-components-http/README.md)。
 
 - [ ] 在消费工程执行 HTTP 单测和自动装配测试并记录结果；现有用例尚未执行，不能视为运行验证。
 - [ ] 补充并执行 TLS 客户端证书、可信代理、响应断连、分块响应大小限制、长下载与并发刷新、凭证轮换及 Trace 传播验证。
@@ -34,7 +34,7 @@
 
 ## P0 · KMS 首版后续验证与部署集成
 
-基于 OpenBao Transit 的独立组件已提供运行密码操作、独立管理身份、版本引用、RSA/AES、公钥读取及受控包装导入；接入见 [KMS README](loadup-components/loadup-components-kms/README.md)。首版协议夹具和自动装配测试已编写，尚未执行。
+基于 OpenBao Transit 的独立组件已提供运行密码操作、独立管理身份、版本引用、RSA/AES、公钥读取及受控包装导入；接入见 [KMS README](loadup-components/security/loadup-components-kms/README.md)。首版协议夹具和自动装配测试已编写，尚未执行。
 
 - [ ] 在消费工程执行 KMS 定向测试，并针对固定 OpenBao 版本执行真实服务验证：生成/导入 RSA 与 AES、签名互操作、轮换、历史验签解密、最低版本限制、公钥导入、BYOK 包装及 ACL；夹具不能代替服务验证。
 - [ ] 接入生产身份登录与续租 Provider，验证令牌过期、权限撤销、TLS/mTLS、封印、重启和超时；管理操作结果未知时查状态，禁止盲目重试。
@@ -107,3 +107,7 @@
 ## 统一日志与观测后续验收
 
 - [ ] 由用户执行相关定向测试与真实消费工程验收，检查指标导出、Trace/MDC、文本与 JSON 日志格式。
+
+## 组件目录迁移后续验收
+
+- [ ] 本地重新导入 Maven，并按需刷新 IDE/CodeGraph 索引；由用户执行选定消费模块的定向构建与运行验证。组件目录及坐标契约见 components README。

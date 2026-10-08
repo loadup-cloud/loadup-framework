@@ -42,4 +42,4 @@ docs/
 .codegraph
 .claude
 .mvn
-data/
+/data/

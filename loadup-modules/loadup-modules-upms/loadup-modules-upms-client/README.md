@@ -13,7 +13,7 @@ UPMS 对外 DTO、Command 与 Query 契约。
 
 ## 设计
 
-内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+内部边界、依赖与源码入口见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
 ## 接入步骤
 

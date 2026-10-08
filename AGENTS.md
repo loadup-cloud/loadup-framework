@@ -39,27 +39,14 @@ loadup-cloud/
 │   ├── loadup-commons-dto/     # 通用响应、DTO 与 BaseDO
 │   ├── loadup-commons-util/    # 工具类：JsonUtil、StringUtils、DateUtils
 │   ├── loadup-commons-log/     # 统一日志格式与 trace MDC 约定
-├── loadup-components/          # 可复用技术组件（框架级中间件）
-│   ├── loadup-components-authorization/   # Spring Security 方法级授权 @PreAuthorize
-│   ├── loadup-components-authserver/        # SAS 令牌签发与 OAuth2 客户端管理
-│   ├── loadup-components-resource-server/  # Controller 入口 JWT 验证
-│   ├── loadup-components-webmvc/          # 全局 API 报文、错误处理与 Jackson 约定
-│   ├── loadup-components-observability/   # Micrometer 指标与 OpenTelemetry 追踪接入
-│   ├── loadup-components-cache/           # 缓存（Spring Cache 门面 + binder-caffeine/redis/jetcache）
-│   ├── loadup-components-captcha/         # 验证码（API + binder-tianai/nanocaptcha）
-│   ├── loadup-components-configcenter/    # 配置中心（API + binder-local/nacos/apollo）
-│   ├── loadup-components-database/        # MyBatis-Flex 配置、多租户、审计、Flyway 迁移
-│   ├── loadup-components-dfs/             # 文件存储（API + 可选 binder）
-│   ├── loadup-components-extension/       # AspectJ 扩展机制
-│   ├── loadup-components-globalunique/    # 全局幂等性控制
-│   ├── loadup-components-gotone/          # 统一消息通知（Mode B：engine + 可选 store-jdbc + binder-email/sms/push/webhook）
-│   ├── loadup-components-pipeline/        # 流水线编排引擎
-│   ├── loadup-components-resilience4j/    # 容错（API + binder-core：熔断/重试/限流/舱壁/超时）
-│   ├── loadup-components-retrytask/       # 分布式重试（JobRunr 底座：facade + binder-jobrunr + notifier-gotone）
-│   ├── loadup-components-scheduler/       # 任务调度（API + binder-jobrunr/quartz）
-│   ├── loadup-components-signature/       # 数字签名
-│   ├── loadup-components-springdoc/       # SpringDoc + Scalar / OpenAPI 文档
-│   └── loadup-components-testcontainers/  # 测试容器封装
+├── loadup-components/          # 技术组件，分类目录不增加 Maven 层级
+│   ├── security/       # authorization, authserver, resource-server, captcha, kms, signature
+│   ├── web/            # webmvc, springdoc
+│   ├── data/           # cache, database, dfs
+│   ├── integration/    # http, gotone
+│   ├── reliability/    # outbox, globalunique, resilience4j
+│   ├── execution/      # scheduler, retrytask, pipeline
+│   └── platform/       # configcenter, extension, observability, testcontainers
 ├── loadup-modules/             # 通用业务能力及可选 *-web 适配模块
 │   ├── loadup-modules-upms/    # 用户与权限管理、账号安全
 │   ├── loadup-modules-audit/   # 审计中心
@@ -82,7 +69,7 @@ loadup-dependencies (BOM)
         ↑
    loadup-commons/*
         ↑
-  loadup-components/*   ← 通过 API/binder 模式解耦横向依赖
+  loadup-components/{category}/*   ← 通过 API/binder 模式解耦横向依赖
         ↑
    loadup-modules/*     ← 模块间依赖应明确且尽量减少
         ↑
@@ -97,7 +84,7 @@ loadup-testify  → 仅 test scope，深度依赖框架内部类型
 
 ## 组件设计规范
 
-> 项目概况见 [README.md](./README.md)，待办事项见 [ROADMAP.md](./ROADMAP.md)，组件设计以对应 `ARCHITECTURE.md` 为准。
+> 项目概况见 [README.md](README.md)，待办事项见 [ROADMAP.md](ROADMAP.md)，组件设计以对应 `ARCHITECTURE.md` 为准。
 > 核心原则：底层 OSS + 薄集成；业务侧 API 尽量采用业界标准接口（Spring Cache、S3、OpenTelemetry、Spring MVC 等）；自创接口仅限标准表达不了的语义；每个组件 README 必须维护能力矩阵契约表。
 
 ### 单后端选择模式（Mode A）
@@ -292,7 +279,7 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 
 | 文件                                                  | 用途                    |
 |-----------------------------------------------------|-----------------------|
-| `loadup-components/loadup-components-database/ARCHITECTURE.md` | MyBatis-Flex 集成与审计设计 |
+| `loadup-components/data/loadup-components-database/ARCHITECTURE.md` | MyBatis-Flex 集成与审计设计 |
 | `loadup-modules/loadup-modules-upms/ARCHITECTURE.md` | 业务模块 COLA 分层参考 |
 
 ---

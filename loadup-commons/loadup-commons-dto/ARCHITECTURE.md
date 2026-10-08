@@ -37,4 +37,4 @@
 - [`CommonConstants`](src/main/java/io/github/loadup/commons/constant/CommonConstants.java)：由实现方或调用方按接口定义对接。
 - [`AssertionCallback`](src/main/java/io/github/loadup/commons/error/AssertionCallback.java)：由实现方或调用方按接口定义对接。
 
-集成方式与配置示例见 [README.md](./README.md)。
+集成方式与配置示例见 [README.md](README.md)。

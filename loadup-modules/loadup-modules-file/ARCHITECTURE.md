@@ -21,4 +21,4 @@
 
 HTTP 上传受 Spring Multipart 大小限制。对高风险文件类型的病毒扫描、内容审核、下载水印、保留期限和跨租户共享应在消费应用的业务规则中实现；首版不开放公开访问。
 
-接入方式见 [README.md](./README.md)。
+接入方式见 [README.md](README.md)。

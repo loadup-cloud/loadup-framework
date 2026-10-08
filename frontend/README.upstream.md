@@ -10,7 +10,7 @@
 [![CI](https://github.com/kailong321200875/vue-element-plus-admin/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/kailong321200875/vue-element-plus-admin/actions/workflows/ci.yml) [![license](https://img.shields.io/github/license/kailong321200875/vue-element-plus-admin.svg)](./LICENSE) [![last commit](https://img.shields.io/github/last-commit/kailong321200875/vue-element-plus-admin.svg)](https://github.com/kailong321200875/vue-element-plus-admin/commits/master) [![stars](https://img.shields.io/github/stars/kailong321200875/vue-element-plus-admin.svg)](https://github.com/kailong321200875/vue-element-plus-admin/stargazers)
 </div>
 
-**English** | [中文](./README.zh-CN.md)
+**English** | [中文](README.zh-CN.md)
 
 ## About v3
 
@@ -121,13 +121,13 @@ pnpm dev:docs
 
 It runs at `http://localhost:4002/` by default.
 
-- [Getting started](./apps/docs/guide/getting-started.md)
-- [Architecture](./apps/docs/guide/architecture.md)
-- [Dynamic routing](./apps/docs/core/dynamic-routing.md)
-- [Request management](./apps/docs/core/request.md)
-- [CRUD](./apps/docs/capabilities/crud.md)
-- [Forms](./apps/docs/capabilities/form.md)
-- [Build and deployment](./apps/docs/development/build-deploy.md)
+- [Getting started](apps/docs/guide/getting-started.md)
+- [Architecture](apps/docs/guide/architecture.md)
+- [Dynamic routing](apps/docs/core/dynamic-routing.md)
+- [Request management](apps/docs/core/request.md)
+- [CRUD](apps/docs/capabilities/crud.md)
+- [Forms](apps/docs/capabilities/form.md)
+- [Build and deployment](apps/docs/development/build-deploy.md)
 
 The former site at [element-plus-admin-doc.cn](https://element-plus-admin-doc.cn/) documents the legacy architecture. New projects should use the v3 documentation and current branch code.
 
@@ -169,7 +169,7 @@ Issues and pull requests are welcome.
 3. Commit your changes using a Conventional Commit message.
 4. Push the branch and open a pull request against `master`.
 
-See the [change log](./CHANGELOG.md) for project history.
+See the [change log](CHANGELOG.md) for project history.
 
 ## Browser support
 
@@ -185,4 +185,4 @@ If this project helps you, sponsorship is welcome.
 
 ## License
 
-[MIT](./LICENSE)
+[MIT](LICENSE)

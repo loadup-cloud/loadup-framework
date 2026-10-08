@@ -29,4 +29,4 @@ loadup:
 
 `actorId` 取自 `Authentication.getName()`。框架的 `LoadUpUser` 返回 `userId`（JWT 的 `sub`），不会保存角色、权限或用户对象的字符串表示。接入自定义认证时，应让 principal 实现 `Principal` 或 Spring Security 的身份接口，并返回稳定的操作者标识；匿名请求的操作者为空。
 
-实现边界见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+实现边界见 [ARCHITECTURE.md](ARCHITECTURE.md)。

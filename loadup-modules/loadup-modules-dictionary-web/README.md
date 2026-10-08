@@ -23,4 +23,4 @@
 
 管理接口要求 `ROLE_SUPER_ADMIN`；选项接口由接入方的 `/api/**` 资源服务器规则保护。请求中的租户 ID 由当前 `TenantUtil` 上下文决定。设置 `loadup.dictionary.web.enabled: false` 可关闭 Web 适配。
 
-控制器带有 OpenAPI 注解；引入可选的 `loadup-components-springdoc` 后可在 `/scalar` 浏览。设计见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+控制器带有 OpenAPI 注解；引入可选的 `loadup-components-springdoc` 后可在 `/scalar` 浏览。设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。

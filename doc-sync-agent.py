@@ -136,7 +136,11 @@ def render(module: Path, target: Path, mapping: dict[Path, Path]) -> str:
     match = re.search(r"^# (.+)$", readme_body, re.MULTILINE)
     title = navigation_title(match.group(1)) if match else module.name
     relative = module.relative_to(ROOT).as_posix()
-    technical = len(module.relative_to(ROOT).parts) > 2 or module.parent.name == "loadup-testify"
+    if module.relative_to(ROOT).parts[0] == "loadup-components":
+        # Functional category directories are not Maven modules; keep their component pages visible.
+        technical = module != ROOT / "loadup-components" and (module.parent / "pom.xml").is_file()
+    else:
+        technical = len(module.relative_to(ROOT).parts) > 2 or module.parent.name == "loadup-testify"
     frontmatter = f"---\ntitle: {json.dumps(title, ensure_ascii=False)}\n"
     if technical:
         frontmatter += "sidebar:\n  exclude: true\n"

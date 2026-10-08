@@ -20,20 +20,20 @@
 
 ## 设计
 
-内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+内部边界、依赖与源码入口见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
 ## 接入步骤
 
 此目录是 Maven 聚合模块，不作为业务运行依赖。按用途选择子模块：
 
-- [`loadup-modules-upms`](./loadup-modules-upms/README.md)：运行实现。
-- [`loadup-modules-audit`](./loadup-modules-audit/README.md)：程序化审计记录。
-- [`loadup-modules-audit-web`](./loadup-modules-audit-web/README.md)：HTTP 适配。
-- [`loadup-modules-dictionary`](./loadup-modules-dictionary/README.md)：程序化字典查询与管理。
-- [`loadup-modules-dictionary-web`](./loadup-modules-dictionary-web/README.md)：HTTP 适配。
-- [`loadup-modules-file`](./loadup-modules-file/README.md)：程序化文件资源管理。
-- [`loadup-modules-file-web`](./loadup-modules-file-web/README.md)：HTTP 适配。
-- [`loadup-modules-notification`](./loadup-modules-notification/README.md)：程序化站内通知投递。
-- [`loadup-modules-notification-web`](./loadup-modules-notification-web/README.md)：HTTP 适配。
-- [`loadup-modules-transfer`](./loadup-modules-transfer/README.md)：程序化导入导出任务。
-- [`loadup-modules-transfer-web`](./loadup-modules-transfer-web/README.md)：HTTP 适配。
+- [`loadup-modules-upms`](loadup-modules-upms/README.md)：运行实现。
+- [`loadup-modules-audit`](loadup-modules-audit/README.md)：程序化审计记录。
+- [`loadup-modules-audit-web`](loadup-modules-audit-web/README.md)：HTTP 适配。
+- [`loadup-modules-dictionary`](loadup-modules-dictionary/README.md)：程序化字典查询与管理。
+- [`loadup-modules-dictionary-web`](loadup-modules-dictionary-web/README.md)：HTTP 适配。
+- [`loadup-modules-file`](loadup-modules-file/README.md)：程序化文件资源管理。
+- [`loadup-modules-file-web`](loadup-modules-file-web/README.md)：HTTP 适配。
+- [`loadup-modules-notification`](loadup-modules-notification/README.md)：程序化站内通知投递。
+- [`loadup-modules-notification-web`](loadup-modules-notification-web/README.md)：HTTP 适配。
+- [`loadup-modules-transfer`](loadup-modules-transfer/README.md)：程序化导入导出任务。
+- [`loadup-modules-transfer-web`](loadup-modules-transfer-web/README.md)：HTTP 适配。

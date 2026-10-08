@@ -37,7 +37,7 @@
 Application → 自动配置 → Web/API、UPMS 与可选技术组件
 ```
 
-集成方式与配置示例见 [README.md](./README.md)。
+集成方式与配置示例见 [README.md](README.md)。
 
 ## 观测配置归属
 

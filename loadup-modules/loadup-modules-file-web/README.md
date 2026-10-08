@@ -16,4 +16,4 @@
 
 JSON 接口沿用 WebMVC 统一 `{result, data}` 响应；文件内容保持二进制响应。文件读取与删除只允许文件所有者或 `ROLE_SUPER_ADMIN`。上传文件名不得含路径分隔符或控制换行。业务引用通过可信业务代码调用 `FileResourceService.attach/detach`，Web 不提供任意关联写入入口。
 
-设计与依赖边界见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+设计与依赖边界见 [ARCHITECTURE.md](ARCHITECTURE.md)。

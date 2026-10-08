@@ -41,7 +41,7 @@ Web → App → Domain Gateway → Infrastructure；认证适配连接 UPMS 凭�
 
 `AuthenticationService` 作为稳定入口；技术选择在运行应用完成，避免 API 层反向依赖具体后端。
 
-集成方式与配置示例见 [README.md](./README.md)。
+集成方式与配置示例见 [README.md](README.md)。
 
 ## 敏感输出契约
 

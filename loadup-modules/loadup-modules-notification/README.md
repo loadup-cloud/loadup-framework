@@ -16,4 +16,4 @@
 
 Gotone `IN_APP` 渠道使用 `NotificationRequest.channels = ["IN_APP"]`，接收者为用户 ID。`templateParams` 提供 `tenantId`、`title`、`body`、`category`，可选 `senderId`、`actionUrl`、`requestKey`；已配置 Gotone 模板时渲染结果作为消息正文，否则使用 `body`。业务重试时应复用相同 `requestKey`，以避免重复入站通知。没有 `tenantId` 时按单租户 `__default__` 处理。
 
-Web 接口见 [Web 适配](../loadup-modules-notification-web/README.md)，设计见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+Web 接口见 [Web 适配](../loadup-modules-notification-web/README.md)，设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。

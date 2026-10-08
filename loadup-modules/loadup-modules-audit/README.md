@@ -21,4 +21,4 @@
 
 `search(AuditQuery)` 强制传入租户上下文，页码从 1 开始，每页最多 100 条。审计表为追加写入，不提供修改、删除接口；保留和归档策略由接入方规划。
 
-设计与失败语义见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+设计与失败语义见 [ARCHITECTURE.md](ARCHITECTURE.md)。

@@ -26,7 +26,7 @@
 
 本地启动器的 `demo-csv-import` 只校验简单 `value,label` CSV 并生成报告，不写业务表；`demo-csv-export` 生成示例 CSV。接入业务表时替换为自己的处理器。
 
-HTTP 用法见 [Web 适配](../loadup-modules-transfer-web/README.md)，一致性设计见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+HTTP 用法见 [Web 适配](../loadup-modules-transfer-web/README.md)，一致性设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
 ## 导出字段脱敏
 

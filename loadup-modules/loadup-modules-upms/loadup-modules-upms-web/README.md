@@ -44,7 +44,7 @@ Controller 接口使用 POST + JSON body。路径如下：
 
 - [`UpmsWebAutoConfiguration`](src/main/java/io/github/loadup/modules/upms/web/UpmsWebAutoConfiguration.java)
 
-设计边界与装配路径见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+设计边界与装配路径见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
 ## 明文查看
 

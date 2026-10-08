@@ -12,16 +12,16 @@
 
 ## 设计
 
-内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+内部边界、依赖与源码入口见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
 ## 接入步骤
 
 此目录是 Maven 聚合模块，不作为业务运行依赖。按用途选择子模块：
 
-- [`loadup-commons-dto`](./loadup-commons-dto/README.md)：运行实现。
-- [`loadup-commons-log`](./loadup-commons-log/README.md)：运行实现。
-- [`loadup-commons-util`](./loadup-commons-util/README.md)：运行实现。
+- [`loadup-commons-dto`](loadup-commons-dto/README.md)：运行实现。
+- [`loadup-commons-log`](loadup-commons-log/README.md)：运行实现。
+- [`loadup-commons-util`](loadup-commons-util/README.md)：运行实现。
 
 ## 展示脱敏
 
-- [`loadup-commons-masking`](./loadup-commons-masking/README.md)：纯 Java 展示规则与 `@Masked` 输出元数据，可供 WebMVC、显式日志与导出使用。
+- [`loadup-commons-masking`](loadup-commons-masking/README.md)：纯 Java 展示规则与 `@Masked` 输出元数据，可供 WebMVC、显式日志与导出使用。

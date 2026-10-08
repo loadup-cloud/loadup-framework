@@ -61,4 +61,4 @@ writer.write(Masking.mask(mobile, MaskType.PHONE));
 
 不要直接打印完整入参、实体、明文 DTO、请求/响应 body 或异常中的原文。注解不会保护 `toString()`。异步导出在生成文件时逐字段显式脱敏；是否允许明文必须在任务提交与实际执行时校验授权，并单独审计，不能依赖请求线程上下文。首版没有通用明文导出能力。
 
-设计与隔离边界见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+设计与隔离边界见 [ARCHITECTURE.md](ARCHITECTURE.md)。

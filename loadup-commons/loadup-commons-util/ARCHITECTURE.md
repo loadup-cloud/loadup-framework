@@ -42,4 +42,4 @@
 业务与组件调用 → JsonUtil / 日期字符串工具 → 标准 Java 与 Jackson 能力
 ```
 
-集成方式与配置示例见 [README.md](./README.md)。
+集成方式与配置示例见 [README.md](README.md)。

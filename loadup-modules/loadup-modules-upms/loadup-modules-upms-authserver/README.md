@@ -25,4 +25,4 @@ UPMS 与授权服务器之间的可选认证适配模块。
 
 ## 设计
 
-内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+内部边界、依赖与源码入口见 [ARCHITECTURE.md](ARCHITECTURE.md)。

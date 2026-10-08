@@ -13,7 +13,7 @@ UPMS 持久化对象、Mapper 和网关实现。
 
 ## 设计
 
-内部边界、依赖与源码入口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+内部边界、依赖与源码入口见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
 ## 接入步骤
 
