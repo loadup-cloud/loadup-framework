@@ -63,6 +63,45 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
     ]
   },
   {
+    path: '/contract',
+    component: Layout,
+    redirect: '/contract/products',
+    name: 'ContractDrafts',
+    meta: { title: '合约草稿', icon: 'mdi:file-document-edit-outline' },
+    children: [
+      {
+        path: 'products',
+        component: () => import('@/views/Contract/Products.vue'),
+        name: 'ContractProducts',
+        meta: { title: '产品目录', icon: 'mdi:package-variant', noCache: true }
+      },
+      {
+        path: 'conditions',
+        component: () => import('@/views/Contract/Conditions.vue'),
+        name: 'ContractConditions',
+        meta: { title: '条件配置', icon: 'mdi:source-branch', noCache: true }
+      },
+      {
+        path: 'bundles',
+        component: () => import('@/views/Contract/Bundles.vue'),
+        name: 'ContractBundles',
+        meta: { title: '产品组合', icon: 'mdi:layers-outline', noCache: true }
+      },
+      {
+        path: 'sales-plans',
+        component: () => import('@/views/Contract/SalesPlans.vue'),
+        name: 'ContractSalesPlans',
+        meta: { title: '销售方案', icon: 'mdi:clipboard-text-outline', noCache: true }
+      },
+      {
+        path: 'merchant-contracts',
+        component: () => import('@/views/Contract/MerchantContracts.vue'),
+        name: 'ContractMerchantContracts',
+        meta: { title: '商户合约意向', icon: 'mdi:file-sign', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/redirect',
     component: Layout,
     name: 'RedirectWrap',

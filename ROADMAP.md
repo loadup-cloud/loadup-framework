@@ -17,14 +17,14 @@ Money、CurrencyEnum（JDK25目录233项）、MoneyUtil 和 MoneyFormatter 已�
 
 ## P1 · 产品目录、销售方案与商户合约
 
-详细设计见 [Contract ARCHITECTURE](loadup-modules/loadup-modules-contract/ARCHITECTURE.md)。阶段一领域核心、BOM 与单测源码已提供：参数继承/协商范围、三值条件、组合展开、产品选择、签约快照与运行时判断。尚未编译或运行测试；当前无持久化、HTTP 或管理页面。
+详细设计见 [Contract ARCHITECTURE](loadup-modules/loadup-modules-contract/ARCHITECTURE.md)。领域、client、租户 Gateway、MySQL/Flyway、app 自动装配、幂等签约、生命周期、管理 API、权限/OpenAPI 和前端页面已提供。页面已接入目录保存/发布/下架、服务端签约预览/签约/查询/状态接口；源码尚未编译或运行测试。
 
-- [ ] 用户本地定向编译并执行 ContractFlowTest、ConditionEvaluatorTest；记录结果，不将源码视为验证通过。
-- [ ] 实现 client DTO、租户范围 Gateway、MyBatis-Flex/MapStruct 持久化、Flyway 和 app 装配；提供可信商户事实来源，验证跨模块迁移版本组合。
-- [ ] 实现受限 JSON Schema 转换、产品/独立条件/组合/方案草稿 API、动态表单与预览页面；接入方法权限、全局报文和 SpringDoc。
-- [ ] 实现内容摘要绑定的审批、签约幂等、修订生效安排与历史、暂停/恢复/终止；事务锁定稳定行防止生效区间重叠，不覆盖旧条款。
-- [ ] 同事务接入合约审计和 Outbox，提供权威状态读取、不可变快照缓存、低基数指标与受控 explain。
-- [ ] 补充并执行真实 MySQL 多实例并发签约、租户隔离、暂停生效、重复/乱序事件、回滚与历史支付条款绑定验收。
+- [ ] 用户定向编译并执行 ContractFlowTest、ConditionEvaluatorTest、ContractCodecTest、ContractAutoConfigurationTest 和 ContractPersistenceIT；验证 Jackson3/MapStruct/Boot 装配（REGISTER_BEAN 条件与组件扫描冲突已通过显式 Import 修复，待运行回归）、真实 MySQL 并发、租户隔离、回滚和迁移组合，记录结果。
+- [ ] 接入消费工程可信租户/商户资料、主库路由、六类方法权限，执行 Router.http 与鉴权/响应回归。
+- [ ] 实现受限 JSON Schema 转换及更完整的动态表单；用户本地执行前端类型检查、构建与 Contract 页面交互联调。
+- [ ] 实现内容摘要绑定审批、修订生效安排与历史，事务锁定稳定合约/范围行防止区间重叠，不修改旧条款。
+- [ ] 同事务接入合约可靠审计和 Outbox，补充不可变快照缓存、低基数指标与受控 explain。
+- [ ] 补充并执行真实 MySQL 多进程故障恢复、重复/乱序事件与历史支付条款绑定验收。
 
 ## P0 · Outbox 首版后续验证与运行完善
 

@@ -539,3 +539,376 @@ Authorization: Bearer {{upmsAccessToken}}
 Content-Type: application/json
 
 {"id": "{{upmsUserId}}", "purpose": "CUSTOMER_SUPPORT"}
+
+# Contract management: configure trusted tenant context, MerchantFactsProvider and contract:* permissions first.
+# Run once with unique catalog codes; response.result.status must be S before using data.
+# This example uses the merchant1 record from the consuming application, not client-supplied merchant facts.
+@contractMerchant = merchant1
+@contractScope = store1
+
+### Create merchant eligibility condition
+POST {{baseUrl}}/api/contract/catalog/save
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "kind": "CONDITION",
+  "code": "HTTP_RETAIL",
+  "version": 1,
+  "definition": {
+    "mode": "ALL",
+    "clauses": [
+      {
+        "kind": "COMPARE",
+        "negated": false,
+        "field": "merchant.industry",
+        "operator": "EQ",
+        "valueType": "STRING",
+        "expected": [
+          "RETAIL"
+        ],
+        "configurationKey": null
+      }
+    ]
+  }
+}
+
+> {%
+  client.assert(response.body.result.status === "S", "Contract operation must succeed");
+  client.global.set("contractConditionId", response.body.data.id);
+  client.global.set("contractConditionVersion", response.body.data.rowVersion);
+%}
+
+### Publish merchant eligibility condition
+POST {{baseUrl}}/api/contract/catalog/publish
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "id": "{{contractConditionId}}",
+  "expectedRowVersion": {{contractConditionVersion}}
+}
+
+### Create payment product
+POST {{baseUrl}}/api/contract/catalog/save
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "kind": "PRODUCT",
+  "code": "HTTP_WECHAT",
+  "version": 1,
+  "definition": {
+    "capabilityCode": "payment.collect",
+    "parameters": [
+      {
+        "key": "fee.rate",
+        "type": "DECIMAL",
+        "required": true,
+        "defaultValue": "0.006",
+        "minimum": "0.003",
+        "maximum": "0.01",
+        "allowedValues": [],
+        "editableLayers": [
+          "BUNDLE",
+          "SALES_PLAN",
+          "MERCHANT"
+        ]
+      }
+    ],
+    "conditionId": null,
+    "dependencies": [],
+    "exclusions": []
+  }
+}
+
+> {%
+  client.assert(response.body.result.status === "S", "Contract operation must succeed");
+  client.global.set("contractProductId", response.body.data.id);
+  client.global.set("contractProductVersion", response.body.data.rowVersion);
+%}
+
+### Publish payment product
+POST {{baseUrl}}/api/contract/catalog/publish
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "id": "{{contractProductId}}",
+  "expectedRowVersion": {{contractProductVersion}}
+}
+
+### Create product bundle
+POST {{baseUrl}}/api/contract/catalog/save
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "kind": "BUNDLE",
+  "code": "HTTP_BASIC",
+  "version": 1,
+  "definition": {
+    "items": [
+      {
+        "itemKey": "wechat",
+        "productId": "{{contractProductId}}",
+        "required": true,
+        "defaultSelected": true,
+        "values": {},
+        "conditionId": null
+      }
+    ]
+  }
+}
+
+> {%
+  client.assert(response.body.result.status === "S", "Contract operation must succeed");
+  client.global.set("contractBundleId", response.body.data.id);
+  client.global.set("contractBundleVersion", response.body.data.rowVersion);
+%}
+
+### Publish bundle
+POST {{baseUrl}}/api/contract/catalog/publish
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "id": "{{contractBundleId}}",
+  "expectedRowVersion": {{contractBundleVersion}}
+}
+
+### Create sales plan
+POST {{baseUrl}}/api/contract/catalog/save
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "kind": "SALES_PLAN",
+  "code": "HTTP_STANDARD",
+  "version": 1,
+  "definition": {
+    "bundles": [
+      {
+        "alias": "basic",
+        "bundleId": "{{contractBundleId}}"
+      }
+    ],
+    "values": {},
+    "merchantPolicies": {
+      "basic.wechat": {
+        "fee.rate": {
+          "minimum": "0.0038",
+          "maximum": "0.006",
+          "allowedValues": []
+        }
+      }
+    },
+    "eligibilityConditionId": "{{contractConditionId}}",
+    "usageConditionId": null,
+    "saleStartsAt": "2026-01-01T00:00:00Z",
+    "saleEndsAt": null
+  }
+}
+
+> {%
+  client.assert(response.body.result.status === "S", "Contract operation must succeed");
+  client.global.set("contractPlanId", response.body.data.id);
+  client.global.set("contractPlanVersion", response.body.data.rowVersion);
+%}
+
+### Publish sales plan
+POST {{baseUrl}}/api/contract/catalog/publish
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "id": "{{contractPlanId}}",
+  "expectedRowVersion": {{contractPlanVersion}}
+}
+
+> {%
+  client.assert(response.body.result.status === "S", "Publish must succeed");
+  client.global.set("contractPublishedPlanVersion", response.body.data.rowVersion);
+%}
+
+### Preview merchant terms without persistence
+POST {{baseUrl}}/api/contract/merchant-contracts/preview
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "merchantId": "{{contractMerchant}}",
+  "scopeKey": "{{contractScope}}",
+  "planVersionId": "{{contractPlanId}}",
+  "requestKey": "http-preview",
+  "selectedItems": [
+    "basic.wechat"
+  ],
+  "values": {
+    "basic.wechat": {
+      "fee.rate": "0.0045"
+    }
+  },
+  "effectiveFrom": null,
+  "effectiveTo": null
+}
+
+### Sign merchant contract; preserve the generated key when retrying
+< {%
+  if (!client.global.get("contractSigningKey")) client.global.set("contractSigningKey", "http-" + Date.now().toString());
+%}
+POST {{baseUrl}}/api/contract/merchant-contracts/sign
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "merchantId": "{{contractMerchant}}",
+  "scopeKey": "{{contractScope}}",
+  "planVersionId": "{{contractPlanId}}",
+  "requestKey": "{{contractSigningKey}}",
+  "selectedItems": [
+    "basic.wechat"
+  ],
+  "values": {
+    "basic.wechat": {
+      "fee.rate": "0.0045"
+    }
+  },
+  "effectiveFrom": null,
+  "effectiveTo": null
+}
+
+> {%
+  client.assert(response.body.result.status === "S", "Contract operation must succeed");
+  client.global.set("contractId", response.body.data.id);
+  client.global.set("contractGeneration", response.body.data.generation);
+%}
+
+### Replay the same signing request
+POST {{baseUrl}}/api/contract/merchant-contracts/sign
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "merchantId": "{{contractMerchant}}",
+  "scopeKey": "{{contractScope}}",
+  "planVersionId": "{{contractPlanId}}",
+  "requestKey": "{{contractSigningKey}}",
+  "selectedItems": [
+    "basic.wechat"
+  ],
+  "values": {
+    "basic.wechat": {
+      "fee.rate": "0.0045"
+    }
+  },
+  "effectiveFrom": null,
+  "effectiveTo": null
+}
+
+### Page catalog plans
+POST {{baseUrl}}/api/contract/catalog/page
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "kind": "SALES_PLAN",
+  "status": "PUBLISHED",
+  "page": 1,
+  "size": 20
+}
+
+### Read a catalog version
+POST {{baseUrl}}/api/contract/catalog/detail
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "id": "{{contractPlanId}}"
+}
+
+### Page merchant contracts
+POST {{baseUrl}}/api/contract/merchant-contracts/page
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "merchantId": "{{contractMerchant}}",
+  "page": 1,
+  "size": 20
+}
+
+### Read signed terms
+POST {{baseUrl}}/api/contract/merchant-contracts/detail
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "id": "{{contractId}}"
+}
+
+### Resolve signed payment capability
+POST {{baseUrl}}/api/contract/runtime/resolve
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "merchantId": "{{contractMerchant}}",
+  "scopeKey": "{{contractScope}}",
+  "itemKey": "basic.wechat",
+  "transactionFacts": {}
+}
+
+### Suspend signed contract
+POST {{baseUrl}}/api/contract/merchant-contracts/status
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "id": "{{contractId}}",
+  "expectedGeneration": {{contractGeneration}},
+  "status": "SUSPENDED"
+}
+
+> {%
+  client.assert(response.body.result.status === "S", "Contract operation must succeed");
+  client.global.set("contractGeneration", response.body.data.generation);
+%}
+
+### Resolve suspended contract; allowed must be false
+POST {{baseUrl}}/api/contract/runtime/resolve
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "merchantId": "{{contractMerchant}}",
+  "scopeKey": "{{contractScope}}",
+  "itemKey": "basic.wechat",
+  "transactionFacts": {}
+}
+
+### Resume signed contract
+POST {{baseUrl}}/api/contract/merchant-contracts/status
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "id": "{{contractId}}",
+  "expectedGeneration": {{contractGeneration}},
+  "status": "NORMAL"
+}
+
+> {%
+  client.assert(response.body.result.status === "S", "Contract operation must succeed");
+  client.global.set("contractGeneration", response.body.data.generation);
+%}
+
+### Retire sales plan; existing signed terms remain unchanged
+POST {{baseUrl}}/api/contract/catalog/retire
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{
+  "id": "{{contractPlanId}}",
+  "expectedRowVersion": {{contractPublishedPlanVersion}}
+}

@@ -1,7 +1,11 @@
-# Contract Test 架构
+# LoadUp Contract Test Architecture
 
-测试通过领域公开入口执行，覆盖 SalesPlanCompiler → ContractSigner → ContractRuntimeResolver，不依赖数据库替身或框架自动装配。关键验证是越权值无法签约、未知条件不能放行、快照不受上游修改影响以及运行区间不会重叠。
+## 验证分层
 
-测试模块只以 test scope 依赖 domain、JUnit Jupiter 和 AssertJ，parent 指向根 loadup-parent。没有生产代码。
+领域测试不启动 Spring，验证确定性算法。ContractCodecTest 检查 Jackson3 多态存储与摘要规则。ContractPersistenceIT 使用 SpringBootTest、Testify 和真实 MySQL Testcontainers，不用 MockBean 替代数据库。
 
-持久化阶段需要 Testify + MySQL Testcontainers 覆盖事务回滚、幂等冲突、租户隔离、并发区间更新及同事务 Outbox；页面/HTTP 阶段需要认证身份、POST 报文、响应包装和 OpenAPI 验证。上述尚未实现或执行。
+IT 为每个场景创建独立租户，测试数据不依赖用户账号或本地业务库。MerchantFactsProvider 测试 Bean 只在测试 Application 中提供固定可信资料，不进入发布 jar。并发线程通过 TenantUtil.callWithTenant 显式绑定上下文。
+
+## 证据边界
+
+测试源码存在不代表已编译或通过；本轮未运行。多进程退出/恢复、HTTP 权限、部署主库路由、迁移组合和真实商户事实仍须消费工程验收。

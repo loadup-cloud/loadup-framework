@@ -11,6 +11,10 @@
     <packaging>pom</packaging>
     <name>LoadUp Contract</name>
     <modules>
+        <module>loadup-modules-contract-client</module>
+        <module>loadup-modules-contract-infrastructure</module>
+        <module>loadup-modules-contract-app</module>
+        <module>loadup-modules-contract-web</module>
         <module>loadup-modules-contract-domain</module>
         <module>loadup-modules-contract-test</module>
     </modules>

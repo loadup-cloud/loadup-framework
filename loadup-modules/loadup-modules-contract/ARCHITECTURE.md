@@ -6,7 +6,7 @@
 
 本设计面向被消费的 SDK，数据库和 HTTP 都不是领域核心的依赖。商户收单应用在自有工程中消费合约能力。框架不承担渠道调用、扣费、对账、余额账户和电子签章。
 
-**本轮交付第一阶段领域核心与测试源码；尚未编译或执行测试。** 数据库、审批工作流、管理 API、页面和分布式事件在后续阶段交付。不能将纯内存领域模型当成生产合约存储。
+**已提供领域、client、MySQL infrastructure、app、可选 web 和前端 API 源码；未编译或执行测试。** 当前交付范围为有效草稿管理、固定版本发布、初次签约、状态管理和权威解析。审批、修订安排、页面后端联调和分布式事件仍待交付。
 
 ## 2. 统一术语
 
@@ -74,7 +74,7 @@ flowchart LR
 
 使用规则树 All/Any/Not/Comparison/Exists，不执行 Java、SpEL、SQL、脚本或网络请求。比较支持 EQ、NE、GT、GE、LT、LE、IN、NOT_IN、BETWEEN。单值比较可以引用最终配置值；区间和集合使用固定类型字面量。
 
-规则可以独立管理和发布，产品/组合/方案发布时引用并冻结确切规则版本。第一阶段规则直接包含在不可变版本中，独立规则主档及 UI 后续提供。
+规则可以独立管理和发布，产品/组合/方案发布时引用并冻结确切规则版本。当前 API 将独立条件以 CONDITION 目录版本管理，引用固定 id；app 将规则展开为不可变领域树。管理界面仍为草稿原型。
 
 ### 5.2 语义
 
@@ -94,7 +94,7 @@ All 遇到 NO_MATCH 返回 NO_MATCH，否则存在未知返回 INDETERMINATE；A
 
 ## 6. 发布和签约
 
-发布生命周期目标：DRAFT → IN_REVIEW → PUBLISHED → RETIRED，审核拒绝为 REJECTED。第一阶段只构建已经确定内容的版本，草稿 CRUD 和审批持久化后续提供。
+发布生命周期目标：DRAFT → IN_REVIEW → PUBLISHED → RETIRED，审核拒绝为 REJECTED。当前持久化生命周期为 DRAFT → PUBLISHED → RETIRED，提供有效草稿 CRUD 与直接发布，审批后续提供。
 
 SalesPlanCompiler：展开带别名的组合 → 合并产品/组合/方案值 → 校验协商策略 → 检查未知产品项 → 生成不可变方案。禁止发布时按输入顺序覆盖冲突项。
 
@@ -121,7 +121,7 @@ ContractDecision resolve(MerchantContract contract, String itemKey,
                          Instant businessTime, Map<String, TypedValue> trustedFacts);
 ```
 
-阶段一由消费方提供已经按租户范围查到的只读合约。后续 app 的 ContractResolveService 从 ContextHolder 获取租户、根据 merchantId/scopeKey 查询绑定，再调用同一领域接口。
+app 的 ContractResolveService 从 TenantUtil 的 ScopedValue 作用域取得租户，加载可信商户事实，再读取主库 merchantId/scopeKey 绑定与状态，校验持久快照摘要后调用同一领域接口。时间来自共享 Clock，客户端不能传入判断时间。
 
 返回 allowed、reason、contractId、revision、snapshotHash、configuration。拒绝原因包括暂停、终止、未生效/已到期、未签约产品、条件不匹配、必要事实未知。拒绝结果不返回可用配置。
 
@@ -129,24 +129,23 @@ ContractDecision resolve(MerchantContract contract, String itemKey,
 
 ## 9. 数据库与事务设计
 
+当前以三个表交付，避免为相同版本 CRUD 创建重复仓储：
+
 | 表 | 核心内容 |
 |---|---|
-| contract_product / contract_product_version | 产品主档、Schema、默认值和使用条件 |
-| contract_condition / contract_condition_version | 规则主档、事实定义、规则树 |
-| contract_bundle / contract_bundle_version / contract_bundle_item | 固定版本及产品项 |
-| contract_sales_plan / contract_sales_plan_version | 可售状态、引用清单和展开快照 |
-| merchant_contract | 商户、范围、管理状态、generation |
-| merchant_contract_revision | 不可变条款、方案来源、摘要 |
-| merchant_contract_schedule | 修订生效安排和历史 |
-| merchant_contract_binding | 商户范围与合约的确定绑定 |
-| contract_approval_record | 内容摘要、审批状态、审批人和时间 |
-| contract_request | 幂等键、摘要和结果引用 |
+| contract_catalog_version | kind 区分产品/条件/组合/方案，租户+kind+code+version 唯一，JSON definition 与 rowVersion |
+| merchant_contract | 租户+商户+scope 唯一，状态/generation、方案 id、持久 requestKey/requestDigest、创建者 |
+| merchant_contract_revision | 租户+合约+revision 唯一，冻结条款 JSON 与快照摘要 |
 
-每表含 id VARCHAR(64)、tenant_id、created_at、updated_at、deleted TINYINT，DO 继承 BaseDO，不重复字段。参数/规则/快照以受限 JSON 存储，主档/关系/版本/索引关系化。使用 MyBatis-Flex QueryWrapper，Mapper 不新增 SQL 方法。
+每表含 id VARCHAR(64)、tenant_id、created_at、updated_at、deleted TINYINT，DO 继承 BaseDO。使用 QueryWrapper，Mapper 无额外 SQL。所有读取、锁定、分页和更新均显式限制租户和 deleted=0；JSON 引用由 app 在同一租户解析。版本身份不变，已发布内容不能原地编辑。
 
-关键唯一约束：租户+编码，租户+主档+版本，租户+合约编号，租户+业务范围绑定，租户+操作+幂等键。版本与 rowVersion 分离。MySQL 通过锁定稳定的合约或范围绑定行，在同一事务中检查并写入生效安排，不依赖先查后写或单独 Redis 锁。
+Flyway 为 V20261009000001__create_contract_catalog.sql，避免重复通用 V1 编号。单表目录是当前设计选择，后续只有需要独立主档、跨项统计或关系约束时再拆表。审批、生效安排、独立绑定历史与审计记录尚未创建空表。
 
-签约/变更/管理状态、generation、业务审计和 Outbox 在一个本地事务提交。Flyway 版本选择要避开当前聚合工程已有编号，并验证多模块迁移组合。
+发布事务锁定目录及引用版本，验证全部引用已发布。已下架引用仍允许解释已发布上层版本；下架已有计划本身阻止新签约，不回写存量快照。签约在商户外部查询完成后开启 READ_COMMITTED 事务，锁定方案状态，计算冻结条款，原子写入 header/revision。租户+requestKey 唯一约束处理重复请求，摘要绑定商户/范围/方案/选择/覆盖值/显式生效时间；相同内容重放已提交合约，不同内容拒绝。锁定方案会使同方案签约短暂串行，生产需按实际容量验证；外部调用不能进入持锁区间。
+
+状态更新以 generation 和非终止状态做条件写入；暂停可恢复，终止不可恢复。v1 仅 revision=1，同商户范围始终只能绑定一个合约。修订需要独立可审计安排与历史，不可修改旧快照的无限区间。当前未发布 Outbox 或可靠审计事件；后续接入时与业务事务共同提交。
+
+运行调用应访问主库，持久快照读取后比较 SHA-256 摘要及 tenant/merchant/scope/contract/revision 身份；摘要用于一致性检查，无法防御有权同时更改快照与摘要的攻击者。
 
 ## 10. 缓存、事件、观测
 
@@ -160,9 +159,9 @@ app 注入共享 MeterRegistry/ObservationRegistry，指标采用 loadup.contrac
 
 目标模块：loadup-modules-contract 聚合 contract-client/domain/infrastructure/app/test；可选 loadup-modules-contract-web。实际 artifact 均使用 loadup-modules-contract-* 前缀。所有 parent 指根工程；版本由 BOM 管理。
 
-本阶段仅 domain 与 test，避免空的 client/app/infrastructure 提示不存在的可运行接入能力。领域纯 Java，无 Spring、ORM、JSON 库或缓存依赖。后续 MapStruct 使用 LoadUpMapStructConfig Spring 模式。
+已实现 client、domain、infrastructure、app、web、test。domain 无框架依赖；client 为 record DTO 与 MerchantFactsProvider SPI；infrastructure 为 BaseDO/Mapper/Gateway；app 管理事务与业务编排，MapStruct 使用 LoadUpMapStructConfig Spring 模式和构造器注入；web 仅 Controller/权限/OpenAPI 适配。app 从共享 JsonMapper 派生内部存储 mapper，仅内部 Condition mixin 描述多态，禁止修改全局 mapper。
 
-外部路径统一 /api/contract/...，Controller 省略框架配置的 /api 前缀，所有 JSON 操作 POST。分组：products、conditions、bundles、sales-plans、merchant-contracts、runtime。管理操作提供 create/update/page/detail/validate/submit-review/publish 等；合约提供 preview/sign/revise/suspend/resume/terminate/history；runtime resolve/explain 只授权可信服务。
+外部路径统一 /api/contract/...，Controller 省略框架配置的 /api 前缀，所有 JSON 操作 POST。当前目录采用 catalog/save/page/detail/publish/retire，kind 区分产品/条件/组合/方案；合约采用 merchant-contracts/preview/sign/page/detail/status；runtime/resolve 仅授权可信调用方。审批、修订/history/explain 是后续能力。完整权限和报文见 README。
 
 HTTP 复用全局 result/data 报文、Jackson、Trace header 和 SpringDoc。客户端不得提供 tenantId、审批人或最终快照覆盖服务端身份与计算。
 
@@ -174,10 +173,10 @@ Vue3 Composition API + Element Plus。产品页编辑参数/默认值/权限/条
 
 ## 13. 分阶段交付与验收
 
-1. 领域核心：不可变类型、条件判断、覆盖校验、方案编译、签约快照、时间视图与运行判断。本轮已提供源码与测试，未执行。
-2. 持久化与编排：client DTO、domain Gateway、DO/Mapper/MapStruct、迁移、事务、幂等、可信商户事实来源和 AutoConfiguration。
-3. 管理 API/页面：草稿编辑、独立条件管理、受限 Schema 转换、动态表单、预览、权限与 OpenAPI。
-4. 发布/合约变更：审批、可审计生效安排、历史对比、暂停/恢复/终止和 Outbox。
+1. 领域核心：已提供不可变类型、条件判断、覆盖校验、方案编译、签约快照、时间视图与测试源码，未执行。
+2. 持久化与编排：client DTO、domain Gateway、DO/Mapper/MapStruct、迁移、事务、幂等、可信商户事实 SPI 和 AutoConfiguration 已提供。
+3. 管理 API/前端调用：有效草稿、独立条件、预览、权限、OpenAPI 和 TypeScript 调用已提供；受限 Schema 转换、页面持久化联调待实现。
+4. 合约生命周期：暂停/恢复/终止已提供；审批、可审计修订安排、历史对比和 Outbox 待实现。
 5. 生产接入：主库门禁、不可变快照缓存、共享观测、支付订单条款绑定与故障演练。
 
 验收：上游修改不改变已签约配置；越权/超范围拒绝；未知事实不放行；必选/依赖/互斥正确；未知参数拒绝；快照独立且摘要稳定；边界时间正确；暂停不因时间倒填放行；重复签约返回同一结果；并发生效区间不重叠；事件重复/乱序不回退状态。
@@ -188,3 +187,9 @@ Vue3 Composition API + Element Plus。产品页编辑参数/默认值/权限/条
 
 - [JSON Schema Validation 2020-12](https://json-schema.org/draft/2020-12/json-schema-validation)：仅采用受限验证词汇，不将任意 Schema/脚本作为业务执行程序。
 - 项目 AGENTS.md：COLA 分层、BOM、租户隔离、API、日志、观测与构建纪律。
+
+## 自动装配条件与注册阶段
+
+ContractAutoConfiguration 保留 `@ConditionalOnSingleCandidate(DataSource.class)` 与启用开关，使用 `@Import` 显式注册服务、仓储、支持类及 MapStruct 生成的 Spring 转换器。Mapper 接口继续由 `@MapperScan` 注册，不在自动配置上使用 `@ComponentScan`。Spring 7 禁止把解析阶段的组件扫描与 REGISTER_BEAN 阶段的 OnBeanCondition 混用；内嵌扫描配置也会继承该限制。
+
+转换器仍由 MapStruct 按共享配置生成并由 Spring 构造器注入，不手工实例化。ContractAutoConfigurationTest 覆盖单 DataSource 启用、缺失 DataSource、显式禁用和多 DataSource 无主候选场景；测试源码已提供，未运行。
