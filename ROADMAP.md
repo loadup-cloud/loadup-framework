@@ -8,6 +8,24 @@
 
 首批交付顺序为 **Outbox → HTTP → 两者组合验证**；随后完善开放接口安全、外部协议隔离和生产运行能力。下面列出的验收条件为后续实现的完成标准，不代表已经执行验证。
 
+## P1 · 金额基础能力验收
+
+Money、CurrencyEnum（JDK25目录233项）、MoneyUtil 和 MoneyFormatter 已提供，接入见 [commons-util README](loadup-commons/loadup-commons-util/README.md)。
+
+- [ ] 用户本地定向编译并执行 MoneyTest：币种精度、越界、异币种、舍入、格式化、目录完整性及 Jackson3 往返；源码已编写，尚未运行。
+- [ ] 消费工程明确渠道可用币种、计费舍入、金额上限与跨端整数表示；JDK 升级时核对币种目录和历史精度变化。
+
+## P1 · 产品目录、销售方案与商户合约
+
+详细设计见 [Contract ARCHITECTURE](loadup-modules/loadup-modules-contract/ARCHITECTURE.md)。阶段一领域核心、BOM 与单测源码已提供：参数继承/协商范围、三值条件、组合展开、产品选择、签约快照与运行时判断。尚未编译或运行测试；当前无持久化、HTTP 或管理页面。
+
+- [ ] 用户本地定向编译并执行 ContractFlowTest、ConditionEvaluatorTest；记录结果，不将源码视为验证通过。
+- [ ] 实现 client DTO、租户范围 Gateway、MyBatis-Flex/MapStruct 持久化、Flyway 和 app 装配；提供可信商户事实来源，验证跨模块迁移版本组合。
+- [ ] 实现受限 JSON Schema 转换、产品/独立条件/组合/方案草稿 API、动态表单与预览页面；接入方法权限、全局报文和 SpringDoc。
+- [ ] 实现内容摘要绑定的审批、签约幂等、修订生效安排与历史、暂停/恢复/终止；事务锁定稳定行防止生效区间重叠，不覆盖旧条款。
+- [ ] 同事务接入合约审计和 Outbox，提供权威状态读取、不可变快照缓存、低基数指标与受控 explain。
+- [ ] 补充并执行真实 MySQL 多实例并发签约、租户隔离、暂停生效、重复/乱序事件、回滚与历史支付条款绑定验收。
+
 ## P0 · Outbox 首版后续验证与运行完善
 
 首版代码、自动装配、BOM、迁移、README 和 ARCHITECTURE 已提供：同事务发布、MySQL 多实例领取、租约恢复、有限退避重试、失败查询、人工重放、Inbox 去重及观测。接入契约以 [Outbox README](loadup-components/reliability/loadup-components-outbox/README.md) 为准。

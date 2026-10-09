@@ -4,6 +4,8 @@
 
 ## 子模块
 
+- [`loadup-modules-contract`](loadup-modules-contract/README.md)：产品/组合/方案/商户合约；阶段一提供纯领域核心，管理 API 与页面待实现。
+
 - [`loadup-modules-upms`](loadup-modules-upms/README.md)
 - [`loadup-modules-audit`](loadup-modules-audit/README.md)：操作审计存储与查询服务。
 - [`loadup-modules-audit-web`](loadup-modules-audit-web/README.md)：可选 MVC 采集和管理员查询接口。
