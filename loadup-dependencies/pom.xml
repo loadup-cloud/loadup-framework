@@ -71,7 +71,7 @@
         <jackson-annotations.version>2.22</jackson-annotations.version>
         <fastjson.version>2.0.65</fastjson.version>
         <jetcache.version>2.8.0.RC</jetcache.version>
-        <jobrunr.version>8.8.2</jobrunr.version>
+        <jobrunr.version>9.0.0</jobrunr.version>
         <io.vavr.version>1.0.1</io.vavr.version>
         <guava.version>33.7.1-jre</guava.version>
         <opencsv.version>5.12.0</opencsv.version>
