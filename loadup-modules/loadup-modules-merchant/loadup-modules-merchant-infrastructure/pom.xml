@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.loadup-cloud</groupId>
+        <artifactId>loadup-parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../../../pom.xml</relativePath>
+    </parent>
+    <artifactId>loadup-modules-merchant-infrastructure</artifactId>
+    <name>LoadUp Merchant Infrastructure</name>
+    <properties>
+        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-modules-merchant-domain</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-modules-merchant-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-database</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-commons-dto</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

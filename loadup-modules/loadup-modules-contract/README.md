@@ -122,3 +122,9 @@ await publishCatalog<'PRODUCT'>(data.id, data.rowVersion)
 提供 ContractFlowTest、ConditionEvaluatorTest、ContractCodecTest 和 ContractPersistenceIT 源码，尚未运行。IT 使用真实 MySQL Testcontainers，涵盖租户引用隔离、发布不可变、乐观版本、持久重放、并发重复签约、暂停/终止门禁和回滚。按项目约定，由用户定向构建/运行，必须带 clean；集成验证需要 Docker。
 
 后续生产验收包括真实 Boot/WebMVC/授权接入、MySQL 多实例与故障恢复、迁移组合、备份恢复及支付订单保存 contractId/revision/snapshotHash 和实际计费值。条款摘要不是电子签名，也不是对数据库管理员篡改的密码学认证。
+
+## 使用 Merchant 资料模块
+
+可引入 `loadup-modules-merchant-app/web` 与 `loadup-modules-merchant-contract` 提供默认 MerchantFactsProvider，资料通过 MerchantLookup 读取，合约核心没有新增仓储依赖。事实包含 merchant.code/type/industry/country/province/city，缺失地区不输出；不会声明资质审核已通过。消费方已有自定义 Provider 时自动退让。
+
+管理 API `/api/merchants/**` 创建商户后，签约 merchantId 使用响应 id，不能填业务编码。签约页面已有启用商户选择。停用阻止后续新资格判断，已签约幂等重放仍返回原结果，历史条款不变。资料、隐私、权限与部署见 [Merchant README](../loadup-modules-merchant/README.md)。

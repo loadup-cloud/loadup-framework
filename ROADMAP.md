@@ -15,12 +15,20 @@ Money、CurrencyEnum（JDK25目录233项）、MoneyUtil 和 MoneyFormatter 已�
 - [ ] 用户本地定向编译并执行 MoneyTest：币种精度、越界、异币种、舍入、格式化、目录完整性及 Jackson3 往返；源码已编写，尚未运行。
 - [ ] 消费工程明确渠道可用币种、计费舍入、金额上限与跨端整数表示；JDK 升级时核对币种目录和历史精度变化。
 
+## P1 · 商户信息管理后续验收
+
+[Merchant 模块](loadup-modules/loadup-modules-merchant/README.md) 已提供 COLA 资料管理、MySQL/Flyway、租户隔离、乐观版本、启停、Web API、脱敏输出和管理页面，merchant-contract 适配将持久基本事实供合约使用。单测/真实 MySQL 组合 IT 源码已写，尚未运行。
+
+- [ ] 用户定向执行 MerchantBasicInfoTest、MerchantFactsTest 和 MerchantContractIT；验证 Boot/MapStruct 装配、资料唯一/隔离/更新、可信资料签约、停用和副本路由语义。
+- [ ] 执行前端类型/构建/交互与真实 WebMVC 脱敏验收，补执行既有数据库的商户权限种子并重新登录，运行 Router.http。
+- [ ] 消费工程明确行业/地区目录、资质审核与商户数据访问范围；基本资料不代表 KYC 或渠道入网。按实际业务接入可靠审计、历史资料、银行账户/渠道商户号与门店。
+
 ## P1 · 产品目录、销售方案与商户合约
 
-详细设计见 [Contract ARCHITECTURE](loadup-modules/loadup-modules-contract/ARCHITECTURE.md)。领域、client、租户 Gateway、MySQL/Flyway、app 自动装配、幂等签约、生命周期、管理 API、权限/OpenAPI 和前端页面已提供。页面已接入目录保存/发布/下架、服务端签约预览/签约/查询/状态接口；业务 Controller 的 `/api` 路由前缀已统一归属 `loadup-components-webmvc`，本地 UPMS 种子已补七类权限，未启用多租户时由 database 组件为请求与新数据统一使用默认租户 ID；源码尚未编译或运行测试。
+详细设计见 [Contract ARCHITECTURE](loadup-modules/loadup-modules-contract/ARCHITECTURE.md)。领域、client、租户 Gateway、MySQL/Flyway、app 自动装配、幂等签约、生命周期、管理 API、权限/OpenAPI 和前端页面已提供。页面已接入目录保存/发布/下架、服务端签约预览/签约/查询/状态接口；目录发布按钮的未保存判断已修正为忽略对象字段顺序，销售方案保存前会提示至少需要一个默认选中的产品项；业务 Controller 的 `/api` 路由前缀已统一归属 `loadup-components-webmvc`，本地 UPMS 种子已补七类权限，未启用多租户时由 database 组件为请求与新数据统一使用默认租户 ID；源码尚未编译或运行测试。
 
 - [ ] 用户定向编译并执行 ContractFlowTest、ConditionEvaluatorTest、ContractCodecTest、ContractAutoConfigurationTest 和 ContractPersistenceIT；验证 Jackson3/MapStruct/Boot 装配（REGISTER_BEAN 条件与组件扫描冲突已通过显式 Import 修复，待运行回归）、真实 MySQL 并发、租户隔离、回滚和迁移组合，记录结果。
-- [ ] 多租户消费工程接入可信租户解析，消费工程接入商户资料、主库路由及七类方法权限；已有本地数据库补执行 Contract 授权语句，重新登录并执行 Router.http 与鉴权/响应回归。
+- [ ] 多租户消费工程接入可信租户解析，消费工程验收 Merchant 默认事实适配、主库路由及商户/合约方法权限；已有本地数据库补执行 Contract 授权语句，重新登录并执行 Router.http 与鉴权/响应回归。
 - [ ] 已有单租户数据若使用旧的 `__loadup_global__` GlobalUnique 范围，切换统一默认租户 ID 前核对并迁移历史声明，避免重放查询遗漏。
 - [ ] 实现受限 JSON Schema 转换及更完整的动态表单；Contract 的 7 个 Vue 模板已通过定向解析，用户本地仍需执行前端类型检查、构建与页面交互联调。
 - [ ] 实现内容摘要绑定审批、修订生效安排与历史，事务锁定稳定合约/范围行防止区间重叠，不修改旧条款。

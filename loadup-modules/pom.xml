@@ -13,6 +13,7 @@
     <description>Loadup Modules — reusable business modules</description>
 
     <modules>
+        <module>loadup-modules-merchant</module>
         <module>loadup-modules-contract</module>
         <module>loadup-modules-upms</module>
         <module>loadup-modules-audit</module>

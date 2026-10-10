@@ -24,9 +24,33 @@
     type ContractStatus,
     type MerchantContract
   } from '@/api/contract'
+  import { queryMerchants, type Merchant } from '@/api/merchant'
   import DraftNotice from './DraftNotice.vue'
   import { codePattern, draftId, useContractDrafts, type ContractIntentDraft } from './drafts'
 
+  const merchantOptions = ref<Merchant[]>([])
+  const merchantLoading = ref(false)
+  let merchantSearch = 0
+  const searchMerchants = async (name = '') => {
+    const request = ++merchantSearch
+    merchantLoading.value = true
+    try {
+      const { data } = await queryMerchants({
+        name: name || undefined,
+        status: 'ACTIVE',
+        page: 1,
+        size: 20
+      })
+      if (request === merchantSearch) merchantOptions.value = data.items
+    } catch {
+      /* The shared request client displays errors. */
+    } finally {
+      if (request === merchantSearch) merchantLoading.value = false
+    }
+  }
+  onMounted(() => {
+    void searchMerchants()
+  })
   const drafts = useContractDrafts()
   const blank = (): ContractIntentDraft => ({
     id: draftId(),
@@ -272,7 +296,19 @@
             >预览与签约都会校验可信商户资料及已发布方案；预览结果不保证之后的条件和时间仍然相同。</p
           >
           <div class="grid gap-12px md:grid-cols-2"
-            ><label>商户标识<ElInput v-model="form.merchantId" placeholder="merchant01" /></label
+            ><label
+              >签约商户<ElSelect
+                v-model="form.merchantId"
+                filterable
+                remote
+                :remote-method="searchMerchants"
+                :loading="merchantLoading"
+                placeholder="选择已启用商户（按名称搜索）"
+                ><ElOption
+                  v-for="merchant in merchantOptions"
+                  :key="merchant.id"
+                  :label="`${merchant.name} (${merchant.merchantCode})`"
+                  :value="merchant.id" /></ElSelect></label
             ><label>业务范围<ElInput v-model="form.scopeKey" placeholder="store01" /></label
             ><label class="md:col-span-2"
               >已发布销售方案<ElSelect

@@ -63,6 +63,21 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
     ]
   },
   {
+    path: '/merchants',
+    component: Layout,
+    redirect: '/merchants/list',
+    name: 'MerchantManagement',
+    meta: { title: '商户管理', icon: 'mdi:store-outline' },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/Merchant/Index.vue'),
+        name: 'MerchantList',
+        meta: { title: '商户信息', icon: 'mdi:store-outline', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/contract',
     component: Layout,
     redirect: '/contract/products',

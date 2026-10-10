@@ -1,0 +1,14 @@
+spring:
+  main:
+    web-application-type: none
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+loadup:
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+mybatis-flex:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    print-banner: false

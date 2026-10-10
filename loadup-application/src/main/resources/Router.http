@@ -540,10 +540,49 @@ Content-Type: application/json
 
 {"id": "{{upmsUserId}}", "purpose": "CUSTOMER_SUPPORT"}
 
+# Merchant management: merchantCode is a business identifier; contract merchantId is the returned id.
+### Create merchant before signing a contract (change merchantCode on repeated runs)
+POST {{baseUrl}}/api/merchants/create
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"merchantCode":"HTTP_MERCHANT","name":"HTTP Retail Merchant","shortName":"Retail","type":"ENTERPRISE","industry":"RETAIL","country":"CN","province":"GD","city":"SZ","address":"Example address","registrationNo":"HTTP-REG-001","contactName":"Contact","contactPhone":"13800138000","contactEmail":"merchant@example.com"}
+
+> {%
+  client.assert(response.body.result.status === "S", "Create merchant must succeed");
+  client.global.set("contractMerchant", response.body.data.id);
+  client.global.set("merchantRowVersion", response.body.data.rowVersion);
+%}
+
+### Page active merchants
+POST {{baseUrl}}/api/merchants/page
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"page":1,"size":20,"status":"ACTIVE"}
+
+### Read masked merchant details
+POST {{baseUrl}}/api/merchants/detail
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id":"{{contractMerchant}}"}
+
+### Update merchant basic data; null private fields preserve the stored value
+POST {{baseUrl}}/api/merchants/update
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id":"{{contractMerchant}}","expectedRowVersion":{{merchantRowVersion}},"merchantCode":"HTTP_MERCHANT","name":"HTTP Retail Merchant Updated","shortName":"Retail","type":"ENTERPRISE","industry":"RETAIL","country":"CN","province":"GD","city":"SZ","address":null,"registrationNo":null,"contactName":null,"contactPhone":null,"contactEmail":null}
+
+> {%
+  client.assert(response.body.result.status === "S", "Update merchant must succeed");
+  client.global.set("merchantRowVersion", response.body.data.rowVersion);
+%}
+
 # Contract management: configure trusted tenant context, MerchantFactsProvider and contract:* permissions first.
 # Run once with unique catalog codes; response.result.status must be S before using data.
-# This example uses the merchant1 record from the consuming application, not client-supplied merchant facts.
-@contractMerchant = merchant1
+# This example uses the merchant created above and the merchant-contract adapter.
 @contractScope = store1
 
 ### Create merchant eligibility condition
@@ -912,3 +951,22 @@ Content-Type: application/json
   "id": "{{contractPlanId}}",
   "expectedRowVersion": {{contractPublishedPlanVersion}}
 }
+
+### Disable merchant; subsequent contract qualification and runtime fact loading are rejected
+POST {{baseUrl}}/api/merchants/status
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id":"{{contractMerchant}}","expectedRowVersion":{{merchantRowVersion}},"status":"INACTIVE"}
+
+> {%
+  client.assert(response.body.result.status === "S", "Disable merchant must succeed");
+  client.global.set("merchantRowVersion", response.body.data.rowVersion);
+%}
+
+### Re-enable merchant
+POST {{baseUrl}}/api/merchants/status
+Authorization: Bearer {{upmsAccessToken}}
+Content-Type: application/json
+
+{"id":"{{contractMerchant}}","expectedRowVersion":{{merchantRowVersion}},"status":"ACTIVE"}

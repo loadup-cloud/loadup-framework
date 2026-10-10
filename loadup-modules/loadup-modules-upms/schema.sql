@@ -413,3 +413,13 @@ FROM upms_permission
 WHERE permission_code IN ('contract:catalog:read', 'contract:catalog:write', 'contract:catalog:publish',
                           'contract:merchant:read', 'contract:merchant:sign', 'contract:merchant:manage',
                           'contract:runtime:resolve');
+
+-- Merchant permissions for the local integration launcher only; consumers manage their own grants.
+INSERT IGNORE INTO upms_permission (id, parent_id, permission_name, permission_code, permission_type, resource_path,
+                                    sort_order, status, created_by, created_at, updated_at)
+VALUES ('merchant-read', '0', '商户资料查询', 'merchant:read', 3, NULL, 1, 1, '1', NOW(), NOW()),
+       ('merchant-write', '0', '商户资料编辑', 'merchant:write', 3, NULL, 2, 1, '1', NOW(), NOW()),
+       ('merchant-manage', '0', '商户启停管理', 'merchant:manage', 3, NULL, 3, 1, '1', NOW(), NOW());
+INSERT IGNORE INTO upms_role_permission (id, role_id, permission_id, created_by, created_at, updated_at)
+SELECT CONCAT('merchant-rp-', REPLACE(permission_code, ':', '-')), '1', id, '1', NOW(), NOW()
+FROM upms_permission WHERE permission_code IN ('merchant:read', 'merchant:write', 'merchant:manage');

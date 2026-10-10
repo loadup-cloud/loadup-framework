@@ -63,6 +63,9 @@
       }))
     })
   )
+  const hasDefaultSelection = computed(() =>
+    items.value.some((entry) => entry.item.defaultSelected)
+  )
   const selectPlan = (item: SalesPlanDraft) => {
     activeId.value = item.id
     Object.assign(form, JSON.parse(JSON.stringify(item)) as SalesPlanDraft)
@@ -137,6 +140,10 @@
     }
     if (new Set(form.bundles.map((item) => item.alias)).size !== form.bundles.length) {
       ElMessage.warning('组合别名不能重复')
+      return
+    }
+    if (!hasDefaultSelection.value) {
+      ElMessage.warning('所选组合没有默认选中的产品。请先在产品组合中发布包含默认选中产品的新版本')
       return
     }
     if (form.saleStartsAt && form.saleEndsAt && form.saleStartsAt >= form.saleEndsAt) {
@@ -294,10 +301,14 @@
                 :value="bundle.id" /></ElSelect></label
           ><ElButton type="danger" link @click="removeBundle(index)">移除</ElButton></div
         >
-        <h3 class="mt-22px text-16px">产品项与参数协商</h3
-        ><p class="text-sm opacity-70"
-          >参数预览按产品默认值、组合覆盖值、方案覆盖值的顺序展示；最终结果以服务端校验为准。</p
-        ><div
+        <h3 class="mt-22px text-16px">产品项与参数协商</h3>
+        <p v-if="items.length && !hasDefaultSelection" class="text-sm text-[var(--el-color-warning)]">
+          当前组合没有默认选中的产品，无法保存方案。请先在产品组合中发布包含默认选中产品的新版本。
+        </p>
+        <p class="text-sm opacity-70">
+          参数预览按产品默认值、组合覆盖值、方案覆盖值的顺序展示；最终结果以服务端校验为准。
+        </p>
+        <div
           v-for="entry in items"
           :key="entry.key"
           class="mb-12px rounded border border-solid border-[var(--el-border-color)] p-14px"
@@ -305,6 +316,8 @@
             ><strong>{{ entry.key }}</strong
             ><ElTag size="small"
               >{{ entry.product?.productCode }} v{{ entry.product?.version }}</ElTag
+            ><ElTag size="small" :type="entry.item.defaultSelected ? 'success' : 'info'"
+              >{{ entry.item.defaultSelected ? '默认选中' : '可选' }}</ElTag
             ></div
           ><div
             v-for="parameter in entry.product?.parameters ?? []"

@@ -460,6 +460,46 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-modules-merchant</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-modules-merchant-client</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-modules-merchant-domain</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-modules-merchant-infrastructure</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-modules-merchant-app</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-modules-merchant-web</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-modules-merchant-contract</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-modules-merchant-test</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-modules-contract</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>

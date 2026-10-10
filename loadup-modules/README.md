@@ -39,3 +39,7 @@
 - [`loadup-modules-notification-web`](loadup-modules-notification-web/README.md)：HTTP 适配。
 - [`loadup-modules-transfer`](loadup-modules-transfer/README.md)：程序化导入导出任务。
 - [`loadup-modules-transfer-web`](loadup-modules-transfer-web/README.md)：HTTP 适配。
+
+## Merchant
+
+`loadup-modules-merchant` 提供 COLA 商户资料管理与可选 Web/Contract 适配，基本资料供合约资格查询使用。见 [接入手册](loadup-modules-merchant/README.md)。

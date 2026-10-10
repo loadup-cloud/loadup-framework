@@ -18,10 +18,20 @@
             : drafts.plans
     return records.find((item) => item.id === props.item.id)
   })
+  const comparable = (value: unknown): unknown => {
+    if (Array.isArray(value)) return value.map(comparable)
+    if (value !== null && typeof value === 'object')
+      return Object.fromEntries(
+        Object.entries(value)
+          .filter(([key]) => key !== 'id')
+          .sort(([left], [right]) => left.localeCompare(right))
+          .map(([key, entry]) => [key, comparable(entry)])
+      )
+    return value
+  }
   const dirty = computed(
     () =>
-      JSON.stringify(props.item, (key, value) => (key === 'id' ? undefined : value)) !==
-      JSON.stringify(stored.value, (key, value) => (key === 'id' ? undefined : value))
+      JSON.stringify(comparable(props.item)) !== JSON.stringify(comparable(stored.value))
   )
   const change = async (action: 'publish' | 'retire') => {
     try {

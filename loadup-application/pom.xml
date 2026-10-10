@@ -24,6 +24,8 @@
         <skip.deploy>true</skip.deploy>
     </properties>
     <dependencies>
+        <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-modules-merchant-web</artifactId></dependency>
+        <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-modules-merchant-contract</artifactId></dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-contract-web</artifactId>
