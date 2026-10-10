@@ -19,19 +19,21 @@
  */
 package io.github.loadup.modules.notification.web;
 
-import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.authorization.model.LoadUpUser;
-import io.github.loadup.modules.notification.client.command.NotificationIdRequest;
-import io.github.loadup.modules.notification.client.command.NotificationSendRequest;
+import io.github.loadup.modules.notification.client.command.NotificationArchiveCommand;
+import io.github.loadup.modules.notification.client.command.NotificationReadAllCommand;
+import io.github.loadup.modules.notification.client.command.NotificationReadCommand;
+import io.github.loadup.modules.notification.client.command.NotificationSendCommand;
 import io.github.loadup.modules.notification.client.dto.NotificationViewDTO;
 import io.github.loadup.modules.notification.client.dto.ReadResultDTO;
 import io.github.loadup.modules.notification.client.dto.SendResultDTO;
 import io.github.loadup.modules.notification.client.dto.UnreadCountDTO;
 import io.github.loadup.modules.notification.client.facade.InboxFacade;
-import io.github.loadup.modules.notification.client.query.NotificationEmptyRequest;
-import io.github.loadup.modules.notification.client.query.NotificationListRequest;
+import io.github.loadup.modules.notification.client.query.NotificationPageQuery;
+import io.github.loadup.modules.notification.client.query.NotificationUnreadCountQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -58,7 +60,7 @@ public class NotificationController {
     @Operation(summary = "Publish a notification to selected users")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
     public SuccessResponse<SendResultDTO> publish(
-            @RequestBody NotificationSendRequest request, Authentication authentication) {
+            @RequestBody NotificationSendCommand request, Authentication authentication) {
         int delivered = inbox.publish(
                 TenantUtil.getTenantId(),
                 actor(authentication),
@@ -74,26 +76,22 @@ public class NotificationController {
     @PostMapping("/list")
     @Operation(summary = "List my notifications")
     @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<java.util.Collection<NotificationViewDTO>> list(
-            @RequestBody NotificationListRequest request, Authentication authentication) {
+    public PageResponse<NotificationViewDTO> list(
+            @RequestBody NotificationPageQuery request, Authentication authentication) {
         var result = inbox.list(
                 TenantUtil.getTenantId(),
                 actor(authentication),
                 Boolean.TRUE.equals(request.unreadOnly()),
                 request.page() == null ? 1 : request.page(),
                 request.size() == null ? 20 : request.size());
-        return SuccessResponse.ofPage(PageDTO.of(
-                result.records().stream().map(converter::toView).toList(),
-                result.total(),
-                result.page(),
-                result.size()));
+        return PageResponse.of(result.map(converter::toView));
     }
 
     @PostMapping("/unread-count")
     @Operation(summary = "Count my unread notifications")
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<UnreadCountDTO> unreadCount(
-            @RequestBody NotificationEmptyRequest request, Authentication authentication) {
+            @RequestBody NotificationUnreadCountQuery request, Authentication authentication) {
         return SuccessResponse.of(
                 new UnreadCountDTO(inbox.unreadCount(TenantUtil.getTenantId(), actor(authentication))));
     }
@@ -101,7 +99,7 @@ public class NotificationController {
     @PostMapping("/read")
     @Operation(summary = "Mark one notification as read")
     @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<Void> markRead(@RequestBody NotificationIdRequest request, Authentication authentication) {
+    public SuccessResponse<Void> markRead(@RequestBody NotificationReadCommand request, Authentication authentication) {
         inbox.markRead(TenantUtil.getTenantId(), actor(authentication), request.id());
         return SuccessResponse.success();
     }
@@ -110,7 +108,7 @@ public class NotificationController {
     @Operation(summary = "Mark all my notifications as read")
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<ReadResultDTO> markAllRead(
-            @RequestBody NotificationEmptyRequest request, Authentication authentication) {
+            @RequestBody NotificationReadAllCommand request, Authentication authentication) {
         return SuccessResponse.of(
                 new ReadResultDTO(inbox.markAllRead(TenantUtil.getTenantId(), actor(authentication))));
     }
@@ -118,7 +116,8 @@ public class NotificationController {
     @PostMapping("/archive")
     @Operation(summary = "Archive one notification")
     @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<Void> archive(@RequestBody NotificationIdRequest request, Authentication authentication) {
+    public SuccessResponse<Void> archive(
+            @RequestBody NotificationArchiveCommand request, Authentication authentication) {
         inbox.archive(TenantUtil.getTenantId(), actor(authentication), request.id());
         return SuccessResponse.success();
     }

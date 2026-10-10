@@ -20,14 +20,17 @@
 package io.github.loadup.modules.upms.web;
 
 import io.github.loadup.commons.request.query.IdQuery;
+import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.modules.upms.client.command.RoleCreateCommand;
+import io.github.loadup.modules.upms.client.command.RoleDeleteCommand;
 import io.github.loadup.modules.upms.client.command.RolePermissionsCommand;
 import io.github.loadup.modules.upms.client.command.RoleUpdateCommand;
 import io.github.loadup.modules.upms.client.command.RoleUserCommand;
 import io.github.loadup.modules.upms.client.dto.RoleDTO;
 import io.github.loadup.modules.upms.client.facade.RoleFacade;
-import io.github.loadup.modules.upms.client.query.RoleQuery;
+import io.github.loadup.modules.upms.client.query.RolePageQuery;
+import io.github.loadup.modules.upms.client.query.RoleTreeQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -65,7 +68,7 @@ public class RoleController {
     @PostMapping("/delete")
     @Operation(summary = "Delete a role")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<Void> delete(@Valid @RequestBody IdQuery query) {
+    public SuccessResponse<Void> delete(@Valid @RequestBody RoleDeleteCommand query) {
         service.deleteRole(query.id());
         return SuccessResponse.success();
     }
@@ -80,14 +83,14 @@ public class RoleController {
     @PostMapping("/list")
     @Operation(summary = "List roles")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<java.util.Collection<RoleDTO>> list(@Valid @RequestBody RoleQuery query) {
-        return SuccessResponse.ofPage(service.queryRoles(query));
+    public PageResponse<RoleDTO> list(@Valid @RequestBody RolePageQuery query) {
+        return PageResponse.of(service.queryRoles(query));
     }
 
     @PostMapping("/tree")
     @Operation(summary = "Get the role hierarchy")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<List<RoleDTO>> tree(@Valid @RequestBody EmptyRequest request) {
+    public SuccessResponse<List<RoleDTO>> tree(@Valid @RequestBody RoleTreeQuery request) {
         return SuccessResponse.of(service.getRoleTree());
     }
 

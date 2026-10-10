@@ -23,9 +23,12 @@ import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.components.authorization.context.UserContext;
 import io.github.loadup.modules.upms.client.command.PermissionCreateCommand;
+import io.github.loadup.modules.upms.client.command.PermissionDeleteCommand;
 import io.github.loadup.modules.upms.client.command.PermissionUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.PermissionDTO;
 import io.github.loadup.modules.upms.client.facade.PermissionFacade;
+import io.github.loadup.modules.upms.client.query.PermissionMenuQuery;
+import io.github.loadup.modules.upms.client.query.PermissionTreeQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -63,7 +66,7 @@ public class PermissionController {
     @PostMapping("/delete")
     @Operation(summary = "Delete a permission", description = "Requires ROLE_SUPER_ADMIN.")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<Void> delete(@Valid @RequestBody IdQuery query) {
+    public SuccessResponse<Void> delete(@Valid @RequestBody PermissionDeleteCommand query) {
         service.deletePermission(query.id());
         return SuccessResponse.success();
     }
@@ -78,14 +81,14 @@ public class PermissionController {
     @PostMapping("/tree")
     @Operation(summary = "Get the permission tree", description = "Requires ROLE_SUPER_ADMIN.")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<List<PermissionDTO>> tree(@Valid @RequestBody EmptyRequest request) {
+    public SuccessResponse<List<PermissionDTO>> tree(@Valid @RequestBody PermissionTreeQuery request) {
         return SuccessResponse.of(service.getPermissionTree());
     }
 
     @PostMapping("/user-menu")
     @Operation(summary = "Get the current user's menu tree", description = "Requires an authenticated user.")
     @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<List<PermissionDTO>> userMenu(@Valid @RequestBody EmptyRequest request) {
+    public SuccessResponse<List<PermissionDTO>> userMenu(@Valid @RequestBody PermissionMenuQuery request) {
         String userId = UserContext.getUserId();
         if (userId == null) throw new IllegalStateException("Authenticated user is required");
         return SuccessResponse.of(service.getUserMenuTree(userId));

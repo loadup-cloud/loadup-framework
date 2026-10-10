@@ -204,8 +204,8 @@ export const useContractDrafts = defineStore('contract-catalog', {
           const results: CatalogVersion<K>[] = []
           for (let page = 1; ; page++) {
             const response = await queryCatalog({ kind, page, size: 100 })
-            results.push(...response.data.items)
-            if (results.length >= response.data.total || !response.data.items.length) return results
+            results.push(...response.data)
+            if (results.length >= (response.pageInfo?.totalCount ?? 0) || !response.data.length) return results
           }
         }
         const [products, conditions, bundles, plans] = await Promise.all([

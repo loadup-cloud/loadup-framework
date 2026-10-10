@@ -19,9 +19,10 @@
  */
 package io.github.loadup.modules.audit.app.service;
 
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.audit.app.converter.AuditDTOConverter;
 import io.github.loadup.modules.audit.client.command.AuditRecordCommand;
-import io.github.loadup.modules.audit.client.dto.AuditPageDTO;
+import io.github.loadup.modules.audit.client.dto.AuditEventDTO;
 import io.github.loadup.modules.audit.client.query.AuditQuery;
 import io.github.loadup.modules.audit.domain.gateway.AuditGateway;
 import io.github.loadup.modules.audit.domain.model.AuditEvent;
@@ -54,7 +55,7 @@ public class AuditService implements io.github.loadup.modules.audit.client.facad
                 LocalDateTime.now()));
     }
 
-    public AuditPageDTO search(AuditQuery query) {
+    public PageDTO<AuditEventDTO> search(AuditQuery query) {
         return converter.toPageDTO(repository.search(converter.toDomain(query)));
     }
 }

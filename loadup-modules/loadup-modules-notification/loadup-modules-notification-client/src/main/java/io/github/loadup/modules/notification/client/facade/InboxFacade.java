@@ -19,7 +19,8 @@
  */
 package io.github.loadup.modules.notification.client.facade;
 
-import io.github.loadup.modules.notification.client.dto.InboxPageDTO;
+import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.modules.notification.client.dto.InboxMessageDTO;
 import java.util.List;
 
 /** Public business contract for InboxService. */
@@ -34,7 +35,7 @@ public interface InboxFacade {
             String actionUrl,
             String requestKey);
 
-    InboxPageDTO list(String tenantId, String recipientId, boolean unreadOnly, int page, int size);
+    PageDTO<InboxMessageDTO> list(String tenantId, String recipientId, boolean unreadOnly, int page, int size);
 
     long unreadCount(String tenantId, String recipientId);
 

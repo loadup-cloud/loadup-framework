@@ -21,12 +21,12 @@ LoadUp 是一个**被消费的框架/SDK**，通过 `loadup-dependencies` BOM �
 
 ---
 
-## 构建纪律
+## 验证与构建
 
-- 默认不构建、不运行测试；由用户在本地执行。优先通过源码、依赖元数据和现有日志验证。
-- 只有用户要求，或变更无法通过其他方式验证时才构建。使用最窄的 `-pl` 模块、目标测试类及适当跳过参数（如 `-DskipTests`、`-Dskip.spotless=true`、`-Dskip.spotbugs=true`）。
-- 必须带 `clean`，避免 MyBatis-Flex、MapStruct 等注解处理器在增量编译时抛出 `FilerException`。
-- 未经用户要求，不启动全 reactor 构建或测试。若确有必要，说明原因并让用户决定。
+- IDEA MCP 可用时直接使用其代码检查能力，不编写临时手动 check 脚本代替 IDE 检查。
+- 需要验证编译、注解处理或依赖装配时使用 Maven build；不完全禁止构建。优先选择受影响模块及其依赖，用户要求整体构建时执行整体构建。
+- Maven 编译必须带 `clean`，避免 MyBatis-Flex、MapStruct 等注解处理器增量生成时发生 `FilerException`。
+- 明确区分格式化、编译、单测与真实环境集成测试；未运行的验证不得标为通过。根据任务需要选择测试和检查跳过参数，避免无收益的重复全量执行。
 
 ---
 
@@ -38,7 +38,7 @@ loadup-cloud/
 ├── loadup-commons/             # 最底层通用基础
 │   ├── loadup-commons-context/ # JDK 25 ScopedValue 只读执行链上下文
 │   ├── loadup-commons-dto/     # 通用响应、DTO 与 BaseDO
-│   ├── loadup-commons-util/    # 工具类：JsonUtil、StringUtils、DateUtils
+│   ├── loadup-commons-util/    # 工具类：StringUtils、DateUtils、MoneyUtil
 │   ├── loadup-commons-log/     # 统一日志格式与 trace MDC 约定
 ├── loadup-components/          # 技术组件，分类目录不增加 Maven 层级
 │   ├── security/       # authorization, authserver, resource-server, captcha, kms, signature
@@ -216,6 +216,25 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 
 ---
 
+## Command、Query 与分页契约
+
+| 入参语义 | 命名与位置 | 示例 |
+|---|---|---|
+| 写操作 | `.client.command.<业务对象><动作>Command` | UserCreateCommand、FileDeleteCommand、TransferTaskRetryCommand |
+| 分页查询 | `.client.query.<业务对象>PageQuery` | UserPageQuery、MerchantPageQuery |
+| 非分页集合查询 | `.client.query.<业务对象>ListQuery` | XxxListQuery |
+| 树 / 特定条件查询 | `.client.query.<业务对象><条件>Query` | PermissionTreeQuery、DictionaryTypeCodeQuery |
+| 仅 ID 查询 | 复用 `io.github.loadup.commons.request.query.IdQuery` | 详情、按 ID 读取 |
+
+- Command 表达写入意图，Query 只读；删除、锁定、重试等操作使用对应 Command，不能使用 IdQuery。新增业务入参不使用 Request 后缀；HTTP 客户端、上传和第三方协议的技术 Request 类型除外。
+- Controller 与 Facade 复用同一份业务入参。Command 直接包含 id、关联编码和业务字段，不创建仅包裹 command 的 Request，也不把 Command 已包含的 id/typeCode 再作为独立参数传入。业务验证、权限及可信租户解析仍在各自负责层执行。
+- Facade 分页统一返回 `io.github.loadup.commons.result.PageDTO<T>`；Controller 通过 `PageResponse.of(page)` 返回 `io.github.loadup.commons.result.PageResponse<T>`。不新增 FilePageDTO、MerchantPageDTO 等重复分页类型，不在 Facade 返回 HTTP envelope。
+- HTTP 分页结构固定为 `{result, data: [...], pageInfo: {...}}`；pageInfo 使用 totalCount、pageIndex、pageSize，页码从 1 开始。data 为当前页数组，不嵌套 items/records、total、page、size。前端同步消费顶层 pageInfo。
+- 领域 Gateway 可保留不依赖 HTTP 的分页对象；app 的 Spring MapStruct Converter 映射记录及元数据到公共 PageDTO。展示 DTO 转换使用 `page.map(converter::toView)`，保留元数据，再交给 PageResponse.of。
+- 入参、DTO 与分页响应遵循 OpenAPI 和 JSON toString 规范；非分页成功响应使用 SuccessResponse，无数据使用 SuccessResponse.success，失败使用 FailureResponse。
+
+---
+
 ## 包命名（根包：`io.github.loadup.modules.{mod}`）
 
 | 层                 | 包路径                          |
@@ -339,7 +358,7 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 - Every object mapping uses a Spring-managed MapStruct Converter with `@Mapper(config = LoadUpMapStructConfig.class)` and constructor injection. DTO/domain mapping belongs to app.converter, DO/domain mapping to infrastructure.converter, HTTP projections to web converters. Do not use Mappers.getMapper, static conversion factories or manually instantiate generated converters.
 - Domain methods implement business validation and transitions, not representation conversion or input-field copying. Express update merge rules in Converter mappings; document null-as-unchanged versus empty-as-clear. Authorize private-field modifications before mapping.
 - Include OpenAPI Tag/Operation on public Controllers and Schema descriptions/examples/units/formats on public DTO, Command and Query fields. Validation annotations define actual constraints; documentation must agree. Java descriptions are English. Credential request fields are WRITE_ONLY with synthetic examples. Document HTTP 200 business failures and actual response envelopes. Domain has no OpenAPI annotations.
-- Business JSON Controllers explicitly return SuccessResponse or IResponse; use SuccessResponse.ofPage for pagination and SuccessResponse.success for no data. Global exception handling returns FailureResponse. Downloads, SSE and standard protocol endpoints preserve their protocol-specific types. Keep application services free of HTTP envelopes.
+- Business JSON Controllers explicitly return IResponse implementations; select SuccessResponse, PageResponse or FailureResponse according to the Command/Query and pagination contract above. Global exception handling returns FailureResponse. Downloads, SSE and standard protocol endpoints preserve their protocol-specific types. Keep application services free of HTTP envelopes.
 - Project DTOs, commands, queries, domain data, DOs and envelopes implement JSON toString through ToStringUtils.reflectionToString. Credentials and keys must be redacted. Output handles records, inheritance, cycles and bounded collections without triggering resource access. Preserve JDK/third-party types and value objects with intentional textual semantics. Log JSON and HTTP JSON have separate disclosure policies.
 - Prefer JDK APIs, then Guava for missing general utilities and Vavr for useful Either/Validation/composition. Public contracts use JDK types. Avoid pass-through utility wrappers; retain project-specific money, signature, context and masking semantics. Propagate Vavr Try failures across transactional entry points. Manage versions through BOM and declare dependencies where used.
 - Business configuration uses loadup.modules.<module>.*. Optional web exposure is selected by the web dependency; do not add general web.enabled properties. Keep meaningful capture/path configuration.

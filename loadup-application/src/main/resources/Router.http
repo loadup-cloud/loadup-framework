@@ -47,7 +47,7 @@ POST {{baseUrl}}/api/dictionaries/items/create
 Authorization: Bearer {{upmsAccessToken}}
 Content-Type: application/json
 
-{"typeCode": "http_demo_status", "command": {"value": "open", "label": "Open", "sortOrder": 10, "enabled": true}}
+{"typeCode": "http_demo_status", "value": "open", "label": "Open", "sortOrder": 10, "enabled": true}
 
 > {%
   client.global.set("dictionaryItemId", response.body.data.id);
@@ -65,7 +65,7 @@ POST {{baseUrl}}/api/dictionaries/items/update
 Authorization: Bearer {{upmsAccessToken}}
 Content-Type: application/json
 
-{"id": "{{dictionaryItemId}}", "command": {"label": "Open", "sortOrder": 10, "enabled": false}}
+{"id": "{{dictionaryItemId}}", "label": "Open", "sortOrder": 10, "enabled": false}
 
 ### Verify the disabled item is absent
 POST {{baseUrl}}/api/dictionaries/options

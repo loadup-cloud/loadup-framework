@@ -23,7 +23,7 @@ import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.client.command.RoleCreateCommand;
 import io.github.loadup.modules.upms.client.command.RoleUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.RoleDTO;
-import io.github.loadup.modules.upms.client.query.RoleQuery;
+import io.github.loadup.modules.upms.client.query.RolePageQuery;
 import java.util.List;
 
 /** Public business contract for RoleService. */
@@ -36,7 +36,7 @@ public interface RoleFacade {
 
     RoleDTO getRoleById(String id);
 
-    PageDTO<RoleDTO> queryRoles(RoleQuery query);
+    PageDTO<RoleDTO> queryRoles(RolePageQuery query);
 
     List<RoleDTO> getRoleTree();
 

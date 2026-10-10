@@ -19,17 +19,18 @@
  */
 package io.github.loadup.modules.file.web;
 
-import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.commons.request.query.IdQuery;
+import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.authorization.model.LoadUpUser;
-import io.github.loadup.modules.file.client.command.FileCleanupRequest;
-import io.github.loadup.modules.file.client.command.FileIdRequest;
+import io.github.loadup.modules.file.client.command.FileCleanupCommand;
+import io.github.loadup.modules.file.client.command.FileDeleteCommand;
 import io.github.loadup.modules.file.client.dto.FileReferenceDTO;
 import io.github.loadup.modules.file.client.dto.FileResourceDTO;
 import io.github.loadup.modules.file.client.dto.FileResourceViewDTO;
 import io.github.loadup.modules.file.client.facade.FileResourceFacade;
-import io.github.loadup.modules.file.client.query.FileListRequest;
+import io.github.loadup.modules.file.client.query.FilePageQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
@@ -83,8 +84,7 @@ public class FileResourceController {
     @PostMapping("/list")
     @Operation(summary = "List my files; administrators may select an owner")
     @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<java.util.Collection<FileResourceViewDTO>> list(
-            @RequestBody FileListRequest request, Authentication authentication) {
+    public PageResponse<FileResourceViewDTO> list(@RequestBody FilePageQuery request, Authentication authentication) {
         var result = service.list(
                 TenantUtil.getTenantId(),
                 actor(authentication),
@@ -92,17 +92,13 @@ public class FileResourceController {
                 request.ownerId(),
                 request.page() == null ? 1 : request.page(),
                 request.size() == null ? 20 : request.size());
-        return SuccessResponse.ofPage(PageDTO.of(
-                result.records().stream().map(converter::toView).toList(),
-                result.total(),
-                result.page(),
-                result.size()));
+        return PageResponse.of(result.map(converter::toView));
     }
 
     @PostMapping("/detail")
     @Operation(summary = "Read file metadata")
     @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<FileResourceViewDTO> get(@RequestBody FileIdRequest request, Authentication authentication) {
+    public SuccessResponse<FileResourceViewDTO> get(@RequestBody IdQuery request, Authentication authentication) {
         return SuccessResponse.of(converter.toView(
                 service.get(TenantUtil.getTenantId(), request.id(), actor(authentication), admin(authentication))));
     }
@@ -111,7 +107,7 @@ public class FileResourceController {
     @Operation(summary = "List business references that protect a file from deletion")
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<List<FileReferenceDTO>> references(
-            @RequestBody FileIdRequest request, Authentication authentication) {
+            @RequestBody IdQuery request, Authentication authentication) {
         return SuccessResponse.of(service.references(
                 TenantUtil.getTenantId(), request.id(), actor(authentication), admin(authentication)));
     }
@@ -145,7 +141,7 @@ public class FileResourceController {
     @PostMapping("/delete")
     @Operation(summary = "Delete an unreferenced file; storage failures remain retryable")
     @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<Void> delete(@RequestBody FileIdRequest request, Authentication authentication) {
+    public SuccessResponse<Void> delete(@RequestBody FileDeleteCommand request, Authentication authentication) {
         String tenant = TenantUtil.getTenantId();
         service.requestDeletion(tenant, request.id(), actor(authentication), admin(authentication));
         service.cleanup(tenant, request.id());
@@ -155,7 +151,7 @@ public class FileResourceController {
     @PostMapping("/cleanup")
     @Operation(summary = "Retry pending DFS deletions")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<Integer> cleanup(@RequestBody FileCleanupRequest request) {
+    public SuccessResponse<Integer> cleanup(@RequestBody FileCleanupCommand request) {
         return SuccessResponse.of(service.cleanupPending(request.limit() == null ? 100 : request.limit()));
     }
 

@@ -87,12 +87,6 @@ export interface PageQuery {
   page: number
   size: number
 }
-export interface Page<T> {
-  items: T[]
-  total: number
-  page: number
-  size: number
-}
 export interface CatalogQuery<K extends CatalogKind> extends PageQuery {
   kind: K
   status?: CatalogStatus

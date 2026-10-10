@@ -19,7 +19,7 @@
  */
 package io.github.loadup.modules.upms.client.facade;
 
-import io.github.loadup.commons.domain.PageResult;
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.client.dto.LoginEntryDTO;
 import io.github.loadup.modules.upms.client.dto.SecurityOverviewDTO;
 
@@ -27,7 +27,7 @@ import io.github.loadup.modules.upms.client.dto.SecurityOverviewDTO;
 public interface AccountSecurityFacade {
     SecurityOverviewDTO overview(String userId);
 
-    PageResult<LoginEntryDTO> loginHistory(String userId, int page, int size);
+    PageDTO<LoginEntryDTO> loginHistory(String userId, int page, int size);
 
     void changePassword(String userId, String oldPassword, String newPassword, String confirmPassword);
 }

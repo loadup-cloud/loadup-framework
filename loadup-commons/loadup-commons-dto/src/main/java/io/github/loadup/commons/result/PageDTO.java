@@ -21,11 +21,17 @@ package io.github.loadup.commons.result;
 
 import io.github.loadup.commons.dto.DTO;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
+@Schema(description = "Application pagination result; use PageResponse for HTTP")
 public class PageDTO<T> implements DTO {
+    @Schema(description = "Entries on the current page")
     private Collection<T> data;
+
+    @Schema(description = "Pagination metadata")
     private PageInfo pageInfo;
 
     public static <T> PageDTO<T> of(List<T> records, Long total, Integer page, Integer size) {
@@ -33,6 +39,12 @@ public class PageDTO<T> implements DTO {
                 .data(records)
                 .pageInfo(new PageInfo(total, size.longValue(), page.longValue()))
                 .build();
+    }
+
+    /** Maps entries while preserving pagination metadata. */
+    public <R> PageDTO<R> map(Function<? super T, ? extends R> mapper) {
+        List<R> entries = data.stream().<R>map(mapper).toList();
+        return new PageDTO<>(entries, pageInfo);
     }
 
     public PageDTO(Collection<T> data, PageInfo pageInfo) {

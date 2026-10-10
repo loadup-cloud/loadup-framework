@@ -20,10 +20,11 @@
 package io.github.loadup.modules.merchant.app.service;
 
 import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.merchant.app.converter.MerchantConverter;
 import io.github.loadup.modules.merchant.client.command.*;
 import io.github.loadup.modules.merchant.client.dto.*;
-import io.github.loadup.modules.merchant.client.query.MerchantQuery;
+import io.github.loadup.modules.merchant.client.query.MerchantPageQuery;
 import io.github.loadup.modules.merchant.domain.gateway.MerchantGateway;
 import io.github.loadup.modules.merchant.domain.model.*;
 import java.time.*;
@@ -106,7 +107,7 @@ public class MerchantService implements io.github.loadup.modules.merchant.client
     }
 
     @Transactional(readOnly = true)
-    public MerchantPageDTO page(MerchantQuery query) {
+    public PageDTO<MerchantDTO> page(MerchantPageQuery query) {
         if (query.page() < 1 || query.size() < 1 || query.size() > 100)
             throw new IllegalArgumentException("Invalid page");
         var result = gateway.page(
@@ -116,7 +117,7 @@ public class MerchantService implements io.github.loadup.modules.merchant.client
                 query.status() == null || query.status().isBlank() ? null : MerchantStatus.valueOf(query.status()),
                 query.page(),
                 query.size());
-        return new MerchantPageDTO(
+        return PageDTO.of(
                 result.items().stream().map(converter::toDTO).toList(), result.total(), query.page(), query.size());
     }
 }

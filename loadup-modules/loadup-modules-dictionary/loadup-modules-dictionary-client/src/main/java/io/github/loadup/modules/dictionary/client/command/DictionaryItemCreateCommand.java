@@ -23,6 +23,7 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record DictionaryItemCreateCommand(
+        @Schema(description = "Dictionary type code") String typeCode,
         @Schema(description = "Value") String value,
         @Schema(description = "Label") String label,
         @Schema(description = "Description") String description,

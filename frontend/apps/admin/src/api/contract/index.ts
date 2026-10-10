@@ -7,7 +7,6 @@ import type {
   ContractDecision,
   ContractStatus,
   MerchantContract,
-  Page,
   PageQuery,
   ResolveQuery,
   SignContract
@@ -20,7 +19,7 @@ const post = <T>(path: string, data: object) =>
 export const saveCatalog = <K extends CatalogKind>(data: CatalogSave<K>) =>
   post<CatalogVersion<K>>('catalog/save', data)
 export const queryCatalog = <K extends CatalogKind>(data: CatalogQuery<K>) =>
-  post<Page<CatalogVersion<K>>>('catalog/page', data)
+  post<CatalogVersion<K>[]>('catalog/page', data)
 export const getCatalog = <K extends CatalogKind>(id: string) =>
   post<CatalogVersion<K>>('catalog/detail', { id })
 export const publishCatalog = <K extends CatalogKind>(id: string, expectedRowVersion: number) =>
@@ -32,7 +31,7 @@ export const previewContract = (data: SignContract) =>
 export const signContract = (data: SignContract) =>
   post<MerchantContract>('merchant-contracts/sign', data)
 export const queryContracts = (data: PageQuery & { merchantId?: string }) =>
-  post<Page<MerchantContract>>('merchant-contracts/page', data)
+  post<MerchantContract[]>('merchant-contracts/page', data)
 export const getContract = (id: string) =>
   post<MerchantContract>('merchant-contracts/detail', { id })
 export const changeContractStatus = (

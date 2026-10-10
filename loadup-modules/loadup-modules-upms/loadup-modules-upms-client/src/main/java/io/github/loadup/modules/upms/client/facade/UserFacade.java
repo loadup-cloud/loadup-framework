@@ -25,7 +25,7 @@ import io.github.loadup.modules.upms.client.command.UserCreateCommand;
 import io.github.loadup.modules.upms.client.command.UserPasswordChangeCommand;
 import io.github.loadup.modules.upms.client.command.UserUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
-import io.github.loadup.modules.upms.client.query.UserQuery;
+import io.github.loadup.modules.upms.client.query.UserPageQuery;
 
 /** Public business contract for UserService. */
 public interface UserFacade extends UserQueryFacade {
@@ -37,7 +37,7 @@ public interface UserFacade extends UserQueryFacade {
 
     UserDetailDTO getUserById(IdQuery idQuery);
 
-    PageDTO<UserDetailDTO> queryUsers(UserQuery query);
+    PageDTO<UserDetailDTO> queryUsers(UserPageQuery query);
 
     void changePassword(UserPasswordChangeCommand command);
 

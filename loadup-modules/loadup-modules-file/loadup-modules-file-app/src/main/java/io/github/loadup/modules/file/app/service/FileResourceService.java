@@ -19,12 +19,12 @@
  */
 package io.github.loadup.modules.file.app.service;
 
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.components.dfs.DfsService;
 import io.github.loadup.components.dfs.model.FileDownloadResponse;
 import io.github.loadup.components.dfs.model.FileMetadata;
 import io.github.loadup.components.dfs.model.FileUploadRequest;
 import io.github.loadup.modules.file.app.converter.FileDTOConverter;
-import io.github.loadup.modules.file.client.dto.FilePageDTO;
 import io.github.loadup.modules.file.client.dto.FileReferenceDTO;
 import io.github.loadup.modules.file.client.dto.FileResourceDTO;
 import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
@@ -110,7 +110,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
         return dfs.download(get(tenantId, id, actorId, admin).storageId());
     }
 
-    public FilePageDTO<FileResourceDTO> list(
+    public PageDTO<FileResourceDTO> list(
             String tenantId, String actorId, boolean admin, String ownerId, int page, int size) {
         if (page < 1 || size < 1 || size > 100) throw new IllegalArgumentException("invalid page or size");
         String owner = admin && ownerId != null && !ownerId.isBlank()

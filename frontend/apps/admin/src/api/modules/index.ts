@@ -105,15 +105,15 @@ export const listDictionaryTypes = (data: PageQuery) =>
 export const createDictionaryType = (data: object) =>
   post<DictionaryType>('/api/dictionaries/types/create', data)
 export const updateDictionaryType = (id: string, command: object) =>
-  post<DictionaryType>('/api/dictionaries/types/update', { id, command })
+  post<DictionaryType>('/api/dictionaries/types/update', { ...command, id })
 export const deleteDictionaryType = (id: string) =>
   post<void>('/api/dictionaries/types/delete', { id })
 export const listDictionaryItems = (typeCode: string, data: PageQuery) =>
   post<DictionaryItem[]>('/api/dictionaries/items/list', { typeCode, ...data })
 export const createDictionaryItem = (typeCode: string, command: object) =>
-  post<DictionaryItem>('/api/dictionaries/items/create', { typeCode, command })
+  post<DictionaryItem>('/api/dictionaries/items/create', { ...command, typeCode })
 export const updateDictionaryItem = (id: string, command: object) =>
-  post<DictionaryItem>('/api/dictionaries/items/update', { id, command })
+  post<DictionaryItem>('/api/dictionaries/items/update', { ...command, id })
 export const deleteDictionaryItem = (id: string) =>
   post<void>('/api/dictionaries/items/delete', { id })
 

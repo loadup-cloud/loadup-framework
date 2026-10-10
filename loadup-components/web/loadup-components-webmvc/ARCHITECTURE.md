@@ -10,6 +10,7 @@
 
 - `loadup-commons-dto`
 - `loadup-commons-util`
+- `loadup-commons-json`
 - `loadup-components-observability`
 
 直接依赖的外部坐标（不含测试与 provided scope）：

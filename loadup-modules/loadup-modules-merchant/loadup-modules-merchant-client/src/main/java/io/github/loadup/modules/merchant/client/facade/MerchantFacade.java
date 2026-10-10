@@ -19,9 +19,10 @@
  */
 package io.github.loadup.modules.merchant.client.facade;
 
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.merchant.client.command.*;
 import io.github.loadup.modules.merchant.client.dto.*;
-import io.github.loadup.modules.merchant.client.query.MerchantQuery;
+import io.github.loadup.modules.merchant.client.query.MerchantPageQuery;
 import java.time.*;
 
 /** Public business contract for MerchantService. */
@@ -34,5 +35,5 @@ public interface MerchantFacade {
 
     MerchantDTO detail(String id);
 
-    MerchantPageDTO page(MerchantQuery query);
+    PageDTO<MerchantDTO> page(MerchantPageQuery query);
 }

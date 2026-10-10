@@ -20,11 +20,12 @@
 package io.github.loadup.modules.contract.app.service;
 
 import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.contract.app.converter.ContractConverter;
 import io.github.loadup.modules.contract.app.support.*;
 import io.github.loadup.modules.contract.client.command.*;
 import io.github.loadup.modules.contract.client.dto.*;
-import io.github.loadup.modules.contract.client.query.CatalogQuery;
+import io.github.loadup.modules.contract.client.query.CatalogPageQuery;
 import io.github.loadup.modules.contract.domain.gateway.CatalogGateway;
 import io.github.loadup.modules.contract.domain.model.*;
 import java.time.*;
@@ -141,7 +142,7 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
     }
 
     @Transactional(readOnly = true)
-    public ContractPageDTO<CatalogVersionDTO> page(CatalogQuery query) {
+    public PageDTO<CatalogVersionDTO> page(CatalogPageQuery query) {
         ContractIdentity.page(query.page(), query.size());
         var page = gateway.page(
                 ContractIdentity.tenant(),
@@ -150,7 +151,7 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
                 query.code(),
                 query.page(),
                 query.size());
-        return new ContractPageDTO<>(
+        return PageDTO.of(
                 page.items().stream().map(converter::toCatalog).toList(), page.total(), query.page(), query.size());
     }
 }

@@ -21,10 +21,14 @@ package io.github.loadup.commons.request.query;
 
 import io.github.loadup.commons.dto.DTO;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import java.util.Objects;
 
-public record IdQuery(@NotBlank String id) implements DTO {
+@Schema(description = "Identifier lookup query")
+public record IdQuery(
+        @Schema(description = "Resource identifier") @NotBlank
+        String id) implements DTO {
 
     public static IdQuery of(String id) {
         return new IdQuery(Objects.requireNonNull(id, "id must not be null"));

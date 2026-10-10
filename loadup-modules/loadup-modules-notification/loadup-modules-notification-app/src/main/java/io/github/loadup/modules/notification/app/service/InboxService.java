@@ -19,8 +19,9 @@
  */
 package io.github.loadup.modules.notification.app.service;
 
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.notification.app.converter.NotificationDTOConverter;
-import io.github.loadup.modules.notification.client.dto.InboxPageDTO;
+import io.github.loadup.modules.notification.client.dto.InboxMessageDTO;
 import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
 import io.github.loadup.modules.notification.domain.model.InboxMessage;
 import java.time.LocalDateTime;
@@ -85,7 +86,7 @@ public class InboxService implements io.github.loadup.modules.notification.clien
         return inserted;
     }
 
-    public InboxPageDTO list(String tenantId, String recipientId, boolean unreadOnly, int page, int size) {
+    public PageDTO<InboxMessageDTO> list(String tenantId, String recipientId, boolean unreadOnly, int page, int size) {
         if (page < 1 || size < 1 || size > 100) throw new IllegalArgumentException("invalid page or size");
         return converter.toPageDTO(
                 repository.list(tenant(tenantId), required(recipientId, "recipientId", 64), unreadOnly, page, size));

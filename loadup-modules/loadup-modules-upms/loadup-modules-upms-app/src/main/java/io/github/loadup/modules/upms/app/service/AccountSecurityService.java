@@ -21,6 +21,7 @@ package io.github.loadup.modules.upms.app.service;
 
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.app.converter.UpmsDTOConverter;
 import io.github.loadup.modules.upms.client.command.UserPasswordChangeCommand;
 import io.github.loadup.modules.upms.client.dto.LoginEntryDTO;
@@ -54,12 +55,12 @@ public class AccountSecurityService implements io.github.loadup.modules.upms.cli
         return dtoConverter.toSecurityOverview(user);
     }
 
-    public PageResult<LoginEntryDTO> loginHistory(String userId, int page, int size) {
+    public PageDTO<LoginEntryDTO> loginHistory(String userId, int page, int size) {
         if (page < 1 || size < 1 || size > 100) throw new IllegalArgumentException("invalid page or size");
         PageResult<LoginLog> result = logins.findByUserId(requiredUser(userId), PageQuery.of(page, size));
         List<LoginEntryDTO> entries =
                 result.records().stream().map(dtoConverter::toLoginEntry).toList();
-        return PageResult.of(entries, result.total(), result.page(), result.size());
+        return PageDTO.of(entries, result.total(), result.page(), result.size());
     }
 
     public void changePassword(String userId, String oldPassword, String newPassword, String confirmPassword) {

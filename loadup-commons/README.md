@@ -32,4 +32,4 @@
 
 ## JSON 诊断
 
-[commons-json](loadup-commons-json/README.md) 提供受限、脱敏的 JSON `toString()`，供 DTO、领域数据和 DO 共用；HTTP 报文仍由 WebMVC 的 Jackson 配置负责。
+[commons-json](loadup-commons-json/README.md) 统一提供 JsonUtil、日期序列化规则及受限、脱敏的 JSON `toString()`，供 DTO、领域数据和 DO 共用；WebMVC 复用其日期配置，诊断输出使用独立 mapper。

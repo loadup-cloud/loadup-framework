@@ -23,6 +23,7 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record DictionaryItemUpdateCommand(
+        @Schema(description = "Resource identifier") String id,
         @Schema(description = "Label") String label,
         @Schema(description = "Description") String description,
 

@@ -19,13 +19,13 @@
  */
 package io.github.loadup.modules.dictionary.app.service;
 
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.dictionary.app.converter.DictionaryDTOConverter;
 import io.github.loadup.modules.dictionary.client.command.DictionaryItemCreateCommand;
 import io.github.loadup.modules.dictionary.client.command.DictionaryItemUpdateCommand;
 import io.github.loadup.modules.dictionary.client.command.DictionaryTypeCreateCommand;
 import io.github.loadup.modules.dictionary.client.command.DictionaryTypeUpdateCommand;
 import io.github.loadup.modules.dictionary.client.dto.DictionaryItemDTO;
-import io.github.loadup.modules.dictionary.client.dto.DictionaryPageDTO;
 import io.github.loadup.modules.dictionary.client.dto.DictionaryTypeDTO;
 import io.github.loadup.modules.dictionary.domain.gateway.DictionaryGateway;
 import io.github.loadup.modules.dictionary.domain.model.DictionaryItem;
@@ -76,12 +76,12 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
     }
 
     @Transactional
-    public DictionaryTypeDTO updateType(String tenantId, String id, DictionaryTypeUpdateCommand command) {
+    public DictionaryTypeDTO updateType(String tenantId, DictionaryTypeUpdateCommand command) {
         if (command == null || command.enabled() == null) {
             throw new IllegalArgumentException("type and enabled are required");
         }
         String tenant = tenant(tenantId);
-        DictionaryType previous = requireType(tenant, id);
+        DictionaryType previous = requireType(tenant, command.id());
         DictionaryType updated = new DictionaryType(
                 previous.id(),
                 tenant,
@@ -105,16 +105,16 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
         repository.deleteType(tenant, type.id());
     }
 
-    public DictionaryPageDTO<DictionaryTypeDTO> listTypes(String tenantId, int page, int size) {
+    public PageDTO<DictionaryTypeDTO> listTypes(String tenantId, int page, int size) {
         validatePage(page, size);
         return converter.toTypePageDTO(repository.listTypes(tenant(tenantId), page, size));
     }
 
     @Transactional
-    public DictionaryItemDTO createItem(String tenantId, String typeCode, DictionaryItemCreateCommand command) {
+    public DictionaryItemDTO createItem(String tenantId, DictionaryItemCreateCommand command) {
         if (command == null) throw new IllegalArgumentException("item is required");
         String tenant = tenant(tenantId);
-        DictionaryType type = requireTypeByCode(tenant, typeCode);
+        DictionaryType type = requireTypeByCode(tenant, command.typeCode());
         LocalDateTime now = LocalDateTime.now();
         DictionaryItem item = new DictionaryItem(
                 UUID.randomUUID().toString(),
@@ -136,12 +136,12 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
     }
 
     @Transactional
-    public DictionaryItemDTO updateItem(String tenantId, String id, DictionaryItemUpdateCommand command) {
+    public DictionaryItemDTO updateItem(String tenantId, DictionaryItemUpdateCommand command) {
         if (command == null || command.enabled() == null || command.sortOrder() == null) {
             throw new IllegalArgumentException("item, enabled and sortOrder are required");
         }
         String tenant = tenant(tenantId);
-        DictionaryItem previous = requireItem(tenant, id);
+        DictionaryItem previous = requireItem(tenant, command.id());
         DictionaryItem updated = new DictionaryItem(
                 previous.id(),
                 tenant,
@@ -163,7 +163,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
         repository.deleteItem(tenant, requireItem(tenant, id).id());
     }
 
-    public DictionaryPageDTO<DictionaryItemDTO> listItems(String tenantId, String typeCode, int page, int size) {
+    public PageDTO<DictionaryItemDTO> listItems(String tenantId, String typeCode, int page, int size) {
         validatePage(page, size);
         String tenant = tenant(tenantId);
         return converter.toItemPageDTO(

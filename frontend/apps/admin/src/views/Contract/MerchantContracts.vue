@@ -41,7 +41,7 @@
         page: 1,
         size: 20
       })
-      if (request === merchantSearch) merchantOptions.value = data.items
+      if (request === merchantSearch) merchantOptions.value = data
     } catch {
       /* The shared request client displays errors. */
     } finally {
@@ -103,13 +103,13 @@
     { deep: true }
   )
   const loadContracts = async () => {
-    const { data } = await queryContracts({
+    const { data, pageInfo } = await queryContracts({
       page: page.value,
       size: 20,
       merchantId: merchantFilter.value || undefined
     })
-    contracts.value = data.items
-    total.value = data.total
+    contracts.value = data
+    total.value = pageInfo?.totalCount ?? 0
   }
   const searchContracts = async () => {
     page.value = 1

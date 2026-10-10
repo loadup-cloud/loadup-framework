@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-commons-util</artifactId>
+            <artifactId>loadup-commons-json</artifactId>
         </dependency>
         <dependency>
             <groupId>com.alibaba.nacos</groupId>

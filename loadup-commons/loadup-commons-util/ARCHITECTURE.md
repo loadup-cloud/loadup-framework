@@ -2,7 +2,7 @@
 
 ## 职责与边界
 
-提供 JSON、日期、字符串等通用工具。
+提供日期、字符串、租户上下文及金额计算等通用工具。JSON 转换和诊断输出统一由 [commons-json](../loadup-commons-json/README.md) 提供。
 
 ## Maven 依赖边界
 
@@ -10,6 +10,8 @@
 
 - `loadup-commons-dto`
 - `loadup-commons-log`
+- `loadup-commons-context`
+- `loadup-commons-json`
 
 直接依赖的外部坐标（不含测试与 provided scope）：
 
@@ -21,17 +23,15 @@
 - `commons-io:commons-io`
 - `org.springframework.security:spring-security-crypto`
 - `org.springframework:spring-context`
-- `tools.jackson.core:jackson-databind`
-- `tools.jackson.core:jackson-core`
-- `com.fasterxml.jackson.core:jackson-annotations`
 - `org.springframework.boot:spring-boot-starter-validation`
-- 另有 4 项，详见 `pom.xml`。
+- `org.hibernate.validator:hibernate-validator`
+- `jakarta.validation:jakarta.validation-api`
+- `org.slf4j:slf4j-api`
 
 ## 实现入口
 
 主要源码入口：
 
-- [`JsonUtil`](src/main/java/io/github/loadup/commons/util/JsonUtil.java)
 - [`StringUtils`](src/main/java/io/github/loadup/commons/util/StringUtils.java)
 - [`AnnotationUtils`](src/main/java/io/github/loadup/commons/util/AnnotationUtils.java)
 - [`AssertUtil`](src/main/java/io/github/loadup/commons/util/AssertUtil.java)
@@ -39,7 +39,8 @@
 ## 分层与调用路径
 
 ```text
-业务与组件调用 → JsonUtil / 日期字符串工具 → 标准 Java 与 Jackson 能力
+业务与组件调用 → 日期字符串及金额工具 → 标准 Java 与通用库
+JSON 调用 → commons-json → Jackson / masking / log
 ```
 
 集成方式与配置示例见 [README.md](README.md)。

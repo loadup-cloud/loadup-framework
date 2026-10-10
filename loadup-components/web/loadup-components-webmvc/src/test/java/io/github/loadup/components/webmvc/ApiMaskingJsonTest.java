@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.github.loadup.commons.masking.MaskType;
 import io.github.loadup.commons.masking.Masked;
 import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -90,6 +91,23 @@ class ApiMaskingJsonTest {
         assertThat(mapper.writerWithView(PublicView.class).writeValueAsString(new Viewed("13812345678", "hidden")))
                 .contains("138****5678")
                 .doesNotContain("hidden", "13812345678");
+    }
+
+    @Test
+    void pageResponseKeepsFlatEnvelopeAndMasksMappedEntries() {
+        var masking = new ApiMaskingJson(JsonMapper.builder().build());
+        var page = PageDTO.of(List.of(new Contact("13812345678", "alice@example.com")), 41L, 2, 20);
+        var response = PageResponse.of(page.map(contact -> new Contact(contact.phone(), contact.email())));
+        var tree = masking.mapper().readTree(masking.write(response));
+        assertThat(tree.get("result").get("status").asString()).isEqualTo("S");
+        assertThat(tree.get("data").isArray()).isTrue();
+        assertThat(tree.get("data").get(0).get("phone").asString()).isEqualTo("138****5678");
+        assertThat(tree.get("pageInfo").get("totalCount").asLong()).isEqualTo(41L);
+        assertThat(tree.get("pageInfo").get("pageIndex").asLong()).isEqualTo(2L);
+        assertThat(tree.get("pageInfo").get("pageSize").asLong()).isEqualTo(20L);
+        assertThat(tree.get("pageInfo").get("totalPages").asLong()).isEqualTo(3L);
+        assertThat(masking.write(PageResponse.of(PageDTO.of(List.of(), 0L, 1, 20))))
+                .contains("\"data\":[]", "\"pageInfo\"");
     }
 
     @Test

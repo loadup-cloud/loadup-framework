@@ -19,9 +19,10 @@
  */
 package io.github.loadup.modules.contract.client.facade;
 
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.contract.client.command.*;
 import io.github.loadup.modules.contract.client.dto.*;
-import io.github.loadup.modules.contract.client.query.MerchantContractQuery;
+import io.github.loadup.modules.contract.client.query.MerchantContractPageQuery;
 import java.time.*;
 import java.util.*;
 
@@ -33,7 +34,7 @@ public interface MerchantContractFacade {
 
     MerchantContractDTO detail(String id);
 
-    ContractPageDTO<MerchantContractDTO> page(MerchantContractQuery query);
+    PageDTO<MerchantContractDTO> page(MerchantContractPageQuery query);
 
     MerchantContractDTO changeStatus(ContractStatusCommand command, String actor);
 }

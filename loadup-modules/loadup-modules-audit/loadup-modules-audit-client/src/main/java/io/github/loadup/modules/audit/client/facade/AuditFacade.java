@@ -19,13 +19,14 @@
  */
 package io.github.loadup.modules.audit.client.facade;
 
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.audit.client.command.AuditRecordCommand;
-import io.github.loadup.modules.audit.client.dto.AuditPageDTO;
+import io.github.loadup.modules.audit.client.dto.AuditEventDTO;
 import io.github.loadup.modules.audit.client.query.AuditQuery;
 
 /** Public business contract for AuditService. */
 public interface AuditFacade {
     void record(AuditRecordCommand write);
 
-    AuditPageDTO search(AuditQuery query);
+    PageDTO<AuditEventDTO> search(AuditQuery query);
 }

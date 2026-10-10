@@ -19,19 +19,20 @@
  */
 package io.github.loadup.modules.transfer.web;
 
-import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.commons.request.query.IdQuery;
+import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.authorization.model.LoadUpUser;
-import io.github.loadup.modules.transfer.client.command.TransferIdRequest;
-import io.github.loadup.modules.transfer.client.command.TransferSubmitRequest;
+import io.github.loadup.modules.transfer.client.command.TransferTaskRetryCommand;
+import io.github.loadup.modules.transfer.client.command.TransferTaskSubmitCommand;
 import io.github.loadup.modules.transfer.client.dto.ResultFileDTO;
 import io.github.loadup.modules.transfer.client.dto.TransferTaskDTO;
 import io.github.loadup.modules.transfer.client.dto.TransferViewDTO;
 import io.github.loadup.modules.transfer.client.enums.TransferKind;
 import io.github.loadup.modules.transfer.client.enums.TransferStatus;
 import io.github.loadup.modules.transfer.client.facade.TransferTaskFacade;
-import io.github.loadup.modules.transfer.client.query.TransferListRequest;
+import io.github.loadup.modules.transfer.client.query.TransferTaskPageQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -58,7 +59,7 @@ public class TransferTaskController {
     @Operation(summary = "Submit an import using a previously uploaded file")
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<TransferViewDTO> submitImport(
-            @RequestBody TransferSubmitRequest request, Authentication authentication) {
+            @RequestBody TransferTaskSubmitCommand request, Authentication authentication) {
         if (request == null) throw new IllegalArgumentException("request is required");
         return SuccessResponse.of(converter.toView(service.submit(
                 TenantUtil.getTenantId(),
@@ -73,7 +74,7 @@ public class TransferTaskController {
     @Operation(summary = "Submit an export")
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<TransferViewDTO> submitExport(
-            @RequestBody TransferSubmitRequest request, Authentication authentication) {
+            @RequestBody TransferTaskSubmitCommand request, Authentication authentication) {
         if (request == null) throw new IllegalArgumentException("request is required");
         return SuccessResponse.of(converter.toView(service.submit(
                 TenantUtil.getTenantId(),
@@ -87,8 +88,8 @@ public class TransferTaskController {
     @PostMapping("/list")
     @Operation(summary = "List my tasks; administrators may select an owner")
     @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<java.util.Collection<TransferViewDTO>> list(
-            @RequestBody TransferListRequest request, Authentication authentication) {
+    public PageResponse<TransferViewDTO> list(
+            @RequestBody TransferTaskPageQuery request, Authentication authentication) {
         var result = service.list(
                 TenantUtil.getTenantId(),
                 actor(authentication),
@@ -96,17 +97,13 @@ public class TransferTaskController {
                 request.ownerId(),
                 request.page() == null ? 1 : request.page(),
                 request.size() == null ? 20 : request.size());
-        return SuccessResponse.ofPage(PageDTO.of(
-                result.records().stream().map(converter::toView).toList(),
-                result.total(),
-                result.page(),
-                result.size()));
+        return PageResponse.of(result.map(converter::toView));
     }
 
     @PostMapping("/detail")
     @Operation(summary = "Get task progress and result metadata")
     @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<TransferViewDTO> get(@RequestBody TransferIdRequest request, Authentication authentication) {
+    public SuccessResponse<TransferViewDTO> get(@RequestBody IdQuery request, Authentication authentication) {
         return SuccessResponse.of(converter.toView(
                 service.get(TenantUtil.getTenantId(), request.id(), actor(authentication), admin(authentication))));
     }
@@ -114,8 +111,7 @@ public class TransferTaskController {
     @PostMapping("/result")
     @Operation(summary = "Get the result file reference for download")
     @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<ResultFileDTO> result(
-            @RequestBody TransferIdRequest request, Authentication authentication) {
+    public SuccessResponse<ResultFileDTO> result(@RequestBody IdQuery request, Authentication authentication) {
         TransferTaskDTO task =
                 service.get(TenantUtil.getTenantId(), request.id(), actor(authentication), admin(authentication));
         if (task.status() != TransferStatus.SUCCEEDED || task.resultFileId() == null) {
@@ -129,7 +125,7 @@ public class TransferTaskController {
     @Operation(summary = "Redispatch a queued task or retry a failed task")
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<TransferViewDTO> retry(
-            @RequestBody TransferIdRequest request, Authentication authentication) {
+            @RequestBody TransferTaskRetryCommand request, Authentication authentication) {
         return SuccessResponse.of(converter.toView(
                 service.retry(TenantUtil.getTenantId(), request.id(), actor(authentication), admin(authentication))));
     }

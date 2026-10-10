@@ -1,6 +1,6 @@
 # Loadup Common Utils
 
-提供 JSON、日期、字符串等通用工具。
+提供日期、字符串、租户上下文及金额计算等通用工具。JSON 转换和诊断输出统一由 [commons-json](../loadup-commons-json/README.md) 提供。
 
 ## 引入
 
@@ -48,7 +48,7 @@ String localized = MoneyFormatter.format(amount, Locale.US);
 
 不提供 double 金额入口、隐式币种转换或默认手续费舍入。费率0.6%传 `new BigDecimal("0.006")`。不得将展示符号作为币种身份。
 
-已提供 `MoneyTest` 12个场景源码，尚未编译/运行。用户可本地执行：
+已提供 `MoneyTest` 12个场景源码，已通过 Maven 编译，尚未运行。用户可本地执行：
 
 ```bash
 mvn clean test -pl loadup-commons/loadup-commons-util -am -Dtest=MoneyTest \

@@ -20,11 +20,12 @@
 package io.github.loadup.modules.contract.app.service;
 
 import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.contract.app.converter.ContractConverter;
 import io.github.loadup.modules.contract.app.support.*;
 import io.github.loadup.modules.contract.client.command.*;
 import io.github.loadup.modules.contract.client.dto.*;
-import io.github.loadup.modules.contract.client.query.MerchantContractQuery;
+import io.github.loadup.modules.contract.client.query.MerchantContractPageQuery;
 import io.github.loadup.modules.contract.domain.gateway.*;
 import io.github.loadup.modules.contract.domain.model.*;
 import java.time.*;
@@ -222,11 +223,10 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
     }
 
     @Transactional(readOnly = true)
-    public ContractPageDTO<MerchantContractDTO> page(MerchantContractQuery query) {
+    public PageDTO<MerchantContractDTO> page(MerchantContractPageQuery query) {
         ContractIdentity.page(query.page(), query.size());
         var page = gateway.page(ContractIdentity.tenant(), query.merchantId(), query.page(), query.size());
-        return new ContractPageDTO<>(
-                page.items().stream().map(this::toDTO).toList(), page.total(), query.page(), query.size());
+        return PageDTO.of(page.items().stream().map(this::toDTO).toList(), page.total(), query.page(), query.size());
     }
 
     @Transactional

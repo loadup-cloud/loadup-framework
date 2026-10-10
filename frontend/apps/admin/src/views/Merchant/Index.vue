@@ -57,19 +57,23 @@
   const load = async () => {
     loading.value = true
     try {
-      const { data } = await queryMerchants({
+      const { data, pageInfo } = await queryMerchants({
         name: name.value || undefined,
         status: status.value || undefined,
         page: page.value,
         size: 20
       })
-      rows.value = data.items
-      total.value = data.total
+      rows.value = data
+      total.value = pageInfo?.totalCount ?? 0
     } catch {
       /* The shared request client displays errors. */
     } finally {
       loading.value = false
     }
+  }
+  const search = () => {
+    page.value = 1
+    void load()
   }
   const create = () => {
     selected.value = null
@@ -168,19 +172,13 @@
           placeholder="商户名称"
           class="!w-220px"
           clearable
-          @keyup.enter="
-            page = 1
-            load()
-          "
+          @keyup.enter="search"
         /><ElSelect v-model="status" placeholder="状态" clearable class="!w-130px"
           ><ElOption label="启用" value="ACTIVE" /><ElOption
             label="停用"
             value="INACTIVE" /></ElSelect
         ><ElButton
-          @click="
-            page = 1
-            load()
-          "
+          @click="search"
           >查询</ElButton
         ><ElButton type="primary" @click="create">新增商户</ElButton></div
       >

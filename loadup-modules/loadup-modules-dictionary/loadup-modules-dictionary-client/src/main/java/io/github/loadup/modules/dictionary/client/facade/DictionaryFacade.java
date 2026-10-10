@@ -19,12 +19,12 @@
  */
 package io.github.loadup.modules.dictionary.client.facade;
 
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.dictionary.client.command.DictionaryItemCreateCommand;
 import io.github.loadup.modules.dictionary.client.command.DictionaryItemUpdateCommand;
 import io.github.loadup.modules.dictionary.client.command.DictionaryTypeCreateCommand;
 import io.github.loadup.modules.dictionary.client.command.DictionaryTypeUpdateCommand;
 import io.github.loadup.modules.dictionary.client.dto.DictionaryItemDTO;
-import io.github.loadup.modules.dictionary.client.dto.DictionaryPageDTO;
 import io.github.loadup.modules.dictionary.client.dto.DictionaryTypeDTO;
 import java.util.List;
 
@@ -32,19 +32,19 @@ import java.util.List;
 public interface DictionaryFacade {
     DictionaryTypeDTO createType(String tenantId, DictionaryTypeCreateCommand command);
 
-    DictionaryTypeDTO updateType(String tenantId, String id, DictionaryTypeUpdateCommand command);
+    DictionaryTypeDTO updateType(String tenantId, DictionaryTypeUpdateCommand command);
 
     void deleteType(String tenantId, String id);
 
-    DictionaryPageDTO<DictionaryTypeDTO> listTypes(String tenantId, int page, int size);
+    PageDTO<DictionaryTypeDTO> listTypes(String tenantId, int page, int size);
 
-    DictionaryItemDTO createItem(String tenantId, String typeCode, DictionaryItemCreateCommand command);
+    DictionaryItemDTO createItem(String tenantId, DictionaryItemCreateCommand command);
 
-    DictionaryItemDTO updateItem(String tenantId, String id, DictionaryItemUpdateCommand command);
+    DictionaryItemDTO updateItem(String tenantId, DictionaryItemUpdateCommand command);
 
     void deleteItem(String tenantId, String id);
 
-    DictionaryPageDTO<DictionaryItemDTO> listItems(String tenantId, String typeCode, int page, int size);
+    PageDTO<DictionaryItemDTO> listItems(String tenantId, String typeCode, int page, int size);
 
     List<DictionaryItemDTO> listEnabledItems(String tenantId, String typeCode);
 }

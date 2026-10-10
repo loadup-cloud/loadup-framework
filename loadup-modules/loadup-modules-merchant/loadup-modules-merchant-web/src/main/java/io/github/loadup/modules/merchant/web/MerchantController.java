@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.merchant.web;
 
+import io.github.loadup.commons.request.query.IdQuery;
+import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.modules.merchant.client.command.*;
 import io.github.loadup.modules.merchant.client.dto.*;
@@ -60,14 +62,14 @@ public class MerchantController {
     @PostMapping("/page")
     @PreAuthorize("hasAuthority('merchant:read')")
     @Operation(summary = "Page merchants in current tenant")
-    public SuccessResponse<MerchantPageDTO> page(@Valid @RequestBody MerchantQuery query) {
-        return SuccessResponse.of(service.page(query));
+    public PageResponse<MerchantDTO> page(@Valid @RequestBody MerchantPageQuery query) {
+        return PageResponse.of(service.page(query));
     }
 
     @PostMapping("/detail")
     @PreAuthorize("hasAuthority('merchant:read')")
     @Operation(summary = "Read merchant with masked private data")
-    public SuccessResponse<MerchantDTO> detail(@Valid @RequestBody MerchantIdQuery query) {
+    public SuccessResponse<MerchantDTO> detail(@Valid @RequestBody IdQuery query) {
         return SuccessResponse.of(service.detail(query.id()));
     }
 

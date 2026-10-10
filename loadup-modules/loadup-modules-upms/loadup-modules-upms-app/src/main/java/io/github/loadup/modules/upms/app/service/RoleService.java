@@ -25,7 +25,7 @@ import io.github.loadup.modules.upms.client.command.RoleCreateCommand;
 import io.github.loadup.modules.upms.client.command.RoleUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.PermissionDTO;
 import io.github.loadup.modules.upms.client.dto.RoleDTO;
-import io.github.loadup.modules.upms.client.query.RoleQuery;
+import io.github.loadup.modules.upms.client.query.RolePageQuery;
 import io.github.loadup.modules.upms.domain.entity.Permission;
 import io.github.loadup.modules.upms.domain.entity.Role;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
@@ -206,7 +206,7 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
     /**
      * Query roles with pagination
      */
-    public PageDTO<RoleDTO> queryRoles(RoleQuery query) {
+    public PageDTO<RoleDTO> queryRoles(RolePageQuery query) {
         int page = query.getPage() == null ? 1 : query.getPage();
         int size = query.getSize() == null ? 20 : query.getSize();
         if (page < 1 || size < 1 || size > 500) throw new IllegalArgumentException("Invalid page or size");

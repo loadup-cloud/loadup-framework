@@ -22,10 +22,12 @@ package io.github.loadup.modules.upms.web;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.modules.upms.client.command.DepartmentCreateCommand;
+import io.github.loadup.modules.upms.client.command.DepartmentDeleteCommand;
 import io.github.loadup.modules.upms.client.command.DepartmentMoveCommand;
 import io.github.loadup.modules.upms.client.command.DepartmentUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.DepartmentDTO;
 import io.github.loadup.modules.upms.client.facade.DepartmentFacade;
+import io.github.loadup.modules.upms.client.query.DepartmentTreeQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -63,7 +65,7 @@ public class DepartmentController {
     @PostMapping("/delete")
     @Operation(summary = "Delete a department")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<Void> delete(@Valid @RequestBody IdQuery query) {
+    public SuccessResponse<Void> delete(@Valid @RequestBody DepartmentDeleteCommand query) {
         service.deleteDepartment(query.id());
         return SuccessResponse.success();
     }
@@ -78,7 +80,7 @@ public class DepartmentController {
     @PostMapping("/tree")
     @Operation(summary = "Get the department tree")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<List<DepartmentDTO>> tree(@Valid @RequestBody EmptyRequest request) {
+    public SuccessResponse<List<DepartmentDTO>> tree(@Valid @RequestBody DepartmentTreeQuery request) {
         return SuccessResponse.of(service.getDepartmentTree());
     }
 

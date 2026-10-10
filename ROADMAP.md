@@ -10,22 +10,26 @@
 
 ## P1 · 统一模块开发契约实施
 
-database 固定默认配置、Tables APT 和五个业务仓储的 MyBatis-Flex 迁移已编写；新增迁移补齐标准字段，任务执行与文件清理恢复可信租户上下文。商户隐私合并与 UPMS DTO 映射已移入 Spring MapStruct Converter；Facade、显式响应、OpenAPI 和独立 commons-json 均已提供。工具选择规范已写入 AGENTS，未为无收益的替换引入额外抽象。尚未编译或执行测试。
+2026-10-10 已将 JsonUtil 与 MultiDateDeserializer 从 commons-util 归并到 commons-json，更新 WebMVC/Nacos 引用并移除 util 的直接 Jackson 依赖。相关 11 个模块的 Maven clean package 成功，含测试源码编译；测试未执行。
 
-- [ ] 用户定向 clean 编译与测试以上变更（含 commons-json、database guard、MapStruct、真实 MySQL 迁移/锁/幂等、Facade 自动装配、OpenAPI 与响应报文）；本轮不默认运行构建/测试，完成实现后仍保留运行验收待办。
+多格式日期输入已补齐 Date、LocalDate、LocalDateTime：严格完整解析、常用分隔符/紧凑格式/小数秒、Date 时区与毫秒时间戳，以及显式字段 JsonFormat。保持固定输出格式，拒绝 Local 类型的有损转换；2026-10-10 定向 Maven clean test 通过全部 30 个日期测试，包含 WebMVC 在内的 9 个相关模块编译成功。真实 HTTP 接入验收仍待执行。
+
+database 固定默认配置、Tables APT 和五个业务仓储的 MyBatis-Flex 迁移已编写；新增迁移补齐标准字段，任务执行与文件清理恢复可信租户上下文。商户隐私合并与 UPMS DTO 映射已移入 Spring MapStruct Converter；Facade、显式响应、OpenAPI 和独立 commons-json 均已提供。工具选择规范已写入 AGENTS，未为无收益的替换引入额外抽象。2026-10-10 全量 141 个模块执行 `mvn clean package -DskipTests -Dskip.spotless=true -Dskip.spotbugs=true` 成功，含主源码、测试源码及 APT 生成代码编译；未执行测试、格式或静态分析门禁。
+
+- [ ] 定向执行 commons-json、database guard、MapStruct 与 Facade 自动装配测试；在真实 MySQL/WebMVC 环境验证迁移、锁、幂等、OpenAPI 与响应报文，并执行发布所需格式与静态分析门禁。
 
 ## P1 · COLA 统一分层与业务配置验收
 
 审计、字典、文件、通知和导入导出已拆分为业务聚合目录内的 client/domain/infrastructure/app/web/test；协议、领域 Gateway、持久化装配、MapStruct、BOM 和接入引用已调整。业务配置统一为 `loadup.modules.<module>.*`，启停使用 `enabled`，既有 UPMS/Contract/Merchant 配置同步迁移。
 
-- [ ] 用户定向执行 AuditAutoConfigurationTest、DictionaryAutoConfigurationTest、FileAutoConfigurationTest、NotificationAutoConfigurationTest、TransferAutoConfigurationTest 和既有 ContractAutoConfigurationTest；源码已编写/调整，未编译或执行。
+- [ ] 定向执行 AuditAutoConfigurationTest、DictionaryAutoConfigurationTest、FileAutoConfigurationTest、NotificationAutoConfigurationTest、TransferAutoConfigurationTest 和既有 ContractAutoConfigurationTest；测试源码已通过全量编译，尚未执行。
 - [ ] 在真实 MySQL 与 WebMVC 环境验证迁移组合、Gateway 覆盖、模块整体开关与按依赖装配 Web、请求/响应投影和既有 Router.http；检查消费工程/配置中心已迁移到新的 modules 前缀。
 
 ## P1 · 金额基础能力验收
 
 Money、CurrencyEnum（JDK25目录233项）、MoneyUtil 和 MoneyFormatter 已提供，接入见 [commons-util README](loadup-commons/loadup-commons-util/README.md)。
 
-- [ ] 用户本地定向编译并执行 MoneyTest：币种精度、越界、异币种、舍入、格式化、目录完整性及 Jackson3 往返；源码已编写，尚未运行。
+- [ ] 定向执行 MoneyTest：币种精度、越界、异币种、舍入、格式化、目录完整性及 Jackson3 往返；测试源码已通过全量编译，尚未运行。
 - [ ] 消费工程明确渠道可用币种、计费舍入、金额上限与跨端整数表示；JDK 升级时核对币种目录和历史精度变化。
 
 ## P1 · 商户信息管理后续验收
@@ -38,9 +42,9 @@ Money、CurrencyEnum（JDK25目录233项）、MoneyUtil 和 MoneyFormatter 已�
 
 ## P1 · 产品目录、销售方案与商户合约
 
-详细设计见 [Contract ARCHITECTURE](loadup-modules/loadup-modules-contract/ARCHITECTURE.md)。领域、client、租户 Gateway、MySQL/Flyway、app 自动装配、幂等签约、生命周期、管理 API、权限/OpenAPI 和前端页面已提供。页面已接入目录保存/发布/下架、服务端签约预览/签约/查询/状态接口；目录发布按钮的未保存判断已修正为忽略对象字段顺序，销售方案保存前会提示至少需要一个默认选中的产品项；业务 Controller 的 `/api` 路由前缀已统一归属 `loadup-components-webmvc`，本地 UPMS 种子已补七类权限，未启用多租户时由 database 组件为请求与新数据统一使用默认租户 ID；源码尚未编译或运行测试。
+详细设计见 [Contract ARCHITECTURE](loadup-modules/loadup-modules-contract/ARCHITECTURE.md)。领域、client、租户 Gateway、MySQL/Flyway、app 自动装配、幂等签约、生命周期、管理 API、权限/OpenAPI 和前端页面已提供。页面已接入目录保存/发布/下架、服务端签约预览/签约/查询/状态接口；目录发布按钮的未保存判断已修正为忽略对象字段顺序，销售方案保存前会提示至少需要一个默认选中的产品项；业务 Controller 的 `/api` 路由前缀已统一归属 `loadup-components-webmvc`，本地 UPMS 种子已补七类权限，未启用多租户时由 database 组件为请求与新数据统一使用默认租户 ID；Java 主源码及测试源码已通过全量编译，尚未运行测试或前端构建。
 
-- [ ] 用户定向编译并执行 ContractFlowTest、ConditionEvaluatorTest、ContractCodecTest、ContractAutoConfigurationTest 和 ContractPersistenceIT；验证 Jackson3/MapStruct/Boot 装配（REGISTER_BEAN 条件与组件扫描冲突已通过显式 Import 修复，待运行回归）、真实 MySQL 并发、租户隔离、回滚和迁移组合，记录结果。
+- [ ] 定向执行 ContractFlowTest、ConditionEvaluatorTest、ContractCodecTest、ContractAutoConfigurationTest 和 ContractPersistenceIT；验证 Jackson3/MapStruct/Boot 装配（REGISTER_BEAN 条件与组件扫描冲突已通过显式 Import 修复，待运行回归）、真实 MySQL 并发、租户隔离、回滚和迁移组合，记录结果。
 - [ ] 多租户消费工程接入可信租户解析，消费工程验收 Merchant 默认事实适配、主库路由及商户/合约方法权限；已有本地数据库补执行 Contract 授权语句，重新登录并执行 Router.http 与鉴权/响应回归。
 - [ ] 已有单租户数据若使用旧的 `__loadup_global__` GlobalUnique 范围，切换统一默认租户 ID 前核对并迁移历史声明，避免重放查询遗漏。
 - [ ] 实现受限 JSON Schema 转换及更完整的动态表单；Contract 的 7 个 Vue 模板已通过定向解析，用户本地仍需执行前端类型检查、构建与页面交互联调。
@@ -162,3 +166,12 @@ Money、CurrencyEnum（JDK25目录233项）、MoneyUtil 和 MoneyFormatter 已�
 - [ ] 用户执行 LockTemplate 单测与真实 Redis IT，验证 Boot 装配、平台/虚拟线程、独立客户端竞争、重入及 watchdog 续期；源码已提供，未执行编译/测试。
 - [ ] 在消费工程验证原生 Redisson TLS/认证、Redis 拓扑与故障转移、断网、长暂停及固定租期失效；确认旧执行者写入由数据库状态条件/唯一约束或资源 fencing 拒绝。
 - [ ] 验证锁先于真实事务获取、提交/回滚后才释放，排查事务代理自调用、异步/流式回调越界；按实际负载配置客户端超时、并发限制及告警。
+
+## P1 · 入参命名与公共分页验收
+
+Command/Query 命名、ID 查询复用、字典 Command 合并、七类重复分页 DTO 移除、公共 PageResponse 与相关前端调用已实现；规则已集中写入 AGENTS 的命名章节，并修正旧分页响应约定。2026-10-11 相关 60 个模块 Maven clean package 成功（测试源码编译）；最终包含全部八个 Web 适配模块的 54 模块 clean test 成功，ApiMaskingJsonTest 的 4 项测试通过，验证公共分页响应、展示 DTO 映射、元数据及脱敏；其他测试未执行。
+
+前端 `pnpm --filter @vea/admin build` 成功；同时修复商户查询事件的多行表达式语法问题。整体 vue-tsc 类型检查仍受以下表格插槽问题阻塞。
+
+- [ ] 实际 WebMVC 请求验证分页 OpenAPI、响应 envelope、租户与权限；运行 Router.http 验证字典扁平 Command，联调商户/合约分页页面。
+- [ ] 修复前端 vue-tsc 报出的多页面表格插槽 DefaultRow 类型错误并重新执行类型检查；本次分页和 API 字段调整未报错，整体检查未通过。

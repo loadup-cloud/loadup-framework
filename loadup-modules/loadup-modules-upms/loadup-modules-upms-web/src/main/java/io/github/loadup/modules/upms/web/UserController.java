@@ -20,13 +20,16 @@
 package io.github.loadup.modules.upms.web;
 
 import io.github.loadup.commons.request.query.IdQuery;
+import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.modules.upms.client.command.UserCreateCommand;
+import io.github.loadup.modules.upms.client.command.UserDeleteCommand;
+import io.github.loadup.modules.upms.client.command.UserLockCommand;
 import io.github.loadup.modules.upms.client.command.UserPasswordChangeCommand;
 import io.github.loadup.modules.upms.client.command.UserUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
 import io.github.loadup.modules.upms.client.facade.UserFacade;
-import io.github.loadup.modules.upms.client.query.UserQuery;
+import io.github.loadup.modules.upms.client.query.UserPageQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -63,7 +66,7 @@ public class UserController {
     @PostMapping("/delete")
     @Operation(summary = "Delete a user")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<Void> delete(@Valid @RequestBody IdQuery query) {
+    public SuccessResponse<Void> delete(@Valid @RequestBody UserDeleteCommand query) {
         service.deleteUser(query.id());
         return SuccessResponse.success();
     }
@@ -78,8 +81,8 @@ public class UserController {
     @PostMapping("/list")
     @Operation(summary = "List users")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<java.util.Collection<UserDetailDTO>> list(@Valid @RequestBody UserQuery query) {
-        return SuccessResponse.ofPage(service.queryUsers(query));
+    public PageResponse<UserDetailDTO> list(@Valid @RequestBody UserPageQuery query) {
+        return PageResponse.of(service.queryUsers(query));
     }
 
     @PostMapping("/change-password")
@@ -93,7 +96,7 @@ public class UserController {
     @PostMapping("/lock")
     @Operation(summary = "Lock a user")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<Void> lock(@Valid @RequestBody IdQuery query) {
+    public SuccessResponse<Void> lock(@Valid @RequestBody UserLockCommand query) {
         service.lockUser(query.id());
         return SuccessResponse.success();
     }
@@ -101,7 +104,7 @@ public class UserController {
     @PostMapping("/unlock")
     @Operation(summary = "Unlock a user")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public SuccessResponse<Void> unlock(@Valid @RequestBody IdQuery query) {
+    public SuccessResponse<Void> unlock(@Valid @RequestBody UserLockCommand query) {
         service.unlockUser(query.id());
         return SuccessResponse.success();
     }

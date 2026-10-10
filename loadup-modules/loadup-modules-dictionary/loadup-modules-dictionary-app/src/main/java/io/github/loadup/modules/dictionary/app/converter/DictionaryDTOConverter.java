@@ -20,14 +20,15 @@
 package io.github.loadup.modules.dictionary.app.converter;
 
 import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.dictionary.client.dto.DictionaryItemDTO;
-import io.github.loadup.modules.dictionary.client.dto.DictionaryPageDTO;
 import io.github.loadup.modules.dictionary.client.dto.DictionaryTypeDTO;
 import io.github.loadup.modules.dictionary.domain.model.DictionaryItem;
 import io.github.loadup.modules.dictionary.domain.model.DictionaryPage;
 import io.github.loadup.modules.dictionary.domain.model.DictionaryType;
 import java.util.List;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /** Maps application results without exposing persistence or domain models. */
 @Mapper(config = LoadUpMapStructConfig.class)
@@ -38,7 +39,15 @@ public interface DictionaryDTOConverter {
 
     List<DictionaryItemDTO> toItemDTOs(List<DictionaryItem> values);
 
-    DictionaryPageDTO<DictionaryTypeDTO> toTypePageDTO(DictionaryPage<DictionaryType> value);
+    @Mapping(target = "data", source = "records")
+    @Mapping(target = "pageInfo.totalCount", source = "total")
+    @Mapping(target = "pageInfo.pageIndex", source = "page")
+    @Mapping(target = "pageInfo.pageSize", source = "size")
+    PageDTO<DictionaryTypeDTO> toTypePageDTO(DictionaryPage<DictionaryType> value);
 
-    DictionaryPageDTO<DictionaryItemDTO> toItemPageDTO(DictionaryPage<DictionaryItem> value);
+    @Mapping(target = "data", source = "records")
+    @Mapping(target = "pageInfo.totalCount", source = "total")
+    @Mapping(target = "pageInfo.pageIndex", source = "page")
+    @Mapping(target = "pageInfo.pageSize", source = "size")
+    PageDTO<DictionaryItemDTO> toItemPageDTO(DictionaryPage<DictionaryItem> value);
 }

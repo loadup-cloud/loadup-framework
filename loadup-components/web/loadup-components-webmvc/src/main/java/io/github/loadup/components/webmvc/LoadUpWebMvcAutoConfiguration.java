@@ -19,7 +19,7 @@
  */
 package io.github.loadup.components.webmvc;
 
-import io.github.loadup.commons.util.JsonUtil;
+import io.github.loadup.commons.json.JsonUtil;
 import io.github.loadup.components.observability.ApiResultMetrics;
 import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.SmartInitializingSingleton;

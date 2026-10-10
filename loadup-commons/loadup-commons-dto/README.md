@@ -51,3 +51,16 @@ JPY 使用0位，CNY/USD使用2位，KWD使用3位，CLF使用4位，不统一�
 特殊代码如 XAU/XXX 在枚举中保留，但没有定义最小单位，Money 拒绝使用。枚举收录不表示渠道支持或当前可交易；业务应用自行限定可用币种。升级 JDK 后应核对目录变化，历史/特殊代码数字编码可能重复，因此不提供默认按数字代码反查。
 
 JSON cent 为整数；超出 JavaScript 安全整数范围时，前端应采用字符串 DTO/大整数处理，不能依赖普通 number 保留精度。Jackson 3 往返测试源码位于 util 模块，尚未运行。
+
+## 查询、命令与分页
+
+纯 ID 查询复用 `io.github.loadup.commons.request.query.IdQuery`；业务写操作采用 `<业务对象><动作>Command`，查询采用 `<业务对象><条件>Query`，分页采用 `<业务对象>PageQuery`。分页结果无需为各模块单独定义 DTO。
+
+```java
+// Facade / application result
+PageDTO<FileResourceDTO> page = facade.list(tenant, actor, false, null, 1, 20);
+// Controller response: result + data array + pageInfo
+PageResponse<FileResourceDTO> response = PageResponse.of(page);
+```
+
+`PageDTO.map(converter::toView)` 支持展示 DTO 转换并保留分页元数据。PageResponse 实现 IResponse，WebMVC 不重复包裹，仍支持统一展示脱敏。非分页成功响应使用 SuccessResponse，错误响应使用 FailureResponse。

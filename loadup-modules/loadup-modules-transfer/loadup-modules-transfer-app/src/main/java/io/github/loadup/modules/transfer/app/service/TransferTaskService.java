@@ -20,12 +20,12 @@
 package io.github.loadup.modules.transfer.app.service;
 
 import io.github.loadup.commons.log.LogUtil;
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.components.dfs.model.FileDownloadResponse;
 import io.github.loadup.modules.file.client.dto.FileResourceDTO;
 import io.github.loadup.modules.file.client.facade.FileResourceFacade;
 import io.github.loadup.modules.transfer.app.config.TransferTaskProperties;
 import io.github.loadup.modules.transfer.app.converter.TransferDTOConverter;
-import io.github.loadup.modules.transfer.client.dto.TransferPageDTO;
 import io.github.loadup.modules.transfer.client.dto.TransferTaskDTO;
 import io.github.loadup.modules.transfer.client.spi.TransferContext;
 import io.github.loadup.modules.transfer.client.spi.TransferHandler;
@@ -143,7 +143,7 @@ public class TransferTaskService
         return task;
     }
 
-    public TransferPageDTO<TransferTaskDTO> list(
+    public PageDTO<TransferTaskDTO> list(
             String tenantId, String actorId, boolean admin, String ownerId, int page, int size) {
         if (page < 1 || size < 1 || size > 100) throw new IllegalArgumentException("invalid page or size");
         String owner = admin && ownerId != null && !ownerId.isBlank()

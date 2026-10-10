@@ -19,9 +19,10 @@
  */
 package io.github.loadup.modules.contract.client.facade;
 
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.contract.client.command.*;
 import io.github.loadup.modules.contract.client.dto.*;
-import io.github.loadup.modules.contract.client.query.CatalogQuery;
+import io.github.loadup.modules.contract.client.query.CatalogPageQuery;
 import java.time.*;
 
 /** Public business contract for CatalogService. */
@@ -34,5 +35,5 @@ public interface CatalogFacade {
 
     CatalogVersionDTO detail(String id);
 
-    ContractPageDTO<CatalogVersionDTO> page(CatalogQuery query);
+    PageDTO<CatalogVersionDTO> page(CatalogPageQuery query);
 }

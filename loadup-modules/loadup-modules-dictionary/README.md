@@ -54,3 +54,9 @@ loadup:
 Java 消费方通过 `client.facade.XxxFacade` 注入公开业务入口；默认应用 Service 直接实现接口。引入 `*-app` 装配业务能力，引入 `*-web` 才提供 Controller，Web 适配不再提供独立 enabled 开关。模块整体启停仍使用 `loadup.modules.dictionary.enabled`。
 
 JSON Controller 显式返回 SuccessResponse，分页保留已有分页报文契约；异常由全局 WebMVC 处理。下载仍为流式响应。请求与 DTO 字段声明 OpenAPI，凭证只写。持久化经 database 组件使用 MyBatis-Flex、Tables 常量和 Spring MapStruct Converter；数据库连接与可信租户来源由消费工程配置。新 schema 迁移与本轮 clean 编译、运行验证仍需本地执行。
+
+## 入参与分页约定
+
+写操作入参采用业务动作 Command，查询入参采用 Query，分页查询使用 PageQuery 后缀；纯 ID 查询复用公共 IdQuery。Facade 分页统一返回 `PageDTO<T>`，HTTP 分页统一返回 `PageResponse<T>`：`result` 表示结果，`data` 为当前页数组，顶层 `pageInfo` 提供 totalCount/pageIndex/pageSize。不再提供模块专用分页 DTO。完整规则与示例见 [commons-dto](../../loadup-commons/loadup-commons-dto/README.md)。
+
+字典创建项直接提交 `{typeCode, value, label, description, sortOrder, enabled}`；更新类型/项直接提交 `{id, ...更新字段}`，移除嵌套 command 字段。

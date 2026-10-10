@@ -29,7 +29,7 @@ import io.github.loadup.modules.upms.client.command.UserPasswordChangeCommand;
 import io.github.loadup.modules.upms.client.command.UserUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.RoleDTO;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
-import io.github.loadup.modules.upms.client.query.UserQuery;
+import io.github.loadup.modules.upms.client.query.UserPageQuery;
 import io.github.loadup.modules.upms.domain.entity.Department;
 import io.github.loadup.modules.upms.domain.entity.Role;
 import io.github.loadup.modules.upms.domain.entity.User;
@@ -247,7 +247,7 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
     /**
      * Query users with pagination
      */
-    public PageDTO<UserDetailDTO> queryUsers(UserQuery query) {
+    public PageDTO<UserDetailDTO> queryUsers(UserPageQuery query) {
         PageQuery pageQuery = PageQuery.of(query.getPage(), query.getSize());
 
         PageResult<User> userPage;

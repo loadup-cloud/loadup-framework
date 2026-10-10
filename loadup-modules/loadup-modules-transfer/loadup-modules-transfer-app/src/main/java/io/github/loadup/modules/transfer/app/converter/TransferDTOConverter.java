@@ -20,16 +20,21 @@
 package io.github.loadup.modules.transfer.app.converter;
 
 import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
-import io.github.loadup.modules.transfer.client.dto.TransferPageDTO;
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.transfer.client.dto.TransferTaskDTO;
 import io.github.loadup.modules.transfer.domain.model.TransferPage;
 import io.github.loadup.modules.transfer.domain.model.TransferTask;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /** Maps application results without exposing persistence or domain models. */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface TransferDTOConverter {
     TransferTaskDTO toDTO(TransferTask value);
 
-    TransferPageDTO<TransferTaskDTO> toPageDTO(TransferPage<TransferTask> value);
+    @Mapping(target = "data", source = "records")
+    @Mapping(target = "pageInfo.totalCount", source = "total")
+    @Mapping(target = "pageInfo.pageIndex", source = "page")
+    @Mapping(target = "pageInfo.pageSize", source = "size")
+    PageDTO<TransferTaskDTO> toPageDTO(TransferPage<TransferTask> value);
 }

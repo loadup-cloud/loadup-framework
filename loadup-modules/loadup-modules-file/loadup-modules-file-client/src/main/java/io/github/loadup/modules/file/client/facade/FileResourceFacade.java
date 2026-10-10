@@ -19,8 +19,8 @@
  */
 package io.github.loadup.modules.file.client.facade;
 
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.components.dfs.model.FileDownloadResponse;
-import io.github.loadup.modules.file.client.dto.FilePageDTO;
 import io.github.loadup.modules.file.client.dto.FileReferenceDTO;
 import io.github.loadup.modules.file.client.dto.FileResourceDTO;
 import java.io.InputStream;
@@ -35,8 +35,7 @@ public interface FileResourceFacade {
 
     FileDownloadResponse download(String tenantId, String id, String actorId, boolean admin);
 
-    FilePageDTO<FileResourceDTO> list(
-            String tenantId, String actorId, boolean admin, String ownerId, int page, int size);
+    PageDTO<FileResourceDTO> list(String tenantId, String actorId, boolean admin, String ownerId, int page, int size);
 
     FileReferenceDTO attach(
             String tenantId, String id, String actorId, boolean admin, String referenceType, String referenceId);

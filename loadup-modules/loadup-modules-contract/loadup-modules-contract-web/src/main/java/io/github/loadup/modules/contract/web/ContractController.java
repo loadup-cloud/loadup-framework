@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.contract.web;
 
+import io.github.loadup.commons.request.query.IdQuery;
+import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.modules.contract.app.service.*;
 import io.github.loadup.modules.contract.client.command.*;
@@ -57,8 +59,8 @@ public class ContractController {
     @PostMapping("/catalog/page")
     @PreAuthorize("hasAuthority('contract:catalog:read')")
     @Operation(summary = "Page catalog versions in the current tenant")
-    public SuccessResponse<ContractPageDTO<CatalogVersionDTO>> catalogPage(@Valid @RequestBody CatalogQuery query) {
-        return SuccessResponse.of(catalog.page(query));
+    public PageResponse<CatalogVersionDTO> catalogPage(@Valid @RequestBody CatalogPageQuery query) {
+        return PageResponse.of(catalog.page(query));
     }
 
     @PostMapping("/catalog/detail")
@@ -103,9 +105,8 @@ public class ContractController {
     @PostMapping("/merchant-contracts/page")
     @PreAuthorize("hasAuthority('contract:merchant:read')")
     @Operation(summary = "Page signed merchant contracts")
-    public SuccessResponse<ContractPageDTO<MerchantContractDTO>> contractPage(
-            @Valid @RequestBody MerchantContractQuery query) {
-        return SuccessResponse.of(contracts.page(query));
+    public PageResponse<MerchantContractDTO> contractPage(@Valid @RequestBody MerchantContractPageQuery query) {
+        return PageResponse.of(contracts.page(query));
     }
 
     @PostMapping("/merchant-contracts/detail")

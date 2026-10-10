@@ -19,7 +19,7 @@
  */
 package io.github.loadup.modules.transfer.client.facade;
 
-import io.github.loadup.modules.transfer.client.dto.TransferPageDTO;
+import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.transfer.client.dto.TransferTaskDTO;
 import io.github.loadup.modules.transfer.client.enums.TransferKind;
 import java.util.Map;
@@ -36,8 +36,7 @@ public interface TransferTaskFacade {
 
     TransferTaskDTO get(String tenantId, String id, String actorId, boolean admin);
 
-    TransferPageDTO<TransferTaskDTO> list(
-            String tenantId, String actorId, boolean admin, String ownerId, int page, int size);
+    PageDTO<TransferTaskDTO> list(String tenantId, String actorId, boolean admin, String ownerId, int page, int size);
 
     TransferTaskDTO retry(String tenantId, String id, String actorId, boolean admin);
 }

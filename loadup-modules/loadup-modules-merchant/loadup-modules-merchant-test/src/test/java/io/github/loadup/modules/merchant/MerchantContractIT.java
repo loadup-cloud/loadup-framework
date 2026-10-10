@@ -31,7 +31,7 @@ import io.github.loadup.modules.contract.client.spi.MerchantFactsProvider;
 import io.github.loadup.modules.merchant.app.service.MerchantService;
 import io.github.loadup.modules.merchant.client.command.*;
 import io.github.loadup.modules.merchant.client.facade.MerchantQueryFacade;
-import io.github.loadup.modules.merchant.client.query.MerchantQuery;
+import io.github.loadup.modules.merchant.client.query.MerchantPageQuery;
 import java.time.Instant;
 import java.util.*;
 import org.junit.jupiter.api.Test;
@@ -102,8 +102,9 @@ class MerchantContractIT {
                             new MerchantStatusCommand(created.id(), created.rowVersion(), "INACTIVE"), "operator"))
                     .isInstanceOf(CommonException.class);
             assertThat(merchants
-                            .page(new MerchantQuery(null, null, null, 1, 20))
-                            .total())
+                            .page(new MerchantPageQuery(null, null, null, 1, 20))
+                            .getPageInfo()
+                            .totalCount())
                     .isEqualTo(1);
             return created.id();
         });

@@ -22,6 +22,7 @@ package io.github.loadup.components.webmvc;
 import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.IResponse;
 import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.components.observability.ApiResultMetrics;
 import org.springframework.core.MethodParameter;
@@ -74,7 +75,7 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
         response.setStatusCode(HttpStatus.OK);
         IResponse<?> envelope = body instanceof IResponse<?> existing
                 ? existing
-                : body instanceof PageDTO<?> page ? SuccessResponse.ofPage(page) : SuccessResponse.of(body);
+                : body instanceof PageDTO<?> page ? PageResponse.of(page) : SuccessResponse.of(body);
         resultMetrics.record(envelope.getResult() != null
                 && ResultStatusEnum.SUCCESS
                         .getCode()

@@ -48,3 +48,9 @@ Jackson properties creator 使用 Long 检查缺失/空金额；对外只输出 
 CurrencyEnum 固定字母代码、三位数字代码和显示符号，来自 JDK 25.0.4.1 的233项目录，包含历史代码；toCurrency 和精度读取委托 JDK。币种目录是版本快照，跨实例应采用一致 JDK 币种数据；历史币种精度变化需要业务迁移评估。市场有效性、渠道支持和现金舍入规则由业务定义。
 
 MoneyFormatter/MoneyUtil 在 util，单向依赖此模块。数学运算、Jackson 往返与枚举完整性测试集中在 util，尚未编译或执行。
+
+## 分页职责
+
+PageDTO 是 Facade 的通用分页数据，不携带成功状态。PageResponse 是 HTTP 成功分页 envelope，实现 sealed IResponse，与 SuccessResponse/FailureResponse 并列，字段顺序为 result、data、pageInfo。领域层保留自己的分页对象，app 的 Spring MapStruct Converter 映射记录和页码元数据；Web 层只包装响应或通过 PageDTO.map 做展示投影。
+
+该划分减少七个业务模块的重复分页 DTO；分页 HTTP data 是列表，不再次嵌套 items/total。商户和合约前端已改用顶层 pageInfo.totalCount。字典命令合并原有 Request 包装，直接携带 id/typeCode；Router.http 和前端请求同步改为扁平字段。

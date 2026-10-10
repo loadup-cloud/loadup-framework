@@ -8,11 +8,11 @@
 import { useCrud, type CrudService } from '@vea/hooks'
 
 type User = { id: number; name: string }
-type UserQuery = { keyword?: string }
+type UserPageQuery = { keyword?: string }
 type CreateUser = Pick<User, 'name'>
 type UpdateUser = Partial<CreateUser>
 
-const service: CrudService<User, User, UserQuery, CreateUser, UpdateUser, number> = {
+const service: CrudService<User, User, UserPageQuery, CreateUser, UpdateUser, number> = {
   list: async (params, { signal }) => {
     const result = await request.get('/users', { params, signal })
     return { list: result.data.items, total: result.data.total }
