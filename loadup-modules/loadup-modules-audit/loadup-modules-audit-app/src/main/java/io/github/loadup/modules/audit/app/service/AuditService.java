@@ -1,0 +1,60 @@
+/*
+ * #%L
+ * LoadUp Audit App
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+package io.github.loadup.modules.audit.app.service;
+
+import io.github.loadup.modules.audit.app.converter.AuditDTOConverter;
+import io.github.loadup.modules.audit.client.command.AuditRecordCommand;
+import io.github.loadup.modules.audit.client.dto.AuditPageDTO;
+import io.github.loadup.modules.audit.client.query.AuditQuery;
+import io.github.loadup.modules.audit.domain.gateway.AuditGateway;
+import io.github.loadup.modules.audit.domain.model.AuditEvent;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+/** Records and searches immutable audit events. */
+public class AuditService implements io.github.loadup.modules.audit.client.facade.AuditFacade {
+    private final AuditDTOConverter converter;
+    private final AuditGateway repository;
+
+    public AuditService(AuditGateway repository, AuditDTOConverter converter) {
+        this.converter = converter;
+        this.repository = repository;
+    }
+
+    public void record(AuditRecordCommand write) {
+        if (write == null || write.action() == null || write.action().isBlank()) {
+            throw new IllegalArgumentException("audit action is required");
+        }
+        repository.insert(new AuditEvent(
+                UUID.randomUUID().toString(),
+                write.tenantId(),
+                write.actorId(),
+                write.action(),
+                write.method(),
+                write.path(),
+                write.outcome(),
+                write.traceId(),
+                LocalDateTime.now()));
+    }
+
+    public AuditPageDTO search(AuditQuery query) {
+        return converter.toPageDTO(repository.search(converter.toDomain(query)));
+    }
+}
