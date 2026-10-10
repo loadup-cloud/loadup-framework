@@ -23,8 +23,8 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import io.github.loadup.modules.contract.client.spi.MerchantFactsProvider;
-import io.github.loadup.modules.merchant.client.api.MerchantLookup;
 import io.github.loadup.modules.merchant.client.dto.MerchantProfileDTO;
+import io.github.loadup.modules.merchant.client.facade.MerchantQueryFacade;
 import io.github.loadup.modules.merchant.contract.*;
 import java.util.*;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 class MerchantFactsTest {
     @Test
     void basicFactsDoNotInventQualificationAndMissingRegionRemainsUnknown() {
-        MerchantLookup lookup = (tenant, id) ->
+        MerchantQueryFacade lookup = (tenant, id) ->
                 Optional.of(new MerchantProfileDTO(id, tenant, "M001", "ENTERPRISE", "RETAIL", "CN", null, "", true));
         var profile = new MerchantContractFactsProvider(lookup).load("tenant", "id");
         assertThat(profile.active()).isTrue();
@@ -67,11 +67,12 @@ class MerchantFactsTest {
             assertThat(context).hasNotFailed();
             assertThat(context).doesNotHaveBean(MerchantFactsProvider.class);
         });
-        runner.withBean(MerchantLookup.class, () -> mock(MerchantLookup.class)).run(context -> {
-            assertThat(context).hasSingleBean(MerchantFactsProvider.class);
-        });
+        runner.withBean(MerchantQueryFacade.class, () -> mock(MerchantQueryFacade.class))
+                .run(context -> {
+                    assertThat(context).hasSingleBean(MerchantFactsProvider.class);
+                });
         var custom = mock(MerchantFactsProvider.class);
-        runner.withBean(MerchantLookup.class, () -> mock(MerchantLookup.class))
+        runner.withBean(MerchantQueryFacade.class, () -> mock(MerchantQueryFacade.class))
                 .withBean(MerchantFactsProvider.class, () -> custom)
                 .run(context -> {
                     assertThat(context).hasSingleBean(MerchantFactsProvider.class);

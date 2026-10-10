@@ -10,6 +10,7 @@
     <name>Testify Assert Engine</name>
 
     <properties>
+        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
         <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -47,6 +48,10 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-commons-json</artifactId>
         </dependency>
     </dependencies>
 </project>

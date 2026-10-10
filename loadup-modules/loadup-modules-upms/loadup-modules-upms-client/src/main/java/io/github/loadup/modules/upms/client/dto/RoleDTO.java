@@ -1,5 +1,26 @@
+/*
+ * #%L
+ * Loadup Modules UPMS Client Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.client.dto;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,20 +32,49 @@ import java.util.List;
  */
 public class RoleDTO {
 
+    @Schema(description = "Resource identifier")
     private String id;
+
+    @Schema(description = "Role name")
     private String roleName;
+
+    @Schema(description = "Role code")
     private String roleCode;
+
+    @Schema(description = "Parent id")
     private String parentId;
+
+    @Schema(description = "Parent role name")
     private String parentRoleName;
+
+    @Schema(description = "Role level")
     private Integer roleLevel;
+
+    @Schema(description = "Data scope")
     private Short dataScope;
+
+    @Schema(description = "Display order; smaller values appear first")
     private Integer sortOrder;
+
+    @Schema(description = "Current lifecycle status")
     private Short status;
+
+    @Schema(description = "Permissions")
     private List<PermissionDTO> permissions;
+
+    @Schema(description = "Department ids")
     private List<String> departmentIds;
+
+    @Schema(description = "Children")
     private List<RoleDTO> children;
+
+    @Schema(description = "Remark")
     private String remark;
+
+    @Schema(description = "Creation time in UTC")
     private LocalDateTime createdAt;
+
+    @Schema(description = "Last update time in UTC")
     private LocalDateTime updatedAt;
 
     public RoleDTO(
@@ -180,118 +230,8 @@ public class RoleDTO {
         this.updatedAt = updatedAt;
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private String id;
-        private String roleName;
-        private String roleCode;
-        private String parentId;
-        private String parentRoleName;
-        private Integer roleLevel;
-        private Short dataScope;
-        private Integer sortOrder;
-        private Short status;
-        private List<PermissionDTO> permissions;
-        private List<String> departmentIds;
-        private String remark;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
-
-        public Builder id(String id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder roleName(String roleName) {
-            this.roleName = roleName;
-            return this;
-        }
-
-        public Builder roleCode(String roleCode) {
-            this.roleCode = roleCode;
-            return this;
-        }
-
-        public Builder parentId(String parentId) {
-            this.parentId = parentId;
-            return this;
-        }
-
-        public Builder parentRoleName(String parentRoleName) {
-            this.parentRoleName = parentRoleName;
-            return this;
-        }
-
-        public Builder roleLevel(Integer roleLevel) {
-            this.roleLevel = roleLevel;
-            return this;
-        }
-
-        public Builder dataScope(Short dataScope) {
-            this.dataScope = dataScope;
-            return this;
-        }
-
-        public Builder sortOrder(Integer sortOrder) {
-            this.sortOrder = sortOrder;
-            return this;
-        }
-
-        public Builder status(Short status) {
-            this.status = status;
-            return this;
-        }
-
-        public Builder permissions(List<PermissionDTO> permissions) {
-            this.permissions = permissions;
-            return this;
-        }
-
-        public Builder departmentIds(List<String> departmentIds) {
-            this.departmentIds = departmentIds;
-            return this;
-        }
-
-        public Builder remark(String remark) {
-            this.remark = remark;
-            return this;
-        }
-
-        public Builder createdAt(LocalDateTime createdAt) {
-            this.createdAt = createdAt;
-            return this;
-        }
-
-        public Builder updatedAt(LocalDateTime updatedAt) {
-            this.updatedAt = updatedAt;
-            return this;
-        }
-
-        public RoleDTO build() {
-            return new RoleDTO(
-                    this.id,
-                    this.roleName,
-                    this.roleCode,
-                    this.parentId,
-                    this.parentRoleName,
-                    this.roleLevel,
-                    this.dataScope,
-                    this.sortOrder,
-                    this.status,
-                    this.permissions,
-                    this.departmentIds,
-                    this.remark,
-                    this.createdAt,
-                    this.updatedAt);
-        }
-    }
-
     @Override
     public String toString() {
-        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
-                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
+        return ToStringAsJson.reflectionToString(this);
     }
 }

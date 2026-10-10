@@ -19,6 +19,7 @@
  */
 package io.github.loadup.components.signature.request;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.net.URI;
 
 /** Exact HTTP origin-form target and body bytes; no decoding or JSON reserialization. */
@@ -72,6 +73,6 @@ public record RequestContent(String method, String target, String contentType, b
 
     @Override
     public String toString() {
-        return "RequestContent[method=" + method + ", payloadBytes=" + payload.length + "]";
+        return ToStringAsJson.reflectionToString(java.util.Map.of("method", method, "payloadBytes", payload.length));
     }
 }

@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
@@ -71,5 +72,10 @@ public record TypedValue(ValueType type, String value) {
     public BigDecimal number() {
         if (!numeric()) throw new IllegalArgumentException("Not a numeric value");
         return new BigDecimal(value);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

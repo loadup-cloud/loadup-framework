@@ -33,14 +33,15 @@
 </dependency>
 ```
 
-商户 Java API 为 MerchantService；跨模块只需依赖 merchant-client 的 MerchantLookup。contract 适配仅依赖两个 client jar，使用 MerchantLookup，不依赖商户内部仓储，也不强制引入合约 app。单独部署商户服务时不引入适配 jar。
+商户 Java API 为 MerchantService；跨模块只需依赖 merchant-client 的 MerchantQueryFacade。contract 适配仅依赖两个 client jar，使用 MerchantQueryFacade，不依赖商户内部仓储，也不强制引入合约 app。单独部署商户服务时不引入适配 jar。
 
 ```yaml
 loadup:
-  merchant:
-    enabled: true
-    web:
+  modules:
+    merchant:
       enabled: true
+      web:
+        enabled: true
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -104,3 +105,13 @@ HTTP 使用200 + result/data，`result.status == "S"` 为成功。MERCHANT_NOT_F
 [Router.http](../../loadup-application/src/main/resources/Router.http) 提供先创建商户、再签约、启停与更新示例；本地 UPMS schema.sql 补三类商户权限。已有数据库需手工执行新增授权语句并重新登录，消费工程自行管理权限。
 
 MerchantBasicInfoTest、MerchantFactsTest 和 MerchantContractIT 源码覆盖私有字段更新语义、事实白名单/未知值、身份错配、自定义 Provider 退让、MySQL 编码唯一/版本冲突/租户隔离、真实商户签约与停用门禁。集成测试使用 Testify + MySQL Testcontainers，不用 MockBean 代替数据库；未执行构建或测试。设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+
+## 业务配置命名空间
+
+模块专属配置统一使用 `loadup.modules.merchant.*`，配置中心与消费工程需同步迁移旧前缀；应用开关为 `loadup.modules.merchant.enabled`，HTTP 开关为 `Maven *-web dependency`，默认开启。
+
+## 统一接入契约
+
+Java 消费方通过 `client.facade.XxxFacade` 注入公开业务入口；默认应用 Service 直接实现接口。引入 `*-app` 装配业务能力，引入 `*-web` 才提供 Controller，Web 适配不再提供独立 enabled 开关。模块整体启停仍使用 `loadup.modules.merchant.enabled`。
+
+JSON Controller 显式返回 SuccessResponse，分页保留已有分页报文契约；异常由全局 WebMVC 处理。下载仍为流式响应。请求与 DTO 字段声明 OpenAPI，凭证只写。持久化经 database 组件使用 MyBatis-Flex、Tables 常量和 Spring MapStruct Converter；数据库连接与可信租户来源由消费工程配置。新 schema 迁移与本轮 clean 编译、运行验证仍需本地执行。

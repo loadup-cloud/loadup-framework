@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-parent</artifactId><version>0.0.2-SNAPSHOT</version></parent>
+    <parent>
+        <groupId>io.github.loadup-cloud</groupId>
+        <artifactId>loadup-parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
     <artifactId>loadup-modules-file</artifactId>
-    <name>LoadUp File Resources</name>
-    <description>Tenant-scoped file metadata, references and lifecycle backed by DFS</description>
-    <dependencies>
-        <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-dfs-api</artifactId></dependency>
-        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-autoconfigure</artifactId></dependency>
-        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-jdbc</artifactId></dependency>
-        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-flyway</artifactId></dependency>
-        <dependency><groupId>org.flywaydb</groupId><artifactId>flyway-mysql</artifactId></dependency>
-    </dependencies>
+    <packaging>pom</packaging>
+    <name>LoadUp File</name>
+    <modules>
+        <module>loadup-modules-file-client</module>
+        <module>loadup-modules-file-domain</module>
+        <module>loadup-modules-file-infrastructure</module>
+        <module>loadup-modules-file-app</module>
+        <module>loadup-modules-file-web</module>
+        <module>loadup-modules-file-test</module>
+    </modules>
+    <properties>
+        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
+    </properties>
 </project>

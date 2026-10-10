@@ -50,7 +50,7 @@ Client Service → 应用服务编排 → 领域服务/Gateway → 基础设施�
 
 ## 配置归属
 
-- [`UpmsSecurityProperties`](src/main/java/io/github/loadup/modules/upms/app/autoconfigure/UpmsSecurityProperties.java) 绑定 `loadup.upms.security`。
+- [`UpmsSecurityProperties`](src/main/java/io/github/loadup/modules/upms/app/autoconfigure/UpmsSecurityProperties.java) 绑定 `loadup.modules.upms.security`。
 
 ## 设计取舍
 

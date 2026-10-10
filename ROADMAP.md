@@ -8,6 +8,19 @@
 
 首批交付顺序为 **Outbox → HTTP → 两者组合验证**；随后完善开放接口安全、外部协议隔离和生产运行能力。下面列出的验收条件为后续实现的完成标准，不代表已经执行验证。
 
+## P1 · 统一模块开发契约实施
+
+database 固定默认配置、Tables APT 和五个业务仓储的 MyBatis-Flex 迁移已编写；新增迁移补齐标准字段，任务执行与文件清理恢复可信租户上下文。商户隐私合并与 UPMS DTO 映射已移入 Spring MapStruct Converter；Facade、显式响应、OpenAPI 和独立 commons-json 均已提供。工具选择规范已写入 AGENTS，未为无收益的替换引入额外抽象。尚未编译或执行测试。
+
+- [ ] 用户定向 clean 编译与测试以上变更（含 commons-json、database guard、MapStruct、真实 MySQL 迁移/锁/幂等、Facade 自动装配、OpenAPI 与响应报文）；本轮不默认运行构建/测试，完成实现后仍保留运行验收待办。
+
+## P1 · COLA 统一分层与业务配置验收
+
+审计、字典、文件、通知和导入导出已拆分为业务聚合目录内的 client/domain/infrastructure/app/web/test；协议、领域 Gateway、持久化装配、MapStruct、BOM 和接入引用已调整。业务配置统一为 `loadup.modules.<module>.*`，启停使用 `enabled`，既有 UPMS/Contract/Merchant 配置同步迁移。
+
+- [ ] 用户定向执行 AuditAutoConfigurationTest、DictionaryAutoConfigurationTest、FileAutoConfigurationTest、NotificationAutoConfigurationTest、TransferAutoConfigurationTest 和既有 ContractAutoConfigurationTest；源码已编写/调整，未编译或执行。
+- [ ] 在真实 MySQL 与 WebMVC 环境验证迁移组合、Gateway 覆盖、模块整体开关与按依赖装配 Web、请求/响应投影和既有 Router.http；检查消费工程/配置中心已迁移到新的 modules 前缀。
+
 ## P1 · 金额基础能力验收
 
 Money、CurrencyEnum（JDK25目录233项）、MoneyUtil 和 MoneyFormatter 已提供，接入见 [commons-util README](loadup-commons/loadup-commons-util/README.md)。

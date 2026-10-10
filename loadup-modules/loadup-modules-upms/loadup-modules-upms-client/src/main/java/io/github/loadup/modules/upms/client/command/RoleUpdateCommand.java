@@ -1,5 +1,26 @@
+/*
+ * #%L
+ * Loadup Modules UPMS Client Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.client.command;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
@@ -13,28 +34,38 @@ import java.util.List;
 public class RoleUpdateCommand {
 
     @NotNull(message = "角色ID不能为空")
+    @Schema(description = "Resource identifier")
     private String id;
 
     @Size(max = 50, message = "角色名称长度不能超过50")
+    @Schema(description = "Role name")
     private String roleName;
 
+    @Schema(description = "Parent id")
     private String parentId;
 
     /**
      * Data scope: 1-All, 2-Custom, 3-Dept, 4-Dept and children, 5-Self only
      */
+    @Schema(description = "Data scope")
     private Short dataScope;
 
+    @Schema(description = "Display order; smaller values appear first")
     private Integer sortOrder;
 
+    @Schema(description = "Current lifecycle status")
     private Short status;
 
+    @Schema(description = "Permission ids")
     private List<String> permissionIds;
 
+    @Schema(description = "Department ids")
     private List<String> departmentIds;
 
+    @Schema(description = "Remark")
     private String remark;
 
+    @Schema(description = "Updated by")
     private String updatedBy;
 
     public RoleUpdateCommand(
@@ -144,7 +175,6 @@ public class RoleUpdateCommand {
 
     @Override
     public String toString() {
-        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
-                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
+        return ToStringAsJson.reflectionToString(this);
     }
 }

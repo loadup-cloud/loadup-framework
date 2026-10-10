@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.contract.infrastructure.repository;
 
+import static io.github.loadup.modules.contract.infrastructure.dataobject.table.Tables.CATALOG_VERSION_DO;
+
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.client.dto.ContractError;
@@ -90,7 +92,8 @@ public class CatalogGatewayImpl implements CatalogGateway {
         if (code != null && !code.isBlank())
             query.and(CatalogVersionDO::getCode).eq(code);
         long total = mapper.selectCountByQuery(query);
-        query.orderBy("updated_at DESC, id ASC").limit((long) (page - 1) * size, size);
+        query.orderBy(CATALOG_VERSION_DO.UPDATED_AT.desc(), CATALOG_VERSION_DO.ID.asc())
+                .limit((long) (page - 1) * size, size);
         return new ContractPage<>(
                 mapper.selectListByQuery(query).stream()
                         .map(converter::toCatalog)

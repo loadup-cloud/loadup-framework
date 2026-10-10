@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 
 /** Version metadata and opaque validated storage content, independent of JSON implementation. */
@@ -33,4 +34,9 @@ public record CatalogEntry(
         String content,
         String updatedBy,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt) {}
+        LocalDateTime updatedAt) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

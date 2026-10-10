@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+
 public record ContractDecision(
         boolean allowed,
         Reason reason,
@@ -34,5 +36,10 @@ public record ContractDecision(
         PRODUCT_NOT_SIGNED,
         CONDITION_REJECTED,
         FACTS_INDETERMINATE
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

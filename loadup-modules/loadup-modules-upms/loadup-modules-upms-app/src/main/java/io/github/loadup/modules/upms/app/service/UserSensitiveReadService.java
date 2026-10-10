@@ -30,7 +30,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserSensitiveReadService {
+public class UserSensitiveReadService implements io.github.loadup.modules.upms.client.facade.UserSensitiveReadFacade {
     public static final String PERMISSION = "upms:user:sensitive:read";
     private final UserGateway users;
     private final AccessDecisionService decisions;

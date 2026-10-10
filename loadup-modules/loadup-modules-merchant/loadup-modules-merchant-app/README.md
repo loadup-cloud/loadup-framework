@@ -18,7 +18,7 @@
 | 能力 | 契约 |
 |---|---|
 | 职责 | 资料管理编排 |
-| 当前实现 | MerchantService 事务编排创建/更新/查询/启停；MerchantLookupService 提供可信基本 Profile。共享 Clock、事务管理器与 DataSource；显式 Import 装配，不与 REGISTER_BEAN 条件混用扫描。 |
+| 当前实现 | MerchantService 事务编排创建/更新/查询/启停；MerchantQueryService 提供可信基本 Profile。共享 Clock、事务管理器与 DataSource；显式 Import 装配，不与 REGISTER_BEAN 条件混用扫描。 |
 | 验证状态 | 源码提供，尚未编译/运行 |
 
 ## 接入约束

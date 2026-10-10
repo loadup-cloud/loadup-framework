@@ -19,9 +19,21 @@
  */
 package io.github.loadup.modules.merchant.client.command;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
 public record MerchantStatusCommand(
-        @NotBlank @Size(max = 64) String id,
-        @Min(1) long expectedRowVersion,
-        @NotBlank String status) {}
+        @Schema(description = "Resource identifier") @NotBlank @Size(max = 64)
+        String id,
+
+        @Schema(description = "Expected version for optimistic concurrency") @Min(1)
+        long expectedRowVersion,
+
+        @Schema(description = "Current lifecycle status") @NotBlank
+        String status) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

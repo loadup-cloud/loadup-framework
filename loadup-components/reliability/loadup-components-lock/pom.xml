@@ -49,5 +49,9 @@
             <artifactId>loadup-testify-spring-boot-starter</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-commons-json</artifactId>
+        </dependency>
     </dependencies>
 </project>

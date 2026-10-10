@@ -29,3 +29,7 @@
 ## 执行链上下文
 
 [`loadup-commons-context`](loadup-commons-context/README.md) 提供 JDK 25 ScopedValue 类型化只读 `ContextHolder`、不可变 ExecutionContext 与可选 ServiceTemplate。租户数据复用该存储，登录身份和 Trace 仍采用各自标准上下文。
+
+## JSON 诊断
+
+[commons-json](loadup-commons-json/README.md) 提供受限、脱敏的 JSON `toString()`，供 DTO、领域数据和 DO 共用；HTTP 报文仍由 WebMVC 的 Jackson 配置负责。

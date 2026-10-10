@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class CatalogService {
+public class CatalogService implements io.github.loadup.modules.contract.client.facade.CatalogFacade {
     private final CatalogGateway gateway;
     private final ContractCodec codec;
     private final CatalogAssembler assembler;

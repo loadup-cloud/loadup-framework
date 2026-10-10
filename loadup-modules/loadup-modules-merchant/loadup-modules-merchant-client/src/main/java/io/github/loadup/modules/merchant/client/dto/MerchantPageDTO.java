@@ -19,6 +19,23 @@
  */
 package io.github.loadup.modules.merchant.client.dto;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
-public record MerchantPageDTO(List<MerchantDTO> items, long total, int page, int size) {}
+public record MerchantPageDTO(
+        @Schema(description = "Entries on the current page") List<MerchantDTO> items,
+
+        @Schema(description = "Total number of matching entries")
+        long total,
+
+        @Schema(description = "Page number, starting at 1", minimum = "1")
+        int page,
+
+        @Schema(description = "Page size; list queries allow at most 100", minimum = "1")
+        int size) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

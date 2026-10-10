@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.merchant.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.Objects;
 
 public record MerchantBasicInfo(
@@ -30,10 +31,20 @@ public record MerchantBasicInfo(
         String country,
         String province,
         String city,
+
+        @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
         String address,
+
+        @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
         String registrationNo,
+
+        @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.NAME)
         String contactName,
+
+        @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.PHONE)
         String contactPhone,
+
+        @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.EMAIL)
         String contactEmail) {
     public MerchantBasicInfo {
         for (String value : new String[] {merchantCode, name, industry, country})
@@ -66,21 +77,9 @@ public record MerchantBasicInfo(
         if (value != null && (value.length() > max || value.codePoints().anyMatch(Character::isISOControl)))
             throw new IllegalArgumentException("Invalid merchant field length or control character");
     }
-    /** Null private fields mean keep existing data; an empty string explicitly clears them. */
-    public MerchantBasicInfo preservePrivateFields(MerchantBasicInfo previous) {
-        return new MerchantBasicInfo(
-                merchantCode,
-                name,
-                shortName,
-                type,
-                industry,
-                country,
-                province,
-                city,
-                address == null ? previous.address : address,
-                registrationNo == null ? previous.registrationNo : registrationNo,
-                contactName == null ? previous.contactName : contactName,
-                contactPhone == null ? previous.contactPhone : contactPhone,
-                contactEmail == null ? previous.contactEmail : contactEmail);
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

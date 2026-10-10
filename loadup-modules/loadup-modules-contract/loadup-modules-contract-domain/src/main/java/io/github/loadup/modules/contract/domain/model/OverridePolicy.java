@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.math.BigDecimal;
 import java.util.Set;
 
@@ -59,5 +60,10 @@ public record OverridePolicy(BigDecimal minimum, BigDecimal maximum, Set<TypedVa
     public void validate(ParameterDefinition definition, TypedValue value) {
         definition.validate(value);
         ParameterDefinition.checkValue(definition.type(), value, minimum, maximum, allowedValues);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

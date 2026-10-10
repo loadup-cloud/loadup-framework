@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Set;
@@ -79,5 +80,10 @@ public record ParameterDefinition(
             throw new IllegalArgumentException("Below minimum");
         if (maximum != null && value.number().compareTo(maximum) > 0)
             throw new IllegalArgumentException("Above maximum");
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

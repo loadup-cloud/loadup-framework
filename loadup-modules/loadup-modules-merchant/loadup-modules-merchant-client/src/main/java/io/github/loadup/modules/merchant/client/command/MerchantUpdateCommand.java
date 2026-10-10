@@ -19,21 +19,53 @@
  */
 package io.github.loadup.modules.merchant.client.command;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
 public record MerchantUpdateCommand(
-        @NotBlank @Size(max = 64) String id,
-        @Min(1) long expectedRowVersion,
-        @NotBlank @Size(max = 64) String merchantCode,
-        @NotBlank @Size(max = 200) String name,
-        @Size(max = 100) String shortName,
-        @NotBlank @Size(max = 32) String type,
-        @NotBlank @Size(max = 64) String industry,
-        @NotBlank @Size(max = 2) String country,
-        @Size(max = 64) String province,
-        @Size(max = 64) String city,
-        @Size(max = 500) String address,
-        @Size(max = 64) String registrationNo,
-        @Size(max = 100) String contactName,
-        @Size(max = 32) String contactPhone,
-        @Size(max = 200) String contactEmail) {}
+        @Schema(description = "Resource identifier") @NotBlank @Size(max = 64)
+        String id,
+
+        @Schema(description = "Expected version for optimistic concurrency") @Min(1)
+        long expectedRowVersion,
+
+        @Schema(description = "Merchant code") @NotBlank @Size(max = 64)
+        String merchantCode,
+
+        @Schema(description = "Name") @NotBlank @Size(max = 200)
+        String name,
+
+        @Schema(description = "Short name") @Size(max = 100) String shortName,
+
+        @Schema(description = "Type") @NotBlank @Size(max = 32)
+        String type,
+
+        @Schema(description = "Industry") @NotBlank @Size(max = 64)
+        String industry,
+
+        @Schema(description = "ISO 3166-1 alpha-2 country code") @NotBlank @Size(max = 2)
+        String country,
+
+        @Schema(description = "Province") @Size(max = 64) String province,
+        @Schema(description = "City") @Size(max = 64) String city,
+
+        @Schema(description = "Merchant business address") @Size(max = 500)
+        String address,
+
+        @Schema(description = "Registration no") @Size(max = 64)
+        String registrationNo,
+
+        @Schema(description = "Contact name") @Size(max = 100)
+        String contactName,
+
+        @Schema(description = "Contact phone") @Size(max = 32)
+        String contactPhone,
+
+        @Schema(description = "Contact email") @Size(max = 200)
+        String contactEmail) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

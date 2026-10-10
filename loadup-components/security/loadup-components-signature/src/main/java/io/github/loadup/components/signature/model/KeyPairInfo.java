@@ -19,6 +19,7 @@
  */
 package io.github.loadup.components.signature.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.io.Serializable;
 
 /** Immutable key pair container with Base64-encoded keys. */
@@ -120,7 +121,6 @@ public class KeyPairInfo implements Serializable {
 
     @Override
     public String toString() {
-        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
-                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
+        return ToStringAsJson.reflectionToString(this);
     }
 }

@@ -19,8 +19,17 @@
  */
 package io.github.loadup.modules.contract.client.dto;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Map;
 
-public record ConfigurationDTO(Map<String, ValueDTO> values, Map<String, OriginDTO> origins) {
+public record ConfigurationDTO(
+        @Schema(description = "Values") Map<String, ValueDTO> values,
+        @Schema(description = "Origins") Map<String, OriginDTO> origins) {
     public record OriginDTO(String layer, String sourceCode, int sourceVersion) {}
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
 }

@@ -13,6 +13,7 @@
     <name>LoadUp Components Authorization</name>
     <description>Method-level authorization facade based on Spring Security standard APIs</description>
     <properties>
+        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
         <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -63,6 +64,10 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-commons-json</artifactId>
         </dependency>
     </dependencies>
 </project>

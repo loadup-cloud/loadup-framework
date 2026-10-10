@@ -1,8 +1,25 @@
+/*-
+ * #%L
+ * Loadup Components Database
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.components.database.config;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
@@ -16,32 +33,7 @@ import org.springframework.validation.annotation.Validated;
 public class DatabaseProperties {
 
     @Valid
-    private Audit audit = new Audit();
-
-    @Valid
-    private IdGenerator idGenerator = new IdGenerator();
-
-    @Valid
     private MultiTenant multiTenant = new MultiTenant();
-
-    @Valid
-    private LogicalDelete logicalDelete = new LogicalDelete();
-
-    public Audit getAudit() {
-        return audit;
-    }
-
-    public void setAudit(Audit audit) {
-        this.audit = audit;
-    }
-
-    public IdGenerator getIdGenerator() {
-        return idGenerator;
-    }
-
-    public void setIdGenerator(IdGenerator idGenerator) {
-        this.idGenerator = idGenerator;
-    }
 
     public MultiTenant getMultiTenant() {
         return multiTenant;
@@ -51,110 +43,14 @@ public class DatabaseProperties {
         this.multiTenant = multiTenant;
     }
 
-    public LogicalDelete getLogicalDelete() {
-        return logicalDelete;
-    }
-
-    public void setLogicalDelete(LogicalDelete logicalDelete) {
-        this.logicalDelete = logicalDelete;
-    }
-
-    public static class Audit {
-        private boolean enabled = true;
-
-        public boolean isEnabled() {
-            return enabled;
-        }
-
-        public void setEnabled(boolean enabled) {
-            this.enabled = enabled;
-        }
-    }
-
-    public static class IdGenerator {
-        private boolean enabled = true;
-        private Strategy strategy = Strategy.RANDOM;
-
-        @Min(1)
-        @Max(64)
-        private int randomLength = 20;
-
-        private boolean uuidWithHyphens;
-
-        @Min(0)
-        @Max(31)
-        private long snowflakeWorkerId;
-
-        @Min(0)
-        @Max(31)
-        private long snowflakeDatacenterId;
-
-        public boolean isEnabled() {
-            return enabled;
-        }
-
-        public void setEnabled(boolean enabled) {
-            this.enabled = enabled;
-        }
-
-        public Strategy getStrategy() {
-            return strategy;
-        }
-
-        public void setStrategy(Strategy strategy) {
-            this.strategy = strategy;
-        }
-
-        public int getRandomLength() {
-            return randomLength;
-        }
-
-        public void setRandomLength(int randomLength) {
-            this.randomLength = randomLength;
-        }
-
-        public boolean isUuidWithHyphens() {
-            return uuidWithHyphens;
-        }
-
-        public void setUuidWithHyphens(boolean uuidWithHyphens) {
-            this.uuidWithHyphens = uuidWithHyphens;
-        }
-
-        public long getSnowflakeWorkerId() {
-            return snowflakeWorkerId;
-        }
-
-        public void setSnowflakeWorkerId(long snowflakeWorkerId) {
-            this.snowflakeWorkerId = snowflakeWorkerId;
-        }
-
-        public long getSnowflakeDatacenterId() {
-            return snowflakeDatacenterId;
-        }
-
-        public void setSnowflakeDatacenterId(long snowflakeDatacenterId) {
-            this.snowflakeDatacenterId = snowflakeDatacenterId;
-        }
-    }
-
-    public enum Strategy {
-        RANDOM,
-        UUID_V4,
-        UUID_V7,
-        SNOWFLAKE
-    }
-
     public static class MultiTenant {
         private boolean enabled = false;
         private boolean required = true;
 
         @NotBlank
-        private String columnName = "tenant_id";
-
-        @NotBlank
         @Size(max = 64)
         private String defaultTenantId = "__default__";
+
         private List<String> ignoreTables = new ArrayList<>();
         private Request request = new Request();
 
@@ -172,14 +68,6 @@ public class DatabaseProperties {
 
         public void setRequired(boolean required) {
             this.required = required;
-        }
-
-        public String getColumnName() {
-            return columnName;
-        }
-
-        public void setColumnName(String columnName) {
-            this.columnName = columnName;
         }
 
         public String getDefaultTenantId() {
@@ -243,48 +131,6 @@ public class DatabaseProperties {
 
         public void setExcludedSubdomains(List<String> excludedSubdomains) {
             this.excludedSubdomains = excludedSubdomains;
-        }
-    }
-
-    public static class LogicalDelete {
-        private boolean enabled;
-
-        @NotBlank
-        private String columnName = "deleted";
-
-        private int normalValue;
-        private int deletedValue = 1;
-
-        public boolean isEnabled() {
-            return enabled;
-        }
-
-        public void setEnabled(boolean enabled) {
-            this.enabled = enabled;
-        }
-
-        public String getColumnName() {
-            return columnName;
-        }
-
-        public void setColumnName(String columnName) {
-            this.columnName = columnName;
-        }
-
-        public int getNormalValue() {
-            return normalValue;
-        }
-
-        public void setNormalValue(int normalValue) {
-            this.normalValue = normalValue;
-        }
-
-        public int getDeletedValue() {
-            return deletedValue;
-        }
-
-        public void setDeletedValue(int deletedValue) {
-            this.deletedValue = deletedValue;
         }
     }
 }

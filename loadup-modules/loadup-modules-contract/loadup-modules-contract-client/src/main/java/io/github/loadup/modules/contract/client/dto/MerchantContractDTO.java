@@ -19,21 +19,28 @@
  */
 package io.github.loadup.modules.contract.client.dto;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Map;
 
 public record MerchantContractDTO(
-        String id,
-        String merchantId,
-        String scopeKey,
-        String planVersionId,
-        String status,
-        long generation,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
-        int revision,
-        Instant effectiveFrom,
-        Instant effectiveTo,
-        String snapshotHash,
-        Map<String, ContractItemDTO> items) {}
+        @Schema(description = "Resource identifier") String id,
+        @Schema(description = "Merchant identifier") String merchantId,
+        @Schema(description = "Scope key") String scopeKey,
+        @Schema(description = "Plan version id") String planVersionId,
+        @Schema(description = "Current lifecycle status") String status,
+        @Schema(description = "Generation") long generation,
+        @Schema(description = "Creation time in UTC") LocalDateTime createdAt,
+        @Schema(description = "Last update time in UTC") LocalDateTime updatedAt,
+        @Schema(description = "Revision") int revision,
+        @Schema(description = "Effective from") Instant effectiveFrom,
+        @Schema(description = "Effective to") Instant effectiveTo,
+        @Schema(description = "Snapshot hash") String snapshotHash,
+        @Schema(description = "Entries on the current page") Map<String, ContractItemDTO> items) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

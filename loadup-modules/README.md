@@ -1,45 +1,55 @@
-# Loadup Modules
+# LoadUp Modules
 
-通用业务能力聚合模块；业务模块按需引入。
+可按需消费的业务能力，每个业务目录是 COLA 聚合 POM。通过 `loadup-dependencies` BOM 管理版本，消费工程引入具体 `*-app` 或 `*-web` jar。
 
-## 子模块
+## 业务目录
 
-- [`loadup-modules-contract`](loadup-modules-contract/README.md)：产品/组合/方案/商户合约；阶段一提供纯领域核心，管理 API 与页面待实现。
+| 模块 | 能力 |
+| --- | --- |
+| [UPMS](loadup-modules-upms/README.md) | 用户、RBAC/ABAC、账号安全及可选认证适配 |
+| [Merchant](loadup-modules-merchant/README.md) | 商户基本资料与可选合约事实适配 |
+| [Contract](loadup-modules-contract/README.md) | 产品、组合、销售方案与商户合约 |
+| [Audit](loadup-modules-audit/README.md) | 审计记录、查询与可选 MVC 采集 |
+| [Dictionary](loadup-modules-dictionary/README.md) | 字典类型、条目及启用选项 |
+| [File](loadup-modules-file/README.md) | 文件元数据、访问控制、引用与清理 |
+| [Notification](loadup-modules-notification/README.md) | 持久化收件箱与 Gotone IN_APP 渠道 |
+| [Transfer](loadup-modules-transfer/README.md) | 导入导出任务、进度、结果与重试 |
 
-- [`loadup-modules-upms`](loadup-modules-upms/README.md)
-- [`loadup-modules-audit`](loadup-modules-audit/README.md)：操作审计存储与查询服务。
-- [`loadup-modules-audit-web`](loadup-modules-audit-web/README.md)：可选 MVC 采集和管理员查询接口。
-- [`loadup-modules-dictionary`](loadup-modules-dictionary/README.md)：业务字典类型与条目。
-- [`loadup-modules-dictionary-web`](loadup-modules-dictionary-web/README.md)：可选字典管理与选项接口。
-- [`loadup-modules-file`](loadup-modules-file/README.md)：文件元数据、业务引用与清理生命周期。
-- [`loadup-modules-file-web`](loadup-modules-file-web/README.md)：可选上传、下载与文件管理接口。
-- [`loadup-modules-notification`](loadup-modules-notification/README.md)：持久化站内收件箱与 Gotone `IN_APP` 渠道。
-- [`loadup-modules-notification-web`](loadup-modules-notification-web/README.md)：可选消息发布及个人收件箱接口。
-- [`loadup-modules-transfer`](loadup-modules-transfer/README.md)：导入导出任务编排、状态与进度。
-- [`loadup-modules-transfer-web`](loadup-modules-transfer-web/README.md)：可选任务提交、查询与结果接口。
+## 分层选择
 
-此 POM 用于 Maven 聚合；在消费工程中选择需要的具体 jar 坐标。
+每个业务目录统一包含 `client / domain / infrastructure / app / web / test` 子模块。UPMS 的 authserver、Merchant 的 contract 适配也位于所属业务目录。web 是可选接口适配层，不在 modules 下单列为业务模块。
 
-## 设计
+- 仅共享协议：引入 `*-client`。
+- 程序化使用用例：引入 `*-app`，自动带入默认持久化适配。
+- 提供 HTTP 接口：引入同一业务目录下的 `*-web`，自动带入 app。
+- 扩展持久化：依赖 domain Gateway，实现并注册接口 Bean。
+- test 只用于验证，不引入生产工程。
 
-内部边界、依赖与源码入口见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+## 配置命名空间
 
-## 接入步骤
+业务配置统一使用 `loadup.modules.<module>.*`，开关为 `enabled`：
 
-此目录是 Maven 聚合模块，不作为业务运行依赖。按用途选择子模块：
+```yaml
+loadup:
+  modules:
+    file:
+      enabled: true
+      web:
+        enabled: true
+    audit:
+      enabled: true
+      web:
+        include-paths:
+          - /api/files/*
+    transfer:
+      max-input-bytes: 20971520
+      max-output-bytes: 104857600
+    upms:
+      security:
+        login:
+          max-fail-attempts: 5
+```
 
-- [`loadup-modules-upms`](loadup-modules-upms/README.md)：运行实现。
-- [`loadup-modules-audit`](loadup-modules-audit/README.md)：程序化审计记录。
-- [`loadup-modules-audit-web`](loadup-modules-audit-web/README.md)：HTTP 适配。
-- [`loadup-modules-dictionary`](loadup-modules-dictionary/README.md)：程序化字典查询与管理。
-- [`loadup-modules-dictionary-web`](loadup-modules-dictionary-web/README.md)：HTTP 适配。
-- [`loadup-modules-file`](loadup-modules-file/README.md)：程序化文件资源管理。
-- [`loadup-modules-file-web`](loadup-modules-file-web/README.md)：HTTP 适配。
-- [`loadup-modules-notification`](loadup-modules-notification/README.md)：程序化站内通知投递。
-- [`loadup-modules-notification-web`](loadup-modules-notification-web/README.md)：HTTP 适配。
-- [`loadup-modules-transfer`](loadup-modules-transfer/README.md)：程序化导入导出任务。
-- [`loadup-modules-transfer-web`](loadup-modules-transfer-web/README.md)：HTTP 适配。
+模块专有业务策略使用 modules 前缀。全局认证协议配置仍由 `loadup.security.*` 管理，观测使用标准 `management.*` 与 `loadup.<domain>.*` 指标命名。旧业务配置前缀已移除，集成方需更新配置；具体属性以各模块文档为准。
 
-## Merchant
-
-`loadup-modules-merchant` 提供 COLA 商户资料管理与可选 Web/Contract 适配，基本资料供合约资格查询使用。见 [接入手册](loadup-modules-merchant/README.md)。
+设计边界见 [ARCHITECTURE.md](ARCHITECTURE.md)。

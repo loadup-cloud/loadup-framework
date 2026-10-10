@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -58,5 +59,10 @@ public record SalesPlanDraft(
             alias = ContractChecks.code(alias);
             Objects.requireNonNull(bundle, "bundle");
         }
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

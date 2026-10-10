@@ -19,6 +19,16 @@
  */
 package io.github.loadup.modules.contract.client.dto;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Map;
 
-public record MerchantProfileDTO(String merchantId, boolean active, Map<String, ValueDTO> facts) {}
+public record MerchantProfileDTO(
+        @Schema(description = "Merchant identifier") String merchantId,
+        @Schema(description = "Active") boolean active,
+        @Schema(description = "Facts") Map<String, ValueDTO> facts) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

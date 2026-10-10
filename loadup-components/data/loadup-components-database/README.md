@@ -1,6 +1,6 @@
 # LoadUp Components Database
 
-MyBatis-Flex integration for common persistent fields, audit timestamps, configurable IDs, logical deletion, and tenant isolation.
+MyBatis-Flex integration for common persistent fields, audit timestamps, UUID identifiers, logical deletion, and tenant isolation.
 
 ## Maven
 
@@ -15,22 +15,13 @@ This module brings the JDBC stack (`spring-boot-starter-jdbc`, so `DataSourceAut
 default Hikari pool); the application still supplies the JDBC driver and the `spring.datasource.*`
 properties. This module does not select a database vendor.
 
-Define each data object as `@Table(...) class XxxDO extends BaseDO` and its mapper as `@Mapper interface XxxDOMapper extends BaseMapper<XxxDO>`. `BaseDO` supplies `id`, `createdAt`, `updatedAt`, `tenantId`, and integer `deleted` (`0` normal, `1` deleted). TableDef and mapper sources are generated from the root `mybatis-flex.config`.
+Define each data object as `@Table(...) class XxxDO extends BaseDO` and its mapper as `@Mapper interface XxxDOMapper extends BaseMapper<XxxDO>`. `BaseDO` supplies `id`, `createdAt`, `updatedAt`, `tenantId`, and integer `deleted` (`0` normal, `1` deleted). Module-local `Tables` and TableDef sources are generated from the root `mybatis-flex.config`; declare empty Mapper interfaces explicitly. Generated files remain under `target/`.
 
 ## Configuration
 
 ```yaml
 loadup:
   database:
-    audit:
-      enabled: true
-    id-generator:
-      strategy: uuid-v7 # random | uuid-v4 | uuid-v7 | snowflake
-      random-length: 20
-      uuid-with-hyphens: false
-      snowflake-worker-id: 0
-      snowflake-datacenter-id: 0
-    logical-delete: {enabled: true, column-name: deleted, normal-value: 0, deleted-value: 1}
     multi-tenant:
       enabled: true
       required: true
@@ -47,7 +38,13 @@ Use `TenantUtil.runWithTenant(...)` or `callWithTenant(...)` for non-HTTP jobs t
 
 | Capability | MyBatis-Flex |
 |---|---|
-| CRUD, QueryWrapper, generated TableDef and mapper | ✓ |
+| CRUD, QueryWrapper, generated Tables and TableDef | ✓ |
 | Audit timestamps and ID generation | ✓ |
 | Integer logical deletion | ✓ |
 | Tenant SQL isolation and request propagation | ✓ |
+
+## Fixed framework conventions
+
+UUID v4 IDs, UTC audit timestamps, `deleted = 0/1` and the `tenant_id` column are framework-owned defaults. They cannot be switched off or renamed through application properties. Extra `MyBatisFlexCustomizer` beans fail startup. DataSource settings, tenant activation and trusted tenant resolution remain deployment concerns. All mapped business tables must contain the five BaseDO fields; apply the module migrations before enabling the adapters.
+
+Use generated `Tables` constants in repositories; do not concatenate SQL or sort expressions. MapStruct converters use the shared Spring configuration and constructor injection. `UpdateEntity.of` expresses partial updates, including intentional null assignments.

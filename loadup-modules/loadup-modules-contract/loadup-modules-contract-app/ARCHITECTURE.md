@@ -10,7 +10,7 @@
 
 ## 关键契约
 
-CatalogService 提供有效草稿、发布/下架和查询；MerchantContractService 预览、幂等签约和生命周期；ContractResolveService 返回权威运行判定。ContractAutoConfiguration 在 DataSource 存在且 loadup.contract.enabled=true 时装配。
+CatalogService 提供有效草稿、发布/下架和查询；MerchantContractService 预览、幂等签约和生命周期；ContractResolveService 返回权威运行判定。ContractAutoConfiguration 在 DataSource 存在且 loadup.modules.contract.enabled=true 时装配。
 
 ## 依赖和扩展
 

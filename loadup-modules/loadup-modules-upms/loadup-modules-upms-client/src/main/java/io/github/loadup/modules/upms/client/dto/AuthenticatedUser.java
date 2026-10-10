@@ -1,5 +1,26 @@
+/*
+ * #%L
+ * Loadup Modules UPMS Client Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.client.dto;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -19,31 +40,37 @@ public class AuthenticatedUser implements Serializable {
     /**
      * 用户 ID
      */
+    @Schema(description = "User id")
     private String userId;
 
     /**
      * 用户名
      */
+    @Schema(description = "Username")
     private String username;
 
     /**
      * 昵称
      */
+    @Schema(description = "Nickname")
     private String nickname;
 
     /**
      * 头像
      */
+    @Schema(description = "Avatar")
     private String avatar;
 
     /**
      * 邮箱
      */
+    @Schema(description = "Email")
     private String email;
 
     /**
      * 手机号
      */
+    @Schema(description = "Mobile")
     private String mobile;
 
     /**
@@ -210,7 +237,6 @@ public class AuthenticatedUser implements Serializable {
 
     @Override
     public String toString() {
-        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
-                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
+        return ToStringAsJson.reflectionToString(this);
     }
 }

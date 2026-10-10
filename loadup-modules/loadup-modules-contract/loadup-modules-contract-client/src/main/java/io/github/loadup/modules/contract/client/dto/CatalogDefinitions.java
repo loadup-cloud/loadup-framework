@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.contract.client.dto;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -29,14 +31,14 @@ public final class CatalogDefinitions {
     private CatalogDefinitions() {}
 
     public record Parameter(
-            String key,
-            String type,
-            boolean required,
-            String defaultValue,
-            String minimum,
-            String maximum,
-            Set<String> allowedValues,
-            Set<String> editableLayers) {}
+            @Schema(description = "Key") String key,
+            @Schema(description = "Type") String type,
+            @Schema(description = "Required") boolean required,
+            @Schema(description = "Default value") String defaultValue,
+            @Schema(description = "Minimum") String minimum,
+            @Schema(description = "Maximum") String maximum,
+            @Schema(description = "Allowed values") Set<String> allowedValues,
+            @Schema(description = "Editable layers") Set<String> editableLayers) {}
 
     public record Product(
             String capabilityCode,
@@ -78,4 +80,9 @@ public final class CatalogDefinitions {
             String usageConditionId,
             Instant saleStartsAt,
             Instant saleEndsAt) {}
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
 }

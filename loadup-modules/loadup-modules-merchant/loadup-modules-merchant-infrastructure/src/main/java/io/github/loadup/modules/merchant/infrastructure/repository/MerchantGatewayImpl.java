@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.merchant.infrastructure.repository;
 
+import static io.github.loadup.modules.merchant.infrastructure.dataobject.table.Tables.MERCHANT_DO;
+
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.merchant.client.dto.MerchantError;
@@ -82,7 +84,7 @@ public class MerchantGatewayImpl implements MerchantGateway {
         if (name != null && !name.isBlank()) query.and(MerchantDO::getName).like(name);
         if (status != null) query.and(MerchantDO::getStatus).eq(status.name());
         long total = mapper.selectCountByQuery(query);
-        query.orderBy("created_at DESC, id ASC").limit((long) (page - 1) * size, size);
+        query.orderBy(MERCHANT_DO.CREATED_AT.desc(), MERCHANT_DO.ID.asc()).limit((long) (page - 1) * size, size);
         return new MerchantPage(
                 mapper.selectListByQuery(query).stream()
                         .map(converter::toMerchant)

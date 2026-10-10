@@ -21,6 +21,7 @@ package io.github.loadup.modules.merchant.infrastructure.dataobject;
 
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
+import io.github.loadup.commons.json.ToStringAsJson;
 
 @Table("merchant_profile")
 public class MerchantDO extends BaseDO {
@@ -196,6 +197,6 @@ public class MerchantDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "MerchantDO[id=" + getId() + "]";
+        return ToStringAsJson.reflectionToString(this);
     }
 }

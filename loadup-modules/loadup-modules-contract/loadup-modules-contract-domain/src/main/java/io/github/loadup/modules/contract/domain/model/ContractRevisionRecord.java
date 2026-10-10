@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 
 public record ContractRevisionRecord(
@@ -29,4 +30,9 @@ public record ContractRevisionRecord(
         String snapshot,
         String snapshotHash,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt) {}
+        LocalDateTime updatedAt) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

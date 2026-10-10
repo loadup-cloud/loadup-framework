@@ -193,3 +193,11 @@ Vue3 Composition API + Element Plus。产品页编辑参数/默认值/权限/条
 ContractAutoConfiguration 保留 `@ConditionalOnSingleCandidate(DataSource.class)` 与启用开关，使用 `@Import` 显式注册服务、仓储、支持类及 MapStruct 生成的 Spring 转换器。Mapper 接口继续由 `@MapperScan` 注册，不在自动配置上使用 `@ComponentScan`。Spring 7 禁止把解析阶段的组件扫描与 REGISTER_BEAN 阶段的 OnBeanCondition 混用；内嵌扫描配置也会继承该限制。
 
 转换器仍由 MapStruct 按共享配置生成并由 Spring 构造器注入，不手工实例化。ContractAutoConfigurationTest 覆盖单 DataSource 启用、缺失 DataSource、显式禁用和多 DataSource 无主候选场景；测试源码已提供，未运行。
+
+## 公共边界与映射约束
+
+Facade 是 client 的业务契约，应用服务直接实现；Controller 和跨模块消费者依赖 Facade。domain 保留业务状态、规则与 Gateway，表示层字段转换交给 Spring 管理的 MapStruct。共享配置固定 Spring 模式、构造器注入和目标字段严格校验。
+
+仓储依赖 database 的固定 UUID、审计时间、逻辑删除规则，显式声明空 BaseMapper，并通过模块生成的 Tables 表达查询。字典删除与文件引用解绑明确使用物理删除；文件状态、通知归档和任务生命周期是业务状态，独立于 BaseDO 的 deleted。
+
+所有数据对象的诊断文本使用 commons-json；诊断序列化与真实 API JSON 分离，避免因 HTTP 脱敏设置改变日志中的凭证披露规则。

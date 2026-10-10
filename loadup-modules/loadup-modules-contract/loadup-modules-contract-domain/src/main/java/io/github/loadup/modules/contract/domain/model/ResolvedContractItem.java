@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.Objects;
 
 public record ResolvedContractItem(
@@ -37,5 +38,10 @@ public record ResolvedContractItem(
             throw new IllegalArgumentException("Invalid bundle origin");
         Objects.requireNonNull(configuration, "configuration");
         new ConditionEvaluator().validate(usageCondition);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

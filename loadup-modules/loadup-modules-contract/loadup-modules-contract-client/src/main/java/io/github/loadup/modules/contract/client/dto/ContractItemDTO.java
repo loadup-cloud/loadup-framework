@@ -19,5 +19,16 @@
  */
 package io.github.loadup.modules.contract.client.dto;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public record ContractItemDTO(
-        String productCode, int productVersion, String capabilityCode, ConfigurationDTO configuration) {}
+        @Schema(description = "Product code") String productCode,
+        @Schema(description = "Product version") int productVersion,
+        @Schema(description = "Capability code") String capabilityCode,
+        @Schema(description = "Configuration") ConfigurationDTO configuration) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

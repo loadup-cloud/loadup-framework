@@ -39,7 +39,12 @@ class UserMaskedWriteTest {
         var roles = mock(RoleGateway.class);
         var departments = mock(DepartmentGateway.class);
         var passwords = mock(PasswordEncoder.class);
-        var service = new UserService(users, roles, departments, passwords);
+        var service = new UserService(
+                users,
+                roles,
+                departments,
+                passwords,
+                mock(io.github.loadup.modules.upms.app.converter.UpmsDTOConverter.class));
         var create = new UserCreateCommand();
         create.setMobile("138****5678");
         assertThatIllegalArgumentException().isThrownBy(() -> service.createUser(create));

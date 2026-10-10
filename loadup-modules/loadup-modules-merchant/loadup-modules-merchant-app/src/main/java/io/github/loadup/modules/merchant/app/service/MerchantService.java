@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class MerchantService {
+public class MerchantService implements io.github.loadup.modules.merchant.client.facade.MerchantFacade {
     private final MerchantGateway gateway;
     private final MerchantConverter converter;
     private final Clock clock;
@@ -76,7 +76,7 @@ public class MerchantService {
         MerchantIdentity.actor(actor);
         var current = require(command.id());
         expected(current, command.expectedRowVersion());
-        var updated = current.update(converter.toInfo(command), actor, now());
+        var updated = current.update(converter.merge(converter.toInfo(command), current.info()), actor, now());
         gateway.update(updated, current.rowVersion());
         return converter.toDTO(updated);
     }

@@ -1,5 +1,26 @@
+/*
+ * #%L
+ * Loadup Modules UPMS Client Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.client.command;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -12,21 +33,30 @@ import jakarta.validation.constraints.Size;
 public class UserPasswordResetCommand {
 
     @NotBlank(message = "用户名不能为空")
+    @Schema(description = "Username")
     private String username;
 
     @NotBlank(message = "验证码不能为空")
+    @Schema(description = "Verification code")
     private String verificationCode;
 
     @NotBlank(message = "新密码不能为空")
     @Size(min = 6, max = 20, message = "新密码长度必须在6-20之间")
+    @Schema(description = "New password", accessMode = Schema.AccessMode.WRITE_ONLY)
+    @com.fasterxml.jackson.annotation.JsonProperty(
+            access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
     private String newPassword;
 
     @NotBlank(message = "确认密码不能为空")
+    @Schema(description = "Confirmation of the new password", accessMode = Schema.AccessMode.WRITE_ONLY)
+    @com.fasterxml.jackson.annotation.JsonProperty(
+            access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
     private String confirmPassword;
 
     /**
      * Verification type: EMAIL or SMS
      */
+    @Schema(description = "Verification type")
     private String verificationType;
 
     public UserPasswordResetCommand(
@@ -86,7 +116,6 @@ public class UserPasswordResetCommand {
 
     @Override
     public String toString() {
-        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
-                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
+        return ToStringAsJson.reflectionToString(this);
     }
 }

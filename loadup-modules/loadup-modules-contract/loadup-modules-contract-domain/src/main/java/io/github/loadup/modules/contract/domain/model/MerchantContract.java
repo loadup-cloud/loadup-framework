@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -61,5 +62,10 @@ public record MerchantContract(
             }
             previous = revision;
         }
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

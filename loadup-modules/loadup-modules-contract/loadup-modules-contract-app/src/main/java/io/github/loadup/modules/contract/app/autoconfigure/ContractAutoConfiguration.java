@@ -42,7 +42,11 @@ import org.springframework.context.annotation.Import;
             "io.github.loadup.components.database.autoconfig.MyBatisFlexAutoConfiguration"
         })
 @ConditionalOnSingleCandidate(DataSource.class)
-@ConditionalOnProperty(prefix = "loadup.contract", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(
+        prefix = "loadup.modules.contract",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 @MapperScan("io.github.loadup.modules.contract.infrastructure.mapper")
 @Import({
     CatalogService.class,

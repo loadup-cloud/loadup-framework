@@ -19,6 +19,7 @@
  */
 package io.github.loadup.components.signature.properties;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.components.signature.enums.DigestAlgorithm;
 import io.github.loadup.components.signature.enums.SignatureAlgorithm;
 import jakarta.validation.constraints.NotNull;
@@ -112,7 +113,6 @@ public class SignatureProperties {
 
     @Override
     public String toString() {
-        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
-                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
+        return ToStringAsJson.reflectionToString(this);
     }
 }

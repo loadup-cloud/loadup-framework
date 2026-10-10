@@ -21,7 +21,7 @@
 | 生命周期 | 有效草稿、固定发布版本、初次签约和暂停/恢复/终止 |
 | 验证状态 | 源码已提供，未编译或执行测试 |
 
-CatalogService 提供有效草稿、发布/下架和查询；MerchantContractService 预览、幂等签约和生命周期；ContractResolveService 返回权威运行判定。ContractAutoConfiguration 在 DataSource 存在且 loadup.contract.enabled=true 时装配。
+CatalogService 提供有效草稿、发布/下架和查询；MerchantContractService 预览、幂等签约和生命周期；ContractResolveService 返回权威运行判定。ContractAutoConfiguration 在 DataSource 存在且 loadup.modules.contract.enabled=true 时装配。
 
 ## 接入约束
 

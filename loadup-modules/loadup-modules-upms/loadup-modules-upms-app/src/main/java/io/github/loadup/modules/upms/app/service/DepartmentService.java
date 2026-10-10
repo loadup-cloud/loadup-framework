@@ -1,5 +1,25 @@
+/*
+ * #%L
+ * Loadup Modules UPMS App Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.app.service;
 
+import io.github.loadup.modules.upms.app.converter.UpmsDTOConverter;
 import io.github.loadup.modules.upms.client.command.DepartmentCreateCommand;
 import io.github.loadup.modules.upms.client.command.DepartmentUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.DepartmentDTO;
@@ -20,7 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.0.0
  */
 @Service
-public class DepartmentService {
+public class DepartmentService implements io.github.loadup.modules.upms.client.facade.DepartmentFacade {
+    private final UpmsDTOConverter dtoConverter;
 
     private final DepartmentGateway departmentGateway;
     private final UserGateway userGateway;
@@ -229,27 +250,13 @@ public class DepartmentService {
      * Convert Department entity to DepartmentDTO
      */
     private DepartmentDTO convertToDTO(Department department) {
-        User leader = null;
-        if (department.getLeaderUserId() != null) {
-            leader = userGateway.findById(department.getLeaderUserId()).orElse(null);
-        }
-
-        return DepartmentDTO.builder()
-                .id(department.getId())
-                .parentId(department.getParentId())
-                .deptName(department.getDeptName())
-                .deptCode(department.getDeptCode())
-                .deptLevel(department.getDeptLevel())
-                .sortOrder(department.getSortOrder())
-                .leaderUserId(department.getLeaderUserId())
-                .leaderUserName(leader != null ? leader.getUsername() : null)
-                .mobile(department.getMobile())
-                .email(department.getEmail())
-                .status(department.getStatus())
-                .remark(department.getRemark())
-                .createdAt(department.getCreatedAt())
-                .updatedAt(department.getUpdatedAt())
-                .build();
+        String leaderName = department.getLeaderUserId() == null
+                ? null
+                : userGateway
+                        .findById(department.getLeaderUserId())
+                        .map(User::getUsername)
+                        .orElse(null);
+        return dtoConverter.toDepartment(department, leaderName);
     }
 
     /**
@@ -273,7 +280,9 @@ public class DepartmentService {
         return tree;
     }
 
-    public DepartmentService(DepartmentGateway departmentGateway, UserGateway userGateway) {
+    public DepartmentService(
+            DepartmentGateway departmentGateway, UserGateway userGateway, UpmsDTOConverter dtoConverter) {
+        this.dtoConverter = dtoConverter;
         this.departmentGateway = departmentGateway;
         this.userGateway = userGateway;
     }

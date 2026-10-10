@@ -22,15 +22,15 @@ package io.github.loadup.modules.merchant.contract;
 import io.github.loadup.modules.contract.client.dto.MerchantProfileDTO;
 import io.github.loadup.modules.contract.client.dto.ValueDTO;
 import io.github.loadup.modules.contract.client.spi.MerchantFactsProvider;
-import io.github.loadup.modules.merchant.client.api.MerchantLookup;
+import io.github.loadup.modules.merchant.client.facade.MerchantQueryFacade;
 import java.util.HashMap;
 import java.util.Map;
 
 /** Supplies only managed basic facts, never unverified qualification or private contact fields. */
 public class MerchantContractFactsProvider implements MerchantFactsProvider {
-    private final MerchantLookup lookup;
+    private final MerchantQueryFacade lookup;
 
-    public MerchantContractFactsProvider(MerchantLookup lookup) {
+    public MerchantContractFactsProvider(MerchantQueryFacade lookup) {
         this.lookup = lookup;
     }
 

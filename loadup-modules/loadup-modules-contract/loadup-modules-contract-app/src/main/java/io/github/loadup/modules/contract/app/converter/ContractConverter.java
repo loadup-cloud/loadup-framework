@@ -23,14 +23,10 @@ import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
 import io.github.loadup.modules.contract.app.support.ContractMappingSupport;
 import io.github.loadup.modules.contract.client.dto.*;
 import io.github.loadup.modules.contract.domain.model.*;
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(
-        config = LoadUpMapStructConfig.class,
-        uses = ContractMappingSupport.class,
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(config = LoadUpMapStructConfig.class, uses = ContractMappingSupport.class)
 public interface ContractConverter {
     @Mapping(target = "definition", source = "content")
     CatalogVersionDTO toCatalog(CatalogEntry source);

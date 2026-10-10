@@ -1,5 +1,26 @@
+/*
+ * #%L
+ * Loadup Modules UPMS Client Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.client.command;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -12,34 +33,47 @@ import jakarta.validation.constraints.Size;
 public class PermissionUpdateCommand {
 
     @NotNull(message = "权限ID不能为空")
+    @Schema(description = "Resource identifier")
     private String id;
 
+    @Schema(description = "Parent id")
     private String parentId;
 
     @Size(max = 50, message = "权限名称长度不能超过50")
+    @Schema(description = "Permission name")
     private String permissionName;
 
     /**
      * Permission type: 1-Menu, 2-Button, 3-API
      */
+    @Schema(description = "Permission type")
     private Short permissionType;
 
+    @Schema(description = "Resource path")
     private String resourcePath;
 
+    @Schema(description = "Http method")
     private String httpMethod;
 
+    @Schema(description = "Icon")
     private String icon;
 
+    @Schema(description = "Component path")
     private String componentPath;
 
+    @Schema(description = "Display order; smaller values appear first")
     private Integer sortOrder;
 
+    @Schema(description = "Visible")
     private Boolean visible;
 
+    @Schema(description = "Current lifecycle status")
     private Short status;
 
+    @Schema(description = "Remark")
     private String remark;
 
+    @Schema(description = "Updated by")
     private String updatedBy;
 
     public PermissionUpdateCommand(
@@ -179,7 +213,6 @@ public class PermissionUpdateCommand {
 
     @Override
     public String toString() {
-        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
-                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
+        return ToStringAsJson.reflectionToString(this);
     }
 }

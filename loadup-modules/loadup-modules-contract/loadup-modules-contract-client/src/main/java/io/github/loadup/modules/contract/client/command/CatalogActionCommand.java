@@ -19,7 +19,18 @@
  */
 package io.github.loadup.modules.contract.client.command;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
 public record CatalogActionCommand(
-        @NotBlank String id, @Min(1) long expectedRowVersion) {}
+        @Schema(description = "Resource identifier") @NotBlank
+        String id,
+
+        @Schema(description = "Expected version for optimistic concurrency") @Min(1)
+        long expectedRowVersion) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

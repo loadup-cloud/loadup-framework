@@ -19,9 +19,9 @@ flowchart LR
   ContractApp[contract-app] --> ContractClient
 ```
 
-client 为 Command/Query/DTO 和 MerchantLookup；domain 为不可变 Merchant/MerchantBasicInfo、枚举与 Gateway，零 Spring/ORM/JSON；infrastructure 为 BaseDO、Mapper、GatewayImpl 和 MapStruct；app 负责事务、身份、时钟、版本及公开查询；web 负责 POST/JSON、权限和 SpringDoc。
+client 为 Command/Query/DTO 和 MerchantQueryFacade；domain 为不可变 Merchant/MerchantBasicInfo、枚举与 Gateway，零 Spring/ORM/JSON；infrastructure 为 BaseDO、Mapper、GatewayImpl 和 MapStruct；app 负责事务、身份、时钟、版本及公开查询；web 负责 POST/JSON、权限和 SpringDoc。
 
-可选 merchant-contract 只通过 MerchantLookup 与 MerchantFactsProvider 桥接，不在商户核心引入合约依赖，也不在合约核心引入商户仓储。Bean 缺失时不装配，已有自定义 Provider 优先。
+可选 merchant-contract 只通过 MerchantQueryFacade 与 MerchantFactsProvider 桥接，不在商户核心引入合约依赖，也不在合约核心引入商户仓储。Bean 缺失时不装配，已有自定义 Provider 优先。
 
 自动配置采用 DataSource 候选条件与显式 Import，转换器为 MapStruct 生成的 Spring Bean。没有组件扫描与 REGISTER_BEAN 条件混用，不手工创建转换器。
 
@@ -43,7 +43,7 @@ Gateway 用 QueryWrapper 明确约束 tenant 与 deleted=0；空租户和空查�
 
 ## 合约事实信任边界
 
-MerchantLookup 读取显式租户/id，并要求请求作用域租户一致；事实适配器再次比较返回身份，仅输出基本事实白名单。未维护的地区不输出，未知事实不能靠空串伪装成存在。联系人、登记号和详细地址不进入事实 map。
+MerchantQueryFacade 读取显式租户/id，并要求请求作用域租户一致；事实适配器再次比较返回身份，仅输出基本事实白名单。未维护的地区不输出，未知事实不能靠空串伪装成存在。联系人、登记号和详细地址不进入事实 map。
 
 后台管理员维护的行业可用于普通产品销售限制；不能把人工登记字段当作证件核验或监管资质。需要强资质判断时消费方扩展独立可信 Provider 与审批，仍不能信任浏览器上传的 fact map。
 
@@ -58,3 +58,11 @@ DTO 用 Masked 描述 JSON 输出规则，由 WebMVC 独立输出 mapper 脱敏�
 ## 验证与扩展
 
 已编写领域、事实适配与真实 MySQL 合约组合测试，未运行。后续执行 Boot 装配、MapStruct/Jackson3、实际权限、脱敏、前端类型/交互及并发停用边界验收。可靠审计、Outbox、资质审核、历史资料与渠道开户扩展不得覆盖现有合约条款。
+
+## 公共边界与映射约束
+
+Facade 是 client 的业务契约，应用服务直接实现；Controller 和跨模块消费者依赖 Facade。domain 保留业务状态、规则与 Gateway，表示层字段转换交给 Spring 管理的 MapStruct。共享配置固定 Spring 模式、构造器注入和目标字段严格校验。
+
+仓储依赖 database 的固定 UUID、审计时间、逻辑删除规则，显式声明空 BaseMapper，并通过模块生成的 Tables 表达查询。字典删除与文件引用解绑明确使用物理删除；文件状态、通知归档和任务生命周期是业务状态，独立于 BaseDO 的 deleted。
+
+所有数据对象的诊断文本使用 commons-json；诊断序列化与真实 API JSON 分离，避免因 HTTP 脱敏设置改变日志中的凭证披露规则。

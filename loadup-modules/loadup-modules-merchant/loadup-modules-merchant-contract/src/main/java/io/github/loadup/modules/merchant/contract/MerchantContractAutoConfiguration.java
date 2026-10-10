@@ -20,17 +20,17 @@
 package io.github.loadup.modules.merchant.contract;
 
 import io.github.loadup.modules.contract.client.spi.MerchantFactsProvider;
-import io.github.loadup.modules.merchant.client.api.MerchantLookup;
+import io.github.loadup.modules.merchant.client.facade.MerchantQueryFacade;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.Bean;
 
 @AutoConfiguration(afterName = "io.github.loadup.modules.merchant.app.autoconfigure.MerchantAutoConfiguration")
-@ConditionalOnBean(MerchantLookup.class)
+@ConditionalOnBean(MerchantQueryFacade.class)
 public class MerchantContractAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(MerchantFactsProvider.class)
-    public MerchantFactsProvider merchantFactsProvider(MerchantLookup lookup) {
+    public MerchantFactsProvider merchantFactsProvider(MerchantQueryFacade lookup) {
         return new MerchantContractFactsProvider(lookup);
     }
 }

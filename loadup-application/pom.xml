@@ -12,6 +12,7 @@
     <description>Loadup Launcher module</description>
 
     <properties>
+        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
         <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -24,8 +25,14 @@
         <skip.deploy>true</skip.deploy>
     </properties>
     <dependencies>
-        <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-modules-merchant-web</artifactId></dependency>
-        <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-modules-merchant-contract</artifactId></dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-modules-merchant-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-modules-merchant-contract</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-contract-web</artifactId>

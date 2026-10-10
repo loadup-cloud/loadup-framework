@@ -21,9 +21,9 @@ package io.github.loadup.framework.transfer;
 
 import io.github.loadup.commons.masking.MaskType;
 import io.github.loadup.commons.masking.Masking;
-import io.github.loadup.modules.transfer.TransferContext;
-import io.github.loadup.modules.transfer.TransferHandler;
-import io.github.loadup.modules.transfer.TransferKind;
+import io.github.loadup.modules.transfer.client.enums.TransferKind;
+import io.github.loadup.modules.transfer.client.spi.TransferContext;
+import io.github.loadup.modules.transfer.client.spi.TransferHandler;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;

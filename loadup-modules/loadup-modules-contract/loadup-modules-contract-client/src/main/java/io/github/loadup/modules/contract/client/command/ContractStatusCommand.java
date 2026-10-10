@@ -19,9 +19,20 @@
  */
 package io.github.loadup.modules.contract.client.command;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
 public record ContractStatusCommand(
-        @NotBlank String id,
-        @Min(1) long expectedGeneration,
-        @NotBlank String status) {}
+        @Schema(description = "Resource identifier") @NotBlank
+        String id,
+
+        @Schema(description = "Expected generation") @Min(1) long expectedGeneration,
+
+        @Schema(description = "Current lifecycle status") @NotBlank
+        String status) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

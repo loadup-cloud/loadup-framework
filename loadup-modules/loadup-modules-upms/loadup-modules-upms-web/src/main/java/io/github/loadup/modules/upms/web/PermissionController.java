@@ -1,12 +1,31 @@
+/*
+ * #%L
+ * LoadUp UPMS Web Adapter
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.web;
 
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.components.authorization.context.UserContext;
-import io.github.loadup.modules.upms.app.service.PermissionService;
 import io.github.loadup.modules.upms.client.command.PermissionCreateCommand;
 import io.github.loadup.modules.upms.client.command.PermissionUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.PermissionDTO;
+import io.github.loadup.modules.upms.client.facade.PermissionFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -21,24 +40,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/upms/permission")
 @Tag(name = "UPMS Permissions", description = "Permission administration and user menus")
 public class PermissionController {
-    private final PermissionService service;
+    private final PermissionFacade service;
 
-    public PermissionController(PermissionService service) {
+    public PermissionController(PermissionFacade service) {
         this.service = service;
     }
 
     @PostMapping("/create")
     @Operation(summary = "Create a permission", description = "Requires ROLE_SUPER_ADMIN.")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public PermissionDTO create(@Valid @RequestBody PermissionCreateCommand command) {
-        return service.createPermission(command);
+    public SuccessResponse<PermissionDTO> create(@Valid @RequestBody PermissionCreateCommand command) {
+        return SuccessResponse.of(service.createPermission(command));
     }
 
     @PostMapping("/update")
     @Operation(summary = "Update a permission", description = "Requires ROLE_SUPER_ADMIN.")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public PermissionDTO update(@Valid @RequestBody PermissionUpdateCommand command) {
-        return service.updatePermission(command);
+    public SuccessResponse<PermissionDTO> update(@Valid @RequestBody PermissionUpdateCommand command) {
+        return SuccessResponse.of(service.updatePermission(command));
     }
 
     @PostMapping("/delete")
@@ -52,23 +71,23 @@ public class PermissionController {
     @PostMapping("/detail")
     @Operation(summary = "Get permission details", description = "Requires ROLE_SUPER_ADMIN.")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public PermissionDTO detail(@Valid @RequestBody IdQuery query) {
-        return service.getPermissionById(query.id());
+    public SuccessResponse<PermissionDTO> detail(@Valid @RequestBody IdQuery query) {
+        return SuccessResponse.of(service.getPermissionById(query.id()));
     }
 
     @PostMapping("/tree")
     @Operation(summary = "Get the permission tree", description = "Requires ROLE_SUPER_ADMIN.")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public List<PermissionDTO> tree(@Valid @RequestBody EmptyRequest request) {
-        return service.getPermissionTree();
+    public SuccessResponse<List<PermissionDTO>> tree(@Valid @RequestBody EmptyRequest request) {
+        return SuccessResponse.of(service.getPermissionTree());
     }
 
     @PostMapping("/user-menu")
     @Operation(summary = "Get the current user's menu tree", description = "Requires an authenticated user.")
     @PreAuthorize("isAuthenticated()")
-    public List<PermissionDTO> userMenu(@Valid @RequestBody EmptyRequest request) {
+    public SuccessResponse<List<PermissionDTO>> userMenu(@Valid @RequestBody EmptyRequest request) {
         String userId = UserContext.getUserId();
         if (userId == null) throw new IllegalStateException("Authenticated user is required");
-        return service.getUserMenuTree(userId);
+        return SuccessResponse.of(service.getUserMenuTree(userId));
     }
 }

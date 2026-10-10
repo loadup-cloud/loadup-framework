@@ -19,10 +19,16 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.List;
 
 public record ContractPage<T>(List<T> items, long total) {
     public ContractPage {
         items = List.copyOf(items);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

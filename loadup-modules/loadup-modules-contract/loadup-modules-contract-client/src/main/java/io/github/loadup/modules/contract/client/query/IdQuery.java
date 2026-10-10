@@ -19,6 +19,15 @@
  */
 package io.github.loadup.modules.contract.client.query;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
-public record IdQuery(@NotBlank String id) {}
+public record IdQuery(
+        @Schema(description = "Resource identifier") @NotBlank
+        String id) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

@@ -23,6 +23,7 @@ import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.modules.upms.app.converter.UpmsDTOConverter;
 import io.github.loadup.modules.upms.client.command.UserCreateCommand;
 import io.github.loadup.modules.upms.client.command.UserPasswordChangeCommand;
 import io.github.loadup.modules.upms.client.command.UserUpdateCommand;
@@ -49,7 +50,8 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.0.0
  */
 @Service
-public class UserService {
+public class UserService implements io.github.loadup.modules.upms.client.facade.UserFacade {
+    private final UpmsDTOConverter dtoConverter;
 
     private final UserGateway userGateway;
     private final RoleGateway roleGateway;
@@ -334,57 +336,40 @@ public class UserService {
      * Convert User entity to UserDetailDTO
      */
     private UserDetailDTO convertToDetailDTO(User user) {
-        List<Role> roles = roleGateway.findByUserId(user.getId());
-        Department dept = null;
-        if (user.getDeptId() != null) {
-            dept = departmentGateway.findById(user.getDeptId()).orElse(null);
-        }
-
-        return UserDetailDTO.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .nickname(user.getNickname())
-                .realName(user.getRealName())
-                .deptId(user.getDeptId())
-                .deptName(dept != null ? dept.getDeptName() : null)
-                .email(user.getEmail())
-                .emailVerified(user.getEmailVerified())
-                .mobile(user.getMobile())
-                .mobileVerified(user.getMobileVerified())
-                .avatar(user.getAvatar())
-                .gender(user.getGender())
-                .birthday(user.getBirthday())
-                .status(user.getStatus())
-                .lastLoginTime(user.getLastLoginTime())
-                .lastLoginIp(user.getLastLoginIp())
-                .roles(roles.stream().map(this::convertRoleToDTO).collect(Collectors.toList()))
-                .remark(user.getRemark())
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
-                .build();
+        List<RoleDTO> roles = roleGateway.findByUserId(user.getId()).stream()
+                .map(dtoConverter::toRoleSummary)
+                .toList();
+        String departmentName = user.getDeptId() == null
+                ? null
+                : departmentGateway
+                        .findById(user.getDeptId())
+                        .map(Department::getDeptName)
+                        .orElse(null);
+        return dtoConverter.toUser(user, departmentName, roles);
     }
 
     /**
      * Convert Role to RoleDTO
      */
     private RoleDTO convertRoleToDTO(Role role) {
-        return RoleDTO.builder()
-                .id(role.getId())
-                .roleName(role.getRoleName())
-                .roleCode(role.getRoleCode())
-                .dataScope(role.getDataScope())
-                .status(role.getStatus())
-                .build();
+        return dtoConverter.toRoleSummary(role);
     }
 
     public UserService(
             UserGateway userGateway,
             RoleGateway roleGateway,
             DepartmentGateway departmentGateway,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            UpmsDTOConverter dtoConverter) {
+        this.dtoConverter = dtoConverter;
         this.userGateway = userGateway;
         this.roleGateway = roleGateway;
         this.departmentGateway = departmentGateway;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    public UserDetailDTO getUserById(String userId) {
+        return getUserById(new io.github.loadup.commons.request.query.IdQuery(userId));
     }
 }

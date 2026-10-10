@@ -17,14 +17,9 @@
         <module>loadup-modules-contract</module>
         <module>loadup-modules-upms</module>
         <module>loadup-modules-audit</module>
-        <module>loadup-modules-audit-web</module>
         <module>loadup-modules-dictionary</module>
-        <module>loadup-modules-dictionary-web</module>
         <module>loadup-modules-file</module>
-        <module>loadup-modules-file-web</module>
         <module>loadup-modules-notification</module>
-        <module>loadup-modules-notification-web</module>
         <module>loadup-modules-transfer</module>
-        <module>loadup-modules-transfer-web</module>
     </modules>
 </project>

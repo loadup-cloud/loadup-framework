@@ -19,7 +19,6 @@
  */
 package io.github.loadup.components.webmvc;
 
-import io.github.loadup.commons.dto.DTO;
 import io.github.loadup.commons.util.JsonUtil;
 import io.github.loadup.components.observability.ApiResultMetrics;
 import jakarta.servlet.DispatcherType;
@@ -76,10 +75,7 @@ public class LoadUpWebMvcAutoConfiguration {
 
     @Bean
     public SmartInitializingSingleton loadUpJsonMapperSync(ObjectMapper objectMapper) {
-        return () -> {
-            DTO.setObjectMapper(objectMapper);
-            JsonUtil.setObjectMapper(objectMapper);
-        };
+        return () -> JsonUtil.setObjectMapper(objectMapper);
     }
 
     @Bean

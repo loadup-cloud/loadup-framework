@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.Objects;
 
 public record ValueOrigin(ConfigurationLayer layer, String sourceCode, int sourceVersion) {
@@ -26,5 +27,10 @@ public record ValueOrigin(ConfigurationLayer layer, String sourceCode, int sourc
         Objects.requireNonNull(layer, "layer");
         sourceCode = ContractChecks.code(sourceCode);
         sourceVersion = ContractChecks.version(sourceVersion);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

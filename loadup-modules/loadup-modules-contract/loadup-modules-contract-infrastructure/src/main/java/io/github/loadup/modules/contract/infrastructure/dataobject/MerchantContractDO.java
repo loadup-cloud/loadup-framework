@@ -21,6 +21,7 @@ package io.github.loadup.modules.contract.infrastructure.dataobject;
 
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
+import io.github.loadup.commons.json.ToStringAsJson;
 
 @Table("merchant_contract")
 public class MerchantContractDO extends BaseDO {
@@ -99,6 +100,6 @@ public class MerchantContractDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "MerchantContractDO[id=" + getId() + "]";
+        return ToStringAsJson.reflectionToString(this);
     }
 }

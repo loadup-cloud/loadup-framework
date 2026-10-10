@@ -1,3 +1,22 @@
+/*-
+ * #%L
+ * Loadup Components Database
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.components.database.autoconfig;
 
 import com.mybatisflex.annotation.KeyType;
@@ -18,8 +37,8 @@ import io.github.loadup.components.database.listener.TenantContextMissingExcepti
 import java.time.Clock;
 import java.util.Locale;
 import java.util.Set;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -31,19 +50,19 @@ public class MyBatisFlexAutoConfiguration {
     private final DatabaseProperties databaseProperties;
 
     @Bean
-    @ConditionalOnMissingBean
     public Clock databaseClock() {
         return Clock.systemUTC();
     }
 
     @Bean
-    @ConditionalOnMissingBean
-    public IdGenerator databaseIdGenerator(DatabaseProperties properties) {
-        return new DatabaseIdGenerator(properties.getIdGenerator());
+    public DatabaseIdGenerator databaseIdGenerator() {
+        return new DatabaseIdGenerator();
     }
 
     @Bean
-    public MyBatisFlexCustomizer myBatisFlexCustomizer(IdGenerator idGenerator, Clock clock) {
+    public MyBatisFlexCustomizer myBatisFlexCustomizer(
+            DatabaseIdGenerator idGenerator,
+            @org.springframework.beans.factory.annotation.Qualifier("databaseClock") Clock clock) {
         return globalConfig -> {
             configureIdGeneration(globalConfig, idGenerator);
             configureLogicalDelete(globalConfig);
@@ -56,30 +75,52 @@ public class MyBatisFlexAutoConfiguration {
         };
     }
 
+    @Bean
+    public static BeanFactoryPostProcessor persistenceConventionGuard(
+            org.springframework.core.env.Environment environment) {
+        return factory -> {
+            var binder = org.springframework.boot.context.properties.bind.Binder.get(environment);
+            for (String prefix : new String[] {
+                "loadup.database.audit",
+                "loadup.database.id-generator",
+                "loadup.database.logical-delete",
+                "mybatis-flex.global-config"
+            }) {
+                if (binder.bind(
+                                prefix,
+                                org.springframework.boot.context.properties.bind.Bindable.mapOf(
+                                        String.class, Object.class))
+                        .isBound()) {
+                    throw new IllegalStateException(
+                            "Framework-owned persistence configuration cannot be overridden: " + prefix);
+                }
+            }
+            if (environment.containsProperty("loadup.database.multi-tenant.column-name")) {
+                throw new IllegalStateException("The tenant column is fixed to tenant_id");
+            }
+
+            String[] customizers = factory.getBeanNamesForType(MyBatisFlexCustomizer.class, true, false);
+            if (customizers.length != 1 || !customizers[0].equals("myBatisFlexCustomizer")) {
+                throw new IllegalStateException(
+                        "LoadUp owns MyBatis-Flex defaults; remove application MyBatisFlexCustomizer beans");
+            }
+        };
+    }
+
     private void configureIdGeneration(FlexGlobalConfig globalConfig, IdGenerator idGenerator) {
-        DatabaseProperties.IdGenerator properties = databaseProperties.getIdGenerator();
-        if (properties.isEnabled()) {
-            FlexGlobalConfig.KeyConfig keyConfig = new FlexGlobalConfig.KeyConfig();
-            keyConfig.setKeyType(KeyType.Generator);
-            keyConfig.setValue(DatabaseIdGenerator.KEY);
-            keyConfig.setBefore(true);
-            globalConfig.setKeyConfig(keyConfig);
-            KeyGeneratorFactory.register(DatabaseIdGenerator.KEY, (entity, keyColumn) -> idGenerator.generate());
-        } else {
-            globalConfig.setKeyConfig(null);
-        }
+        FlexGlobalConfig.KeyConfig keyConfig = new FlexGlobalConfig.KeyConfig();
+        keyConfig.setKeyType(KeyType.Generator);
+        keyConfig.setValue(DatabaseIdGenerator.KEY);
+        keyConfig.setBefore(true);
+        globalConfig.setKeyConfig(keyConfig);
+        KeyGeneratorFactory.register(DatabaseIdGenerator.KEY, (entity, keyColumn) -> idGenerator.generate());
     }
 
     private void configureLogicalDelete(FlexGlobalConfig globalConfig) {
-        DatabaseProperties.LogicalDelete properties = databaseProperties.getLogicalDelete();
-        if (properties.isEnabled()) {
-            globalConfig.setLogicDeleteColumn(properties.getColumnName());
-            globalConfig.setNormalValueOfLogicDelete(properties.getNormalValue());
-            globalConfig.setDeletedValueOfLogicDelete(properties.getDeletedValue());
-            LogicDeleteManager.setProcessor(new DefaultLogicDeleteProcessor());
-        } else {
-            globalConfig.setLogicDeleteColumn(null);
-        }
+        globalConfig.setLogicDeleteColumn("deleted");
+        globalConfig.setNormalValueOfLogicDelete(0);
+        globalConfig.setDeletedValueOfLogicDelete(1);
+        LogicDeleteManager.setProcessor(new DefaultLogicDeleteProcessor());
     }
 
     private void configureMultiTenant(FlexGlobalConfig globalConfig) {
@@ -94,7 +135,7 @@ public class MyBatisFlexAutoConfiguration {
                 .filter(table -> table != null && !table.isBlank())
                 .map(table -> table.trim().toLowerCase(Locale.ROOT))
                 .collect(java.util.stream.Collectors.toUnmodifiableSet());
-        globalConfig.setTenantColumn(properties.getColumnName());
+        globalConfig.setTenantColumn("tenant_id");
         TenantManager.setTenantFactory(new com.mybatisflex.core.tenant.TenantFactory() {
             @Override
             @SuppressWarnings("deprecation")

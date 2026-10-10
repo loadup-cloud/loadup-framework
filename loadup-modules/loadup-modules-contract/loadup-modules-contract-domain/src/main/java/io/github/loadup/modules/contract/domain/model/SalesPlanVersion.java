@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
@@ -80,5 +81,10 @@ public final class SalesPlanVersion {
         public Item {
             merchantPolicies = Map.copyOf(merchantPolicies);
         }
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

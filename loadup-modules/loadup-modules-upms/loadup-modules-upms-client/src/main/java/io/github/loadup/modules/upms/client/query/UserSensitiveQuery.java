@@ -19,9 +19,18 @@
  */
 package io.github.loadup.modules.upms.client.query;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public record UserSensitiveQuery(
-        @NotNull @Pattern(regexp = "[A-Za-z0-9_-]{1,64}") String id,
-        @NotNull SensitiveReadPurpose purpose) {}
+        @Schema(description = "Resource identifier") @NotNull @Pattern(regexp = "[A-Za-z0-9_-]{1,64}")
+        String id,
+
+        @Schema(description = "Purpose") @NotNull SensitiveReadPurpose purpose) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

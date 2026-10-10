@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
@@ -57,5 +58,10 @@ public record MerchantContractRevision(
 
     public String snapshotHash() {
         return SnapshotDigest.hash(this);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

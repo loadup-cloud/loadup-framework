@@ -20,14 +20,13 @@
 package io.github.loadup.modules.merchant.web;
 
 import io.github.loadup.modules.merchant.app.autoconfigure.MerchantAutoConfiguration;
-import io.github.loadup.modules.merchant.app.service.MerchantService;
+import io.github.loadup.modules.merchant.client.facade.MerchantFacade;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.Import;
 
 @AutoConfiguration(after = MerchantAutoConfiguration.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnBean(MerchantService.class)
-@ConditionalOnProperty(prefix = "loadup.merchant.web", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnBean(MerchantFacade.class)
 @Import(MerchantController.class)
 public class MerchantWebAutoConfiguration {}

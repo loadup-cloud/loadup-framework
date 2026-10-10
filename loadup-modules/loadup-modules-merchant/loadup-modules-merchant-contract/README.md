@@ -18,7 +18,7 @@
 | 能力 | 契约 |
 |---|---|
 | 职责 | 可选合约事实适配 |
-| 当前实现 | 只依赖 merchant-client、contract-client 与 Boot 装配，将 MerchantLookup 查询结果转换为 MerchantFactsProvider。检查 tenant/id，仅输出基本事实，已存在 Provider 时退让。 |
+| 当前实现 | 只依赖 merchant-client、contract-client 与 Boot 装配，将 MerchantQueryFacade 查询结果转换为 MerchantFactsProvider。检查 tenant/id，仅输出基本事实，已存在 Provider 时退让。 |
 | 验证状态 | 源码提供，尚未编译/运行 |
 
 ## 接入约束

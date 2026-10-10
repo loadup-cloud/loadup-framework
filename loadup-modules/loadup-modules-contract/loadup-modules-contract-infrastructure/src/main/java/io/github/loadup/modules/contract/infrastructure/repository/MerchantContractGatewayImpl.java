@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.contract.infrastructure.repository;
 
+import static io.github.loadup.modules.contract.infrastructure.dataobject.table.Tables.MERCHANT_CONTRACT_DO;
+
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.client.dto.ContractError;
@@ -123,7 +125,8 @@ public class MerchantContractGatewayImpl implements MerchantContractGateway {
         if (merchant != null && !merchant.isBlank())
             query.and(MerchantContractDO::getMerchantId).eq(required(merchant));
         long total = contracts.selectCountByQuery(query);
-        query.orderBy("created_at DESC, id ASC").limit((long) (page - 1) * size, size);
+        query.orderBy(MERCHANT_CONTRACT_DO.CREATED_AT.desc(), MERCHANT_CONTRACT_DO.ID.asc())
+                .limit((long) (page - 1) * size, size);
         return new ContractPage<>(
                 contracts.selectListByQuery(query).stream()
                         .map(converter::toContract)

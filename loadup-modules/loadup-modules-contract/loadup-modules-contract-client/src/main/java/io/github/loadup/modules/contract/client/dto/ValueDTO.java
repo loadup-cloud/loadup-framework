@@ -19,4 +19,14 @@
  */
 package io.github.loadup.modules.contract.client.dto;
 
-public record ValueDTO(String type, String value) {}
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+public record ValueDTO(
+        @Schema(description = "Type") String type,
+        @Schema(description = "Value") String value) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

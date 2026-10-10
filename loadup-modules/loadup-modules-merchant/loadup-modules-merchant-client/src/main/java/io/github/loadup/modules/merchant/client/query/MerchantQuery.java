@@ -19,11 +19,26 @@
  */
 package io.github.loadup.modules.merchant.client.query;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
 public record MerchantQuery(
-        @Size(max = 64) String merchantCode,
-        @Size(max = 200) String name,
-        @Size(max = 16) String status,
-        @Min(1) int page,
-        @Min(1) @Max(100) int size) {}
+        @Schema(description = "Merchant code") @Size(max = 64)
+        String merchantCode,
+
+        @Schema(description = "Name") @Size(max = 200) String name,
+
+        @Schema(description = "Current lifecycle status") @Size(max = 16)
+        String status,
+
+        @Schema(description = "Page number, starting at 1", minimum = "1") @Min(1)
+        int page,
+
+        @Schema(description = "Page size; list queries allow at most 100", minimum = "1") @Min(1) @Max(100)
+        int size) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

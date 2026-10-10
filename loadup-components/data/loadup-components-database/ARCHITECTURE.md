@@ -9,7 +9,7 @@ The component is a single-jar, thin MyBatis-Flex integration. It owns persistenc
 ```text
 DO extends BaseDO
       │
-      ├─ MyBatis-Flex key generator ── random / UUID v4 / UUID v7 / Snowflake
+      ├─ MyBatis-Flex key generator ── fixed UUID v4
       ├─ BaseEntityListener ─────────── createdAt / updatedAt / tenantId / deleted
       ├─ logic-delete metadata ──────── deleted = 0 / 1
       └─ tenant metadata ────────────── tenant_id predicate + insert value
@@ -27,20 +27,17 @@ DO extends BaseDO
 | `updatedAt` | `updated_at` | `DATETIME` | Filled on insert and every entity update |
 | `deleted` | `deleted` | `TINYINT` | `0` normal, `1` deleted |
 
-Timestamps use a UTC `Clock` bean. Applications can replace the bean for deterministic tests or another time source.
+Timestamps use the framework UTC clock. Unit tests may construct a listener with a deterministic clock.
 
 ## ID generation
 
-`DatabaseIdGenerator` implements both the LoadUp `IdGenerator` contract and MyBatis-Flex `IKeyGenerator`. Auto-configuration registers it under `loadupId` and sets it as the global strategy only when automatic generation is enabled. An explicit entity `@Id` strategy still has higher priority.
+`DatabaseIdGenerator` implements LoadUp and MyBatis-Flex generator contracts with UUID v4. Missing identifiers are filled before insertion; explicit business identifiers are preserved.
 
-- `random`: compact alphanumeric value, 1–64 characters.
-- `uuid-v4`: random RFC 4122 UUID.
-- `uuid-v7`: timestamp-ordered RFC 9562 UUID, suitable for B-tree indexes.
-- `snowflake`: decimal 64-bit ID using 5-bit datacenter and worker identifiers.
+## Logical deletion and ownership
 
-## Logical deletion
+The framework always configures `deleted`, normal value `0` and deleted value `1`. Physical lifecycle operations such as dictionary removal or reference unlinking explicitly use `LogicDeleteManager.execWithoutLogicDelete`; default repository queries retain the normal-row filter.
 
-When enabled, the configured column and integer values are applied to Flex global metadata. Delete operations become updates and normal queries add the normal-value predicate. Physical maintenance operations can use `LogicDeleteManager.execWithoutLogicDelete` explicitly.
+A bean-definition guard rejects additional MyBatisFlexCustomizer beans before singleton initialization. Fixed defaults are applied after Boot property binding. This protects normal Spring integration; MyBatis-Flex exposes mutable static APIs, so direct calls to mutate globals remain prohibited rather than technically immutable. Applications own deployment connection settings and trusted tenant resolution, not audit listeners or global CRUD conventions.
 
 ## Multi-tenancy
 
@@ -52,7 +49,7 @@ The servlet filter always propagates request context. With multi-tenancy disable
 
 ## Code generation
 
-The repository root `mybatis-flex.config` is the single source for annotation processing. It generates uppercase TableDef properties, one module-local `Tables` class, and mapper interfaces annotated with `@Mapper`. Generated sources stay under `target/generated-sources/annotations` and must not be committed.
+The repository root `mybatis-flex.config` is the single source for annotation processing. It generates uppercase TableDef properties, one module-local `Tables` class, while Mapper interfaces are explicitly declared. Generated sources stay under `target/generated-sources/annotations` and must not be committed.
 
 ## Schema contract
 

@@ -19,6 +19,7 @@
  */
 package io.github.loadup.components.signature.request;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.components.kms.KmsSignatureAlgorithm;
 import java.util.Base64;
 import java.util.List;
@@ -101,6 +102,7 @@ public record RequestSignature(RequestSignatureParameters parameters, String sig
 
     @Override
     public String toString() {
-        return "RequestSignature[appId=" + parameters.appId() + ", keyVersion=" + parameters.keyVersion() + "]";
+        return ToStringAsJson.reflectionToString(
+                java.util.Map.of("appId", parameters.appId(), "keyVersion", parameters.keyVersion()));
     }
 }

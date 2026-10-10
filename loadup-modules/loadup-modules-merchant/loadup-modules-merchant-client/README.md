@@ -1,6 +1,6 @@
 # LoadUp Merchant Client
 
-公开报文与 MerchantLookup。接入细节见 [商户 README](../README.md)。
+公开报文与 MerchantQueryFacade。接入细节见 [商户 README](../README.md)。
 
 ## Maven
 
@@ -17,8 +17,8 @@
 
 | 能力 | 契约 |
 |---|---|
-| 职责 | 公开报文与 MerchantLookup |
-| 当前实现 | 不可变 record 提供写入、分页、状态、详情和非敏感 Profile 查询契约。Masked 注解仅描述 WebMVC 输出；MerchantLookup 使用显式租户/id 查询，不暴露私有联系信息。 |
+| 职责 | 公开报文与 MerchantQueryFacade |
+| 当前实现 | 不可变 record 提供写入、分页、状态、详情和非敏感 Profile 查询契约。Masked 注解仅描述 WebMVC 输出；MerchantQueryFacade 使用显式租户/id 查询，不暴露私有联系信息。 |
 | 验证状态 | 源码提供，尚未编译/运行 |
 
 ## 接入约束

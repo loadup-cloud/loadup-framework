@@ -19,10 +19,18 @@
  */
 package io.github.loadup.modules.contract.client.dto;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public record ContractDecisionDTO(
-        boolean allowed,
-        String reason,
-        String contractId,
-        Integer revision,
-        String snapshotHash,
-        ConfigurationDTO configuration) {}
+        @Schema(description = "Allowed") boolean allowed,
+        @Schema(description = "Reason") String reason,
+        @Schema(description = "Contract id") String contractId,
+        @Schema(description = "Revision") Integer revision,
+        @Schema(description = "Snapshot hash") String snapshotHash,
+        @Schema(description = "Configuration") ConfigurationDTO configuration) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

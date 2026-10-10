@@ -21,12 +21,13 @@
 
 ```yaml
 loadup:
-  upms:
-    security:
-      login:
-        enable-failure-tracking: true
-        max-fail-attempts: 5
-        lock-duration: 30
+  modules:
+    upms:
+      security:
+        login:
+          enable-failure-tracking: true
+          max-fail-attempts: 5
+          lock-duration: 30
 ```
 
 `AuthenticationService.login` 是内部身份校验接口；HTTP 登录由 authserver 适配器完成。需要预置用户注册与 RBAC HTTP 接口时，再引入 `loadup-modules-upms-web`；也可以直接在应用 Controller 中调用 UPMS 服务。
@@ -57,3 +58,13 @@ loadup:
 purpose 只允许 `PROFILE_CORRECTION`、`CUSTOMER_SUPPORT`、`SECURITY_REVIEW`。接口没有超级管理员绕过规则；需要显式配置权限及相应角色数据范围，不自动授予现有账号。返回 `result/data`，data 只含 id、realName、email、mobile；响应为 `Cache-Control: no-store`。
 
 明文返回前必须有 `SensitiveReadAudit` 同步持久化访问记录。消费工程显式引入 `loadup-modules-audit` 后，Web 适配器提供默认桥接，以独立事务记录 actor、目标 ID、用途、tenant 与 traceId，不记录字段原文。缺失审计组件或写入/提交失败则拒绝明文；也可提供自己的可靠 recorder。
+
+## 业务配置命名空间
+
+模块专属配置统一使用 `loadup.modules.upms.*`，配置中心与消费工程需同步迁移旧前缀；登录策略为 `loadup.modules.upms.security.login`，OAuth 为 `loadup.modules.upms.security.oauth`。认证协议与令牌校验继续使用全局 `loadup.security.*`。
+
+## 统一接入契约
+
+Java 消费方通过 `client.facade.XxxFacade` 注入公开业务入口；默认应用 Service 直接实现接口。引入 `*-app` 装配业务能力，引入 `*-web` 才提供 Controller，Web 适配不再提供独立 enabled 开关。模块整体启停仍使用 `loadup.modules.upms.enabled`。
+
+JSON Controller 显式返回 SuccessResponse，分页保留已有分页报文契约；异常由全局 WebMVC 处理。下载仍为流式响应。请求与 DTO 字段声明 OpenAPI，凭证只写。持久化经 database 组件使用 MyBatis-Flex、Tables 常量和 Spring MapStruct Converter；数据库连接与可信租户来源由消费工程配置。新 schema 迁移与本轮 clean 编译、运行验证仍需本地执行。

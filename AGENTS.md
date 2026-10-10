@@ -48,7 +48,7 @@ loadup-cloud/
 │   ├── reliability/    # lock, outbox, globalunique, resilience4j
 │   ├── execution/      # scheduler, retrytask, pipeline
 │   └── platform/       # configcenter, extension, observability, testcontainers
-├── loadup-modules/             # 通用业务能力及可选 *-web 适配模块
+├── loadup-modules/             # 通用业务聚合，各自包含 COLA 分层与可选 web 子模块
 │   ├── loadup-modules-upms/    # 用户与权限管理、账号安全
 │   ├── loadup-modules-audit/   # 审计中心
 │   ├── loadup-modules-dictionary/ # 数据字典
@@ -141,10 +141,11 @@ loadup-components-{name}/
 
 ```
 loadup-modules-{mod}/
-├── {mod}-client/          # DTO、Command、Query（可被其他模块依赖）
+├── {mod}-client/          # Facade、DTO、Command、Query、消费方 SPI
 ├── {mod}-domain/          # 纯 POJO + Gateway 接口 + 枚举（零 Spring 注解）
 ├── {mod}-infrastructure/  # DO extends BaseDO、Mapper、GatewayImpl、Converter
 ├── {mod}-app/             # @Service 业务编排、AutoConfiguration
+├── {mod}-web/             # 可选 Controller 适配；按 Maven 依赖装配
 └── {mod}-test/            # 集成测试 + 单元测试（parent = 根 loadup-parent）
 ```
 
@@ -221,6 +222,9 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 |-------------------|------------------------------|
 | client DTO        | `.client.dto`                |
 | client Command    | `.client.command`            |
+| client Facade     | `.client.facade`             |
+| client Query      | `.client.query`              |
+| client SPI        | `.client.spi`                |
 | domain model      | `.domain.model`              |
 | domain gateway    | `.domain.gateway`            |
 | infra DO          | `.infrastructure.dataobject` |
@@ -320,3 +324,22 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 
 - 业务元数据使用 `commons-context` 的不可变 ExecutionContext 与 ScopedValue ContextHolder；入口用 runWith/callWith，下游只读，临时覆盖派生新对象进入嵌套回调。ServiceTemplate 的 init/clean 按入口及资源需求使用，普通 Service 可直接调用。
 - 跨线程业务上下文用 Observability 的 LoadUpContextTaskDecorator 或纯 Java wrap；Boot 标准 Micrometer 装饰器负责 Trace，任意 Micrometer snapshot 不会自动捕获 ScopedValue。只绑定轻量不可变值；用户身份由 SecurityContextHolder 管理，traceId/spanId 由 Micrometer/MDC 管理。
+
+## Business Facades and Persistence
+
+- Public business interfaces reside in `client.facade` and use `XxxFacade`. Application services implement the interfaces directly; Controllers and cross-module consumers depend on Facades. Consumer-supplied extensions remain `client.spi.XxxProvider` or `XxxHandler`.
+- Facades return client DTOs or JDK values. HTTP envelopes belong to Controllers. Keep domain Gateway ports separate from public Facades.
+- Business infrastructure depends on `loadup-components-database`. GatewayImpl uses MyBatis-Flex BaseMapper and QueryWrapper with generated Tables/TableDef constants. Business repositories contain no JdbcTemplate, NamedParameterJdbcTemplate, handwritten SQL, string columns or SQL sort fragments.
+- DOs extend BaseDO. Mappers are explicit empty `BaseMapper<XxxDO>` interfaces; APT generates table definitions, not Mappers. Generated sources stay in target and are not committed.
+- database owns fixed framework defaults for audit fields, UUID keys and logical deletion. Business modules and consumers must not replace FlexGlobalConfig, framework listeners, or MyBatisFlexCustomizer. Deployment DataSource settings and trusted tenant resolution remain integration responsibilities. Validate conflicting persistence conventions at startup.
+- Root `mybatis-flex.config` owns common APT options. Do not override these options in child modules. Each infrastructure generates its own Tables in its DO package's `.table` subpackage.
+
+## Mapping, HTTP Contracts and Utilities
+
+- Every object mapping uses a Spring-managed MapStruct Converter with `@Mapper(config = LoadUpMapStructConfig.class)` and constructor injection. DTO/domain mapping belongs to app.converter, DO/domain mapping to infrastructure.converter, HTTP projections to web converters. Do not use Mappers.getMapper, static conversion factories or manually instantiate generated converters.
+- Domain methods implement business validation and transitions, not representation conversion or input-field copying. Express update merge rules in Converter mappings; document null-as-unchanged versus empty-as-clear. Authorize private-field modifications before mapping.
+- Include OpenAPI Tag/Operation on public Controllers and Schema descriptions/examples/units/formats on public DTO, Command and Query fields. Validation annotations define actual constraints; documentation must agree. Java descriptions are English. Credential request fields are WRITE_ONLY with synthetic examples. Document HTTP 200 business failures and actual response envelopes. Domain has no OpenAPI annotations.
+- Business JSON Controllers explicitly return SuccessResponse or IResponse; use SuccessResponse.ofPage for pagination and SuccessResponse.success for no data. Global exception handling returns FailureResponse. Downloads, SSE and standard protocol endpoints preserve their protocol-specific types. Keep application services free of HTTP envelopes.
+- Project DTOs, commands, queries, domain data, DOs and envelopes implement JSON toString through ToStringUtils.reflectionToString. Credentials and keys must be redacted. Output handles records, inheritance, cycles and bounded collections without triggering resource access. Preserve JDK/third-party types and value objects with intentional textual semantics. Log JSON and HTTP JSON have separate disclosure policies.
+- Prefer JDK APIs, then Guava for missing general utilities and Vavr for useful Either/Validation/composition. Public contracts use JDK types. Avoid pass-through utility wrappers; retain project-specific money, signature, context and masking semantics. Propagate Vavr Try failures across transactional entry points. Manage versions through BOM and declare dependencies where used.
+- Business configuration uses loadup.modules.<module>.*. Optional web exposure is selected by the web dependency; do not add general web.enabled properties. Keep meaningful capture/path configuration.

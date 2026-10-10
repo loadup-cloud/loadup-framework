@@ -1,5 +1,26 @@
+/*
+ * #%L
+ * Loadup Modules UPMS Client Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.client.dto;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,20 +32,49 @@ import java.util.List;
  */
 public class DepartmentDTO {
 
+    @Schema(description = "Resource identifier")
     private String id;
+
+    @Schema(description = "Parent id")
     private String parentId;
+
+    @Schema(description = "Dept name")
     private String deptName;
+
+    @Schema(description = "Dept code")
     private String deptCode;
+
+    @Schema(description = "Dept level")
     private Integer deptLevel;
+
+    @Schema(description = "Display order; smaller values appear first")
     private Integer sortOrder;
+
+    @Schema(description = "Leader user id")
     private String leaderUserId;
+
+    @Schema(description = "Leader user name")
     private String leaderUserName;
+
+    @Schema(description = "Mobile")
     private String mobile;
+
+    @Schema(description = "Email")
     private String email;
+
+    @Schema(description = "Current lifecycle status")
     private Short status;
+
+    @Schema(description = "Children")
     private List<DepartmentDTO> children;
+
+    @Schema(description = "Remark")
     private String remark;
+
+    @Schema(description = "Creation time in UTC")
     private LocalDateTime createdAt;
+
+    @Schema(description = "Last update time in UTC")
     private LocalDateTime updatedAt;
 
     public DepartmentDTO(
@@ -300,7 +350,6 @@ public class DepartmentDTO {
 
     @Override
     public String toString() {
-        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
-                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
+        return ToStringAsJson.reflectionToString(this);
     }
 }

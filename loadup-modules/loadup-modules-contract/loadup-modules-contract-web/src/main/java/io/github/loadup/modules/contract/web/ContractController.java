@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.web;
 
+import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.modules.contract.app.service.*;
 import io.github.loadup.modules.contract.client.command.*;
 import io.github.loadup.modules.contract.client.dto.*;
@@ -48,77 +49,84 @@ public class ContractController {
     @PostMapping("/catalog/save")
     @PreAuthorize("hasAuthority('contract:catalog:write')")
     @Operation(summary = "Create or update a validated draft version")
-    public CatalogVersionDTO save(@Valid @RequestBody CatalogSaveCommand command, Authentication actor) {
-        return catalog.save(command, actor.getName());
+    public SuccessResponse<CatalogVersionDTO> save(
+            @Valid @RequestBody CatalogSaveCommand command, Authentication actor) {
+        return SuccessResponse.of(catalog.save(command, actor.getName()));
     }
 
     @PostMapping("/catalog/page")
     @PreAuthorize("hasAuthority('contract:catalog:read')")
     @Operation(summary = "Page catalog versions in the current tenant")
-    public ContractPageDTO<CatalogVersionDTO> catalogPage(@Valid @RequestBody CatalogQuery query) {
-        return catalog.page(query);
+    public SuccessResponse<ContractPageDTO<CatalogVersionDTO>> catalogPage(@Valid @RequestBody CatalogQuery query) {
+        return SuccessResponse.of(catalog.page(query));
     }
 
     @PostMapping("/catalog/detail")
     @PreAuthorize("hasAuthority('contract:catalog:read')")
     @Operation(summary = "Read a fixed catalog version")
-    public CatalogVersionDTO catalogDetail(@Valid @RequestBody IdQuery query) {
-        return catalog.detail(query.id());
+    public SuccessResponse<CatalogVersionDTO> catalogDetail(@Valid @RequestBody IdQuery query) {
+        return SuccessResponse.of(catalog.detail(query.id()));
     }
 
     @PostMapping("/catalog/publish")
     @PreAuthorize("hasAuthority('contract:catalog:publish')")
     @Operation(summary = "Publish an immutable version after server validation")
-    public CatalogVersionDTO publish(@Valid @RequestBody CatalogActionCommand command, Authentication actor) {
-        return catalog.publish(command, actor.getName());
+    public SuccessResponse<CatalogVersionDTO> publish(
+            @Valid @RequestBody CatalogActionCommand command, Authentication actor) {
+        return SuccessResponse.of(catalog.publish(command, actor.getName()));
     }
 
     @PostMapping("/catalog/retire")
     @PreAuthorize("hasAuthority('contract:catalog:publish')")
     @Operation(summary = "Retire a catalog version without rewriting signed contracts")
-    public CatalogVersionDTO retire(@Valid @RequestBody CatalogActionCommand command, Authentication actor) {
-        return catalog.retire(command, actor.getName());
+    public SuccessResponse<CatalogVersionDTO> retire(
+            @Valid @RequestBody CatalogActionCommand command, Authentication actor) {
+        return SuccessResponse.of(catalog.retire(command, actor.getName()));
     }
 
     @PostMapping("/merchant-contracts/preview")
     @PreAuthorize("hasAuthority('contract:merchant:sign')")
     @Operation(summary = "Preview merchant terms using verified merchant facts")
-    public MerchantContractDTO preview(@Valid @RequestBody ContractSignCommand command, Authentication actor) {
-        return contracts.preview(command, actor.getName());
+    public SuccessResponse<MerchantContractDTO> preview(
+            @Valid @RequestBody ContractSignCommand command, Authentication actor) {
+        return SuccessResponse.of(contracts.preview(command, actor.getName()));
     }
 
     @PostMapping("/merchant-contracts/sign")
     @PreAuthorize("hasAuthority('contract:merchant:sign')")
     @Operation(summary = "Sign a fixed sales plan with a durable idempotency key")
-    public MerchantContractDTO sign(@Valid @RequestBody ContractSignCommand command, Authentication actor) {
-        return contracts.sign(command, actor.getName());
+    public SuccessResponse<MerchantContractDTO> sign(
+            @Valid @RequestBody ContractSignCommand command, Authentication actor) {
+        return SuccessResponse.of(contracts.sign(command, actor.getName()));
     }
 
     @PostMapping("/merchant-contracts/page")
     @PreAuthorize("hasAuthority('contract:merchant:read')")
     @Operation(summary = "Page signed merchant contracts")
-    public ContractPageDTO<MerchantContractDTO> contractPage(@Valid @RequestBody MerchantContractQuery query) {
-        return contracts.page(query);
+    public SuccessResponse<ContractPageDTO<MerchantContractDTO>> contractPage(
+            @Valid @RequestBody MerchantContractQuery query) {
+        return SuccessResponse.of(contracts.page(query));
     }
 
     @PostMapping("/merchant-contracts/detail")
     @PreAuthorize("hasAuthority('contract:merchant:read')")
     @Operation(summary = "Read signed terms and their stored digest")
-    public MerchantContractDTO contractDetail(@Valid @RequestBody IdQuery query) {
-        return contracts.detail(query.id());
+    public SuccessResponse<MerchantContractDTO> contractDetail(@Valid @RequestBody IdQuery query) {
+        return SuccessResponse.of(contracts.detail(query.id()));
     }
 
     @PostMapping("/merchant-contracts/status")
     @PreAuthorize("hasAuthority('contract:merchant:manage')")
     @Operation(summary = "Suspend, resume or terminate with generation checking")
-    public MerchantContractDTO status(@Valid @RequestBody ContractStatusCommand command, Authentication actor) {
-        return contracts.changeStatus(command, actor.getName());
+    public SuccessResponse<MerchantContractDTO> status(
+            @Valid @RequestBody ContractStatusCommand command, Authentication actor) {
+        return SuccessResponse.of(contracts.changeStatus(command, actor.getName()));
     }
 
     @PostMapping("/runtime/resolve")
     @PreAuthorize("hasAuthority('contract:runtime:resolve')")
     @Operation(summary = "Resolve signed capabilities; transaction facts must be validated by the caller")
-    public ContractDecisionDTO resolve(@Valid @RequestBody ContractResolveQuery query) {
-        return runtime.resolve(query);
+    public SuccessResponse<ContractDecisionDTO> resolve(@Valid @RequestBody ContractResolveQuery query) {
+        return SuccessResponse.of(runtime.resolve(query));
     }
 }

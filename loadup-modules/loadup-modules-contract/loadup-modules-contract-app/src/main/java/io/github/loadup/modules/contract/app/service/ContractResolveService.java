@@ -31,7 +31,7 @@ import java.util.*;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ContractResolveService {
+public class ContractResolveService implements io.github.loadup.modules.contract.client.facade.ContractResolveFacade {
     private final MerchantContractGateway gateway;
     private final MerchantContractService contracts;
     private final MerchantFacts facts;

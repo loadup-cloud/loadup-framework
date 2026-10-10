@@ -19,17 +19,27 @@
  */
 package io.github.loadup.modules.contract.client.dto;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.Map;
 
 public record CatalogVersionDTO(
-        String id,
-        String kind,
-        String code,
-        int version,
-        String status,
+        @Schema(description = "Resource identifier") String id,
+        @Schema(description = "Task or catalog category") String kind,
+        @Schema(description = "Business code") String code,
+        @Schema(description = "Version") int version,
+        @Schema(description = "Current lifecycle status") String status,
+
+        @Schema(description = "Current optimistic concurrency version")
         long rowVersion,
-        Map<String, Object> definition,
-        String updatedBy,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt) {}
+
+        @Schema(description = "Definition") Map<String, Object> definition,
+        @Schema(description = "Updated by") String updatedBy,
+        @Schema(description = "Creation time in UTC") LocalDateTime createdAt,
+        @Schema(description = "Last update time in UTC") LocalDateTime updatedAt) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

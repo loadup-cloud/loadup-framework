@@ -20,14 +20,13 @@
 package io.github.loadup.modules.contract.web;
 
 import io.github.loadup.modules.contract.app.autoconfigure.ContractAutoConfiguration;
-import io.github.loadup.modules.contract.app.service.CatalogService;
+import io.github.loadup.modules.contract.client.facade.CatalogFacade;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.Import;
 
 @AutoConfiguration(after = ContractAutoConfiguration.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnBean(CatalogService.class)
-@ConditionalOnProperty(prefix = "loadup.contract.web", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnBean(CatalogFacade.class)
 @Import(ContractController.class)
 public class ContractWebAutoConfiguration {}

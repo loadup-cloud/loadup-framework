@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.Map;
 
 public record ResolvedConfiguration(Map<String, TypedValue> values, Map<String, ValueOrigin> origins) {
@@ -26,5 +27,10 @@ public record ResolvedConfiguration(Map<String, TypedValue> values, Map<String, 
         values = ContractChecks.map(values);
         origins = ContractChecks.map(origins);
         if (!values.keySet().equals(origins.keySet())) throw new IllegalArgumentException("Missing value provenance");
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

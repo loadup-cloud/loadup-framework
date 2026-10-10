@@ -27,6 +27,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface MerchantStorageConverter {
+
     MerchantBasicInfo toInfo(MerchantDO source);
 
     @Mapping(target = "info", source = "source")

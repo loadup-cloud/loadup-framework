@@ -21,18 +21,24 @@ package io.github.loadup.modules.merchant;
 
 import static org.assertj.core.api.Assertions.*;
 
+import io.github.loadup.modules.merchant.app.converter.MerchantConverter;
+import io.github.loadup.modules.merchant.app.converter.MerchantConverterImpl;
 import io.github.loadup.modules.merchant.domain.model.*;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 class MerchantBasicInfoTest {
     @Test
     void nullPrivateFieldsPreserveDataAndEmptyValuesClearIt() {
-        var previous = info("M001", "13800138000");
-        var retained = info("M001", null).preservePrivateFields(previous);
-        assertThat(retained.contactPhone()).isEqualTo("13800138000");
-        assertThat(info("M001", "").preservePrivateFields(previous).contactPhone())
-                .isEmpty();
+        new ApplicationContextRunner().withBean(MerchantConverterImpl.class).run(context -> {
+            MerchantConverter converter = context.getBean(MerchantConverter.class);
+            var previous = info("M001", "13800138000");
+            assertThat(converter.merge(info("M001", null), previous).contactPhone())
+                    .isEqualTo("13800138000");
+            assertThat(converter.merge(info("M001", ""), previous).contactPhone())
+                    .isEmpty();
+        });
     }
 
     @Test

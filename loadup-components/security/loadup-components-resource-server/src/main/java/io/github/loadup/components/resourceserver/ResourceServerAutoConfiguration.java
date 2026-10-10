@@ -121,8 +121,8 @@ public class ResourceServerAutoConfiguration {
                                 writeError(response, objectMapper, resultMetrics, CommonResultCodeEnum.ACCESS_DENIED)))
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
                                 jwt.decoder(validatedDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter))
-                        .authenticationEntryPoint((request, response, exception) ->
-                                writeError(response, objectMapper, resultMetrics, CommonResultCodeEnum.UNAUTHENTICATED)));
+                        .authenticationEntryPoint((request, response, exception) -> writeError(
+                                response, objectMapper, resultMetrics, CommonResultCodeEnum.UNAUTHENTICATED)));
         return http.build();
     }
 

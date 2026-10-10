@@ -19,13 +19,29 @@
  */
 package io.github.loadup.modules.contract.client.command;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import java.util.Map;
 
 public record CatalogSaveCommand(
-        String id,
+        @Schema(description = "Resource identifier") String id,
+
+        @Schema(description = "Expected version for optimistic concurrency")
         Long expectedRowVersion,
-        @NotBlank String kind,
-        @NotBlank @Size(max = 128) String code,
-        @Min(1) int version,
-        @NotNull @Size(max = 64) Map<String, Object> definition) {}
+
+        @Schema(description = "Task or catalog category") @NotBlank
+        String kind,
+
+        @Schema(description = "Business code") @NotBlank @Size(max = 128)
+        String code,
+
+        @Schema(description = "Version") @Min(1) int version,
+
+        @Schema(description = "Definition") @NotNull @Size(max = 64)
+        Map<String, Object> definition) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

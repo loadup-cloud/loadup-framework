@@ -29,8 +29,8 @@ import io.github.loadup.modules.contract.client.command.*;
 import io.github.loadup.modules.contract.client.query.ContractResolveQuery;
 import io.github.loadup.modules.contract.client.spi.MerchantFactsProvider;
 import io.github.loadup.modules.merchant.app.service.MerchantService;
-import io.github.loadup.modules.merchant.client.api.MerchantLookup;
 import io.github.loadup.modules.merchant.client.command.*;
+import io.github.loadup.modules.merchant.client.facade.MerchantQueryFacade;
 import io.github.loadup.modules.merchant.client.query.MerchantQuery;
 import java.time.Instant;
 import java.util.*;
@@ -46,7 +46,7 @@ import org.springframework.test.context.ActiveProfiles;
 @EnableTestContainers(ContainerType.MYSQL)
 class MerchantContractIT {
     private final MerchantService merchants;
-    private final MerchantLookup lookup;
+    private final MerchantQueryFacade lookup;
     private final MerchantFactsProvider facts;
     private final CatalogService catalog;
     private final MerchantContractService contracts;
@@ -55,7 +55,7 @@ class MerchantContractIT {
     @Autowired
     MerchantContractIT(
             MerchantService merchants,
-            MerchantLookup lookup,
+            MerchantQueryFacade lookup,
             MerchantFactsProvider facts,
             CatalogService catalog,
             MerchantContractService contracts,

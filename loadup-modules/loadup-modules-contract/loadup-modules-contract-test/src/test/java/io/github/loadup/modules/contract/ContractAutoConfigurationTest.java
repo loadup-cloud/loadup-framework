@@ -85,7 +85,7 @@ class ContractAutoConfigurationTest {
     @Test
     void disabledModuleDoesNotRegisterComponentsEvenWithDataSource() {
         runner.withBean(DataSource.class, () -> mock(DataSource.class))
-                .withPropertyValues("loadup.contract.enabled=false")
+                .withPropertyValues("loadup.modules.contract.enabled=false")
                 .run(context -> {
                     assertThat(context).hasNotFailed();
                     assertThat(context).doesNotHaveBean(CatalogService.class);

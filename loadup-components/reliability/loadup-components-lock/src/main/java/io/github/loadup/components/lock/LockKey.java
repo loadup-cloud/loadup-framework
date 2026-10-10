@@ -19,6 +19,7 @@
  */
 package io.github.loadup.components.lock;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -63,6 +64,6 @@ public record LockKey(String business, String tenantId, String resourceId) {
 
     @Override
     public String toString() {
-        return "LockKey[scope=" + (tenantId == null ? "global" : "tenant") + "]";
+        return ToStringAsJson.reflectionToString(java.util.Map.of("scope", tenantId == null ? "global" : "tenant"));
     }
 }

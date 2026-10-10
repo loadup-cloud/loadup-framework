@@ -19,28 +19,52 @@
  */
 package io.github.loadup.modules.merchant.client.dto;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.masking.MaskType;
 import io.github.loadup.commons.masking.Masked;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
 public record MerchantDTO(
-        String id,
-        String merchantCode,
-        String name,
-        String shortName,
-        String type,
-        String industry,
+        @Schema(description = "Resource identifier") String id,
+        @Schema(description = "Merchant code") String merchantCode,
+        @Schema(description = "Name") String name,
+        @Schema(description = "Short name") String shortName,
+        @Schema(description = "Type") String type,
+        @Schema(description = "Industry") String industry,
+
+        @Schema(description = "ISO 3166-1 alpha-2 country code")
         String country,
-        String province,
-        String city,
-        @Masked(MaskType.FULL) String address,
-        @Masked(MaskType.FULL) String registrationNo,
-        @Masked(MaskType.NAME) String contactName,
-        @Masked(MaskType.PHONE) String contactPhone,
-        @Masked(MaskType.EMAIL) String contactEmail,
-        String status,
+
+        @Schema(description = "Province") String province,
+        @Schema(description = "City") String city,
+
+        @Schema(description = "Merchant business address") @Masked(MaskType.FULL)
+        String address,
+
+        @Schema(description = "Registration no") @Masked(MaskType.FULL)
+        String registrationNo,
+
+        @Schema(description = "Contact name") @Masked(MaskType.NAME)
+        String contactName,
+
+        @Schema(description = "Contact phone") @Masked(MaskType.PHONE)
+        String contactPhone,
+
+        @Schema(description = "Contact email") @Masked(MaskType.EMAIL)
+        String contactEmail,
+
+        @Schema(description = "Current lifecycle status") String status,
+
+        @Schema(description = "Current optimistic concurrency version")
         long rowVersion,
-        String createdBy,
-        String updatedBy,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt) {}
+
+        @Schema(description = "Created by") String createdBy,
+        @Schema(description = "Updated by") String updatedBy,
+        @Schema(description = "Creation time in UTC") LocalDateTime createdAt,
+        @Schema(description = "Last update time in UTC") LocalDateTime updatedAt) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

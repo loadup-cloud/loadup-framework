@@ -26,8 +26,7 @@ class ObservabilityIntegrationTest {
         when(context.traceId()).thenReturn("0123456789abcdef0123456789abcdef");
 
         MockHttpServletResponse response = new MockHttpServletResponse();
-        new TraceResponseHeaderFilter(tracer)
-                .doFilter(new MockHttpServletRequest(), response, new MockFilterChain());
+        new TraceResponseHeaderFilter(tracer).doFilter(new MockHttpServletRequest(), response, new MockFilterChain());
 
         assertThat(response.getHeader("traceId")).isEqualTo("0123456789abcdef0123456789abcdef");
         verify(tracer).currentSpan();
@@ -39,8 +38,7 @@ class ObservabilityIntegrationTest {
         Tracer tracer = mock(Tracer.class);
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        new TraceResponseHeaderFilter(tracer)
-                .doFilter(new MockHttpServletRequest(), response, new MockFilterChain());
+        new TraceResponseHeaderFilter(tracer).doFilter(new MockHttpServletRequest(), response, new MockFilterChain());
 
         assertThat(response.getHeader("traceId")).isNull();
     }
@@ -53,9 +51,15 @@ class ObservabilityIntegrationTest {
         metrics.record(false);
         metrics.record(false);
 
-        assertThat(registry.get("loadup.api.responses").tag("outcome", "success").counter().count())
+        assertThat(registry.get("loadup.api.responses")
+                        .tag("outcome", "success")
+                        .counter()
+                        .count())
                 .isEqualTo(1.0);
-        assertThat(registry.get("loadup.api.responses").tag("outcome", "failure").counter().count())
+        assertThat(registry.get("loadup.api.responses")
+                        .tag("outcome", "failure")
+                        .counter()
+                        .count())
                 .isEqualTo(2.0);
     }
 }

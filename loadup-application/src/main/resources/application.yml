@@ -29,37 +29,38 @@ scalar:
 
 # LoadUp component and module properties
 loadup:
+  modules:
+    audit:
+      web:
+        include-paths:
+          - /api/upms/*/create
+          - /api/upms/*/update
+          - /api/upms/*/delete
+          - /api/upms/*/change-password
+          - /api/upms/*/lock
+          - /api/upms/*/unlock
+          - /api/upms/*/move
+          - /api/upms/*/assign-*
+          - /api/upms/*/remove-*
+          - /api/auth/login
+          - /api/auth/register
+          - /api/dictionaries/types/*
+          - /api/dictionaries/items/*
+          - /api/files
+          - /api/files/*
+          - /api/files/cleanup
+          - /api/notifications
+          - /api/notifications/*
+          - /api/account/security/password
+          - /api/transfer-tasks/imports
+          - /api/transfer-tasks/exports
+          - /api/transfer-tasks/retry
+    transfer:
+      max-input-bytes: 20971520
+      max-output-bytes: 104857600
   database:
     multi-tenant:
       default-tenant-id: ${LOADUP_DEFAULT_TENANT_ID:__default__}
-  audit:
-    web:
-      include-paths:
-        - /api/upms/*/create
-        - /api/upms/*/update
-        - /api/upms/*/delete
-        - /api/upms/*/change-password
-        - /api/upms/*/lock
-        - /api/upms/*/unlock
-        - /api/upms/*/move
-        - /api/upms/*/assign-*
-        - /api/upms/*/remove-*
-        - /api/auth/login
-        - /api/auth/register
-        - /api/dictionaries/types/*
-        - /api/dictionaries/items/*
-        - /api/files
-        - /api/files/*
-        - /api/files/cleanup
-        - /api/notifications
-        - /api/notifications/*
-        - /api/account/security/password
-        - /api/transfer-tasks/imports
-        - /api/transfer-tasks/exports
-        - /api/transfer-tasks/retry
-  transfer:
-    max-input-bytes: 20971520
-    max-output-bytes: 104857600
   dfs:
     binder-type: local
     binder:

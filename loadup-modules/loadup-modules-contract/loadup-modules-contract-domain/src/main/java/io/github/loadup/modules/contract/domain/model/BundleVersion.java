@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -50,5 +51,10 @@ public record BundleVersion(String bundleCode, int version, List<Item> items) {
             values = ContractChecks.map(values);
             new ConditionEvaluator().validate(usageCondition);
         }
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

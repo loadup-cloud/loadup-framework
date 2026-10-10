@@ -1,3 +1,22 @@
+/*-
+ * #%L
+ * Loadup Components Database
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.components.database.listener;
 
 import com.mybatisflex.annotation.InsertListener;
@@ -22,20 +41,16 @@ public class BaseEntityListener implements InsertListener, UpdateListener {
             return;
         }
 
-        DatabaseProperties.Audit audit = databaseProperties.getAudit();
-        DatabaseProperties.IdGenerator idProperties = databaseProperties.getIdGenerator();
         LocalDateTime now = LocalDateTime.now(clock);
 
-        if (idProperties.isEnabled() && !StringUtils.hasText(baseDO.getId())) {
+        if (!StringUtils.hasText(baseDO.getId())) {
             baseDO.setId(idGenerator.generate());
         }
 
-        if (audit.isEnabled()) {
-            if (baseDO.getCreatedAt() == null) {
-                baseDO.setCreatedAt(now);
-            }
-            baseDO.setUpdatedAt(now);
+        if (baseDO.getCreatedAt() == null) {
+            baseDO.setCreatedAt(now);
         }
+        baseDO.setUpdatedAt(now);
 
         DatabaseProperties.MultiTenant tenant = databaseProperties.getMultiTenant();
         if (!tenant.isEnabled()) {
@@ -50,12 +65,7 @@ public class BaseEntityListener implements InsertListener, UpdateListener {
             }
         }
 
-        DatabaseProperties.LogicalDelete logicalDelete = databaseProperties.getLogicalDelete();
-        if (logicalDelete.isEnabled()) {
-            baseDO.setDeleted(logicalDelete.getNormalValue());
-        } else if (baseDO.getDeleted() == null) {
-            baseDO.setDeleted(0);
-        }
+        baseDO.setDeleted(0);
     }
 
     @Override
@@ -64,9 +74,7 @@ public class BaseEntityListener implements InsertListener, UpdateListener {
             return;
         }
 
-        if (databaseProperties.getAudit().isEnabled()) {
-            baseDO.setUpdatedAt(LocalDateTime.now(clock));
-        }
+        baseDO.setUpdatedAt(LocalDateTime.now(clock));
     }
 
     public BaseEntityListener(DatabaseProperties databaseProperties, IdGenerator idGenerator, Clock clock) {

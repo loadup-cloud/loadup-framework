@@ -19,9 +19,10 @@
  */
 package io.github.loadup.modules.merchant.web;
 
-import io.github.loadup.modules.merchant.app.service.MerchantService;
+import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.modules.merchant.client.command.*;
 import io.github.loadup.modules.merchant.client.dto.*;
+import io.github.loadup.modules.merchant.client.facade.MerchantFacade;
 import io.github.loadup.modules.merchant.client.query.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,44 +35,47 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/merchants")
 @Tag(name = "Merchants", description = "Tenant-scoped merchant basic information")
 public class MerchantController {
-    private final MerchantService service;
+    private final MerchantFacade service;
 
-    public MerchantController(MerchantService service) {
+    public MerchantController(MerchantFacade service) {
         this.service = service;
     }
 
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('merchant:write')")
     @Operation(summary = "Create merchant basic information")
-    public MerchantDTO create(@Valid @RequestBody MerchantCreateCommand command, Authentication actor) {
-        return service.create(command, actor.getName());
+    public SuccessResponse<MerchantDTO> create(
+            @Valid @RequestBody MerchantCreateCommand command, Authentication actor) {
+        return SuccessResponse.of(service.create(command, actor.getName()));
     }
 
     @PostMapping("/update")
     @PreAuthorize("hasAuthority('merchant:write')")
     @Operation(summary = "Update merchant with expected version; null private fields preserve data")
-    public MerchantDTO update(@Valid @RequestBody MerchantUpdateCommand command, Authentication actor) {
-        return service.update(command, actor.getName());
+    public SuccessResponse<MerchantDTO> update(
+            @Valid @RequestBody MerchantUpdateCommand command, Authentication actor) {
+        return SuccessResponse.of(service.update(command, actor.getName()));
     }
 
     @PostMapping("/page")
     @PreAuthorize("hasAuthority('merchant:read')")
     @Operation(summary = "Page merchants in current tenant")
-    public MerchantPageDTO page(@Valid @RequestBody MerchantQuery query) {
-        return service.page(query);
+    public SuccessResponse<MerchantPageDTO> page(@Valid @RequestBody MerchantQuery query) {
+        return SuccessResponse.of(service.page(query));
     }
 
     @PostMapping("/detail")
     @PreAuthorize("hasAuthority('merchant:read')")
     @Operation(summary = "Read merchant with masked private data")
-    public MerchantDTO detail(@Valid @RequestBody MerchantIdQuery query) {
-        return service.detail(query.id());
+    public SuccessResponse<MerchantDTO> detail(@Valid @RequestBody MerchantIdQuery query) {
+        return SuccessResponse.of(service.detail(query.id()));
     }
 
     @PostMapping("/status")
     @PreAuthorize("hasAuthority('merchant:manage')")
     @Operation(summary = "Enable or disable merchant with expected version")
-    public MerchantDTO status(@Valid @RequestBody MerchantStatusCommand command, Authentication actor) {
-        return service.changeStatus(command, actor.getName());
+    public SuccessResponse<MerchantDTO> status(
+            @Valid @RequestBody MerchantStatusCommand command, Authentication actor) {
+        return SuccessResponse.of(service.changeStatus(command, actor.getName()));
     }
 }

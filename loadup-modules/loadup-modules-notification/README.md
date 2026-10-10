@@ -5,10 +5,10 @@
 ## 引入
 
 ```xml
-<dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-modules-notification</artifactId></dependency>
+<dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-modules-notification-app</artifactId></dependency>
 ```
 
-应用需要 MySQL `DataSource`；Flyway 执行 `V20261003000001__create_notification_inbox.sql`。设置 `loadup.notification.enabled: false` 可关闭自动装配。需要 API 时另引入 `loadup-modules-notification-web`；需要使用 Gotone 统一发送入口时引入 `loadup-components-gotone-engine`。
+应用需要 MySQL `DataSource`；Flyway 执行 `V20261003000001__create_notification_inbox.sql`。设置 `loadup.modules.notification.enabled: false` 可关闭自动装配。需要 API 时另引入 `loadup-modules-notification-web`；需要使用 Gotone 统一发送入口时引入 `loadup-components-gotone-engine`。
 
 ## 服务 API
 
@@ -16,4 +16,38 @@
 
 Gotone `IN_APP` 渠道使用 `NotificationRequest.channels = ["IN_APP"]`，接收者为用户 ID。`templateParams` 提供 `tenantId`、`title`、`body`、`category`，可选 `senderId`、`actionUrl`、`requestKey`；已配置 Gotone 模板时渲染结果作为消息正文，否则使用 `body`。业务重试时应复用相同 `requestKey`，以避免重复入站通知。没有 `tenantId` 时按单租户 `__default__` 处理。
 
-Web 接口见 [Web 适配](../loadup-modules-notification-web/README.md)，设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+Web 接口见 [Web 适配](loadup-modules-notification-web/README.md)，设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+
+## COLA 模块选择
+
+本目录的 Maven 坐标 `loadup-modules-notification` 为聚合 POM。业务接入选择具体 jar，版本由根 BOM 管理：
+
+| 子模块 | 用途 |
+| --- | --- |
+| [`client`](loadup-modules-notification-client/README.md) | 对外 DTO、请求契约；不依赖 Spring 或持久化实现 |
+| [`domain`](loadup-modules-notification-domain/README.md) | 纯 Java 领域模型、分页值与 Gateway 接口 |
+| [`infrastructure`](loadup-modules-notification-infrastructure/README.md) | 默认 MyBatis-Flex Gateway、Flyway 迁移与持久化装配 |
+| [`app`](loadup-modules-notification-app/README.md) | 用例服务、DTO 映射与应用装配；程序化接入入口 |
+| [`web`](loadup-modules-notification-web/README.md) | 可选 Spring MVC 适配；自动引入 app |
+| [`test`](loadup-modules-notification-test/README.md) | 自动装配回归源码，不作为生产依赖 |
+
+`InboxService` 现在位于 `io.github.loadup.modules.notification.app.service`；公开结果位于 `io.github.loadup.modules.notification.client.dto`。领域 Gateway 不引用客户端 DTO，也不引用数据库或 Spring API。HTTP 适配使用客户端契约，接口路径及 JSON 字段保持一致。
+
+配置统一归入 `loadup.modules.notification`：
+
+```yaml
+loadup:
+  modules:
+    notification:
+      enabled: true
+      web:
+        enabled: true
+```
+
+仅引入 app 时不注册 Controller；关闭 web 开关保留程序化服务，关闭模块 enabled 开关同时停止默认应用与持久化 Bean 装配。配置开关不控制 Flyway 对已在 classpath 上的脚本执行。不要在已有数据库重复复制迁移脚本。
+
+## 统一接入契约
+
+Java 消费方通过 `client.facade.XxxFacade` 注入公开业务入口；默认应用 Service 直接实现接口。引入 `*-app` 装配业务能力，引入 `*-web` 才提供 Controller，Web 适配不再提供独立 enabled 开关。模块整体启停仍使用 `loadup.modules.notification.enabled`。
+
+JSON Controller 显式返回 SuccessResponse，分页保留已有分页报文契约；异常由全局 WebMVC 处理。下载仍为流式响应。请求与 DTO 字段声明 OpenAPI，凭证只写。持久化经 database 组件使用 MyBatis-Flex、Tables 常量和 Spring MapStruct Converter；数据库连接与可信租户来源由消费工程配置。新 schema 迁移与本轮 clean 编译、运行验证仍需本地执行。

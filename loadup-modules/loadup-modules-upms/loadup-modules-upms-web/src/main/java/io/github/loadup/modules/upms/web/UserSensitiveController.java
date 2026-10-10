@@ -19,9 +19,10 @@
  */
 package io.github.loadup.modules.upms.web;
 
+import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.components.authorization.model.LoadUpUser;
-import io.github.loadup.modules.upms.app.service.UserSensitiveReadService;
 import io.github.loadup.modules.upms.client.dto.UserSensitiveDTO;
+import io.github.loadup.modules.upms.client.facade.UserSensitiveReadFacade;
 import io.github.loadup.modules.upms.client.query.UserSensitiveQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,16 +40,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/upms/user")
 @Tag(name = "User Sensitive Data")
 public class UserSensitiveController {
-    private final UserSensitiveReadService service;
+    private final UserSensitiveReadFacade service;
 
-    public UserSensitiveController(UserSensitiveReadService service) {
+    public UserSensitiveController(UserSensitiveReadFacade service) {
         this.service = service;
     }
 
     @PostMapping("/sensitive")
     @PreAuthorize("hasAuthority('upms:user:sensitive:read')")
     @Operation(summary = "Read plaintext personal data with authorization and durable audit")
-    public UserSensitiveDTO read(
+    public SuccessResponse<UserSensitiveDTO> read(
             @Valid @RequestBody UserSensitiveQuery query, Authentication authentication, HttpServletResponse response) {
         response.setHeader("Cache-Control", "no-store");
         if (authentication == null
@@ -56,6 +57,6 @@ public class UserSensitiveController {
                 || !(authentication.getPrincipal() instanceof LoadUpUser user)) {
             throw new AccessDeniedException("Authenticated user is required");
         }
-        return service.read(user.getUserId(), query);
+        return SuccessResponse.of(service.read(user.getUserId(), query));
     }
 }

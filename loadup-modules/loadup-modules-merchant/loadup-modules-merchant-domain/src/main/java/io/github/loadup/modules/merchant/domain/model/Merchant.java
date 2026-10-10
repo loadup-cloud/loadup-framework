@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.merchant.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -42,18 +43,15 @@ public record Merchant(
         if (!info.merchantCode().equals(changes.merchantCode()))
             throw new IllegalArgumentException("Merchant code is immutable");
         return new Merchant(
-                id,
-                tenantId,
-                changes.preservePrivateFields(info),
-                status,
-                Math.addExact(rowVersion, 1),
-                createdBy,
-                actor,
-                createdAt,
-                now);
+                id, tenantId, changes, status, Math.addExact(rowVersion, 1), createdBy, actor, createdAt, now);
     }
 
     public Merchant changeStatus(MerchantStatus target, String actor, LocalDateTime now) {
         return new Merchant(id, tenantId, info, target, Math.addExact(rowVersion, 1), createdBy, actor, createdAt, now);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

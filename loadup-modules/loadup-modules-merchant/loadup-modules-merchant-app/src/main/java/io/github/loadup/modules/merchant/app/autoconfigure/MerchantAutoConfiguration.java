@@ -20,7 +20,7 @@
 package io.github.loadup.modules.merchant.app.autoconfigure;
 
 import io.github.loadup.modules.merchant.app.converter.MerchantConverterImpl;
-import io.github.loadup.modules.merchant.app.service.MerchantLookupService;
+import io.github.loadup.modules.merchant.app.service.MerchantQueryService;
 import io.github.loadup.modules.merchant.app.service.MerchantService;
 import io.github.loadup.modules.merchant.infrastructure.converter.MerchantStorageConverterImpl;
 import io.github.loadup.modules.merchant.infrastructure.repository.MerchantGatewayImpl;
@@ -36,11 +36,15 @@ import org.springframework.context.annotation.Import;
             "io.github.loadup.components.database.autoconfig.MyBatisFlexAutoConfiguration"
         })
 @ConditionalOnSingleCandidate(DataSource.class)
-@ConditionalOnProperty(prefix = "loadup.merchant", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(
+        prefix = "loadup.modules.merchant",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 @MapperScan("io.github.loadup.modules.merchant.infrastructure.mapper")
 @Import({
     MerchantService.class,
-    MerchantLookupService.class,
+    MerchantQueryService.class,
     MerchantConverterImpl.class,
     MerchantStorageConverterImpl.class,
     MerchantGatewayImpl.class

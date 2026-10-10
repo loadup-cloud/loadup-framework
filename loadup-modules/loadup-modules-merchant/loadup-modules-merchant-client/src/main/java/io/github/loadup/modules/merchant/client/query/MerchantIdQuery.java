@@ -19,6 +19,15 @@
  */
 package io.github.loadup.modules.merchant.client.query;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
-public record MerchantIdQuery(@NotBlank @Size(max = 64) String id) {}
+public record MerchantIdQuery(
+        @Schema(description = "Resource identifier") @NotBlank @Size(max = 64)
+        String id) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

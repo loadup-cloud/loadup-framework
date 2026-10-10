@@ -20,8 +20,8 @@
 package io.github.loadup.modules.upms.web;
 
 import io.github.loadup.commons.util.TenantUtil;
-import io.github.loadup.modules.audit.AuditService;
-import io.github.loadup.modules.audit.AuditWrite;
+import io.github.loadup.modules.audit.client.command.AuditRecordCommand;
+import io.github.loadup.modules.audit.client.facade.AuditFacade;
 import io.github.loadup.modules.upms.app.service.SensitiveReadAudit;
 import io.github.loadup.modules.upms.client.query.SensitiveReadPurpose;
 import org.slf4j.MDC;
@@ -34,26 +34,26 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(AuditService.class)
-@ConditionalOnBean(AuditService.class)
+@ConditionalOnClass(AuditFacade.class)
+@ConditionalOnBean(AuditFacade.class)
 public class SensitiveReadAuditConfiguration {
     @Bean
     @ConditionalOnMissingBean(SensitiveReadAudit.class)
-    public SensitiveReadAudit upmsSensitiveReadAudit(AuditService audit) {
+    public SensitiveReadAudit upmsSensitiveReadAudit(AuditFacade audit) {
         return new AuditRecorder(audit);
     }
 
     public static class AuditRecorder implements SensitiveReadAudit {
-        private final AuditService audit;
+        private final AuditFacade audit;
 
-        public AuditRecorder(AuditService audit) {
+        public AuditRecorder(AuditFacade audit) {
             this.audit = audit;
         }
 
         @Override
         @Transactional(propagation = Propagation.REQUIRES_NEW)
         public void record(String actorId, String subjectId, SensitiveReadPurpose purpose) {
-            audit.record(new AuditWrite(
+            audit.record(new AuditRecordCommand(
                     TenantUtil.getTenantId(),
                     actorId,
                     "UPMS_SENSITIVE_READ:" + purpose.name(),

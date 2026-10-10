@@ -19,10 +19,27 @@
  */
 package io.github.loadup.modules.contract.client.dto;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
-public record ContractPageDTO<T>(List<T> items, long total, int page, int size) {
+public record ContractPageDTO<T>(
+        @Schema(description = "Entries on the current page") List<T> items,
+
+        @Schema(description = "Total number of matching entries")
+        long total,
+
+        @Schema(description = "Page number, starting at 1", minimum = "1")
+        int page,
+
+        @Schema(description = "Page size; list queries allow at most 100", minimum = "1")
+        int size) {
     public ContractPageDTO {
         items = List.copyOf(items);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 }

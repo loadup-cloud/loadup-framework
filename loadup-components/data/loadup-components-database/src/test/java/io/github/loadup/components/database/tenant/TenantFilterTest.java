@@ -83,8 +83,11 @@ class TenantFilterTest {
         var request = new MockHttpServletRequest();
         request.addHeader("X-Tenant-Id", "other-tenant");
 
-        new TenantFilter(properties).doFilter(request, new MockHttpServletResponse(), (r, response) ->
-                assertThat(TenantUtil.getTenantId()).isEqualTo("single-tenant"));
+        new TenantFilter(properties)
+                .doFilter(
+                        request,
+                        new MockHttpServletResponse(),
+                        (r, response) -> assertThat(TenantUtil.getTenantId()).isEqualTo("single-tenant"));
 
         assertThat(ContextHolder.isBound()).isFalse();
     }
@@ -95,9 +98,11 @@ class TenantFilterTest {
         properties.setEnabled(true);
         properties.setDefaultTenantId("single-tenant");
 
-        new TenantFilter(properties).doFilter(
-                new MockHttpServletRequest(),
-                new MockHttpServletResponse(),
-                (request, response) -> assertThat(TenantUtil.getTenantId()).isNull());
+        new TenantFilter(properties)
+                .doFilter(
+                        new MockHttpServletRequest(),
+                        new MockHttpServletResponse(),
+                        (request, response) ->
+                                assertThat(TenantUtil.getTenantId()).isNull());
     }
 }

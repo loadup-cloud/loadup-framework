@@ -19,12 +19,23 @@
  */
 package io.github.loadup.modules.contract.client.query;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.contract.client.dto.ValueDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import java.util.Map;
 
 public record ContractResolveQuery(
-        @NotBlank String merchantId,
-        @NotBlank String scopeKey,
-        @NotBlank String itemKey,
-        @NotNull @Size(max = 256) Map<String, ValueDTO> transactionFacts) {}
+        @Schema(description = "Merchant identifier") @NotBlank
+        String merchantId,
+
+        @Schema(description = "Scope key") @NotBlank String scopeKey,
+        @Schema(description = "Item key") @NotBlank String itemKey,
+
+        @Schema(description = "Transaction facts") @NotNull @Size(max = 256)
+        Map<String, ValueDTO> transactionFacts) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

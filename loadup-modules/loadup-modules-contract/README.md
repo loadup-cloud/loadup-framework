@@ -34,10 +34,11 @@ API 类型由 `loadup-modules-contract-client` 提供；纯 Java 解析可单独
 
 ```yaml
 loadup:
-  contract:
-    enabled: true
-    web:
+  modules:
+    contract:
       enabled: true
+      web:
+        enabled: true
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -125,6 +126,16 @@ await publishCatalog<'PRODUCT'>(data.id, data.rowVersion)
 
 ## 使用 Merchant 资料模块
 
-可引入 `loadup-modules-merchant-app/web` 与 `loadup-modules-merchant-contract` 提供默认 MerchantFactsProvider，资料通过 MerchantLookup 读取，合约核心没有新增仓储依赖。事实包含 merchant.code/type/industry/country/province/city，缺失地区不输出；不会声明资质审核已通过。消费方已有自定义 Provider 时自动退让。
+可引入 `loadup-modules-merchant-app/web` 与 `loadup-modules-merchant-contract` 提供默认 MerchantFactsProvider，资料通过 MerchantQueryFacade 读取，合约核心没有新增仓储依赖。事实包含 merchant.code/type/industry/country/province/city，缺失地区不输出；不会声明资质审核已通过。消费方已有自定义 Provider 时自动退让。
 
 管理 API `/api/merchants/**` 创建商户后，签约 merchantId 使用响应 id，不能填业务编码。签约页面已有启用商户选择。停用阻止后续新资格判断，已签约幂等重放仍返回原结果，历史条款不变。资料、隐私、权限与部署见 [Merchant README](../loadup-modules-merchant/README.md)。
+
+## 业务配置命名空间
+
+模块专属配置统一使用 `loadup.modules.contract.*`，配置中心与消费工程需同步迁移旧前缀；应用开关为 `loadup.modules.contract.enabled`，HTTP 开关为 `Maven *-web dependency`，默认开启。
+
+## 统一接入契约
+
+Java 消费方通过 `client.facade.XxxFacade` 注入公开业务入口；默认应用 Service 直接实现接口。引入 `*-app` 装配业务能力，引入 `*-web` 才提供 Controller，Web 适配不再提供独立 enabled 开关。模块整体启停仍使用 `loadup.modules.contract.enabled`。
+
+JSON Controller 显式返回 SuccessResponse，分页保留已有分页报文契约；异常由全局 WebMVC 处理。下载仍为流式响应。请求与 DTO 字段声明 OpenAPI，凭证只写。持久化经 database 组件使用 MyBatis-Flex、Tables 常量和 Spring MapStruct Converter；数据库连接与可信租户来源由消费工程配置。新 schema 迁移与本轮 clean 编译、运行验证仍需本地执行。

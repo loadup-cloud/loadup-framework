@@ -19,8 +19,10 @@
  */
 package io.github.loadup.modules.upms.client.dto;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.masking.MaskType;
 import io.github.loadup.commons.masking.Masked;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,34 +35,67 @@ import java.util.List;
  */
 public class UserDetailDTO {
 
+    @Schema(description = "Resource identifier")
     private String id;
+
+    @Schema(description = "Username")
     private String username;
+
+    @Schema(description = "Nickname")
     private String nickname;
 
     @Masked(MaskType.NAME)
+    @Schema(description = "Real name")
     private String realName;
 
+    @Schema(description = "Dept id")
     private String deptId;
+
+    @Schema(description = "Dept name")
     private String deptName;
 
     @Masked(MaskType.EMAIL)
+    @Schema(description = "Email")
     private String email;
 
+    @Schema(description = "Email verified")
     private Boolean emailVerified;
 
     @Masked(MaskType.PHONE)
+    @Schema(description = "Mobile")
     private String mobile;
 
+    @Schema(description = "Mobile verified")
     private Boolean mobileVerified;
+
+    @Schema(description = "Avatar")
     private String avatar;
+
+    @Schema(description = "Gender")
     private Short gender;
+
+    @Schema(description = "Birthday")
     private LocalDate birthday;
+
+    @Schema(description = "Current lifecycle status")
     private Short status;
+
+    @Schema(description = "Last login time")
     private LocalDateTime lastLoginTime;
+
+    @Schema(description = "Last login ip")
     private String lastLoginIp;
+
+    @Schema(description = "Roles")
     private List<RoleDTO> roles;
+
+    @Schema(description = "Remark")
     private String remark;
+
+    @Schema(description = "Creation time in UTC")
     private LocalDateTime createdAt;
+
+    @Schema(description = "Last update time in UTC")
     private LocalDateTime updatedAt;
 
     public UserDetailDTO(
@@ -421,7 +456,6 @@ public class UserDetailDTO {
 
     @Override
     public String toString() {
-        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
-                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
+        return ToStringAsJson.reflectionToString(this);
     }
 }

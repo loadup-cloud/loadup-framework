@@ -1,5 +1,25 @@
+/*
+ * #%L
+ * Loadup Modules UPMS App Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.app.service;
 
+import io.github.loadup.modules.upms.app.converter.UpmsDTOConverter;
 import io.github.loadup.modules.upms.client.command.PermissionCreateCommand;
 import io.github.loadup.modules.upms.client.command.PermissionUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.PermissionDTO;
@@ -22,7 +42,8 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.0.0
  */
 @Service
-public class PermissionService {
+public class PermissionService implements io.github.loadup.modules.upms.client.facade.PermissionFacade {
+    private final UpmsDTOConverter dtoConverter;
 
     private final PermissionGateway permissionGateway;
     private final UserPermissionService userPermissionService;
@@ -144,23 +165,7 @@ public class PermissionService {
     }
 
     private PermissionDTO convertToDTO(Permission permission) {
-        return PermissionDTO.builder()
-                .id(permission.getId())
-                .parentId(permission.getParentId())
-                .permissionName(permission.getPermissionName())
-                .permissionCode(permission.getPermissionCode())
-                .permissionType(permission.getPermissionType())
-                .resourcePath(permission.getResourcePath())
-                .httpMethod(permission.getHttpMethod())
-                .icon(permission.getIcon())
-                .componentPath(permission.getComponentPath())
-                .sortOrder(permission.getSortOrder())
-                .visible(permission.isVisible())
-                .status(permission.getStatus())
-                .remark(permission.getRemark())
-                .createdAt(permission.getCreatedAt())
-                .updatedAt(permission.getUpdatedAt())
-                .build();
+        return dtoConverter.toPermission(permission);
     }
 
     private List<PermissionDTO> buildPermissionTree(List<Permission> allPermissions, String parentId) {
@@ -181,7 +186,11 @@ public class PermissionService {
         return tree;
     }
 
-    public PermissionService(PermissionGateway permissionGateway, UserPermissionService userPermissionService) {
+    public PermissionService(
+            PermissionGateway permissionGateway,
+            UserPermissionService userPermissionService,
+            UpmsDTOConverter dtoConverter) {
+        this.dtoConverter = dtoConverter;
         this.permissionGateway = permissionGateway;
         this.userPermissionService = userPermissionService;
     }

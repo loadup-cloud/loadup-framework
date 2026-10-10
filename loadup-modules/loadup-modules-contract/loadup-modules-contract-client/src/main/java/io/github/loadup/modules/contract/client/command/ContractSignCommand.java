@@ -19,17 +19,33 @@
  */
 package io.github.loadup.modules.contract.client.command;
 
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 
 public record ContractSignCommand(
-        @NotBlank @Size(max = 64) String merchantId,
-        @NotBlank @Size(max = 128) String scopeKey,
-        @NotBlank String planVersionId,
-        @NotBlank @Size(max = 128) String requestKey,
-        @NotNull @Size(max = 256) Set<String> selectedItems,
-        @NotNull Map<String, Map<String, String>> values,
-        Instant effectiveFrom,
-        Instant effectiveTo) {}
+        @Schema(description = "Merchant identifier") @NotBlank @Size(max = 64)
+        String merchantId,
+
+        @Schema(description = "Scope key") @NotBlank @Size(max = 128)
+        String scopeKey,
+
+        @Schema(description = "Plan version id") @NotBlank String planVersionId,
+
+        @Schema(description = "Idempotency key") @NotBlank @Size(max = 128)
+        String requestKey,
+
+        @Schema(description = "Selected items") @NotNull @Size(max = 256)
+        Set<String> selectedItems,
+
+        @Schema(description = "Values") @NotNull Map<String, Map<String, String>> values,
+        @Schema(description = "Effective from") Instant effectiveFrom,
+        @Schema(description = "Effective to") Instant effectiveTo) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

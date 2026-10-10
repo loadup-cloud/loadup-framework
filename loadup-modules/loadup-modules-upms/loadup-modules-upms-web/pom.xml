@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-modules-audit</artifactId>
+            <artifactId>loadup-modules-audit-app</artifactId>
             <optional>true</optional>
         </dependency>
 

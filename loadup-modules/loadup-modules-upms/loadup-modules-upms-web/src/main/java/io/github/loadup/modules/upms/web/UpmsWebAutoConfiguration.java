@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Import;
 
 @AutoConfiguration(
         after = UpmsAutoConfiguration.class,
-        afterName = "io.github.loadup.modules.audit.autoconfigure.AuditAutoConfiguration")
+        afterName = "io.github.loadup.modules.audit.app.autoconfigure.AuditAutoConfiguration")
 @Import({
     AuthenticationController.class,
     AccountSecurityController.class,

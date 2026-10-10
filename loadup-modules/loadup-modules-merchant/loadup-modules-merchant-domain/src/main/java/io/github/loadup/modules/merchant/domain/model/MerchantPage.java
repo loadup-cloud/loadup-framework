@@ -19,6 +19,12 @@
  */
 package io.github.loadup.modules.merchant.domain.model;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.List;
 
-public record MerchantPage(List<Merchant> items, long total) {}
+public record MerchantPage(List<Merchant> items, long total) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+}

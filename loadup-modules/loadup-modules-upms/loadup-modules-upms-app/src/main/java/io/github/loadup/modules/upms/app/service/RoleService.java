@@ -1,6 +1,26 @@
+/*
+ * #%L
+ * Loadup Modules UPMS App Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.app.service;
 
 import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.modules.upms.app.converter.UpmsDTOConverter;
 import io.github.loadup.modules.upms.client.command.RoleCreateCommand;
 import io.github.loadup.modules.upms.client.command.RoleUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.PermissionDTO;
@@ -32,7 +52,8 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.0.0
  */
 @Service
-public class RoleService {
+public class RoleService implements io.github.loadup.modules.upms.client.facade.RoleFacade {
+    private final UpmsDTOConverter dtoConverter;
 
     private final RoleGateway roleGateway;
     private final PermissionGateway permissionGateway;
@@ -276,50 +297,33 @@ public class RoleService {
      * Convert Role entity to RoleDTO
      */
     private RoleDTO convertToDTO(Role role) {
-        List<Permission> permissions = permissionGateway.findByRoleId(role.getId());
-        List<String> departmentIds = roleGateway.findDepartmentIdsByRoleId(role.getId());
-
-        Role parentRole = null;
-        if (role.getParentId() != null) {
-            parentRole = roleGateway.findById(role.getParentId()).orElse(null);
-        }
-
-        return RoleDTO.builder()
-                .id(role.getId())
-                .roleName(role.getRoleName())
-                .roleCode(role.getRoleCode())
-                .parentId(role.getParentId())
-                .parentRoleName(parentRole != null ? parentRole.getRoleName() : null)
-                .roleLevel(role.getRoleLevel())
-                .dataScope(role.getDataScope())
-                .sortOrder(role.getSortOrder())
-                .status(role.getStatus())
-                .permissions(
-                        permissions.stream().map(this::convertPermissionToDTO).collect(Collectors.toList()))
-                .departmentIds(departmentIds)
-                .remark(role.getRemark())
-                .createdAt(role.getCreatedAt())
-                .updatedAt(role.getUpdatedAt())
-                .build();
+        var permissions = permissionGateway.findByRoleId(role.getId()).stream()
+                .map(dtoConverter::toPermissionSummary)
+                .toList();
+        var departments = roleGateway.findDepartmentIdsByRoleId(role.getId());
+        String parentName = role.getParentId() == null
+                ? null
+                : roleGateway
+                        .findById(role.getParentId())
+                        .map(Role::getRoleName)
+                        .orElse(null);
+        return dtoConverter.toRole(role, parentName, permissions, departments);
     }
 
     /**
      * Convert Permission to PermissionDTO
      */
     private PermissionDTO convertPermissionToDTO(Permission permission) {
-        return PermissionDTO.builder()
-                .id(permission.getId())
-                .permissionName(permission.getPermissionName())
-                .permissionCode(permission.getPermissionCode())
-                .permissionType(permission.getPermissionType())
-                .build();
+        return dtoConverter.toPermissionSummary(permission);
     }
 
     public RoleService(
             RoleGateway roleGateway,
             PermissionGateway permissionGateway,
             DepartmentGateway departmentGateway,
-            UserGateway userGateway) {
+            UserGateway userGateway,
+            UpmsDTOConverter dtoConverter) {
+        this.dtoConverter = dtoConverter;
         this.roleGateway = roleGateway;
         this.permissionGateway = permissionGateway;
         this.departmentGateway = departmentGateway;

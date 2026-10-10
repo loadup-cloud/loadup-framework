@@ -21,6 +21,7 @@ package io.github.loadup.modules.contract.infrastructure.dataobject;
 
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
+import io.github.loadup.commons.json.ToStringAsJson;
 
 @Table("contract_catalog_version")
 public class CatalogVersionDO extends BaseDO {
@@ -90,6 +91,6 @@ public class CatalogVersionDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "CatalogVersionDO[id=" + getId() + "]";
+        return ToStringAsJson.reflectionToString(this);
     }
 }

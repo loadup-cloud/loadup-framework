@@ -32,6 +32,30 @@ public interface MerchantConverter {
 
     MerchantBasicInfo toInfo(MerchantUpdateCommand command);
 
+    /** Retains private values on null; an empty string explicitly clears a value. */
+    @Mapping(target = "merchantCode", source = "update.merchantCode")
+    @Mapping(target = "name", source = "update.name")
+    @Mapping(target = "shortName", source = "update.shortName")
+    @Mapping(target = "type", source = "update.type")
+    @Mapping(target = "industry", source = "update.industry")
+    @Mapping(target = "country", source = "update.country")
+    @Mapping(target = "province", source = "update.province")
+    @Mapping(target = "city", source = "update.city")
+    @Mapping(target = "address", expression = "java(update.address() == null ? previous.address() : update.address())")
+    @Mapping(
+            target = "registrationNo",
+            expression = "java(update.registrationNo() == null ? previous.registrationNo() : update.registrationNo())")
+    @Mapping(
+            target = "contactName",
+            expression = "java(update.contactName() == null ? previous.contactName() : update.contactName())")
+    @Mapping(
+            target = "contactPhone",
+            expression = "java(update.contactPhone() == null ? previous.contactPhone() : update.contactPhone())")
+    @Mapping(
+            target = "contactEmail",
+            expression = "java(update.contactEmail() == null ? previous.contactEmail() : update.contactEmail())")
+    MerchantBasicInfo merge(MerchantBasicInfo update, MerchantBasicInfo previous);
+
     @Mapping(target = "merchantCode", source = "info.merchantCode")
     @Mapping(target = "name", source = "info.name")
     @Mapping(target = "shortName", source = "info.shortName")

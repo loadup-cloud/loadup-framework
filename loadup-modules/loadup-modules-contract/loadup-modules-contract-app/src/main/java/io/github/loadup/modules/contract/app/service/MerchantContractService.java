@@ -37,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
-public class MerchantContractService {
+public class MerchantContractService implements io.github.loadup.modules.contract.client.facade.MerchantContractFacade {
     private final CatalogGateway catalog;
     private final MerchantContractGateway gateway;
     private final CatalogAssembler assembler;

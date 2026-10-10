@@ -1,4 +1,26 @@
+/*
+ * #%L
+ * Loadup Modules UPMS Client Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.client.command;
+
+import io.github.loadup.commons.json.ToStringAsJson;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * User Register Command
@@ -8,20 +30,34 @@ package io.github.loadup.modules.upms.client.command;
  */
 public class UserRegisterCommand {
 
+    @Schema(description = "Username")
     private String username;
 
+    @Schema(description = "Password, supplied only in requests", accessMode = Schema.AccessMode.WRITE_ONLY)
+    @com.fasterxml.jackson.annotation.JsonProperty(
+            access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    @Schema(description = "Nickname")
     private String nickname;
 
+    @Schema(description = "Email")
     private String email;
 
+    @Schema(description = "Mobile")
     private String mobile;
 
+    @Schema(description = "Captcha key")
     private String captchaKey;
 
+    @Schema(description = "Captcha answer", accessMode = Schema.AccessMode.WRITE_ONLY)
+    @com.fasterxml.jackson.annotation.JsonProperty(
+            access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
     private String captchaCode;
 
+    @Schema(description = "SMS verification code", accessMode = Schema.AccessMode.WRITE_ONLY)
+    @com.fasterxml.jackson.annotation.JsonProperty(
+            access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
     private String smsCode;
 
     public UserRegisterCommand(
@@ -111,7 +147,6 @@ public class UserRegisterCommand {
 
     @Override
     public String toString() {
-        return org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(
-                this, org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE);
+        return ToStringAsJson.reflectionToString(this);
     }
 }

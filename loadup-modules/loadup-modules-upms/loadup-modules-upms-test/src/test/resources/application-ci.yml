@@ -33,8 +33,9 @@ logging:
     io.github.loadup.modules.upms: INFO
 
 loadup:
-  upms:
-    security:
-      jwt:
-        # Test-only signing key. CI never reuses production secrets.
-        secret: loadup-test-only-hs256-key-0123456789abcdef
+  modules:
+    upms:
+      security:
+        jwt:
+          # Test-only signing key. CI never reuses production secrets.
+          secret: loadup-test-only-hs256-key-0123456789abcdef
