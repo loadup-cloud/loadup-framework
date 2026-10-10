@@ -40,12 +40,12 @@ import org.springframework.context.annotation.*;
 public class NotificationPersistenceAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(InboxGateway.class)
-    @MapperScan(basePackageClasses = InboxMessageMapper.class)
+    @MapperScan(basePackageClasses = InboxMessageDOMapper.class)
     @Import(NotificationStorageConverterImpl.class)
     static class DefaultPersistence {
         @Bean
         public InboxGateway notificationGateway(
-                InboxMessageMapper inboxMessageMapper, NotificationStorageConverter converter) {
+                InboxMessageDOMapper inboxMessageMapper, NotificationStorageConverter converter) {
             return new InboxGatewayImpl(inboxMessageMapper, converter);
         }
     }

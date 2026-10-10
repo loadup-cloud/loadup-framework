@@ -5,7 +5,7 @@ import io.github.loadup.components.dfs.DfsObjectNotFoundException;
 import io.github.loadup.components.dfs.DfsProvider;
 import io.github.loadup.components.dfs.DfsStorageException;
 import io.github.loadup.components.dfs.database.dataobject.FileStorageDO;
-import io.github.loadup.components.dfs.database.mapper.FileStorageMapper;
+import io.github.loadup.components.dfs.database.mapper.FileStorageDOMapper;
 import io.github.loadup.components.dfs.model.FileDownloadResponse;
 import io.github.loadup.components.dfs.model.FileMetadata;
 import io.github.loadup.components.dfs.model.FileUploadRequest;
@@ -21,10 +21,10 @@ import tools.jackson.databind.ObjectMapper;
 
 /** Transitional database binder for small files. S3 is the recommended production binder. */
 public class DatabaseDfsProvider implements DfsProvider {
-    private final FileStorageMapper mapper;
+    private final FileStorageDOMapper mapper;
     private final ObjectMapper objectMapper;
 
-    public DatabaseDfsProvider(FileStorageMapper mapper, ObjectMapper objectMapper) {
+    public DatabaseDfsProvider(FileStorageDOMapper mapper, ObjectMapper objectMapper) {
         this.mapper = mapper;
         this.objectMapper = objectMapper;
     }

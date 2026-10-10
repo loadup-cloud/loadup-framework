@@ -31,10 +31,10 @@ import java.util.*;
 
 public class AuditGatewayImpl implements AuditGateway {
 
-    private final AuditEventMapper mapper;
+    private final AuditEventDOMapper mapper;
     private final AuditStorageConverter converter;
 
-    public AuditGatewayImpl(AuditEventMapper mapper, AuditStorageConverter converter) {
+    public AuditGatewayImpl(AuditEventDOMapper mapper, AuditStorageConverter converter) {
         this.mapper = mapper;
         this.converter = converter;
     }

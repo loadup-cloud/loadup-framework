@@ -349,9 +349,9 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 - Public business interfaces reside in `client.facade` and use `XxxFacade`. Application services implement the interfaces directly; Controllers and cross-module consumers depend on Facades. Consumer-supplied extensions remain `client.spi.XxxProvider` or `XxxHandler`.
 - Facades return client DTOs or JDK values. HTTP envelopes belong to Controllers. Keep domain Gateway ports separate from public Facades.
 - Business infrastructure depends on `loadup-components-database`. GatewayImpl uses MyBatis-Flex BaseMapper and QueryWrapper with generated Tables/TableDef constants. Business repositories contain no JdbcTemplate, NamedParameterJdbcTemplate, handwritten SQL, string columns or SQL sort fragments.
-- DOs extend BaseDO. Mappers are explicit empty `BaseMapper<XxxDO>` interfaces; APT generates table definitions, not Mappers. Generated sources stay in target and are not committed.
+- DOs extend BaseDO. The database processor automatically generates `XxxDOMapper extends BaseMapper<XxxDO>` with MyBatis `@Mapper`, plus Tables/TableDef. Do not hand-write empty persistence Mappers. MapStruct Converter interfaces remain separate Spring components. Generated sources stay in target and are not committed.
 - database owns fixed framework defaults for audit fields, UUID keys and logical deletion. Business modules and consumers must not replace FlexGlobalConfig, framework listeners, or MyBatisFlexCustomizer. Deployment DataSource settings and trusted tenant resolution remain integration responsibilities. Validate conflicting persistence conventions at startup.
-- Root `mybatis-flex.config` owns common APT options. Do not override these options in child modules. Each infrastructure generates its own Tables in its DO package's `.table` subpackage.
+- Database `DatabaseAptConfiguration` Java code owns fixed APT options; do not add project `mybatis-flex.config` files. DO-owning modules use the optional/provided `loadup-components-database-processor` and explicitly select its wrapper (alongside MapStruct/Boot); never run upstream Flex independently at the same time. Each infrastructure generates Tables in its DO package's `.table` subpackage and persistence interfaces in the sibling `.mapper` package.
 
 ## Mapping, HTTP Contracts and Utilities
 

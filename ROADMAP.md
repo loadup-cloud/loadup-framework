@@ -10,6 +10,8 @@
 
 ## P1 · 统一模块开发契约实施
 
+2026-10-11 MyBatis-Flex APT 配置已移入 database processor 的 Java 固定配置，删除根配置文件和手写空 Mapper，统一生成 XxxDOMapper、Tables 与 TableDef；11 个 DO 所属模块及相关依赖定向 clean package 成功，生成器编译测试及六个业务模块自动装配测试共 20 项通过，含下游主源码与测试源码编译。真实数据库运行验收仍保留为待办。
+
 2026-10-10 已将 JsonUtil 与 MultiDateDeserializer 从 commons-util 归并到 commons-json，更新 WebMVC/Nacos 引用并移除 util 的直接 Jackson 依赖。相关 11 个模块的 Maven clean package 成功，含测试源码编译；测试未执行。
 
 多格式日期输入已补齐 Date、LocalDate、LocalDateTime：严格完整解析、常用分隔符/紧凑格式/小数秒、Date 时区与毫秒时间戳，以及显式字段 JsonFormat。保持固定输出格式，拒绝 Local 类型的有损转换；2026-10-10 定向 Maven clean test 通过全部 30 个日期测试，包含 WebMVC 在内的 9 个相关模块编译成功。真实 HTTP 接入验收仍待执行。
@@ -22,7 +24,6 @@ database 固定默认配置、Tables APT 和五个业务仓储的 MyBatis-Flex �
 
 审计、字典、文件、通知和导入导出已拆分为业务聚合目录内的 client/domain/infrastructure/app/web/test；协议、领域 Gateway、持久化装配、MapStruct、BOM 和接入引用已调整。业务配置统一为 `loadup.modules.<module>.*`，启停使用 `enabled`，既有 UPMS/Contract/Merchant 配置同步迁移。
 
-- [ ] 定向执行 AuditAutoConfigurationTest、DictionaryAutoConfigurationTest、FileAutoConfigurationTest、NotificationAutoConfigurationTest、TransferAutoConfigurationTest 和既有 ContractAutoConfigurationTest；测试源码已通过全量编译，尚未执行。
 - [ ] 在真实 MySQL 与 WebMVC 环境验证迁移组合、Gateway 覆盖、模块整体开关与按依赖装配 Web、请求/响应投影和既有 Router.http；检查消费工程/配置中心已迁移到新的 modules 前缀。
 
 ## P1 · 金额基础能力验收

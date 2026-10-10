@@ -34,11 +34,12 @@ import java.util.*;
 
 public class FileResourceGatewayImpl implements FileResourceGateway {
 
-    private final FileResourceMapper files;
-    private final FileReferenceMapper refs;
+    private final FileResourceDOMapper files;
+    private final FileReferenceDOMapper refs;
     private final FileStorageConverter converter;
 
-    public FileResourceGatewayImpl(FileResourceMapper files, FileReferenceMapper refs, FileStorageConverter converter) {
+    public FileResourceGatewayImpl(
+            FileResourceDOMapper files, FileReferenceDOMapper refs, FileStorageConverter converter) {
         this.files = files;
         this.refs = refs;
         this.converter = converter;

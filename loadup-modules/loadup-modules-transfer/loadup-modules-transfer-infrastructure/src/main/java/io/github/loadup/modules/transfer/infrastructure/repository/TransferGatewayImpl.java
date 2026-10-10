@@ -35,12 +35,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class TransferGatewayImpl implements TransferGateway {
 
-    private final TransferTaskMapper tasks;
-    private final TransferTaskOptionMapper options;
+    private final TransferTaskDOMapper tasks;
+    private final TransferTaskOptionDOMapper options;
     private final TransferStorageConverter converter;
 
     public TransferGatewayImpl(
-            TransferTaskMapper tasks, TransferTaskOptionMapper options, TransferStorageConverter converter) {
+            TransferTaskDOMapper tasks, TransferTaskOptionDOMapper options, TransferStorageConverter converter) {
         this.tasks = tasks;
         this.options = options;
         this.converter = converter;

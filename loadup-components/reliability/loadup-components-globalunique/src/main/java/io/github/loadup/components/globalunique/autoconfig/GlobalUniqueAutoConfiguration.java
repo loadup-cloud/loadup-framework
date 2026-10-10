@@ -5,7 +5,7 @@ import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.globalunique.DefaultGlobalUniqueTemplate;
 import io.github.loadup.components.globalunique.GlobalUniqueProperties;
 import io.github.loadup.components.globalunique.GlobalUniqueTemplate;
-import io.github.loadup.components.globalunique.mapper.GlobalUniqueMapper;
+import io.github.loadup.components.globalunique.mapper.GlobalUniqueDOMapper;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -20,7 +20,8 @@ public class GlobalUniqueAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(GlobalUniqueTemplate.class)
-    public GlobalUniqueTemplate globalUniqueTemplate(GlobalUniqueMapper mapper, DatabaseProperties databaseProperties) {
+    public GlobalUniqueTemplate globalUniqueTemplate(
+            GlobalUniqueDOMapper mapper, DatabaseProperties databaseProperties) {
         return new DefaultGlobalUniqueTemplate(mapper, databaseProperties);
     }
 }

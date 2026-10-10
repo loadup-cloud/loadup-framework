@@ -825,6 +825,11 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-database-processor</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-database</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>

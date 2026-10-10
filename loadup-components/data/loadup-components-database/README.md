@@ -15,7 +15,50 @@ This module brings the JDBC stack (`spring-boot-starter-jdbc`, so `DataSourceAut
 default Hikari pool); the application still supplies the JDBC driver and the `spring.datasource.*`
 properties. This module does not select a database vendor.
 
-Define each data object as `@Table(...) class XxxDO extends BaseDO` and its mapper as `@Mapper interface XxxDOMapper extends BaseMapper<XxxDO>`. `BaseDO` supplies `id`, `createdAt`, `updatedAt`, `tenantId`, and integer `deleted` (`0` normal, `1` deleted). Module-local `Tables` and TableDef sources are generated from the root `mybatis-flex.config`; declare empty Mapper interfaces explicitly. Generated files remain under `target/`.
+Define each data object as `@Table(...) class XxxDO extends BaseDO`. `BaseDO` supplies `id`, `createdAt`, `updatedAt`, `tenantId`, and integer `deleted` (`0` normal, `1` deleted). The database processor generates `XxxDOMapper extends BaseMapper<XxxDO>` with MyBatis `@Mapper`, module-local `Tables` and TableDef sources. Do not declare these Mapper interfaces manually. Generated files remain under `target/`.
+
+## Compile-time generation
+
+Infrastructure modules enable the database-owned processor separately from the runtime dependency. The BOM manages its version. A provided dependency establishes Maven reactor ordering and keeps the processor out of deployment dependencies:
+
+```xml
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-components-database-processor</artifactId>
+    <scope>provided</scope>
+    <optional>true</optional>
+</dependency>
+```
+
+Configure `maven-compiler-plugin` annotation processing (external consumers must also include MapStruct/Boot paths if used):
+
+```xml
+<configuration>
+    <annotationProcessorPaths combine.children="append">
+        <path>
+            <groupId>com.mybatis-flex</groupId>
+            <artifactId>mybatis-flex-processor</artifactId>
+            <version>${mybatis.flex.version}</version>
+        </path>
+        <path>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-database-processor</artifactId>
+            <version>${loadup.framework.version}</version>
+        </path>
+    </annotationProcessorPaths>
+    <annotationProcessors>
+        <annotationProcessor>org.mapstruct.ap.MappingProcessor</annotationProcessor>
+        <annotationProcessor>org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor</annotationProcessor>
+        <annotationProcessor>io.github.loadup.components.database.processor.LoadUpMyBatisFlexProcessor</annotationProcessor>
+    </annotationProcessors>
+</configuration>
+```
+
+External projects must define the example version properties to match the selected BOM; importing a BOM does not import its Maven properties or plugin configuration.
+
+The explicit processor list avoids running upstream Flex a second time through service discovery. Both Flex paths are explicit so compilation works before the processor artifact is installed into the local repository. Build using `mvn clean ...` to avoid generating the same sources twice from stale output. Import `infrastructure.mapper.XxxDOMapper` and inject it into repositories; scan the generated mapper package with `@MapperScan`. MapStruct remains an independent processor for Spring-managed converters.
+
+Fixed options live in `DatabaseAptConfiguration` Java code. No project `mybatis-flex.config` or application property is needed; ancestor config files cannot change these options. The generated config in compiler output is an upstream implementation bridge, not an application configuration file.
 
 ## Configuration
 
@@ -38,7 +81,7 @@ Use `TenantUtil.runWithTenant(...)` or `callWithTenant(...)` for non-HTTP jobs t
 
 | Capability | MyBatis-Flex |
 |---|---|
-| CRUD, QueryWrapper, generated Tables and TableDef | ✓ |
+| CRUD, QueryWrapper, generated MyBatis Mapper, Tables and TableDef | ✓ |
 | Audit timestamps and ID generation | ✓ |
 | Integer logical deletion | ✓ |
 | Tenant SQL isolation and request propagation | ✓ |

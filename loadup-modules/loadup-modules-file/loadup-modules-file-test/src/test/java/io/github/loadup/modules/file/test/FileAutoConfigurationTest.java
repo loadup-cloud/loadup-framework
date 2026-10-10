@@ -28,8 +28,8 @@ import io.github.loadup.modules.file.app.converter.FileDTOConverter;
 import io.github.loadup.modules.file.app.service.FileResourceService;
 import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
 import io.github.loadup.modules.file.infrastructure.autoconfigure.FilePersistenceAutoConfiguration;
-import io.github.loadup.modules.file.infrastructure.mapper.FileReferenceMapper;
-import io.github.loadup.modules.file.infrastructure.mapper.FileResourceMapper;
+import io.github.loadup.modules.file.infrastructure.mapper.FileReferenceDOMapper;
+import io.github.loadup.modules.file.infrastructure.mapper.FileResourceDOMapper;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -39,8 +39,8 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 class FileAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withBean(DataSource.class, () -> mock(DataSource.class))
-            .withBean("fileResourceMapper", FileResourceMapper.class, () -> mock(FileResourceMapper.class))
-            .withBean("fileReferenceMapper", FileReferenceMapper.class, () -> mock(FileReferenceMapper.class))
+            .withBean("fileResourceDOMapper", FileResourceDOMapper.class, () -> mock(FileResourceDOMapper.class))
+            .withBean("fileReferenceDOMapper", FileReferenceDOMapper.class, () -> mock(FileReferenceDOMapper.class))
             .withBean(DfsService.class, () -> mock(DfsService.class))
             .withConfiguration(
                     AutoConfigurations.of(FilePersistenceAutoConfiguration.class, FileResourceAutoConfiguration.class));

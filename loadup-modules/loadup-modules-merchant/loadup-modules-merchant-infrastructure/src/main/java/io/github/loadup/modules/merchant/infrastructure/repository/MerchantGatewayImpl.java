@@ -28,16 +28,16 @@ import io.github.loadup.modules.merchant.domain.gateway.MerchantGateway;
 import io.github.loadup.modules.merchant.domain.model.*;
 import io.github.loadup.modules.merchant.infrastructure.converter.MerchantStorageConverter;
 import io.github.loadup.modules.merchant.infrastructure.dataobject.MerchantDO;
-import io.github.loadup.modules.merchant.infrastructure.mapper.MerchantMapper;
+import io.github.loadup.modules.merchant.infrastructure.mapper.MerchantDOMapper;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class MerchantGatewayImpl implements MerchantGateway {
-    private final MerchantMapper mapper;
+    private final MerchantDOMapper mapper;
     private final MerchantStorageConverter converter;
 
-    public MerchantGatewayImpl(MerchantMapper mapper, MerchantStorageConverter converter) {
+    public MerchantGatewayImpl(MerchantDOMapper mapper, MerchantStorageConverter converter) {
         this.mapper = mapper;
         this.converter = converter;
     }

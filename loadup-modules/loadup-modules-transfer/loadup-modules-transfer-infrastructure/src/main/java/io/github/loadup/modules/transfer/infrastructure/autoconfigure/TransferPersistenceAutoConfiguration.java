@@ -40,13 +40,13 @@ import org.springframework.context.annotation.*;
 public class TransferPersistenceAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(TransferGateway.class)
-    @MapperScan(basePackageClasses = TransferTaskMapper.class)
+    @MapperScan(basePackageClasses = TransferTaskDOMapper.class)
     @Import(TransferStorageConverterImpl.class)
     static class DefaultPersistence {
         @Bean
         public TransferGateway transferGateway(
-                TransferTaskMapper transferTaskMapper,
-                TransferTaskOptionMapper transferTaskOptionMapper,
+                TransferTaskDOMapper transferTaskMapper,
+                TransferTaskOptionDOMapper transferTaskOptionMapper,
                 TransferStorageConverter converter) {
             return new TransferGatewayImpl(transferTaskMapper, transferTaskOptionMapper, converter);
         }

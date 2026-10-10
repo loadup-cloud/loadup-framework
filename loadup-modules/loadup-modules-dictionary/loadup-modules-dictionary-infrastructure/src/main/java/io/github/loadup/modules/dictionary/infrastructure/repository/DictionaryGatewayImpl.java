@@ -33,12 +33,12 @@ import java.util.*;
 
 public class DictionaryGatewayImpl implements DictionaryGateway {
 
-    private final DictionaryTypeMapper types;
-    private final DictionaryItemMapper items;
+    private final DictionaryTypeDOMapper types;
+    private final DictionaryItemDOMapper items;
     private final DictionaryStorageConverter converter;
 
     public DictionaryGatewayImpl(
-            DictionaryTypeMapper types, DictionaryItemMapper items, DictionaryStorageConverter converter) {
+            DictionaryTypeDOMapper types, DictionaryItemDOMapper items, DictionaryStorageConverter converter) {
         this.types = types;
         this.items = items;
         this.converter = converter;

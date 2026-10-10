@@ -27,8 +27,8 @@ import io.github.loadup.modules.dictionary.app.converter.DictionaryDTOConverter;
 import io.github.loadup.modules.dictionary.app.service.DictionaryService;
 import io.github.loadup.modules.dictionary.domain.gateway.DictionaryGateway;
 import io.github.loadup.modules.dictionary.infrastructure.autoconfigure.DictionaryPersistenceAutoConfiguration;
-import io.github.loadup.modules.dictionary.infrastructure.mapper.DictionaryItemMapper;
-import io.github.loadup.modules.dictionary.infrastructure.mapper.DictionaryTypeMapper;
+import io.github.loadup.modules.dictionary.infrastructure.mapper.DictionaryItemDOMapper;
+import io.github.loadup.modules.dictionary.infrastructure.mapper.DictionaryTypeDOMapper;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -38,8 +38,8 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 class DictionaryAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withBean(DataSource.class, () -> mock(DataSource.class))
-            .withBean("dictionaryTypeMapper", DictionaryTypeMapper.class, () -> mock(DictionaryTypeMapper.class))
-            .withBean("dictionaryItemMapper", DictionaryItemMapper.class, () -> mock(DictionaryItemMapper.class))
+            .withBean("dictionaryTypeDOMapper", DictionaryTypeDOMapper.class, () -> mock(DictionaryTypeDOMapper.class))
+            .withBean("dictionaryItemDOMapper", DictionaryItemDOMapper.class, () -> mock(DictionaryItemDOMapper.class))
             .withConfiguration(AutoConfigurations.of(
                     DictionaryPersistenceAutoConfiguration.class, DictionaryAutoConfiguration.class));
 

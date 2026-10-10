@@ -27,7 +27,7 @@ import io.github.loadup.modules.audit.app.converter.AuditDTOConverter;
 import io.github.loadup.modules.audit.app.service.AuditService;
 import io.github.loadup.modules.audit.domain.gateway.AuditGateway;
 import io.github.loadup.modules.audit.infrastructure.autoconfigure.AuditPersistenceAutoConfiguration;
-import io.github.loadup.modules.audit.infrastructure.mapper.AuditEventMapper;
+import io.github.loadup.modules.audit.infrastructure.mapper.AuditEventDOMapper;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -37,7 +37,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 class AuditAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withBean(DataSource.class, () -> mock(DataSource.class))
-            .withBean("auditEventMapper", AuditEventMapper.class, () -> mock(AuditEventMapper.class))
+            .withBean("auditEventDOMapper", AuditEventDOMapper.class, () -> mock(AuditEventDOMapper.class))
             .withConfiguration(
                     AutoConfigurations.of(AuditPersistenceAutoConfiguration.class, AuditAutoConfiguration.class));
 

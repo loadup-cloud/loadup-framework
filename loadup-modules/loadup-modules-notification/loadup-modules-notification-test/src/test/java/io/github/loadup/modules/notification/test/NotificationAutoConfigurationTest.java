@@ -27,7 +27,7 @@ import io.github.loadup.modules.notification.app.converter.NotificationDTOConver
 import io.github.loadup.modules.notification.app.service.InboxService;
 import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
 import io.github.loadup.modules.notification.infrastructure.autoconfigure.NotificationPersistenceAutoConfiguration;
-import io.github.loadup.modules.notification.infrastructure.mapper.InboxMessageMapper;
+import io.github.loadup.modules.notification.infrastructure.mapper.InboxMessageDOMapper;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -37,7 +37,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 class NotificationAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withBean(DataSource.class, () -> mock(DataSource.class))
-            .withBean("inboxMessageMapper", InboxMessageMapper.class, () -> mock(InboxMessageMapper.class))
+            .withBean("inboxMessageDOMapper", InboxMessageDOMapper.class, () -> mock(InboxMessageDOMapper.class))
             .withConfiguration(AutoConfigurations.of(
                     NotificationPersistenceAutoConfiguration.class, NotificationAutoConfiguration.class));
 

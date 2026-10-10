@@ -34,10 +34,10 @@ import org.springframework.dao.DuplicateKeyException;
 
 public class InboxGatewayImpl implements InboxGateway {
 
-    private final InboxMessageMapper mapper;
+    private final InboxMessageDOMapper mapper;
     private final NotificationStorageConverter converter;
 
-    public InboxGatewayImpl(InboxMessageMapper mapper, NotificationStorageConverter converter) {
+    public InboxGatewayImpl(InboxMessageDOMapper mapper, NotificationStorageConverter converter) {
         this.mapper = mapper;
         this.converter = converter;
     }

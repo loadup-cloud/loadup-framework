@@ -49,7 +49,11 @@ The servlet filter always propagates request context. With multi-tenancy disable
 
 ## Code generation
 
-The repository root `mybatis-flex.config` is the single source for annotation processing. It generates uppercase TableDef properties, one module-local `Tables` class, while Mapper interfaces are explicitly declared. Generated sources stay under `target/generated-sources/annotations` and must not be committed.
+Generation belongs to the database component's `loadup-components-database-processor` build-time jar. `DatabaseAptConfiguration` fixes the options in Java; `LoadUpMyBatisFlexProcessor` delegates source generation to the upstream MyBatis-Flex processor. It generates uppercase TableDef properties, module-local `Tables`, and `XxxDOMapper extends BaseMapper<XxxDO>` annotated with MyBatis `@Mapper`. DOs in `.dataobject` produce interfaces in the sibling `.mapper` package. Generated sources stay under `target/generated-sources/annotations` and must not be committed.
+
+Upstream 1.11.8 reads generation configuration only from files. Before initializing the delegate, the wrapper writes its fixed options into `CLASS_OUTPUT/mybatis-flex.config` and enables `stopBubbling`; parent configuration is ignored. This bridge avoids reflection, copied upstream generator code and runtime Spring configuration for a compile-time concern. The compile test verifies that disabling generation or changing packages in a parent config cannot override the defaults.
+
+The processor jar is an independent reactor module beneath database; the runtime database artifact remains a jar. Infrastructure modules declare it as optional/provided and explicitly select the wrapper alongside MapStruct and Boot processors. The upstream processor path supplies the delegate but is not selected independently, preventing duplicate generation. The wrapper is not a dependency of the runtime database artifact. Empty hand-written persistence Mapper interfaces are removed; MapStruct converter contracts remain unchanged.
 
 ## Schema contract
 

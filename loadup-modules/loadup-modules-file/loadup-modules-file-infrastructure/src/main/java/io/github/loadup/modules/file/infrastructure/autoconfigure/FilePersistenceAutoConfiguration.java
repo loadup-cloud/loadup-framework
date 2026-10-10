@@ -36,13 +36,13 @@ import org.springframework.context.annotation.*;
 public class FilePersistenceAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(FileResourceGateway.class)
-    @MapperScan(basePackageClasses = FileResourceMapper.class)
+    @MapperScan(basePackageClasses = FileResourceDOMapper.class)
     @Import(FileStorageConverterImpl.class)
     static class DefaultPersistence {
         @Bean
         public FileResourceGateway fileGateway(
-                FileResourceMapper fileResourceMapper,
-                FileReferenceMapper fileReferenceMapper,
+                FileResourceDOMapper fileResourceMapper,
+                FileReferenceDOMapper fileReferenceMapper,
                 FileStorageConverter converter) {
             return new FileResourceGatewayImpl(fileResourceMapper, fileReferenceMapper, converter);
         }

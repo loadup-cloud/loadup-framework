@@ -40,13 +40,13 @@ import org.springframework.context.annotation.*;
 public class DictionaryPersistenceAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(DictionaryGateway.class)
-    @MapperScan(basePackageClasses = DictionaryTypeMapper.class)
+    @MapperScan(basePackageClasses = DictionaryTypeDOMapper.class)
     @Import(DictionaryStorageConverterImpl.class)
     static class DefaultPersistence {
         @Bean
         public DictionaryGateway dictionaryGateway(
-                DictionaryTypeMapper dictionaryTypeMapper,
-                DictionaryItemMapper dictionaryItemMapper,
+                DictionaryTypeDOMapper dictionaryTypeMapper,
+                DictionaryItemDOMapper dictionaryItemMapper,
                 DictionaryStorageConverter converter) {
             return new DictionaryGatewayImpl(dictionaryTypeMapper, dictionaryItemMapper, converter);
         }

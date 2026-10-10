@@ -36,11 +36,11 @@ import org.springframework.context.annotation.*;
 public class AuditPersistenceAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(AuditGateway.class)
-    @MapperScan(basePackageClasses = AuditEventMapper.class)
+    @MapperScan(basePackageClasses = AuditEventDOMapper.class)
     @Import(AuditStorageConverterImpl.class)
     static class DefaultPersistence {
         @Bean
-        public AuditGateway auditGateway(AuditEventMapper auditEventMapper, AuditStorageConverter converter) {
+        public AuditGateway auditGateway(AuditEventDOMapper auditEventMapper, AuditStorageConverter converter) {
             return new AuditGatewayImpl(auditEventMapper, converter);
         }
     }

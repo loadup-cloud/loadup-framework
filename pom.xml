@@ -139,11 +139,6 @@
                                 <version>${mapstruct.version}</version>
                             </path>
                             <path>
-                                <groupId>com.mybatis-flex</groupId>
-                                <artifactId>mybatis-flex-processor</artifactId>
-                                <version>${mybatis.flex.version}</version>
-                            </path>
-                            <path>
                                 <groupId>org.springframework.boot</groupId>
                                 <artifactId>spring-boot-configuration-processor</artifactId>
                                 <version>${spring.boot.version}</version>

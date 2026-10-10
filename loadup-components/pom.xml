@@ -25,6 +25,7 @@
         <module>web/loadup-components-springdoc</module>
         <!-- data -->
         <module>data/loadup-components-cache</module>
+        <module>data/loadup-components-database/loadup-components-database-processor</module>
         <module>data/loadup-components-database</module>
         <module>data/loadup-components-dfs</module>
         <!-- integration -->

@@ -1,13 +1,13 @@
 package io.github.loadup.components.globalunique;
 
-import static io.github.loadup.components.globalunique.dataobject.table.GlobalUniqueDOTableDef.GLOBAL_UNIQUE_DO;
+import static io.github.loadup.components.globalunique.dataobject.table.Tables.GLOBAL_UNIQUE_DO;
 
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.globalunique.dataobject.GlobalUniqueDO;
-import io.github.loadup.components.globalunique.mapper.GlobalUniqueMapper;
+import io.github.loadup.components.globalunique.mapper.GlobalUniqueDOMapper;
 import io.github.loadup.components.globalunique.model.GlobalUniqueClaim;
 import io.github.loadup.components.globalunique.model.GlobalUniqueRecord;
 import java.util.Objects;
@@ -20,10 +20,10 @@ public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {
 
     private static final String GLOBAL_TENANT = "__loadup_global__";
 
-    private final GlobalUniqueMapper mapper;
+    private final GlobalUniqueDOMapper mapper;
     private final DatabaseProperties databaseProperties;
 
-    public DefaultGlobalUniqueTemplate(GlobalUniqueMapper mapper, DatabaseProperties databaseProperties) {
+    public DefaultGlobalUniqueTemplate(GlobalUniqueDOMapper mapper, DatabaseProperties databaseProperties) {
         this.mapper = mapper;
         this.databaseProperties = databaseProperties;
     }
