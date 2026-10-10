@@ -34,6 +34,8 @@ DTO / JsonUtil   ← SmartInitializingSingleton   ← Boot ObjectMapper
 ```
 
 `ApiPathMatcher` 只匹配 `/api` 和 `/api/**`（考虑 Servlet context path）。
+
+`LoadUpWebMvcAutoConfiguration` 使用 `WebMvcConfigurer#configurePathMatch` 为 `io.github.loadup.modules` 下的 Controller 统一添加 `/api`。各业务模块只声明相对路径；文档、Actuator、错误 Controller 和消费工程自有包不在匹配范围内。
 `ApiResponseAdvice` 对 JSON 与字符串响应设置 HTTP 200；已有 `IResponse` 保持原报文，
 `PageDTO` 使用分页报文，字节响应不包装。`ApiErrorController` 接管错误路径，
 将业务 API 的 400/401/403/404 等状态映射到 `FailureResponse`；非 API 请求保留原 HTTP 状态。

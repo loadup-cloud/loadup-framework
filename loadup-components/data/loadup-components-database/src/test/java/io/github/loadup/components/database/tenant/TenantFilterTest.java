@@ -35,8 +35,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 class TenantFilterTest {
     @Test
     void bindsTenantInsideChainAndPreservesRequestMetadataAcrossRedispatch() throws Exception {
-        var properties = new DatabaseProperties.Request();
-        properties.setHeaderName("X-Tenant-Id");
+        var properties = new DatabaseProperties.MultiTenant();
+        properties.setEnabled(true);
+        properties.getRequest().setHeaderName("X-Tenant-Id");
         var filter = new TenantFilter(properties);
         var request = new MockHttpServletRequest();
         request.addHeader("X-Tenant-Id", " tenant ");
@@ -59,8 +60,9 @@ class TenantFilterTest {
 
     @Test
     void failureRestoresOuterBinding() {
-        var properties = new DatabaseProperties.Request();
-        properties.setHeaderName("X-Tenant-Id");
+        var properties = new DatabaseProperties.MultiTenant();
+        properties.setEnabled(true);
+        properties.getRequest().setHeaderName("X-Tenant-Id");
         var request = new MockHttpServletRequest();
         request.addHeader("X-Tenant-Id", "inner");
         TenantUtil.runWithTenant("outer", () -> {
@@ -72,5 +74,30 @@ class TenantFilterTest {
             assertThat(TenantUtil.getTenantId()).isEqualTo("outer");
         });
         assertThat(ContextHolder.isBound()).isFalse();
+    }
+
+    @Test
+    void disabledMultiTenancyUsesConfiguredDefaultAndIgnoresRequestTenant() throws Exception {
+        var properties = new DatabaseProperties.MultiTenant();
+        properties.setDefaultTenantId("single-tenant");
+        var request = new MockHttpServletRequest();
+        request.addHeader("X-Tenant-Id", "other-tenant");
+
+        new TenantFilter(properties).doFilter(request, new MockHttpServletResponse(), (r, response) ->
+                assertThat(TenantUtil.getTenantId()).isEqualTo("single-tenant"));
+
+        assertThat(ContextHolder.isBound()).isFalse();
+    }
+
+    @Test
+    void enabledMultiTenancyDoesNotUseSingleTenantDefault() throws Exception {
+        var properties = new DatabaseProperties.MultiTenant();
+        properties.setEnabled(true);
+        properties.setDefaultTenantId("single-tenant");
+
+        new TenantFilter(properties).doFilter(
+                new MockHttpServletRequest(),
+                new MockHttpServletResponse(),
+                (request, response) -> assertThat(TenantUtil.getTenantId()).isNull());
     }
 }

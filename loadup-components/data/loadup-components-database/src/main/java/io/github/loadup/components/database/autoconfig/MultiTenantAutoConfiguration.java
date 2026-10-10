@@ -6,7 +6,6 @@ import io.github.loadup.components.database.tenant.TenantFilter;
 import jakarta.servlet.DispatcherType;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -18,20 +17,19 @@ import org.springframework.core.Ordered;
 @EnableConfigurationProperties(DatabaseProperties.class)
 @ConditionalOnClass(name = {"jakarta.servlet.Filter", "org.springframework.boot.web.servlet.FilterRegistrationBean"})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnProperty(prefix = "loadup.database.multi-tenant", name = "enabled", havingValue = "true")
 public class MultiTenantAutoConfiguration {
 
     @Bean
     public FilterRegistrationBean<TenantFilter> tenantFilterRegistration(DatabaseProperties properties) {
         FilterRegistrationBean<TenantFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new TenantFilter(properties.getMultiTenant().getRequest()));
+        registration.setFilter(new TenantFilter(properties.getMultiTenant()));
         registration.addUrlPatterns("/*");
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
         registration.setName("tenantFilter");
         registration.setAsyncSupported(true);
         registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);
 
-        LogUtil.info(MultiTenantAutoConfiguration.class, "Registered TenantFilter for multi-tenant support");
+        LogUtil.info(MultiTenantAutoConfiguration.class, "Registered tenant context filter");
         return registration;
     }
 }

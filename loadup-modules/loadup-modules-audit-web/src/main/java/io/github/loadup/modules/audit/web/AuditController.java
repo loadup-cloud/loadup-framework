@@ -24,7 +24,7 @@ public class AuditController {
         this.service = service;
     }
 
-    @PostMapping("/api/audit/events/query")
+    @PostMapping("/audit/events/query")
     @Operation(summary = "Search audit events")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
     public PageDTO<AuditEvent> query(@RequestBody AuditSearchRequest request) {

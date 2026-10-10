@@ -73,15 +73,12 @@ public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {
     private String resolveTenantId() {
         DatabaseProperties.MultiTenant multiTenant = databaseProperties.getMultiTenant();
         if (!multiTenant.isEnabled()) {
-            return GLOBAL_TENANT;
+            return multiTenant.getDefaultTenantId();
         }
 
         String tenantId = TenantUtil.getTenantId();
         if (StringUtils.hasText(tenantId)) {
             return tenantId;
-        }
-        if (StringUtils.hasText(multiTenant.getDefaultTenantId())) {
-            return multiTenant.getDefaultTenantId();
         }
         if (multiTenant.isRequired()) {
             throw new IllegalStateException("Tenant context is required for global unique operations");

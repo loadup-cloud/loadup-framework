@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** Authenticated submission and tracking of business-supplied import/export handlers. */
 @RestController
-@RequestMapping("/api/transfer-tasks")
+@RequestMapping("/transfer-tasks")
 @Tag(name = "Import Export Tasks", description = "Asynchronous import and export tasks")
 public class TransferTaskController {
     private final TransferTaskService service;

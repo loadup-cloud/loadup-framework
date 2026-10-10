@@ -44,6 +44,19 @@ class BaseEntityListenerTest {
     }
 
     @Test
+    void disabledMultiTenancyWritesConfiguredDefaultTenant() {
+        DatabaseProperties properties = new DatabaseProperties();
+        properties.getMultiTenant().setDefaultTenantId("single-tenant");
+        BaseEntityListener listener = new BaseEntityListener(properties, () -> "id", Clock.fixed(NOW, ZoneOffset.UTC));
+        TestEntity entity = new TestEntity();
+        entity.setTenantId("untrusted-value");
+
+        listener.onInsert(entity);
+
+        assertThat(entity.getTenantId()).isEqualTo("single-tenant");
+    }
+
+    @Test
     void refreshesUpdatedAtWithoutChangingCreatedAt() {
         DatabaseProperties properties = new DatabaseProperties();
         BaseEntityListener listener = new BaseEntityListener(properties, () -> "id", Clock.fixed(NOW, ZoneOffset.UTC));

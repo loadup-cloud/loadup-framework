@@ -395,3 +395,21 @@ VALUES ('1', '1', '1', '1', NOW(),now()),
        ('9', '1', '9', '1', NOW(),now()),
        ('10', '1', '10', '1', NOW(),now()),
        ('11', '1', '11', '1', NOW(),now());
+
+-- Contract API permissions for the local super administrator.
+INSERT IGNORE INTO upms_permission (id, parent_id, permission_name, permission_code, permission_type, resource_path,
+                                    sort_order, status, created_by, created_at, updated_at)
+VALUES ('contract-catalog-read', '0', '合约目录查询', 'contract:catalog:read', 3, NULL, 1, 1, '1', NOW(), NOW()),
+       ('contract-catalog-write', '0', '合约目录编辑', 'contract:catalog:write', 3, NULL, 2, 1, '1', NOW(), NOW()),
+       ('contract-catalog-publish', '0', '合约目录发布', 'contract:catalog:publish', 3, NULL, 3, 1, '1', NOW(), NOW()),
+       ('contract-merchant-read', '0', '商户合约查询', 'contract:merchant:read', 3, NULL, 4, 1, '1', NOW(), NOW()),
+       ('contract-merchant-sign', '0', '商户合约签约', 'contract:merchant:sign', 3, NULL, 5, 1, '1', NOW(), NOW()),
+       ('contract-merchant-manage', '0', '商户合约管理', 'contract:merchant:manage', 3, NULL, 6, 1, '1', NOW(), NOW()),
+       ('contract-runtime-resolve', '0', '合约运行解析', 'contract:runtime:resolve', 3, NULL, 7, 1, '1', NOW(), NOW());
+
+INSERT IGNORE INTO upms_role_permission (id, role_id, permission_id, created_by, created_at, updated_at)
+SELECT CONCAT('contract-rp-', REPLACE(permission_code, ':', '-')), '1', id, '1', NOW(), NOW()
+FROM upms_permission
+WHERE permission_code IN ('contract:catalog:read', 'contract:catalog:write', 'contract:catalog:publish',
+                          'contract:merchant:read', 'contract:merchant:sign', 'contract:merchant:manage',
+                          'contract:runtime:resolve');

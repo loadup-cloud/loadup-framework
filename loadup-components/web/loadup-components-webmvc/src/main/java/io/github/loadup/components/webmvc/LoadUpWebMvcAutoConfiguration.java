@@ -36,11 +36,24 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
+import org.springframework.web.method.HandlerTypePredicate;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import tools.jackson.databind.ObjectMapper;
 
 @AutoConfiguration(beforeName = "org.springframework.boot.webmvc.autoconfigure.error.ErrorMvcAutoConfiguration")
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class LoadUpWebMvcAutoConfiguration {
+    @Bean
+    public WebMvcConfigurer loadUpApiPathPrefix() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void configurePathMatch(PathMatchConfigurer configurer) {
+                configurer.addPathPrefix("/api", HandlerTypePredicate.forBasePackage("io.github.loadup.modules"));
+            }
+        };
+    }
+
     @Bean
     public FilterRegistrationBean<ExecutionContextFilter> loadUpExecutionContextFilter() {
         var registration = new FilterRegistrationBean<>(new ExecutionContextFilter());

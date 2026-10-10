@@ -30,9 +30,10 @@ The database constraint is:
 UNIQUE (tenant_id, biz_type, unique_key)
 ```
 
-Tenant-enabled applications use `TenantContextHolder` or the database default tenant. When tenant
-support is disabled or optional context is absent, the reserved `__loadup_global__` tenant scope is
-used so the non-null unique constraint remains deterministic.
+Tenant-enabled applications use the tenant bound in `TenantUtil`. When tenant support is disabled,
+the database component's `default-tenant-id` scopes claims. When tenant support is enabled but
+context is optional and absent, the reserved `__loadup_global__` scope keeps the non-null unique
+constraint deterministic.
 
 `bizType` and `uniqueKey` are trimmed and required. Their maximum lengths are 64 and 255
 characters. `bizId` and `requestData` are diagnostic data and do not participate in uniqueness.

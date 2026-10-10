@@ -87,6 +87,14 @@
     contracts.value = data.items
     total.value = data.total
   }
+  const searchContracts = async () => {
+    page.value = 1
+    try {
+      await loadContracts()
+    } catch {
+      /* Request client shows the error. */
+    }
+  }
   onMounted(() => {
     void drafts.loadAll().catch(() => undefined)
     void loadContracts().catch(() => undefined)
@@ -231,17 +239,8 @@
             v-model="merchantFilter"
             placeholder="商户标识"
             clearable
-            @keyup.enter="
-              page = 1
-              loadContracts()
-            "
-          /><ElButton
-            @click="
-              page = 1
-              loadContracts()
-            "
-            >查询</ElButton
-          ></div
+            @keyup.enter="searchContracts"
+          /><ElButton @click="searchContracts">查询</ElButton></div
         ><ElEmpty v-if="!contracts.length" description="暂无合约" /><button
           v-for="item in contracts"
           :key="item.id"

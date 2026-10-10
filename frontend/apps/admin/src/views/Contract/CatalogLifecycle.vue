@@ -54,7 +54,9 @@
       :type="
         item.status === 'PUBLISHED' ? 'success' : item.status === 'RETIRED' ? 'info' : 'warning'
       "
-      >{{ item.status }}</ElTag
+      >{{
+        item.status === 'DRAFT' ? '未发布' : item.status === 'PUBLISHED' ? '已发布' : '已下架'
+      }}</ElTag
     >
     <ElButton
       v-if="item.status === 'DRAFT'"

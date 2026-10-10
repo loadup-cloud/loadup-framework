@@ -109,9 +109,6 @@ public class MyBatisFlexAutoConfiguration {
                 }
                 String tenantId = TenantUtil.getTenantId();
                 if (!org.springframework.util.StringUtils.hasText(tenantId)) {
-                    tenantId = properties.getDefaultTenantId();
-                }
-                if (!org.springframework.util.StringUtils.hasText(tenantId)) {
                     if (properties.isRequired()) {
                         throw new TenantContextMissingException(tableName);
                     }

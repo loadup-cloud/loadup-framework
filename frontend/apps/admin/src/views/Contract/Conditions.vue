@@ -153,7 +153,7 @@
         ><div class="mb-14px flex items-center justify-between"
           ><h1 class="m-0 text-20px">条件规则</h1
           ><ElButton type="primary" @click="newCondition">新建</ElButton></div
-        ><ElEmpty v-if="!drafts.conditions.length" description="暂无条件草稿" /><button
+        ><ElEmpty v-if="!drafts.conditions.length" description="暂无条件版本" /><button
           v-for="item in drafts.conditions"
           :key="item.id"
           type="button"
@@ -169,7 +169,7 @@
       >
       <ElCard shadow="never"
         ><div class="mb-18px flex items-center justify-between"
-          ><h2 class="m-0 text-18px">条件草稿</h2
+          ><h2 class="m-0 text-18px">条件版本</h2
           ><div class="flex items-center gap-8px"
             ><CatalogLifecycle kind="CONDITION" :item="form" /><ElButton
               v-if="form.status"
@@ -179,7 +179,7 @@
               type="primary"
               :disabled="!!form.status && form.status !== 'DRAFT'"
               @click="save"
-              >保存草稿</ElButton
+              >保存版本</ElButton
             ></div
           ></div
         >

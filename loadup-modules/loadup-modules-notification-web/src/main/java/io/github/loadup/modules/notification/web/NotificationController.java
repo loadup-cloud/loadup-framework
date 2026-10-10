@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** A user-owned inbox with a separate administrator publishing entry point. */
 @RestController
-@RequestMapping("/api/notifications")
+@RequestMapping("/notifications")
 @Tag(name = "In-App Notifications", description = "Private notification inbox")
 public class NotificationController {
     private final InboxService inbox;

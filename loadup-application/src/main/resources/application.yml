@@ -29,6 +29,9 @@ scalar:
 
 # LoadUp component and module properties
 loadup:
+  database:
+    multi-tenant:
+      default-tenant-id: ${LOADUP_DEFAULT_TENANT_ID:__default__}
   audit:
     web:
       include-paths:

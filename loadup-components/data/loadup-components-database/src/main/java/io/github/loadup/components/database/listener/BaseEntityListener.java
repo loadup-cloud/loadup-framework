@@ -38,11 +38,10 @@ public class BaseEntityListener implements InsertListener, UpdateListener {
         }
 
         DatabaseProperties.MultiTenant tenant = databaseProperties.getMultiTenant();
-        if (tenant.isEnabled()) {
+        if (!tenant.isEnabled()) {
+            baseDO.setTenantId(tenant.getDefaultTenantId());
+        } else {
             String tenantId = TenantUtil.getTenantId();
-            if (!StringUtils.hasText(tenantId)) {
-                tenantId = tenant.getDefaultTenantId();
-            }
             if (!StringUtils.hasText(tenantId) && tenant.isRequired()) {
                 throw new TenantContextMissingException(entity.getClass());
             }

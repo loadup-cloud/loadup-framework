@@ -275,7 +275,7 @@ export const useContractDrafts = defineStore('contract-catalog', {
       Object.assign(value, copy(saved))
     },
     async transition(kind: CatalogKind, item: CatalogDraft, action: 'publish' | 'retire') {
-      if (!item.status || item.rowVersion === undefined) throw new Error('请先保存目录草稿')
+      if (!item.status || item.rowVersion === undefined) throw new Error('请先保存目录版本')
       const { data } = await (action === 'publish' ? publishCatalog : retireCatalog)(
         item.id,
         item.rowVersion

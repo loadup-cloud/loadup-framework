@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** HTTP administration and option lookup for business dictionaries. */
 @RestController
-@RequestMapping("/api/dictionaries")
+@RequestMapping("/dictionaries")
 @Tag(name = "Data Dictionaries", description = "Tenant-scoped business dictionary management")
 public class DictionaryController {
     private final DictionaryService service;

@@ -31,7 +31,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 /** Authenticated file API; metadata uses the normal JSON envelope, content is streamed. */
 @RestController
-@RequestMapping("/api/files")
+@RequestMapping("/files")
 @Tag(name = "File Resources", description = "Managed file uploads, downloads and lifecycle")
 public class FileResourceController {
     private final FileResourceService service;

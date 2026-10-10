@@ -193,7 +193,7 @@
         ><div class="mb-14px flex items-center justify-between"
           ><h1 class="m-0 text-20px">销售方案</h1
           ><ElButton type="primary" @click="newPlan">新建</ElButton></div
-        ><ElEmpty v-if="!drafts.plans.length" description="暂无方案草稿" /><button
+        ><ElEmpty v-if="!drafts.plans.length" description="暂无方案版本" /><button
           v-for="item in drafts.plans"
           :key="item.id"
           type="button"
@@ -207,7 +207,7 @@
       >
       <ElCard shadow="never"
         ><div class="mb-18px flex items-center justify-between"
-          ><h2 class="m-0 text-18px">方案草稿</h2
+          ><h2 class="m-0 text-18px">方案版本</h2
           ><div class="flex items-center gap-8px"
             ><CatalogLifecycle kind="SALES_PLAN" :item="form" /><ElButton
               v-if="form.status"
@@ -217,7 +217,7 @@
               type="primary"
               :disabled="!!form.status && form.status !== 'DRAFT'"
               @click="save"
-              >保存草稿</ElButton
+              >保存版本</ElButton
             ></div
           ></div
         >
@@ -296,7 +296,7 @@
         >
         <h3 class="mt-22px text-16px">产品项与参数协商</h3
         ><p class="text-sm opacity-70"
-          >参数预览按产品默认值、组合覆盖值、方案覆盖值的顺序展示，仅用于编辑草稿。</p
+          >参数预览按产品默认值、组合覆盖值、方案覆盖值的顺序展示；最终结果以服务端校验为准。</p
         ><div
           v-for="entry in items"
           :key="entry.key"

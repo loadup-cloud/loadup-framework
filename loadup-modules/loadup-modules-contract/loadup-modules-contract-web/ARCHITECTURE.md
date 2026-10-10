@@ -10,7 +10,7 @@ Web 只做 HTTP 参数、当前 Authentication 操作者、权限与服务调用
 
 ## 关键契约
 
-Controller 路径 /contract，WebMVC 默认添加 /api。全部 JSON 操作为 POST，@Valid + @PreAuthorize + SpringDoc，响应由全局 WebMVC result/data 包装。loadup.contract.web.enabled 可关闭装配。
+Controller 路径 /contract，由 `loadup-components-webmvc` 统一添加 /api。全部 JSON 操作为 POST，@Valid + @PreAuthorize + SpringDoc，响应由全局 WebMVC result/data 包装。loadup.contract.web.enabled 可关闭装配。
 
 ## 依赖和扩展
 

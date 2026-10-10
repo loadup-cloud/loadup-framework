@@ -67,7 +67,7 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
     component: Layout,
     redirect: '/contract/products',
     name: 'ContractDrafts',
-    meta: { title: '合约草稿', icon: 'mdi:file-document-edit-outline' },
+    meta: { title: '合约管理', icon: 'mdi:file-document-edit-outline' },
     children: [
       {
         path: 'products',
@@ -97,7 +97,7 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
         path: 'merchant-contracts',
         component: () => import('@/views/Contract/MerchantContracts.vue'),
         name: 'ContractMerchantContracts',
-        meta: { title: '商户合约意向', icon: 'mdi:file-sign', noCache: true }
+        meta: { title: '商户合约', icon: 'mdi:file-sign', noCache: true }
       }
     ]
   },

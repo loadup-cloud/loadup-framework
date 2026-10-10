@@ -108,7 +108,7 @@
           item.version === form.version
       )
     ) {
-      ElMessage.warning('该产品版本已存在于草稿中')
+      ElMessage.warning('该产品版本已存在')
       return
     }
     const keys = form.parameters.map((item) => item.key)
@@ -171,7 +171,7 @@
         ><div class="mb-14px flex items-center justify-between"
           ><h1 class="m-0 text-20px">产品目录</h1
           ><ElButton type="primary" @click="newProduct">新建</ElButton></div
-        ><ElEmpty v-if="!drafts.products.length" description="暂无产品草稿" /><button
+        ><ElEmpty v-if="!drafts.products.length" description="暂无产品版本" /><button
           v-for="item in drafts.products"
           :key="item.id"
           type="button"
@@ -185,7 +185,7 @@
       >
       <ElCard shadow="never"
         ><div class="mb-18px flex items-center justify-between"
-          ><h2 class="m-0 text-18px">{{ isNew ? '新产品草稿' : '编辑产品草稿' }}</h2
+          ><h2 class="m-0 text-18px">{{ isNew ? '新建产品版本' : '产品版本' }}</h2
           ><div class="flex items-center gap-8px"
             ><CatalogLifecycle kind="PRODUCT" :item="form" /><ElButton
               v-if="form.status"
@@ -195,7 +195,7 @@
               type="primary"
               :disabled="!!form.status && form.status !== 'DRAFT'"
               @click="save"
-              >保存草稿</ElButton
+              >保存版本</ElButton
             ></div
           ></div
         >

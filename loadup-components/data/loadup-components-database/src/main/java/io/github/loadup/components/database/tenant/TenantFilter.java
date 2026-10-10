@@ -14,16 +14,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 /** Binds the configured request tenant to immutable execution metadata. */
 public class TenantFilter extends OncePerRequestFilter {
-    private final DatabaseProperties.Request requestProperties;
+    private final DatabaseProperties.MultiTenant tenantProperties;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String tenantId = resolveTenantId(request);
+        String tenantId = tenantProperties.isEnabled()
+                ? resolveTenantId(request)
+                : tenantProperties.getDefaultTenantId();
         String attribute = ExecutionContext.class.getName();
         ExecutionContext context =
                 request.getAttribute(attribute) instanceof ExecutionContext saved ? saved : ContextHolder.current();
-        if (tenantId != null) context = context.with(ContextKeys.TENANT_ID, tenantId);
+        if (!tenantProperties.isEnabled() || tenantId != null) context = context.with(ContextKeys.TENANT_ID, tenantId);
         request.setAttribute(attribute, context);
         try {
             ContextHolder.callWith(context, () -> {
@@ -48,6 +50,7 @@ public class TenantFilter extends OncePerRequestFilter {
     }
 
     private String resolveTenantId(HttpServletRequest request) {
+        DatabaseProperties.Request requestProperties = tenantProperties.getRequest();
         String tenantId = StringUtils.hasText(requestProperties.getHeaderName())
                 ? readValue(request.getHeader(requestProperties.getHeaderName()))
                 : null;
@@ -80,7 +83,7 @@ public class TenantFilter extends OncePerRequestFilter {
         return value.trim();
     }
 
-    public TenantFilter(DatabaseProperties.Request requestProperties) {
-        this.requestProperties = requestProperties;
+    public TenantFilter(DatabaseProperties.MultiTenant tenantProperties) {
+        this.tenantProperties = tenantProperties;
     }
 }

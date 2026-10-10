@@ -44,7 +44,7 @@ public class UpmsTokenController {
     }
 
     @PostMapping(
-            path = "/api/auth/login",
+            path = "/auth/login",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Log in with username and password", description = "Returns a Bearer access token in data.")
